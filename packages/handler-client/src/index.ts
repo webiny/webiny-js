@@ -3,7 +3,8 @@ import { ClientContext } from "~/types";
 
 export default () => ({
     type: "context",
-    apply(context: ClientContext) {
+    name: "handler-client.context",
+    async apply(context: ClientContext) {
         context.handlerClient = new HandlerClient(context);
     }
 });

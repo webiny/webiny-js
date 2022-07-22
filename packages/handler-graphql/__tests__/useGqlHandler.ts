@@ -5,12 +5,14 @@ import graphqlServerPlugins from "../src";
 
 export default ({ debug = false, plugins = [] } = {}) => {
     // Creates the actual handler. Feel free to add additional plugins if needed.
-    const handler = createHandler(
-        handlerArgsPlugins(),
-        handlerHTTPPlugins(),
-        graphqlServerPlugins({ debug }),
-        ...plugins
-    );
+    const handler = createHandler({
+        plugins: [
+            handlerArgsPlugins(),
+            handlerHTTPPlugins(),
+            graphqlServerPlugins({ debug }),
+            ...plugins
+        ]
+    });
 
     // Let's also create the "invoke" function. This will make handler invocations in actual tests easier and nicer.
     const invoke = async ({ method = "POST", body, headers = {}, ...rest }) => {

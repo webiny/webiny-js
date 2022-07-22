@@ -4243,6 +4243,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@fastify/cookie@npm:^7.2.0":
+  version: 7.2.0
+  resolution: "@fastify/cookie@npm:7.2.0"
+  dependencies:
+    cookie: ^0.5.0
+    cookie-signature: ^1.1.0
+    fastify-plugin: ^3.0.1
+  checksum: ac618c8246bd791b90fac0272dcd94ce7ce09b2289038ce5202b0e97d727783ceb353753100b097b018063238542acee7281a171e2af0371cfa0d65f82ffd8ee
+  languageName: node
+  linkType: hard
+
 "@fastify/deepmerge@npm:^1.0.0":
   version: 1.1.0
   resolution: "@fastify/deepmerge@npm:1.1.0"
@@ -10244,7 +10255,7 @@ __metadata:
     "@webiny/db-dynamodb": ^5.29.0
     "@webiny/error": ^5.29.0
     "@webiny/handler": ^5.29.0
-    "@webiny/handler-aws": ^5.25.0
+    "@webiny/handler-fastify-aws": ^5.25.0
     "@webiny/handler-graphql": ^5.29.0
     "@webiny/handler-http": ^5.25.0
     "@webiny/plugins": ^5.25.0
@@ -10278,8 +10289,8 @@ __metadata:
     "@webiny/db-dynamodb": ^5.29.0
     "@webiny/error": ^5.29.0
     "@webiny/handler": ^5.29.0
-    "@webiny/handler-aws": ^5.29.0
     "@webiny/handler-db": ^5.29.0
+    "@webiny/handler-fastify-aws": ^5.29.0
     "@webiny/handler-graphql": ^5.29.0
     "@webiny/plugins": ^5.29.0
     "@webiny/project-utils": ^5.29.0
@@ -10320,9 +10331,9 @@ __metadata:
     "@webiny/error": ^5.29.0
     "@webiny/handler": ^5.29.0
     "@webiny/handler-args": ^5.29.0
-    "@webiny/handler-aws": ^5.29.0
     "@webiny/handler-client": ^5.29.0
     "@webiny/handler-db": ^5.29.0
+    "@webiny/handler-fastify-aws": ^5.29.0
     "@webiny/handler-graphql": ^5.29.0
     "@webiny/handler-logs": ^5.29.0
     "@webiny/plugins": ^5.29.0
@@ -10584,8 +10595,8 @@ __metadata:
     "@webiny/db-dynamodb": ^5.29.0
     "@webiny/error": ^5.29.0
     "@webiny/handler": ^5.29.0
-    "@webiny/handler-aws": ^5.29.0
     "@webiny/handler-db": ^5.29.0
+    "@webiny/handler-fastify-aws": ^5.29.0
     "@webiny/plugins": ^5.29.0
     "@webiny/project-utils": ^5.29.0
     "@webiny/utils": ^5.29.0
@@ -10656,7 +10667,7 @@ __metadata:
     "@webiny/cli": ^5.29.0
     "@webiny/error": ^5.29.0
     "@webiny/handler": ^5.29.0
-    "@webiny/handler-aws": ^5.29.0
+    "@webiny/handler-fastify-aws": ^5.29.0
     "@webiny/handler-graphql": ^5.29.0
     "@webiny/plugins": ^5.29.0
     "@webiny/project-utils": ^5.29.0
@@ -10697,8 +10708,8 @@ __metadata:
     "@webiny/db-dynamodb": ^5.29.0
     "@webiny/error": ^5.29.0
     "@webiny/handler": ^5.29.0
-    "@webiny/handler-aws": ^5.29.0
     "@webiny/handler-db": ^5.29.0
+    "@webiny/handler-fastify-aws": ^5.29.0
     "@webiny/plugins": ^5.29.0
     "@webiny/project-utils": ^5.29.0
     "@webiny/utils": ^5.29.0
@@ -10773,8 +10784,8 @@ __metadata:
     "@webiny/cli": ^5.29.0
     "@webiny/error": ^5.29.0
     "@webiny/handler": ^5.29.0
-    "@webiny/handler-aws": ^5.29.0
     "@webiny/handler-db": ^5.29.0
+    "@webiny/handler-fastify-aws": ^5.29.0
     "@webiny/handler-graphql": ^5.29.0
     "@webiny/handler-http": ^5.29.0
     "@webiny/plugins": ^5.29.0
@@ -10842,8 +10853,8 @@ __metadata:
     "@webiny/db-dynamodb": ^5.29.0
     "@webiny/error": ^5.29.0
     "@webiny/handler": ^5.29.0
-    "@webiny/handler-aws": ^5.29.0
     "@webiny/handler-db": ^5.29.0
+    "@webiny/handler-fastify-aws": ^5.29.0
     "@webiny/handler-graphql": ^5.29.0
     "@webiny/project-utils": ^5.29.0
     dynamodb-toolbox: ^0.3.4
@@ -10874,8 +10885,8 @@ __metadata:
     "@webiny/cli": ^5.29.0
     "@webiny/error": ^5.29.0
     "@webiny/handler": ^5.29.0
-    "@webiny/handler-aws": ^5.29.0
     "@webiny/handler-client": ^5.29.0
+    "@webiny/handler-fastify-aws": ^5.29.0
     "@webiny/handler-graphql": ^5.29.0
     "@webiny/handler-http": ^5.29.0
     "@webiny/plugins": ^5.29.0
@@ -10931,7 +10942,7 @@ __metadata:
     "@webiny/db-dynamodb": ^5.29.0
     "@webiny/error": ^5.29.0
     "@webiny/handler": ^5.29.0
-    "@webiny/handler-aws": ^5.29.0
+    "@webiny/handler-fastify-aws": ^5.29.0
     "@webiny/handler-graphql": ^5.29.0
     "@webiny/project-utils": ^5.29.0
     dynamodb-toolbox: ^0.3.4
@@ -10974,7 +10985,7 @@ __metadata:
     "@webiny/error": ^5.29.0
     "@webiny/handler": ^5.29.0
     "@webiny/handler-args": ^5.29.0
-    "@webiny/handler-aws": ^5.29.0
+    "@webiny/handler-fastify-aws": ^5.29.0
     "@webiny/handler-graphql": ^5.29.0
     "@webiny/project-utils": ^5.29.0
     "@webiny/utils": ^5.29.0
@@ -11019,8 +11030,8 @@ __metadata:
     "@webiny/db-dynamodb": ^5.29.0
     "@webiny/error": ^5.29.0
     "@webiny/handler": ^5.29.0
-    "@webiny/handler-aws": ^5.29.0
     "@webiny/handler-db": ^5.29.0
+    "@webiny/handler-fastify-aws": ^5.29.0
     "@webiny/handler-graphql": ^5.29.0
     "@webiny/plugins": ^5.29.0
     "@webiny/project-utils": ^5.29.0
@@ -11054,8 +11065,8 @@ __metadata:
     "@webiny/db-dynamodb": ^5.29.0
     "@webiny/error": ^5.29.0
     "@webiny/handler": ^5.29.0
-    "@webiny/handler-aws": ^5.29.0
     "@webiny/handler-db": ^5.29.0
+    "@webiny/handler-fastify-aws": ^5.29.0
     "@webiny/handler-graphql": ^5.29.0
     "@webiny/plugins": ^5.29.0
     "@webiny/project-utils": ^5.29.0
@@ -11103,9 +11114,9 @@ __metadata:
     "@webiny/error": ^5.29.0
     "@webiny/handler": ^5.29.0
     "@webiny/handler-args": ^5.29.0
-    "@webiny/handler-aws": ^5.29.0
     "@webiny/handler-client": ^5.29.0
     "@webiny/handler-db": ^5.29.0
+    "@webiny/handler-fastify-aws": ^5.29.0
     "@webiny/handler-graphql": ^5.29.0
     "@webiny/plugins": ^5.29.0
     "@webiny/project-utils": ^5.29.0
@@ -11172,7 +11183,7 @@ __metadata:
     "@webiny/db": ^5.29.0
     "@webiny/db-dynamodb": ^5.29.0
     "@webiny/error": ^5.29.0
-    "@webiny/handler-aws": ^5.29.0
+    "@webiny/handler-fastify-aws": ^5.29.0
     "@webiny/project-utils": ^5.29.0
     dynamodb-toolbox: ^0.3.4
     jest-dynalite: ^3.3.1
@@ -11199,8 +11210,8 @@ __metadata:
     "@webiny/error": ^5.29.0
     "@webiny/handler": ^5.29.0
     "@webiny/handler-args": ^5.29.0
-    "@webiny/handler-aws": ^5.29.0
     "@webiny/handler-client": ^5.29.0
+    "@webiny/handler-fastify-aws": ^5.29.0
     "@webiny/plugins": ^5.29.0
     "@webiny/project-utils": ^5.29.0
     chrome-aws-lambda: ^5.5.0
@@ -11299,7 +11310,7 @@ __metadata:
     "@webiny/cli": ^5.29.0
     "@webiny/error": ^5.29.0
     "@webiny/handler": ^5.29.0
-    "@webiny/handler-aws": ^5.25.0
+    "@webiny/handler-fastify-aws": ^5.25.0
     "@webiny/handler-graphql": ^5.29.0
     "@webiny/handler-http": ^5.29.0
     "@webiny/plugins": ^5.29.0
@@ -11346,10 +11357,10 @@ __metadata:
     "@webiny/api-wcp": ^5.29.0
     "@webiny/cli": ^5.29.0
     "@webiny/error": ^5.29.0
+    "@webiny/fastify": ^5.29.0
     "@webiny/handler": ^5.29.0
     "@webiny/handler-db": ^5.29.0
     "@webiny/handler-graphql": ^5.29.0
-    "@webiny/handler-http": ^5.29.0
     "@webiny/project-utils": ^5.29.0
     "@webiny/pubsub": ^5.29.0
     dataloader: ^2.0.0
@@ -11375,7 +11386,7 @@ __metadata:
     "@webiny/api-wcp": ^5.29.0
     "@webiny/cli": ^5.29.0
     "@webiny/handler": ^5.29.0
-    "@webiny/handler-aws": ^5.29.0
+    "@webiny/handler-fastify-aws": ^5.29.0
     "@webiny/handler-graphql": ^5.29.0
     "@webiny/handler-http": ^5.29.0
     "@webiny/project-utils": ^5.29.0
@@ -11400,7 +11411,7 @@ __metadata:
     "@webiny/api-tenancy-so-ddb": ^5.29.0
     "@webiny/cli": ^5.29.0
     "@webiny/handler": ^5.29.0
-    "@webiny/handler-aws": ^5.29.0
+    "@webiny/handler-fastify-aws": ^5.29.0
     "@webiny/handler-graphql": ^5.29.0
     "@webiny/handler-http": ^5.29.0
     "@webiny/project-utils": ^5.29.0
@@ -13021,6 +13032,33 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/fastify@^5.29.0, @webiny/fastify@workspace:packages/fastify":
+  version: 0.0.0-use.local
+  resolution: "@webiny/fastify@workspace:packages/fastify"
+  dependencies:
+    "@babel/cli": ^7.16.0
+    "@babel/core": ^7.16.0
+    "@babel/preset-env": ^7.16.4
+    "@babel/preset-typescript": ^7.16.0
+    "@babel/runtime": ^7.16.3
+    "@fastify/cookie": ^7.2.0
+    "@webiny/cli": ^5.29.0
+    "@webiny/error": ^5.29.0
+    "@webiny/handler": ^5.29.0
+    "@webiny/handler-client": ^5.29.0
+    "@webiny/handler-http": ^5.29.0
+    "@webiny/plugins": ^5.29.0
+    "@webiny/project-utils": ^5.29.0
+    "@webiny/utils": ^5.29.0
+    babel-plugin-lodash: ^3.3.4
+    fastify: ^4.2.1
+    merge: ^1.2.1
+    rimraf: ^3.0.2
+    ttypescript: ^1.5.13
+    typescript: 4.7.4
+  languageName: unknown
+  linkType: soft
+
 "@webiny/form@^5.29.0, @webiny/form@workspace:packages/form":
   version: 0.0.0-use.local
   resolution: "@webiny/form@workspace:packages/form"
@@ -13075,7 +13113,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/handler-aws@^5.25.0, @webiny/handler-aws@^5.29.0, @webiny/handler-aws@workspace:packages/handler-aws":
+"@webiny/handler-aws@^5.29.0, @webiny/handler-aws@workspace:packages/handler-aws":
   version: 0.0.0-use.local
   resolution: "@webiny/handler-aws@workspace:packages/handler-aws"
   dependencies:
@@ -13137,7 +13175,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/handler-fastify-aws@workspace:packages/handler-fastify-aws":
+"@webiny/handler-fastify-aws@^5.25.0, @webiny/handler-fastify-aws@^5.29.0, @webiny/handler-fastify-aws@workspace:packages/handler-fastify-aws":
   version: 0.0.0-use.local
   resolution: "@webiny/handler-fastify-aws@workspace:packages/handler-fastify-aws"
   dependencies:
@@ -13149,34 +13187,10 @@ __metadata:
     "@fastify/aws-lambda": ^3.0.0
     "@webiny/cli": ^5.29.0
     "@webiny/error": ^5.29.0
+    "@webiny/fastify": ^5.29.0
     "@webiny/handler": ^5.29.0
-    "@webiny/handler-fastify": ^5.29.0
     "@webiny/project-utils": ^5.29.0
     aws-lambda: ^1.0.7
-    rimraf: ^3.0.2
-    ttypescript: ^1.5.13
-    typescript: 4.7.4
-  languageName: unknown
-  linkType: soft
-
-"@webiny/handler-fastify@^5.29.0, @webiny/handler-fastify@workspace:packages/handler-fastify":
-  version: 0.0.0-use.local
-  resolution: "@webiny/handler-fastify@workspace:packages/handler-fastify"
-  dependencies:
-    "@babel/cli": ^7.16.0
-    "@babel/core": ^7.16.0
-    "@babel/preset-env": ^7.16.4
-    "@babel/preset-typescript": ^7.16.0
-    "@babel/runtime": ^7.16.3
-    "@webiny/cli": ^5.29.0
-    "@webiny/error": ^5.29.0
-    "@webiny/handler": ^5.29.0
-    "@webiny/handler-http": ^5.29.0
-    "@webiny/plugins": ^5.29.0
-    "@webiny/project-utils": ^5.29.0
-    babel-plugin-lodash: ^3.3.4
-    fastify: ^4.2.1
-    merge: ^1.2.1
     rimraf: ^3.0.2
     ttypescript: ^1.5.13
     typescript: 4.7.4
@@ -13194,6 +13208,7 @@ __metadata:
     "@graphql-tools/schema": ^7.0.0
     "@webiny/cli": ^5.29.0
     "@webiny/error": ^5.29.0
+    "@webiny/fastify": ^5.29.0
     "@webiny/handler": ^5.29.0
     "@webiny/handler-args": ^5.29.0
     "@webiny/handler-http": ^5.29.0
@@ -13621,8 +13636,8 @@ __metadata:
     "@webiny/cli": ^5.29.0
     "@webiny/cli-plugin-deploy-pulumi": ^5.29.0
     "@webiny/db-dynamodb": ^5.29.0
-    "@webiny/handler-aws": ^5.29.0
     "@webiny/handler-db": ^5.29.0
+    "@webiny/handler-fastify-aws": ^5.29.0
     "@webiny/handler-logs": ^5.29.0
     "@webiny/plugins": ^5.29.0
     "@webiny/project-utils": ^5.29.0
@@ -18678,6 +18693,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cookie-signature@npm:^1.1.0":
+  version: 1.2.0
+  resolution: "cookie-signature@npm:1.2.0"
+  checksum: d11f56f909733695d989511bf0e1dd874220d818b9d118945dce3c275fa50adfb3f6984354de0f5eefdc9347951a22ba3545230a762576019d23c16055b12d4c
+  languageName: node
+  linkType: hard
+
 "cookie@npm:0.4.0":
   version: 0.4.0
   resolution: "cookie@npm:0.4.0"
@@ -22567,6 +22589,13 @@ __metadata:
   bin:
     fxparser: src/cli/cli.js
   checksum: bf8467fb59b0840f4e3e8383872ec39a97f6cc16fc1c05b3e28060500f85cd34477911254fae61dff64e42129687f2e4ae47c86038230344e306124abaa2f335
+  languageName: node
+  linkType: hard
+
+"fastify-plugin@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "fastify-plugin@npm:3.0.1"
+  checksum: 131ba0a388f777829c3fb0fd5b75cf057688ce6d0ca354fb1ebf829767a8c853b0825762b9185b5200097454df0ede2f3095da2efe1aa1b3736d07f194e6d374
   languageName: node
   linkType: hard
 

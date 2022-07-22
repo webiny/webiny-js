@@ -1,41 +1,32 @@
-import { HandlerPlugin } from "@webiny/handler";
-import { FastifyAwsContext } from "~/types";
-import awsLambdaFastify from "@fastify/aws-lambda";
-import WebinyError from "@webiny/error";
+import awsLambdaFastify, { LambdaResponse } from "@fastify/aws-lambda";
+import { APIGatewayEvent, Context as LambdaContext } from "aws-lambda";
+import { createFastify, CreateFastifyHandlerParams } from "@webiny/fastify";
 
-export const createAwsFastifyHandler = () => {
-    return new HandlerPlugin<FastifyAwsContext>(async context => {
-        if (!context.args || context.args.length < 2) {
-            throw new WebinyError(
-                `AWS Lambda Fastify cannot be run without event and context variables which are taken from "context.args".`,
-                "ARGS_ERROR",
-                {
-                    args: context.args
-                }
-            );
-        }
-        const [event, ctx] = context.args;
-        if (!event) {
-            throw new WebinyError(
-                `AWS Lambda Fastify cannot be run without event variable which is taken from "context.args[0]".`,
-                "ARGS_ERROR",
-                {
-                    args: context.args
-                }
-            );
-        } else if (!ctx) {
-            throw new WebinyError(
-                `AWS Lambda Fastify cannot be run without context variable which is taken from "context.args[1]".`,
-                "ARGS_ERROR",
-                {
-                    args: context.args
-                }
-            );
-        }
+export interface FastifyAwsHandlerCallable {
+    (event: APIGatewayEvent, ctx: LambdaContext): Promise<LambdaResponse>;
+}
 
-        return awsLambdaFastify(context.server, {
+export interface CreateAwsFastifyHandlerParams extends CreateFastifyHandlerParams {
+    http?: {
+        debug?: boolean;
+    };
+}
+
+export const createAwsFastifyHandler = (
+    params: CreateAwsFastifyHandlerParams
+): FastifyAwsHandlerCallable => {
+    return (event, context) => {
+        const app = createFastify({
+            plugins: params?.plugins || [],
+            options: {
+                logger: params?.http?.debug === true,
+                ...(params?.options || {})
+            }
+        });
+        const appLambda = awsLambdaFastify(app, {
             decorateRequest: true,
             serializeLambdaArguments: true
-        })(event, ctx);
-    });
+        });
+        return appLambda(event, context);
+    };
 };

@@ -5,6 +5,7 @@
     { "path": "../error" },
     { "path": "../handler" },
     { "path": "../handler-http" },
+    { "path": "../fastify" },
     { "path": "../plugins" },
     { "path": "../utils" },
     { "path": "../handler-args" }
@@ -21,6 +22,8 @@
       "@webiny/handler": ["../handler/src"],
       "@webiny/handler-http/*": ["../handler-http/src/*"],
       "@webiny/handler-http": ["../handler-http/src"],
+      "@webiny/fastify/*": ["../fastify/src/*"],
+      "@webiny/fastify": ["../fastify/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/utils/*": ["../utils/src/*"],

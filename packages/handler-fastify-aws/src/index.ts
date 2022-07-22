@@ -1,14 +1,7 @@
-import {
-    createHandler as createDefaultHandler,
-    CreateHandlerParams as CreateDefaultHandlerParams
-} from "@webiny/handler-fastify";
-import { createAwsFastifyHandler } from "~/handler";
+import { createAwsFastifyHandler, CreateAwsFastifyHandlerParams } from "~/handler";
 
-export const createHandler = (params: CreateDefaultHandlerParams) => {
-    return createDefaultHandler({
-        plugins: [createAwsFastifyHandler(), ...(params.plugins || [])],
-        options: {
-            ...(params.options || {})
-        }
-    });
+export type CreateHandlerParams = CreateAwsFastifyHandlerParams;
+
+export const createHandler = (params: CreateHandlerParams) => {
+    return createAwsFastifyHandler(params);
 };

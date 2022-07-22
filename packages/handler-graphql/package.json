@@ -17,6 +17,7 @@
     "@babel/runtime": "^7.16.3",
     "@graphql-tools/schema": "^7.0.0",
     "@webiny/error": "^5.29.0",
+    "@webiny/fastify": "^5.29.0",
     "@webiny/handler": "^5.29.0",
     "@webiny/handler-http": "^5.29.0",
     "@webiny/plugins": "^5.29.0",

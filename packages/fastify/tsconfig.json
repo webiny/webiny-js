@@ -5,6 +5,7 @@
     { "path": "../handler" },
     { "path": "../error" },
     { "path": "../handler-http" },
+    { "path": "../handler-client" },
     { "path": "../plugins" }
   ],
   "compilerOptions": {
@@ -19,6 +20,8 @@
       "@webiny/error": ["../error/src"],
       "@webiny/handler-http/*": ["../handler-http/src/*"],
       "@webiny/handler-http": ["../handler-http/src"],
+      "@webiny/handler-client/*": ["../handler-client/src/*"],
+      "@webiny/handler-client": ["../handler-client/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"]
     },

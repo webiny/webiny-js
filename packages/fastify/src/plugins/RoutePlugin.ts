@@ -11,27 +11,16 @@ interface RoutePluginCbParams {
     onOptions: RouteMethod;
 }
 interface RoutePluginCb {
-    (params: RoutePluginCbParams): Promise<void>;
+    (params: RoutePluginCbParams): void;
 }
 
 export class RoutePlugin extends Plugin {
     public static override readonly type: string = "handler.fastify.route";
 
-    private readonly cb: RoutePluginCb;
+    public readonly cb: RoutePluginCb;
 
     public constructor(cb: RoutePluginCb) {
         super();
         this.cb = cb;
-    }
-    /**
-     * Used to attach the route in our handler-fastify package.
-     * Do not use if you are not sure what you are doing.
-     * @internal
-     */
-    public async attach(context: FastifyContext): Promise<void> {
-        return this.cb({
-            context,
-            ...context.routes
-        });
     }
 }

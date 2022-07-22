@@ -1,6 +1,6 @@
 import { createHandler } from "~/index";
 import { createLambdaEvent } from "./mocks/lambdaEvent";
-import { RoutePlugin } from "@webiny/handler-fastify";
+import { RoutePlugin } from "@webiny/fastify";
 import { createLambdaContext } from "./mocks/lambdaContext";
 
 const message = "It seems that reply is working.";
@@ -9,11 +9,12 @@ describe("fastify aws handler routes", () => {
     it("should register the route /webiny and trigger it on event", async () => {
         const handler = createHandler({
             plugins: [
-                new RoutePlugin(async ({ onPost }) => {
+                new RoutePlugin(({ onPost }) => {
                     onPost("/webiny", async (_, reply) => {
                         reply.send({
                             message
                         });
+                        return reply;
                     });
                 })
             ]

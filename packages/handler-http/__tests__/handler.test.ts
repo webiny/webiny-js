@@ -31,13 +31,15 @@ describe("handler response", () => {
             });
         });
 
-        const handler = createHandler(
-            contextPlugin,
-            handlerPlugin,
-            plugins({
-                debug: true
-            })
-        );
+        const handler = createHandler({
+            plugins: [
+                contextPlugin,
+                handlerPlugin,
+                plugins({
+                    debug: true
+                })
+            ]
+        });
 
         const result = await handler();
 
@@ -83,12 +85,14 @@ describe("handler response", () => {
                 method: "OPTIONS"
             };
         });
-        const handler = createHandler(
-            context,
-            plugins({
-                debug: true
-            })
-        );
+        const handler = createHandler({
+            plugins: [
+                context,
+                plugins({
+                    debug: true
+                })
+            ]
+        });
 
         const result = await handler();
 
