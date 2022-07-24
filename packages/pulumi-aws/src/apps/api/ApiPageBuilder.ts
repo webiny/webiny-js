@@ -68,11 +68,11 @@ function createExportPagesResources(app: PulumiApp, params: PageBuilderParams) {
                 )
             }),
             environment: {
-                variables: {
-                    ...getCommonLambdaEnvVariables(),
+                variables: getCommonLambdaEnvVariables().apply(value => ({
+                    ...value,
                     ...params.env,
                     S3_BUCKET: core.fileManagerBucketId
-                }
+                }))
             }
         }
     });
@@ -92,12 +92,12 @@ function createExportPagesResources(app: PulumiApp, params: PageBuilderParams) {
                 )
             }),
             environment: {
-                variables: {
-                    ...getCommonLambdaEnvVariables(),
+                variables: getCommonLambdaEnvVariables().apply(value => ({
+                    ...value,
                     ...params.env,
                     S3_BUCKET: core.fileManagerBucketId,
                     EXPORT_PAGE_COMBINE_HANDLER: combine.output.arn
-                }
+                }))
             }
         }
     });
@@ -193,11 +193,11 @@ function createImportPagesResources(app: PulumiApp, params: PageBuilderParams) {
                 )
             }),
             environment: {
-                variables: {
-                    ...getCommonLambdaEnvVariables(),
+                variables: getCommonLambdaEnvVariables().apply(value => ({
+                    ...value,
                     ...params.env,
                     S3_BUCKET: core.fileManagerBucketId
-                }
+                }))
             }
         }
     });
@@ -217,12 +217,12 @@ function createImportPagesResources(app: PulumiApp, params: PageBuilderParams) {
                 )
             }),
             environment: {
-                variables: {
-                    ...getCommonLambdaEnvVariables(),
+                variables: getCommonLambdaEnvVariables().apply(value => ({
+                    ...value,
                     ...params.env,
                     S3_BUCKET: core.fileManagerBucketId,
                     IMPORT_PAGE_QUEUE_PROCESS_HANDLER: process.output.arn
-                }
+                }))
             }
         }
     });
