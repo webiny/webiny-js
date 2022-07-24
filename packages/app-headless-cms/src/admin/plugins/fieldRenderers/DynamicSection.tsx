@@ -18,7 +18,7 @@ const style = {
     })
 };
 
-interface DynamicSectionPropsChildrenParams {
+export interface DynamicSectionPropsChildrenParams {
     Bind: BindComponent;
     field: CmsEditorField;
     bind: {

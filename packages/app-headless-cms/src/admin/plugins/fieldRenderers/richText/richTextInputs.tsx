@@ -3,17 +3,20 @@ import get from "lodash/get";
 import { i18n } from "@webiny/app/i18n";
 import { CmsEditorField, CmsEditorFieldRendererPlugin } from "~/types";
 import { ReactComponent as DeleteIcon } from "~/admin/icons/close.svg";
-import DynamicSection from "../DynamicSection";
+import DynamicSection, { DynamicSectionPropsChildrenParams } from "../DynamicSection";
 import { RichTextEditor, createPropsFromConfig } from "@webiny/app-admin/components/RichTextEditor";
 import { IconButton } from "@webiny/ui/Button";
 import { plugins } from "@webiny/plugins";
 import styled from "@emotion/styled";
-import { BindComponentRenderProp } from "@webiny/form";
 
 const t = i18n.ns("app-headless-cms/admin/fields/rich-text");
 
-const getKey = (field: CmsEditorField, bind: BindComponentRenderProp, index: number): string => {
-    const formId = (bind as any).index?.form?.data?.id || "new";
+const getKey = (
+    field: CmsEditorField,
+    bind: DynamicSectionPropsChildrenParams["bind"],
+    index: number
+): string => {
+    const formId = bind.index.form?.data?.id || "new";
     return `${formId}.${field.fieldId}.${index}`;
 };
 
