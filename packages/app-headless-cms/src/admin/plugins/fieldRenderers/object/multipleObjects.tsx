@@ -1,16 +1,20 @@
-import React, { useState } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import shortid from "shortid";
 import { i18n } from "@webiny/app/i18n";
-import { CmsEditorFieldRendererPlugin, CmsEditorFieldRendererProps } from "~/types";
+import { IconButton } from "@webiny/ui/Button";
+import { Cell } from "@webiny/ui/Grid";
+import { FormElementMessage } from "@webiny/ui/FormElementMessage";
+import { Typography } from "@webiny/ui/Typography";
+import {
+    BindComponentRenderProp,
+    CmsEditorFieldRendererPlugin,
+    CmsEditorFieldRendererProps
+} from "~/types";
 import DynamicSection from "../DynamicSection";
 import { Fields } from "~/admin/components/ContentEntryForm/Fields";
 import { ReactComponent as DeleteIcon } from "~/admin/icons/close.svg";
 import { ReactComponent as ArrowUp } from "./arrow_drop_up.svg";
 import { ReactComponent as ArrowDown } from "./arrow_drop_down.svg";
-import { IconButton } from "@webiny/ui/Button";
-import { Cell } from "@webiny/ui/Grid";
-import { FormElementMessage } from "@webiny/ui/FormElementMessage";
-import { Typography } from "@webiny/ui/Typography";
 import Accordion from "~/admin/plugins/fieldRenderers/Accordion";
 import {
     fieldsWrapperStyle,
@@ -22,6 +26,46 @@ import {
 } from "./StyledComponents";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
+
+interface ActionsProps {
+    setHighlightIndex: Dispatch<SetStateAction<{ [key: number]: string }>>;
+    index: number;
+    bind: {
+        index: BindComponentRenderProp;
+        field: BindComponentRenderProp;
+    };
+}
+
+const Actions: React.FC<ActionsProps> = ({ setHighlightIndex, bind, index }) => {
+    return index > 0 ? (
+        <>
+            <IconButton
+                icon={<ArrowDown />}
+                onClick={e => {
+                    e.stopPropagation();
+                    bind.field.moveValueDown(index);
+                    setHighlightIndex(map => ({
+                        ...map,
+                        [index + 1]: shortid.generate()
+                    }));
+                }}
+            />
+            <IconButton
+                icon={<ArrowUp />}
+                onClick={e => {
+                    e.stopPropagation();
+                    bind.field.moveValueUp(index);
+                    setHighlightIndex(map => ({
+                        ...map,
+                        [index - 1]: shortid.generate()
+                    }));
+                }}
+            />
+
+            <IconButton icon={<DeleteIcon />} onClick={() => bind.field.removeValue(index)} />
+        </>
+    ) : null;
+};
 
 const ObjectsRenderer: React.FC<CmsEditorFieldRendererProps> = props => {
     const [highlightMap, setHighlightIndex] = useState<{ [key: number]: string }>({});
@@ -48,37 +92,11 @@ const ObjectsRenderer: React.FC<CmsEditorFieldRendererProps> = props => {
                     <Accordion
                         title={`${props.field.label} #${index + 1}`}
                         action={
-                            index > 0 ? (
-                                <>
-                                    <IconButton
-                                        icon={<ArrowDown />}
-                                        onClick={e => {
-                                            e.stopPropagation();
-                                            bind.field.moveValueDown(index);
-                                            setHighlightIndex(map => ({
-                                                ...map,
-                                                [index + 1]: shortid.generate()
-                                            }));
-                                        }}
-                                    />
-                                    <IconButton
-                                        icon={<ArrowUp />}
-                                        onClick={e => {
-                                            e.stopPropagation();
-                                            bind.field.moveValueUp(index);
-                                            setHighlightIndex(map => ({
-                                                ...map,
-                                                [index - 1]: shortid.generate()
-                                            }));
-                                        }}
-                                    />
-
-                                    <IconButton
-                                        icon={<DeleteIcon />}
-                                        onClick={() => bind.field.removeValue(index)}
-                                    />
-                                </>
-                            ) : null
+                            <Actions
+                                setHighlightIndex={setHighlightIndex}
+                                index={index}
+                                bind={bind}
+                            />
                         }
                         // Open first Accordion by default
                         defaultValue={index === 0}

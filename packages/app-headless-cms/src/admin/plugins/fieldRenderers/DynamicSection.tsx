@@ -3,7 +3,7 @@ import { css } from "emotion";
 import { i18n } from "@webiny/app/i18n";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { ButtonDefault, ButtonIcon } from "@webiny/ui/Button";
-import { CmsEditorField } from "~/types";
+import { BindComponent, BindComponentRenderProp, CmsEditorField } from "~/types";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import { GetBindCallable } from "~/admin/components/ContentEntryForm/useBind";
@@ -18,20 +18,22 @@ const style = {
     })
 };
 
-/**
- * TODO @ts-refactor figure out correct types
- */
 interface DynamicSectionPropsChildrenParams {
-    // bind: BindComponentRenderProp;
-    // index: number;
-    [key: string]: any;
+    Bind: BindComponent;
+    field: CmsEditorField;
+    bind: {
+        index: BindComponentRenderProp;
+        field: BindComponentRenderProp;
+    };
+    index: number;
 }
-interface DynamicSectionProps {
+
+export interface DynamicSectionProps {
     field: CmsEditorField;
     getBind: GetBindCallable;
     showLabel?: boolean;
     Label: React.ComponentType<any>;
-    children: (params: DynamicSectionPropsChildrenParams) => React.ReactElement;
+    children: (params: DynamicSectionPropsChildrenParams) => JSX.Element;
     emptyValue?: any;
     renderTitle?: (value: any[]) => React.ReactElement;
     gridClassName?: string;

@@ -39,7 +39,7 @@ export const ItemHighLight = styled("div")({
         backgroundColor: "rgba(42, 217, 134, 0.25)",
         borderRadius: "2px",
         position: "absolute",
-        top: 5,
+        top: 0,
         left: -12,
         right: -8,
         bottom: 0,

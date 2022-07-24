@@ -600,7 +600,7 @@ export interface CmsMetaResponse {
 /***
  * ###### FORM ########
  */
-interface BindComponentRenderProp extends BaseBindComponentRenderProp {
+export interface BindComponentRenderProp extends BaseBindComponentRenderProp {
     parentName: string;
     appendValue: (value: any) => void;
     prependValue: (value: any) => void;
