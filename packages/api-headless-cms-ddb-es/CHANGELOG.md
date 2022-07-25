@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.30.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.29.0...v5.30.0-beta.0) (2022-07-25)
+
+
+### Features
+
+* **api-headless-cms:** combine cms contexts and graphqls ([#2528](https://github.com/webiny/webiny-js/issues/2528)) ([87bb89b](https://github.com/webiny/webiny-js/commit/87bb89be1d11a97698b9f9d72d383dd8068c27d6))
+* typescript to 4.7.4 ([#2527](https://github.com/webiny/webiny-js/issues/2527)) ([ee24a3a](https://github.com/webiny/webiny-js/commit/ee24a3a995942ee2588e615e42f604ed7418390a))
+* **app-apw:** headless cms workflow ([#2415](https://github.com/webiny/webiny-js/issues/2415)) ([3243fed](https://github.com/webiny/webiny-js/commit/3243fed5f56ff05d0ea7d6168d01c031db6dd493))
+
+
+
+
+
 # [5.29.0](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.2...v5.29.0) (2022-06-28)
 
 **Note:** Version bump only for package @webiny/api-headless-cms-ddb-es
