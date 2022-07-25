@@ -1,6 +1,11 @@
 import { createHandler, EventPlugin } from "~/index";
 
-const eventPlugin = new EventPlugin(async payload => {
+interface PayloadObj {
+    test?: boolean;
+    fn?: boolean;
+}
+
+const eventPlugin = new EventPlugin<PayloadObj>(async payload => {
     if (payload.test === true) {
         return {
             testing: true
@@ -55,5 +60,52 @@ describe("handler fastify", () => {
         const result = await handler();
 
         expect(result).toBeInstanceOf(Error);
+    });
+
+    it("should fire handler multiple times", async () => {
+        const handler = createHandler({
+            plugins: [eventPlugin]
+        });
+
+        const fnHandlerResult = await handler({
+            fn: true
+        });
+
+        expect(fnHandlerResult).toEqual({
+            fn: expect.any(Function)
+        });
+
+        const fnResult = fnHandlerResult.fn();
+        expect(fnResult).toEqual(1234);
+
+        const result = await handler();
+
+        expect(result).toBeInstanceOf(Error);
+    });
+
+    it("should fire handlers simultaneously", async () => {
+        const handler = createHandler({
+            plugins: [eventPlugin]
+        });
+
+        const result = await Promise.all([
+            handler({
+                test: true
+            }),
+            handler({
+                fn: true
+            }),
+            handler()
+        ]);
+
+        expect(result).toEqual([
+            {
+                testing: true
+            },
+            {
+                fn: expect.any(Function)
+            },
+            expect.any(Error)
+        ]);
     });
 });

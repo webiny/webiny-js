@@ -36,6 +36,9 @@ export const createFastifyHandler = (
                         reject(err);
                         return;
                     }
+                    /**
+                     * In our EventPlugin we stored result into custom property on the fastify instance.
+                     */
                     const result = (app as any).__webiny_event_result;
                     resolve(result);
                 }

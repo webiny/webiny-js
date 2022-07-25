@@ -5,12 +5,12 @@ import { FastifyContext } from "@webiny/fastify/types";
  * We return raw data to the output of the event.
  * If we used fastify reply it would need to be stringifyable.
  */
-interface EventPluginCallable<T> {
-    (payload: Record<string, any>, context: FastifyContext): Promise<T>;
+interface EventPluginCallable<Payload, Response> {
+    (payload: Payload, context: FastifyContext): Promise<Response>;
 }
 
-export class EventPlugin<T = any> extends RoutePlugin {
-    public constructor(cb: EventPluginCallable<T>) {
+export class EventPlugin<Payload = Record<string, any>, Response = any> extends RoutePlugin {
+    public constructor(cb: EventPluginCallable<Payload, Response>) {
         super(async ({ onPost, context }) => {
             onPost("/webiny-event", async request => {
                 /**

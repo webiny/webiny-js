@@ -3,8 +3,6 @@ import { createLambdaEvent } from "./mocks/lambdaEvent";
 import { RoutePlugin } from "@webiny/fastify";
 import { createLambdaContext } from "./mocks/lambdaContext";
 
-process.env.WEBINY_ENABLE_VERSION_HEADER = "true";
-
 const message = "It seems that reply is working.";
 
 describe("fastify aws handler routes", () => {
@@ -26,7 +24,7 @@ describe("fastify aws handler routes", () => {
         const body = JSON.stringify({
             message
         });
-        expect(result).toEqual({
+        expect(result).toMatchObject({
             body,
             headers: {
                 connection: "keep-alive",
@@ -36,8 +34,7 @@ describe("fastify aws handler routes", () => {
                 "access-control-allow-methods": "*",
                 "access-control-allow-origin": "*",
                 "cache-control": "no-store",
-                date: expect.any(String),
-                "x-webiny-version": expect.any(String)
+                date: expect.any(String)
             },
             isBase64Encoded: false,
             statusCode: 200
