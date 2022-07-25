@@ -21,8 +21,10 @@ export default (options: HandlerGraphQLOptions = {}): PluginCollection => {
 
     const debug = boolean(options.debug);
 
+    const path = options?.path || "/graphql";
+
     const route = new RoutePlugin(async ({ onPost, onOptions, context }) => {
-        onOptions("/graphql", async (_, reply) => {
+        onOptions(path, async (_, reply) => {
             return reply
                 .status(204)
                 .headers({
@@ -30,7 +32,7 @@ export default (options: HandlerGraphQLOptions = {}): PluginCollection => {
                 })
                 .send({});
         });
-        onPost("/graphql", async (request, reply) => {
+        onPost(path, async (request, reply) => {
             if (!schema) {
                 schema = createGraphQLSchema(context);
             }

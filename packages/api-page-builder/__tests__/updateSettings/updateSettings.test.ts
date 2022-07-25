@@ -59,7 +59,7 @@ describe("Update Settings Handler Test", () => {
                 "content-length": "26",
                 "content-type": "application/json; charset=utf-8",
                 "access-control-allow-headers": "*",
-                "access-control-allow-methods": "",
+                "access-control-allow-methods": "*",
                 "access-control-allow-origin": "*",
                 "cache-control": "no-store",
                 date: expect.any(String)

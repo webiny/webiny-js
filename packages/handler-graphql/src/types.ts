@@ -12,6 +12,7 @@ export interface GraphQLScalarPlugin extends Plugin {
 }
 
 export interface HandlerGraphQLOptions {
+    path?: string;
     debug?: boolean | string;
 }
 
