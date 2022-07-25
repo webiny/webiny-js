@@ -5,7 +5,7 @@ describe("identity test", () => {
     const tenant = "root";
     // @ts-ignore
     const { storageOperations } = __getStorageOperations();
-    let security: Security = null;
+    let security: Security;
 
     beforeAll(async () => {
         security = await createSecurity({

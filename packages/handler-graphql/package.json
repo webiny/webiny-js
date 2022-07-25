@@ -21,7 +21,6 @@
     "@webiny/handler": "^5.29.0",
     "@webiny/handler-http": "^5.29.0",
     "@webiny/plugins": "^5.29.0",
-    "@webiny/utils": "^5.29.0",
     "boolean": "^3.0.1",
     "graphql": "^15.7.2",
     "graphql-scalars": "1.12.0",

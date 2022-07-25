@@ -12,11 +12,16 @@ import fastifyCookies from "@fastify/cookie";
 
 const DEFAULT_HEADERS: Record<string, string> = {
     "Cache-Control": "no-store",
-    "Content-Type": "application/json",
+    "Content-Type": "application/json; charset=utf-8",
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Headers": "*",
     "Access-Control-Allow-Methods": "OPTIONS,POST,GET,DELETE,PUT,PATCH",
     ...getWebinyVersionHeaders()
+};
+
+const OPTIONS_HEADERS: Record<string, string> = {
+    "Access-Control-Max-Age": "86400",
+    "Cache-Control": "public, max-age=86400"
 };
 
 export interface CreateFastifyHandlerParams {
@@ -156,10 +161,25 @@ export const createFastify = (params?: CreateFastifyHandlerParams) => {
         }
     });
 
-    app.addHook("preHandler", async () => {
+    app.addHook("preHandler", async (_, reply) => {
+        /**
+         * By the default we add some headers.
+         */
+        reply.headers(DEFAULT_HEADERS);
         for (const plugin of app.webiny.plugins.byType(BeforeHandlerPlugin.type)) {
             await plugin.apply(app.webiny);
         }
+    });
+
+    app.addHook("onSend", async (request, reply) => {
+        if (request.method.toLowerCase() !== "options") {
+            return;
+        }
+        const cacheControl = reply.getHeader("cache-control");
+        if (cacheControl && cacheControl.match("max-age") !== null) {
+            return;
+        }
+        reply.headers(OPTIONS_HEADERS);
     });
 
     app.addHook("onError", async (_, reply, error) => {
@@ -176,8 +196,12 @@ export const createFastify = (params?: CreateFastifyHandlerParams) => {
         );
         const result = handler(app.webiny, error);
 
-        reply.statusCode = 500;
-        return reply.headers(DEFAULT_HEADERS).send(result);
+        return reply
+            .headers({
+                "Cache-Control": "no-store"
+            })
+            .status(500)
+            .send(result);
     });
 
     return app;

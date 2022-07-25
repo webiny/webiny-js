@@ -7,7 +7,6 @@
     { "path": "../handler-http" },
     { "path": "../fastify" },
     { "path": "../plugins" },
-    { "path": "../utils" },
     { "path": "../handler-args" }
   ],
   "compilerOptions": {
@@ -26,8 +25,6 @@
       "@webiny/fastify": ["../fastify/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
-      "@webiny/utils/*": ["../utils/src/*"],
-      "@webiny/utils": ["../utils/src"],
       "@webiny/handler-args/*": ["../handler-args/src/*"],
       "@webiny/handler-args": ["../handler-args/src"]
     },

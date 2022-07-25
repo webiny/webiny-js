@@ -1,25 +1,23 @@
 import { BeforeHandlerPlugin } from "@webiny/handler";
 import { SecurityContext } from "~/types";
-import { HttpContext } from "@webiny/handler-http/types";
+import { FastifyContext } from "@webiny/fastify/types";
 
-type Context = HttpContext & SecurityContext;
+type Context = FastifyContext & SecurityContext;
 
 export interface GetHeader {
-    (context: Context): string;
+    (context: Context): string | null | undefined;
 }
 
 const defaultGetHeader: GetHeader = context => {
-    const { headers } = context.http.request;
-
-    const header = headers["authorization"];
+    const header = context.request.headers["authorization"];
 
     return header ? header.split(" ").pop() : null;
 };
 
 export const authenticateUsingHttpHeader = (getHeader: GetHeader = defaultGetHeader) => {
     return new BeforeHandlerPlugin<Context>(async context => {
-        const { method } = context.http.request;
-        if (method !== "POST") {
+        const { method } = context.request;
+        if (method.toLowerCase() !== "post") {
             return;
         }
 

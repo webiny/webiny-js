@@ -4,17 +4,8 @@ import { createGraphQLSchema } from "./createGraphQLSchema";
 import { PluginCollection } from "@webiny/plugins/types";
 import debugPlugins from "./debugPlugins";
 import processRequestBody from "./processRequestBody";
-import { getWebinyVersionHeaders } from "@webiny/utils";
 import { GraphQLSchema } from "graphql";
 import { RoutePlugin } from "@webiny/fastify";
-
-const DEFAULT_HEADERS = {
-    "Content-Type": "application/json",
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "*",
-    "Access-Control-Allow-Methods": "OPTIONS,POST",
-    ...getWebinyVersionHeaders()
-};
 
 const DEFAULT_CACHE_MAX_AGE = 30758400; // 1 year
 
@@ -30,32 +21,32 @@ export default (options: HandlerGraphQLOptions = {}): PluginCollection => {
 
     const debug = boolean(options.debug);
 
+    const route = new RoutePlugin(async ({ onPost, onOptions, context }) => {
+        onOptions("/graphql", async (_, reply) => {
+            return reply
+                .status(204)
+                .headers({
+                    "Cache-Control": `public, max-age=${DEFAULT_CACHE_MAX_AGE}`
+                })
+                .send({});
+        });
+        onPost("/graphql", async (request, reply) => {
+            if (!schema) {
+                schema = createGraphQLSchema(context);
+            }
+            const body = createRequestBody(request.body);
+            const result = await processRequestBody(body, schema, context);
+            return reply.status(200).send(result);
+        });
+    });
+
+    route.name = "handler.graphql.route.default";
+
     return [
         ...(debug ? debugPlugins() : []),
-        { type: "wcp-telemetry-tracker" },
-        new RoutePlugin(async ({ onPost, onOptions, context }) => {
-            onOptions("/graphql", async (_, reply) => {
-                reply.statusCode = 204;
-                return reply
-                    .headers({
-                        ...DEFAULT_HEADERS,
-                        "Cache-Control": "public, max-age=" + DEFAULT_CACHE_MAX_AGE
-                    })
-                    .send({});
-            });
-            onPost("/graphql", async (request, reply) => {
-                if (!schema) {
-                    schema = createGraphQLSchema(context);
-                }
-                const body = createRequestBody(request.body);
-                const result = await processRequestBody(body, schema, context);
-                reply.statusCode = 200;
-                return reply
-                    .headers({
-                        ...DEFAULT_HEADERS
-                    })
-                    .send(result);
-            });
-        })
+        {
+            type: "wcp-telemetry-tracker"
+        },
+        route
     ];
 };

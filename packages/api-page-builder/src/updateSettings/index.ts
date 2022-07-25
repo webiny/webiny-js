@@ -34,7 +34,7 @@ export interface UpdateSettingsParams {
 export default (params: UpdateSettingsParams) => {
     const { storageOperations } = params;
 
-    return new RoutePlugin(({ context }) => {
+    const route = new RoutePlugin(({ context }) => {
         context.server.all("*", async (request, reply) => {
             try {
                 const { data, migrate: runMigration } = request.body as Record<string, any>;
@@ -75,4 +75,8 @@ export default (params: UpdateSettingsParams) => {
             }
         });
     });
+
+    route.name = "pageBuilder.route.updateSettings";
+
+    return route;
 };
