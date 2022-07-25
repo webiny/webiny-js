@@ -13205,6 +13205,7 @@ __metadata:
     "@webiny/fastify": ^5.29.0
     "@webiny/handler": ^5.29.0
     "@webiny/handler-args": ^5.29.0
+    "@webiny/handler-fastify-aws": ^5.29.0
     "@webiny/handler-http": ^5.29.0
     "@webiny/plugins": ^5.29.0
     "@webiny/project-utils": ^5.29.0
