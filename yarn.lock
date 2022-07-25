@@ -11208,7 +11208,6 @@ __metadata:
     "@webiny/handler": ^5.29.0
     "@webiny/handler-args": ^5.29.0
     "@webiny/handler-client": ^5.29.0
-    "@webiny/handler-fastify-aws": ^5.29.0
     "@webiny/plugins": ^5.29.0
     "@webiny/project-utils": ^5.29.0
     chrome-aws-lambda: ^5.5.0
