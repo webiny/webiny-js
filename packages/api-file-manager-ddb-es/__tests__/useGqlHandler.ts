@@ -18,6 +18,7 @@ import graphqlHandlerPlugins from "@webiny/handler-graphql";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
+import { createHandler as createBaseHandler } from "@webiny/handler";
 
 /**
  * Load some test stuff from the api-file-manager
@@ -90,11 +91,13 @@ export default (params?: UseGqlHandlerParams) => {
         const index = getIndexName(params);
         try {
             return await elasticsearchClient.indices.delete({
-                index
+                index,
+                ignore_unavailable: true
             });
         } catch (ex) {
             console.log(`Could not delete elasticsearch index: ${index}`);
             console.log(ex.message);
+            console.log(JSON.stringify(ex));
         }
         return null;
     };
@@ -110,9 +113,7 @@ export default (params?: UseGqlHandlerParams) => {
     // Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)
     simulateStream(
         documentClient,
-        createHandler({
-            plugins: [elasticsearchClientContext, dynamoToElastic()]
-        })
+        createBaseHandler(elasticsearchClientContext, dynamoToElastic())
     );
 
     const tenant = { id: "root", name: "Root", parent: null };
@@ -151,12 +152,20 @@ export default (params?: UseGqlHandlerParams) => {
 
     // Let's also create the "invoke" function. This will make handler invocations in actual tests easier and nicer.
     const invoke = async ({ httpMethod = "POST", body, headers = {}, ...rest }: InvokeParams) => {
-        const response = await handler({
-            httpMethod,
-            headers,
-            body: JSON.stringify(body),
-            ...rest
-        });
+        const response = await handler(
+            {
+                path: "/graphql",
+                httpMethod,
+                headers: {
+                    ["x-tenant"]: tenant.id,
+                    ["Content-Type"]: "application/json",
+                    ...headers
+                },
+                body: JSON.stringify(body),
+                ...rest
+            } as any,
+            {} as any
+        );
 
         // The first element is the response body, and the second is the raw response.
         return [JSON.parse(response.body), response];

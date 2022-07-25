@@ -2,7 +2,6 @@ const dbPlugins = require("@webiny/handler-db").default;
 const { DynamoDbDriver } = require("@webiny/db-dynamodb");
 const { DocumentClient } = require("aws-sdk/clients/dynamodb");
 const elasticsearchClientContextPlugin = require("@webiny/api-elasticsearch").default;
-const { createHandler } = require("@webiny/handler-fastify-aws");
 const dynamoToElastic = require("@webiny/api-dynamodb-to-elasticsearch/handler").default;
 const { simulateStream } = require("@webiny/project-utils/testing/dynamodb");
 const NodeEnvironment = require("jest-environment-node");
@@ -21,6 +20,7 @@ const {
 const plugins = require("../../dist/index").default;
 const { configurations } = require("../../dist/configurations");
 const { base: baseConfigurationPlugin } = require("../../dist/elasticsearch/indices/base");
+const { createHandler: createBaseHandler } = require("@webiny/handler");
 
 if (typeof plugins !== "function") {
     throw new Error(`Loaded plugins file must export a function that returns an array of plugins.`);
@@ -51,12 +51,7 @@ class FileManagerTestEnvironment extends NodeEnvironment {
             context.plugins.register([elasticsearchDataGzipCompression()]);
             await elasticsearchClientContext.apply(context);
         });
-        simulateStream(
-            documentClient,
-            createHandler({
-                plugins: [simulationContext, dynamoToElastic()]
-            })
-        );
+        simulateStream(documentClient, createBaseHandler(simulationContext, dynamoToElastic()));
 
         /**
          * This is a global function that will be called inside the tests to get all relevant plugins, methods and objects.

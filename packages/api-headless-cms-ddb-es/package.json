@@ -29,7 +29,6 @@
     "@webiny/error": "^5.29.0",
     "@webiny/handler": "^5.29.0",
     "@webiny/handler-db": "^5.29.0",
-    "@webiny/handler-fastify-aws": "^5.29.0",
     "@webiny/plugins": "^5.29.0",
     "@webiny/utils": "^5.29.0",
     "dataloader": "^2.0.0",

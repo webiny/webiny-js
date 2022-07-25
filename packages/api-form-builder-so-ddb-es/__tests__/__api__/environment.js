@@ -2,7 +2,6 @@ const dbPlugins = require("@webiny/handler-db").default;
 const { DynamoDbDriver } = require("@webiny/db-dynamodb");
 const { DocumentClient } = require("aws-sdk/clients/dynamodb");
 const createElasticsearchClientContextPlugin = require("@webiny/api-elasticsearch").default;
-const { createHandler } = require("@webiny/handler-fastify-aws");
 const dynamoToElastic = require("@webiny/api-dynamodb-to-elasticsearch/handler").default;
 const { simulateStream } = require("@webiny/project-utils/testing/dynamodb");
 const NodeEnvironment = require("jest-environment-node");
@@ -24,6 +23,7 @@ const { base: baseConfigurationPlugin } = require("../../dist/elasticsearch/indi
 const {
     elasticIndexManager
 } = require("@webiny/project-utils/testing/helpers/elasticIndexManager");
+const { createHandler: createBaseHandler } = require("@webiny/handler");
 
 if (typeof createFormBuilderStorageOperations !== "function") {
     throw new Error(
@@ -57,12 +57,7 @@ class FormBuilderTestEnvironment extends NodeEnvironment {
             context.plugins.register([elasticsearchDataGzipCompression()]);
             await elasticsearchClientContext.apply(context);
         });
-        simulateStream(
-            documentClient,
-            createHandler({
-                plugins: [simulationContext, dynamoToElastic()]
-            })
-        );
+        simulateStream(documentClient, createBaseHandler(simulationContext, dynamoToElastic()));
 
         /**
          * This is a global function that will be called inside the tests to get all relevant plugins, methods and objects.
