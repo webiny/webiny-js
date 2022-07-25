@@ -19,6 +19,33 @@ const DEFAULT_HEADERS: Record<string, string> = {
     ...getWebinyVersionHeaders()
 };
 
+type DefinedRoutes = Record<RouteTypes, string[]>;
+const getDefaultHeaders = (routes: DefinedRoutes): Record<string, string> => {
+    /**
+     * If we are accepting all headers, just output that one.
+     */
+    const keys = Object.keys(routes);
+    if (keys.some(key => key === "all")) {
+        return {
+            ...DEFAULT_HEADERS,
+            "Access-Control-Allow-Methods": "*"
+        };
+    }
+    return {
+        ...DEFAULT_HEADERS,
+        "Access-Control-Allow-Methods": keys
+            .filter(key => {
+                const type = key as unknown as RouteTypes;
+                if (!routes[type] || Array.isArray(routes[type]) === false) {
+                    return false;
+                }
+                return routes[type].length > 0;
+            })
+            .map(route => route.toUpperCase())
+            .join(",")
+    };
+};
+
 const OPTIONS_HEADERS: Record<string, string> = {
     "Access-Control-Max-Age": "86400",
     "Cache-Control": "public, max-age=86400"
@@ -30,7 +57,7 @@ export interface CreateFastifyHandlerParams {
 }
 
 export const createFastify = (params?: CreateFastifyHandlerParams) => {
-    const definedRoutes: Record<RouteTypes, string[]> = {
+    const definedRoutes: DefinedRoutes = {
         post: [],
         get: [],
         options: [],
@@ -165,7 +192,7 @@ export const createFastify = (params?: CreateFastifyHandlerParams) => {
         /**
          * By the default we add some headers.
          */
-        reply.headers(DEFAULT_HEADERS);
+        reply.headers(getDefaultHeaders(definedRoutes));
         for (const plugin of app.webiny.plugins.byType(BeforeHandlerPlugin.type)) {
             await plugin.apply(app.webiny);
         }

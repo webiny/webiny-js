@@ -49,7 +49,7 @@ describe("Update Settings Handler Test", () => {
          * Fastify returns response object for the Lambda
          *
          */
-        expect(result).toEqual({
+        expect(result).toMatchObject({
             body: JSON.stringify({
                 data: true,
                 error: null
@@ -58,6 +58,10 @@ describe("Update Settings Handler Test", () => {
                 connection: "keep-alive",
                 "content-length": "26",
                 "content-type": "application/json; charset=utf-8",
+                "access-control-allow-headers": "*",
+                "access-control-allow-methods": "",
+                "access-control-allow-origin": "*",
+                "cache-control": "no-store",
                 date: expect.any(String)
             },
             isBase64Encoded: false,
