@@ -5,7 +5,7 @@ context("I18N app", () => {
         cy.visit("/i18n/locales");
         // Delete new locale
         cy.findByTestId("default-data-list").within(() => {
-            cy.get("div")
+            cy.get("li")
                 .first()
                 .within(() => {
                     cy.findByTestId("default-data-list.delete").click({ force: true });
@@ -14,7 +14,7 @@ context("I18N app", () => {
 
         cy.findByTestId("default-data-list.delete-dialog").within(() => {
             cy.findByText(/Confirmation/i);
-            cy.findByText(/confirm$/i).click();
+            cy.findAllByTestId("dialog-accept").next().click();
         });
 
         cy.findByText(

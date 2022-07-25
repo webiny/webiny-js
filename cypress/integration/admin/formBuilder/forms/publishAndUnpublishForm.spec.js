@@ -10,7 +10,7 @@ context("Forms Creation", () => {
         cy.findAllByTestId("new-record-button").first().click();
         cy.findByTestId("fb-new-form-modal").within(() => {
             cy.findByPlaceholderText("Enter a name for your new form").type(newFormTitle);
-            cy.findByText("+ Create").click();
+            cy.findByTestId("fb.form.create").click();
         });
         cy.wait(1000);
 
@@ -27,12 +27,12 @@ context("Forms Creation", () => {
         // 3. Publish form from inside the editor
         cy.findByTestId("fb.editor.default-bar.publish").click();
         cy.findByTestId("fb.editor.default-bar.publish-dialog").within(() => {
-            cy.findByText(/Confirm/i).click();
+            cy.findByTestId("confirmationdialog-confirm-action").click();
         });
         cy.findByText(/Your form was published successfully/i).should("exist");
         cy.wait(1000);
         cy.findByTestId("default-data-list").within(() => {
-            cy.get("div")
+            cy.get("li")
                 .first()
                 .within(() => {
                     cy.findByText(newFormTitle).should("exist");
@@ -44,12 +44,12 @@ context("Forms Creation", () => {
         // 4. UnPublish the form
         cy.findByTestId("fb.form-preview.header.unpublish").click();
         cy.findByTestId("fb.form-preview.header.unpublish-dialog").within(() => {
-            cy.findByText(/Confirm/i).click();
+            cy.findByTestId("confirmationdialog-confirm-action").click();
         });
         cy.findByText(/Successfully unpublished revision/i).should("exist");
         cy.wait(1000);
         cy.findByTestId("default-data-list").within(() => {
-            cy.get("div")
+            cy.get("li")
                 .first()
                 .within(() => {
                     cy.findByText(newFormTitle).should("exist");
@@ -71,12 +71,12 @@ context("Forms Creation", () => {
         // 5.2. Publish the new revision
         cy.findByTestId("fb.editor.default-bar.publish").click();
         cy.findByTestId("fb.editor.default-bar.publish-dialog").within(() => {
-            cy.findByText(/Confirm/i).click();
+            cy.findByTestId("confirmationdialog-confirm-action").click();
         });
         cy.findByText(/Your form was published successfully/i).should("exist");
         cy.wait(1000);
         cy.findByTestId("default-data-list").within(() => {
-            cy.get("div")
+            cy.get("li")
                 .first()
                 .within(() => {
                     cy.findByText(newFormTitle).should("exist");
@@ -99,13 +99,13 @@ context("Forms Creation", () => {
         // 6. Try selecting "Revisions" tab and verify revisions
         cy.findByTestId("fb.form-details.tab.revisions").click();
         cy.findByTestId("fb.form-details.tab.revisions.content-list").within(() => {
-            cy.get("div")
+            cy.get("li")
                 .first()
                 .within(() => {
                     cy.findByText(/#2/i).should("exist");
                 });
 
-            cy.get("div")
+            cy.get("li")
                 .next()
                 .within(() => {
                     cy.findByText(/#1/i).should("exist");
@@ -114,7 +114,7 @@ context("Forms Creation", () => {
         cy.wait(1000);
         // 7. Create a new revision from "Locked"(v1) revision
         cy.findByTestId("fb.form-details.tab.revisions.content-list").within(() => {
-            cy.get("div")
+            cy.get("li")
                 .first()
                 .next()
                 .within(() => {
@@ -129,7 +129,7 @@ context("Forms Creation", () => {
         cy.wait(1000);
 
         cy.findByTestId("default-data-list").within(() => {
-            cy.get("div")
+            cy.get("li")
                 .first()
                 .within(() => {
                     cy.findByText(newFormTitle).should("exist");

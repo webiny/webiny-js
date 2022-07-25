@@ -54,7 +54,10 @@ const DefaultPublishPageButton: React.FC = () => {
             message="You are about to publish this page, are you sure want to continue?"
         >
             {({ showConfirmation }) => (
-                <ButtonPrimary onClick={() => showConfirmation(publishChanges)}>
+                <ButtonPrimary
+                    onClick={() => showConfirmation(publishChanges)}
+                    data-testid="pb.editor.header.publish.button"
+                >
                     {page.version > 1 ? "Publish changes" : "Publish"}
                 </ButtonPrimary>
             )}

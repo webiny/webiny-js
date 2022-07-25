@@ -32,6 +32,7 @@ export const Input: React.FC<InputProps> = ({ bind, ...props }) => {
             description={props.field.helpText}
             type={props.type}
             trailingIcon={props.trailingIcon}
+            data-testid={`fr.input.${props.field.label}`}
         />
     );
 };

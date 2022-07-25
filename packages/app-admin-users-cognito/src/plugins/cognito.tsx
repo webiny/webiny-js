@@ -61,6 +61,7 @@ export default (): PluginCollection => {
                                     description={data.id && "Type a new password to reset it."}
                                     type="password"
                                     label={"Password"}
+                                    data-testid="account.password"
                                 />
                             </Bind>
                         </Cell>

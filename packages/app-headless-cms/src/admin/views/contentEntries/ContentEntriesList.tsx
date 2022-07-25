@@ -203,7 +203,7 @@ const ContentEntriesList: React.FC = () => {
                                 </UIList.ListItemText>
 
                                 <UIList.ListItemMeta className={rightAlign}>
-                                    <Typography use={"subtitle2"}>
+                                    <Typography use={"subtitle2"} data-testid="ul.list.subtitle">
                                         {statusLabels[item.meta.status]} (v{item.meta.version})
                                     </Typography>
                                 </UIList.ListItemMeta>

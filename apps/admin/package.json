@@ -28,7 +28,8 @@
     "react": "16.14.0",
     "react-dom": "16.14.0",
     "regenerator-runtime": "^0.13.5",
-    "theme": "^0.1.0"
+    "theme": "^0.1.0",
+    "tslib": "^2.4.0"
   },
   "devDependencies": {
     "cross-env": "^5.0.2"
@@ -57,7 +58,8 @@
         "theme-1",
         "@webiny/app-apw",
         "@webiny/cli",
-        "@webiny/react-properties"
+        "@webiny/react-properties",
+        "tslib"
       ],
       "src": [
         "@okta/okta-signin-widget",

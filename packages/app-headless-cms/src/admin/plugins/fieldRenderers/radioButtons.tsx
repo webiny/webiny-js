@@ -39,6 +39,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
                                                 label={option.label}
                                                 value={getValue(value)}
                                                 onChange={onChange(value)}
+                                                data-testid={`fr.input.${field.label}.${option.label}`}
                                             />
                                         </div>
                                     );

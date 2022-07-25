@@ -33,7 +33,7 @@ const LinkForm: React.FC<LinkFormProps> = ({ data, onSubmit, onCancel }) => {
                         <Grid>
                             <Cell span={12}>
                                 <Bind name="title" validators={validation.create("required")}>
-                                    <Input label="Title" />
+                                    <Input label="Title" data-testid="pb.menu.new.link.title" />
                                 </Bind>
                             </Cell>
                         </Grid>
@@ -45,7 +45,7 @@ const LinkForm: React.FC<LinkFormProps> = ({ data, onSubmit, onCancel }) => {
                                         "required,url:allowRelative:allowHref"
                                     )}
                                 >
-                                    <Input label="URL" />
+                                    <Input label="URL" data-testid="pb.menu.new.link.url" />
                                 </Bind>
                             </Cell>
                         </Grid>
@@ -57,6 +57,7 @@ const LinkForm: React.FC<LinkFormProps> = ({ data, onSubmit, onCancel }) => {
                                         submit(ev);
                                     }}
                                     style={{ float: "right" }}
+                                    data-testid="pb.menu.new.link.button.save"
                                 >
                                     Save menu item
                                 </ButtonPrimary>

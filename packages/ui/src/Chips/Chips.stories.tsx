@@ -11,7 +11,7 @@ import readme from "./README.md";
 
 import { ReactComponent as BaselineDoneIcon } from "./icons/baseline-done-24px.svg";
 import { ReactComponent as BaselineEmailIcon } from "./icons/baseline-email-24px.svg";
-import { Chip, ChipIcon, Chips } from "./index";
+import { Chip, Chips } from "./index";
 
 const story = storiesOf("Components/Chips", module);
 
@@ -31,13 +31,13 @@ story.add(
                             </Chips>
 
                             <Chips>
-                                <Chip>
-                                    <ChipIcon leading icon={<BaselineEmailIcon />} />
+                                <Chip icon={<BaselineEmailIcon />}>Cookies</Chip>
+                                <Chip trailingIcon icon={<BaselineDoneIcon />}>
                                     Cookies
                                 </Chip>
-                                <Chip>
+                                <Chip icon={<BaselineEmailIcon />}>Cookies</Chip>
+                                <Chip trailingIcon icon={<BaselineDoneIcon />}>
                                     Cookies
-                                    <ChipIcon trailing icon={<BaselineDoneIcon />} />
                                 </Chip>
                             </Chips>
                         </div>
@@ -70,5 +70,5 @@ story.add(
             </Story>
         );
     },
-    { info: { propTables: [Chip, ChipIcon, Chips] } }
+    { info: { propTables: [Chip, Chips] } }
 );

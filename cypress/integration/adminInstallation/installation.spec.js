@@ -24,13 +24,20 @@ context("Admin Installation", () => {
             cy.findByTestId("install-security-button").click();
             cy.findByLabelText("First Name").type(Cypress.env("DEFAULT_ADMIN_USER_FIRST_NAME"));
             cy.findByLabelText("Last Name").type(Cypress.env("DEFAULT_ADMIN_USER_LAST_NAME"));
-            cy.findByLabelText("Email").type(Cypress.env("DEFAULT_ADMIN_USER_LAST_NAME"));
+            cy.findAllByLabelText("Email")
+                .first()
+                .type(Cypress.env("DEFAULT_ADMIN_USER_LAST_NAME"));
             cy.findByTestId("install-security-button").click();
 
             cy.findByText("Value must be a valid e-mail address.").should("exist");
 
-            cy.findByLabelText("Email").clear().type(Cypress.env("DEFAULT_ADMIN_USER_USERNAME"));
-            cy.findByLabelText("Password").type(Cypress.env("DEFAULT_ADMIN_USER_PASSWORD"));
+            cy.findAllByLabelText("Email")
+                .first()
+                .clear()
+                .type(Cypress.env("DEFAULT_ADMIN_USER_USERNAME"));
+            cy.findAllByLabelText("Password")
+                .first()
+                .type(Cypress.env("DEFAULT_ADMIN_USER_PASSWORD"));
 
             cy.findByTestId("install-security-button").click();
 

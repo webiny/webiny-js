@@ -101,7 +101,11 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ field, form, fieldPlugin }) => 
                             afterChangeLabel(value);
                         }}
                     >
-                        <Input label={"Label"} inputRef={inputRef} />
+                        <Input
+                            label={"Label"}
+                            inputRef={inputRef}
+                            data-testid="cms.editor.field.settings.general.label"
+                        />
                     </Bind>
                 </Cell>
                 <Cell span={6}>
@@ -114,7 +118,11 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ field, form, fieldPlugin }) => 
                         ]}
                         beforeChange={beforeChangeFieldId}
                     >
-                        <Input label={"Field ID"} disabled={!!field.id} />
+                        <Input
+                            label={"Field ID"}
+                            disabled={!!field.id}
+                            data-testid={`cms.editor.field.settings.general.label-${field.id}`}
+                        />
                     </Bind>
                 </Cell>
 
@@ -123,6 +131,7 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ field, form, fieldPlugin }) => 
                         <Switch
                             label={fieldPlugin.field.multipleValuesLabel}
                             disabled={!fieldPlugin.field.allowMultipleValues}
+                            data-testid={`cms.editor.field.settings.general.switch-multiplevalues`}
                         />
                     </Bind>
                 </Cell>
@@ -131,13 +140,18 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ field, form, fieldPlugin }) => 
                         <Switch
                             label={"Use predefined values"}
                             disabled={!predefinedValuesEnabled}
+                            data-testid={`cms.editor.field.settings.general.switch-predefinedvalues`}
                         />
                     </Bind>
                 </Cell>
 
                 <Cell span={12}>
                     <Bind name={"helpText"}>
-                        <Input label={"Help text"} description={"Help text (optional)"} />
+                        <Input
+                            label={"Help text"}
+                            description={"Help text (optional)"}
+                            data-testid={`cms.editor.field.settings.general.helptext`}
+                        />
                     </Bind>
                 </Cell>
             </Grid>

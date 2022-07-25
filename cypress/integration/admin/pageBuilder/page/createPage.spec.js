@@ -16,10 +16,10 @@ context("Pages Creation", () => {
         cy.get(`input[value="Untitled"]`).clear().type(newPageTitle).blur();
         cy.findByText("Page title updated successfully!");
 
-        cy.findByText("Publish").click();
+        cy.findByTestId("pb.editor.header.publish.button").click();
 
-        cy.findByTestId("pb-editor-publish-confirmation-dialog").within(() => {
-            cy.findByText(/Confirm/i).click();
+        cy.findByRole("alertdialog").within(() => {
+            cy.findByTestId("confirmationdialog-confirm-action").click();
         });
 
         cy.findByText("Your page was published successfully!");
@@ -60,8 +60,8 @@ context("Pages Creation", () => {
 
         // Delete page
         cy.findByTestId("pb-page-details-header-delete-button").click();
-        cy.findByTestId("pb-page-details-header-delete-dialog").within(() => {
-            cy.findByText(/Confirm/i).click();
+        cy.findByRole("alertdialog").within(() => {
+            cy.findAllByTestId("dialog-accept").next().click();
         });
 
         cy.findByTestId("default-data-list").within(() => {

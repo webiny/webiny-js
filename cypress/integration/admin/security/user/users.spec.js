@@ -17,13 +17,13 @@ context("Security -> Users", () => {
         // Add user's detail
         cy.findByLabelText("First Name").type(firstName);
         cy.findByLabelText("Last Name").type(lastName);
-        cy.findByLabelText("Email").type(email);
-        cy.findByLabelText("Password").type(password);
-        cy.findByLabelText("Group").type(groupName);
+        cy.findByTestId("input-element-Email").type(email);
+        cy.get("input[type=password]").type(password);
+        cy.findByTestId("group-autocomplete").type(groupName);
         cy.wait(1000);
         cy.findByText(groupName).click();
         // Save details
-        cy.findByText("Save user").click();
+        cy.findByTestId("button-element-save-user").click();
         // Wait for loading to finish
         cy.get(".react-spinner-material").should("not.exist");
         // Verify success message
@@ -34,16 +34,16 @@ context("Security -> Users", () => {
         const [newFirstName, newLastName, newPassword] = [uniqid(), uniqid(), uniqid()];
         const newGroupName = "Anonymous";
 
-        cy.findByLabelText("Email").should("have.value", email);
+        cy.findByTestId("input-element-Email").should("have.value", email);
         // Add user's detail
         cy.findByLabelText("First Name").type(newFirstName);
         cy.findByLabelText("Last Name").type(newLastName);
-        cy.findByLabelText("Password").type(newPassword);
-        cy.findByLabelText("Group").clear().type(newGroupName);
+        cy.get("input[type=password]").type(newPassword);
+        cy.findByTestId("group-autocomplete").clear().type(newGroupName);
         cy.wait(1000);
         cy.findByText(newGroupName).click();
         // Save details
-        cy.findByText("Save user").click();
+        cy.findByTestId("button-element-save-user").click();
         // Wait for loading to finish
         cy.get(".react-spinner-material").should("not.exist");
         // Verify success message
@@ -60,7 +60,7 @@ context("Security -> Users", () => {
         });
 
         cy.findByTestId("default-data-list.delete-dialog").within(() => {
-            cy.findByText("Confirm").click();
+            cy.findAllByTestId("dialog-accept").next().click();
         });
         cy.findByText(`User "${email}" deleted.`).should("exist");
     });

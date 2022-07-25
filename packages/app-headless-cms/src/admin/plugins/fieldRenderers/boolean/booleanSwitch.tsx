@@ -26,7 +26,12 @@ const plugin: CmsEditorFieldRendererPlugin = {
             return (
                 <Bind>
                     {bindProps => (
-                        <Switch {...bindProps} label={field.label} description={field.helpText} />
+                        <Switch
+                            {...bindProps}
+                            label={field.label}
+                            description={field.helpText}
+                            data-testid={`fr.input.boolean.${field.label}`}
+                        />
                     )}
                 </Bind>
             );

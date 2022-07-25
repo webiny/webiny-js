@@ -54,6 +54,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
                                 label={field.label}
                                 placeholder={field.placeholderText}
                                 description={field.helpText}
+                                data-testid={`fr.input.richtext.${field.label}`}
                             />
                         );
                     }}
