@@ -9,7 +9,7 @@ export type AdminPulumiApp = ReturnType<typeof createAdminPulumiApp>;
 
 export interface CreateAdminPulumiAppParams {
     /** Custom domain configuration */
-    domain?: PulumiAppParamCallback<CustomDomainParams>;
+    domains?: PulumiAppParamCallback<CustomDomainParams>;
 
     /**
      * Provides a way to adjust existing Pulumi code (cloud infrastructure resources)
@@ -71,9 +71,9 @@ export const createAdminPulumiApp = (projectAppParams: CreateAdminPulumiAppParam
                 }
             });
 
-            const domain = app.getParam(projectAppParams.domain);
-            if (domain) {
-                applyCustomDomain(cloudfront, domain);
+            const domains = app.getParam(projectAppParams.domains);
+            if (domains) {
+                applyCustomDomain(cloudfront, domains);
             }
 
             app.addOutputs({
