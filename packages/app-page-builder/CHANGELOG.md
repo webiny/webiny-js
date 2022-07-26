@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.30.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.30.0-beta.0...v5.30.0-beta.1) (2022-07-26)
+
+
+### Bug Fixes
+
+* **app-page-builder:** detect zoom level properly ([937a81b](https://github.com/webiny/webiny-js/commit/937a81bdcb7a0dda507eb1578fde839d89c973cb))
+
+
+
+
+
 # [5.30.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.29.0...v5.30.0-beta.0) (2022-07-25)
 
 
