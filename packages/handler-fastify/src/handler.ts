@@ -3,7 +3,7 @@ import {
     CreateFastifyHandlerParams as BaseCreateFastifyHandlerParams
 } from "@webiny/fastify";
 
-export interface FastifyHandlerCallable<R = Record<string, any>> {
+export interface FastifyHandlerCallable<R> {
     (payload?: Record<string, any>): Promise<R>;
 }
 
@@ -11,9 +11,9 @@ export interface CreateFastifyHandlerParams extends BaseCreateFastifyHandlerPara
     debug?: boolean;
 }
 
-export const createFastifyHandler = (
+export const createFastifyHandler = <R extends Record<string, any> = Record<string, any>>(
     params: CreateFastifyHandlerParams
-): FastifyHandlerCallable => {
+): FastifyHandlerCallable<R> => {
     return payload => {
         const app = createFastify({
             plugins: params?.plugins || [],

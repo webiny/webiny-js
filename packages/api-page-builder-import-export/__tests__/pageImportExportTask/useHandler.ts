@@ -1,10 +1,10 @@
 import { createWcpContext } from "@webiny/api-wcp";
-import { createHandler } from "@webiny/handler-fastify-aws";
+import { createHandler } from "@webiny/handler-fastify";
 import graphqlHandler from "@webiny/handler-graphql";
 import pageImportExportTaskPlugins from "~/graphql/crud/pageImportExportTasks.crud";
 import { ContextPlugin } from "@webiny/handler";
-import { PbContext } from "@webiny/api-page-builder/graphql/types";
 import { createTenancyAndSecurity } from "../tenancySecurity";
+import { PbPageImportExportContext } from "~/graphql/types";
 
 interface Params {
     plugins?: any;
@@ -15,7 +15,7 @@ export default (params: Params = {}) => {
 
     // @ts-ignore
     const { storageOperations } = __getStorageOperations();
-    const handler = createHandler({
+    const handler = createHandler<PbPageImportExportContext>({
         plugins: [
             // storageOperations(),
             createWcpContext(),
@@ -23,7 +23,7 @@ export default (params: Params = {}) => {
             graphqlHandler(),
             {
                 type: "context",
-                apply: (context: PbContext) => {
+                apply: (context: PbPageImportExportContext) => {
                     if (context.i18n) {
                         return;
                     }
@@ -54,7 +54,7 @@ export default (params: Params = {}) => {
                     };
                 }
             },
-            new ContextPlugin<PbContext>(context => {
+            new ContextPlugin<PbPageImportExportContext>(context => {
                 context.pageBuilder = {} as any;
             }),
             pageImportExportTaskPlugins({ storageOperations }),

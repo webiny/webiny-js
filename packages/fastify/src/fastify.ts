@@ -2,7 +2,7 @@ import { PluginCollection } from "@webiny/plugins/types";
 import fastify, { FastifyServerOptions } from "fastify";
 import { BeforeHandlerPlugin, ContextPlugin, HandlerErrorPlugin } from "@webiny/handler";
 import { getWebinyVersionHeaders } from "@webiny/utils";
-import { FastifyContext, RouteMethodOptions, RouteTypes } from "~/types";
+import { FastifyContext, FastifyContextRoutes, RouteMethodOptions, RouteTypes } from "~/types";
 import { Context } from "~/plugins/Context";
 import WebinyError from "@webiny/error";
 import { RoutePlugin } from "./plugins/RoutePlugin";
@@ -19,18 +19,18 @@ const DEFAULT_HEADERS: Record<string, string> = {
     ...getWebinyVersionHeaders()
 };
 
-type DefinedRoutes = Record<RouteTypes, string[]>;
-const getDefaultHeaders = (routes: DefinedRoutes): Record<string, string> => {
+const getDefaultHeaders = (routes: FastifyContextRoutes["defined"]): Record<string, string> => {
     /**
      * If we are accepting all headers, just output that one.
      */
-    if (routes["all"].length > 0) {
+    const keys = Object.keys(routes);
+    const all = keys.every(key => routes[key as RouteTypes].length > 0);
+    if (all) {
         return {
             ...DEFAULT_HEADERS,
             "Access-Control-Allow-Methods": "*"
         };
     }
-    const keys = Object.keys(routes);
     return {
         ...DEFAULT_HEADERS,
         "Access-Control-Allow-Methods": keys
@@ -41,7 +41,6 @@ const getDefaultHeaders = (routes: DefinedRoutes): Record<string, string> => {
                 }
                 return routes[type].length > 0;
             })
-            .map(route => route.toUpperCase())
             .sort()
             .join(",")
     };
@@ -58,22 +57,29 @@ export interface CreateFastifyHandlerParams {
 }
 
 export const createFastify = (params?: CreateFastifyHandlerParams) => {
-    const definedRoutes: DefinedRoutes = {
-        post: [],
-        get: [],
-        options: [],
-        delete: [],
-        patch: [],
-        put: [],
-        all: []
+    const definedRoutes: FastifyContextRoutes["defined"] = {
+        POST: [],
+        GET: [],
+        OPTIONS: [],
+        DELETE: [],
+        PATCH: [],
+        PUT: [],
+        HEAD: []
     };
 
     const throwOnDefinedRoute = (
-        type: RouteTypes,
+        type: RouteTypes | "ALL",
         path: string,
         options?: RouteMethodOptions
     ): void => {
-        if (definedRoutes[type].includes(path) === false) {
+        if (type === "ALL") {
+            const all = Object.keys(definedRoutes).every(key => {
+                return definedRoutes[key as RouteTypes].length > 0;
+            });
+            if (!all) {
+                return;
+            }
+        } else if (definedRoutes[type].includes(path) === false) {
             return;
         } else if (options?.override === true) {
             return;
@@ -88,8 +94,11 @@ export const createFastify = (params?: CreateFastifyHandlerParams) => {
         );
     };
 
-    const addDefinedRoute = (type: RouteTypes, path: string): void => {
-        if (definedRoutes[type].includes(path)) {
+    const addDefinedRoute = (inputType: RouteTypes, path: string): void => {
+        const type = (inputType as string).toUpperCase() as RouteTypes;
+        if (!definedRoutes[type]) {
+            return;
+        } else if (definedRoutes[type].includes(path)) {
             return;
         }
         definedRoutes[type].push(path);
@@ -99,6 +108,19 @@ export const createFastify = (params?: CreateFastifyHandlerParams) => {
      */
     const app = fastify({
         ...(params?.options || {})
+    });
+    /**
+     * We need to register routes in our system so we can output headers later on and dissallow overriding routes.
+     */
+    app.addHook("onRoute", route => {
+        const method = route.method;
+        if (Array.isArray(method)) {
+            for (const m of method) {
+                addDefinedRoute(m, route.path);
+            }
+            return;
+        }
+        addDefinedRoute(method, route.path);
     });
     /**
      *
@@ -112,39 +134,32 @@ export const createFastify = (params?: CreateFastifyHandlerParams) => {
     const routes: FastifyContext["routes"] = {
         defined: definedRoutes,
         onPost: (path, handler, options) => {
-            throwOnDefinedRoute("post", path, options);
+            throwOnDefinedRoute("POST", path, options);
             app.post(path, handler);
-            addDefinedRoute("post", path);
         },
         onGet: (path, handler, options) => {
-            throwOnDefinedRoute("get", path, options);
+            throwOnDefinedRoute("GET", path, options);
             app.get(path, handler);
-            addDefinedRoute("get", path);
         },
         onOptions: (path, handler, options) => {
-            throwOnDefinedRoute("options", path, options);
+            throwOnDefinedRoute("OPTIONS", path, options);
             app.options(path, handler);
-            addDefinedRoute("options", path);
         },
         onDelete: (path, handler, options) => {
-            throwOnDefinedRoute("delete", path, options);
+            throwOnDefinedRoute("DELETE", path, options);
             app.delete(path, handler);
-            addDefinedRoute("delete", path);
         },
         onPatch: (path, handler, options) => {
-            throwOnDefinedRoute("patch", path, options);
+            throwOnDefinedRoute("PATCH", path, options);
             app.patch(path, handler);
-            addDefinedRoute("patch", path);
         },
         onPut: (path, handler, options) => {
-            throwOnDefinedRoute("put", path, options);
+            throwOnDefinedRoute("PUT", path, options);
             app.put(path, handler);
-            addDefinedRoute("put", path);
         },
         onAll: (path, handler, options) => {
-            throwOnDefinedRoute("all", path, options);
+            throwOnDefinedRoute("ALL", path, options);
             app.all(path, handler);
-            addDefinedRoute("all", path);
         }
     };
     const context = new Context({

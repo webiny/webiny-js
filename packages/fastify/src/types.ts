@@ -1,7 +1,7 @@
-import { FastifyInstance, FastifyRequest, RouteHandlerMethod } from "fastify";
+import { FastifyInstance, FastifyRequest, HTTPMethods, RouteHandlerMethod } from "fastify";
 import { ClientContext } from "@webiny/handler-client/types";
 
-export type RouteTypes = "post" | "get" | "options" | "delete" | "patch" | "put" | "all";
+export type RouteTypes = HTTPMethods;
 
 export interface RouteMethodOptions {
     override?: boolean;

@@ -34,8 +34,8 @@ export interface UpdateSettingsParams {
 export default (params: UpdateSettingsParams) => {
     const { storageOperations } = params;
 
-    const route = new RoutePlugin(({ context }) => {
-        context.server.all("*", async (request, reply) => {
+    const route = new RoutePlugin(({ onAll }) => {
+        onAll("*", async (request, reply) => {
             try {
                 const { data, migrate: runMigration } = request.body as Record<string, any>;
 
