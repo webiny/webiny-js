@@ -73,13 +73,21 @@ export const createFastify = (params?: CreateFastifyHandlerParams) => {
         options?: RouteMethodOptions
     ): void => {
         if (type === "ALL") {
-            const all = Object.keys(definedRoutes).every(key => {
+            const all = Object.keys(definedRoutes).some(key => {
                 const routes = definedRoutes[key as RouteTypes];
                 return routes.includes(path);
             });
             if (!all) {
                 return;
             }
+            throw new WebinyError(
+                `You cannot override a route with onAll() method, please remove unnecessary route from the system.`,
+                "OVERRIDE_ROUTE_ERROR",
+                {
+                    type,
+                    path
+                }
+            );
         } else if (definedRoutes[type].includes(path) === false) {
             return;
         } else if (options?.override === true) {
