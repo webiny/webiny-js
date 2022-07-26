@@ -34,7 +34,7 @@ context("Pages Creation", () => {
                     cy.findByText(newPageTitle).should("exist");
                     cy.findByText(/Static/i).should("exist");
                     cy.findByText(/Published/i).should("exist");
-                    cy.findByText(/(v1)/i).should("exist");
+                    cy.findByText(/\(v1\)/i).should("exist");
                 });
         });
 
