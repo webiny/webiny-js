@@ -8,7 +8,6 @@ import {
     Resolvers
 } from "@webiny/handler-graphql/types";
 import { SecurityPermission } from "@webiny/api-security/types";
-// import { HttpContext } from "@webiny/handler-http/types";
 import { DbContext } from "@webiny/handler-db/types";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
