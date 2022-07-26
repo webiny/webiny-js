@@ -9,8 +9,14 @@ describe("fastify aws handler routes", () => {
     it("should register the route /webiny and trigger it on event", async () => {
         const handler = createHandler({
             plugins: [
-                new RoutePlugin(({ onPost }) => {
+                new RoutePlugin(({ onPost, onPut }) => {
                     onPost("/webiny", async (_, reply) => {
+                        return reply.send({
+                            message
+                        });
+                    });
+
+                    onPut("/webiny", async (_, reply) => {
                         return reply.send({
                             message
                         });
@@ -31,7 +37,7 @@ describe("fastify aws handler routes", () => {
                 "content-length": `${body.length}`,
                 "content-type": "application/json; charset=utf-8",
                 "access-control-allow-headers": "*",
-                "access-control-allow-methods": "*",
+                "access-control-allow-methods": "POST,PUT",
                 "access-control-allow-origin": "*",
                 "cache-control": "no-store",
                 date: expect.any(String)
@@ -149,9 +155,7 @@ describe("fastify aws handler routes", () => {
         );
 
         expect(result).toMatchObject({
-            body: JSON.stringify({
-                options: true
-            }),
+            body: "",
             headers: expect.any(Object)
         });
     });
