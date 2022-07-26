@@ -4,10 +4,10 @@ import styled from "@emotion/styled";
 import classNames from "classnames";
 import { Typography } from "@webiny/ui/Typography";
 import { Select } from "@webiny/ui/Select";
-import RenderElement from "../../../../render/components/Element";
-import useResponsiveClassName from "../../../../hooks/useResponsiveClassName";
-import Zoom from "./Zoom";
+import { Zoom } from "./Zoom";
 import { PbPageData } from "~/types";
+import useResponsiveClassName from "~/hooks/useResponsiveClassName";
+import RenderElement from "~/render/components/Element";
 
 const webinyZoomStyles = css`
     &.mdc-select--no-label:not(.mdc-select--outlined)
@@ -68,29 +68,32 @@ const PagePreview: React.FC<PagePreviewProps> = ({ page }) => {
 
     return (
         <Zoom>
-            {({ zoom, setZoom }) => (
-                <div
-                    ref={pageElementRef}
-                    className={classNames(pageInnerWrapper, responsiveClassName)}
-                    style={{ "--webiny-pb-page-preview-scale": zoom } as CSSProperties}
-                >
-                    <RenderElement key={page.id} element={page.content} />
-                    <PagePreviewToolbar>
-                        <span>
-                            <Typography use={"overline"}>Zoom:&nbsp;</Typography>
-                        </span>
-                        <Select
-                            value={zoom.toString()}
-                            onChange={setZoom}
-                            className={webinyZoomStyles}
-                        >
-                            <option value={"1"}>100%</option>
-                            <option value={"0.75"}>75%</option>
-                            <option value={"0.5"}>50%</option>
-                        </Select>
-                    </PagePreviewToolbar>
-                </div>
-            )}
+            {({ zoom, setZoom }) => {
+                console.log("zoom", zoom);
+                return (
+                    <div
+                        ref={pageElementRef}
+                        className={classNames(pageInnerWrapper, responsiveClassName)}
+                        style={{ "--webiny-pb-page-preview-scale": zoom } as CSSProperties}
+                    >
+                        <RenderElement key={page.id} element={page.content} />
+                        <PagePreviewToolbar>
+                            <span>
+                                <Typography use={"overline"}>Zoom:&nbsp;</Typography>
+                            </span>
+                            <Select
+                                value={zoom.toString()}
+                                onChange={setZoom}
+                                className={webinyZoomStyles}
+                            >
+                                <option value={"1"}>100%</option>
+                                <option value={"0.75"}>75%</option>
+                                <option value={"0.5"}>50%</option>
+                            </Select>
+                        </PagePreviewToolbar>
+                    </div>
+                );
+            }}
         </Zoom>
     );
 };
