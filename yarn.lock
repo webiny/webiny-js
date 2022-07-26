@@ -3639,7 +3639,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@commodo/fields@npm:^1.0.0, @commodo/fields@npm:^1.2.1":
+"@commodo/fields@npm:^1.0.0":
   version: 1.2.1
   resolution: "@commodo/fields@npm:1.2.1"
   dependencies:
@@ -10230,7 +10230,7 @@ __metadata:
     dynamodb-toolbox: ^0.3.4
     jest: ^28.1.0
     jest-dynalite: ^3.2.0
-    jest-environment-node: ^27.0.6
+    jest-environment-node: ^27.2.4
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
     typescript: 4.7.4
@@ -10243,7 +10243,7 @@ __metadata:
   dependencies:
     "@babel/cli": ^7.16.0
     "@babel/core": ^7.16.0
-    "@commodo/fields": ^1.2.1
+    "@commodo/fields": 1.1.2-beta.20
     "@types/jsonwebtoken": 8.5.1
     "@types/md5": ^2.3.2
     "@webiny/api-security": ^5.29.0
@@ -10297,7 +10297,7 @@ __metadata:
     dynamodb-toolbox: ^0.3.4
     jest: ^28.1.0
     jest-dynalite: ^3.2.0
-    jest-environment-node: ^27.0.6
+    jest-environment-node: ^27.2.4
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
     typescript: 4.7.4
@@ -10314,7 +10314,7 @@ __metadata:
     "@babel/preset-env": ^7.5.5
     "@babel/preset-flow": ^7.0.0
     "@babel/runtime": ^7.5.5
-    "@commodo/fields": beta
+    "@commodo/fields": 1.1.2-beta.20
     "@webiny/api-headless-cms": ^5.29.0
     "@webiny/api-headless-cms-ddb": ^5.29.0
     "@webiny/api-i18n": ^5.29.0
@@ -10570,7 +10570,7 @@ __metadata:
     commodo-fields-object: ^1.0.6
     jest: ^28.1.0
     mdbid: ^1.0.0
-    object-hash: ^1.3.1
+    object-hash: ^2.1.1
     rimraf: ^3.0.2
     sanitize-filename: ^1.6.3
     ttypescript: ^1.5.12
@@ -10715,7 +10715,7 @@ __metadata:
     dynamodb-toolbox: ^0.3.4
     jest: ^28.1.0
     jest-dynalite: ^3.2.0
-    jest-environment-node: ^26.6.2
+    jest-environment-node: ^27.2.4
     jsonpack: ^1.1.5
     lodash: ^4.17.21
     mdbid: ^1.0.0
@@ -10747,11 +10747,11 @@ __metadata:
     "@webiny/utils": ^5.29.0
     aws-sdk: ^2.971.0
     dataloader: ^2.0.0
-    dot-prop: ^5.3.0
+    dot-prop: ^6.0.1
     dynamodb-toolbox: ^0.3.3
     jest: ^28.1.0
     jest-dynalite: ^3.2.0
-    jest-environment-node: ^26.6.2
+    jest-environment-node: ^27.2.4
     jsonpack: ^1.1.5
     lodash: ^4.5.0
     ttypescript: ^1.5.12
@@ -10781,6 +10781,7 @@ __metadata:
     "@webiny/api-wcp": ^5.29.0
     "@webiny/cli": ^5.29.0
     "@webiny/error": ^5.29.0
+    "@webiny/fastify": ^5.29.0
     "@webiny/handler": ^5.29.0
     "@webiny/handler-db": ^5.29.0
     "@webiny/handler-fastify-aws": ^5.29.0
@@ -10858,7 +10859,7 @@ __metadata:
     dynamodb-toolbox: ^0.3.4
     jest: ^28.1.0
     jest-dynalite: ^3.2.0
-    jest-environment-node: ^27.0.6
+    jest-environment-node: ^27.2.4
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
     typescript: 4.7.4
@@ -12898,7 +12899,7 @@ __metadata:
     execa: 5.0.0
     graphlib: 2.1.8
     multimatch: 5.0.0
-    p-map: 2.1.0
+    p-map: ^4.0.0
     random-color: 1.0.1
   languageName: unknown
   linkType: soft
@@ -12938,7 +12939,7 @@ __metadata:
   dependencies:
     "@babel/cli": ^7.16.0
     "@babel/core": ^7.16.0
-    "@commodo/fields": ^1.2.1
+    "@commodo/fields": 1.1.2-beta.20
     "@commodo/hooks": ^1.2.1
     "@commodo/name": ^1.3.1
     "@webiny/cli": ^5.29.0
@@ -13494,7 +13495,7 @@ __metadata:
     "@pulumi/aws": ^5.8.0
     "@pulumi/pulumi": ^3.34.0
     "@types/lodash": ^4.14.178
-    "@types/node": ^10.0.0
+    "@types/node": "*"
     "@webiny/cli": ^5.29.0
     "@webiny/project-utils": ^5.29.0
     decompress: ^4.2.1
@@ -19010,7 +19011,7 @@ __metadata:
     os: 0.1.1
     p-retry: 4.2.0
     rimraf: 3.0.2
-    semver: 7.3.4
+    semver: ^7.3.4
     uuid: 8.3.2
     validate-npm-package-name: 3.0.0
     write-json-file: 4.3.0
@@ -20746,7 +20747,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dot-prop@npm:^5.1.0, dot-prop@npm:^5.3.0":
+"dot-prop@npm:^5.1.0":
   version: 5.3.0
   resolution: "dot-prop@npm:5.3.0"
   dependencies:
@@ -31360,13 +31361,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"object-hash@npm:^1.3.1":
-  version: 1.3.1
-  resolution: "object-hash@npm:1.3.1"
-  checksum: fdcb957a2f15a9060e30655a9f683ba1fc25dfb8809a73d32e9634bec385a2f1d686c707ac1e5f69fb773bc12df03fb64c77ce3faeed83e35f4eb1946cb1989e
-  languageName: node
-  linkType: hard
-
 "object-hash@npm:^2.1.1":
   version: 2.2.0
   resolution: "object-hash@npm:2.2.0"
@@ -31913,17 +31907,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"p-map@npm:2.1.0, p-map@npm:^2.0.0, p-map@npm:^2.1.0":
-  version: 2.1.0
-  resolution: "p-map@npm:2.1.0"
-  checksum: 9e3ad3c9f6d75a5b5661bcad78c91f3a63849189737cd75e4f1225bf9ac205194e5c44aac2ef6f09562b1facdb9bd1425584d7ac375bfaa17b3f1a142dab936d
-  languageName: node
-  linkType: hard
-
 "p-map@npm:^1.1.1":
   version: 1.2.0
   resolution: "p-map@npm:1.2.0"
   checksum: 1ac7267b1e8c562bfd01d83c1769cd550d50cc518f75ea2b9c9a0b365767365961a00ff5b0edbf0cbd4a8e405a804c211d9c3497245257955645bbd39d4d0fb4
+  languageName: node
+  linkType: hard
+
+"p-map@npm:^2.0.0, p-map@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "p-map@npm:2.1.0"
+  checksum: 9e3ad3c9f6d75a5b5661bcad78c91f3a63849189737cd75e4f1225bf9ac205194e5c44aac2ef6f09562b1facdb9bd1425584d7ac375bfaa17b3f1a142dab936d
   languageName: node
   linkType: hard
 

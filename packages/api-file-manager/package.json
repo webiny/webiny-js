@@ -34,7 +34,7 @@
     "aws-sdk": "^2.971.0",
     "commodo-fields-object": "^1.0.6",
     "mdbid": "^1.0.0",
-    "object-hash": "^1.3.1",
+    "object-hash": "^2.1.1",
     "sanitize-filename": "^1.6.3"
   },
   "devDependencies": {

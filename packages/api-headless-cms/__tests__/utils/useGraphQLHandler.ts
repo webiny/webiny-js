@@ -6,13 +6,7 @@ import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { ApiKey, SecurityIdentity } from "@webiny/api-security/types";
 import apiKeyAuthentication from "@webiny/api-security/plugins/apiKeyAuthentication";
 import apiKeyAuthorization from "@webiny/api-security/plugins/apiKeyAuthorization";
-import {
-    createPermissions,
-    until,
-    sleep,
-    PermissionsArg,
-    createDummyPathContextPlugin
-} from "./helpers";
+import { createPermissions, until, sleep, PermissionsArg } from "./helpers";
 import { INSTALL_MUTATION, IS_INSTALLED_QUERY } from "./graphql/settings";
 import {
     CREATE_CONTENT_MODEL_GROUP_MUTATION,
@@ -75,7 +69,7 @@ export interface InvokeParams {
     headers?: Record<string, string>;
 }
 
-export const useGraphQLHandler = (params: GraphQLHandlerParams) => {
+export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
     const ops = getStorageOperations({
         plugins: params.storageOperationPlugins || []
     });
@@ -138,7 +132,6 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams) => {
                     };
                 }
             } as ContextPlugin<TestContext>,
-            createDummyPathContextPlugin(path),
             apiKeyAuthentication({ identityType: "api-key" }),
             apiKeyAuthorization({ identityType: "api-key" }),
             i18nContext(),
@@ -149,26 +142,31 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams) => {
             plugins,
             graphQLHandlerPlugins()
         ],
-        http: { debug: true }
+        http: {
+            debug: false
+        }
     });
 
     const invoke = async ({ httpMethod = "POST", body, headers = {}, ...rest }: InvokeParams) => {
-        const response = await handler({
-            path: "/graphql",
-            httpMethod,
-            headers: {
-                ["x-tenant"]: "root",
-                ["Content-Type"]: "application/json",
-                ...headers
-            },
-            body: JSON.stringify(body),
-            ...rest
-        });
-        if (httpMethod === "OPTIONS" && !response.body) {
-            return [null, response];
-        }
+        const response = await handler(
+            {
+                /**
+                 * If no path defined, use /graphql as we want to make request to main api
+                 */
+                path: path ? `/cms/${path}` : "/graphql",
+                httpMethod,
+                headers: {
+                    ["x-tenant"]: "root",
+                    ["Content-Type"]: "application/json",
+                    ...headers
+                },
+                body: JSON.stringify(body),
+                ...rest
+            } as any,
+            {} as any
+        );
         // The first element is the response body, and the second is the raw response.
-        return [JSON.parse(response.body), response];
+        return [JSON.parse(response.body || "{}"), response];
     };
 
     return {
@@ -183,8 +181,8 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams) => {
             return invoke({ body: { query: getIntrospectionQuery() } });
         },
         // settings
-        async isInstalledQuery() {
-            return invoke({ body: { query: IS_INSTALLED_QUERY } });
+        async isInstalledQuery({ headers = {} } = {}) {
+            return invoke({ body: { query: IS_INSTALLED_QUERY }, headers });
         },
         async installMutation() {
             return invoke({ body: { query: INSTALL_MUTATION } });

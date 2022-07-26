@@ -1,7 +1,6 @@
 import { PluginCollection } from "@webiny/plugins/types";
 import fastify, { FastifyServerOptions } from "fastify";
 import { BeforeHandlerPlugin, ContextPlugin, HandlerErrorPlugin } from "@webiny/handler";
-import middleware from "@webiny/handler/middleware";
 import { getWebinyVersionHeaders } from "@webiny/utils";
 import { FastifyContext, RouteMethodOptions, RouteTypes } from "~/types";
 import { Context } from "~/plugins/Context";
@@ -9,6 +8,7 @@ import WebinyError from "@webiny/error";
 import { RoutePlugin } from "./plugins/RoutePlugin";
 import defaultHandlerClient from "@webiny/handler-client";
 import fastifyCookies from "@fastify/cookie";
+import { middleware } from "~/middleware";
 
 const DEFAULT_HEADERS: Record<string, string> = {
     "Cache-Control": "no-store",
@@ -24,13 +24,13 @@ const getDefaultHeaders = (routes: DefinedRoutes): Record<string, string> => {
     /**
      * If we are accepting all headers, just output that one.
      */
-    const keys = Object.keys(routes);
-    if (keys.some(key => key === "all")) {
+    if (routes["all"].length > 0) {
         return {
             ...DEFAULT_HEADERS,
             "Access-Control-Allow-Methods": "*"
         };
     }
+    const keys = Object.keys(routes);
     return {
         ...DEFAULT_HEADERS,
         "Access-Control-Allow-Methods": keys
@@ -42,6 +42,7 @@ const getDefaultHeaders = (routes: DefinedRoutes): Record<string, string> => {
                 return routes[type].length > 0;
             })
             .map(route => route.toUpperCase())
+            .sort()
             .join(",")
     };
 };
@@ -168,6 +169,25 @@ export const createFastify = (params?: CreateFastifyHandlerParams) => {
     app.decorate("webiny", context);
 
     /**
+     * On every request we add default headers, which can be changed later.
+     * Also, if it is an options request, we skip everything after this hook and output options headers.
+     */
+    app.addHook("onRequest", async (request, reply) => {
+        const defaultHeaders = getDefaultHeaders(definedRoutes);
+        reply.headers(defaultHeaders);
+        if (request.method.toLowerCase() !== "options") {
+            return;
+        }
+        const raw = reply.code(204).hijack().raw;
+        const headers = { ...defaultHeaders, ...OPTIONS_HEADERS };
+        for (const key in headers) {
+            raw.setHeader(key, headers[key]);
+        }
+
+        raw.end("");
+    });
+
+    /**
      * Add routes to the system.
      */
     for (const plugin of app.webiny.plugins.byType<RoutePlugin>(RoutePlugin.type)) {
@@ -188,25 +208,13 @@ export const createFastify = (params?: CreateFastifyHandlerParams) => {
         }
     });
 
-    app.addHook("preHandler", async (_, reply) => {
+    app.addHook("preHandler", async () => {
         /**
          * By the default we add some headers.
          */
-        reply.headers(getDefaultHeaders(definedRoutes));
         for (const plugin of app.webiny.plugins.byType(BeforeHandlerPlugin.type)) {
             await plugin.apply(app.webiny);
         }
-    });
-
-    app.addHook("onSend", async (request, reply) => {
-        if (request.method.toLowerCase() !== "options") {
-            return;
-        }
-        const cacheControl = reply.getHeader("cache-control");
-        if (cacheControl && cacheControl.match("max-age") !== null) {
-            return;
-        }
-        reply.headers(OPTIONS_HEADERS);
     });
 
     app.addHook("onError", async (_, reply, error) => {

@@ -28,6 +28,7 @@
     "@webiny/api-tenancy": "^5.29.0",
     "@webiny/api-upgrade": "^5.29.0",
     "@webiny/error": "^5.29.0",
+    "@webiny/fastify": "^5.29.0",
     "@webiny/handler": "^5.29.0",
     "@webiny/handler-db": "^5.29.0",
     "@webiny/handler-fastify-aws": "^5.29.0",
