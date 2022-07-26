@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.30.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.29.0...v5.30.0-beta.0) (2022-07-25)
+
+
+### Features
+
+* **pulumi:** allow custom Lambda ENV vars and resource customization ([#2540](https://github.com/webiny/webiny-js/issues/2540)) ([7df7a08](https://github.com/webiny/webiny-js/commit/7df7a08fc8ea196c3ee26ac70d749d26520b26b7))
+* typescript to 4.7.4 ([#2527](https://github.com/webiny/webiny-js/issues/2527)) ([ee24a3a](https://github.com/webiny/webiny-js/commit/ee24a3a995942ee2588e615e42f604ed7418390a))
+
+
+
+
+
 # [5.29.0](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.2...v5.29.0) (2022-06-28)
 
 **Note:** Version bump only for package @webiny/pulumi

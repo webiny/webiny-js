@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.30.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.29.0...v5.30.0-beta.0) (2022-07-25)
+
+
+### Bug Fixes
+
+* **pulumi-aws:** use domains parameter in all apps ([ddb59bf](https://github.com/webiny/webiny-js/commit/ddb59bf01c1bd9f5e6e13bff4770f0c643e37c0d))
+* **pulumi-aws:** use output apply on ENV variables ([45b173c](https://github.com/webiny/webiny-js/commit/45b173ca14ab85f26018f6aa16f0861701829bc9))
+* use handlers for the `projectAppParams.pulumi` parameter ([ab677e5](https://github.com/webiny/webiny-js/commit/ab677e545ea5f5271cdbdecbf008156c9cad8989))
+* use handlers for the `projectAppParams.pulumi` parameter ([e2bbf40](https://github.com/webiny/webiny-js/commit/e2bbf400d79c3aa86fa70c4f7112a4701f1f3fc2))
+
+
+### Features
+
+* **pulumi:** allow custom Lambda ENV vars and resource customization ([#2540](https://github.com/webiny/webiny-js/issues/2540)) ([7df7a08](https://github.com/webiny/webiny-js/commit/7df7a08fc8ea196c3ee26ac70d749d26520b26b7))
+* bring back APW into Webiny Projects ([#2535](https://github.com/webiny/webiny-js/issues/2535)) ([4db06af](https://github.com/webiny/webiny-js/commit/4db06afc3778f8451407da6f0a84c1eac37d1ec4))
+* export Pulumi app types ([25c2a31](https://github.com/webiny/webiny-js/commit/25c2a31289dc93590fe4357f366649869e964b63))
+* typescript to 4.7.4 ([#2527](https://github.com/webiny/webiny-js/issues/2527)) ([ee24a3a](https://github.com/webiny/webiny-js/commit/ee24a3a995942ee2588e615e42f604ed7418390a))
+
+
+
+
+
 # [5.29.0](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.2...v5.29.0) (2022-06-28)
 
 **Note:** Version bump only for package @webiny/pulumi-aws

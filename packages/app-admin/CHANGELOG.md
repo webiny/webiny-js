@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.30.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.29.0...v5.30.0-beta.0) (2022-07-25)
+
+
+### Bug Fixes
+
+* **app-admin:** use <Brand/> component in the installer view ([#2552](https://github.com/webiny/webiny-js/issues/2552)) ([0a8073f](https://github.com/webiny/webiny-js/commit/0a8073f022b37acff3cc658d05717424f4858ed6))
+
+
+### Features
+
+* **ui:** upgrade RMWC to v7 ([#2553](https://github.com/webiny/webiny-js/issues/2553)) ([ee963b0](https://github.com/webiny/webiny-js/commit/ee963b0bee9f50bc24de5cacaeee43b1fd7f8b09))
+* typescript to 4.7.4 ([#2527](https://github.com/webiny/webiny-js/issues/2527)) ([ee24a3a](https://github.com/webiny/webiny-js/commit/ee24a3a995942ee2588e615e42f604ed7418390a))
+
+
+
+
+
 # [5.29.0](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.2...v5.29.0) (2022-06-28)
 
 **Note:** Version bump only for package @webiny/app-admin
