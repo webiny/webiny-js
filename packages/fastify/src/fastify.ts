@@ -74,7 +74,8 @@ export const createFastify = (params?: CreateFastifyHandlerParams) => {
     ): void => {
         if (type === "ALL") {
             const all = Object.keys(definedRoutes).every(key => {
-                return definedRoutes[key as RouteTypes].length > 0;
+                const routes = definedRoutes[key as RouteTypes];
+                return routes.includes(path);
             });
             if (!all) {
                 return;
@@ -160,6 +161,10 @@ export const createFastify = (params?: CreateFastifyHandlerParams) => {
         onAll: (path, handler, options) => {
             throwOnDefinedRoute("ALL", path, options);
             app.all(path, handler);
+        },
+        onHead: (path, handler, options) => {
+            throwOnDefinedRoute("HEAD", path, options);
+            app.head(path, handler);
         }
     };
     const context = new Context({

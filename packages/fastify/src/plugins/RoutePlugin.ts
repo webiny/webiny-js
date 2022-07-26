@@ -10,6 +10,7 @@ interface RoutePluginCbParams<T extends FastifyContext> {
     onDelete: RouteMethod;
     onOptions: RouteMethod;
     onAll: RouteMethod;
+    onHead: RouteMethod;
 }
 interface RoutePluginCb<T extends FastifyContext> {
     (params: RoutePluginCbParams<T>): void;

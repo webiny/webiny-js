@@ -4,7 +4,7 @@ import { RouteTypes } from "~/types";
 describe("Fastify routes plugin", () => {
     it("should add routes and they must be visible in the defined property", async () => {
         const routes = new RoutePlugin(
-            async ({ onPost, onGet, onDelete, onOptions, onPatch, onPut, onAll }) => {
+            async ({ onPost, onGet, onDelete, onOptions, onPatch, onPut, onAll, onHead }) => {
                 onPost("/webiny-post", async () => {
                     throw new Error("This should not fire!");
                 });
@@ -28,6 +28,9 @@ describe("Fastify routes plugin", () => {
                 onPut("/webiny-put", async () => {
                     throw new Error("This should not fire!");
                 });
+                onHead("/webiny-head", async () => {
+                    throw new Error("This should not fire!");
+                });
                 onAll("/webiny-all", async () => {
                     throw new Error("This should not fire!");
                 });
@@ -41,13 +44,13 @@ describe("Fastify routes plugin", () => {
         expect(app).not.toBeNull();
 
         const expected: Record<RouteTypes, string[]> = {
-            put: ["/webiny-put"],
-            patch: ["/webiny-patch"],
-            post: ["/webiny-post"],
-            get: ["/webiny-get"],
-            delete: ["/webiny-delete"],
-            options: ["/webiny-options"],
-            all: ["/webiny-all"]
+            PUT: ["/webiny-put", "/webiny-all"],
+            PATCH: ["/webiny-patch", "/webiny-all"],
+            POST: ["/webiny-post", "/webiny-all"],
+            GET: ["/webiny-get", "/webiny-all"],
+            DELETE: ["/webiny-delete", "/webiny-all"],
+            OPTIONS: ["/webiny-options", "/webiny-all"],
+            HEAD: ["/webiny-get", "/webiny-head", "/webiny-all"]
         };
 
         expect(app.webiny.routes.defined).toEqual(expected);

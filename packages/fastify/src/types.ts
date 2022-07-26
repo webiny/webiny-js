@@ -20,6 +20,7 @@ export interface FastifyContextRoutes {
     onDelete: RouteMethod;
     onOptions: RouteMethod;
     onAll: RouteMethod;
+    onHead: RouteMethod;
 }
 
 export interface FastifyContext extends ClientContext {
