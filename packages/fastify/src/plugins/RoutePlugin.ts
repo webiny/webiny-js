@@ -12,7 +12,7 @@ interface RoutePluginCbParams<T extends FastifyContext> {
     onAll: RouteMethod;
     onHead: RouteMethod;
 }
-interface RoutePluginCb<T extends FastifyContext> {
+export interface RoutePluginCb<T extends FastifyContext> {
     (params: RoutePluginCbParams<T>): void;
 }
 

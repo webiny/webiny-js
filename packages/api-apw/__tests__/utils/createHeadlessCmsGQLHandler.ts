@@ -62,6 +62,7 @@ import {
     contentEntryUpdateMutationFactory
 } from "./graphql/cms.entry";
 import { contextSecurity, contextCommon } from "./context";
+// import createGraphQLHandler from "@webiny/handler-graphql";
 
 export interface CreateHeadlessCmsGQLHandlerParams {
     permissions?: PermissionsArg[];
@@ -100,7 +101,7 @@ export const createHeadlessCmsGQLHandler = (params: CreateHeadlessCmsGQLHandlerP
         name: "Root",
         parent: null
     };
-    const { permissions, identity, plugins = [] } = params;
+    const { permissions, identity, plugins = [], path } = params;
     /**
      * We're using ddb-only storageOperations here because current jest setup doesn't allow
      * usage of more than one storageOperations at a time with the help of --keyword flag.
@@ -113,7 +114,8 @@ export const createHeadlessCmsGQLHandler = (params: CreateHeadlessCmsGQLHandlerP
 
     const handler = createHandler({
         plugins: [
-            contextCommon(params),
+            // createGraphQLHandler(),
+            contextCommon(),
             ...ops.plugins,
             ...createTenancyAndSecurity({
                 permissions: [...createPermissions(permissions), { name: "pb.*" }],
@@ -133,13 +135,15 @@ export const createHeadlessCmsGQLHandler = (params: CreateHeadlessCmsGQLHandlerP
             createApwGraphQL(),
             plugins
         ],
-        http: { debug: true }
+        http: {
+            debug: false
+        }
     });
 
     const invoke = async ({ httpMethod = "POST", body, headers = {}, ...rest }: InvokeParams) => {
         const response = await handler(
             {
-                path: "/graphql",
+                path: path ? `/cms/${path}` : "/graphql",
                 httpMethod,
                 headers: {
                     ["x-tenant"]: "root",
