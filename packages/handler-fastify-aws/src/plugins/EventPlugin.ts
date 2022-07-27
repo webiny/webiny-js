@@ -11,18 +11,18 @@ interface EventPluginCallableParams<P, C extends FastifyContext> {
  * We return raw data to the output of the event.
  * If we used fastify reply it would need to be stringifyable.
  */
-interface EventPluginCallable<P, C extends FastifyContext, R> {
+export interface EventPluginCallable<P, C extends FastifyContext, R> {
     (params: EventPluginCallableParams<P, C>): Promise<R>;
 }
 
-export class EventPlugin<
+export abstract class EventPlugin<
     Payload = any,
     Context extends FastifyContext = FastifyContext,
     Response = any
 > extends RoutePlugin {
-    public constructor(cb: EventPluginCallable<Payload, Context, Response>) {
+    public constructor(path: string, cb: EventPluginCallable<Payload, Context, Response>) {
         const fn: RoutePluginCb<Context> = async ({ onPost, context }) => {
-            onPost("/webiny-event", async (request, reply) => {
+            onPost(path, async (request, reply) => {
                 /**
                  * We need to send result to the instance of the fastify so it can be accessible later on when returning the response.
                  */

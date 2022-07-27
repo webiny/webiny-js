@@ -5,7 +5,7 @@ interface PayloadObj {
     fn?: boolean;
 }
 
-const eventPlugin = new EventPlugin<PayloadObj>(async payload => {
+const eventPlugin = new EventPlugin<PayloadObj>(async ({ payload }) => {
     if (payload.test === true) {
         return {
             testing: true
