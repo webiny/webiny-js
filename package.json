@@ -4,6 +4,7 @@
     "packages": [
       "packages/*",
       "apps/admin",
+      "apps/custom",
       "apps/website",
       "apps/website/prerendering/*",
       "apps/theme",
