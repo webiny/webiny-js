@@ -3,7 +3,7 @@
 The following examples how to register relevant plugins in a [handler function](../../../handler).
 
 ```ts
-import { createHandler } from "@webiny/handler-aws";
+import { createHandler } from "@webiny/handler-fastify-aws";
 import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
 
 export const handler = createHandler({

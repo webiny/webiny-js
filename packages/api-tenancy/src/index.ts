@@ -24,11 +24,14 @@ export const createTenancyContext = ({ storageOperations }: TenancyPluginsParams
         await applyBackwardsCompatibility(context);
 
         const multiTenancy = context.wcp.canUseFeature("multiTenancy");
+        if (!context.request) {
+            throw new Error("MISSING CONTEXT REQUEST");
+        }
 
         if (multiTenancy) {
-            const { headers = {}, method } = context.http.request;
+            const { headers = {}, method } = context.request;
 
-            tenantId = headers["x-tenant"];
+            tenantId = headers["x-tenant"] as string;
 
             if (!tenantId && method === "POST") {
                 throw new WebinyError({

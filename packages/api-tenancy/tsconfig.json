@@ -7,7 +7,7 @@
     { "path": "../handler" },
     { "path": "../handler-db" },
     { "path": "../handler-graphql" },
-    { "path": "../handler-http" },
+    { "path": "../fastify" },
     { "path": "../pubsub" }
   ],
   "compilerOptions": {
@@ -26,8 +26,8 @@
       "@webiny/handler-db": ["../handler-db/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
       "@webiny/handler-graphql": ["../handler-graphql/src"],
-      "@webiny/handler-http/*": ["../handler-http/src/*"],
-      "@webiny/handler-http": ["../handler-http/src"],
+      "@webiny/fastify/*": ["../fastify/src/*"],
+      "@webiny/fastify": ["../fastify/src"],
       "@webiny/pubsub/*": ["../pubsub/src/*"],
       "@webiny/pubsub": ["../pubsub/src"]
     },

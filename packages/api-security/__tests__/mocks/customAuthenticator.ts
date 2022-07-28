@@ -1,13 +1,17 @@
 import { SecurityContext } from "~/types";
-import { HttpContext } from "@webiny/handler-http/types";
 import { ContextPlugin } from "@webiny/handler";
+import { FastifyContext } from "@webiny/fastify/types";
 
-interface Context extends HttpContext, SecurityContext {}
+interface Context extends FastifyContext, SecurityContext {}
 
 export const customAuthenticator = () => {
     return new ContextPlugin<Context>(context => {
+        /**
+         * TODO @pavel can we return null?
+         */
+        // @ts-ignore
         context.security.addAuthenticator(async () => {
-            if ("authorization" in context.http.request.headers) {
+            if ("authorization" in context.request.headers) {
                 return;
             }
 

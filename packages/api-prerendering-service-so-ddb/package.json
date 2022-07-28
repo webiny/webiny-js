@@ -31,7 +31,7 @@
     "@webiny/cli": "^5.29.0",
     "@webiny/db": "^5.29.0",
     "@webiny/db-dynamodb": "^5.29.0",
-    "@webiny/handler-aws": "^5.29.0",
+    "@webiny/handler-fastify-aws": "^5.29.0",
     "@webiny/project-utils": "^5.29.0",
     "jest-dynalite": "^3.3.1",
     "jest-environment-node": "^27.3.0",

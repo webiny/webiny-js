@@ -1,17 +1,9 @@
-import { createHandler as createDefaultHandler } from "@webiny/handler";
-import { createFastifyPlugins, CreateFastifyHandlerParams } from "./plugins";
-import { PluginCollection } from "@webiny/plugins/types";
+import { createFastifyHandler, CreateFastifyHandlerParams } from "~/handler";
 
-export interface CreateHandlerParams extends CreateFastifyHandlerParams {
-    plugins?: PluginCollection;
-}
-export const createHandler = (params?: CreateHandlerParams) => {
-    return createDefaultHandler([
-        ...createFastifyPlugins({
-            options: params?.options || {}
-        }),
-        ...(params?.plugins || [])
-    ]);
+export type CreateHandlerParams = CreateFastifyHandlerParams;
+
+export const createHandler = <R = Record<string, any>>(params: CreateHandlerParams) => {
+    return createFastifyHandler<R>(params);
 };
 
-export * from "~/plugins/RoutePlugin";
+export * from "~/plugins/EventPlugin";

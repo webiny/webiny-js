@@ -1,23 +1,17 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
-  "references": [
-    { "path": "../error" },
-    { "path": "../handler" },
-    { "path": "../handler-fastify" }
-  ],
+  "references": [{ "path": "../fastify" }, { "path": "../plugins" }],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",
     "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
-      "@webiny/error/*": ["../error/src/*"],
-      "@webiny/error": ["../error/src"],
-      "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"],
-      "@webiny/handler-fastify/*": ["../handler-fastify/src/*"],
-      "@webiny/handler-fastify": ["../handler-fastify/src"]
+      "@webiny/fastify/*": ["../fastify/src/*"],
+      "@webiny/fastify": ["../fastify/src"],
+      "@webiny/plugins/*": ["../plugins/src/*"],
+      "@webiny/plugins": ["../plugins/src"]
     },
     "baseUrl": "."
   }

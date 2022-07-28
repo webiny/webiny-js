@@ -3,7 +3,7 @@ import queueProcessPlugins from "@webiny/api-prerendering-service/queue/process"
 import handlerClient from "@webiny/handler-client";
 import { getStorageOperations } from "../../../../storageOperations";
 
-export default (...plugins) => {
+export default (...plugins: any[]) => {
     const storageOperations = getStorageOperations();
 
     const handler = createHandler(

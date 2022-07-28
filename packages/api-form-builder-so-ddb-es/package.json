@@ -28,7 +28,6 @@
     "@webiny/db-dynamodb": "^5.29.0",
     "@webiny/error": "^5.29.0",
     "@webiny/handler": "^5.29.0",
-    "@webiny/handler-aws": "^5.29.0",
     "@webiny/plugins": "^5.29.0",
     "@webiny/utils": "^5.29.0",
     "dynamodb-toolbox": "^0.3.4",

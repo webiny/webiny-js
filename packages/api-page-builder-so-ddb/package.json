@@ -36,7 +36,7 @@
     "@webiny/api-tenancy": "^5.29.0",
     "@webiny/cli": "^5.29.0",
     "@webiny/handler": "^5.29.0",
-    "@webiny/handler-aws": "^5.29.0",
+    "@webiny/handler-fastify-aws": "^5.29.0",
     "@webiny/handler-graphql": "^5.29.0",
     "@webiny/plugins": "^5.29.0",
     "@webiny/project-utils": "^5.29.0",

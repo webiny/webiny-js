@@ -13,10 +13,6 @@ export interface CrudParams {
 export const createCrud = (params: CrudParams) => {
     const { storageOperations } = params;
     return new ContextPlugin<CmsContext>(async context => {
-        if (context.http?.request?.method === "OPTIONS") {
-            return;
-        }
-
         const getLocale = () => {
             return context.cms.getLocale();
         };
