@@ -11,7 +11,7 @@ context("Forms Creation", () => {
         cy.findAllByTestId("new-record-button").first().click();
         cy.findByTestId("fb-new-form-modal").within(() => {
             cy.findByPlaceholderText("Enter a name for your new form").type(newFormTitle);
-            cy.findByText("+ Create").click();
+            cy.findByTestId("fb.form.create").click();
         });
         cy.wait(1000);
         cy.findByTestId("fb-editor-form-title").click();
@@ -31,7 +31,7 @@ context("Forms Creation", () => {
         cy.wait(1000);
 
         cy.findByTestId("default-data-list").within(() => {
-            cy.get("div")
+            cy.get("li")
                 .first()
                 .within(() => {
                     cy.findByText(newFormTitle2);
@@ -55,12 +55,12 @@ context("Forms Creation", () => {
         // Publish the form and check it's status
         cy.findByTestId("fb.form-preview.header.publish").click();
         cy.findByTestId("fb.form-preview.header.publish-dialog").within(() => {
-            cy.findByText(/Confirm/i).click();
+            cy.findByTestId("confirmationdialog-confirm-action").click();
         });
         cy.findByText(/Successfully published revision/i).should("exist");
         cy.wait(1000);
         cy.findByTestId("default-data-list").within(() => {
-            cy.get("div")
+            cy.get("li")
                 .first()
                 .within(() => {
                     cy.findByText(newFormTitle2);
@@ -80,7 +80,7 @@ context("Forms Creation", () => {
         cy.wait(1000);
 
         cy.findByTestId("default-data-list").within(() => {
-            cy.get("div")
+            cy.get("li")
                 .first()
                 .within(() => {
                     cy.findByText(newFormTitle2);
@@ -104,12 +104,12 @@ context("Forms Creation", () => {
         cy.wait(500);
         cy.findByTestId("fb.editor.default-bar.publish").click();
         cy.findByTestId("fb.editor.default-bar.publish-dialog").within(() => {
-            cy.findByText(/Confirm/i).click();
+            cy.findByTestId("confirmationdialog-confirm-action").click();
         });
         cy.findByText(/Your form was published successfully/i).should("exist");
         cy.wait(1000);
         cy.findByTestId("default-data-list").within(() => {
-            cy.get("div")
+            cy.get("li")
                 .first()
                 .within(() => {
                     cy.findByText(newFormTitle2);

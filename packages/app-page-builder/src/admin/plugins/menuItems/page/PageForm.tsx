@@ -51,6 +51,7 @@ const LinkForm: React.FC<LinkFormProps> = ({ data, onSubmit, onCancel }) => {
                                                 }
                                             }}
                                             label="Page"
+                                            data-testid="pb.menu.new.pageitem.page"
                                         />
                                     )}
                                 </Bind>
@@ -59,7 +60,7 @@ const LinkForm: React.FC<LinkFormProps> = ({ data, onSubmit, onCancel }) => {
                         <Grid>
                             <Cell span={12}>
                                 <Bind name="title" validators={validation.create("required")}>
-                                    <Input label="Title" />
+                                    <Input label="Title" data-testid="pb.menu.new.pageitem.title" />
                                 </Bind>
                             </Cell>
                         </Grid>
@@ -71,6 +72,7 @@ const LinkForm: React.FC<LinkFormProps> = ({ data, onSubmit, onCancel }) => {
                                         submit(ev);
                                     }}
                                     style={{ float: "right" }}
+                                    data-testid="pb.menu.new.pageitem.button.save"
                                 >
                                     Save menu item
                                 </ButtonPrimary>

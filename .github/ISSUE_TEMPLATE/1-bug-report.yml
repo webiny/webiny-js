@@ -1,11 +1,12 @@
 name: "\U0001F41B Bug report"
-description: Create a report to help us improve
+labels: "bug"
+description: Report an issue that you have spotted
 body:
   - type: markdown
     attributes:
       value: |
         Thank you for reporting an issue.
-        Please fill in as much of the form below as you're able.
+        Please fill in as much of the form below as you're able to.
   - type: input
     attributes:
       label: Version
@@ -18,8 +19,8 @@ body:
       label: Browser
   - type: textarea
     attributes:
-      label: What steps will reproduce the bug?
-      description: Enter details about your bug.
+      label: What are the steps to reproduce this bug?
+      description: Provide steps on how to reproduce this bug.
   - type: textarea
     attributes:
       label: What is the expected behavior?

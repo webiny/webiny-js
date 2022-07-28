@@ -74,6 +74,30 @@ export function useBind({ Bind: ParentBind, field }: UseBindProps) {
                                     // To make sure the field is still valid, we must trigger validation.
                                     bind.form.validateInput(field.fieldId);
                                 };
+
+                                props.moveValueUp = (index: number) => {
+                                    if (index <= 0) {
+                                        return;
+                                    }
+
+                                    const value = [...bind.value];
+                                    value.splice(index, 1);
+                                    value.splice(index - 1, 0, bind.value[index]);
+
+                                    bind.onChange(value);
+                                };
+
+                                props.moveValueDown = (index: number) => {
+                                    if (index >= bind.value.length) {
+                                        return;
+                                    }
+
+                                    const value = [...bind.value];
+                                    value.splice(index, 1);
+                                    value.splice(index + 1, 0, bind.value[index]);
+
+                                    bind.onChange(value);
+                                };
                             }
 
                             if (typeof children === "function") {
@@ -94,3 +118,5 @@ export function useBind({ Bind: ParentBind, field }: UseBindProps) {
         [field.fieldId]
     );
 }
+
+// [0,1,2,3,4,5]

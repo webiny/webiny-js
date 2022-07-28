@@ -74,6 +74,7 @@ const RequireNewPassword: React.FC = () => {
                             <Grid>
                                 <Cell span={12} className={alignRight}>
                                     <ButtonPrimary
+                                        data-testid="submit-sign-in-form-button"
                                         onClick={ev => {
                                             submit(ev);
                                         }}

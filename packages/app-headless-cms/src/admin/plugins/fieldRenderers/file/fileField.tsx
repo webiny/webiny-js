@@ -55,6 +55,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
                                                     showFileManager={selectFile}
                                                     placeholder={field.placeholderText}
                                                     description={field.helpText}
+                                                    data-testid={`fr.input.filefield.${field.label}`}
                                                 />
                                             );
                                         }}

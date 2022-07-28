@@ -3,6 +3,48 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.30.0](https://github.com/webiny/webiny-js/compare/v5.30.0-beta.1...v5.30.0) (2022-07-27)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.30.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.30.0-beta.0...v5.30.0-beta.1) (2022-07-26)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.30.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.29.0...v5.30.0-beta.0) (2022-07-25)
+
+
+### Bug Fixes
+
+* **app-page-builder:** improve editor core ([#2536](https://github.com/webiny/webiny-js/issues/2536)) ([1ae77d2](https://github.com/webiny/webiny-js/commit/1ae77d2e4ac514f5dde49ceae62db19c80758dc5))
+* bring back APW into Webiny projects ([18f9afd](https://github.com/webiny/webiny-js/commit/18f9afdffa9d38b785f070612b5cf2940aadb13f))
+* **api-headless-cms:** locale error when system not installed ([#2537](https://github.com/webiny/webiny-js/issues/2537)) ([4c0585b](https://github.com/webiny/webiny-js/commit/4c0585b88e1b218a3d5302e5f94c7269919a8476))
+* **cwp-template-aws:** add missing .babelrc file ([5ff9078](https://github.com/webiny/webiny-js/commit/5ff9078cfe801e5726d6659d8eee102d7147f51b))
+* update ts-jest ([0cd42eb](https://github.com/webiny/webiny-js/commit/0cd42ebf36ae16006370d8c831a4e62fd66f6b95))
+
+
+### Features
+
+* **ui:** upgrade RMWC to v7 ([#2553](https://github.com/webiny/webiny-js/issues/2553)) ([ee963b0](https://github.com/webiny/webiny-js/commit/ee963b0bee9f50bc24de5cacaeee43b1fd7f8b09))
+* add missing env var types ([#2541](https://github.com/webiny/webiny-js/issues/2541)) ([2be45c3](https://github.com/webiny/webiny-js/commit/2be45c34ef5be30c9847fba469f8a6f1b77839c2))
+* **api-headless-cms:** combine cms contexts and graphqls ([#2528](https://github.com/webiny/webiny-js/issues/2528)) ([87bb89b](https://github.com/webiny/webiny-js/commit/87bb89be1d11a97698b9f9d72d383dd8068c27d6))
+* decouple Page Editor and introduce a Block Editor ([#2529](https://github.com/webiny/webiny-js/issues/2529)) ([a455192](https://github.com/webiny/webiny-js/commit/a45519283b1145a57660252c360f3a86c890d363))
+* typescript to 4.7.4 ([#2527](https://github.com/webiny/webiny-js/issues/2527)) ([ee24a3a](https://github.com/webiny/webiny-js/commit/ee24a3a995942ee2588e615e42f604ed7418390a))
+* **api-apw:** cms workflow ([#2450](https://github.com/webiny/webiny-js/issues/2450)) ([57c082d](https://github.com/webiny/webiny-js/commit/57c082d0305ef0316939989ddda1e438efa8dc2f))
+* **cwp-template-aws:** add apw to user projects ([#2523](https://github.com/webiny/webiny-js/issues/2523)) ([94547d2](https://github.com/webiny/webiny-js/commit/94547d2dd5b840c90a90687c9593554489c178fe))
+
+
+
+
+
 # [5.29.0](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.2...v5.29.0) (2022-06-28)
 
 **Note:** Version bump only for package @webiny/cwp-template-aws

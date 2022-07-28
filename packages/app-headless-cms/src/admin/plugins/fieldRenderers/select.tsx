@@ -45,6 +45,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
                                 label={field.label}
                                 description={field.helpText}
                                 options={options}
+                                data-testid={`fr.input.select.${field.label}`}
                             />
                         );
                     }}

@@ -114,10 +114,10 @@ function createExecuteActionLambda(app: PulumiApp, params: ScheduleActionParams)
                 )
             }),
             environment: {
-                variables: {
-                    ...getCommonLambdaEnvVariables(),
+                variables: getCommonLambdaEnvVariables().apply(value => ({
+                    ...value,
                     ...params.env
-                }
+                }))
             }
         }
     });
@@ -216,13 +216,13 @@ function createScheduleActionLambda(
                 )
             }),
             environment: {
-                variables: {
-                    ...getCommonLambdaEnvVariables(),
+                variables: getCommonLambdaEnvVariables().apply(value => ({
+                    ...value,
                     ...params.env,
                     APW_SCHEDULER_EXECUTE_ACTION_HANDLER: executeLambda.arn
                     // RULE_NAME: this.eventRule.name.apply(name => name),
                     // RULE_TARGET_ID: this.eventTarget.targetId.apply(id => id)
-                }
+                }))
             }
         }
     });

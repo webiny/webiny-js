@@ -128,6 +128,7 @@ const Tags: React.FC<TagsProps> = ({ file, canEdit }) => {
                     className={addTagsStyle}
                     onClick={handleEdit}
                     disabled={!isEditingAllowed}
+                    data-testid="fm.tags.add"
                 >
                     Add tags...
                 </ButtonDefault>

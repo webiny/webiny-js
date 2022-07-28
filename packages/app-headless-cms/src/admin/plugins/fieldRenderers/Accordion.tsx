@@ -79,6 +79,9 @@ const classes = {
         "&.collapsed": {
             maxHeight: 0,
             transition: "max-height 0.35s cubic-bezier(0, 1, 0, 1)"
+        },
+        ".accordion-content": {
+            paddingBottom: 10
         }
     })
 };

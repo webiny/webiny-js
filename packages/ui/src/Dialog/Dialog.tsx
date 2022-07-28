@@ -139,6 +139,7 @@ export const DialogCancel: React.FC<DialogCancelProps> = props => {
         <DialogButton
             {...getClasses(props, "webiny-ui-dialog__button webiny-ui-dialog__button--cancel")}
             action="close"
+            data-testid="dialog-cancel"
         >
             {props.children}
         </DialogButton>
@@ -160,6 +161,7 @@ export const DialogAccept: React.FC<DialogAcceptProps> = props => {
         <DialogButton
             {...getClasses(props, "webiny-ui-dialog__button webiny-ui-dialog__button--accept")}
             action="accept"
+            data-testid="dialog-accept"
         >
             {props.children}
         </DialogButton>
