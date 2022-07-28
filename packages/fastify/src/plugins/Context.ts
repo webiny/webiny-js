@@ -1,4 +1,4 @@
-import { Context as BaseContext, ContextParams as BaseContextParams } from "@webiny/handler";
+import { Context as BaseContext, ContextParams as BaseContextParams } from "@webiny/api-core";
 import { FastifyContext } from "~/types";
 
 export interface ContextParams extends BaseContextParams {

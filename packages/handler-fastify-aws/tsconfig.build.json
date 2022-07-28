@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
-  "references": [{ "path": "../fastify/tsconfig.build.json" }],
+  "references": [{ "path": "../fastify/tsconfig.build.json" },{ "path": "../api-core/tsconfig.build.json" }],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
