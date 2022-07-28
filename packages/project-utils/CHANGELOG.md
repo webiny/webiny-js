@@ -3,6 +3,110 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.30.0](https://github.com/webiny/webiny-js/compare/v5.30.0-beta.1...v5.30.0) (2022-07-27)
+
+**Note:** Version bump only for package @webiny/project-utils
+
+
+
+
+
+# [5.30.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.30.0-beta.0...v5.30.0-beta.1) (2022-07-26)
+
+**Note:** Version bump only for package @webiny/project-utils
+
+
+
+
+
+# [5.30.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.29.0...v5.30.0-beta.0) (2022-07-25)
+
+
+### Features
+
+* **ui:** upgrade RMWC to v7 ([#2553](https://github.com/webiny/webiny-js/issues/2553)) ([ee963b0](https://github.com/webiny/webiny-js/commit/ee963b0bee9f50bc24de5cacaeee43b1fd7f8b09))
+* assign WCP project ID via WCP_PROJECT_ID ([ef55575](https://github.com/webiny/webiny-js/commit/ef55575323737151a0f6675471e6964703ac7513))
+* typescript to 4.7.4 ([#2527](https://github.com/webiny/webiny-js/issues/2527)) ([ee24a3a](https://github.com/webiny/webiny-js/commit/ee24a3a995942ee2588e615e42f604ed7418390a))
+* **api-apw:** cms workflow ([#2450](https://github.com/webiny/webiny-js/issues/2450)) ([57c082d](https://github.com/webiny/webiny-js/commit/57c082d0305ef0316939989ddda1e438efa8dc2f))
+* **api-mailer:** package to send e-mails from the system ([#2514](https://github.com/webiny/webiny-js/issues/2514)) ([568c4c4](https://github.com/webiny/webiny-js/commit/568c4c41345c7c7dcc8958e6793935924ab02f47))
+* **app-apw:** headless cms workflow ([#2415](https://github.com/webiny/webiny-js/issues/2415)) ([3243fed](https://github.com/webiny/webiny-js/commit/3243fed5f56ff05d0ea7d6168d01c031db6dd493))
+* **project-utils:** use retries to delete indexes on snapshot errors ([#2513](https://github.com/webiny/webiny-js/issues/2513)) ([5dbba1d](https://github.com/webiny/webiny-js/commit/5dbba1d2bb780a4d4c6eabea511f303e1369cee5))
+
+
+
+
+
+# [5.29.0](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.2...v5.29.0) (2022-06-28)
+
+**Note:** Version bump only for package @webiny/project-utils
+
+
+
+
+
+# [5.29.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.1...v5.29.0-beta.2) (2022-06-27)
+
+**Note:** Version bump only for package @webiny/project-utils
+
+
+
+
+
+# [5.29.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.0...v5.29.0-beta.1) (2022-06-25)
+
+**Note:** Version bump only for package @webiny/project-utils
+
+
+
+
+
+# [5.29.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.28.0...v5.29.0-beta.0) (2022-06-25)
+
+
+### Bug Fixes
+
+* **app-wcp:** add backwards compatibility for multi-tenancy ([ddc56b5](https://github.com/webiny/webiny-js/commit/ddc56b5655f245cba37fb118e89474c80ddcea16))
+* bring back `traverseLoaders.js` ([1b1056e](https://github.com/webiny/webiny-js/commit/1b1056ec21534da1924e09a2b8ed3bfe5c5af984))
+* bring back Jest config ([9c98e71](https://github.com/webiny/webiny-js/commit/9c98e71ae5114ca4a310a5430c34380f25e0674b))
+* clean project-utils ([f13100d](https://github.com/webiny/webiny-js/commit/f13100d2059a77dd2728d67c37257abf20dd00a4))
+* do not rely on env var to determine if MT is enabled ([d7a60d7](https://github.com/webiny/webiny-js/commit/d7a60d7cb591473a2952927dc2852636fab19bac))
+* load project app ([913a6c7](https://github.com/webiny/webiny-js/commit/913a6c796efb9d88d60d45ddce97e80d1564d167))
+* move telemetry client code injection to API project app ([ffb6072](https://github.com/webiny/webiny-js/commit/ffb60727f33e3a02fcf0942463c76173c6ce5cf0))
+* remove redundant files ([dc40863](https://github.com/webiny/webiny-js/commit/dc4086315ef617c61af59890bde8607a272575a0))
+* remove rollup/esbuild packages ([2e84957](https://github.com/webiny/webiny-js/commit/2e8495723fd22c02dd2553282b8734cac78661a3))
+* remove todo ([5d0957c](https://github.com/webiny/webiny-js/commit/5d0957c73cc41782ce35506fa076be8a6f3f3843))
+* use `js` extension ([6b221d6](https://github.com/webiny/webiny-js/commit/6b221d6909f9456f07845bdbef2a14c52ee6eef0))
+* use fs-extra and synchronize dep version ([48a0605](https://github.com/webiny/webiny-js/commit/48a0605f8cc8487c81bd52f7b7db7308e5cbda04))
+
+
+### Features
+
+* pass WCP project ID via the `REACT_APP_WCP_PROJECT_ID` env var ([b53d104](https://github.com/webiny/webiny-js/commit/b53d1046fd24bdd88528426688812b99855ad6c1))
+* simplify project structure ([4f3a75b](https://github.com/webiny/webiny-js/commit/4f3a75b0b1028e42689b7ea69a3e25925b7b3689))
+
+
+
+
+
+# [5.28.0](https://github.com/webiny/webiny-js/compare/v5.28.0-beta.0...v5.28.0) (2022-06-07)
+
+**Note:** Version bump only for package @webiny/project-utils
+
+
+
+
+
+# [5.28.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.27.0...v5.28.0-beta.0) (2022-06-07)
+
+
+### Bug Fixes
+
+* improve package validity check ([349ee4f](https://github.com/webiny/webiny-js/commit/349ee4fb891f7e8b72a766dc3947ad8a1554d56a))
+
+
+
+
+
 # [5.27.0](https://github.com/webiny/webiny-js/compare/v5.27.0-beta.0...v5.27.0) (2022-05-26)
 
 **Note:** Version bump only for package @webiny/project-utils

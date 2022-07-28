@@ -1,6 +1,6 @@
 import React from "react";
 import Saving from "./Saving";
-import { PbEditorToolbarBottomPlugin } from "../../../../types";
+import { PbEditorToolbarBottomPlugin } from "~/types";
 
 export default {
     name: "pb-editor-toolbar-save",

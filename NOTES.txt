@@ -1,0 +1,30 @@
+First build:
+yarn setup-project
+
+Run UI:
+
+yarn webiny watch apps/admin --env=dev-vit -p admin -p @webiny/app-page-builder
+
+Run API:
+
+yarn webiny watch api --env dev-vit -r -p api-graphql -p @webiny/api-page-builder -p @webiny/api-page-builder-so-ddb-es -p @webiny/api-page-builder-so-ddb
+
+Run tests:
+
+yarn test packages/validation/*
+yarn test packages/api-page-builder/* --keyword=pb:ddb --keyword=pb:base
+
+Run build via package:
+
+yarn workspace @webiny/api-page-builder-so-ddb run build
+yarn workspace @webiny/api-page-builder-so-ddb-es run build
+yarn workspace @webiny/api-page-builder run build
+
+Run deploy hack (for Victor env):
+yarn webiny deploy apps/storage --env dev-v
+yarn workspace api-graphql run build && yarn webiny deploy api --env dev-v --no-build
+
+
+Run deploy hack (for Vitalii env):
+yarn webiny deploy apps/storage --env dev-vit
+yarn workspace api-graphql run build && yarn webiny deploy api --env dev-vit --no-build

@@ -1,0 +1,43 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["src"],
+  "references": [
+    { "path": "../api-apw/tsconfig.build.json" },
+    { "path": "../api-apw-scheduler-so-ddb/tsconfig.build.json" },
+    { "path": "../api-dynamodb-to-elasticsearch/tsconfig.build.json" },
+    { "path": "../api-elasticsearch/tsconfig.build.json" },
+    { "path": "../api-file-manager/tsconfig.build.json" },
+    { "path": "../api-file-manager-ddb/tsconfig.build.json" },
+    { "path": "../api-file-manager-ddb-es/tsconfig.build.json" },
+    { "path": "../api-file-manager-s3/tsconfig.build.json" },
+    { "path": "../api-i18n/tsconfig.build.json" },
+    { "path": "../api-i18n-content/tsconfig.build.json" },
+    { "path": "../api-i18n-ddb/tsconfig.build.json" },
+    { "path": "../api-page-builder/tsconfig.build.json" },
+    { "path": "../api-page-builder-import-export/tsconfig.build.json" },
+    { "path": "../api-page-builder-import-export-so-ddb/tsconfig.build.json" },
+    { "path": "../api-page-builder-so-ddb/tsconfig.build.json" },
+    { "path": "../api-page-builder-so-ddb-es/tsconfig.build.json" },
+    { "path": "../api-prerendering-service-aws/tsconfig.build.json" },
+    { "path": "../api-prerendering-service-so-ddb/tsconfig.build.json" },
+    { "path": "../api-security/tsconfig.build.json" },
+    { "path": "../api-security-so-ddb/tsconfig.build.json" },
+    { "path": "../api-tenancy/tsconfig.build.json" },
+    { "path": "../api-tenancy-so-ddb/tsconfig.build.json" },
+    { "path": "../db-dynamodb/tsconfig.build.json" },
+    { "path": "../handler-aws/tsconfig.build.json" },
+    { "path": "../handler-db/tsconfig.build.json" },
+    { "path": "../handler-logs/tsconfig.build.json" },
+    { "path": "../plugins/tsconfig.build.json" },
+    { "path": "../pulumi/tsconfig.build.json" },
+    { "path": "../pulumi-aws/tsconfig.build.json" },
+    { "path": "../wcp/tsconfig.build.json" }
+  ],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": { "~/*": ["./src/*"] },
+    "baseUrl": "."
+  }
+}

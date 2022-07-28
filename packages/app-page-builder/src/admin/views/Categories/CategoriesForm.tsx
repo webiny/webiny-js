@@ -220,12 +220,19 @@ const CategoriesForm: React.FC<CategoriesFormProps> = ({ canCreate }) => {
                         <Grid>
                             <Cell span={6}>
                                 <Bind name="name" validators={validation.create("required")}>
-                                    <Input label={t`Name`} />
+                                    <Input
+                                        label={t`Name`}
+                                        data-testid="pb.category.new.form.name"
+                                    />
                                 </Bind>
                             </Cell>
                             <Cell span={6}>
                                 <Bind name="slug" validators={validation.create("required")}>
-                                    <Input disabled={data.createdOn} label={t`Slug`} />
+                                    <Input
+                                        disabled={data.createdOn}
+                                        label={t`Slug`}
+                                        data-testid="pb.category.new.form.slug"
+                                    />
                                 </Bind>
                             </Cell>
                             <Cell span={12}>
@@ -236,7 +243,11 @@ const CategoriesForm: React.FC<CategoriesFormProps> = ({ canCreate }) => {
                                         categoryUrlValidator
                                     ]}
                                 >
-                                    <Input disabled={data.id} label={t`URL`} />
+                                    <Input
+                                        disabled={data.id}
+                                        label={t`URL`}
+                                        data-testid="pb.category.new.form.url"
+                                    />
                                 </Bind>
                             </Cell>
                             <Cell span={6}>
@@ -244,7 +255,10 @@ const CategoriesForm: React.FC<CategoriesFormProps> = ({ canCreate }) => {
                                     name="layout"
                                     defaultValue={layouts.length ? layouts[0].name : ""}
                                 >
-                                    <Select label={t`Layout`}>
+                                    <Select
+                                        label={t`Layout`}
+                                        data-testid="pb.category.new.form.layout"
+                                    >
                                         {layouts.map(({ name, title }) => (
                                             <option key={name} value={name}>
                                                 {title}
@@ -259,9 +273,11 @@ const CategoriesForm: React.FC<CategoriesFormProps> = ({ canCreate }) => {
                         <ButtonWrapper>
                             <ButtonDefault
                                 onClick={() => history.push("/page-builder/categories")}
+                                data-testid="pb.category.new.form.button.cancel"
                             >{t`Cancel`}</ButtonDefault>
                             {canSave && (
                                 <ButtonPrimary
+                                    data-testid="pb.category.new.form.button.save"
                                     onClick={ev => {
                                         form.submit(ev);
                                     }}

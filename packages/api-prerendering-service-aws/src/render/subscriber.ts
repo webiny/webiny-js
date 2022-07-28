@@ -1,14 +1,16 @@
 import { EventBridgeEvent } from "aws-lambda";
 import SqsClient, { SendMessageBatchRequestEntry } from "aws-sdk/clients/sqs";
 import lodashChunk from "lodash/chunk";
+import { nanoid } from "nanoid";
 
 import {
-    Args,
+    RenderEvent,
     PrerenderingServiceStorageOperations,
     RenderPagesEvent
 } from "@webiny/api-prerendering-service/types";
 import { ArgsContext } from "@webiny/handler-args/types";
-import { Context, HandlerPlugin as DefaultHandlerPlugin } from "@webiny/handler/types";
+import { Context } from "@webiny/handler/types";
+import { HandlerPlugin } from "@webiny/handler";
 
 export type HandlerArgs = EventBridgeEvent<"RenderPages", RenderPagesEvent>;
 
@@ -18,105 +20,102 @@ export interface HandlerContext extends Context, ArgsContext<HandlerArgs> {
 
 export interface HandlerConfig {
     storageOperations: PrerenderingServiceStorageOperations;
-    sqsQueueUrl: string;
 }
 
-export type HandlerPlugin = DefaultHandlerPlugin<HandlerContext>;
-
-export default (params: HandlerConfig): HandlerPlugin => {
+export default (params: HandlerConfig) => {
     const { storageOperations } = params;
     const sqsClient = new SqsClient();
 
-    return {
-        type: "handler",
-        async handle(context) {
-            if (context.invocationArgs["detail-type"] !== "RenderPages") {
-                return;
-            }
+    return new HandlerPlugin<HandlerContext>(async context => {
+        if (context.invocationArgs["detail-type"] !== "RenderPages") {
+            return;
+        }
 
-            const event = context.invocationArgs.detail;
-            const namespace = event.configuration?.db?.namespace ?? "";
-            const variant = event.variant;
+        const event = context.invocationArgs.detail;
+        const tenant = event.tenant;
+        const variant = event.variant;
 
-            // Check if there is only specific variant rerender is requested.
-            if (variant && variant !== process.env.STAGED_ROLLOUTS_VARIANT) {
-                return;
-            }
+        // Check if a specific variant rerender is requested.
+        if (variant && variant !== process.env.STAGED_ROLLOUTS_VARIANT) {
+            return;
+        }
 
-            const toRender = new Map<string, Args>();
+        const settings = await storageOperations.getSettings();
+        if (!settings.sqsQueueUrl) {
+            console.error("SQS Queue URL was not found in Prerendering Settings!");
+            return;
+        }
 
-            if (event.path === "*") {
-                const renders = await storageOperations.listRenders({
-                    where: { namespace }
-                });
+        const toRender: Array<{ groupId: string; body: RenderEvent }> = [];
 
-                for (const render of renders) {
-                    if (render.args) {
-                        addRender(render.args);
-                    }
+        // Event might contain specific paths to exclude from full rerender.
+        const exclude = event.exclude || [];
+
+        if (event.path === "*") {
+            const renders = await storageOperations.listRenders({
+                where: { tenant }
+            });
+
+            renders.forEach(addRender);
+        } else if (event.tag) {
+            const renders = await storageOperations.listRenders({
+                where: {
+                    tenant,
+                    tag: event.tag
                 }
-            } else if (event.tag) {
-                const renders = await storageOperations.listRenders({
-                    where: {
-                        namespace,
-                        tag: event.tag
-                    }
-                });
+            });
 
-                for (const render of renders) {
-                    if (render.args) {
-                        addRender(render.args);
-                    }
-                }
-            } else {
-                addRender(event);
-            }
+            renders.forEach(addRender);
+        } else {
+            addRender(event);
+        }
 
-            const entries: SendMessageBatchRequestEntry[] = [];
+        const entries: SendMessageBatchRequestEntry[] = [];
 
-            let i = 0;
-            for (const [id, render] of toRender.entries()) {
-                entries.push({
-                    Id: i.toString(),
-                    MessageBody: JSON.stringify(render),
-                    MessageDeduplicationId: id,
-                    MessageGroupId: id
-                });
-                i++;
-            }
+        for (const item of toRender) {
+            const messageId = nanoid(8);
 
-            // console.log(JSON.stringify([...toRender.values()]));
+            entries.push({
+                // A batch entry ID can only contain alphanumeric characters, hyphens and underscores.
+                Id: messageId,
+                // MessageBody is a string, so we stringify the payload.
+                MessageBody: JSON.stringify(item.body),
+                // We're using the same unique ID as the message itself. For now, we don't want to deduplicate anything.
+                MessageDeduplicationId: messageId,
+                // We're grouping messages using the DB namespace, which looks like this: `T#root` (group by tenant).
+                MessageGroupId: item.groupId
+            });
+        }
 
-            const entriesChunked = lodashChunk(entries, 10);
-            for (const chunk of entriesChunked) {
-                const result = await sqsClient
-                    .sendMessageBatch({
-                        QueueUrl: params.sqsQueueUrl,
-                        Entries: chunk
-                    })
-                    .promise();
+        const entriesChunked = lodashChunk(entries, 10);
+        for (const chunk of entriesChunked) {
+            const result = await sqsClient
+                .sendMessageBatch({
+                    QueueUrl: settings.sqsQueueUrl,
+                    Entries: chunk
+                })
+                .promise();
 
-                if (result.Failed.length) {
-                    console.error("Failed to deliver some of messages");
-                    console.error(JSON.stringify(result.Failed));
-                }
-            }
-
-            function addRender(args: Args) {
-                const namespace = args.configuration?.db?.namespace || "";
-                const id = `${namespace}/${args.path}`;
-
-                toRender.set(id, {
-                    path: args.path,
-                    configuration: {
-                        db: args.configuration?.db,
-                        meta: {
-                            locale: args.configuration?.meta?.locale,
-                            tenant: args.configuration?.meta?.tenant
-                        }
-                    }
-                });
+            if (result.Failed.length) {
+                console.error("Failed to deliver some of messages");
+                console.error(JSON.stringify(result.Failed));
             }
         }
-    };
+
+        function addRender(render: RenderEvent) {
+            if (render.path && exclude.includes(render.path)) {
+                return;
+            }
+
+            /**
+             * We're only sending the data that comes from the business logic. Things like CDN URLs, S3 buckets, etc.
+             * are all injected into the appropriate Lambda functions at deploy time, so that information is detached from
+             * the database. This way we are sure that we don't store obsolete infrastructure information.
+             */
+            toRender.push({
+                groupId: render.tenant,
+                body: render
+            });
+        }
+    });
 };

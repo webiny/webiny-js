@@ -1,10 +1,11 @@
 import React, { useContext, useEffect } from "react";
 import { Link as RouterLink, LinkProps as RouterLinkProps } from "react-router-dom";
+import { makeComposable } from "@webiny/react-composition";
 import { RouterContext } from "./context/RouterContext";
 
 export type LinkProps = RouterLinkProps;
 
-const Link: React.FC<LinkProps> = ({ children, ...props }) => {
+const Link = makeComposable<LinkProps>("Link", ({ children, ...props }) => {
     const { onLink } = useContext(RouterContext);
 
     let { to } = props;
@@ -25,6 +26,6 @@ const Link: React.FC<LinkProps> = ({ children, ...props }) => {
     };
 
     return <LinkComponent {...componentProps}>{children}</LinkComponent>;
-};
+});
 
 export { Link };

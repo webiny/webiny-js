@@ -26,6 +26,7 @@ const SaveContentModelButton: React.FC = () => {
 
     return (
         <ButtonPrimary
+            data-testid="cms.editor.defaultbar.save"
             disabled={loading}
             onClick={() => {
                 onClick();

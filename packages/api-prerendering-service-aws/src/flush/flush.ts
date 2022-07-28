@@ -1,39 +1,27 @@
 import { EventBridgeEvent } from "aws-lambda";
-
-import { Args } from "@webiny/api-prerendering-service/types";
+import { RenderEvent } from "@webiny/api-prerendering-service/types";
 import plugin, { Params } from "@webiny/api-prerendering-service/flush";
 import { ArgsContext } from "@webiny/handler-args/types";
-import { Context, HandlerPlugin as DefaultHandlerPlugin } from "@webiny/handler/types";
+import { Context } from "@webiny/handler/types";
+import { HandlerPlugin } from "@webiny/handler";
 
-export type HandlerArgs = EventBridgeEvent<"FlushPages", Args | Args[]>;
+export type HandlerArgs = EventBridgeEvent<"FlushPages", RenderEvent | RenderEvent[]>;
+export interface HandlerContext extends Context, ArgsContext<HandlerArgs> {}
 
-export interface HandlerContext extends Context, ArgsContext<HandlerArgs> {
-    //
-}
-
-export type HandlerPlugin = DefaultHandlerPlugin<HandlerContext>;
-
-export default (params: Params): HandlerPlugin => {
+export default (params: Params) => {
     const flush = plugin(params);
 
-    return {
-        type: "handler",
-        handle(context) {
-            if (context.invocationArgs["detail-type"] !== "FlushPages") {
-                return;
-            }
-
-            const args = context.invocationArgs.detail;
-
-            console.log(JSON.stringify(args));
-
-            return flush.handle(
-                {
-                    ...context,
-                    invocationArgs: args
-                },
-                async () => void 0
-            );
+    return new HandlerPlugin<HandlerContext>(async context => {
+        if (context.invocationArgs["detail-type"] !== "FlushPages") {
+            return;
         }
-    };
+
+        return flush.handle(
+            {
+                ...context,
+                invocationArgs: context.invocationArgs.detail
+            },
+            async () => void 0
+        );
+    });
 };

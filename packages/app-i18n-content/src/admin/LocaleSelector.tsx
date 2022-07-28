@@ -41,15 +41,14 @@ export const LocaleSelector: React.FC = () => {
     const currentLocale = getCurrentLocale("content");
     return (
         <Menu
-            anchor={"topEnd"}
+            anchor={"bottomLeft"}
             className={menuList}
             handle={
-                <ButtonPrimary className={buttonStyles} flat>
+                <ButtonPrimary className={buttonStyles} flat data-testid={"app-i18n-content.menu"}>
                     <ButtonIcon icon={<TranslateIcon />} />
                     Locale: {currentLocale}
                 </ButtonPrimary>
             }
-            data-testid={"app-i18n-content.menu"}
         >
             {localeList.map(locale => (
                 <MenuItem

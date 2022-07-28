@@ -4,7 +4,7 @@ import { configurePreset } from "@webiny/preset-aws";
 export default defineProject({
     presets: [configurePreset({})],
     plugins: [],
-    deploy: env => ({
-        resourceName: name => `my-res-${env}-${name}`
+    deploy: (env: string) => ({
+        resourceName: (name: string) => `my-res-${env}-${name}`
     })
 });

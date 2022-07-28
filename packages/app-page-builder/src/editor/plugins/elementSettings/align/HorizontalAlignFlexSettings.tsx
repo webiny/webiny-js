@@ -57,7 +57,7 @@ const HorizontalAlignFlexSettings: React.FC<PbEditorPageElementSettingsRenderCom
     defaultAccordionValue = false
 }) => {
     const { displayMode, config } = useDisplayMode();
-    const element = useActiveElement();
+    const [element] = useActiveElement();
     const updateElement = useUpdateElement();
 
     const propName = `${DATA_NAMESPACE}.${displayMode}`;

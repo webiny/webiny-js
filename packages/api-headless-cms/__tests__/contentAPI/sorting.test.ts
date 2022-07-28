@@ -1,4 +1,4 @@
-import { useContentGqlHandler } from "../utils/useContentGqlHandler";
+import { useGraphQLHandler } from "../utils/useGraphQLHandler";
 import { useFruitManageHandler } from "../utils/useFruitManageHandler";
 import { setupContentModelGroup, setupContentModels } from "../utils/setup";
 import { useFruitReadHandler } from "../utils/useFruitReadHandler";
@@ -74,7 +74,7 @@ describe("sorting + cursor", () => {
     const manageOpts = { path: "manage/en-US" };
     const readOpts = { path: "read/en-US" };
 
-    const mainManager = useContentGqlHandler(manageOpts);
+    const mainManager = useGraphQLHandler(manageOpts);
 
     const { until, createFruit, publishFruit } = useFruitManageHandler({
         ...manageOpts

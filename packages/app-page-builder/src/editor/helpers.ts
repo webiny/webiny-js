@@ -14,14 +14,14 @@ import {
 const ALPHANUMERIC = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 export const getNanoid = customAlphabet(ALPHANUMERIC, 10);
 
-interface FlattenElementsType {
+interface FlatElements {
     [id: string]: PbEditorElement;
 }
-export const flattenElements = (el?: PbEditorElement, parent?: string): FlattenElementsType => {
+export const flattenElements = (el?: PbEditorElement, parent?: string): FlatElements => {
     if (!el || !el.id) {
         return {};
     }
-    const els: FlattenElementsType = {};
+    const els: FlatElements = {};
     els[el.id] = set(
         el,
         "elements",

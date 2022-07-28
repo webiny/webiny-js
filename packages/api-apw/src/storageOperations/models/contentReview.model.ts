@@ -12,8 +12,8 @@ const contentField = (fields: CmsModelField[]) =>
         settings: { fields },
         validation: [
             {
-                name: "required",
-                message: "Value is required."
+                message: "`content` field value is required in contentReview.",
+                name: "required"
             }
         ]
     });
@@ -42,8 +42,8 @@ const contentStatus = () =>
         },
         validation: [
             {
-                name: "required",
-                message: "Value is required."
+                message: "`status` field value is required in contentReview.",
+                name: "required"
             }
         ]
     });
@@ -53,7 +53,12 @@ const titleField = () =>
         label: "Title",
         type: "text",
         parent: "contentReview",
-        validation: [{ name: "required", message: "Value is required." }]
+        validation: [
+            {
+                message: "`title` field value is required in contentReview.",
+                name: "required"
+            }
+        ]
     });
 
 const contentIdField = () =>
@@ -61,7 +66,12 @@ const contentIdField = () =>
         label: "Id",
         type: "text",
         parent: "contentReview Content",
-        validation: [{ name: "required", message: "Value is required." }]
+        validation: [
+            {
+                message: "`id` field value is required in contentReview Content.",
+                name: "required"
+            }
+        ]
     });
 
 const contentWorkflowIdField = () =>
@@ -69,7 +79,12 @@ const contentWorkflowIdField = () =>
         label: "Workflow Id",
         type: "text",
         parent: "contentReview Content",
-        validation: [{ name: "required", message: "Value is required." }]
+        validation: [
+            {
+                message: "`workflowId` field value is required in contentReview Content.",
+                name: "required"
+            }
+        ]
     });
 
 const contentTypeField = () =>
@@ -87,7 +102,12 @@ const contentTypeField = () =>
                 { value: "cms-entry", label: "CMS Entry" }
             ]
         },
-        validation: [{ name: "required", message: "Value is required." }]
+        validation: [
+            {
+                message: "`type` field value is required in contentReview Type.",
+                name: "required"
+            }
+        ]
     });
 
 const contentSettingsField = (fields: CmsModelField[]) =>
@@ -162,8 +182,8 @@ const stepStatusField = (): CmsModelField => ({
     type: "text",
     validation: [
         {
-            name: "required",
-            message: "Value is required."
+            message: "`status` field value is required in contentReview steps status.",
+            name: "required"
         }
     ],
     fieldId: "status"
@@ -176,8 +196,8 @@ const stepPendingChangeRequests = () =>
         parent: "contentReview Step",
         validation: [
             {
-                name: "required",
-                message: "Value is required."
+                message: "`pendingChangeRequests` field value is required in contentReview step.",
+                name: "required"
             }
         ]
     });
@@ -189,8 +209,8 @@ const stepTotalComments = () =>
         parent: "contentReview Step",
         validation: [
             {
-                name: "required",
-                message: "Value is required."
+                message: "`totalComments` field value is required in contentReview step.",
+                name: "required"
             }
         ]
     });
@@ -254,11 +274,13 @@ interface CreateContentReviewModelDefinitionParams {
     reviewerModelId: string;
 }
 
+export const CONTENT_REVIEW_MODEL_ID = "apwContentReviewModelDefinition";
+
 export const createContentReviewModelDefinition = ({
     reviewerModelId
 }: CreateContentReviewModelDefinitionParams): WorkflowModelDefinition => ({
     name: "APW - Content Review",
-    modelId: "apwContentReviewModelDefinition",
+    modelId: CONTENT_REVIEW_MODEL_ID,
     titleFieldId: "content",
     layout: [
         ["contentReview_content"],
@@ -292,5 +314,6 @@ export const createContentReviewModelDefinition = ({
         ]),
         latestCommentId()
     ],
-    description: ""
+    description: "",
+    isPrivate: true
 });

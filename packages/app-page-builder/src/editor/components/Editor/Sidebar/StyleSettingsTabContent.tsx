@@ -1,10 +1,10 @@
 import React from "react";
 import styled from "@emotion/styled";
-import { PbEditorElement } from "~/types";
-import useElementStyleSettings from "../../../plugins/elementSettings/hooks/useElementStyleSettings";
 import NoActiveElement from "./NoActiveElement";
 import { ReactComponent as TouchIcon } from "./icons/touch_app.svg";
 import { ReactComponent as WarningIcon } from "./icons/warning-black.svg";
+import { useActiveElement } from "~/editor/hooks/useActiveElement";
+import useElementStyleSettings from "~/editor/plugins/elementSettings/hooks/useElementStyleSettings";
 
 const RootElement = styled("div")({
     height: "calc(100vh - 65px - 48px)", // Subtract top-bar and tab-header height
@@ -22,11 +22,8 @@ const RootElement = styled("div")({
     }
 });
 
-interface StyleSettingsTabContentProps {
-    element: PbEditorElement | null;
-}
-
-const StyleSettingsTabContent: React.FC<StyleSettingsTabContentProps> = ({ element }) => {
+const StyleSettingsTabContent: React.FC = () => {
+    const [element] = useActiveElement();
     const elementStyleSettings = useElementStyleSettings();
 
     if (!element) {

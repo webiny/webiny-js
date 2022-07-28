@@ -32,7 +32,6 @@ describe("Settings Lifecycle Events", () => {
                             },
                             name
                         },
-                        id: expect.stringMatching(/T#root#L#/),
                         error: null
                     }
                 }

@@ -36,6 +36,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
                                 placeholder={field.placeholderText}
                                 description={field.helpText}
                                 type="number"
+                                data-testid={`fr.input.number.${field.label}`}
                             />
                         );
                     }}

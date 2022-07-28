@@ -6,15 +6,12 @@
     "@webiny/cli": "latest",
     "@webiny/cli-plugin-scaffold": "latest",
     "@webiny/cli-plugin-scaffold-admin-app-module": "latest",
-    "@webiny/cli-plugin-scaffold-full-stack-app": "latest",
-    "@webiny/cli-plugin-scaffold-graphql-api": "latest",
     "@webiny/cli-plugin-scaffold-graphql-service": "latest",
-    "@webiny/cli-plugin-scaffold-react-app": "latest",
-    "@webiny/cli-plugin-scaffold-react-component": "latest",
     "@webiny/cli-plugin-scaffold-ci": "latest",
     "@webiny/cli-plugin-workspaces": "latest",
     "@webiny/cli-plugin-deploy-pulumi": "latest",
-    "@webiny/project-utils": "latest"
+    "@webiny/project-utils": "latest",
+    "@webiny/serverless-cms-aws": "latest"
   },
   "devDependencies": {
     "@babel/cli": "^7.16.0",
@@ -45,28 +42,20 @@
     "eslint-plugin-promise": "^5.2.0",
     "eslint-plugin-react": "^7.27.1",
     "eslint-plugin-standard": "^5.0.0",
-    "execa": "4.1.0",
+    "execa": "^5.0.0",
     "jest": "^26.1.0",
     "merge": "^1.2.1",
     "prettier": "^2.3.2",
-    "ts-jest": "^26.4.4",
-    "typescript": "4.5.5"
+    "ts-jest": "^28.0.5",
+    "typescript": "4.7.4"
   },
   "workspaces": {
     "packages": [
-      "apps/admin/code",
-      "apps/website/code",
+      "apps/admin",
+      "apps/website",
       "apps/theme",
-      "api/code/dynamoToElastic",
-      "api/code/fileManager/*",
-      "api/code/graphql",
-      "api/code/headlessCMS",
-      "api/code/pageBuilder/updateSettings",
-      "api/code/pageBuilder/importPages/*",
-      "api/code/pageBuilder/exportPages/*",
-      "api/code/prerenderingService/render",
-      "api/code/prerenderingService/flush",
-      "api/code/prerenderingService/queue/*"
+      "apps/api/graphql",
+      "apps/api/headlessCMS"
     ]
   },
   "scripts": {
@@ -87,10 +76,8 @@
   "resolutions": {
     "@types/react": "16.14.4",
     "react": "16.14.0",
-    "typescript": "4.5.5",
+    "typescript": "4.7.4",
     "react-dom": "16.14.0",
-    "codex-tooltip": "1.0.2",
-    "@pulumi/pulumi": "3.19.0",
-    "@pulumi/aws": "4.28.0"
+    "codex-tooltip": "1.0.2"
   }
 }

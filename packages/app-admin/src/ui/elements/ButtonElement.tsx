@@ -1,6 +1,7 @@
 import React from "react";
 import { ButtonDefault, ButtonPrimary, ButtonSecondary } from "@webiny/ui/Button";
 import { UIElement, UIElementConfig } from "../UIElement";
+import { kebabCase } from "lodash";
 
 export type ButtonElementType = "default" | "primary" | "secondary";
 
@@ -70,6 +71,13 @@ export class ButtonElement<TRenderProps = any> extends UIElement<
         const Component = BUTTONS[this.getType(props)];
         const onClick = this.getOnClick();
 
-        return <Component onClick={() => onClick(props)}>{this.getLabel(props)}</Component>;
+        return (
+            <Component
+                onClick={() => onClick(props)}
+                data-testid={`button-element-${kebabCase(this.getLabel(props))}`}
+            >
+                {this.getLabel(props)}
+            </Component>
+        );
     }
 }

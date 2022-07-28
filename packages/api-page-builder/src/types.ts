@@ -93,18 +93,6 @@ export interface Page {
     settings?: PageSettings;
     locked: boolean;
     status: PageStatus;
-    visibility: {
-        list: {
-            latest: boolean;
-            published: boolean;
-        };
-        get: {
-            latest: boolean;
-            published: boolean;
-        };
-    };
-    home: boolean;
-    notFound: boolean;
     createdOn: string;
     savedOn: string;
     createdBy: CreatedBy;
@@ -431,6 +419,12 @@ export interface Settings {
     tenant: string | undefined | false;
     locale: string | undefined | false;
 }
+
+export interface DefaultSettings {
+    websiteUrl: string;
+    websitePreviewUrl: string;
+}
+
 /**
  * @category StorageOperations
  * @category SettingsStorageOperations
@@ -438,8 +432,8 @@ export interface Settings {
 export interface SettingsStorageOperationsGetParams {
     where: {
         type: string;
-        tenant: string | undefined | false;
-        locale: string | undefined | false;
+        tenant: string;
+        locale: string;
     };
 }
 /**
@@ -471,6 +465,7 @@ export interface SettingsStorageOperations {
      */
     createCacheKey: (params: DefaultSettingsCrudOptions) => string;
     get: (params: SettingsStorageOperationsGetParams) => Promise<Settings | null>;
+    getDefaults: () => Promise<DefaultSettings | null>;
     create: (params: SettingsStorageOperationsCreateParams) => Promise<Settings>;
     update: (params: SettingsStorageOperationsUpdateParams) => Promise<Settings>;
 }

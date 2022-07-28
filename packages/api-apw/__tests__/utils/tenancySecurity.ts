@@ -7,6 +7,7 @@ import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import { BeforeHandlerPlugin } from "@webiny/handler/plugins/BeforeHandlerPlugin";
 import { TestContext } from "../types";
+import { createPermissions } from "./helpers";
 
 // IMPORTANT: This must be removed from here in favor of a dynamic SO setup.
 const documentClient = new DocumentClient({
@@ -19,12 +20,11 @@ const documentClient = new DocumentClient({
 });
 
 interface Config {
-    setupGraphQL?: boolean;
     permissions: SecurityPermission[];
     identity?: SecurityIdentity | null;
 }
 
-export const createTenancyAndSecurity = ({ setupGraphQL, permissions, identity }: Config) => {
+export const createTenancyAndSecurity = ({ permissions, identity }: Config) => {
     return [
         createTenancyContext({
             storageOperations: tenancyStorageOperations({
@@ -35,14 +35,16 @@ export const createTenancyAndSecurity = ({ setupGraphQL, permissions, identity }
                 })
             })
         }),
-        setupGraphQL ? createTenancyGraphQL() : null,
+        createTenancyGraphQL(),
         createSecurityContext({
+            verifyIdentityToTenantLink: false,
             storageOperations: securityStorageOperations({
                 documentClient,
                 table: process.env.DB_TABLE
-            })
+            }),
+            verifyIdentityToTenantLink: false
         }),
-        setupGraphQL ? createSecurityGraphQL() : null,
+        createSecurityGraphQL(),
         new ContextPlugin<TestContext>(context => {
             context.tenancy.setCurrentTenant({
                 id: "root",
@@ -53,17 +55,21 @@ export const createTenancyAndSecurity = ({ setupGraphQL, permissions, identity }
                 settings: {
                     domains: []
                 },
-                webinyVersion: context.WEBINY_VERSION
+                webinyVersion: context.WEBINY_VERSION,
+                createdOn: new Date().toISOString(),
+                savedOn: new Date().toISOString()
             });
 
             context.security.addAuthenticator(async () => {
-                return (
-                    identity || {
-                        id: "12345678",
-                        type: "admin",
-                        displayName: "John Doe"
-                    }
-                );
+                const base = identity || {
+                    id: "12345678",
+                    type: "admin",
+                    displayName: "John Doe"
+                };
+                return {
+                    ...base,
+                    permissions: createPermissions().concat({ name: "pb.*" })
+                };
             });
 
             context.security.addAuthorizer(async () => {

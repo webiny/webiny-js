@@ -14,6 +14,9 @@ const CUSTOM_HANDLERS = {
     // Ignore "i18n" package.
     i18n: () => [],
 
+    // TODO: bring back project-utils tests.
+    "project-utils": () => [],
+
     // Split "api-file-manager" tests.
     "api-file-manager": () => {
         return [
@@ -46,18 +49,24 @@ const CUSTOM_HANDLERS = {
     },
     // Split "api-apw" tests.
     "api-apw": () => {
+        // TODO 1: we had to disable these temporarily because APW relies on WCP, and in our
+        // TODO 1: CI/CD, we're not testing a WCP-enabled Webiny project yet (which causes errors).
+        // TODO 1: Let's bring this ASAP or at least before releasing APW in Q3/2022.
+        //return [];
+
         return [
-            // TODO: APW tests currently only work with DynamoDB-only (it's hard-coded in the tests).
-            //  That is because we currently have no way to load multiple storage operations at the same time.
+            //     // TODO 2: APW tests currently only work with DynamoDB-only (it's hard-coded in the tests).
+            //     // TODO 2: That is because we currently have no way to load multiple storage operations at the same time.
             "packages/api-apw/*"
-            // "packages/api-apw/* --keyword=cms:ddb --keyword=apw:base",
-            // "packages/api-apw/* --keyword=cms:ddb-es --keyword=apw:base"
+            //     // "packages/api-apw/* --keyword=cms:ddb --keyword=apw:base",
+            //     // "packages/api-apw/* --keyword=cms:ddb-es --keyword=apw:base"
         ];
     }
 };
 
-/**
+const testFilePattern = /test\.j?t?sx?$/;
 
+/**
  * @param folder
  * @returns boolean
  */
@@ -74,8 +83,8 @@ function hasTestFiles(folder) {
             if (hasTFiles) {
                 return true;
             }
-        } else if (filepath.endsWith("test.js") || filepath.endsWith("test.ts")) {
-            return true;
+        } else {
+            return testFilePattern.test(filepath);
         }
     }
     return false;

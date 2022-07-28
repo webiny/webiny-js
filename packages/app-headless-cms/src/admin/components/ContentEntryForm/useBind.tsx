@@ -1,7 +1,3 @@
-/**
- * Figure out correct types for this and packages/app-headless-cms/src/admin/plugins/fieldRenderers/DynamicSection.tsx files
- * TODO @ts-refactor
- */
 import React, { useRef, useCallback, cloneElement } from "react";
 import { createValidators } from "./functions/createValidators";
 import { BindComponent, CmsEditorField } from "~/types";
@@ -14,7 +10,7 @@ interface UseBindProps {
 
 interface UseBindParams {
     name?: string;
-    validators?: Validator[];
+    validators?: Validator | Validator[];
     children?: any;
 }
 
@@ -43,12 +39,7 @@ export function useBind({ Bind: ParentBind, field }: UseBindProps) {
             const defaultValue: string[] | undefined = field.multipleValues ? [] : undefined;
             const isMultipleValues = index === -1 && field.multipleValues;
             const inputValidators = isMultipleValues ? listValidators : validators;
-            /**
-             * TODO @ts-refactor
-             *
-             * TS is complaining about validators property because UseBindParams.validators cannot be single validator??????
-             */
-            // @ts-ignore
+
             memoizedBindComponents.current[name] = function UseBind(params: UseBindParams) {
                 const { name: childName, validators: childValidators, children } = params;
                 return (
@@ -83,6 +74,30 @@ export function useBind({ Bind: ParentBind, field }: UseBindProps) {
                                     // To make sure the field is still valid, we must trigger validation.
                                     bind.form.validateInput(field.fieldId);
                                 };
+
+                                props.moveValueUp = (index: number) => {
+                                    if (index <= 0) {
+                                        return;
+                                    }
+
+                                    const value = [...bind.value];
+                                    value.splice(index, 1);
+                                    value.splice(index - 1, 0, bind.value[index]);
+
+                                    bind.onChange(value);
+                                };
+
+                                props.moveValueDown = (index: number) => {
+                                    if (index >= bind.value.length) {
+                                        return;
+                                    }
+
+                                    const value = [...bind.value];
+                                    value.splice(index, 1);
+                                    value.splice(index + 1, 0, bind.value[index]);
+
+                                    bind.onChange(value);
+                                };
                             }
 
                             if (typeof children === "function") {
@@ -103,3 +118,5 @@ export function useBind({ Bind: ParentBind, field }: UseBindProps) {
         [field.fieldId]
     );
 }
+
+// [0,1,2,3,4,5]

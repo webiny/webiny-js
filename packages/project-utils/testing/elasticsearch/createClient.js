@@ -15,7 +15,37 @@ if (!!esEndpoint) {
     defaultOptions.auth = undefined;
 }
 
+const wait = ms => {
+    return new Promise(resolve => {
+        setTimeout(() => {
+            resolve();
+        }, ms);
+    });
+};
+
+const SNAPSHOT_ERROR = "snapshot_in_progress_exception";
+
+const isSnapshotError = ex => {
+    const rootCauseType = ex.meta?.body?.error?.type;
+    if (rootCauseType === SNAPSHOT_ERROR) {
+        return true;
+    }
+    const rootCauses = ex.meta?.body?.error?.root_cause;
+    if (Array.isArray(rootCauses) === false) {
+        return false;
+    }
+    for (const rc of rootCauses) {
+        if (rc.type === SNAPSHOT_ERROR) {
+            return true;
+        }
+    }
+    return false;
+};
+
 const createDeleteIndexCallable = client => {
+    /**
+     * The amount of retries in case of snapshot error.
+     */
     const max = 10;
     return async index => {
         for (let counter = 0; counter <= max; counter++) {
@@ -36,18 +66,29 @@ const createDeleteIndexCallable = client => {
                 return;
             }
             /**
-             * Then we delete it.
+             * Then we delete it, or at least try.
              */
             try {
                 await client.indices.delete({
                     index,
                     ignore_unavailable: true
                 });
+                return;
             } catch (ex) {
                 console.log(`Could not delete index: ${index}`);
                 console.log(JSON.stringify(ex));
-                return;
+                /**
+                 * In case of snapshot error - we will retry.
+                 */
+                if (isSnapshotError(ex) === false) {
+                    return;
+                }
             }
+            console.log("Is snapshot error, will try to delete the index in a sec...");
+            /**
+             * Let's retry deleting index again...
+             */
+            await wait(1000);
             counter++;
         }
     };

@@ -2,9 +2,10 @@ import useHandler from "./useHandler";
 import createRenderEntry from "./mocks/createRenderEntry";
 import createTagLinkEntry from "./mocks/createTagLinkEntry";
 import createQueueJobEntry from "./mocks/createQueueJobEntry";
-import { Render, TagUrlLink } from "~/types";
+import { Render, RenderEvent, TagPathLink } from "~/types";
 
-const namespace = "root";
+const tenant = "root";
+const locale = "en-US";
 
 describe("Render Pages Test", () => {
     // eslint-disable-next-line
@@ -12,11 +13,11 @@ describe("Render Pages Test", () => {
         /**
          * With this section, we are intercepting all render handler invocations, and inspecting the passed args.
          */
-        const issuedRenders = [];
+        const issuedRenders: RenderEvent[][] = [];
         const { handler, storageOperations } = useHandler({
             type: "handler-client-handler-render-handler",
             name: "handler-client-handler-render-handler",
-            invoke(args) {
+            invoke(args: RenderEvent[]) {
                 issuedRenders.push(args);
             }
         });
@@ -29,11 +30,12 @@ describe("Render Pages Test", () => {
             { key: "pb-menu", value: "not-main-menu" }
         ];
 
-        const url = `https://site.com/random-path`;
+        const path = `/random-path`;
 
         const render: Render = {
-            namespace,
-            url,
+            tenant,
+            locale,
+            path,
             files: [
                 {
                     name: "index.html",
@@ -51,48 +53,48 @@ describe("Render Pages Test", () => {
 
         const renderers = await storageOperations.listRenders({
             where: {
-                namespace
+                tenant
             }
         });
         expect(renderers).toEqual([render]);
 
-        const tagUrlLinks: TagUrlLink[] = tags.map(tag => {
+        const tagPathLinks: TagPathLink[] = tags.map(tag => {
             return {
                 ...tag,
-                url,
-                namespace
+                path,
+                tenant
             };
         });
 
-        await storageOperations.createTagUrlLinks({
-            tagUrlLinks
+        await storageOperations.createTagPathLinks({
+            tagPathLinks
         });
 
-        const listPbPageTagUrlLinks = await storageOperations.listTagUrlLinks({
+        const listPbPageTagPathLinks = await storageOperations.listTagPathLinks({
             where: {
-                namespace,
+                tenant,
                 tag: {
                     key: "pb-page"
                 }
             }
         });
-        expect(listPbPageTagUrlLinks).toHaveLength(1);
+        expect(listPbPageTagPathLinks).toHaveLength(1);
 
-        const listPbMenuTagUrlLinks = await storageOperations.listTagUrlLinks({
+        const listPbMenuTagPathLinks = await storageOperations.listTagPathLinks({
             where: {
-                namespace,
+                tenant,
                 tag: {
                     key: "pb-menu"
                 }
             }
         });
-        expect(listPbMenuTagUrlLinks).toHaveLength(1);
+        expect(listPbMenuTagPathLinks).toHaveLength(1);
         /**
          * 2. Now, let's create three render entries with the `{ value: "main-menu", key: "pb-menu" }` tag. Note
          * that once we've created those, we area also creating a tag-url link for every tag in the render entry.
          */
         for (let i = 0; i < 3; i++) {
-            const url = `https://site.com/path-${i}`;
+            const path = `/path-${i}`;
             const tags = [
                 { value: `page-id-${i}`, key: "pb-page" },
                 { value: "main-menu", key: "pb-menu" }
@@ -100,8 +102,9 @@ describe("Render Pages Test", () => {
 
             await storageOperations.createRender({
                 render: createRenderEntry({
-                    namespace,
-                    url,
+                    locale,
+                    tenant,
+                    path,
                     files: [
                         {
                             name: "index.html",
@@ -114,11 +117,11 @@ describe("Render Pages Test", () => {
                 })
             });
 
-            await storageOperations.createTagUrlLinks({
-                tagUrlLinks: tags.map(tag => {
+            await storageOperations.createTagPathLinks({
+                tagPathLinks: tags.map(tag => {
                     return createTagLinkEntry({
-                        url,
-                        namespace,
+                        path,
+                        tenant,
                         ...tag
                     });
                 })
@@ -136,11 +139,8 @@ describe("Render Pages Test", () => {
         await storageOperations.createQueueJob({
             queueJob: createQueueJobEntry({
                 render: {
-                    configuration: {
-                        db: {
-                            namespace: "root"
-                        }
-                    },
+                    locale,
+                    tenant,
                     tag: {
                         key: "pb-menu",
                         value: "main-menu"
@@ -155,11 +155,8 @@ describe("Render Pages Test", () => {
         await storageOperations.createQueueJob({
             queueJob: createQueueJobEntry({
                 render: {
-                    configuration: {
-                        db: {
-                            namespace: "root"
-                        }
-                    },
+                    locale,
+                    tenant,
                     tag: {
                         key: "pb-menu",
                         value: "non-existing-menu"
@@ -190,107 +187,104 @@ describe("Render Pages Test", () => {
          */
         const renderRecords = await storageOperations.listRenders({
             where: {
-                namespace
+                tenant
             }
         });
         expect(renderRecords).toHaveLength(4);
         expect(renderRecords).toMatchObject([
             {
-                args: expect.any(Object),
-                namespace,
-                url: "https://site.com/path-0"
+                tenant,
+                path: "/path-0"
             },
             {
-                args: expect.any(Object),
-                namespace,
-                url: "https://site.com/path-1"
+                tenant,
+                path: "/path-1"
             },
             {
-                args: expect.any(Object),
-                namespace,
-                url: "https://site.com/path-2"
+                tenant,
+                path: "/path-2"
             },
             {
-                namespace,
-                url: "https://site.com/random-path"
+                tenant,
+                path: "/random-path"
             }
         ]);
 
         /**
          * 6.3. A total of four "pb-page" tag-url link entries must be present.
          */
-        const tagUrlLinkPbPageRecords = await storageOperations.listTagUrlLinks({
+        const tagPathLinkPbPageRecords = await storageOperations.listTagPathLinks({
             where: {
-                namespace,
+                tenant,
                 tag: {
                     key: "pb-page"
                 }
             }
         });
-        expect(tagUrlLinkPbPageRecords).toHaveLength(4);
-        expect(tagUrlLinkPbPageRecords).toEqual([
+        expect(tagPathLinkPbPageRecords).toHaveLength(4);
+        expect(tagPathLinkPbPageRecords).toEqual([
             {
-                namespace,
+                tenant,
                 key: "pb-page",
                 value: "page-id-0",
-                url: "https://site.com/path-0"
+                path: "/path-0"
             },
             {
-                namespace,
+                tenant,
                 key: "pb-page",
                 value: "page-id-1",
-                url: "https://site.com/path-1"
+                path: "/path-1"
             },
             {
-                namespace,
+                tenant,
                 key: "pb-page",
                 value: "page-id-2",
-                url: "https://site.com/path-2"
+                path: "/path-2"
             },
             {
-                namespace,
+                tenant,
                 key: "pb-page",
                 value: "page-random-id",
-                url: "https://site.com/random-path"
+                path: "/random-path"
             }
         ]);
 
         /**
          * 6.4. A total of four "pb-menu" tags must be present in the queue.
          */
-        const tagUrlLinkPbMenuRecords = await storageOperations.listTagUrlLinks({
+        const tagPathLinkPbMenuRecords = await storageOperations.listTagPathLinks({
             where: {
-                namespace,
+                tenant,
                 tag: {
                     key: "pb-menu"
                 }
             }
         });
-        expect(tagUrlLinkPbMenuRecords).toHaveLength(4);
-        expect(tagUrlLinkPbMenuRecords).toEqual([
+        expect(tagPathLinkPbMenuRecords).toHaveLength(4);
+        expect(tagPathLinkPbMenuRecords).toEqual([
             {
-                namespace,
+                tenant,
                 key: "pb-menu",
                 value: "main-menu",
-                url: "https://site.com/path-0"
+                path: "/path-0"
             },
             {
-                namespace,
+                tenant,
                 key: "pb-menu",
                 value: "main-menu",
-                url: "https://site.com/path-1"
+                path: "/path-1"
             },
             {
-                namespace,
+                tenant,
                 key: "pb-menu",
                 value: "main-menu",
-                url: "https://site.com/path-2"
+                path: "/path-2"
             },
             {
-                namespace,
+                tenant,
                 key: "pb-menu",
                 value: "not-main-menu",
-                url: "https://site.com/random-path"
+                path: "/random-path"
             }
         ]);
 
@@ -311,58 +305,16 @@ describe("Render Pages Test", () => {
         expect(issuedRenders).toHaveLength(1);
         expect(issuedRenders[0]).toHaveLength(3);
 
-        expect(issuedRenders).toEqual([
+        expect(issuedRenders.map(batch => batch.map(render => ({ path: render.path })))).toEqual([
             [
                 {
-                    url: expect.stringMatching("https://site.com/path-"),
-                    configuration: {
-                        meta: {
-                            cloudfront: {
-                                distributionId: "xyz"
-                            }
-                        },
-                        db: {
-                            namespace: "root"
-                        },
-                        storage: {
-                            name: "s3-bucket-name",
-                            folder: "test-folder"
-                        }
-                    }
+                    path: expect.stringMatching("/path-")
                 },
                 {
-                    url: expect.stringMatching("https://site.com/path-"),
-                    configuration: {
-                        meta: {
-                            cloudfront: {
-                                distributionId: "xyz"
-                            }
-                        },
-                        db: {
-                            namespace: "root"
-                        },
-                        storage: {
-                            name: "s3-bucket-name",
-                            folder: "test-folder"
-                        }
-                    }
+                    path: expect.stringMatching("/path-")
                 },
                 {
-                    url: expect.stringMatching("https://site.com/path-"),
-                    configuration: {
-                        meta: {
-                            cloudfront: {
-                                distributionId: "xyz"
-                            }
-                        },
-                        db: {
-                            namespace: "root"
-                        },
-                        storage: {
-                            name: "s3-bucket-name",
-                            folder: "test-folder"
-                        }
-                    }
+                    path: expect.stringMatching("/path-")
                 }
             ]
         ]);

@@ -16,13 +16,8 @@ export default {
                     import("@webiny/cli-plugin-deploy-pulumi"),
                     import("@webiny/cwp-template-aws/cli"),
                     import("@webiny/cli-plugin-scaffold"),
-                    import("@webiny/cli-plugin-scaffold-full-stack-app"),
-                    import("@webiny/cli-plugin-scaffold-graphql-api"),
                     import("@webiny/cli-plugin-scaffold-graphql-service"),
-                    import("@webiny/cli-plugin-scaffold-admin-app-module"),
-                    import("@webiny/cli-plugin-scaffold-react-app"),
-                    import("@webiny/cli-plugin-scaffold-react-component"),
-                    import("@webiny/cli-plugin-scaffold-ci")
+                    import("@webiny/cli-plugin-scaffold-admin-app-module")
                 ]);
 
                 return modules

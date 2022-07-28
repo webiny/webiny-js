@@ -40,6 +40,7 @@ const cssRegex = /\.css$/;
 const cssModuleRegex = /\.module\.css$/;
 const sassRegex = /\.(scss|sass)$/;
 const sassModuleRegex = /\.module\.(scss|sass)$/;
+
 const sassLoader = {
     loader: require.resolve("sass-loader"),
     options: {

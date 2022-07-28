@@ -4,8 +4,7 @@
   "references": [
     { "path": "../api-i18n" },
     { "path": "../api-security" },
-    { "path": "../handler" },
-    { "path": "../handler-graphql" }
+    { "path": "../handler" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],

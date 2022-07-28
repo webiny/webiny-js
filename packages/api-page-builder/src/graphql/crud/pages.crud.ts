@@ -25,7 +25,6 @@ import checkBasePermissions from "./utils/checkBasePermissions";
 import checkOwnPermissions from "./utils/checkOwnPermissions";
 import normalizePath from "./pages/normalizePath";
 import { CreateDataModel, UpdateSettingsModel } from "./pages/models";
-import { PagePlugin } from "~/plugins/PagePlugin";
 import WebinyError from "@webiny/error";
 import lodashTrimEnd from "lodash/trimEnd";
 import {
@@ -137,11 +136,6 @@ export interface CreatePageCrudParams {
 }
 export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
     const { context, storageOperations, getLocaleCode, getTenantId } = params;
-
-    /**
-     * Used in a couple of key events - (un)publishing and pages deletion.
-     */
-    const pagePlugins = context.plugins.byType<PagePlugin>(PagePlugin.type);
 
     const { compressContent, decompressContent } = createCompression({
         plugins: context.plugins
@@ -285,9 +279,6 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                 displayName: identity.displayName,
                 type: identity.type
             };
-            /**
-             * Just create the initial { compression, content } object.
-             */
 
             const page: Page = {
                 id,
@@ -300,12 +291,6 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                 path: pagePath,
                 version,
                 status: STATUS_DRAFT,
-                visibility: {
-                    list: { latest: true, published: true },
-                    get: { latest: true, published: true }
-                },
-                home: false,
-                notFound: false,
                 locked: false,
                 publishedOn: null,
                 createdFrom: null,
@@ -1199,23 +1184,6 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
             }
 
             if (!page) {
-                /**
-                 * Try loading dynamic pages.
-                 * TODO: @pavel do this some other way possibly?
-                 * TODO: There are no more events in PagePlugin, so maybe produce some other kind of plugin
-                 * TODO: that will only do stuff related to dynamic pages?
-                 */
-                for (const plugin of pagePlugins) {
-                    if (typeof plugin.notFound === "function") {
-                        page = (await plugin.notFound({ args: params, context })) || null;
-                        if (page) {
-                            break;
-                        }
-                    }
-                }
-            }
-
-            if (!page) {
                 throw new NotFoundError("Page not found.");
             }
             return {
@@ -1409,10 +1377,10 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
         },
         prerendering: {
             flush: async (args: FlushParams) => {
-                return args.context.pageBuilder.getPrerenderingHandlers().flush(args);
+                return context.pageBuilder.getPrerenderingHandlers().flush(args);
             },
             render: async (args: RenderParams) => {
-                return args.context.pageBuilder.getPrerenderingHandlers().render(args);
+                return context.pageBuilder.getPrerenderingHandlers().render(args);
             }
         }
     };

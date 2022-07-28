@@ -1,4 +1,7 @@
-export const encodeCursor = (cursor?: string | null): string | null => {
+export type CursorInput = string | number | (string | number)[] | null;
+export type CursorOutput = string | null;
+
+export const encodeCursor = (cursor?: CursorInput): CursorOutput => {
     if (!cursor) {
         return null;
     }
@@ -12,7 +15,7 @@ export const encodeCursor = (cursor?: string | null): string | null => {
     }
 };
 
-export const decodeCursor = (cursor?: string | null): string | null => {
+export const decodeCursor = (cursor?: CursorOutput): CursorInput => {
     if (!cursor) {
         return null;
     }

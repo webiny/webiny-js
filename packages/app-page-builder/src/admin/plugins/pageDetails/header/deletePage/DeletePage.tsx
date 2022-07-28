@@ -63,28 +63,29 @@ const DeletePage: React.FC<DeletePageProps> = props => {
                     }
                 );
 
-                if (response) {
-                    const { error } = response;
-                    if (error) {
-                        showDialog(error.message, { title: t`Could not delete page.` });
-                        return;
-                    }
-
-                    showSnackbar(
-                        <span>
-                            {t`The page {title} was deleted successfully.`({
-                                title: (
-                                    <strong>
-                                        {page.title.slice(0, 20)}
-                                        ...
-                                    </strong>
-                                )
-                            })}
-                        </span>
-                    );
-
-                    history.push("/page-builder/pages");
+                if (!response) {
+                    return;
                 }
+                const { error } = response;
+                if (error) {
+                    showDialog(error.message, { title: t`Could not delete page.` });
+                    return;
+                }
+
+                showSnackbar(
+                    <span>
+                        {t`The page {title} was deleted successfully.`({
+                            title: (
+                                <strong>
+                                    {page.title.slice(0, 20)}
+                                    ...
+                                </strong>
+                            )
+                        })}
+                    </span>
+                );
+
+                history.push("/page-builder/pages");
             }),
         [page.id]
     );

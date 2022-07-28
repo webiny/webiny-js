@@ -4,14 +4,13 @@ import { TenancyContext } from "@webiny/api-tenancy/types";
 import { I18NContext } from "@webiny/api-i18n/types";
 import { ClientContext } from "@webiny/handler-client/types";
 import { Topic } from "@webiny/pubsub/types";
-import { Args as PsFlushParams } from "@webiny/api-prerendering-service/flush/types";
-import { Args as PsRenderParams } from "@webiny/api-prerendering-service/render/types";
-import { Args as PsQueueAddParams } from "@webiny/api-prerendering-service/queue/add/types";
+import { RenderEvent, FlushEvent, QueueAddJob } from "@webiny/api-prerendering-service/types";
 
 import {
     PageBlock,
     BlockCategory,
     Category,
+    DefaultSettings,
     Menu,
     Page,
     PageElement,
@@ -462,12 +461,11 @@ export interface SettingsCrud {
     getSettings: (options?: DefaultSettingsCrudOptions) => Promise<Settings | null>;
     getDefaultSettings: (
         options?: Pick<DefaultSettingsCrudOptions, "tenant">
-    ) => Promise<Settings | null>;
+    ) => Promise<DefaultSettings | null>;
     updateSettings: (
         data: Record<string, any>,
         options?: { auth?: boolean } & DefaultSettingsCrudOptions
     ) => Promise<Settings>;
-    getSettingsCacheKey: (options?: DefaultSettingsCrudOptions) => string;
     /**
      * Lifecycle events
      */
@@ -703,72 +701,55 @@ export interface PageSecurityPermission extends PbSecurityPermission {
 // Page Builder lifecycle events.
 export interface PageBeforeRenderEvent extends Pick<RenderParams, "paths" | "tags"> {
     args: {
-        render?: PsRenderParams[];
-        queue?: PsQueueAddParams[];
+        render?: RenderEvent[];
+        queue?: QueueAddJob[];
     };
 }
 
 export interface PageAfterRenderEvent extends Pick<RenderParams, "paths" | "tags"> {
     args: {
-        render?: PsRenderParams[];
-        queue?: PsQueueAddParams[];
+        render?: RenderEvent[];
+        queue?: QueueAddJob[];
     };
 }
 
 export interface PageBeforeFlushEvent extends Pick<FlushParams, "paths" | "tags"> {
     args: {
-        flush?: PsFlushParams[];
-        queue?: PsQueueAddParams[];
+        flush?: FlushEvent[];
+        queue?: QueueAddJob[];
     };
 }
 
 export interface PageAfterFlushEvent extends Pick<FlushParams, "paths" | "tags"> {
     args: {
-        flush?: PsFlushParams[];
-        queue?: PsQueueAddParams[];
+        flush?: FlushEvent[];
+        queue?: QueueAddJob[];
     };
 }
 
 // Prerendering configuration.
 export interface Tag {
     key: string;
-    value?: string;
+    value?: string | boolean;
 }
 
 export interface TagItem {
     tag: Tag;
-    configuration?: {
-        meta?: Record<string, any>;
-        storage?: {
-            folder?: string;
-            name?: string;
-        };
-    };
 }
 
 export interface PathItem {
     path: string;
-    configuration?: {
-        db?: {
-            namespace: string;
-        };
-        meta?: Record<string, any>;
-        storage?: {
-            folder?: string;
-            name?: string;
-        };
-    };
+    exclude?: string[];
+    tags?: Tag[];
 }
 
 export interface RenderParams {
     queue?: boolean;
-    context: PbContext;
     tags?: TagItem[];
     paths?: PathItem[];
 }
 
 export interface FlushParams {
-    context: PbContext;
     tags?: TagItem[];
     paths?: PathItem[];
 }
@@ -785,21 +766,10 @@ export interface PbCategoryInput {
     layout: string;
 }
 
-interface PbPageVisibilitySettingsInput {
-    published: boolean;
-    latest: boolean;
-}
-
-interface PbPageVisibilityInput {
-    get: PbPageVisibilitySettingsInput;
-    list: PbPageVisibilitySettingsInput;
-}
-
 export interface PbUpdatePageInput {
     title?: string;
     category?: string;
     path?: string;
-    visibility?: PbPageVisibilityInput;
     settings?: PageSettings;
     content?: Record<string, any> | null;
 }

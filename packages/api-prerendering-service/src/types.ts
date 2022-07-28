@@ -1,26 +1,6 @@
-import { Args as QueueAddArgs, Tag } from "~/queue/add/types";
-
-export interface HandlerResponse<TData = Record<string, any>, TError = Record<string, any>> {
-    data: TData | null;
-    error: TError | null;
-}
-
-/**
- * Contains data about the previously performed render process for given URL.
- */
-export interface Render {
-    namespace: string;
-    url: string;
-    args?: Record<string, any>;
-    configuration?: Record<string, any>;
-    files: {
-        name: string;
-        type: string;
-        meta: {
-            tags?: TagUrlLink[];
-            [key: string]: any;
-        };
-    }[];
+export interface Tag {
+    key: string;
+    value?: string | boolean;
 }
 
 /**
@@ -28,24 +8,60 @@ export interface Render {
  */
 export interface QueueJob {
     id: string;
-    args: QueueAddArgs;
+    args: QueueAddJob;
+}
+
+export interface RenderJob {
+    tenant: string;
+    locale: string;
+    tag?: Tag;
+    path?: string;
+}
+
+export interface FlushJob {
+    tenant: string;
+    tag?: Tag;
+    path?: string;
+}
+
+export interface QueueAddJob {
+    flush?: FlushJob;
+    render?: RenderJob;
+}
+
+/**
+ * Contains data about the previously performed render process for given path.
+ */
+export interface Render {
+    path: string;
+    tenant: string;
+    locale: string;
+    tags?: Tag[];
+    files: {
+        name: string;
+        type: string;
+        meta: {
+            tags?: Tag[];
+            [key: string]: any;
+        };
+    }[];
 }
 
 /**
  * Represents a link between a tag (that contains a key and value) and a URL.
  * Note that if you want to get URL and all of its tags, use Render.
  */
-export interface TagUrlLink {
-    namespace: string;
-    url: string;
+export interface TagPathLink {
+    path: string;
     key: string;
     value: string;
+    tenant: string;
 }
 
 export interface PrerenderingServiceStorageOperationsGetRenderParams {
     where: {
-        namespace: string;
-        url: string;
+        tenant: string;
+        path: string;
     };
 }
 
@@ -55,8 +71,8 @@ export interface PrerenderingServiceStorageOperationsDeleteRenderParams {
 
 export interface PrerenderingServiceStorageOperationsListRendersParams {
     where: {
-        namespace: string;
-        url?: string;
+        tenant: string;
+        path?: string;
         tag?: Tag;
     };
 }
@@ -77,23 +93,20 @@ export interface PrerenderingServiceStorageOperationsListQueueJobsParams {
     // nothing required yet
 }
 
-export interface PrerenderingServiceStorageOperationsCreateTagUrlLinksParams {
-    tagUrlLinks: TagUrlLink[];
+export interface PrerenderingServiceStorageOperationsCreateTagPathLinksParams {
+    tagPathLinks: TagPathLink[];
 }
 
-export interface PrerenderingServiceStorageOperationsDeleteTagUrlLinksParams {
+export interface PrerenderingServiceStorageOperationsDeleteTagPathLinksParams {
     tags: Tag[];
-    namespace: string;
-    url?: string;
+    tenant: string;
+    path: string;
 }
 
-export interface PrerenderingServiceStorageOperationsListTagUrlLinksParams {
+export interface PrerenderingServiceStorageOperationsListTagPathLinksParams {
     where: {
-        namespace: string;
-        tag: {
-            key: string;
-            value?: string;
-        };
+        tenant: string;
+        tag: Tag;
     };
 }
 
@@ -108,17 +121,22 @@ export interface PrerenderingServiceRenderStorageOperations {
     listRenders: (
         params: PrerenderingServiceStorageOperationsListRendersParams
     ) => Promise<Render[]>;
-    createTagUrlLinks: (
-        params: PrerenderingServiceStorageOperationsCreateTagUrlLinksParams
-    ) => Promise<TagUrlLink[]>;
+    createTagPathLinks: (
+        params: PrerenderingServiceStorageOperationsCreateTagPathLinksParams
+    ) => Promise<TagPathLink[]>;
 
-    deleteTagUrlLinks: (
-        params: PrerenderingServiceStorageOperationsDeleteTagUrlLinksParams
+    deleteTagPathLinks: (
+        params: PrerenderingServiceStorageOperationsDeleteTagPathLinksParams
     ) => Promise<void>;
 
-    listTagUrlLinks: (
-        params: PrerenderingServiceStorageOperationsListTagUrlLinksParams
-    ) => Promise<TagUrlLink[]>;
+    listTagPathLinks: (
+        params: PrerenderingServiceStorageOperationsListTagPathLinksParams
+    ) => Promise<TagPathLink[]>;
+}
+
+export interface PrerenderingServiceSettingsStorageOperations {
+    getSettings(): Promise<PrerenderingSettings>;
+    saveSettings(params: PrerenderingServiceSaveSettingsParams): Promise<PrerenderingSettings>;
 }
 
 export interface PrerenderingServiceQueueJobStorageOperations {
@@ -136,43 +154,43 @@ export interface PrerenderingServiceQueueJobStorageOperations {
 
 export interface PrerenderingServiceStorageOperations
     extends PrerenderingServiceRenderStorageOperations,
-        PrerenderingServiceQueueJobStorageOperations {
+        PrerenderingServiceQueueJobStorageOperations,
+        PrerenderingServiceSettingsStorageOperations {
     //
 }
 
-export interface Configuration {
-    db?: {
-        namespace?: string;
-        folder?: {
-            namespace?: string;
-        };
-    };
-    storage?: {
-        folder?: string;
-        name?: string;
-    };
-    website?: {
-        url?: string;
-    };
-    meta?: {
-        notFoundPage?: string;
-        tenant?: string;
-        locale?: string;
-        [key: string]: any | undefined;
-    };
+/**
+ * Represents a Lambda function payload for `render` Lambda.
+ */
+export interface RenderEvent {
+    path: string;
+    tenant: string;
+    locale: string;
+    exclude?: string[];
+    tags?: Tag[];
 }
 
-export interface Args {
-    url?: string;
+export interface FlushEvent {
+    tenant: string;
+    locale: string;
     path?: string;
-    configuration?: Configuration;
+    tag?: Tag;
 }
 
-export interface RenderPagesEvent extends Args {
+export interface RenderPagesEvent extends RenderEvent {
     /** Render pages only in a specific variant. */
     variant?: string;
-    tag?: {
-        key: string;
-        value?: string;
-    };
+    tag?: Tag;
+}
+
+export interface PrerenderingServiceSaveSettingsParams {
+    settings: PrerenderingSettings;
+    variant?: string;
+}
+
+export interface PrerenderingSettings {
+    appUrl: string;
+    bucket: string;
+    cloudfrontId: string;
+    sqsQueueUrl?: string;
 }

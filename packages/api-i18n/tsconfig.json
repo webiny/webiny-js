@@ -13,6 +13,7 @@
     { "path": "../handler-graphql" },
     { "path": "../plugins" },
     { "path": "../pubsub" },
+    { "path": "../api-wcp" },
     { "path": "../handler-http" }
   ],
   "compilerOptions": {
@@ -43,6 +44,8 @@
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/pubsub/*": ["../pubsub/src/*"],
       "@webiny/pubsub": ["../pubsub/src"],
+      "@webiny/api-wcp/*": ["../api-wcp/src/*"],
+      "@webiny/api-wcp": ["../api-wcp/src"],
       "@webiny/handler-http/*": ["../handler-http/src/*"],
       "@webiny/handler-http": ["../handler-http/src"]
     },

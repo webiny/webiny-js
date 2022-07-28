@@ -8,7 +8,7 @@
   <a href="https://www.webiny.com/docs/webiny/introduction/">Documentation</a> |
   <a href="https://www.webiny.com/slack">Community Slack</a> |
   <a href="https://github.com/webiny/webiny-js/discussions">Forum</a> |
-  <a href="https://twitter.com/WebinyPlatform">Twitter</a> 
+  <a href="https://twitter.com/WebinyCMS">Twitter</a> 
 </p>
 
 #

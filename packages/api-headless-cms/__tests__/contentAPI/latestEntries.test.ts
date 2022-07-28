@@ -1,4 +1,4 @@
-import { useContentGqlHandler } from "../utils/useContentGqlHandler";
+import { useGraphQLHandler } from "../utils/useGraphQLHandler";
 import { CmsModel, CmsGroup } from "~/types";
 import models from "./mocks/contentModels";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
@@ -16,7 +16,7 @@ describe("latest entries", function () {
         createContentModelMutation,
         updateContentModelMutation,
         createContentModelGroupMutation
-    } = useContentGqlHandler(manageOpts);
+    } = useGraphQLHandler(manageOpts);
 
     const { createCategory, createCategoryFrom, updateCategory, publishCategory } =
         useCategoryManageHandler({
@@ -328,7 +328,8 @@ describe("latest entries", function () {
                                         version: 1
                                     }
                                 }
-                            ]
+                            ],
+                            data: {}
                         },
                         title: updatedFruitCategory.title,
                         slug: updatedFruitCategory.slug

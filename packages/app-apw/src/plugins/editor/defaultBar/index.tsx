@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { ContentReviewStatus } from "./ContentReviewStatus";
 import { BackButton } from "./BackButton";
 import { Divider } from "./Divider";
 import { Name } from "./Name";
+import { plugins } from "@webiny/plugins";
 
-export default [
+const defaultBaPlugins = [
     {
         name: "content-review-editor-default-bar-right-divider",
         type: "content-review-editor-default-bar-right",
@@ -41,3 +42,10 @@ export default [
         }
     }
 ];
+
+export const DefaultBar: React.FC = () => {
+    useEffect(() => {
+        plugins.register(defaultBaPlugins);
+    }, []);
+    return null;
+};

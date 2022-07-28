@@ -1,5 +1,5 @@
 import * as aws from "@pulumi/aws";
-import { PulumiApp } from "@webiny/pulumi-sdk";
+import { PulumiApp } from "@webiny/pulumi";
 
 export function getAwsAccountId(app: PulumiApp) {
     return app.addHandler(() => {

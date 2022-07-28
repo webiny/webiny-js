@@ -1,4 +1,4 @@
-import { useContentGqlHandler } from "../utils/useContentGqlHandler";
+import { useGraphQLHandler } from "../utils/useGraphQLHandler";
 import { CmsGroup, CmsModel, CmsModelField } from "~/types";
 import models from "./mocks/contentModels";
 
@@ -46,7 +46,7 @@ describe("content model - cloning", () => {
         createContentModelFromMutation,
         getContentModelQuery,
         listContentModelsQuery
-    } = useContentGqlHandler(manageOpts);
+    } = useGraphQLHandler(manageOpts);
 
     let defaultGroup: CmsGroup;
     let cloneGroup: CmsGroup;
@@ -226,7 +226,7 @@ describe("content model - cloning", () => {
             createContentModelGroupMutation: createDeContentModelGroupMutation,
             listContentModelsQuery,
             getContentModelQuery
-        } = useContentGqlHandler(manageDeOpts);
+        } = useGraphQLHandler(manageDeOpts);
         const [createGroupResponse] = await createDeContentModelGroupMutation({
             data: {
                 name: "Default group DE",

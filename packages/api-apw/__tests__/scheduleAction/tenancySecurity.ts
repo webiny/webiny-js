@@ -41,7 +41,8 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config = {})
             storageOperations: securityStorageOperations({
                 documentClient,
                 table: process.env.DB_TABLE
-            })
+            }),
+            verifyIdentityToTenantLink: false
         }),
         createSecurityGraphQL(),
         new ContextPlugin<SecurityContext & TenancyContext>(context => {
@@ -53,7 +54,9 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config = {})
                 description: "",
                 settings: {
                     domains: []
-                }
+                },
+                createdOn: new Date().toISOString(),
+                savedOn: new Date().toISOString()
             });
 
             context.security.addAuthenticator(async () => {

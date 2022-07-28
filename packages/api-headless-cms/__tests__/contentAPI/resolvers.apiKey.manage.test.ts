@@ -1,6 +1,6 @@
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { CmsGroup } from "~/types";
-import { useContentGqlHandler } from "../utils/useContentGqlHandler";
+import { useGraphQLHandler } from "../utils/useGraphQLHandler";
 import models from "./mocks/contentModels";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import { useCategoryReadHandler } from "../utils/useCategoryReadHandler";
@@ -53,7 +53,7 @@ describe("MANAGE - resolvers - api key", () => {
         updateContentModelMutation,
         createContentModelGroupMutation,
         installMutation
-    } = useContentGqlHandler(manageOpts);
+    } = useGraphQLHandler(manageOpts);
 
     beforeEach(async () => {
         await installMutation();
@@ -167,7 +167,8 @@ describe("MANAGE - resolvers - api key", () => {
                             ],
                             status: "draft",
                             version: 1,
-                            title: "Vegetables"
+                            title: "Vegetables",
+                            data: {}
                         }
                     },
                     error: null
@@ -223,7 +224,8 @@ describe("MANAGE - resolvers - api key", () => {
                             ],
                             status: "draft",
                             version: 1,
-                            title: "Vegetables"
+                            title: "Vegetables",
+                            data: {}
                         }
                     },
                     error: null
@@ -274,7 +276,8 @@ describe("MANAGE - resolvers - api key", () => {
                             ],
                             status: "draft",
                             version: 1,
-                            title: "Green vegetables"
+                            title: "Green vegetables",
+                            data: {}
                         }
                     },
                     error: null
@@ -324,7 +327,8 @@ describe("MANAGE - resolvers - api key", () => {
                                 ],
                                 status: "draft",
                                 version: 1,
-                                title: updatedCategory.title
+                                title: updatedCategory.title,
+                                data: {}
                             }
                         }
                     ],

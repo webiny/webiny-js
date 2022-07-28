@@ -1,0 +1,61 @@
+Create
+
+mutation CreateBlock {
+  pageBuilder {
+    createPageBlock(
+      data: {
+        name: "test"
+        blockCategory: "block-cat-slug"
+        content: { test: true }
+        preview: { test: true }
+      }
+    ) {
+      data {
+        id
+        blockCategory
+        preview
+        name
+        content
+        createdOn
+        createdBy {
+          id
+          displayName
+          type
+        }
+      }
+      error {
+        code
+        data
+        message
+      }
+    }
+  }
+}
+
+
+List
+
+{
+  pageBuilder {
+    listPageBlocks {
+      data {
+        id
+        blockCategory
+        preview
+        name
+        content
+        createdOn
+        createdBy {
+          id
+          displayName
+          type
+        }
+      }
+      error {
+        code
+        data
+        message
+      }
+    }
+  }
+}

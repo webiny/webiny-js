@@ -6,11 +6,11 @@ import { useConfirmationDialog, useSnackbar } from "@webiny/app-admin";
 import { useAdminPageBuilder } from "@webiny/app-page-builder/admin/hooks/useAdminPageBuilder";
 import { DELETE_CONTENT_REVIEW_MUTATION } from "~/graphql/contentReview.gql";
 import { ApwContentTypes } from "~/types";
-import { IS_REVIEW_REQUIRED_QUERY } from "./graphql";
+import { IS_REVIEW_REQUIRED_QUERY } from "../graphql";
 
 const t = i18n.ns("app-apw/page-builder/dialog");
 
-export const ApwOnPageDelete = () => {
+export const ApwOnPageDelete: React.FC = () => {
     const pageBuilder = useAdminPageBuilder();
     const client = useApolloClient();
     const { showSnackbar } = useSnackbar();

@@ -15,10 +15,15 @@ const BrandImpl: HigherOrderComponent = () => {
     return function BrandRenderer() {
         const { location } = useTags();
         const { setVisible } = useNavigation();
+        const inApp = ["appBar", "navigation"].includes(String(location));
 
         const onClick = useCallback(() => {
             location === "navigation" ? setVisible(false) : null;
         }, []);
+
+        if (!inApp) {
+            return <Logo />;
+        }
 
         return (
             <Link to={"/"} onClick={onClick}>
@@ -32,15 +37,17 @@ const WebinyLogo: React.FC = () => {
     const { location } = useTags();
     const isLoginScreen = location === "loginScreen";
     const isAppBar = location === "appBar";
+    const isInstaller = location === "installer";
+    const inApp = !isInstaller && !isLoginScreen;
 
     const color = isAppBar ? "white" : "var(--mdc-theme-primary)";
 
     return (
         <LogoIcon
             style={{
-                width: isLoginScreen ? 125 : 100,
-                height: isLoginScreen ? "auto" : 30,
-                paddingLeft: isLoginScreen ? 0 : 20,
+                width: !inApp ? 125 : 100,
+                height: !inApp ? "auto" : 30,
+                paddingLeft: !inApp ? 0 : 20,
                 color
             }}
         />

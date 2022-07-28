@@ -77,6 +77,9 @@ export const createEntryEntity = (params: Params): Entity<any> => {
             values: {
                 type: "map"
             },
+            meta: {
+                type: "map"
+            },
             ...(attributes || {})
         }
     });

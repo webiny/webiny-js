@@ -1,7 +1,7 @@
 import { zeroPad } from "~/zeroPad";
 
 describe("zero pad", () => {
-    const inputs = [
+    const inputs: [number | string, string][] = [
         [1, "0001"],
         [12, "0012"],
         [123, "0123"],
@@ -9,7 +9,7 @@ describe("zero pad", () => {
         [12345, "12345"]
     ];
 
-    test.each(inputs)(`should pad "%s" with zeros`, (input: any, expected: string) => {
+    test.each(inputs)(`should pad "%s" with zeros`, (input, expected) => {
         const result = zeroPad(input);
 
         expect(result).toEqual(expected);

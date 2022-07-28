@@ -19,7 +19,7 @@ const deleteGroup = slug => {
     });
 
     cy.findByTestId("default-data-list.delete-dialog").within(() => {
-        cy.findByText("Confirm").click();
+        cy.findAllByTestId("dialog-accept").next().click();
     });
     cy.findByText(`Group "${slug}" deleted.`).should("exist");
 };
@@ -42,14 +42,14 @@ context("Security -> Group", () => {
         // Open group details form
         cy.findAllByTestId("new-record-button").first().click();
         // Add group's detail
-        cy.findByLabelText("Name").type(name);
-        cy.findByLabelText("Slug").type(slug);
-        cy.findByLabelText("Description").type(description);
+        cy.findByTestId("admin.am.group.new.name").type(name);
+        cy.findByTestId("admin.am.group.new.slug").type(slug);
+        cy.findByTestId("admin.am.group.new.description").type(description);
 
         cy.findByLabelText(/All locales/i).check();
 
         // Save details
-        cy.findByText("Save group").click();
+        cy.findByTestId("admin.am.group.new.save").click();
         // Wait for loading to finish
         cy.get(".react-spinner-material").should("not.exist");
         // Verify success message
@@ -59,10 +59,10 @@ context("Security -> Group", () => {
 
         const [newName, newDescription] = [uniqid("new-name-"), uniqid("new-description-")];
 
-        cy.findByLabelText("Name").should("have.value", name);
+        cy.findByTestId("admin.am.group.new.name").should("have.value", name);
         // Add group's detail
-        cy.findByLabelText("Name").clear().type(newName);
-        cy.findByLabelText("Description").clear().type(newDescription);
+        cy.findByTestId("admin.am.group.new.name").clear().type(newName);
+        cy.findByTestId("admin.am.group.new.description").clear().type(newDescription);
         // Update permissions
         cy.findByTestId("permission.fm").click();
 
@@ -73,7 +73,7 @@ context("Security -> Group", () => {
             });
 
         // Save details
-        cy.findByText("Save group").click();
+        cy.findByTestId("admin.am.group.new.save").click();
         // Wait for loading to finish
         cy.get(".react-spinner-material").should("not.exist");
         // Verify success message
@@ -100,9 +100,9 @@ context("Security -> Group", () => {
         // Open group details form
         cy.findAllByTestId("new-record-button").first().click();
         // Add group's detail
-        cy.findByLabelText("Name").type(name);
-        cy.findByLabelText("Slug").type(slug);
-        cy.findByLabelText("Description").type(description);
+        cy.findByTestId("admin.am.group.new.name").type(name);
+        cy.findByTestId("admin.am.group.new.slug").type(slug);
+        cy.findByTestId("admin.am.group.new.description").type(description);
         cy.findByLabelText(/All locales/i).check();
 
         // Add all permissions
@@ -114,7 +114,7 @@ context("Security -> Group", () => {
         selectPermission("permission.i18n", "full");
 
         // Save details
-        cy.findByText("Save group").click();
+        cy.findByTestId("admin.am.group.new.save").click();
         // Wait for loading to finish
         cy.get(".react-spinner-material").should("not.exist");
         // Verify success message

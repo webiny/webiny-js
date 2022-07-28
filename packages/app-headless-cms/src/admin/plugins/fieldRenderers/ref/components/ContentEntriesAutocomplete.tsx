@@ -12,6 +12,7 @@ import { CmsEditorField } from "~/types";
 import { BindComponentRenderProp } from "@webiny/form";
 import { OptionItem } from "./types";
 import { EntryStatus } from "./EntryStatus";
+import { parseIdentifier } from "@webiny/utils";
 
 const t = i18n.ns("app-headless-cms/admin/fields/ref");
 
@@ -22,7 +23,7 @@ const getItemOption = (options: OptionItem[], id?: string | null): OptionItem | 
     if (!id || !options || options.length === 0) {
         return null;
     }
-    const [entryId] = id.split("#");
+    const { id: entryId } = parseIdentifier(id);
     return options.find(item => item.entryId === entryId) || null;
 };
 
@@ -73,6 +74,7 @@ const ContentEntriesAutocomplete: React.FC<ContentEntriesAutocompleteProps> = ({
                     value={value || undefined}
                     options={options}
                     label={field.label}
+                    data-testid={`fr.input.autocomplete.${field.label}`}
                     description={
                         <>
                             {field.helpText}

@@ -1,14 +1,12 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../tsconfig.build.json",
+  "include": ["src"],
+  "references": [{ "path": "../core/tsconfig.build.json" }],
   "compilerOptions": {
-    "noEmit": false,
-    "declaration": true,
-    "emitDeclarationOnly": true,
     "rootDir": "./src",
-    "outDir": "./lib/types",
-    "declarationDir": "./lib/types",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": { "~/*": ["./src/*"] },
     "baseUrl": "."
-  },
-  "include": ["./src"],
-  "references": [{ "path": "../core/tsconfig.build.json" }]
+  }
 }
