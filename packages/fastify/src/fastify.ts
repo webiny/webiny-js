@@ -1,22 +1,54 @@
 import { PluginCollection } from "@webiny/plugins/types";
 import fastify, { FastifyServerOptions } from "fastify";
-import { BeforeHandlerPlugin, ContextPlugin, HandlerErrorPlugin } from "@webiny/handler";
-import middleware from "@webiny/handler/middleware";
+import { BeforeHandlerPlugin, ContextPlugin, HandlerErrorPlugin } from "@webiny/api";
 import { getWebinyVersionHeaders } from "@webiny/utils";
-import { FastifyContext, RouteMethodOptions, RouteTypes } from "~/types";
+import { FastifyContext, FastifyContextRoutes, RouteMethodOptions, RouteTypes } from "~/types";
 import { Context } from "~/plugins/Context";
 import WebinyError from "@webiny/error";
 import { RoutePlugin } from "./plugins/RoutePlugin";
 import defaultHandlerClient from "@webiny/handler-client";
 import fastifyCookies from "@fastify/cookie";
+import { middleware } from "~/middleware";
 
 const DEFAULT_HEADERS: Record<string, string> = {
     "Cache-Control": "no-store",
-    "Content-Type": "application/json",
+    "Content-Type": "application/json; charset=utf-8",
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Headers": "*",
     "Access-Control-Allow-Methods": "OPTIONS,POST,GET,DELETE,PUT,PATCH",
     ...getWebinyVersionHeaders()
+};
+
+const getDefaultHeaders = (routes: FastifyContextRoutes["defined"]): Record<string, string> => {
+    /**
+     * If we are accepting all headers, just output that one.
+     */
+    const keys = Object.keys(routes);
+    const all = keys.every(key => routes[key as RouteTypes].length > 0);
+    if (all) {
+        return {
+            ...DEFAULT_HEADERS,
+            "Access-Control-Allow-Methods": "*"
+        };
+    }
+    return {
+        ...DEFAULT_HEADERS,
+        "Access-Control-Allow-Methods": keys
+            .filter(key => {
+                const type = key as unknown as RouteTypes;
+                if (!routes[type] || Array.isArray(routes[type]) === false) {
+                    return false;
+                }
+                return routes[type].length > 0;
+            })
+            .sort()
+            .join(",")
+    };
+};
+
+const OPTIONS_HEADERS: Record<string, string> = {
+    "Access-Control-Max-Age": "86400",
+    "Cache-Control": "public, max-age=86400"
 };
 
 export interface CreateFastifyHandlerParams {
@@ -25,21 +57,38 @@ export interface CreateFastifyHandlerParams {
 }
 
 export const createFastify = (params?: CreateFastifyHandlerParams) => {
-    const definedRoutes: Record<RouteTypes, string[]> = {
-        post: [],
-        get: [],
-        options: [],
-        delete: [],
-        patch: [],
-        put: []
+    const definedRoutes: FastifyContextRoutes["defined"] = {
+        POST: [],
+        GET: [],
+        OPTIONS: [],
+        DELETE: [],
+        PATCH: [],
+        PUT: [],
+        HEAD: []
     };
 
     const throwOnDefinedRoute = (
-        type: RouteTypes,
+        type: RouteTypes | "ALL",
         path: string,
         options?: RouteMethodOptions
     ): void => {
-        if (definedRoutes[type].includes(path) === false) {
+        if (type === "ALL") {
+            const all = Object.keys(definedRoutes).some(key => {
+                const routes = definedRoutes[key as RouteTypes];
+                return routes.includes(path);
+            });
+            if (!all) {
+                return;
+            }
+            throw new WebinyError(
+                `You cannot override a route with onAll() method, please remove unnecessary route from the system.`,
+                "OVERRIDE_ROUTE_ERROR",
+                {
+                    type,
+                    path
+                }
+            );
+        } else if (definedRoutes[type].includes(path) === false) {
             return;
         } else if (options?.override === true) {
             return;
@@ -54,8 +103,11 @@ export const createFastify = (params?: CreateFastifyHandlerParams) => {
         );
     };
 
-    const addDefinedRoute = (type: RouteTypes, path: string): void => {
-        if (definedRoutes[type].includes(path)) {
+    const addDefinedRoute = (inputType: RouteTypes, path: string): void => {
+        const type = (inputType as string).toUpperCase() as RouteTypes;
+        if (!definedRoutes[type]) {
+            return;
+        } else if (definedRoutes[type].includes(path)) {
             return;
         }
         definedRoutes[type].push(path);
@@ -65,6 +117,19 @@ export const createFastify = (params?: CreateFastifyHandlerParams) => {
      */
     const app = fastify({
         ...(params?.options || {})
+    });
+    /**
+     * We need to register routes in our system so we can output headers later on and dissallow overriding routes.
+     */
+    app.addHook("onRoute", route => {
+        const method = route.method;
+        if (Array.isArray(method)) {
+            for (const m of method) {
+                addDefinedRoute(m, route.path);
+            }
+            return;
+        }
+        addDefinedRoute(method, route.path);
     });
     /**
      *
@@ -78,34 +143,36 @@ export const createFastify = (params?: CreateFastifyHandlerParams) => {
     const routes: FastifyContext["routes"] = {
         defined: definedRoutes,
         onPost: (path, handler, options) => {
-            throwOnDefinedRoute("post", path, options);
+            throwOnDefinedRoute("POST", path, options);
             app.post(path, handler);
-            addDefinedRoute("post", path);
         },
         onGet: (path, handler, options) => {
-            throwOnDefinedRoute("get", path, options);
+            throwOnDefinedRoute("GET", path, options);
             app.get(path, handler);
-            addDefinedRoute("get", path);
         },
         onOptions: (path, handler, options) => {
-            throwOnDefinedRoute("options", path, options);
+            throwOnDefinedRoute("OPTIONS", path, options);
             app.options(path, handler);
-            addDefinedRoute("options", path);
         },
         onDelete: (path, handler, options) => {
-            throwOnDefinedRoute("delete", path, options);
+            throwOnDefinedRoute("DELETE", path, options);
             app.delete(path, handler);
-            addDefinedRoute("delete", path);
         },
         onPatch: (path, handler, options) => {
-            throwOnDefinedRoute("patch", path, options);
+            throwOnDefinedRoute("PATCH", path, options);
             app.patch(path, handler);
-            addDefinedRoute("patch", path);
         },
         onPut: (path, handler, options) => {
-            throwOnDefinedRoute("put", path, options);
+            throwOnDefinedRoute("PUT", path, options);
             app.put(path, handler);
-            addDefinedRoute("put", path);
+        },
+        onAll: (path, handler, options) => {
+            throwOnDefinedRoute("ALL", path, options);
+            app.all(path, handler);
+        },
+        onHead: (path, handler, options) => {
+            throwOnDefinedRoute("HEAD", path, options);
+            app.head(path, handler);
         }
     };
     const context = new Context({
@@ -130,6 +197,25 @@ export const createFastify = (params?: CreateFastifyHandlerParams) => {
     app.decorate("webiny", context);
 
     /**
+     * On every request we add default headers, which can be changed later.
+     * Also, if it is an options request, we skip everything after this hook and output options headers.
+     */
+    app.addHook("onRequest", async (request, reply) => {
+        const defaultHeaders = getDefaultHeaders(definedRoutes);
+        reply.headers(defaultHeaders);
+        if (request.method.toLowerCase() !== "options") {
+            return;
+        }
+        const raw = reply.code(204).hijack().raw;
+        const headers = { ...defaultHeaders, ...OPTIONS_HEADERS };
+        for (const key in headers) {
+            raw.setHeader(key, headers[key]);
+        }
+
+        raw.end("");
+    });
+
+    /**
      * Add routes to the system.
      */
     for (const plugin of app.webiny.plugins.byType<RoutePlugin>(RoutePlugin.type)) {
@@ -151,6 +237,9 @@ export const createFastify = (params?: CreateFastifyHandlerParams) => {
     });
 
     app.addHook("preHandler", async () => {
+        /**
+         * By the default we add some headers.
+         */
         for (const plugin of app.webiny.plugins.byType(BeforeHandlerPlugin.type)) {
             await plugin.apply(app.webiny);
         }
@@ -170,11 +259,12 @@ export const createFastify = (params?: CreateFastifyHandlerParams) => {
         );
         const result = handler(app.webiny, error);
 
-        reply.statusCode = 500;
-        reply.headers(DEFAULT_HEADERS);
-        reply.send(result);
-
-        return reply;
+        return reply
+            .headers({
+                "Cache-Control": "no-store"
+            })
+            .status(500)
+            .send(result);
     });
 
     return app;

@@ -2,11 +2,11 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
-    { "path": "../handler" },
+    { "path": "../api" },
     { "path": "../error" },
-    { "path": "../handler-http" },
     { "path": "../handler-client" },
-    { "path": "../plugins" }
+    { "path": "../plugins" },
+    { "path": "../utils" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -14,16 +14,16 @@
     "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
-      "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"],
+      "@webiny/api/*": ["../api/src/*"],
+      "@webiny/api": ["../api/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
-      "@webiny/handler-http/*": ["../handler-http/src/*"],
-      "@webiny/handler-http": ["../handler-http/src"],
       "@webiny/handler-client/*": ["../handler-client/src/*"],
       "@webiny/handler-client": ["../handler-client/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"]
+      "@webiny/plugins": ["../plugins/src"],
+      "@webiny/utils/*": ["../utils/src/*"],
+      "@webiny/utils": ["../utils/src"]
     },
     "baseUrl": "."
   }

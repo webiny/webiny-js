@@ -28,7 +28,7 @@
     "@babel/cli": "^7.16.0",
     "@babel/core": "^7.16.0",
     "@types/lodash": "^4.14.178",
-    "@types/node": "^10.0.0",
+    "@types/node": "*",
     "@webiny/cli": "^5.29.0",
     "@webiny/project-utils": "^5.29.0",
     "rimraf": "^3.0.2",

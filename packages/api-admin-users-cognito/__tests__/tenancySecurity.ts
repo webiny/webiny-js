@@ -53,7 +53,10 @@ export const createTenancyAndSecurity = ({ fullAccess, identity }: Config = {}) 
                 settings: {
                     domains: []
                 },
-                description: ""
+                description: "",
+                createdOn: new Date().toISOString(),
+                savedOn: new Date().toISOString(),
+                webinyVersion: process.env.WEBINY_VERSION as string
             });
 
             context.security.addAuthenticator(async () => {

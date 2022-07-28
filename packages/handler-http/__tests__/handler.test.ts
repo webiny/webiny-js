@@ -2,6 +2,8 @@ import { ContextPlugin, createHandler, HandlerPlugin } from "@webiny/handler";
 import plugins from "~/index";
 import { HttpContext } from "~/types";
 
+process.env.WEBINY_ENABLE_VERSION_HEADER = "true";
+
 describe("handler response", () => {
     it("should have http object attached to context", async () => {
         const ctx: any = {
@@ -12,7 +14,7 @@ describe("handler response", () => {
                 method: "POST",
                 body: "",
                 headers: {},
-                cookies: {},
+                cookies: [],
                 path: {
                     base: "base",
                     parameters: {},
@@ -31,15 +33,13 @@ describe("handler response", () => {
             });
         });
 
-        const handler = createHandler({
-            plugins: [
-                contextPlugin,
-                handlerPlugin,
-                plugins({
-                    debug: true
-                })
-            ]
-        });
+        const handler = createHandler(
+            contextPlugin,
+            handlerPlugin,
+            plugins({
+                debug: true
+            })
+        );
 
         const result = await handler();
 
@@ -82,21 +82,27 @@ describe("handler response", () => {
     it("should output proper options headers with caching", async () => {
         const context = new ContextPlugin<HttpContext>(async context => {
             context.invocationArgs = {
-                method: "OPTIONS"
+                method: "OPTIONS",
+                body: JSON.stringify({}),
+                headers: {},
+                cookies: [],
+                path: {
+                    base: "/",
+                    query: {},
+                    parameters: {}
+                }
             };
         });
-        const handler = createHandler({
-            plugins: [
-                context,
-                plugins({
-                    debug: true
-                })
-            ]
-        });
+        const handler = createHandler(
+            context,
+            plugins({
+                debug: true
+            })
+        );
 
         const result = await handler();
 
-        expect(result).toEqual({
+        expect(result).toMatchObject({
             body: "",
             statusCode: 204,
             headers: {
@@ -106,6 +112,7 @@ describe("handler response", () => {
                 "Access-Control-Allow-Headers": "*",
                 "Access-Control-Allow-Methods": "OPTIONS,POST",
                 "Access-Control-Max-Age": "86400"
+                // "x-webiny-version": expect.any(String)
             }
         });
     });

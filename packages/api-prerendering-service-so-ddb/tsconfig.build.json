@@ -6,7 +6,7 @@
     { "path": "../error/tsconfig.build.json" },
     { "path": "../db/tsconfig.build.json" },
     { "path": "../db-dynamodb/tsconfig.build.json" },
-    { "path": "../handler-aws/tsconfig.build.json" }
+    { "path": "../handler-fastify-aws/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",

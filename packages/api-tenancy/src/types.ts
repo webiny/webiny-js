@@ -1,8 +1,8 @@
 import { Context } from "@webiny/handler/types";
 import { DbContext } from "@webiny/handler-db/types";
-import { HttpContext } from "@webiny/handler-http/types";
 import { Topic } from "@webiny/pubsub/types";
 import { WcpContext } from "@webiny/api-wcp/types";
+import { FastifyContext } from "@webiny/fastify/types";
 
 export interface TenantDomain {
     fqdn: string;
@@ -49,7 +49,7 @@ export interface Tenancy {
     deleteTenant(id: string): Promise<boolean>;
 }
 
-export interface TenancyContext extends Context, HttpContext, DbContext, WcpContext {
+export interface TenancyContext extends Context, FastifyContext, DbContext, WcpContext {
     tenancy: Tenancy;
 }
 

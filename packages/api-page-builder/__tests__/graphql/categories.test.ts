@@ -183,10 +183,14 @@ describe("Categories CRUD Test", () => {
             ([res]) => res.data.pageBuilder.createPage.data
         );
 
-        await until(listPages, ([res]: any) => res.data.pageBuilder.listPages.data.length === 3, {
-            tries: 10,
-            name: "list pages before delete"
-        });
+        await until(
+            () => listPages(),
+            ([res]: any) => res.data.pageBuilder.listPages.data.length === 3,
+            {
+                tries: 10,
+                name: "list pages before delete"
+            }
+        );
 
         const error: ErrorOptions = {
             code: "CANNOT_DELETE_CATEGORY_PAGE_EXISTING",

@@ -8,7 +8,7 @@
   "dependencies": {
     "@webiny/handler": "^WEBINY_VERSION",
     "@webiny/handler-args": "^WEBINY_VERSION",
-    "@webiny/handler-aws": "^WEBINY_VERSION",
+    "@webiny/handler-fastify-aws": "^WEBINY_VERSION",
     "@webiny/handler-client": "^WEBINY_VERSION",
     "@webiny/handler-graphql": "^WEBINY_VERSION",
     "@webiny/handler-http": "^WEBINY_VERSION",

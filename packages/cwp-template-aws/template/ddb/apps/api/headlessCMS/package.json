@@ -21,7 +21,7 @@
     "@webiny/api-wcp": "latest",
     "@webiny/cli": "latest",
     "@webiny/db-dynamodb": "latest",
-    "@webiny/handler-aws": "latest",
+    "@webiny/handler-fastify-aws": "latest",
     "@webiny/handler-client": "latest",
     "@webiny/handler-db": "latest",
     "@webiny/handler-http": "latest",

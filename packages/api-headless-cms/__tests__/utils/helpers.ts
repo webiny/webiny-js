@@ -1,6 +1,4 @@
 import { SecurityIdentity } from "@webiny/api-security/types";
-import { ContextPlugin } from "@webiny/handler";
-import { TestContext } from "./types";
 export { until } from "@webiny/project-utils/testing/helpers/until";
 export { sleep } from "@webiny/project-utils/testing/helpers/sleep";
 
@@ -64,25 +62,4 @@ export const createIdentity = (identity?: SecurityIdentity) => {
         return getSecurityIdentity();
     }
     return identity;
-};
-
-export const createDummyPathContextPlugin = (path?: string): ContextPlugin<TestContext> => {
-    return new ContextPlugin<TestContext>(async context => {
-        if (!path) {
-            return;
-        }
-        context.http = {
-            ...(context?.http || {}),
-            request: {
-                ...(context?.http?.request || {}),
-                path: {
-                    ...(context?.http?.request?.path || {}),
-                    parameters: {
-                        ...(context?.http?.request?.path?.parameters || {}),
-                        key: path
-                    }
-                }
-            }
-        };
-    });
 };

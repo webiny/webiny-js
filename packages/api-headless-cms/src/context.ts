@@ -20,10 +20,6 @@ const getParameters = async (context: CmsContext): Promise<CmsParametersPluginRe
 
 export const createContextPlugin = () => {
     return new ContextPlugin<CmsContext>(async context => {
-        if (context.http?.request?.method === "OPTIONS") {
-            return;
-        }
-
         const { type, locale } = await getParameters(context);
 
         const getLocale = () => {

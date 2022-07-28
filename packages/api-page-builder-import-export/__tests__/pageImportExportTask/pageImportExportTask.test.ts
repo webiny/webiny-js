@@ -1,5 +1,9 @@
 import useHandler from "./useHandler";
-import { PageImportExportTaskCrud, PageImportExportTaskStatus } from "~/types";
+import {
+    PageImportExportTask,
+    PageImportExportTaskCrud,
+    PageImportExportTaskStatus
+} from "~/types";
 import { initialStats } from "~/importPages/utils";
 import { defaultIdentity } from "../tenancySecurity";
 
@@ -11,7 +15,7 @@ describe("Page builder import export task Test", () => {
         const pageImportExportTask: PageImportExportTaskCrud = pageBuilder.pageImportExportTask;
 
         // Create a PageImportExportTask
-        let result = await pageImportExportTask.createTask({
+        const result = await pageImportExportTask.createTask({
             status: PageImportExportTaskStatus.PENDING
         });
 
@@ -23,19 +27,19 @@ describe("Page builder import export task Test", () => {
         });
 
         // Should be able to get task by id
-        result = await pageImportExportTask.getTask(result.id);
-        expect(result).toMatchObject({
+        const getResult = (await pageImportExportTask.getTask(result.id)) as PageImportExportTask;
+        expect(getResult).toMatchObject({
             id: taskId,
             status: "pending",
             createdBy: defaultIdentity
         });
 
         // List all task
-        let response = await pageImportExportTask.listTasks({
-            where: { tenant: result.tenant, locale: result.locale },
+        const listAllTasksResponse = await pageImportExportTask.listTasks({
+            where: { tenant: getResult.tenant, locale: getResult.locale },
             limit: 10
         });
-        expect(response).toMatchObject([
+        expect(listAllTasksResponse).toMatchObject([
             {
                 id: taskId,
                 status: "pending",
@@ -44,27 +48,29 @@ describe("Page builder import export task Test", () => {
         ]);
 
         // Update a PageImportExportTask
-        result = await pageImportExportTask.updateTask(result.id, {
+        const updateResult = await pageImportExportTask.updateTask(getResult.id, {
             status: PageImportExportTaskStatus.PROCESSING
         });
 
-        expect(result).toMatchObject({
+        expect(updateResult).toMatchObject({
             id: taskId,
             status: "processing",
             createdBy: defaultIdentity
         });
 
         // Should be able to get updated task by id
-        result = await pageImportExportTask.getTask(result.id);
-        expect(result).toMatchObject({
+        const getAfterUpdateResult = (await pageImportExportTask.getTask(
+            updateResult.id
+        )) as PageImportExportTask;
+        expect(getAfterUpdateResult).toMatchObject({
             id: taskId,
             status: "processing",
             createdBy: defaultIdentity
         });
 
         // List all task
-        response = await pageImportExportTask.listTasks();
-        expect(response).toMatchObject([
+        const listAllTasksAfterUpdate = await pageImportExportTask.listTasks();
+        expect(listAllTasksAfterUpdate).toMatchObject([
             {
                 id: taskId,
                 status: "processing",
@@ -73,20 +79,20 @@ describe("Page builder import export task Test", () => {
         ]);
 
         // Delete the task
-        result = await pageImportExportTask.deleteTask(result.id);
-        expect(result).toMatchObject({
+        const deleteResult = await pageImportExportTask.deleteTask(getAfterUpdateResult.id);
+        expect(deleteResult).toMatchObject({
             id: taskId,
             status: "processing",
             createdBy: defaultIdentity
         });
 
         // Should list zero entry
-        response = await pageImportExportTask.listTasks();
+        const response = await pageImportExportTask.listTasks();
         expect(response).toMatchObject([]);
 
         // Should get error when trying to get task by id
-        result = await pageImportExportTask.getTask(result.id);
-        expect(result).toBe(null);
+        const resultWithError = await pageImportExportTask.getTask(deleteResult.id);
+        expect(resultWithError).toBe(null);
     });
 
     test("Should able to create, update, list, get and delete page import export sub tasks", async () => {
@@ -94,7 +100,7 @@ describe("Page builder import export task Test", () => {
         const pageImportExportTask: PageImportExportTaskCrud = pageBuilder.pageImportExportTask;
 
         // Create a PageImportExportTask
-        let task = await pageImportExportTask.createTask({
+        const task = await pageImportExportTask.createTask({
             status: PageImportExportTaskStatus.PENDING
         });
         const taskId = task.id;
@@ -105,19 +111,25 @@ describe("Page builder import export task Test", () => {
         });
 
         // Should be able to get task by id
-        task = await pageImportExportTask.getTask(task.id);
-        expect(task).toMatchObject({
+        const getTaskResponse = (await pageImportExportTask.getTask(
+            task.id
+        )) as PageImportExportTask;
+        expect(getTaskResponse).toMatchObject({
             id: taskId,
             status: "pending",
             createdBy: defaultIdentity
         });
 
         // Should be able to create a subTask
-        let subTask = await pageImportExportTask.createSubTask(task.id, "0001", {
-            status: PageImportExportTaskStatus.PENDING,
-            input: { key: "xyz" }
-        });
-        expect(subTask).toMatchObject({
+        const createSubTaskResponse = await pageImportExportTask.createSubTask(
+            getTaskResponse.id,
+            "0001",
+            {
+                status: PageImportExportTaskStatus.PENDING,
+                input: { key: "xyz" }
+            }
+        );
+        expect(createSubTaskResponse).toMatchObject({
             status: PageImportExportTaskStatus.PENDING,
             input: { key: "xyz" },
             id: `0001`,
@@ -125,21 +137,21 @@ describe("Page builder import export task Test", () => {
         });
 
         // Should be able to get a subTask
-        subTask = await pageImportExportTask.getSubTask(taskId, "0001");
-        expect(subTask).toMatchObject({
+        const getSubTaskResponse = await pageImportExportTask.getSubTask(taskId, "0001");
+        expect(getSubTaskResponse).toMatchObject({
             status: PageImportExportTaskStatus.PENDING,
             input: { key: "xyz" },
             id: `0001`,
             parent: taskId
         });
         // list of the "pending" sub tasks should be 1
-        let list = await pageImportExportTask.listSubTasks(
+        const listSubtasksPendingResponse = await pageImportExportTask.listSubTasks(
             taskId,
             PageImportExportTaskStatus.PENDING,
             10
         );
-        expect(list.length).toBe(1);
-        expect(list).toMatchObject([
+        expect(listSubtasksPendingResponse.length).toBe(1);
+        expect(listSubtasksPendingResponse).toMatchObject([
             {
                 status: PageImportExportTaskStatus.PENDING,
                 input: { key: "xyz" },
@@ -149,11 +161,15 @@ describe("Page builder import export task Test", () => {
         ]);
 
         // Should be able to update the sub task
-        subTask = await pageImportExportTask.updateSubTask(task.id, "0001", {
-            status: PageImportExportTaskStatus.COMPLETED,
-            input: { key: "xyz" }
-        });
-        expect(subTask).toMatchObject({
+        const getUpdatedSubTaskResponse = await pageImportExportTask.updateSubTask(
+            task.id,
+            "0001",
+            {
+                status: PageImportExportTaskStatus.COMPLETED,
+                input: { key: "xyz" }
+            }
+        );
+        expect(getUpdatedSubTaskResponse).toMatchObject({
             status: PageImportExportTaskStatus.COMPLETED,
             input: { key: "xyz" },
             id: `0001`,
@@ -161,22 +177,22 @@ describe("Page builder import export task Test", () => {
         });
 
         // list of the "pending" sub tasks should be zero
-        list = await pageImportExportTask.listSubTasks(
+        const listPendingTasksZeroResponse = await pageImportExportTask.listSubTasks(
             taskId,
             PageImportExportTaskStatus.PENDING,
             10
         );
-        expect(list.length).toBe(0);
-        expect(list).toMatchObject([]);
+        expect(listPendingTasksZeroResponse.length).toBe(0);
+        expect(listPendingTasksZeroResponse).toMatchObject([]);
 
         // list of the "completed" sub tasks should be 1
-        list = await pageImportExportTask.listSubTasks(
+        const listCompletedSubTasks = await pageImportExportTask.listSubTasks(
             taskId,
             PageImportExportTaskStatus.COMPLETED,
             10
         );
-        expect(list.length).toBe(1);
-        expect(list).toMatchObject([
+        expect(listCompletedSubTasks.length).toBe(1);
+        expect(listCompletedSubTasks).toMatchObject([
             {
                 status: PageImportExportTaskStatus.COMPLETED,
                 input: { key: "xyz" },
@@ -191,7 +207,7 @@ describe("Page builder import export task Test", () => {
         const pageImportExportTask: PageImportExportTaskCrud = pageBuilder.pageImportExportTask;
 
         // Create a PageImportExportTask
-        let result = await pageImportExportTask.createTask({
+        const result = await pageImportExportTask.createTask({
             status: PageImportExportTaskStatus.PENDING,
             stats: initialStats(5)
         });
@@ -216,8 +232,8 @@ describe("Page builder import export task Test", () => {
         });
 
         // Should have 4 "pending" and 1 "processing"
-        result = await pageImportExportTask.getTask(taskId);
-        expect(result).toMatchObject({
+        const result41 = await pageImportExportTask.getTask(taskId);
+        expect(result41).toMatchObject({
             createdBy: defaultIdentity,
             stats: {
                 [PageImportExportTaskStatus.PENDING]: 4,
@@ -235,8 +251,8 @@ describe("Page builder import export task Test", () => {
         });
 
         // Should have 3 "pending", 1 "failed", and 1 "processing"
-        result = await pageImportExportTask.getTask(taskId);
-        expect(result).toMatchObject({
+        const result311 = await pageImportExportTask.getTask(taskId);
+        expect(result311).toMatchObject({
             createdBy: defaultIdentity,
             stats: {
                 [PageImportExportTaskStatus.PENDING]: 3,

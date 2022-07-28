@@ -1,12 +1,13 @@
 import useGqlHandler from "./useGqlHandler";
 import { GraphQLSchemaPlugin } from "~/types";
+import { ContextPlugin } from "@webiny/handler/types";
 
 const books = [{ name: "Book 1" }, { name: "Book 2" }];
 
-const crudPlugin = {
+const crudPlugin: ContextPlugin = {
     type: "context",
-    apply(context) {
-        context.getBooks = () => {
+    async apply(context) {
+        (context as any).getBooks = () => {
             console.log("getBooks");
             console.table(books);
             console.warn("Your store is quite empty!");

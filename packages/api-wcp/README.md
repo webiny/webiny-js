@@ -59,7 +59,7 @@ export declare const createWcpContext: () => ContextPlugin<WcpContext>;
 Creates the WCP context API.
 
 ```ts
-import { createHandler } from "@webiny/handler-aws";
+import { createHandler } from "@webiny/handler-fastify-aws";
 import { createWcpContext } from "@webiny/api-wcp";
 
 export const handler = createHandler({
@@ -87,7 +87,7 @@ export declare const createWcpGraphQL: () => GraphQLSchemaPlugin<WcpContext>;
 Returns WCP API URL. The default URL can be overridden via the `WCP_API_URL` environment variable.
 
 ```ts
-import { createHandler } from "@webiny/handler-aws";
+import { createHandler } from "@webiny/handler-fastify-aws";
 import { createWcpGraphQL } from "@webiny/api-wcp";
 
 export const handler = createHandler({
