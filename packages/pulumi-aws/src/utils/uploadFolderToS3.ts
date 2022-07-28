@@ -1,9 +1,12 @@
 import fs from "fs";
+import fetch from "node-fetch";
+import FormData from "form-data";
 import S3Client from "aws-sdk/clients/s3";
 import mime from "mime";
 import chunk from "lodash/chunk";
 import { relative } from "path";
 import { crawlDirectory } from "./crawlDirectory";
+import { getPresignedPost } from "./getPresignedPost";
 
 function getFileChecksum(file: string): Promise<string> {
     const crypto = require("crypto");
@@ -52,9 +55,9 @@ export const uploadFolderToS3 = async ({
     path: root,
     bucket,
     onFileUploadSuccess,
-    onFileUploadError,
+    // onFileUploadError,
     onFileUploadSkip,
-    acl = "public-read",
+    // acl = "public-read",
     cacheControl = "max-age=31536000"
 }: UploadFolderToS3Params) => {
     const s3 = new S3Client({ region: process.env.AWS_REGION });
@@ -104,7 +107,7 @@ export const uploadFolderToS3 = async ({
                                 .promise();
 
                             if (existingObject.Metadata?.checksum === checksum) {
-                                skipUpload = true;
+                                skipUpload = false;
                             }
                         } catch {
                             // Do nothing.
@@ -116,20 +119,41 @@ export const uploadFolderToS3 = async ({
                             }
                         } else {
                             const cacheControl = cacheControls.find(item => item.pattern.test(key));
+                            const contentType = mime.getType(path);
 
-                            await s3
-                                .putObject({
-                                    Bucket: bucket,
-                                    Key: key,
-                                    ACL: acl,
-                                    CacheControl: cacheControl?.value,
-                                    ContentType: mime.getType(path) || undefined,
-                                    Body: fs.readFileSync(path),
-                                    Metadata: {
-                                        checksum
-                                    }
-                                })
-                                .promise();
+                            const { url, fields } = await getPresignedPost({
+                                bucket,
+                                key,
+                                checksum,
+                                contentType,
+                                cacheControl: cacheControl ? cacheControl.value : undefined
+                            });
+
+                            const data: Record<string, string> = {
+                                bucket,
+                                ...fields,
+                                "Content-Type": contentType || "",
+                                "X-Amz-Meta-Checksum": checksum,
+                                file: fs.readFileSync(path, "utf8")
+                            };
+
+                            if (cacheControl) {
+                                data["Cache-Control"] = cacheControl.value;
+                            }
+
+                            const formData = new FormData();
+                            Object.keys(data).forEach(key => {
+                                formData.append(key, data[key]);
+                            });
+
+                            const [status, body] = await fetch(url, {
+                                method: "POST",
+                                body: formData
+                            }).then(async res => {
+                                return [await res.text(), res.status];
+                            });
+
+                            console.log(status, body);
 
                             if (typeof onFileUploadSuccess === "function") {
                                 await onFileUploadSuccess({ paths: { full: path, relative: key } });
@@ -137,13 +161,15 @@ export const uploadFolderToS3 = async ({
                         }
                         resolve();
                     } catch (e) {
-                        if (typeof onFileUploadError === "function") {
-                            await onFileUploadError({
-                                paths: { full: path, relative: key },
-                                error: e
-                            });
-                        }
-                        resolve();
+                        console.log(e);
+                        process.exit();
+                        // if (typeof onFileUploadError === "function") {
+                        //     await onFileUploadError({
+                        //         paths: { full: path, relative: key },
+                        //         error: e
+                        //     });
+                        // }
+                        // resolve();
                     }
                 })
             );
