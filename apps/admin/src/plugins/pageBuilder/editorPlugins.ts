@@ -29,10 +29,6 @@ import formGroup from "@webiny/app-page-builder/editor/plugins/elementGroups/for
 import socialGroup from "@webiny/app-page-builder/editor/plugins/elementGroups/social";
 import codeGroup from "@webiny/app-page-builder/editor/plugins/elementGroups/code";
 import savedGroup from "@webiny/app-page-builder/editor/plugins/elementGroups/saved";
-// Blocks
-import gridBlock from "@webiny/app-page-builder/editor/plugins/blocks/gridBlock";
-// Block categories
-import blocksCategories from "@webiny/app-page-builder/editor/plugins/blocksCategories";
 // Toolbar
 import addElement from "@webiny/app-page-builder/editor/plugins/toolbar/addElement";
 import navigator from "@webiny/app-page-builder/editor/plugins/toolbar/navigator";
@@ -68,7 +64,6 @@ export default [
     document(),
     grid(),
     block(),
-    gridBlock,
     cell(),
     heading(),
     paragraph(),
@@ -98,8 +93,6 @@ export default [
     socialGroup,
     codeGroup,
     savedGroup,
-    // Block categories
-    blocksCategories,
     // Toolbar
     addElement,
     navigator(),
