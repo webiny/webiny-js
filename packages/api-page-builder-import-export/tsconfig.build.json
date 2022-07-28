@@ -8,7 +8,7 @@
     { "path": "../error/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },
     { "path": "../handler-args/tsconfig.build.json" },
-    { "path": "../handler-aws/tsconfig.build.json" },
+    { "path": "../handler-fastify/tsconfig.build.json" },
     { "path": "../handler-graphql/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" },
     { "path": "../validation/tsconfig.build.json" },

@@ -5,9 +5,10 @@
     { "path": "../error" },
     { "path": "../handler" },
     { "path": "../handler-http" },
+    { "path": "../fastify" },
     { "path": "../plugins" },
-    { "path": "../utils" },
-    { "path": "../handler-args" }
+    { "path": "../handler-args" },
+    { "path": "../handler-fastify-aws" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -21,12 +22,14 @@
       "@webiny/handler": ["../handler/src"],
       "@webiny/handler-http/*": ["../handler-http/src/*"],
       "@webiny/handler-http": ["../handler-http/src"],
+      "@webiny/fastify/*": ["../fastify/src/*"],
+      "@webiny/fastify": ["../fastify/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
-      "@webiny/utils/*": ["../utils/src/*"],
-      "@webiny/utils": ["../utils/src"],
       "@webiny/handler-args/*": ["../handler-args/src/*"],
-      "@webiny/handler-args": ["../handler-args/src"]
+      "@webiny/handler-args": ["../handler-args/src"],
+      "@webiny/handler-fastify-aws/*": ["../handler-fastify-aws/src/*"],
+      "@webiny/handler-fastify-aws": ["../handler-fastify-aws/src"]
     },
     "baseUrl": "."
   }

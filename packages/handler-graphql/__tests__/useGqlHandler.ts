@@ -1,25 +1,41 @@
-import { createHandler } from "@webiny/handler";
+import { createHandler } from "@webiny/handler-fastify-aws";
 import handlerArgsPlugins from "@webiny/handler-args";
 import handlerHTTPPlugins from "@webiny/handler-http";
 import graphqlServerPlugins from "../src";
+import { PluginCollection } from "@webiny/plugins/types";
 
-export default ({ debug = false, plugins = [] } = {}) => {
+interface Params {
+    debug?: boolean;
+    plugins?: PluginCollection;
+}
+
+export default ({ debug = false, plugins = [] }: Params = {}) => {
     // Creates the actual handler. Feel free to add additional plugins if needed.
-    const handler = createHandler(
-        handlerArgsPlugins(),
-        handlerHTTPPlugins(),
-        graphqlServerPlugins({ debug }),
-        ...plugins
-    );
+    const handler = createHandler({
+        plugins: [
+            handlerArgsPlugins(),
+            handlerHTTPPlugins(),
+            graphqlServerPlugins({ debug }),
+            ...plugins
+        ]
+    });
 
     // Let's also create the "invoke" function. This will make handler invocations in actual tests easier and nicer.
-    const invoke = async ({ method = "POST", body, headers = {}, ...rest }) => {
-        const response = await handler({
-            method,
-            headers,
-            body: JSON.stringify(body),
-            ...rest
-        });
+    const invoke = async ({ method = "POST", body = {}, headers = {}, ...rest }) => {
+        const response = await handler(
+            {
+                path: "/graphql",
+                httpMethod: method,
+                headers: {
+                    ["x-tenant"]: "root",
+                    ["Content-Type"]: "application/json",
+                    ...headers
+                },
+                body: JSON.stringify(body),
+                ...rest
+            } as any,
+            {} as any
+        );
 
         // The first element is the response body, and the second is the raw response.
         return [JSON.parse(response.body), response];

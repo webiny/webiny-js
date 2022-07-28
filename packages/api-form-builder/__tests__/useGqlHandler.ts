@@ -1,7 +1,7 @@
 import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
 import path from "path";
 import fs from "fs";
-import { createHandler } from "@webiny/handler-aws";
+import { createHandler } from "@webiny/handler-fastify-aws";
 import graphqlHandlerPlugins from "@webiny/handler-graphql";
 import fileManagerPlugins from "@webiny/api-file-manager/plugins";
 import fileManagerDynamoDbPlugins from "@webiny/api-file-manager-ddb";
@@ -80,56 +80,66 @@ export default (params: UseGqlHandlerParams = {}) => {
         plugins.push(...getGlobalPlugins());
     }
 
-    const handler = createHandler(
-        ...plugins,
-        createWcpContext(),
-        createWcpGraphQL(),
-        graphqlHandlerPlugins(),
-        ...createTenancyAndSecurity({ permissions, identity: identity || defaultIdentity }),
-        i18nContext(),
-        i18nDynamoDbStorageOperations(),
-        mockLocalesPlugins(),
-        fileManagerPlugins(),
-        fileManagerDynamoDbPlugins(),
-        /**
-         * We need to create the form builder API app.
-         * It requires storage operations and plugins from the storage operations.
-         */
-        createFormBuilder({
-            storageOperations: createStorageOperations()
-        }),
-        {
-            type: "api-file-manager-storage",
-            name: "api-file-manager-storage",
-            async upload(args: any) {
-                // TODO: use tmp OS directory
-                const key = path.join(__dirname, args.name);
+    const handler = createHandler({
+        plugins: [
+            ...plugins,
+            createWcpContext(),
+            createWcpGraphQL(),
+            graphqlHandlerPlugins(),
+            ...createTenancyAndSecurity({ permissions, identity: identity || defaultIdentity }),
+            i18nContext(),
+            i18nDynamoDbStorageOperations(),
+            mockLocalesPlugins(),
+            fileManagerPlugins(),
+            fileManagerDynamoDbPlugins(),
+            /**
+             * We need to create the form builder API app.
+             * It requires storage operations and plugins from the storage operations.
+             */
+            createFormBuilder({
+                storageOperations: createStorageOperations()
+            }),
+            {
+                type: "api-file-manager-storage",
+                name: "api-file-manager-storage",
+                async upload(args: any) {
+                    // TODO: use tmp OS directory
+                    const key = path.join(__dirname, args.name);
 
-                fs.writeFileSync(key, args.buffer);
+                    fs.writeFileSync(key, args.buffer);
 
-                return {
-                    file: {
-                        key: args.name,
-                        name: args.name,
-                        type: args.type,
-                        size: args.size
-                    }
-                };
-            },
-            async delete() {
-                // dummy
+                    return {
+                        file: {
+                            key: args.name,
+                            name: args.name,
+                            type: args.type,
+                            size: args.size
+                        }
+                    };
+                },
+                async delete() {
+                    // dummy
+                }
             }
-        }
-    );
+        ]
+    });
 
     // Let's also create the "invoke" function. This will make handler invocations in actual tests easier and nicer.
     const invoke = async ({ httpMethod = "POST", body, headers = {}, ...rest }: InvokeParams) => {
-        const response = await handler({
-            httpMethod,
-            headers,
-            body: JSON.stringify(body),
-            ...rest
-        });
+        const response = await handler(
+            {
+                path: "/graphql",
+                httpMethod,
+                headers: {
+                    ["x-tenant"]: "root",
+                    ["Content-Type"]: "application/json",
+                    ...headers
+                },
+                body: JSON.stringify(body),
+                ...rest
+            } as any,
+            {} as any
+        );
 
         // The first element is the response body, and the second is the raw response.
         return [JSON.parse(response.body), response];

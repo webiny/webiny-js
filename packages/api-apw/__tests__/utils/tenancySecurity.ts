@@ -41,8 +41,7 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config) => {
             storageOperations: securityStorageOperations({
                 documentClient,
                 table: process.env.DB_TABLE
-            }),
-            verifyIdentityToTenantLink: false
+            })
         }),
         createSecurityGraphQL(),
         new ContextPlugin<TestContext>(context => {
@@ -73,7 +72,7 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config) => {
             });
 
             context.security.addAuthorizer(async () => {
-                const { headers = {} } = context.http.request || {};
+                const { headers = {} } = context.request || {};
                 if (headers["authorization"]) {
                     return null;
                 }
@@ -82,7 +81,7 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config) => {
             });
         }),
         new BeforeHandlerPlugin<TestContext>(context => {
-            const { headers = {} } = context.http.request || {};
+            const { headers = {} } = context.request || {};
             if (headers["authorization"]) {
                 return context.security.authenticate(headers["authorization"]);
             }

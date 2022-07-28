@@ -2,16 +2,14 @@ import { GraphQLSchema } from "graphql";
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import { ApiEndpoint, CmsContext } from "~/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
-import { NotAuthorizedError, NotAuthorizedResponse } from "@webiny/api-security";
+import { NotAuthorizedError } from "@webiny/api-security";
 import { PluginCollection } from "@webiny/plugins/types";
 import debugPlugins from "@webiny/handler-graphql/debugPlugins";
 import processRequestBody from "@webiny/handler-graphql/processRequestBody";
 import { buildSchemaPlugins } from "./buildSchemaPlugins";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
-import { getWebinyVersionHeaders } from "@webiny/utils";
-import { HttpObject } from "@webiny/handler-http/types";
-import { HandlerPlugin } from "@webiny/handler/types";
 import { GraphQLRequestBody } from "@webiny/handler-graphql/types";
+import { RoutePlugin } from "@webiny/fastify";
 
 interface SchemaCache {
     key: string;
@@ -23,28 +21,6 @@ interface GetSchemaParams {
     locale: I18NLocale;
 }
 
-const DEFAULT_HEADERS: Record<string, string> = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "*",
-    "Access-Control-Allow-Methods": "OPTIONS,POST",
-    "Content-Type": "application/json",
-    ...getWebinyVersionHeaders()
-};
-
-const DEFAULT_CACHE_MAX_AGE = 30758400; // 1 year
-
-const OPTIONS_HEADERS: Record<string, string> = {
-    "Access-Control-Max-Age": `${DEFAULT_CACHE_MAX_AGE}`,
-    "Cache-Control": `public, max-age=${DEFAULT_CACHE_MAX_AGE}`
-};
-
-const respond = (http: HttpObject, result: unknown) => {
-    return http.response({
-        body: JSON.stringify(result),
-        statusCode: 200,
-        headers: DEFAULT_HEADERS
-    });
-};
 const schemaList = new Map<string, SchemaCache>();
 
 const generateCacheKey = async (args: GetSchemaParams): Promise<string> => {
@@ -126,62 +102,47 @@ export interface GraphQLHandlerFactoryParams {
     debug?: boolean;
 }
 
-export const graphQLHandlerFactory = ({ debug }: GraphQLHandlerFactoryParams): PluginCollection => {
-    const handler: HandlerPlugin = {
-        type: "handler",
-        name: "handler.cms.graphql",
-        async handle(context: CmsContext, next) {
-            const { http, cms } = context;
-            /**
-             * Possibly not a CMS request?
-             */
-            const type = cms?.type;
-            if (!type || !http?.request) {
-                return next();
-            }
-
-            const method = (http.request.method || "").toLowerCase();
-            /**
-             * In case of OPTIONS method we just return the headers since there is no need to go further.
-             */
-            if (method.toLowerCase() === "options") {
-                return http.response({
-                    statusCode: 204,
-                    headers: {
-                        ...DEFAULT_HEADERS,
-                        ...OPTIONS_HEADERS
-                    }
-                });
-            }
-            /**
-             * We expect, and allow, only POST method to access our GraphQL
-             */
-            if (method !== "post") {
-                return next();
-            }
-
-            try {
-                await checkEndpointAccess(context);
-            } catch (ex) {
-                return respond(http, new NotAuthorizedResponse(ex));
-            }
-
-            const schema = await getSchema({
-                context,
-                locale: cms.getLocale(),
-                type
+const cmsRoutes = new RoutePlugin<CmsContext>(({ onPost, onOptions, context }) => {
+    onPost("/cms/:type(^manage|preview|read$)/:locale", async (request, reply) => {
+        try {
+            await checkEndpointAccess(context);
+        } catch (ex) {
+            return reply.code(401).send({
+                data: null,
+                error: {
+                    message: ex.message || "Not authorized!",
+                    code: ex.code || "SECURITY_NOT_AUTHORIZED",
+                    data: ex.data || null,
+                    stack: null
+                }
             });
-
-            const body: GraphQLRequestBody | GraphQLRequestBody[] = JSON.parse(http.request.body);
-
-            const result = await processRequestBody(body, schema, context);
-            return respond(http, result);
         }
-    };
 
+        const schema = await getSchema({
+            context,
+            locale: context.cms.getLocale(),
+            type: context.cms.type as ApiEndpoint
+        });
+        const body: GraphQLRequestBody | GraphQLRequestBody[] = request.body as any;
+        const result = await processRequestBody(body, schema, context);
+        return reply.code(200).send(result);
+    });
+
+    // context.server.addHook("onRequest", async (request, reply) => {
+    //     if (request.method.toLowerCase() === "options") {
+    //         reply.hijack().code(204).headers({}).raw.end("");
+    //     }
+    // });
+
+    onOptions("/cms/:type(^manage|preview|read$)/:locale", async (_, reply) => {
+        return reply.hijack().send({});
+    });
+});
+
+export const graphQLHandlerFactory = ({ debug }: GraphQLHandlerFactoryParams): PluginCollection => {
     return [
         ...(debug ? debugPlugins() : []),
-        handler,
+        cmsRoutes,
         {
             type: "wcp-telemetry-tracker"
         }

@@ -1,4 +1,4 @@
-import { createHandler } from "@webiny/handler-aws";
+import { createHandler } from "@webiny/handler-fastify-aws";
 import elasticsearchClientContextPlugin from "@webiny/api-elasticsearch";
 import elasticsearchDataGzipCompression from "@webiny/api-elasticsearch/plugins/GzipCompression";
 import dynamoDBToElastic from "@webiny/api-dynamodb-to-elasticsearch/handler";

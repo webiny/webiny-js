@@ -1,5 +1,5 @@
 import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
-import { createHandler } from "@webiny/handler-aws";
+import { createHandler } from "@webiny/handler-fastify-aws";
 import graphqlHandler from "@webiny/handler-graphql";
 import i18nPlugins from "@webiny/api-i18n/graphql";
 import i18nDynamoDbStorageOperations from "~/index";
@@ -28,28 +28,35 @@ export default (params: UseGqlHandlerParams) => {
         secretAccessKey: "test"
     });
 
-    const handler = createHandler(
-        createWcpContext(),
-        createWcpGraphQL(),
-        dbPlugins({
-            table: process.env.DB_TABLE,
-            driver: new DynamoDbDriver({
-                documentClient
-            })
-        }),
-        ...createTenancyAndSecurity(),
-        i18nDynamoDbStorageOperations(),
-        dynamoDbPlugins(),
-        graphqlHandler(),
-        i18nPlugins(),
-        extraPlugins || []
-    );
+    const handler = createHandler({
+        plugins: [
+            createWcpContext(),
+            createWcpGraphQL(),
+            dbPlugins({
+                table: process.env.DB_TABLE,
+                driver: new DynamoDbDriver({
+                    documentClient
+                })
+            }),
+            ...createTenancyAndSecurity(),
+            i18nDynamoDbStorageOperations(),
+            dynamoDbPlugins(),
+            graphqlHandler(),
+            i18nPlugins(),
+            ...(extraPlugins || [])
+        ]
+    });
 
     // Let's also create the "invoke" function. This will make handler invocations in actual tests easier and nicer.
     const invoke = async ({ httpMethod = "POST", body, headers = {}, ...rest }) => {
         const response = await handler({
+            path: "/graphql",
             httpMethod,
-            headers,
+            headers: {
+                ["x-tenant"]: "root",
+                ["Content-Type"]: "application/json",
+                ...headers
+            },
             body: JSON.stringify(body),
             ...rest
         });

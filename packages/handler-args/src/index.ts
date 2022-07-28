@@ -6,7 +6,7 @@ import { ContextPlugin } from "@webiny/handler";
 import { ArgsContext } from "~/types";
 
 export default (): ContextPlugin<ArgsContext> => {
-    return new ContextPlugin(async context => {
+    return new ContextPlugin<any>(async context => {
         const [event] = context.args;
         context.invocationArgs = event;
     });

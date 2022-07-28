@@ -66,7 +66,7 @@ export const createTenancyAndSecurity = ({
             });
 
             context.security.addAuthorizer(async () => {
-                const { headers = {} } = context.http.request || {};
+                const { headers = {} } = context.request || {};
                 if (headers["authorization"]) {
                     return null;
                 }
@@ -75,7 +75,7 @@ export const createTenancyAndSecurity = ({
             });
         }),
         new BeforeHandlerPlugin<TestContext>(context => {
-            const { headers = {} } = context.http.request || {};
+            const { headers = {} } = context.request || {};
             if (headers["authorization"]) {
                 return context.security.authenticate(headers["authorization"]);
             }
