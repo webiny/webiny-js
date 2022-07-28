@@ -15,10 +15,10 @@ export interface CreateHandlerParams extends CreateFastifyHandlerParams {
 export const createHandler = (params: CreateHandlerParams): HandlerCallable => {
     return (event, context) => {
         const app = createFastify({
-            plugins: params?.plugins || [],
+            plugins: params.plugins,
             options: {
-                logger: params?.http?.debug === true,
-                ...(params?.options || {})
+                logger: params.http?.debug === true,
+                ...(params.options || {})
             }
         });
         if (app.webiny.plugins.byType<RoutePlugin>(RoutePlugin.type).length === 0) {

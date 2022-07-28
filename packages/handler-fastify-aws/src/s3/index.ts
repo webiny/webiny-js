@@ -21,8 +21,8 @@ export const createHandler = (params: CreateHandlerParams): HandlerCallable => {
         const app = createFastify({
             plugins: params.plugins,
             options: {
-                logger: params?.debug === true,
-                ...(params?.options || {})
+                logger: params.debug === true,
+                ...(params.options || {})
             }
         });
         /**
