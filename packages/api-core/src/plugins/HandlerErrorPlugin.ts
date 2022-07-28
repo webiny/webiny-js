@@ -19,3 +19,9 @@ export class HandlerErrorPlugin<T extends Context = Context> extends Plugin {
         return this._callable(context, error, next);
     }
 }
+
+export const createHandlerErrorPlugin = <T extends Context = Context>(
+    callable: HandlerErrorCallable<T>
+): HandlerErrorPlugin<T> => {
+    return new HandlerErrorPlugin<T>(callable);
+};

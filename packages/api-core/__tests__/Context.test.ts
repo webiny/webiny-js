@@ -20,14 +20,12 @@ describe("Context", () => {
                 plugins: {}
             },
             WEBINY_VERSION: "test",
-            args: [],
             waiters: []
         });
         expect(context.plugins).toEqual({
             _byTypeCache: {},
             plugins: {}
         });
-        expect(context.args).toEqual([]);
         expect(context.WEBINY_VERSION).toEqual("test");
     });
 

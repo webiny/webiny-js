@@ -1,4 +1,4 @@
-import { Context as ContextInterface, HandlerArgs } from "~/types";
+import { Context as ContextInterface } from "~/types";
 import { PluginsContainer } from "@webiny/plugins";
 import { PluginCollection } from "@webiny/plugins/types";
 
@@ -8,22 +8,19 @@ interface Waiter {
 }
 
 export interface ContextParams {
-    args?: HandlerArgs;
     plugins?: PluginCollection;
     WEBINY_VERSION: string;
 }
 export class Context implements ContextInterface {
     public _result: any;
     public readonly plugins: PluginsContainer;
-    public readonly args: HandlerArgs;
     public readonly WEBINY_VERSION: string;
 
     private readonly waiters: Waiter[] = [];
 
     public constructor(params: ContextParams) {
-        const { plugins, args, WEBINY_VERSION } = params;
+        const { plugins, WEBINY_VERSION } = params;
         this.plugins = new PluginsContainer(plugins || []);
-        this.args = args || [];
         this.WEBINY_VERSION = WEBINY_VERSION;
     }
 

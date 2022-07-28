@@ -1,18 +1,16 @@
 {
-  "name": "@webiny/handler",
-  "version": "5.29.0",
+  "name": "@webiny/api-core",
+  "version": "5.30.0",
   "main": "index.js",
-  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
   },
-  "description": "A pluginable function for the cloud.",
+  "description": "Core package for all of our API packages.",
   "contributors": [
-    "Pavel Denisjuk <pavel@webiny.com>",
-    "Sven Al Hamad <sven@webiny.com>",
-    "Adrian Smijulj <adrian@webiny.com>"
+    "Bruno Zorić <bruno@webiny.com>"
   ],
+  "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.16.3",
     "@webiny/plugins": "^5.29.0"
@@ -21,6 +19,7 @@
     "@babel/cli": "^7.16.0",
     "@babel/core": "^7.16.0",
     "@babel/preset-env": "^7.16.4",
+    "@babel/preset-typescript": "^7.16.0",
     "@webiny/cli": "^5.29.0",
     "@webiny/project-utils": "^5.29.0",
     "rimraf": "^3.0.2",

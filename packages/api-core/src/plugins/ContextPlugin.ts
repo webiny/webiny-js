@@ -24,3 +24,9 @@ export class ContextPlugin<T extends Context = Context> extends Plugin {
         return this._callable(context);
     }
 }
+
+export const createContextPlugin = <T extends Context = Context>(
+    callable: ContextPluginCallable<T>
+): ContextPlugin<T> => {
+    return new ContextPlugin<T>(callable);
+};
