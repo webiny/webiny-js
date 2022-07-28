@@ -10333,7 +10333,6 @@ __metadata:
     "@webiny/handler-args": ^5.29.0
     "@webiny/handler-client": ^5.29.0
     "@webiny/handler-db": ^5.29.0
-    "@webiny/handler-fastify": ^5.29.0
     "@webiny/handler-fastify-aws": ^5.29.0
     "@webiny/handler-graphql": ^5.29.0
     "@webiny/handler-logs": ^5.29.0
@@ -11462,6 +11461,24 @@ __metadata:
     node-fetch: ^2.6.7
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
+    typescript: 4.7.4
+  languageName: unknown
+  linkType: soft
+
+"@webiny/api@^5.29.0, @webiny/api@workspace:packages/api":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api@workspace:packages/api"
+  dependencies:
+    "@babel/cli": ^7.16.0
+    "@babel/core": ^7.16.0
+    "@babel/preset-env": ^7.16.4
+    "@babel/preset-typescript": ^7.16.0
+    "@babel/runtime": ^7.16.3
+    "@webiny/cli": ^5.29.0
+    "@webiny/plugins": ^5.29.0
+    "@webiny/project-utils": ^5.29.0
+    rimraf: ^3.0.2
+    ttypescript: ^1.5.13
     typescript: 4.7.4
   languageName: unknown
   linkType: soft
@@ -13039,9 +13056,9 @@ __metadata:
     "@babel/preset-typescript": ^7.16.0
     "@babel/runtime": ^7.16.3
     "@fastify/cookie": ^7.2.0
+    "@webiny/api": ^5.29.0
     "@webiny/cli": ^5.29.0
     "@webiny/error": ^5.29.0
-    "@webiny/handler": ^5.29.0
     "@webiny/handler-client": ^5.29.0
     "@webiny/plugins": ^5.29.0
     "@webiny/project-utils": ^5.29.0
@@ -13141,9 +13158,9 @@ __metadata:
     "@babel/preset-env": ^7.16.4
     "@babel/preset-typescript": ^7.16.0
     "@babel/runtime": ^7.16.3
+    "@webiny/api": ^5.29.0
     "@webiny/cli": ^5.29.0
     "@webiny/error": ^5.29.0
-    "@webiny/handler": ^5.29.0
     "@webiny/plugins": ^5.29.0
     "@webiny/project-utils": ^5.29.0
     babel-plugin-lodash: ^3.3.4
@@ -13183,6 +13200,7 @@ __metadata:
     "@fastify/aws-lambda": ^3.0.0
     "@webiny/cli": ^5.29.0
     "@webiny/fastify": ^5.29.0
+    "@webiny/plugins": ^5.29.0
     "@webiny/project-utils": ^5.29.0
     aws-lambda: ^1.0.7
     rimraf: ^3.0.2

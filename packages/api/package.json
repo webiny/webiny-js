@@ -1,22 +1,18 @@
 {
-  "name": "@webiny/handler-client",
-  "version": "5.29.0",
+  "name": "@webiny/api",
+  "version": "5.30.0",
   "main": "index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
   },
-  "description": "A package that contains plugins for developing Webiny API in the AWS cloud.",
+  "description": "Core package for all of our API packages.",
   "contributors": [
-    "Pavel Denisjuk <pavel@webiny.com>",
-    "Sven Al Hamad <sven@webiny.com>",
-    "Adrian Smijulj <adrian@webiny.com>"
+    "Bruno Zorić <bruno@webiny.com>"
   ],
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.16.3",
-    "@webiny/api": "^5.29.0",
-    "@webiny/error": "^5.29.0",
     "@webiny/plugins": "^5.29.0"
   },
   "devDependencies": {
@@ -26,10 +22,8 @@
     "@babel/preset-typescript": "^7.16.0",
     "@webiny/cli": "^5.29.0",
     "@webiny/project-utils": "^5.29.0",
-    "babel-plugin-lodash": "^3.3.4",
-    "jest": "^28.1.0",
-    "merge": "^1.2.1",
     "rimraf": "^3.0.2",
+    "ttypescript": "^1.5.13",
     "typescript": "4.7.4"
   },
   "publishConfig": {

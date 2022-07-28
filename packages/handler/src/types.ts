@@ -1,6 +1,4 @@
 import { Plugin, PluginsContainer } from "@webiny/plugins/types";
-
-export type HandlerArgs = any[];
 /**
  * Left for backwards compatibility.
  * @deprecated
@@ -13,7 +11,6 @@ export type HandlerContext = Context;
  */
 export interface Context {
     plugins: PluginsContainer;
-    args: HandlerArgs;
     readonly WEBINY_VERSION: string;
     /**
      * Not to be used outside of Webiny internal code.

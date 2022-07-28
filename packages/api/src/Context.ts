@@ -8,22 +8,19 @@ interface Waiter {
 }
 
 export interface ContextParams {
-    args?: any;
     plugins?: PluginCollection;
     WEBINY_VERSION: string;
 }
 export class Context implements ContextInterface {
     public _result: any;
     public readonly plugins: PluginsContainer;
-    public readonly args: any;
     public readonly WEBINY_VERSION: string;
 
     private readonly waiters: Waiter[] = [];
 
     public constructor(params: ContextParams) {
-        const { plugins, args, WEBINY_VERSION } = params;
+        const { plugins, WEBINY_VERSION } = params;
         this.plugins = new PluginsContainer(plugins || []);
-        this.args = args || [];
         this.WEBINY_VERSION = WEBINY_VERSION;
     }
 

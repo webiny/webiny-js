@@ -1,6 +1,6 @@
 import { PluginCollection } from "@webiny/plugins/types";
 import fastify, { FastifyServerOptions } from "fastify";
-import { BeforeHandlerPlugin, ContextPlugin, HandlerErrorPlugin } from "@webiny/handler";
+import { BeforeHandlerPlugin, ContextPlugin, HandlerErrorPlugin } from "@webiny/api";
 import { getWebinyVersionHeaders } from "@webiny/utils";
 import { FastifyContext, FastifyContextRoutes, RouteMethodOptions, RouteTypes } from "~/types";
 import { Context } from "~/plugins/Context";
