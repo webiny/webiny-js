@@ -8,7 +8,7 @@ import { S3EventHandler, S3EventHandlerCallableParams } from "./plugins/S3EventH
 const url = "/webiny-s3-event";
 
 export interface HandlerCallable {
-    (event: S3Event, context: LambdaContext): Promise<void>;
+    (event: S3Event, context: LambdaContext): Promise<any>;
 }
 
 export interface CreateHandlerParams extends BaseCreateFastifyHandlerParams {
@@ -33,14 +33,16 @@ export const createHandler = (params: CreateHandlerParams): HandlerCallable => {
             throw new Error(`@webiny/handler-fastify-aws/s3 must have S3EventHandler set.`);
         }
 
-        app.post(url, async request => {
+        app.post(url, async (request, reply) => {
             const params: S3EventHandlerCallableParams = {
                 request,
                 context: app.webiny,
                 event,
                 lambdaContext: context
             };
-            await handler.cb(params);
+            const result = await handler.cb(params);
+
+            return reply.send(result);
         });
         app.decorateRequest("s3", {
             getter: () => ({
@@ -52,7 +54,7 @@ export const createHandler = (params: CreateHandlerParams): HandlerCallable => {
                 }
             })
         });
-        return new Promise((resolve, reject) => {
+        return new Promise(resolve => {
             app.inject(
                 {
                     method: "POST",
@@ -61,12 +63,23 @@ export const createHandler = (params: CreateHandlerParams): HandlerCallable => {
                     query: {},
                     headers: {}
                 },
-                err => {
+                (err, response) => {
                     if (err) {
-                        reject(err);
-                        return;
+                        return resolve({
+                            statusCode: 500,
+                            body: JSON.stringify(err),
+                            headers: {}
+                        });
                     }
-                    resolve();
+                    const isBase64Encoded = !!response.headers["x-base64-encoded"];
+                    return resolve({
+                        statusCode: response.statusCode,
+                        body: isBase64Encoded
+                            ? response.rawPayload.toString("base64")
+                            : response.payload,
+                        headers: response.headers,
+                        isBase64Encoded
+                    });
                 }
             );
         });

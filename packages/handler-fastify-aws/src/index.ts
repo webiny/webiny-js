@@ -1,6 +1,7 @@
 import {
     createHandler as createApiGatewayHandler,
-    CreateHandlerParams as CreateApiGatewayHandlerParams
+    CreateHandlerParams as CreateApiGatewayHandlerParams,
+    RoutePlugin
 } from "~/gateway";
 import {
     createHandler as createS3Handler,
@@ -28,7 +29,8 @@ export {
     createS3EventHandler,
     createRawEventHandler,
     S3EventHandler,
-    RawEventHandler
+    RawEventHandler,
+    RoutePlugin
 };
 export type {
     CreateApiGatewayHandlerParams,

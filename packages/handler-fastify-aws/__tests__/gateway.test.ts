@@ -1,4 +1,6 @@
-import { createApiGatewayHandler } from "~/index";
+import { createApiGatewayHandler, RoutePlugin } from "~/index";
+import { createLambdaContext } from "./mocks/lambdaContext";
+import { createLambdaEvent } from "./mocks/lambdaEvent";
 
 describe("api gateway", () => {
     it("should create handler", async () => {
@@ -7,5 +9,46 @@ describe("api gateway", () => {
         });
 
         expect(handler).not.toBeNull();
+        expect(typeof handler).toEqual("function");
+    });
+
+    it("should call handler and get an error for non-existing route", async () => {
+        const handler = createApiGatewayHandler({
+            plugins: []
+        });
+
+        let error: any;
+        try {
+            await handler(createLambdaEvent(), createLambdaContext());
+        } catch (ex) {
+            error = ex;
+        }
+
+        expect(error.message).toEqual(
+            "@webiny/handler-fastify-aws/gateway must have at least one RoutePlugin set."
+        );
+    });
+
+    it("should call handler and trigger given route", async () => {
+        const handler = createApiGatewayHandler({
+            plugins: [
+                new RoutePlugin(({ onPost }) => {
+                    onPost("/webiny", async (_, reply) => {
+                        return reply.send({
+                            test: true
+                        });
+                    });
+                })
+            ]
+        });
+
+        const result = await handler(createLambdaEvent(), createLambdaContext());
+
+        expect(result).toEqual({
+            body: JSON.stringify({ test: true }),
+            headers: expect.any(Object),
+            isBase64Encoded: false,
+            statusCode: 200
+        });
     });
 });

@@ -11,6 +11,7 @@ export type HandlerContext = Context;
  */
 export interface Context {
     plugins: PluginsContainer;
+    args: any;
     readonly WEBINY_VERSION: string;
     /**
      * Not to be used outside of Webiny internal code.

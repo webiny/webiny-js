@@ -34,3 +34,5 @@ export const createHandler = (params: CreateHandlerParams): HandlerCallable => {
         return appLambda(event, context);
     };
 };
+
+export { RoutePlugin };

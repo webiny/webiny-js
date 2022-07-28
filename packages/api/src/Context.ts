@@ -13,6 +13,7 @@ export interface ContextParams {
 }
 export class Context implements ContextInterface {
     public _result: any;
+    public args: any;
     public readonly plugins: PluginsContainer;
     public readonly WEBINY_VERSION: string;
 

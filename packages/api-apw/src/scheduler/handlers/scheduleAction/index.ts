@@ -48,7 +48,7 @@ const scheduleActionLambda = ({
     type: "handler",
     async handle(context): Promise<void> {
         try {
-            const { invocationArgs: args, handlerClient, args: originalArgs } = context as any;
+            const { invocationArgs: args, handlerClient, args: originalArgs } = context;
 
             const [, eventContext] = originalArgs;
 
