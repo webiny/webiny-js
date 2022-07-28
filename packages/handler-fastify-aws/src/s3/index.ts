@@ -4,11 +4,12 @@ import {
 } from "@webiny/fastify";
 import { S3Event, Context as LambdaContext } from "aws-lambda";
 import { S3EventHandler, S3EventHandlerCallableParams } from "./plugins/S3EventHandler";
+import { APIGatewayProxyResult } from "aws-lambda/trigger/api-gateway-proxy";
 
 const url = "/webiny-s3-event";
 
 export interface HandlerCallable {
-    (event: S3Event, context: LambdaContext): Promise<any>;
+    (event: S3Event, context: LambdaContext): Promise<APIGatewayProxyResult>;
 }
 
 export interface CreateHandlerParams extends BaseCreateFastifyHandlerParams {
@@ -44,7 +45,7 @@ export const createHandler = (params: CreateHandlerParams): HandlerCallable => {
 
             return reply.send(result);
         });
-        app.decorateRequest("s3", {
+        app.decorateRequest("awsS3", {
             getter: () => ({
                 get event() {
                     return event;
@@ -63,7 +64,7 @@ export const createHandler = (params: CreateHandlerParams): HandlerCallable => {
                     query: {},
                     headers: {}
                 },
-                (err, response) => {
+                (err, result) => {
                     if (err) {
                         return resolve({
                             statusCode: 500,
@@ -71,15 +72,17 @@ export const createHandler = (params: CreateHandlerParams): HandlerCallable => {
                             headers: {}
                         });
                     }
-                    const isBase64Encoded = !!response.headers["x-base64-encoded"];
-                    return resolve({
-                        statusCode: response.statusCode,
+                    const isBase64Encoded =
+                        !!result.headers["x-base64-encoded"] || !!result.headers["x-binary"];
+                    const response: APIGatewayProxyResult = {
+                        statusCode: result.statusCode,
                         body: isBase64Encoded
-                            ? response.rawPayload.toString("base64")
-                            : response.payload,
-                        headers: response.headers,
+                            ? result.rawPayload.toString("base64")
+                            : result.payload,
+                        headers: result.headers as APIGatewayProxyResult["headers"],
                         isBase64Encoded
-                    });
+                    };
+                    return resolve(response);
                 }
             );
         });

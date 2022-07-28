@@ -2,13 +2,13 @@ import {
     createFastify,
     CreateFastifyHandlerParams as BaseCreateFastifyHandlerParams
 } from "@webiny/fastify";
-import { Context as LambdaContext } from "aws-lambda";
+import { Context as LambdaContext, APIGatewayProxyResult } from "aws-lambda";
 import { RawEventHandler, RawEventHandlerCallableParams } from "./plugins/RawEventHandler";
 
 const url = "/webiny-raw-event";
 
 export interface HandlerCallable<T> {
-    (event: T, context: LambdaContext): Promise<void>;
+    (event: T, context: LambdaContext): Promise<APIGatewayProxyResult>;
 }
 
 export interface CreateHandlerParams extends BaseCreateFastifyHandlerParams {
@@ -33,16 +33,18 @@ export const createHandler = <T = any>(params: CreateHandlerParams): HandlerCall
             throw new Error(`@webiny/handler-fastify-aws/raw must have RawEventHandler set.`);
         }
 
-        app.post(url, async request => {
+        app.post(url, async (request, reply) => {
             const params: RawEventHandlerCallableParams<T> = {
                 request,
                 context: app.webiny,
                 event,
                 lambdaContext: context
             };
-            await handler.cb(params);
+            const result = await handler.cb(params);
+
+            return reply.send(result);
         });
-        app.decorateRequest("raw", {
+        app.decorateRequest("awsRaw", {
             getter: () => ({
                 get event() {
                     return event;
@@ -52,7 +54,7 @@ export const createHandler = <T = any>(params: CreateHandlerParams): HandlerCall
                 }
             })
         });
-        return new Promise((resolve, reject) => {
+        return new Promise(resolve => {
             app.inject(
                 {
                     method: "POST",
@@ -61,12 +63,25 @@ export const createHandler = <T = any>(params: CreateHandlerParams): HandlerCall
                     query: {},
                     headers: {}
                 },
-                err => {
+                (err, result) => {
                     if (err) {
-                        reject(err);
-                        return;
+                        return resolve({
+                            statusCode: 500,
+                            body: JSON.stringify(err),
+                            headers: {}
+                        });
                     }
-                    resolve();
+                    const isBase64Encoded =
+                        !!result.headers["x-base64-encoded"] || !!result.headers["x-binary"];
+                    const response: APIGatewayProxyResult = {
+                        statusCode: result.statusCode,
+                        body: isBase64Encoded
+                            ? result.rawPayload.toString("base64")
+                            : result.payload,
+                        headers: result.headers as APIGatewayProxyResult["headers"],
+                        isBase64Encoded
+                    };
+                    return resolve(response);
                 }
             );
         });

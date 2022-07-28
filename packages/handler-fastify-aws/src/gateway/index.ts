@@ -29,7 +29,7 @@ export const createHandler = (params: CreateHandlerParams): HandlerCallable => {
         const appLambda = awsLambdaFastify(app, {
             decorateRequest: true,
             serializeLambdaArguments: true,
-            decorationPropertyName: "awsLambdaEvent"
+            decorationPropertyName: "awsLambda"
         });
         return appLambda(event, context);
     };

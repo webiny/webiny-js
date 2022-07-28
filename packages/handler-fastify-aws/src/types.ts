@@ -4,15 +4,15 @@ export * from "@webiny/fastify/types";
 
 declare module "fastify" {
     export interface FastifyRequest {
-        awsLambdaEvent: {
+        awsLambda: {
             event: APIGatewayEvent;
             context: LambdaContext;
         };
-        s3Event: {
+        awsS3: {
             event: S3Event;
             context: LambdaContext;
         };
-        rawEvent: {
+        awsRaw: {
             event: any;
             context: LambdaContext;
         };
