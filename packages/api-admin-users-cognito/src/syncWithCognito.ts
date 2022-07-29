@@ -1,6 +1,6 @@
 import CognitoIdentityServiceProvider from "aws-sdk/clients/cognitoidentityserviceprovider";
 import WebinyError from "@webiny/error";
-import { ContextPlugin } from "@webiny/handler";
+import { ContextPlugin } from "@webiny/api";
 import { AdminUser, AdminUsersContext, BaseUserAttributes } from "~/types";
 
 type MappedAttrType = (user: AdminUser) => string | keyof AdminUser;
