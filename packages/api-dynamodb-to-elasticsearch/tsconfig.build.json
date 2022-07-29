@@ -4,6 +4,7 @@
   "references": [
     { "path": "../api-elasticsearch/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
+    { "path": "../plugins/tsconfig.build.json" },
     { "path": "../handler-fastify-aws/tsconfig.build.json" }
   ],
   "compilerOptions": {
