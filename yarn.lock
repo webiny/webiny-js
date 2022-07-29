@@ -10895,10 +10895,10 @@ __metadata:
     "@babel/cli": ^7.16.0
     "@babel/core": ^7.16.0
     "@babel/runtime": ^7.16.3
+    "@webiny/api": ^5.30.0
     "@webiny/api-i18n": ^5.30.0
     "@webiny/api-security": ^5.30.0
     "@webiny/cli": ^5.30.0
-    "@webiny/handler": ^5.30.0
     "@webiny/project-utils": ^5.30.0
     graphql: ^15.7.2
     rimraf: ^3.0.2
@@ -10915,6 +10915,7 @@ __metadata:
     "@babel/preset-env": ^7.16.4
     "@babel/preset-typescript": ^7.16.0
     "@babel/runtime": ^7.16.3
+    "@webiny/api": ^5.30.0
     "@webiny/api-i18n": ^5.30.0
     "@webiny/api-security": ^5.30.0
     "@webiny/api-security-so-ddb": ^5.30.0
@@ -10924,7 +10925,6 @@ __metadata:
     "@webiny/cli": ^5.30.0
     "@webiny/db-dynamodb": ^5.30.0
     "@webiny/error": ^5.30.0
-    "@webiny/handler": ^5.30.0
     "@webiny/handler-db": ^5.30.0
     "@webiny/handler-fastify-aws": ^5.30.0
     "@webiny/handler-graphql": ^5.30.0
@@ -10949,6 +10949,7 @@ __metadata:
     "@babel/preset-typescript": ^7.16.0
     "@babel/runtime": ^7.16.3
     "@types/accept-language-parser": ^1.5.3
+    "@webiny/api": ^5.30.0
     "@webiny/api-security": ^5.30.0
     "@webiny/api-security-so-ddb": ^5.25.0
     "@webiny/api-tenancy": ^5.30.0
@@ -10956,11 +10957,9 @@ __metadata:
     "@webiny/api-wcp": ^5.30.0
     "@webiny/cli": ^5.30.0
     "@webiny/error": ^5.30.0
-    "@webiny/handler": ^5.30.0
     "@webiny/handler-client": ^5.30.0
     "@webiny/handler-fastify-aws": ^5.30.0
     "@webiny/handler-graphql": ^5.30.0
-    "@webiny/handler-http": ^5.30.0
     "@webiny/plugins": ^5.30.0
     "@webiny/project-utils": ^5.30.0
     "@webiny/pubsub": ^5.30.0
