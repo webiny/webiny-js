@@ -55,9 +55,8 @@ export const uploadFolderToS3 = async ({
     path: root,
     bucket,
     onFileUploadSuccess,
-    // onFileUploadError,
+    onFileUploadError,
     onFileUploadSkip,
-    // acl = "public-read",
     cacheControl = "max-age=31536000"
 }: UploadFolderToS3Params) => {
     const s3 = new S3Client({ region: process.env.AWS_REGION });
@@ -90,8 +89,7 @@ export const uploadFolderToS3 = async ({
 
             promises.push(
                 new Promise<void>(async resolve => {
-                    // We also replace "\" with "/", which can occur on Windows' CMD or Powershell.
-                    // https://github.com/webiny/webiny-js/issues/1701#issuecomment-860123555
+                    // We also replace "\" with "/", which is a path separator on Windows' CMD or Powershell.
                     const key = relative(root, path).replace(/\\/g, "/");
                     try {
                         // Get file checksum so that we can check if a file needs to be uploaded or not.
@@ -107,7 +105,7 @@ export const uploadFolderToS3 = async ({
                                 .promise();
 
                             if (existingObject.Metadata?.checksum === checksum) {
-                                skipUpload = false;
+                                skipUpload = true;
                             }
                         } catch {
                             // Do nothing.
@@ -130,7 +128,6 @@ export const uploadFolderToS3 = async ({
                             });
 
                             const data: Record<string, string> = {
-                                bucket,
                                 ...fields,
                                 "Content-Type": contentType || "",
                                 "X-Amz-Meta-Checksum": checksum,
@@ -146,14 +143,14 @@ export const uploadFolderToS3 = async ({
                                 formData.append(key, data[key]);
                             });
 
-                            const [status, body] = await fetch(url, {
+                            const res = await fetch(url, {
                                 method: "POST",
                                 body: formData
-                            }).then(async res => {
-                                return [await res.text(), res.status];
                             });
 
-                            console.log(status, body);
+                            if (res.status > 299) {
+                                throw new Error(`${res.statusText}\n${await res.text()}`);
+                            }
 
                             if (typeof onFileUploadSuccess === "function") {
                                 await onFileUploadSuccess({ paths: { full: path, relative: key } });
@@ -161,15 +158,13 @@ export const uploadFolderToS3 = async ({
                         }
                         resolve();
                     } catch (e) {
-                        console.log(e);
-                        process.exit();
-                        // if (typeof onFileUploadError === "function") {
-                        //     await onFileUploadError({
-                        //         paths: { full: path, relative: key },
-                        //         error: e
-                        //     });
-                        // }
-                        // resolve();
+                        if (typeof onFileUploadError === "function") {
+                            await onFileUploadError({
+                                paths: { full: path, relative: key },
+                                error: e
+                            });
+                        }
+                        resolve();
                     }
                 })
             );
