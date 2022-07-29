@@ -2,14 +2,17 @@ import {
     createFastify,
     CreateFastifyHandlerParams as BaseCreateFastifyHandlerParams
 } from "@webiny/fastify";
-import { S3Event, Context as LambdaContext } from "aws-lambda";
-import { S3EventHandler, S3EventHandlerCallableParams } from "./plugins/S3EventHandler";
+import { DynamoDBStreamEvent, Context as LambdaContext } from "aws-lambda";
+import {
+    DynamoDBEventHandler,
+    DynamoDBEventHandlerCallableParams
+} from "./plugins/DynamoDBEventHandler";
 import { APIGatewayProxyResult } from "aws-lambda/trigger/api-gateway-proxy";
 
-const url = "/webiny-s3-event";
+const url = "/webiny-dynamodb-event";
 
 export interface HandlerCallable {
-    (event: S3Event, context: LambdaContext): Promise<APIGatewayProxyResult>;
+    (event: DynamoDBStreamEvent, context: LambdaContext): Promise<APIGatewayProxyResult>;
 }
 
 export interface CreateHandlerParams extends BaseCreateFastifyHandlerParams {
@@ -28,14 +31,14 @@ export const createHandler = (params: CreateHandlerParams): HandlerCallable => {
         /**
          * There must be an event plugin for this handler to work.
          */
-        const plugins = app.webiny.plugins.byType<S3EventHandler>(S3EventHandler.type);
+        const plugins = app.webiny.plugins.byType<DynamoDBEventHandler>(DynamoDBEventHandler.type);
         const handler = plugins.shift();
         if (!handler) {
-            throw new Error(`@webiny/handler-fastify-aws/s3 must have S3EventHandler set.`);
+            throw new Error(`@webiny/handler-fastify-aws/dynamodb must have DynamoDBHandler set.`);
         }
 
         app.post(url, async (request, reply) => {
-            const params: S3EventHandlerCallableParams = {
+            const params: DynamoDBEventHandlerCallableParams = {
                 request,
                 context: app.webiny,
                 event,
@@ -79,4 +82,4 @@ export const createHandler = (params: CreateHandlerParams): HandlerCallable => {
     };
 };
 
-export * from "./plugins/S3EventHandler";
+export * from "./plugins/DynamoDBEventHandler";
