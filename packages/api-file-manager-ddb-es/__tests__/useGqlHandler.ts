@@ -2,7 +2,7 @@ import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
 import richTextFieldPlugin from "./mocks/richTextFieldPlugin";
 import fileManagerPlugins from "@webiny/api-file-manager/plugins";
 import fileManagerDdbEsPlugins from "~/index";
-import dynamoToElastic from "@webiny/api-dynamodb-to-elasticsearch/handler";
+import { createEventHandler as createDynamoDBToElasticsearchHandler } from "@webiny/api-dynamodb-to-elasticsearch";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import dbPlugins from "@webiny/handler-db";
@@ -13,12 +13,12 @@ import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
 // @ts-ignore
 import { simulateStream } from "@webiny/project-utils/testing/dynamodb";
 import elasticsearchClientContextPlugin from "@webiny/api-elasticsearch";
-import { createHandler } from "@webiny/handler-fastify-aws";
+import { createHandler } from "@webiny/handler-fastify-aws/gateway";
 import graphqlHandlerPlugins from "@webiny/handler-graphql";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
-import { createHandler as createBaseHandler } from "@webiny/handler";
+import { createHandler as createDynamoDBHandler } from "@webiny/handler-fastify-aws/dynamodb";
 
 /**
  * Load some test stuff from the api-file-manager
@@ -113,7 +113,9 @@ export default (params?: UseGqlHandlerParams) => {
     // Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)
     simulateStream(
         documentClient,
-        createBaseHandler(elasticsearchClientContext, dynamoToElastic())
+        createDynamoDBHandler({
+            plugins: [elasticsearchClientContext, createDynamoDBToElasticsearchHandler()]
+        })
     );
 
     const tenant = { id: "root", name: "Root", parent: null };

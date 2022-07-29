@@ -3,7 +3,7 @@ import { getApplicablePlugin } from "@webiny/api-upgrade";
 import { FileManagerContext, FileManagerSettings, FileManagerSystem } from "~/types";
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
 import WebinyError from "@webiny/error";
-import { ContextPlugin } from "@webiny/handler";
+import { ContextPlugin } from "@webiny/api";
 import { executeCallbacks } from "~/utils";
 import { InstallationPlugin } from "~/plugins/definitions/InstallationPlugin";
 import { SystemStorageOperationsProviderPlugin } from "~/plugins/definitions/SystemStorageOperationsProviderPlugin";
