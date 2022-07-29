@@ -10454,9 +10454,9 @@ __metadata:
     "@babel/preset-env": ^7.16.4
     "@babel/preset-typescript": ^7.16.0
     "@babel/runtime": ^7.16.3
+    "@webiny/api": ^5.30.0
     "@webiny/cli": ^5.30.0
-    "@webiny/handler": ^5.30.0
-    "@webiny/handler-http": ^5.30.0
+    "@webiny/fastify": ^5.30.0
     "@webiny/project-utils": ^5.30.0
     jest-dynalite: ^3.2.0
     rimraf: ^3.0.2

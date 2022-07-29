@@ -1,29 +1,27 @@
-import { BeforeHandlerPlugin } from "@webiny/handler";
-import { HttpContext } from "@webiny/handler-http/types";
+import { BeforeHandlerPlugin } from "@webiny/api";
 import { AuthenticationContext } from "~/types";
 
-type Context = HttpContext & AuthenticationContext;
-
 export interface GetHeader {
-    (context: Context): string;
+    (headers: Record<string, any>): string | null;
 }
 
-const defaultGetHeader: GetHeader = context => {
-    const { headers } = context.http.request;
-
+const defaultGetHeader: GetHeader = headers => {
     const header = headers["authorization"];
 
-    return header ? header.split(" ").pop() : null;
+    if (!header) {
+        return null;
+    }
+    return header.split(" ").pop() || null;
 };
 
 export const authenticateUsingHttpHeader = (getHeader: GetHeader = defaultGetHeader) => {
-    return new BeforeHandlerPlugin<Context>(async context => {
-        const { method } = context.http.request;
+    return new BeforeHandlerPlugin<AuthenticationContext>(async context => {
+        const { method, headers } = context.request;
         if (method !== "POST") {
             return;
         }
 
-        const token = getHeader(context);
+        const token = getHeader(headers);
 
         if (!token) {
             return;
