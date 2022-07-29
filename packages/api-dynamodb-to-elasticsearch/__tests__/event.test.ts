@@ -1,4 +1,4 @@
-import { createEventHandler } from "~/handler";
+import { createEventHandler } from "~/index";
 import { PluginsContainer } from "@webiny/plugins";
 import { DynamoDBStreamEvent } from "aws-lambda";
 
