@@ -1,4 +1,4 @@
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
+import { ContextPlugin } from "@webiny/api";
 import { ApwContext } from "~/types";
 import { deleteCommentsAfterChangeRequest } from "./deleteCommentsAfterChangeRequest";
 import { deleteChangeRequestsWithContentReview } from "./deleteChangeRequestsAfterContentReview";

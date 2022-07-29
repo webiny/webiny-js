@@ -2,7 +2,9 @@ const dbPlugins = require("@webiny/handler-db").default;
 const { DynamoDbDriver } = require("@webiny/db-dynamodb");
 const { DocumentClient } = require("aws-sdk/clients/dynamodb");
 const elasticsearchClientContextPlugin = require("@webiny/api-elasticsearch").default;
-const dynamoToElastic = require("@webiny/api-dynamodb-to-elasticsearch/handler").default;
+const {
+    createEventHandler: createDynamoDBToElasticsearchEventHandler
+} = require("@webiny/api-dynamodb-to-elasticsearch");
 const {
     createElasticsearchClient
 } = require("@webiny/project-utils/testing/elasticsearch/createClient");
@@ -51,7 +53,10 @@ class PageBuilderTestEnvironment extends NodeEnvironment {
             context.plugins.register([elasticsearchDataGzipCompression()]);
             await elasticsearchClientContext.apply(context);
         });
-        simulateStream(documentClient, createBaseHandler(simulationContext, dynamoToElastic()));
+        simulateStream(
+            documentClient,
+            createBaseHandler(simulationContext, createDynamoDBToElasticsearchEventHandler())
+        );
 
         const plugins = [
             elasticsearchDataGzipCompression(),

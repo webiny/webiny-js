@@ -2,7 +2,9 @@ const dbPlugins = require("@webiny/handler-db").default;
 const { DynamoDbDriver } = require("@webiny/db-dynamodb");
 const { DocumentClient } = require("aws-sdk/clients/dynamodb");
 const elasticsearchClientContextPlugin = require("@webiny/api-elasticsearch").default;
-const dynamoToElastic = require("@webiny/api-dynamodb-to-elasticsearch/handler").default;
+const {
+    createEventHandler: createDynamoDBToElasticsearchEventHandler
+} = require("@webiny/api-dynamodb-to-elasticsearch");
 const { simulateStream } = require("@webiny/project-utils/testing/dynamodb");
 const NodeEnvironment = require("jest-environment-node");
 const elasticsearchDataGzipCompression =
@@ -64,7 +66,10 @@ class CmsTestEnvironment extends NodeEnvironment {
             context.plugins.register([elasticsearchDataGzipCompression()]);
             await elasticsearchClientContext.apply(context);
         });
-        simulateStream(documentClient, createBaseHandler(simulationContext, dynamoToElastic()));
+        simulateStream(
+            documentClient,
+            createBaseHandler(simulationContext, createDynamoDBToElasticsearchEventHandler())
+        );
 
         //const onBeforeEntryList = new ContextPlugin(async context => {
         //if (!context.cms) {
