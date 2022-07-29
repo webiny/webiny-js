@@ -30,7 +30,8 @@ describe("authenticateUsingHttpHeader", () => {
             request: {
                 headers: {
                     authorization: `Bearer ${token}`
-                }
+                },
+                method: "POST"
             },
             authentication: auth
         } as unknown as AuthenticationContext);

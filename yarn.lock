@@ -10495,8 +10495,10 @@ __metadata:
     "@webiny/api-elasticsearch": ^5.30.0
     "@webiny/cli": ^5.30.0
     "@webiny/error": ^5.30.0
-    "@webiny/handler": ^5.30.0
+    "@webiny/handler-fastify-aws": ^5.30.0
+    "@webiny/plugins": ^5.30.0
     "@webiny/project-utils": ^5.30.0
+    aws-lambda: ^1.0.7
     aws-sdk: ^2.971.0
     typescript: 4.7.4
   languageName: unknown
@@ -10509,9 +10511,9 @@ __metadata:
     "@babel/cli": ^7.16.0
     "@babel/core": ^7.16.0
     "@elastic/elasticsearch": 7.12.0
+    "@webiny/api": ^5.30.0
     "@webiny/cli": ^5.30.0
     "@webiny/error": ^5.30.0
-    "@webiny/handler": ^5.30.0
     "@webiny/plugins": ^5.30.0
     "@webiny/project-utils": ^5.30.0
     "@webiny/utils": ^5.30.0
