@@ -13,23 +13,23 @@ import {
 } from "~/s3";
 
 import {
-    createHandler as createRawHandler,
-    CreateHandlerParams as CreateRawHandlerParams,
-    RawEventHandler,
-    RawEventHandlerCallable,
-    RawEventHandlerCallableParams,
-    createRawEventHandler,
-    HandlerCallable as RawHandlerCallable
-} from "~/raw";
+    createHandler as createPayloadHandler,
+    CreateHandlerParams as CreatePayloadHandlerParams,
+    PayloadEventHandler,
+    PayloadEventHandlerCallable,
+    PayloadHandlerCallableParams,
+    createEventHandler as createPayloadEventHandler,
+    HandlerCallable as PayloadHandlerCallable
+} from "~/payload";
 
 export {
     createApiGatewayHandler,
     createS3Handler,
-    createRawHandler,
+    createPayloadHandler,
     createS3EventHandler,
-    createRawEventHandler,
+    createPayloadEventHandler,
     S3EventHandler,
-    RawEventHandler,
+    PayloadEventHandler,
     RoutePlugin
 };
 export type {
@@ -37,8 +37,8 @@ export type {
     CreateS3HandlerParams,
     S3EventHandlerCallable,
     S3EventHandlerCallableParams,
-    CreateRawHandlerParams,
-    RawEventHandlerCallable,
-    RawEventHandlerCallableParams,
-    RawHandlerCallable
+    CreatePayloadHandlerParams,
+    PayloadEventHandlerCallable,
+    PayloadHandlerCallableParams,
+    PayloadHandlerCallable
 };
