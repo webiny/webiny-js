@@ -29,6 +29,13 @@ export interface TransformHandlerEventArgs extends HandlerEventArgs {
     };
 }
 
+export interface TransformHandlerBody {
+    key: string;
+    transformations: {
+        width: string;
+    };
+}
+
 export interface HandlerHeaders {
     [key: string]: string | boolean | undefined;
 }
