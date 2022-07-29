@@ -6,8 +6,13 @@ export const customGroupAuthorizer = () => {
         security.addAuthorizer(async () => {
             const identity = security.getIdentity();
             if (identity && identity["group"] === "full-access") {
-                return [{ name: "*" }];
+                return [
+                    {
+                        name: "*"
+                    }
+                ];
             }
+            return null;
         });
     });
 };
