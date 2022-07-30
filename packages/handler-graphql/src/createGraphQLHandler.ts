@@ -5,7 +5,7 @@ import { PluginCollection } from "@webiny/plugins/types";
 import debugPlugins from "./debugPlugins";
 import processRequestBody from "./processRequestBody";
 import { GraphQLSchema } from "graphql";
-import { RoutePlugin } from "@webiny/fastify";
+import { RoutePlugin } from "@webiny/handler-fastify-aws";
 
 const DEFAULT_CACHE_MAX_AGE = 30758400; // 1 year
 
