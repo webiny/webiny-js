@@ -1,4 +1,4 @@
-import { ContextPlugin } from "@webiny/handler";
+import { ContextPlugin } from "@webiny/api";
 import { CmsContext, HeadlessCmsStorageOperations } from "~/types";
 import { createModelGroupsCrud } from "./contentModelGroup.crud";
 import { createModelsCrud } from "./contentModel.crud";

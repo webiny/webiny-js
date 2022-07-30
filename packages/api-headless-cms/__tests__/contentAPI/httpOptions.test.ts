@@ -1,4 +1,4 @@
-import { ContextPlugin } from "@webiny/handler";
+import { ContextPlugin } from "@webiny/api";
 import { CmsContext } from "~/types";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 

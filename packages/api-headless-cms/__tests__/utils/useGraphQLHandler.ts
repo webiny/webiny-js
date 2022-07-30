@@ -1,7 +1,7 @@
 import { createWcpContext } from "@webiny/api-wcp";
 import { getIntrospectionQuery } from "graphql";
 import i18nContext from "@webiny/api-i18n/graphql/context";
-import { createHandler } from "@webiny/handler-fastify-aws";
+import { createHandler } from "@webiny/handler-fastify-aws/gateway";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { ApiKey, SecurityIdentity } from "@webiny/api-security/types";
 import apiKeyAuthentication from "@webiny/api-security/plugins/apiKeyAuthentication";
@@ -42,7 +42,7 @@ import {
     SEARCH_CONTENT_ENTRIES_QUERY,
     SearchContentEntriesVariables
 } from "./graphql/contentEntry";
-import { ContextPlugin } from "@webiny/handler";
+import { ContextPlugin } from "@webiny/api";
 import { TestContext } from "./types";
 import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "~/index";
 import graphQLHandlerPlugins from "@webiny/handler-graphql";

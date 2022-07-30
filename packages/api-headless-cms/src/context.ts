@@ -1,6 +1,6 @@
 import { CmsContext } from "~/types";
 import WebinyError from "@webiny/error";
-import { ContextPlugin } from "@webiny/handler";
+import { ContextPlugin } from "@webiny/api";
 import { CmsParametersPlugin, CmsParametersPluginResponse } from "./plugins/CmsParametersPlugin";
 
 const getParameters = async (context: CmsContext): Promise<CmsParametersPluginResponse> => {
