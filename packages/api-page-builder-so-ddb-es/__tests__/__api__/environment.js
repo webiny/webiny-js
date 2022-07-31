@@ -12,7 +12,7 @@ const { simulateStream } = require("@webiny/project-utils/testing/dynamodb");
 const NodeEnvironment = require("jest-environment-node");
 const elasticsearchDataGzipCompression =
     require("@webiny/api-elasticsearch/plugins/GzipCompression").default;
-const { ContextPlugin } = require("@webiny/handler");
+const { ContextPlugin } = require("@webiny/api");
 const {
     elasticIndexManager
 } = require("@webiny/project-utils/testing/helpers/elasticIndexManager");
@@ -22,7 +22,7 @@ const {
 const { createStorageOperations } = require("../../dist/index");
 const { configurations } = require("../../dist/configurations");
 const { base: baseConfigurationPlugin } = require("../../dist/elasticsearch/indices/base");
-const { createHandler: createBaseHandler } = require("@webiny/handler");
+const { createHandler: createDynamoDBHandler } = require("@webiny/handler-fastify-aws/dynamodb");
 
 if (typeof createStorageOperations !== "function") {
     throw new Error(`Loaded plugins file must export a function that returns an array of plugins.`);
@@ -55,7 +55,9 @@ class PageBuilderTestEnvironment extends NodeEnvironment {
         });
         simulateStream(
             documentClient,
-            createBaseHandler(simulationContext, createDynamoDBToElasticsearchEventHandler())
+            createDynamoDBHandler({
+                plugins: [simulationContext, createDynamoDBToElasticsearchEventHandler()]
+            })
         );
 
         const plugins = [

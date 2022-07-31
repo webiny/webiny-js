@@ -1,5 +1,5 @@
 import lodashGet from "lodash/get";
-import { ContextPlugin } from "@webiny/handler";
+import { ContextPlugin } from "@webiny/api";
 import { PbContext } from "~/graphql/types";
 
 export default () => {

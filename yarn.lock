@@ -10876,6 +10876,7 @@ __metadata:
     "@babel/runtime": ^7.16.3
     "@elastic/elasticsearch": 7.12.0
     "@elastic/elasticsearch-mock": 0.3.0
+    "@webiny/api": ^5.30.0
     "@webiny/api-dynamodb-to-elasticsearch": ^5.30.0
     "@webiny/api-elasticsearch": ^5.30.0
     "@webiny/api-page-builder": ^5.30.0
@@ -10885,7 +10886,6 @@ __metadata:
     "@webiny/cli": ^5.30.0
     "@webiny/db-dynamodb": ^5.30.0
     "@webiny/error": ^5.30.0
-    "@webiny/handler": ^5.30.0
     "@webiny/handler-db": ^5.30.0
     "@webiny/handler-fastify-aws": ^5.30.0
     "@webiny/handler-graphql": ^5.30.0
@@ -10920,7 +10920,6 @@ __metadata:
     "@webiny/cli": ^5.30.0
     "@webiny/db-dynamodb": ^5.30.0
     "@webiny/error": ^5.30.0
-    "@webiny/handler": ^5.30.0
     "@webiny/handler-db": ^5.30.0
     "@webiny/handler-fastify-aws": ^5.30.0
     "@webiny/handler-graphql": ^5.30.0
@@ -10954,6 +10953,7 @@ __metadata:
     "@types/node-fetch": ^2.6.1
     "@types/puppeteer": ^5.4.2
     "@types/rimraf": ^3.0.2
+    "@webiny/api": ^5.30.0
     "@webiny/api-file-manager": ^5.30.0
     "@webiny/api-file-manager-ddb": ^5.30.0
     "@webiny/api-i18n": ^5.30.0
@@ -10969,7 +10969,6 @@ __metadata:
     "@webiny/db-dynamodb": ^5.30.0
     "@webiny/error": ^5.30.0
     "@webiny/fastify": ^5.30.0
-    "@webiny/handler": ^5.30.0
     "@webiny/handler-db": ^5.30.0
     "@webiny/handler-fastify-aws": ^5.30.0
     "@webiny/handler-graphql": ^5.30.0
