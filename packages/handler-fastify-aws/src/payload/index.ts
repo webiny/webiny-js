@@ -3,11 +3,12 @@ import {
     CreateFastifyHandlerParams as BaseCreateFastifyHandlerParams
 } from "@webiny/fastify";
 import { PayloadEventHandler, PayloadHandlerCallableParams } from "./plugins/PayloadEventHandler";
+import { Context as LambdaContext } from "aws-lambda";
 
 const url = "/webiny-payload-event";
 
 export interface HandlerCallable<Payload, Response> {
-    (payload?: Payload): Promise<Response>;
+    (payload: Payload, context: LambdaContext): Promise<Response>;
 }
 
 export interface CreateHandlerParams extends BaseCreateFastifyHandlerParams {
@@ -17,7 +18,7 @@ export interface CreateHandlerParams extends BaseCreateFastifyHandlerParams {
 export const createHandler = <Payload = any, Response = any>(
     params: CreateHandlerParams
 ): HandlerCallable<Payload, Response> => {
-    return payload => {
+    return (payload, context) => {
         const app = createFastify({
             plugins: params.plugins,
             options: {
@@ -40,7 +41,8 @@ export const createHandler = <Payload = any, Response = any>(
             const params: PayloadHandlerCallableParams<Payload> = {
                 request,
                 context: app.webiny,
-                payload
+                payload,
+                lambdaContext: context
             };
             app.__webiny_raw_result = await handler.cb(params);
 
