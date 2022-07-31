@@ -1,5 +1,5 @@
 import { SecurityContext, SecurityIdentity, SecurityPermission } from "~/types";
-import { ContextPlugin } from "@webiny/handler";
+import { ContextPlugin } from "@webiny/api";
 
 export interface Config {
     identityType?: string;

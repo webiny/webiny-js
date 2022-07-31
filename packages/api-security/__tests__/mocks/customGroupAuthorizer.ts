@@ -1,5 +1,5 @@
 import { SecurityContext } from "~/types";
-import { ContextPlugin } from "@webiny/handler";
+import { ContextPlugin } from "@webiny/api";
 
 export const customGroupAuthorizer = () => {
     return new ContextPlugin<SecurityContext>(({ security }) => {
