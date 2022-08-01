@@ -23,33 +23,44 @@ interface StoreFileParams {
     body: string;
     storageName: string;
 }
+
 const storeFile = async (params: StoreFileParams) => {
     const { storageName, key, contentType, body } = params;
     const cacheControl = "max-age=30";
 
-    const { url, fields } = await getPresignedPost({
-        key,
-        contentType,
-        bucket: storageName,
-        cacheControl
-    });
+    try {
+        console.log("Get presigned URL");
 
-    const data: Record<string, string> = {
-        ...fields,
-        "Content-Type": contentType,
-        "Cache-Control": cacheControl,
-        file: body
-    };
+        const { url, fields } = await getPresignedPost({
+            key,
+            contentType,
+            bucket: storageName,
+            cacheControl
+        });
 
-    const formData = new FormData();
-    Object.keys(data).forEach(key => {
-        formData.append(key, data[key]);
-    });
+        console.log("Presigned POST", { url, fields });
 
-    await fetch(url, {
-        method: "POST",
-        body: formData
-    });
+        const data: Record<string, string> = {
+            ...fields,
+            "Content-Type": contentType,
+            "Cache-Control": cacheControl,
+            file: body
+        };
+
+        const formData = new FormData();
+        Object.keys(data).forEach(key => {
+            formData.append(key, data[key]);
+        });
+
+        console.log("Upload file");
+        await fetch(url, {
+            method: "POST",
+            body: formData
+        });
+    } catch (e) {
+        console.log("storeFile ERROR", e);
+        throw e;
+    }
 };
 
 export interface RenderParams {
