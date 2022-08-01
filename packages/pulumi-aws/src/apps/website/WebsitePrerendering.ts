@@ -30,7 +30,7 @@ export function createPrerenderingService(app: PulumiApp, params: PreRenderingSe
         }
     });
 
-    const policy = createLambdaPolicy(app, queue.output);
+    const policy = createLambdaPolicy(app, queue.output, params);
     const renderer = createRenderer(app, queue.output, policy.output, params);
     const subscriber = createRenderSubscriber(app, policy.output, params);
     const flush = createFlushService(app, policy.output, params);
@@ -293,7 +293,7 @@ function createFlushService(
     };
 }
 
-function createLambdaPolicy(app: PulumiApp, queue: pulumi.Output<aws.sqs.Queue>) {
+function createLambdaPolicy(app: PulumiApp, queue: pulumi.Output<aws.sqs.Queue>, params: PreRenderingServiceParams) {
     const core = app.getModule(CoreOutput);
     const awsAccountId = getAwsAccountId(app);
 
@@ -347,12 +347,7 @@ function createLambdaPolicy(app: PulumiApp, queue: pulumi.Output<aws.sqs.Queue>)
                         ],
                         Resource: [
                             pulumi.interpolate`arn:aws:s3:::${core.fileManagerBucketId}/*`,
-                            /**
-                             * We're using the hard-coded value for "delivery" S3 bucket because;
-                             * It is created during deployment of the `apps/website` stack which is after the api stack,
-                             * so, we don't know its ARN.
-                             */
-                            "arn:aws:s3:::delivery-*/*"
+                            pulumi.interpolate`arn:aws:s3:::${params.bucket}/*`
                         ]
                     },
                     {
