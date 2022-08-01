@@ -5,7 +5,7 @@
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
-A plugin that enables [Amazon Cognito](https://aws.amazon.com/cognito/) based authentication in [`@webiny/handler`](../handler) handlers.
+A plugin that enables [Amazon Cognito](https://aws.amazon.com/cognito/) based authentication in [`@webiny/fastify`](../fastify) routes.
 
 ## Install
 
@@ -24,7 +24,7 @@ yarn add @webiny/api-security @webiny/api-security-cognito
 The set up process consists only of a single step, and that's adding the plugins in your handler:
 
 ```ts
-import { createHandler } from "@webiny/handler-fastify-aws";
+import { createHandler } from "@webiny/handler-fastify-aws/gateway";
 import graphqlPlugins from "@webiny/handler-graphql";
 import logsPlugins from "@webiny/handler-logs";
 import securityPlugins, { SecurityIdentity } from "@webiny/api-security";

@@ -1,4 +1,4 @@
-import { ContextPlugin } from "@webiny/handler";
+import { ContextPlugin } from "@webiny/api";
 import { SecurityContext, SecurityIdentity } from "@webiny/api-security/types";
 import { createAuthenticator, Config as CognitoConfig } from "@webiny/api-cognito-authenticator";
 
