@@ -24,6 +24,7 @@ function sanitizeRequestURI(uri) {
     return [""].concat(parts).concat("index.html").join("/");
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function handler(event) {
     var request = event.request;
 
