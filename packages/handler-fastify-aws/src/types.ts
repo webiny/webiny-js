@@ -1,5 +1,4 @@
 import { APIGatewayEvent, Context as LambdaContext } from "aws-lambda";
-import { FastifyRequest } from "fastify";
 
 export * from "@webiny/fastify/types";
 

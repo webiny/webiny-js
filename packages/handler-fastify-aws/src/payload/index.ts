@@ -16,7 +16,9 @@ export interface HandlerCallable<Payload, Response> {
 }
 
 export interface CreateHandlerParams extends BaseCreateFastifyHandlerParams {
-    debug?: boolean;
+    http?: {
+        debug?: boolean;
+    };
 }
 
 export const createHandler = <Payload = any, Response = any>(
@@ -26,7 +28,7 @@ export const createHandler = <Payload = any, Response = any>(
         const app = createFastify({
             plugins: params.plugins,
             options: {
-                logger: params.debug === true,
+                logger: params.http?.debug === true,
                 ...(params.options || {})
             }
         });

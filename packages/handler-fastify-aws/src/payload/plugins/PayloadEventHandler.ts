@@ -5,7 +5,7 @@ import { Context as LambdaContext } from "aws-lambda";
 export interface PayloadHandlerCallableParams<Payload> {
     request: Request;
     context: FastifyContext;
-    payload?: Payload;
+    payload: Payload;
     lambdaContext: LambdaContext;
 }
 export interface PayloadEventHandlerCallable<Payload, Response> {
