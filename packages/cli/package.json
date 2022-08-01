@@ -50,6 +50,7 @@
         "@webiny/project-utils",
         "@webiny/api-file-manager",
         "@webiny/cli-plugin-deploy-pulumi",
+        "@webiny/api",
         "@webiny/handler",
         "@webiny/handler-http",
         "@webiny/handler-args",
