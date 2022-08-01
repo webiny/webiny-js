@@ -1,5 +1,5 @@
 import WebinyError from "@webiny/error";
-import { ContextPlugin } from "@webiny/handler";
+import { ContextPlugin } from "@webiny/api";
 import { TenancyContext, TenancyStorageOperations } from "./types";
 import { createTenancy } from "./createTenancy";
 import graphql from "./graphql/full.gql";
