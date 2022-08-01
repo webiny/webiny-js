@@ -1,7 +1,7 @@
 import { createHandler, createEventHandler } from "@webiny/handler-fastify-aws/payload";
 import graphqlHandler from "@webiny/handler-graphql";
 import { createScheduler } from "~/scheduler";
-import { ContextPlugin } from "@webiny/handler";
+import { ContextPlugin } from "@webiny/api";
 import { PbContext } from "@webiny/api-page-builder/graphql/types";
 import { createTenancyAndSecurity } from "./tenancySecurity";
 import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";

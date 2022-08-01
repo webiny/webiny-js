@@ -10193,6 +10193,7 @@ __metadata:
     "@webiny/project-utils": ^5.30.0
     "@webiny/pubsub": ^5.30.0
     "@webiny/validation": ^5.30.0
+    "@webiny/wcp": ^5.30.0
     dayjs: ^1.10.4
     get-yarn-workspaces: ^1.0.2
     graphql: ^15.7.2

@@ -51,6 +51,7 @@
     "@webiny/api-tenancy-so-ddb": "^5.30.0",
     "@webiny/cli": "^5.30.0",
     "@webiny/project-utils": "^5.30.0",
+    "@webiny/wcp": "^5.30.0",
     "get-yarn-workspaces": "^1.0.2",
     "graphql": "^15.7.2",
     "jest": "^28.1.0",
