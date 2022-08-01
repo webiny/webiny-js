@@ -1,4 +1,4 @@
-import { createHandler } from "@webiny/handler-aws";
+import { createHandler } from "@webiny/handler-fastify-aws/gateway";
 import { executeActionHandlerPlugins } from "@webiny/api-apw/scheduler/handlers/executeAction";
 import { createStorageOperations } from "@webiny/api-apw-scheduler-so-ddb";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";

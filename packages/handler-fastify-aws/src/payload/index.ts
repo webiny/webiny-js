@@ -1,3 +1,7 @@
+/**
+ * This handler will return what ever is set in the PayloadEventHandler as result.
+ * This way we can get back some function or even context object for further use.
+ */
 import {
     createFastify,
     CreateFastifyHandlerParams as BaseCreateFastifyHandlerParams
