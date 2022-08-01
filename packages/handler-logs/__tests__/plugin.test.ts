@@ -4,7 +4,7 @@ const forwardUrl = "http://localhost/testing";
 process.env.AWS_LAMBDA_FUNCTION_NAME = lambdaName;
 process.env.WEBINY_LOGS_FORWARD_URL = forwardUrl;
 
-let mockResult: any = {
+const mockResult: any = {
     url: null,
     opts: null
 };
