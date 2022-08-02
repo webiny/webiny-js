@@ -5,6 +5,7 @@ import pageImportExportTaskPlugins from "~/graphql/crud/pageImportExportTasks.cr
 import { ContextPlugin } from "@webiny/api";
 import { createTenancyAndSecurity } from "../tenancySecurity";
 import { PbPageImportExportContext } from "~/graphql/types";
+import { PayloadEventHandler } from "@webiny/handler-fastify-aws";
 
 interface Params {
     plugins?: any;
@@ -15,7 +16,7 @@ export default (params: Params = {}) => {
 
     // @ts-ignore
     const { storageOperations } = __getStorageOperations();
-    const handler = createHandler({
+    const handler = createHandler<PbPageImportExportContext>({
         plugins: [
             createWcpContext(),
             ...createTenancyAndSecurity(),
@@ -57,6 +58,12 @@ export default (params: Params = {}) => {
                 context.pageBuilder = {} as any;
             }),
             pageImportExportTaskPlugins({ storageOperations }),
+            /**
+             * We need an EventPlugin defined because it returns the context which we actually use in tests.
+             */
+            new PayloadEventHandler(async ({ context }) => {
+                return context;
+            }),
             extraPlugins || []
         ]
     });
