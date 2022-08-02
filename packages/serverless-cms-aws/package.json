@@ -63,8 +63,9 @@
     "typescript": "4.7.4"
   },
   "scripts": {
-    "build": "yarn webiny run build",
-    "watch": "yarn webiny run watch"
+    "build": "yarn webiny run build && yarn webiny run buildHandlers",
+    "watch": "yarn webiny run watch",
+    "prepublishOnly": "yarn webiny run buildHandlers"
   },
   "adio": {
     "ignoreDirs": [
