@@ -11312,8 +11312,8 @@ __metadata:
     apollo-link-context: ^1.0.20
     babel-plugin-lodash: ^3.3.4
     emotion: ^10.0.27
-    react: 16.14.0
-    react-dom: 16.14.0
+    react: 17.0.2
+    react-dom: 17.0.2
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
     typescript: 4.7.4
@@ -11341,8 +11341,8 @@ __metadata:
     "@webiny/react-router": ^5.30.0
     babel-plugin-named-asset-import: ^1.0.0-next.3e165448
     lodash.debounce: ^4.0.8
-    react: 16.14.0
-    react-dom: 16.14.0
+    react: 17.0.2
+    react-dom: 17.0.2
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
     typescript: 4.7.4
@@ -11384,8 +11384,8 @@ __metadata:
     graphql: ^15.7.2
     graphql-tag: ^2.12.6
     lodash.get: ^4.4.2
-    react: 16.14.0
-    react-dom: 16.14.0
+    react: 17.0.2
+    react-dom: 17.0.2
     rimraf: ^3.0.2
     typescript: 4.7.4
   languageName: unknown
@@ -11419,8 +11419,8 @@ __metadata:
     classnames: ^2.3.1
     emotion: ^10.0.27
     lodash: ^4.17.21
-    react: 16.14.0
-    react-dom: 16.14.0
+    react: 17.0.2
+    react-dom: 17.0.2
     react-helmet: ^6.1.0
     react-transition-group: ^4.4.2
     rimraf: ^3.0.2
@@ -11462,8 +11462,8 @@ __metadata:
     graphql: ^15.7.2
     graphql-tag: ^2.12.6
     lodash: ^4.17.21
-    react: 16.14.0
-    react-dom: 16.14.0
+    react: 17.0.2
+    react-dom: 17.0.2
     react-helmet: ^6.1.0
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
@@ -11529,9 +11529,9 @@ __metadata:
     minimatch: ^3.0.4
     nanoid: ^3.1.23
     prop-types: ^15.7.2
-    react: 16.14.0
+    react: 17.0.2
     react-butterfiles: ^1.3.1
-    react-dom: 16.14.0
+    react-dom: 17.0.2
     react-hotkeyz: ^1.0.4
     react-lazy-load: ^3.0.13
     react-transition-group: ^4.3.0
@@ -11583,8 +11583,8 @@ __metadata:
     lodash: ^4.17.11
     nanoid: ^3.1.20
     prop-types: ^15.7.2
-    react: ^16.14.0
-    react-dom: ^16.14.0
+    react: 17.0.2
+    react-dom: 17.0.2
     react-helmet: ^6.1.0
     react-spinner-material: 1.1.4
     rimraf: ^3.0.2
@@ -11610,8 +11610,8 @@ __metadata:
     "@webiny/project-utils": ^5.30.0
     babel-plugin-lodash: ^3.3.4
     lodash.get: ^4.4.2
-    react: 16.14.0
-    react-dom: 16.14.0
+    react: 17.0.2
+    react-dom: 17.0.2
     rimraf: ^3.0.2
     typescript: 4.7.4
   languageName: unknown
@@ -11668,8 +11668,8 @@ __metadata:
     graphql-tag: ^2.12.6
     lodash.get: ^4.4.2
     prop-types: ^15.7.2
-    react: 16.14.0
-    react-dom: 16.14.0
+    react: 17.0.2
+    react-dom: 17.0.2
     rimraf: ^3.0.2
     ttypescript: ^1.5.13
     typescript: 4.7.4
@@ -11717,10 +11717,10 @@ __metadata:
     graphql-tag: ^2.12.6
     lodash: ^4.17.10
     prop-types: ^15.7.2
-    react: 16.14.0
+    react: 17.0.2
     react-dnd: ^11.1.3
     react-dnd-html5-backend: ^11.1.3
-    react-dom: 16.14.0
+    react-dom: 17.0.2
     react-google-recaptcha: ^1.1.0
     react-hotkeyz: ^1.0.4
     react-sortable-hoc: ^1.9.1
@@ -11762,8 +11762,8 @@ __metadata:
     graphql: ^15.7.2
     load-script: ^1.0.0
     prop-types: ^15.7.2
-    react: 16.14.0
-    react-dom: 16.14.0
+    react: 17.0.2
+    react-dom: 17.0.2
     rimraf: ^3.0.2
     typescript: 4.7.4
   languageName: unknown
@@ -11827,11 +11827,11 @@ __metadata:
     pluralize: ^8.0.0
     prop-types: ^15.7.2
     raw.macro: ^0.4.2
-    react: 16.14.0
+    react: 17.0.2
     react-custom-scrollbars: ^4.2.1
     react-dnd: ^11.1.3
     react-dnd-html5-backend: ^11.1.3
-    react-dom: 16.14.0
+    react-dom: 17.0.2
     react-helmet: ^6.1.0
     react-hotkeyz: ^1.0.4
     react-virtualized: ^9.21.2
@@ -11866,8 +11866,8 @@ __metadata:
     babel-plugin-emotion: ^9.2.8
     babel-plugin-lodash: ^3.3.4
     emotion: ^10.0.17
-    react: 16.14.0
-    react-dom: 16.14.0
+    react: 17.0.2
+    react-dom: 17.0.2
     rimraf: ^3.0.2
     typescript: 4.7.4
   languageName: unknown
@@ -11907,8 +11907,8 @@ __metadata:
     graphql-tag: ^2.12.6
     lodash: ^4.17.11
     prop-types: ^15.7.2
-    react: 16.14.0
-    react-dom: 16.14.0
+    react: 17.0.2
+    react-dom: 17.0.2
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
     typescript: 4.7.4
@@ -11950,10 +11950,10 @@ __metadata:
     lodash: ^4.17.10
     nanoid: ^3.1.20
     prop-types: ^15.7.2
-    react: 16.14.0
+    react: 17.0.2
     react-dnd: ^11.1.3
     react-dnd-html5-backend: ^11.1.3
-    react-dom: 16.14.0
+    react-dom: 17.0.2
     recoil: ^0.1.2
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
@@ -12060,11 +12060,11 @@ __metadata:
     nanoid: ^3.1.20
     platform: ^1.3.5
     prop-types: ^15.7.2
-    react: 16.14.0
+    react: 17.0.2
     react-color: ^2.14.1
     react-dnd: ^11.1.3
     react-dnd-html5-backend: ^11.1.3
-    react-dom: 16.14.0
+    react-dom: 17.0.2
     react-helmet: ^6.1.0
     react-images: ^0.5.19
     react-sortable: ^2.0.0
@@ -12095,8 +12095,8 @@ __metadata:
     "@webiny/cli": ^5.30.0
     "@webiny/plugins": ^5.30.0
     "@webiny/project-utils": ^5.30.0
-    react: 16.14.0
-    react-dom: 16.14.0
+    react: 17.0.2
+    react-dom: 17.0.2
     rimraf: ^3.0.2
     typescript: 4.7.4
   languageName: unknown
@@ -12130,8 +12130,8 @@ __metadata:
     emotion: ^10.0.17
     graphql-tag: ^2.12.6
     lodash: ^4.17.21
-    react: 16.14.0
-    react-dom: 16.14.0
+    react: 17.0.2
+    react-dom: 17.0.2
     react-helmet: ^6.1.0
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
@@ -12157,8 +12157,8 @@ __metadata:
     babel-plugin-emotion: ^9.2.8
     babel-plugin-lodash: ^3.3.4
     minimatch: ^3.0.4
-    react: 16.14.0
-    react-dom: 16.14.0
+    react: 17.0.2
+    react-dom: 17.0.2
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
     typescript: 4.7.4
@@ -12202,8 +12202,8 @@ __metadata:
     apollo-utilities: ^1.3.4
     babel-plugin-emotion: ^9.2.8
     babel-plugin-named-asset-import: ^1.0.0-next.3e165448
-    react: 16.14.0
-    react-dom: 16.14.0
+    react: 17.0.2
+    react-dom: 17.0.2
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
     typescript: 4.7.4
@@ -12234,8 +12234,8 @@ __metadata:
     babel-plugin-emotion: ^9.2.8
     babel-plugin-lodash: ^3.3.4
     graphql-tag: ^2.12.6
-    react: 16.14.0
-    react-dom: 16.14.0
+    react: 17.0.2
+    react-dom: 17.0.2
     rimraf: ^3.0.2
     store: ^2.0.12
     ttypescript: ^1.3.2
@@ -12277,8 +12277,8 @@ __metadata:
     graphql-tag: ^2.12.6
     lodash: ^4.17.11
     prop-types: ^15.7.2
-    react: 16.14.0
-    react-dom: 16.14.0
+    react: 17.0.2
+    react-dom: 17.0.2
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
     typescript: 4.7.4
@@ -12318,8 +12318,8 @@ __metadata:
     graphql-tag: ^2.12.6
     lodash: ^4.17.11
     prop-types: ^15.7.2
-    react: 16.14.0
-    react-dom: 16.14.0
+    react: 17.0.2
+    react-dom: 17.0.2
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
     typescript: 4.7.4
@@ -12346,8 +12346,8 @@ __metadata:
     "@webiny/validation": ^5.30.0
     babel-plugin-emotion: ^9.2.8
     lodash: ^4.17.4
-    react: 16.14.0
-    react-dom: 16.14.0
+    react: 17.0.2
+    react-dom: 17.0.2
     recoil: ^0.1.2
     rimraf: ^3.0.2
     typescript: 4.7.4
@@ -12373,8 +12373,8 @@ __metadata:
     apollo-link: ^1.2.14
     apollo-utilities: ^1.3.4
     graphql-tag: ^2.12.6
-    react: 16.14.0
-    react-dom: 16.14.0
+    react: 17.0.2
+    react-dom: 17.0.2
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
     typescript: 4.7.4
@@ -12418,8 +12418,8 @@ __metadata:
     invariant: ^2.2.4
     lodash: ^4.17.4
     nanoid: ^3.1.30
-    react: 16.14.0
-    react-dom: 16.14.0
+    react: 17.0.2
+    react-dom: 17.0.2
     rimraf: ^3.0.2
     typescript: 4.7.4
     warning: ^4.0.2
@@ -13170,7 +13170,7 @@ __metadata:
     postcss-normalize: 10.0.1
     postcss-preset-env: 7.0.1
     raw-loader: 4.0.2
-    react: ^16.14.0
+    react: 17.0.2
     react-dev-utils: 12.0.0
     react-dom: 17.0.2
     react-native-web: 0.12.3
@@ -13294,8 +13294,8 @@ __metadata:
     "@webiny/cli": ^5.30.0
     "@webiny/project-utils": ^5.30.0
     lodash.debounce: ^4.0.8
-    react: ^16.14.0
-    react-dom: ^16.14.0
+    react: 17.0.2
+    react-dom: 17.0.2
     ttypescript: ^1.5.13
     typescript: 4.7.4
   languageName: unknown
@@ -13312,7 +13312,7 @@ __metadata:
     "@webiny/project-utils": ^5.30.0
     "@webiny/react-composition": ^5.30.0
     nanoid: ^3.3.4
-    react: ^16.14.0
+    react: 17.0.2
   languageName: unknown
   linkType: soft
 
@@ -13332,7 +13332,7 @@ __metadata:
     "@webiny/cli": ^5.30.0
     "@webiny/project-utils": ^5.30.0
     classnames: ^2.3.1
-    react: ^16.14.0
+    react: 17.0.2
     rimraf: ^3.0.2
     typescript: 4.7.4
   languageName: unknown
@@ -13354,8 +13354,8 @@ __metadata:
     apollo-client: ^2.6.10
     graphql: ^15.7.2
     history: ^5.3.0
-    react: 16.14.0
-    react-dom: 16.14.0
+    react: 17.0.2
+    react-dom: 17.0.2
     react-router-dom: ^6.2.2
     rimraf: ^3.0.2
     ttypescript: ^1.5.13
@@ -13439,8 +13439,8 @@ __metadata:
     execa: ^5.0.0
     highlight.js: ^9.12.0
     prettier: ^2.3.2
-    react: 16.14.0
-    react-dom: 16.14.0
+    react: 17.0.2
+    react-dom: 17.0.2
     react-element-to-jsx-string: ^14.0.1
     react-highlight.js: ^1.0.7
     react-remarkable: ^1.1.3
@@ -13471,8 +13471,8 @@ __metadata:
     "@webiny/plugins": ^5.30.0
     "@webiny/project-utils": ^5.30.0
     p-wait-for: ^4.1.0
-    react: 16.14.0
-    react-dom: 16.14.0
+    react: 17.0.2
+    react-dom: 17.0.2
     rimraf: ^3.0.2
     typescript: 4.7.4
   languageName: unknown
@@ -13977,8 +13977,8 @@ __metadata:
     cross-fetch: ^3.0.4
     invariant: ^2.2.4
     prop-types: ^15.7.2
-    react: 16.14.0
-    react-dom: 16.14.0
+    react: 17.0.2
+    react-dom: 17.0.2
     regenerator-runtime: ^0.13.5
     theme: ^0.1.0
     tslib: ^2.4.0
@@ -38359,7 +38359,7 @@ __metadata:
     graphql-tag: ^2.12.6
     invariant: ^2.2.4
     lodash: ^4.4.2
-    react: 16.14.0
+    react: 17.0.2
     react-hamburger-menu: ^1.1.1
     react-helmet: ^6.1.0
   languageName: unknown
@@ -40336,8 +40336,8 @@ __metadata:
     graphql-tag: ^2.12.6
     invariant: ^2.2.4
     lodash: ^4.4.2
-    react: 16.14.0
-    react-dom: 16.14.0
+    react: 17.0.2
+    react-dom: 17.0.2
     react-helmet: ^6.1.0
     regenerator-runtime: ^0.13.5
     theme: ^0.1.0
