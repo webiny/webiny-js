@@ -1,5 +1,5 @@
-import { ArgsContext } from "@webiny/handler-args/types";
-import { Context } from "@webiny/handler/types";
+import { ArgsContext } from "@webiny/handler-args-old/types";
+import { Context } from "@webiny/handler-old/types";
 
 export default {
     type: "context",

@@ -8,8 +8,8 @@
     "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
-      "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"]
+      "@webiny/handler-old/*": ["../handler/src/*"],
+      "@webiny/handler-old": ["../handler/src"]
     },
     "baseUrl": "."
   }

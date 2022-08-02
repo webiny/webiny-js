@@ -1,5 +1,5 @@
 {
-  "name": "@webiny/handler-aws",
+  "name": "@webiny/handler-aws-old",
   "version": "5.30.0",
   "main": "index.js",
   "repository": {
@@ -15,10 +15,10 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.16.3",
-    "@webiny/handler": "^5.30.0",
-    "@webiny/handler-args": "^5.30.0",
+    "@webiny/handler-args-old": "^5.30.0",
     "@webiny/handler-client": "^5.30.0",
-    "@webiny/handler-http": "^5.30.0",
+    "@webiny/handler-http-old": "^5.30.0",
+    "@webiny/handler-old": "^5.30.0",
     "@webiny/plugins": "^5.30.0"
   },
   "devDependencies": {

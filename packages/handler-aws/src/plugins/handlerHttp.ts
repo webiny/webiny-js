@@ -1,6 +1,6 @@
-import { HttpContext } from "@webiny/handler-http/types";
-import { ContextPlugin } from "@webiny/handler/types";
-import { ArgsContext } from "@webiny/handler-args/types";
+import { HttpContext } from "@webiny/handler-http-old/types";
+import { ContextPlugin } from "@webiny/handler-old/types";
+import { ArgsContext } from "@webiny/handler-args-old/types";
 
 const lowercaseKeys = (obj: Record<string, string>) => {
     return Object.keys(obj).reduce((acc, key) => {
