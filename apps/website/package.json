@@ -54,7 +54,7 @@
   "adio": {
     "ignore": {
       "src": [
-        "@webiny/handler-aws",
+        "@webiny/handler-fastify-aws",
         "@webiny/api-prerendering-service-aws",
         "@webiny/api-prerendering-service-so-ddb"
       ],

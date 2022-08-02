@@ -1,5 +1,5 @@
 const { CloudWatchEventsClient } = require("@aws-sdk/client-cloudwatch-events");
-import { createHandler } from "@webiny/handler-fastify-aws";
+import { createHandler } from "@webiny/handler-fastify-aws/payload";
 import { scheduleActionHandlerPlugins } from "@webiny/api-apw/scheduler/handlers/scheduleAction";
 import { createStorageOperations } from "@webiny/api-apw-scheduler-so-ddb";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";

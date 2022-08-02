@@ -11012,9 +11012,8 @@ __metadata:
     "@webiny/api-prerendering-service": ^5.30.0
     "@webiny/cli": ^5.30.0
     "@webiny/error": ^5.30.0
-    "@webiny/handler": ^5.30.0
-    "@webiny/handler-args": ^5.30.0
     "@webiny/handler-client": ^5.30.0
+    "@webiny/handler-fastify-aws": ^5.30.0
     "@webiny/project-utils": ^5.30.0
     lodash: ^4.17.21
     nanoid: ^4.0.0
@@ -12972,7 +12971,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/handler-aws@^5.30.0, @webiny/handler-aws@workspace:packages/handler-aws":
+"@webiny/handler-aws@workspace:packages/handler-aws":
   version: 0.0.0-use.local
   resolution: "@webiny/handler-aws@workspace:packages/handler-aws"
   dependencies:
@@ -14551,7 +14550,7 @@ __metadata:
     "@webiny/api-apw": ^5.30.0
     "@webiny/api-apw-scheduler-so-ddb": ^5.30.0
     "@webiny/cli": ^5.30.0
-    "@webiny/handler-aws": ^5.30.0
+    "@webiny/handler-fastify-aws": ^5.30.0
     "@webiny/project-utils": ^5.30.0
   languageName: unknown
   linkType: soft
@@ -14623,11 +14622,10 @@ __metadata:
     "@webiny/cli": ^5.30.0
     "@webiny/cli-plugin-deploy-pulumi": ^5.30.0
     "@webiny/db-dynamodb": ^5.30.0
-    "@webiny/handler-aws": ^5.30.0
     "@webiny/handler-client": ^5.30.0
     "@webiny/handler-db": ^5.30.0
+    "@webiny/handler-fastify-aws": ^5.30.0
     "@webiny/handler-graphql": ^5.30.0
-    "@webiny/handler-http": ^5.30.0
     "@webiny/handler-logs": ^5.30.0
     "@webiny/project-utils": ^5.30.0
     graphql-request: ^3.4.0
@@ -14653,10 +14651,9 @@ __metadata:
     "@webiny/api-wcp": ^5.30.0
     "@webiny/cli": ^5.30.0
     "@webiny/db-dynamodb": ^5.30.0
-    "@webiny/handler-aws": ^5.30.0
     "@webiny/handler-client": ^5.30.0
     "@webiny/handler-db": ^5.30.0
-    "@webiny/handler-http": ^5.30.0
+    "@webiny/handler-fastify-aws": ^5.30.0
     "@webiny/handler-logs": ^5.30.0
     "@webiny/project-utils": ^5.30.0
   languageName: unknown
@@ -14679,8 +14676,8 @@ __metadata:
     "@webiny/api-tenancy-so-ddb": ^5.30.0
     "@webiny/cli": ^5.30.0
     "@webiny/db-dynamodb": ^5.30.0
-    "@webiny/handler-aws": ^5.30.0
     "@webiny/handler-db": ^5.30.0
+    "@webiny/handler-fastify-aws": ^5.30.0
     "@webiny/handler-logs": ^5.30.0
     "@webiny/project-utils": ^5.30.0
   languageName: unknown
@@ -14703,8 +14700,8 @@ __metadata:
     "@webiny/api-tenancy-so-ddb": ^5.30.0
     "@webiny/cli": ^5.30.0
     "@webiny/db-dynamodb": ^5.30.0
-    "@webiny/handler-aws": ^5.30.0
     "@webiny/handler-db": ^5.30.0
+    "@webiny/handler-fastify-aws": ^5.30.0
     "@webiny/handler-logs": ^5.30.0
     "@webiny/project-utils": ^5.30.0
   languageName: unknown
@@ -14727,8 +14724,8 @@ __metadata:
     "@webiny/api-tenancy-so-ddb": ^5.30.0
     "@webiny/cli": ^5.30.0
     "@webiny/db-dynamodb": ^5.30.0
-    "@webiny/handler-aws": ^5.30.0
     "@webiny/handler-db": ^5.30.0
+    "@webiny/handler-fastify-aws": ^5.30.0
     "@webiny/handler-logs": ^5.30.0
     "@webiny/project-utils": ^5.30.0
   languageName: unknown
@@ -14754,8 +14751,8 @@ __metadata:
     "@webiny/api-tenancy-so-ddb": ^5.30.0
     "@webiny/cli": ^5.30.0
     "@webiny/db-dynamodb": ^5.30.0
-    "@webiny/handler-aws": ^5.30.0
     "@webiny/handler-db": ^5.30.0
+    "@webiny/handler-fastify-aws": ^5.30.0
     "@webiny/handler-logs": ^5.30.0
     "@webiny/project-utils": ^5.30.0
   languageName: unknown
@@ -14768,7 +14765,7 @@ __metadata:
     "@webiny/api-page-builder": ^5.30.0
     "@webiny/api-page-builder-so-ddb": ^5.30.0
     "@webiny/cli": ^5.30.0
-    "@webiny/handler-aws": ^5.30.0
+    "@webiny/handler-fastify-aws": ^5.30.0
     "@webiny/project-utils": ^5.30.0
   languageName: unknown
   linkType: soft
@@ -18573,7 +18570,7 @@ __metadata:
     "@webiny/api-dynamodb-to-elasticsearch": ^5.30.0
     "@webiny/api-elasticsearch": ^5.30.0
     "@webiny/cli": ^5.30.0
-    "@webiny/handler-aws": ^5.30.0
+    "@webiny/handler-fastify-aws": ^5.30.0
     "@webiny/project-utils": ^5.30.0
   languageName: unknown
   linkType: soft
@@ -39926,7 +39923,7 @@ __metadata:
     "@webiny/api-prerendering-service-aws": ^5.30.0
     "@webiny/api-prerendering-service-so-ddb": ^5.30.0
     "@webiny/cli": ^5.30.0
-    "@webiny/handler-aws": ^5.30.0
+    "@webiny/handler-fastify-aws": ^5.30.0
     "@webiny/project-utils": ^5.30.0
   languageName: unknown
   linkType: soft
@@ -39938,7 +39935,7 @@ __metadata:
     "@webiny/api-prerendering-service-aws": ^5.30.0
     "@webiny/api-prerendering-service-so-ddb": ^5.30.0
     "@webiny/cli": ^5.30.0
-    "@webiny/handler-aws": ^5.30.0
+    "@webiny/handler-fastify-aws": ^5.30.0
     "@webiny/project-utils": ^5.30.0
   languageName: unknown
   linkType: soft
@@ -39950,7 +39947,7 @@ __metadata:
     "@webiny/api-prerendering-service-aws": ^5.30.0
     "@webiny/api-prerendering-service-so-ddb": ^5.30.0
     "@webiny/cli": ^5.30.0
-    "@webiny/handler-aws": ^5.30.0
+    "@webiny/handler-fastify-aws": ^5.30.0
     "@webiny/project-utils": ^5.30.0
   languageName: unknown
   linkType: soft

@@ -1,27 +1,24 @@
 import { EventBridgeEvent } from "aws-lambda";
 import { RenderEvent } from "@webiny/api-prerendering-service/types";
 import plugin, { Params } from "@webiny/api-prerendering-service/flush";
-import { ArgsContext } from "@webiny/handler-args/types";
-import { Context } from "@webiny/handler/types";
-import { HandlerPlugin } from "@webiny/handler";
-
-export type HandlerArgs = EventBridgeEvent<"FlushPages", RenderEvent | RenderEvent[]>;
-export interface HandlerContext extends Context, ArgsContext<HandlerArgs> {}
+import { createPayloadEventHandler } from "@webiny/handler-fastify-aws";
 
 export default (params: Params) => {
     const flush = plugin(params);
 
-    return new HandlerPlugin<HandlerContext>(async context => {
-        if (context.invocationArgs["detail-type"] !== "FlushPages") {
-            return;
-        }
+    return createPayloadEventHandler<EventBridgeEvent<"FlushPages", RenderEvent | RenderEvent[]>>(
+        async ({ payload, context }) => {
+            if (payload["detail-type"] !== "FlushPages") {
+                return;
+            }
 
-        return flush.handle(
-            {
-                ...context,
-                invocationArgs: context.invocationArgs.detail
-            },
-            async () => void 0
-        );
-    });
+            return flush.handle(
+                {
+                    ...context,
+                    invocationArgs: payload.detail
+                },
+                async () => void 0
+            );
+        }
+    );
 };

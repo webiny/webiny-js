@@ -19,8 +19,8 @@
     "@webiny/api-tenancy-so-ddb": "^5.30.0",
     "@webiny/cli": "^5.30.0",
     "@webiny/db-dynamodb": "^5.30.0",
-    "@webiny/handler-aws": "^5.30.0",
     "@webiny/handler-db": "^5.30.0",
+    "@webiny/handler-fastify-aws": "^5.30.0",
     "@webiny/handler-logs": "^5.30.0",
     "@webiny/project-utils": "^5.30.0"
   }
