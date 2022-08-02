@@ -88,8 +88,8 @@ export default (): HandlerPlugin<Context> => ({
             const presignedUrl = await s3.getSignedUrlPromise("getObject", {
                 Bucket: params.Bucket,
                 Key: params.Key,
-                // The URL will be valid for 1 minute.
-                Expires: 60
+                // The URL will be valid for 15 minutes.
+                Expires: 900
             });
 
             // Lambda can return max 6MB of content, so if our object's size is larger, we are sending
