@@ -293,7 +293,11 @@ function createFlushService(
     };
 }
 
-function createLambdaPolicy(app: PulumiApp, queue: pulumi.Output<aws.sqs.Queue>, params: PreRenderingServiceParams) {
+function createLambdaPolicy(
+    app: PulumiApp,
+    queue: pulumi.Output<aws.sqs.Queue>,
+    params: PreRenderingServiceParams
+) {
     const core = app.getModule(CoreOutput);
     const awsAccountId = getAwsAccountId(app);
 
@@ -341,9 +345,7 @@ function createLambdaPolicy(app: PulumiApp, queue: pulumi.Output<aws.sqs.Queue>,
                         Action: [
                             "s3:DeleteObject",
                             "s3:GetObject",
-                            "s3:GetObjectAcl",
-                            "s3:PutObject",
-                            "s3:PutObjectAcl"
+                            "s3:PutObject"
                         ],
                         Resource: [
                             pulumi.interpolate`arn:aws:s3:::${core.fileManagerBucketId}/*`,

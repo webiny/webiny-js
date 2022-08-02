@@ -1,15 +1,13 @@
+import renderUrl, { File } from "./renderUrl";
 import { join } from "path";
-import FormData from "form-data";
-import fetch from "node-fetch";
+import S3 from "aws-sdk/clients/s3";
+import { getStorageFolder, getRenderUrl, getIsNotFoundPage } from "~/utils";
+import { HandlerArgs, RenderHookPlugin } from "./types";
+import { PrerenderingServiceStorageOperations, Render, TagPathLink } from "~/types";
 import omit from "lodash/omit";
 import { HandlerPlugin } from "@webiny/handler";
 import { Context } from "@webiny/handler/types";
 import { ArgsContext } from "@webiny/handler-args/types";
-import { getStorageFolder, getRenderUrl, getIsNotFoundPage } from "~/utils";
-import renderUrl, { File } from "./renderUrl";
-import { HandlerArgs, RenderHookPlugin } from "./types";
-import { PrerenderingServiceStorageOperations, Render, TagPathLink } from "~/types";
-import { getPresignedPost } from "./getPresignedPost";
 
 export interface HandlerContext extends Context, ArgsContext<HandlerArgs> {
     //
@@ -17,50 +15,25 @@ export interface HandlerContext extends Context, ArgsContext<HandlerArgs> {
 
 const sleep = () => new Promise(resolve => setTimeout(resolve, 1000));
 
+const s3 = new S3({ region: process.env.AWS_REGION });
+
 interface StoreFileParams {
     key: string;
     contentType: string;
     body: string;
     storageName: string;
 }
-
-const storeFile = async (params: StoreFileParams) => {
+const storeFile = (params: StoreFileParams) => {
     const { storageName, key, contentType, body } = params;
-    const cacheControl = "max-age=30";
-
-    try {
-        console.log("Get presigned URL");
-
-        const { url, fields } = await getPresignedPost({
-            key,
-            contentType,
-            bucket: storageName,
-            cacheControl
-        });
-
-        console.log("Presigned POST", { url, fields });
-
-        const data: Record<string, string> = {
-            ...fields,
-            "Content-Type": contentType,
-            "Cache-Control": cacheControl,
-            file: body
-        };
-
-        const formData = new FormData();
-        Object.keys(data).forEach(key => {
-            formData.append(key, data[key]);
-        });
-
-        console.log("Upload file");
-        await fetch(url, {
-            method: "POST",
-            body: formData
-        });
-    } catch (e) {
-        console.log("storeFile ERROR", e);
-        throw e;
-    }
+    return s3
+        .putObject({
+            Bucket: storageName,
+            Key: key,
+            ContentType: contentType,
+            CacheControl: "max-age=30",
+            Body: body
+        })
+        .promise();
 };
 
 export interface RenderParams {
