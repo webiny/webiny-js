@@ -1,4 +1,4 @@
-import { ArgsContext } from "@webiny/handler-args/types";
+import { ArgsContext } from "@webiny/handler-args-old/types";
 
 interface ResponseArgs {
     statusCode?: number;

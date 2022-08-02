@@ -8,6 +8,7 @@ import {
 } from "@webiny/fastify";
 import { PayloadEventHandler, PayloadHandlerCallableParams } from "./plugins/PayloadEventHandler";
 import { Context as LambdaContext } from "aws-lambda";
+import { FastifyContext } from "@webiny/fastify/types";
 
 const url = "/webiny-payload-event";
 
@@ -21,7 +22,11 @@ export interface CreateHandlerParams extends BaseCreateFastifyHandlerParams {
     };
 }
 
-export const createHandler = <Payload = any, Response = any>(
+export const createHandler = <
+    Payload = any,
+    Context extends FastifyContext = FastifyContext,
+    Response = any
+>(
     params: CreateHandlerParams
 ): HandlerCallable<Payload, Response> => {
     return (payload, context) => {
@@ -44,9 +49,9 @@ export const createHandler = <Payload = any, Response = any>(
         }
 
         app.post(url, async (request, reply) => {
-            const params: PayloadHandlerCallableParams<Payload> = {
+            const params: PayloadHandlerCallableParams<Payload, Context> = {
                 request,
-                context: app.webiny,
+                context: app.webiny as Context,
                 payload,
                 lambdaContext: context
             };

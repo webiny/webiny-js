@@ -11,7 +11,7 @@ describe("Page builder import export task Test", () => {
     const { handler } = useHandler();
 
     test("Should able to create, update, list, get and delete page import export tasks", async () => {
-        const { pageBuilder } = await handler();
+        const { pageBuilder } = await handler({}, {} as any);
         const pageImportExportTask: PageImportExportTaskCrud = pageBuilder.pageImportExportTask;
 
         // Create a PageImportExportTask
@@ -96,7 +96,7 @@ describe("Page builder import export task Test", () => {
     });
 
     test("Should able to create, update, list, get and delete page import export sub tasks", async () => {
-        const { pageBuilder } = await handler();
+        const { pageBuilder } = await handler({}, {} as any);
         const pageImportExportTask: PageImportExportTaskCrud = pageBuilder.pageImportExportTask;
 
         // Create a PageImportExportTask
@@ -203,7 +203,7 @@ describe("Page builder import export task Test", () => {
     });
 
     test("Should able to update stats of a task", async () => {
-        const { pageBuilder } = await handler();
+        const { pageBuilder } = await handler({}, {} as any);
         const pageImportExportTask: PageImportExportTaskCrud = pageBuilder.pageImportExportTask;
 
         // Create a PageImportExportTask

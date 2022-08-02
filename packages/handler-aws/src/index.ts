@@ -1,7 +1,7 @@
 import defaultHandlerClient from "@webiny/handler-client";
 import defaultHandlerHttp from "@webiny/handler-http-old";
 import { HandlerHttpOptions } from "@webiny/handler-http-old/types";
-import defaultHandlerArgs from "@webiny/handler-args";
+import defaultHandlerArgs from "@webiny/handler-args-old";
 import { createHandler as createDefaultHandler } from "@webiny/handler-old";
 import { PluginCollection } from "@webiny/plugins/types";
 import handlerClient from "./plugins/handlerClient";

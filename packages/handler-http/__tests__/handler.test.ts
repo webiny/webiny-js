@@ -1,4 +1,4 @@
-import { ContextPlugin, createHandler, HandlerPlugin } from "@webiny/handler";
+import { ContextPlugin, createHandler, HandlerPlugin } from "@webiny/handler-old";
 import plugins from "~/index";
 import { HttpContext } from "~/types";
 

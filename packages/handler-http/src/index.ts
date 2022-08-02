@@ -1,8 +1,7 @@
 import { HttpContext, HandlerHttpOptions } from "./types";
-import { HandlerErrorPlugin } from "@webiny/handler";
+import { HandlerErrorPlugin, ContextPlugin } from "@webiny/handler-old";
 import { boolean } from "boolean";
 import { getWebinyVersionHeaders } from "@webiny/utils";
-import { ContextPlugin } from "@webiny/handler";
 import { Plugin } from "@webiny/plugins";
 
 const DEFAULT_HEADERS: Record<string, string> = {
