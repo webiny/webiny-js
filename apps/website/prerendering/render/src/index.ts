@@ -12,18 +12,6 @@ const documentClient = new DocumentClient({
 export const handler = createHandler({
     plugins: [
         renderPlugins({
-            storage: {
-                name: String(process.env.DELIVERY_BUCKET)
-            },
-            website: {
-                url: String(process.env.APP_URL)
-            },
-            meta: {
-                // TODO Add proper typing.
-                cloudfront: {
-                    distributionId: String(process.env.DELIVERY_CLOUDFRONT)
-                }
-            },
             storageOperations: createPrerenderingServiceStorageOperations({
                 table: table => ({
                     ...table,
