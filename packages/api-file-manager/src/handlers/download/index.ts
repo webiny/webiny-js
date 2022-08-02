@@ -85,17 +85,12 @@ export default (): HandlerPlugin<Context> => ({
                 };
             }
 
-            // For pre-5.29.0 systems, we need to make large files publicly accessible.
-            // For >=5.29.0 systems, permissions are granted based on Origin Access Identity, and this block is ignored.
-            if (process.env.PULUMI_APPS !== "true") {
-                await s3
-                    .putObjectAcl({
-                        Bucket: params.Bucket,
-                        ACL: "public-read",
-                        Key: params.Key
-                    })
-                    .promise();
-            }
+            const presignedUrl = await s3.getSignedUrlPromise("getObject", {
+                Bucket: params.Bucket,
+                Key: params.Key,
+                // The URL will be valid for 1 minute.
+                Expires: 60
+            });
 
             // Lambda can return max 6MB of content, so if our object's size is larger, we are sending
             // a 301 Redirect, redirecting the user to the public URL of the object in S3.
@@ -103,7 +98,7 @@ export default (): HandlerPlugin<Context> => ({
                 data: null,
                 statusCode: 301,
                 headers: {
-                    Location: `https://${params.Bucket}.s3.amazonaws.com/${params.Key}`
+                    Location: presignedUrl
                 }
             };
         };
