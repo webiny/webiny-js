@@ -342,13 +342,11 @@ function createLambdaPolicy(
                     {
                         Sid: "PermissionForS3",
                         Effect: "Allow",
-                        Action: [
-                            "s3:DeleteObject",
-                            "s3:GetObject",
-                            "s3:PutObject"
-                        ],
+                        Action: ["s3:*"],
                         Resource: [
+                            pulumi.interpolate`arn:aws:s3:::${core.fileManagerBucketId}`,
                             pulumi.interpolate`arn:aws:s3:::${core.fileManagerBucketId}/*`,
+                            pulumi.interpolate`arn:aws:s3:::${params.bucket}`,
                             pulumi.interpolate`arn:aws:s3:::${params.bucket}/*`
                         ]
                     },
