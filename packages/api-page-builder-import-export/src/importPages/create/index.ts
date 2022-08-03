@@ -9,7 +9,7 @@ import { Payload as ProcessPayload } from "../process";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { mockSecurity } from "~/mockSecurity";
 import { zeroPad } from "@webiny/utils";
-import { createPayloadEventHandler } from "@webiny/handler-fastify-aws";
+import { createRawEventHandler } from "@webiny/handler-fastify-aws";
 
 interface Configuration {
     handlers: {
@@ -24,11 +24,16 @@ export interface Payload {
     task: PageImportExportTask;
     identity: SecurityIdentity;
 }
+export interface Response {
+    data: string | null;
+    error: Partial<Error> | null;
+}
+
 /**
  * Handles the import page workflow.
  */
 export default (configuration: Configuration) => {
-    return createPayloadEventHandler<Payload, PbPageImportExportContext>(
+    return createRawEventHandler<Payload, PbPageImportExportContext, Response>(
         async ({ payload, context }) => {
             const log = console.log;
 

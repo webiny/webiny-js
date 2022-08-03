@@ -27,6 +27,7 @@
     "@webiny/api-wcp": "^5.30.0",
     "@webiny/db-dynamodb": "^5.30.0",
     "@webiny/error": "^5.30.0",
+    "@webiny/fastify": "^5.30.0",
     "@webiny/handler-client": "^5.30.0",
     "@webiny/handler-db": "^5.30.0",
     "@webiny/handler-fastify-aws": "^5.30.0",

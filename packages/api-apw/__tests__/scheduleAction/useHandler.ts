@@ -1,4 +1,4 @@
-import { createHandler, createEventHandler } from "@webiny/handler-fastify-aws/payload";
+import { createHandler, createEventHandler } from "@webiny/handler-fastify-aws/raw";
 import graphqlHandler from "@webiny/handler-graphql";
 import { createScheduler } from "~/scheduler";
 import { ContextPlugin } from "@webiny/api";

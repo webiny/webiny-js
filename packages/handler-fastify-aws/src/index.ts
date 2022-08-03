@@ -13,16 +13,6 @@ export {
     createS3EventHandler
 } from "~/s3";
 
-// export {
-//     createHandler as createPayloadHandler,
-//     CreateHandlerParams as CreatePayloadHandlerParams,
-//     PayloadEventHandler,
-//     PayloadEventHandlerCallable,
-//     PayloadHandlerCallableParams,
-//     createEventHandler as createPayloadEventHandler,
-//     HandlerCallable as PayloadHandlerCallable
-// } from "~/payload";
-
 export {
     createHandler as createDynamoDBHandler,
     CreateHandlerParams as CreateDynamoDBHandlerParams,
@@ -56,5 +46,9 @@ export {
 export {
     createHandler as createRawHandler,
     CreateHandlerParams as CreateRawHandlerParams,
-    HandlerCallable as RawHandlerCallable
+    HandlerCallable as RawHandlerCallable,
+    createEventHandler as createRawEventHandler,
+    RawEventHandlerCallableParams,
+    RawEventHandlerCallable,
+    RawEventHandler
 } from "~/raw";

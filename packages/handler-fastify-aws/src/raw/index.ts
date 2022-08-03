@@ -6,19 +6,19 @@
  */
 import {
     createFastify,
-    CreateFastifyHandlerParams as BaseCreateFastifyHandlerParams,
-    EventPlugin
+    CreateFastifyHandlerParams as BaseCreateFastifyHandlerParams
 } from "@webiny/fastify";
 const Reply = require("fastify/lib/Reply");
 import { Context as LambdaContext } from "aws-lambda";
 import { APIGatewayProxyResult } from "aws-lambda/trigger/api-gateway-proxy";
 
 import { createHandleResponse } from "~/response";
+import { RawEventHandler } from "~/raw/plugins/RawEventHandler";
 
 const url = "/webiny-raw-event";
 
-export interface HandlerCallable<Payload> {
-    (event: Payload, context: LambdaContext): Promise<APIGatewayProxyResult>;
+export interface HandlerCallable<Payload, Response = APIGatewayProxyResult> {
+    (event: Payload, context: LambdaContext): Promise<Response>;
 }
 
 export interface CreateHandlerParams extends BaseCreateFastifyHandlerParams {
@@ -27,10 +27,10 @@ export interface CreateHandlerParams extends BaseCreateFastifyHandlerParams {
     };
 }
 
-export const createHandler = <Payload = any>(
+export const createHandler = <Payload = any, Response = APIGatewayProxyResult>(
     params: CreateHandlerParams
-): HandlerCallable<Payload> => {
-    return event => {
+): HandlerCallable<Payload, Response> => {
+    return (event, context) => {
         const app = createFastify({
             plugins: params.plugins,
             options: {
@@ -41,11 +41,13 @@ export const createHandler = <Payload = any>(
         /**
          * There must be an event plugin for this handler to work.
          */
-        const plugins = app.webiny.plugins.byType<EventPlugin<Payload>>(EventPlugin.type);
+        const plugins = app.webiny.plugins.byType<RawEventHandler<Payload, any, Response>>(
+            RawEventHandler.type
+        );
         const handler = plugins.shift();
         if (!handler) {
             throw new Error(
-                `To run @webiny/handler-fastify-aws/event, you must have EventPlugin set.`
+                `To run @webiny/handler-fastify-aws/event, you must have RawEventHandler set.`
             );
         }
 
@@ -54,7 +56,8 @@ export const createHandler = <Payload = any>(
                 request,
                 reply,
                 context: app.webiny,
-                payload: event
+                payload: event,
+                lambdaContext: context
             };
             const result = await handler.cb(params);
 
@@ -79,3 +82,5 @@ export const createHandler = <Payload = any>(
         });
     };
 };
+
+export * from "./plugins/RawEventHandler";

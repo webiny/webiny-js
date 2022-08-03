@@ -5,7 +5,7 @@ import { ContextPlugin } from "@webiny/api";
 import { PageBuilderGraphQL } from "./plugins/PageBuilderGraphQL";
 import { HeadlessCMSGraphQL } from "./plugins/HeadlessCMSGraphQL";
 import { ApplicationGraphQL } from "./plugins/ApplicationGraphQL";
-import { createPayloadEventHandler } from "@webiny/handler-fastify-aws";
+import { createEvent } from "@webiny/fastify";
 
 export interface HandlerArgs {
     datetime: string;
@@ -24,7 +24,7 @@ interface Configuration {
 const createExecuteActionLambda = (params: Configuration) => {
     const { storageOperations } = params;
 
-    return createPayloadEventHandler<HandlerArgs>(async ({ payload, context }) => {
+    return createEvent<HandlerArgs>(async ({ payload, context }) => {
         const log = console.log;
 
         const applicationGraphQLPlugins = context.plugins.byType<ApplicationGraphQL>(

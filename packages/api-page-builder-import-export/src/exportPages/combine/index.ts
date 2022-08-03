@@ -3,18 +3,23 @@ import { s3Stream } from "../s3Stream";
 import { ZipOfZip } from "../zipper";
 import { mockSecurity } from "~/mockSecurity";
 import { SecurityIdentity } from "@webiny/api-security/types";
-import { createPayloadEventHandler } from "@webiny/handler-fastify-aws";
+import { createRawEventHandler } from "@webiny/handler-fastify-aws";
 
 export interface Payload {
     taskId: string;
     identity: SecurityIdentity;
 }
 
+export interface Response {
+    data: string | null;
+    error: Partial<Error> | null;
+}
+
 /**
  * Handles the export pages combine workflow.
  */
 export default () => {
-    return createPayloadEventHandler<Payload, PbPageImportExportContext>(
+    return createRawEventHandler<Payload, PbPageImportExportContext, Response>(
         async ({ payload, context }) => {
             const log = console.log;
 

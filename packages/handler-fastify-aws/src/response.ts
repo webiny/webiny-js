@@ -2,7 +2,7 @@ import { APIGatewayProxyResult } from "aws-lambda/trigger/api-gateway-proxy";
 import { CallbackFunc as LightMyRequestCallback } from "light-my-request";
 
 interface Resolve {
-    (response: APIGatewayProxyResult): void;
+    (response: APIGatewayProxyResult | any): void;
 }
 interface Reject {
     (error: Error): void;

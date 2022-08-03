@@ -1,3 +1,6 @@
+/**
+ * This logic/file should be moved somewhere else as it is relying on AWS specific stuff.
+ */
 import { ApwScheduleActionStorageOperations } from "~/scheduler/types";
 import {
     isDateTimeInNextCentury,
@@ -11,7 +14,7 @@ import {
     restoreDateTime,
     scheduleLambdaExecution
 } from "./scheduleAction.utils";
-import { createPayloadEventHandler } from "@webiny/handler-fastify-aws";
+import { createRawEventHandler } from "@webiny/handler-fastify-aws";
 
 export enum InvocationTypes {
     SCHEDULED = "scheduled"
@@ -41,7 +44,7 @@ const log = console.log;
 const createScheduleActionLambda = (params: Configuration) => {
     const { cwClient: cloudWatchEventClient, storageOperations, handlers } = params;
 
-    return createPayloadEventHandler<HandlerArgs>(
+    return createRawEventHandler<HandlerArgs>(
         async ({ payload, context, lambdaContext: eventContext }) => {
             try {
                 const { locale, tenant, invocationType } = payload;
