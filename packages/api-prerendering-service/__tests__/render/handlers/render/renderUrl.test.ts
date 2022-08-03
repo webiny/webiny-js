@@ -7,12 +7,18 @@ describe(`"renderUrl" Function Test`, () => {
     it("should insert basic meta data into the received HTML", async () => {
         const [[html], meta] = await render("https://some-url.com", {
             context: {} as any,
-            args: {},
-            configuration: {},
+            args: {
+                path: "path",
+                tenant: "root",
+                locale: "en-US"
+            },
             renderUrlFunction: async () => {
                 return {
                     content: BASE_HTML,
-                    meta: {}
+                    meta: {
+                        gqlCache: {},
+                        apolloState: {}
+                    }
                 };
             }
         });
@@ -54,7 +60,10 @@ describe(`"renderUrl" Function Test`, () => {
             renderUrlFunction: async () => {
                 return {
                     content: BASE_HTML,
-                    meta: {}
+                    meta: {
+                        gqlCache: {},
+                        apolloState: {}
+                    }
                 };
             }
         });

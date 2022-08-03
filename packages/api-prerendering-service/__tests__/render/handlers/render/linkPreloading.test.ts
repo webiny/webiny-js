@@ -25,12 +25,18 @@ describe(`Link Preloading Test`, () => {
     it("should insert preloading attributes to CSS/JS links", async () => {
         const [[html], meta] = await render("https://some-url.com", {
             context: {} as any,
-            args: {},
-            configuration: {},
+            args: {
+                path: "path",
+                tenant: "root",
+                locale: "en-US"
+            },
             renderUrlFunction: async () => {
                 return {
                     content: BASE_HTML,
-                    meta: {}
+                    meta: {
+                        gqlCache: {},
+                        apolloState: {}
+                    }
                 };
             }
         });

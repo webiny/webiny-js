@@ -44,7 +44,7 @@ export const createHandler = <
         const handler = plugins.shift();
         if (!handler) {
             throw new Error(
-                `@webiny/handler-fastify-aws/payload must have PayloadEventHandler set.`
+                `To run @webiny/handler-fastify-aws/payload, you must have PayloadEventHandler set.`
             );
         }
 

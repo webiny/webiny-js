@@ -35,7 +35,7 @@ describe("Render All Pages Test", () => {
         const queueJobsRecords = await storageOperations.listQueueJobs();
         expect(queueJobsRecords).toHaveLength(6);
 
-        expect(await handler()).toEqual({
+        expect(await handler({}, {} as any)).toEqual({
             data: {
                 stats: {
                     jobs: {
@@ -74,7 +74,7 @@ describe("Render All Pages Test", () => {
         const queueJobsRecords = await storageOperations.listQueueJobs();
         expect(queueJobsRecords).toHaveLength(9);
 
-        expect(await handler()).toEqual({
+        expect(await handler({}, {} as any)).toEqual({
             data: {
                 stats: {
                     jobs: {

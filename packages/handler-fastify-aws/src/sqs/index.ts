@@ -2,18 +2,16 @@ import {
     createFastify,
     CreateFastifyHandlerParams as BaseCreateFastifyHandlerParams
 } from "@webiny/fastify";
-import { DynamoDBStreamEvent, Context as LambdaContext } from "aws-lambda";
-import {
-    DynamoDBEventHandler,
-    DynamoDBEventHandlerCallableParams
-} from "./plugins/DynamoDBEventHandler";
+import { SQSEvent, Context as LambdaContext } from "aws-lambda";
+import { SQSEventHandler, SQSEventHandlerCallableParams } from "./plugins/SQSEventHandler";
 import { APIGatewayProxyResult } from "aws-lambda/trigger/api-gateway-proxy";
+
 import { createHandleResponse } from "~/response";
 
-const url = "/webiny-dynamodb-event";
+const url = "/webiny-sqs-event";
 
 export interface HandlerCallable {
-    (event: DynamoDBStreamEvent, context: LambdaContext): Promise<APIGatewayProxyResult>;
+    (event: SQSEvent, context: LambdaContext): Promise<APIGatewayProxyResult>;
 }
 
 export interface CreateHandlerParams extends BaseCreateFastifyHandlerParams {
@@ -32,21 +30,21 @@ export const createHandler = (params: CreateHandlerParams): HandlerCallable => {
         /**
          * There must be an event plugin for this handler to work.
          */
-        const plugins = app.webiny.plugins.byType<DynamoDBEventHandler>(DynamoDBEventHandler.type);
+        const plugins = app.webiny.plugins.byType<SQSEventHandler>(SQSEventHandler.type);
         const handler = plugins.shift();
         if (!handler) {
             throw new Error(
-                `To run @webiny/handler-fastify-aws/dynamodb, you must have DynamoDBHandler set.`
+                `To run @webiny/handler-fastify-aws/sqs, you must have SQSEventHandler set.`
             );
         }
 
         app.post(url, async (request, reply) => {
-            const params: DynamoDBEventHandlerCallableParams = {
+            const params: SQSEventHandlerCallableParams = {
                 request,
+                reply,
                 context: app.webiny,
                 event,
-                lambdaContext: context,
-                reply
+                lambdaContext: context
             };
             return await handler.cb(params);
         });
@@ -65,4 +63,4 @@ export const createHandler = (params: CreateHandlerParams): HandlerCallable => {
     };
 };
 
-export * from "./plugins/DynamoDBEventHandler";
+export * from "./plugins/SQSEventHandler";

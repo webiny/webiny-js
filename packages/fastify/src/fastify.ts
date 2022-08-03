@@ -9,6 +9,7 @@ import { RoutePlugin } from "./plugins/RoutePlugin";
 import defaultHandlerClient from "@webiny/handler-client";
 import fastifyCookies from "@fastify/cookie";
 import { middleware } from "~/middleware";
+import { EventPlugin } from "~/plugins/EventPlugin";
 
 const DEFAULT_HEADERS: Record<string, string> = {
     "Cache-Control": "no-store",
@@ -216,9 +217,35 @@ export const createFastify = (params?: CreateFastifyHandlerParams) => {
     });
 
     /**
+     * We have few types of triggers:
+     *  * Events - EventPlugin
+     *  * Routes - RoutePlugin
+     *
+     *  If we have one defined, cannot have any other.
+     */
+    const eventPlugins = app.webiny.plugins.byType<EventPlugin>(EventPlugin.type);
+    const routePlugins = app.webiny.plugins.byType<RoutePlugin>(RoutePlugin.type);
+    if (eventPlugins.length > 0 && routePlugins.length > 0) {
+        throw new WebinyError(
+            "Only one type of trigger can be set for the given handler.",
+            "TRIGGER_TYPE",
+            {
+                events: eventPlugins.length,
+                routes: routePlugins.length
+            }
+        );
+    } else if (eventPlugins.length === 0 && routePlugins.length === 0) {
+        throw new WebinyError(
+            "You must set one type of trigger - route or event.",
+            "MISSING_TRIGGER"
+        );
+    } else if (eventPlugins.length > 1) {
+        throw new WebinyError("There can be only one EventPlugin defined.", "EVENT_AMOUNT_ERROR");
+    }
+    /**
      * Add routes to the system.
      */
-    for (const plugin of app.webiny.plugins.byType<RoutePlugin>(RoutePlugin.type)) {
+    for (const plugin of routePlugins) {
         plugin.cb({
             ...app.webiny.routes,
             context: app.webiny

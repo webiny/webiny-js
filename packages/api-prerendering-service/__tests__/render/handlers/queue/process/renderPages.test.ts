@@ -288,7 +288,7 @@ describe("Render Pages Test", () => {
             }
         ]);
 
-        const handlerResponse = await handler();
+        const handlerResponse = await handler({}, {} as any);
         expect(handlerResponse).toEqual({
             data: {
                 stats: {

@@ -3341,15 +3341,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:7.18.6":
-  version: 7.18.6
-  resolution: "@babel/runtime@npm:7.18.6"
-  dependencies:
-    regenerator-runtime: ^0.13.4
-  checksum: 8b707b64ae0524db617d0c49933b258b96376a38307dc0be8fb42db5697608bcc1eba459acce541e376cff5ed5c5287d24db5780bd776b7c75ba2c2e26ff8a2c
-  languageName: node
-  linkType: hard
-
 "@babel/standalone@npm:^7.4.5":
   version: 7.18.5
   resolution: "@babel/standalone@npm:7.18.5"
@@ -11068,11 +11059,12 @@ __metadata:
     "@babel/preset-typescript": ^7.16.0
     "@babel/runtime": ^7.16.3
     "@types/object-hash": ^2.2.1
+    "@webiny/api": ^5.30.0
     "@webiny/cli": ^5.30.0
     "@webiny/error": ^5.30.0
-    "@webiny/handler": ^5.30.0
-    "@webiny/handler-args": ^5.30.0
+    "@webiny/fastify": ^5.30.0
     "@webiny/handler-client": ^5.30.0
+    "@webiny/handler-fastify-aws": ^5.30.0
     "@webiny/plugins": ^5.30.0
     "@webiny/project-utils": ^5.30.0
     chrome-aws-lambda: ^5.5.0
@@ -12979,16 +12971,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/handler-args@npm:^5.30.0":
-  version: 5.30.0
-  resolution: "@webiny/handler-args@npm:5.30.0"
-  dependencies:
-    "@babel/runtime": 7.18.6
-    "@webiny/handler": 5.30.0
-  checksum: 38ded3219602725f73330e21d74406c41c3c3aee2e734039abafdb7153b3fa969ed33165235493dadcc169409540e1f8dd32ffa2b4336061d2a85f69632c7a06
-  languageName: node
-  linkType: hard
-
 "@webiny/handler-aws-old@workspace:packages/handler-aws":
   version: 0.0.0-use.local
   resolution: "@webiny/handler-aws-old@workspace:packages/handler-aws"
@@ -13066,6 +13048,7 @@ __metadata:
     "@webiny/plugins": ^5.29.0
     "@webiny/project-utils": ^5.29.0
     aws-lambda: ^1.0.7
+    light-my-request: ^5.0.0
     rimraf: ^3.0.2
     ttypescript: ^1.5.13
     typescript: 4.7.4
@@ -13172,16 +13155,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/handler@npm:5.30.0, @webiny/handler@npm:^5.30.0":
-  version: 5.30.0
-  resolution: "@webiny/handler@npm:5.30.0"
-  dependencies:
-    "@babel/runtime": 7.18.6
-    "@webiny/plugins": 5.30.0
-  checksum: bfa711419daf8037534e08639e202a53299a87ffaf1e2979b65d56fc07892dd21343be0dab578b052a30c0522217103563ab60092cd0e4dd70576d0005418557
-  languageName: node
-  linkType: hard
-
 "@webiny/i18n-react@^5.30.0, @webiny/i18n-react@workspace:packages/i18n-react":
   version: 0.0.0-use.local
   resolution: "@webiny/i18n-react@workspace:packages/i18n-react"
@@ -13244,7 +13217,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/plugins@5.30.0, @webiny/plugins@^5.25.0, @webiny/plugins@^5.29.0, @webiny/plugins@^5.30.0, @webiny/plugins@workspace:packages/plugins":
+"@webiny/plugins@^5.25.0, @webiny/plugins@^5.29.0, @webiny/plugins@^5.30.0, @webiny/plugins@workspace:packages/plugins":
   version: 0.0.0-use.local
   resolution: "@webiny/plugins@workspace:packages/plugins"
   dependencies:

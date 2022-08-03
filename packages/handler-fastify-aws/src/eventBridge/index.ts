@@ -2,26 +2,32 @@ import {
     createFastify,
     CreateFastifyHandlerParams as BaseCreateFastifyHandlerParams
 } from "@webiny/fastify";
-import { DynamoDBStreamEvent, Context as LambdaContext } from "aws-lambda";
+import { EventBridgeEvent, Context as LambdaContext } from "aws-lambda";
 import {
-    DynamoDBEventHandler,
-    DynamoDBEventHandlerCallableParams
-} from "./plugins/DynamoDBEventHandler";
+    EventBridgeEventHandler,
+    EventBridgeEventHandlerCallableParams
+} from "./plugins/EventBridgeEventHandler";
 import { APIGatewayProxyResult } from "aws-lambda/trigger/api-gateway-proxy";
+
 import { createHandleResponse } from "~/response";
 
-const url = "/webiny-dynamodb-event";
+const url = "/webiny-sqs-event";
 
-export interface HandlerCallable {
-    (event: DynamoDBStreamEvent, context: LambdaContext): Promise<APIGatewayProxyResult>;
+export interface HandlerCallable<DetailType extends string, Detail> {
+    (
+        event: EventBridgeEvent<DetailType, Detail>,
+        context: LambdaContext
+    ): Promise<APIGatewayProxyResult>;
 }
 
 export interface CreateHandlerParams extends BaseCreateFastifyHandlerParams {
     debug?: boolean;
 }
 
-export const createHandler = (params: CreateHandlerParams): HandlerCallable => {
-    return (event, context) => {
+export const createHandler = <DetailType extends string, Detail>(
+    params: CreateHandlerParams
+): HandlerCallable<DetailType, Detail> => {
+    return (payload, context) => {
         const app = createFastify({
             plugins: params.plugins,
             options: {
@@ -32,21 +38,23 @@ export const createHandler = (params: CreateHandlerParams): HandlerCallable => {
         /**
          * There must be an event plugin for this handler to work.
          */
-        const plugins = app.webiny.plugins.byType<DynamoDBEventHandler>(DynamoDBEventHandler.type);
+        const plugins = app.webiny.plugins.byType<EventBridgeEventHandler<DetailType, Detail>>(
+            EventBridgeEventHandler.type
+        );
         const handler = plugins.shift();
         if (!handler) {
             throw new Error(
-                `To run @webiny/handler-fastify-aws/dynamodb, you must have DynamoDBHandler set.`
+                `To run @webiny/handler-fastify-aws/eventBridge, you must have EventBridgeEventHandler set.`
             );
         }
 
         app.post(url, async (request, reply) => {
-            const params: DynamoDBEventHandlerCallableParams = {
+            const params: EventBridgeEventHandlerCallableParams<DetailType, Detail> = {
                 request,
+                reply,
                 context: app.webiny,
-                event,
-                lambdaContext: context,
-                reply
+                payload,
+                lambdaContext: context
             };
             return await handler.cb(params);
         });
@@ -55,7 +63,7 @@ export const createHandler = (params: CreateHandlerParams): HandlerCallable => {
                 {
                     method: "POST",
                     url,
-                    payload: event || {},
+                    payload: payload || {},
                     query: {},
                     headers: {}
                 },
@@ -65,4 +73,4 @@ export const createHandler = (params: CreateHandlerParams): HandlerCallable => {
     };
 };
 
-export * from "./plugins/DynamoDBEventHandler";
+export * from "./plugins/EventBridgeEventHandler";

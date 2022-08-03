@@ -1,24 +1,21 @@
-import { EventBridgeEvent } from "aws-lambda";
 import { RenderEvent } from "@webiny/api-prerendering-service/types";
 import plugin, { Params } from "@webiny/api-prerendering-service/flush";
-import { createPayloadEventHandler } from "@webiny/handler-fastify-aws";
+import { createEventBridgeEventHandler } from "@webiny/handler-fastify-aws";
 
 export default (params: Params) => {
     const flush = plugin(params);
 
-    return createPayloadEventHandler<EventBridgeEvent<"FlushPages", RenderEvent | RenderEvent[]>>(
-        async ({ payload, context }) => {
+    return createEventBridgeEventHandler<"FlushPages", RenderEvent | RenderEvent[]>(
+        async params => {
+            const { payload, reply } = params;
             if (payload["detail-type"] !== "FlushPages") {
-                return;
+                return reply.send({});
             }
 
-            return flush.handle(
-                {
-                    ...context,
-                    invocationArgs: payload.detail
-                },
-                async () => void 0
-            );
+            return flush.cb({
+                ...params,
+                payload: payload.detail
+            });
         }
     );
 };

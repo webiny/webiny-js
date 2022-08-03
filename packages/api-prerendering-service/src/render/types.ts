@@ -1,13 +1,11 @@
-import { Context } from "@webiny/handler/types";
-import { ArgsContext } from "@webiny/handler-args/types";
+import { FastifyContext as Context } from "@webiny/fastify/types";
 import { Plugin } from "@webiny/plugins/types";
 import { RenderEvent, PrerenderingSettings, Render } from "~/types";
 
-export type HandlerArgs = RenderEvent | RenderEvent[];
-export interface HandlerContext extends Context, ArgsContext<HandlerArgs> {}
+export type HandlerPayload = RenderEvent | RenderEvent[];
 
 export type HookCallbackFunction = (args: {
-    context: HandlerContext;
+    context: Context;
     log: (...args: string[]) => void;
     render: Omit<Render, "files">;
     settings: PrerenderingSettings;
@@ -39,7 +37,7 @@ export interface RenderResult {
  * @internal
  */
 export interface RenderUrlCallableParams {
-    context: HandlerContext;
+    context: Context;
     args: RenderEvent;
 }
 /**

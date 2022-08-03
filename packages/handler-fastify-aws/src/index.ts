@@ -32,3 +32,29 @@ export {
     createEventHandler as createDynamoDBEventHandler,
     HandlerCallable as DynamoDBHandlerCallable
 } from "~/dynamodb";
+
+export {
+    createHandler as createSQSHandler,
+    CreateHandlerParams as CreateSQSHandlerParams,
+    SQSEventHandler,
+    SQSEventHandlerCallable,
+    SQSEventHandlerCallableParams,
+    createEventHandler as createSQSEventHandler,
+    HandlerCallable as SQSHandlerCallable
+} from "~/sqs";
+
+export {
+    createHandler as createEventBridgeHandler,
+    CreateHandlerParams as CreateEventBridgeHandlerParams,
+    EventBridgeEventHandler,
+    EventBridgeEventHandlerCallable,
+    EventBridgeEventHandlerCallableParams,
+    createEventHandler as createEventBridgeEventHandler,
+    HandlerCallable as EventBridgeHandlerCallable
+} from "~/eventBridge";
+
+export {
+    createHandler as createRawHandler,
+    CreateHandlerParams as CreateRawHandlerParams,
+    HandlerCallable as RawHandlerCallable
+} from "~/raw";
