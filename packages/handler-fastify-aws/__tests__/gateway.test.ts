@@ -25,7 +25,7 @@ describe("api gateway", () => {
         }
 
         expect(error.message).toEqual(
-            "@webiny/handler-fastify-aws/gateway must have at least one RoutePlugin set."
+            "To run @webiny/handler-fastify-aws/gateway, you must have at least one RoutePlugin set."
         );
     });
 

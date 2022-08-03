@@ -9,7 +9,6 @@ import { RoutePlugin } from "./plugins/RoutePlugin";
 import defaultHandlerClient from "@webiny/handler-client";
 import fastifyCookies from "@fastify/cookie";
 import { middleware } from "~/middleware";
-import { EventPlugin } from "~/plugins/EventPlugin";
 
 const DEFAULT_HEADERS: Record<string, string> = {
     "Cache-Control": "no-store",
@@ -57,7 +56,7 @@ export interface CreateFastifyHandlerParams {
     options?: FastifyServerOptions;
 }
 
-export const createFastify = (params?: CreateFastifyHandlerParams) => {
+export const createFastify = (params: CreateFastifyHandlerParams) => {
     const definedRoutes: FastifyContextRoutes["defined"] = {
         POST: [],
         GET: [],
@@ -117,7 +116,7 @@ export const createFastify = (params?: CreateFastifyHandlerParams) => {
      * We must attach the server to our internal context if we want to have it accessible.
      */
     const app = fastify({
-        ...(params?.options || {})
+        ...(params.options || {})
     });
     /**
      * We need to register routes in our system so we can output headers later on and dissallow overriding routes.
@@ -183,7 +182,7 @@ export const createFastify = (params?: CreateFastifyHandlerParams) => {
              * And it must be one of the first context plugins applied.
              */
             defaultHandlerClient(),
-            ...(params?.plugins || [])
+            ...(params.plugins || [])
         ],
         /**
          * Inserted via webpack on build time.
@@ -196,6 +195,25 @@ export const createFastify = (params?: CreateFastifyHandlerParams) => {
      * We are attaching our custom context to webiny variable on the fastify app so it is accessible everywhere
      */
     app.decorate("webiny", context);
+
+    /**
+     * We have few types of triggers:
+     *  * Events - EventPlugin
+     *  * Routes - RoutePlugin
+     *
+     * Routes are registered in fastify but events must be handled in package which implements cloud specific methods.
+     */
+    const routePlugins = app.webiny.plugins.byType<RoutePlugin>(RoutePlugin.type);
+
+    /**
+     * Add routes to the system.
+     */
+    for (const plugin of routePlugins) {
+        plugin.cb({
+            ...app.webiny.routes,
+            context: app.webiny
+        });
+    }
 
     /**
      * On every request we add default headers, which can be changed later.
@@ -215,42 +233,6 @@ export const createFastify = (params?: CreateFastifyHandlerParams) => {
 
         raw.end("");
     });
-
-    /**
-     * We have few types of triggers:
-     *  * Events - EventPlugin
-     *  * Routes - RoutePlugin
-     *
-     *  If we have one defined, cannot have any other.
-     */
-    const eventPlugins = app.webiny.plugins.byType<EventPlugin>(EventPlugin.type);
-    const routePlugins = app.webiny.plugins.byType<RoutePlugin>(RoutePlugin.type);
-    if (eventPlugins.length > 0 && routePlugins.length > 0) {
-        throw new WebinyError(
-            "Only one type of trigger can be set for the given handler.",
-            "TRIGGER_TYPE",
-            {
-                events: eventPlugins.length,
-                routes: routePlugins.length
-            }
-        );
-    } else if (eventPlugins.length === 0 && routePlugins.length === 0) {
-        throw new WebinyError(
-            "You must set one type of trigger - route or event.",
-            "MISSING_TRIGGER"
-        );
-    } else if (eventPlugins.length > 1) {
-        throw new WebinyError("There can be only one EventPlugin defined.", "EVENT_AMOUNT_ERROR");
-    }
-    /**
-     * Add routes to the system.
-     */
-    for (const plugin of routePlugins) {
-        plugin.cb({
-            ...app.webiny.routes,
-            context: app.webiny
-        });
-    }
 
     app.addHook("preParsing", async request => {
         app.webiny.request = request;
