@@ -2,7 +2,7 @@ import {
     createFastify,
     CreateFastifyHandlerParams as BaseCreateFastifyHandlerParams
 } from "@webiny/fastify";
-const Reply = require("fastify/lib/Reply");
+const Reply = require("fastify/lib/reply");
 import { EventBridgeEvent, Context as LambdaContext } from "aws-lambda";
 import {
     EventBridgeEventHandler,

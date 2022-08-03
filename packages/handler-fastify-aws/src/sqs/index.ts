@@ -2,7 +2,7 @@ import {
     createFastify,
     CreateFastifyHandlerParams as BaseCreateFastifyHandlerParams
 } from "@webiny/fastify";
-const Reply = require("fastify/lib/Reply");
+const Reply = require("fastify/lib/reply");
 import { SQSEvent, Context as LambdaContext } from "aws-lambda";
 import { SQSEventHandler, SQSEventHandlerCallableParams } from "./plugins/SQSEventHandler";
 import { APIGatewayProxyResult } from "aws-lambda/trigger/api-gateway-proxy";

@@ -2,7 +2,7 @@ import {
     createFastify,
     CreateFastifyHandlerParams as BaseCreateFastifyHandlerParams
 } from "@webiny/fastify";
-const Reply = require("fastify/lib/Reply");
+const Reply = require("fastify/lib/reply");
 import { S3Event, Context as LambdaContext } from "aws-lambda";
 import { S3EventHandler, S3EventHandlerCallableParams } from "./plugins/S3EventHandler";
 import { APIGatewayProxyResult } from "aws-lambda/trigger/api-gateway-proxy";

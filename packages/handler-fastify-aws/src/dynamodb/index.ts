@@ -2,7 +2,7 @@ import {
     createFastify,
     CreateFastifyHandlerParams as BaseCreateFastifyHandlerParams
 } from "@webiny/fastify";
-const Reply = require("fastify/lib/Reply");
+const Reply = require("fastify/lib/reply");
 import { DynamoDBStreamEvent, Context as LambdaContext } from "aws-lambda";
 import {
     DynamoDBEventHandler,
