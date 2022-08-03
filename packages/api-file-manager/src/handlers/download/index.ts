@@ -60,7 +60,7 @@ const getS3Object = async (request: Request, s3: S3, context: FastifyContext) =>
 export const createDownloadFilePlugins = () => {
     return [
         new RoutePlugin(({ onGet, context }) => {
-            onGet("*", async (request, reply) => {
+            onGet("/files/:path", async (request, reply) => {
                 const { region } = getEnvironment();
                 const s3 = new S3({ region });
 
