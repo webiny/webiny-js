@@ -1,6 +1,4 @@
-import { createHandler } from "@webiny/handler-fastify-aws";
-import handlerArgsPlugins from "@webiny/handler-args";
-import handlerHTTPPlugins from "@webiny/handler-http";
+import { createHandler } from "@webiny/handler-fastify-aws/gateway";
 import graphqlServerPlugins from "../src";
 import { PluginCollection } from "@webiny/plugins/types";
 
@@ -12,12 +10,7 @@ interface Params {
 export default ({ debug = false, plugins = [] }: Params = {}) => {
     // Creates the actual handler. Feel free to add additional plugins if needed.
     const handler = createHandler({
-        plugins: [
-            handlerArgsPlugins(),
-            handlerHTTPPlugins(),
-            graphqlServerPlugins({ debug }),
-            ...plugins
-        ]
+        plugins: [graphqlServerPlugins({ debug }), ...plugins]
     });
 
     // Let's also create the "invoke" function. This will make handler invocations in actual tests easier and nicer.

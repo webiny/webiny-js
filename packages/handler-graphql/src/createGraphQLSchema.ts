@@ -1,7 +1,7 @@
 import gql from "graphql-tag";
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import { GraphQLScalarPlugin, GraphQLSchemaPlugin } from "./types";
-import { Context } from "@webiny/handler/types";
+import { Context } from "@webiny/api/types";
 import {
     RefInput,
     Number as NumberScalar,

@@ -6,7 +6,7 @@ import {
     I18NLocale,
     LocaleKeys
 } from "~/types";
-import { ContextPlugin } from "@webiny/handler";
+import { ContextPlugin } from "@webiny/api";
 import { NotAuthorizedError } from "@webiny/api-security";
 import { I18NLocaleContextPlugin } from "~/plugins/I18NLocaleContextPlugin";
 import { createCrudContext } from "~/graphql/crud";

@@ -1,30 +1,34 @@
-import { Plugin } from "@webiny/plugins/Plugin";
-import { Request, FastifyContext } from "@webiny/fastify/types";
+import { Request, Reply, FastifyContext } from "@webiny/fastify/types";
 import { Context as LambdaContext } from "aws-lambda";
+import { EventPlugin } from "@webiny/fastify";
 
-export interface RawEventHandlerCallableParams<Event> {
+export interface RawEventHandlerCallableParams<Event, Context> {
     request: Request;
-    context: FastifyContext;
-    event: Event;
+    reply: Reply;
+    context: Context;
+    payload: Event;
     lambdaContext: LambdaContext;
 }
-export interface RawEventHandlerCallable<Event, Response> {
-    (params: RawEventHandlerCallableParams<Event>): Promise<Response>;
+export interface RawEventHandlerCallable<Event, Context extends FastifyContext, Response> {
+    (params: RawEventHandlerCallableParams<Event, Context>): Promise<Response | Reply>;
 }
 
-export class RawEventHandler<Event = any, Response = any> extends Plugin {
-    public static override type: "handler.fastify.aws.raw.eventHandler";
-
-    public readonly cb: RawEventHandlerCallable<Event, Response>;
-
-    public constructor(cb: RawEventHandlerCallable<Event, Response>) {
-        super();
-        this.cb = cb;
+export class RawEventHandler<
+    Event = any,
+    Context extends FastifyContext = FastifyContext,
+    Response = any
+> extends EventPlugin {
+    public constructor(cb: RawEventHandlerCallable<Event, Context, Response>) {
+        super(cb as any);
     }
 }
 
-export const createRawEventHandler = <Event = any, Response = any>(
-    cb: RawEventHandlerCallable<Event, Response>
-): RawEventHandler<Event, Response> => {
-    return new RawEventHandler<Event, Response>(cb);
+export const createEventHandler = <
+    Event = any,
+    Context extends FastifyContext = FastifyContext,
+    Response = any
+>(
+    cb: RawEventHandlerCallable<Event, Context, Response>
+) => {
+    return new RawEventHandler<Event, Context, Response>(cb);
 };

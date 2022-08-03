@@ -4,7 +4,8 @@
   "references": [
     { "path": "../api-elasticsearch" },
     { "path": "../error" },
-    { "path": "../handler" }
+    { "path": "../plugins" },
+    { "path": "../handler-fastify-aws" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -16,8 +17,10 @@
       "@webiny/api-elasticsearch": ["../api-elasticsearch/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
-      "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"]
+      "@webiny/plugins/*": ["../plugins/src/*"],
+      "@webiny/plugins": ["../plugins/src"],
+      "@webiny/handler-fastify-aws/*": ["../handler-fastify-aws/src/*"],
+      "@webiny/handler-fastify-aws": ["../handler-fastify-aws/src"]
     },
     "baseUrl": "."
   }

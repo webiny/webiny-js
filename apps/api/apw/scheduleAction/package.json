@@ -10,7 +10,7 @@
     "@webiny/api-apw": "^5.30.0",
     "@webiny/api-apw-scheduler-so-ddb": "^5.30.0",
     "@webiny/cli": "^5.30.0",
-    "@webiny/handler-aws": "^5.30.0",
+    "@webiny/handler-fastify-aws": "^5.30.0",
     "@webiny/project-utils": "^5.30.0"
   }
 }

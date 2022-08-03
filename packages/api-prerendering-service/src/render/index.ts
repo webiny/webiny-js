@@ -2,16 +2,10 @@ import renderUrl, { File } from "./renderUrl";
 import { join } from "path";
 import S3 from "aws-sdk/clients/s3";
 import { getStorageFolder, getRenderUrl, getIsNotFoundPage } from "~/utils";
-import { HandlerArgs, RenderHookPlugin } from "./types";
+import { HandlerPayload, RenderHookPlugin } from "./types";
 import { PrerenderingServiceStorageOperations, Render, TagPathLink } from "~/types";
 import omit from "lodash/omit";
-import { HandlerPlugin } from "@webiny/handler";
-import { Context } from "@webiny/handler/types";
-import { ArgsContext } from "@webiny/handler-args/types";
-
-export interface HandlerContext extends Context, ArgsContext<HandlerArgs> {
-    //
-}
+import { EventPlugin } from "@webiny/fastify";
 
 const sleep = () => new Promise(resolve => setTimeout(resolve, 1000));
 
@@ -58,9 +52,8 @@ export default (params: RenderParams) => {
     const isMultiTenant = isMultiTenancyEnabled();
     const log = console.log;
 
-    return new HandlerPlugin<HandlerContext>(async context => {
-        const { invocationArgs } = context;
-        const handlerArgs = Array.isArray(invocationArgs) ? invocationArgs : [invocationArgs];
+    return new EventPlugin<HandlerPayload>(async ({ payload, context }) => {
+        const handlerArgs = Array.isArray(payload) ? payload : [payload];
         const handlerHookPlugins = context.plugins.byType<RenderHookPlugin>("ps-render-hook");
 
         try {

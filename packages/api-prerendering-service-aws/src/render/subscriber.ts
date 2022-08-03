@@ -1,22 +1,12 @@
-import { EventBridgeEvent } from "aws-lambda";
 import SqsClient, { SendMessageBatchRequestEntry } from "aws-sdk/clients/sqs";
 import lodashChunk from "lodash/chunk";
 import { nanoid } from "nanoid";
-
 import {
     RenderEvent,
     PrerenderingServiceStorageOperations,
     RenderPagesEvent
 } from "@webiny/api-prerendering-service/types";
-import { ArgsContext } from "@webiny/handler-args/types";
-import { Context } from "@webiny/handler/types";
-import { HandlerPlugin } from "@webiny/handler";
-
-export type HandlerArgs = EventBridgeEvent<"RenderPages", RenderPagesEvent>;
-
-export interface HandlerContext extends Context, ArgsContext<HandlerArgs> {
-    //
-}
+import { createEventBridgeEventHandler } from "@webiny/handler-fastify-aws";
 
 export interface HandlerConfig {
     storageOperations: PrerenderingServiceStorageOperations;
@@ -26,12 +16,12 @@ export default (params: HandlerConfig) => {
     const { storageOperations } = params;
     const sqsClient = new SqsClient();
 
-    return new HandlerPlugin<HandlerContext>(async context => {
-        if (context.invocationArgs["detail-type"] !== "RenderPages") {
+    return createEventBridgeEventHandler<"RenderPages", RenderPagesEvent>(async ({ payload }) => {
+        if (payload["detail-type"] !== "RenderPages") {
             return;
         }
 
-        const event = context.invocationArgs.detail;
+        const event = payload.detail;
         const tenant = event.tenant;
         const variant = event.variant;
 

@@ -8,7 +8,6 @@
     { "path": "../plugins" },
     { "path": "../api-security" },
     { "path": "../api-tenancy" },
-    { "path": "../handler" },
     { "path": "../handler-fastify-aws" },
     { "path": "../handler-db" },
     { "path": "../handler-graphql" }
@@ -31,8 +30,6 @@
       "@webiny/api-security": ["../api-security/src"],
       "@webiny/api-tenancy/*": ["../api-tenancy/src/*"],
       "@webiny/api-tenancy": ["../api-tenancy/src"],
-      "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"],
       "@webiny/handler-fastify-aws/*": ["../handler-fastify-aws/src/*"],
       "@webiny/handler-fastify-aws": ["../handler-fastify-aws/src"],
       "@webiny/handler-db/*": ["../handler-db/src/*"],

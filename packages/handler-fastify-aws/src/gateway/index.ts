@@ -23,7 +23,7 @@ export const createHandler = (params: CreateHandlerParams): HandlerCallable => {
         });
         if (app.webiny.plugins.byType<RoutePlugin>(RoutePlugin.type).length === 0) {
             throw new Error(
-                `@webiny/handler-fastify-aws/gateway must have at least one RoutePlugin set.`
+                `To run @webiny/handler-fastify-aws/gateway, you must have at least one RoutePlugin set.`
             );
         }
         const appLambda = awsLambdaFastify(app, {

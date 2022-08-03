@@ -26,16 +26,31 @@ describe("s3", () => {
         }
 
         expect(error.message).toEqual(
-            "@webiny/handler-fastify-aws/s3 must have S3EventHandler set."
+            "To run @webiny/handler-fastify-aws/s3, you must have S3EventHandler set."
         );
     });
 
-    it("should call handler and trigger given event", async () => {
+    it("should call handler and trigger given event - raw returned", async () => {
         const s3Event = createS3Event();
         const handler = createS3Handler({
             plugins: [
                 new S3EventHandler<S3Event>(async ({ event }) => {
                     return event;
+                })
+            ]
+        });
+
+        const result = await handler(s3Event, createLambdaContext());
+
+        expect(result).toEqual(createS3Event());
+    });
+
+    it("should call handler and trigger given event - reply returned", async () => {
+        const s3Event = createS3Event();
+        const handler = createS3Handler({
+            plugins: [
+                new S3EventHandler<S3Event>(async ({ event, reply }) => {
+                    return reply.send(event);
                 })
             ]
         });

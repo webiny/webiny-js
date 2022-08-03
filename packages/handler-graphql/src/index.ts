@@ -1,6 +1,6 @@
 import { HandlerGraphQLOptions } from "./types";
 import createGraphQLHandler from "./createGraphQLHandler";
-import { Context } from "@webiny/handler/types";
+import { Context } from "@webiny/api/types";
 import { GraphQLFieldResolver } from "./types";
 
 /**

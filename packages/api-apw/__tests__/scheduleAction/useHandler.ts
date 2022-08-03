@@ -1,14 +1,12 @@
-import {
-    createRawHandler as createHandler,
-    createRawEventHandler
-} from "@webiny/handler-fastify-aws";
+import { createHandler, createEventHandler } from "@webiny/handler-fastify-aws/raw";
 import graphqlHandler from "@webiny/handler-graphql";
 import { createScheduler } from "~/scheduler";
-import { ContextPlugin } from "@webiny/handler";
+import { ContextPlugin } from "@webiny/api";
 import { PbContext } from "@webiny/api-page-builder/graphql/types";
 import { createTenancyAndSecurity } from "./tenancySecurity";
 import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
 import { createPermissions } from "../utils/helpers";
+import { ApwContext } from "~/types";
 
 interface Params {
     plugins?: any;
@@ -19,7 +17,7 @@ export default (params: Params = {}) => {
 
     // @ts-ignore
     const { storageOperations } = __getStorageOperations();
-    const handler = createHandler({
+    const handler = createHandler<unknown, ApwContext>({
         plugins: [
             ...createTenancyAndSecurity(),
             graphqlHandler(),
@@ -84,12 +82,12 @@ export default (params: Params = {}) => {
                     }
                 });
             }),
+            createEventHandler(async ({ context }) => {
+                return context;
+            }),
             /**
              * We need an EventPlugin defined because it returns the context which we actually use in tests.
              */
-            createRawEventHandler(async ({ context: ctx }) => {
-                return ctx;
-            }),
             extraPlugins || []
         ]
     });

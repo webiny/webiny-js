@@ -1,5 +1,5 @@
 import { SecurityContext } from "~/types";
-import { ContextPlugin } from "@webiny/handler";
+import { ContextPlugin } from "@webiny/api";
 import { FastifyContext } from "@webiny/fastify/types";
 
 interface Context extends FastifyContext, SecurityContext {}

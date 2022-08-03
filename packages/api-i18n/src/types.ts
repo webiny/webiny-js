@@ -1,6 +1,6 @@
 import { Plugin } from "@webiny/plugins/types";
 import { ClientContext } from "@webiny/handler-client/types";
-import { Context } from "@webiny/handler/types";
+import { Context } from "@webiny/api/types";
 import { TenancyContext } from "@webiny/api-tenancy/types";
 import { Topic } from "@webiny/pubsub/types";
 import { SecurityContext } from "@webiny/api-security/types";

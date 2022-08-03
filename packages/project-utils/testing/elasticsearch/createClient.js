@@ -83,8 +83,9 @@ const createDeleteIndexCallable = client => {
                 if (isSnapshotError(ex) === false) {
                     return;
                 }
+                console.log("Is snapshot error, will try to delete the index in a sec...");
+                console.log(JSON.stringify(ex));
             }
-            console.log("Is snapshot error, will try to delete the index in a sec...");
             /**
              * Let's retry deleting index again...
              */

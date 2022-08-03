@@ -1,6 +1,6 @@
 import updateSettingsPlugins from "@webiny/api-page-builder/updateSettings";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import { createHandler } from "@webiny/handler-aws";
+import { createHandler } from "@webiny/handler-fastify-aws/raw";
 import { createStorageOperations as createPageBuilderStorageOperations } from "@webiny/api-page-builder-so-ddb";
 
 const documentClient = new DocumentClient({
@@ -8,10 +8,12 @@ const documentClient = new DocumentClient({
     region: process.env.AWS_REGION
 });
 
-export const handler = createHandler(
-    updateSettingsPlugins({
-        storageOperations: createPageBuilderStorageOperations({
-            documentClient
+export const handler = createHandler({
+    plugins: [
+        updateSettingsPlugins({
+            storageOperations: createPageBuilderStorageOperations({
+                documentClient
+            })
         })
-    })
-);
+    ]
+});

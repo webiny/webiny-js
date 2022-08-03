@@ -1,5 +1,5 @@
 import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
-import { createHandler } from "@webiny/handler-fastify-aws";
+import { createHandler } from "@webiny/handler-fastify-aws/gateway";
 import graphqlHandler from "@webiny/handler-graphql";
 import { PluginCollection } from "@webiny/plugins/types";
 import adminUsersPlugins from "../src/index";

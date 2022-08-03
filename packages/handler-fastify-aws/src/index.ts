@@ -1,9 +1,10 @@
-import {
+export {
     createHandler as createApiGatewayHandler,
     CreateHandlerParams as CreateApiGatewayHandlerParams,
     RoutePlugin
 } from "~/gateway";
-import {
+
+export {
     createHandler as createS3Handler,
     CreateHandlerParams as CreateS3HandlerParams,
     S3EventHandler,
@@ -12,33 +13,42 @@ import {
     createS3EventHandler
 } from "~/s3";
 
-import {
-    createHandler as createRawHandler,
-    CreateHandlerParams as CreateRawHandlerParams,
-    RawEventHandler,
-    RawEventHandlerCallable,
-    RawEventHandlerCallableParams,
-    createRawEventHandler,
-    HandlerCallable as RawHandlerCallable
-} from "~/raw";
+export {
+    createHandler as createDynamoDBHandler,
+    CreateHandlerParams as CreateDynamoDBHandlerParams,
+    DynamoDBEventHandler,
+    DynamoDBEventHandlerCallable,
+    DynamoDBEventHandlerCallableParams,
+    createEventHandler as createDynamoDBEventHandler,
+    HandlerCallable as DynamoDBHandlerCallable
+} from "~/dynamodb";
 
 export {
-    createApiGatewayHandler,
-    createS3Handler,
-    createRawHandler,
-    createS3EventHandler,
-    createRawEventHandler,
-    S3EventHandler,
-    RawEventHandler,
-    RoutePlugin
-};
-export type {
-    CreateApiGatewayHandlerParams,
-    CreateS3HandlerParams,
-    S3EventHandlerCallable,
-    S3EventHandlerCallableParams,
-    CreateRawHandlerParams,
-    RawEventHandlerCallable,
+    createHandler as createSQSHandler,
+    CreateHandlerParams as CreateSQSHandlerParams,
+    SQSEventHandler,
+    SQSEventHandlerCallable,
+    SQSEventHandlerCallableParams,
+    createEventHandler as createSQSEventHandler,
+    HandlerCallable as SQSHandlerCallable
+} from "~/sqs";
+
+export {
+    createHandler as createEventBridgeHandler,
+    CreateHandlerParams as CreateEventBridgeHandlerParams,
+    EventBridgeEventHandler,
+    EventBridgeEventHandlerCallable,
+    EventBridgeEventHandlerCallableParams,
+    createEventHandler as createEventBridgeEventHandler,
+    HandlerCallable as EventBridgeHandlerCallable
+} from "~/eventBridge";
+
+export {
+    createHandler as createRawHandler,
+    CreateHandlerParams as CreateRawHandlerParams,
+    HandlerCallable as RawHandlerCallable,
+    createEventHandler as createRawEventHandler,
     RawEventHandlerCallableParams,
-    RawHandlerCallable
-};
+    RawEventHandlerCallable,
+    RawEventHandler
+} from "~/raw";

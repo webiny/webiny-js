@@ -4,7 +4,6 @@
   "references": [
     { "path": "../cli-plugin-scaffold" },
     { "path": "../error" },
-    { "path": "../handler" },
     { "path": "../plugins" }
   ],
   "compilerOptions": {
@@ -17,8 +16,6 @@
       "@webiny/cli-plugin-scaffold": ["../cli-plugin-scaffold/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
-      "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"]
     },

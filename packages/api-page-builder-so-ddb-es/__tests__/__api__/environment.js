@@ -2,7 +2,9 @@ const dbPlugins = require("@webiny/handler-db").default;
 const { DynamoDbDriver } = require("@webiny/db-dynamodb");
 const { DocumentClient } = require("aws-sdk/clients/dynamodb");
 const elasticsearchClientContextPlugin = require("@webiny/api-elasticsearch").default;
-const dynamoToElastic = require("@webiny/api-dynamodb-to-elasticsearch/handler").default;
+const {
+    createEventHandler: createDynamoDBToElasticsearchEventHandler
+} = require("@webiny/api-dynamodb-to-elasticsearch");
 const {
     createElasticsearchClient
 } = require("@webiny/project-utils/testing/elasticsearch/createClient");
@@ -10,7 +12,7 @@ const { simulateStream } = require("@webiny/project-utils/testing/dynamodb");
 const NodeEnvironment = require("jest-environment-node");
 const elasticsearchDataGzipCompression =
     require("@webiny/api-elasticsearch/plugins/GzipCompression").default;
-const { ContextPlugin } = require("@webiny/handler");
+const { ContextPlugin } = require("@webiny/api");
 const {
     elasticIndexManager
 } = require("@webiny/project-utils/testing/helpers/elasticIndexManager");
@@ -20,7 +22,7 @@ const {
 const { createStorageOperations } = require("../../dist/index");
 const { configurations } = require("../../dist/configurations");
 const { base: baseConfigurationPlugin } = require("../../dist/elasticsearch/indices/base");
-const { createHandler: createBaseHandler } = require("@webiny/handler");
+const { createHandler: createDynamoDBHandler } = require("@webiny/handler-fastify-aws/dynamodb");
 
 if (typeof createStorageOperations !== "function") {
     throw new Error(`Loaded plugins file must export a function that returns an array of plugins.`);
@@ -51,7 +53,12 @@ class PageBuilderTestEnvironment extends NodeEnvironment {
             context.plugins.register([elasticsearchDataGzipCompression()]);
             await elasticsearchClientContext.apply(context);
         });
-        simulateStream(documentClient, createBaseHandler(simulationContext, dynamoToElastic()));
+        simulateStream(
+            documentClient,
+            createDynamoDBHandler({
+                plugins: [simulationContext, createDynamoDBToElasticsearchEventHandler()]
+            })
+        );
 
         const plugins = [
             elasticsearchDataGzipCompression(),

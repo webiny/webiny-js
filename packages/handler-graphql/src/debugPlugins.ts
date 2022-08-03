@@ -1,6 +1,7 @@
 import { interceptConsole } from "./interceptConsole";
 import { GraphQLAfterQueryPlugin } from "./types";
-import { Context, ContextPlugin } from "@webiny/handler/types";
+import { Context } from "@webiny/api/types";
+import { ContextPlugin } from "@webiny/api";
 
 interface Log {
     method: string;
@@ -13,22 +14,19 @@ interface DebugContext extends Context {
 }
 
 export default () => [
-    {
-        type: "context",
-        apply(context) {
-            if (!context.debug) {
-                context.debug = {};
-            }
-
-            if (!context.debug.logs) {
-                context.debug.logs = [];
-            }
-
-            interceptConsole((method, args) => {
-                (context.debug.logs as Log[]).push({ method, args });
-            });
+    new ContextPlugin<DebugContext>(async context => {
+        if (!context.debug) {
+            context.debug = {};
         }
-    } as ContextPlugin<DebugContext>,
+
+        if (!context.debug.logs) {
+            context.debug.logs = [];
+        }
+
+        interceptConsole((method, args) => {
+            (context.debug.logs as Log[]).push({ method, args });
+        });
+    }),
     {
         type: "graphql-after-query",
         apply({ result, context }) {

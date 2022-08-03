@@ -37,7 +37,6 @@
     "@types/inquirer": "^7.3.1",
     "@types/ncp": "^2.0.4",
     "@types/pluralize": "^0.0.29",
-    "@webiny/handler": "^5.30.0",
     "@webiny/plugins": "^5.30.0",
     "@webiny/project-utils": "^5.30.0",
     "rimraf": "^3.0.2",

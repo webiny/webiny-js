@@ -1,4 +1,3 @@
-import { HttpContext } from "@webiny/handler-http/types";
 import { ClientContext } from "@webiny/handler-client/types";
 import { ElasticsearchContext } from "@webiny/api-elasticsearch/types";
 import { TenancyContext } from "@webiny/api-tenancy/types";
@@ -17,8 +16,7 @@ import { FormBuilderContext } from "@webiny/api-form-builder/types";
 // Feel free to extend it with additional context interfaces, if needed. Also, please do not change the
 // name of the interface, as existing scaffolding utilities may rely on it during the scaffolding process.
 export interface Context
-    extends HttpContext,
-        ClientContext,
+    extends ClientContext,
         ElasticsearchContext,
         TenancyContext,
         SecurityContext,

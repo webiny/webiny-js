@@ -1,4 +1,4 @@
-import { Context } from "@webiny/handler/types";
+import { Context } from "@webiny/api/types";
 import { DbContext } from "@webiny/handler-db/types";
 import { Topic } from "@webiny/pubsub/types";
 import { WcpContext } from "@webiny/api-wcp/types";

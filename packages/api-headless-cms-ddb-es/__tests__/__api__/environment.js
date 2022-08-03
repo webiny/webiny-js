@@ -2,12 +2,14 @@ const dbPlugins = require("@webiny/handler-db").default;
 const { DynamoDbDriver } = require("@webiny/db-dynamodb");
 const { DocumentClient } = require("aws-sdk/clients/dynamodb");
 const elasticsearchClientContextPlugin = require("@webiny/api-elasticsearch").default;
-const dynamoToElastic = require("@webiny/api-dynamodb-to-elasticsearch/handler").default;
+const {
+    createEventHandler: createDynamoDBToElasticsearchEventHandler
+} = require("@webiny/api-dynamodb-to-elasticsearch");
 const { simulateStream } = require("@webiny/project-utils/testing/dynamodb");
 const NodeEnvironment = require("jest-environment-node");
 const elasticsearchDataGzipCompression =
     require("@webiny/api-elasticsearch/plugins/GzipCompression").default;
-const { ContextPlugin } = require("@webiny/handler");
+const { ContextPlugin } = require("@webiny/api");
 const {
     elasticIndexManager
 } = require("@webiny/project-utils/testing/helpers/elasticIndexManager");
@@ -20,7 +22,7 @@ const {
 const { createStorageOperations } = require("../../dist/index");
 const { configurations } = require("../../dist/configurations");
 const { base: baseIndexConfigurationPlugin } = require("../../dist/elasticsearch/indices/base");
-const { createHandler: createBaseHandler } = require("@webiny/handler");
+const { createHandler: createDynamoDBHandler } = require("@webiny/handler-fastify-aws/dynamodb");
 
 if (typeof createStorageOperations !== "function") {
     throw new Error(`Loaded plugins file must export a function that returns an array of plugins.`);
@@ -64,24 +66,12 @@ class CmsTestEnvironment extends NodeEnvironment {
             context.plugins.register([elasticsearchDataGzipCompression()]);
             await elasticsearchClientContext.apply(context);
         });
-        simulateStream(documentClient, createBaseHandler(simulationContext, dynamoToElastic()));
-
-        //const onBeforeEntryList = new ContextPlugin(async context => {
-        //if (!context.cms) {
-        //    return;
-        //}
-        //context.cms.onBeforeEntryList.subscribe(async ({ model }) => {
-        //    console.log("Refreshing index on before listing...");
-        //    const { index } = configurations.es({
-        //        model
-        //    });
-        //    await elasticsearchClient.indices.refresh({
-        //        index,
-        //        ignore_unavailable: true,
-        //        expand_wildcards: "all"
-        //    });
-        //});
-        //});
+        simulateStream(
+            documentClient,
+            createDynamoDBHandler({
+                plugins: [simulationContext, createDynamoDBToElasticsearchEventHandler()]
+            })
+        );
         /**
          * We need to create model index before entry create because of the direct storage operations tests.
          * When running direct storage ops tests, index is created on the fly otherwise and then it is not cleaned up afterwards.

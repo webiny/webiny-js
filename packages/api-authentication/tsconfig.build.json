@@ -2,8 +2,8 @@
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
   "references": [
-    { "path": "../handler/tsconfig.build.json" },
-    { "path": "../handler-http/tsconfig.build.json" }
+    { "path": "../api/tsconfig.build.json" },
+    { "path": "../fastify/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",

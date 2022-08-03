@@ -1,7 +1,7 @@
 import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
 import path from "path";
 import fs from "fs";
-import { createHandler } from "@webiny/handler-fastify-aws";
+import { createHandler } from "@webiny/handler-fastify-aws/gateway";
 import graphqlHandlerPlugins from "@webiny/handler-graphql";
 import fileManagerPlugins from "@webiny/api-file-manager/plugins";
 import fileManagerDynamoDbPlugins from "@webiny/api-file-manager-ddb";

@@ -1,4 +1,4 @@
-import { BeforeHandlerPlugin } from "@webiny/handler";
+import { BeforeHandlerPlugin } from "@webiny/api";
 import { SecurityContext } from "~/types";
 import { FastifyContext } from "@webiny/fastify/types";
 

@@ -1,20 +1,18 @@
-import { HandlerPlugin } from "@webiny/handler/types";
-import { ArgsContext } from "@webiny/handler-args/types";
 import { ApwScheduleActionData, ApwScheduleActionStorageOperations } from "~/scheduler/types";
 import { getIsoStringTillMinutes, encodeToken, basePlugins } from "~/scheduler/handlers/utils";
-import { ClientContext } from "@webiny/handler-client/types";
 import { getApwSettings } from "~/scheduler/handlers/utils";
-import { ContextPlugin } from "@webiny/handler";
+import { ContextPlugin } from "@webiny/api";
 import { PageBuilderGraphQL } from "./plugins/PageBuilderGraphQL";
 import { HeadlessCMSGraphQL } from "./plugins/HeadlessCMSGraphQL";
 import { ApplicationGraphQL } from "./plugins/ApplicationGraphQL";
+import { createEvent } from "@webiny/fastify";
 
-export type HandlerArgs = {
+export interface HandlerArgs {
     datetime: string;
     tenant: string;
     locale: string;
-    futureDatetime: string;
-};
+    futureDatetime?: string;
+}
 
 interface Configuration {
     storageOperations: ApwScheduleActionStorageOperations;
@@ -23,11 +21,10 @@ interface Configuration {
 /**
  * Handler that execute the provided action(s) for the schedule action workflow.
  */
-const executeActionLambda = ({
-    storageOperations
-}: Configuration): HandlerPlugin<ArgsContext<HandlerArgs>, ClientContext> => ({
-    type: "handler",
-    async handle(context): Promise<void> {
+const createExecuteActionLambda = (params: Configuration) => {
+    const { storageOperations } = params;
+
+    return createEvent<HandlerArgs>(async ({ payload, context }) => {
         const log = console.log;
 
         const applicationGraphQLPlugins = context.plugins.byType<ApplicationGraphQL>(
@@ -59,9 +56,9 @@ const executeActionLambda = ({
         };
 
         try {
-            const { invocationArgs: args } = context;
             const apwSettings = await getApwSettings();
-            const { futureDatetime: datetime } = args;
+
+            const { futureDatetime: datetime, locale, tenant } = payload;
             /**
              * If there is no datetime we bail out early.
              */
@@ -75,8 +72,8 @@ const executeActionLambda = ({
              */
             const [items] = await storageOperations.list({
                 where: {
-                    tenant: args.tenant,
-                    locale: args.locale,
+                    tenant,
+                    locale,
                     datetime_startsWith: getIsoStringTillMinutes(datetime)
                 },
                 sort: ["datetime_ASC"],
@@ -140,13 +137,13 @@ const executeActionLambda = ({
             log("[HANDLER_EXECUTE_ACTION] Error => ", e);
             // TODO: Maybe update the status like error in original item in DB.
         }
-    }
-});
+    });
+};
 
 export const executeActionHandlerPlugins = (config: Configuration) => [
     new ContextPlugin(async context => {
         context.plugins.register([new PageBuilderGraphQL(), new HeadlessCMSGraphQL()]);
     }),
     basePlugins(),
-    executeActionLambda(config)
+    createExecuteActionLambda(config)
 ];

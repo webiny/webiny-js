@@ -1,5 +1,5 @@
 import { Plugin } from "@webiny/plugins/Plugin";
-import { Request, FastifyContext } from "@webiny/fastify/types";
+import { Request, Reply, FastifyContext } from "@webiny/fastify/types";
 import { S3Event, Context as LambdaContext } from "aws-lambda";
 
 export interface S3EventHandlerCallableParams {
@@ -7,9 +7,10 @@ export interface S3EventHandlerCallableParams {
     context: FastifyContext;
     event: S3Event;
     lambdaContext: LambdaContext;
+    reply: Reply;
 }
 export interface S3EventHandlerCallable<Response> {
-    (params: S3EventHandlerCallableParams): Promise<Response>;
+    (params: S3EventHandlerCallableParams): Promise<Response | Reply>;
 }
 
 export class S3EventHandler<Response = any> extends Plugin {
@@ -23,6 +24,6 @@ export class S3EventHandler<Response = any> extends Plugin {
     }
 }
 
-export const createS3EventHandler = <Response = any>(cb: S3EventHandlerCallable<Response>) => {
-    return new S3EventHandler(cb);
+export const createS3EventHandler = <Response>(cb: S3EventHandlerCallable<Response>) => {
+    return new S3EventHandler<Response>(cb);
 };
