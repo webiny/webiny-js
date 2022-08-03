@@ -1,4 +1,4 @@
-import awsLambdaFastify, { LambdaResponse } from "@fastify/aws-lambda";
+import awsLambdaFastify, { LambdaFastifyOptions, LambdaResponse } from "@fastify/aws-lambda";
 import { APIGatewayEvent, Context as LambdaContext } from "aws-lambda";
 import { createFastify, CreateFastifyHandlerParams, RoutePlugin } from "@webiny/fastify";
 
@@ -10,6 +10,7 @@ export interface CreateHandlerParams extends CreateFastifyHandlerParams {
     http?: {
         debug?: boolean;
     };
+    lambdaOptions?: LambdaFastifyOptions;
 }
 
 export const createHandler = (params: CreateHandlerParams): HandlerCallable => {
@@ -29,7 +30,9 @@ export const createHandler = (params: CreateHandlerParams): HandlerCallable => {
         const appLambda = awsLambdaFastify(app, {
             decorateRequest: true,
             serializeLambdaArguments: true,
-            decorationPropertyName: "awsLambda"
+            decorationPropertyName: "awsLambda",
+            binaryMimeTypes: ["image/png", "image/jpeg", "image/jpg", "image/gif"],
+            ...(params.lambdaOptions || {})
         });
         return appLambda(event, context);
     };
