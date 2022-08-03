@@ -2,7 +2,7 @@ import * as aws from "@pulumi/aws";
 
 import { createPulumiApp, PulumiAppParamCallback } from "@webiny/pulumi";
 import { tagResources } from "~/utils";
-import { createPublicAppBucket } from "../createAppBucket";
+import { createPrivateAppBucket } from "../createAppBucket";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
 
 export type AdminPulumiApp = ReturnType<typeof createAdminPulumiApp>;
@@ -32,7 +32,7 @@ export const createAdminPulumiApp = (projectAppParams: CreateAdminPulumiAppParam
                 });
             }
 
-            const bucket = createPublicAppBucket(app, "admin-app");
+            const bucket = createPrivateAppBucket(app, "admin-app");
 
             const cloudfront = app.addResource(aws.cloudfront.Distribution, {
                 name: "admin-app-cdn",

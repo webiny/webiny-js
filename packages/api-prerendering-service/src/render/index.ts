@@ -23,7 +23,6 @@ const storeFile = (params: StoreFileParams) => {
         .putObject({
             Bucket: storageName,
             Key: key,
-            ACL: "public-read",
             ContentType: contentType,
             CacheControl: "max-age=30",
             Body: body
