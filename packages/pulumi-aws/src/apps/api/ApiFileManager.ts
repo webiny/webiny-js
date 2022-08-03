@@ -160,8 +160,16 @@ function createFileManagerLambdaPolicy(app: PulumiApp) {
                     {
                         Sid: "PermissionForS3",
                         Effect: "Allow",
-                        Action: "s3:*",
-                        Resource: pulumi.interpolate`arn:aws:s3:::${core.fileManagerBucketId}/*`
+                        Action: [
+                            "s3:DeleteObject",
+                            "s3:PutObject",
+                            "s3:GetObject",
+                            "s3:ListBucket"
+                        ],
+                        Resource: [
+                            pulumi.interpolate`arn:aws:s3:::${core.fileManagerBucketId}`,
+                            pulumi.interpolate`arn:aws:s3:::${core.fileManagerBucketId}/*`
+                        ]
                     }
                 ]
             }
