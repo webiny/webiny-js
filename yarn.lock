@@ -12956,46 +12956,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/handler-args-old@^5.30.0, @webiny/handler-args-old@workspace:packages/handler-args":
-  version: 0.0.0-use.local
-  resolution: "@webiny/handler-args-old@workspace:packages/handler-args"
-  dependencies:
-    "@babel/cli": ^7.16.0
-    "@babel/core": ^7.16.0
-    "@babel/preset-env": ^7.16.4
-    "@babel/preset-typescript": ^7.16.0
-    "@babel/runtime": ^7.16.3
-    "@webiny/cli": ^5.30.0
-    "@webiny/handler-old": ^5.30.0
-    "@webiny/project-utils": ^5.30.0
-    rimraf: ^3.0.2
-    typescript: 4.7.4
-  languageName: unknown
-  linkType: soft
-
-"@webiny/handler-aws-old@workspace:packages/handler-aws":
-  version: 0.0.0-use.local
-  resolution: "@webiny/handler-aws-old@workspace:packages/handler-aws"
-  dependencies:
-    "@babel/cli": ^7.16.0
-    "@babel/core": ^7.16.0
-    "@babel/preset-env": ^7.16.4
-    "@babel/preset-typescript": ^7.16.0
-    "@babel/runtime": ^7.16.3
-    "@webiny/cli": ^5.30.0
-    "@webiny/handler-args-old": ^5.30.0
-    "@webiny/handler-client": ^5.30.0
-    "@webiny/handler-http-old": ^5.30.0
-    "@webiny/handler-old": ^5.30.0
-    "@webiny/plugins": ^5.30.0
-    "@webiny/project-utils": ^5.30.0
-    babel-plugin-lodash: ^3.3.4
-    merge: ^1.2.1
-    rimraf: ^3.0.2
-    typescript: 4.7.4
-  languageName: unknown
-  linkType: soft
-
 "@webiny/handler-client@^5.29.0, @webiny/handler-client@^5.30.0, @webiny/handler-client@workspace:packages/handler-client":
   version: 0.0.0-use.local
   resolution: "@webiny/handler-client@workspace:packages/handler-client"
@@ -13102,26 +13062,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/handler-http-old@^5.30.0, @webiny/handler-http-old@workspace:packages/handler-http":
-  version: 0.0.0-use.local
-  resolution: "@webiny/handler-http-old@workspace:packages/handler-http"
-  dependencies:
-    "@babel/cli": ^7.16.0
-    "@babel/core": ^7.16.0
-    "@babel/runtime": ^7.16.3
-    "@webiny/cli": ^5.30.0
-    "@webiny/handler-args-old": ^5.30.0
-    "@webiny/handler-old": ^5.30.0
-    "@webiny/plugins": ^5.30.0
-    "@webiny/project-utils": ^5.30.0
-    "@webiny/utils": ^5.30.0
-    boolean: ^3.0.1
-    merge: ^1.2.1
-    rimraf: ^3.0.2
-    typescript: 4.7.4
-  languageName: unknown
-  linkType: soft
-
 "@webiny/handler-logs@^5.30.0, @webiny/handler-logs@workspace:packages/handler-logs":
   version: 0.0.0-use.local
   resolution: "@webiny/handler-logs@workspace:packages/handler-logs"
@@ -13137,23 +13077,6 @@ __metadata:
     "@webiny/project-utils": ^5.30.0
     node-fetch: ^2.6.1
     rimraf: ^3.0.2
-    typescript: 4.7.4
-  languageName: unknown
-  linkType: soft
-
-"@webiny/handler-old@^5.30.0, @webiny/handler-old@workspace:packages/handler":
-  version: 0.0.0-use.local
-  resolution: "@webiny/handler-old@workspace:packages/handler"
-  dependencies:
-    "@babel/cli": ^7.16.0
-    "@babel/core": ^7.16.0
-    "@babel/preset-env": ^7.16.4
-    "@babel/runtime": ^7.16.3
-    "@webiny/cli": ^5.30.0
-    "@webiny/plugins": ^5.30.0
-    "@webiny/project-utils": ^5.30.0
-    rimraf: ^3.0.2
-    ttypescript: ^1.5.13
     typescript: 4.7.4
   languageName: unknown
   linkType: soft
