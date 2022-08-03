@@ -52,7 +52,7 @@ export default (params: RenderParams) => {
     const isMultiTenant = isMultiTenancyEnabled();
     const log = console.log;
 
-    return new EventPlugin<HandlerPayload>(async ({ payload, context, reply }) => {
+    return new EventPlugin<HandlerPayload>(async ({ payload, context }) => {
         const handlerArgs = Array.isArray(payload) ? payload : [payload];
         const handlerHookPlugins = context.plugins.byType<RenderHookPlugin>("ps-render-hook");
 
@@ -196,17 +196,17 @@ export default (params: RenderParams) => {
                 }
             }
 
-            return reply.send({
+            return {
                 data: null,
                 error: null
-            });
+            };
         } catch (e) {
             console.log("An error occurred while prerendering...", e);
             console.log(JSON.stringify(e.message));
-            return reply.send({
+            return {
                 data: null,
                 error: e
-            });
+            };
         }
     });
 };

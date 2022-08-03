@@ -14,7 +14,7 @@ export interface CreateQueueAddParams {
 export default (params: CreateQueueAddParams) => {
     const { storageOperations } = params;
 
-    return new EventPlugin<QueueAddJobEvent>(async ({ payload, reply }) => {
+    return new EventPlugin<QueueAddJobEvent>(async ({ payload }) => {
         const log = console.log;
         const handlerArgs = Array.isArray(payload) ? payload : [payload];
 
@@ -38,16 +38,16 @@ export default (params: CreateQueueAddParams) => {
                 log("Queue job saved.", JSON.stringify(payload));
             }
 
-            return reply.send({
+            return {
                 data: null,
                 error: null
-            });
+            };
         } catch (e) {
             log("An error occurred while trying to add to prerendering queue...", e);
-            return reply.send({
+            return {
                 data: null,
                 error: e
-            });
+            };
         }
     });
 };

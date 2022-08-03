@@ -32,7 +32,7 @@ export interface Stats {
 export default (params: Configuration) => {
     const { storageOperations } = params;
 
-    return new EventPlugin(async ({ context, reply }) => {
+    return new EventPlugin(async ({ context }) => {
         const stats: Stats = {
             jobs: {
                 unique: 0,
@@ -51,12 +51,12 @@ export default (params: Configuration) => {
 
             if (jobs.length === 0) {
                 log("No queue jobs to process. Exiting...");
-                return reply.send({
+                return {
                     data: {
                         stats
                     },
                     error: null
-                });
+                };
             }
 
             log(`Deleting all jobs from the database so they don't get executed again...`);
@@ -285,20 +285,20 @@ export default (params: Configuration) => {
 
             log(`All queue jobs processed, triggering "afterProcess" hook...`);
 
-            return reply.send({
+            return {
                 data: {
                     stats
                 },
                 error: null
-            });
+            };
         } catch (e) {
             log("An error occurred while trying to add to prerendering queue...", e);
-            return reply.send({
+            return {
                 data: {
                     stats
                 },
                 error: e
-            });
+            };
         }
     });
 };

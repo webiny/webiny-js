@@ -9,21 +9,21 @@ export interface SQSEventHandlerCallableParams {
     event: SQSEvent;
     lambdaContext: LambdaContext;
 }
-export interface SQSEventHandlerCallable {
-    (params: SQSEventHandlerCallableParams): Promise<Reply>;
+export interface SQSEventHandlerCallable<Response> {
+    (params: SQSEventHandlerCallableParams): Promise<Response | Reply>;
 }
 
-export class SQSEventHandler extends Plugin {
+export class SQSEventHandler<Response = any> extends Plugin {
     public static override type = "handler.fastify.aws.sqs.eventHandler";
 
-    public readonly cb: SQSEventHandlerCallable;
+    public readonly cb: SQSEventHandlerCallable<Response>;
 
-    public constructor(cb: SQSEventHandlerCallable) {
+    public constructor(cb: SQSEventHandlerCallable<Response>) {
         super();
         this.cb = cb;
     }
 }
 
-export const createEventHandler = (cb: SQSEventHandlerCallable) => {
-    return new SQSEventHandler(cb);
+export const createEventHandler = <Response>(cb: SQSEventHandlerCallable<Response>) => {
+    return new SQSEventHandler<Response>(cb);
 };

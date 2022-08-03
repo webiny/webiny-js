@@ -19,9 +19,8 @@ describe("Jobs Removal Test", () => {
         expect(queueJobsRecords).toHaveLength(3);
 
         const handlerResponse = await handler({}, {} as any);
-        const handlerResponseBody = JSON.parse(handlerResponse.body);
 
-        expect(handlerResponseBody).toEqual({
+        expect(handlerResponse).toEqual({
             data: {
                 stats: {
                     jobs: {

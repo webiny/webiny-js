@@ -16,26 +16,31 @@ export interface EventPluginCallableParams<Payload, Context extends FastifyConte
     reply: Reply;
 }
 
-export interface EventPluginCallable<Payload, Context extends FastifyContext> {
-    (params: EventPluginCallableParams<Payload, Context>): Promise<Reply>;
+export interface EventPluginCallable<Payload, Context extends FastifyContext, Response> {
+    (params: EventPluginCallableParams<Payload, Context>): Promise<Response | Reply>;
 }
 
 export class EventPlugin<
     Payload = any,
-    Context extends FastifyContext = FastifyContext
+    Context extends FastifyContext = FastifyContext,
+    Response = any
 > extends Plugin {
     public static override type = "handler.fastify.event";
 
-    public readonly cb: EventPluginCallable<Payload, Context>;
+    public readonly cb: EventPluginCallable<Payload, Context, Response>;
 
-    public constructor(cb: EventPluginCallable<Payload, Context>) {
+    public constructor(cb: EventPluginCallable<Payload, Context, Response>) {
         super();
         this.cb = cb;
     }
 }
 
-export const createEvent = <Payload = any, Context extends FastifyContext = FastifyContext>(
-    cb: EventPluginCallable<Payload, Context>
+export const createEvent = <
+    Payload = any,
+    Context extends FastifyContext = FastifyContext,
+    Response = any
+>(
+    cb: EventPluginCallable<Payload, Context, Response>
 ) => {
-    return new EventPlugin<Payload, Context>(cb);
+    return new EventPlugin<Payload, Context, Response>(cb);
 };

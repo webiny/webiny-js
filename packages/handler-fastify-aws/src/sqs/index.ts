@@ -2,6 +2,7 @@ import {
     createFastify,
     CreateFastifyHandlerParams as BaseCreateFastifyHandlerParams
 } from "@webiny/fastify";
+const Reply = require("fastify/lib/Reply");
 import { SQSEvent, Context as LambdaContext } from "aws-lambda";
 import { SQSEventHandler, SQSEventHandlerCallableParams } from "./plugins/SQSEventHandler";
 import { APIGatewayProxyResult } from "aws-lambda/trigger/api-gateway-proxy";
@@ -46,7 +47,14 @@ export const createHandler = (params: CreateHandlerParams): HandlerCallable => {
                 event,
                 lambdaContext: context
             };
-            return await handler.cb(params);
+            const result = await handler.cb(params);
+
+            if (result instanceof Reply) {
+                return result;
+            }
+
+            (app as any).__webiny_raw_result = result;
+            return reply.send({});
         });
         return new Promise((resolve, reject) => {
             app.inject(
@@ -57,7 +65,7 @@ export const createHandler = (params: CreateHandlerParams): HandlerCallable => {
                     query: {},
                     headers: {}
                 },
-                createHandleResponse(resolve, reject)
+                createHandleResponse(app, resolve, reject)
             );
         });
     };

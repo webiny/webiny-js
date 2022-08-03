@@ -28,7 +28,7 @@ export interface Params {
 export default (configuration: Params) => {
     const { storageOperations } = configuration;
 
-    return new EventPlugin<HandlerArgs>(async ({ payload, context, reply }) => {
+    return new EventPlugin<HandlerArgs>(async ({ payload, context }) => {
         const log = console.log;
         const events = Array.isArray(payload) ? payload : [payload];
         const handlerHookPlugins = context.plugins.byType<FlushHookPlugin>("ps-flush-hook");
@@ -150,16 +150,16 @@ export default (configuration: Params) => {
 
             await Promise.all(promises);
 
-            return reply.send({
+            return {
                 data: null,
                 error: null
-            });
+            };
         } catch (e) {
             log("An error occurred while prerendering...", e);
-            return reply.send({
+            return {
                 data: null,
                 error: e
-            });
+            };
         }
     });
 };

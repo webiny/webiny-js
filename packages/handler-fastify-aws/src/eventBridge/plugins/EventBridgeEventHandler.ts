@@ -9,23 +9,27 @@ export interface EventBridgeEventHandlerCallableParams<DetailType extends string
     payload: EventBridgeEvent<DetailType, Detail>;
     lambdaContext: LambdaContext;
 }
-export interface EventBridgeEventHandlerCallable<DetailType extends string, Detail> {
-    (params: EventBridgeEventHandlerCallableParams<DetailType, Detail>): Promise<Reply>;
+export interface EventBridgeEventHandlerCallable<DetailType extends string, Detail, Response> {
+    (params: EventBridgeEventHandlerCallableParams<DetailType, Detail>): Promise<Response | Reply>;
 }
 
-export class EventBridgeEventHandler<DetailType extends string, Detail> extends Plugin {
+export class EventBridgeEventHandler<
+    DetailType extends string,
+    Detail,
+    Response = any
+> extends Plugin {
     public static override type = "handler.fastify.aws.sqs.eventHandler";
 
-    public readonly cb: EventBridgeEventHandlerCallable<DetailType, Detail>;
+    public readonly cb: EventBridgeEventHandlerCallable<DetailType, Detail, Response>;
 
-    public constructor(cb: EventBridgeEventHandlerCallable<DetailType, Detail>) {
+    public constructor(cb: EventBridgeEventHandlerCallable<DetailType, Detail, Response>) {
         super();
         this.cb = cb;
     }
 }
 
-export const createEventHandler = <DetailType extends string, Detail>(
-    cb: EventBridgeEventHandlerCallable<DetailType, Detail>
+export const createEventHandler = <DetailType extends string, Detail, Response = any>(
+    cb: EventBridgeEventHandlerCallable<DetailType, Detail, Response>
 ) => {
-    return new EventBridgeEventHandler<DetailType, Detail>(cb);
+    return new EventBridgeEventHandler<DetailType, Detail, Response>(cb);
 };

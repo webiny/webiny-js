@@ -8,8 +8,15 @@ interface Reject {
     (error: Error): void;
 }
 
-// eslint-disable-next-line
-export const createHandleResponse = (resolve: Resolve, _: Reject): LightMyRequestCallback => {
+export const createHandleResponse = (
+    /**
+     * Should be FastifyInstance but for some reason its causing problems for the augmentation.
+     */
+    app: any,
+    resolve: Resolve,
+    // eslint-disable-next-line
+    _: Reject
+): LightMyRequestCallback => {
     return (err, result) => {
         if (err) {
             return resolve({
@@ -17,6 +24,9 @@ export const createHandleResponse = (resolve: Resolve, _: Reject): LightMyReques
                 body: JSON.stringify(err),
                 headers: {}
             });
+        }
+        if (app.__webiny_raw_result) {
+            return resolve(app.__webiny_raw_result);
         }
         const isBase64Encoded =
             !!result.headers["x-base64-encoded"] || !!result.headers["x-binary"];

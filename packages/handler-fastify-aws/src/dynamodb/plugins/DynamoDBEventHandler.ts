@@ -9,21 +9,21 @@ export interface DynamoDBEventHandlerCallableParams {
     lambdaContext: LambdaContext;
     reply: Reply;
 }
-export interface DynamoDBEventHandlerCallable {
-    (params: DynamoDBEventHandlerCallableParams): Promise<Reply>;
+export interface DynamoDBEventHandlerCallable<Response> {
+    (params: DynamoDBEventHandlerCallableParams): Promise<Response | Reply>;
 }
 
-export class DynamoDBEventHandler extends Plugin {
+export class DynamoDBEventHandler<Response = any> extends Plugin {
     public static override type = "handler.fastify.aws.dynamodb.eventHandler";
 
-    public readonly cb: DynamoDBEventHandlerCallable;
+    public readonly cb: DynamoDBEventHandlerCallable<Response>;
 
-    public constructor(cb: DynamoDBEventHandlerCallable) {
+    public constructor(cb: DynamoDBEventHandlerCallable<Response>) {
         super();
         this.cb = cb;
     }
 }
 
-export const createEventHandler = (cb: DynamoDBEventHandlerCallable) => {
-    return new DynamoDBEventHandler(cb);
+export const createEventHandler = <Response>(cb: DynamoDBEventHandlerCallable<Response>) => {
+    return new DynamoDBEventHandler<Response>(cb);
 };

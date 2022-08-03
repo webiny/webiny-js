@@ -2,6 +2,7 @@ import {
     createFastify,
     CreateFastifyHandlerParams as BaseCreateFastifyHandlerParams
 } from "@webiny/fastify";
+const Reply = require("fastify/lib/Reply");
 import { DynamoDBStreamEvent, Context as LambdaContext } from "aws-lambda";
 import {
     DynamoDBEventHandler,
@@ -48,7 +49,14 @@ export const createHandler = (params: CreateHandlerParams): HandlerCallable => {
                 lambdaContext: context,
                 reply
             };
-            return await handler.cb(params);
+            const result = await handler.cb(params);
+
+            if (result instanceof Reply) {
+                return result;
+            }
+
+            (app as any).__webiny_raw_result = result;
+            return reply.send({});
         });
         return new Promise((resolve, reject) => {
             app.inject(
@@ -59,7 +67,7 @@ export const createHandler = (params: CreateHandlerParams): HandlerCallable => {
                     query: {},
                     headers: {}
                 },
-                createHandleResponse(resolve, reject)
+                createHandleResponse(app, resolve, reject)
             );
         });
     };

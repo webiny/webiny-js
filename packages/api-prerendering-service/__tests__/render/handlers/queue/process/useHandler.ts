@@ -1,5 +1,5 @@
 import { createHandler } from "@webiny/handler-fastify-aws/raw";
-import queueProcessPlugins from "@webiny/api-prerendering-service/queue/process";
+import queueProcessPlugins from "~/queue/process";
 import handlerClient from "@webiny/handler-client";
 import { getStorageOperations } from "../../../../storageOperations";
 

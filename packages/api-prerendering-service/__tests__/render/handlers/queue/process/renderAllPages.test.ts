@@ -36,8 +36,7 @@ describe("Render All Pages Test", () => {
         expect(queueJobsRecords).toHaveLength(6);
 
         const handlerResponse = await handler({}, {} as any);
-        const handlerResponseBody = JSON.parse(handlerResponse.body);
-        expect(handlerResponseBody).toEqual({
+        expect(handlerResponse).toEqual({
             data: {
                 stats: {
                     jobs: {
@@ -77,9 +76,8 @@ describe("Render All Pages Test", () => {
         expect(queueJobsRecords).toHaveLength(9);
 
         const handlerResponse = await handler({}, {} as any);
-        const handlerResponseBody = JSON.parse(handlerResponse.body);
 
-        expect(handlerResponseBody).toEqual({
+        expect(handlerResponse).toEqual({
             data: {
                 stats: {
                     jobs: {

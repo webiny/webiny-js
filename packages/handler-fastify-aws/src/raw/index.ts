@@ -9,6 +9,7 @@ import {
     CreateFastifyHandlerParams as BaseCreateFastifyHandlerParams,
     EventPlugin
 } from "@webiny/fastify";
+const Reply = require("fastify/lib/Reply");
 import { Context as LambdaContext } from "aws-lambda";
 import { APIGatewayProxyResult } from "aws-lambda/trigger/api-gateway-proxy";
 
@@ -21,7 +22,9 @@ export interface HandlerCallable<Payload> {
 }
 
 export interface CreateHandlerParams extends BaseCreateFastifyHandlerParams {
-    debug?: boolean;
+    http?: {
+        debug?: boolean;
+    };
 }
 
 export const createHandler = <Payload = any>(
@@ -31,7 +34,7 @@ export const createHandler = <Payload = any>(
         const app = createFastify({
             plugins: params.plugins,
             options: {
-                logger: params.debug === true,
+                logger: params.http?.debug === true,
                 ...(params.options || {})
             }
         });
@@ -53,7 +56,14 @@ export const createHandler = <Payload = any>(
                 context: app.webiny,
                 payload: event
             };
-            return await handler.cb(params);
+            const result = await handler.cb(params);
+
+            if (result instanceof Reply) {
+                return result;
+            }
+
+            (app as any).__webiny_raw_result = result;
+            return reply.send({});
         });
         return new Promise((resolve, reject) => {
             app.inject(
@@ -64,7 +74,7 @@ export const createHandler = <Payload = any>(
                     query: {},
                     headers: {}
                 },
-                createHandleResponse(resolve, reject)
+                createHandleResponse(app, resolve, reject)
             );
         });
     };

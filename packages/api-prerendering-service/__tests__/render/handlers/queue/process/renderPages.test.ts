@@ -288,8 +288,7 @@ describe("Render Pages Test", () => {
         ]);
 
         const handlerResponse = await handler({}, {} as any);
-        const handlerResponseBody = JSON.parse(handlerResponse.body);
-        expect(handlerResponseBody).toEqual({
+        expect(handlerResponse).toEqual({
             data: {
                 stats: {
                     jobs: {
