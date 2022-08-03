@@ -68,32 +68,29 @@ const PagePreview: React.FC<PagePreviewProps> = ({ page }) => {
 
     return (
         <Zoom>
-            {({ zoom, setZoom }) => {
-                console.log("zoom", zoom);
-                return (
-                    <div
-                        ref={pageElementRef}
-                        className={classNames(pageInnerWrapper, responsiveClassName)}
-                        style={{ "--webiny-pb-page-preview-scale": zoom } as CSSProperties}
-                    >
-                        <RenderElement key={page.id} element={page.content} />
-                        <PagePreviewToolbar>
-                            <span>
-                                <Typography use={"overline"}>Zoom:&nbsp;</Typography>
-                            </span>
-                            <Select
-                                value={zoom.toString()}
-                                onChange={setZoom}
-                                className={webinyZoomStyles}
-                            >
-                                <option value={"1"}>100%</option>
-                                <option value={"0.75"}>75%</option>
-                                <option value={"0.5"}>50%</option>
-                            </Select>
-                        </PagePreviewToolbar>
-                    </div>
-                );
-            }}
+            {({ zoom, setZoom }) => (
+                <div
+                    ref={pageElementRef}
+                    className={classNames(pageInnerWrapper, responsiveClassName)}
+                    style={{ "--webiny-pb-page-preview-scale": zoom } as CSSProperties}
+                >
+                    <RenderElement key={page.id} element={page.content} />
+                    <PagePreviewToolbar>
+                        <span>
+                            <Typography use={"overline"}>Zoom:&nbsp;</Typography>
+                        </span>
+                        <Select
+                            value={zoom.toString()}
+                            onChange={setZoom}
+                            className={webinyZoomStyles}
+                        >
+                            <option value={"1"}>100%</option>
+                            <option value={"0.75"}>75%</option>
+                            <option value={"0.5"}>50%</option>
+                        </Select>
+                    </PagePreviewToolbar>
+                </div>
+            )}
         </Zoom>
     );
 };

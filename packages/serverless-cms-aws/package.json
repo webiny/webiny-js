@@ -64,7 +64,8 @@
   },
   "scripts": {
     "build": "yarn webiny run build",
-    "watch": "yarn webiny run watch"
+    "watch": "yarn webiny run watch",
+    "prepublishOnly": "yarn webiny run buildHandlers"
   },
   "adio": {
     "ignoreDirs": [

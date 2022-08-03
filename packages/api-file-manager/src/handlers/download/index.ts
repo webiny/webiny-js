@@ -10,6 +10,7 @@ import { ClientContext } from "@webiny/handler-client/types";
 
 const MAX_RETURN_CONTENT_LENGTH = 5000000; // ~4.77MB
 const DEFAULT_CACHE_MAX_AGE = 30758400; // 1 year
+const PRESIGNED_URL_EXPIRATION = 900; // 15 minutes
 
 interface Context extends ClientContext, ArgsContext<DownloadHandlerEventArgs> {}
 /**
@@ -85,21 +86,20 @@ export default (): HandlerPlugin<Context> => ({
                 };
             }
 
+            const presignedUrl = await s3.getSignedUrlPromise("getObject", {
+                Bucket: params.Bucket,
+                Key: params.Key,
+                Expires: PRESIGNED_URL_EXPIRATION
+            });
+
             // Lambda can return max 6MB of content, so if our object's size is larger, we are sending
             // a 301 Redirect, redirecting the user to the public URL of the object in S3.
-            await s3
-                .putObjectAcl({
-                    Bucket: params.Bucket,
-                    ACL: "public-read",
-                    Key: params.Key
-                })
-                .promise();
-
             return {
                 data: null,
                 statusCode: 301,
                 headers: {
-                    Location: `https://${params.Bucket}.s3.amazonaws.com/${params.Key}`
+                    Location: presignedUrl,
+                    "Cache-Control": "public, max-age=" + PRESIGNED_URL_EXPIRATION
                 }
             };
         };

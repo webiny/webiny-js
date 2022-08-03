@@ -28,7 +28,9 @@ const variablesPromise = new Promise<EnvVariables>(resolve => {
                 // STAGED_ROLLOUTS_VARIANT: app.ctx.variant || "",
                 // Among other things, this determines the amount of information we reveal on runtime errors.
                 // https://www.webiny.com/docs/how-to-guides/environment-variables/#debug-environment-variable
-                DEBUG: String(process.env.DEBUG)
+                DEBUG: String(process.env.DEBUG),
+                // This flag means that Lambda was deployed using the new Pulumi Apps architecture.
+                PULUMI_APPS: "true"
             }
         );
 
