@@ -31,7 +31,35 @@ export const createHandler = (params: CreateHandlerParams): HandlerCallable => {
             decorateRequest: true,
             serializeLambdaArguments: true,
             decorationPropertyName: "awsLambda",
-            binaryMimeTypes: ["image/png", "image/jpeg", "image/jpg", "image/gif"],
+            /**
+             * This is required until this part of aws-lambda-fastify is released: https://github.com/fastify/aws-lambda-fastify/blob/master/index.js#L6
+             */
+            binaryMimeTypes: [
+                "video/x-msvideo",
+                "image/bmp",
+                "image/gif",
+                "video/x-flv",
+                "image/x-freehand",
+                "image/x-icon",
+                "image/jpeg",
+                "audio/x-mpequrl",
+                "audio/midi",
+                "audio/midi",
+                "video/quicktime",
+                "audio/mpeg",
+                "image/png",
+                "video/quicktime",
+                "audio/x-realaudio",
+                "audio/x-pn-realaudio",
+                "audio/x-qt-stream",
+                "image/tiff",
+                "image/tiff",
+                "video/x-mpg",
+                "audio/x-wav",
+                "image/jpg",
+                "image/gif",
+                "image/webp"
+            ],
             ...(params.lambdaOptions || {})
         });
         return appLambda(event, context);

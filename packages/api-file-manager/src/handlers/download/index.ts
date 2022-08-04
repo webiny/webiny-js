@@ -71,7 +71,8 @@ export const createDownloadFilePlugins = () => {
                     return reply
                         .headers({
                             "Content-Type": object.ContentType,
-                            "Cache-Control": `public, max-age=${DEFAULT_CACHE_MAX_AGE}`
+                            "Cache-Control": `public, max-age=${DEFAULT_CACHE_MAX_AGE}`,
+                            "x-base64-encoded": true
                         })
                         .send((object?.Body || "").toString("base64"));
                 }
