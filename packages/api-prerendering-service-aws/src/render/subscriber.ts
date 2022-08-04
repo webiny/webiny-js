@@ -6,7 +6,7 @@ import {
     PrerenderingServiceStorageOperations,
     RenderPagesEvent
 } from "@webiny/api-prerendering-service/types";
-import { createEventBridgeEventHandler } from "@webiny/handler-fastify-aws";
+import { createEventBridgeEventHandler } from "@webiny/handler-aws";
 
 export interface HandlerConfig {
     storageOperations: PrerenderingServiceStorageOperations;

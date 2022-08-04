@@ -13,12 +13,12 @@ import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
 // @ts-ignore
 import { simulateStream } from "@webiny/project-utils/testing/dynamodb";
 import elasticsearchClientContextPlugin from "@webiny/api-elasticsearch";
-import { createHandler } from "@webiny/handler-fastify-aws/gateway";
+import { createHandler } from "@webiny/handler-aws/gateway";
 import graphqlHandlerPlugins from "@webiny/handler-graphql";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
-import { createHandler as createDynamoDBHandler } from "@webiny/handler-fastify-aws/dynamodb";
+import { createHandler as createDynamoDBHandler } from "@webiny/handler-aws/dynamodb";
 
 /**
  * Load some test stuff from the api-file-manager

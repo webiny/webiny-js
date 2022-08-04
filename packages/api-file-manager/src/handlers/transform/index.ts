@@ -4,7 +4,7 @@ import optimizeImage from "./optimizeImage";
 import { getEnvironment, getObjectParams } from "../utils";
 import { getImageKey } from "./utils";
 import { TransformHandlerBody } from "~/handlers/types";
-import { RoutePlugin } from "@webiny/handler-fastify-aws/gateway";
+import { RoutePlugin } from "@webiny/handler-aws/gateway";
 
 export const createTransformFilePlugins = () => {
     return [

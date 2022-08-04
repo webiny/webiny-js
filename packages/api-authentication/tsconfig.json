@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
-  "references": [{ "path": "../api" }, { "path": "../fastify" }],
+  "references": [{ "path": "../api" }, { "path": "../handler" }],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",
@@ -10,8 +10,8 @@
       "~/*": ["./src/*"],
       "@webiny/api/*": ["../api/src/*"],
       "@webiny/api": ["../api/src"],
-      "@webiny/fastify/*": ["../fastify/src/*"],
-      "@webiny/fastify": ["../fastify/src"]
+      "@webiny/handler/*": ["../handler/src/*"],
+      "@webiny/handler": ["../handler/src"]
     },
     "baseUrl": "."
   }

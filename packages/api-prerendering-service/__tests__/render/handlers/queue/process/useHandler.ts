@@ -1,4 +1,4 @@
-import { createHandler } from "@webiny/handler-fastify-aws/raw";
+import { createHandler } from "@webiny/handler-aws/raw";
 import queueProcessPlugins from "~/queue/process";
 import handlerClient from "@webiny/handler-client";
 import { getStorageOperations } from "../../../../storageOperations";

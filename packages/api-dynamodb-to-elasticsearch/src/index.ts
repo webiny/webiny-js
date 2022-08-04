@@ -2,7 +2,7 @@ import WebinyError from "@webiny/error";
 import { Converter } from "aws-sdk/clients/dynamodb";
 import { decompress } from "@webiny/api-elasticsearch/compression";
 import { ApiResponse, ElasticsearchContext } from "@webiny/api-elasticsearch/types";
-import { createDynamoDBEventHandler } from "@webiny/handler-fastify-aws";
+import { createDynamoDBEventHandler } from "@webiny/handler-aws";
 import { StreamRecord } from "aws-lambda/trigger/dynamodb-stream";
 
 enum Operations {

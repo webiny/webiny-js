@@ -1,6 +1,6 @@
 import updateSettingsPlugins from "@webiny/api-page-builder/updateSettings";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import { createHandler } from "@webiny/handler-fastify-aws/gateway";
+import { createHandler } from "@webiny/handler-aws/gateway";
 import { createStorageOperations as createPageBuilderStorageOperations } from "@webiny/api-page-builder-so-ddb";
 
 const documentClient = new DocumentClient({

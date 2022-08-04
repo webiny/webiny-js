@@ -2,7 +2,7 @@
  * We use @ts-ignore because __getStorageOperationsPlugins and __getStorageOperationsPlugins are attached from other projects directly to JEST context.
  */
 import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
-import { createHandler } from "@webiny/handler-fastify-aws/gateway";
+import { createHandler } from "@webiny/handler-aws/gateway";
 import graphqlHandler from "@webiny/handler-graphql";
 import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
 import i18nPlugins from "~/graphql";

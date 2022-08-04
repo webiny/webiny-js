@@ -12,7 +12,7 @@
     { "path": "../api-tenancy-so-ddb" },
     { "path": "../api-wcp" },
     { "path": "../api" },
-    { "path": "../handler-fastify-aws" },
+    { "path": "../handler-aws" },
     { "path": "../handler-graphql" }
   ],
   "compilerOptions": {
@@ -41,8 +41,8 @@
       "@webiny/api-wcp": ["../api-wcp/src"],
       "@webiny/api/*": ["../api/src/*"],
       "@webiny/api": ["../api/src"],
-      "@webiny/handler-fastify-aws/*": ["../handler-fastify-aws/src/*"],
-      "@webiny/handler-fastify-aws": ["../handler-fastify-aws/src"],
+      "@webiny/handler-aws/*": ["../handler-aws/src/*"],
+      "@webiny/handler-aws": ["../handler-aws/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
       "@webiny/handler-graphql": ["../handler-graphql/src"]
     },

@@ -2,7 +2,7 @@ import hash from "object-hash";
 import chunk from "lodash/chunk";
 import pluralize from "pluralize";
 import { FlushJob, RenderJob, QueueJob, PrerenderingServiceStorageOperations } from "~/types";
-import { EventPlugin } from "@webiny/fastify";
+import { EventPlugin } from "@webiny/handler";
 
 const IS_TEST = process.env.NODE_ENV === "test";
 const log = (...args: string[]) => {

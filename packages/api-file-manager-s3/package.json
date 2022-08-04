@@ -14,7 +14,7 @@
     "@webiny/error": "^5.30.0",
     "@webiny/handler-graphql": "^5.30.0",
     "@webiny/validation": "^5.30.0",
-    "form-data": "^3.0.0",
+    "form-data": "^4.0.0",
     "node-fetch": "^2.6.1",
     "sanitize-filename": "^1.6.3",
     "uniqid": "^5.2.0"

@@ -1,6 +1,6 @@
 import { PageBuilderStorageOperations, Settings } from "~/types";
 import { migrate, putDefaultSettings, SettingsInput } from "./migration/migrate";
-import { RoutePlugin } from "@webiny/fastify";
+import { RoutePlugin } from "@webiny/handler";
 
 export interface HandlerArgs {
     data: Settings;

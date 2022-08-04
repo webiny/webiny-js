@@ -9,7 +9,7 @@ import processRequestBody from "@webiny/handler-graphql/processRequestBody";
 import { buildSchemaPlugins } from "./buildSchemaPlugins";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
 import { GraphQLRequestBody } from "@webiny/handler-graphql/types";
-import { RoutePlugin } from "@webiny/fastify";
+import { RoutePlugin } from "@webiny/handler";
 
 interface SchemaCache {
     key: string;
@@ -127,12 +127,6 @@ const cmsRoutes = new RoutePlugin<CmsContext>(({ onPost, onOptions, context }) =
         const result = await processRequestBody(body, schema, context);
         return reply.code(200).send(result);
     });
-
-    // context.server.addHook("onRequest", async (request, reply) => {
-    //     if (request.method.toLowerCase() === "options") {
-    //         reply.hijack().code(204).headers({}).raw.end("");
-    //     }
-    // });
 
     onOptions("/cms/:type(^manage|preview|read$)/:locale", async (_, reply) => {
         return reply.hijack().send({});

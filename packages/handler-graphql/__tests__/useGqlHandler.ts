@@ -1,4 +1,4 @@
-import { createHandler } from "@webiny/handler-fastify-aws/gateway";
+import { createHandler } from "@webiny/handler-aws/gateway";
 import graphqlServerPlugins from "../src";
 import { PluginCollection } from "@webiny/plugins/types";
 

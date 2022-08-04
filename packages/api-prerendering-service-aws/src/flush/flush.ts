@@ -1,6 +1,6 @@
 import { RenderEvent } from "@webiny/api-prerendering-service/types";
 import plugin, { Params } from "@webiny/api-prerendering-service/flush";
-import { createEventBridgeEventHandler } from "@webiny/handler-fastify-aws";
+import { createEventBridgeEventHandler } from "@webiny/handler-aws";
 
 export default (params: Params) => {
     const flush = plugin(params);

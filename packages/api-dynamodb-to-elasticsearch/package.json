@@ -14,7 +14,7 @@
     "@babel/runtime": "^7.16.3",
     "@webiny/api-elasticsearch": "^5.30.0",
     "@webiny/error": "^5.30.0",
-    "@webiny/handler-fastify-aws": "^5.30.0",
+    "@webiny/handler-aws": "^5.30.0",
     "aws-lambda": "^1.0.7",
     "aws-sdk": "^2.971.0"
   },

@@ -27,7 +27,6 @@ export const ApiPageBuilder = createAppModule({
 
             new aws.s3.BucketObject("./pbInstallation.zip", {
                 key: "pbInstallation.zip",
-                acl: "public-read",
                 bucket: core.fileManagerBucketId,
                 contentType: "application/octet-stream",
                 source: new pulumi.asset.FileAsset(pbInstallationZipPath)

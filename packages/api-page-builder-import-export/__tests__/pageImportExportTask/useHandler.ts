@@ -1,11 +1,11 @@
 import { createWcpContext } from "@webiny/api-wcp";
-import { createHandler } from "@webiny/handler-fastify-aws/raw";
+import { createHandler } from "@webiny/handler-aws/raw";
 import graphqlHandler from "@webiny/handler-graphql";
 import pageImportExportTaskPlugins from "~/graphql/crud/pageImportExportTasks.crud";
 import { ContextPlugin } from "@webiny/api";
 import { createTenancyAndSecurity } from "../tenancySecurity";
 import { PbPageImportExportContext } from "~/graphql/types";
-import { EventPlugin } from "@webiny/fastify";
+import { EventPlugin } from "@webiny/handler";
 
 interface Params {
     plugins?: any;

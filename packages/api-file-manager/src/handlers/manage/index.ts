@@ -2,10 +2,10 @@ import path from "path";
 import S3 from "aws-sdk/clients/s3";
 import { getEnvironment } from "../utils";
 import managers from "../transform/managers";
-import { S3EventHandler } from "@webiny/handler-fastify-aws";
+import { S3EventHandler } from "@webiny/handler-aws";
 
 /**
- * This handler must be run through @webiny/handler-fastify-aws/s3
+ * This handler must be run through @webiny/handler-aws/s3
  */
 export const createManageFilePlugins = () => {
     return [

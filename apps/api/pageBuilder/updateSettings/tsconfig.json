@@ -4,7 +4,7 @@
   "references": [
     { "path": "../../../../packages/api-page-builder/tsconfig.build.json" },
     { "path": "../../../../packages/api-page-builder-so-ddb/tsconfig.build.json" },
-    { "path": "../../../../packages/handler-fastify-aws/tsconfig.build.json" }
+    { "path": "../../../../packages/handler-aws/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "paths": {
@@ -13,8 +13,8 @@
       "@webiny/api-page-builder": ["../../../../packages/api-page-builder/src"],
       "@webiny/api-page-builder-so-ddb/*": ["../../../../packages/api-page-builder-so-ddb/src/*"],
       "@webiny/api-page-builder-so-ddb": ["../../../../packages/api-page-builder-so-ddb/src"],
-      "@webiny/handler-fastify-aws/*": ["../../../../packages/handler-fastify-aws/src/*"],
-      "@webiny/handler-fastify-aws": ["../../../../packages/handler-fastify-aws/src"]
+      "@webiny/handler-aws/*": ["../../../../packages/handler-aws/src/*"],
+      "@webiny/handler-aws": ["../../../../packages/handler-aws/src"]
     },
     "baseUrl": "."
   }

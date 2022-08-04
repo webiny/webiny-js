@@ -22,7 +22,7 @@ const {
 const { createStorageOperations } = require("../../dist/index");
 const { configurations } = require("../../dist/configurations");
 const { base: baseConfigurationPlugin } = require("../../dist/elasticsearch/indices/base");
-const { createHandler: createDynamoDBHandler } = require("@webiny/handler-fastify-aws/dynamodb");
+const { createHandler: createDynamoDBHandler } = require("@webiny/handler-aws/dynamodb");
 
 if (typeof createStorageOperations !== "function") {
     throw new Error(`Loaded plugins file must export a function that returns an array of plugins.`);

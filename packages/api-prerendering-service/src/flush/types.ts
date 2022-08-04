@@ -1,6 +1,6 @@
 import { FlushEvent, PrerenderingSettings, Render } from "~/types";
 import { Plugin } from "@webiny/plugins/types";
-import { FastifyContext as Context } from "@webiny/fastify/types";
+import { Context } from "@webiny/handler/types";
 
 export type HandlerArgs = FlushEvent | FlushEvent[];
 

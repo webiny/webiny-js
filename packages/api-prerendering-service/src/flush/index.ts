@@ -4,7 +4,7 @@ import WebinyError from "@webiny/error";
 import { getStorageFolder } from "~/utils";
 import { FlushHookPlugin, HandlerArgs } from "./types";
 import { PrerenderingServiceStorageOperations } from "~/types";
-import { EventPlugin } from "@webiny/fastify";
+import { EventPlugin } from "@webiny/handler";
 
 const s3 = new S3({ region: process.env.AWS_REGION });
 

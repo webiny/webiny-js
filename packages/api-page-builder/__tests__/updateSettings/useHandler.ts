@@ -1,4 +1,4 @@
-import { createHandler } from "@webiny/handler-fastify-aws/gateway";
+import { createHandler } from "@webiny/handler-aws/gateway";
 import pageBuilderPlugins from "../../src/updateSettings";
 import { getStorageOperations } from "../storageOperations";
 
