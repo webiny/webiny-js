@@ -3,7 +3,7 @@ import { s3Stream } from "../s3Stream";
 import { ZipOfZip } from "../zipper";
 import { mockSecurity } from "~/mockSecurity";
 import { SecurityIdentity } from "@webiny/api-security/types";
-import { createRawEventHandler } from "@webiny/handler-fastify-aws";
+import { createRawEventHandler } from "@webiny/handler-aws";
 
 export interface Payload {
     taskId: string;

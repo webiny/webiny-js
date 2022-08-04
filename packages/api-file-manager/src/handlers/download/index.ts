@@ -3,8 +3,8 @@ import sanitizeFilename from "sanitize-filename";
 import pathLib from "path";
 import { getEnvironment, getObjectParams } from "../utils";
 import loaders from "../transform/loaders";
-import { RoutePlugin } from "@webiny/handler-fastify-aws/gateway";
-import { Context, Request } from "@webiny/fastify/types";
+import { RoutePlugin } from "@webiny/handler-aws/gateway";
+import { Context, Request } from "@webiny/handler/types";
 
 const MAX_RETURN_CONTENT_LENGTH = 5000000; // ~4.77MB
 const DEFAULT_CACHE_MAX_AGE = 30758400; // 1 year

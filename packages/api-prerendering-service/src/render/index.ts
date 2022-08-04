@@ -5,7 +5,7 @@ import { getStorageFolder, getRenderUrl, getIsNotFoundPage } from "~/utils";
 import { HandlerPayload, RenderHookPlugin } from "./types";
 import { PrerenderingServiceStorageOperations, Render, TagPathLink } from "~/types";
 import omit from "lodash/omit";
-import { EventPlugin } from "@webiny/fastify";
+import { EventPlugin } from "@webiny/handler";
 
 const sleep = () => new Promise(resolve => setTimeout(resolve, 1000));
 

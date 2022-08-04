@@ -1,4 +1,4 @@
-import { createHandler } from "@webiny/handler-fastify-aws/raw";
+import { createHandler } from "@webiny/handler-aws/raw";
 import elasticsearchClientContextPlugin from "@webiny/api-elasticsearch";
 import elasticsearchDataGzipCompression from "@webiny/api-elasticsearch/plugins/GzipCompression";
 import { createEventHandler as createDynamoDBEventHandler } from "@webiny/api-dynamodb-to-elasticsearch";

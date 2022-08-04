@@ -1,7 +1,7 @@
 import { createWcpContext } from "@webiny/api-wcp";
 import { getIntrospectionQuery } from "graphql";
 import i18nContext from "@webiny/api-i18n/graphql/context";
-import { createHandler } from "@webiny/handler-fastify-aws/gateway";
+import { createHandler } from "@webiny/handler-aws/gateway";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { ApiKey, SecurityIdentity } from "@webiny/api-security/types";
 import apiKeyAuthentication from "@webiny/api-security/plugins/apiKeyAuthentication";

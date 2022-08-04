@@ -14,7 +14,7 @@ import {
     restoreDateTime,
     scheduleLambdaExecution
 } from "./scheduleAction.utils";
-import { createRawEventHandler } from "@webiny/handler-fastify-aws";
+import { createRawEventHandler } from "@webiny/handler-aws";
 
 export enum InvocationTypes {
     SCHEDULED = "scheduled"

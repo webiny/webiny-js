@@ -78,7 +78,7 @@
       "path": "../../../packages/db-dynamodb/tsconfig.build.json"
     },
     {
-      "path": "../../../packages/handler-fastify-aws/tsconfig.build.json"
+      "path": "../../../packages/handler-aws/tsconfig.build.json"
     },
     {
       "path": "../../../packages/handler-db/tsconfig.build.json"
@@ -164,8 +164,8 @@
       "@webiny/api-tenant-manager": ["../../../packages/api-tenant-manager/src"],
       "@webiny/db-dynamodb/*": ["../../../packages/db-dynamodb/src/*"],
       "@webiny/db-dynamodb": ["../../../packages/db-dynamodb/src"],
-      "@webiny/handler-fastify-aws/*": ["../../../packages/handler-fastify-aws/src/*"],
-      "@webiny/handler-fastify-aws": ["../../../packages/handler-fastify-aws/src"],
+      "@webiny/handler-aws/*": ["../../../packages/handler-aws/src/*"],
+      "@webiny/handler-aws": ["../../../packages/handler-aws/src"],
       "@webiny/handler-db/*": ["../../../packages/handler-db/src/*"],
       "@webiny/handler-db": ["../../../packages/handler-db/src"],
       "@webiny/handler-graphql/*": ["../../../packages/handler-graphql/src/*"],

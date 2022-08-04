@@ -1,6 +1,6 @@
 import { BeforeHandlerPlugin } from "@webiny/api";
 import { SecurityContext } from "~/types";
-import { Context as BaseContext } from "@webiny/fastify/types";
+import { Context as BaseContext } from "@webiny/handler/types";
 
 type Context = BaseContext & SecurityContext;
 

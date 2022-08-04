@@ -9,7 +9,7 @@ import processRequestBody from "@webiny/handler-graphql/processRequestBody";
 import { buildSchemaPlugins } from "./buildSchemaPlugins";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
 import { GraphQLRequestBody } from "@webiny/handler-graphql/types";
-import { RoutePlugin } from "@webiny/fastify";
+import { RoutePlugin } from "@webiny/handler";
 
 interface SchemaCache {
     key: string;

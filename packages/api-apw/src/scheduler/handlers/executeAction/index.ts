@@ -5,7 +5,7 @@ import { ContextPlugin } from "@webiny/api";
 import { PageBuilderGraphQL } from "./plugins/PageBuilderGraphQL";
 import { HeadlessCMSGraphQL } from "./plugins/HeadlessCMSGraphQL";
 import { ApplicationGraphQL } from "./plugins/ApplicationGraphQL";
-import { createEvent } from "@webiny/fastify";
+import { createEvent } from "@webiny/handler";
 
 export interface HandlerArgs {
     datetime: string;

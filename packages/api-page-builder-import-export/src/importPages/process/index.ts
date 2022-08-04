@@ -4,7 +4,7 @@ import { invokeHandlerClient } from "~/importPages/client";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { mockSecurity } from "~/mockSecurity";
 import { zeroPad } from "@webiny/utils";
-import { createRawEventHandler } from "@webiny/handler-fastify-aws";
+import { createRawEventHandler } from "@webiny/handler-aws";
 
 interface Configuration {
     handlers: {

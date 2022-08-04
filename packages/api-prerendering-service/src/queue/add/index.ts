@@ -5,7 +5,7 @@
 import mdbid from "mdbid";
 import { QueueAddJobEvent } from "./types";
 import { PrerenderingServiceStorageOperations, QueueJob } from "~/types";
-import { EventPlugin } from "@webiny/fastify";
+import { EventPlugin } from "@webiny/handler";
 
 export interface CreateQueueAddParams {
     storageOperations: PrerenderingServiceStorageOperations;

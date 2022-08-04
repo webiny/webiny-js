@@ -1,4 +1,4 @@
-import { Context as BaseContext } from "@webiny/handler-fastify-aws/types";
+import { Context as BaseContext } from "@webiny/handler-aws/types";
 
 // When working with the `context` object (for example while defining a new GraphQL resolver function),
 // you can import this interface and assign it to it. This will give you full autocomplete functionality

@@ -4,7 +4,7 @@ import { TenancyContext } from "@webiny/api-tenancy/types";
 import { I18NContext } from "@webiny/api-i18n/types";
 import { Topic } from "@webiny/pubsub/types";
 import { RenderEvent, FlushEvent, QueueAddJob } from "@webiny/api-prerendering-service/types";
-import { Context as BaseContext } from "@webiny/fastify/types";
+import { Context as BaseContext } from "@webiny/handler/types";
 
 import {
     Category,

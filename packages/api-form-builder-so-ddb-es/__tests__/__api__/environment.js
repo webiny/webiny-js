@@ -25,7 +25,7 @@ const { base: baseConfigurationPlugin } = require("../../dist/elasticsearch/indi
 const {
     elasticIndexManager
 } = require("@webiny/project-utils/testing/helpers/elasticIndexManager");
-const { createHandler: createDynamoDBHandler } = require("@webiny/handler-fastify-aws/dynamodb");
+const { createHandler: createDynamoDBHandler } = require("@webiny/handler-aws/dynamodb");
 
 if (typeof createFormBuilderStorageOperations !== "function") {
     throw new Error(

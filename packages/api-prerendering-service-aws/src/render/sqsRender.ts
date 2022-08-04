@@ -1,5 +1,5 @@
 import plugin, { RenderParams } from "@webiny/api-prerendering-service/render";
-import { createSQSEventHandler } from "@webiny/handler-fastify-aws";
+import { createSQSEventHandler } from "@webiny/handler-aws";
 import { HandlerPayload } from "@webiny/api-prerendering-service/render/types";
 
 export default (params: RenderParams) => {
