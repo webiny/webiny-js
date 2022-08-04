@@ -23,7 +23,7 @@ const extractFilenameOptions = (request: Request) => {
 
 const getS3Object = async (request: Request, s3: S3, context: Context) => {
     const { options, filename, extension } = extractFilenameOptions(request);
-    
+
     for (const loader of loaders) {
         const canProcess = loader.canProcess({
             context,
@@ -34,7 +34,7 @@ const getS3Object = async (request: Request, s3: S3, context: Context) => {
                 extension
             }
         });
-        
+
         if (!canProcess) {
             continue;
         }
@@ -48,7 +48,7 @@ const getS3Object = async (request: Request, s3: S3, context: Context) => {
             }
         });
     }
-    
+
     // If no processors handled the file request, just return the S3 object by default.
     const params = getObjectParams(filename);
     return {
@@ -63,9 +63,9 @@ export const createDownloadFilePlugins = () => {
             onGet("/files/:path", async (request, reply) => {
                 const { region } = getEnvironment();
                 const s3 = new S3({ region });
-                
+
                 const { params, object } = await getS3Object(request, s3, context);
-                
+
                 const contentLength = object.ContentLength === undefined ? 0 : object.ContentLength;
                 if (contentLength < MAX_RETURN_CONTENT_LENGTH) {
                     return reply
@@ -76,13 +76,13 @@ export const createDownloadFilePlugins = () => {
                         })
                         .send(object?.Body || "");
                 }
-                
+
                 const presignedUrl = await s3.getSignedUrlPromise("getObject", {
                     Bucket: params.Bucket,
                     Key: params.Key,
                     Expires: PRESIGNED_URL_EXPIRATION
                 });
-                
+
                 // Lambda can return max 6MB of content, so if our object's size is larger, we are sending
                 // a 301 Redirect, redirecting the user to the public URL of the object in S3.
                 return reply
