@@ -9,7 +9,9 @@ const IMAGE_TRANSFORMER_FUNCTION = process.env.IMAGE_TRANSFORMER_FUNCTION as str
 interface TransformerParams {
     context: ClientContext;
     key: string;
-    transformations?: any;
+    transformations?: {
+        width?: number;
+    };
 }
 
 const callImageTransformerLambda = async ({ key, transformations, context }: TransformerParams) => {

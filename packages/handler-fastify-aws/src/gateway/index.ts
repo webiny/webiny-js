@@ -35,30 +35,36 @@ export const createHandler = (params: CreateHandlerParams): HandlerCallable => {
              * This is required until this part of aws-lambda-fastify is released: https://github.com/fastify/aws-lambda-fastify/blob/master/index.js#L6
              */
             binaryMimeTypes: [
-                "video/x-msvideo",
-                "image/bmp",
-                "image/gif",
-                "video/x-flv",
-                "image/x-freehand",
-                "image/x-icon",
-                "image/jpeg",
+                // audio
                 "audio/x-mpequrl",
                 "audio/midi",
-                "audio/midi",
-                "video/quicktime",
                 "audio/mpeg",
-                "image/png",
-                "video/quicktime",
                 "audio/x-realaudio",
                 "audio/x-pn-realaudio",
                 "audio/x-qt-stream",
-                "image/tiff",
-                "image/tiff",
-                "video/x-mpg",
                 "audio/x-wav",
+                // image
+                "image/bmp",
+                "image/gif",
+                "image/x-freehand",
+                "image/x-icon",
+                "image/jpeg",
+                "image/png",
+                "image/tiff",
                 "image/jpg",
                 "image/gif",
-                "image/webp"
+                "image/webp",
+                // video
+                "video/x-msvideo",
+                "video/x-flv",
+                "video/quicktime",
+                "video/quicktime",
+                "video/x-mpg",
+                // other
+                "application/pdf",
+                "text/rtf",
+                "text/xml-svg",
+                "text/x-sgml"
             ],
             ...(params.lambdaOptions || {})
         });
