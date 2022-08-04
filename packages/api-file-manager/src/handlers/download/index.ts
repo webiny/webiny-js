@@ -91,7 +91,7 @@ export const createDownloadFilePlugins = () => {
                         Location: presignedUrl,
                         "Cache-Control": "public, max-age=" + PRESIGNED_URL_EXPIRATION
                     })
-                    .send({});
+                    .send("");
             });
         })
     ];

@@ -1,6 +1,11 @@
-import { createHandler } from "@webiny/handler-aws/gateway";
+import { createHandler } from "@webiny/handler-aws/gateway/download";
 import { createDownloadFilePlugins } from "~/handlers/download";
 import { APIGatewayEvent } from "aws-lambda";
+
+const binaryMimeTypes: string[] = [];
+binaryMimeTypes.indexOf = () => {
+    return 1;
+};
 
 enum Files {
     smallFile = "small-test-file-path.png",
@@ -57,14 +62,7 @@ const createFileDownloadEvent = (file: string): APIGatewayEvent => {
 describe("download handler", () => {
     it("should trigger s3 file download - stream", async () => {
         const handler = createHandler({
-            plugins: [createDownloadFilePlugins()],
-            lambdaOptions: {
-                binaryMimeTypes: {
-                    indexOf: () => {
-                        return 1;
-                    }
-                } as unknown as string[]
-            }
+            plugins: [createDownloadFilePlugins()]
         });
 
         const result = await handler(createFileDownloadEvent(Files.smallFile), {} as any);
@@ -95,19 +93,19 @@ describe("download handler", () => {
         const result = await handler(createFileDownloadEvent(Files.largeFile), {} as any);
 
         expect(result).toEqual({
-            body: "{}",
+            body: "",
             headers: {
                 "access-control-allow-headers": "*",
                 "access-control-allow-methods": "GET,HEAD",
                 "access-control-allow-origin": "*",
                 "cache-control": "public, max-age=900",
                 connection: "keep-alive",
-                "content-length": "2",
+                "content-length": "0",
                 "content-type": "application/json; charset=utf-8",
                 date: expect.any(String),
                 location: "https://presigned-domain.loc/some-url?1fjdsfjdsfds"
             },
-            isBase64Encoded: false,
+            isBase64Encoded: true,
             statusCode: 301
         });
     });
