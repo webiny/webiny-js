@@ -11533,7 +11533,7 @@ __metadata:
     react-butterfiles: ^1.3.1
     react-dom: 17.0.2
     react-hotkeyz: ^1.0.4
-    react-lazy-load: ^3.0.13
+    react-lazy-load: ^3.1.14
     react-transition-group: ^4.3.0
     rimraf: ^3.0.2
     semver: ^7.3.4
@@ -34551,18 +34551,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-lazy-load@npm:^3.0.13":
-  version: 3.1.13
-  resolution: "react-lazy-load@npm:3.1.13"
+"react-lazy-load@npm:^3.1.14":
+  version: 3.1.14
+  resolution: "react-lazy-load@npm:3.1.14"
   dependencies:
     eventlistener: 0.0.1
     lodash.debounce: ^4.0.0
     lodash.throttle: ^4.0.0
     prop-types: ^15.5.8
   peerDependencies:
-    react: ^0.14.0 || ^15.0.0-0 || ^16.0.0
-    react-dom: ^0.14.0 || ^15.0.0-0 || ^16.0.0
-  checksum: f2d9d0d140a5c4e635994e057cf0fc0e89b381b2bac2b00ce7fb4f3e8427119a375e7e5b98ca596705e4656fdbf55d7e43ec846ded95ec4a7c71fa2ea2fbb26f
+    react: ^0.14.0 || ^15.0.0-0 || ^16.0.0 || ^17.0.0
+    react-dom: ^0.14.0 || ^15.0.0-0 || ^16.0.0 || ^17.0.0
+  checksum: f04bd1608591ae6a4badb405663a49ca454315a79039c402afee506210a2fbb1b09ae9c3853d53ebeabd18a0aa70b590dc2c20b8224b6226c09a4c192b793c3a
   languageName: node
   linkType: hard
 
