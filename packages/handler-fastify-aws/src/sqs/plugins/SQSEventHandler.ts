@@ -1,11 +1,11 @@
 import { Plugin } from "@webiny/plugins/Plugin";
-import { Request, Reply, FastifyContext } from "@webiny/fastify/types";
+import { Request, Reply, Context } from "@webiny/fastify/types";
 import { SQSEvent, Context as LambdaContext } from "aws-lambda";
 
 export interface SQSEventHandlerCallableParams {
     request: Request;
     reply: Reply;
-    context: FastifyContext;
+    context: Context;
     event: SQSEvent;
     lambdaContext: LambdaContext;
 }

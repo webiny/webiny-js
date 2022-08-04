@@ -128,12 +128,6 @@ const cmsRoutes = new RoutePlugin<CmsContext>(({ onPost, onOptions, context }) =
         return reply.code(200).send(result);
     });
 
-    // context.server.addHook("onRequest", async (request, reply) => {
-    //     if (request.method.toLowerCase() === "options") {
-    //         reply.hijack().code(204).headers({}).raw.end("");
-    //     }
-    // });
-
     onOptions("/cms/:type(^manage|preview|read$)/:locale", async (_, reply) => {
         return reply.hijack().send({});
     });

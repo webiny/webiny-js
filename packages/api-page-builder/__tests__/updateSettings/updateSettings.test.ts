@@ -46,7 +46,7 @@ describe("Update Settings Handler Test", () => {
          * TODO check if this is correct
          *
          * Result was not used anywhere so it did not matter.
-         * Fastify returns response object for the Lambda
+         * Server returns response object for the Lambda
          *
          */
         expect(result).toMatchObject({

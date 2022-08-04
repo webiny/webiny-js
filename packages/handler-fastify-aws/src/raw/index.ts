@@ -5,8 +5,8 @@
  * We should try to have some kind of standardized event type implementation at some point.
  */
 import {
-    createFastify,
-    CreateFastifyHandlerParams as BaseCreateFastifyHandlerParams
+    createHandler as createBaseHandler,
+    CreateHandlerParams as BaseCreateHandlerParams
 } from "@webiny/fastify";
 const Reply = require("fastify/lib/reply");
 import { Context as LambdaContext } from "aws-lambda";
@@ -21,7 +21,7 @@ export interface HandlerCallable<Payload, Response = APIGatewayProxyResult> {
     (event: Payload, context: LambdaContext): Promise<Response>;
 }
 
-export interface CreateHandlerParams extends BaseCreateFastifyHandlerParams {
+export interface CreateHandlerParams extends BaseCreateHandlerParams {
     http?: {
         debug?: boolean;
     };
@@ -31,7 +31,7 @@ export const createHandler = <Payload = any, Response = APIGatewayProxyResult>(
     params: CreateHandlerParams
 ): HandlerCallable<Payload, Response> => {
     return (event, context) => {
-        const app = createFastify({
+        const app = createBaseHandler({
             plugins: params.plugins,
             options: {
                 logger: params.http?.debug === true,

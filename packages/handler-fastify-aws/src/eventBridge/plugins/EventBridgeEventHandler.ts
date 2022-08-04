@@ -1,11 +1,11 @@
 import { Plugin } from "@webiny/plugins/Plugin";
-import { Request, Reply, FastifyContext } from "@webiny/fastify/types";
+import { Request, Reply, Context } from "@webiny/fastify/types";
 import { EventBridgeEvent, Context as LambdaContext } from "aws-lambda";
 
 export interface EventBridgeEventHandlerCallableParams<DetailType extends string, Detail> {
     request: Request;
     reply: Reply;
-    context: FastifyContext;
+    context: Context;
     payload: EventBridgeEvent<DetailType, Detail>;
     lambdaContext: LambdaContext;
 }

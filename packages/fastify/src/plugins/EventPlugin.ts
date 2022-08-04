@@ -7,22 +7,22 @@
  * If more is needed, check ~/fastify.ts and implement that possibility.
  */
 import { Plugin } from "@webiny/plugins/Plugin";
-import { Request, FastifyContext, Reply } from "~/types";
+import { Request, Context as BaseContext, Reply } from "~/types";
 
-export interface EventPluginCallableParams<Payload, Context extends FastifyContext> {
+export interface EventPluginCallableParams<Payload, Context extends BaseContext> {
     context: Context;
     payload: Payload;
     request: Request;
     reply: Reply;
 }
 
-export interface EventPluginCallable<Payload, Context extends FastifyContext, Response> {
+export interface EventPluginCallable<Payload, Context extends BaseContext, Response> {
     (params: EventPluginCallableParams<Payload, Context>): Promise<Response | Reply>;
 }
 
 export class EventPlugin<
     Payload = any,
-    Context extends FastifyContext = FastifyContext,
+    Context extends BaseContext = BaseContext,
     Response = any
 > extends Plugin {
     public static override type = "handler.fastify.event";
@@ -37,7 +37,7 @@ export class EventPlugin<
 
 export const createEvent = <
     Payload = any,
-    Context extends FastifyContext = FastifyContext,
+    Context extends BaseContext = BaseContext,
     Response = any
 >(
     cb: EventPluginCallable<Payload, Context, Response>

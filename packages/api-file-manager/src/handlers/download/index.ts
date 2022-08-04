@@ -4,7 +4,7 @@ import pathLib from "path";
 import { getEnvironment, getObjectParams } from "../utils";
 import loaders from "../transform/loaders";
 import { RoutePlugin } from "@webiny/handler-fastify-aws/gateway";
-import { FastifyContext, Request } from "@webiny/fastify/types";
+import { Context, Request } from "@webiny/fastify/types";
 
 const MAX_RETURN_CONTENT_LENGTH = 5000000; // ~4.77MB
 const DEFAULT_CACHE_MAX_AGE = 30758400; // 1 year
@@ -21,7 +21,7 @@ const extractFilenameOptions = (request: Request) => {
     };
 };
 
-const getS3Object = async (request: Request, s3: S3, context: FastifyContext) => {
+const getS3Object = async (request: Request, s3: S3, context: Context) => {
     const { options, filename, extension } = extractFilenameOptions(request);
 
     for (const loader of loaders) {
@@ -74,7 +74,7 @@ export const createDownloadFilePlugins = () => {
                             "Cache-Control": `public, max-age=${DEFAULT_CACHE_MAX_AGE}`,
                             "x-base64-encoded": true
                         })
-                        .send((object?.Body || "").toString("base64"));
+                        .send(object?.Body || "");
                 }
 
                 const presignedUrl = await s3.getSignedUrlPromise("getObject", {

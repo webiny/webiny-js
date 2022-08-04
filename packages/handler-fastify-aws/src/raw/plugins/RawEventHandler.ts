@@ -1,4 +1,4 @@
-import { Request, Reply, FastifyContext } from "@webiny/fastify/types";
+import { Request, Reply, Context as BaseContext } from "@webiny/fastify/types";
 import { Context as LambdaContext } from "aws-lambda";
 import { EventPlugin } from "@webiny/fastify";
 
@@ -9,13 +9,13 @@ export interface RawEventHandlerCallableParams<Event, Context> {
     payload: Event;
     lambdaContext: LambdaContext;
 }
-export interface RawEventHandlerCallable<Event, Context extends FastifyContext, Response> {
+export interface RawEventHandlerCallable<Event, Context extends BaseContext, Response> {
     (params: RawEventHandlerCallableParams<Event, Context>): Promise<Response | Reply>;
 }
 
 export class RawEventHandler<
     Event = any,
-    Context extends FastifyContext = FastifyContext,
+    Context extends BaseContext = BaseContext,
     Response = any
 > extends EventPlugin {
     public constructor(cb: RawEventHandlerCallable<Event, Context, Response>) {
@@ -25,7 +25,7 @@ export class RawEventHandler<
 
 export const createEventHandler = <
     Event = any,
-    Context extends FastifyContext = FastifyContext,
+    Context extends BaseContext = BaseContext,
     Response = any
 >(
     cb: RawEventHandlerCallable<Event, Context, Response>

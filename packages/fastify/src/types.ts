@@ -20,8 +20,9 @@ export interface RouteMethod {
 export type Request = FastifyRequest;
 export type Reply = FastifyReply;
 
-export interface FastifyContextRoutes {
-    defined: Record<RouteTypes, string[]>;
+export type DefinedContextRoutes = Record<RouteTypes, string[]>;
+export interface ContextRoutes {
+    defined: DefinedContextRoutes;
     onGet: RouteMethod;
     onPost: RouteMethod;
     onPut: RouteMethod;
@@ -32,7 +33,7 @@ export interface FastifyContextRoutes {
     onHead: RouteMethod;
 }
 
-export interface FastifyContext extends ClientContext {
+export interface Context extends ClientContext {
     /**
      * An instance of fastify server.
      * Use at your own risk.
@@ -46,11 +47,11 @@ export interface FastifyContext extends ClientContext {
     /**
      * @internal
      */
-    routes: FastifyContextRoutes;
+    routes: ContextRoutes;
 }
 
 declare module "fastify" {
     interface FastifyInstance {
-        webiny: FastifyContext;
+        webiny: Context;
     }
 }

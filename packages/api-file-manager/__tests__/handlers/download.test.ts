@@ -74,7 +74,8 @@ describe("download handler", () => {
                 connection: "keep-alive",
                 "content-length": "24",
                 "content-type": "image/png",
-                date: expect.any(String)
+                date: expect.any(String),
+                "x-base64-encoded": "true"
             }
         });
     });

@@ -1,10 +1,10 @@
 import { Plugin } from "@webiny/plugins/Plugin";
-import { Request, Reply, FastifyContext } from "@webiny/fastify/types";
+import { Request, Reply, Context } from "@webiny/fastify/types";
 import { S3Event, Context as LambdaContext } from "aws-lambda";
 
 export interface S3EventHandlerCallableParams {
     request: Request;
-    context: FastifyContext;
+    context: Context;
     event: S3Event;
     lambdaContext: LambdaContext;
     reply: Reply;

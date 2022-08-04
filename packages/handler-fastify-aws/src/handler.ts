@@ -1,22 +1,23 @@
 import awsLambdaFastify, { LambdaResponse } from "@fastify/aws-lambda";
 import { APIGatewayEvent, Context as LambdaContext } from "aws-lambda";
-import { createFastify, CreateFastifyHandlerParams } from "@webiny/fastify";
+import {
+    createHandler as createBaseHandler,
+    CreateHandlerParams as BaseCreateHandlerParams
+} from "@webiny/fastify";
 
-export interface FastifyAwsHandlerCallable {
+export interface AwsHandlerCallable {
     (event: APIGatewayEvent, ctx: LambdaContext): Promise<LambdaResponse>;
 }
 
-export interface CreateAwsFastifyHandlerParams extends CreateFastifyHandlerParams {
+export interface CreateAwsHandlerParams extends BaseCreateHandlerParams {
     http?: {
         debug?: boolean;
     };
 }
 
-export const createAwsFastifyHandler = (
-    params: CreateAwsFastifyHandlerParams
-): FastifyAwsHandlerCallable => {
+export const createAwsHandler = (params: CreateAwsHandlerParams): AwsHandlerCallable => {
     return (event, context) => {
-        const app = createFastify({
+        const app = createBaseHandler({
             plugins: params?.plugins || [],
             options: {
                 logger: params?.http?.debug === true,

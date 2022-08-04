@@ -1,10 +1,10 @@
 import { Plugin } from "@webiny/plugins/Plugin";
-import { Request, Reply, FastifyContext } from "@webiny/fastify/types";
+import { Request, Reply, Context } from "@webiny/fastify/types";
 import { DynamoDBStreamEvent, Context as LambdaContext } from "aws-lambda";
 
 export interface DynamoDBEventHandlerCallableParams {
     request: Request;
-    context: FastifyContext;
+    context: Context;
     event: DynamoDBStreamEvent;
     lambdaContext: LambdaContext;
     reply: Reply;

@@ -1,4 +1,4 @@
-import { FastifyContext as Context } from "@webiny/fastify/types";
+import { Context } from "@webiny/fastify/types";
 
 export interface AuthenticationContext<TIdentity = Identity> extends Context {
     authentication: Authentication<TIdentity>;

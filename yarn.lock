@@ -12911,7 +12911,7 @@ __metadata:
     "@webiny/project-utils": ^5.29.0
     "@webiny/utils": ^5.29.0
     babel-plugin-lodash: ^3.3.4
-    fastify: ^4.2.1
+    fastify: ^4.3.0
     merge: ^1.2.1
     rimraf: ^3.0.2
     ttypescript: ^1.5.13
@@ -22252,28 +22252,6 @@ __metadata:
   version: 3.0.1
   resolution: "fastify-plugin@npm:3.0.1"
   checksum: 131ba0a388f777829c3fb0fd5b75cf057688ce6d0ca354fb1ebf829767a8c853b0825762b9185b5200097454df0ede2f3095da2efe1aa1b3736d07f194e6d374
-  languageName: node
-  linkType: hard
-
-"fastify@npm:^4.2.1":
-  version: 4.2.1
-  resolution: "fastify@npm:4.2.1"
-  dependencies:
-    "@fastify/ajv-compiler": ^3.1.1
-    "@fastify/error": ^3.0.0
-    "@fastify/fast-json-stringify-compiler": ^4.0.0
-    abstract-logging: ^2.0.1
-    avvio: ^8.1.3
-    find-my-way: ^7.0.0
-    light-my-request: ^5.0.0
-    pino: ^8.0.0
-    process-warning: ^2.0.0
-    proxy-addr: ^2.0.7
-    rfdc: ^1.3.0
-    secure-json-parse: ^2.4.0
-    semver: ^7.3.7
-    tiny-lru: ^8.0.2
-  checksum: 443c634d1a65016649f2ee782c057b8e7f02dcaab45ef5b3c1a22663a2c88ecb361f301f1cc92c3ad27c0a1c434c53d9ae051ce4474bee55abcd73ebf6c7af2d
   languageName: node
   linkType: hard
 

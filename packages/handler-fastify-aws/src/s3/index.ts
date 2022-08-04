@@ -1,6 +1,6 @@
 import {
-    createFastify,
-    CreateFastifyHandlerParams as BaseCreateFastifyHandlerParams
+    createHandler as createBaseHandler,
+    CreateHandlerParams as BaseCreateHandlerParams
 } from "@webiny/fastify";
 const Reply = require("fastify/lib/reply");
 import { S3Event, Context as LambdaContext } from "aws-lambda";
@@ -14,13 +14,13 @@ export interface HandlerCallable {
     (event: S3Event, context: LambdaContext): Promise<APIGatewayProxyResult>;
 }
 
-export interface CreateHandlerParams extends BaseCreateFastifyHandlerParams {
+export interface CreateHandlerParams extends BaseCreateHandlerParams {
     debug?: boolean;
 }
 
 export const createHandler = (params: CreateHandlerParams): HandlerCallable => {
     return (event, context) => {
-        const app = createFastify({
+        const app = createBaseHandler({
             plugins: params.plugins,
             options: {
                 logger: params.debug === true,

@@ -1,7 +1,7 @@
-import { createFastify, RoutePlugin } from "~/index";
+import { createHandler, RoutePlugin } from "~/index";
 import { RouteTypes } from "~/types";
 
-describe("Fastify routes plugin", () => {
+describe("route plugins", () => {
     it("should add routes and they must be visible in the defined property", async () => {
         const routes = new RoutePlugin(
             async ({ onPost, onGet, onDelete, onOptions, onPatch, onPut, onAll, onHead }) => {
@@ -37,7 +37,7 @@ describe("Fastify routes plugin", () => {
             }
         );
 
-        const app = createFastify({
+        const app = createHandler({
             plugins: [routes]
         });
 

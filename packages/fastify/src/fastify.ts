@@ -1,8 +1,8 @@
 import { PluginCollection } from "@webiny/plugins/types";
-import fastify, { FastifyServerOptions } from "fastify";
+import fastify, { FastifyServerOptions as ServerOptions } from "fastify";
 import { BeforeHandlerPlugin, ContextPlugin, HandlerErrorPlugin } from "@webiny/api";
 import { getWebinyVersionHeaders } from "@webiny/utils";
-import { FastifyContext, FastifyContextRoutes, RouteMethodOptions, RouteTypes } from "~/types";
+import { ContextRoutes, DefinedContextRoutes, RouteMethodOptions, RouteTypes } from "~/types";
 import { Context } from "~/plugins/Context";
 import WebinyError from "@webiny/error";
 import { RoutePlugin } from "./plugins/RoutePlugin";
@@ -19,7 +19,7 @@ const DEFAULT_HEADERS: Record<string, string> = {
     ...getWebinyVersionHeaders()
 };
 
-const getDefaultHeaders = (routes: FastifyContextRoutes["defined"]): Record<string, string> => {
+const getDefaultHeaders = (routes: DefinedContextRoutes): Record<string, string> => {
     /**
      * If we are accepting all headers, just output that one.
      */
@@ -51,13 +51,13 @@ const OPTIONS_HEADERS: Record<string, string> = {
     "Cache-Control": "public, max-age=86400"
 };
 
-export interface CreateFastifyHandlerParams {
+export interface CreateHandlerParams {
     plugins: PluginCollection;
-    options?: FastifyServerOptions;
+    options?: ServerOptions;
 }
 
-export const createFastify = (params: CreateFastifyHandlerParams) => {
-    const definedRoutes: FastifyContextRoutes["defined"] = {
+export const createHandler = (params: CreateHandlerParams) => {
+    const definedRoutes: ContextRoutes["defined"] = {
         POST: [],
         GET: [],
         OPTIONS: [],
@@ -140,7 +140,7 @@ export const createFastify = (params: CreateFastifyHandlerParams) => {
     /**
      * Route helpers - mostly for users.
      */
-    const routes: FastifyContext["routes"] = {
+    const routes: ContextRoutes = {
         defined: definedRoutes,
         onPost: (path, handler, options) => {
             throwOnDefinedRoute("POST", path, options);
@@ -222,7 +222,7 @@ export const createFastify = (params: CreateFastifyHandlerParams) => {
     app.addHook("onRequest", async (request, reply) => {
         const defaultHeaders = getDefaultHeaders(definedRoutes);
         reply.headers(defaultHeaders);
-        if (request.method.toLowerCase() !== "options") {
+        if (request.method !== "OPTIONS") {
             return;
         }
         const raw = reply.code(204).hijack().raw;
@@ -257,7 +257,7 @@ export const createFastify = (params: CreateFastifyHandlerParams) => {
     app.addHook("onError", async (_, reply, error) => {
         const plugins = app.webiny.plugins.byType(HandlerErrorPlugin.type);
         // Log error to cloud, as these can be extremely annoying to debug!
-        console.log("@webiny/fastify");
+        console.log("@webiny/handler");
         console.log(error);
         const handler = middleware(
             plugins.map(pl => {

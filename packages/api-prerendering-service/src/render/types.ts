@@ -1,4 +1,4 @@
-import { FastifyContext as Context } from "@webiny/fastify/types";
+import { Context } from "@webiny/fastify/types";
 import { Plugin } from "@webiny/plugins/types";
 import { RenderEvent, PrerenderingSettings, Render } from "~/types";
 
