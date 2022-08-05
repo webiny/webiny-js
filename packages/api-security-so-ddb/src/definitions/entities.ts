@@ -103,6 +103,9 @@ export const createSystemEntity = (table: Table, attributes: Attributes = {}) =>
         version: {
             type: "string"
         },
+        createdOn: {
+            type: "string"
+        },
         ...attributes
     });
 };
