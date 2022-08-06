@@ -154,7 +154,7 @@ export const Columns: React.FC<ColumnsProps> = ({ children, space, ...props }) =
                 if (React.isValidElement(child)) {
                     return React.cloneElement(child, { ...childProps, ...child.props });
                 }
-                
+
                 return child;
             })}
         </Box>
