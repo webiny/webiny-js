@@ -18,7 +18,7 @@
     "csstype": "^3.0.11"
   },
   "peerDependencies": {
-    "react": "^16.14.0"
+    "react": "^17.0.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.16.0",
@@ -27,7 +27,7 @@
     "@babel/preset-env": "^7.16.4",
     "@babel/preset-react": "^7.16.0",
     "@babel/preset-typescript": "^7.16.0",
-    "@types/react": "^16.14.0",
+    "@types/react": "17.0.39",
     "@types/resize-observer-browser": "^0.1.4",
     "@webiny/cli": "^5.30.0",
     "@webiny/project-utils": "^5.30.0",

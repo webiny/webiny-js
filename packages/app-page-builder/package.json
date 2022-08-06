@@ -23,7 +23,7 @@
     "@fortawesome/react-fontawesome": "^0.1.17",
     "@svgr/webpack": "^6.1.1",
     "@types/medium-editor": "^5.0.3",
-    "@types/react": "^16.14.0",
+    "@types/react": "17.0.39",
     "@webiny/app": "^5.30.0",
     "@webiny/app-admin": "^5.30.0",
     "@webiny/app-i18n": "^5.30.0",

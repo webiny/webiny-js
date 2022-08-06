@@ -11,7 +11,7 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@types/react": "^16.14.0",
+    "@types/react": "17.0.39",
     "@webiny/app": "^5.30.0",
     "@webiny/plugins": "^5.30.0",
     "@webiny/react-composition": "^5.30.0",
