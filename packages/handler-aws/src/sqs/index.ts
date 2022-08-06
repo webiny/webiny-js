@@ -8,6 +8,7 @@ import { SQSEventHandler, SQSEventHandlerCallableParams } from "./plugins/SQSEve
 import { APIGatewayProxyResult } from "aws-lambda/trigger/api-gateway-proxy";
 
 import { createHandleResponse } from "~/response";
+import { registerDefaultPlugins } from "~/plugins";
 
 const url = "/webiny-sqs-event";
 
@@ -28,6 +29,10 @@ export const createHandler = (params: CreateHandlerParams): HandlerCallable => {
                 ...(params.options || {})
             }
         });
+        /**
+         * We always must add our default plugins to the app.
+         */
+        registerDefaultPlugins(app.webiny);
         /**
          * There must be an event plugin for this handler to work.
          */

@@ -14,6 +14,7 @@ import { APIGatewayProxyResult } from "aws-lambda/trigger/api-gateway-proxy";
 
 import { createHandleResponse } from "~/response";
 import { RawEventHandler } from "~/raw/plugins/RawEventHandler";
+import { registerDefaultPlugins } from "~/plugins";
 
 const url = "/webiny-raw-event";
 
@@ -39,6 +40,10 @@ export const createHandler = <Payload = any, Response = APIGatewayProxyResult>(
             }
         });
         /**
+         * We always must add our default plugins to the app.
+         */
+        registerDefaultPlugins(app.webiny);
+        /**
          * There must be an event plugin for this handler to work.
          */
         const plugins = app.webiny.plugins.byType<RawEventHandler<Payload, any, Response>>(
@@ -46,7 +51,7 @@ export const createHandler = <Payload = any, Response = APIGatewayProxyResult>(
         );
         const handler = plugins.shift();
         if (!handler) {
-            throw new Error(`To run @webiny/handler-aws/event, you must have RawEventHandler set.`);
+            throw new Error(`To run @webiny/handler-aws/raw, you must have RawEventHandler set.`);
         }
 
         app.post(url, async (request, reply) => {

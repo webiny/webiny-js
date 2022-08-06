@@ -51,6 +51,7 @@ const getS3Object = async (request: Request, s3: S3, context: Context) => {
 
     // If no processors handled the file request, just return the S3 object by default.
     const params = getObjectParams(filename);
+
     return {
         object: await s3.getObject(params).promise(),
         params: params
@@ -82,7 +83,6 @@ export const createDownloadFilePlugins = () => {
                     Key: params.Key,
                     Expires: PRESIGNED_URL_EXPIRATION
                 });
-
                 // Lambda can return max 6MB of content, so if our object's size is larger, we are sending
                 // a 301 Redirect, redirecting the user to the public URL of the object in S3.
                 return reply

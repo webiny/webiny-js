@@ -12771,6 +12771,7 @@ __metadata:
     "@fastify/aws-lambda": ^3.0.0
     "@webiny/cli": ^5.29.0
     "@webiny/handler": ^5.29.0
+    "@webiny/handler-client": ^5.29.0
     "@webiny/plugins": ^5.29.0
     "@webiny/project-utils": ^5.29.0
     aws-lambda: ^1.0.7
@@ -12833,6 +12834,7 @@ __metadata:
     "@webiny/api": ^5.30.0
     "@webiny/cli": ^5.30.0
     "@webiny/error": ^5.30.0
+    "@webiny/handler": ^5.30.0
     "@webiny/handler-aws": ^5.30.0
     "@webiny/plugins": ^5.30.0
     "@webiny/project-utils": ^5.30.0

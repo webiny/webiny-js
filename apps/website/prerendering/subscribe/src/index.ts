@@ -1,5 +1,5 @@
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import { createHandler } from "@webiny/handler-aws/raw";
+import { createHandler } from "@webiny/handler-aws/eventBridge";
 import subscribePlugins from "@webiny/api-prerendering-service-aws/render/subscriber";
 import { createPrerenderingServiceStorageOperations } from "@webiny/api-prerendering-service-so-ddb";
 

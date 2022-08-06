@@ -6,7 +6,7 @@ import { ContextRoutes, DefinedContextRoutes, RouteMethodOptions, RouteTypes } f
 import { Context } from "~/plugins/Context";
 import WebinyError from "@webiny/error";
 import { RoutePlugin } from "./plugins/RoutePlugin";
-import defaultHandlerClient from "@webiny/handler-client";
+import { createHandlerClient } from "@webiny/handler-client";
 import fastifyCookies from "@fastify/cookie";
 import { middleware } from "~/middleware";
 
@@ -181,7 +181,7 @@ export const createHandler = (params: CreateHandlerParams) => {
              * We must have handlerClient by default.
              * And it must be one of the first context plugins applied.
              */
-            defaultHandlerClient(),
+            createHandlerClient(),
             ...(params.plugins || [])
         ],
         /**

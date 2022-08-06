@@ -1,7 +1,9 @@
 import HandlerClient from "./HandlerClient";
 import { ClientContext } from "~/types";
 
-export default () => ({
+export * from "./HandlerClientPlugin";
+
+export const createHandlerClient = () => ({
     type: "context",
     name: "handler-client.context",
     async apply(context: ClientContext) {

@@ -8,6 +8,7 @@ import {
     CreateHandlerParams as BaseCreateHandlerParams,
     RoutePlugin
 } from "@webiny/handler";
+import { registerDefaultPlugins } from "~/plugins";
 
 export interface HandlerCallable {
     (event: APIGatewayEvent, ctx: LambdaContext): Promise<LambdaResponse>;
@@ -29,6 +30,11 @@ export const createHandler = (params: CreateHandlerParams): HandlerCallable => {
                 ...(params.options || {})
             }
         });
+        /**
+         * We always must add our default plugins to the app.
+         */
+        registerDefaultPlugins(app.webiny);
+
         if (app.webiny.plugins.byType<RoutePlugin>(RoutePlugin.type).length === 0) {
             throw new Error(
                 `To run @webiny/handler-aws/gateway, you must have at least one RoutePlugin set.`

@@ -15,6 +15,7 @@
     "@babel/runtime": "^7.16.3",
     "@fastify/aws-lambda": "^3.0.0",
     "@webiny/handler": "^5.29.0",
+    "@webiny/handler-client": "^5.29.0",
     "@webiny/plugins": "^5.29.0",
     "aws-lambda": "^1.0.7",
     "fastify": "^4.3.0",

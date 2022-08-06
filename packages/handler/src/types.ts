@@ -13,8 +13,9 @@ export interface RouteMethodOptions {
     override?: boolean;
 }
 
+export type RouteMethodPath = `/${string}` | "*";
 export interface RouteMethod {
-    (path: string, handler: RouteHandlerMethod, options?: RouteMethodOptions): void;
+    (path: RouteMethodPath, handler: RouteHandlerMethod, options?: RouteMethodOptions): void;
 }
 
 export type Request = FastifyRequest;
