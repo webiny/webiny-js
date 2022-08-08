@@ -3,7 +3,7 @@ import {
     PageImportExportTaskStatus,
     PbPageImportExportContext
 } from "~/types";
-import { invokeHandlerClient } from "~/importPages/client";
+import { invokeHandlerClient } from "~/client";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { exportPage } from "~/exportPages/utils";
 import { Payload as ExtractPayload } from "../combine";

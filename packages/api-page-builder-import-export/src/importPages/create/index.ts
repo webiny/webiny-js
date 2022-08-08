@@ -4,7 +4,7 @@ import {
     PbPageImportExportContext
 } from "~/types";
 import { initialStats, readExtractAndUploadZipFileContents } from "~/importPages/utils";
-import { invokeHandlerClient } from "~/importPages/client";
+import { invokeHandlerClient } from "~/client";
 import { Payload as ProcessPayload } from "../process";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { mockSecurity } from "~/mockSecurity";

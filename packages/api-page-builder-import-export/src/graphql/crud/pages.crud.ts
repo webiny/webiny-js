@@ -7,7 +7,7 @@ import {
     PagesImportExportCrud,
     PbPageImportExportContext
 } from "~/types";
-import { invokeHandlerClient } from "~/importPages/client";
+import { invokeHandlerClient } from "~/client";
 import { Payload as CreateHandlerPayload } from "~/importPages/create";
 import { initialStats } from "~/importPages/utils";
 import { Payload as ExportPagesProcessHandlerPayload } from "~/exportPages/process";

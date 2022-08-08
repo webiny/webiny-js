@@ -27,7 +27,15 @@ export const createHandlerClientPlugin = () => {
             if (!params?.name) {
                 return true;
             }
-            return params.name.match("arn:") !== null;
+            const { name } = params;
+            /**
+             * In case we are invoking currently active lambda, let's use this plugin as well.
+             * When invoking some other lambda, name starts with arn.
+             */
+            if (name === process.env.AWS_LAMBDA_FUNCTION_NAME) {
+                return true;
+            }
+            return name.match("arn:") !== null;
         }
     });
 
