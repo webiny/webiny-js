@@ -1,3 +1,3 @@
 import { CliContext } from "./types";
 
-export const cli: CliContext;
+export declare const cli: CliContext;

@@ -5,17 +5,14 @@
   "dependencies": {
     "@types/react": "^16.14.0",
     "@webiny/cli": "^5.30.0",
-    "@webiny/project-utils": "^5.30.0",
     "@webiny/serverless-cms-aws": "^5.30.0",
     "core-js": "^3.0.1",
     "cross-fetch": "^3.0.4",
-    "invariant": "^2.2.4",
     "react": "16.14.0",
     "react-dom": "16.14.0",
     "regenerator-runtime": "^0.13.5"
   },
   "devDependencies": {
-    "@webiny/cli-plugin-deploy-pulumi": "^5.30.0",
     "cross-env": "^5.0.2"
   },
   "scripts": {

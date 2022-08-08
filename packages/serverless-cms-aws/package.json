@@ -49,7 +49,9 @@
     "@webiny/wcp": "^5.30.0",
     "fast-glob": "^3.2.5",
     "find-up": "^5.0.0",
-    "node-fetch": "^2.6.1"
+    "invariant": "^2.2.4",
+    "node-fetch": "^2.6.1",
+    "webpack": "^5.74.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.16.0",

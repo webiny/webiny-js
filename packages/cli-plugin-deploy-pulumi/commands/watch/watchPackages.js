@@ -16,15 +16,6 @@ const parseMessage = message => {
     }
 };
 
-function getPackageCommands(pkg, commandOptions, context) {
-    let config = pkg.config;
-    if (typeof config === "function") {
-        config = config({ options: { ...commandOptions, cwd: pkg.paths.root }, context });
-    }
-
-    return config.commands;
-}
-
 module.exports = async ({ inputs, output, context }) => {
     const packages = await getPackages({ inputs, output, context });
     if (packages.length === 0) {
@@ -149,25 +140,14 @@ const getPackages = async ({ inputs, context, output }) => {
                 : path.join(root, "webiny.config.js");
 
             try {
-                const pckg = {
+                packages.push({
                     name: packageName,
                     config: require(configPath).default || require(configPath),
                     paths: {
                         root,
                         config: configPath
                     }
-                };
-
-                packages.push(pckg);
-
-                // if (typeof pckg.config === "function") {
-                //     packages.push(pckg);
-                // } else if (
-                //     pckg.config.commands &&
-                //     typeof pckg.config.commands.watch === "function"
-                // ) {
-                //     packages.push(pckg);
-                // }
+                });
             } catch (e) {
                 if (inputs.debug) {
                     output.log({
