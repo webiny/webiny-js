@@ -25,12 +25,14 @@ function createSettings(data: Settings): SettingsInput {
     };
 }
 
-interface Payload {
-    body: {
-        data: Settings;
-        migrate?: boolean;
-    };
+interface PayloadBody {
+    data?: Settings;
+    migrate?: boolean;
 }
+interface Payload {
+    body: string | PayloadBody;
+}
+
 /**
  * Updates system default settings, for all tenants and all locales. Of course, these values can later be overridden
  * via the settings UI in the Admin app. But it's with these settings that every new tenant / locale will start off.
@@ -41,10 +43,24 @@ export interface UpdateSettingsParams {
 export default (params: UpdateSettingsParams) => {
     const { storageOperations } = params;
 
-    const route = new EventPlugin<Payload>(async ({ payload, reply }) => {
+    const route = new EventPlugin<Payload>(async ({ payload }) => {
         try {
-            const { data, migrate: runMigration } = payload.body;
+            const body = payload.body as Payload["body"];
 
+            const result: PayloadBody = typeof body === "string" ? JSON.parse(body) : body;
+            if (!result?.data) {
+                return {
+                    data: false,
+                    error: {
+                        message: "Missing data to be processed.",
+                        code: "DATA_ERROR",
+                        data: {
+                            body
+                        }
+                    }
+                };
+            }
+            const { data, migrate: runMigration } = result;
             // In 5.29.0, we need to migrate data for Prerendering Service and Tenants
             if (process.env.NODE_ENV !== "test") {
                 const executed = await migrate(
@@ -54,21 +70,21 @@ export default (params: UpdateSettingsParams) => {
                 );
 
                 if (executed) {
-                    return reply.send({
+                    return {
                         data: true,
                         error: null
-                    });
+                    };
                 }
             }
 
             await putDefaultSettings(storageOperations, createSettings(data));
 
-            return reply.send({
+            return {
                 data: true,
                 error: null
-            });
+            };
         } catch (ex) {
-            return reply.send({
+            return {
                 data: false,
                 error: {
                     message: ex.message,
@@ -77,7 +93,7 @@ export default (params: UpdateSettingsParams) => {
                         ...(ex.data || {})
                     }
                 }
-            });
+            };
         }
     });
 
