@@ -1,4 +1,4 @@
-import { createHandler } from "@webiny/handler-aws/gateway/download";
+import { createHandler } from "@webiny/handler-aws/gateway";
 import { createDownloadFilePlugins } from "~/handlers/download";
 import { APIGatewayEvent } from "aws-lambda";
 
@@ -80,7 +80,7 @@ describe("download handler", () => {
                 "content-length": "24",
                 "content-type": "image/png",
                 date: expect.any(String),
-                "x-base64-encoded": "true"
+                "x-webiny-base64-encoded": "true"
             }
         });
     });
@@ -105,7 +105,7 @@ describe("download handler", () => {
                 date: expect.any(String),
                 location: "https://presigned-domain.loc/some-url?1fjdsfjdsfds"
             },
-            isBase64Encoded: true,
+            isBase64Encoded: false,
             statusCode: 301
         });
     });

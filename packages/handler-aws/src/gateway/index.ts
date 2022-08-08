@@ -9,6 +9,8 @@ import {
     RoutePlugin
 } from "@webiny/handler";
 import { registerDefaultPlugins } from "~/plugins";
+import { Base64EncodeHeader } from "~/types";
+import { LightMyRequestResponse } from "fastify";
 
 export interface HandlerCallable {
     (event: APIGatewayEvent, ctx: LambdaContext): Promise<LambdaResponse>;
@@ -40,45 +42,21 @@ export const createHandler = (params: CreateHandlerParams): HandlerCallable => {
                 `To run @webiny/handler-aws/gateway, you must have at least one RoutePlugin set.`
             );
         }
+        /**
+         * Until PR is merged, which fixes the type, leave this part.
+         * https://github.com/fastify/aws-lambda-fastify/pull/121
+         */
+        const enforceBase64: any = (response: LightMyRequestResponse) => {
+            return (
+                !!response.headers[Base64EncodeHeader.encoded] ||
+                !!response.headers[Base64EncodeHeader.binary]
+            );
+        };
         const appLambda = awsLambdaFastify(app, {
             decorateRequest: true,
             serializeLambdaArguments: true,
             decorationPropertyName: "awsLambda",
-            /**
-             * This is required until this part of aws-lambda-fastify is released: https://github.com/fastify/aws-lambda-fastify/blob/master/index.js#L6
-             */
-            binaryMimeTypes: [
-                // audio
-                "audio/x-mpequrl",
-                "audio/midi",
-                "audio/mpeg",
-                "audio/x-realaudio",
-                "audio/x-pn-realaudio",
-                "audio/x-qt-stream",
-                "audio/x-wav",
-                // image
-                "image/bmp",
-                "image/gif",
-                "image/x-freehand",
-                "image/x-icon",
-                "image/jpeg",
-                "image/png",
-                "image/tiff",
-                "image/jpg",
-                "image/gif",
-                "image/webp",
-                // video
-                "video/x-msvideo",
-                "video/x-flv",
-                "video/quicktime",
-                "video/quicktime",
-                "video/x-mpg",
-                // other
-                "application/pdf",
-                "text/rtf",
-                "text/xml-svg",
-                "text/x-sgml"
-            ],
+            enforceBase64,
             ...(params.lambdaOptions || {})
         });
         return appLambda(event, context);

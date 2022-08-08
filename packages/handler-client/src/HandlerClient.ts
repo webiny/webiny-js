@@ -1,18 +1,13 @@
-import {
-    HandlerClientPlugin,
-    HandlerClientHandlerPlugin,
-    InvokeArgs,
-    ClientContext
-} from "./types";
 import WebinyError from "@webiny/error";
+import { HandlerClientHandlerPlugin, InvokeArgs, ClientContext } from "./types";
+import { HandlerClientPlugin } from "~/HandlerClientPlugin";
 
 const defaultPluginName = "handler-client";
 
 const getPluginFetcher = (context: ClientContext): HandlerClientPlugin => {
-    return {
-        type: "handler-client",
-        name: defaultPluginName,
-        async invoke({ name, payload, await: useAwait }) {
+    const pl = new HandlerClientPlugin({
+        invoke: async params => {
+            const { name, payload, await: useAwait } = params;
             const plugin = context.plugins.byName<HandlerClientHandlerPlugin>(name);
             if (!plugin) {
                 throw new WebinyError(`Could not find "${name}" handler plugin.`);
@@ -25,7 +20,9 @@ const getPluginFetcher = (context: ClientContext): HandlerClientPlugin => {
 
             return promise;
         }
-    };
+    });
+    pl.name = defaultPluginName;
+    return pl;
 };
 
 const getHandlerClientPlugin = (context: ClientContext): HandlerClientPlugin => {
@@ -51,15 +48,15 @@ class HandlerClient {
         this.default = getPluginFetcher(context);
     }
 
-    invoke<TInvokeArgsPayload = any, TResponse = any>(
+    public async invoke<TInvokeArgsPayload = any, TResponse = any>(
         params: InvokeArgs<TInvokeArgsPayload>
     ): Promise<TResponse> {
         let plugin: HandlerClientPlugin = this.plugin;
-        if (this.plugin.name !== params.name) {
+        if (plugin.canHandle && plugin.canHandle(params) === false) {
             plugin = this.default;
         }
         try {
-            return plugin.invoke(params);
+            return await plugin.invoke(params);
         } catch (e) {
             throw new WebinyError(
                 `An error occurred while trying to invoke another handler with the following params: ${JSON.stringify(

@@ -1,5 +1,6 @@
 import { APIGatewayProxyResult } from "aws-lambda/trigger/api-gateway-proxy";
-import { CallbackFunc as LightMyRequestCallback } from "light-my-request";
+import { Base64EncodeHeader } from "~/types";
+import { LightMyRequestCallback } from "fastify";
 
 interface Resolve {
     (response: APIGatewayProxyResult | any): void;
@@ -29,7 +30,8 @@ export const createHandleResponse = (
             return resolve(app.__webiny_raw_result);
         }
         const isBase64Encoded =
-            !!result.headers["x-base64-encoded"] || !!result.headers["x-binary"];
+            !!result.headers[Base64EncodeHeader.encoded] ||
+            !!result.headers[Base64EncodeHeader.binary];
         const response: APIGatewayProxyResult = {
             statusCode: result.statusCode,
             body: isBase64Encoded ? result.rawPayload.toString("base64") : result.payload,
