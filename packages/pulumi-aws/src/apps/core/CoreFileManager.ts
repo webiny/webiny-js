@@ -8,7 +8,7 @@ export const CoreFileManger = createAppModule({
         return app.addResource(aws.s3.Bucket, {
             name: "fm-bucket",
             config: {
-                acl: "private",
+                acl: aws.s3.CannedAcl.Private,
                 // We definitely don't want to force-destroy if "protected" flag is true.
                 forceDestroy: !params.protect,
                 corsRules: [
