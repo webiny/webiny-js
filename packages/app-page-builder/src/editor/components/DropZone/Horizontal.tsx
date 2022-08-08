@@ -1,6 +1,7 @@
 import React from "react";
 import Droppable, { DroppableIsVisiblePropType, DroppableOnDropPropType } from "../Droppable";
 import styled from "@emotion/styled";
+import { string } from "yargs";
 
 const InnerDiv = styled("div")({
     height: 5,
@@ -46,13 +47,21 @@ export interface HorizontalPropsType {
     onDrop: DroppableOnDropPropType;
     below?: boolean;
     isVisible?: DroppableIsVisiblePropType;
+
+    /**
+     * For testing purpose
+     */
+     "data-testid"?: string;
 }
 
-const HorizontalComponent: React.FC<HorizontalPropsType> = ({ below, onDrop, isVisible, type }) => {
+const HorizontalComponent: React.FC<HorizontalPropsType> = props => {
+    const { below, onDrop, isVisible, type } = props;
     return (
         <Droppable type={type} isVisible={isVisible} onDrop={onDrop}>
             {({ isOver, drop }) => (
                 <div
+                    className={props["data-testid"]}
+                    data-testid={props["data-testid"]}
                     ref={drop}
                     style={{
                         height: "25px",

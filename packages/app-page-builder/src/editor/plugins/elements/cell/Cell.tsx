@@ -17,10 +17,10 @@ interface CellPropsType {
 const Cell: React.FC<CellPropsType> = ({ id, dropElement, index, isLast = false, type }) => {
     return (
         <CellStyle>
-            <DropZone.Above type={type} onDrop={source => dropElement(source, index)} />
+            <DropZone.Above data-testid={`drop-zone-above-${id}`} type={type} onDrop={source => dropElement(source, index)} />
             <Element id={id} />
             {isLast && (
-                <DropZone.Below type={type} onDrop={source => dropElement(source, index + 1)} />
+                <DropZone.Below data-testid={`drop-zone-below-${id}`} type={type} onDrop={source => dropElement(source, index + 1)}/>
             )}
         </CellStyle>
     );

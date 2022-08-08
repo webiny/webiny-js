@@ -180,6 +180,7 @@ const TextSettings: React.FC<TextSettingsProps> = ({ defaultAccordionValue, opti
             <>
                 <Wrapper containerClassName={classes.grid} label={"Color"}>
                     <BaseColorPicker
+                        data-testid={"text-color-picker"}
                         value={text.color}
                         updateValue={updateColor}
                         updatePreview={updateColorPreview}

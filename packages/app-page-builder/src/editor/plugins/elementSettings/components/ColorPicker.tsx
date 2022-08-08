@@ -5,6 +5,7 @@ import { activeElementAtom, elementByIdSelector } from "../../../recoil/modules"
 import { Typography } from "@webiny/ui/Typography";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { useRecoilValue } from "recoil";
+import { string } from "yargs";
 
 const extrapolateActiveElementValue = (
     value?: string,
@@ -31,6 +32,7 @@ interface ColorPickerProps {
     updateValue: Function;
     className?: string;
     handlerClassName?: string;
+    "data-testid"?: string;
 }
 
 const ColorPicker: React.FC<ColorPickerProps> = ({
@@ -63,17 +65,19 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
 export default React.memo(ColorPicker);
 
 type BaseColorPickerComponent = Omit<ColorPickerProps, "label">;
-export const BaseColorPickerComponent: React.FC<BaseColorPickerComponent> = ({
-    value,
-    valueKey,
-    defaultValue,
-    updatePreview,
-    updateValue,
-    handlerClassName
-}) => {
+export const BaseColorPickerComponent: React.FC<BaseColorPickerComponent> = (props) => {
+    const {
+        value,
+        valueKey,
+        defaultValue,
+        updatePreview,
+        updateValue,
+        handlerClassName
+    } = props;
     const targetValue = extrapolateActiveElementValue(value, valueKey, defaultValue);
     return (
         <ColorPickerCmp
+            data-testid={props['data-testid']}
             handlerClassName={handlerClassName}
             compact
             value={targetValue}

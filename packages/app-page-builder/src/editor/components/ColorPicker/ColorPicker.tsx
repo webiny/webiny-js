@@ -172,6 +172,7 @@ const styles = {
 };
 
 interface ColorPickerProps {
+    "data-testid"?: string;
     value: string;
     onChange: Function;
     onChangeComplete: Function;
@@ -179,12 +180,14 @@ interface ColorPickerProps {
     handlerClassName?: string;
 }
 
-const ColorPicker: React.FC<ColorPickerProps> = ({
-    value,
-    onChange,
-    onChangeComplete,
-    compact = false
-}) => {
+const ColorPicker: React.FC<ColorPickerProps> = (props) => {
+
+    const {
+        value,
+        onChange,
+        onChangeComplete,
+        compact = false
+    } = props;
     const [showPicker, setShowPicker] = useState(false);
 
     const getColorValue = useCallback(rgb => {
@@ -290,12 +293,12 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
                 <Menu
                     anchor={"bottomLeft"}
                     handle={
-                        <button className={styles.button}>
+                        <button className={styles.button} data-testid={props['data-testid']}>
                             <ColorizeIcon />
                         </button>
                     }
                 >
-                    <ColorList>
+                    <ColorList data-testid={props['data-testid'] ?props['data-testid']+"-color-list":""}>
                         {React.cloneElement(colorPicker, { style: { width: 240 } })}
                     </ColorList>
                 </Menu>
