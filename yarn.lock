@@ -13410,6 +13410,7 @@ __metadata:
     "@webiny/pulumi": ^5.30.0
     "@webiny/pulumi-aws": ^5.30.0
     "@webiny/wcp": ^5.30.0
+    caller-callsite: 4.1.0
     fast-glob: ^3.2.5
     find-up: ^5.0.0
     node-fetch: ^2.6.1
@@ -16969,6 +16970,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"caller-callsite@npm:4.1.0":
+  version: 4.1.0
+  resolution: "caller-callsite@npm:4.1.0"
+  dependencies:
+    callsites: ^3.1.0
+  checksum: 4a3e775344f553a473947ddb01e45c91c7e0e5a0d77d697095063ad0efd8ea38e4093654837470aaf529cedff338320ece9e5da91224bc5cc9109a0ded25cd11
+  languageName: node
+  linkType: hard
+
 "caller-callsite@npm:^2.0.0":
   version: 2.0.0
   resolution: "caller-callsite@npm:2.0.0"
@@ -16994,7 +17004,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"callsites@npm:^3.0.0":
+"callsites@npm:^3.0.0, callsites@npm:^3.1.0":
   version: 3.1.0
   resolution: "callsites@npm:3.1.0"
   checksum: 072d17b6abb459c2ba96598918b55868af677154bec7e73d222ef95a8fdb9bbf7dae96a8421085cdad8cd190d86653b5b6dc55a4484f2e5b2e27d5e0c3fc15b3

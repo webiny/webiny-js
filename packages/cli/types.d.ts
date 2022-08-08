@@ -111,39 +111,3 @@ export interface CliContext {
         get: (key: string) => any;
     };
 }
-
-/**
- * Args received from the CLI.
- */
-interface CliUpgradePluginOptions {
-    /**
-     * Targeted version of the upgrade.
-     */
-    targetVersion: string;
-}
-/**
- *
- */
-export interface CliUpgradePlugin extends Plugin {
-    /**
-     * Name of the plugin to differentiate from others.
-     * Something like: cli-upgrade-5.0.0
-     */
-    name: string;
-    /**
-     * Type of the plugin.
-     */
-    type: "cli-upgrade";
-    /**
-     * Version the plugin is for.
-     */
-    version: string;
-    /**
-     * Is this plugin usable for the upgrade?
-     */
-    canUpgrade?: (options: CliUpgradePluginOptions, context: CliContext) => Promise<boolean>;
-    /**
-     * Apply the upgrade.
-     */
-    upgrade: (options: CliUpgradePluginOptions, context: CliContext) => Promise<void>;
-}
