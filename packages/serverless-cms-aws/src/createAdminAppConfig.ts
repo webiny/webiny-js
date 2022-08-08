@@ -1,4 +1,5 @@
 import { createReactAppConfig, ReactAppConfigModifier } from "~/createReactAppConfig";
+import { ApiOutput } from "@webiny/pulumi-aws";
 
 export const createAdminAppConfig = (modifier?: ReactAppConfigModifier) => {
     return createReactAppConfig(baseParams => {
@@ -6,13 +7,16 @@ export const createAdminAppConfig = (modifier?: ReactAppConfigModifier) => {
 
         config.customEnv(env => ({ ...env, PORT: 3001 }));
 
-        config.pulumiOutputToEnv("apps/api", {
-            REACT_APP_USER_POOL_REGION: "${region}",
-            REACT_APP_GRAPHQL_API_URL: "${apiUrl}/graphql",
-            REACT_APP_API_URL: "${apiUrl}",
-            REACT_APP_USER_POOL_ID: "${cognitoUserPoolId}",
-            REACT_APP_USER_POOL_WEB_CLIENT_ID: "${cognitoAppClientId}",
-            REACT_APP_USER_POOL_PASSWORD_POLICY: "${cognitoUserPoolPasswordPolicy}"
+        config.pulumiOutputToEnv<ApiOutput>("apps/api", ({ output, env }) => {
+            return {
+                ...env,
+                REACT_APP_USER_POOL_REGION: output.region,
+                REACT_APP_GRAPHQL_API_URL: `${output.apiUrl}/graphql`,
+                REACT_APP_API_URL: output.apiUrl,
+                REACT_APP_USER_POOL_ID: output.cognitoUserPoolId,
+                REACT_APP_USER_POOL_WEB_CLIENT_ID: output.cognitoAppClientId,
+                REACT_APP_USER_POOL_PASSWORD_POLICY: output.cognitoUserPoolPasswordPolicy
+            };
         });
 
         if (modifier) {

@@ -8,7 +8,6 @@ import {
     injectWcpTelemetryClientCode
 } from "./api/plugins";
 
-export type { ApiPulumiApp } from "@webiny/pulumi-aws";
 export { ApiOutput } from "@webiny/pulumi-aws";
 
 export interface CreateApiAppParams extends CreateApiPulumiAppParams {

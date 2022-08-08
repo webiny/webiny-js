@@ -3,6 +3,8 @@ import invariant from "invariant";
 import { Configuration as WebpackConfig } from "webpack";
 import { getStackOutput } from "@webiny/cli-plugin-deploy-pulumi/utils";
 import { createBuildApp, createWatchApp } from "@webiny/project-utils";
+import { PulumiAppModule } from "@webiny/pulumi";
+import { Unwrap } from "@pulumi/pulumi";
 
 export interface RunCommandOptions {
     cwd: string;
@@ -64,17 +66,15 @@ export interface CustomEnvModifier {
     (env: ReactAppEnv): ReactAppEnv;
 }
 
-export interface PulumiOutput {
-    [key: string]: string;
-}
+export type PulumiOutput = PulumiAppModule<any>;
 
-export interface PulumiOutputToEnvModifierParams {
-    output: PulumiOutput;
+export interface PulumiOutputToEnvModifierParams<T extends PulumiOutput> {
+    output: Unwrap<T>;
     env: ReactAppEnv;
 }
 
-export interface PulumiOutputToEnvModifier {
-    (params: PulumiOutputToEnvModifierParams): ReactAppEnv;
+export interface PulumiOutputToEnvModifier<T extends PulumiOutput = PulumiOutput> {
+    (params: PulumiOutputToEnvModifierParams<T>): ReactAppEnv;
 }
 
 export interface ReactAppConfig {
@@ -84,9 +84,9 @@ export interface ReactAppConfig {
     entry(modifier: EntryModifier): void;
     customEnv(modifier: CustomEnvModifier): void;
     commands(commands: ReactAppCommandsModifier): void;
-    pulumiOutputToEnv(
+    pulumiOutputToEnv<T extends PulumiOutput>(
         app: `apps/${string}`,
-        modifier: ReactAppEnvMap | PulumiOutputToEnvModifier
+        modifier: ReactAppEnvMap | PulumiOutputToEnvModifier<T>
     ): void;
 }
 
@@ -132,7 +132,7 @@ function createEmptyReactConfig(options: RunCommandOptions): ReactAppConfig {
     const loadEnvVars = () => {
         let envVars = customEnvModifiers.reduce<ReactAppEnv>((env, modifier) => modifier(env), {});
 
-        const outputCache: Map<string, PulumiOutput> = new Map();
+        const outputCache = new Map<string, Unwrap<PulumiOutput>>();
 
         envVars = pulumiOutputToEnvModifiers.reduce<ReactAppEnv>((env, [app, modifier]) => {
             if (!outputCache.has(app)) {
@@ -191,7 +191,7 @@ function createEmptyReactConfig(options: RunCommandOptions): ReactAppConfig {
         },
         pulumiOutputToEnv(app, modifier) {
             if (typeof modifier === "function") {
-                pulumiOutputToEnvModifiers.push([app, modifier]);
+                pulumiOutputToEnvModifiers.push([app, modifier as PulumiOutputToEnvModifier]);
                 return;
             }
 
