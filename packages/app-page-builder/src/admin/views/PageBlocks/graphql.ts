@@ -47,6 +47,35 @@ export const LIST_PAGE_BLOCKS_AND_CATEGORIES = gql`
 `;
 /**
  * ##############################
+ * Get Page Block Query
+ */
+export interface GetPageBlockQueryResponse {
+    pageBuilder: {
+        data?: PbPageBlock;
+        error?: PbErrorResponse;
+    };
+}
+export interface GetPageBlockQueryVariables {
+    id: string;
+}
+export const GET_PAGE_BLOCK = gql`
+    query GetPageBlocks($id: ID!) {
+        pageBuilder {
+            getPageBlock(id: $id) {
+                data {
+                    ${PAGE_BLOCK_BASE_FIELDS}
+                }
+                error {
+                    code
+                    data
+                    message
+                }
+            }
+        }
+    }
+`;
+/**
+ * ##############################
  * List Page Blocks Query
  */
 export interface ListPageBlocksQueryResponse {

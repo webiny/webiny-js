@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
 import { useRouter } from "@webiny/react-router";
+import { plugins } from "@webiny/plugins";
 import get from "lodash/get";
 import { Editor as PbEditor } from "~/admin/components/Editor";
 import { EditorLoadingScreen } from "~/admin/components/EditorLoadingScreen";
@@ -9,12 +10,17 @@ import {
     ListPageElementsQueryResponse,
     ListPageElementsQueryResponseData
 } from "~/admin/graphql/pages";
+import { GET_PAGE_BLOCK, ListPageBlocksQueryResponse } from "~/admin/views/PageBlocks/graphql";
+import { LIST_BLOCK_CATEGORIES } from "~/admin/views/BlockCategories/graphql";
 import createElementPlugin from "~/admin/utils/createElementPlugin";
 // import createBlockPlugin from "~/admin/utils/createBlockPlugin";
 import { createStateInitializer } from "./createStateInitializer";
 import { BlockEditorConfig } from "./config/BlockEditorConfig";
 import { BlockWithContent } from "~/blockEditor/state";
-import { createElement } from "~/editor/helpers";
+import { createBlockElements } from "~/editor/helpers";
+import { PbPageBlock, PbEditorBlockPlugin, PbBlockCategory } from "~/types";
+import createBlockPlugin from "~/admin/utils/createBlockPlugin";
+import createBlockCategoryPlugin from "~/admin/utils/createBlockCategoryPlugin";
 
 export const BlockEditor: React.FC = () => {
     const client = useApolloClient();
@@ -36,38 +42,45 @@ export const BlockEditor: React.FC = () => {
                             data: {},
                             elements: []
                         });
-                    } else {
-                        // createBlockPlugin({
-                        //     ...element
-                        // });
                     }
                 });
             });
 
-        // TODO: for full implementation example, see how `pageEditor` loads the initial data.
-        // NOTE: for Blocks, we don't have revisions, so we don't need to check for states like
-        // `published`, nor do we need to create new revisions.
-
-        // For demo purposes, we create a dummy promise with dummy data.
-        const document = createElement("document");
-        const blockData = new Promise<void>(resolve => {
-            setBlock({
-                id: blockId,
-                title: "My block",
-                content: {
-                    ...document,
-                    elements: [createElement("block")]
-                },
-                createdBy: {
-                    id: "123"
-                }
+        const blockCategories = client
+            .query<ListPageBlocksQueryResponse>({ query: LIST_BLOCK_CATEGORIES })
+            .then(({ data }) => {
+                const blockCategoriesData: PbBlockCategory[] =
+                    get(data, "pageBuilder.listBlockCategories.data") || [];
+                blockCategoriesData.forEach(element => {
+                    createBlockCategoryPlugin({
+                        ...element
+                    });
+                });
             });
 
-            resolve();
-        });
+        const blockData = client
+            .query<ListPageBlocksQueryResponse>({
+                query: GET_PAGE_BLOCK,
+                variables: { id: blockId }
+            })
+            .then(({ data }) => {
+                const pageBlockData: PbPageBlock = get(data, "pageBuilder.getPageBlock.data");
+
+                createBlockPlugin(pageBlockData);
+
+                const blockPlugin = plugins.byName<PbEditorBlockPlugin>(
+                    `pb-saved-block-${blockId}`
+                );
+                const blockElement = createBlockElements(blockPlugin?.name as string);
+
+                setBlock({
+                    ...pageBlockData,
+                    content: blockElement
+                });
+            });
 
         return React.lazy(() =>
-            Promise.all([savedElements, blockData]).then(() => {
+            Promise.all([savedElements, blockCategories, blockData]).then(() => {
                 return { default: ({ children }: { children: React.ReactElement }) => children };
             })
         );

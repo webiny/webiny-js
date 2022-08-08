@@ -5,8 +5,8 @@ import { useRouter } from "@webiny/react-router";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { EditorBar } from "~/editor";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
-import { UpdateDocumentActionEvent } from "~/editor/recoil/actions";
 import { useBlock } from "~/blockEditor/hooks/useBlock";
+import { SaveBlockActionEvent } from "~/blockEditor/config/eventActions/saveBlock/event";
 
 const DefaultSaveBlockButton: React.FC = () => {
     const [block] = useBlock();
@@ -16,21 +16,19 @@ const DefaultSaveBlockButton: React.FC = () => {
 
     const saveChanges = useCallback(() => {
         eventActionHandler.trigger(
-            new UpdateDocumentActionEvent({
+            new SaveBlockActionEvent({
                 debounce: false,
                 onFinish() {
-                    history.push(
-                        `/page-builder/blocks?id=${encodeURIComponent(block.id as string)}`
-                    );
+                    history.push(`/page-builder/page-blocks`);
 
                     // Let's wait a bit, because we are also redirecting the user.
                     setTimeout(() => {
-                        showSnackbar("Your page was published successfully!");
+                        showSnackbar(`Block ${block.name} saved successfully!`);
                     }, 500);
                 }
             })
         );
-    }, [block.id]);
+    }, [block.name]);
 
     return <ButtonPrimary onClick={saveChanges}>Save Changes</ButtonPrimary>;
 };

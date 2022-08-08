@@ -18,6 +18,16 @@ const PageBlocks: React.FC = () => {
         return getPermission("pb.block");
     }, [identity]);
 
+    const canCreate = useMemo((): boolean => {
+        if (!pbPageBlockPermission) {
+            return false;
+        }
+        if (typeof pbPageBlockPermission.rwd === "string") {
+            return pbPageBlockPermission.rwd.includes("w");
+        }
+        return true;
+    }, []);
+
     const canEdit = useCallback((item: CreatableItem): boolean => {
         if (!pbPageBlockPermission) {
             return false;
@@ -51,7 +61,7 @@ const PageBlocks: React.FC = () => {
     return (
         <SplitView>
             <LeftPanel>
-                <BlocksByCategoriesDataList />
+                <BlocksByCategoriesDataList canCreate={canCreate} />
             </LeftPanel>
             <RightPanel>
                 <PageBlocksDataList canEdit={canEdit} canDelete={canDelete} />

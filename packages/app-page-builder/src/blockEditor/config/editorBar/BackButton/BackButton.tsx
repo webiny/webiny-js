@@ -24,7 +24,7 @@ export const BackButtonPlugin = createComponentPlugin(EditorBar.BackButton, () =
                         console.error("Could not determine block ID from params.");
                         return;
                     }
-                    history.push(`/page-builder/blocks?id=${id}`);
+                    history.push(`/page-builder/page-blocks`);
                 }}
                 icon={<BackIcon />}
             />
