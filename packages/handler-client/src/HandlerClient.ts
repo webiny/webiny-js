@@ -57,13 +57,28 @@ class HandlerClient {
         }
         try {
             return await plugin.invoke(params);
-        } catch (e) {
+        } catch (ex) {
+            /**
+             * We collect error that was caught and the description of the invoke, if any.
+             */
+            const data: Record<string, any> = {
+                error: {
+                    message: ex.message,
+                    data: ex.data,
+                    code: ex.code
+                }
+            };
+            if (params.description) {
+                data.description = params.description;
+            }
             throw new WebinyError(
                 `An error occurred while trying to invoke another handler with the following params: ${JSON.stringify(
                     params,
                     null,
                     2
-                )}`
+                )}`,
+                "INVOKE_ERROR",
+                data
             );
         }
     }
