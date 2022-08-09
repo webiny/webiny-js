@@ -1,10 +1,16 @@
 const run = require("./run");
 const telemetry = require("./telemetry");
-const wcp = require("./wcp");
 const upgrade = require("./upgrade");
 
 module.exports.createCommands = async (yargs, context) => {
-    context.plugins.register(run, telemetry, upgrade, wcp);
+    context.plugins.register(run, telemetry, upgrade);
+
+    try {
+        const wcp = require("./wcp");
+        context.plugins.register(wcp);
+    } catch {
+        // Skip WCP command
+    }
 
     await context.loadUserPlugins();
 
