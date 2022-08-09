@@ -6,14 +6,7 @@ export type InvokeArgs<TInvokeArgsPayload = any> = {
     name: string;
     payload?: TInvokeArgsPayload;
     await?: boolean;
-};
-
-export type HandlerClientPlugin = Plugin & {
-    type: "handler-client";
-    name: "handler-client";
-    invoke: <TInvokeArgsPayload = Record<string, any>>(
-        params: InvokeArgs<TInvokeArgsPayload>
-    ) => any;
+    description?: string;
 };
 
 export type HandlerClientHandlerPlugin = Plugin & {

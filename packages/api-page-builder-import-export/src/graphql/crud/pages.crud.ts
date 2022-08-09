@@ -7,7 +7,7 @@ import {
     PagesImportExportCrud,
     PbPageImportExportContext
 } from "~/types";
-import { invokeHandlerClient } from "~/importPages/client";
+import { invokeHandlerClient } from "~/client";
 import { Payload as CreateHandlerPayload } from "~/importPages/create";
 import { initialStats } from "~/importPages/utils";
 import { Payload as ExportPagesProcessHandlerPayload } from "~/exportPages/process";
@@ -55,7 +55,8 @@ export default new ContextPlugin<PbPageImportExportContext>(context => {
                     zipFileUrl,
                     task,
                     identity: context.security.getIdentity()
-                }
+                },
+                description: "Import Pages - create"
             });
 
             return {
@@ -142,7 +143,8 @@ export default new ContextPlugin<PbPageImportExportContext>(context => {
                     taskId: task.id,
                     subTaskIndex: 1,
                     identity: context.security.getIdentity()
-                }
+                },
+                description: "Export pages - process"
             });
 
             return { task };

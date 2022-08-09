@@ -451,8 +451,12 @@ export function createContentReviewMethods(
             // Invoke handler
             await handlerClient.invoke({
                 name: String(process.env.APW_SCHEDULER_SCHEDULE_ACTION_HANDLER),
-                payload: { tenant: getTenant().id, locale: getLocale().code },
-                await: false
+                payload: {
+                    tenant: getTenant().id,
+                    locale: getLocale().code
+                },
+                await: false,
+                description: "APW scheduler handler"
             });
             return scheduledAction.id;
         },

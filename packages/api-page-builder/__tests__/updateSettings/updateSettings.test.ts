@@ -6,12 +6,6 @@ describe("Update Settings Handler Test", () => {
     test("update settings", async () => {
         const result = await handler(
             {
-                path: "/",
-                httpMethod: "POST",
-                headers: {
-                    ["x-tenant"]: "root",
-                    "Content-Type": "application/json"
-                },
                 body: JSON.stringify({
                     data: {
                         name: "test 1",
@@ -39,7 +33,7 @@ describe("Update Settings Handler Test", () => {
                         }
                     }
                 })
-            } as any,
+            },
             {} as any
         );
         /**
@@ -50,22 +44,8 @@ describe("Update Settings Handler Test", () => {
          *
          */
         expect(result).toMatchObject({
-            body: JSON.stringify({
-                data: true,
-                error: null
-            }),
-            headers: {
-                connection: "keep-alive",
-                "content-length": "26",
-                "content-type": "application/json; charset=utf-8",
-                "access-control-allow-headers": "*",
-                "access-control-allow-methods": "*",
-                "access-control-allow-origin": "*",
-                "cache-control": "no-store",
-                date: expect.any(String)
-            },
-            isBase64Encoded: false,
-            statusCode: 200
+            data: true,
+            error: null
         });
     });
 });

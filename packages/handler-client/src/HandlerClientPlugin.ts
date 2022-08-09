@@ -5,19 +5,31 @@ interface HandlerClientPluginCallable<Payload = Record<string, any>, Response = 
     (params: InvokeArgs<Payload>): Promise<Response>;
 }
 
+export interface HandlerClientPluginParams {
+    invoke: HandlerClientPluginCallable;
+    canUse?: (params: InvokeArgs) => boolean;
+}
+
 export class HandlerClientPlugin extends Plugin {
     public static override type = "handler-client";
 
-    private readonly cb: HandlerClientPluginCallable;
+    private readonly _invoke: HandlerClientPluginCallable;
+    private readonly canUse?: (params: InvokeArgs) => boolean;
 
-    public constructor(cb: HandlerClientPluginCallable) {
+    public constructor({ invoke, canUse }: HandlerClientPluginParams) {
         super();
-        this.cb = cb;
+        this._invoke = invoke;
+        this.canUse = canUse;
     }
 
-    public invoke<Payload = Record<string, any>, Response = any>(
-        params: InvokeArgs<Payload>
-    ): Promise<Response> {
-        return this.cb(params);
+    public canHandle(params: InvokeArgs): boolean {
+        if (!this.canUse) {
+            return true;
+        }
+        return this.canUse(params);
+    }
+
+    public invoke<Payload = any, Response = any>(params: InvokeArgs<Payload>): Promise<Response> {
+        return this._invoke(params);
     }
 }

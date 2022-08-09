@@ -9,9 +9,8 @@ import {
     EventBridgeEventHandlerCallableParams
 } from "./plugins/EventBridgeEventHandler";
 import { APIGatewayProxyResult } from "aws-lambda/trigger/api-gateway-proxy";
-
-import { createHandleResponse } from "~/response";
 import { registerDefaultPlugins } from "~/plugins";
+import { execute } from "~/execute";
 
 const url = "/webiny-sqs-event";
 
@@ -71,17 +70,10 @@ export const createHandler = <DetailType extends string, Detail>(
             (app as any).__webiny_raw_result = result;
             return reply.send({});
         });
-        return new Promise((resolve, reject) => {
-            app.inject(
-                {
-                    method: "POST",
-                    url,
-                    payload: payload || {},
-                    query: {},
-                    headers: {}
-                },
-                createHandleResponse(app, resolve, reject)
-            );
+        return execute({
+            app,
+            url,
+            payload
         });
     };
 };

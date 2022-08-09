@@ -156,22 +156,25 @@ describe("Settings Test", () => {
         );
 
         const { handler } = useHandler();
-        await handler({
-            data: {
-                name: "test 1",
-                websiteUrl: "https://www.test.com/",
-                websitePreviewUrl: "https://preview.test.com/",
-                social: {
-                    facebook: "https://www.facebook.com/",
-                    instagram: "https://www.instagram.com/",
-                    twitter: "https://www.twitter.com/",
-                    image: {
-                        id: "1kucKwtX3vI2w6tYuPwJsvRFn9g",
-                        src: "https://d1peg08dnrinui.cloudfront.net/files/9ki1goobp-webiny_security__1_.png"
+        await handler(
+            {
+                data: {
+                    name: "test 1",
+                    websiteUrl: "https://www.test.com/",
+                    websitePreviewUrl: "https://preview.test.com/",
+                    social: {
+                        facebook: "https://www.facebook.com/",
+                        instagram: "https://www.instagram.com/",
+                        twitter: "https://www.twitter.com/",
+                        image: {
+                            id: "1kucKwtX3vI2w6tYuPwJsvRFn9g",
+                            src: "https://d1peg08dnrinui.cloudfront.net/files/9ki1goobp-webiny_security__1_.png"
+                        }
                     }
                 }
-            }
-        });
+            },
+            {} as any
+        );
 
         await getDefaultSettings().then(([res]) =>
             expect(res).toEqual({
