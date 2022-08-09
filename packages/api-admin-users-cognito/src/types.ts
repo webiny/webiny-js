@@ -112,6 +112,23 @@ export interface AfterDeleteEvent {
     user: AdminUser;
 }
 
+export interface CreateErrorEvent {
+    user: AdminUser;
+    inputData: CreateUserInput;
+    error: Error;
+}
+
+export interface UpdateErrorEvent {
+    user: AdminUser;
+    inputData: UpdateUserInput;
+    error: Error;
+}
+
+export interface DeleteErrorEvent {
+    user: AdminUser;
+    error: Error;
+}
+
 export interface ErrorEvent extends InstallEvent {
     error: Error;
 }
@@ -137,6 +154,9 @@ export interface AdminUsers {
     onUserBeforeDelete: Topic<BeforeDeleteEvent>;
     onUserAfterDelete: Topic<AfterDeleteEvent>;
     onBeforeInstall: Topic<InstallEvent>;
+    onUserCreateError: Topic<CreateErrorEvent>;
+    onUserUpdateError: Topic<UpdateErrorEvent>;
+    onUserDeleteError: Topic<DeleteErrorEvent>;
     /**
      * This will be executed during Webiny installation.
      */
