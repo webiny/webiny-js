@@ -13,7 +13,7 @@ import logsPlugins from "@webiny/handler-logs";
 /**
  * APW
  */
-import { createApwHeadlessCmsContext } from "@webiny/api-apw";
+import { createApwHeadlessCmsContext, createApwGraphQL } from "@webiny/api-apw";
 import { createStorageOperations as createApwSaStorageOperations } from "@webiny/api-apw-scheduler-so-ddb";
 
 // Imports plugins created via scaffolding utilities.
@@ -44,6 +44,7 @@ export const handler = createHandler({
             })
         }),
         createHeadlessCmsGraphQL({ debug }),
+        createApwGraphQL(),
         createApwHeadlessCmsContext({
             storageOperations: createApwSaStorageOperations({ documentClient })
         }),
