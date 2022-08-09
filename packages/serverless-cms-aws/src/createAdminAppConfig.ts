@@ -15,7 +15,9 @@ export const createAdminAppConfig = (modifier?: ReactAppConfigModifier) => {
                 REACT_APP_API_URL: output.apiUrl,
                 REACT_APP_USER_POOL_ID: output.cognitoUserPoolId,
                 REACT_APP_USER_POOL_WEB_CLIENT_ID: output.cognitoAppClientId,
-                REACT_APP_USER_POOL_PASSWORD_POLICY: output.cognitoUserPoolPasswordPolicy
+                REACT_APP_USER_POOL_PASSWORD_POLICY: JSON.stringify(
+                    output.cognitoUserPoolPasswordPolicy
+                )
             };
         });
 
