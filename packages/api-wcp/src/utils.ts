@@ -29,7 +29,7 @@ export const getWcpProjectLicenseCacheKey = () => {
     return `cached-project-license-${currentHourOfTheDay}-${Math.ceil(currentMinuteOfTheHour / 5)}`;
 };
 
-const WBY_APPS_PERMISSIONS_PREFIXES = ["pb", "fb", "cms", "security", "adminUsers", "i18n"];
+const WBY_APPS_PERMISSIONS_PREFIXES = ["pb", "fb", "fm", "cms", "security", "adminUsers", "i18n"];
 
 export const filterOutCustomWbyAppsPermissions = (permissions: SecurityPermission[]) => {
     return permissions.filter(permission => {
