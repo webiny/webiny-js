@@ -11,15 +11,14 @@ import {
 const Reply = require("fastify/lib/reply");
 import { Context as LambdaContext } from "aws-lambda";
 import { APIGatewayProxyResult } from "aws-lambda/trigger/api-gateway-proxy";
-
-import { createHandleResponse } from "~/response";
 import { RawEventHandler } from "~/raw/plugins/RawEventHandler";
 import { registerDefaultPlugins } from "~/plugins";
+import { execute } from "~/execute";
 
 const url = "/webiny-raw-event";
 
 export interface HandlerCallable<Payload, Response = APIGatewayProxyResult> {
-    (event: Payload, context: LambdaContext): Promise<Response>;
+    (payload: Payload, context: LambdaContext): Promise<Response>;
 }
 
 export interface CreateHandlerParams extends BaseCreateHandlerParams {
@@ -31,7 +30,7 @@ export interface CreateHandlerParams extends BaseCreateHandlerParams {
 export const createHandler = <Payload = any, Response = APIGatewayProxyResult>(
     params: CreateHandlerParams
 ): HandlerCallable<Payload, Response> => {
-    return (event, context) => {
+    return (payload, context) => {
         const app = createBaseHandler({
             plugins: params.plugins,
             options: {
@@ -59,7 +58,7 @@ export const createHandler = <Payload = any, Response = APIGatewayProxyResult>(
                 request,
                 reply,
                 context: app.webiny,
-                payload: event,
+                payload,
                 lambdaContext: context
             };
             const result = await handler.cb(params);
@@ -71,17 +70,10 @@ export const createHandler = <Payload = any, Response = APIGatewayProxyResult>(
             (app as any).__webiny_raw_result = result;
             return reply.send({});
         });
-        return new Promise((resolve, reject) => {
-            app.inject(
-                {
-                    method: "POST",
-                    url,
-                    payload: event || {},
-                    query: {},
-                    headers: {}
-                },
-                createHandleResponse(app, resolve, reject)
-            );
+        return execute({
+            app,
+            url,
+            payload
         });
     };
 };

@@ -258,7 +258,7 @@ export const createHandler = (params: CreateHandlerParams) => {
         const plugins = app.webiny.plugins.byType(HandlerErrorPlugin.type);
         // Log error to cloud, as these can be extremely annoying to debug!
         console.log("@webiny/handler");
-        console.log(error);
+        console.log(JSON.stringify(error || {}));
         const handler = middleware(
             plugins.map(pl => {
                 return (context: Context, error: Error, next: Function) => {
@@ -266,14 +266,13 @@ export const createHandler = (params: CreateHandlerParams) => {
                 };
             })
         );
-        const result = handler(app.webiny, error);
+        await handler(app.webiny, error);
 
         return reply
             .headers({
                 "Cache-Control": "no-store"
             })
-            .status(500)
-            .send(result);
+            .status(500);
     });
 
     return app;

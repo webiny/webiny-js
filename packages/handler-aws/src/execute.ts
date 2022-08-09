@@ -1,23 +1,12 @@
+import { FastifyInstance } from "@webiny/handler/types";
 import { APIGatewayProxyResult } from "aws-lambda/trigger/api-gateway-proxy";
-import { Base64EncodeHeader } from "~/types";
 import { LightMyRequestCallback } from "fastify";
+import { Base64EncodeHeader } from "~/types";
 
 interface Resolve {
     (response: APIGatewayProxyResult | any): void;
 }
-interface Reject {
-    (error: Error): void;
-}
-
-export const createHandleResponse = (
-    /**
-     * Should be FastifyInstance but for some reason its causing problems for the augmentation.
-     */
-    app: any,
-    resolve: Resolve,
-    // eslint-disable-next-line
-    _: Reject
-): LightMyRequestCallback => {
+const createHandleResponse = (app: FastifyInstance, resolve: Resolve): LightMyRequestCallback => {
     return (err, result) => {
         if (err) {
             return resolve({
@@ -40,4 +29,28 @@ export const createHandleResponse = (
         };
         return resolve(response);
     };
+};
+
+export interface ExecuteParams {
+    app: FastifyInstance;
+    url: string;
+    payload: any;
+}
+
+export const execute = (params: ExecuteParams): Promise<any> => {
+    const { app, url, payload } = params;
+
+    return new Promise(resolve => {
+        app.inject(
+            {
+                method: "POST",
+                url,
+                payload: payload || {},
+                query: payload?.query || {},
+                headers: payload?.headers || {},
+                cookies: payload?.cookies || {}
+            },
+            createHandleResponse(app, resolve)
+        );
+    });
 };

@@ -179,7 +179,8 @@ export default (configuration: Configuration) => {
                             taskId,
                             subTaskIndex: subTaskIndex + 1,
                             identity: context.security.getIdentity()
-                        }
+                        },
+                        description: "Import pages - process - subtask"
                     });
                 }
             }

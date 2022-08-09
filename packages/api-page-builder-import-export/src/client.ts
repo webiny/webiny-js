@@ -4,22 +4,32 @@ export interface InvokeHandlerClientParams<TParams> {
     context: PbPageImportExportContext;
     name: string;
     payload: TParams;
+    description: string;
 }
 
 export async function invokeHandlerClient<TParams>({
     context,
     name,
-    payload
+    payload,
+    description
 }: InvokeHandlerClientParams<TParams>) {
     /*
      * Prepare "invocationArgs", we're hacking our wat here.
      * They are necessary to setup the "context.pageBuilder" object among other things in IMPORT_PAGE_FUNCTION
      */
     const { request } = context;
+
+    const tenantId = context.tenancy.getCurrentTenant().id;
+
+    const headers = {
+        ...request.headers,
+        ["x-tenant"]: request.headers["x-tenant"] || tenantId
+    };
+    delete headers["content-length"];
     const invocationArgs = {
         httpMethod: request.method,
         body: request.body,
-        headers: request.headers,
+        headers,
         /**
          * Required until type augmentation works correctly.
          */
@@ -32,6 +42,7 @@ export async function invokeHandlerClient<TParams>({
             ...payload,
             ...invocationArgs
         },
-        await: false
+        await: false,
+        description
     });
 }

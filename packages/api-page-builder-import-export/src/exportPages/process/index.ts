@@ -186,7 +186,8 @@ export default (configuration: Configuration) => {
                         payload: {
                             taskId,
                             identity: context.security.getIdentity()
-                        }
+                        },
+                        description: "Export pages - combine"
                     });
                 } else {
                     console.log(`Invoking PROCESS for task "${subTaskIndex + 1}"`);
@@ -198,7 +199,8 @@ export default (configuration: Configuration) => {
                             taskId,
                             subTaskIndex: subTaskIndex + 1,
                             identity: context.security.getIdentity()
-                        }
+                        },
+                        description: "Export pages - process - subtask"
                     });
                 }
             }
