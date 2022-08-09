@@ -10,7 +10,6 @@ import {
 } from "@webiny/handler";
 import { registerDefaultPlugins } from "~/plugins";
 import { Base64EncodeHeader } from "~/types";
-import { LightMyRequestResponse } from "fastify";
 
 export interface HandlerCallable {
     (event: APIGatewayEvent, ctx: LambdaContext): Promise<LambdaResponse>;
@@ -42,21 +41,16 @@ export const createHandler = (params: CreateHandlerParams): HandlerCallable => {
                 `To run @webiny/handler-aws/gateway, you must have at least one RoutePlugin set.`
             );
         }
-        /**
-         * Until PR is merged, which fixes the type, leave this part.
-         * https://github.com/fastify/aws-lambda-fastify/pull/121
-         */
-        const enforceBase64: any = (response: LightMyRequestResponse) => {
-            return (
-                !!response.headers[Base64EncodeHeader.encoded] ||
-                !!response.headers[Base64EncodeHeader.binary]
-            );
-        };
         const appLambda = awsLambdaFastify(app, {
             decorateRequest: true,
             serializeLambdaArguments: true,
             decorationPropertyName: "awsLambda",
-            enforceBase64,
+            enforceBase64: response => {
+                return (
+                    !!response.headers[Base64EncodeHeader.encoded] ||
+                    !!response.headers[Base64EncodeHeader.binary]
+                );
+            },
             ...(params.lambdaOptions || {})
         });
         return appLambda(event, context);

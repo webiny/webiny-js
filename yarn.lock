@@ -4034,10 +4034,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fastify/aws-lambda@npm:^3.1.0":
-  version: 3.1.0
-  resolution: "@fastify/aws-lambda@npm:3.1.0"
-  checksum: b1f3d0137d338410e1a2b3444affadef404975654315b39f03b028c21f8bd6a200d05b9393a43bbcfcf5cf52e11a25bef15f1fb776cdf83f798ec6119110778c
+"@fastify/aws-lambda@npm:^3.1.1":
+  version: 3.1.1
+  resolution: "@fastify/aws-lambda@npm:3.1.1"
+  checksum: 6c3fe7fb27213c1ab87a39c3f1e31461bb751d91d1e5f97fa278a6f946471758364d545483a614058f8b7b325d1c0146b90cc53e54e6e1ba832cbb8ee9b6564d
   languageName: node
   linkType: hard
 
@@ -12768,7 +12768,7 @@ __metadata:
     "@babel/preset-env": ^7.16.4
     "@babel/preset-typescript": ^7.16.0
     "@babel/runtime": ^7.16.3
-    "@fastify/aws-lambda": ^3.1.0
+    "@fastify/aws-lambda": ^3.1.1
     "@webiny/cli": ^5.29.0
     "@webiny/handler": ^5.29.0
     "@webiny/handler-client": ^5.29.0
