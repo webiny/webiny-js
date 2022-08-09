@@ -1,5 +1,6 @@
 const camelCase = require("camelcase");
 const findUp = require("find-up");
+const path = require("path");
 
 module.exports = {
     type: "cli-command",
@@ -16,9 +17,16 @@ module.exports = {
             },
             async argv => {
                 const configFile = findUp.sync(["webiny.config.ts", "webiny.config.js"]);
-                const config = context.import(configFile);
+                let config = context.import(configFile);
 
                 const command = camelCase(argv.command);
+                if (typeof config === "function") {
+                    config = config({
+                        options: { ...argv, cwd: path.dirname(configFile) },
+                        context
+                    });
+                }
+
                 if (config.commands && typeof config.commands[command] === "function") {
                     return await config.commands[command]({ ...argv }, context);
                 }

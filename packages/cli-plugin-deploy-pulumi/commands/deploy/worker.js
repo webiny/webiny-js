@@ -1,5 +1,6 @@
-const { parentPort } = require("worker_threads");
+const { parentPort, workerData } = require("worker_threads");
 require("@webiny/cli/utils/importModule");
+const { cli } = require("@webiny/cli");
 
 // We need this because tools have internal console.log calls. So,
 // let's intercept those and make sure messages are just forwarded
@@ -22,10 +23,13 @@ for (let i = 0; i < types.length; i++) {
     };
 }
 
-parentPort.on("message", async params => {
+(async () => {
     try {
-        const { options, package: pckg } = JSON.parse(params);
-        const config = require(pckg.paths.config).default || require(pckg.paths.config);
+        const { options, package: pckg } = workerData;
+        let config = require(pckg.config).default || require(pckg.config);
+        if (typeof config === "function") {
+            config = config({ options: { ...options, cwd: pckg.root }, context: cli });
+        }
 
         const hasBuildCommand = config.commands && typeof config.commands.build === "function";
         if (!hasBuildCommand) {
@@ -39,4 +43,4 @@ parentPort.on("message", async params => {
         console.log(e.stack);
         console.error(e);
     }
-});
+})();

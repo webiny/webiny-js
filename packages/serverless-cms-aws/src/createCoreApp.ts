@@ -2,6 +2,8 @@ import { createCorePulumiApp, CreateCorePulumiAppParams } from "@webiny/pulumi-a
 import { PluginCollection } from "@webiny/plugins/types";
 import { generateDdbToEsHandler } from "./core/plugins";
 
+export { CoreOutput } from "@webiny/pulumi-aws";
+
 export interface CreateCoreAppParams extends CreateCorePulumiAppParams {
     plugins?: PluginCollection;
 }
