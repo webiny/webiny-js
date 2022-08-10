@@ -29,6 +29,7 @@ import { PbBlockCategory, PbPageBlock } from "~/types";
 import { LIST_PAGE_BLOCKS_AND_CATEGORIES, CREATE_PAGE_BLOCK } from "./graphql";
 
 import preview from "./assets/preview.png";
+import { addElementId } from "~/editor/helpers";
 
 const t = i18n.ns("app-page-builder/admin/page-blocks/by-categories-data-list");
 
@@ -134,8 +135,11 @@ const BlocksByCategoriesDataList = ({ canCreate }: PageBuilderBlocksByCategories
                 data: {
                     name: "New block",
                     blockCategory: categorySlug,
-                    content: {
+                    // Create base block content, and make sure all elements have an `id` property.
+                    content: addElementId({
                         type: "block",
+                        // `data` object is required, even if empty.
+                        data: {},
                         elements: [
                             {
                                 type: "grid",
@@ -161,7 +165,7 @@ const BlocksByCategoriesDataList = ({ canCreate }: PageBuilderBlocksByCategories
                                 ]
                             }
                         ]
-                    },
+                    }),
                     preview: {
                         src: preview
                     }

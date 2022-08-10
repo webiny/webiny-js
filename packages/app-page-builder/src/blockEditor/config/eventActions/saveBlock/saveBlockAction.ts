@@ -27,12 +27,15 @@ export const saveBlockAction: BlockEventActionCallable<SaveBlockActionArgsType> 
     // TODO: make sure the API call is not sent if the data was not changed since the last invocation of this event.
     // See `pageEditor` for an example and feel free to copy that same logic over here.
     const element = await state.getElementTree();
-    const createdImage = await getPreviewImage(element, meta);
+    // We need to grab the first block from the "document" element.
+    const createdImage = await getPreviewImage(element.elements[0], meta);
 
     const data: BlockType = {
         name: state.block.name,
         blockCategory: state.block.blockCategory,
-        content: element
+        // We need to grab the contents of the "document" element, and we can safely just grab the first element
+        // because we only have 1 block in the block editor.
+        content: element.elements[0]
     };
 
     if (debouncedSave) {

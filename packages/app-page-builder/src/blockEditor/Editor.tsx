@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
 import { useRouter } from "@webiny/react-router";
-import { plugins } from "@webiny/plugins";
 import get from "lodash/get";
 import { Editor as PbEditor } from "~/admin/components/Editor";
 import { EditorLoadingScreen } from "~/admin/components/EditorLoadingScreen";
@@ -13,13 +12,11 @@ import {
 import { GET_PAGE_BLOCK, ListPageBlocksQueryResponse } from "~/admin/views/PageBlocks/graphql";
 import { LIST_BLOCK_CATEGORIES } from "~/admin/views/BlockCategories/graphql";
 import createElementPlugin from "~/admin/utils/createElementPlugin";
-// import createBlockPlugin from "~/admin/utils/createBlockPlugin";
 import { createStateInitializer } from "./createStateInitializer";
 import { BlockEditorConfig } from "./config/BlockEditorConfig";
 import { BlockWithContent } from "~/blockEditor/state";
-import { createBlockElements } from "~/editor/helpers";
-import { PbPageBlock, PbEditorBlockPlugin, PbBlockCategory } from "~/types";
-import createBlockPlugin from "~/admin/utils/createBlockPlugin";
+import { createElement } from "~/editor/helpers";
+import { PbPageBlock, PbBlockCategory, PbEditorElement } from "~/types";
 import createBlockCategoryPlugin from "~/admin/utils/createBlockCategoryPlugin";
 
 export const BlockEditor: React.FC = () => {
@@ -66,16 +63,15 @@ export const BlockEditor: React.FC = () => {
             .then(({ data }) => {
                 const pageBlockData: PbPageBlock = get(data, "pageBuilder.getPageBlock.data");
 
-                createBlockPlugin(pageBlockData);
-
-                const blockPlugin = plugins.byName<PbEditorBlockPlugin>(
-                    `pb-saved-block-${blockId}`
-                );
-                const blockElement = createBlockElements(blockPlugin?.name as string);
+                // We need to wrap all elements into a "document" element, it's a requirement for the editor to work.
+                const content: PbEditorElement = {
+                    ...createElement("document"),
+                    elements: [pageBlockData.content]
+                };
 
                 setBlock({
                     ...pageBlockData,
-                    content: blockElement
+                    content
                 });
             });
 
