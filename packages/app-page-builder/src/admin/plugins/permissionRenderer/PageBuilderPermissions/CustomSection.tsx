@@ -14,13 +14,16 @@ interface CustomSectionProps {
     entity: string;
     setValue: (permission: string, type: string) => void;
     title: string;
+    disabled?: boolean;
 }
+
 const CustomSection: React.FC<CustomSectionProps> = ({
     Bind,
     data,
     entity,
     setValue,
     title,
+    disabled,
     children = null
 }) => {
     const rwdSelectEnabled = ["full"].includes(data[`${entity}AccessScope`]);
@@ -44,6 +47,7 @@ const CustomSection: React.FC<CustomSectionProps> = ({
                                 }}
                             >
                                 <Select
+                                    disabled={disabled}
                                     label={t`Access Scope`}
                                     description={t`The scope of the content that can be accessed.`}
                                 >
@@ -58,7 +62,7 @@ const CustomSection: React.FC<CustomSectionProps> = ({
                         <Cell span={12}>
                             <Bind name={`${entity}RWD`}>
                                 <Select
-                                    disabled={!rwdSelectEnabled}
+                                    disabled={disabled || !rwdSelectEnabled}
                                     label={t`Primary actions`}
                                     description={t`Primary actions that can be performed on the content.`}
                                 >

@@ -10,6 +10,8 @@ import { Checkbox, CheckboxGroup } from "@webiny/ui/Checkbox";
 import CustomSection from "./CustomSection";
 import { SecurityPermission } from "@webiny/app-security/types";
 import { PageBuilderSecurityPermission } from "~/types";
+import { useWcp } from "@webiny/app-serverless-cms";
+import { Alert } from "@webiny/ui/Alert";
 
 const t = i18n.ns("app-page-builder/admin/plugins/permissionRenderer");
 
@@ -40,6 +42,9 @@ export const PageBuilderPermissions: React.FC<PageBuilderPermissionsProps> = ({
     value,
     onChange
 }) => {
+    const { canUseFeature } = useWcp();
+    const cannotUseAAcl = !canUseFeature("advancedAccessControlLayer");
+
     const onFormChange = useCallback(
         formData => {
             let newValue: SecurityPermission[] = [];
@@ -166,6 +171,29 @@ export const PageBuilderPermissions: React.FC<PageBuilderPermissionsProps> = ({
             {({ data, Bind, setValue }) => (
                 <Fragment>
                     <Grid className={gridNoPaddingClass}>
+                        <Cell span={12}>
+                            {data.accessLevel === "custom" && cannotUseAAcl && (
+                                <Alert
+                                    title={t`Advanced Access Control Layer (AACL) not activated`}
+                                    type={"danger"}
+                                >
+                                    <strong>Custom access</strong> option cannot be used because the
+                                    Advanced Access Control Layer (AACL) is not activated. <br />
+                                    <br />
+                                    To learn more, please visit the official&nbsp;
+                                    <a
+                                        href={
+                                            "https://docs-webiny-com-git-wcp-guides-webiny.vercel.app/docs/wcp/overview"
+                                        }
+                                    >
+                                        documentation
+                                    </a>
+                                    .
+                                </Alert>
+                            )}
+                        </Cell>
+                    </Grid>
+                    <Grid className={gridNoPaddingClass}>
                         <Cell span={6}>
                             <PermissionInfo title={t`Access Level`} />
                         </Cell>
@@ -185,6 +213,7 @@ export const PageBuilderPermissions: React.FC<PageBuilderPermissionsProps> = ({
                                 data={data}
                                 Bind={Bind}
                                 setValue={setValue}
+                                disabled={cannotUseAAcl}
                                 entity={"category"}
                                 title={"Categories"}
                             />
@@ -192,6 +221,7 @@ export const PageBuilderPermissions: React.FC<PageBuilderPermissionsProps> = ({
                                 data={data}
                                 Bind={Bind}
                                 setValue={setValue}
+                                disabled={cannotUseAAcl}
                                 entity={"menu"}
                                 title={"Menus"}
                             />
@@ -200,6 +230,7 @@ export const PageBuilderPermissions: React.FC<PageBuilderPermissionsProps> = ({
                                 data={data}
                                 Bind={Bind}
                                 setValue={setValue}
+                                disabled={cannotUseAAcl}
                                 entity={"page"}
                                 title={"Pages"}
                             >
@@ -213,6 +244,7 @@ export const PageBuilderPermissions: React.FC<PageBuilderPermissionsProps> = ({
                                                 pwOptions.map(({ id, name }) => (
                                                     <Checkbox
                                                         disabled={
+                                                            cannotUseAAcl ||
                                                             !["full", "own"].includes(
                                                                 data.pageAccessScope
                                                             )
@@ -241,7 +273,10 @@ export const PageBuilderPermissions: React.FC<PageBuilderPermissionsProps> = ({
                                             </Cell>
                                             <Cell span={6} align={"middle"}>
                                                 <Bind name={"settingsAccessLevel"}>
-                                                    <Select label={t`Access Level`}>
+                                                    <Select
+                                                        label={t`Access Level`}
+                                                        disabled={cannotUseAAcl}
+                                                    >
                                                         <option
                                                             value={NO_ACCESS}
                                                         >{t`No access`}</option>
