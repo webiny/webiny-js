@@ -7,7 +7,7 @@ export interface CreateWebsiteAppParams extends CreateWebsitePulumiAppParams {
 }
 
 export function createWebsiteApp(projectAppParams: CreateWebsiteAppParams = {}) {
-    const builtInPlugins = [uploadAppToS3, generateCommonHandlers, renderWebsite];
+    const builtInPlugins = [uploadAppToS3(), generateCommonHandlers, renderWebsite];
     const customPlugins = projectAppParams.plugins ? [...projectAppParams.plugins] : [];
 
     return {
