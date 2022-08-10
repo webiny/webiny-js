@@ -2,6 +2,7 @@ export { Admin } from "./Admin";
 export type { AdminProps } from "./Admin";
 export {
     useAdmin,
+    useWcp,
     useUserMenuItem,
     useUserMenu,
     useMenuItem,
