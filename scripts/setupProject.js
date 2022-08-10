@@ -12,7 +12,7 @@ const execa = require("execa");
     // Build all packages in the "packages" workspace.
     console.log(`🏗  Building packages...`);
     try {
-        await execa("yarn", ["webiny", "workspaces", "run", "build", "--folder", "packages"], {
+        await execa("yarn", ["build"], {
             stdio: "inherit"
         });
         console.log(`✅️ Packages were built successfully!`);
