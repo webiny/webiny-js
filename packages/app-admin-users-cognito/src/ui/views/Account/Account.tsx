@@ -107,7 +107,10 @@ const UserAccountForm: React.FC = () => {
                                         name="firstName"
                                         validators={validation.create("required")}
                                     >
-                                        <Input label={t`First Name`} />
+                                        <Input
+                                            label={t`First Name`}
+                                            data-testid="account.firstname"
+                                        />
                                     </Bind>
                                 </Cell>
                                 <Cell span={12}>
@@ -116,7 +119,10 @@ const UserAccountForm: React.FC = () => {
                                         name="lastName"
                                         validators={validation.create("required")}
                                     >
-                                        <Input label={t`Last Name`} />
+                                        <Input
+                                            label={t`Last Name`}
+                                            data-testid="account.lastname"
+                                        />
                                     </Bind>
                                 </Cell>
                                 <Cell span={12}>
@@ -128,6 +134,7 @@ const UserAccountForm: React.FC = () => {
                                             value={data.email}
                                             label={t`Email`}
                                             disabled={emailIsDisabled}
+                                            data-testid="account.email"
                                             description={
                                                 "Email is your unique identifier used to login!"
                                             }
@@ -142,6 +149,7 @@ const UserAccountForm: React.FC = () => {
                         </SimpleFormContent>
                         <SimpleFormFooter data-testid={"form-footer"}>
                             <ButtonPrimary
+                                data-testid="account.updatebutton"
                                 onClick={ev => {
                                     form.submit(ev);
                                 }}

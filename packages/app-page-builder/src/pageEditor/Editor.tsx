@@ -147,7 +147,7 @@ export const PageEditor: React.FC = () => {
         <React.Suspense fallback={<EditorLoadingScreen />}>
             <PageEditorConfig />
             <LoadData>
-                <PbEditor initializeState={createStateInitializer(page, revisions)} />
+                <PbEditor stateInitializerFactory={createStateInitializer(page!, revisions)} />
             </LoadData>
         </React.Suspense>
     );

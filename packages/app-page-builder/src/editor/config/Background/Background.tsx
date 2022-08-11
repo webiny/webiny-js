@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { Compose, HigherOrderComponent } from "@webiny/app-admin";
+import { createComponentPlugin } from "@webiny/app-admin";
 import { css } from "emotion";
 import { EditorContent } from "~/editor";
 import { useActiveElement } from "~/editor/hooks/useActiveElement";
@@ -25,7 +25,7 @@ const Background: React.FC = () => {
     return <div className={backgroundStyle} onClick={deactivateElement} />;
 };
 
-const AddBackground: HigherOrderComponent = PrevContent => {
+export const BackgroundPlugin = createComponentPlugin(EditorContent, PrevContent => {
     return function AddBackground() {
         return (
             <>
@@ -34,8 +34,4 @@ const AddBackground: HigherOrderComponent = PrevContent => {
             </>
         );
     };
-};
-
-export const BackgroundPlugin = () => {
-    return <Compose component={EditorContent} with={AddBackground} />;
-};
+});

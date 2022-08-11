@@ -87,6 +87,7 @@ const ForgotPassword: React.FC = () => {
                                                     onClick={ev => {
                                                         submit(ev);
                                                     }}
+                                                    data-testid="send-code"
                                                 >
                                                     {"Send me the code"}
                                                 </ButtonPrimary>

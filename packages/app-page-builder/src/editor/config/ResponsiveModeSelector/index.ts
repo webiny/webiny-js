@@ -1,1 +1,1 @@
-export { ResponsiveModeSelectorModule } from "./ResponsiveModeSelectorModule";
+export { ResponsiveModeSelectorPlugin } from "./ResponsiveModeSelectorPlugin";

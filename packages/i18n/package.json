@@ -1,6 +1,6 @@
 {
   "name": "@webiny/i18n",
-  "version": "5.29.0",
+  "version": "5.30.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -21,7 +21,7 @@
     "yargs": "12.0.5"
   },
   "peerDependencies": {
-    "react": "^16.14.0"
+    "react": "^17.0.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.16.0",
@@ -31,8 +31,8 @@
     "@babel/register": "^7.16.0",
     "@types/accounting": "^0.4.2",
     "@types/lodash": "^4.14.178",
-    "@webiny/cli": "^5.29.0",
-    "@webiny/project-utils": "^5.29.0",
+    "@webiny/cli": "^5.30.0",
+    "@webiny/project-utils": "^5.30.0",
     "babel-plugin-lodash": "^3.3.4",
     "glob": "^7.1.2",
     "rimraf": "^3.0.2",

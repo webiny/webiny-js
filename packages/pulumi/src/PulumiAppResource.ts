@@ -31,6 +31,7 @@ export type PulumiAppResourceConfigProxy<T extends object> = {
 
 export interface PulumiAppResource<T extends PulumiAppResourceConstructor> {
     name: string;
+    type: T;
     readonly config: PulumiAppResourceConfigProxy<PulumiAppResourceArgs<T>>;
     readonly opts: pulumi.CustomResourceOptions;
     readonly output: pulumi.Output<pulumi.Unwrap<PulumiAppResourceType<T>>>;

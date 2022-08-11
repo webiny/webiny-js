@@ -5,7 +5,7 @@
   "dependencies": {
     "@apollo/react-components": "^3.1.5",
     "@apollo/react-hooks": "^3.1.5",
-    "@types/react": "^16.14.0",
+    "@types/react": "^17.0.2",
     "@webiny/app": "latest",
     "@webiny/app-form-builder": "latest",
     "@webiny/app-page-builder": "latest",
@@ -22,8 +22,8 @@
     "graphql": "^15.7.2",
     "graphql-tag": "^2.12.6",
     "invariant": "^2.2.4",
-    "react": "16.14.0",
-    "react-dom": "16.14.0",
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
     "react-helmet": "^6.1.0",
     "regenerator-runtime": "^0.13.5",
     "theme": "^0.1.0"

@@ -58,24 +58,26 @@ module.exports = async ({ projectApplication, inputs, context }) => {
     const stats = { success: 0, warning: 0, error: 0 };
     for (let i = 0; i < projectApplication.packages.length; i++) {
         const current = projectApplication.packages[i];
-        const config = current.config;
-        if (typeof config.commands.build !== "function") {
-            stats.warning++;
-            context.warning(
-                `Skipping build of ${context.warning.hl(
-                    current.name
-                )} package - ${context.warning.hl(
-                    "build"
-                )} command missing. Check package's ${context.warning.hl("webiny.config.ts")} file.`
-            );
-            continue;
-        }
-
         const start = new Date();
 
         promises.push(
             new Promise(resolve => {
-                const worker = new Worker(path.join(__dirname, "./worker.js"));
+                let enableLogs = inputs.logs;
+                if (typeof enableLogs === "undefined") {
+                    enableLogs = !multipleBuilds;
+                }
+
+                const workerData = {
+                    options: {
+                        env,
+                        variant,
+                        debug,
+                        logs: enableLogs
+                    },
+                    package: { ...current.paths }
+                };
+
+                const worker = new Worker(path.join(__dirname, "./worker.js"), { workerData });
                 worker.on("message", threadMessage => {
                     const { type, message } = parseMessage(threadMessage);
 
@@ -149,23 +151,6 @@ module.exports = async ({ projectApplication, inputs, context }) => {
                         }
                     });
                 });
-
-                let enableLogs = inputs.logs;
-                if (typeof enableLogs === "undefined") {
-                    enableLogs = !multipleBuilds;
-                }
-
-                worker.postMessage(
-                    JSON.stringify({
-                        options: {
-                            env,
-                            variant,
-                            debug,
-                            logs: enableLogs
-                        },
-                        package: current
-                    })
-                );
             })
         );
     }

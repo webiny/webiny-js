@@ -5,5 +5,5 @@ import { EventActionHandler } from "~/types";
 export function useEventActionHandler<
     TCallableState = unknown
 >(): EventActionHandler<TCallableState> {
-    return useContext<EventActionHandler<TCallableState>>(EventActionHandlerContext as any);
+    return useContext(EventActionHandlerContext) as EventActionHandler<TCallableState>;
 }

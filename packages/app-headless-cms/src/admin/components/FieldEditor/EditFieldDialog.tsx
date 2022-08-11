@@ -173,6 +173,15 @@ const EditFieldDialog: React.FC<EditFieldDialogProps> = ({ field, onSubmit, ...p
                 }}
             >
                 {form => {
+                    const hasValidators =
+                        Array.isArray(fieldPlugin.field.validators) &&
+                        fieldPlugin.field.validators.length > 0;
+
+                    const showValidatorsTab =
+                        form.data.multipleValues ||
+                        (Array.isArray(fieldPlugin.field.validators) &&
+                            fieldPlugin.field.validators.length > 0);
+
                     const predefinedValuesTabEnabled =
                         fieldPlugin.field.allowPredefinedValues &&
                         form.data.predefinedValues &&
@@ -202,78 +211,75 @@ const EditFieldDialog: React.FC<EditFieldDialogProps> = ({ field, onSubmit, ...p
                                         )}
                                     </Tab>
 
-                                    {form.data.multipleValues && (
+                                    {showValidatorsTab ? (
                                         <Tab
                                             label={"Validators"}
                                             data-testid={"cms.editor.field.tabs.validators"}
                                         >
-                                            <Grid>
-                                                <Cell span={12}>
-                                                    <Typography use={"headline5"}>
-                                                        List validators
-                                                    </Typography>
-                                                    <br />
-                                                    <Typography use={"body2"}>
-                                                        These validators are applied to the entire
-                                                        list of values.
-                                                    </Typography>
-                                                </Cell>
-                                                <Cell span={12}>
-                                                    <Elevation z={2}>
-                                                        <ValidatorsTab
-                                                            field={current}
-                                                            name={"listValidation"}
-                                                            validators={getListValidators(
-                                                                fieldPlugin
-                                                            )}
-                                                            form={form}
-                                                        />
-                                                    </Elevation>
-                                                </Cell>
-                                            </Grid>
+                                            {form.data.multipleValues ? (
+                                                <>
+                                                    <Grid>
+                                                        <Cell span={12}>
+                                                            <Typography use={"headline5"}>
+                                                                List validators
+                                                            </Typography>
+                                                            <br />
+                                                            <Typography use={"body2"}>
+                                                                These validators are applied to the
+                                                                entire list of values.
+                                                            </Typography>
+                                                        </Cell>
+                                                        <Cell span={12}>
+                                                            <Elevation z={2}>
+                                                                <ValidatorsTab
+                                                                    field={current}
+                                                                    name={"listValidation"}
+                                                                    validators={getListValidators(
+                                                                        fieldPlugin
+                                                                    )}
+                                                                    form={form}
+                                                                />
+                                                            </Elevation>
+                                                        </Cell>
+                                                    </Grid>
 
-                                            <Grid>
-                                                <Cell span={12}>
-                                                    <Typography use={"headline5"}>
-                                                        Individual value validators
-                                                    </Typography>
-                                                    <br />
-                                                    <Typography use={"body2"}>
-                                                        These validators are applied to each value
-                                                        in the list.
-                                                    </Typography>
-                                                </Cell>
-                                                <Cell span={12}>
-                                                    <Elevation z={2}>
-                                                        <ValidatorsTab
-                                                            field={current}
-                                                            form={form}
-                                                            name={"validation"}
-                                                            validators={getFieldValidators(
-                                                                fieldPlugin
-                                                            )}
-                                                        />
-                                                    </Elevation>
-                                                </Cell>
-                                            </Grid>
-                                        </Tab>
-                                    )}
+                                                    <Grid>
+                                                        <Cell span={12}>
+                                                            <Typography use={"headline5"}>
+                                                                Individual value validators
+                                                            </Typography>
+                                                            <br />
+                                                            <Typography use={"body2"}>
+                                                                These validators are applied to each
+                                                                value in the list.
+                                                            </Typography>
+                                                        </Cell>
+                                                        <Cell span={12}>
+                                                            <Elevation z={2}>
+                                                                <ValidatorsTab
+                                                                    field={current}
+                                                                    form={form}
+                                                                    name={"validation"}
+                                                                    validators={getFieldValidators(
+                                                                        fieldPlugin
+                                                                    )}
+                                                                />
+                                                            </Elevation>
+                                                        </Cell>
+                                                    </Grid>
+                                                </>
+                                            ) : null}
 
-                                    {!form.data.multipleValues &&
-                                        Array.isArray(fieldPlugin.field.validators) &&
-                                        fieldPlugin.field.validators.length > 0 && (
-                                            <Tab
-                                                label={"Validators"}
-                                                data-testid={"cms.editor.field.tabs.validators"}
-                                            >
+                                            {!form.data.multipleValues && hasValidators ? (
                                                 <ValidatorsTab
                                                     field={current}
                                                     form={form}
                                                     name={"validation"}
                                                     validators={getFieldValidators(fieldPlugin)}
                                                 />
-                                            </Tab>
-                                        )}
+                                            ) : null}
+                                        </Tab>
+                                    ) : null}
                                     <Tab label={t`Appearance`}>
                                         <AppearanceTab
                                             form={form}
@@ -286,8 +292,12 @@ const EditFieldDialog: React.FC<EditFieldDialogProps> = ({ field, onSubmit, ...p
                                 </Tabs>
                             </DialogContent>
                             <DialogActions>
-                                <ButtonDefault onClick={onClose}>{t`Cancel`}</ButtonDefault>
+                                <ButtonDefault
+                                    data-testid="cms.editor.field.settings.cancel"
+                                    onClick={onClose}
+                                >{t`Cancel`}</ButtonDefault>
                                 <ButtonPrimary
+                                    data-testid="cms.editor.field.settings.save"
                                     onClick={ev => {
                                         form.submit(ev);
                                     }}

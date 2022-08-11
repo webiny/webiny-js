@@ -6,7 +6,7 @@ import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import usePermission from "~/hooks/usePermission";
 import { useAdminPageBuilder } from "~/admin/hooks/useAdminPageBuilder";
-import { Compose, HigherOrderComponent, makeComposable } from "@webiny/app-admin";
+import { createComponentPlugin, makeComposable } from "@webiny/app-admin";
 import { EditorBar } from "~/editor";
 import { usePage } from "~/pageEditor/hooks/usePage";
 
@@ -54,7 +54,10 @@ const DefaultPublishPageButton: React.FC = () => {
             message="You are about to publish this page, are you sure want to continue?"
         >
             {({ showConfirmation }) => (
-                <ButtonPrimary onClick={() => showConfirmation(publishChanges)}>
+                <ButtonPrimary
+                    onClick={() => showConfirmation(publishChanges)}
+                    data-testid="pb.editor.header.publish.button"
+                >
                     {page.version > 1 ? "Publish changes" : "Publish"}
                 </ButtonPrimary>
             )}
@@ -64,17 +67,16 @@ const DefaultPublishPageButton: React.FC = () => {
 
 export const PublishPageButton = makeComposable("PublishPageButton", DefaultPublishPageButton);
 
-const AddPublishPageButton: HigherOrderComponent = RightSection => {
-    return function AddPublishPageButton(props) {
-        return (
-            <RightSection>
-                <PublishPageButton />
-                {props.children}
-            </RightSection>
-        );
-    };
-};
-
-export const PublishPageButtonPlugin = () => {
-    return <Compose component={EditorBar.RightSection} with={AddPublishPageButton} />;
-};
+export const PublishPageButtonPlugin = createComponentPlugin(
+    EditorBar.RightSection,
+    RightSection => {
+        return function AddPublishPageButton(props) {
+            return (
+                <RightSection>
+                    <PublishPageButton />
+                    {props.children}
+                </RightSection>
+            );
+        };
+    }
+);

@@ -8,7 +8,7 @@ import { Typography } from "@webiny/ui/Typography";
 import { ReactComponent as DownButton } from "./round-arrow_drop_down-24px.svg";
 import { useRevisions } from "~/pageEditor/hooks/useRevisions";
 import { RevisionItemAtomType } from "~/pageEditor/state";
-import { Compose, HigherOrderComponent } from "@webiny/app-admin";
+import { createComponentPlugin } from "@webiny/app-admin";
 import { EditorBar } from "~/editor";
 
 const buttonStyle = css({
@@ -69,8 +69,8 @@ const Revisions: React.FC = () => {
     );
 };
 
-const AddRevisionSelector: HigherOrderComponent = RightSection => {
-    return function AddRevisionSelector(props) {
+const ComposeRevisionSelector = createComponentPlugin(EditorBar.RightSection, RightSection => {
+    return function ComposeRightSection(props) {
         return (
             <RightSection>
                 <Revisions />
@@ -79,8 +79,8 @@ const AddRevisionSelector: HigherOrderComponent = RightSection => {
             </RightSection>
         );
     };
-};
+});
 
 export const RevisionsPlugin = () => {
-    return <Compose component={EditorBar.RightSection} with={AddRevisionSelector} />;
+    return <ComposeRevisionSelector />;
 };

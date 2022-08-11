@@ -38,7 +38,7 @@ const FolderForm: React.FC<FolderFormProps> = ({ data, onSubmit, onCancel }) => 
                         <Grid>
                             <Cell span={12}>
                                 <Bind name="title" validators={validation.create("required")}>
-                                    <Input label={`Title`} />
+                                    <Input label={`Title`} data-testid="pb.menu.new.folder.title" />
                                 </Bind>
                             </Cell>
                         </Grid>
@@ -50,6 +50,7 @@ const FolderForm: React.FC<FolderFormProps> = ({ data, onSubmit, onCancel }) => 
                                         submit(ev);
                                     }}
                                     style={{ float: "right" }}
+                                    data-testid="pb.menu.new.folder.button.save"
                                 >
                                     Save menu item
                                 </ButtonPrimary>

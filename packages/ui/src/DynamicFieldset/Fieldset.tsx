@@ -38,7 +38,10 @@ interface FieldsetProps {
 const DynamicFieldsetRow = styled("div")({
     paddingBottom: 10,
     "> .mdc-layout-grid": {
-        padding: 0
+        padding: 0,
+        "> .mdc-layout-grid__inner": {
+            display: "block"
+        }
     }
 });
 

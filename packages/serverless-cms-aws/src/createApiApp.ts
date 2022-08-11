@@ -8,6 +8,8 @@ import {
     injectWcpTelemetryClientCode
 } from "./api/plugins";
 
+export { ApiOutput } from "@webiny/pulumi-aws";
+
 export interface CreateApiAppParams extends CreateApiPulumiAppParams {
     /**
      * Enables ElasticSearch infrastructure.

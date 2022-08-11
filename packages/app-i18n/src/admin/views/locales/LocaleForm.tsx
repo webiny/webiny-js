@@ -65,6 +65,7 @@ const I18NLocaleForm: React.FC = () => {
                                     <LocaleCodesAutoComplete
                                         disabled={Boolean(data.createdOn)}
                                         label={t`Code`}
+                                        data-testid="l18n.locale.code"
                                         description={t`For example: "en-GB"`}
                                     />
                                 </Bind>
@@ -85,6 +86,7 @@ const I18NLocaleForm: React.FC = () => {
                                 onClick={ev => {
                                     form.submit(ev);
                                 }}
+                                data-testid="l18n.locale.save"
                             >{t`Save locale`}</ButtonPrimary>
                         </ButtonWrapper>
                     </SimpleFormFooter>

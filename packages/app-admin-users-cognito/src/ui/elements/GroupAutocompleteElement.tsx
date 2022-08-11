@@ -29,7 +29,7 @@ export class GroupAutocompleteElement extends InputElement {
                 name={this.id}
                 validators={typeof validators === "function" ? validators({ formProps }) : []}
             >
-                <GroupAutocomplete label={"Group"} />
+                <GroupAutocomplete label={"Group"} data-testid="group-autocomplete" />
             </Bind>
         );
     }

@@ -1,6 +1,5 @@
 import { EventActionCallable, EventActionHandlerCallableState, PbEditorElement } from "~/types";
 import { DeleteElementActionArgsType } from "./types";
-import { UpdateElementTreeActionEvent } from "..";
 import { UpdateDocumentActionEvent } from "~/editor/recoil/actions/updateDocument";
 
 const removeElementFromParent = (parent: PbEditorElement, id: string): PbEditorElement => {
@@ -50,6 +49,6 @@ export const deleteElementAction: EventActionCallable<DeleteElementActionArgsTyp
             activeElement: null,
             highlightElement: null
         },
-        actions: [new UpdateDocumentActionEvent(), new UpdateElementTreeActionEvent()]
+        actions: [new UpdateDocumentActionEvent()]
     };
 };
