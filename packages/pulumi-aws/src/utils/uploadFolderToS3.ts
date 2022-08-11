@@ -24,14 +24,14 @@ function getFileChecksum(file: string): Promise<string> {
     });
 }
 
-import { BucketName, ObjectCannedACL, CacheControl } from "aws-sdk/clients/s3";
+import { BucketName, CacheControl } from "aws-sdk/clients/s3";
 
 export interface Paths {
     full: string;
     relative: string;
 }
 
-type CacheControls = Array<{ pattern: RegExp; value: CacheControl }>;
+export type CacheControls = Array<{ pattern: RegExp; value: CacheControl }>;
 
 export interface UploadFolderToS3Params {
     // Path to the folder that needs to be uploaded.
@@ -46,8 +46,10 @@ export interface UploadFolderToS3Params {
     // A callback that gets called every time a file upload has been skipped.
     onFileUploadSkip: (params: { paths: Paths }) => void;
 
+    // Target bucket
     bucket: BucketName;
-    acl?: ObjectCannedACL;
+
+    // Cache control to apply to each uploaded file
     cacheControl?: CacheControl | CacheControls;
 }
 
