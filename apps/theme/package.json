@@ -18,7 +18,7 @@
     "graphql-tag": "^2.12.6",
     "invariant": "^2.2.4",
     "lodash": "^4.4.2",
-    "react": "16.14.0",
+    "react": "17.0.2",
     "react-hamburger-menu": "^1.1.1",
     "react-helmet": "^6.1.0"
   },

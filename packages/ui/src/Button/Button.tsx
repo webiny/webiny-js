@@ -134,7 +134,7 @@ export const ButtonFloating: React.FC<ButtonFloatingProps> = props => {
         icon,
         onClick,
         small = false,
-        label = false,
+        label = null,
         ripple = true,
         className = null,
         ...rest
