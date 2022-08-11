@@ -12760,6 +12760,22 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/handler-args@workspace:packages/handler-args":
+  version: 0.0.0-use.local
+  resolution: "@webiny/handler-args@workspace:packages/handler-args"
+  dependencies:
+    "@babel/cli": ^7.16.0
+    "@babel/core": ^7.16.0
+    "@babel/preset-env": ^7.16.4
+    "@babel/preset-typescript": ^7.16.0
+    "@babel/runtime": ^7.16.3
+    "@webiny/cli": ^5.29.0
+    "@webiny/project-utils": ^5.29.0
+    rimraf: ^3.0.2
+    typescript: 4.7.4
+  languageName: unknown
+  linkType: soft
+
 "@webiny/handler-aws@^5.25.0, @webiny/handler-aws@^5.30.0, @webiny/handler-aws@workspace:packages/handler-aws":
   version: 0.0.0-use.local
   resolution: "@webiny/handler-aws@workspace:packages/handler-aws"
@@ -12844,6 +12860,22 @@ __metadata:
     graphql-tag: ^2.12.6
     jest: ^28.1.0
     jest-mock-console: ^1.0.0
+    rimraf: ^3.0.2
+    typescript: 4.7.4
+  languageName: unknown
+  linkType: soft
+
+"@webiny/handler-http@workspace:packages/handler-http":
+  version: 0.0.0-use.local
+  resolution: "@webiny/handler-http@workspace:packages/handler-http"
+  dependencies:
+    "@babel/cli": ^7.16.0
+    "@babel/core": ^7.16.0
+    "@babel/runtime": ^7.16.3
+    "@webiny/cli": ^5.29.0
+    "@webiny/project-utils": ^5.29.0
+    boolean: ^3.0.1
+    merge: ^1.2.1
     rimraf: ^3.0.2
     typescript: 4.7.4
   languageName: unknown
