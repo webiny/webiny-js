@@ -11,9 +11,9 @@
   "dependencies": {
     "@babel/runtime": "^7.16.3",
     "@editorjs/editorjs": "^2.20.1",
-    "@types/react": "^16.14.0",
+    "@types/react": "17.0.39",
     "classnames": "^2.3.1",
-    "react": "^16.14.0"
+    "react": "17.0.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.16.0",
