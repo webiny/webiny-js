@@ -4,7 +4,8 @@ import { createStorageOperations as tenancyStorageOperations } from "@webiny/api
 import { createSecurityContext, createSecurityGraphQL } from "@webiny/api-security";
 import { createStorageOperations as securityStorageOperations } from "@webiny/api-security-so-ddb";
 import { SecurityContext, SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
-import { ContextPlugin, BeforeHandlerPlugin } from "@webiny/api";
+import { ContextPlugin } from "@webiny/api";
+import { BeforeHandlerPlugin } from "@webiny/handler";
 import { TenancyContext } from "@webiny/api-tenancy/types";
 
 // IMPORTANT: This must be removed from here in favor of a dynamic SO setup.
@@ -33,7 +34,10 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config = {})
         createTenancyContext({
             storageOperations: tenancyStorageOperations({
                 documentClient,
-                table: table => ({ ...table, name: process.env.DB_TABLE })
+                table: table => ({
+                    ...table,
+                    name: process.env.DB_TABLE as string
+                })
             })
         }),
         createTenancyGraphQL(),
@@ -45,7 +49,7 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config = {})
         }),
         createSecurityGraphQL(),
         new ContextPlugin<SecurityContext & TenancyContext>(context => {
-            context.tenancy.setCurrentTenant({ id: "root", name: "Root" });
+            context.tenancy.setCurrentTenant({ id: "root", name: "Root" } as any);
 
             context.security.addAuthenticator(async () => {
                 return identity || defaultIdentity;

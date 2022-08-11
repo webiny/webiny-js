@@ -16,7 +16,7 @@ jest.mock("node-fetch", () => {
 });
 
 import createPlugin from "~/index";
-import { HandlerResultPlugin } from "@webiny/api";
+import { HandlerResultPlugin } from "@webiny/handler";
 
 describe("logs plugin", () => {
     it("should send data to given url", async () => {

@@ -1,5 +1,5 @@
 import fetch from "node-fetch";
-import { HandlerResultPlugin } from "@webiny/api";
+import { HandlerResultPlugin } from "@webiny/handler";
 
 export default () => {
     const consoleLog = console.log;

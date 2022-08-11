@@ -1,14 +1,20 @@
 import { PluginCollection } from "@webiny/plugins/types";
-import fastify, { FastifyServerOptions as ServerOptions } from "fastify";
-import { BeforeHandlerPlugin, ContextPlugin, HandlerErrorPlugin } from "@webiny/api";
+import fastify, {
+    FastifyServerOptions as ServerOptions,
+    preSerializationAsyncHookHandler
+} from "fastify";
 import { getWebinyVersionHeaders } from "@webiny/utils";
 import { ContextRoutes, DefinedContextRoutes, RouteMethodOptions, RouteTypes } from "~/types";
-import { Context } from "~/plugins/Context";
+import { Context } from "~/Context";
 import WebinyError from "@webiny/error";
 import { RoutePlugin } from "./plugins/RoutePlugin";
 import { createHandlerClient } from "@webiny/handler-client";
 import fastifyCookies from "@fastify/cookie";
 import { middleware } from "~/middleware";
+import { ContextPlugin } from "@webiny/api";
+import { BeforeHandlerPlugin } from "./plugins/BeforeHandlerPlugin";
+import { HandlerResultPlugin } from "./plugins/HandlerResultPlugin";
+import { HandlerErrorPlugin } from "./plugins/HandlerErrorPlugin";
 
 const DEFAULT_HEADERS: Record<string, string> = {
     "Cache-Control": "no-store",
@@ -244,15 +250,27 @@ export const createHandler = (params: CreateHandlerParams) => {
             return result;
         }
     });
-
+    /**
+     *
+     */
     app.addHook("preHandler", async () => {
-        /**
-         * By the default we add some headers.
-         */
         for (const plugin of app.webiny.plugins.byType(BeforeHandlerPlugin.type)) {
             await plugin.apply(app.webiny);
         }
     });
+
+    /**
+     *
+     */
+    const preSerialization: preSerializationAsyncHookHandler<any> = async (_, __, payload) => {
+        const plugins = app.webiny.plugins.byType<HandlerResultPlugin>(HandlerResultPlugin.type);
+        for (const plugin of plugins) {
+            await plugin.handle(app.webiny, payload);
+        }
+        return payload;
+    };
+
+    app.addHook("preSerialization", preSerialization);
 
     app.addHook("onError", async (_, reply, error) => {
         const plugins = app.webiny.plugins.byType(HandlerErrorPlugin.type);

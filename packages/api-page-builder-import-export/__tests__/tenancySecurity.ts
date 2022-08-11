@@ -4,7 +4,8 @@ import { createStorageOperations as tenancyStorageOperations } from "@webiny/api
 import { createSecurityContext, createSecurityGraphQL } from "@webiny/api-security";
 import { createStorageOperations as securityStorageOperations } from "@webiny/api-security-so-ddb";
 import { SecurityContext, SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
-import { ContextPlugin, BeforeHandlerPlugin } from "@webiny/api";
+import { ContextPlugin } from "@webiny/api";
+import { BeforeHandlerPlugin } from "@webiny/handler";
 import { TenancyContext, Tenant } from "@webiny/api-tenancy/types";
 import { Identity } from "../../api-authentication/src/types";
 

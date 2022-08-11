@@ -47,6 +47,7 @@
     "@webiny/api-dynamodb-to-elasticsearch": "^5.30.0",
     "@webiny/api-i18n": "^5.30.0",
     "@webiny/cli": "^5.30.0",
+    "@webiny/handler": "^5.30.0",
     "@webiny/handler-aws": "^5.30.0",
     "jest": "^28.1.0",
     "jest-dynalite": "^3.2.0",

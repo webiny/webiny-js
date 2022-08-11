@@ -1,5 +1,5 @@
 import { Plugin } from "@webiny/plugins/types";
-import { Context } from "@webiny/api/types";
+import { Context } from "@webiny/handler/types";
 import { Authentication, Identity } from "@webiny/api-authentication/types";
 import { Topic } from "@webiny/pubsub/types";
 import { GetTenant } from "~/createSecurity";

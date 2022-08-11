@@ -1,4 +1,4 @@
-import { BeforeHandlerPlugin } from "@webiny/api";
+import { BeforeHandlerPlugin } from "@webiny/handler";
 import { AuthenticationContext } from "~/types";
 
 export interface GetHeader {
@@ -16,10 +16,7 @@ const defaultGetHeader: GetHeader = headers => {
 
 export const authenticateUsingHttpHeader = (getHeader: GetHeader = defaultGetHeader) => {
     return new BeforeHandlerPlugin<AuthenticationContext>(async context => {
-        const { method, headers } = context.request;
-        if (method !== "POST") {
-            return;
-        }
+        const { headers } = context.request;
 
         const token = getHeader(headers);
 

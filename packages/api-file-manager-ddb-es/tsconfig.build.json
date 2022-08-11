@@ -8,6 +8,7 @@
     { "path": "../db-dynamodb/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
     { "path": "../api/tsconfig.build.json" },
+    { "path": "../handler/tsconfig.build.json" },
     { "path": "../handler-aws/tsconfig.build.json" },
     { "path": "../handler-db/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" },

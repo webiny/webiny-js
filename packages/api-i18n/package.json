@@ -39,6 +39,7 @@
     "@webiny/api-tenancy-so-ddb": "^5.25.0",
     "@webiny/api-wcp": "^5.30.0",
     "@webiny/cli": "^5.30.0",
+    "@webiny/handler": "^5.30.0",
     "@webiny/project-utils": "^5.30.0",
     "jest": "^28.1.0",
     "rimraf": "^3.0.2",

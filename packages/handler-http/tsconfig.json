@@ -1,9 +1,7 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
-  "references": [
-
-  ],
+  "references": [],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",

@@ -1,4 +1,4 @@
-import { BeforeHandlerPlugin } from "@webiny/api";
+import { BeforeHandlerPlugin } from "@webiny/handler";
 import { SecurityContext } from "~/types";
 
 export const triggerAuthentication = () => {

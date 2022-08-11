@@ -33,7 +33,7 @@ export const createTenancyContext = ({ storageOperations }: TenancyPluginsParams
 
             tenantId = headers["x-tenant"] as string;
 
-            if (!tenantId && method === "POST") {
+            if (!tenantId) {
                 throw new WebinyError({
                     message: `"x-tenant" header is missing in the request!`,
                     code: "MISSING_TENANT_HEADER",

@@ -11,7 +11,6 @@ export class Context extends BaseContext implements BaseContextType {
     public readonly routes: BaseContextType["routes"];
     // @ts-ignore
     public handlerClient: BaseContextType["handlerClient"];
-
     // @ts-ignore
     public request: BaseContextType["request"];
 
