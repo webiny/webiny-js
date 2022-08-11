@@ -19,6 +19,7 @@ context("Headless CMS - Content Models CRUD", () => {
 
             cy.findByTestId("cms.newcontentmodeldialog.name")
                 .focus()
+                .clear()
                 // waiting seems to improve flakyness of this test
                 .wait(500)
                 .type(`Book - ${uniqueId}`)
