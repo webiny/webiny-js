@@ -242,19 +242,17 @@ export const createHandler = (params: CreateHandlerParams) => {
 
     app.addHook("preParsing", async request => {
         app.webiny.request = request;
-        for (const plugin of app.webiny.plugins.byType(ContextPlugin.type)) {
-            const result = await plugin.apply(app.webiny);
-            if (!result) {
-                continue;
-            }
-            return result;
+        const plugins = app.webiny.plugins.byType<ContextPlugin>(ContextPlugin.type);
+        for (const plugin of plugins) {
+            await plugin.apply(app.webiny);
         }
     });
     /**
      *
      */
     app.addHook("preHandler", async () => {
-        for (const plugin of app.webiny.plugins.byType(BeforeHandlerPlugin.type)) {
+        const plugins = app.webiny.plugins.byType<BeforeHandlerPlugin>(BeforeHandlerPlugin.type);
+        for (const plugin of plugins) {
             await plugin.apply(app.webiny);
         }
     });
@@ -273,7 +271,7 @@ export const createHandler = (params: CreateHandlerParams) => {
     app.addHook("preSerialization", preSerialization);
 
     app.addHook("onError", async (_, reply, error) => {
-        const plugins = app.webiny.plugins.byType(HandlerErrorPlugin.type);
+        const plugins = app.webiny.plugins.byType<HandlerErrorPlugin>(HandlerErrorPlugin.type);
         // Log error to cloud, as these can be extremely annoying to debug!
         console.log("@webiny/handler");
         console.log(JSON.stringify(error || {}));

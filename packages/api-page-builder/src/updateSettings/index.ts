@@ -25,12 +25,9 @@ function createSettings(data: Settings): SettingsInput {
     };
 }
 
-interface PayloadBody {
+interface Payload {
     data?: Settings;
     migrate?: boolean;
-}
-interface Payload {
-    body: string | PayloadBody;
 }
 
 /**
@@ -43,24 +40,28 @@ export interface UpdateSettingsParams {
 export default (params: UpdateSettingsParams) => {
     const { storageOperations } = params;
 
-    const route = new EventPlugin<Payload>(async ({ payload }) => {
+    const route = new EventPlugin<Payload | string>(async ({ payload }) => {
         try {
-            const body = payload.body as Payload["body"];
+            const body: Payload | undefined =
+                typeof payload === "string" ? JSON.parse(payload) : payload;
 
-            const result: PayloadBody = typeof body === "string" ? JSON.parse(body) : body;
-            if (!result?.data) {
+            if (!body?.data) {
                 return {
                     data: false,
                     error: {
                         message: "Missing data to be processed.",
                         code: "DATA_ERROR",
                         data: {
-                            body
+                            payload:
+                                typeof payload === "string"
+                                    ? payload
+                                    : JSON.stringify(payload || {}),
+                            raw: payload
                         }
                     }
                 };
             }
-            const { data, migrate: runMigration } = result;
+            const { data, migrate: runMigration } = body;
             // In 5.29.0, we need to migrate data for Prerendering Service and Tenants
             if (process.env.NODE_ENV !== "test") {
                 const executed = await migrate(
