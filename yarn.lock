@@ -11306,8 +11306,6 @@ __metadata:
     "@babel/preset-env": ^7.16.4
     "@babel/preset-typescript": ^7.16.0
     "@babel/runtime": ^7.16.3
-    "@webiny/api-security": ^5.30.0
-    "@webiny/api-tenancy": ^5.30.0
     "@webiny/cli": ^5.30.0
     "@webiny/error": ^5.30.0
     "@webiny/handler": ^5.30.0
