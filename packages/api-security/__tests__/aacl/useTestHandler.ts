@@ -9,9 +9,7 @@ import { customGroupAuthorizer } from "./mocks/customGroupAuthorizer";
 import { customAuthenticator } from "./mocks/customAuthenticator";
 import { triggerAuthentication } from "./mocks/triggerAuthentication";
 
-import { createStorageOperations as securityStorageOperations } from "@webiny/api-security-so-ddb";
-
-import { WcpContext } from "~/types";
+import { WcpContext } from "@webiny/api-wcp/types";
 import { HandlerPlugin } from "@webiny/handler";
 
 type UseTestHandlerParams = {
@@ -28,14 +26,16 @@ const documentClient = new DocumentClient({
 });
 
 export default (opts: UseTestHandlerParams = {}) => {
+    // @ts-ignore
+    if (typeof __getStorageOperations !== "function") {
+        throw new Error(`There is no global "__getStorageOperations" function.`);
+    }
+    // @ts-ignore
+    const { storageOperations } = __getStorageOperations();
+
     const plugins: PluginCollection = [
         createWcpContext(),
-        createSecurityContext({
-            storageOperations: securityStorageOperations({
-                documentClient,
-                table: process.env.DB_TABLE
-            })
-        }),
+        createSecurityContext({ storageOperations }),
         authenticateUsingHttpHeader(),
         triggerAuthentication(),
         customAuthenticator(),

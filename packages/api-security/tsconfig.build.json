@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
   "references": [
+    { "path": "../api-wcp/tsconfig.build.json" },
     { "path": "../api-authentication/tsconfig.build.json" },
     { "path": "../api-tenancy/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
@@ -12,8 +13,8 @@
     { "path": "../plugins/tsconfig.build.json" },
     { "path": "../pubsub/tsconfig.build.json" },
     { "path": "../validation/tsconfig.build.json" },
-    { "path": "../api-tenancy-so-ddb/tsconfig.build.json" },
-    { "path": "../api-wcp/tsconfig.build.json" }
+    { "path": "../wcp/tsconfig.build.json" },
+    { "path": "../api-tenancy-so-ddb/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",

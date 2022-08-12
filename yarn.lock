@@ -11167,6 +11167,7 @@ __metadata:
     "@webiny/project-utils": ^5.30.0
     "@webiny/pubsub": ^5.30.0
     "@webiny/validation": ^5.30.0
+    "@webiny/wcp": ^5.30.0
     commodo-fields-object: ^1.0.6
     deep-equal: ^2.0.5
     mdbid: ^1.0.0
@@ -12063,7 +12064,6 @@ __metadata:
     "@webiny/app-page-builder-elements": ^5.30.0
     "@webiny/app-plugin-admin-welcome-screen": ^5.30.0
     "@webiny/app-security": ^5.30.0
-    "@webiny/app-serverless-cms": ^5.30.0
     "@webiny/app-tenancy": ^5.30.0
     "@webiny/cli": ^5.30.0
     "@webiny/form": ^5.30.0

@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
+    { "path": "../api-wcp" },
     { "path": "../api-authentication" },
     { "path": "../api-tenancy" },
     { "path": "../error" },
@@ -12,8 +13,8 @@
     { "path": "../plugins" },
     { "path": "../pubsub" },
     { "path": "../validation" },
-    { "path": "../api-tenancy-so-ddb" },
-    { "path": "../api-wcp" }
+    { "path": "../wcp" },
+    { "path": "../api-tenancy-so-ddb" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -21,6 +22,8 @@
     "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
+      "@webiny/api-wcp/*": ["../api-wcp/src/*"],
+      "@webiny/api-wcp": ["../api-wcp/src"],
       "@webiny/api-authentication/*": ["../api-authentication/src/*"],
       "@webiny/api-authentication": ["../api-authentication/src"],
       "@webiny/api-tenancy/*": ["../api-tenancy/src/*"],
@@ -41,10 +44,10 @@
       "@webiny/pubsub": ["../pubsub/src"],
       "@webiny/validation/*": ["../validation/src/*"],
       "@webiny/validation": ["../validation/src"],
+      "@webiny/wcp/*": ["../wcp/src/*"],
+      "@webiny/wcp": ["../wcp/src"],
       "@webiny/api-tenancy-so-ddb/*": ["../api-tenancy-so-ddb/src/*"],
-      "@webiny/api-tenancy-so-ddb": ["../api-tenancy-so-ddb/src"],
-      "@webiny/api-wcp/*": ["../api-wcp/src/*"],
-      "@webiny/api-wcp": ["../api-wcp/src"]
+      "@webiny/api-tenancy-so-ddb": ["../api-tenancy-so-ddb/src"]
     },
     "baseUrl": "."
   }
