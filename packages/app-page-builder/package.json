@@ -30,7 +30,6 @@
     "@webiny/app-page-builder-elements": "^5.30.0",
     "@webiny/app-plugin-admin-welcome-screen": "^5.30.0",
     "@webiny/app-security": "^5.30.0",
-    "@webiny/app-serverless-cms": "^5.30.0",
     "@webiny/app-tenancy": "^5.30.0",
     "@webiny/form": "^5.30.0",
     "@webiny/plugins": "^5.30.0",

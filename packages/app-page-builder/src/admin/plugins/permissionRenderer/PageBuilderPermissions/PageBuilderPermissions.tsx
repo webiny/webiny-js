@@ -10,7 +10,7 @@ import { Checkbox, CheckboxGroup } from "@webiny/ui/Checkbox";
 import CustomSection from "./CustomSection";
 import { SecurityPermission } from "@webiny/app-security/types";
 import { PageBuilderSecurityPermission } from "~/types";
-import { useWcp } from "@webiny/app-serverless-cms";
+import { useWcp } from "@webiny/app-admin";
 import { Alert } from "@webiny/ui/Alert";
 
 const t = i18n.ns("app-page-builder/admin/plugins/permissionRenderer");
