@@ -31,6 +31,22 @@ const createHandleResponse = (app: FastifyInstance, resolve: Resolve): LightMyRe
     };
 };
 
+const getPayloadProperty = (
+    payload: any,
+    prop: string,
+    defaults: Record<string, any> = {}
+): Record<string, any> => {
+    if (typeof payload === "object") {
+        const value = payload[prop] ? payload[prop] : {};
+
+        return {
+            ...defaults,
+            ...value
+        };
+    }
+    return defaults;
+};
+
 export interface ExecuteParams {
     app: FastifyInstance;
     url: string;
@@ -40,15 +56,21 @@ export interface ExecuteParams {
 export const execute = (params: ExecuteParams): Promise<any> => {
     const { app, url, payload } = params;
 
+    const query = getPayloadProperty(payload, "query", {});
+    const headers = getPayloadProperty(payload, "headers", {
+        ["content-type"]: "application/json"
+    });
+    const cookies = getPayloadProperty(payload, "cookies", {});
+
     return new Promise(resolve => {
         app.inject(
             {
                 method: "POST",
                 url,
                 payload: payload || {},
-                query: payload?.query || {},
-                headers: payload?.headers || {},
-                cookies: payload?.cookies || {}
+                query,
+                headers,
+                cookies
             },
             createHandleResponse(app, resolve)
         );
