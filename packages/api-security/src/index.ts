@@ -1,5 +1,6 @@
 import { ContextPlugin } from "@webiny/handler";
 import { TenancyContext } from "@webiny/api-tenancy/types";
+import { WcpContext } from "@webiny/api-wcp/types";
 import {
     SecurityAuthenticationPlugin,
     SecurityAuthorizationPlugin,
@@ -24,13 +25,16 @@ export interface SecurityConfig extends MultiTenancyAppConfig {
     storageOperations: SecurityStorageOperations;
 }
 
-type Context = SecurityContext & TenancyContext;
+type Context = SecurityContext & TenancyContext & WcpContext;
 
 export const createSecurityContext = ({ storageOperations, ...config }: SecurityConfig) => {
     return new ContextPlugin<Context>(async context => {
         context.plugins.register(gqlInterfaces);
 
+        const advancedAccessControlLayer = context.wcp.canUseFeature("advancedAccessControlLayer");
+
         context.security = await createSecurity({
+            advancedAccessControlLayer,
             getTenant: () => {
                 const tenant = context.tenancy.getCurrentTenant();
                 return tenant ? tenant.id : undefined;

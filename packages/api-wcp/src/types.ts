@@ -1,10 +1,8 @@
 import { Context } from "@webiny/handler/types";
 import { DecryptedWcpProjectLicense, WcpProjectEnvironment } from "@webiny/wcp/types";
 import { WCP_FEATURE_LABEL } from "@webiny/wcp";
-import { SecurityContext } from "@webiny/api-security/types";
-import { TenancyContext } from "@webiny/api-tenancy/types";
 
-export interface WcpContext extends Context, SecurityContext, TenancyContext {
+export interface WcpContext extends Context {
     wcp: WcpContextObject;
 }
 

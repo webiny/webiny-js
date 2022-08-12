@@ -8,10 +8,8 @@ import { createSecurityContext } from "@webiny/api-security";
 import { customGroupAuthorizer } from "./mocks/customGroupAuthorizer";
 import { customAuthenticator } from "./mocks/customAuthenticator";
 import { triggerAuthentication } from "./mocks/triggerAuthentication";
-import { createTenancyContext } from "@webiny/api-tenancy";
 
 import { createStorageOperations as securityStorageOperations } from "@webiny/api-security-so-ddb";
-import { createStorageOperations as tenancyStorageOperations } from "@webiny/api-tenancy-so-ddb";
 
 import { WcpContext } from "~/types";
 import { HandlerPlugin } from "@webiny/handler";
@@ -32,13 +30,6 @@ const documentClient = new DocumentClient({
 export default (opts: UseTestHandlerParams = {}) => {
     const plugins: PluginCollection = [
         createWcpContext(),
-        createTenancyContext({
-            storageOperations: tenancyStorageOperations({
-                documentClient,
-                // @ts-ignore
-                table: table => ({ ...table, name: process.env.DB_TABLE })
-            })
-        }),
         createSecurityContext({
             storageOperations: securityStorageOperations({
                 documentClient,
@@ -60,7 +51,6 @@ export default (opts: UseTestHandlerParams = {}) => {
 
     const handler = createHandler({ plugins });
 
-    // Let's also create the "invoke" function. This will make handler invocations in actual tests easier and nicer.
     const invoke = async (): Promise<WcpContext> => {
         return handler({
             httpMethod: "POST",

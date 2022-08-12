@@ -23,6 +23,7 @@ export interface Authorizer {
 }
 
 export interface SecurityConfig {
+    advancedAccessControlLayer?: boolean,
     getTenant: GetTenant;
     storageOperations: SecurityStorageOperations;
 }

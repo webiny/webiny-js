@@ -5,6 +5,7 @@ import { createApiKeysMethods } from "~/createSecurity/createApiKeysMethods";
 import { createGroupsMethods } from "~/createSecurity/createGroupsMethods";
 import { createSystemMethods } from "~/createSecurity/createSystemMethods";
 import { createTenantLinksMethods } from "~/createSecurity/createTenantLinksMethods";
+import { filterOutCustomWbyAppsPermissions } from "~/createSecurity/filterOutCustomWbyAppsPermissions";
 import { createTopic } from "@webiny/pubsub";
 
 export interface GetTenant {
@@ -109,7 +110,30 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
         },
 
         async getPermissions(this: Security): Promise<SecurityPermission[]> {
-            return await loadPermissions(this);
+            const permissions = await loadPermissions(this);
+
+            // Now we start checking whether we want to return all permissions, or we
+            // need to omit the custom ones because of the one of the following reasons.
+
+            // 1. Are we dealing with an old Webiny project?
+            const securitySystemRecord = await this.getStorageOperations().getSystemData({
+                tenant: "root"
+            });
+
+            // Older versions of Webiny do not have the `createdOn` value stored. So,
+            // if missing, we don't want to make any changes to the existing behavior.
+            if (!securitySystemRecord || !securitySystemRecord.createdOn) {
+                return permissions;
+            }
+
+            // 2. If Advanced Access Control Layer (AACL) can be used, again, no need to do anything.
+            if (config.advancedAccessControlLayer === true) {
+                return permissions;
+            }
+
+            // 3. If Advanced Access Control Layer (AACL) cannot be used,
+            // we omit all of the Webiny apps-related custom permissions.
+            return filterOutCustomWbyAppsPermissions(permissions);
         },
 
         async hasFullAccess(this: Security): Promise<boolean> {
