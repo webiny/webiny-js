@@ -14,6 +14,9 @@ export type WcpProjectPackage = {
         advancedPublishingWorkflow: {
             enabled: boolean;
         };
+        advancedAccessControlLayer: {
+            enabled: boolean;
+        };
     };
 };
 
