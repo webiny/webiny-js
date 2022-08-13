@@ -19,15 +19,19 @@ interface StoreFileParams {
 }
 const storeFile = (params: StoreFileParams) => {
     const { storageName, key, contentType, body } = params;
-    return s3
-        .putObject({
-            Bucket: storageName,
-            Key: key,
-            ContentType: contentType,
-            CacheControl: "max-age=30",
-            Body: body
-        })
-        .promise();
+    const object: S3.Types.PutObjectRequest = {
+        Bucket: storageName,
+        Key: key,
+        ContentType: contentType,
+        CacheControl: "max-age=30",
+        Body: body
+    };
+
+    if (process.env.WEBINY_IS_PRE_529) {
+        object.ACL = "public-read";
+    }
+
+    return s3.putObject(object).promise();
 };
 
 export interface RenderParams {

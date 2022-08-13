@@ -1,10 +1,16 @@
 const path = require("path");
+const fs = require("fs");
 const webpack = require("webpack");
 const WebpackBar = require("webpackbar");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
+const { cli } = require("@webiny/cli");
 
 const { version } = require("@webiny/project-utils/package.json");
 const { getOutput, getEntry } = require("./utils");
+
+const isPre529 = () => {
+    return fs.existsSync(cli.resolve("api"));
+};
 
 module.exports = options => {
     const output = getOutput(options);
@@ -46,6 +52,7 @@ module.exports = options => {
         },
         plugins: [
             new webpack.DefinePlugin({
+                "process.env.WEBINY_IS_PRE_529": JSON.stringify(isPre529()),
                 "process.env.WEBINY_VERSION": JSON.stringify(process.env.WEBINY_VERSION || version),
                 "process.env.WEBINY_ENABLE_VERSION_HEADER": JSON.stringify(
                     process.env.WEBINY_ENABLE_VERSION_HEADER || "false"
