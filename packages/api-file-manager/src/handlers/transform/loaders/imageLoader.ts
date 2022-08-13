@@ -26,6 +26,7 @@ const callImageTransformerLambda = async ({ key, transformations, context }: Tra
 interface File {
     extension: string;
     name: string;
+    contentLength: number;
 }
 interface Options {
     width?: string;
