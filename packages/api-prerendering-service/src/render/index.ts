@@ -27,7 +27,7 @@ const storeFile = (params: StoreFileParams) => {
         Body: body
     };
 
-    if (process.env.WEBINY_IS_PRE_529) {
+    if (process.env.WEBINY_IS_PRE_529 === "true") {
         object.ACL = "public-read";
     }
 

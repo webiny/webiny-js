@@ -12,7 +12,7 @@ declare namespace NodeJS {
         DB_TABLE_PAGE_BUILDER?: string;
         ELASTICSEARCH_SHARED_INDEXES?: "true" | "false" | string;
         WEBINY_VERSION?: string;
-        WEBINY_IS_PRE_529?: boolean;
+        WEBINY_IS_PRE_529?: "true" | "false";
         WEBINY_ENABLE_VERSION_HEADER?: "true" | "false" | string;
         WEBINY_LOGS_FORWARD_URL?: string;
         AWS_LAMBDA_FUNCTION_NAME?: string;

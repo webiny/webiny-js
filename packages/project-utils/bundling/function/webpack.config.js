@@ -52,7 +52,7 @@ module.exports = options => {
         },
         plugins: [
             new webpack.DefinePlugin({
-                "process.env.WEBINY_IS_PRE_529": JSON.stringify(isPre529()),
+                "process.env.WEBINY_IS_PRE_529": JSON.stringify(String(isPre529())),
                 "process.env.WEBINY_VERSION": JSON.stringify(process.env.WEBINY_VERSION || version),
                 "process.env.WEBINY_ENABLE_VERSION_HEADER": JSON.stringify(
                     process.env.WEBINY_ENABLE_VERSION_HEADER || "false"
