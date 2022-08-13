@@ -27,12 +27,8 @@ interface S3Object {
     params: ObjectParamsResponse;
 }
 
-const getS3Object = async (
-    event: DownloadHandlerEventArgs,
-    s3: S3,
-    context: Context
-): Promise<S3Object> => {
-    const { options, filename, extension } = extractFilenameOptions(event);
+const getS3Object = async (request: Request, s3: S3, context: Context): Promise<S3Object> => {
+    const { options, filename, extension } = extractFilenameOptions(request);
     const params = getObjectParams(filename);
     const objectHead = await s3.headObject(params).promise();
     const contentLength = objectHead.ContentLength ? objectHead.ContentLength : 0;
@@ -93,7 +89,7 @@ export const createDownloadFilePlugins = () => {
                         .send(object.Body || "");
                 }
 
-                const presignedUrl = await s3.getSignedUrlPromise("getObject", {
+                const presignedUrl = s3.getSignedUrl("getObject", {
                     Bucket: params.Bucket,
                     Key: params.Key,
                     Expires: PRESIGNED_URL_EXPIRATION
