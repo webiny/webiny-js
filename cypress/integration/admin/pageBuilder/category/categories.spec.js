@@ -401,14 +401,13 @@ context("Categories Module", () => {
         cy.get('[data-testid="pb-page-element"] blockquote').should('not.exist');
     });
 
-    it.only("should create basic flow of elements", () => {
+    it("should create basic flow of elements", () => {
         cy.visit("/page-builder/pages");
         cy.get('div.action__container button[data-testid="new-record-button"]').click();
         cy.get('[data-testid="pb-new-page-category-modal"] div.mdc-list-item:last-child').click();
         cy.findByTestId('pb-content-add-block-button').click();
         cy.findByTestId('pb-editor-page-blocks-list-item-grid-block').trigger('mouseover');
         cy.findByText('Click to Add').click({force: true});
-        
 
         // Add Heading element.
         cy.findByTestId('add-element').click();
@@ -470,7 +469,77 @@ context("Categories Module", () => {
         cy.get('div.webiny-ui-tabs span').contains('Select an element on the canvas to activate this panel.').should('be.visible');
 
         // Customize header element.
-        cy.get("h1").contains('Heading').dblclick();
+        cy.get("h1").contains('Heading').click({force: true})
+        cy.get('div.element-holder span').contains('heading').click({force: true});
         cy.findByText('Text').click();
+        cy.findByTestId("data-test-heading-type").select('H2');
+
+        // Align text to center.
+        cy.get('.accordion-content span.webiny-ui-tooltip.tooltip-content-wrapper:nth-child(2)').click();
+
+        // Focus the paragraph element.
+        cy.get('p[role="textbox"]').click({force: true})
+        cy.get('div.element-holder span').contains('paragraph').click({force: true});
+
+          cy.get('div > ul li span').should('exist');
+          cy.get('li > span').contains('paragraph').should('exist');
+          cy.get('div.element-holder span').contains('paragraph').should('be.visible');
+          cy.findByText('Text').should('be.visible');
+          cy.get('body').type('{esc}');
+          cy.get('div > ul li span').should('not.exist');
+          cy.get('div.webiny-ui-tabs span').contains('Select an element on the canvas to activate this panel.').should('be.visible');
+
+         // Customize paragraph element. 
+         cy.get('p[role="textbox"]').click({force: true})
+         cy.get('div.element-holder span').contains('paragraph').click({force: true});
+         cy.findByText('Text').click();
+         cy.get('.accordion-content span.webiny-ui-tooltip.tooltip-content-wrapper:nth-child(4)').click();
+
+         cy.findByTestId('data-test-typography').select('Description');
+
+         // Wait 1 second and refresh the page - assert that the changes still persist.
+         cy.wait(1000);
+         cy.reload();
+         cy.get('p[role="textbox"]').click({force: true})
+         cy.get('div.element-holder span').contains('paragraph').click({force: true});
+         cy.findByText('Text').click();
+         cy.contains('Description');
+
+         // Publish page.
+         cy.get("button > span").contains('Publish').click();
+         cy.get('[data-testid="pb-editor-publish-confirmation-dialog"] > div > div button').contains('Confirm').click();
+         cy.findByTestId('new-record-button').should('exist');
+
+         // Edit published page.
+         cy.findByTestId('pb-page-details-header-edit-revision').click();
+
+         // Delete paragraph element.
+         cy.get('p[role="textbox"]').click({force: true})
+         cy.get('div.element-holder span').contains('paragraph').click({force: true});
+         cy.get('body').type('{del}');
+
+         // Delete header element.
+         cy.get("h2").contains('Heading').click({force: true})
+         cy.get('div.element-holder span').contains('heading').click({force: true});
+         cy.get('body').type('{del}');
+
+         // Try to delete cell section.
+         cy.get('div.element-holder span').contains('cell').click({force: true});
+         cy.get('body').type('{del}');
+
+         // Delete block section
+         cy.get('div.element-holder span').contains('block').click({force: true});
+         cy.get('body').type('{del}');
+
+         cy.findByTestId('pb-content-add-block-button').should('be.visible');
+
+         // Publish changes.
+         cy.get("button > span").contains('Publish changes').click();
+         cy.get('[data-testid="pb-editor-publish-confirmation-dialog"] > div > div button').contains('Confirm').click();
+         cy.findByTestId('new-record-button').should('exist');
+
+
+         // Delete published page.
+         cy.findByTestId('pb-page-details-header-delete-button').click();
     });
 });
