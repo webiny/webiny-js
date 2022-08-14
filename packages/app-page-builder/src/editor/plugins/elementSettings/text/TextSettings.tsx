@@ -193,9 +193,9 @@ const TextSettings: React.FC<TextSettingsProps> = ({ defaultAccordionValue, opti
                         leftCellSpan={5}
                         rightCellSpan={7}
                     >
-                        <SelectField value={text.tag} onChange={updateTag}>
+                        <SelectField value={text.tag} onChange={updateTag} data-testid={"data-test-heading-type"}>
                             {options.tags.map(tag => (
-                                <option value={tag} key={tag}>
+                                <option value={tag} key={tag} data-testid={"data-test-heading-option"}>
                                     {tag.toUpperCase()}
                                 </option>
                             ))}
@@ -209,6 +209,7 @@ const TextSettings: React.FC<TextSettingsProps> = ({ defaultAccordionValue, opti
                     rightCellSpan={7}
                 >
                     <SelectField
+                        data-testid={"data-test-typography"}
                         value={text.typography}
                         onChange={updateTypography}
                         disabled={themeTypographyOptions.length === 0}
