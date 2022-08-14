@@ -1,3 +1,4 @@
+import { divide } from "lodash";
 import uniqid from "uniqid";
 
 context("Categories Module", () => {
@@ -290,7 +291,7 @@ context("Categories Module", () => {
         cy.findByText('Saved').should('not.be.visible');
     });
 
-    it.only("should ensure cloning page element works correctly", () => {
+    it("should ensure cloning page element works correctly", () => {
         cy.visit("/page-builder/pages");
         cy.get('div.action__container button[data-testid="new-record-button"]').click();
         cy.get('[data-testid="pb-new-page-category-modal"] div.mdc-list-item:last-child').click();
@@ -322,5 +323,154 @@ context("Categories Module", () => {
         cy.findByTestId('clone-element').click();
         cy.wait(1000);
         cy.get('div').find('[data-placeholder="Type your text"]').should('have.length', 2)
+    });
+
+    it("should ensure undo/redo works", () => {
+        cy.visit("/page-builder/pages");
+        cy.get('div.action__container button[data-testid="new-record-button"]').click();
+        cy.get('[data-testid="pb-new-page-category-modal"] div.mdc-list-item:last-child').click();
+        cy.findByTestId('pb-content-add-block-button').click();
+        cy.findByTestId('pb-editor-page-blocks-list-item-grid-block').trigger('mouseover');
+        cy.findByText('Click to Add').click({force: true});
+        cy.findByTestId('add-element').click();
+
+        const dataTransfer = new DataTransfer();
+        cy.findByTestId("pb-editor-add-element-button-paragraph", { force: true }).trigger(
+            "dragstart",
+            {
+                dataTransfer,
+                force: true
+            }
+        );
+        cy.wait(500);
+        cy.findByTestId("cell-container-add-icon")
+            .trigger("drop", {
+                dataTransfer,
+                force: true
+            })
+            .trigger("dragend", { dataTransfer, force: true });
+        cy.wait(2500);
+
+        // Add block quote element.
+        cy.findByTestId('add-element').click();
+        
+        const dataTransferElem = new DataTransfer();
+        cy.findByTestId("pb-editor-add-element-button-quote", { force: true }).trigger(
+            "dragstart",
+            {
+                dataTransferElem,
+                force: true
+            }
+        );
+        cy.wait(500);
+        
+        cy.findByTestId(/^drop-zone-below-.*/)
+            .trigger("drop", {
+                dataTransferElem,
+                force: true
+            })
+            .trigger("dragend", { dataTransferElem, force: true });
+        cy.wait(2500);
+
+        // Align text to center.
+        cy.findByText('Text').click();
+        cy.get('.accordion-content span.webiny-ui-tooltip.tooltip-content-wrapper:nth-child(2)').click();
+
+        // Change text color.
+        cy.findByTestId('text-color-picker').click();
+        cy.get('div[data-testid="text-color-picker-color-list"] div > div:nth-child(2)').click();
+
+        // Clone the element.
+        cy.findByTestId('element-data-test').click();
+        cy.findByTestId('clone-element').click();
+
+        // Use CTRL+Z keys combination.
+        for(let i=0;i<4;i++){
+            cy.get('body').type(
+                '{ctrl+z}'
+              );
+        }
+        cy.get('blockquote').contains('Block Quote').should('not.be.visible');
+        cy.get('body').type(
+            '{shift+ctrl+z}'
+        );
+        cy.get('[data-testid="pb-page-element"] blockquote').should('be.visible');
+
+        //Use physical 'Undo' button.
+        cy.get('#action-undo').click();
+        cy.get('[data-testid="pb-page-element"] blockquote').should('not.exist');
+    });
+
+    it.only("should create basic flow of elements", () => {
+        cy.visit("/page-builder/pages");
+        cy.get('div.action__container button[data-testid="new-record-button"]').click();
+        cy.get('[data-testid="pb-new-page-category-modal"] div.mdc-list-item:last-child').click();
+        cy.findByTestId('pb-content-add-block-button').click();
+        cy.findByTestId('pb-editor-page-blocks-list-item-grid-block').trigger('mouseover');
+        cy.findByText('Click to Add').click({force: true});
+        
+
+        // Add Heading element.
+        cy.findByTestId('add-element').click();
+        
+        const dataTransferElem = new DataTransfer();
+        cy.findByTestId("pb-editor-add-element-button-heading", { force: true }).trigger(
+            "dragstart",
+            {
+                dataTransferElem,
+                force: true
+            }
+        );
+        cy.wait(500);
+        
+        cy.findByTestId("cell-container-add-icon")
+            .trigger("drop", {
+                dataTransferElem,
+                force: true
+            })
+            .trigger("dragend", { dataTransferElem, force: true });
+        cy.wait(2500);
+
+        // Add paragraph element.
+        cy.findByTestId('add-element').click();
+
+        const dataTransfer = new DataTransfer();
+        cy.findByTestId("pb-editor-add-element-button-paragraph", { force: true }).trigger(
+            "dragstart",
+            {
+                dataTransfer,
+                force: true
+            }
+        );
+        cy.wait(500);
+        
+        cy.findByTestId(/^drop-zone-below-.*/)
+            .trigger("drop", {
+                dataTransfer,
+                force: true
+            })
+            .trigger("dragend", { dataTransfer, force: true });
+        cy.wait(2500);
+
+        // Focus on the Heading element.
+        cy.get("h1").contains('Heading').dblclick();
+        
+        // Assert breadcrumbs are visible.
+        cy.get('div > ul li span').should('exist');
+        cy.get('li > span').contains('heading').should('exist');
+
+        // Assert heading is visible in top-right corner.
+        cy.get('div.element-holder span').contains('heading').should('be.visible');
+
+        // Assert toolbar is displayed.
+        cy.findByText('Text').should('be.visible');
+
+        cy.get('body').type('{esc}');
+        cy.get('div > ul li span').should('not.exist');
+        cy.get('div.webiny-ui-tabs span').contains('Select an element on the canvas to activate this panel.').should('be.visible');
+
+        // Customize header element.
+        cy.get("h1").contains('Heading').dblclick();
+        cy.findByText('Text').click();
     });
 });
