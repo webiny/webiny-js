@@ -104,6 +104,14 @@ export class Pulumi {
         set(args.execa, "env.PULUMI_SKIP_UPDATE_CHECK", "true");
         set(args.execa, "env.PULUMI_HOME", this.pulumiFolder);
 
+        if (os.arch() === "arm64") {
+            /**
+             * This variable is an attempt to resolve this issue:
+             * https://yaleman.org/post/2021/2021-01-01-apple-m1-terraform-and-golang/
+             */
+            set(args.execa, "env.GODEBUG", "asyncpreemptoff=1");
+        }
+
         // Use ";" when on Windows. For Mac and Linux, use ":".
         const PATH_SEPARATOR = os.platform() === "win32" ? ";" : ":";
 
