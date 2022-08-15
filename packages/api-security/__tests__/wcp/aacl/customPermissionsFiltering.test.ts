@@ -1,4 +1,4 @@
-import { filterOutCustomWbyAppsPermissions } from "~/utils";
+import { filterOutCustomWbyAppsPermissions } from "~/createSecurity/filterOutCustomWbyAppsPermissions";
 import { customPermissions } from "./mocks/customPermissions";
 
 describe("Custom permissions filtering test", () => {
@@ -14,7 +14,8 @@ describe("Custom permissions filtering test", () => {
             { name: "security.*" },
             { name: "adminUsers.*" },
             { name: "i18n.*" },
-            { name: "*" }
+            { name: "*" },
+            { aacl: null, name: "wcp" }
         ]);
     });
 });

@@ -27,7 +27,16 @@ import useTestHandler from "./useTestHandler";
 
 describe(`Custom permissions (no WCP access) test`, () => {
     test("should not be able to use custom permissions if the license doesn't permit it", async () => {
-        const { invoke } = useTestHandler();
+        const { invoke } = useTestHandler({
+            overrideStorageOperations: storageOperations => {
+                storageOperations.getSystemData = () => {
+                    return {
+                        installedOn: "3000-01-01T00:00:00.000Z"
+                    };
+                };
+            }
+        });
+
         const context = await invoke();
         expect(await context.security.getPermissions()).toEqual([
             { something: "custom" },
@@ -41,7 +50,8 @@ describe(`Custom permissions (no WCP access) test`, () => {
             { name: "security.*" },
             { name: "adminUsers.*" },
             { name: "i18n.*" },
-            { name: "*" }
+            { name: "*" },
+            { name: "wcp", aacl: false }
         ]);
     });
 });

@@ -3,17 +3,20 @@ const { DocumentClient } = require("aws-sdk/clients/dynamodb");
 import { createHandler } from "@webiny/handler-aws";
 import { PluginCollection } from "@webiny/plugins/types";
 import { authenticateUsingHttpHeader } from "@webiny/api-security/plugins/authenticateUsingHttpHeader";
-import { createSecurityContext } from "@webiny/api-security";
+import { createSecurityContext } from "@webiny/api-security/index";
+import { SecurityContext } from "@webiny/api-security/types";
 
 import { customGroupAuthorizer } from "./mocks/customGroupAuthorizer";
 import { customAuthenticator } from "./mocks/customAuthenticator";
 import { triggerAuthentication } from "./mocks/triggerAuthentication";
+import { createTenancyContext } from "@webiny/api-tenancy";
+import { createStorageOperations as tenancyStorageOperations } from "@webiny/api-tenancy-so-ddb";
 
-import { WcpContext } from "@webiny/api-wcp/types";
 import { HandlerPlugin } from "@webiny/handler";
 
 type UseTestHandlerParams = {
     plugins?: PluginCollection;
+    overrideStorageOperations: (storageOperations: Record<string, any>) => void;
 };
 
 const documentClient = new DocumentClient({
@@ -32,9 +35,19 @@ export default (opts: UseTestHandlerParams = {}) => {
     }
     // @ts-ignore
     const { storageOperations } = __getStorageOperations();
+    if (opts.overrideStorageOperations) {
+        opts.overrideStorageOperations(storageOperations);
+    }
 
     const plugins: PluginCollection = [
         createWcpContext(),
+        // TODO: tenancy storage operations need to be loaded dynamically, but for now this will do since we only have DDB storage for this app.
+        createTenancyContext({
+            storageOperations: tenancyStorageOperations({
+                documentClient,
+                table: table => ({ ...table, name: process.env.DB_TABLE })
+            })
+        }),
         createSecurityContext({ storageOperations }),
         authenticateUsingHttpHeader(),
         triggerAuthentication(),
@@ -51,12 +64,12 @@ export default (opts: UseTestHandlerParams = {}) => {
 
     const handler = createHandler({ plugins });
 
-    const invoke = async (): Promise<WcpContext> => {
+    const invoke = async (): Promise<SecurityContext> => {
         return handler({
             httpMethod: "POST",
             headers: { "x-tenant": "root" },
             body: ""
-        }) as WcpContext;
+        }) as SecurityContext;
     };
 
     return {

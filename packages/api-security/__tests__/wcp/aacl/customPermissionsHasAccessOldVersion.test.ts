@@ -19,6 +19,11 @@ describe(`Custom permissions test (no WCP access but we're dealing with an old p
 
         // This is now an old project and AACL should work as usual.
         const context = await invoke();
-        expect(await context.security.getPermissions()).toEqual(customPermissions);
+        expect(await context.security.getPermissions()).toEqual([
+            ...customPermissions,
+
+            // `aacl: null` means we're dealing with an old, non-WCP, Webiny project.
+            { name: "wcp", aacl: null }
+        ]);
     });
 });

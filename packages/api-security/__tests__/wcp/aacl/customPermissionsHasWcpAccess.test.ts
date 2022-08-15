@@ -33,6 +33,10 @@ describe(`Custom permissions (has WCP access) test`, () => {
     test("should be able to use custom permissions if the license permits it", async () => {
         const { invoke } = useTestHandler();
         const context = await invoke();
-        expect(await context.security.getPermissions()).toEqual(customPermissions);
+
+        expect(await context.security.getPermissions()).toEqual([
+            ...customPermissions,
+            { name: "wcp", aacl: true }
+        ]);
     });
 });
