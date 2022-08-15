@@ -7,7 +7,11 @@ import ContentModelGroupPermission from "./components/ContentModelGroupPermissio
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 import { i18n } from "@webiny/app/i18n";
-import { PermissionInfo, gridNoPaddingClass } from "@webiny/app-admin/components/Permissions";
+import {
+    CannotUseAaclAlert,
+    PermissionInfo,
+    gridNoPaddingClass
+} from "@webiny/app-admin/components/Permissions";
 import { Form } from "@webiny/form";
 import { ContentModelPermission } from "./components/ContentModelPermission";
 import { ContentEntryPermission } from "./components/ContentEntryPermission";
@@ -15,6 +19,8 @@ import { Checkbox, CheckboxGroup } from "@webiny/ui/Checkbox";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { Link } from "@webiny/react-router";
 import { CmsSecurityPermission } from "~/types";
+import { useSecurity } from "@webiny/app-security";
+import { WcpPermission } from "@webiny/app-admin";
 
 const t = i18n.ns("app-headless-cms/admin/plugins/permissionRenderer");
 
@@ -38,6 +44,14 @@ export interface CMSPermissionsProps {
     onChange: (value: CmsSecurityPermission[]) => void;
 }
 export const CMSPermissions: React.FC<CMSPermissionsProps> = ({ value, onChange }) => {
+    const { getPermission } = useSecurity();
+
+    // We disable form elements for custom permissions if AACL cannot be used.
+    const cannotUseAAcl = useMemo(() => {
+        const wcpPermissions = getPermission<WcpPermission>("wcp");
+        return wcpPermissions?.aacl === false;
+    }, []);
+
     const { getLocales } = useI18N();
 
     const canRead = useCallback((value: any[], permissionName: string) => {
@@ -268,6 +282,14 @@ export const CMSPermissions: React.FC<CMSPermissionsProps> = ({ value, onChange 
                 return (
                     <Fragment>
                         <Grid className={gridNoPaddingClass}>
+                            <Cell span={12}>
+                                {data.accessLevel === "custom" && cannotUseAAcl && (
+                                    <CannotUseAaclAlert />
+                                )}
+                            </Cell>
+                        </Grid>
+
+                        <Grid className={gridNoPaddingClass}>
                             <Cell span={6}>
                                 <PermissionInfo title={t`Access Level`} />
                             </Cell>
@@ -307,6 +329,7 @@ export const CMSPermissions: React.FC<CMSPermissionsProps> = ({ value, onChange 
                                                             label={name}
                                                             value={getValue(id)}
                                                             onChange={onChange(id)}
+                                                            disabled={cannotUseAAcl}
                                                         />
                                                     ))
                                                 }
@@ -318,6 +341,7 @@ export const CMSPermissions: React.FC<CMSPermissionsProps> = ({ value, onChange 
                                     <ContentModelGroupPermission
                                         data={data}
                                         Bind={Bind}
+                                        disabled={cannotUseAAcl}
                                         entity={"contentModelGroup"}
                                         title={"Content Model Groups"}
                                         locales={locales}
@@ -331,6 +355,7 @@ export const CMSPermissions: React.FC<CMSPermissionsProps> = ({ value, onChange 
                                             data={data}
                                             setValue={setValue}
                                             Bind={Bind}
+                                            disabled={cannotUseAAcl}
                                             entity={"contentModel"}
                                             title={"Content Models"}
                                             selectedContentModelGroups={getSelectedContentModelGroups(
@@ -343,6 +368,7 @@ export const CMSPermissions: React.FC<CMSPermissionsProps> = ({ value, onChange 
                                     <ContentEntryPermission
                                         data={data}
                                         Bind={Bind}
+                                        disabled={cannotUseAAcl}
                                         setValue={setValue}
                                         entity={"contentEntry"}
                                         title={"Content Entries"}

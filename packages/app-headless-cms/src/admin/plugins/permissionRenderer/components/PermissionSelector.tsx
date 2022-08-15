@@ -17,6 +17,7 @@ interface RenderItemsProps {
     onChange: OnChangeCallable;
     getValue: GetValueCallable;
     items: PermissionSelectorCmsModel[] | PermissionSelectorCmsGroup[];
+    disabled?: boolean;
 }
 
 export interface PermissionSelectorProps {
@@ -26,14 +27,26 @@ export interface PermissionSelectorProps {
     entity: string;
     getItems: (code: string) => PermissionSelectorCmsModel[] | PermissionSelectorCmsGroup[];
     RenderItems?: React.FC<RenderItemsProps>;
+    disabled?: boolean;
 }
 
-const DefaultRenderItems: React.FC<RenderItemsProps> = ({ items, getValue, onChange }) => {
+const DefaultRenderItems: React.FC<RenderItemsProps> = ({
+    items,
+    getValue,
+    onChange,
+    disabled
+}) => {
     return (
         <React.Fragment>
             {items.map(({ id, label }) => (
                 <div key={id}>
-                    <Checkbox key={id} label={label} value={getValue(id)} onChange={onChange(id)} />
+                    <Checkbox
+                        key={id}
+                        label={label}
+                        value={getValue(id)}
+                        onChange={onChange(id)}
+                        disabled={disabled}
+                    />
                 </div>
             ))}
         </React.Fragment>
@@ -46,7 +59,8 @@ export const PermissionSelector: React.FC<PermissionSelectorProps> = ({
     locales,
     selectorKey,
     getItems,
-    RenderItems = DefaultRenderItems
+    RenderItems = DefaultRenderItems,
+    disabled
 }) => {
     const description = t`Select the {selectorKey} user will be allowed to access.`({
         selectorKey
@@ -74,6 +88,7 @@ export const PermissionSelector: React.FC<PermissionSelectorProps> = ({
                             {({ onChange, getValue }) => {
                                 return (
                                     <RenderItems
+                                        disabled={disabled}
                                         items={items}
                                         onChange={onChange}
                                         getValue={getValue}

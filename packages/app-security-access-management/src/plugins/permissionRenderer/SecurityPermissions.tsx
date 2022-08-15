@@ -2,11 +2,17 @@ import React, { Fragment, useCallback, useMemo } from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 import { i18n } from "@webiny/app/i18n";
-import { PermissionInfo, gridNoPaddingClass } from "@webiny/app-admin/components/Permissions";
+import {
+    CannotUseAaclAlert,
+    PermissionInfo,
+    gridNoPaddingClass
+} from "@webiny/app-admin/components/Permissions";
 import { Form } from "@webiny/form";
 import { Elevation } from "@webiny/ui/Elevation";
 import { Typography } from "@webiny/ui/Typography";
 import { SecurityPermission } from "@webiny/app-security/types";
+import { useSecurity } from "@webiny/app-security";
+import { WcpPermission } from "@webiny/app-admin";
 
 const t = i18n.ns("app-security-admin-users/plugins/permissionRenderer");
 
@@ -23,6 +29,14 @@ interface SecurityPermissionsProps {
     onChange: (value: SecurityPermission[]) => void;
 }
 export const SecurityPermissions: React.FC<SecurityPermissionsProps> = ({ value, onChange }) => {
+    const { getPermission } = useSecurity();
+
+    // We disable form elements for custom permissions if AACL cannot be used.
+    const cannotUseAAcl = useMemo(() => {
+        const wcpPermissions = getPermission<WcpPermission>("wcp");
+        return wcpPermissions?.aacl === false;
+    }, []);
+
     const onFormChange = useCallback(
         data => {
             let newValue: SecurityPermission[] = [];
@@ -96,12 +110,19 @@ export const SecurityPermissions: React.FC<SecurityPermissionsProps> = ({ value,
                 return (
                     <Fragment>
                         <Grid className={gridNoPaddingClass}>
+                            <Cell span={12}>
+                                {data.accessLevel === "custom" && cannotUseAAcl && (
+                                    <CannotUseAaclAlert />
+                                )}
+                            </Cell>
+                        </Grid>
+                        <Grid className={gridNoPaddingClass}>
                             <Cell span={6}>
                                 <PermissionInfo title={t`Access Level`} />
                             </Cell>
                             <Cell span={6}>
                                 <Bind name={"accessLevel"}>
-                                    <Select label={t`Access Level`}>
+                                    <Select label={t`Access Level`} disabled={cannotUseAAcl}>
                                         <option value={NO_ACCESS}>{t`No access`}</option>
                                         <option value={FULL_ACCESS}>{t`Full access`}</option>
                                         <option value={CUSTOM_ACCESS}>{t`Custom access`}</option>
@@ -118,7 +139,7 @@ export const SecurityPermissions: React.FC<SecurityPermissionsProps> = ({ value,
                                         </Cell>
                                         <Cell span={12}>
                                             <Bind name={"apiKeyAccessScope"}>
-                                                <Select label={t`Access Scope`}>
+                                                <Select label={t`Access Scope`} disabled={cannotUseAAcl}>
                                                     <option
                                                         value={NO_ACCESS}
                                                     >{t`No access`}</option>
@@ -137,7 +158,7 @@ export const SecurityPermissions: React.FC<SecurityPermissionsProps> = ({ value,
                                         </Cell>
                                         <Cell span={12}>
                                             <Bind name={"groupAccessScope"}>
-                                                <Select label={t`Access Scope`}>
+                                                <Select label={t`Access Scope`} disabled={cannotUseAAcl}>
                                                     <option
                                                         value={NO_ACCESS}
                                                     >{t`No access`}</option>

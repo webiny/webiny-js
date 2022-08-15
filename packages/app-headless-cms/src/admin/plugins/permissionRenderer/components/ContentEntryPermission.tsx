@@ -29,13 +29,15 @@ interface ContentEntryPermissionProps {
     entity: string;
     setValue: (name: string, value: string) => void;
     title: string;
+    disabled?: boolean;
 }
 export const ContentEntryPermission: React.FC<ContentEntryPermissionProps> = ({
     Bind,
     data,
     entity,
     setValue,
-    title
+    title,
+    disabled
 }) => {
     // Set "cms.contentEntry" access scope to "own" if "cms.contentModel" === "own".
     useEffect(() => {
@@ -74,7 +76,7 @@ export const ContentEntryPermission: React.FC<ContentEntryPermissionProps> = ({
                             >
                                 <Select
                                     label={t`Access Scope`}
-                                    disabled={data[`contentModelAccessScope`] === "own"}
+                                    disabled={disabled || data[`contentModelAccessScope`] === "own"}
                                 >
                                     <option value={"full"}>{t`All entries`}</option>
                                     {(endpoints.includes("manage") && (
@@ -99,7 +101,7 @@ export const ContentEntryPermission: React.FC<ContentEntryPermissionProps> = ({
                             <Bind name={`${entity}RWD`}>
                                 <Select
                                     label={t`Primary Actions`}
-                                    disabled={disabledPrimaryActions}
+                                    disabled={disabled || disabledPrimaryActions}
                                 >
                                     <option value={"r"}>{t`Read`}</option>
                                     {endpoints.includes("manage") ? (
@@ -125,7 +127,7 @@ export const ContentEntryPermission: React.FC<ContentEntryPermissionProps> = ({
                                         {({ getValue, onChange }) =>
                                             pwOptions.map(({ id, name }) => (
                                                 <Checkbox
-                                                    disabled={[undefined, "no"].includes(
+                                                    disabled={disabled || [undefined, "no"].includes(
                                                         data[`${entity}AccessScope`]
                                                     )}
                                                     key={id}

@@ -22,6 +22,7 @@ interface ContentModelPermissionProps {
     title: string;
     locales: string[];
     selectedContentModelGroups?: Record<string, string[]>;
+    disabled?: boolean
 }
 export const ContentModelPermission: React.FC<ContentModelPermissionProps> = ({
     Bind,
@@ -30,7 +31,8 @@ export const ContentModelPermission: React.FC<ContentModelPermissionProps> = ({
     entity,
     title,
     locales,
-    selectedContentModelGroups = {}
+    selectedContentModelGroups = {},
+    disabled
 }) => {
     const modelsGroups = useCmsData(locales);
     // Set "cms.contentModel" access scope to "own" if "cms.contentModelGroup" === "own".
@@ -76,7 +78,7 @@ export const ContentModelPermission: React.FC<ContentModelPermissionProps> = ({
                             <Bind name={`${entity}AccessScope`} defaultValue={"full"}>
                                 <Select
                                     label={t`Access Scope`}
-                                    disabled={data[`contentModelGroupAccessScope`] === "own"}
+                                    disabled={disabled || data[`contentModelGroupAccessScope`] === "own"}
                                     description={t`The list of available models is defined by the options set in the content model groups section above.`}
                                 >
                                     <option value={"full"}>{t`All models`}</option>
@@ -101,6 +103,7 @@ export const ContentModelPermission: React.FC<ContentModelPermissionProps> = ({
                         {data[`${entity}AccessScope`] === "models" && (
                             <PermissionSelectorWrapper>
                                 <PermissionSelector
+                                    disabled={disabled}
                                     locales={locales}
                                     Bind={Bind}
                                     entity={entity}
@@ -115,7 +118,7 @@ export const ContentModelPermission: React.FC<ContentModelPermissionProps> = ({
                             <Bind name={`${entity}RWD`}>
                                 <Select
                                     label={t`Primary Actions`}
-                                    disabled={disabledPrimaryActions}
+                                    disabled={disabled || disabledPrimaryActions}
                                 >
                                     <option value={"r"}>{t`Read`}</option>
                                     {endpoints.includes("manage") ? (

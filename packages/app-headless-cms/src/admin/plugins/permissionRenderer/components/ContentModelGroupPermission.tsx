@@ -17,13 +17,15 @@ interface ContentModelGroupPermissionProps {
     entity: string;
     title: string;
     locales: string[];
+    disabled?: boolean;
 }
 const ContentModelGroupPermission: React.FC<ContentModelGroupPermissionProps> = ({
     Bind,
     data,
     entity,
     title,
-    locales
+    locales,
+    disabled
 }) => {
     const modelsGroups = useCmsData(locales);
 
@@ -50,7 +52,7 @@ const ContentModelGroupPermission: React.FC<ContentModelGroupPermissionProps> = 
                     <Grid style={{ padding: 0, paddingBottom: 24 }}>
                         <Cell span={12}>
                             <Bind name={`${entity}AccessScope`} defaultValue={"full"}>
-                                <Select label={t`Access Scope`}>
+                                <Select label={t`Access Scope`} disabled={disabled}>
                                     <option value={"full"}>{t`All groups`}</option>
                                     <option value={"groups"}>{t`Only specific groups`}</option>
                                     {(endpoints.includes("manage") && (
@@ -64,6 +66,7 @@ const ContentModelGroupPermission: React.FC<ContentModelGroupPermissionProps> = 
                         {data[`${entity}AccessScope`] === "groups" && (
                             <PermissionSelectorWrapper>
                                 <PermissionSelector
+                                    disabled={disabled}
                                     locales={locales}
                                     Bind={Bind}
                                     entity={entity}
@@ -76,7 +79,7 @@ const ContentModelGroupPermission: React.FC<ContentModelGroupPermissionProps> = 
                             <Bind name={`${entity}RWD`}>
                                 <Select
                                     label={t`Primary Actions`}
-                                    disabled={disabledPrimaryActions}
+                                    disabled={disabled || disabledPrimaryActions}
                                 >
                                     <option value={"r"}>{t`Read`}</option>
                                     {endpoints.includes("manage") ? (

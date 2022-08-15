@@ -2,10 +2,16 @@ import React, { Fragment, useCallback, useMemo } from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 import { i18n } from "@webiny/app/i18n";
-import { PermissionInfo, gridNoPaddingClass } from "@webiny/app-admin/components/Permissions";
+import {
+    CannotUseAaclAlert,
+    PermissionInfo,
+    gridNoPaddingClass
+} from "@webiny/app-admin/components/Permissions";
 import { Form } from "@webiny/form";
 import { Elevation } from "@webiny/ui/Elevation";
 import { Typography } from "@webiny/ui/Typography";
+import { useSecurity } from "@webiny/app-security";
+import { WcpPermission } from "@webiny/app-admin";
 
 const t = i18n.ns("app-file-manager/admin/plugins/permissionRenderer");
 
@@ -39,6 +45,14 @@ export const FileManagerPermissions: React.FC<FileManagerPermissionsProps> = ({
     value,
     onChange
 }) => {
+    const { getPermission } = useSecurity();
+
+    // We disable form elements for custom permissions if AACL cannot be used.
+    const cannotUseAAcl = useMemo(() => {
+        const wcpPermissions = getPermission<WcpPermission>("wcp");
+        return wcpPermissions?.aacl === false;
+    }, []);
+
     const onFormChange = useCallback(
         (data: FileManagerPermissionItem) => {
             let newValue: FileManagerPermissionItem[] = [];
@@ -136,6 +150,13 @@ export const FileManagerPermissions: React.FC<FileManagerPermissionsProps> = ({
             {({ data, Bind, setValue }) => (
                 <Fragment>
                     <Grid className={gridNoPaddingClass}>
+                        <Cell span={12}>
+                            {data.accessLevel === "custom" && cannotUseAAcl && (
+                                <CannotUseAaclAlert />
+                            )}
+                        </Cell>
+                    </Grid>
+                    <Grid className={gridNoPaddingClass}>
                         <Cell span={6}>
                             <PermissionInfo title={t`Access Level`} />
                         </Cell>
@@ -168,7 +189,10 @@ export const FileManagerPermissions: React.FC<FileManagerPermissionsProps> = ({
                                                         cb(value);
                                                     }}
                                                 >
-                                                    <Select label={t`Access Scope`}>
+                                                    <Select
+                                                        label={t`Access Scope`}
+                                                        disabled={cannotUseAAcl}
+                                                    >
                                                         <option
                                                             value={NO_ACCESS}
                                                         >{t`No access`}</option>
@@ -185,7 +209,10 @@ export const FileManagerPermissions: React.FC<FileManagerPermissionsProps> = ({
                                                 <Bind name={"filesRWD"}>
                                                     <Select
                                                         label={t`Primary Actions`}
-                                                        disabled={data.filesAccessScope !== "full"}
+                                                        disabled={
+                                                            cannotUseAAcl ||
+                                                            data.filesAccessScope !== "full"
+                                                        }
                                                     >
                                                         <option value={"r"}>{t`Read`}</option>
                                                         <option
@@ -208,7 +235,10 @@ export const FileManagerPermissions: React.FC<FileManagerPermissionsProps> = ({
                                     </Cell>
                                     <Cell span={12}>
                                         <Bind name={"settingsAccessScope"}>
-                                            <Select label={t`Access Scope`}>
+                                            <Select
+                                                disabled={cannotUseAAcl}
+                                                label={t`Access Scope`}
+                                            >
                                                 <option value={NO_ACCESS}>{t`No access`}</option>
                                                 <option
                                                     value={FULL_ACCESS}

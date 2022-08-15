@@ -2,16 +2,20 @@ import React, { Fragment, useCallback, useMemo } from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 import { i18n } from "@webiny/app/i18n";
-import { PermissionInfo, gridNoPaddingClass } from "@webiny/app-admin/components/Permissions";
+import {
+    CannotUseAaclAlert,
+    PermissionInfo,
+    gridNoPaddingClass
+} from "@webiny/app-admin/components/Permissions";
 import { Form } from "@webiny/form";
 import { Elevation } from "@webiny/ui/Elevation";
 import { Typography } from "@webiny/ui/Typography";
 import { Checkbox, CheckboxGroup } from "@webiny/ui/Checkbox";
 import CustomSection from "./CustomSection";
+import { useSecurity } from "@webiny/app-security";
 import { SecurityPermission } from "@webiny/app-security/types";
 import { PageBuilderSecurityPermission } from "~/types";
-import { useWcp } from "@webiny/app-admin";
-import { Alert } from "@webiny/ui/Alert";
+import { WcpPermission } from "@webiny/app-admin";
 
 const t = i18n.ns("app-page-builder/admin/plugins/permissionRenderer");
 
@@ -42,8 +46,13 @@ export const PageBuilderPermissions: React.FC<PageBuilderPermissionsProps> = ({
     value,
     onChange
 }) => {
-    const { canUseFeature } = useWcp();
-    const cannotUseAAcl = !canUseFeature("advancedAccessControlLayer");
+    const { getPermission } = useSecurity();
+
+    // We disable form elements for custom permissions if AACL cannot be used.
+    const cannotUseAAcl = useMemo(() => {
+        const wcpPermissions = getPermission<WcpPermission>("wcp");
+        return wcpPermissions?.aacl === false;
+    }, []);
 
     const onFormChange = useCallback(
         formData => {
@@ -173,23 +182,7 @@ export const PageBuilderPermissions: React.FC<PageBuilderPermissionsProps> = ({
                     <Grid className={gridNoPaddingClass}>
                         <Cell span={12}>
                             {data.accessLevel === "custom" && cannotUseAAcl && (
-                                <Alert
-                                    title={t`Advanced Access Control Layer (AACL) not activated`}
-                                    type={"danger"}
-                                >
-                                    <strong>Custom access</strong> option cannot be used because the
-                                    Advanced Access Control Layer (AACL) is not activated. <br />
-                                    <br />
-                                    To learn more, please visit the official&nbsp;
-                                    <a
-                                        href={
-                                            "https://docs-webiny-com-git-wcp-guides-webiny.vercel.app/docs/wcp/overview"
-                                        }
-                                    >
-                                        documentation
-                                    </a>
-                                    .
-                                </Alert>
+                                <CannotUseAaclAlert />
                             )}
                         </Cell>
                     </Grid>
