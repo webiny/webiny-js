@@ -5,6 +5,7 @@ import commitWorkflows from "~/githubActions/commitWorkflows";
 import fetchAllRepositories from "~/githubActions/fetchAllRepositories";
 import validateNpmPackageName from "validate-npm-package-name";
 import open from "open";
+import { validation } from "@webiny/validation";
 
 type Await<T> = T extends PromiseLike<infer U> ? U : T;
 
@@ -20,6 +21,7 @@ export interface GithubActionsInput {
         name: string;
         owner: string;
     };
+    userEmail: "";
 }
 
 let octokit: Octokit;
@@ -81,6 +83,15 @@ const plugin: CliPluginsScaffoldCi<GithubActionsInput> = {
 
                     return true;
                 }
+            },
+            {
+                name: "userEmail",
+                message:
+                    "Please enter your e-mail address (will be used ONLY upon making git commits): ",
+                required: true,
+                when: () => !user.email,
+                type: "input",
+                validate: async answer => validation.validate(answer, "email")
             },
             {
                 name: "newOrExistingRepo",
@@ -189,7 +200,7 @@ const plugin: CliPluginsScaffoldCi<GithubActionsInput> = {
         }
 
         console.log(
-            `- push GitHub actions workflow files (located in ${chalk.green(".github/workflows")})`
+            `- push GitHub Actions workflow files (located in ${chalk.green(".github/workflows")})`
         );
         console.log(
             `- create protected ${chalk.green("dev")}, ${chalk.green("staging")}, and ${chalk.green(
@@ -198,12 +209,6 @@ const plugin: CliPluginsScaffoldCi<GithubActionsInput> = {
         );
 
         console.log(`- set ${chalk.green("dev")} as the default branch`);
-
-        console.log(
-            `- create ${chalk.green("pr")}, ${chalk.green("dev")}, ${chalk.green(
-                "staging"
-            )}, and ${chalk.green("prod")} code repository environments`
-        );
 
         const { proceed } = await prompt({
             name: "proceed",
@@ -218,7 +223,7 @@ const plugin: CliPluginsScaffoldCi<GithubActionsInput> = {
         console.log();
     },
     generate: async ({ input, ora }) => {
-        const { newRepoName, newRepoOrgName, existingRepo, newRepoPrivacyType } = input;
+        const { newRepoName, newRepoOrgName, existingRepo, newRepoPrivacyType, userEmail } = input;
 
         // 1. Create a new repo or get existing.
         if (newRepoName) {
@@ -268,7 +273,7 @@ const plugin: CliPluginsScaffoldCi<GithubActionsInput> = {
                 branch: repo.default_branch,
                 author: {
                     name: user.name as string,
-                    email: user.email as string
+                    email: userEmail || (user.email as string)
                 }
             });
 
@@ -282,6 +287,9 @@ const plugin: CliPluginsScaffoldCi<GithubActionsInput> = {
                 symbol: chalk.red("✘"),
                 text: `Creation of GitHub Actions workflows failed with the following message: ${e.message}`
             });
+
+            console.log(chalk.red("✘") + " Cannot continue, exiting...");
+            process.exit();
         }
 
         // 3. Create protected (long-lived) branches.
@@ -384,46 +392,6 @@ const plugin: CliPluginsScaffoldCi<GithubActionsInput> = {
                 text: `Setting ${chalk.green(
                     "dev"
                 )} as the default branch failed with the following message: ${e.message}`
-            });
-        }
-
-        // 6. Create code repository environments
-
-        ora.start(
-            `Creating ${chalk.green("pr")}, ${chalk.green("dev")}, ${chalk.green(
-                "staging"
-            )}, and ${chalk.green("prod")} code repository environments...`
-        );
-
-        const REPOSITORY_ENVIRONMENTS = ["pr", ...LONG_LIVED_BRANCHES];
-
-        try {
-            for (let i = 0; i < REPOSITORY_ENVIRONMENTS.length; i++) {
-                const env = REPOSITORY_ENVIRONMENTS[i];
-                await octokit.rest.repos.createOrUpdateEnvironment({
-                    owner: repo.owner.login,
-                    repo: repo.name,
-                    environment_name: env,
-                    reviewers: [{ type: "User", id: user.id }],
-                    deployment_branch_policy: null
-                });
-            }
-
-            ora.stopAndPersist({
-                symbol: chalk.green("✔"),
-                text: `${chalk.green("pr")}, ${chalk.green("dev")}, ${chalk.green(
-                    "staging"
-                )}, and ${chalk.green("prod")} code repository environments created.`
-            });
-        } catch (e) {
-            generateErrorsCount++;
-            ora.stopAndPersist({
-                symbol: chalk.red("✘"),
-                text: `Creation of ${chalk.green("pr")}, ${chalk.green("dev")}, ${chalk.green(
-                    "staging"
-                )}, and ${chalk.green(
-                    "prod"
-                )} code repository environments failed with the following message: ${e.message}`
             });
         }
     },
