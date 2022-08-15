@@ -30,7 +30,7 @@ export function createPrerenderingService(app: PulumiApp, params: PreRenderingSe
         }
     });
 
-    const policy = createLambdaPolicy(app, queue.output);
+    const policy = createLambdaPolicy(app, queue.output, params);
     const renderer = createRenderer(app, queue.output, policy.output, params);
     const subscriber = createRenderSubscriber(app, policy.output, params);
     const flush = createFlushService(app, policy.output, params);
@@ -103,10 +103,10 @@ function createRenderSubscriber(
             timeout: 30,
             memorySize: 512,
             environment: {
-                variables: {
-                    ...getCommonLambdaEnvVariables(),
+                variables: getCommonLambdaEnvVariables().apply(value => ({
+                    ...value,
                     DB_TABLE: params.dbTableName
-                }
+                }))
             },
             description: "Subscribes to render events on event bus",
             code: new pulumi.asset.AssetArchive({
@@ -185,10 +185,10 @@ function createRenderer(
             memorySize: 2048,
             layers: [getLayerArn("shelf-io-chrome-aws-lambda-layer")],
             environment: {
-                variables: {
-                    ...getCommonLambdaEnvVariables(),
+                variables: getCommonLambdaEnvVariables().apply(value => ({
+                    ...value,
                     DB_TABLE: params.dbTableName
-                }
+                }))
             },
             description: "Renders pages and stores output in an S3 bucket of choice.",
             code: new pulumi.asset.AssetArchive({
@@ -239,10 +239,10 @@ function createFlushService(
             timeout: 30,
             memorySize: 512,
             environment: {
-                variables: {
-                    ...getCommonLambdaEnvVariables(),
+                variables: getCommonLambdaEnvVariables().apply(value => ({
+                    ...value,
                     DB_TABLE: params.dbTableName
-                }
+                }))
             },
             description: "Subscribes to flush events on event bus",
             code: new pulumi.asset.AssetArchive({
@@ -293,7 +293,11 @@ function createFlushService(
     };
 }
 
-function createLambdaPolicy(app: PulumiApp, queue: pulumi.Output<aws.sqs.Queue>) {
+function createLambdaPolicy(
+    app: PulumiApp,
+    queue: pulumi.Output<aws.sqs.Queue>,
+    params: PreRenderingServiceParams
+) {
     const core = app.getModule(CoreOutput);
     const awsAccountId = getAwsAccountId(app);
 
@@ -338,22 +342,8 @@ function createLambdaPolicy(app: PulumiApp, queue: pulumi.Output<aws.sqs.Queue>)
                     {
                         Sid: "PermissionForS3",
                         Effect: "Allow",
-                        Action: [
-                            "s3:DeleteObject",
-                            "s3:GetObject",
-                            "s3:GetObjectAcl",
-                            "s3:PutObject",
-                            "s3:PutObjectAcl"
-                        ],
-                        Resource: [
-                            pulumi.interpolate`arn:aws:s3:::${core.fileManagerBucketId}/*`,
-                            /**
-                             * We're using the hard-coded value for "delivery" S3 bucket because;
-                             * It is created during deployment of the `apps/website` stack which is after the api stack,
-                             * so, we don't know its ARN.
-                             */
-                            "arn:aws:s3:::delivery-*/*"
-                        ]
+                        Action: ["s3:DeleteObject", "s3:GetObject", "s3:PutObject"],
+                        Resource: [pulumi.interpolate`arn:aws:s3:::${params.bucket}/*`]
                     },
                     {
                         Sid: "PermissionForCloudfront",

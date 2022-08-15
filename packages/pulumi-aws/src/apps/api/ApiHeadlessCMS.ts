@@ -36,11 +36,11 @@ export const ApiHeadlessCMS = createAppModule({
                     )
                 }),
                 environment: {
-                    variables: {
-                        ...getCommonLambdaEnvVariables(),
+                    variables: getCommonLambdaEnvVariables().apply(value => ({
+                        ...value,
                         ...params.env,
                         AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
-                    }
+                    }))
                 },
                 vpcConfig: app.getModule(VpcConfig).functionVpcConfig
             }

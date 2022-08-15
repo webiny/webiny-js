@@ -52,7 +52,7 @@ export class List extends React.Component<ListProps> {
 export type ListItemTextProps = RmwcListItemTextProps & {
     children: React.ReactNode;
     className?: string;
-    onClick?: (e: React.SyntheticEvent<MouseEvent>) => void;
+    onClick?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
 };
 
 /**

@@ -1,4 +1,4 @@
-@use "~@material/theme/mixins" as themeMixins;
+@use "@material/theme/mixins" as themeMixins;
 
 // material variables
 $mdc-theme-primary: $webiny-theme-light-primary;
@@ -34,6 +34,7 @@ body {
   --mdc-theme-text-secondary-on-background: #{$mdc-theme-text-secondary-on-background};
   --mdc-theme-text-hint-on-dark: #{$mdc-theme-text-hint-on-dark};
   --mdc-theme-caret-down: #{$webiny-theme-light-caret-down};
+  --mdc-typography-font-family: #{$mdc-typography-font-family};
 
   font-family: "Source Sans Pro";
 }

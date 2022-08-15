@@ -20,8 +20,8 @@ const createContentEntry = ({ model, entries }) => {
     // a) Click on "New Entry" button
     cy.findAllByTestId("new-record-button").first().click();
     // b) Fill entry details
-    cy.findByLabelText("Title").type(newEntryTitle);
-    cy.findByLabelText("Edition").type(newEntryEdition.toString());
+    cy.findByTestId("fr.input.text.Title").type(newEntryTitle);
+    cy.findByTestId("fr.input.number.Edition").type(newEntryEdition.toString());
     // c) Save entry
     cy.findByTestId("cms-content-save-content-button").click();
     // d) Verify success message
@@ -39,7 +39,7 @@ const deleteContentEntry = () => {
     cy.findByTestId("cms.content-form.header.delete").click();
     cy.findByTestId("cms.content-form.header.delete-dialog").within(() => {
         cy.findByText(/Delete content entry/i);
-        cy.findByText(/Confirm/i).click();
+        cy.findByText(/Confirm/i).click({ force: true });
     });
     // Verify
     cy.findByText(/deleted successfully!/i).should("exist");

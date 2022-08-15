@@ -14,7 +14,7 @@ export const Select: React.FC<SelectProps> = props => {
         <UiSelect {...props}>
             {props.options.map(t => {
                 return (
-                    <option key={t.value} value={t.value}>
+                    <option key={t.value} value={t.value} data-testid={`fr.input.${t.label}`}>
                         {t.label}
                     </option>
                 );

@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-cognito-authenticator",
-  "version": "5.29.0",
+  "version": "5.30.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -14,8 +14,8 @@
   "dependencies": {
     "@aws-amplify/auth": "^4.0.2",
     "lodash.get": "^4.4.2",
-    "react": "16.14.0",
-    "react-dom": "16.14.0"
+    "react": "17.0.2",
+    "react-dom": "17.0.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.16.0",
@@ -26,8 +26,8 @@
     "@babel/preset-react": "^7.16.0",
     "@babel/preset-typescript": "^7.16.0",
     "@types/lodash.get": "^4.4.6",
-    "@webiny/cli": "^5.29.0",
-    "@webiny/project-utils": "^5.29.0",
+    "@webiny/cli": "^5.30.0",
+    "@webiny/project-utils": "^5.30.0",
     "babel-plugin-lodash": "^3.3.4",
     "rimraf": "^3.0.2",
     "typescript": "4.7.4"

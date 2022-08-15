@@ -151,7 +151,11 @@ export const GroupsForm: React.FC<GroupsFormProps> = () => {
                                         name="name"
                                         validators={validation.create("required,minLength:3")}
                                     >
-                                        <Input label={t`Name`} disabled={systemGroup} />
+                                        <Input
+                                            label={t`Name`}
+                                            disabled={systemGroup}
+                                            data-testid="admin.am.group.new.name"
+                                        />
                                     </Bind>
                                 </Cell>
                                 <Cell span={6}>
@@ -159,7 +163,11 @@ export const GroupsForm: React.FC<GroupsFormProps> = () => {
                                         name="slug"
                                         validators={validation.create("required,minLength:3")}
                                     >
-                                        <Input disabled={Boolean(data.id)} label={t`Slug`} />
+                                        <Input
+                                            disabled={Boolean(data.id)}
+                                            label={t`Slug`}
+                                            data-testid="admin.am.group.new.slug"
+                                        />
                                     </Bind>
                                 </Cell>
                             </Grid>
@@ -173,6 +181,7 @@ export const GroupsForm: React.FC<GroupsFormProps> = () => {
                                             label={t`Description`}
                                             rows={3}
                                             disabled={systemGroup}
+                                            data-testid="admin.am.group.new.description"
                                         />
                                     </Bind>
                                 </Cell>
@@ -209,6 +218,7 @@ export const GroupsForm: React.FC<GroupsFormProps> = () => {
                                         onClick={() => history.push("/access-management/groups")}
                                     >{t`Cancel`}</ButtonDefault>
                                     <ButtonPrimary
+                                        data-testid="admin.am.group.new.save"
                                         onClick={ev => {
                                             form.submit(ev);
                                         }}

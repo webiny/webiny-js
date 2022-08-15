@@ -262,7 +262,7 @@ const FormsDataList: React.FC<FormsDataListProps> = props => {
                                     )}
                                 </ListItemText>
                                 <ListItemMeta className={rightAlign}>
-                                    <Typography use={"subtitle2"}>
+                                    <Typography use={"subtitle2"} data-testid="fb.form.status">
                                         {upperFirst(form.status)} (v{form.version})
                                     </Typography>
                                     <ListActions>

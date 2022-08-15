@@ -25,7 +25,10 @@ export default {
             return false;
         }
 
-        return (
+        // We only want to process original images, and delete all variations of it at once.
+        // We DO NOT want to process the event for the deletion of an optimized/transformed image.
+        // Unfortunately, there's no way to filter those events on the S3 bucket itself, so we have to do it this way.
+        return !(
             key.startsWith(OPTIMIZED_IMAGE_PREFIX) ||
             key.startsWith(OPTIMIZED_TRANSFORMED_IMAGE_PREFIX)
         );

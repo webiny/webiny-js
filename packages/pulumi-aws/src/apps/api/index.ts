@@ -6,3 +6,4 @@ export * from "./ApiGraphql";
 export * from "./ApiHeadlessCMS";
 export * from "./ApiPageBuilder";
 export * from "./createApiPulumiApp";
+export * from "./ApiOutput";

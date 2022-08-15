@@ -2,7 +2,7 @@ import React from "react";
 import {
     Grid as RmwcGrid,
     GridCell as RmwcGridCell,
-    GridInner as RmwcGridInner,
+    GridRow as RmwcGridInner,
     GridCellProps as RmwcGridCellProps,
     GridProps as RmwcGridProps
 } from "@rmwc/grid";

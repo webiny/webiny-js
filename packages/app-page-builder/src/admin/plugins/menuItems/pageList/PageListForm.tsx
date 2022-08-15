@@ -24,7 +24,7 @@ interface LinkFormProps {
 }
 const LinkForm: React.FC<LinkFormProps> = ({ data, onSubmit, onCancel }) => {
     return (
-        <Elevation z={4} css={menuPageFormStyle}>
+        <Elevation z={4} css={menuPageFormStyle} data-testid="pb.page.list.menu.item.form">
             <Form data={data} onSubmit={onSubmit}>
                 {({ Bind, submit, data: formData }) => (
                     <>
@@ -34,16 +34,19 @@ const LinkForm: React.FC<LinkFormProps> = ({ data, onSubmit, onCancel }) => {
                             </Cell>
                         </Grid>
                         <Grid>
-                            <Cell span={12}>
+                            <Cell span={12} data-testid="pb.menu.new.listitem.title.grid">
                                 <Bind name="title" validators={validation.create("required")}>
-                                    <Input label="Title" />
+                                    <Input label="Title" data-testid="pb.menu.new.listitem.title" />
                                 </Bind>
                             </Cell>
                         </Grid>
                         <Grid>
                             <Cell span={12}>
                                 <Bind name="category" validators={validation.create("required")}>
-                                    <CategoriesAutocomplete label="Category" />
+                                    <CategoriesAutocomplete
+                                        label="Category"
+                                        data-testid="pb.menu.new.listitem.category"
+                                    />
                                 </Bind>
                             </Cell>
                         </Grid>
@@ -54,7 +57,10 @@ const LinkForm: React.FC<LinkFormProps> = ({ data, onSubmit, onCancel }) => {
                                     defaultValue={"publishedOn"}
                                     validators={validation.create("required")}
                                 >
-                                    <Select label="Sort by...">
+                                    <Select
+                                        label="Sort by..."
+                                        data-testid="pb.menu.new.listitem.sortby"
+                                    >
                                         <option value="publishedOn">Published on</option>
                                         <option value="title">Title</option>
                                     </Select>
@@ -68,7 +74,10 @@ const LinkForm: React.FC<LinkFormProps> = ({ data, onSubmit, onCancel }) => {
                                     defaultValue={"desc"}
                                     validators={validation.create("required")}
                                 >
-                                    <Select label="Sort direction...">
+                                    <Select
+                                        label="Sort direction..."
+                                        data-testid="pb.menu.new.listitem.sortdirection"
+                                    >
                                         <option value="asc">Ascending</option>
                                         <option value="desc">Descending</option>
                                     </Select>
@@ -78,7 +87,7 @@ const LinkForm: React.FC<LinkFormProps> = ({ data, onSubmit, onCancel }) => {
                         <Grid>
                             <Cell span={12}>
                                 <Bind name="tags">
-                                    <TagsMultiAutocomplete />
+                                    <TagsMultiAutocomplete data-testid="pb.menu.new.listitem.tags" />
                                 </Bind>
                             </Cell>
                         </Grid>
@@ -90,7 +99,10 @@ const LinkForm: React.FC<LinkFormProps> = ({ data, onSubmit, onCancel }) => {
                                         defaultValue={"all"}
                                         validators={validation.create("required")}
                                     >
-                                        <Select label="Tags rule...">
+                                        <Select
+                                            label="Tags rule..."
+                                            data-testid="pb.menu.new.listitem.tagsrule"
+                                        >
                                             <option value="all">Must include all tags</option>
                                             <option value="any">
                                                 Must include any of the tags
@@ -102,12 +114,18 @@ const LinkForm: React.FC<LinkFormProps> = ({ data, onSubmit, onCancel }) => {
                         </Grid>
                         <Grid>
                             <Cell span={12}>
-                                <ButtonSecondary onClick={onCancel}>Cancel</ButtonSecondary>
+                                <ButtonSecondary
+                                    onClick={onCancel}
+                                    data-testid="pb.menu.new.listitem.button.cancel"
+                                >
+                                    Cancel
+                                </ButtonSecondary>
                                 <ButtonPrimary
                                     onClick={ev => {
                                         submit(ev);
                                     }}
                                     style={{ float: "right" }}
+                                    data-testid="pb.menu.new.listitem.button.save"
                                 >
                                     Save menu item
                                 </ButtonPrimary>
