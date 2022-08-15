@@ -36,3 +36,12 @@ export interface GetWcpProjectGqlResponse {
         };
     };
 }
+
+export interface WcpPermission {
+    name: 'wcp',
+
+    // If boolean, tells us whether the project has access to the Advanced Access Control Layer (AACL)
+    // feature, based on the project's WCP license. `null` means we're dealing with an old, non-WCP,
+    // project, meaning access should be allowed, even without a valid WCP license.
+    aacl: boolean | null
+}
