@@ -27,3 +27,5 @@ export const getWcpProjectLicenseCacheKey = () => {
     // - "cached-license-23-12"
     return `cached-project-license-${currentHourOfTheDay}-${Math.ceil(currentMinuteOfTheHour / 5)}`;
 };
+
+export const AACL_RELEASE_DATE = '2022-09-01';
