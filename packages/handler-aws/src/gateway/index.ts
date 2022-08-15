@@ -6,7 +6,8 @@ import { APIGatewayEvent, Context as LambdaContext } from "aws-lambda";
 import {
     createHandler as createBaseHandler,
     CreateHandlerParams as BaseCreateHandlerParams,
-    RoutePlugin
+    RoutePlugin,
+    createRoute
 } from "@webiny/handler";
 import { registerDefaultPlugins } from "~/plugins";
 import { Base64EncodeHeader } from "~/types";
@@ -57,4 +58,4 @@ export const createHandler = (params: CreateHandlerParams): HandlerCallable => {
     };
 };
 
-export { RoutePlugin };
+export { RoutePlugin, createRoute };

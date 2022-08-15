@@ -1,7 +1,8 @@
 export {
     createHandler as createApiGatewayHandler,
     CreateHandlerParams as CreateApiGatewayHandlerParams,
-    RoutePlugin
+    RoutePlugin,
+    createRoute as createApiGatewayRoute
 } from "~/gateway";
 
 export {

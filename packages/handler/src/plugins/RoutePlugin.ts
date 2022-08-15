@@ -26,3 +26,7 @@ export class RoutePlugin<T extends Context = Context> extends Plugin {
         this.cb = cb;
     }
 }
+
+export const createRoute = <T extends Context = Context>(cb: RoutePluginCb<T>): RoutePlugin<T> => {
+    return new RoutePlugin<T>(cb);
+};

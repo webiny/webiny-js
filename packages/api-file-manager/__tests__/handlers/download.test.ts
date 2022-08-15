@@ -14,24 +14,36 @@ enum Files {
 
 jest.mock("aws-sdk/clients/s3", () => {
     return class {
+        private readonly _fileSizes: Record<string, number> = {
+            ["small-test-file-path.png"]: 137,
+            ["large-test-file-path.png"]: 500000001
+        };
+
         public getObject(obj: any) {
             const { Key: file } = obj;
-            const fileSizes = {
-                ["small-test-file-path.png"]: 137,
-                ["large-test-file-path.png"]: 50000001
-            };
             return {
                 promise: async () => {
                     return {
                         Body: file,
                         ContentType: "image/png",
-                        ContentLength: fileSizes[file as Files]
+                        ContentLength: this._fileSizes[file as Files]
                     };
                 }
             };
         }
-        public getSignedUrlPromise() {
+        public getSignedUrl() {
             return "https://presigned-domain.loc/some-url?1fjdsfjdsfds";
+        }
+
+        public headObject(obj: any) {
+            const { Key: file } = obj;
+            return {
+                promise: async () => {
+                    return {
+                        ContentLength: this._fileSizes[file as Files]
+                    };
+                }
+            };
         }
     };
 });
