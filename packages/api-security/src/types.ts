@@ -196,7 +196,7 @@ export interface DeleteGroupParams {
 export interface System {
     tenant: string;
     version: string;
-    createdOn: string;
+    installedOn: string;
 }
 
 export interface GetSystemParams {
