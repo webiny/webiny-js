@@ -7,6 +7,8 @@ import { createSystemMethods } from "~/createSecurity/createSystemMethods";
 import { createTenantLinksMethods } from "~/createSecurity/createTenantLinksMethods";
 import { filterOutCustomWbyAppsPermissions } from "~/createSecurity/filterOutCustomWbyAppsPermissions";
 import { createTopic } from "@webiny/pubsub";
+import { AACL_RELEASE_DATE } from "@webiny/api-wcp";
+import { WcpPermission } from "@webiny/api-wcp/types";
 
 export interface GetTenant {
     (): string | undefined;
@@ -115,23 +117,33 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
             // Now we start checking whether we want to return all permissions, or we
             // need to omit the custom ones because of the one of the following reasons.
 
-            // 1. Are we dealing with an old Webiny project?
-            const securitySystemRecord = await this.getStorageOperations().getSystemData({
-                tenant: "root"
-            });
+            let aacl: WcpPermission["aacl"] = config.advancedAccessControlLayer === true;
+            if (!aacl) {
+                // Are we dealing with an old Webiny project?
+                // Older versions of Webiny do not have the `installedOn` value stored. So,
+                // if missing, we don't want to make any changes to the existing behavior.
+                const securitySystemRecord = await this.getStorageOperations().getSystemData({
+                    tenant: "root"
+                });
+                const securityInstalledOn = securitySystemRecord?.installedOn;
+                const isWcpAdvancedAccessControlLayer =
+                    securityInstalledOn && securityInstalledOn >= AACL_RELEASE_DATE;
 
-            // Older versions of Webiny do not have the `createdOn` value stored. So,
-            // if missing, we don't want to make any changes to the existing behavior.
-            if (!securitySystemRecord || !securitySystemRecord.createdOn) {
+                if (!isWcpAdvancedAccessControlLayer) {
+                    aacl = null;
+                }
+            }
+
+            // Pushing the value of `aacl` can help us in making similar checks on the frontend side.
+            permissions.push({ name: "wcp", aacl });
+
+            // If Advanced Access Control Layer (AACL) can be used or if we are
+            // dealing with an old Webiny project, we don't need to do anything.
+            if (aacl || aacl === null) {
                 return permissions;
             }
 
-            // 2. If Advanced Access Control Layer (AACL) can be used, again, no need to do anything.
-            if (config.advancedAccessControlLayer === true) {
-                return permissions;
-            }
-
-            // 3. If Advanced Access Control Layer (AACL) cannot be used,
+            // If Advanced Access Control Layer (AACL) cannot be used,
             // we omit all of the Webiny apps-related custom permissions.
             return filterOutCustomWbyAppsPermissions(permissions);
         },
