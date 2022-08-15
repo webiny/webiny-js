@@ -34,7 +34,6 @@
     "@babel/preset-env": "^7.16.4",
     "@babel/preset-typescript": "^7.16.0",
     "@webiny/api-tenancy-so-ddb": "^5.30.0",
-    "@webiny/api-wcp": "^5.30.0",
     "@webiny/cli": "^5.30.0",
     "@webiny/handler-aws": "^5.25.0",
     "@webiny/project-utils": "^5.30.0",
