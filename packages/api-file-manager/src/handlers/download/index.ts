@@ -7,6 +7,7 @@ import loaders from "../transform/loaders";
 import { ArgsContext } from "@webiny/handler-args/types";
 import { DownloadHandlerEventArgs } from "~/handlers/types";
 import { ClientContext } from "@webiny/handler-client/types";
+import { ObjectParamsResponse } from "~/handlers/utils/getObjectParams";
 
 const MAX_RETURN_CONTENT_LENGTH = 5000000; // ~4.77MB
 const DEFAULT_CACHE_MAX_AGE = 30758400; // 1 year
@@ -26,8 +27,20 @@ const extractFilenameOptions = (event: DownloadHandlerEventArgs) => {
     };
 };
 
-const getS3Object = async (event: DownloadHandlerEventArgs, s3: S3, context: Context) => {
+interface S3Object {
+    object?: S3.Types.GetObjectOutput;
+    params: ObjectParamsResponse;
+}
+
+const getS3Object = async (
+    event: DownloadHandlerEventArgs,
+    s3: S3,
+    context: Context
+): Promise<S3Object> => {
     const { options, filename, extension } = extractFilenameOptions(event);
+    const params = getObjectParams(filename);
+    const objectHead = await s3.headObject(params).promise();
+    const contentLength = objectHead.ContentLength ? objectHead.ContentLength : 0;
 
     for (const loader of loaders) {
         const canProcess = loader.canProcess({
@@ -36,30 +49,34 @@ const getS3Object = async (event: DownloadHandlerEventArgs, s3: S3, context: Con
             options,
             file: {
                 name: filename,
-                extension
+                extension,
+                contentLength
             }
         });
 
         if (!canProcess) {
             continue;
         }
+
         return loader.process({
             context,
             s3,
             options,
             file: {
                 name: filename,
-                extension
+                extension,
+                contentLength
             }
         });
     }
 
-    // If no processors handled the file request, just return the S3 object by default.
-    const params = getObjectParams(filename);
-    return {
-        object: await s3.getObject(params).promise(),
-        params: params
-    };
+    // If no processors handled the file request, just return the S3 object taking its size into consideration.
+    let object;
+    if (contentLength < MAX_RETURN_CONTENT_LENGTH) {
+        object = await s3.getObject(params).promise();
+    }
+
+    return { object, params };
 };
 
 export default (): HandlerPlugin<Context> => ({
@@ -72,12 +89,9 @@ export default (): HandlerPlugin<Context> => ({
 
             const { params, object } = await getS3Object(event, s3, context);
 
-            const contentLength = object.ContentLength === undefined ? 0 : object.ContentLength;
-            if (contentLength < MAX_RETURN_CONTENT_LENGTH) {
+            // If there's an "object", it means we can return its body directly.
+            if (object) {
                 return {
-                    /**
-                     * It is safe to cast as buffer or unknown
-                     */
                     data: object.Body || null,
                     headers: {
                         "Content-Type": object.ContentType,
@@ -103,8 +117,7 @@ export default (): HandlerPlugin<Context> => ({
                 }
             };
         };
-        const handler = createHandler(eventHandler);
 
-        return await handler(context.invocationArgs);
+        return await createHandler(eventHandler)(context.invocationArgs);
     }
 });
