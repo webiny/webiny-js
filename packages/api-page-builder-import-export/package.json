@@ -46,7 +46,6 @@
     "@babel/preset-typescript": "^7.16.0",
     "@types/archiver": "^5.3.1",
     "@types/node-fetch": "^2.6.1",
-    "@types/puppeteer": "^5.4.2",
     "@types/yauzl": "^2.9.2",
     "@webiny/api-dynamodb-to-elasticsearch": "^5.30.0",
     "@webiny/api-file-manager-ddb-es": "^5.30.0",

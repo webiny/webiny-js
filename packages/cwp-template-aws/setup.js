@@ -120,12 +120,7 @@ const setup = async args => {
         const options = {
             cwd: projectRoot,
             maxBuffer: "500_000_000",
-            stdio: "inherit",
-            env: {
-                // We can skip Chromium download, because locally we don't need it, and Lambda functions
-                // get it via a dedicated Lambda layer.
-                PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: true
-            }
+            stdio: "inherit"
         };
 
         try {
