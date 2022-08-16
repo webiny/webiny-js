@@ -12412,6 +12412,7 @@ __metadata:
     "@webiny/cli-plugin-scaffold": ^5.30.0
     "@webiny/plugins": ^5.30.0
     "@webiny/project-utils": ^5.30.0
+    "@webiny/validation": ^5.30.0
     chalk: ^4.1.0
     inquirer: ^7.3.3
     js-base64: ^3.6.0
