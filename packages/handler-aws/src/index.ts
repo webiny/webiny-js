@@ -11,7 +11,7 @@ export {
     S3EventHandler,
     S3EventHandlerCallable,
     S3EventHandlerCallableParams,
-    createS3EventHandler
+    createEventHandler as createS3EventHandler
 } from "~/s3";
 
 export {

@@ -24,6 +24,6 @@ export class S3EventHandler<Response = any> extends Plugin {
     }
 }
 
-export const createS3EventHandler = <Response>(cb: S3EventHandlerCallable<Response>) => {
+export const createEventHandler = <Response>(cb: S3EventHandlerCallable<Response>) => {
     return new S3EventHandler<Response>(cb);
 };
