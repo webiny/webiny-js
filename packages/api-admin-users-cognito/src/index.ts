@@ -1,4 +1,4 @@
-import { ContextPlugin } from "@webiny/handler";
+import { ContextPlugin } from "@webiny/api";
 import { createAdminUsers } from "./createAdminUsers";
 import { AdminUsersContext, AdminUsersStorageOperations } from "./types";
 import base from "./graphql/base.gql";

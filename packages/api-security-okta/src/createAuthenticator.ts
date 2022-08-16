@@ -4,7 +4,7 @@ import fetch from "node-fetch";
 import util from "util";
 import { SecurityContext, SecurityIdentity } from "@webiny/api-security/types";
 import WebinyError from "@webiny/error";
-import { ContextPlugin } from "@webiny/handler";
+import { ContextPlugin } from "@webiny/api";
 const verify = util.promisify<string, string, Record<string, any>>(jwt.verify);
 
 interface VerifyResponse {

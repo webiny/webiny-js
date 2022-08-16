@@ -1,4 +1,4 @@
-import { Context } from "@webiny/handler/types";
+import { Context } from "@webiny/api/types";
 import { DecryptedWcpProjectLicense, WcpProjectEnvironment } from "@webiny/wcp/types";
 import { WCP_FEATURE_LABEL } from "@webiny/wcp";
 

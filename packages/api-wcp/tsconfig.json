@@ -3,7 +3,7 @@
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
     { "path": "../error" },
-    { "path": "../handler" },
+    { "path": "../api" },
     { "path": "../handler-graphql" },
     { "path": "../wcp" }
   ],
@@ -15,8 +15,8 @@
       "~/*": ["./src/*"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
-      "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"],
+      "@webiny/api/*": ["../api/src/*"],
+      "@webiny/api": ["../api/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
       "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],

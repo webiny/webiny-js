@@ -1,44 +1,55 @@
-import defaultHandlerClient from "@webiny/handler-client";
-import defaultHandlerHttp from "@webiny/handler-http";
-import { HandlerHttpOptions } from "@webiny/handler-http/types";
-import defaultHandlerArgs from "@webiny/handler-args";
-import { createHandler as createDefaultHandler } from "@webiny/handler";
-import { PluginCollection } from "@webiny/plugins/types";
-import handlerClient from "./plugins/handlerClient";
-import handlerHttp from "./plugins/handlerHttp";
+export {
+    createHandler as createApiGatewayHandler,
+    CreateHandlerParams as CreateApiGatewayHandlerParams,
+    RoutePlugin,
+    createRoute as createApiGatewayRoute
+} from "~/gateway";
 
-interface CreateAwsHandlerOptions {
-    plugins: PluginCollection;
-    http?: HandlerHttpOptions;
-}
+export {
+    createHandler as createS3Handler,
+    CreateHandlerParams as CreateS3HandlerParams,
+    S3EventHandler,
+    S3EventHandlerCallable,
+    S3EventHandlerCallableParams,
+    createS3EventHandler
+} from "~/s3";
 
-interface CreateAwsHandler {
-    (...plugins: PluginCollection): Function;
-    (params: CreateAwsHandlerOptions): Function;
-}
+export {
+    createHandler as createDynamoDBHandler,
+    CreateHandlerParams as CreateDynamoDBHandlerParams,
+    DynamoDBEventHandler,
+    DynamoDBEventHandlerCallable,
+    DynamoDBEventHandlerCallableParams,
+    createEventHandler as createDynamoDBEventHandler,
+    HandlerCallable as DynamoDBHandlerCallable
+} from "~/dynamodb";
 
-/**
- * To avoid braking changes, the "createHandler" function supports two signature:
- *  1. A list of plugins.       (backwards-compatible)
- *  2. A single argument of type `CreateHandlerOptions`.
- *
- * @param {Array | CreateAwsHandlerOptions} args - The list of plugins or object of type `CreateHandlerOptions`.
- */
-export const createHandler: CreateAwsHandler = (...args: any) => {
-    let plugins = args;
+export {
+    createHandler as createSQSHandler,
+    CreateHandlerParams as CreateSQSHandlerParams,
+    SQSEventHandler,
+    SQSEventHandlerCallable,
+    SQSEventHandlerCallableParams,
+    createEventHandler as createSQSEventHandler,
+    HandlerCallable as SQSHandlerCallable
+} from "~/sqs";
 
-    const createHandlerOptions: CreateAwsHandlerOptions =
-        args[0] as unknown as CreateAwsHandlerOptions;
-    if (createHandlerOptions && Array.isArray(createHandlerOptions.plugins)) {
-        plugins = createHandlerOptions.plugins;
-    }
+export {
+    createHandler as createEventBridgeHandler,
+    CreateHandlerParams as CreateEventBridgeHandlerParams,
+    EventBridgeEventHandler,
+    EventBridgeEventHandlerCallable,
+    EventBridgeEventHandlerCallableParams,
+    createEventHandler as createEventBridgeEventHandler,
+    HandlerCallable as EventBridgeHandlerCallable
+} from "~/eventBridge";
 
-    return createDefaultHandler(
-        defaultHandlerClient(),
-        defaultHandlerArgs(),
-        defaultHandlerHttp(createHandlerOptions && createHandlerOptions.http),
-        handlerClient,
-        handlerHttp,
-        ...plugins
-    );
-};
+export {
+    createHandler as createRawHandler,
+    CreateHandlerParams as CreateRawHandlerParams,
+    HandlerCallable as RawHandlerCallable,
+    createEventHandler as createRawEventHandler,
+    RawEventHandlerCallableParams,
+    RawEventHandlerCallable,
+    RawEventHandler
+} from "~/raw";

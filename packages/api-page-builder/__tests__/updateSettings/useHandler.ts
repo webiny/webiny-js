@@ -1,11 +1,6 @@
-import { createWcpContext } from "@webiny/api-wcp";
-import { createHandler } from "@webiny/handler-aws";
-import graphqlHandler from "@webiny/handler-graphql";
+import { createHandler } from "@webiny/handler-aws/raw";
 import pageBuilderPlugins from "../../src/updateSettings";
-import { createTenancyAndSecurity } from "../tenancySecurity";
 import { getStorageOperations } from "../storageOperations";
-import { ContextPlugin } from "@webiny/handler";
-import { PbContext } from "~/graphql/types";
 
 interface Params {
     plugins?: any;
@@ -16,30 +11,15 @@ export default (params: Params = {}) => {
     const ops = getStorageOperations({
         plugins: params.storageOperationPlugins || []
     });
-    const handler = createHandler(
-        ...ops.plugins,
-        createWcpContext(),
-        graphqlHandler(),
-        ...createTenancyAndSecurity(),
-        new ContextPlugin<PbContext>(async context => {
-            if (context.i18n) {
-                return;
-            }
-            context.i18n = {
-                // @ts-ignore
-                ...(context.i18n || {}),
-                getLocale: () => {
-                    return {
-                        code: "en-US"
-                    };
-                }
-            };
-        }),
-        pageBuilderPlugins({
-            storageOperations: ops.storageOperations
-        }),
-        extraPlugins || []
-    );
+    const handler = createHandler({
+        plugins: [
+            ...ops.plugins,
+            pageBuilderPlugins({
+                storageOperations: ops.storageOperations
+            }),
+            extraPlugins || []
+        ]
+    });
 
     return {
         handler

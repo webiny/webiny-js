@@ -1,4 +1,4 @@
-import { ContextPlugin } from "@webiny/handler";
+import { ContextPlugin } from "@webiny/api";
 import { CmsContext, HeadlessCmsStorageOperations } from "~/types";
 import { createModelGroupsCrud } from "./contentModelGroup.crud";
 import { createModelsCrud } from "./contentModel.crud";
@@ -13,10 +13,6 @@ export interface CrudParams {
 export const createCrud = (params: CrudParams) => {
     const { storageOperations } = params;
     return new ContextPlugin<CmsContext>(async context => {
-        if (context.http?.request?.method === "OPTIONS") {
-            return;
-        }
-
         const getLocale = () => {
             return context.cms.getLocale();
         };

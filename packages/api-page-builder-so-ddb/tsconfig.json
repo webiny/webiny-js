@@ -9,7 +9,6 @@
     { "path": "../utils" },
     { "path": "../api-security" },
     { "path": "../api-tenancy" },
-    { "path": "../handler" },
     { "path": "../handler-aws" },
     { "path": "../handler-graphql" },
     { "path": "../plugins" }
@@ -34,8 +33,6 @@
       "@webiny/api-security": ["../api-security/src"],
       "@webiny/api-tenancy/*": ["../api-tenancy/src/*"],
       "@webiny/api-tenancy": ["../api-tenancy/src"],
-      "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
       "@webiny/handler-aws": ["../handler-aws/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],

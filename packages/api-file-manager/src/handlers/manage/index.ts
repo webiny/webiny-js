@@ -1,24 +1,25 @@
 import path from "path";
 import S3 from "aws-sdk/clients/s3";
-import { HandlerPlugin } from "@webiny/handler/types";
-import { createHandler, getEnvironment, EventHandlerCallable } from "../utils";
+import { getEnvironment } from "../utils";
 import managers from "../transform/managers";
-import { ArgsContext } from "@webiny/handler-args/types";
-import { ManageHandlerEventArgs } from "~/handlers/types";
+import { S3EventHandler } from "@webiny/handler-aws";
 
-export default (): HandlerPlugin<ArgsContext<ManageHandlerEventArgs>> => ({
-    type: "handler",
-    name: "handler-download-file",
-    async handle(context) {
-        // TODO @ts-refactor check in createHandler for returns types that eventHandler must return
-        // @ts-ignore
-        const eventHandler: EventHandlerCallable<ManageHandlerEventArgs> = async event => {
+/**
+ * This handler must be run through @webiny/handler-aws/s3
+ */
+export const createManageFilePlugins = () => {
+    return [
+        new S3EventHandler(async ({ event }) => {
             const keys: string[] = [];
             for (let i = 0; i < event.Records.length; i++) {
                 const record = event.Records[i];
                 if (typeof record.s3.object.key === "string") {
                     keys.push(record.s3.object.key);
                 }
+            }
+
+            if (keys.length === 0) {
+                return;
             }
 
             const { region } = getEnvironment();
@@ -43,10 +44,6 @@ export default (): HandlerPlugin<ArgsContext<ManageHandlerEventArgs>> => ({
                     });
                 }
             }
-        };
-
-        const handler = createHandler(eventHandler);
-
-        return await handler(context.invocationArgs);
-    }
-});
+        })
+    ];
+};

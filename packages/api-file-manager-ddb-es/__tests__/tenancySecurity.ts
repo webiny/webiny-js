@@ -4,8 +4,8 @@ import { createStorageOperations as tenancyStorageOperations } from "@webiny/api
 import { createSecurityContext, createSecurityGraphQL } from "@webiny/api-security";
 import { createStorageOperations as securityStorageOperations } from "@webiny/api-security-so-ddb";
 import { SecurityContext, SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
-import { BeforeHandlerPlugin } from "@webiny/handler/plugins/BeforeHandlerPlugin";
+import { ContextPlugin } from "@webiny/api";
+import { BeforeHandlerPlugin } from "@webiny/handler";
 import { TenancyContext } from "@webiny/api-tenancy/types";
 
 // IMPORTANT: This must be removed from here in favor of a dynamic SO setup.
@@ -51,7 +51,10 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config = {})
                 description: "",
                 settings: {
                     domains: []
-                }
+                },
+                webinyVersion: "w.w.w",
+                savedOn: new Date().toISOString(),
+                createdOn: new Date().toISOString()
             });
 
             context.security.addAuthenticator(async () => {

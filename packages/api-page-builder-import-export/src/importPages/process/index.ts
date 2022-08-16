@@ -1,25 +1,10 @@
-import { HandlerPlugin } from "@webiny/handler/types";
-import { ArgsContext } from "@webiny/handler-args/types";
 import { PageImportExportTaskStatus, PbPageImportExportContext } from "~/types";
 import { importPage } from "~/importPages/utils";
-import { invokeHandlerClient } from "~/importPages/client";
+import { invokeHandlerClient } from "~/client";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { mockSecurity } from "~/mockSecurity";
 import { zeroPad } from "@webiny/utils";
-
-export interface HandlerArgs {
-    taskId: string;
-    subTaskIndex: number;
-    identity: SecurityIdentity;
-}
-
-interface HandlerResponseError {
-    message: string;
-}
-export interface HandlerResponse {
-    data: string | null;
-    error: HandlerResponseError | null;
-}
+import { createRawEventHandler } from "@webiny/handler-aws";
 
 interface Configuration {
     handlers: {
@@ -27,173 +12,182 @@ interface Configuration {
     };
 }
 
-/**
- * Handles the import page workflow.
- */
-export default (
-    configuration: Configuration
-): HandlerPlugin<PbPageImportExportContext, ArgsContext<HandlerArgs>> => ({
-    type: "handler",
-    async handle(context): Promise<HandlerResponse> {
-        const log = console.log;
-        let subTask;
-        let noPendingTask = true;
-        let prevStatusOfSubTask = PageImportExportTaskStatus.PENDING;
+export interface Payload {
+    taskId: string;
+    subTaskIndex: number;
+    identity: SecurityIdentity;
+}
 
-        log("RUNNING Import Page Queue Process");
-        const { invocationArgs: args, pageBuilder } = context;
-        const { taskId, subTaskIndex, identity } = args;
-        // Disable authorization; this is necessary because we call Page Builder CRUD methods which include authorization checks
-        // and this Lambda is invoked internally, without credentials.
-        mockSecurity(identity, context);
+export interface Response {
+    data: string | null;
+    error: Partial<Error> | null;
+}
 
-        try {
-            /*
-             * Note: We're not going to DB for getting next sub-task to process,
-             * because the data might be out of sync due to GSI eventual consistency.
-             */
+export default (configuration: Configuration) => {
+    return createRawEventHandler<Payload, PbPageImportExportContext, Response>(
+        async ({ payload, context }) => {
+            const log = console.log;
+            let subTask;
+            let noPendingTask = true;
+            let prevStatusOfSubTask = PageImportExportTaskStatus.PENDING;
 
-            subTask = await pageBuilder.pageImportExportTask.getSubTask(
-                taskId,
-                zeroPad(subTaskIndex, 5)
-            );
+            log("RUNNING Import Page Queue Process");
+            const { pageBuilder } = context;
+            const { taskId, subTaskIndex, identity } = payload;
+            // Disable authorization; this is necessary because we call Page Builder CRUD methods which include authorization checks
+            // and this Lambda is invoked internally, without credentials.
+            mockSecurity(identity, context);
 
-            /**
-             * Base condition!!
-             * Bail out early, if task not found or task's status is not "pending".
-             */
-            if (!subTask || subTask.status !== PageImportExportTaskStatus.PENDING) {
-                noPendingTask = true;
-                return {
-                    data: "",
-                    error: null
-                };
-            } else {
-                noPendingTask = false;
-            }
-            prevStatusOfSubTask = subTask.status;
-
-            log(`Fetched sub task => ${subTask.id}`);
-
-            const { pageKey, category, zipFileKey, input } = subTask.data;
-            const { fileUploadsData } = input;
-
-            log(`Processing page key "${pageKey}"`);
-
-            // Mark task status as PROCESSING
-            subTask = await pageBuilder.pageImportExportTask.updateSubTask(taskId, subTask.id, {
-                status: PageImportExportTaskStatus.PROCESSING
-            });
-            // Update stats in main task
-            await pageBuilder.pageImportExportTask.updateStats(taskId, {
-                prevStatus: prevStatusOfSubTask,
-                nextStatus: PageImportExportTaskStatus.PROCESSING
-            });
-            prevStatusOfSubTask = subTask.status;
-
-            // Real job
-            const page = await importPage({
-                context,
-                pageKey,
-                key: zipFileKey,
-                fileUploadsData
-            });
-
-            // Create a page
-            let pbPage = await context.pageBuilder.createPage(category);
-
-            // Update page with data
-            pbPage = await context.pageBuilder.updatePage(pbPage.id, {
-                content: page.content,
-                title: page.title,
-                path: page.path,
-                settings: page.settings
-            });
-
-            // TODO: Publish page
-
-            // Update task record in DB
-            subTask = await pageBuilder.pageImportExportTask.updateSubTask(taskId, subTask.id, {
-                status: PageImportExportTaskStatus.COMPLETED,
-                data: {
-                    message: "Done",
-                    page: {
-                        id: pbPage.id,
-                        title: pbPage.title,
-                        version: pbPage.version,
-                        status: pbPage.status
-                    }
-                }
-            });
-            // Update stats in main task
-            await pageBuilder.pageImportExportTask.updateStats(taskId, {
-                prevStatus: prevStatusOfSubTask,
-                nextStatus: PageImportExportTaskStatus.COMPLETED
-            });
-            prevStatusOfSubTask = subTask.status;
-        } catch (e) {
-            log("[IMPORT_PAGES_PROCESS] Error => ", e);
-
-            if (subTask && subTask.id) {
-                /**
-                 * In case of error, we'll update the task status to "failed",
-                 * so that, client can show notify the user appropriately.
+            try {
+                /*
+                 * Note: We're not going to DB for getting next sub-task to process,
+                 * because the data might be out of sync due to GSI eventual consistency.
                  */
-                const { invocationArgs: args, pageBuilder } = context;
-                const { taskId } = args;
 
+                subTask = await pageBuilder.pageImportExportTask.getSubTask(
+                    taskId,
+                    zeroPad(subTaskIndex, 5)
+                );
+
+                /**
+                 * Base condition!!
+                 * Bail out early, if task not found or task's status is not "pending".
+                 */
+                if (!subTask || subTask.status !== PageImportExportTaskStatus.PENDING) {
+                    noPendingTask = true;
+                    return {
+                        data: "",
+                        error: null
+                    };
+                } else {
+                    noPendingTask = false;
+                }
+                prevStatusOfSubTask = subTask.status;
+
+                log(`Fetched sub task => ${subTask.id}`);
+
+                const { pageKey, category, zipFileKey, input } = subTask.data;
+                const { fileUploadsData } = input;
+
+                log(`Processing page key "${pageKey}"`);
+
+                // Mark task status as PROCESSING
                 subTask = await pageBuilder.pageImportExportTask.updateSubTask(taskId, subTask.id, {
-                    status: PageImportExportTaskStatus.FAILED,
-                    error: {
-                        name: e.name,
-                        message: e.message,
-                        stack: e.stack,
-                        code: "IMPORT_FAILED"
-                    }
+                    status: PageImportExportTaskStatus.PROCESSING
                 });
-
                 // Update stats in main task
                 await pageBuilder.pageImportExportTask.updateStats(taskId, {
                     prevStatus: prevStatusOfSubTask,
-                    nextStatus: PageImportExportTaskStatus.FAILED
+                    nextStatus: PageImportExportTaskStatus.PROCESSING
                 });
                 prevStatusOfSubTask = subTask.status;
-            }
 
-            return {
-                data: null,
-                error: {
-                    message: e.message
-                }
-            };
-        } finally {
-            // Base condition!
-            if (noPendingTask) {
-                log(`No pending sub-task for task ${taskId}`);
+                // Real job
+                const page = await importPage({
+                    context,
+                    pageKey,
+                    key: zipFileKey,
+                    fileUploadsData
+                });
 
-                await pageBuilder.pageImportExportTask.updateTask(taskId, {
+                // Create a page
+                let pbPage = await context.pageBuilder.createPage(category);
+
+                // Update page with data
+                pbPage = await context.pageBuilder.updatePage(pbPage.id, {
+                    content: page.content,
+                    title: page.title,
+                    path: page.path,
+                    settings: page.settings
+                });
+
+                // TODO: Publish page
+
+                // Update task record in DB
+                subTask = await pageBuilder.pageImportExportTask.updateSubTask(taskId, subTask.id, {
                     status: PageImportExportTaskStatus.COMPLETED,
                     data: {
-                        message: `Finish importing pages.`
+                        message: "Done",
+                        page: {
+                            id: pbPage.id,
+                            title: pbPage.title,
+                            version: pbPage.version,
+                            status: pbPage.status
+                        }
                     }
                 });
-            } else {
-                log(`Invoking PROCESS for task "${subTaskIndex + 1}"`);
-                // We want to continue with Self invocation no matter if current page error out.
-                await invokeHandlerClient<HandlerArgs>({
-                    context,
-                    name: configuration.handlers.process,
-                    payload: {
+                // Update stats in main task
+                await pageBuilder.pageImportExportTask.updateStats(taskId, {
+                    prevStatus: prevStatusOfSubTask,
+                    nextStatus: PageImportExportTaskStatus.COMPLETED
+                });
+                prevStatusOfSubTask = subTask.status;
+            } catch (e) {
+                log("[IMPORT_PAGES_PROCESS] Error => ", e);
+
+                if (subTask && subTask.id) {
+                    /**
+                     * In case of error, we'll update the task status to "failed",
+                     * so that, client can show notify the user appropriately.
+                     */
+                    subTask = await pageBuilder.pageImportExportTask.updateSubTask(
                         taskId,
-                        subTaskIndex: subTaskIndex + 1,
-                        identity: context.security.getIdentity()
+                        subTask.id,
+                        {
+                            status: PageImportExportTaskStatus.FAILED,
+                            error: {
+                                name: e.name,
+                                message: e.message,
+                                stack: e.stack,
+                                code: "IMPORT_FAILED"
+                            }
+                        }
+                    );
+
+                    // Update stats in main task
+                    await pageBuilder.pageImportExportTask.updateStats(taskId, {
+                        prevStatus: prevStatusOfSubTask,
+                        nextStatus: PageImportExportTaskStatus.FAILED
+                    });
+                    prevStatusOfSubTask = subTask.status;
+                }
+
+                return {
+                    data: null,
+                    error: {
+                        message: e.message
                     }
-                });
+                };
+            } finally {
+                // Base condition!
+                if (noPendingTask) {
+                    log(`No pending sub-task for task ${taskId}`);
+
+                    await pageBuilder.pageImportExportTask.updateTask(taskId, {
+                        status: PageImportExportTaskStatus.COMPLETED,
+                        data: {
+                            message: `Finish importing pages.`
+                        }
+                    });
+                } else {
+                    log(`Invoking PROCESS for task "${subTaskIndex + 1}"`);
+                    // We want to continue with Self invocation no matter if current page error out.
+                    await invokeHandlerClient<Payload>({
+                        context,
+                        name: configuration.handlers.process,
+                        payload: {
+                            taskId,
+                            subTaskIndex: subTaskIndex + 1,
+                            identity: context.security.getIdentity()
+                        },
+                        description: "Import pages - process - subtask"
+                    });
+                }
             }
+            return {
+                data: "",
+                error: null
+            };
         }
-        return {
-            data: "",
-            error: null
-        };
-    }
-});
+    );
+};

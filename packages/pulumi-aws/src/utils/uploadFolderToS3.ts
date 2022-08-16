@@ -37,6 +37,9 @@ export interface UploadFolderToS3Params {
     // Path to the folder that needs to be uploaded.
     path: string;
 
+    // Object ACL.
+    acl: string;
+
     // A callback that gets called every time a file has been uploaded successfully.
     onFileUploadSuccess: (params: { paths: Paths }) => void;
 
@@ -59,6 +62,8 @@ export const uploadFolderToS3 = async ({
     onFileUploadSuccess,
     onFileUploadError,
     onFileUploadSkip,
+    // For backwards compatibility, we need to leave ACL on "public-read".
+    acl = "public-read",
     cacheControl = "max-age=31536000"
 }: UploadFolderToS3Params) => {
     const s3 = new S3Client({ region: process.env.AWS_REGION });
@@ -124,6 +129,7 @@ export const uploadFolderToS3 = async ({
                             const { url, fields } = await getPresignedPost({
                                 bucket,
                                 key,
+                                acl,
                                 checksum,
                                 contentType,
                                 cacheControl: cacheControl ? cacheControl.value : undefined

@@ -6,13 +6,10 @@ describe("Settings crud test", () => {
         path: "manage/en-US"
     };
 
-    const { introspect, installMutation } = useGraphQLHandler({
-        mockLocales: false
-    });
+    const { introspect, installMutation } = useGraphQLHandler({});
 
     const { isInstalledQuery, installMutation: installMutationNoPermission } = useGraphQLHandler({
-        permissions: [],
-        mockLocales: false
+        permissions: []
     });
 
     const { listContentModelGroupsQuery } = useGraphQLHandler(manageOpts);

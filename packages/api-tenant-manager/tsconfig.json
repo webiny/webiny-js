@@ -8,9 +8,9 @@
     { "path": "../api-security-so-ddb" },
     { "path": "../api-tenancy-so-ddb" },
     { "path": "../api-wcp" },
+    { "path": "../api" },
     { "path": "../handler" },
-    { "path": "../handler-aws" },
-    { "path": "../handler-http" }
+    { "path": "../handler-aws" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -30,12 +30,12 @@
       "@webiny/api-tenancy-so-ddb": ["../api-tenancy-so-ddb/src"],
       "@webiny/api-wcp/*": ["../api-wcp/src/*"],
       "@webiny/api-wcp": ["../api-wcp/src"],
+      "@webiny/api/*": ["../api/src/*"],
+      "@webiny/api": ["../api/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
-      "@webiny/handler-aws": ["../handler-aws/src"],
-      "@webiny/handler-http/*": ["../handler-http/src/*"],
-      "@webiny/handler-http": ["../handler-http/src"]
+      "@webiny/handler-aws": ["../handler-aws/src"]
     },
     "baseUrl": "."
   }

@@ -1,4 +1,4 @@
-import { Context } from "@webiny/handler/types";
+import { Context } from "@webiny/api/types";
 import { Topic } from "@webiny/pubsub/types";
 
 export interface MailerContextObjectSendParams {

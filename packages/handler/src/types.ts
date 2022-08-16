@@ -1,136 +1,60 @@
-import { Plugin, PluginsContainer } from "@webiny/plugins/types";
+import {
+    FastifyInstance,
+    FastifyRequest,
+    FastifyReply,
+    HTTPMethods,
+    RouteHandlerMethod
+} from "fastify";
 
-export type HandlerArgs = any[];
-/**
- * Left for backwards compatibility.
- * @deprecated
- */
-export type HandlerContext = Context;
+export { FastifyInstance, HTTPMethods } from "fastify";
+import { ClientContext } from "@webiny/handler-client/types";
 
-/**
- * The main context which is constructed on every request.
- * All other contexts should extend this one.
- */
-export interface Context {
-    plugins: PluginsContainer;
-    args: HandlerArgs;
-    readonly WEBINY_VERSION: string;
-    /**
-     * Not to be used outside of Webiny internal code.
-     * @internal
-     */
-    hasResult: () => boolean;
-    /**
-     * Not to be used outside of Webiny internal code.
-     * @internal
-     *
-     * @private
-     */
-    _result?: any;
-    /**
-     * Not to be used outside of Webiny internal code.
-     * @internal
-     */
-    setResult: (value: any) => void;
-    /**
-     * Not to be used outside of Webiny internal code.
-     * @internal
-     */
-    getResult: () => void;
-    /**
-     * Wait for property to be defined on the object and then execute the callable.
-     * In case of multiple objects defined, wait for all of them.
-     */
-    waitFor: <T extends Context = Context>(
-        obj: string[] | string,
-        cb: (context: T) => void
-    ) => void;
+export type RouteTypes = HTTPMethods;
+
+export interface RouteMethodOptions {
+    override?: boolean;
 }
 
-/**
- * Left for backwards-compatibility.
- *
- * @deprecated
- */
-export type ContextPlugin<
-    C0 = Context,
-    C1 = Context,
-    C2 = Context,
-    C3 = Context,
-    C4 = Context,
-    C5 = Context,
-    C6 = Context,
-    C7 = Context,
-    C8 = Context,
-    C9 = Context
-> = Plugin & {
-    type: "context";
-    apply(context: C0 & C1 & C2 & C3 & C4 & C5 & C6 & C7 & C8 & C9): Promise<void>;
-};
-/**
- * Left for backwards-compatibility.
- *
- * @deprecated
- */
-export type HandlerPlugin<
-    C0 = Context,
-    C1 = Context,
-    C2 = Context,
-    C3 = Context,
-    C4 = Context,
-    C5 = Context,
-    C6 = Context,
-    C7 = Context,
-    C8 = Context,
-    C9 = Context
-> = Plugin & {
-    type: "handler";
-    handle(
-        context: C0 & C1 & C2 & C3 & C4 & C5 & C6 & C7 & C8 & C9,
-        next: () => Promise<void>
-    ): any;
-};
-/**
- * Left for backwards-compatibility.
- *
- * @deprecated
- */
-export type HandlerResultPlugin<
-    C0 = Context,
-    C1 = Context,
-    C2 = Context,
-    C3 = Context,
-    C4 = Context,
-    C5 = Context,
-    C6 = Context,
-    C7 = Context,
-    C8 = Context,
-    C9 = Context
-> = Plugin & {
-    type: "handler-result";
-    handle(context: C0 & C1 & C2 & C3 & C4 & C5 & C6 & C7 & C8 & C9, result: any): any;
-};
-/**
- * Left for backwards-compatibility.
- *
- * @deprecated
- */
-export type HandlerErrorPlugin<
-    C0 = Context,
-    C1 = Context,
-    C2 = Context,
-    C3 = Context,
-    C4 = Context,
-    C5 = Context,
-    C6 = Context,
-    C7 = Context,
-    C8 = Context,
-    C9 = Context
-> = Plugin & {
-    type: "handler-error";
-    handle(
-        context: C0 & C1 & C2 & C3 & C4 & C5 & C6 & C7 & C8 & C9,
-        error: any,
-        next: Function
-    ): Promise<any>;
-};
+export type RouteMethodPath = `/${string}` | "*";
+export interface RouteMethod {
+    (path: RouteMethodPath, handler: RouteHandlerMethod, options?: RouteMethodOptions): void;
+}
+
+export type Request = FastifyRequest;
+export type Reply = FastifyReply;
+
+export type DefinedContextRoutes = Record<RouteTypes, string[]>;
+export interface ContextRoutes {
+    defined: DefinedContextRoutes;
+    onGet: RouteMethod;
+    onPost: RouteMethod;
+    onPut: RouteMethod;
+    onPatch: RouteMethod;
+    onDelete: RouteMethod;
+    onOptions: RouteMethod;
+    onAll: RouteMethod;
+    onHead: RouteMethod;
+}
+
+export interface Context extends ClientContext {
+    /**
+     * An instance of fastify server.
+     * Use at your own risk.
+     * @instance
+     */
+    server: FastifyInstance;
+    /**
+     * Current request. Must be set only once!
+     */
+    request: FastifyRequest;
+    /**
+     * @internal
+     */
+    routes: ContextRoutes;
+}
+
+declare module "fastify" {
+    interface FastifyInstance {
+        webiny: Context;
+    }
+}

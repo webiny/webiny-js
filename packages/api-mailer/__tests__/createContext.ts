@@ -1,6 +1,6 @@
 import { MailerConfig, MailerContext } from "~/types";
 import { createMailer } from "~/index";
-import { Context, ContextPlugin } from "@webiny/handler";
+import { Context, ContextPlugin } from "@webiny/api";
 
 export const createContext = async (config?: MailerConfig): Promise<MailerContext> => {
     const context = new Context({

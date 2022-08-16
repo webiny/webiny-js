@@ -47,6 +47,9 @@ export const createAdminUsers = ({
         onUserBeforeCreate: createTopic("adminUsers.onBeforeCreate"),
         onUserBeforeDelete: createTopic("adminUsers.onBeforeDelete"),
         onUserBeforeUpdate: createTopic("adminUsers.onBeforeUpdate"),
+        onUserCreateError: createTopic("adminUsers.onCreateError"),
+        // onUserUpdateError: createTopic("adminUsers.onUpdateError"),
+        // onUserDeleteError: createTopic("adminUsers.onDeleteError"),
         onBeforeInstall: createTopic("adminUsers.onBeforeInstall"),
         onInstall: createTopic("adminUsers.onInstall"),
         onAfterInstall: createTopic("adminUsers.onAfterInstall"),
@@ -129,6 +132,11 @@ export const createAdminUsers = ({
 
                 loaders.getUser.clear(result.id).prime(result.id, result);
             } catch (e) {
+                await this.onUserCreateError.publish({
+                    user,
+                    inputData: data,
+                    error: e
+                });
                 // If something failed, let's undo the previous incrementWcpSeats call.
                 await decrementWcpSeats();
                 throw e;
@@ -160,6 +168,10 @@ export const createAdminUsers = ({
 
                 await this.onUserAfterDelete.publish({ user });
             } catch (err) {
+                await this.onUserDeleteError.publish({
+                    user,
+                    error: err
+                });
                 throw WebinyError.from(err, {
                     message: "Could not delete user.",
                     code: "DELETE_USER_ERROR",
@@ -233,6 +245,11 @@ export const createAdminUsers = ({
 
                 return updatedUser;
             } catch (err) {
+                await this.onUserUpdateError.publish({
+                    user: originalUser,
+                    inputData: data,
+                    error: err
+                });
                 throw WebinyError.from(err, {
                     message: "Cannot update user.",
                     code: "UPDATE_USER_ERROR"
