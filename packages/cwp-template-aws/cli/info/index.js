@@ -20,7 +20,7 @@ const printEnvOutput = async (env, context) => {
     console.log(`Environment: ${green(env)}`);
     console.log(line);
 
-    const apiFolder = getApiFolder();
+    const apiFolder = getApiFolder(context);
 
     let stacksDeployedCount = 0;
     let output = getStackOutput({ folder: apiFolder, env });
@@ -89,7 +89,6 @@ module.exports = {
             },
             async args => {
                 const { env } = args;
-
                 if (!env) {
                     // Get all existing environments
                     const glob = require("fast-glob");
