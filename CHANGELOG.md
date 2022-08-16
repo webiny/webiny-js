@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.31.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.30.0...v5.31.0-beta.0) (2022-08-16)
+
+
+### Bug Fixes
+
+* **api-file-manager:** handle download of large files without using s3.getObject ([#2577](https://github.com/webiny/webiny-js/issues/2577)) ([2d5413f](https://github.com/webiny/webiny-js/commit/2d5413fc0aa41c953f6d0eae3834c019dd37ceb9))
+* **cwp-template-aws:** pass context into path checking ([4733439](https://github.com/webiny/webiny-js/commit/4733439e43e9015640cbb4a0534cba36187a1a1d))
+* **cwp-template-aws:** set PUPPETEER_SKIP_CHROMIUM_DOWNLOAD variable ([#2584](https://github.com/webiny/webiny-js/issues/2584)) ([41d3bec](https://github.com/webiny/webiny-js/commit/41d3beca86b643fc69696ab18c396d4ad67526f9))
+* **handler-aws:** create event handler export ([644a831](https://github.com/webiny/webiny-js/commit/644a83167ab2e438a1572029d862cf91a97561fb))
+* **pulumi-aws:** assign proper Lambda execution roles in prod setup ([#2585](https://github.com/webiny/webiny-js/issues/2585)) ([7b232c7](https://github.com/webiny/webiny-js/commit/7b232c7204429bed9a60f7a02c8bee8cad39d94f))
+* **pulumi-sdk:** set GODEBUG variable for M1 ([#2581](https://github.com/webiny/webiny-js/issues/2581)) ([1116fd0](https://github.com/webiny/webiny-js/commit/1116fd0e8556cb92ee6e55fb8758b16148e5ebb0))
+* **puppeteer:** use puppeteer-core to skip chromium download ([#2587](https://github.com/webiny/webiny-js/issues/2587)) ([e4eddfd](https://github.com/webiny/webiny-js/commit/e4eddfd2a371f9b7de6bac37ded6584ec9b43879))
+* **serverless-cms-aws:** disable cache control on website preview index.html ([#2575](https://github.com/webiny/webiny-js/issues/2575)) ([cff4a62](https://github.com/webiny/webiny-js/commit/cff4a628ee58bd020ead7ca031d085fd87b8db92))
+* improve setup-project script ([#2571](https://github.com/webiny/webiny-js/issues/2571)) ([6c010d9](https://github.com/webiny/webiny-js/commit/6c010d99a58e3974d0d7efaefc5ac9cea2abc113))
+
+
+### Features
+
+* **ci-cd scaffold:** use repository secrets instead of environments ([7eb6f77](https://github.com/webiny/webiny-js/commit/7eb6f779a974b2689c843bea8a599d20836725b2))
+* **handler:** export ContextPlugin ([7263725](https://github.com/webiny/webiny-js/commit/7263725818842f824a7417e3916307b4bd25eb95))
+* **handler-fastify:** add fastify as handler into the system ([#2546](https://github.com/webiny/webiny-js/issues/2546)) ([8d258aa](https://github.com/webiny/webiny-js/commit/8d258aa2ebd8562b79e395d7aeea6316405f7f4e))
+* add support for custom React apps ([#2569](https://github.com/webiny/webiny-js/issues/2569)) ([f7af516](https://github.com/webiny/webiny-js/commit/f7af516d745b2da74da9497658f3fd9702d5a639))
+* make all buckets private ([#2558](https://github.com/webiny/webiny-js/issues/2558)) ([6e84b04](https://github.com/webiny/webiny-js/commit/6e84b043f6f5bd37f5e02babdd51bad43f5914b3))
+
+
+
+
+
 # [5.30.0](https://github.com/webiny/webiny-js/compare/v5.30.0-beta.1...v5.30.0) (2022-07-27)
 
 **Note:** Version bump only for package webiny-js

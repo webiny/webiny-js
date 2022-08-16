@@ -1,6 +1,6 @@
 {
   "name": "@webiny/pulumi-sdk",
-  "version": "5.30.0",
+  "version": "5.31.0-beta.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -29,8 +29,8 @@
     "@babel/core": "^7.16.0",
     "@types/lodash": "^4.14.178",
     "@types/node": "*",
-    "@webiny/cli": "^5.29.0",
-    "@webiny/project-utils": "^5.29.0",
+    "@webiny/cli": "^5.31.0-beta.0",
+    "@webiny/project-utils": "^5.31.0-beta.0",
     "rimraf": "^3.0.2",
     "typescript": "4.7.4"
   },
