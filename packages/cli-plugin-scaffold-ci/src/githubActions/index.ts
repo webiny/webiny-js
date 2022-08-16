@@ -296,7 +296,7 @@ const plugin: CliPluginsScaffoldCi<GithubActionsInput> = {
             });
 
             console.log(chalk.red("✘") + " Cannot continue, exiting...");
-            process.exit();
+            return;
         }
 
         // 3. Create protected (long-lived) branches.
