@@ -20,7 +20,7 @@ import {
     RenderUrlParams,
     RenderUrlPostHtmlParams
 } from "./types";
-import { Browser, Page } from "puppeteer";
+import { Browser, Page } from "puppeteer-core";
 import { TagPathLink } from "~/types";
 
 const windowSet = (page: Page, name: string, value: string | boolean) => {

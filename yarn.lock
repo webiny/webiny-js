@@ -8997,7 +8997,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/puppeteer@npm:^5.4.2":
+"@types/puppeteer-core@npm:^5.4.0":
+  version: 5.4.0
+  resolution: "@types/puppeteer-core@npm:5.4.0"
+  dependencies:
+    "@types/puppeteer": "*"
+  checksum: a62fef210beed01bc122007eebc7b223e28d4e49cb6233587e388c86d8954aab124bb0818fee3ca3e6536f5fa3126e1f63f570534f5fa149eb063eb6f1573775
+  languageName: node
+  linkType: hard
+
+"@types/puppeteer@npm:*":
   version: 5.4.6
   resolution: "@types/puppeteer@npm:5.4.6"
   dependencies:
@@ -10660,7 +10669,6 @@ __metadata:
     "@commodo/fields": beta
     "@types/archiver": ^5.3.1
     "@types/node-fetch": ^2.6.1
-    "@types/puppeteer": ^5.4.2
     "@types/yauzl": ^2.9.2
     "@webiny/api": ^5.30.0
     "@webiny/api-dynamodb-to-elasticsearch": ^5.30.0
@@ -10787,7 +10795,6 @@ __metadata:
     "@commodo/fields": beta
     "@types/extract-zip": ^1.6.2
     "@types/node-fetch": ^2.6.1
-    "@types/puppeteer": ^5.4.2
     "@types/rimraf": ^3.0.2
     "@webiny/api": ^5.30.0
     "@webiny/api-file-manager": ^5.30.0
@@ -10896,6 +10903,7 @@ __metadata:
     "@babel/preset-typescript": ^7.16.0
     "@babel/runtime": ^7.16.3
     "@types/object-hash": ^2.2.1
+    "@types/puppeteer-core": ^5.4.0
     "@webiny/api": ^5.30.0
     "@webiny/cli": ^5.30.0
     "@webiny/error": ^5.30.0
@@ -10913,7 +10921,7 @@ __metadata:
     posthtml-noopener: ^1.0.5
     posthtml-plugin-link-preload: ^1.0.0
     prettier: ^2.3.2
-    puppeteer: ^5.5.0
+    puppeteer-core: ^5.5.0
     rimraf: ^3.0.2
     shortid: ^2.2.16
     srcset: ^4.0.0
@@ -33171,9 +33179,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"puppeteer@npm:^5.5.0":
+"puppeteer-core@npm:^5.5.0":
   version: 5.5.0
-  resolution: "puppeteer@npm:5.5.0"
+  resolution: "puppeteer-core@npm:5.5.0"
   dependencies:
     debug: ^4.1.0
     devtools-protocol: 0.0.818844
@@ -33187,7 +33195,7 @@ __metadata:
     tar-fs: ^2.0.0
     unbzip2-stream: ^1.3.3
     ws: ^7.2.3
-  checksum: ce6fabe8cc44db25def9a5185db15a6fa94702fed4213140c7b686e30ea4cc8a31be67083f4b799e02c9c0829601eb21c632c9aa076746926d60a3f0fcf9e04d
+  checksum: b50e55dd6e88524e50fa6b71dd45b32d7ff556e21f60f4ec0cf0ca686248959abcb14d98e5bb7324210ac822b041b773d9bd17c49ea95641f9c7a1f66ed88eec
   languageName: node
   linkType: hard
 
