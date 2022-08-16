@@ -1,13 +1,19 @@
 import { createWebsitePulumiApp, CreateWebsitePulumiAppParams } from "@webiny/pulumi-aws";
 import { PluginCollection } from "@webiny/plugins/types";
-import { uploadAppToS3, generateCommonHandlers, renderWebsite } from "./website/plugins";
+import { generateCommonHandlers, renderWebsite } from "./website/plugins";
+import { uploadAppToS3 } from "./react/plugins";
 
 export interface CreateWebsiteAppParams extends CreateWebsitePulumiAppParams {
     plugins?: PluginCollection;
 }
 
 export function createWebsiteApp(projectAppParams: CreateWebsiteAppParams = {}) {
-    const builtInPlugins = [uploadAppToS3(), generateCommonHandlers, renderWebsite];
+    const builtInPlugins = [
+        uploadAppToS3({ folder: "apps/website" }),
+        generateCommonHandlers,
+        renderWebsite
+    ];
+
     const customPlugins = projectAppParams.plugins ? [...projectAppParams.plugins] : [];
 
     return {

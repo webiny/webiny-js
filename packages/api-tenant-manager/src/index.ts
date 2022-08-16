@@ -1,5 +1,5 @@
 import graphqlPlugins from "./graphql";
-import { ContextPlugin } from "@webiny/handler";
+import { ContextPlugin } from "@webiny/api";
 import { TenantManagerContext } from "./types";
 
 export default () => [

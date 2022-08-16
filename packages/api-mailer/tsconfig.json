@@ -3,7 +3,7 @@
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
     { "path": "../error" },
-    { "path": "../handler" },
+    { "path": "../api" },
     { "path": "../plugins" },
     { "path": "../pubsub" }
   ],
@@ -15,8 +15,8 @@
       "~/*": ["./src/*"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
-      "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"],
+      "@webiny/api/*": ["../api/src/*"],
+      "@webiny/api": ["../api/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/pubsub/*": ["../pubsub/src/*"],

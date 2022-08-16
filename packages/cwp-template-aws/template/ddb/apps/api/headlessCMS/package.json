@@ -24,7 +24,6 @@
     "@webiny/handler-aws": "latest",
     "@webiny/handler-client": "latest",
     "@webiny/handler-db": "latest",
-    "@webiny/handler-http": "latest",
     "@webiny/handler-logs": "latest",
     "@webiny/project-utils": "latest"
   }

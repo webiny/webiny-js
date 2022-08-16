@@ -13,10 +13,10 @@
   "dependencies": {
     "@babel/runtime": "^7.16.3",
     "@types/aws-lambda": "^8.10.93",
+    "@webiny/api": "^5.30.0",
     "@webiny/api-prerendering-service": "^5.30.0",
     "@webiny/error": "^5.30.0",
-    "@webiny/handler": "^5.30.0",
-    "@webiny/handler-args": "^5.30.0",
+    "@webiny/handler-aws": "^5.30.0",
     "@webiny/handler-client": "^5.30.0",
     "lodash": "^4.17.21",
     "nanoid": "^4.0.0"

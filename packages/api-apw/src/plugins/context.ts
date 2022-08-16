@@ -1,6 +1,6 @@
 import { attachApwHooks } from "./hooks";
 import WebinyError from "@webiny/error";
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
+import { ContextPlugin } from "@webiny/api";
 import { ApwContext } from "~/types";
 import { createApw } from "~/crud";
 import { apwPageBuilderHooks } from "./pageBuilder";

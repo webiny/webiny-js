@@ -1,12 +1,22 @@
 import * as path from "path";
 import * as fs from "fs";
 import { getStackOutput } from "@webiny/cli-plugin-deploy-pulumi/utils";
-import { uploadFolderToS3 } from "@webiny/pulumi-aws";
+import { uploadFolderToS3, UploadFolderToS3Params } from "@webiny/pulumi-aws";
 import { CliContext } from "@webiny/cli/types";
 
-interface UploadAppToS3Params {
+export type UploadAppToS3Config = Partial<
+    Pick<
+        UploadFolderToS3Params,
+        | "path"
+        | "cacheControl"
+        | "onFileUploadSuccess"
+        | "onFileUploadSkip"
+        | "onFileUploadError"
+        | "acl"
+    >
+> & {
     folder: string;
-}
+};
 
 /**
  * This plugin uploads the React application to the deployed Amazon S3 bucket.
@@ -14,7 +24,7 @@ interface UploadAppToS3Params {
  * and relevant cloud infrastructure resources have been deployed (via `webiny deploy` command).
  * https://www.webiny.com/docs/how-to-guides/deployment/deploy-your-project/
  */
-export const uploadAppToS3 = ({ folder }: UploadAppToS3Params) => ({
+export const uploadAppToS3 = ({ folder, ...config }: UploadAppToS3Config) => ({
     type: "hook-after-deploy",
     name: "hook-after-deploy-upload-app-to-s3",
     async hook(params: Record<string, any>, context: CliContext) {
@@ -36,6 +46,17 @@ export const uploadAppToS3 = ({ folder }: UploadAppToS3Params) => ({
         await uploadFolderToS3({
             path: buildFolderPath,
             bucket: appOutput.appStorage,
+            acl: "private",
+            cacheControl: [
+                {
+                    pattern: /index\.html/,
+                    value: "no-cache, no-store, must-revalidate"
+                },
+                {
+                    pattern: /.*/,
+                    value: "max-age=31536000"
+                }
+            ],
             onFileUploadSuccess: ({ paths }) => {
                 context.success(paths.relative);
             },
@@ -45,7 +66,8 @@ export const uploadAppToS3 = ({ folder }: UploadAppToS3Params) => ({
             },
             onFileUploadSkip: ({ paths }) => {
                 context.info(`Skipping ${context.info.hl(paths.relative)}, already exists.`);
-            }
+            },
+            ...config
         });
 
         const duration = (new Date().getTime() - start) / 1000;

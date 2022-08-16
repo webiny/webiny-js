@@ -8,9 +8,9 @@
     { "path": "../api-security-so-ddb/tsconfig.build.json" },
     { "path": "../api-tenancy-so-ddb/tsconfig.build.json" },
     { "path": "../api-wcp/tsconfig.build.json" },
+    { "path": "../api/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },
-    { "path": "../handler-aws/tsconfig.build.json" },
-    { "path": "../handler-http/tsconfig.build.json" }
+    { "path": "../handler-aws/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",

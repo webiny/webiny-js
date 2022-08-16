@@ -20,6 +20,11 @@ export const attachRequiredFieldValue = (def: string, field: CmsModelField): str
     }
     return `${def}!`;
 };
+
+const envVars: string[] = [
+    "HEADLESS_CMS_GRAPHQL_INPUT_REQUIRE_ARRAY_ITEM",
+    "WEBINY_HEADLESS_CMS_GRAPHQL_INPUT_REQUIRE_ARRAY_ITEM"
+];
 /**
  * Method creates single and multiple values fields.
  */
@@ -30,8 +35,7 @@ export const createGraphQLInputField = (field: CmsModelField, graphQlType: strin
     }
     const multipleRequired = getIsRequired(field.listValidation) ? "!" : "";
 
-    const itemRequired =
-        process.env.HEADLESS_CMS_GRAPHQL_INPUT_REQUIRE_ARRAY_ITEM === "false" ? "" : "!";
+    const itemRequired = envVars.some(v => process.env[v] === "false") ? "" : "!";
 
     return `${field.fieldId}: [${graphQlType}${itemRequired}]${multipleRequired}`;
 };

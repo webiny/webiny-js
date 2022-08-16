@@ -38,7 +38,6 @@
     "@webiny/handler-client": "latest",
     "@webiny/handler-db": "latest",
     "@webiny/handler-graphql": "latest",
-    "@webiny/handler-http": "latest",
     "@webiny/handler-logs": "latest",
     "@webiny/project-utils": "latest"
   }

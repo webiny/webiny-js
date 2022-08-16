@@ -13,8 +13,8 @@
   "license": "MIT",
   "dependencies": {
     "@elastic/elasticsearch": "7.12.0",
+    "@webiny/api": "^5.30.0",
     "@webiny/error": "^5.30.0",
-    "@webiny/handler": "^5.30.0",
     "@webiny/plugins": "^5.30.0",
     "@webiny/utils": "^5.30.0",
     "aws-elasticsearch-connector": "^9.0.0",

@@ -1,6 +1,6 @@
 import { Plugin } from "@webiny/plugins/types";
 import { I18NContext, I18NLocale } from "@webiny/api-i18n/types";
-import { Context } from "@webiny/handler/types";
+import { Context } from "@webiny/api/types";
 import { TenancyContext } from "@webiny/api-tenancy/types";
 import {
     GraphQLFieldResolver,
@@ -8,7 +8,6 @@ import {
     Resolvers
 } from "@webiny/handler-graphql/types";
 import { SecurityPermission } from "@webiny/api-security/types";
-import { HttpContext } from "@webiny/handler-http/types";
 import { DbContext } from "@webiny/handler-db/types";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
@@ -58,7 +57,7 @@ export interface HeadlessCms
 export interface CmsContext
     extends Context,
         DbContext,
-        HttpContext,
+        // HttpContext,
         I18NContext,
         FileManagerContext,
         TenancyContext {

@@ -27,7 +27,6 @@
     "@babel/preset-flow": "^7.16.0",
     "@types/inquirer": "^7.3.1",
     "@webiny/cli": "^5.30.0",
-    "@webiny/handler": "^5.30.0",
     "@webiny/plugins": "^5.30.0",
     "@webiny/project-utils": "^5.30.0",
     "chalk": "^4.1.0",

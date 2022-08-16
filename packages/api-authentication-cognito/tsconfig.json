@@ -4,7 +4,7 @@
   "references": [
     { "path": "../api-authentication" },
     { "path": "../api-cognito-authenticator" },
-    { "path": "../handler" }
+    { "path": "../api" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -16,8 +16,8 @@
       "@webiny/api-authentication": ["../api-authentication/src"],
       "@webiny/api-cognito-authenticator/*": ["../api-cognito-authenticator/src/*"],
       "@webiny/api-cognito-authenticator": ["../api-cognito-authenticator/src"],
-      "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"]
+      "@webiny/api/*": ["../api/src/*"],
+      "@webiny/api": ["../api/src"]
     },
     "baseUrl": "."
   }

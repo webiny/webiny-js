@@ -17,6 +17,7 @@ export default () => {
 
     return new HandlerResultPlugin(async () => {
         const url = process.env.WEBINY_LOGS_FORWARD_URL;
+        console.log(url);
         if (logs.length && typeof url === "string" && url.startsWith("http")) {
             try {
                 await fetch(url, {

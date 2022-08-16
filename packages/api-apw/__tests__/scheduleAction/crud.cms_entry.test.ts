@@ -28,7 +28,7 @@ describe("Schedule action CRUD Test - CMS Entry type", () => {
     const { handler } = useHandler();
 
     test("Should able to create, update, list, get and delete schedule action items", async () => {
-        const context = await handler();
+        const context = await handler({}, {} as any);
         const scheduleActionCrud: ApwScheduleActionCrud = context.scheduleAction;
         /**
          * Let's create one schedule action item.
@@ -146,7 +146,7 @@ describe("Schedule action CRUD Test - CMS Entry type", () => {
     });
 
     test("Should able to sort schedule action items by datetime", async () => {
-        const context = await handler();
+        const context = await handler({}, {} as any);
         const scheduleActionCrud: ApwScheduleActionCrud = context.scheduleAction;
         /**
          * Let's create five schedule action item.
@@ -232,7 +232,7 @@ describe("Schedule action CRUD Test - CMS Entry type", () => {
     });
 
     test("Should able to get all schedule action items with same datetime", async () => {
-        const context = await handler();
+        const context = await handler({}, {} as any);
         const scheduleActionCrud: ApwScheduleActionCrud = context.scheduleAction;
         /**
          * Let's create five schedule action item.
@@ -301,7 +301,7 @@ describe("Schedule action CRUD Test - CMS Entry type", () => {
     });
 
     test("Should able to get and update current  schedule action item", async () => {
-        const context = await handler();
+        const context = await handler({}, {} as any);
         const scheduleActionCrud: ApwScheduleActionCrud = context.scheduleAction;
         /**
          * Let's create two schedule action item.
@@ -392,7 +392,7 @@ describe("Schedule action CRUD Test - CMS Entry type", () => {
     });
 
     test("Validation should fail when modelId is not sent", async () => {
-        const context = await handler();
+        const context = await handler({}, {} as any);
         const scheduleActionCrud: ApwScheduleActionCrud = context.scheduleAction;
 
         let ex: Error | null = null;
