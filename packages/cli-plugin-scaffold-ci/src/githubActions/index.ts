@@ -91,7 +91,14 @@ const plugin: CliPluginsScaffoldCi<GithubActionsInput> = {
                 required: true,
                 when: () => !user.email,
                 type: "input",
-                validate: async answer => validation.validate(answer, "email")
+                validate: answer => {
+                    try {
+                        validation.validateSync(answer, "email");
+                        return true;
+                    } catch (e) {
+                        return e.message;
+                    }
+                }
             },
             {
                 name: "newOrExistingRepo",
