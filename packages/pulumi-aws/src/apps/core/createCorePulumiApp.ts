@@ -79,7 +79,7 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
             const eventBus = app.addModule(CoreEventBus);
 
             // Setup file core bucket
-            const fileManagerBucket = app.addModule(CoreFileManger, { protect });
+            const { bucket: fileManagerBucket } = app.addModule(CoreFileManger, { protect });
 
             const elasticSearch = app.getParam(projectAppParams?.elasticSearch)
                 ? app.addModule(ElasticSearch, { protect })
