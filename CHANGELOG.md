@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.31.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.31.0-beta.0...v5.31.0-beta.1) (2022-08-17)
+
+
+### Bug Fixes
+
+* **pulumi-aws:** block all public access on FM bucket ([2415e90](https://github.com/webiny/webiny-js/commit/2415e9089d2599cad84907f66cad6c344d6f8019))
+
+
+
+
+
 # [5.31.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.30.0...v5.31.0-beta.0) (2022-08-16)
 
 
