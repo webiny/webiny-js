@@ -14,15 +14,15 @@ import { LIST_BLOCK_CATEGORIES } from "~/admin/views/BlockCategories/graphql";
 import createElementPlugin from "~/admin/utils/createElementPlugin";
 import { createStateInitializer } from "./createStateInitializer";
 import { BlockEditorConfig } from "./config/BlockEditorConfig";
-import { BlockWithContent } from "~/blockEditor/state";
+import { BlockWithContent, BlockCategoriesAtomType } from "~/blockEditor/state";
 import { createElement } from "~/editor/helpers";
 import { PbPageBlock, PbBlockCategory, PbEditorElement } from "~/types";
-import createBlockCategoryPlugin from "~/admin/utils/createBlockCategoryPlugin";
 
 export const BlockEditor: React.FC = () => {
     const client = useApolloClient();
     const { params } = useRouter();
     const [block, setBlock] = useState<BlockWithContent>();
+    const [blockCategories, setBlockCategories] = useState<BlockCategoriesAtomType>();
     const blockId = decodeURIComponent(params["id"]);
 
     const LoadData = useMemo(() => {
@@ -48,11 +48,8 @@ export const BlockEditor: React.FC = () => {
             .then(({ data }) => {
                 const blockCategoriesData: PbBlockCategory[] =
                     get(data, "pageBuilder.listBlockCategories.data") || [];
-                blockCategoriesData.forEach(element => {
-                    createBlockCategoryPlugin({
-                        ...element
-                    });
-                });
+
+                setBlockCategories(blockCategoriesData);
             });
 
         const blockData = client
@@ -87,7 +84,10 @@ export const BlockEditor: React.FC = () => {
             <BlockEditorConfig />
             <LoadData>
                 <PbEditor
-                    stateInitializerFactory={createStateInitializer(block as BlockWithContent)}
+                    stateInitializerFactory={createStateInitializer(
+                        block as BlockWithContent,
+                        blockCategories as BlockCategoriesAtomType
+                    )}
                 />
             </LoadData>
         </React.Suspense>

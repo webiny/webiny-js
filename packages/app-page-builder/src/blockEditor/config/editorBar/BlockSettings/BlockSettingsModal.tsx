@@ -12,7 +12,7 @@ import { Dialog, DialogCancel, DialogTitle, DialogActions, DialogContent } from 
 
 import { blockSettingsStateAtom } from "./state";
 import { useBlock } from "~/blockEditor/hooks/useBlock";
-import { PbEditorBlockCategoryPlugin } from "~/types";
+import { useBlockCategories } from "~/blockEditor/hooks/useBlockCategories";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import { UpdateDocumentActionEvent } from "~/editor/recoil/actions";
 import { BlockAtomType } from "~/blockEditor/state";
@@ -26,12 +26,11 @@ const ButtonWrapper = styled("div")({
 const BlockSettingsModal: React.FC = () => {
     const handler = useEventActionHandler();
     const [block] = useBlock();
+    const [blockCategories] = useBlockCategories();
     const [, setState] = useRecoilState(blockSettingsStateAtom);
     const onClose = useCallback(() => {
         setState(false);
     }, []);
-
-    const blockCategories = plugins.byType<PbEditorBlockCategoryPlugin>("pb-editor-block-category");
 
     const updateBlock = (data: Partial<BlockAtomType>) => {
         handler.trigger(
@@ -61,8 +60,8 @@ const BlockSettingsModal: React.FC = () => {
                                 >
                                     <Select label="Category">
                                         {blockCategories.map((blockCategory, index) => (
-                                            <option key={index} value={blockCategory.categoryName}>
-                                                {blockCategory.title}
+                                            <option key={index} value={blockCategory.slug}>
+                                                {blockCategory.name}
                                             </option>
                                         ))}
                                     </Select>

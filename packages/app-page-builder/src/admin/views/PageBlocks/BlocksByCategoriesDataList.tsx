@@ -1,9 +1,10 @@
 import React, { useCallback, useMemo, useState } from "react";
-import styled from "@emotion/styled";
+import { css } from "emotion";
 import { i18n } from "@webiny/app/i18n";
 import { useRouter } from "@webiny/react-router";
 import { useQuery, useApolloClient } from "@apollo/react-hooks";
 import orderBy from "lodash/orderBy";
+import isEmpty from "lodash/isEmpty";
 import get from "lodash/get";
 
 import {
@@ -11,16 +12,18 @@ import {
     DataListModalOverlay,
     DataListModalOverlayAction,
     ScrollList,
+    List,
     ListItem,
     ListItemText,
+    ListItemTextPrimary,
     ListItemTextSecondary
 } from "@webiny/ui/List";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 import { Typography } from "@webiny/ui/Typography";
 import SearchUI from "@webiny/app-admin/components/SearchUI";
-import { Dialog, DialogTitle } from "@webiny/ui/Dialog";
-import { ButtonIcon, ButtonSecondary } from "@webiny/ui/Button";
+import { Dialog, DialogTitle, DialogContent, DialogActions } from "@webiny/ui/Dialog";
+import { ButtonDefault, ButtonIcon, ButtonSecondary } from "@webiny/ui/Button";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
@@ -28,14 +31,21 @@ import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18
 import { PbBlockCategory, PbPageBlock } from "~/types";
 import { LIST_PAGE_BLOCKS_AND_CATEGORIES, CREATE_PAGE_BLOCK } from "./graphql";
 
-import preview from "./assets/preview.png";
 import { addElementId } from "~/editor/helpers";
 
 const t = i18n.ns("app-page-builder/admin/page-blocks/by-categories-data-list");
 
-const CustomScrollList = styled(ScrollList)({
-    maxHeight: "425px",
-    height: "100%"
+const narrowDialog = css({
+    ".mdc-dialog__surface": {
+        width: 400,
+        minWidth: 400
+    }
+});
+
+const noRecordsWrapper = css({
+    display: "flex",
+    justifyContent: "center",
+    color: "var(--mdc-theme-on-surface)"
 });
 
 interface Sorter {
@@ -166,9 +176,7 @@ const BlocksByCategoriesDataList = ({ canCreate }: PageBuilderBlocksByCategories
                             }
                         ]
                     }),
-                    preview: {
-                        src: preview
-                    }
+                    preview: {}
                 }
             }
         });
@@ -247,17 +255,45 @@ const BlocksByCategoriesDataList = ({ canCreate }: PageBuilderBlocksByCategories
             <Dialog
                 open={isNewPageBlockDialogOpen}
                 onClose={() => setIsNewPageBlockDialogOpen(false)}
+                className={narrowDialog}
             >
                 <DialogTitle>
                     <Typography use="headline5">Please select block category</Typography>
                 </DialogTitle>
-                <CustomScrollList>
-                    {categoryList.map(item => (
-                        <ListItem key={item.slug} onClick={() => onCreatePageBlock(item.slug)}>
-                            <ListItemText>{item.name}</ListItemText>
-                        </ListItem>
-                    ))}
-                </CustomScrollList>
+                <DialogContent>
+                    <React.Fragment>
+                        {isEmpty(categoryList) ? (
+                            <div className={noRecordsWrapper}>
+                                <Typography use="overline">
+                                    There are no block categories
+                                </Typography>
+                            </div>
+                        ) : (
+                            <List twoLine>
+                                {categoryList.map(item => (
+                                    <ListItem
+                                        key={item.slug}
+                                        onClick={() => onCreatePageBlock(item.slug)}
+                                    >
+                                        <ListItemText>
+                                            <ListItemTextPrimary>{item.name}</ListItemTextPrimary>
+                                            <ListItemTextSecondary>
+                                                {item.slug}
+                                            </ListItemTextSecondary>
+                                        </ListItemText>
+                                    </ListItem>
+                                ))}
+                            </List>
+                        )}
+                    </React.Fragment>
+                </DialogContent>
+                <DialogActions>
+                    <ButtonDefault
+                        onClick={() => history.push("/page-builder/block-categories?new=true")}
+                    >
+                        + Create new block category
+                    </ButtonDefault>
+                </DialogActions>
             </Dialog>
         </>
     );
