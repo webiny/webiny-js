@@ -2,7 +2,6 @@ import React, { useCallback } from "react";
 import styled from "@emotion/styled";
 import { useRecoilState } from "recoil";
 
-import { plugins } from "@webiny/plugins";
 import { Form } from "@webiny/form";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { SimpleFormContent } from "@webiny/app-admin/components/SimpleForm";
