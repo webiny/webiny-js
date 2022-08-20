@@ -56,6 +56,7 @@ export const TabsContext = createContext<TabsContext | undefined>(undefined);
 
 export interface TabsImperativeApi {
     switchTab(index: number): void;
+    getActiveIndex(): number;
 }
 /**
  * Use Tabs component to display a list of choices, once the handler is triggered.
@@ -76,6 +77,9 @@ export const Tabs = forwardRef<TabsImperativeApi | undefined, TabsProps>((props,
     }, []);
 
     useImperativeHandle(ref, () => ({
+        getActiveIndex() {
+            return activeIndex;
+        },
         switchTab(tabIndex: number) {
             activateTabIndex(tabIndex);
         }
