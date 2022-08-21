@@ -14,10 +14,7 @@ async function buildHandlers(options) {
 
 module.exports = {
     commands: {
-        build: async options => {
-            await createBuildPackage({ cwd: __dirname })(options);
-            await buildHandlers(options);
-        },
+        build: createBuildPackage({ cwd: __dirname }),
         watch: createWatchPackage({ cwd: __dirname }),
         buildHandlers
     }

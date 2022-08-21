@@ -1,6 +1,6 @@
 {
   "name": "@webiny/aws-layers",
-  "version": "5.30.0",
+  "version": "5.31.0",
   "main": "index.js",
   "repository": {
     "type": "git",

@@ -3,12 +3,12 @@ const fs = require("fs");
 const webpack = require("webpack");
 const WebpackBar = require("webpackbar");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
-const { cli } = require("@webiny/cli");
 
 const { version } = require("@webiny/project-utils/package.json");
 const { getOutput, getEntry } = require("./utils");
 
 const isPre529 = () => {
+    const { cli } = require("@webiny/cli");
     return fs.existsSync(cli.resolve("api"));
 };
 
