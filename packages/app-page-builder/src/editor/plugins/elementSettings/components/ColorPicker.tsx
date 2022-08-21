@@ -5,7 +5,6 @@ import { activeElementAtom, elementByIdSelector } from "../../../recoil/modules"
 import { Typography } from "@webiny/ui/Typography";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { useRecoilValue } from "recoil";
-import { string } from "yargs";
 
 const extrapolateActiveElementValue = (
     value?: string,

@@ -1,7 +1,6 @@
 import React from "react";
 import Droppable, { DroppableIsVisiblePropType, DroppableOnDropPropType } from "../Droppable";
 import styled from "@emotion/styled";
-import { string } from "yargs";
 
 const InnerDiv = styled("div")({
     height: 5,

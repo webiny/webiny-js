@@ -162,7 +162,7 @@ context("Categories Module", () => {
         // Create the first page.
         cy.visit("/page-builder/pages");
         cy.get('div.action__container button[data-testid="new-record-button"]').click();
-        cy.get('[data-testid="pb-new-page-category-modal"] div.mdc-list-item:last-child').click();
+        cy.get('[data-testid="pb-new-page-category-modal"] li.mdc-list-item:last-child').click();
         // cy.get("header > div > section:last-child > button.mdc-icon-button").click(); // Settings button
         cy.findByTestId("page-settings-btn").click();
         cy.get('div[aria-haspopup="listbox"] input').type("super-page");
@@ -175,8 +175,7 @@ context("Categories Module", () => {
         // Create the second page.
         cy.visit("/page-builder/pages");
         cy.get('div.action__container button[data-testid="new-record-button"]').click();
-        cy.get('[data-testid="pb-new-page-category-modal"] div.mdc-list-item:last-child').click();
-        // cy.get("header > div > section:last-child > button.mdc-icon-button").click(); // Settings button
+        cy.get('[data-testid="pb-new-page-category-modal"] li.mdc-list-item:last-child').click();
         cy.findByTestId("page-settings-btn").click();
         cy.get('div[aria-haspopup="listbox"] input').type("super-");
         cy.wait(2000);
@@ -202,7 +201,7 @@ context("Categories Module", () => {
     it("should be able test slug input", () => {
         cy.visit("/page-builder/pages");
         cy.get('div.action__container button[data-testid="new-record-button"]').click();
-        cy.get('[data-testid="pb-new-page-category-modal"] div.mdc-list-item:last-child').click();
+        cy.get('[data-testid="pb-new-page-category-modal"] li.mdc-list-item:last-child').click();
         cy.findByTestId("page-settings-btn").click();
         cy.findByTestId("general-settings-path-input").clear().type("/about-us");
         cy.get('input[value="/about-us"]').should("exist");
@@ -216,7 +215,7 @@ context("Categories Module", () => {
     it("should select different display modes and ensure the view has changed", () => {
         cy.visit("/page-builder/pages");
         cy.get('div.action__container button[data-testid="new-record-button"]').click();
-        cy.get('[data-testid="pb-new-page-category-modal"] div.mdc-list-item:last-child').click();
+        cy.get('[data-testid="pb-new-page-category-modal"] li.mdc-list-item:last-child').click();
         cy.findByTestId("pb-content-add-block-button").click();
         cy.findByTestId("pb-editor-page-blocks-list-item-grid-block").trigger("mouseover");
         cy.findByText("Click to Add").click({ force: true });
@@ -247,7 +246,7 @@ context("Categories Module", () => {
     it("should be able to close main menu page builder editor on Esc key", () => {
         cy.visit("/page-builder/pages");
         cy.get('div.action__container button[data-testid="new-record-button"]').click();
-        cy.get('[data-testid="pb-new-page-category-modal"] div.mdc-list-item:last-child').click();
+        cy.get('[data-testid="pb-new-page-category-modal"] li.mdc-list-item:last-child').click();
         cy.findByTestId("pb-content-add-block-button").click();
         cy.findByTestId("pb-editor-page-blocks-list-item-grid-block").trigger("mouseover");
         cy.findByText("Click to Add").click({ force: true });
@@ -258,10 +257,9 @@ context("Categories Module", () => {
         cy.findByTestId("add-element").type("{esc}");
         cy.findByText("Saved").should("not.be.visible");
 
-        // test partea a doua
         cy.visit("/page-builder/pages");
         cy.get('div.action__container button[data-testid="new-record-button"]').click();
-        cy.get('[data-testid="pb-new-page-category-modal"] div.mdc-list-item:last-child').click();
+        cy.get('[data-testid="pb-new-page-category-modal"] li.mdc-list-item:last-child').click();
         cy.findByTestId("pb-content-add-block-button").click();
         cy.findByTestId("pb-editor-page-blocks-list-item-grid-block").trigger("mouseover");
         cy.findByText("Click to Add").click({ force: true });
@@ -294,7 +292,7 @@ context("Categories Module", () => {
     it("should ensure cloning page element works correctly", () => {
         cy.visit("/page-builder/pages");
         cy.get('div.action__container button[data-testid="new-record-button"]').click();
-        cy.get('[data-testid="pb-new-page-category-modal"] div.mdc-list-item:last-child').click();
+        cy.get('[data-testid="pb-new-page-category-modal"] li.mdc-list-item:last-child').click();
         cy.findByTestId("pb-content-add-block-button").click();
         cy.findByTestId("pb-editor-page-blocks-list-item-grid-block").trigger("mouseover");
         cy.findByText("Click to Add").click({ force: true });
@@ -328,7 +326,7 @@ context("Categories Module", () => {
     it("should ensure undo/redo works", () => {
         cy.visit("/page-builder/pages");
         cy.get('div.action__container button[data-testid="new-record-button"]').click();
-        cy.get('[data-testid="pb-new-page-category-modal"] div.mdc-list-item:last-child').click();
+        cy.get('[data-testid="pb-new-page-category-modal"] li.mdc-list-item:last-child').click();
         cy.findByTestId("pb-content-add-block-button").click();
         cy.findByTestId("pb-editor-page-blocks-list-item-grid-block").trigger("mouseover");
         cy.findByText("Click to Add").click({ force: true });
@@ -380,7 +378,7 @@ context("Categories Module", () => {
 
         // Change text color.
         cy.findByTestId("text-settings-color-picker").click();
-        cy.get('div[data-testid="text-color-picker-color-list"] div > div:nth-child(2)').click();
+        cy.get('div[data-testid="text-settings-color-picker-color-list"] div > div:nth-child(2)').click();
 
         // Clone the element.
         cy.findByTestId("element-data-test").click();
@@ -402,7 +400,7 @@ context("Categories Module", () => {
     it("should create basic flow of elements", () => {
         cy.visit("/page-builder/pages");
         cy.get('div.action__container button[data-testid="new-record-button"]').click();
-        cy.get('[data-testid="pb-new-page-category-modal"] div.mdc-list-item:last-child').click();
+        cy.get('[data-testid="pb-new-page-category-modal"] li.mdc-list-item:last-child').click();
         cy.findByTestId("pb-content-add-block-button").click();
         cy.findByTestId("pb-editor-page-blocks-list-item-grid-block").trigger("mouseover");
         cy.findByText("Click to Add").click({ force: true });
@@ -453,7 +451,7 @@ context("Categories Module", () => {
         cy.get("h1").contains("Heading").dblclick();
 
         // Assert breadcrumbs are visible.
-        cy.get("div > ul li span").should("exist");
+        cy.get('ul li span[style="--element-count:0;"]').should("exist");
         cy.get("li > span").contains("heading").should("exist");
 
         // Assert heading is visible in top-right corner.
@@ -463,7 +461,7 @@ context("Categories Module", () => {
         cy.findByText("Text").should("be.visible");
 
         cy.get("body").type("{esc}");
-        cy.get("div > ul li span").should("not.exist");
+        cy.get('ul li span[style="--element-count:0;"]').should("not.exist");
         cy.get("div.webiny-ui-tabs span")
             .contains("Select an element on the canvas to activate this panel.")
             .should("be.visible");
@@ -483,12 +481,12 @@ context("Categories Module", () => {
         cy.get('p[role="textbox"]').click({ force: true });
         cy.get("div.element-holder span").contains("paragraph").click({ force: true });
 
-        cy.get("div > ul li span").should("exist");
+        cy.get('ul li span[style="--element-count:0;"]').should("exist");
         cy.get("li > span").contains("paragraph").should("exist");
         cy.get("div.element-holder span").contains("paragraph").should("be.visible");
         cy.findByText("Text").should("be.visible");
         cy.get("body").type("{esc}");
-        cy.get("div > ul li span").should("not.exist");
+        cy.get('ul li span[style="--element-count:0;"]').should("not.exist");
         cy.get("div.webiny-ui-tabs span")
             .contains("Select an element on the canvas to activate this panel.")
             .should("be.visible");
@@ -512,10 +510,10 @@ context("Categories Module", () => {
         cy.contains("Description");
 
         // Publish page.
-        cy.get("button > span").contains("Publish").click();
+        cy.get("button > span").contains("Publish").click({force: true});
         cy.get('[data-testid="pb-editor-publish-confirmation-dialog"] > div > div button')
             .contains("Confirm")
-            .click();
+            .click({force: true});
         cy.findByTestId("new-record-button").should("exist");
 
         // Edit published page.
@@ -542,10 +540,10 @@ context("Categories Module", () => {
         cy.findByTestId("pb-content-add-block-button").should("be.visible");
 
         // Publish changes.
-        cy.get("button > span").contains("Publish changes").click();
+        cy.get("button > span").contains("Publish changes").click({force: true});
         cy.get('[data-testid="pb-editor-publish-confirmation-dialog"] > div > div button')
             .contains("Confirm")
-            .click();
+            .click({force: true});
         cy.findByTestId("new-record-button").should("exist");
 
         // Delete published page.
