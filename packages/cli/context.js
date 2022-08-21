@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const { importModule, getProject, PluginsContainer, log, localStorage } = require("./utils");
+const { importModule, getProject, PluginsContainer, log, localStorage, noop } = require("./utils");
 
 const project = getProject();
 
@@ -92,7 +92,7 @@ class Context {
     log = log.log;
     info = log.info;
     success = log.success;
-    debug = log.debug;
+    debug = process.argv.includes("--debug") ? log.debug : noop;
     warning = log.warning;
     error = log.error;
 

@@ -1,10 +1,10 @@
 import S3 from "aws-sdk/clients/s3";
 import { join } from "path";
-import { HandlerPlugin } from "@webiny/handler";
 import WebinyError from "@webiny/error";
 import { getStorageFolder } from "~/utils";
-import { FlushHookPlugin, HandlerContext } from "./types";
+import { FlushHookPlugin, HandlerArgs } from "./types";
 import { PrerenderingServiceStorageOperations } from "~/types";
+import { EventPlugin } from "@webiny/handler";
 
 const s3 = new S3({ region: process.env.AWS_REGION });
 
@@ -28,15 +28,14 @@ export interface Params {
 export default (configuration: Params) => {
     const { storageOperations } = configuration;
 
-    return new HandlerPlugin<HandlerContext>(async context => {
+    return new EventPlugin<HandlerArgs>(async ({ payload, context }) => {
         const log = console.log;
-        const { invocationArgs } = context;
-        const events = Array.isArray(invocationArgs) ? invocationArgs : [invocationArgs];
+        const events = Array.isArray(payload) ? payload : [payload];
         const handlerHookPlugins = context.plugins.byType<FlushHookPlugin>("ps-flush-hook");
 
         const settings = await storageOperations.getSettings();
 
-        log("Received args: ", JSON.stringify(invocationArgs));
+        log("Received args: ", JSON.stringify(payload));
 
         try {
             const promises = events.map(event => {
@@ -151,10 +150,16 @@ export default (configuration: Params) => {
 
             await Promise.all(promises);
 
-            return { data: null, error: null };
+            return {
+                data: null,
+                error: null
+            };
         } catch (e) {
             log("An error occurred while prerendering...", e);
-            return { data: null, error: e };
+            return {
+                data: null,
+                error: e
+            };
         }
     });
 };

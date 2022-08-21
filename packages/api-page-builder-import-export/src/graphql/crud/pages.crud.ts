@@ -1,16 +1,16 @@
 import WebinyError from "@webiny/error";
 import { NotFoundError } from "@webiny/handler-graphql";
-import { ContextPlugin } from "@webiny/handler";
+import { ContextPlugin } from "@webiny/api";
 import checkBasePermissions from "@webiny/api-page-builder/graphql/crud/utils/checkBasePermissions";
 import {
     PageImportExportTaskStatus,
     PagesImportExportCrud,
     PbPageImportExportContext
 } from "~/types";
-import { invokeHandlerClient } from "~/importPages/client";
-import { HandlerArgs as CreateHandlerArgs } from "~/importPages/create";
+import { invokeHandlerClient } from "~/client";
+import { Payload as CreateHandlerPayload } from "~/importPages/create";
 import { initialStats } from "~/importPages/utils";
-import { HandlerArgs as ExportPagesProcessHandlerArgs } from "~/exportPages/process";
+import { Payload as ExportPagesProcessHandlerPayload } from "~/exportPages/process";
 import { EXPORT_PAGES_FOLDER_KEY } from "~/exportPages/utils";
 import { MetaResponse } from "@webiny/api-page-builder/types";
 import { zeroPad } from "@webiny/utils";
@@ -41,8 +41,12 @@ export default new ContextPlugin<PbPageImportExportContext>(context => {
                     zipFileUrl
                 }
             });
-
-            await invokeHandlerClient<CreateHandlerArgs>({
+            /**
+             * Import Pages
+             * ImportPages
+             * importPages
+             */
+            await invokeHandlerClient<CreateHandlerPayload>({
                 context,
                 name: IMPORT_PAGES_CREATE_HANDLER,
                 payload: {
@@ -51,7 +55,8 @@ export default new ContextPlugin<PbPageImportExportContext>(context => {
                     zipFileUrl,
                     task,
                     identity: context.security.getIdentity()
-                }
+                },
+                description: "Import Pages - create"
             });
 
             return {
@@ -125,15 +130,21 @@ export default new ContextPlugin<PbPageImportExportContext>(context => {
                 }
             });
 
+            /**
+             * Export Pages
+             * ExportPages
+             * exportPages
+             */
             // Invoke handler.
-            await invokeHandlerClient<ExportPagesProcessHandlerArgs>({
+            await invokeHandlerClient<ExportPagesProcessHandlerPayload>({
                 context,
                 name: EXPORT_PAGES_PROCESS_HANDLER,
                 payload: {
                     taskId: task.id,
                     subTaskIndex: 1,
                     identity: context.security.getIdentity()
-                }
+                },
+                description: "Export pages - process"
             });
 
             return { task };

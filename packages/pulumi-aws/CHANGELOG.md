@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.31.0](https://github.com/webiny/webiny-js/compare/v5.31.0-beta.1...v5.31.0) (2022-08-18)
+
+**Note:** Version bump only for package @webiny/pulumi-aws
+
+
+
+
+
+# [5.31.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.31.0-beta.0...v5.31.0-beta.1) (2022-08-17)
+
+
+### Bug Fixes
+
+* **pulumi-aws:** block all public access on FM bucket ([2415e90](https://github.com/webiny/webiny-js/commit/2415e9089d2599cad84907f66cad6c344d6f8019))
+
+
+
+
+
+# [5.31.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.30.0...v5.31.0-beta.0) (2022-08-16)
+
+
+### Bug Fixes
+
+* **pulumi-aws:** assign proper Lambda execution roles in prod setup ([#2585](https://github.com/webiny/webiny-js/issues/2585)) ([7b232c7](https://github.com/webiny/webiny-js/commit/7b232c7204429bed9a60f7a02c8bee8cad39d94f))
+* **serverless-cms-aws:** disable cache control on website preview index.html ([#2575](https://github.com/webiny/webiny-js/issues/2575)) ([cff4a62](https://github.com/webiny/webiny-js/commit/cff4a628ee58bd020ead7ca031d085fd87b8db92))
+
+
+### Features
+
+* **handler-fastify:** add fastify as handler into the system ([#2546](https://github.com/webiny/webiny-js/issues/2546)) ([8d258aa](https://github.com/webiny/webiny-js/commit/8d258aa2ebd8562b79e395d7aeea6316405f7f4e))
+* add support for custom React apps ([#2569](https://github.com/webiny/webiny-js/issues/2569)) ([f7af516](https://github.com/webiny/webiny-js/commit/f7af516d745b2da74da9497658f3fd9702d5a639))
+* make all buckets private ([#2558](https://github.com/webiny/webiny-js/issues/2558)) ([6e84b04](https://github.com/webiny/webiny-js/commit/6e84b043f6f5bd37f5e02babdd51bad43f5914b3))
+
+
+
+
+
 # [5.30.0](https://github.com/webiny/webiny-js/compare/v5.30.0-beta.1...v5.30.0) (2022-07-27)
 
 **Note:** Version bump only for package @webiny/pulumi-aws

@@ -7,7 +7,7 @@ import { validation } from "@webiny/validation";
 import { FileManagerContext, FileManagerSettings } from "~/types";
 import { SettingsStorageOperationsProviderPlugin } from "~/plugins/definitions/SettingsStorageOperationsProviderPlugin";
 import WebinyError from "@webiny/error";
-import { ContextPlugin } from "@webiny/handler";
+import { ContextPlugin } from "@webiny/api";
 
 // TODO @ts-refactor verify that this is not used and remove it
 export const SETTINGS_KEY = "file-manager";

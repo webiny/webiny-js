@@ -1,9 +1,9 @@
-import { ContextPlugin } from "@webiny/handler";
+import { ContextPlugin } from "@webiny/api";
 import { ApwContext } from "~/types";
 import { ApiKey, SecurityIdentity } from "@webiny/api-security/types";
 import { Tenant } from "@webiny/api-tenancy/types";
 import { WcpContextObject } from "@webiny/api-wcp/types";
-import { WCP_FEATURE_LABEL } from "../../../wcp/src";
+import { WCP_FEATURE_LABEL } from "@webiny/wcp";
 
 const createCanUseFeature = (wcp?: WcpContextObject) => {
     const defaultCanUseFeature = wcp?.canUseFeature;
@@ -17,10 +17,7 @@ const createCanUseFeature = (wcp?: WcpContextObject) => {
     };
 };
 
-interface ContextCommonParams {
-    path: string;
-}
-export const contextCommon = ({ path }: ContextCommonParams): ContextPlugin<ApwContext>[] => {
+export const contextCommon = (): ContextPlugin<ApwContext>[] => {
     return [
         /**
          * Setup dummy wcp canUseFeature
@@ -30,28 +27,6 @@ export const contextCommon = ({ path }: ContextCommonParams): ContextPlugin<ApwC
             context.wcp = {
                 ...(context.wcp || {}),
                 canUseFeature
-            };
-        }),
-        /**
-         * Setup dummy request
-         */
-        new ContextPlugin<ApwContext>(async context => {
-            context.http = {
-                ...(context?.http || {}),
-                request: {
-                    ...(context?.http?.request || {}),
-                    headers: {
-                        ...(context?.http?.request?.headers || {}),
-                        ["x-tenant"]: "root"
-                    },
-                    path: {
-                        ...(context?.http?.request?.path || {}),
-                        parameters: {
-                            ...(context?.http?.request?.path?.parameters || {}),
-                            key: path
-                        }
-                    }
-                }
             };
         })
     ];

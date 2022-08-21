@@ -1,7 +1,7 @@
 import lodashGet from "lodash/get";
 import WebinyError from "@webiny/error";
 import { FlushEvent, RenderEvent, QueueAddJob } from "@webiny/api-prerendering-service/types";
-import { ContextPlugin } from "@webiny/handler";
+import { ContextPlugin } from "@webiny/api";
 import { PbContext } from "~/graphql/types";
 
 export const prerenderingHandlers = new ContextPlugin<PbContext>(context => {

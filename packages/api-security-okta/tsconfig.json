@@ -6,7 +6,7 @@
     { "path": "../api-tenancy" },
     { "path": "../api-tenant-manager" },
     { "path": "../error" },
-    { "path": "../handler" },
+    { "path": "../api" },
     { "path": "../handler-graphql" }
   ],
   "compilerOptions": {
@@ -23,8 +23,8 @@
       "@webiny/api-tenant-manager": ["../api-tenant-manager/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
-      "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"],
+      "@webiny/api/*": ["../api/src/*"],
+      "@webiny/api": ["../api/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
       "@webiny/handler-graphql": ["../handler-graphql/src"]
     },

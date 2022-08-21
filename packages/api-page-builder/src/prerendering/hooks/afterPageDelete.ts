@@ -1,5 +1,5 @@
 import { PbContext } from "~/graphql/types";
-import { ContextPlugin } from "@webiny/handler";
+import { ContextPlugin } from "@webiny/api";
 
 export default () => {
     return new ContextPlugin<PbContext>(async ({ pageBuilder }) => {

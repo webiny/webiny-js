@@ -6,12 +6,9 @@
     "watch": "yarn webiny run watch"
   },
   "dependencies": {
-    "@webiny/handler": "^WEBINY_VERSION",
-    "@webiny/handler-args": "^WEBINY_VERSION",
     "@webiny/handler-aws": "^WEBINY_VERSION",
     "@webiny/handler-client": "^WEBINY_VERSION",
     "@webiny/handler-graphql": "^WEBINY_VERSION",
-    "@webiny/handler-http": "^WEBINY_VERSION",
     "@webiny/handler-logs": "^WEBINY_VERSION",
     "mdbid": "^1.0.0"
   },

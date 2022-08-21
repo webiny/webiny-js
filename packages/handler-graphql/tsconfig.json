@@ -3,11 +3,10 @@
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
     { "path": "../error" },
-    { "path": "../handler" },
-    { "path": "../handler-http" },
+    { "path": "../api" },
     { "path": "../plugins" },
-    { "path": "../utils" },
-    { "path": "../handler-args" }
+    { "path": "../handler" },
+    { "path": "../handler-aws" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -17,16 +16,14 @@
       "~/*": ["./src/*"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
-      "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"],
-      "@webiny/handler-http/*": ["../handler-http/src/*"],
-      "@webiny/handler-http": ["../handler-http/src"],
+      "@webiny/api/*": ["../api/src/*"],
+      "@webiny/api": ["../api/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
-      "@webiny/utils/*": ["../utils/src/*"],
-      "@webiny/utils": ["../utils/src"],
-      "@webiny/handler-args/*": ["../handler-args/src/*"],
-      "@webiny/handler-args": ["../handler-args/src"]
+      "@webiny/handler/*": ["../handler/src/*"],
+      "@webiny/handler": ["../handler/src"],
+      "@webiny/handler-aws/*": ["../handler-aws/src/*"],
+      "@webiny/handler-aws": ["../handler-aws/src"]
     },
     "baseUrl": "."
   }

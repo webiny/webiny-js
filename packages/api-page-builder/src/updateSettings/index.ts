@@ -1,7 +1,6 @@
-import { HandlerPlugin } from "@webiny/handler/types";
-import { ArgsContext } from "@webiny/handler-args/types";
-import { PageBuilderStorageOperations, PbContext, Settings } from "~/types";
+import { PageBuilderStorageOperations, Settings } from "~/types";
 import { migrate, putDefaultSettings, SettingsInput } from "./migration/migrate";
+import { EventPlugin } from "@webiny/handler";
 
 export interface HandlerArgs {
     data: Settings;
@@ -25,6 +24,12 @@ function createSettings(data: Settings): SettingsInput {
         websiteUrl: data.websiteUrl
     };
 }
+
+interface Payload {
+    data?: Settings;
+    migrate?: boolean;
+}
+
 /**
  * Updates system default settings, for all tenants and all locales. Of course, these values can later be overridden
  * via the settings UI in the Admin app. But it's with these settings that every new tenant / locale will start off.
@@ -32,51 +37,68 @@ function createSettings(data: Settings): SettingsInput {
 export interface UpdateSettingsParams {
     storageOperations: PageBuilderStorageOperations;
 }
-export default (
-    params: UpdateSettingsParams
-): HandlerPlugin<PbContext, ArgsContext<HandlerArgs>> => {
+export default (params: UpdateSettingsParams) => {
     const { storageOperations } = params;
 
-    return {
-        type: "handler",
-        async handle(context): Promise<HandlerResponse> {
-            try {
-                const { invocationArgs: args } = context;
+    const route = new EventPlugin<Payload | string>(async ({ payload }) => {
+        try {
+            const body: Payload | undefined =
+                typeof payload === "string" ? JSON.parse(payload) : payload;
 
-                // In 5.29.0, we need to migrate data for Prerendering Service and Tenants
-                if (process.env.NODE_ENV !== "test") {
-                    const executed = await migrate(
-                        storageOperations,
-                        createSettings(args.data),
-                        args.migrate === true
-                    );
-
-                    if (executed) {
-                        return {
-                            data: true,
-                            error: null
-                        };
-                    }
-                }
-
-                await putDefaultSettings(storageOperations, createSettings(args.data));
-
-                return {
-                    data: true,
-                    error: null
-                };
-            } catch (ex) {
+            if (!body?.data) {
                 return {
                     data: false,
                     error: {
-                        message: ex.message,
-                        code: ex.code || "UNKNOWN",
+                        message: "Missing data to be processed.",
+                        code: "DATA_ERROR",
                         data: {
-                            ...(ex.data || {})
+                            payload:
+                                typeof payload === "string"
+                                    ? payload
+                                    : JSON.stringify(payload || {}),
+                            raw: payload
                         }
                     }
                 };
             }
+            const { data, migrate: runMigration } = body;
+            // In 5.29.0, we need to migrate data for Prerendering Service and Tenants
+            if (process.env.NODE_ENV !== "test") {
+                const executed = await migrate(
+                    storageOperations,
+                    createSettings(data),
+                    runMigration === true
+                );
+
+                if (executed) {
+                    return {
+                        data: true,
+                        error: null
+                    };
+                }
+            }
+
+            await putDefaultSettings(storageOperations, createSettings(data));
+
+            return {
+                data: true,
+                error: null
+            };
+        } catch (ex) {
+            return {
+                data: false,
+                error: {
+                    message: ex.message,
+                    code: ex.code || "UNKNOWN",
+                    data: {
+                        ...(ex.data || {})
+                    }
+                }
+            };
         }
-    };
+    });
+
+    route.name = "pageBuilder.event.updateSettings";
+
+    return route;
 };

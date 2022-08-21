@@ -1,23 +1,19 @@
 import { createHeaderParameterPlugin } from "~/parameters";
 import { ApiEndpoint, CmsContext } from "~/types";
 import { useGraphQLHandler } from "../utils/useGraphQLHandler";
-import { ContextPlugin } from "@webiny/handler";
-import { TestContext } from "../utils/types";
 
 const TYPE = "x-webiny-cms-endpoint";
 const LOCALE = "x-webiny-cms-locale";
 
 const createContext = (type?: ApiEndpoint | null, locale?: string | null): CmsContext => {
     return {
-        http: {
-            request: {
-                cookies: [],
-                body: "",
-                method: "POST",
-                headers: {
-                    [TYPE]: type,
-                    [LOCALE]: locale
-                }
+        request: {
+            cookies: [],
+            body: "",
+            method: "POST",
+            headers: {
+                [TYPE]: type,
+                [LOCALE]: locale
             }
         }
     } as unknown as CmsContext;
@@ -79,19 +75,7 @@ describe("Header Parameter Plugin", () => {
     });
 
     it("should load main schema when no type or locale headers passed", async () => {
-        const { isInstalledQuery, listContentModelGroupsQuery } = useGraphQLHandler({
-            plugins: [
-                new ContextPlugin<TestContext>(async context => {
-                    context.http = {
-                        ...context.http,
-                        request: {
-                            ...context.http.request,
-                            headers: {}
-                        }
-                    };
-                })
-            ]
-        });
+        const { isInstalledQuery, listContentModelGroupsQuery } = useGraphQLHandler();
 
         /**
          * We should be able to run isInstalledQuery
@@ -121,31 +105,18 @@ describe("Header Parameter Plugin", () => {
 
     it("should load content schema when type and locale headers passed", async () => {
         const { isInstalledQuery, listContentModelGroupsQuery } = useGraphQLHandler({
-            topPlugins: [
-                new ContextPlugin<TestContext>(async context => {
-                    context.http = {
-                        ...(context.http || {}),
-                        request: {
-                            ...(context.http?.request || {}),
-                            path: {
-                                base: "",
-                                query: {},
-                                parameters: undefined
-                            } as any,
-                            headers: {
-                                [TYPE]: "manage",
-                                [LOCALE]: "en-US"
-                            }
-                        }
-                    };
-                })
-            ]
+            path: "manage/en-US"
         });
 
         /**
          * We should not be able to run isInstalledQuery
          */
-        const [isInstalledResponse] = await isInstalledQuery();
+        const [isInstalledResponse] = await isInstalledQuery({
+            headers: {
+                [TYPE]: "manage",
+                [LOCALE]: "en-US"
+            }
+        });
 
         expect(isInstalledResponse).toMatchObject({
             errors: [

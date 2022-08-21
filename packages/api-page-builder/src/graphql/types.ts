@@ -2,9 +2,9 @@ import { DbContext } from "@webiny/handler-db/types";
 import { SecurityContext, SecurityPermission } from "@webiny/api-security/types";
 import { TenancyContext } from "@webiny/api-tenancy/types";
 import { I18NContext } from "@webiny/api-i18n/types";
-import { ClientContext } from "@webiny/handler-client/types";
 import { Topic } from "@webiny/pubsub/types";
 import { RenderEvent, FlushEvent, QueueAddJob } from "@webiny/api-prerendering-service/types";
+import { Context as BaseContext } from "@webiny/handler/types";
 
 import {
     Category,
@@ -518,8 +518,8 @@ export interface PageBuilderContextObject
 }
 
 export interface PbContext
-    extends I18NContext,
-        ClientContext,
+    extends BaseContext,
+        I18NContext,
         DbContext,
         SecurityContext,
         TenancyContext,

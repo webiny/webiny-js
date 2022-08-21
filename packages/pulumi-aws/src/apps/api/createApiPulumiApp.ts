@@ -110,7 +110,12 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                         pageBuilder.exportPages.functions.process.output.arn,
                     // TODO: move to okta plugin
                     OKTA_ISSUER: process.env["OKTA_ISSUER"],
-                    WEBINY_LOGS_FORWARD_URL
+                    WEBINY_LOGS_FORWARD_URL,
+                    /**
+                     * APW
+                     */
+                    APW_SCHEDULER_SCHEDULE_ACTION_HANDLER:
+                        apwScheduler.scheduleAction.lambda.output.arn
                 },
                 apwSchedulerEventRule: apwScheduler.eventRule.output,
                 apwSchedulerEventTarget: apwScheduler.eventTarget.output
@@ -131,7 +136,12 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                     S3_BUCKET: core.fileManagerBucketId,
                     // TODO: move to okta plugin
                     OKTA_ISSUER: process.env["OKTA_ISSUER"],
-                    WEBINY_LOGS_FORWARD_URL
+                    WEBINY_LOGS_FORWARD_URL,
+                    /**
+                     * APW
+                     */
+                    APW_SCHEDULER_SCHEDULE_ACTION_HANDLER:
+                        apwScheduler.scheduleAction.lambda.output.arn
                 }
             });
 
