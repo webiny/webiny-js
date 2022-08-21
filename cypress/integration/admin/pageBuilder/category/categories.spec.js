@@ -1,4 +1,3 @@
-import { divide } from "lodash";
 import uniqid from "uniqid";
 
 context("Categories Module", () => {
