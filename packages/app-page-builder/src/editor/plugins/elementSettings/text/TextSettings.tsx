@@ -180,7 +180,7 @@ const TextSettings: React.FC<TextSettingsProps> = ({ defaultAccordionValue, opti
             <>
                 <Wrapper containerClassName={classes.grid} label={"Color"}>
                     <BaseColorPicker
-                        data-testid={"text-color-picker"}
+                        data-testid={"text-settings-color-picker"}
                         value={text.color}
                         updateValue={updateColor}
                         updatePreview={updateColorPreview}
@@ -209,7 +209,7 @@ const TextSettings: React.FC<TextSettingsProps> = ({ defaultAccordionValue, opti
                     rightCellSpan={7}
                 >
                     <SelectField
-                        data-testid={"data-test-typography"}
+                        data-testid={"text-settings-typography"}
                         value={text.typography}
                         onChange={updateTypography}
                         disabled={themeTypographyOptions.length === 0}
