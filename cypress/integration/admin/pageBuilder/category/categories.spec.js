@@ -204,11 +204,11 @@ context("Categories Module", () => {
         cy.get('div.action__container button[data-testid="new-record-button"]').click();
         cy.get('[data-testid="pb-new-page-category-modal"] div.mdc-list-item:last-child').click();
         cy.findByTestId("page-settings-btn").click();
-        cy.findByTestId("data-test-path").clear().type("/about-us");
+        cy.findByTestId("general-settings-path-input").clear().type("/about-us");
         cy.get('input[value="/about-us"]').should("exist");
-        cy.findByTestId("data-test-path").type("/");
+        cy.findByTestId("general-settings-path-input").type("/");
         cy.get('input[value="/about-us/"]').should("exist");
-        cy.findByTestId("data-test-path").type("NEW--PAGE");
+        cy.findByTestId("general-settings-path-input").type("NEW--PAGE");
         cy.get('input[value="/about-us/new-page"]').should("exist");
         cy.findByText("Save Settings").click();
     });
@@ -379,7 +379,7 @@ context("Categories Module", () => {
         ).click();
 
         // Change text color.
-        cy.findByTestId("text-color-picker").click();
+        cy.findByTestId("text-settings-color-picker").click();
         cy.get('div[data-testid="text-color-picker-color-list"] div > div:nth-child(2)').click();
 
         // Clone the element.
@@ -501,7 +501,7 @@ context("Categories Module", () => {
             ".accordion-content span.webiny-ui-tooltip.tooltip-content-wrapper:nth-child(4)"
         ).click();
 
-        cy.findByTestId("data-test-typography").select("Description");
+        cy.findByTestId("text-settings-typography").select("Description");
 
         // Wait 1 second and refresh the page - assert that the changes still persist.
         cy.wait(1000);
