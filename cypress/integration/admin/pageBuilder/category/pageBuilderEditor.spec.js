@@ -1,0 +1,394 @@
+context("Page Builder Editor Module", () => {
+    beforeEach(() => cy.login());
+
+    it("should be able add tags in page settings", () => {
+        // Create the first page.
+        cy.visit("/page-builder/pages");
+        cy.get('div.action__container button[data-testid="new-record-button"]').click();
+        cy.get('[data-testid="pb-new-page-category-modal"] li.mdc-list-item:last-child').click();
+        // cy.get("header > div > section:last-child > button.mdc-icon-button").click(); // Settings button
+        cy.findByTestId("page-settings-btn").click();
+        cy.get('div[aria-haspopup="listbox"] input').type("super-page");
+        cy.get('li[role="option"]').contains("super-page").click();
+
+        cy.get('div[aria-haspopup="listbox"] input').type("super-page-a");
+        cy.get('li[role="option"]').contains("super-page-a").click();
+        cy.findByText("Save Settings").click({force: true});
+
+        // Create the second page.
+        cy.visit("/page-builder/pages");
+        cy.get('div.action__container button[data-testid="new-record-button"]').click();
+        cy.get('[data-testid="pb-new-page-category-modal"] li.mdc-list-item:last-child').click();
+        cy.findByTestId("page-settings-btn").click();
+        cy.get('div[aria-haspopup="listbox"] input').type("super-");
+        cy.wait(2000);
+        cy.get('li[role="option"] span').contains("super-page").should("be.visible");
+        cy.get('li[role="option"] span').contains("super-page-a").should("be.visible");
+        cy.get('li[role="option"] span').contains("super-page").click();
+
+        cy.get('div[aria-haspopup="listbox"] input').type("super-");
+        cy.wait(2000);
+        cy.get('li[role="option"] span').should("not.have.text", "super-page");
+        cy.get('li[role="option"]').contains("super-page-a").should("be.visible");
+
+        cy.get('div[aria-haspopup="listbox"] input').type("page-b");
+        cy.get('li[role="option"]').contains("super-page-b").click();
+        cy.findByText("Save Settings").click({force: true});
+        cy.findByText("Settings saved!").should("be.visible");
+        cy.findByTestId("page-settings-btn").click();
+        cy.contains("super-page").should("be.visible");
+        cy.contains("super-page-b").should("be.visible");
+    });
+
+    it("should be able test slug input", () => {
+        cy.visit("/page-builder/pages");
+        cy.get('div.action__container button[data-testid="new-record-button"]').click();
+        cy.get('[data-testid="pb-new-page-category-modal"] li.mdc-list-item:last-child').click();
+        cy.findByTestId("page-settings-btn").click();
+        cy.findByTestId("general-settings-path-input").clear().type("/about-us");
+        cy.get('input[value="/about-us"]').should("exist");
+        cy.findByTestId("general-settings-path-input").type("/");
+        cy.get('input[value="/about-us/"]').should("exist");
+        cy.findByTestId("general-settings-path-input").type("NEW--PAGE");
+        cy.get('input[value="/about-us/new-page"]').should("exist");
+        cy.findByText("Save Settings").click({force: true});
+    });
+
+    it("should select different display modes and ensure the view has changed", () => {
+        cy.visit("/page-builder/pages");
+        cy.get('div.action__container button[data-testid="new-record-button"]').click();
+        cy.get('[data-testid="pb-new-page-category-modal"] li.mdc-list-item:last-child').click();
+        cy.findByTestId("pb-content-add-block-button").click();
+        cy.findByTestId("pb-editor-page-blocks-list-item-grid-block").trigger("mouseover");
+        cy.findByText("Click to Add").click({ force: true });
+        cy.findByTestId("add-element").click();
+
+        const dataTransfer = new DataTransfer();
+        cy.findByTestId("pb-editor-add-element-button-paragraph", { force: true }).trigger(
+            "dragstart",
+            {
+                dataTransfer,
+                force: true
+            }
+        );
+        cy.wait(500);
+        cy.findByTestId("cell-container-add-icon")
+            .trigger("drop", {
+                dataTransfer,
+                force: true
+            })
+            .trigger("dragend", { dataTransfer, force: true });
+        cy.wait(2500);
+
+        // Click Mobile Portrait device resolution.
+        cy.get("span.webiny-ui-tooltip.action-wrapper:nth-child(4)").click();
+        cy.get("span.width > span:first-child").should("contain", "320");
+    });
+
+    it("should be able to close main menu page builder editor on Esc key", () => {
+        cy.visit("/page-builder/pages");
+        cy.get('div.action__container button[data-testid="new-record-button"]').click();
+        cy.get('[data-testid="pb-new-page-category-modal"] li.mdc-list-item:last-child').click();
+        cy.findByTestId("pb-content-add-block-button").click();
+        cy.findByTestId("pb-editor-page-blocks-list-item-grid-block").trigger("mouseover");
+        cy.findByText("Click to Add").click({ force: true });
+
+        cy.findByTestId("add-element").click();
+        cy.wait(1000);
+        cy.findByText("Saved").should("exist");
+        cy.findByTestId("add-element").type("{esc}");
+        cy.findByText("Saved").should("not.be.visible");
+
+        cy.visit("/page-builder/pages");
+        cy.get('div.action__container button[data-testid="new-record-button"]').click();
+        cy.get('[data-testid="pb-new-page-category-modal"] li.mdc-list-item:last-child').click();
+        cy.findByTestId("pb-content-add-block-button").click();
+        cy.findByTestId("pb-editor-page-blocks-list-item-grid-block").trigger("mouseover");
+        cy.findByText("Click to Add").click({ force: true });
+        cy.findByTestId("add-element").click();
+
+        const dataTransfer = new DataTransfer();
+        cy.findByTestId("pb-editor-add-element-button-paragraph", { force: true }).trigger(
+            "dragstart",
+            {
+                dataTransfer,
+                force: true
+            }
+        );
+        cy.wait(500);
+        cy.findByTestId("cell-container-add-icon")
+            .trigger("drop", {
+                dataTransfer,
+                force: true
+            })
+            .trigger("dragend", { dataTransfer, force: true });
+        cy.wait(2500);
+
+        cy.findByTestId("add-element").click();
+        cy.wait(1000);
+        cy.findByText("Saved").should("exist");
+        cy.findByTestId("add-element").type("{esc}");
+        cy.findByText("Saved").should("not.be.visible");
+    });
+
+    it("should ensure cloning page element works correctly", () => {
+        cy.visit("/page-builder/pages");
+        cy.get('div.action__container button[data-testid="new-record-button"]').click();
+        cy.get('[data-testid="pb-new-page-category-modal"] li.mdc-list-item:last-child').click();
+        cy.findByTestId("pb-content-add-block-button").click();
+        cy.findByTestId("pb-editor-page-blocks-list-item-grid-block").trigger("mouseover");
+        cy.findByText("Click to Add").click({ force: true });
+        cy.findByTestId("add-element").click();
+
+        const dataTransfer = new DataTransfer();
+        cy.findByTestId("pb-editor-add-element-button-paragraph", { force: true }).trigger(
+            "dragstart",
+            {
+                dataTransfer,
+                force: true
+            }
+        );
+        cy.wait(500);
+        cy.findByTestId("cell-container-add-icon")
+            .trigger("drop", {
+                dataTransfer,
+                force: true
+            })
+            .trigger("dragend", { dataTransfer, force: true });
+        cy.wait(2500);
+
+        cy.findByTestId("pb-editor-page-options-menu").click();
+        cy.findByTestId("add-element").click();
+        cy.findByTestId("element-data-test").click();
+        cy.findByTestId("clone-element").click();
+        cy.wait(1000);
+        cy.get("div").find('[data-placeholder="Type your text"]').should("have.length", 2);
+    });
+
+    it("should ensure undo/redo works", () => {
+        cy.visit("/page-builder/pages");
+        cy.get('div.action__container button[data-testid="new-record-button"]').click();
+        cy.get('[data-testid="pb-new-page-category-modal"] li.mdc-list-item:last-child').click();
+        cy.findByTestId("pb-content-add-block-button").click();
+        cy.findByTestId("pb-editor-page-blocks-list-item-grid-block").trigger("mouseover");
+        cy.findByText("Click to Add").click({ force: true });
+        cy.findByTestId("add-element").click();
+
+        const dataTransfer = new DataTransfer();
+        cy.findByTestId("pb-editor-add-element-button-paragraph", { force: true }).trigger(
+            "dragstart",
+            {
+                dataTransfer,
+                force: true
+            }
+        );
+        cy.wait(500);
+        cy.findByTestId("cell-container-add-icon")
+            .trigger("drop", {
+                dataTransfer,
+                force: true
+            })
+            .trigger("dragend", { dataTransfer, force: true });
+        cy.wait(2500);
+
+        // Add block quote element.
+        cy.findByTestId("add-element").click();
+
+        const dataTransferElem = new DataTransfer();
+        cy.findByTestId("pb-editor-add-element-button-quote", { force: true }).trigger(
+            "dragstart",
+            {
+                dataTransferElem,
+                force: true
+            }
+        );
+        cy.wait(500);
+
+        cy.findByTestId(/^drop-zone-below-.*/)
+            .trigger("drop", {
+                dataTransferElem,
+                force: true
+            })
+            .trigger("dragend", { dataTransferElem, force: true });
+        cy.wait(2500);
+
+        // Align text to center.
+        cy.findByText("Text").click();
+        cy.get(
+            ".accordion-content span.webiny-ui-tooltip.tooltip-content-wrapper:nth-child(2)"
+        ).click();
+
+        // Change text color.
+        cy.findByTestId("text-settings-color-picker").click();
+        cy.get('div[data-testid="text-settings-color-picker-color-list"] div > div:nth-child(2)').click();
+
+        // Clone the element.
+        cy.findByTestId("element-data-test").click();
+        cy.findByTestId("clone-element").click();
+
+        // Use CTRL+Z keys combination.
+        for (let i = 0; i < 4; i++) {
+            cy.get("body").type("{ctrl+z}");
+        }
+        cy.get("blockquote").contains("Block Quote").should("not.be.visible");
+        cy.get("body").type("{shift+ctrl+z}");
+        cy.get('[data-testid="pb-page-element"] blockquote').should("be.visible");
+
+        //Use physical 'Undo' button.
+        cy.get("#action-undo").click();
+        cy.get('[data-testid="pb-page-element"] blockquote').should("not.exist");
+    });
+
+    it("should create basic flow of elements", () => {
+        cy.visit("/page-builder/pages");
+        cy.get('div.action__container button[data-testid="new-record-button"]').click();
+        cy.get('[data-testid="pb-new-page-category-modal"] li.mdc-list-item:last-child').click();
+        cy.findByTestId("pb-content-add-block-button").click();
+        cy.findByTestId("pb-editor-page-blocks-list-item-grid-block").trigger("mouseover");
+        cy.findByText("Click to Add").click({ force: true });
+
+        // Add Heading element.
+        cy.findByTestId("add-element").click();
+
+        const dataTransferElem = new DataTransfer();
+        cy.findByTestId("pb-editor-add-element-button-heading", { force: true }).trigger(
+            "dragstart",
+            {
+                dataTransferElem,
+                force: true
+            }
+        );
+        cy.wait(500);
+
+        cy.findByTestId("cell-container-add-icon")
+            .trigger("drop", {
+                dataTransferElem,
+                force: true
+            })
+            .trigger("dragend", { dataTransferElem, force: true });
+        cy.wait(2500);
+
+        // Add paragraph element.
+        cy.findByTestId("add-element").click();
+
+        const dataTransfer = new DataTransfer();
+        cy.findByTestId("pb-editor-add-element-button-paragraph", { force: true }).trigger(
+            "dragstart",
+            {
+                dataTransfer,
+                force: true
+            }
+        );
+        cy.wait(500);
+
+        cy.findByTestId(/^drop-zone-below-.*/)
+            .trigger("drop", {
+                dataTransfer,
+                force: true
+            })
+            .trigger("dragend", { dataTransfer, force: true });
+        cy.wait(2500);
+
+        // Focus on the Heading element.
+        cy.get("h1").contains("Heading").dblclick();
+
+        // Assert breadcrumbs are visible.
+        cy.get('ul li span[style="--element-count:0;"]').should("exist");
+        cy.get("li > span").contains("heading").should("exist");
+
+        // Assert heading is visible in top-right corner.
+        cy.get("div.element-holder span").contains("heading").should("be.visible");
+
+        // Assert toolbar is displayed.
+        cy.findByText("Text").should("be.visible");
+
+        cy.get("body").type("{esc}");
+        cy.get('ul li span[style="--element-count:0;"]').should("not.exist");
+        cy.get("div.webiny-ui-tabs span")
+            .contains("Select an element on the canvas to activate this panel.")
+            .should("be.visible");
+
+        // Customize header element.
+        cy.get("h1").contains("Heading").click({ force: true });
+        cy.get("div.element-holder span").contains("heading").click({ force: true });
+        cy.findByText("Text").click();
+        cy.findByTestId("data-test-heading-type").select("H2");
+
+        // Align text to center.
+        cy.get(
+            ".accordion-content span.webiny-ui-tooltip.tooltip-content-wrapper:nth-child(2)"
+        ).click();
+
+        // Focus the paragraph element.
+        cy.get('p[role="textbox"]').click({ force: true });
+        cy.get("div.element-holder span").contains("paragraph").click({ force: true });
+
+        cy.get('ul li span[style="--element-count:0;"]').should("exist");
+        cy.get("li > span").contains("paragraph").should("exist");
+        cy.get("div.element-holder span").contains("paragraph").should("be.visible");
+        cy.findByText("Text").should("be.visible");
+        cy.get("body").type("{esc}");
+        cy.get('ul li span[style="--element-count:0;"]').should("not.exist");
+        cy.get("div.webiny-ui-tabs span")
+            .contains("Select an element on the canvas to activate this panel.")
+            .should("be.visible");
+
+        // Customize paragraph element.
+        cy.get('p[role="textbox"]').click({ force: true });
+        cy.get("div.element-holder span").contains("paragraph").click({ force: true });
+        cy.findByText("Text").click();
+        cy.get(
+            ".accordion-content span.webiny-ui-tooltip.tooltip-content-wrapper:nth-child(4)"
+        ).click();
+
+        cy.findByTestId("text-settings-typography").select("Description");
+
+        // Wait 1 second and refresh the page - assert that the changes still persist.
+        cy.wait(1000);
+        cy.reload();
+        cy.get('p[role="textbox"]').click({ force: true });
+        cy.get("div.element-holder span").contains("paragraph").click({ force: true });
+        cy.findByText("Text").click();
+        cy.contains("Description");
+
+        // Publish page.
+        cy.get("button > span").contains("Publish").click({force: true});
+        cy.get('[data-testid="pb-editor-publish-confirmation-dialog"] > div > div button')
+            .contains("Confirm")
+            .click({force: true});
+        cy.findByTestId("new-record-button").should("exist");
+
+        // Edit published page.
+        cy.findByTestId("pb-page-details-header-edit-revision").click();
+
+        // Delete paragraph element.
+        cy.get('p[role="textbox"]').click({ force: true });
+        cy.get("div.element-holder span").contains("paragraph").click({ force: true });
+        cy.get("body").type("{del}");
+
+        // Delete header element.
+        cy.get("h2").contains("Heading").click({ force: true });
+        cy.get("div.element-holder span").contains("heading").click({ force: true });
+        cy.get("body").type("{del}");
+
+        // Try to delete cell section.
+        cy.get("div.element-holder span").contains("cell").click({ force: true });
+        cy.get("body").type("{del}");
+
+        // Delete block section
+        cy.get("div.element-holder span").contains("block").click({ force: true });
+        cy.get("body").type("{del}");
+
+        cy.findByTestId("pb-content-add-block-button").should("be.visible");
+
+        // Publish changes.
+        cy.get("button > span").contains("Publish changes").click({force: true});
+        cy.get('[data-testid="pb-editor-publish-confirmation-dialog"] > div > div button')
+            .contains("Confirm")
+            .click({force: true});
+        cy.findByTestId("new-record-button").should("exist");
+
+        // Delete published page.
+        cy.findByTestId("pb-page-details-header-delete-button").click();
+    }); 
+});
