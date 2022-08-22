@@ -64,19 +64,12 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
 export default React.memo(ColorPicker);
 
 type BaseColorPickerComponent = Omit<ColorPickerProps, "label">;
-export const BaseColorPickerComponent: React.FC<BaseColorPickerComponent> = (props) => {
-    const {
-        value,
-        valueKey,
-        defaultValue,
-        updatePreview,
-        updateValue,
-        handlerClassName
-    } = props;
+export const BaseColorPickerComponent: React.FC<BaseColorPickerComponent> = props => {
+    const { value, valueKey, defaultValue, updatePreview, updateValue, handlerClassName } = props;
     const targetValue = extrapolateActiveElementValue(value, valueKey, defaultValue);
     return (
         <ColorPickerCmp
-            data-testid={props['data-testid']}
+            data-testid={props["data-testid"]}
             handlerClassName={handlerClassName}
             compact
             value={targetValue}

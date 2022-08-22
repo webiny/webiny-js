@@ -13,7 +13,7 @@ context("Page Builder Editor Module", () => {
 
         cy.get('div[aria-haspopup="listbox"] input').type("super-page-a");
         cy.get('li[role="option"]').contains("super-page-a").click();
-        cy.findByText("Save Settings").click({force: true});
+        cy.findByText("Save Settings").click({ force: true });
 
         // Create the second page.
         cy.visit("/page-builder/pages");
@@ -33,7 +33,7 @@ context("Page Builder Editor Module", () => {
 
         cy.get('div[aria-haspopup="listbox"] input').type("page-b");
         cy.get('li[role="option"]').contains("super-page-b").click();
-        cy.findByText("Save Settings").click({force: true});
+        cy.findByText("Save Settings").click({ force: true });
         cy.findByText("Settings saved!").should("be.visible");
         cy.findByTestId("page-settings-btn").click();
         cy.contains("super-page").should("be.visible");
@@ -51,7 +51,7 @@ context("Page Builder Editor Module", () => {
         cy.get('input[value="/about-us/"]').should("exist");
         cy.findByTestId("general-settings-path-input").type("NEW--PAGE");
         cy.get('input[value="/about-us/new-page"]').should("exist");
-        cy.findByText("Save Settings").click({force: true});
+        cy.findByText("Save Settings").click({ force: true });
     });
 
     it("should select different display modes and ensure the view has changed", () => {
@@ -220,7 +220,9 @@ context("Page Builder Editor Module", () => {
 
         // Change text color.
         cy.findByTestId("text-settings-color-picker").click();
-        cy.get('div[data-testid="text-settings-color-picker-color-list"] div > div:nth-child(2)').click();
+        cy.get(
+            'div[data-testid="text-settings-color-picker-color-list"] div > div:nth-child(2)'
+        ).click();
 
         // Clone the element.
         cy.findByTestId("element-data-test").click();
@@ -352,10 +354,10 @@ context("Page Builder Editor Module", () => {
         cy.contains("Description");
 
         // Publish page.
-        cy.get("button > span").contains("Publish").click({force: true});
+        cy.get("button > span").contains("Publish").click({ force: true });
         cy.get('[data-testid="pb-editor-publish-confirmation-dialog"] > div > div button')
             .contains("Confirm")
-            .click({force: true});
+            .click({ force: true });
         cy.findByTestId("new-record-button").should("exist");
 
         // Edit published page.
@@ -382,13 +384,13 @@ context("Page Builder Editor Module", () => {
         cy.findByTestId("pb-content-add-block-button").should("be.visible");
 
         // Publish changes.
-        cy.get("button > span").contains("Publish changes").click({force: true});
+        cy.get("button > span").contains("Publish changes").click({ force: true });
         cy.get('[data-testid="pb-editor-publish-confirmation-dialog"] > div > div button')
             .contains("Confirm")
-            .click({force: true});
+            .click({ force: true });
         cy.findByTestId("new-record-button").should("exist");
 
         // Delete published page.
         cy.findByTestId("pb-page-details-header-delete-button").click();
-    }); 
+    });
 });

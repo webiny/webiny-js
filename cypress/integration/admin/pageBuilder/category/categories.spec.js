@@ -105,7 +105,7 @@ context("Categories Module", () => {
     it("should be able to access new category form via link", () => {
         cy.visit("/page-builder/pages");
         cy.get('div.action__container button[data-testid="new-record-button"]').click();
-        cy.findByText("+ Create new category").click({force:true});
+        cy.findByText("+ Create new category").click({ force: true });
         cy.findByTestId("data-list-new-record-button").should("be.visible");
     });
 
@@ -116,17 +116,17 @@ context("Categories Module", () => {
         cy.findByTestId("data-list-new-record-button").click();
 
         cy.findByTestId("pb.category.new.form.name").type(`Cool Category ${id}`);
-        cy.findByText("Save category").click({force: true});
+        cy.findByText("Save category").click({ force: true });
         cy.findAllByText("Value is required.").should("exist").should("have.length", 2);
         cy.findByTestId("pb.category.new.form.url").type(`Some URL`);
-        cy.findByText("Save category").click({force: true});
+        cy.findByText("Save category").click({ force: true });
         cy.findByText("Value is required.").should("exist");
         cy.findByTestId("pb.category.new.form.slug").type(`coolest-category-${id}`);
-        cy.findByText("Save category").click({force: true});
+        cy.findByText("Save category").click({ force: true });
         cy.findByText("Value is required.").should("not.exist");
         cy.findByText("Category URL must begin and end with a forward slash (`/`)").should("exist");
         cy.findByTestId("pb.category.new.form.url").clear().type(`/some-url-for-category-${id}/`);
-        cy.findByText("Save category").click({force: true});
+        cy.findByText("Save category").click({ force: true });
         cy.findByText("Category URL must begin and end with a forward slash (`/`)").should(
             "not.exist"
         );
@@ -136,8 +136,8 @@ context("Categories Module", () => {
         // Use category to create a new page.
         cy.visit("/page-builder/pages");
         cy.get('div.action__container button[data-testid="new-record-button"]').click();
-        cy.findByText(`Cool Category ${id}`).click({force: true});
-        cy.findByText(`Publish`).click({force: true});
+        cy.findByText(`Cool Category ${id}`).click({ force: true });
+        cy.findByText(`Publish`).click({ force: true });
         cy.get(
             '[data-testid="pb-editor-publish-confirmation-dialog"] [data-testid="confirmationdialog-confirm-action"]'
         ).click();
@@ -149,7 +149,7 @@ context("Categories Module", () => {
         cy.get('[data-testid="default-data-list"] > li:nth-child(1) button').click({
             force: true
         });
-        cy.findByText("Confirm").click({force: true});
+        cy.findByText("Confirm").click({ force: true });
 
         // assert TO BE added after bug fix
     });

@@ -193,9 +193,17 @@ const TextSettings: React.FC<TextSettingsProps> = ({ defaultAccordionValue, opti
                         leftCellSpan={5}
                         rightCellSpan={7}
                     >
-                        <SelectField value={text.tag} onChange={updateTag} data-testid={"data-test-heading-type"}>
+                        <SelectField
+                            value={text.tag}
+                            onChange={updateTag}
+                            data-testid={"data-test-heading-type"}
+                        >
                             {options.tags.map(tag => (
-                                <option value={tag} key={tag} data-testid={"data-test-heading-option"}>
+                                <option
+                                    value={tag}
+                                    key={tag}
+                                    data-testid={"data-test-heading-option"}
+                                >
                                     {tag.toUpperCase()}
                                 </option>
                             ))}

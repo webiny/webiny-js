@@ -66,7 +66,11 @@ export const EditorSidebar: React.FC = React.memo(() => {
                 <EditorSidebarTab label={"Style"} data-testid={"style-data-test"}>
                     <StyleSettingsTabContent />
                 </EditorSidebarTab>
-                <EditorSidebarTab label={"Element"} disabled={!element} data-testid={"element-data-test"}>
+                <EditorSidebarTab
+                    label={"Element"}
+                    disabled={!element}
+                    data-testid={"element-data-test"}
+                >
                     <ElementSettingsTabContent />
                 </EditorSidebarTab>
             </Tabs>

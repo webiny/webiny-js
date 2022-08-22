@@ -1,6 +1,6 @@
-Cypress.on('uncaught:exception', (err, runnable) => {
+Cypress.on("uncaught:exception", (err, runnable) => {
     return false;
-  });
+});
 
 context("Export & Import Pages", () => {
     beforeEach(() => cy.login());

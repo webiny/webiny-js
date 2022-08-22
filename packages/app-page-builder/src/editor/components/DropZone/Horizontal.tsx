@@ -50,7 +50,7 @@ export interface HorizontalPropsType {
     /**
      * For testing purpose
      */
-     "data-testid"?: string;
+    "data-testid"?: string;
 }
 
 const HorizontalComponent: React.FC<HorizontalPropsType> = props => {
