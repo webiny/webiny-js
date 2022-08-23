@@ -54,7 +54,9 @@ describe("Page blocks Security Test", () => {
         await createBlockCategory({
             data: {
                 slug: `block-category`,
-                name: `block-category-name`
+                name: `block-category-name`,
+                icon: `block-category-icon`,
+                description: `block-category-description`
             }
         });
 
@@ -241,7 +243,9 @@ describe("Page blocks Security Test", () => {
         await createBlockCategory({
             data: {
                 slug: `block-category`,
-                name: `block-category-name`
+                name: `block-category-name`,
+                icon: `block-category-icon`,
+                description: `block-category-description`
             }
         });
 
@@ -290,7 +294,9 @@ describe("Page blocks Security Test", () => {
             await createBlockCategory({
                 data: {
                     slug: `block-category`,
-                    name: `block-category-name`
+                    name: `block-category-name`,
+                    icon: `block-category-icon`,
+                    description: `block-category-description`
                 }
             });
             const data = new Mock(`page-block-create-${intAsString[i]}-`);
@@ -314,7 +320,9 @@ describe("Page blocks Security Test", () => {
         await createBlockCategory({
             data: {
                 slug: `block-category`,
-                name: `block-category-name`
+                name: `block-category-name`,
+                icon: `block-category-icon`,
+                description: `block-category-description`
             }
         });
 
@@ -391,7 +399,9 @@ describe("Page blocks Security Test", () => {
             await createBlockCategory({
                 data: {
                     slug: `block-category`,
-                    name: `block-category-name`
+                    name: `block-category-name`,
+                    icon: `block-category-icon`,
+                    description: `block-category-description`
                 }
             });
 
@@ -426,7 +436,9 @@ describe("Page blocks Security Test", () => {
             await createBlockCategory({
                 data: {
                     slug: `block-category`,
-                    name: `block-category-name`
+                    name: `block-category-name`,
+                    icon: `block-category-icon`,
+                    description: `block-category-description`
                 }
             });
 
@@ -469,7 +481,9 @@ describe("Page blocks Security Test", () => {
             await createBlockCategory({
                 data: {
                     slug: `block-category`,
-                    name: `block-category-name`
+                    name: `block-category-name`,
+                    icon: `block-category-icon`,
+                    description: `block-category-description`
                 }
             });
 
@@ -505,7 +519,9 @@ describe("Page blocks Security Test", () => {
             await createBlockCategory({
                 data: {
                     slug: `block-category`,
-                    name: `block-category-name`
+                    name: `block-category-name`,
+                    icon: `block-category-icon`,
+                    description: `block-category-description`
                 }
             });
 

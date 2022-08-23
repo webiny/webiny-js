@@ -11,3 +11,11 @@ export const blockCategorySlugValidator = (value: string): boolean => {
 
     return true;
 };
+
+export const blockCategoryDescriptionValidator = (value: string): boolean => {
+    if (value.length > 100) {
+        throw new Error("Block Category description must be shorter than 100 characters");
+    }
+
+    return true;
+};

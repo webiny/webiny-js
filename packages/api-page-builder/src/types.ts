@@ -723,6 +723,8 @@ export interface PageBuilderStorageOperations {
 export interface BlockCategory {
     name: string;
     slug: string;
+    icon: string;
+    description: string;
     createdOn: string;
     createdBy: CreatedBy;
     tenant: string;

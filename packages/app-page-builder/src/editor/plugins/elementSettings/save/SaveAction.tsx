@@ -15,7 +15,11 @@ import { plugins } from "@webiny/plugins";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useKeyHandler } from "../../../hooks/useKeyHandler";
 import { CREATE_PAGE_ELEMENT, UPDATE_PAGE_ELEMENT } from "~/admin/graphql/pages";
-import { CREATE_PAGE_BLOCK, UPDATE_PAGE_BLOCK } from "~/admin/views/PageBlocks/graphql";
+import {
+    CREATE_PAGE_BLOCK,
+    UPDATE_PAGE_BLOCK,
+    LIST_PAGE_BLOCKS_AND_CATEGORIES
+} from "~/admin/views/PageBlocks/graphql";
 import { useRecoilValue } from "recoil";
 import { CREATE_FILE } from "./SaveDialog/graphql";
 import { FileUploaderPlugin } from "@webiny/app/types";
@@ -135,7 +139,8 @@ const SaveAction: React.FC = ({ children }) => {
                           id: element.source,
                           data: pick(formData, ["content", "preview"])
                       }
-                    : { data: pick(formData, ["name", "blockCategory", "preview", "content"]) }
+                    : { data: pick(formData, ["name", "blockCategory", "preview", "content"]) },
+                refetchQueries: [{ query: LIST_PAGE_BLOCKS_AND_CATEGORIES }]
             });
 
             const { error, data } = get(res, `pageBuilder.pageBlock`);

@@ -778,6 +778,8 @@ export interface PbMenu {
 export interface PbBlockCategory {
     name: string;
     slug: string;
+    icon: string;
+    description: string;
     createdOn: string;
     createdBy: PbIdentity;
 }

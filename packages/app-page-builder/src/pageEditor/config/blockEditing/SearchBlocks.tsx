@@ -1,10 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import classNames from "classnames";
 import { useMutation } from "@apollo/react-hooks";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { plugins } from "@webiny/plugins";
 import { OverlayLayout } from "@webiny/app-admin/components/OverlayLayout";
 import { LeftPanel, RightPanel, SplitView } from "@webiny/app-admin/components/SplitView";
-import { List, ListItem, ListItemGraphic } from "@webiny/ui/List";
+import { ScrollList, ListItem, ListItemGraphic } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
 import { Typography } from "@webiny/ui/Typography";
 import { ReactComponent as SearchIcon } from "~/editor/assets/icons/search.svg";
@@ -20,7 +21,14 @@ import createBlockPlugin from "~/admin/utils/createBlockPlugin";
 import BlocksList from "./BlocksList";
 import { UPDATE_PAGE_BLOCK, DELETE_PAGE_BLOCK } from "~/admin/views/PageBlocks/graphql";
 import EditBlockDialog from "./EditBlockDialog";
-import { listItem, ListItemTitle, listStyle, TitleContent } from "./SearchBlocksStyled";
+import {
+    IconWrapper,
+    listItem,
+    activeListItem,
+    ListItemTitle,
+    listStyle,
+    TitleContent
+} from "./SearchBlocksStyled";
 import * as Styled from "./StyledComponents";
 import { PbEditorBlockCategoryPlugin, PbEditorBlockPlugin, PbEditorElement } from "~/types";
 import { elementWithChildrenByIdSelector, rootElementAtom } from "~/editor/recoil/modules";
@@ -251,11 +259,14 @@ const SearchBar = () => {
         <OverlayLayout barMiddle={renderSearchInput()} onExited={onExited}>
             <SplitView>
                 <LeftPanel span={3}>
-                    <List twoLine className={listStyle}>
+                    <ScrollList className={listStyle}>
                         {allCategories.map(p => (
                             <ListItem
                                 key={p.name}
-                                className={listItem}
+                                className={classNames(
+                                    listItem,
+                                    activeCategory === p.categoryName && activeListItem
+                                )}
                                 onClick={() => {
                                     setActiveCategory(p.categoryName);
                                 }}
@@ -271,14 +282,14 @@ const SearchBar = () => {
                                 </TitleContent>
                             </ListItem>
                         ))}
-                    </List>
+                    </ScrollList>
                 </LeftPanel>
                 <RightPanel span={9}>
                     {activeCategory && (
                         <SimpleForm>
                             <SimpleFormHeader
                                 title={categoryPlugin.title}
-                                icon={categoryPlugin.icon}
+                                icon={<IconWrapper>{categoryPlugin.icon}</IconWrapper>}
                             />
                             <SimpleFormContent>
                                 <Styled.BlockList>

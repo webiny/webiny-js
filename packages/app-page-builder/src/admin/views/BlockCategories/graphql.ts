@@ -4,6 +4,8 @@ import { PbBlockCategory, PbErrorResponse } from "~/types";
 export const PAGE_BLOCK_CATEGORY_BASE_FIELDS = `
     slug
     name
+    icon
+    description
     createdOn
     createdBy {
         id

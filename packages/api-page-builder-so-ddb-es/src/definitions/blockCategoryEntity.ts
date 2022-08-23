@@ -28,6 +28,12 @@ export const createBlockCategoryEntity = (params: Params): Entity<any> => {
             slug: {
                 type: "string"
             },
+            icon: {
+                type: "string"
+            },
+            description: {
+                type: "string"
+            },
             createdOn: {
                 type: "string"
             },

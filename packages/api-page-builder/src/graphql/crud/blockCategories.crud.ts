@@ -30,11 +30,15 @@ import { createTopic } from "@webiny/pubsub";
 
 const CreateDataModel = withFields({
     slug: string({ validation: validation.create("required,slug") }),
-    name: string({ validation: validation.create("required,minLength:1,maxLength:100") })
+    name: string({ validation: validation.create("required,minLength:1,maxLength:100") }),
+    icon: string({ validation: validation.create("required,maxLength:255") }),
+    description: string({ validation: validation.create("required,minLength:1,maxLength:100") })
 })();
 
 const UpdateDataModel = withFields({
-    name: string({ validation: validation.create("minLength:1,maxLength:100") })
+    name: string({ validation: validation.create("minLength:1,maxLength:100") }),
+    icon: string({ validation: validation.create("maxLength:255") }),
+    description: string({ validation: validation.create("minLength:1,maxLength:100") })
 })();
 
 const PERMISSION_NAME = "pb.block";
