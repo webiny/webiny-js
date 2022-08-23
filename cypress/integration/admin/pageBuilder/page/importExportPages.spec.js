@@ -1,4 +1,4 @@
-Cypress.on("uncaught:exception", (err, runnable) => {
+Cypress.on("uncaught:exception", () => {
     return false;
 });
 
