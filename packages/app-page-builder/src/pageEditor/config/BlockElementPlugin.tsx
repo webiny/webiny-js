@@ -1,8 +1,10 @@
 import React, { useCallback } from "react";
 import styled from "@emotion/styled";
 import { createComponentPlugin } from "@webiny/app-admin";
-import { ElementRoot, ElementRootChildrenFunction } from "~/render";
+import { ElementRoot, ElementRootChildrenFunction, DropZone } from "~/editor";
 import { useActiveElementId } from "~/editor/hooks/useActiveElementId";
+import { useCurrentBlockElement } from "~/editor/hooks/useCurrentBlockElement";
+import { useCurrentElement } from "~/editor/hooks/useCurrentElement";
 
 const DisableInteractions = styled.div`
     position: absolute;
@@ -19,19 +21,20 @@ const DisableInteractions = styled.div`
  * Hook into `ElementRoot`, which is a component that renders _every_ element of the page content.
  * If it's a `block` element, add an overlay to disable mouse interactions.
  */
-export const BlockElementPlugin = createComponentPlugin(ElementRoot, Original => {
+const DisableInteractionsPlugin = createComponentPlugin(ElementRoot, Original => {
     return function ElementRoot({ children, ...props }) {
         const [, setActiveElementId] = useActiveElementId();
+        const { element } = useCurrentElement();
 
         const onClick = useCallback(() => {
-            setActiveElementId(props.element.id);
-        }, [props.element.id]);
+            setActiveElementId(element.id);
+        }, [element.id]);
 
-        if (props.element.type !== "block") {
+        if (element.type !== "block") {
             return <Original {...props}>{children}</Original>;
         }
 
-        // TODO: add handling of the "empty" block. We don't want to disable interactions on the empty block
+        // TODO: add handling of the "empty" block. We don't want to disable interactions on an empty block
         // because it is considered to be a custom inline block, created for a specific page.
 
         /**
@@ -50,3 +53,37 @@ export const BlockElementPlugin = createComponentPlugin(ElementRoot, Original =>
         );
     };
 });
+
+const plugins = [DropZone.Below, DropZone.Above].map(Component => {
+    return createComponentPlugin(Component, Original => {
+        return function BlockDropZone({ children, ...props }) {
+            const { block } = useCurrentBlockElement();
+
+            if (!block) {
+                return <Original {...props}>{children}</Original>;
+            }
+
+            // TODO: add a check to see if this block can be edited: "empty" block or "unlinked" block
+            // Example code:
+            //
+            // if (block.id !== "dUXdSfGGdW") {
+            //     props.isVisible = () => {
+            //         return false;
+            //     };
+            // }
+
+            return <Original {...props}>{children}</Original>;
+        };
+    });
+});
+
+export const BlockElementPlugin = () => {
+    return (
+        <>
+            <DisableInteractionsPlugin />
+            {plugins.map((Plugin, index) => (
+                <Plugin key={index} />
+            ))}
+        </>
+    );
+};

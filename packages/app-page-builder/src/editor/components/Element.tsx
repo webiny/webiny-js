@@ -17,6 +17,7 @@ import { useActiveElementId } from "~/editor/hooks/useActiveElementId";
 import { useUI } from "~/editor/hooks/useUI";
 import { useElementById } from "~/editor/hooks/useElementById";
 import { SetterOrUpdater } from "recoil";
+import { ElementProvider } from "~/editor/contexts/ElementProvider";
 
 interface RenderDraggableCallableParams {
     drag: DragElementWrapper<DragSourceOptions> | null;
@@ -127,32 +128,34 @@ const ElementComponent: React.FC<ElementPropsType> = ({
     const isDraggable = Array.isArray(plugin.target) && plugin.target.length > 0;
 
     return (
-        <Transition in={true} timeout={250} appear={true}>
-            {state => (
-                <ElementContainer
-                    id={element.id}
-                    onMouseOver={onMouseOver}
-                    onMouseOut={onMouseOut}
-                    highlight={isActive ? true : isHighlighted}
-                    active={isActive || false}
-                    style={{ ...defaultStyle, ...transitionStyles[state] }}
-                    className={"webiny-pb-page-element-container"}
-                >
-                    <div className={["innerWrapper", className].filter(c => c).join(" ")}>
-                        <Draggable
-                            enabled={isDraggable}
-                            target={plugin ? plugin.target || [] : []}
-                            beginDrag={beginDrag}
-                            endDrag={endDrag}
-                        >
-                            {renderDraggable}
-                        </Draggable>
+        <ElementProvider element={element}>
+            <Transition in={true} timeout={250} appear={true}>
+                {state => (
+                    <ElementContainer
+                        id={element.id}
+                        onMouseOver={onMouseOver}
+                        onMouseOut={onMouseOut}
+                        highlight={isActive ? true : isHighlighted}
+                        active={isActive || false}
+                        style={{ ...defaultStyle, ...transitionStyles[state] }}
+                        className={"webiny-pb-page-element-container"}
+                    >
+                        <div className={["innerWrapper", className].filter(c => c).join(" ")}>
+                            <Draggable
+                                enabled={isDraggable}
+                                target={plugin ? plugin.target || [] : []}
+                                beginDrag={beginDrag}
+                                endDrag={endDrag}
+                            >
+                                {renderDraggable}
+                            </Draggable>
 
-                        {renderedPlugin}
-                    </div>
-                </ElementContainer>
-            )}
-        </Transition>
+                            {renderedPlugin}
+                        </div>
+                    </ElementContainer>
+                )}
+            </Transition>
+        </ElementProvider>
     );
 };
 

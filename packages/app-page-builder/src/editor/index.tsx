@@ -14,3 +14,5 @@ export * from "./components/Editor/EditorContent";
 export { EditorProvider } from "./contexts/EditorProvider";
 export { EditorSidebarTab, EditorSidebarTabProps } from "./components/Editor/EditorSidebar";
 export { ElementSettingsRenderer } from "./plugins/elementSettings/advanced/ElementSettings";
+export * from "../render/components/ElementRoot";
+export { default as DropZone } from "../editor/components/DropZone";
