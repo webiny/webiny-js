@@ -25,7 +25,7 @@ const ButtonWrapper = styled("div")({
 const BlockSettingsModal: React.FC = () => {
     const handler = useEventActionHandler();
     const [block] = useBlock();
-    const [blockCategories] = useBlockCategories();
+    const blockCategories = useBlockCategories();
     const [, setState] = useRecoilState(blockSettingsStateAtom);
     const onClose = useCallback(() => {
         setState(false);

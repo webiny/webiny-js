@@ -258,7 +258,7 @@ const BlocksByCategoriesDataList = ({ canCreate }: PageBuilderBlocksByCategories
                 className={narrowDialog}
             >
                 <DialogTitle>
-                    <Typography use="headline5">Please select block category</Typography>
+                    <Typography use="headline5">Please select a block category</Typography>
                 </DialogTitle>
                 <DialogContent>
                     <React.Fragment>
@@ -291,7 +291,7 @@ const BlocksByCategoriesDataList = ({ canCreate }: PageBuilderBlocksByCategories
                     <ButtonDefault
                         onClick={() => history.push("/page-builder/block-categories?new=true")}
                     >
-                        + Create new block category
+                        + Create a new block category
                     </ButtonDefault>
                 </DialogActions>
             </Dialog>
