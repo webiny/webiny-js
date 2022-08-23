@@ -1,17 +1,8 @@
 import omit from "lodash/omit";
-import {
-    blockAtom,
-    BlockAtomType,
-    BlockWithContent,
-    blockCategoriesAtom,
-    BlockCategoriesAtomType
-} from "~/blockEditor/state";
+import { blockAtom, BlockAtomType, BlockWithContent } from "~/blockEditor/state";
 import { EditorStateInitializerFactory } from "~/editor/Editor";
 
-export const createStateInitializer = (
-    block: BlockWithContent,
-    blockCategories: BlockCategoriesAtomType
-): EditorStateInitializerFactory => {
+export const createStateInitializer = (block: BlockWithContent): EditorStateInitializerFactory => {
     return () => ({
         content: block.content,
         recoilInitializer({ set }) {
@@ -20,7 +11,6 @@ export const createStateInitializer = (
              */
             const blockData: BlockAtomType = omit(block, ["content"]);
             set(blockAtom, blockData);
-            set(blockCategoriesAtom, blockCategories);
         }
     });
 };
