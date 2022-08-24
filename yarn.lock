@@ -10350,6 +10350,21 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/api-folders-so-ddb@workspace:packages/api-folders-so-ddb":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-folders-so-ddb@workspace:packages/api-folders-so-ddb"
+  dependencies:
+    "@babel/cli": ^7.16.0
+    "@babel/core": ^7.16.0
+    "@webiny/cli": ^5.31.0
+    "@webiny/project-utils": ^5.31.0
+    jest: ^28.1.0
+    rimraf: ^3.0.2
+    ttypescript: ^1.5.12
+    typescript: 4.7.4
+  languageName: unknown
+  linkType: soft
+
 "@webiny/api-folders@workspace:packages/api-folders":
   version: 0.0.0-use.local
   resolution: "@webiny/api-folders@workspace:packages/api-folders"
