@@ -15,7 +15,7 @@ import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDi
 import { PbPageBlock } from "~/types";
 import { LIST_PAGE_BLOCKS, LIST_PAGE_BLOCKS_AND_CATEGORIES, DELETE_PAGE_BLOCK } from "./graphql";
 import { CreatableItem } from "./PageBlocks";
-import PageBlocksForm from "./PageBlocksForm";
+import previewFallback from "./assets/preview.png";
 
 const t = i18n.ns("app-page-builder/admin/page-blocks/data-list");
 
@@ -172,15 +172,16 @@ const PageBlocksDataList = ({ canEdit, canDelete }: PageBlocksDataListProps) => 
                 {isLoading && <CircularProgress />}
                 {pageBlocksData.map(pageBlock => (
                     <ListItem key={pageBlock.id}>
-                        <img src={pageBlock?.preview?.src} alt={pageBlock.name} />
+                        <img
+                            src={pageBlock?.preview?.src || previewFallback}
+                            alt={pageBlock.name}
+                        />
                         <ListItemText>{pageBlock.name}</ListItemText>
                         <Controls>
                             {canEdit(pageBlock) && (
                                 <EditButton
                                     onClick={() =>
-                                        history.push(
-                                            `/page-builder/page-blocks?category=${selectedBlocksCategory}&id=${pageBlock.id}`
-                                        )
+                                        history.push(`/page-builder/block-editor/${pageBlock.id}`)
                                     }
                                 />
                             )}
@@ -191,7 +192,6 @@ const PageBlocksDataList = ({ canEdit, canDelete }: PageBlocksDataListProps) => 
                     </ListItem>
                 ))}
             </List>
-            <PageBlocksForm pageBlocksData={pageBlocksData} refetch={refetch} />
         </>
     );
 };

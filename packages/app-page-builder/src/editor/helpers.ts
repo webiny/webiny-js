@@ -126,9 +126,9 @@ export const createDroppedElement = (
     return createElement(source.type, {}, target);
 };
 /**
- * Add unique id to elements recur
+ * Add unique id to elements recursively
  */
-const addElementId = (target: Omit<PbEditorElement, "id">): PbEditorElement => {
+export const addElementId = (target: Omit<PbEditorElement, "id">): PbEditorElement => {
     /**
      * Need to cast because typescript thinks we removed everything via Omit???
      */

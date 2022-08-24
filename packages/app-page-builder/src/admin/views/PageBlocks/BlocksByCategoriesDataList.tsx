@@ -1,27 +1,52 @@
 import React, { useCallback, useMemo, useState } from "react";
+import { css } from "emotion";
 import { i18n } from "@webiny/app/i18n";
 import { useRouter } from "@webiny/react-router";
-import { useQuery } from "@apollo/react-hooks";
+import { useQuery, useApolloClient } from "@apollo/react-hooks";
 import orderBy from "lodash/orderBy";
+import isEmpty from "lodash/isEmpty";
+import get from "lodash/get";
 
 import {
     DataList,
     DataListModalOverlay,
     DataListModalOverlayAction,
     ScrollList,
+    List,
     ListItem,
     ListItemText,
+    ListItemTextPrimary,
     ListItemTextSecondary
 } from "@webiny/ui/List";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
+import { Typography } from "@webiny/ui/Typography";
 import SearchUI from "@webiny/app-admin/components/SearchUI";
+import { Dialog, DialogTitle, DialogContent, DialogActions } from "@webiny/ui/Dialog";
+import { ButtonDefault, ButtonIcon, ButtonSecondary } from "@webiny/ui/Button";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
+import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 
 import { PbBlockCategory, PbPageBlock } from "~/types";
-import { LIST_PAGE_BLOCKS_AND_CATEGORIES } from "./graphql";
+import { LIST_PAGE_BLOCKS_AND_CATEGORIES, CREATE_PAGE_BLOCK } from "./graphql";
+
+import { addElementId } from "~/editor/helpers";
 
 const t = i18n.ns("app-page-builder/admin/page-blocks/by-categories-data-list");
+
+const narrowDialog = css({
+    ".mdc-dialog__surface": {
+        width: 400,
+        minWidth: 400
+    }
+});
+
+const noRecordsWrapper = css({
+    display: "flex",
+    justifyContent: "center",
+    color: "var(--mdc-theme-on-surface)"
+});
 
 interface Sorter {
     label: string;
@@ -46,10 +71,16 @@ const SORTERS: Sorter[] = [
     }
 ];
 
-const BlocksByCategoriesDataList = () => {
+type PageBuilderBlocksByCategoriesDataListProps = {
+    canCreate: boolean;
+};
+const BlocksByCategoriesDataList = ({ canCreate }: PageBuilderBlocksByCategoriesDataListProps) => {
     const [filter, setFilter] = useState<string>("");
     const [sort, setSort] = useState<string>(SORTERS[0].sort);
+    const [isNewPageBlockDialogOpen, setIsNewPageBlockDialogOpen] = useState<boolean>(false);
     const { history } = useRouter();
+    const client = useApolloClient();
+    const { showSnackbar } = useSnackbar();
     const listQuery = useQuery(LIST_PAGE_BLOCKS_AND_CATEGORIES);
 
     const blockCategoriesData: PbBlockCategory[] =
@@ -107,61 +138,164 @@ const BlocksByCategoriesDataList = () => {
         filter === "" ? blockCategoriesData : blockCategoriesData.filter(filterData);
     const categoryList: PbBlockCategory[] = sortData(filteredBlockCategoriesData);
 
-    return (
-        <DataList
-            title={t`Blocks`}
-            loading={Boolean(loading)}
-            data={categoryList}
-            search={
-                <SearchUI
-                    value={filter}
-                    onChange={setFilter}
-                    inputPlaceholder={t`Search categories`}
-                />
-            }
-            modalOverlay={blockCategoriesDataListModalOverlay}
-            modalOverlayAction={
-                <DataListModalOverlayAction
-                    icon={<FilterIcon />}
-                    data-testid={"default-data-list.filter"}
-                />
-            }
-            refresh={() => {
-                if (!listQuery.refetch) {
-                    return;
-                }
-                listQuery.refetch();
-            }}
-        >
-            {({ data }: { data: PbBlockCategory[] }) => (
-                <ScrollList data-testid="default-data-list">
-                    {data.map(item => {
-                        const numberOfBlocks = pageBlocksData.filter(
-                            pageBlock => pageBlock.blockCategory === item.slug
-                        ).length;
-                        return (
-                            <ListItem
-                                key={item.slug}
-                                selected={item.slug === selectedBlocksCategory}
-                            >
-                                <ListItemText
-                                    onClick={() =>
-                                        history.push(
-                                            `/page-builder/page-blocks?category=${item.slug}`
-                                        )
+    const onCreatePageBlock = async (categorySlug: string) => {
+        const { data: res } = await client.mutate({
+            mutation: CREATE_PAGE_BLOCK,
+            variables: {
+                data: {
+                    name: "New block",
+                    blockCategory: categorySlug,
+                    // Create base block content, and make sure all elements have an `id` property.
+                    content: addElementId({
+                        type: "block",
+                        // `data` object is required, even if empty.
+                        data: {},
+                        elements: [
+                            {
+                                type: "grid",
+                                data: {
+                                    settings: {
+                                        grid: {
+                                            cellsType: "12"
+                                        }
                                     }
+                                },
+                                elements: [
+                                    {
+                                        type: "cell",
+                                        data: {
+                                            settings: {
+                                                grid: {
+                                                    size: 12
+                                                }
+                                            }
+                                        },
+                                        elements: []
+                                    }
+                                ]
+                            }
+                        ]
+                    }),
+                    preview: {}
+                }
+            }
+        });
+        const { error, data } = get(res, `pageBuilder.pageBlock`);
+        if (data) {
+            setIsNewPageBlockDialogOpen(false);
+            history.push(`/page-builder/block-editor/${data.id}`);
+        } else {
+            showSnackbar(error.message);
+        }
+    };
+
+    return (
+        <>
+            <DataList
+                title={t`Blocks`}
+                loading={Boolean(loading)}
+                data={categoryList}
+                actions={
+                    canCreate ? (
+                        <ButtonSecondary onClick={() => setIsNewPageBlockDialogOpen(true)}>
+                            <ButtonIcon icon={<AddIcon />} /> {t`New Block`}
+                        </ButtonSecondary>
+                    ) : null
+                }
+                search={
+                    <SearchUI
+                        value={filter}
+                        onChange={setFilter}
+                        inputPlaceholder={t`Search categories`}
+                    />
+                }
+                modalOverlay={blockCategoriesDataListModalOverlay}
+                modalOverlayAction={
+                    <DataListModalOverlayAction
+                        icon={<FilterIcon />}
+                        data-testid={"default-data-list.filter"}
+                    />
+                }
+                refresh={() => {
+                    if (!listQuery.refetch) {
+                        return;
+                    }
+                    listQuery.refetch();
+                }}
+            >
+                {({ data }: { data: PbBlockCategory[] }) => (
+                    <ScrollList data-testid="default-data-list">
+                        {data.map(item => {
+                            const numberOfBlocks = pageBlocksData.filter(
+                                pageBlock => pageBlock.blockCategory === item.slug
+                            ).length;
+                            return (
+                                <ListItem
+                                    key={item.slug}
+                                    selected={item.slug === selectedBlocksCategory}
                                 >
-                                    {item.name}
-                                    <ListItemTextSecondary>{`${numberOfBlocks} ${
-                                        numberOfBlocks === 1 ? "block" : "blocks"
-                                    } in the category`}</ListItemTextSecondary>
-                                </ListItemText>
-                            </ListItem>
-                        );
-                    })}
-                </ScrollList>
-            )}
-        </DataList>
+                                    <ListItemText
+                                        onClick={() =>
+                                            history.push(
+                                                `/page-builder/page-blocks?category=${item.slug}`
+                                            )
+                                        }
+                                    >
+                                        {item.name}
+                                        <ListItemTextSecondary>{`${numberOfBlocks} ${
+                                            numberOfBlocks === 1 ? "block" : "blocks"
+                                        } in the category`}</ListItemTextSecondary>
+                                    </ListItemText>
+                                </ListItem>
+                            );
+                        })}
+                    </ScrollList>
+                )}
+            </DataList>
+            <Dialog
+                open={isNewPageBlockDialogOpen}
+                onClose={() => setIsNewPageBlockDialogOpen(false)}
+                className={narrowDialog}
+            >
+                <DialogTitle>
+                    <Typography use="headline5">Please select a block category</Typography>
+                </DialogTitle>
+                <DialogContent>
+                    <React.Fragment>
+                        {isEmpty(categoryList) ? (
+                            <div className={noRecordsWrapper}>
+                                <Typography use="overline">
+                                    There are no block categories
+                                </Typography>
+                            </div>
+                        ) : (
+                            <List twoLine>
+                                {categoryList.map(item => (
+                                    <ListItem
+                                        key={item.slug}
+                                        onClick={() => onCreatePageBlock(item.slug)}
+                                    >
+                                        <ListItemText>
+                                            <ListItemTextPrimary>{item.name}</ListItemTextPrimary>
+                                            <ListItemTextSecondary>
+                                                {item.slug}
+                                            </ListItemTextSecondary>
+                                        </ListItemText>
+                                    </ListItem>
+                                ))}
+                            </List>
+                        )}
+                    </React.Fragment>
+                </DialogContent>
+                <DialogActions>
+                    <ButtonDefault
+                        onClick={() => history.push("/page-builder/block-categories?new=true")}
+                    >
+                        + Create a new block category
+                    </ButtonDefault>
+                </DialogActions>
+            </Dialog>
+        </>
     );
 };
 

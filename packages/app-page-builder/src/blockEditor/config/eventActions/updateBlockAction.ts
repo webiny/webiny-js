@@ -1,12 +1,15 @@
 import { UpdateDocumentActionArgsType } from "~/editor/recoil/actions";
-import { SaveBlockActionEvent } from "./saveBlock";
 import { BlockAtomType } from "~/blockEditor/state";
 import { BlockEventActionCallable } from "~/blockEditor/types";
+import { ToggleSaveBlockStateActionEvent } from "./saveBlock/event";
 
 export const updateBlockAction: BlockEventActionCallable<
     UpdateDocumentActionArgsType<BlockAtomType>
-> = (state, _, args) => {
+> = async (state, meta, args) => {
     console.log("updateBlockAction", state, args);
+
+    meta.eventActionHandler.trigger(new ToggleSaveBlockStateActionEvent({ saving: true }));
+
     return {
         state: {
             block: {
@@ -14,11 +17,6 @@ export const updateBlockAction: BlockEventActionCallable<
                 ...(args?.document || {})
             }
         },
-        actions: [
-            new SaveBlockActionEvent({
-                debounce: args?.debounce || false,
-                onFinish: args?.onFinish
-            })
-        ]
+        actions: []
     };
 };

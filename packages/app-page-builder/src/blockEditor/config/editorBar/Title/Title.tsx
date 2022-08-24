@@ -22,7 +22,7 @@ const Title: React.FC = () => {
     const { showSnackbar } = useSnackbar();
     const [editTitle, setEdit] = useState<boolean>(false);
     const [stateTitle, setTitle] = useState<string | null>(null);
-    let title = stateTitle === null ? block.title : stateTitle;
+    let title = stateTitle === null ? block.name : stateTitle;
 
     const updateBlock = (data: Partial<BlockAtomType>) => {
         handler.trigger(
@@ -44,7 +44,7 @@ const Title: React.FC = () => {
             setTitle(title);
         }
         setEdit(false);
-        updateBlock({ title });
+        updateBlock({ name: title });
     }, [title]);
 
     const onKeyDown = useCallback(
@@ -54,7 +54,7 @@ const Title: React.FC = () => {
                 case "Escape":
                     e.preventDefault();
                     setEdit(false);
-                    setTitle(block.title || "");
+                    setTitle(block.name || "");
                     break;
                 case "Enter":
                     if (title === "") {
@@ -65,13 +65,13 @@ const Title: React.FC = () => {
                     e.preventDefault();
                     setEdit(false);
 
-                    updateBlock({ title });
+                    updateBlock({ name: title });
                     break;
                 default:
                     return;
             }
         },
-        [title, block.title]
+        [title, block.name]
     );
 
     // Disable autoFocus because for some reason, blur event would automatically be triggered when clicking

@@ -7,7 +7,8 @@ export interface BlockWithContent extends BlockAtomType {
 
 export interface BlockAtomType {
     id: string;
-    title?: string;
+    name?: string;
+    blockCategory?: string;
     savedOn?: Date;
     createdBy: {
         id: string | null;
