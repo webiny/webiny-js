@@ -10358,6 +10358,10 @@ __metadata:
     "@babel/core": ^7.18.13
     "@babel/preset-env": ^7.18.10
     "@babel/preset-typescript": ^7.18.6
+    "@webiny/api": ^5.31.0
+    "@webiny/cli": ^5.31.0
+    "@webiny/error": ^5.31.0
+    "@webiny/handler-graphql": ^5.31.0
     "@webiny/project-utils": ^5.31.0
     jest: ^28.1.3
     rimraf: ^3.0.2
