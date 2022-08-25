@@ -59,7 +59,6 @@ const HorizontalComponent: React.FC<HorizontalPropsType> = props => {
         <Droppable type={type} isVisible={isVisible} onDrop={onDrop}>
             {({ isOver, drop }) => (
                 <div
-                    className={props["data-testid"]}
                     data-testid={props["data-testid"]}
                     ref={drop}
                     style={{
