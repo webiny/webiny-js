@@ -4,7 +4,7 @@ import { plugins } from "@webiny/plugins";
 import { Typography } from "@webiny/ui/Typography";
 import { Grid } from "react-virtualized";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import DelayedOnChange from "./DelayedOnChange";
+import { DelayedOnChange } from "@webiny/ui/DelayedOnChange";
 import { Menu } from "@webiny/ui/Menu";
 import { Input } from "@webiny/ui/Input";
 import { PbIcon, PbIconsPlugin } from "~/types";
