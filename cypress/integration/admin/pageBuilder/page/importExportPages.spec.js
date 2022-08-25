@@ -1,5 +1,4 @@
-// eslint-disable-next-line jest/valid-expect-in-promise
-Cypress.on("uncaught:exception", (err, runnable) => {
+Cypress.on("uncaught:exception", () => {
     return false;
 });
 
