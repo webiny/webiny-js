@@ -1,4 +1,5 @@
-Cypress.on("uncaught:exception", () => {
+// eslint-disable-next-line jest/valid-expect-in-promise
+Cypress.on("uncaught:exception", (err, runnable) => {
     return false;
 });
 
@@ -28,7 +29,7 @@ context("Export & Import Pages", () => {
             cy.get(".mdc-list-item")
                 .first()
                 .within(() => {
-                    cy.findByText(/Welcome to Webiny/i).should("exist");
+                    cy.contains("Welcome to Webiny").should("exist");
                     cy.findByTestId("pages-default-data-list.select-page").click({ force: true });
                     cy.get(`[type="checkbox"]`).should("exist");
                     cy.get(`[type="checkbox"]`).check();
@@ -41,7 +42,7 @@ context("Export & Import Pages", () => {
         // Select revision type
         cy.findByTestId("export-pages.select-revision-type-dialog").should("be.visible");
         cy.findByTestId("export-pages.select-revision-type-dialog").within(() => {
-            cy.findByText(/Continue/i).click();
+            cy.get("span").contains("Continue").click({ force: true });
         });
         // Initial loading
         cy.findByTestId("export-pages.initial-dialog").should("be.visible");
@@ -56,7 +57,9 @@ context("Export & Import Pages", () => {
         cy.findByText(/Successfully copied!/i).should("be.visible");
         // Close dialog
         cy.findByTestId("export-pages.export-ready-dialog").within(() => {
-            cy.findByText(/Close/i).click();
+            cy.get('button[data-testid="dialog-accept"] span')
+                .contains("Close")
+                .click({ force: true });
         });
         clearSearch();
 
@@ -68,7 +71,7 @@ context("Export & Import Pages", () => {
         });
         // User input
         cy.findByTestId("import-pages.input-dialog").within(() => {
-            cy.findByText(/Paste file URL/i).click();
+            cy.findByText(/Paste file URL/i).click({ force: true });
             // Let's check the copied text
             // eslint-disable-next-line jest/valid-expect-in-promise
             cy.window()
@@ -78,7 +81,7 @@ context("Export & Import Pages", () => {
                 .then(text => {
                     cy.findByLabelText("File URL").focus().type(text);
                 });
-            cy.findByText(/Continue/i).click();
+            cy.get("span").contains("Continue").click({ force: true });
         });
         // Loading
         cy.findByTestId("import-pages.loading-dialog").should("be.visible");
@@ -90,7 +93,7 @@ context("Export & Import Pages", () => {
                 .children()
                 .should("have.length", 1);
 
-            cy.findByText(/Continue/i).click();
+            cy.get("span").contains("Continue").click({ force: true });
         });
 
         // Page should be there
@@ -118,7 +121,7 @@ context("Export & Import Pages", () => {
         });
         cy.findByTestId("pb-page-details-header-delete-button").click();
         cy.findByTestId("pb-page-details-header-delete-dialog").within(() => {
-            cy.findByText(/Confirm/i).click();
+            cy.get("span").contains("Confirm").click({ force: true });
         });
         cy.findByTestId("default-data-list").within(() => {
             cy.get(".mdc-list-item")
