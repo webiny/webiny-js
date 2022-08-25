@@ -1,3 +1,4 @@
+// TODO: find a better way to share IconPicker with icons across apps.
 import * as React from "react";
 import { css } from "emotion";
 import { plugins } from "@webiny/plugins";
