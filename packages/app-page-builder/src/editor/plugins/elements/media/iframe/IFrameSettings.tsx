@@ -4,7 +4,7 @@ import { merge } from "dot-prop-immutable";
 import { Form } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import { withActiveElement } from "~/editor/components";
-import { DelayedOnChange } from "~/editor/components/DelayedOnChange";
+import { DelayedOnChange } from "@webiny/ui/DelayedOnChange";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import { UpdateElementActionEvent } from "~/editor/recoil/actions";
 import { PbEditorPageElementSettingsRenderComponentProps, PbEditorElement } from "~/types";

@@ -504,6 +504,8 @@ export interface SystemCrud {
 export interface PbBlockCategoryInput {
     name: string;
     slug: string;
+    icon: string;
+    description: string;
 }
 
 /**

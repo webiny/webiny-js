@@ -2,6 +2,8 @@ export const DATA_FIELD = /* GraphQL */ `
     {
         slug
         name
+        icon
+        description
         createdOn
         createdBy {
             id

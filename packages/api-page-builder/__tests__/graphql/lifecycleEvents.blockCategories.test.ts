@@ -4,6 +4,8 @@ import { assignBlockCategoryLifecycleEvents, tracker } from "./mocks/lifecycleEv
 
 const name = "Block Category Lifecycle Events";
 const slug = "block-category-lifecycle-events";
+const icon = "/block-category-icon";
+const description = "Block Category Description";
 
 describe("Block Category Lifecycle Events", () => {
     const handler = useGqlHandler({
@@ -20,7 +22,9 @@ describe("Block Category Lifecycle Events", () => {
         const [response] = await createBlockCategory({
             data: {
                 slug,
-                name
+                name,
+                icon,
+                description
             }
         });
         expect(response).toMatchObject({
@@ -29,7 +33,9 @@ describe("Block Category Lifecycle Events", () => {
                     createBlockCategory: {
                         data: {
                             name,
-                            slug
+                            slug,
+                            icon,
+                            description
                         },
                         error: null
                     }
@@ -49,7 +55,9 @@ describe("Block Category Lifecycle Events", () => {
         await createBlockCategory({
             data: {
                 slug,
-                name
+                name,
+                icon,
+                description
             }
         });
 
@@ -59,7 +67,9 @@ describe("Block Category Lifecycle Events", () => {
             slug: slug,
             data: {
                 slug,
-                name: `${name} updated`
+                name: `${name} updated`,
+                icon: `${icon}-updated`,
+                description: `${name} Updated`
             }
         });
 
@@ -69,7 +79,9 @@ describe("Block Category Lifecycle Events", () => {
                     updateBlockCategory: {
                         data: {
                             name: `${name} updated`,
-                            slug
+                            slug,
+                            icon: `${icon}-updated`,
+                            description: `${name} Updated`
                         },
                         error: null
                     }
@@ -89,7 +101,9 @@ describe("Block Category Lifecycle Events", () => {
         await createBlockCategory({
             data: {
                 slug,
-                name
+                name,
+                icon,
+                description
             }
         });
 
@@ -104,7 +118,9 @@ describe("Block Category Lifecycle Events", () => {
                     deleteBlockCategory: {
                         data: {
                             name,
-                            slug
+                            slug,
+                            icon,
+                            description
                         },
                         error: null
                     }

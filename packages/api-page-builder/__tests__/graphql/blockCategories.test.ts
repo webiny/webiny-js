@@ -23,7 +23,9 @@ describe("Block Categories CRUD Test", () => {
             const prefix = prefixes[i];
             let data = {
                 slug: `${prefix}slug`,
-                name: `${prefix}name`
+                name: `${prefix}name`,
+                icon: `${prefix}icon`,
+                description: `${prefix}description`
             };
 
             let [response] = await createBlockCategory({ data });
@@ -60,7 +62,9 @@ describe("Block Categories CRUD Test", () => {
 
             data = {
                 slug: data.slug, // Slug cannot be changed.
-                name: data.name + "-UPDATED"
+                name: data.name + "-UPDATED",
+                icon: data.icon + "-UPDATED",
+                description: data.description + "-UPDATED"
             };
 
             [response] = await updateBlockCategory({ slug: data.slug, data });
@@ -90,18 +94,24 @@ describe("Block Categories CRUD Test", () => {
                             {
                                 slug: "block-category-one-slug",
                                 name: "block-category-one-name-UPDATED",
+                                icon: "block-category-one-icon-UPDATED",
+                                description: "block-category-one-description-UPDATED",
                                 createdOn: /^20/,
                                 createdBy: defaultIdentity
                             },
                             {
                                 slug: "block-category-two-slug",
                                 name: "block-category-two-name-UPDATED",
+                                icon: "block-category-two-icon-UPDATED",
+                                description: "block-category-two-description-UPDATED",
                                 createdOn: /^20/,
                                 createdBy: defaultIdentity
                             },
                             {
                                 slug: "block-category-three-slug",
                                 name: "block-category-three-name-UPDATED",
+                                icon: "block-category-three-icon-UPDATED",
+                                description: "block-category-three-description-UPDATED",
                                 createdOn: /^20/,
                                 createdBy: defaultIdentity
                             }
@@ -117,7 +127,9 @@ describe("Block Categories CRUD Test", () => {
             const prefix = prefixes[i];
             const data = {
                 slug: `${prefix}slug`,
-                name: `${prefix}name-UPDATED`
+                name: `${prefix}name-UPDATED`,
+                icon: `${prefix}icon-UPDATED`,
+                description: `${prefix}description-UPDATED`
             };
 
             const [response] = await deleteBlockCategory({ slug: data.slug });
@@ -155,7 +167,9 @@ describe("Block Categories CRUD Test", () => {
         const [emptySlugErrorResponse] = await createBlockCategory({
             data: {
                 slug: ``,
-                name: `empty-slug-category`
+                name: `empty-slug-category-name`,
+                icon: `empty-slug-category-icon`,
+                description: `empty-slug-category-description`
             }
         });
 
@@ -187,7 +201,9 @@ describe("Block Categories CRUD Test", () => {
         const [invalidSlugErrorResponse] = await createBlockCategory({
             data: {
                 slug: `invalid--slug--category`,
-                name: `invalid--slug--category`
+                name: `invalid--slug--category--name`,
+                icon: `invalid--slug--category--icon`,
+                description: `invalid--slug--category--description`
             }
         });
 
@@ -242,7 +258,12 @@ describe("Block Categories CRUD Test", () => {
     test("cannot update a block category by empty slug", async () => {
         const [errorResponse] = await updateBlockCategory({
             slug: ``,
-            data: { slug: ``, name: `empty-slug-category` }
+            data: {
+                slug: ``,
+                name: `empty-slug-category-name`,
+                icon: `empty-slug-category-icon`,
+                description: `empty-slug-category-description`
+            }
         });
 
         const error: ErrorOptions = {
@@ -267,7 +288,9 @@ describe("Block Categories CRUD Test", () => {
         await createBlockCategory({
             data: {
                 slug: `delete-block-cat`,
-                name: `name`
+                name: `name`,
+                icon: `icon`,
+                description: `description`
             }
         });
 
@@ -389,7 +412,9 @@ describe("Block Categories CRUD Test", () => {
                 data: {
                     createdBy: defaultIdentity,
                     slug: `delete-block-cat`,
-                    name: `name`
+                    name: `name`,
+                    icon: `icon`,
+                    description: `description`
                 },
                 error: null
             })

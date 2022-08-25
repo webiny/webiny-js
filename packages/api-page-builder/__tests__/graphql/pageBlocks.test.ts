@@ -22,7 +22,9 @@ describe("Page Blocks Test", () => {
         await createBlockCategory({
             data: {
                 slug: "block-category",
-                name: "block-category-name"
+                name: "block-category-name",
+                icon: "block-category-icon",
+                description: "block-category-description"
             }
         });
 
@@ -241,7 +243,9 @@ describe("Page Blocks Test", () => {
         await createBlockCategory({
             data: {
                 slug: "block-category",
-                name: "block-category-name"
+                name: "block-category-name",
+                icon: "block-category-icon",
+                description: "block-category-description"
             }
         });
 
@@ -331,14 +335,18 @@ describe("Page Blocks Test", () => {
         await createBlockCategory({
             data: {
                 slug: "block-category-one",
-                name: "block-category-one-name"
+                name: "block-category-one-name",
+                icon: "block-category-one-icon",
+                description: "block-category-one-description"
             }
         });
 
         await createBlockCategory({
             data: {
                 slug: "block-category-two",
-                name: "block-category-two-name"
+                name: "block-category-two-name",
+                icon: "block-category-two-icon",
+                description: "block-category-two-description"
             }
         });
 

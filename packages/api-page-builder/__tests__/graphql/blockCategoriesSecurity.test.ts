@@ -4,6 +4,8 @@ import { identityA, identityB } from "./mocks";
 function Mock(prefix = "") {
     this.slug = `${prefix}slug`;
     this.name = `${prefix}name`;
+    this.icon = `${prefix}icon`;
+    this.description = `${prefix}description`;
 }
 
 const NOT_AUTHORIZED_RESPONSE = operation => ({
@@ -102,25 +104,33 @@ describe("Block Categories Security Test", () => {
                                     createdBy: identityA,
                                     createdOn: /^20/,
                                     slug: "list-block-categories-one-slug",
-                                    name: "list-block-categories-one-name"
+                                    name: "list-block-categories-one-name",
+                                    icon: "list-block-categories-one-icon",
+                                    description: "list-block-categories-one-description"
                                 },
                                 {
                                     createdBy: identityA,
                                     createdOn: /^20/,
                                     slug: "list-block-categories-two-slug",
-                                    name: "list-block-categories-two-name"
+                                    name: "list-block-categories-two-name",
+                                    icon: "list-block-categories-two-icon",
+                                    description: "list-block-categories-two-description"
                                 },
                                 {
                                     createdBy: identityB,
                                     createdOn: /^20/,
                                     slug: "list-block-categories-three-slug",
-                                    name: "list-block-categories-three-name"
+                                    name: "list-block-categories-three-name",
+                                    icon: "list-block-categories-three-icon",
+                                    description: "list-block-categories-three-description"
                                 },
                                 {
                                     createdBy: identityB,
                                     createdOn: /^20/,
                                     slug: "list-block-categories-four-slug",
-                                    name: "list-block-categories-four-name"
+                                    name: "list-block-categories-four-name",
+                                    icon: "list-block-categories-four-icon",
+                                    description: "list-block-categories-four-description"
                                 }
                             ],
                             error: null
@@ -145,13 +155,17 @@ describe("Block Categories Security Test", () => {
                                 createdBy: identityA,
                                 createdOn: /^20/,
                                 slug: "list-block-categories-one-slug",
-                                name: "list-block-categories-one-name"
+                                name: "list-block-categories-one-name",
+                                icon: "list-block-categories-one-icon",
+                                description: "list-block-categories-one-description"
                             },
                             {
                                 createdBy: identityA,
                                 createdOn: /^20/,
                                 slug: "list-block-categories-two-slug",
-                                name: "list-block-categories-two-name"
+                                name: "list-block-categories-two-name",
+                                icon: "list-block-categories-two-icon",
+                                description: "list-block-categories-two-description"
                             }
                         ],
                         error: null
@@ -175,13 +189,17 @@ describe("Block Categories Security Test", () => {
                                 createdBy: identityB,
                                 createdOn: /^20/,
                                 slug: "list-block-categories-three-slug",
-                                name: "list-block-categories-three-name"
+                                name: "list-block-categories-three-name",
+                                icon: "list-block-categories-three-icon",
+                                description: "list-block-categories-three-description"
                             },
                             {
                                 createdBy: identityB,
                                 createdOn: /^20/,
                                 slug: "list-block-categories-four-slug",
-                                name: "list-block-categories-four-name"
+                                name: "list-block-categories-four-name",
+                                icon: "list-block-categories-four-icon",
+                                description: "list-block-categories-four-description"
                             }
                         ],
                         error: null

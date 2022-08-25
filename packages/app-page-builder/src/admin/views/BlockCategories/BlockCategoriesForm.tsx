@@ -12,8 +12,9 @@ import {
     SimpleFormContent,
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
+import IconPicker from "./IconPicker";
 import { validation } from "@webiny/validation";
-import { blockCategorySlugValidator } from "./validators";
+import { blockCategorySlugValidator, blockCategoryDescriptionValidator } from "./validators";
 import {
     GET_BLOCK_CATEGORY,
     CREATE_BLOCK_CATEGORY,
@@ -116,7 +117,7 @@ const CategoriesForm: React.FC<CategoriesFormProps> = ({ canCreate }) => {
     const onSubmit = useCallback(
         async formData => {
             const isUpdate = loadedBlockCategory.slug;
-            const data = pick(formData, ["slug", "name"]);
+            const data = pick(formData, ["slug", "name", "icon", "description"]);
 
             let response;
             if (isUpdate) {
@@ -223,6 +224,25 @@ const CategoriesForm: React.FC<CategoriesFormProps> = ({ canCreate }) => {
                                     ]}
                                 >
                                     <Input disabled={data.createdOn} label={t`Slug`} />
+                                </Bind>
+                            </Cell>
+                            <Cell span={12}>
+                                <Bind name="icon" validators={validation.create("required")}>
+                                    <IconPicker
+                                        label={t`Category icon`}
+                                        description={t`Icon that will be displayed in the page builder.`}
+                                    />
+                                </Bind>
+                            </Cell>
+                            <Cell span={12}>
+                                <Bind
+                                    name="description"
+                                    validators={[
+                                        validation.create("required"),
+                                        blockCategoryDescriptionValidator
+                                    ]}
+                                >
+                                    <Input label={t`Description`} />
                                 </Bind>
                             </Cell>
                         </Grid>

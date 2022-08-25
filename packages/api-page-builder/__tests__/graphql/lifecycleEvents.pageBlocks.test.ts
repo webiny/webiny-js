@@ -40,7 +40,9 @@ describe("Page Block Lifecycle Events", () => {
         await createBlockCategory({
             data: {
                 slug: blockCategory,
-                name: `name`
+                name: `name`,
+                icon: `icon`,
+                description: `description`
             }
         });
         // eslint-disable-next-line
