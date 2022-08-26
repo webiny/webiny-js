@@ -31,8 +31,14 @@
     "typescript": "^4.7.4"
   },
   "dependencies": {
+    "@commodo/fields": "^1.2.1",
     "@webiny/api": "^5.31.0",
+    "@webiny/api-i18n": "^5.31.0",
+    "@webiny/api-tenancy": "^5.31.0",
     "@webiny/error": "^5.31.0",
-    "@webiny/handler-graphql": "^5.31.0"
+    "@webiny/handler": "^5.31.0",
+    "@webiny/handler-graphql": "^5.31.0",
+    "@webiny/validation": "^5.31.0",
+    "mdbid": "^1.0.0"
   }
 }

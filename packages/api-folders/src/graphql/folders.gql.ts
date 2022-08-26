@@ -1,16 +1,27 @@
-import { Response, ErrorResponse, ListResponse } from "@webiny/handler-graphql/responses";
+import { Response, ErrorResponse } from "@webiny/handler-graphql/responses";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
-import { FoldersContext } from "../types";
+import { FoldersContext } from "~/types";
 
 export default new GraphQLSchemaPlugin<FoldersContext>({
     typeDefs: /* GraphQL */ `
         type Folder {
-            id: ID
+            id: ID!
             name: String
             slug: String
             type: String
             createdOn: DateTime
-            createdBy: SecurityCreatedBy
+            createdBy: FolderCreatedBy
+        }
+
+        input FolderCreateInput {
+            name: String!
+            slug: String!
+            type: String!
+        }
+
+        input FolderGetWhereInput {
+            id: ID
+            slug: String
         }
 
         type FolderResponse {
@@ -18,32 +29,20 @@ export default new GraphQLSchemaPlugin<FoldersContext>({
             error: FolderError
         }
 
-        type FolderListResponse {
-            data: [Folder]
-            error: FolderError
+        extend type FoldersQuery {
+            getFolder(where: FolderGetWhereInput!): FolderResponse
         }
 
-        extend type FolderQuery {
-            getFolder(id: ID!): FolderResponse
-            listFolders: FolderListResponse
+        extend type FoldersMutation {
+            createFolder(data: FolderCreateInput!): FolderResponse
         }
     `,
     resolvers: {
         FoldersQuery: {
-            async getFolder(_, args: any, context) {
+            getGroup: async (_, { where }, context) => {
                 try {
-                    const folder = await context.folders.getFolder(args.id);
-
-                    return new Response(folder);
-                } catch (error) {
-                    return new ErrorResponse(error);
-                }
-            },
-            async listFolders(_, args: any, context) {
-                try {
-                    const folders = await context.folders.listFolders(args);
-
-                    return new ListResponse(folders);
+                    const folder = await context.folders.getFolder({ where });
+                    return new Response({ folder });
                 } catch (error) {
                     return new ErrorResponse(error);
                 }
@@ -51,29 +50,10 @@ export default new GraphQLSchemaPlugin<FoldersContext>({
         },
 
         FoldersMutation: {
-            async createFolder(_, args: any, context) {
+            createFolder: async (_, { data }, context) => {
                 try {
-                    const folder = await context.folders.createFolder(args.data);
-
+                    const folder = await context.folders.createFolder(data);
                     return new Response(folder);
-                } catch (error) {
-                    return new ErrorResponse(error);
-                }
-            },
-            async updateFolder(_, args: any, context) {
-                try {
-                    const folder = await context.folders.updateFolder(args.id, args.data);
-
-                    return new Response(folder);
-                } catch (error) {
-                    return new ErrorResponse(error);
-                }
-            },
-            async deleteFolder(_, args: any, context) {
-                try {
-                    await context.folders.deleteFolder(args.id);
-
-                    return new Response(true);
                 } catch (error) {
                     return new ErrorResponse(error);
                 }

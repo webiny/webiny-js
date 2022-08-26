@@ -1,4 +1,14 @@
-import { Context } from "@webiny/api/types";
+import { TenancyContext } from "@webiny/api-tenancy/types";
+import { Context as BaseContext } from "@webiny/handler/types";
+import { I18NContext } from "@webiny/api-i18n/types";
+
+export interface GetTenantId {
+    (): string;
+}
+
+export interface GetLocaleCode {
+    (): string;
+}
 
 export interface CreatedBy {
     id: string;
@@ -20,40 +30,49 @@ export interface Folder {
     webinyVersion: string;
 }
 
-export interface FolderInput {
-    name: string;
-    slug: string;
-    type: Type;
+export type FolderInput = Pick<Folder, "name" | "slug" | "type">;
+
+export interface FoldersConfig {
+    getTenantId: GetTenantId;
+    getLocaleCode: GetLocaleCode;
+    storageOperations: FoldersStorageOperations;
 }
 
-export interface FoldersContext extends Context {
+export interface FoldersContext extends BaseContext, I18NContext, TenancyContext {
     folders: Folders;
 }
 
 export interface Folders {
-    getFolder(id: string): Promise<Folder>;
-    listFolders(params: FoldersCRUDListParams): Promise<Folder[]>;
-    createFolder(params: FolderInput): Promise<Folder>;
-    updateFolder(id: string, params: FolderInput): Promise<Folder>;
-    deleteFolder(id: string): Promise<boolean>;
+    getFolder(params: GetFolderParams): Promise<Folder>;
+    createFolder(input: FolderInput): Promise<Folder>;
 }
 
 export interface FoldersStorageOperations {
-    getFolder(id: string): Promise<Folder>;
-    listFolders(params: FoldersCRUDListParams): Promise<Folder[]>;
-    createFolder(params: FolderInput): Promise<Folder>;
-    updateFolder(id: string, params: FolderInput): Promise<Folder>;
-    deleteFolder(id: string): Promise<boolean>;
+    getFolder(params: StorageOperationsGetFolderParams): Promise<Folder | null>;
+    createFolder(params: StorageOperationsCreateFolderParams): Promise<Folder>;
 }
 
-export interface DefaultCrudListParams {
-    limit?: number;
-    after?: string;
-    sort?: string[];
+export interface GetFolderWhere {
+    id?: string;
+    slug?: string;
+    tenant?: string;
+    locale?: string;
+    type?: string;
 }
 
-export interface FoldersCRUDListParams extends DefaultCrudListParams {
-    where: {
-        type: Type;
+export interface GetFolderParams {
+    where: GetFolderWhere;
+}
+
+export interface CreateFolderParams {
+    folder: Folder;
+}
+
+export interface StorageOperationsGetFolderParams extends GetFolderParams {
+    where: GetFolderParams["where"] & {
+        tenant: string;
+        locale: string;
     };
 }
+
+export type StorageOperationsCreateFolderParams = CreateFolderParams;

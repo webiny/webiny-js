@@ -1,5 +1,5 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
-import { FoldersContext } from "../types";
+import { FoldersContext } from "~/types";
 
 const emptyResolver = () => ({});
 
@@ -14,7 +14,7 @@ export default new GraphQLSchemaPlugin<FoldersContext>({
         }
 
         extend type Query {
-            folders: FolderQuery
+            folders: FoldersQuery
         }
 
         extend type Mutation {

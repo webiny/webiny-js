@@ -1,79 +1,96 @@
+/**
+ * Package mdbid does not have types.
+ */
+// @ts-ignore
+import mdbid from "mdbid";
+/**
+ * Package @commodo/fields does not have types.
+ */
+// @ts-ignore
+import { string, withFields } from "@commodo/fields";
 import WebinyError from "@webiny/error";
+import { NotFoundError } from "@webiny/handler-graphql";
+import { validation } from "@webiny/validation";
 
-import { FolderInput, Folders, FoldersCRUDListParams, FoldersStorageOperations } from "./types";
+import { FolderInput, Folder, Folders, FoldersConfig, GetFolderParams } from "~/types";
 
-export const createFolders = async (
-    foldersOperations: FoldersStorageOperations
-): Promise<Folders> => {
+const CreateDataModel = withFields({
+    name: string({ validation: validation.create("required,minLength:3") }),
+    slug: string({ validation: validation.create("required,minLength:3") }),
+    type: string({ validation: validation.create("required") }),
+    tenant: string({ validation: validation.create("required") }),
+    locale: string({ validation: validation.create("required") })
+})();
+
+export const createFolders = async ({
+    getTenantId,
+    getLocaleCode,
+    storageOperations
+}: FoldersConfig): Promise<Folders> => {
+    const tenant = getTenantId();
+    const locale = getLocaleCode();
+
     return {
-        async getFolder(id: string) {
+        async getFolder({ where }: GetFolderParams): Promise<Folder> {
+            let folder: Folder | null = null;
             try {
-                return await foldersOperations.getFolder(id);
+                folder = await storageOperations.getFolder({
+                    where: { tenant, locale, ...where }
+                });
             } catch (error) {
-                throw new WebinyError(
-                    error.message || "Could not get folder by id.",
-                    error.code || "GET_FOLDER_BY_ID_ERROR",
-                    {
-                        id
-                    }
-                );
+                throw WebinyError.from(error, {
+                    message: "Could not get folder.",
+                    code: "GET_FOLDER_ERROR",
+                    data: { ...where }
+                });
             }
+            if (!folder) {
+                throw new NotFoundError(`Unable to find group : ${JSON.stringify(where)}`);
+            }
+            return folder;
         },
 
-        async listFolders(params: FoldersCRUDListParams) {
-            try {
-                return await foldersOperations.listFolders(params);
-            } catch (error) {
+        async createFolder(input: FolderInput): Promise<Folder> {
+            await new CreateDataModel().populate({ ...input, tenant, locale }).validate();
+
+            const existing = await storageOperations.getFolder({
+                where: {
+                    tenant,
+                    locale,
+                    type: input.type,
+                    slug: input.slug
+                }
+            });
+
+            if (existing) {
                 throw new WebinyError(
-                    error.message || "Could not list folders.",
-                    error.code || "LIST_FOLDERS_BY_TYPE_ERROR",
-                    {
-                        ...params
-                    }
+                    `Folder with slug "${input.slug}" already exists.`,
+                    "FOLDER_EXISTS"
                 );
             }
-        },
 
-        async createFolder(params: FolderInput) {
-            try {
-                return await foldersOperations.createFolder(params);
-            } catch (error) {
-                throw new WebinyError(
-                    error.message || "Could not create folder.",
-                    error.code || "CREATE_FOLDER_ERROR",
-                    {
-                        ...params
-                    }
-                );
-            }
-        },
+            const folder: Folder = {
+                id: mdbid(),
+                tenant,
+                locale,
+                ...input,
+                webinyVersion: process.env.WEBINY_VERSION as string,
+                createdOn: new Date().toISOString(),
+                createdBy: {
+                    id: "ID", // TODO: how does security work?
+                    displayName: "DISPLAY_NAME",
+                    type: "TYPE"
+                }
+            };
 
-        async updateFolder(id: string, params: FolderInput) {
             try {
-                return await foldersOperations.updateFolder(id, params);
+                return await storageOperations.createFolder({ folder });
             } catch (error) {
-                throw new WebinyError(
-                    error.message || "Could not update folder.",
-                    error.code || "UPDATE_FOLDER_ERROR",
-                    {
-                        id,
-                        ...params
-                    }
-                );
-            }
-        },
-
-        async deleteFolder(id: string) {
-            try {
-                return await foldersOperations.deleteFolder(id);
-            } catch (error) {
-                throw new WebinyError(
-                    error.message || "Could not delete folder.",
-                    error.code || "DELETE_FOLDER_ERROR",
-                    {
-                        id
-                    }
-                );
+                throw WebinyError.from(error, {
+                    message: "Could not create folder.",
+                    code: "CREATE_FOLDER_ERROR",
+                    data: { ...input }
+                });
             }
         }
     };
