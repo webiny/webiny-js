@@ -65,7 +65,7 @@ export const createWcp = async (): Promise<WcpContextObject> => {
 
         console.error(message, response.status, response.statusText, jsonParseError || json);
 
-        throw new Error(message);
+        throw new WError(message, "WCP_CANNOT_UPDATE_USER_SEATS");
     };
 
     return {
