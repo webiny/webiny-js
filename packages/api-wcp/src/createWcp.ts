@@ -58,7 +58,7 @@ export const createWcp = async (): Promise<WcpContextObject> => {
             jsonParseError = e;
         }
 
-        let message = `An error occurred while trying to ${operation} user seats.`;
+        let message = `Failed to ${operation} user seats.`;
         if (jsonParseError) {
             message += " Could not JSON-parse received HTTP response.";
         }
