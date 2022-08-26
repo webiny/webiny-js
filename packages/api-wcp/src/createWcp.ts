@@ -50,11 +50,10 @@ export const createWcp = async (): Promise<WcpContextObject> => {
             return;
         }
 
-        // If the `.json()` call throws an error, we don't want to disrupt the flow.
         let jsonParseError, json;
 
         try {
-            json = await response.json().catch();
+            json = await response.json();
         } catch (e) {
             jsonParseError = e;
         }
