@@ -50,25 +50,23 @@ export const createWcp = async (): Promise<WcpContextObject> => {
             return;
         }
 
+        // If the `.json()` call throws an error, we don't want to disrupt the flow.
+        let jsonParseError, json;
+
         try {
-            const json = await response.json();
-            console.error(
-                `An error occurred while trying to ${operation} user seats.`,
-                response.status,
-                response.statusText,
-                response.json
-            );
-            throw new Error(json.message);
+            json = await response.json().catch();
         } catch (e) {
-            console.error(
-                `An error occurred while trying to ${operation} user seats.`,
-                response.status,
-                response.statusText
-            );
-            throw new Error(
-                `An error occurred while trying to ${operation} user seats. Please check logs for more info.`
-            );
+            jsonParseError = e;
         }
+
+        let message = `An error occurred while trying to ${operation} user seats.`;
+        if (jsonParseError) {
+            message += " Could not JSON-parse received HTTP response.";
+        }
+
+        console.error(message, response.status, response.statusText, jsonParseError || json);
+
+        throw new Error(message);
     };
 
     return {
