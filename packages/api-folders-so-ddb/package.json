@@ -29,7 +29,6 @@
     "@webiny/api-folders": "^5.31.0",
     "@webiny/db-dynamodb": "^5.31.0",
     "@webiny/error": "^5.31.0",
-    "aws-sdk": "^2.1203.0",
     "dynamodb-toolbox": "^0.3.4"
   },
   "publishConfig": {
