@@ -39,7 +39,7 @@ export default new GraphQLSchemaPlugin<FoldersContext>({
     `,
     resolvers: {
         FoldersQuery: {
-            getGroup: async (_, { where }, context) => {
+            getFolder: async (_, { where }, context) => {
                 try {
                     const folder = await context.folders.getFolder({ where });
                     return new Response({ folder });
