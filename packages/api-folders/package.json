@@ -34,6 +34,7 @@
     "@commodo/fields": "^1.2.1",
     "@webiny/api": "^5.31.0",
     "@webiny/api-i18n": "^5.31.0",
+    "@webiny/api-security": "^5.31.0",
     "@webiny/api-tenancy": "^5.31.0",
     "@webiny/error": "^5.31.0",
     "@webiny/handler": "^5.31.0",

@@ -1,14 +1,7 @@
 import { TenancyContext } from "@webiny/api-tenancy/types";
 import { Context as BaseContext } from "@webiny/handler/types";
 import { I18NContext } from "@webiny/api-i18n/types";
-
-export interface GetTenantId {
-    (): string;
-}
-
-export interface GetLocaleCode {
-    (): string;
-}
+import { SecurityContext, SecurityIdentity } from "@webiny/api-security/types";
 
 export interface CreatedBy {
     id: string;
@@ -36,12 +29,13 @@ export interface Folder {
 export type FolderInput = Pick<Folder, "name" | "slug" | "category">;
 
 export interface FoldersConfig {
-    getTenantId: GetTenantId;
-    getLocaleCode: GetLocaleCode;
+    getTenantId: () => string;
+    getLocaleCode: () => string;
+    getIdentity: () => SecurityIdentity;
     storageOperations: FoldersStorageOperations;
 }
 
-export interface FoldersContext extends BaseContext, I18NContext, TenancyContext {
+export interface FoldersContext extends BaseContext, I18NContext, TenancyContext, SecurityContext {
     folders: Folders;
 }
 

@@ -25,6 +25,7 @@ const CreateDataModel = withFields({
 export const createFolders = async ({
     getTenantId,
     getLocaleCode,
+    getIdentity,
     storageOperations
 }: FoldersConfig): Promise<Folders> => {
     const tenant = getTenantId();
@@ -69,6 +70,8 @@ export const createFolders = async ({
                 );
             }
 
+            const identity = getIdentity();
+
             const folder: Folder = {
                 id: mdbid(),
                 tenant,
@@ -77,9 +80,9 @@ export const createFolders = async ({
                 webinyVersion: process.env.WEBINY_VERSION as string,
                 createdOn: new Date().toISOString(),
                 createdBy: {
-                    id: "ID", // TODO: how does security work?
-                    displayName: "DISPLAY_NAME",
-                    type: "TYPE"
+                    id: identity.id,
+                    displayName: identity.displayName,
+                    type: identity.type
                 }
             };
 

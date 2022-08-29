@@ -4,6 +4,7 @@ import WebinyError from "@webiny/error";
 import { createFolders } from "./context";
 import graphqlPlugins from "./graphql";
 
+import { SecurityIdentity } from "@webiny/api-security/types";
 import { FoldersContext, FoldersStorageOperations } from "~/types";
 
 export interface FoldersConfig {
@@ -28,10 +29,17 @@ export const createFoldersContext = ({ storageOperations }: FoldersConfig) => {
             return locale.code;
         };
 
+        const getIdentity = (): SecurityIdentity => {
+            const identity = context.security.getIdentity();
+
+            return identity;
+        };
+
         context.folders = await createFolders({
             storageOperations,
             getTenantId,
-            getLocaleCode
+            getLocaleCode,
+            getIdentity
         });
     });
 };
