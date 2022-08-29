@@ -17,7 +17,7 @@ context("Security -> Users", () => {
         // Add user's detail
         cy.findByLabelText("First Name").type(firstName);
         cy.findByLabelText("Last Name").type(lastName);
-        cy.findByTestId("input-element-Email").type(email);
+        cy.get('[aria-labelledBy="textfield-Email-label"] input').type(email);
         cy.get("input[type=password]").type(password);
         cy.findByTestId("group-autocomplete").type(groupName);
         cy.wait(1000);
@@ -34,7 +34,7 @@ context("Security -> Users", () => {
         const [newFirstName, newLastName, newPassword] = [uniqid(), uniqid(), uniqid()];
         const newGroupName = "Anonymous";
 
-        cy.findByTestId("input-element-Email").should("have.value", email);
+        cy.get('[aria-labelledBy="textfield-Email-label"] input').should("have.value", email);
         // Add user's detail
         cy.findByLabelText("First Name").type(newFirstName);
         cy.findByLabelText("Last Name").type(newLastName);
