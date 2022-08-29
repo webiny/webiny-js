@@ -4,15 +4,17 @@ import { getFieldValues, getTransformer } from "~/utils/fieldResolver";
 import WebinyError from "@webiny/error";
 import { ApwChangeRequest } from "~/types";
 
-export const createChangeRequestStorageOperations = ({
-    cms,
-    getCmsContext
-}: CreateApwStorageOperationsParams): ApwChangeRequestStorageOperations => {
+export const createChangeRequestStorageOperations = (
+    params: CreateApwStorageOperationsParams
+): ApwChangeRequestStorageOperations => {
+    const { cms, getCmsContext, security } = params;
     const getChangeRequestModel = async () => {
+        security.disableAuthorization();
         const model = await cms.getModel("apwChangeRequestModelDefinition");
+        security.enableAuthorization();
         if (!model) {
             throw new WebinyError(
-                "Could not find `apwWorkflowModelDefinition` model.",
+                "Could not find `apwChangeRequestModelDefinition` model.",
                 "MODEL_NOT_FOUND_ERROR"
             );
         }
