@@ -36,6 +36,7 @@ export default new GraphQLSchemaPlugin<FoldersContext>({
 
         extend type FoldersMutation {
             createFolder(data: FolderCreateInput!): FolderResponse
+            deleteFolder(id: ID!): FolderBooleanResponse
         }
     `,
     resolvers: {
@@ -55,6 +56,14 @@ export default new GraphQLSchemaPlugin<FoldersContext>({
                 try {
                     const folder = await context.folders.createFolder(data);
                     return new Response(folder);
+                } catch (error) {
+                    return new ErrorResponse(error);
+                }
+            },
+            deleteFolder: async (_, { id }, context) => {
+                try {
+                    await context.folders.deleteFolder(id);
+                    return new Response(true);
                 } catch (error) {
                     return new ErrorResponse(error);
                 }

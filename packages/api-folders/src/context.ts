@@ -95,6 +95,26 @@ export const createFolders = async ({
                     data: { ...input }
                 });
             }
+        },
+
+        async deleteFolder(id: string): Promise<void> {
+            const folder = await storageOperations.getFolder({ where: { tenant, locale, id } });
+
+            if (!folder) {
+                throw new NotFoundError(`Folder "${id}" was not found!`);
+            }
+
+            try {
+                await storageOperations.deleteFolder({ folder });
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Could not delete folder.",
+                    ex.code || "DELETE_FOLDER_ERROR",
+                    {
+                        folder
+                    }
+                );
+            }
         }
     };
 };

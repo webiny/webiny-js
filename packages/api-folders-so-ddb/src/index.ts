@@ -66,8 +66,8 @@ export const createStorageOperations = (params: FoldersStorageParams): FoldersSt
                     ...keys
                 });
                 return folder;
-            } catch (err) {
-                throw WebinyError.from(err, {
+            } catch (error) {
+                throw WebinyError.from(error, {
                     message: "Could not create folder.",
                     code: "CREATE_FOLDER_ERROR",
                     data: { keys }
@@ -97,11 +97,25 @@ export const createStorageOperations = (params: FoldersStorageParams): FoldersSt
                 }
 
                 return cleanupItem(entities.folders, result);
-            } catch (err) {
-                throw WebinyError.from(err, {
+            } catch (error) {
+                throw WebinyError.from(error, {
                     message: "Could not load folder.",
                     code: "GET_FOLDER_ERROR",
                     data: { id, slug }
+                });
+            }
+        },
+
+        async deleteFolder({ folder }) {
+            const keys = createFolderKeys(folder);
+
+            try {
+                await entities.folders.delete(keys);
+            } catch (error) {
+                throw WebinyError.from(error, {
+                    message: "Could not delete folder.",
+                    code: "DELETE_FOLDER_ERROR",
+                    data: { keys, folder }
                 });
             }
         }
