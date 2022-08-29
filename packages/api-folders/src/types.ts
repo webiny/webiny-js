@@ -42,7 +42,7 @@ export interface FoldersContext extends BaseContext, I18NContext, TenancyContext
 export interface Folders {
     getFolder(params: GetFolderParams): Promise<Folder>;
     createFolder(input: FolderInput): Promise<Folder>;
-    deleteFolder(id: string): Promise<boolean>;
+    deleteFolder(id: string): Promise<void>;
 }
 
 export interface FoldersStorageOperations {
