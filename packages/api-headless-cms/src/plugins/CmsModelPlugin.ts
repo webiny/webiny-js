@@ -1,7 +1,7 @@
 import { Plugin } from "@webiny/plugins";
 import { CmsModel as CmsModelBase } from "~/types";
 
-export interface CmsModel extends Omit<CmsModelBase, "locale" | "tenant" | "webinyVersion"> {
+interface CmsModel extends Omit<CmsModelBase, "locale" | "tenant" | "webinyVersion"> {
     locale?: string;
     tenant?: string;
 }
@@ -15,3 +15,7 @@ export class CmsModelPlugin extends Plugin {
         this.contentModel = contentModel;
     }
 }
+
+export const createCmsModel = (model: CmsModel): CmsModelPlugin => {
+    return new CmsModelPlugin(model);
+};

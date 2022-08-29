@@ -10,7 +10,7 @@ export interface PermissionsArg {
     name: string;
     locales?: string[];
     rwd?: string;
-    pw?: string;
+    pw?: string | null;
     own?: boolean;
 }
 
