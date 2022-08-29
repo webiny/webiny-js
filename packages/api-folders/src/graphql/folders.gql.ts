@@ -8,7 +8,7 @@ export default new GraphQLSchemaPlugin<FoldersContext>({
             id: ID!
             name: String!
             slug: String!
-            type: String!
+            category: String!
             createdOn: DateTime
             createdBy: FolderCreatedBy
         }
@@ -16,12 +16,13 @@ export default new GraphQLSchemaPlugin<FoldersContext>({
         input FolderCreateInput {
             name: String!
             slug: String!
-            type: String!
+            category: String!
         }
 
         input FolderGetWhereInput {
             id: ID
             slug: String
+            category: String
         }
 
         type FolderResponse {

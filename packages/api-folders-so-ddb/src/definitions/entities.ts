@@ -37,7 +37,7 @@ export const createFolderEntity = (table: Table, attributes: Attributes = {}) =>
         slug: {
             type: "string"
         },
-        type: {
+        category: {
             type: "string"
         },
         createdOn: {

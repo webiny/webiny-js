@@ -17,7 +17,7 @@ import { FolderInput, Folder, Folders, FoldersConfig, GetFolderParams } from "~/
 const CreateDataModel = withFields({
     name: string({ validation: validation.create("required,minLength:3") }),
     slug: string({ validation: validation.create("required,minLength:3") }),
-    type: string({ validation: validation.create("required") }),
+    category: string({ validation: validation.create("required,in:page:cms:file") }),
     tenant: string({ validation: validation.create("required") }),
     locale: string({ validation: validation.create("required") })
 })();
@@ -57,7 +57,7 @@ export const createFolders = async ({
                 where: {
                     tenant,
                     locale,
-                    type: input.type,
+                    category: input.category,
                     slug: input.slug
                 }
             });

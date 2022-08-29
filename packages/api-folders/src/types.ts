@@ -16,13 +16,16 @@ export interface CreatedBy {
     displayName: string | null;
 }
 
-export type Type = "pages" | "cms" | "files";
-
+export enum Category {
+    PAGE = "page",
+    CMS = "cms",
+    FILE = "file"
+}
 export interface Folder {
     id: string;
     name: string;
     slug: string;
-    type: Type;
+    category: Category;
     createdOn: string;
     createdBy: CreatedBy;
     tenant: string;
@@ -30,7 +33,7 @@ export interface Folder {
     webinyVersion: string;
 }
 
-export type FolderInput = Pick<Folder, "name" | "slug" | "type">;
+export type FolderInput = Pick<Folder, "name" | "slug" | "category">;
 
 export interface FoldersConfig {
     getTenantId: GetTenantId;
@@ -57,7 +60,7 @@ export interface GetFolderWhere {
     slug?: string;
     tenant?: string;
     locale?: string;
-    type?: string;
+    category?: Category;
 }
 
 export interface GetFolderParams {
