@@ -106,10 +106,10 @@ export const createFolders = async ({
 
             try {
                 await storageOperations.deleteFolder({ folder });
-            } catch (ex) {
+            } catch (error) {
                 throw new WebinyError(
-                    ex.message || "Could not delete folder.",
-                    ex.code || "DELETE_FOLDER_ERROR",
+                    error.message || "Could not delete folder.",
+                    error.code || "DELETE_FOLDER_ERROR",
                     {
                         folder
                     }
