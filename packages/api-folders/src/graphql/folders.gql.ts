@@ -6,9 +6,9 @@ export default new GraphQLSchemaPlugin<FoldersContext>({
     typeDefs: /* GraphQL */ `
         type Folder {
             id: ID!
-            name: String
-            slug: String
-            type: String
+            name: String!
+            slug: String!
+            type: String!
             createdOn: DateTime
             createdBy: FolderCreatedBy
         }
@@ -42,7 +42,7 @@ export default new GraphQLSchemaPlugin<FoldersContext>({
             getFolder: async (_, { where }, context) => {
                 try {
                     const folder = await context.folders.getFolder({ where });
-                    return new Response({ folder });
+                    return new Response(folder);
                 } catch (error) {
                     return new ErrorResponse(error);
                 }
