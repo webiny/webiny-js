@@ -22,6 +22,11 @@ const CreateDataModel = withFields({
     locale: string({ validation: validation.create("required") })
 })();
 
+const UpdateDataModel = withFields({
+    name: string({ validation: validation.create("minLength:3") }),
+    slug: string({ validation: validation.create("required,minLength:3") })
+})();
+
 export const createFolders = async ({
     getTenantId,
     getLocaleCode,
@@ -36,7 +41,7 @@ export const createFolders = async ({
             let folder: Folder | null = null;
             try {
                 folder = await storageOperations.getFolder({
-                    where: { tenant, locale, ...where }
+                    where: { tenant, locale, ...where } // TODO: remove dependency with locale and tenant
                 });
             } catch (error) {
                 throw WebinyError.from(error, {
@@ -94,6 +99,39 @@ export const createFolders = async ({
                     code: "CREATE_FOLDER_ERROR",
                     data: { ...input }
                 });
+            }
+        },
+
+        async updateFolder(id: string, input: Record<string, any>): Promise<Folder> {
+            const model = await new UpdateDataModel().populate(input);
+
+            await model.validate();
+
+            const original = await storageOperations.getFolder({
+                where: { tenant, locale, id }
+            });
+
+            if (!original) {
+                throw new NotFoundError(`Folder "${id}" was not found!`);
+            }
+
+            const data = await model.toJSON({ onlyDirty: true });
+
+            const folder: Folder = {
+                ...original,
+                ...data
+            };
+            try {
+                const result = await storageOperations.updateFolder({ original, folder });
+                return result;
+            } catch (error) {
+                throw new WebinyError(
+                    error.message || "Could not update folder.",
+                    error.code || "UPDATE_FOLDER_ERROR",
+                    {
+                        folder
+                    }
+                );
             }
         },
 
