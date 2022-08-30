@@ -2,6 +2,9 @@ Cypress.on("uncaught:exception", () => {
     return false;
 });
 
+// Increase the timeout for this current spec file.
+Cypress.config('pageLoadTimeout', 50000);
+
 context("Export & Import Pages", () => {
     beforeEach(() => cy.login());
     const pageTitle = "Welcome to Webiny";
