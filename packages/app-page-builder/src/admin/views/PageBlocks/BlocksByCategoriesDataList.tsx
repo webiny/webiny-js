@@ -178,7 +178,8 @@ const BlocksByCategoriesDataList = ({ canCreate }: PageBuilderBlocksByCategories
                     }),
                     preview: {}
                 }
-            }
+            },
+            refetchQueries: [{ query: LIST_PAGE_BLOCKS_AND_CATEGORIES }]
         });
         const { error, data } = get(res, `pageBuilder.pageBlock`);
         if (data) {
