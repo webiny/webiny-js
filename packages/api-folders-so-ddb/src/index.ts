@@ -106,6 +106,25 @@ export const createStorageOperations = (params: FoldersStorageParams): FoldersSt
             }
         },
 
+        async updateFolder({ folder }): Promise<Folder> {
+            const keys = createFolderKeys(folder);
+
+            try {
+                await entities.folders.put({
+                    ...cleanupItem(entities.folders, folder),
+                    ...keys,
+                    ...createFolderGsiKeys(folder)
+                });
+                return folder;
+            } catch (error) {
+                throw WebinyError.from(error, {
+                    message: "Could not update folder.",
+                    code: "UPDATE_FOLDER_ERROR",
+                    data: { keys, folder }
+                });
+            }
+        },
+
         async deleteFolder({ folder }) {
             const keys = createFolderKeys(folder);
 

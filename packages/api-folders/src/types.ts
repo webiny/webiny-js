@@ -48,6 +48,7 @@ export interface Folders {
 export interface FoldersStorageOperations {
     getFolder(params: StorageOperationsGetFolderParams): Promise<Folder>;
     createFolder(params: StorageOperationsCreateFolderParams): Promise<Folder>;
+    updateFolder(params: StorageOperationsUpdateFolderParams): Promise<Folder>;
     deleteFolder(params: StorageOperationsDeleteFolderParams): Promise<void>;
 }
 
@@ -67,6 +68,11 @@ export interface CreateFolderParams {
     folder: Folder;
 }
 
+export interface UpdateFolderParams {
+    original: Folder;
+    folder: Folder;
+}
+
 export interface DeleteFolderParams {
     folder: Folder;
 }
@@ -79,4 +85,5 @@ export interface StorageOperationsGetFolderParams extends GetFolderParams {
 }
 
 export type StorageOperationsCreateFolderParams = CreateFolderParams;
+export type StorageOperationsUpdateFolderParams = UpdateFolderParams;
 export type StorageOperationsDeleteFolderParams = DeleteFolderParams;

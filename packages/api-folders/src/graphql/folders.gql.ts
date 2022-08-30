@@ -19,6 +19,11 @@ export default new GraphQLSchemaPlugin<FoldersContext>({
             category: String!
         }
 
+        input FolderUpdateInput {
+            name: String
+            slug: String
+        }
+
         input FolderGetWhereInput {
             id: ID
             slug: String
@@ -36,6 +41,7 @@ export default new GraphQLSchemaPlugin<FoldersContext>({
 
         extend type FoldersMutation {
             createFolder(data: FolderCreateInput!): FolderResponse
+            updateFolder(id: ID!, data: FolderUpdateInput!): FolderResponse
             deleteFolder(id: ID!): FolderBooleanResponse
         }
     `,
@@ -56,6 +62,14 @@ export default new GraphQLSchemaPlugin<FoldersContext>({
                 try {
                     const folder = await context.folders.createFolder(data);
                     return new Response(folder);
+                } catch (error) {
+                    return new ErrorResponse(error);
+                }
+            },
+            updateFolder: async (_, { id, data }, context) => {
+                try {
+                    const group = await context.folders.updateFolder(id, data);
+                    return new Response(group);
                 } catch (error) {
                     return new ErrorResponse(error);
                 }
