@@ -35,7 +35,7 @@ import { elementWithChildrenByIdSelector, rootElementAtom } from "~/editor/recoi
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import { useKeyHandler } from "~/editor/hooks/useKeyHandler";
 import { UpdateElementActionEvent } from "~/editor/recoil/actions";
-import { createBlockElements } from "~/editor/helpers";
+import { createBlockReference } from "~/editor/helpers";
 import { DelayedOnChange } from "@webiny/ui/DelayedOnChange";
 import { blocksBrowserStateAtom } from "~/pageEditor/config/blockEditing/state";
 
@@ -113,7 +113,7 @@ const SearchBar = () => {
         plugin => {
             const element: any = {
                 ...content,
-                elements: [...content.elements, createBlockElements(plugin.name)]
+                elements: [...content.elements, createBlockReference(plugin.name)]
             };
             eventActionHandler.trigger(
                 new UpdateElementActionEvent({

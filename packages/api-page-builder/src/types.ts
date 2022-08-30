@@ -11,7 +11,7 @@ export interface PageElement {
     name: string;
     type: "element" | "block";
     category: string;
-    content: File;
+    content: any;
     preview: File;
     createdOn: string;
     createdBy: CreatedBy;
@@ -818,7 +818,7 @@ export interface PageBlock {
     id: string;
     name: string;
     blockCategory: string;
-    content: File;
+    content: any;
     preview: File;
     createdOn: string;
     createdBy: CreatedBy;

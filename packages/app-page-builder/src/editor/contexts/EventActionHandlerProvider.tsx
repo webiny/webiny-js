@@ -127,13 +127,12 @@ export const EventActionHandlerProvider = makeComposable<
     });
     const goToSnapshot = useGotoRecoilSnapshot();
 
-    useEffect(() => {
-        sidebarAtomValueRef.current = sidebarAtomValue;
-        rootElementAtomValueRef.current = rootElementAtomValue;
-        pluginsAtomValueRef.current = pluginsAtomValue;
-        uiAtomValueRef.current = uiAtomValue;
-        snapshotRef.current = snapshot;
-    }, [sidebarAtomValue, rootElementAtomValue, pluginsAtomValue, uiAtomValue]);
+    // reinit ref values
+    sidebarAtomValueRef.current = sidebarAtomValue;
+    rootElementAtomValueRef.current = rootElementAtomValue;
+    pluginsAtomValueRef.current = pluginsAtomValue;
+    uiAtomValueRef.current = uiAtomValue;
+    snapshotRef.current = snapshot;
 
     const registry = useRef<RegistryType>(new Map());
 
