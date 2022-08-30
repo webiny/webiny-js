@@ -14,6 +14,7 @@ export enum Category {
     CMS = "cms",
     FILE = "file"
 }
+
 export interface Folder {
     id: string;
     name: string;
@@ -28,41 +29,8 @@ export interface Folder {
 
 export type FolderInput = Pick<Folder, "name" | "slug" | "category">;
 
-export interface FoldersConfig {
-    getTenantId: () => string;
-    getLocaleCode: () => string;
-    getIdentity: () => SecurityIdentity;
-    storageOperations: FoldersStorageOperations;
-}
-
-export interface FoldersContext extends BaseContext, I18NContext, TenancyContext, SecurityContext {
-    folders: Folders;
-}
-
-export interface Folders {
-    getFolder(params: GetFolderParams): Promise<Folder>;
-    listFolders(params: ListFoldersParams): Promise<Folder[]>;
-    createFolder(input: FolderInput): Promise<Folder>;
-    updateFolder(id: string, input: Partial<Folder>): Promise<Folder>;
-    deleteFolder(id: string): Promise<void>;
-}
-
-export interface FoldersStorageOperations {
-    getFolder(params: StorageOperationsGetFolderParams): Promise<Folder>;
-    listFolders(params: StorageOperationsListFoldersParams): Promise<Folder[]>;
-    createFolder(params: StorageOperationsCreateFolderParams): Promise<Folder>;
-    updateFolder(params: StorageOperationsUpdateFolderParams): Promise<Folder>;
-    deleteFolder(params: StorageOperationsDeleteFolderParams): Promise<void>;
-}
-
-export interface GetFolderWhere {
-    id?: string;
-    slug?: string;
-    category?: Category;
-}
-
 export interface GetFolderParams {
-    where: GetFolderWhere;
+    id: string;
 }
 
 export interface ListFoldersWhere {
@@ -86,11 +54,12 @@ export interface DeleteFolderParams {
     folder: Folder;
 }
 
-export interface StorageOperationsGetFolderParams extends GetFolderParams {
-    where: GetFolderParams["where"] & {
-        tenant: string;
-        locale: string;
-    };
+export interface StorageOperationsGetFolderParams {
+    id?: string;
+    slug?: string;
+    category?: Category;
+    tenant: string;
+    locale: string;
 }
 
 export interface StorageOperationsListFoldersParams extends ListFoldersParams {
@@ -104,3 +73,42 @@ export interface StorageOperationsListFoldersParams extends ListFoldersParams {
 export type StorageOperationsCreateFolderParams = CreateFolderParams;
 export type StorageOperationsUpdateFolderParams = UpdateFolderParams;
 export type StorageOperationsDeleteFolderParams = DeleteFolderParams;
+
+export interface Entry {
+    id: string;
+    folderId: string;
+    category: Category;
+    createdOn: string;
+    createdBy: CreatedBy;
+    tenant: string;
+    locale: string;
+    webinyVersion: string;
+}
+
+export interface FoldersConfig {
+    getTenantId: () => string;
+    getLocaleCode: () => string;
+    getIdentity: () => SecurityIdentity;
+    storageOperations: FoldersStorageOperations;
+}
+
+export interface FoldersContext extends BaseContext, I18NContext, TenancyContext, SecurityContext {
+    folders: Folders;
+}
+
+export interface Folders {
+    // Folders
+    getFolder(params: GetFolderParams): Promise<Folder>;
+    listFolders(params: ListFoldersParams): Promise<Folder[]>;
+    createFolder(input: FolderInput): Promise<Folder>;
+    updateFolder(id: string, input: Partial<Folder>): Promise<Folder>;
+    deleteFolder(id: string): Promise<void>;
+}
+
+export interface FoldersStorageOperations {
+    getFolder(params: StorageOperationsGetFolderParams): Promise<Folder>;
+    listFolders(params: StorageOperationsListFoldersParams): Promise<Folder[]>;
+    createFolder(params: StorageOperationsCreateFolderParams): Promise<Folder>;
+    updateFolder(params: StorageOperationsUpdateFolderParams): Promise<Folder>;
+    deleteFolder(params: StorageOperationsDeleteFolderParams): Promise<void>;
+}

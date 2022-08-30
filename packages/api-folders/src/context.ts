@@ -44,21 +44,19 @@ export const createFolders = async ({
     const locale = getLocaleCode();
 
     return {
-        async getFolder({ where }: GetFolderParams): Promise<Folder> {
+        async getFolder({ id }: GetFolderParams): Promise<Folder> {
             let folder: Folder | null = null;
             try {
-                folder = await storageOperations.getFolder({
-                    where: { tenant, locale, ...where }
-                });
+                folder = await storageOperations.getFolder({ tenant, locale, id });
             } catch (error) {
                 throw WebinyError.from(error, {
                     message: "Could not get folder.",
                     code: "GET_FOLDER_ERROR",
-                    data: { ...where }
+                    data: { id }
                 });
             }
             if (!folder) {
-                throw new NotFoundError(`Unable to find folder: ${JSON.stringify(where)}`);
+                throw new NotFoundError(`Unable to find folder with id: ${id}`);
             }
             return folder;
         },
@@ -82,12 +80,10 @@ export const createFolders = async ({
             await new CreateDataModel().populate({ ...input, tenant, locale }).validate();
 
             const existing = await storageOperations.getFolder({
-                where: {
-                    tenant,
-                    locale,
-                    category: input.category,
-                    slug: input.slug
-                }
+                tenant,
+                locale,
+                category: input.category,
+                slug: input.slug
             });
 
             if (existing) {
@@ -129,9 +125,7 @@ export const createFolders = async ({
 
             await model.validate();
 
-            const original = await storageOperations.getFolder({
-                where: { tenant, locale, id }
-            });
+            const original = await storageOperations.getFolder({ tenant, locale, id });
 
             if (!original) {
                 throw new NotFoundError(`Folder "${id}" was not found!`);
@@ -158,7 +152,7 @@ export const createFolders = async ({
         },
 
         async deleteFolder(id: string): Promise<void> {
-            const folder = await storageOperations.getFolder({ where: { tenant, locale, id } });
+            const folder = await storageOperations.getFolder({ tenant, locale, id });
 
             if (!folder) {
                 throw new NotFoundError(`Folder "${id}" was not found!`);

@@ -76,7 +76,7 @@ export const createStorageOperations = (params: FoldersStorageParams): FoldersSt
             }
         },
 
-        async getFolder({ where: { tenant, locale, id, slug, category } }): Promise<Folder> {
+        async getFolder({ tenant, locale, id, slug, category }): Promise<Folder> {
             try {
                 let result;
                 if (id) {

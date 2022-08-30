@@ -34,7 +34,7 @@ export default new GraphQLSchemaPlugin<FoldersContext>({
 
         type FolderBooleanResponse {
             data: Boolean
-            error: SecurityError
+            error: FolderError
         }
     `,
     resolvers: {

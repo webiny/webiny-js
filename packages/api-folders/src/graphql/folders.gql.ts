@@ -30,12 +30,6 @@ export default new GraphQLSchemaPlugin<FoldersContext>({
             slug: String
         }
 
-        input FolderGetWhereInput {
-            id: ID
-            slug: String
-            category: Category
-        }
-
         input FoldersListWhereInput {
             category: Category!
         }
@@ -51,7 +45,7 @@ export default new GraphQLSchemaPlugin<FoldersContext>({
         }
 
         extend type FoldersQuery {
-            getFolder(where: FolderGetWhereInput!): FolderResponse
+            getFolder(id: ID!): FolderResponse
             listFolders(where: FoldersListWhereInput!): FoldersListResponse
         }
 
@@ -63,9 +57,9 @@ export default new GraphQLSchemaPlugin<FoldersContext>({
     `,
     resolvers: {
         FoldersQuery: {
-            getFolder: async (_, { where }, context) => {
+            getFolder: async (_, { id }, context) => {
                 try {
-                    const folder = await context.folders.getFolder({ where });
+                    const folder = await context.folders.getFolder({ id });
                     return new Response(folder);
                 } catch (error) {
                     return new ErrorResponse(error);
@@ -92,8 +86,8 @@ export default new GraphQLSchemaPlugin<FoldersContext>({
             },
             updateFolder: async (_, { id, data }, context) => {
                 try {
-                    const group = await context.folders.updateFolder(id, data);
-                    return new Response(group);
+                    const folder = await context.folders.updateFolder(id, data);
+                    return new Response(folder);
                 } catch (error) {
                     return new ErrorResponse(error);
                 }
