@@ -1,5 +1,6 @@
-import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
-import { queryOne } from "@webiny/db-dynamodb/utils/query";
+import { cleanupItem, cleanupItems } from "@webiny/db-dynamodb/utils/cleanup";
+import { queryAll, queryOne } from "@webiny/db-dynamodb/utils/query";
+import { sortItems } from "@webiny/db-dynamodb/utils/sort";
 import WebinyError from "@webiny/error";
 
 import { createTable } from "./definitions/table";
@@ -104,6 +105,35 @@ export const createStorageOperations = (params: FoldersStorageParams): FoldersSt
                     data: { id, slug }
                 });
             }
+        },
+
+        async listFolders({ where: { tenant, locale, category }, sort }): Promise<Folder[]> {
+            let items: Folder[] = [];
+
+            try {
+                items = await queryAll<Folder>({
+                    entity: entities.folders,
+                    partitionKey: `T#${tenant}#L#${locale}#category#${category}#FOLDERS`,
+                    options: {
+                        index: "GSI1",
+                        beginsWith: ""
+                    }
+                });
+            } catch (error) {
+                throw WebinyError.from(error, {
+                    message: "Could not list folders.",
+                    code: "LIST_FOLDERS_ERROR"
+                });
+            }
+
+            return cleanupItems(
+                entities.folders,
+                sortItems({
+                    items,
+                    sort,
+                    fields: []
+                })
+            );
         },
 
         async updateFolder({ folder }): Promise<Folder> {

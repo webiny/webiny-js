@@ -12,7 +12,14 @@ import WebinyError from "@webiny/error";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { validation } from "@webiny/validation";
 
-import { FolderInput, Folder, Folders, FoldersConfig, GetFolderParams } from "~/types";
+import {
+    FolderInput,
+    Folder,
+    Folders,
+    FoldersConfig,
+    GetFolderParams,
+    ListFoldersParams
+} from "~/types";
 
 const CreateDataModel = withFields({
     name: string({ validation: validation.create("required,minLength:3") }),
@@ -54,6 +61,21 @@ export const createFolders = async ({
                 throw new NotFoundError(`Unable to find group : ${JSON.stringify(where)}`);
             }
             return folder;
+        },
+
+        async listFolders({ where }: ListFoldersParams): Promise<Folder[]> {
+            try {
+                return await storageOperations.listFolders({
+                    where: { tenant, locale, ...where },
+                    sort: ["createdOn_ASC"]
+                });
+            } catch (error) {
+                throw WebinyError.from(error, {
+                    message: "Could not list folders.",
+                    code: "LIST_FOLDERS_ERROR",
+                    data: { ...where }
+                });
+            }
         },
 
         async createFolder(input: FolderInput): Promise<Folder> {

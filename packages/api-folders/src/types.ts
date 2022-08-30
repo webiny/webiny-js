@@ -41,12 +41,15 @@ export interface FoldersContext extends BaseContext, I18NContext, TenancyContext
 
 export interface Folders {
     getFolder(params: GetFolderParams): Promise<Folder>;
+    listFolders(params: ListFoldersParams): Promise<Folder[]>;
     createFolder(input: FolderInput): Promise<Folder>;
+    updateFolder(id: string, input: Partial<Folder>): Promise<Folder>;
     deleteFolder(id: string): Promise<void>;
 }
 
 export interface FoldersStorageOperations {
     getFolder(params: StorageOperationsGetFolderParams): Promise<Folder>;
+    listFolders(params: StorageOperationsListFoldersParams): Promise<Folder[]>;
     createFolder(params: StorageOperationsCreateFolderParams): Promise<Folder>;
     updateFolder(params: StorageOperationsUpdateFolderParams): Promise<Folder>;
     deleteFolder(params: StorageOperationsDeleteFolderParams): Promise<void>;
@@ -62,6 +65,14 @@ export interface GetFolderWhere {
 
 export interface GetFolderParams {
     where: GetFolderWhere;
+}
+
+export interface ListFoldersWhere {
+    category: Category;
+}
+
+export interface ListFoldersParams {
+    where: ListFoldersWhere;
 }
 
 export interface CreateFolderParams {
@@ -82,6 +93,14 @@ export interface StorageOperationsGetFolderParams extends GetFolderParams {
         tenant: string;
         locale: string;
     };
+}
+
+export interface StorageOperationsListFoldersParams extends ListFoldersParams {
+    where: ListFoldersParams["where"] & {
+        tenant: string;
+        locale: string;
+    };
+    sort: string[];
 }
 
 export type StorageOperationsCreateFolderParams = CreateFolderParams;

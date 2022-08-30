@@ -30,13 +30,23 @@ export default new GraphQLSchemaPlugin<FoldersContext>({
             category: String
         }
 
+        input FoldersListWhereInput {
+            category: String!
+        }
+
         type FolderResponse {
             data: Folder
             error: FolderError
         }
 
+        type FoldersListResponse {
+            data: [Folder]
+            error: FolderError
+        }
+
         extend type FoldersQuery {
             getFolder(where: FolderGetWhereInput!): FolderResponse
+            listFolders(where: FoldersListWhereInput!): FoldersListResponse
         }
 
         extend type FoldersMutation {
@@ -51,6 +61,14 @@ export default new GraphQLSchemaPlugin<FoldersContext>({
                 try {
                     const folder = await context.folders.getFolder({ where });
                     return new Response(folder);
+                } catch (error) {
+                    return new ErrorResponse(error);
+                }
+            },
+            listFolders: async (_, { where }, context) => {
+                try {
+                    const folders = await context.folders.listFolders({ where });
+                    return new Response(folders);
                 } catch (error) {
                     return new ErrorResponse(error);
                 }
