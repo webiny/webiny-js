@@ -49,7 +49,7 @@ export const createStorageOperations = (params: FoldersStorageParams): FoldersSt
         category,
         slug
     }: Pick<Folder, "tenant" | "locale" | "category" | "slug">) => ({
-        GSI1_PK: `T#${tenant}#L#${locale}#category#${category}#FOLDERS`,
+        GSI1_PK: `T#${tenant}#L#${locale}#CATEGORY#${category}#FOLDERS`,
         GSI1_SK: slug
     });
 
@@ -89,7 +89,7 @@ export const createStorageOperations = (params: FoldersStorageParams): FoldersSt
                 } else if (slug) {
                     result = await queryOne({
                         entity: entities.folders,
-                        partitionKey: `T#${tenant}#L#${locale}#category#${category}#FOLDERS`,
+                        partitionKey: `T#${tenant}#L#${locale}#CATEGORY#${category}#FOLDERS`,
                         options: {
                             index: "GSI1",
                             eq: slug
@@ -113,7 +113,7 @@ export const createStorageOperations = (params: FoldersStorageParams): FoldersSt
             try {
                 items = await queryAll<Folder>({
                     entity: entities.folders,
-                    partitionKey: `T#${tenant}#L#${locale}#category#${category}#FOLDERS`,
+                    partitionKey: `T#${tenant}#L#${locale}#CATEGORY#${category}#FOLDERS`,
                     options: {
                         index: "GSI1",
                         beginsWith: ""
