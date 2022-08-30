@@ -58,7 +58,7 @@ export const createFolders = async ({
                 });
             }
             if (!folder) {
-                throw new NotFoundError(`Unable to find group : ${JSON.stringify(where)}`);
+                throw new NotFoundError(`Unable to find folder: ${JSON.stringify(where)}`);
             }
             return folder;
         },
