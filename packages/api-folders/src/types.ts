@@ -58,8 +58,6 @@ export interface FoldersStorageOperations {
 export interface GetFolderWhere {
     id?: string;
     slug?: string;
-    tenant?: string;
-    locale?: string;
     category?: Category;
 }
 

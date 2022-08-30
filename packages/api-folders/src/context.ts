@@ -48,7 +48,7 @@ export const createFolders = async ({
             let folder: Folder | null = null;
             try {
                 folder = await storageOperations.getFolder({
-                    where: { tenant, locale, ...where } // TODO: remove dependency with locale and tenant
+                    where: { tenant, locale, ...where }
                 });
             } catch (error) {
                 throw WebinyError.from(error, {
