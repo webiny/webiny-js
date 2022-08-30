@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useState } from "react";
+import React, { useEffect, useState } from "react";
 import BlockContainer from "./BlockContainer";
 import ElementAnimation from "../../../../render/components/ElementAnimation";
 import styled from "@emotion/styled";
