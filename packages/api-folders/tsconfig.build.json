@@ -6,7 +6,7 @@
     { "path": "../api-security/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
     { "path": "../handler-graphql/tsconfig.build.json" },
-    { "path": "../handler/tsconfig.build.json" },
+    { "path": "../handler/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",

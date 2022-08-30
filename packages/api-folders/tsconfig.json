@@ -6,7 +6,7 @@
     { "path": "../api" },
     { "path": "../api-security" },
     { "path": "../handler-graphql" },
-    { "path": "../validation" },
+    { "path": "../validation" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -23,7 +23,7 @@
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
       "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/validation/*": ["../validation/src/*"],
-      "@webiny/validation": ["../validation/src"],
+      "@webiny/validation": ["../validation/src"]
     },
     "baseUrl": "."
   }
