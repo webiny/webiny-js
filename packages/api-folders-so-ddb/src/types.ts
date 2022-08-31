@@ -21,7 +21,8 @@ export type DbItem<T> = T & {
 export type Attributes = Record<string, AttributeDefinition>;
 
 export enum ENTITIES {
-    FOLDER = "folder"
+    FOLDER = "folder",
+    ENTRY = "entry"
 }
 
 export interface FoldersStorageParams {

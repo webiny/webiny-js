@@ -58,3 +58,36 @@ export const createFolderEntity = (table: Table, attributes: Attributes = {}) =>
         ...attributes
     });
 };
+
+export const createEntryEntity = (table: Table, attributes: Attributes = {}) => {
+    return createEntity(ENTITIES.ENTRY, table, {
+        id: {
+            type: "string"
+        },
+        name: {
+            type: "string"
+        },
+        folderId: {
+            type: "string"
+        },
+        externalId: {
+            type: "string"
+        },
+        createdOn: {
+            type: "string"
+        },
+        createdBy: {
+            type: "map"
+        },
+        tenant: {
+            type: "string"
+        },
+        locale: {
+            type: "string"
+        },
+        webinyVersion: {
+            type: "string"
+        },
+        ...attributes
+    });
+};

@@ -12,90 +12,81 @@ import WebinyError from "@webiny/error";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { validation } from "@webiny/validation";
 
-import {
-    FolderInput,
-    Folder,
-    Folders,
-    FoldersConfig,
-    GetFolderParams,
-    ListFoldersParams
-} from "~/types";
+import { FoldersConfig, Entry, ListEntriesParams, EntryInput, IEntries } from "~/types";
 
 const CreateDataModel = withFields({
-    name: string({ validation: validation.create("required,minLength:3") }),
-    slug: string({ validation: validation.create("required,minLength:3") }),
-    category: string({ validation: validation.create("required,in:page:cms:file") }),
+    externalId: string({ validation: validation.create("required") }),
+    folderId: string({ validation: validation.create("required") }),
     tenant: string({ validation: validation.create("required") }),
     locale: string({ validation: validation.create("required") })
 })();
 
 const UpdateDataModel = withFields({
-    name: string({ validation: validation.create("minLength:3") }),
-    slug: string({ validation: validation.create("required,minLength:3") })
+    folderId: string({ validation: validation.create("required") })
 })();
 
-export const createFolders = async ({
+export default async ({
     getTenantId,
     getLocaleCode,
     getIdentity,
     storageOperations
-}: FoldersConfig): Promise<Folders> => {
+}: FoldersConfig): Promise<IEntries> => {
     const tenant = getTenantId();
     const locale = getLocaleCode();
 
     return {
-        async getFolder({ id }: GetFolderParams): Promise<Folder> {
-            let folder: Folder | null = null;
+        async getEntry(id: string): Promise<Entry> {
+            let entry: Entry | null = null;
             try {
-                folder = await storageOperations.getFolder({ tenant, locale, id });
+                entry = await storageOperations.getEntry({ tenant, locale, id });
             } catch (error) {
                 throw WebinyError.from(error, {
-                    message: "Could not get folder.",
-                    code: "GET_FOLDER_ERROR",
+                    message: "Could not get entry.",
+                    code: "GET_ENTRY_ERROR",
                     data: { id }
                 });
             }
-            if (!folder) {
-                throw new NotFoundError(`Unable to find folder with id: ${id}`);
+            if (!entry) {
+                throw new NotFoundError(`Unable to find entry with id: ${id}`);
             }
-            return folder;
+            return entry;
         },
 
-        async listFolders({ where }: ListFoldersParams): Promise<Folder[]> {
+        async listEntries({ where }: ListEntriesParams): Promise<Entry[]> {
             try {
-                return await storageOperations.listFolders({
+                return await storageOperations.listEntries({
                     where: { tenant, locale, ...where },
                     sort: ["createdOn_ASC"]
                 });
             } catch (error) {
                 throw WebinyError.from(error, {
-                    message: "Could not list folders.",
-                    code: "LIST_FOLDERS_ERROR",
+                    message: "Could not list entries.",
+                    code: "LIST_ENTRIES_ERROR",
                     data: { ...where }
                 });
             }
         },
 
-        async createFolder(input: FolderInput): Promise<Folder> {
+        async createEntry(input: EntryInput): Promise<Entry> {
             await new CreateDataModel().populate({ ...input, tenant, locale }).validate();
 
-            const existing = await storageOperations.getFolder({
+            const existing = await storageOperations.getEntry({
                 tenant,
                 locale,
-                category: input.category,
-                slug: input.slug
+                folderId: input.folderId,
+                externalId: input.externalId
             });
 
             if (existing) {
                 throw new WebinyError(
-                    `Folder with slug "${input.slug}" already exists.`,
-                    "FOLDER_EXISTS"
+                    `Entry with id "${input.externalId}" already exists.`,
+                    "ENTRY_EXISTS"
                 );
             }
 
             const identity = getIdentity();
 
-            const folder: Folder = {
+            const entry: Entry = {
                 id: mdbid(),
                 tenant,
                 locale,
@@ -110,62 +101,63 @@ export const createFolders = async ({
             };
 
             try {
-                return await storageOperations.createFolder({ folder });
+                return await storageOperations.createEntry({ entry });
             } catch (error) {
                 throw WebinyError.from(error, {
-                    message: "Could not create folder.",
-                    code: "CREATE_FOLDER_ERROR",
+                    message: "Could not create entry.",
+                    code: "CREATE_ENTRY_ERROR",
                     data: { ...input }
                 });
             }
         },
 
-        async updateFolder(id: string, input: Record<string, any>): Promise<Folder> {
+        async updateEntry(id: string, input: Record<string, any>): Promise<Entry> {
             const model = await new UpdateDataModel().populate(input);
 
             await model.validate();
 
-            const original = await storageOperations.getFolder({ tenant, locale, id });
+            const original = await storageOperations.getEntry({ tenant, locale, id });
 
             if (!original) {
-                throw new NotFoundError(`Folder "${id}" was not found!`);
+                throw new NotFoundError(`Entry "${id}" was not found!`);
             }
 
             const data = await model.toJSON({ onlyDirty: true });
 
-            const folder: Folder = {
+            const entry: Entry = {
                 ...original,
                 ...data
             };
+
             try {
-                const result = await storageOperations.updateFolder({ original, folder });
+                const result = await storageOperations.updateEntry({ original, entry });
                 return result;
             } catch (error) {
                 throw new WebinyError(
-                    error.message || "Could not update folder.",
-                    error.code || "UPDATE_FOLDER_ERROR",
+                    error.message || "Could not update entry.",
+                    error.code || "UPDATE_ENTRY_ERROR",
                     {
-                        folder
+                        entry
                     }
                 );
             }
         },
 
-        async deleteFolder(id: string): Promise<void> {
-            const folder = await storageOperations.getFolder({ tenant, locale, id });
+        async deleteEntry(id: string): Promise<void> {
+            const entry = await storageOperations.getEntry({ tenant, locale, id });
 
-            if (!folder) {
-                throw new NotFoundError(`Folder "${id}" was not found!`);
+            if (!entry) {
+                throw new NotFoundError(`Entry "${id}" was not found!`);
             }
 
             try {
-                await storageOperations.deleteFolder({ folder });
+                await storageOperations.deleteEntry({ entry });
             } catch (error) {
                 throw new WebinyError(
-                    error.message || "Could not delete folder.",
-                    error.code || "DELETE_FOLDER_ERROR",
+                    error.message || "Could not delete entry.",
+                    error.code || "DELETE_ENTRY_ERROR",
                     {
-                        folder
+                        entry
                     }
                 );
             }

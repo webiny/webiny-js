@@ -36,6 +36,12 @@ export default new GraphQLSchemaPlugin<FoldersContext>({
             data: Boolean
             error: FolderError
         }
+
+        enum FolderCategory {
+            page
+            cms
+            file
+        }
     `,
     resolvers: {
         Query: {

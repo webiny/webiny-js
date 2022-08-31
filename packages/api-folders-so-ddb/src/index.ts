@@ -4,10 +4,10 @@ import { sortItems } from "@webiny/db-dynamodb/utils/sort";
 import WebinyError from "@webiny/error";
 
 import { createTable } from "./definitions/table";
-import { createFolderEntity } from "./definitions/entities";
+import { createFolderEntity, createEntryEntity } from "./definitions/entities";
 
 import { ENTITIES, FoldersStorageParams } from "./types";
-import { Folder, FoldersStorageOperations } from "@webiny/api-folders/types";
+import { Entry, Folder, FoldersStorageOperations } from "@webiny/api-folders/types";
 
 const reservedFields: string[] = ["PK", "SK", "index", "data"];
 
@@ -31,7 +31,8 @@ export const createStorageOperations = (params: FoldersStorageParams): FoldersSt
     const table = createTable({ table: tableName, documentClient });
 
     const entities = {
-        folders: createFolderEntity(table, attributes ? attributes[ENTITIES.FOLDER] : {})
+        folders: createFolderEntity(table, attributes ? attributes[ENTITIES.FOLDER] : {}),
+        entries: createEntryEntity(table, attributes ? attributes[ENTITIES.ENTRY] : {})
     };
 
     const createFolderKeys = ({
@@ -51,6 +52,21 @@ export const createStorageOperations = (params: FoldersStorageParams): FoldersSt
     }: Pick<Folder, "tenant" | "locale" | "category" | "slug">) => ({
         GSI1_PK: `T#${tenant}#L#${locale}#CATEGORY#${category}#FOLDERS`,
         GSI1_SK: slug
+    });
+
+    const createEntryKeys = ({ id, tenant, locale }: Pick<Entry, "id" | "tenant" | "locale">) => ({
+        PK: `T#${tenant}#L#${locale}#ENTRY#${id}`,
+        SK: `A`
+    });
+
+    const createEntryGsiKeys = ({
+        tenant,
+        locale,
+        folderId,
+        externalId
+    }: Pick<Entry, "tenant" | "locale" | "folderId" | "externalId">) => ({
+        GSI1_PK: `T#${tenant}#L#${locale}#FOLDER#${folderId}#ENTRIES`,
+        GSI1_SK: externalId
     });
 
     return {
@@ -165,6 +181,121 @@ export const createStorageOperations = (params: FoldersStorageParams): FoldersSt
                     message: "Could not delete folder.",
                     code: "DELETE_FOLDER_ERROR",
                     data: { keys, folder }
+                });
+            }
+        },
+
+        async createEntry({ entry }): Promise<Entry> {
+            const keys = {
+                ...createEntryKeys(entry),
+                ...createEntryGsiKeys(entry)
+            };
+
+            try {
+                await entities.entries.put({
+                    ...cleanupItem(entities.entries, entry),
+                    TYPE: "entry",
+                    ...keys
+                });
+                return entry;
+            } catch (error) {
+                throw WebinyError.from(error, {
+                    message: "Could not create entry.",
+                    code: "CREATE_ENTRY_ERROR",
+                    data: { keys }
+                });
+            }
+        },
+
+        async getEntry({ tenant, locale, id, externalId, folderId }): Promise<Entry> {
+            try {
+                let result;
+                if (id) {
+                    const response = await entities.entries.get(
+                        createEntryKeys({ id, tenant, locale })
+                    );
+                    if (response.Item) {
+                        result = response.Item;
+                    }
+                } else if (externalId) {
+                    result = await queryOne({
+                        entity: entities.entries,
+                        partitionKey: `T#${tenant}#L#${locale}#FOLDER#${folderId}#ENTRIES`,
+                        options: {
+                            index: "GSI1",
+                            eq: externalId
+                        }
+                    });
+                }
+
+                return cleanupItem(entities.entries, result);
+            } catch (error) {
+                throw WebinyError.from(error, {
+                    message: "Could not load entry.",
+                    code: "GET_ENTRY_ERROR",
+                    data: { id, externalId, folderId }
+                });
+            }
+        },
+
+        async listEntries({ where: { tenant, locale, folderId }, sort }): Promise<Entry[]> {
+            let items: Entry[] = [];
+
+            try {
+                items = await queryAll<Entry>({
+                    entity: entities.entries,
+                    partitionKey: `T#${tenant}#L#${locale}#FOLDER#${folderId}#ENTRIES`,
+                    options: {
+                        index: "GSI1",
+                        beginsWith: ""
+                    }
+                });
+            } catch (error) {
+                throw WebinyError.from(error, {
+                    message: "Could not list entries.",
+                    code: "LIST_ENTRIES_ERROR"
+                });
+            }
+
+            return cleanupItems(
+                entities.entries,
+                sortItems({
+                    items,
+                    sort,
+                    fields: []
+                })
+            );
+        },
+
+        async updateEntry({ entry }): Promise<Entry> {
+            const keys = createEntryKeys(entry);
+
+            try {
+                await entities.entries.put({
+                    ...cleanupItem(entities.entries, entry),
+                    ...keys,
+                    ...createEntryGsiKeys(entry)
+                });
+                return entry;
+            } catch (error) {
+                throw WebinyError.from(error, {
+                    message: "Could not update entry.",
+                    code: "UPDATE_ENTRY_ERROR",
+                    data: { keys, entry }
+                });
+            }
+        },
+
+        async deleteEntry({ entry }) {
+            const keys = createEntryKeys(entry);
+
+            try {
+                await entities.entries.delete(keys);
+            } catch (error) {
+                throw WebinyError.from(error, {
+                    message: "Could not delete entry.",
+                    code: "DELETE_ENTRY_ERROR",
+                    data: { keys, entry }
                 });
             }
         }

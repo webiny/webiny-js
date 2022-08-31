@@ -1,7 +1,7 @@
 import { ContextPlugin } from "@webiny/api";
 import WebinyError from "@webiny/error";
 
-import { createFolders } from "./context";
+import createContext from "./context";
 import graphqlPlugins from "./graphql";
 
 import { SecurityIdentity } from "@webiny/api-security/types";
@@ -35,7 +35,7 @@ export const createFoldersContext = ({ storageOperations }: FoldersConfig) => {
             return identity;
         };
 
-        context.folders = await createFolders({
+        context.folders = await createContext({
             storageOperations,
             getTenantId,
             getLocaleCode,

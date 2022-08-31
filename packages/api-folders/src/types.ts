@@ -76,13 +76,78 @@ export type StorageOperationsDeleteFolderParams = DeleteFolderParams;
 
 export interface Entry {
     id: string;
+    externalId: string;
     folderId: string;
-    category: Category;
     createdOn: string;
     createdBy: CreatedBy;
     tenant: string;
     locale: string;
     webinyVersion: string;
+}
+
+export type EntryInput = Pick<Entry, "externalId" | "folderId">;
+
+export interface ListEntriesWhere {
+    folderId: string;
+}
+
+export interface ListEntriesParams {
+    where: ListEntriesWhere;
+}
+
+export interface CreateEntryParams {
+    entry: Entry;
+}
+
+export interface UpdateEntryParams {
+    original: Entry;
+    entry: Entry;
+}
+
+export interface DeleteEntryParams {
+    entry: Entry;
+}
+
+export interface StorageOperationsGetEntryParams {
+    id?: string;
+    externalId?: string;
+    folderId?: string;
+    tenant: string;
+    locale: string;
+}
+
+export interface StorageOperationsListEntriesParams extends ListEntriesParams {
+    where: ListEntriesParams["where"] & {
+        tenant: string;
+        locale: string;
+    };
+    sort: string[];
+}
+
+export type StorageOperationsCreateEntryParams = CreateEntryParams;
+export type StorageOperationsUpdateEntryParams = UpdateEntryParams;
+export type StorageOperationsDeleteEntryParams = DeleteEntryParams;
+
+export interface FoldersContext extends BaseContext, I18NContext, TenancyContext, SecurityContext {
+    folders: Folders;
+}
+
+export type Folders = IFolders & IEntries;
+
+export interface IFolders {
+    getFolder(params: GetFolderParams): Promise<Folder>;
+    listFolders(params: ListFoldersParams): Promise<Folder[]>;
+    createFolder(input: FolderInput): Promise<Folder>;
+    updateFolder(id: string, input: Partial<Folder>): Promise<Folder>;
+    deleteFolder(id: string): Promise<void>;
+}
+
+export interface IEntries {
+    getEntry(id: string): Promise<Entry>;
+    listEntries(params: ListEntriesParams): Promise<Entry[]>;
+    createEntry(input: EntryInput): Promise<Entry>;
+    updateEntry(id: string, input: Partial<Entry>): Promise<Entry>;
+    deleteEntry(id: string): Promise<void>;
 }
 
 export interface FoldersConfig {
@@ -92,23 +157,17 @@ export interface FoldersConfig {
     storageOperations: FoldersStorageOperations;
 }
 
-export interface FoldersContext extends BaseContext, I18NContext, TenancyContext, SecurityContext {
-    folders: Folders;
-}
-
-export interface Folders {
-    // Folders
-    getFolder(params: GetFolderParams): Promise<Folder>;
-    listFolders(params: ListFoldersParams): Promise<Folder[]>;
-    createFolder(input: FolderInput): Promise<Folder>;
-    updateFolder(id: string, input: Partial<Folder>): Promise<Folder>;
-    deleteFolder(id: string): Promise<void>;
-}
-
 export interface FoldersStorageOperations {
+    // Folders
     getFolder(params: StorageOperationsGetFolderParams): Promise<Folder>;
     listFolders(params: StorageOperationsListFoldersParams): Promise<Folder[]>;
     createFolder(params: StorageOperationsCreateFolderParams): Promise<Folder>;
     updateFolder(params: StorageOperationsUpdateFolderParams): Promise<Folder>;
     deleteFolder(params: StorageOperationsDeleteFolderParams): Promise<void>;
+    // Entries
+    getEntry(params: StorageOperationsGetEntryParams): Promise<Entry>;
+    listEntries(params: StorageOperationsListEntriesParams): Promise<Entry[]>;
+    createEntry(params: StorageOperationsCreateEntryParams): Promise<Entry>;
+    updateEntry(params: StorageOperationsUpdateEntryParams): Promise<Entry>;
+    deleteEntry(params: StorageOperationsDeleteEntryParams): Promise<void>;
 }
