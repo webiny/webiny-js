@@ -6,15 +6,15 @@ export default new GraphQLSchemaPlugin<FoldersContext>({
     typeDefs: /* GraphQL */ `
         type Entry {
             id: ID!
+            eId: ID!
             folderId: ID!
-            externalId: ID!
             createdOn: DateTime
             createdBy: FolderCreatedBy
         }
 
         input EntryCreateInput {
+            id: ID!
             folderId: ID!
-            externalId: ID!
         }
 
         input EntryUpdateInput {

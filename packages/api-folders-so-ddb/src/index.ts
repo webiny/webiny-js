@@ -63,10 +63,10 @@ export const createStorageOperations = (params: FoldersStorageParams): FoldersSt
         tenant,
         locale,
         folderId,
-        externalId
-    }: Pick<Entry, "tenant" | "locale" | "folderId" | "externalId">) => ({
+        id
+    }: Pick<Entry, "tenant" | "locale" | "folderId" | "id">) => ({
         GSI1_PK: `T#${tenant}#L#${locale}#FOLDER#${folderId}#ENTRIES`,
-        GSI1_SK: externalId
+        GSI1_SK: id
     });
 
     return {
@@ -207,7 +207,7 @@ export const createStorageOperations = (params: FoldersStorageParams): FoldersSt
             }
         },
 
-        async getEntry({ tenant, locale, id, externalId, folderId }): Promise<Entry> {
+        async getEntry({ tenant, locale, id, folderId }): Promise<Entry> {
             try {
                 let result;
                 if (id) {
@@ -217,13 +217,13 @@ export const createStorageOperations = (params: FoldersStorageParams): FoldersSt
                     if (response.Item) {
                         result = response.Item;
                     }
-                } else if (externalId) {
+                } else if (folderId) {
                     result = await queryOne({
                         entity: entities.entries,
                         partitionKey: `T#${tenant}#L#${locale}#FOLDER#${folderId}#ENTRIES`,
                         options: {
                             index: "GSI1",
-                            eq: externalId
+                            eq: id
                         }
                     });
                 }
@@ -233,7 +233,7 @@ export const createStorageOperations = (params: FoldersStorageParams): FoldersSt
                 throw WebinyError.from(error, {
                     message: "Could not load entry.",
                     code: "GET_ENTRY_ERROR",
-                    data: { id, externalId, folderId }
+                    data: { id, folderId }
                 });
             }
         },

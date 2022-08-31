@@ -76,7 +76,7 @@ export type StorageOperationsDeleteFolderParams = DeleteFolderParams;
 
 export interface Entry {
     id: string;
-    externalId: string;
+    eId: string;
     folderId: string;
     createdOn: string;
     createdBy: CreatedBy;
@@ -85,7 +85,7 @@ export interface Entry {
     webinyVersion: string;
 }
 
-export type EntryInput = Pick<Entry, "externalId" | "folderId">;
+export type EntryInput = Pick<Entry, "id" | "folderId">;
 
 export interface ListEntriesWhere {
     folderId: string;
@@ -110,7 +110,7 @@ export interface DeleteEntryParams {
 
 export interface StorageOperationsGetEntryParams {
     id?: string;
-    externalId?: string;
+    eId?: string;
     folderId?: string;
     tenant: string;
     locale: string;

@@ -15,7 +15,7 @@ import { validation } from "@webiny/validation";
 import { FoldersConfig, Entry, ListEntriesParams, EntryInput, IEntries } from "~/types";
 
 const CreateDataModel = withFields({
-    externalId: string({ validation: validation.create("required") }),
+    id: string({ validation: validation.create("required") }),
     folderId: string({ validation: validation.create("required") }),
     tenant: string({ validation: validation.create("required") }),
     locale: string({ validation: validation.create("required") })
@@ -74,12 +74,12 @@ export default async ({
                 tenant,
                 locale,
                 folderId: input.folderId,
-                externalId: input.externalId
+                id: input.id
             });
 
             if (existing) {
                 throw new WebinyError(
-                    `Entry with id "${input.externalId}" already exists.`,
+                    `Entry with id "${input.id}" already exists.`,
                     "ENTRY_EXISTS"
                 );
             }
@@ -87,7 +87,7 @@ export default async ({
             const identity = getIdentity();
 
             const entry: Entry = {
-                id: mdbid(),
+                eId: mdbid(),
                 tenant,
                 locale,
                 ...input,

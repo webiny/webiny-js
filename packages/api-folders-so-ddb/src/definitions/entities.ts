@@ -64,13 +64,10 @@ export const createEntryEntity = (table: Table, attributes: Attributes = {}) => 
         id: {
             type: "string"
         },
-        name: {
-            type: "string"
-        },
         folderId: {
             type: "string"
         },
-        externalId: {
+        eId: {
             type: "string"
         },
         createdOn: {
