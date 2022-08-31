@@ -20,6 +20,9 @@ module.exports.prepareOptions = ({ config, options }) => {
     // We want to have debug logs disabled by default.
     mergedOptions.debug = mergedOptions.debug === true;
 
+    // We want to have globSyncDot disabled by default.
+    mergedOptions.globSyncDot = mergedOptions.globSyncDot === true;
+
     return mergedOptions;
 };
 

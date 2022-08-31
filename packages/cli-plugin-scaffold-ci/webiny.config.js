@@ -2,7 +2,7 @@ const { createWatchPackage, createBuildPackage } = require("@webiny/project-util
 
 module.exports = {
     commands: {
-        build: createBuildPackage({ cwd: __dirname }),
+        build: createBuildPackage({ cwd: __dirname, globSyncDot: true }),
         watch: createWatchPackage({ cwd: __dirname })
     }
 };
