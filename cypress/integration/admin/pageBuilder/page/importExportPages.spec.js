@@ -2,9 +2,6 @@ Cypress.on("uncaught:exception", () => {
     return false;
 });
 
-// Increase the timeout for this current spec file.
-Cypress.config('pageLoadTimeout', 50000);
-
 context("Export & Import Pages", () => {
     beforeEach(() => cy.login());
     const pageTitle = "Welcome to Webiny";
@@ -51,14 +48,14 @@ context("Export & Import Pages", () => {
         // Loading with stats
         cy.findByTestId("export-pages.loading-dialog").should("be.visible");
         // Export ready
-        cy.findByTestId("export-pages.export-ready-dialog").should("be.visible");
+        cy.get('[data-testid="export-pages.export-ready-dialog"]', {timeout: 50000}).should("be.visible");
         // Copy export file URL
         cy.findByTestId("export-pages.export-ready-dialog").within(() => {
             cy.findByTestId("export-pages.export-ready-dialog.copy-button").click();
         });
         cy.findByText(/Successfully copied!/i).should("be.visible");
         // Close dialog
-        cy.findByTestId("export-pages.export-ready-dialog").within(() => {
+        cy.get('[data-testid="export-pages.export-ready-dialog"]', {timeout: 50000}).within(() => {
             cy.get('button[data-testid="dialog-accept"] span')
                 .contains("Close")
                 .click({ force: true });
