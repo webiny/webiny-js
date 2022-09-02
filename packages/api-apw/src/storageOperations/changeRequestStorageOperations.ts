@@ -24,7 +24,9 @@ export const createChangeRequestStorageOperations = (
         id
     }) => {
         const model = await getChangeRequestModel();
+        security.disableAuthorization();
         const entry = await cms.getEntryById(model, id);
+        security.enableAuthorization();
         return getFieldValues({
             entry,
             fields: baseFields,
@@ -37,12 +39,14 @@ export const createChangeRequestStorageOperations = (
         getChangeRequest,
         async listChangeRequests(params) {
             const model = await getChangeRequestModel();
+            security.disableAuthorization();
             const [entries, meta] = await cms.listLatestEntries(model, {
                 ...params,
                 where: {
                     ...params.where
                 }
             });
+            security.enableAuthorization();
             const all = await Promise.all(
                 entries.map(entry =>
                     getFieldValues<ApwChangeRequest>({
@@ -57,7 +61,9 @@ export const createChangeRequestStorageOperations = (
         },
         async createChangeRequest(params) {
             const model = await getChangeRequestModel();
+            security.disableAuthorization();
             const entry = await cms.createEntry(model, params.data);
+            security.enableAuthorization();
             return getFieldValues({
                 entry,
                 fields: baseFields,
@@ -73,10 +79,12 @@ export const createChangeRequestStorageOperations = (
              */
             const existingEntry = await getChangeRequest({ id: params.id });
 
+            security.disableAuthorization();
             const entry = await cms.updateEntry(model, params.id, {
                 ...existingEntry,
                 ...params.data
             });
+            security.enableAuthorization();
             return getFieldValues({
                 entry,
                 fields: baseFields,
@@ -86,7 +94,9 @@ export const createChangeRequestStorageOperations = (
         },
         async deleteChangeRequest(params) {
             const model = await getChangeRequestModel();
+            security.disableAuthorization();
             await cms.deleteEntry(model, params.id);
+            security.enableAuthorization();
             return true;
         }
     };

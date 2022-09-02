@@ -25,17 +25,34 @@ describe("access", () => {
         plugins: [accessTestGroup, accessTestModel]
     });
 
-    const { createContentEntryMutation, createContentReviewMutation, until } =
-        useContentHeadlessCmsHandler({
-            ...options,
-            identity: {
-                id: "someUserId",
-                displayName: "User",
-                type: "user"
-            },
-            permissions,
-            plugins: [accessTestGroup, accessTestModel]
-        });
+    const {
+        // content entry
+        createContentEntryMutation,
+        // content review
+        createContentReviewMutation,
+        getContentReviewQuery,
+        deleteContentReviewMutation,
+        // comment
+        createCommentMutation,
+        updateCommentMutation,
+        deleteCommentMutation,
+        getCommentQuery,
+        // change request
+        createChangeRequestMutation,
+        updateChangeRequestMutation,
+        deleteChangeRequestMutation,
+        // utils
+        until
+    } = useContentHeadlessCmsHandler({
+        ...options,
+        identity: {
+            id: "someUserId",
+            displayName: "User",
+            type: "user"
+        },
+        permissions,
+        plugins: [accessTestGroup, accessTestModel]
+    });
 
     const login = async () => {
         return await securityIdentity.login();
@@ -58,6 +75,9 @@ describe("access", () => {
         const [reviewer] = listReviewersResponse.data.apw.listReviewers.data;
         return reviewer;
     };
+
+    const entryTitle = "Test entry #1";
+    let entryId: string;
 
     beforeEach(async () => {
         const reviewer = await setupReviewer();
@@ -83,44 +103,28 @@ describe("access", () => {
         } else if (!createWorkflowResponse.data?.apw?.createWorkflow?.data?.id) {
             throw new Error(`Could not create workflow.`);
         }
-    });
 
-    it("should create a new entry in test model", async () => {
-        const title = "Test entry #1";
-        const [createResponse] = await createContentEntryMutation(model, {
-            data: {
-                title
-            }
-        });
-
-        expect(createResponse).toMatchObject({
-            data: {
-                createAccessTestModel: {
-                    data: {
-                        id: expect.any(String),
-                        title
-                    },
-                    error: null
-                }
-            }
-        });
-    });
-
-    it("should create request for review", async () => {
-        const title = "Test entry #1";
         const [createEntryResponse] = await createContentEntryMutation(model, {
             data: {
-                title
+                title: entryTitle
             }
         });
-        const id = createEntryResponse.data.createAccessTestModel.data.id;
 
-        expect(id).toMatch(/^([a-zA-Z0-9]+)#0001$/);
+        if (!createEntryResponse.data?.createAccessTestModel?.data?.id) {
+            throw new Error(`Missing content entry.`);
+        }
 
+        entryId = createEntryResponse.data.createAccessTestModel.data.id;
+    });
+
+    const setupContentReview = async () => {
+        if (!entryId) {
+            throw new Error(`Missing "entryId" - should be created before calling this method.`);
+        }
         const [createReviewRequestResponse] = await createContentReviewMutation({
             data: {
                 content: {
-                    id,
+                    id: entryId,
                     type: "cms_entry",
                     settings: {
                         modelId: model.modelId
@@ -128,14 +132,20 @@ describe("access", () => {
                 }
             }
         });
+        return createReviewRequestResponse;
+    };
 
-        expect(createReviewRequestResponse).toMatchObject({
+    it("should create request for review and delete it", async () => {
+        const createContentReviewResponse = await setupContentReview();
+
+        expect(createContentReviewResponse).toMatchObject({
             data: {
                 apw: {
                     createContentReview: {
                         data: {
+                            id: expect.any(String),
                             content: {
-                                id
+                                id: entryId
                             },
                             steps: [
                                 {
@@ -146,8 +156,266 @@ describe("access", () => {
                                     status: "active"
                                 }
                             ],
-                            title
+                            title: entryTitle
                         },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const contentReviewId = createContentReviewResponse.data.apw.createContentReview.data.id;
+
+        const [getReviewRequestResponse] = await getContentReviewQuery({
+            id: contentReviewId
+        });
+
+        expect(getReviewRequestResponse).toMatchObject({
+            data: {
+                apw: {
+                    getContentReview: {
+                        data: {
+                            id: contentReviewId
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const [deleteReviewRequestResponse] = await deleteContentReviewMutation({
+            id: contentReviewId
+        });
+
+        expect(deleteReviewRequestResponse).toMatchObject({
+            data: {
+                apw: {
+                    deleteContentReview: {
+                        data: true,
+                        error: null
+                    }
+                }
+            }
+        });
+    });
+
+    it("should create change request, update it and delete it", async () => {
+        const createContentReviewResponse = await setupContentReview();
+        const contentReview = createContentReviewResponse.data.apw.createContentReview.data;
+
+        const changeRequestStepId = `${contentReview.id}#${contentReview.steps[0].id}`;
+
+        const [createChangeRequestResponse] = await createChangeRequestMutation({
+            data: {
+                step: changeRequestStepId,
+                title: `Requesting change on "${entryTitle}"`,
+                body: [
+                    {
+                        type: "h1",
+                        text: "Really important!"
+                    }
+                ],
+                resolved: false,
+                media: {
+                    src: "cloudfront.net/my-file"
+                }
+            }
+        });
+
+        expect(createChangeRequestResponse).toMatchObject({
+            data: {
+                apw: {
+                    createChangeRequest: {
+                        data: {
+                            id: expect.any(String),
+                            step: changeRequestStepId
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+        const changeRequestId = createChangeRequestResponse.data.apw.createChangeRequest.data.id;
+
+        const [updateChangeRequestResponse] = await updateChangeRequestMutation({
+            id: changeRequestId,
+            data: {
+                title: `Requesting change on "${entryTitle}" - updated`,
+                body: [
+                    {
+                        type: "h1",
+                        text: "Really important! - updated"
+                    }
+                ],
+                resolved: false,
+                media: {
+                    src: "cloudfront.net/my-file-updated"
+                }
+            }
+        });
+
+        expect(updateChangeRequestResponse).toMatchObject({
+            data: {
+                apw: {
+                    updateChangeRequest: {
+                        data: {
+                            id: expect.any(String),
+                            step: changeRequestStepId,
+                            title: `Requesting change on "${entryTitle}" - updated`,
+                            body: [
+                                {
+                                    type: "h1",
+                                    text: "Really important! - updated"
+                                }
+                            ],
+                            resolved: false,
+                            media: {
+                                src: "cloudfront.net/my-file-updated"
+                            }
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const [deleteChangeRequestResponse] = await deleteChangeRequestMutation({
+            id: changeRequestId
+        });
+
+        expect(deleteChangeRequestResponse).toMatchObject({
+            data: {
+                apw: {
+                    deleteChangeRequest: {
+                        data: true,
+                        error: null
+                    }
+                }
+            }
+        });
+    });
+
+    it("should create comment, update it and delete it", async () => {
+        const createContentReviewResponse = await setupContentReview();
+        const contentReview = createContentReviewResponse.data.apw.createContentReview.data;
+
+        const changeRequestStepId = `${contentReview.id}#${contentReview.steps[0].id}`;
+
+        const [createChangeRequestResponse] = await createChangeRequestMutation({
+            data: {
+                step: changeRequestStepId,
+                title: `Requesting change on "${entryTitle}"`,
+                body: [
+                    {
+                        type: "h1",
+                        text: "Really important!"
+                    }
+                ],
+                resolved: false,
+                media: {
+                    src: "cloudfront.net/my-file"
+                }
+            }
+        });
+
+        const changeRequest = createChangeRequestResponse.data.apw.createChangeRequest.data;
+
+        const [createCommentResponse] = await createCommentMutation({
+            data: {
+                body: [
+                    {
+                        type: "p",
+                        text: "Comment Test"
+                    }
+                ],
+                changeRequest: changeRequest.id,
+                media: {
+                    src: "cloudfront.net/my-file"
+                }
+            }
+        });
+
+        expect(createCommentResponse).toMatchObject({
+            data: {
+                apw: {
+                    createComment: {
+                        data: {
+                            id: expect.any(String)
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+        const commentId = createCommentResponse.data.apw.createComment.data.id;
+
+        const [getCommentResponse] = await getCommentQuery({
+            id: commentId
+        });
+
+        expect(getCommentResponse).toMatchObject({
+            data: {
+                apw: {
+                    getComment: {
+                        data: {
+                            id: commentId,
+                            body: [
+                                {
+                                    type: "p",
+                                    text: "Comment Test"
+                                }
+                            ],
+                            changeRequest: changeRequest.id,
+                            media: {
+                                src: "cloudfront.net/my-file"
+                            }
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const [updateCommentResponse] = await updateCommentMutation({
+            id: commentId,
+            data: {
+                body: [
+                    {
+                        type: "h1",
+                        text: "Heading"
+                    }
+                ]
+            }
+        });
+
+        expect(updateCommentResponse).toMatchObject({
+            data: {
+                apw: {
+                    updateComment: {
+                        data: {
+                            id: commentId,
+                            body: [
+                                {
+                                    type: "h1",
+                                    text: "Heading"
+                                }
+                            ]
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const [deleteCommentResponse] = await deleteCommentMutation({
+            id: commentId
+        });
+
+        expect(deleteCommentResponse).toEqual({
+            data: {
+                apw: {
+                    deleteComment: {
+                        data: true,
                         error: null
                     }
                 }
