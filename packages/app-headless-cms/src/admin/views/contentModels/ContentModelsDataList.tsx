@@ -17,7 +17,7 @@ import { ButtonIcon, ButtonSecondary, IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { i18n } from "@webiny/app/i18n";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
-import { removeModelFromGroupCache, removeModelFromListCache } from "./cache";
+import { removeModelFromGroupCache, removeModelFromListCache, removeModelFromCache } from "./cache";
 import * as GQL from "../../viewsGraphql";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import SearchUI from "@webiny/app-admin/components/SearchUI";
@@ -130,6 +130,7 @@ const ContentModelsDataList: React.FC<ContentModelsDataListProps> = ({
 
                     removeModelFromListCache(cache, item);
                     removeModelFromGroupCache(cache, item);
+                    removeModelFromCache(client, item);
 
                     showSnackbar(
                         t`Content model {name} deleted successfully!.`({ name: item.name })
