@@ -1,4 +1,4 @@
-import { Context } from "@webiny/handler/types";
+import { Context } from "@webiny/api/types";
 import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
 import { I18NLocale, I18NContext } from "@webiny/api-i18n/types";
 import { Tenant } from "@webiny/api-tenancy/types";
@@ -27,6 +27,7 @@ export interface ListWhere {
 
 export interface ListParams {
     where: ListWhere;
+    sort?: ("datetime_ASC" | "datetime_DESC")[];
     limit?: number;
     after?: string;
 }
@@ -94,6 +95,11 @@ export interface ApwScheduleActionData {
     type: ApwContentTypes;
     datetime: string;
     entryId: string;
+    /**
+     * We will add modelId to the data for now.
+     * TODO extract in separate package?
+     */
+    modelId?: string;
 }
 
 export enum InvocationTypes {
@@ -112,9 +118,7 @@ interface BaseApwCrud<TEntry, TCreateEntryParams, TUpdateEntryParams> {
 
 export interface ApwScheduleActionCrud
     extends BaseApwCrud<ApwScheduleAction, ApwScheduleActionData, ApwScheduleActionData> {
-    list(
-        params: ListParams & { sort?: "datetime_ASC" | "datetime_DESC" }
-    ): Promise<[ApwScheduleAction[], ListMeta]>;
+    list(params: ListParams): Promise<[ApwScheduleAction[], ListMeta]>;
 
     getCurrentTask(): Promise<ApwScheduleAction | null>;
 
@@ -159,7 +163,6 @@ export interface ApwScheduleActionListParams extends ListParams {
         tenant: string;
         locale: string;
     };
-    sort?: "datetime_ASC" | "datetime_DESC";
 }
 
 export type StorageOperationsGetScheduleActionParams = StorageOperationsGetParams;

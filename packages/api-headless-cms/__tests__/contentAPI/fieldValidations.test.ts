@@ -1,4 +1,4 @@
-import { useContentGqlHandler } from "../utils/useContentGqlHandler";
+import { useGraphQLHandler } from "../utils/useGraphQLHandler";
 import { CmsGroup, CmsModel } from "~/types";
 import models from "./mocks/contentModels";
 import { useFruitManageHandler } from "../utils/useFruitManageHandler";
@@ -10,7 +10,7 @@ describe("fieldValidations", () => {
         createContentModelMutation,
         updateContentModelMutation,
         createContentModelGroupMutation
-    } = useContentGqlHandler(manageOpts);
+    } = useGraphQLHandler(manageOpts);
 
     const defaultFruitData = {
         name: "Apple",

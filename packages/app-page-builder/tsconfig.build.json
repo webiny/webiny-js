@@ -11,8 +11,10 @@
     { "path": "../app-tenancy/tsconfig.build.json" },
     { "path": "../form/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" },
+    { "path": "../react-composition/tsconfig.build.json" },
     { "path": "../react-router/tsconfig.build.json" },
     { "path": "../ui/tsconfig.build.json" },
+    { "path": "../utils/tsconfig.build.json" },
     { "path": "../validation/tsconfig.build.json" }
   ],
   "compilerOptions": {

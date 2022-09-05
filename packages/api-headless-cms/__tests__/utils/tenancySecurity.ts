@@ -1,10 +1,11 @@
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { Plugin } from "@webiny/plugins/Plugin";
 import { createTenancyContext, createTenancyGraphQL } from "@webiny/api-tenancy";
 import { createStorageOperations as tenancyStorageOperations } from "@webiny/api-tenancy-so-ddb";
 import { createSecurityContext, createSecurityGraphQL } from "@webiny/api-security";
 import { createStorageOperations as securityStorageOperations } from "@webiny/api-security-so-ddb";
 import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
-import { ContextPlugin } from "@webiny/handler";
+import { ContextPlugin } from "@webiny/api";
 import { BeforeHandlerPlugin } from "@webiny/handler";
 import { TestContext } from "./types";
 
@@ -24,7 +25,11 @@ interface Config {
     identity?: SecurityIdentity | null;
 }
 
-export const createTenancyAndSecurity = ({ setupGraphQL, permissions, identity }: Config) => {
+export const createTenancyAndSecurity = ({
+    setupGraphQL,
+    permissions,
+    identity
+}: Config): Plugin[] => {
     return [
         createTenancyContext({
             storageOperations: tenancyStorageOperations({
@@ -61,7 +66,7 @@ export const createTenancyAndSecurity = ({ setupGraphQL, permissions, identity }
             });
 
             context.security.addAuthorizer(async () => {
-                const { headers = {} } = context.http.request || {};
+                const { headers = {} } = context.request || {};
                 if (headers["authorization"]) {
                     return null;
                 }
@@ -70,12 +75,12 @@ export const createTenancyAndSecurity = ({ setupGraphQL, permissions, identity }
             });
         }),
         new BeforeHandlerPlugin<TestContext>(context => {
-            const { headers = {} } = context.http.request || {};
+            const { headers = {} } = context.request || {};
             if (headers["authorization"]) {
                 return context.security.authenticate(headers["authorization"]);
             }
 
             return context.security.authenticate("");
         })
-    ].filter(Boolean);
+    ].filter(Boolean) as Plugin[];
 };

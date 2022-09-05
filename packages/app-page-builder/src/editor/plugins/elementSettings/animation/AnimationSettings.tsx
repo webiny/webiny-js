@@ -2,11 +2,8 @@ import React, { useEffect } from "react";
 import { css } from "emotion";
 import get from "lodash/get";
 import { Cell, Grid } from "@webiny/ui/Grid";
-import {
-    PbEditorElement,
-    PbEditorPageElementSettingsRenderComponentProps
-} from "../../../../types";
-import ElementAnimation from "../../../../render/components/ElementAnimation";
+import { PbEditorElement, PbEditorPageElementSettingsRenderComponentProps } from "~/types";
+import ElementAnimation from "~/render/components/ElementAnimation";
 import useUpdateHandlers from "../useUpdateHandlers";
 // Components
 import DurationInput from "../components/SliderWithInput";
@@ -48,7 +45,7 @@ type SettingsPropsType = {
 const Settings: React.FC<SettingsPropsType & PbEditorPageElementSettingsRenderComponentProps> = ({
     defaultAccordionValue
 }) => {
-    const element = useActiveElement() as PbEditorElement;
+    const [element] = useActiveElement<PbEditorElement>();
 
     const { getUpdateValue, getUpdatePreview } = useUpdateHandlers({
         element,

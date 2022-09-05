@@ -1,6 +1,6 @@
 import WebinyError from "@webiny/error";
 import { CmsEntry, CmsGroup, CmsModel } from "~/types";
-import { useContentGqlHandler } from "../utils/useContentGqlHandler";
+import { useGraphQLHandler } from "../utils/useGraphQLHandler";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import { useCategoryReadHandler } from "../utils/useCategoryReadHandler";
 import models from "./mocks/contentModels";
@@ -54,7 +54,7 @@ describe("MANAGE - Resolvers", () => {
         createContentModelMutation,
         updateContentModelMutation,
         createContentModelGroupMutation
-    } = useContentGqlHandler(manageOpts);
+    } = useGraphQLHandler(manageOpts);
 
     // This function is not directly within `beforeEach` as we don't always setup the same content model.
     // We call this function manually at the beginning of each test, where needed.
@@ -201,7 +201,8 @@ describe("MANAGE - Resolvers", () => {
                         title: "Hardware",
                         slug: "hardware"
                     }
-                ]
+                ],
+                data: {}
             }
         });
     });
@@ -299,7 +300,8 @@ describe("MANAGE - Resolvers", () => {
                         title: "Hardware",
                         slug: "hardware"
                     }
-                ]
+                ],
+                data: {}
             }
         });
         expect(response.data.getCategory.error).toEqual(null);
@@ -368,7 +370,8 @@ describe("MANAGE - Resolvers", () => {
                                 ],
                                 status: "published",
                                 title: "Title 1",
-                                version: 1
+                                version: 1,
+                                data: {}
                             }
                         }
                     ],
@@ -466,7 +469,8 @@ describe("MANAGE - Resolvers", () => {
                             status: "draft"
                         }
                     }
-                ]
+                ],
+                data: {}
             }
         });
 
@@ -542,7 +546,8 @@ describe("MANAGE - Resolvers", () => {
                             version: 1
                         }
                     }
-                ]
+                ],
+                data: {}
             }
         });
 
@@ -617,7 +622,8 @@ describe("MANAGE - Resolvers", () => {
                             ],
                             status: "draft",
                             title: "Hardware",
-                            version: 2
+                            version: 2,
+                            data: {}
                         }
                     },
                     error: null
@@ -700,7 +706,8 @@ describe("MANAGE - Resolvers", () => {
                             ],
                             title: "New title",
                             status: "draft",
-                            version: 1
+                            version: 1,
+                            data: {}
                         }
                     },
                     error: null
@@ -1391,7 +1398,8 @@ describe("MANAGE - Resolvers", () => {
                             ],
                             status: "published",
                             title,
-                            version: 6
+                            version: 6,
+                            data: {}
                         }
                     },
                     error: null

@@ -1,6 +1,6 @@
 import { CmsGroup } from "~/types";
 import models from "./mocks/contentModels";
-import { useContentGqlHandler } from "../utils/useContentGqlHandler";
+import { useGraphQLHandler } from "../utils/useGraphQLHandler";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 
 describe("model delete", () => {
@@ -11,7 +11,7 @@ describe("model delete", () => {
         updateContentModelMutation,
         deleteContentModelMutation,
         createContentModelGroupMutation
-    } = useContentGqlHandler(manageOpts);
+    } = useGraphQLHandler(manageOpts);
 
     const setupGroup = async (): Promise<CmsGroup> => {
         const [createCMG] = await createContentModelGroupMutation({

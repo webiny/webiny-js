@@ -11,7 +11,7 @@
     "declaration": true,
     "composite": true,
     "noEmit": false,
-    "jsx": "preserve",
+    "jsx": "react",
     "emitDeclarationOnly": true,
     "baseUrl": ".",
     "paths": {},

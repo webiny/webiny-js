@@ -40,22 +40,17 @@ export const handler = createHandler({
 });
 ```
 
-Next, for type-safety and easier discovery down the road, it's recommended you update the main `Context` interface that describes the handler's `context` object. In Webiny projects, the interface can be found in `types.ts` file, for example `api/code/graphql/src/types.ts` or `api/code/headlessCMS/src/types.ts`. 
+Next, for type-safety and easier discovery down the road, it's recommended you update the main `Context` interface that describes the handler's `context` object. In Webiny projects, the interface can be found in `types.ts` file, for example `apps/api/graphql/src/types.ts` or `apps/api/headlessCMS/src/types.ts`. 
 
 ```ts
-import { HandlerContext } from "@webiny/handler/types";
-import { HttpContext } from "@webiny/handler-http/types";
-import { ArgsContext } from "@webiny/handler-args/types";
+import { Context as BaseContext } from "@webiny/handler/types";
 import { ClientContext } from "@webiny/handler-client/types";
 
 // Import the `SecurityContext` from `@webiny/api-security/types`.
 import { SecurityContext } from "@webiny/api-security/types";
 
 export interface Context
-    extends HandlerContext,
-        HttpContext,
-        ArgsContext,
-        ClientContext,
+    extends BaseContext,
         
         // Simply add the interface like to the list.
         SecurityContext {}
@@ -64,7 +59,7 @@ export interface Context
 Finally, the security doesn't do much on its own. So, the final step would be to also add the appropriate package that implements the necessary internal processes for your identity provider, for example [`@webiny/api-security-cognito-authentication`](../api-security-cognito-authentication):
 
 ```ts
-import { createHandler } from "@webiny/handler-aws";
+import { createHandler } from "@webiny/handler-aws/gateway";
 import graphqlPlugins from "@webiny/handler-graphql";
 import logsPlugins from "@webiny/handler-logs";
 import securityPlugins, { SecurityIdentity } from "@webiny/api-security";

@@ -1,29 +1,47 @@
 import WebinyError from "@webiny/error";
-import { ContextPlugin } from "@webiny/handler";
+import { ContextPlugin } from "@webiny/api";
 import { TenancyContext, TenancyStorageOperations } from "./types";
 import { createTenancy } from "./createTenancy";
 import graphql from "./graphql/full.gql";
 import baseGraphQLTypes from "./graphql/types.gql";
+import { createWcpContext } from "@webiny/api-wcp";
 
 interface TenancyPluginsParams {
     storageOperations: TenancyStorageOperations;
+}
+
+async function applyBackwardsCompatibility(context: TenancyContext) {
+    if (!context.wcp) {
+        // This can happen in projects created prior to 5.29.0 release.
+        await createWcpContext().apply(context);
+    }
 }
 
 export const createTenancyContext = ({ storageOperations }: TenancyPluginsParams) => {
     return new ContextPlugin<TenancyContext>(async context => {
         let tenantId = "root";
 
-        const multiTenancy = process.env.WEBINY_MULTI_TENANCY === "true";
+        await applyBackwardsCompatibility(context);
+
+        const multiTenancy = context.wcp.canUseFeature("multiTenancy");
+        if (!context.request) {
+            throw new Error("MISSING CONTEXT REQUEST");
+        }
 
         if (multiTenancy) {
-            const { headers = {}, method } = context.http.request;
+            const { headers = {}, method, params, query } = context.request;
 
-            tenantId = headers["x-tenant"];
+            tenantId = headers["x-tenant"] as string;
 
-            if (!tenantId && method === "POST") {
+            if (!tenantId) {
                 throw new WebinyError({
                     message: `"x-tenant" header is missing in the request!`,
-                    code: "MISSING_TENANT_HEADER"
+                    code: "MISSING_TENANT_HEADER",
+                    data: {
+                        method,
+                        params,
+                        query
+                    }
                 });
             }
         }
@@ -45,4 +63,4 @@ export const createTenancyContext = ({ storageOperations }: TenancyPluginsParams
     });
 };
 
-export const createTenancyGraphQL = () => graphql;
+export const createTenancyGraphQL = () => [graphql];

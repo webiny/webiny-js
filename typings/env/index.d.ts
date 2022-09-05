@@ -12,6 +12,7 @@ declare namespace NodeJS {
         DB_TABLE_PAGE_BUILDER?: string;
         ELASTICSEARCH_SHARED_INDEXES?: "true" | "false" | string;
         WEBINY_VERSION?: string;
+        WEBINY_IS_PRE_529?: "true" | "false";
         WEBINY_ENABLE_VERSION_HEADER?: "true" | "false" | string;
         WEBINY_LOGS_FORWARD_URL?: string;
         AWS_LAMBDA_FUNCTION_NAME?: string;
@@ -24,11 +25,9 @@ declare namespace NodeJS {
         WEBINY_ENV?: string;
         REACT_APP_DEBUG?: "true" | "false" | string;
         AWS_REGION?: string;
-        WEBINY_MULTI_TENANCY?: string;
         REACT_APP_WEBINY_VERSION?: string;
         REACT_APP_GRAPHQL_API_URL?: string;
         REACT_APP_API_URL?: string;
-        REACT_APP_WEBINY_MULTI_TENANCY?: "true" | "false" | string;
         REACT_APP_USER_POOL_REGION?: string;
         REACT_APP_USER_POOL_ID?: string;
         REACT_APP_USER_POOL_WEB_CLIENT_ID?: string;
@@ -42,8 +41,11 @@ declare namespace NodeJS {
         EXPORT_PAGES_PROCESS_HANDLER?: string;
         IMPORT_PAGES_CREATE_HANDLER?: string;
         PUBLIC_URL?: string;
-        HEADLESS_CMS_GRAPHQL_INPUT_REQUIRE_ARRAY_ITEM?: "false" | string;
+        WEBINY_HEADLESS_CMS_GRAPHQL_INPUT_REQUIRE_ARRAY_ITEM?: "false" | string;
         WEBINY_ELASTICSEARCH_INDEX_LOCALE?: "true" | string;
         APW_SCHEDULER_SCHEDULE_ACTION_HANDLER?: string;
+        STAGED_ROLLOUTS_VARIANT?: string;
+        ELASTIC_SEARCH_ENDPOINT?: string;
+        EVENT_BUS?: string;
     }
 }

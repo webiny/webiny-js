@@ -1,11 +1,10 @@
 import { CmsGroup } from "~/types";
-import { useContentGqlHandler } from "../utils/useContentGqlHandler";
+import { GraphQLHandlerParams, useGraphQLHandler } from "../utils/useGraphQLHandler";
 import models from "./mocks/contentModels";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import { useCategoryReadHandler } from "../utils/useCategoryReadHandler";
 import { useProductManageHandler } from "../utils/useProductManageHandler";
 import { useProductReadHandler } from "../utils/useProductReadHandler";
-import { GQLHandlerCallableParams } from "../utils/useGqlHandler";
 
 const createPermissions = ({ groups, models }: { groups?: string[]; models?: string[] }) => [
     {
@@ -37,9 +36,7 @@ const createPermissions = ({ groups, models }: { groups?: string[]; models?: str
     }
 ];
 
-const categoryManagerHelper = async (
-    manageOpts: Omit<GQLHandlerCallableParams, "createHeadlessCmsApp">
-) => {
+const categoryManagerHelper = async (manageOpts: GraphQLHandlerParams) => {
     // Use "manage" API to create and publish entries
     const { until, createCategory, publishCategory, sleep } = useCategoryManageHandler(manageOpts);
 
@@ -93,7 +90,7 @@ describe("READ - Resolvers", () => {
         createContentModelMutation,
         updateContentModelMutation,
         createContentModelGroupMutation
-    } = useContentGqlHandler(manageOpts);
+    } = useGraphQLHandler(manageOpts);
 
     const setupModel = async (name: string, group: CmsGroup) => {
         const targetModel = models.find(m => m.modelId === name);

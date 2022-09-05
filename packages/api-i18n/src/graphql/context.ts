@@ -6,11 +6,10 @@ import {
     I18NLocale,
     LocaleKeys
 } from "~/types";
-import { ContextPlugin } from "@webiny/handler";
+import { ContextPlugin } from "@webiny/api";
 import { NotAuthorizedError } from "@webiny/api-security";
 import { I18NLocaleContextPlugin } from "~/plugins/I18NLocaleContextPlugin";
 import { createCrudContext } from "~/graphql/crud";
-import { HttpObject } from "@webiny/handler-http/types";
 import { hasI18NContentPermission } from "./hasI18NContentPermission";
 
 interface Locales {
@@ -48,19 +47,17 @@ interface GetLocaleFromHeadersResult {
     contextLocaleHeader: string | null;
 }
 const getLocaleFromHeaders = (
-    http: HttpObject,
+    headers: Record<string, any>,
     localeContext: LocaleKeys = "default"
 ): GetLocaleFromHeadersResult => {
     let acceptLanguageHeader: string | null = null;
     let contextLocaleHeader: string | null = null;
-    if (!http || !http.request || !http.request.headers) {
+    if (!headers) {
         return {
             acceptLanguageHeader,
             contextLocaleHeader
         };
     }
-
-    const { headers = {} } = http.request;
 
     for (const key in headers) {
         if (!headers.hasOwnProperty(key)) {
@@ -79,7 +76,10 @@ const getLocaleFromHeaders = (
         }
     }
 
-    return { acceptLanguageHeader, contextLocaleHeader };
+    return {
+        acceptLanguageHeader,
+        contextLocaleHeader
+    };
 };
 
 interface I18NCache {
@@ -103,7 +103,9 @@ const createBaseContextPlugin = () => {
             locales = await plugin.resolve({ context });
         }
 
-        const { http, plugins } = context;
+        const { plugins } = context;
+
+        const { headers = {} } = context.request;
 
         const __i18n: I18NCache = {
             acceptLanguage: "",
@@ -147,7 +149,7 @@ const createBaseContextPlugin = () => {
 
             let currentLocale: I18NLocale | undefined;
             const { acceptLanguageHeader, contextLocaleHeader } = getLocaleFromHeaders(
-                http,
+                headers,
                 localeContext
             );
 

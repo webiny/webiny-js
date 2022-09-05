@@ -35,6 +35,7 @@ module.exports = {
             "aws-sdk",
             "url",
             "worker_threads",
+            "~tests",
             "~"
         ],
         dependencies: [

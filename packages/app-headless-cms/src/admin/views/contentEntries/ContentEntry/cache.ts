@@ -22,7 +22,7 @@ const sortEntries = (
     if (!sort) {
         return list;
     } else if (Array.isArray(sort) === false) {
-        console.log("Sort is not an Array of strings.");
+        console.warn("Sort is not an Array of strings.");
         return list;
     } else if (sort.length === 0) {
         return list;
@@ -66,7 +66,7 @@ export const updateLatestRevisionInListCache = (
 ): void => {
     const gqlParams = { query: GQL.createListQuery(model), variables };
 
-    const [uniqueId] = revision.id.split("#");
+    const { id: uniqueId } = parseIdentifier(revision.id);
 
     const response = cache.readQuery<CmsEntriesListQueryResponse, CmsEntriesListQueryVariables>(
         gqlParams
@@ -122,9 +122,12 @@ export const removeRevisionFromEntryCache = (
     cache: DataProxy,
     revision: CmsContentEntryRevision
 ): CmsContentEntryRevision[] => {
+    const { id } = parseIdentifier(revision.id);
     const gqlParams = {
         query: GQL.createRevisionsQuery(model),
-        variables: { id: revision.id.split("#")[0] }
+        variables: {
+            id
+        }
     };
 
     const response = cache.readQuery<
@@ -140,20 +143,25 @@ export const removeRevisionFromEntryCache = (
         return [];
     }
 
-    const { revisions: revisionsData } = response;
+    const { revisions } = response;
 
-    const revisions = revisionsData.data.filter(item => {
+    const data = revisions.data.filter(item => {
         return item.id !== revision.id;
     });
 
-    cache.writeQuery({
+    const query = {
         ...gqlParams,
         data: {
-            revisions
+            revisions: {
+                ...revisions,
+                data
+            }
         }
-    });
+    };
 
-    return revisions;
+    cache.writeQuery(query);
+
+    return data;
 };
 
 export const addRevisionToRevisionsCache = (
@@ -161,9 +169,12 @@ export const addRevisionToRevisionsCache = (
     cache: DataProxy,
     revision: CmsContentEntryRevision
 ): void => {
+    const { id } = parseIdentifier(revision.id);
     const gqlParams = {
         query: GQL.createRevisionsQuery(model),
-        variables: { id: revision.id.split("#")[0] }
+        variables: {
+            id
+        }
     };
 
     const response = cache.readQuery<
@@ -189,9 +200,12 @@ export const unpublishPreviouslyPublishedRevision = (
     cache: DataProxy,
     publishedId: string
 ): void => {
+    const { id } = parseIdentifier(publishedId);
     const gqlParams = {
         query: GQL.createRevisionsQuery(model),
-        variables: { id: publishedId.split("#")[0] }
+        variables: {
+            id
+        }
     };
 
     const response = cache.readQuery<
@@ -199,23 +213,44 @@ export const unpublishPreviouslyPublishedRevision = (
         CmsEntriesListRevisionsQueryVariables
     >(gqlParams);
 
-    if (!response || !response.revisions || !response.revisions.data) {
+    if (!response?.revisions?.data) {
         return;
     }
     const { revisions } = response;
 
-    const prevPublished = revisions.data.findIndex(
+    const prevPublished = revisions.data.find(
         item => item.id !== publishedId && item.meta.status === "published"
     );
 
-    if (prevPublished === -1) {
+    if (!prevPublished) {
         return;
     }
 
-    cache.writeQuery({
+    const query: DataProxy.WriteQueryOptions<
+        CmsEntriesListRevisionsQueryResponse,
+        CmsEntriesListRevisionsQueryVariables
+    > = {
         ...gqlParams,
         data: {
-            revisions: dotProp.set(revisions, `data.${prevPublished}.meta.status`, "unpublished")
+            revisions: {
+                ...revisions,
+                data: revisions.data.map(revision => {
+                    if (revision.id !== prevPublished.id) {
+                        return {
+                            ...revision
+                        };
+                    }
+                    return {
+                        ...revision,
+                        meta: {
+                            ...revision.meta,
+                            status: "unpublished"
+                        }
+                    };
+                })
+            }
         }
-    });
+    };
+
+    cache.writeQuery(query);
 };

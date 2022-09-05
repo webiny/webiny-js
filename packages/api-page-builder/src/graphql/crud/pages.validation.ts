@@ -1,6 +1,6 @@
 import { UpdateDataModel, UpdateSettingsModel } from "./pages/models";
 import { PbContext } from "~/graphql/types";
-import { ContextPlugin } from "@webiny/handler";
+import { ContextPlugin } from "@webiny/api";
 
 export const createPageValidation = () => {
     return new ContextPlugin<PbContext>(async context => {

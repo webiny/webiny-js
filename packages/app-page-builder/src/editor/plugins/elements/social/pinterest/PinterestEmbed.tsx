@@ -3,7 +3,7 @@ import { css } from "emotion";
 import { isEqual } from "lodash";
 import { get } from "lodash";
 import { PbEditorElement, PbElementDataTypeSource } from "~/types";
-import useRenderEmptyEmbed from "../../../elements/utils/oembed/useRenderEmptyEmbed";
+import useRenderEmptyEmbed from "~/editor/plugins/elements/utils/oembed/useRenderEmptyEmbed";
 
 declare global {
     interface Window {
@@ -81,4 +81,9 @@ const PinterestEmbed: React.FC<PinterestEmbedProps> = props => {
     return url ? renderEmbed() : renderEmpty();
 };
 
-export default React.memo(PinterestEmbed, (props, nextProps) => isEqual(props, nextProps));
+const MemoizedPinterestEmbed = React.memo(PinterestEmbed, (props, nextProps) =>
+    isEqual(props, nextProps)
+);
+
+MemoizedPinterestEmbed.displayName = "MemoizedPinterestEmbed";
+export default MemoizedPinterestEmbed;

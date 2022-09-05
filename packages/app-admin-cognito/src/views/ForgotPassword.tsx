@@ -14,11 +14,11 @@ import { useAuthenticator } from "@webiny/app-cognito-authenticator/hooks/useAut
 import { useForgotPassword } from "@webiny/app-cognito-authenticator/hooks/useForgotPassword";
 
 const ForgotPassword: React.FC = () => {
-    const { checkingUser, authData, changeState } = useAuthenticator();
+    const { authData, changeState } = useAuthenticator();
     const { loading, codeSent, shouldRender, setPassword, requestCode, error } =
         useForgotPassword();
 
-    if (!shouldRender || checkingUser) {
+    if (!shouldRender) {
         return null;
     }
 
@@ -87,6 +87,7 @@ const ForgotPassword: React.FC = () => {
                                                     onClick={ev => {
                                                         submit(ev);
                                                     }}
+                                                    data-testid="send-code"
                                                 >
                                                     {"Send me the code"}
                                                 </ButtonPrimary>

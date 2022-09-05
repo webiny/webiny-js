@@ -4,6 +4,8 @@ import { FormElementMessage } from "~/FormElementMessage";
 import pick from "lodash/pick";
 import { FormComponentProps } from "~/types";
 import { ReactElement } from "react";
+import { css } from "emotion";
+import classNames from "classnames";
 
 export type InputProps = FormComponentProps &
     TextFieldProps & {
@@ -37,7 +39,21 @@ export type InputProps = FormComponentProps &
 
         // CSS class name
         className?: string;
+
+        // For testing purposes.
+        "data-testid"?: string;
     };
+
+/**
+ * fix label position when autofilled
+ * @type {string}
+ */
+const webinyInputStyles = css`
+    .mdc-text-field__input:-webkit-autofill + .mdc-floating-label {
+            transform: translateY(-106%) scale(0.75);
+        }
+    }
+`;
 
 /**
  * Use Input component to store short string values, like first name, last name, e-mail etc.
@@ -136,6 +152,8 @@ export class Input extends React.Component<InputProps> {
                     placeholder={(!label && placeholder) || undefined}
                     trailingIcon={trailingIcon}
                     rows={this.props.rows}
+                    className={classNames("webiny-ui-input", webinyInputStyles)}
+                    data-testid={props["data-testid"]}
                 />
 
                 {validationIsValid === false && (

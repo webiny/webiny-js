@@ -24,14 +24,14 @@ async function output(target, content) {
 (async () => {
     const workspaces = getPackages();
 
-    const apiTsConfigPath = path.join(PROJECT_ROOT, "api/tsconfig.json");
+    const apiTsConfigPath = path.join(PROJECT_ROOT, "apps/api/tsconfig.json");
 
     for (const wpObject of workspaces) {
         if (!wpObject.isTs) {
             continue;
         }
 
-        if (!wpObject.packageFolder.includes("api/")) {
+        if (!wpObject.packageFolder.includes("apps/api/")) {
             continue;
         }
 

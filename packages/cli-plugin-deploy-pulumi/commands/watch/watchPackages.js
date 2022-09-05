@@ -47,25 +47,19 @@ module.exports = async ({ inputs, output, context }) => {
 
     const log = createLog({ multipleWatches, output, context });
 
+    const commandOptions = { env, debug, logs: !multipleWatches || logs };
     const promises = [];
     for (let i = 0; i < packages.length; i++) {
         const current = packages[i];
-        const config = current.config;
-        if (typeof config.commands.watch !== "function") {
-            output.log({
-                type: "build",
-                message: `Skipping watch of ${context.warning.hl(
-                    current.name
-                )} package - ${context.warning.hl(
-                    "watch"
-                )} command missing. Check package's ${context.warning.hl("webiny.config.ts")} file.`
-            });
-            continue;
-        }
-
         promises.push(
             new Promise(resolve => {
-                const worker = new Worker(path.join(__dirname, "./worker.js"));
+                const worker = new Worker(path.join(__dirname, "./worker.js"), {
+                    workerData: {
+                        options: commandOptions,
+                        package: { ...current.paths }
+                    }
+                });
+
                 worker.on("message", threadMessage => {
                     const { type, message } = parseMessage(threadMessage);
 
@@ -95,13 +89,6 @@ module.exports = async ({ inputs, output, context }) => {
                         }
                     });
                 });
-
-                worker.postMessage(
-                    JSON.stringify({
-                        options: { env, debug, logs: !multipleWatches || logs },
-                        package: current
-                    })
-                );
             })
         );
     }
@@ -153,18 +140,14 @@ const getPackages = async ({ inputs, context, output }) => {
                 : path.join(root, "webiny.config.js");
 
             try {
-                const pckg = {
+                packages.push({
                     name: packageName,
                     config: require(configPath).default || require(configPath),
                     paths: {
                         root,
                         config: configPath
                     }
-                };
-
-                if (pckg.config.commands && typeof pckg.config.commands.watch === "function") {
-                    packages.push(pckg);
-                }
+                });
             } catch (e) {
                 if (inputs.debug) {
                     output.log({

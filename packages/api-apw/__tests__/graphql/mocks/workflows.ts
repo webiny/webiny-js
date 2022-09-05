@@ -1,9 +1,9 @@
-import { ApwReviewer, ApwWorkflowStepTypes } from "~/types";
+import { ApwReviewer, ApwWorkflowApplications, ApwWorkflowStepTypes } from "~/types";
 import { getNanoid } from "~/plugins/utils";
 
-interface CreateWorkflowParams {
+export interface CreateWorkflowParams {
     title?: string;
-    app?: "pageBuilder" | "cms";
+    app: ApwWorkflowApplications;
     scope?: {
         type: string;
         data?: Record<string, any>;
@@ -26,7 +26,6 @@ export default {
     reviewerModelId: "apwReviewerModelDefinition",
     createWorkflowStep,
     createWorkflow: (params: CreateWorkflowParams, reviewers: ApwReviewer[]) => ({
-        app: "pageBuilder",
         title: "Main workflow",
         steps: [
             createWorkflowStep({
@@ -42,7 +41,6 @@ export default {
         ...params
     }),
     createWorkflowWithThreeSteps: (params: CreateWorkflowParams, reviewers: ApwReviewer[]) => ({
-        app: "pageBuilder",
         title: "Main workflow",
         steps: [
             createWorkflowStep({
@@ -75,19 +73,22 @@ export default {
             type: "default"
         },
         {
-            type: "pb"
+            type: "custom"
         },
         {
-            type: "cm"
+            type: "custom"
         },
         {
-            type: "pb"
+            type: "custom"
         }
     ],
     getPageBuilderScope: (pageId: string, pageCategory?: string) => [
         {
-            type: "pb",
+            type: "custom",
             data: {
+                entries: [],
+                models: [],
+                pages: [],
                 categories: ["dynamic", pageCategory]
             }
         },
@@ -95,20 +96,29 @@ export default {
             type: "default"
         },
         {
-            type: "pb",
+            type: "custom",
             data: {
+                entries: [],
+                models: [],
+                categories: [],
                 pages: ["page#1", "page#2", "page#3", pageId]
             }
         },
         {
-            type: "pb",
+            type: "custom",
             data: {
+                entries: [],
+                models: [],
+                pages: [],
                 categories: ["random", pageCategory]
             }
         },
         {
-            type: "pb",
+            type: "custom",
             data: {
+                entries: [],
+                models: [],
+                categories: [],
                 pages: ["page#1", "page#2", "page#3", pageId]
             }
         }
@@ -129,8 +139,11 @@ export default {
             })
         ],
         scope: {
-            type: "pb",
+            type: "custom",
             data: {
+                entries: [],
+                models: [],
+                pages: [],
                 categories: ["static"]
             }
         }

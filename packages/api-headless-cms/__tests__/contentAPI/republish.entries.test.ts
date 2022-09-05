@@ -1,5 +1,5 @@
-import { useContentGqlHandler } from "../utils/useContentGqlHandler";
-import { CmsEntry, CmsGroup, CmsModel, CmsModelField } from "~/types";
+import { useGraphQLHandler } from "../utils/useGraphQLHandler";
+import { CmsEntry, CmsGroup, CmsModel } from "~/types";
 import models from "./mocks/contentModels";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import { useCategoryReadHandler } from "../utils/useCategoryReadHandler";
@@ -7,6 +7,8 @@ import { useCategoryReadHandler } from "../utils/useCategoryReadHandler";
 import mdbid from "mdbid";
 import { useProductReadHandler } from "../utils/useProductReadHandler";
 import { useProductManageHandler } from "../utils/useProductManageHandler";
+import { PluginsContainer } from "@webiny/plugins";
+import { createGraphQLFields } from "~/graphqlFields";
 const cliPackageJson = require("@webiny/cli/package.json");
 const webinyVersion = cliPackageJson.version;
 
@@ -24,7 +26,7 @@ describe("Republish entries", () => {
         updateContentModelMutation,
         createContentModelGroupMutation,
         until
-    } = useContentGqlHandler(manageOpts);
+    } = useGraphQLHandler(manageOpts);
 
     const { createCategory, publishCategory, republishCategory } =
         useCategoryManageHandler(manageOpts);
@@ -145,16 +147,7 @@ describe("Republish entries", () => {
                 tenant: model.tenant,
                 webinyVersion,
                 locked: false,
-                values: Object.keys(input).reduce((collection, key) => {
-                    const field = model.fields.find(
-                        field => field.alias === key || field.fieldId === key
-                    );
-                    if (!field) {
-                        return collection;
-                    }
-                    collection[field.fieldId] = input[key];
-                    return collection;
-                }, {} as Record<string, any>),
+                values: input,
                 createdOn: date.toISOString(),
                 savedOn: date.toISOString(),
                 modelId: model.modelId,
@@ -370,6 +363,12 @@ describe("Republish entries", () => {
 
         const { storageOperations } = useCategoryManageHandler(manageOpts);
 
+        if (storageOperations.beforeInit) {
+            await storageOperations.beforeInit({
+                plugins: new PluginsContainer(createGraphQLFields())
+            } as any);
+        }
+
         const { entry: galaEntry } = createEntry(productModel, {
             title: "Gala",
             category: {
@@ -520,17 +519,13 @@ describe("Republish entries", () => {
             sort: ["createdOn_ASC"]
         });
 
-        const categoryField = productModel.fields.find(
-            field => field.alias === "category"
-        ) as CmsModelField;
-
         expect(latestProducts).toMatchObject({
             items: [
                 {
                     entryId: galaRecord.entryId,
                     createdOn: galaRecord.createdOn,
                     values: {
-                        [categoryField.fieldId]: {
+                        category: {
                             id: applePublished.id,
                             entryId: applePublished.entryId,
                             modelId: categoryModel.modelId
@@ -541,7 +536,7 @@ describe("Republish entries", () => {
                     entryId: goldenRecord.entryId,
                     createdOn: goldenRecord.createdOn,
                     values: {
-                        [categoryField.fieldId]: {
+                        category: {
                             id: bananaPublished.id,
                             entryId: bananaPublished.entryId,
                             modelId: categoryModel.modelId
@@ -563,7 +558,7 @@ describe("Republish entries", () => {
         expect(latestGalaRecord).toMatchObject({
             id: galaRecord.id,
             values: {
-                [categoryField.fieldId]: {
+                category: {
                     id: applePublished.id,
                     entryId: applePublished.entryId,
                     modelId: categoryModel.modelId
@@ -581,7 +576,7 @@ describe("Republish entries", () => {
         expect(latestGoldenRecord).toMatchObject({
             id: goldenRecord.id,
             values: {
-                [categoryField.fieldId]: {
+                category: {
                     id: bananaPublished.id,
                     entryId: bananaPublished.entryId,
                     modelId: categoryModel.modelId
@@ -602,7 +597,7 @@ describe("Republish entries", () => {
                     entryId: galaRecord.entryId,
                     createdOn: galaRecord.createdOn,
                     values: {
-                        [categoryField.fieldId]: {
+                        category: {
                             id: applePublished.id,
                             entryId: applePublished.entryId,
                             modelId: categoryModel.modelId
@@ -613,7 +608,7 @@ describe("Republish entries", () => {
                     entryId: goldenRecord.entryId,
                     createdOn: goldenRecord.createdOn,
                     values: {
-                        [categoryField.fieldId]: {
+                        category: {
                             id: bananaPublished.id,
                             entryId: bananaPublished.entryId,
                             modelId: categoryModel.modelId
@@ -635,7 +630,7 @@ describe("Republish entries", () => {
         expect(publishedGalaRecord).toMatchObject({
             id: galaRecord.id,
             values: {
-                [categoryField.fieldId]: {
+                category: {
                     id: applePublished.id,
                     entryId: applePublished.entryId,
                     modelId: categoryModel.modelId
@@ -653,7 +648,7 @@ describe("Republish entries", () => {
         expect(publishedGoldenRecord).toMatchObject({
             id: goldenRecord.id,
             values: {
-                [categoryField.fieldId]: {
+                category: {
                     id: bananaPublished.id,
                     entryId: bananaPublished.entryId,
                     modelId: categoryModel.modelId

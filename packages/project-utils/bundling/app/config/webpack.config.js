@@ -40,6 +40,7 @@ const cssRegex = /\.css$/;
 const cssModuleRegex = /\.module\.css$/;
 const sassRegex = /\.(scss|sass)$/;
 const sassModuleRegex = /\.module\.(scss|sass)$/;
+
 const sassLoader = {
     loader: require.resolve("sass-loader"),
     options: {
@@ -126,10 +127,7 @@ module.exports = function (webpackEnv, { paths, options }) {
             devtoolModuleFilenameTemplate: isEnvProduction
                 ? info => path.relative(paths.appSrc, info.absoluteResourcePath).replace(/\\/g, "/")
                 : isEnvDevelopment &&
-                  (info => path.resolve(info.absoluteResourcePath).replace(/\\/g, "/")),
-            // this defaults to 'window', but by setting it to 'this' then
-            // module chunks which are built will work in web workers as well.
-            globalObject: "this"
+                  (info => path.resolve(info.absoluteResourcePath).replace(/\\/g, "/"))
         },
         optimization: {
             minimize: isEnvProduction,

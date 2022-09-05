@@ -41,22 +41,26 @@ const Navigator: React.FC = () => {
             setElementTree(elementTree);
         } catch (e) {}
     };
-    // Update element tree
+
     useEffect(() => {
-        eventHandler.on(UpdateElementTreeActionEvent, () => {
+        const off = eventHandler.on(UpdateElementTreeActionEvent, () => {
             refreshElementTree();
+
             return {
                 actions: []
             };
         });
+
+        return () => {
+            off();
+        };
     }, []);
 
-    // Get initial element tree.
     useEffect(() => {
         if (elementTree) {
             return;
         }
-        // Load element tree.
+
         refreshElementTree();
     });
 

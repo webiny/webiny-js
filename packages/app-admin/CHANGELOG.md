@@ -3,6 +3,214 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.31.0](https://github.com/webiny/webiny-js/compare/v5.31.0-beta.1...v5.31.0) (2022-08-18)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [5.31.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.31.0-beta.0...v5.31.0-beta.1) (2022-08-17)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [5.31.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.30.0...v5.31.0-beta.0) (2022-08-16)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [5.30.0](https://github.com/webiny/webiny-js/compare/v5.30.0-beta.1...v5.30.0) (2022-07-27)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [5.30.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.30.0-beta.0...v5.30.0-beta.1) (2022-07-26)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [5.30.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.29.0...v5.30.0-beta.0) (2022-07-25)
+
+
+### Bug Fixes
+
+* **app-admin:** use <Brand/> component in the installer view ([#2552](https://github.com/webiny/webiny-js/issues/2552)) ([0a8073f](https://github.com/webiny/webiny-js/commit/0a8073f022b37acff3cc658d05717424f4858ed6))
+
+
+### Features
+
+* **ui:** upgrade RMWC to v7 ([#2553](https://github.com/webiny/webiny-js/issues/2553)) ([ee963b0](https://github.com/webiny/webiny-js/commit/ee963b0bee9f50bc24de5cacaeee43b1fd7f8b09))
+* typescript to 4.7.4 ([#2527](https://github.com/webiny/webiny-js/issues/2527)) ([ee24a3a](https://github.com/webiny/webiny-js/commit/ee24a3a995942ee2588e615e42f604ed7418390a))
+
+
+
+
+
+# [5.29.0](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.2...v5.29.0) (2022-06-28)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [5.29.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.1...v5.29.0-beta.2) (2022-06-27)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [5.29.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.0...v5.29.0-beta.1) (2022-06-25)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [5.29.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.28.0...v5.29.0-beta.0) (2022-06-25)
+
+
+### Bug Fixes
+
+* add loader ([6e0722a](https://github.com/webiny/webiny-js/commit/6e0722a805157b98ed544a1c1dcc47b5dcfd14f2))
+* correct import statement ([007b9cf](https://github.com/webiny/webiny-js/commit/007b9cf74604b16c953c73c6d9efb343597e4aec))
+
+
+### Features
+
+* reexport `useWcp` hook ([fb575b1](https://github.com/webiny/webiny-js/commit/fb575b1b7d616b9277fddacd90231c83e4a07498))
+
+
+
+
+
+# [5.28.0](https://github.com/webiny/webiny-js/compare/v5.28.0-beta.0...v5.28.0) (2022-06-07)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [5.28.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.27.0...v5.28.0-beta.0) (2022-06-07)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [5.27.0](https://github.com/webiny/webiny-js/compare/v5.27.0-beta.0...v5.27.0) (2022-05-26)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [5.27.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.26.1-beta.0...v5.27.0-beta.0) (2022-05-25)
+
+
+### Bug Fixes
+
+* **app-admin:** restore onChange handling ([590965f](https://github.com/webiny/webiny-js/commit/590965f11de812426dd21e6bc932fd2839cba1fb))
+* **app-admin:** tweak positioning of toolbar when editor is empty ([183cdd1](https://github.com/webiny/webiny-js/commit/183cdd1bbed78ab67dfa4b76abc86c6d618e6241))
+
+
+
+
+
+## [5.26.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.26.0...v5.26.1-beta.0) (2022-05-24)
+
+
+### Bug Fixes
+
+* improve Rich Text Editor menu positioning ([#2419](https://github.com/webiny/webiny-js/issues/2419)) ([7a689e4](https://github.com/webiny/webiny-js/commit/7a689e4e6c8991e2f0b38c47d04265a9a0c68027))
+
+
+
+
+
+# [5.26.0](https://github.com/webiny/webiny-js/compare/v5.26.0-beta.2...v5.26.0) (2022-05-13)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [5.26.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.26.0-beta.1...v5.26.0-beta.2) (2022-05-13)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [5.26.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.26.0-beta.0...v5.26.0-beta.1) (2022-05-12)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [5.26.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.25.1-beta.1...v5.26.0-beta.0) (2022-05-11)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+## [5.25.1-beta.1](https://github.com/webiny/webiny-js/compare/v5.25.1-beta.0...v5.25.1-beta.1) (2022-05-11)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+## [5.25.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.25.0...v5.25.1-beta.0) (2022-05-10)
+
+
+### Bug Fixes
+
+* correct `value` prop assignment ([b24a6c8](https://github.com/webiny/webiny-js/commit/b24a6c8e2f572204dc54ff9eaf383e2efbe4c368))
+* format with prettier ([9efe240](https://github.com/webiny/webiny-js/commit/9efe240bb1c1b7f3dd66c9c27182ef7c4b0ac116))
+* **app-admin:** add classname to SimpleFormFooter props ([f4fcdbd](https://github.com/webiny/webiny-js/commit/f4fcdbd5570a8d836e866f40d47bc073b213cc42))
+* **app-admin:** add own prop to FileManager ([2af2257](https://github.com/webiny/webiny-js/commit/2af225797eacd36a78e7853a646857af0b682d8f))
+* **app-admin:** add scope prop in FileManager ([997b6ee](https://github.com/webiny/webiny-js/commit/997b6eefd439e3ac78ef61bae1f47c493696a3f4))
+* **app-admin:** add tags prop in FileManager ([4e0212f](https://github.com/webiny/webiny-js/commit/4e0212f3248e4261d263c546bf6645d4aa3657e7))
+* **app-admin:** export leftPanel styles ([efa2447](https://github.com/webiny/webiny-js/commit/efa2447ae366d1268fe1e6912fff9c1b3e6708be))
+
+
+### Features
+
+* **app-admin:** open thankyou page on new install or upgrade ([#2355](https://github.com/webiny/webiny-js/issues/2355)) ([14b5dda](https://github.com/webiny/webiny-js/commit/14b5dda51085525cb5b2e18ec4819c563a24f671))
+* **app-admin:** send telemetry to GA on first install ([#2365](https://github.com/webiny/webiny-js/issues/2365)) ([46d72f3](https://github.com/webiny/webiny-js/commit/46d72f3cb5ce60988eac6065086ce4acf5c365bc))
+
+
+
+
+
 # [5.25.0](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.6...v5.25.0) (2022-04-04)
 
 **Note:** Version bump only for package @webiny/app-admin

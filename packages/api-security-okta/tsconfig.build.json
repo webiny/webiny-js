@@ -6,7 +6,7 @@
     { "path": "../api-tenancy/tsconfig.build.json" },
     { "path": "../api-tenant-manager/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
-    { "path": "../handler/tsconfig.build.json" },
+    { "path": "../api/tsconfig.build.json" },
     { "path": "../handler-graphql/tsconfig.build.json" }
   ],
   "compilerOptions": {

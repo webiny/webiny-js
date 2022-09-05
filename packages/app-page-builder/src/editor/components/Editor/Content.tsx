@@ -3,26 +3,18 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import styled from "@emotion/styled";
 import { css } from "emotion";
 import kebabCase from "lodash/kebabCase";
-import { plugins } from "@webiny/plugins";
 import { Elevation } from "@webiny/ui/Elevation";
+import { PbEditorElement, PbTheme } from "~/types";
 import {
-    PbEditorContentPlugin,
-    PbPageLayout,
-    PbPageLayoutPlugin,
-    PbEditorElement,
-    PbTheme
-} from "~/types";
-import {
-    isPluginActiveSelector,
-    layoutSelector,
     uiAtom,
     setPagePreviewDimensionMutation,
     rootElementAtom,
     elementsAtom
-} from "../../recoil/modules";
+} from "~/editor/recoil/modules";
 
 import { usePageBuilder } from "~/hooks/usePageBuilder";
 import Element from "../Element";
+import { EditorContent } from "~/editor";
 
 const BREADCRUMB_HEIGHT = 33;
 interface ContentContainerParams {
@@ -47,7 +39,6 @@ const contentContainerWrapper = css({
     padding: 0,
     position: "absolute",
     width: "calc(100vw - 115px - 300px)",
-    //overflow: "hidden", // cuts off the block selector tooltip
     top: 0,
     boxSizing: "border-box",
     zIndex: 1
@@ -57,26 +48,10 @@ const BaseContainer = styled("div")({
     left: 52,
     margin: "0 auto"
 });
-const renderContent = (
-    layout: PbPageLayout | null,
-    rootElement: PbEditorElement,
-    render: boolean
-) => {
-    const content = <Element id={rootElement.id} />;
-    if (!render) {
-        return content;
-    } else if (!layout) {
-        console.log("Missing layout variable in renderContent callable. Rendering content.");
-        return content;
-    }
-    return React.createElement(layout.component, null, content);
-};
 
 const Content: React.FC = () => {
     const rootElementId = useRecoilValue(rootElementAtom);
     const rootElement = useRecoilValue(elementsAtom(rootElementId)) as PbEditorElement;
-    const renderLayout = useRecoilValue(isPluginActiveSelector("pb-editor-toolbar-preview"));
-    const layout = useRecoilValue(layoutSelector);
     const [{ displayMode }, setUiAtomValue] = useRecoilState(uiAtom);
     const pagePreviewRef = useRef<HTMLDivElement>(null);
 
@@ -95,6 +70,7 @@ const Content: React.FC = () => {
             }
         });
     }, []);
+
     // Set resize observer
     useEffect(() => {
         if (pagePreviewRef.current) {
@@ -109,17 +85,7 @@ const Content: React.FC = () => {
     }, []);
 
     const { theme } = usePageBuilder();
-    const pluginsByType = plugins.byType<PbEditorContentPlugin>("pb-editor-content");
 
-    const layouts = React.useMemo((): PbPageLayout[] => {
-        const layoutPlugins = plugins.byType<PbPageLayoutPlugin>("pb-page-layout");
-        return (layoutPlugins || []).map(pl => pl.layout);
-    }, []);
-    const themeLayout = layouts.find(l => l.name === layout);
-
-    if (renderLayout && !themeLayout) {
-        return <div>Layout &quot;{layout}&quot; was not found in your theme!</div>;
-    }
     return (
         <Elevation className={contentContainerWrapper} z={0}>
             <ContentContainer
@@ -128,11 +94,9 @@ const Content: React.FC = () => {
                     displayMode
                 )} webiny-pb-media-query--${kebabCase(displayMode)}`}
             >
-                {pluginsByType.map(plugin =>
-                    React.cloneElement(plugin.render(), { key: plugin.name })
-                )}
+                <EditorContent />
                 <BaseContainer ref={pagePreviewRef} className={"webiny-pb-editor-content-preview"}>
-                    {renderContent(themeLayout || null, rootElement, renderLayout)}
+                    <Element id={rootElement.id} />
                 </BaseContainer>
             </ContentContainer>
         </Elevation>

@@ -1,28 +1,26 @@
 const chalk = require("chalk");
 
-const getLogType = type => {
-    switch (type) {
-        case "log":
-            return type;
-        case "info":
-            return `${chalk.blueBright(type)}`;
-        case "error":
-            return `${chalk.red(type)}`;
-        case "warning":
-            return `${chalk.yellow(type)}`;
-        case "debug":
-            return `${chalk.gray(type)}`;
-        case "success":
-            return `${chalk.green(type)}`;
-    }
+const logColors = {
+    log: v => v,
+    info: chalk.blueBright,
+    error: chalk.red,
+    warning: chalk.yellow,
+    debug: chalk.gray,
+    success: chalk.green
+};
+
+const colorizePlaceholders = (type, string) => {
+    return string.replace(/\%[a-zA-Z]/g, match => {
+        return logColors[type](match);
+    });
 };
 
 const webinyLog = (type, ...args) => {
-    const prefix = `webiny ${getLogType(type)}: `;
+    const prefix = `webiny ${logColors[type](type)}: `;
 
     const [first, ...rest] = args;
     if (typeof first === "string") {
-        return console.log(prefix + first, ...rest);
+        return console.log(prefix + colorizePlaceholders(type, first), ...rest);
     }
     return console.log(prefix, first, ...rest);
 };

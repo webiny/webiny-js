@@ -1,13 +1,11 @@
 import React from "react";
 import styled from "@emotion/styled";
-import { Cell, Grid } from "@webiny/ui/Grid";
 import { Typography } from "@webiny/ui/Typography";
-import { Checkbox } from "@webiny/ui/Checkbox";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
 import { ChildrenRenderProp } from "@webiny/ui/Checkbox/CheckboxGroup";
 import { Box, Columns } from "~/components/Layout";
-import { restGridStyles } from "./Styled";
 import { useReviewers } from "~/hooks/useReviewers";
+import { ListItemWithCheckbox } from "./ListItemWithCheckbox";
 
 export const GRADIENTS = [
     "135deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%",
@@ -22,12 +20,6 @@ export const Avatar = styled.div<{ index: number }>`
     height: 24px;
     border-radius: 50%;
     background: linear-gradient(${props => GRADIENTS[props.index % GRADIENTS.length]});
-`;
-
-const CheckboxWrapper = styled.div`
-    box-sizing: border-box;
-    display: flex;
-    justify-content: flex-end;
 `;
 
 const ReviewerName = styled(Typography)`
@@ -55,7 +47,7 @@ const ListItemTitle: React.FC<ListItemTitleProps> = ({ index, label }) => {
 export const ReviewersList: React.FC<ChildrenRenderProp> = ({ onChange, getValue }) => {
     const { reviewers, loading } = useReviewers();
 
-    if (loading) {
+    if (loading || !reviewers || reviewers.length === 0) {
         return (
             <div style={{ width: "100%", height: "120px" }}>
                 <Typography use={"subtitle2"}>Loading reviewers...</Typography>
@@ -74,36 +66,5 @@ export const ReviewersList: React.FC<ChildrenRenderProp> = ({ onChange, getValue
                 />
             ))}
         </Scrollbar>
-    );
-};
-
-interface ListItemWithCheckboxProps {
-    label: string | React.ReactElement;
-    value: boolean;
-    onChange: () => void;
-}
-
-export const ListItemWithCheckbox: React.FC<ListItemWithCheckboxProps> = ({
-    label,
-    value,
-    onChange
-}) => {
-    return (
-        <Grid className={restGridStyles}>
-            <Cell span={6} align={"middle"}>
-                {typeof label === "string" ? (
-                    <Box>
-                        <Typography use={"subtitle1"}>{label}</Typography>
-                    </Box>
-                ) : (
-                    label
-                )}
-            </Cell>
-            <Cell span={6}>
-                <CheckboxWrapper>
-                    <Checkbox value={value} onClick={onChange} />
-                </CheckboxWrapper>
-            </Cell>
-        </Grid>
     );
 };

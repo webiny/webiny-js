@@ -45,6 +45,11 @@ export const createSettingsGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                     prerendering: PbSettingsPrerendering
                 }
 
+                type PbDefaultSettings {
+                    websiteUrl: String
+                    websitePreviewUrl: String
+                }
+
                 type PbSettingsResponse {
                     # This field's value is hardcoded and it's here to help frontend clients cache data more easily.
                     id: ID
@@ -56,7 +61,7 @@ export const createSettingsGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                     # This field's value is hardcoded and it's here to help frontend clients cache data more easily.
                     id: ID
                     error: PbSettingsError
-                    data: PbSettings
+                    data: PbDefaultSettings
                 }
 
                 type PbSettingsPages {
@@ -129,19 +134,6 @@ export const createSettingsGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                 }
             `,
             resolvers: {
-                PbSettingsResponse: {
-                    id: (_, __, context) => {
-                        return context.pageBuilder.getSettingsCacheKey();
-                    }
-                },
-                PbDefaultSettingsResponse: {
-                    id: (_, __, context) => {
-                        return context.pageBuilder.getSettingsCacheKey({
-                            tenant: false,
-                            locale: false
-                        });
-                    }
-                },
                 PbQuery: {
                     getCurrentSettings: async (_, __, context) => {
                         try {

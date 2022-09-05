@@ -1,11 +1,11 @@
 import * as aws from "@pulumi/aws";
-import { defineAppModule, PulumiApp, PulumiAppModule } from "@webiny/pulumi-sdk";
+import { createAppModule, PulumiApp, PulumiAppModule } from "@webiny/pulumi";
 
 import { ApiGateway } from "./ApiGateway";
 
 export type ApiCloudfront = PulumiAppModule<typeof ApiCloudfront>;
 
-export const ApiCloudfront = defineAppModule({
+export const ApiCloudfront = createAppModule({
     name: "ApiCloudfront",
     config(app: PulumiApp) {
         const gateway = app.getModule(ApiGateway);
@@ -14,6 +14,8 @@ export const ApiCloudfront = defineAppModule({
             name: "api-cloudfront",
             config: {
                 waitForDeployment: false,
+                isIpv6Enabled: true,
+                enabled: true,
                 defaultCacheBehavior: {
                     compress: true,
                     allowedMethods: ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"],
@@ -32,8 +34,6 @@ export const ApiCloudfront = defineAppModule({
                     targetOriginId: gateway.api.output.name,
                     viewerProtocolPolicy: "allow-all"
                 },
-                isIpv6Enabled: true,
-                enabled: true,
                 orderedCacheBehaviors: [
                     {
                         compress: true,

@@ -12,7 +12,7 @@ const execa = require("execa");
     // Build all packages in the "packages" workspace.
     console.log(`🏗  Building packages...`);
     try {
-        await execa("yarn", ["webiny", "workspaces", "run", "build", "--folder", "packages"], {
+        await execa("yarn", ["build"], {
             stdio: "inherit"
         });
         console.log(`✅️ Packages were built successfully!`);
@@ -26,7 +26,7 @@ const execa = require("execa");
     console.log(
         `Alternatively, to deploy a single project application, run ${green(
             "yarn webiny deploy {folder} --env {env}"
-        )} command, for example: ${green("yarn webiny deploy api --env dev")}.`
+        )} command, for example: ${green("yarn webiny deploy apps/api --env dev")}.`
     );
 
     console.log(

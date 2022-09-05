@@ -130,7 +130,7 @@ export const Box = styled("div", {
     /**
      * We don't want to pass "display" and "width" properties to underlying "div" HTML tag.
      */
-    shouldForwardProp: prop => isPropValid(prop) && !IGNORED_PROPS.includes(prop)
+    shouldForwardProp: (prop: string) => isPropValid(prop) && !IGNORED_PROPS.includes(prop)
 })(StyledBox);
 
 interface ColumnsProps extends StyledBoxProps {
@@ -151,7 +151,11 @@ export const Columns: React.FC<ColumnsProps> = ({ children, space, ...props }) =
                     childProps["marginLeft"] = space;
                 }
 
-                return React.cloneElement(child, { ...childProps, ...child.props });
+                if (React.isValidElement(child)) {
+                    return React.cloneElement(child, { ...childProps, ...child.props });
+                }
+
+                return child;
             })}
         </Box>
     );
@@ -163,14 +167,14 @@ interface StackProps extends StyledBoxProps {
     className?: string;
 }
 
-export const Stack = ({ children, space, ...props }: StackProps) => {
+export const Stack: React.FC<StackProps> = ({ children, space, ...props }) => {
     return (
         <Box {...props}>
             {React.Children.map(children, (child, index) => {
                 if (child === null) {
                     return child;
                 }
-                if (index > 0) {
+                if (index > 0 && React.isValidElement(child)) {
                     return React.cloneElement(child, { marginTop: space });
                 }
 

@@ -1,4 +1,4 @@
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
+import { ContextPlugin } from "@webiny/api";
 import { ApwContext } from "~/types";
 import { deleteCommentsAfterChangeRequest } from "./deleteCommentsAfterChangeRequest";
 import { deleteChangeRequestsWithContentReview } from "./deleteChangeRequestsAfterContentReview";
@@ -9,18 +9,13 @@ import { updateTotalCommentsCount, updateLatestCommentId } from "./updateTotalCo
 import { validateChangeRequest } from "./validateChangeRequest";
 import { validateContentReview } from "./validateContentReview";
 import { validateComment } from "./validateComment";
-import { isInstallationPending } from "../utils";
 
-export default () => [
+export const attachApwHooks = () =>
     /**
      * Hook into CMS events and execute business logic.
      */
     new ContextPlugin<ApwContext>(async context => {
-        const { security, apw, tenancy, i18n } = context;
-
-        if (isInstallationPending({ tenancy, i18n })) {
-            return;
-        }
+        const { security, apw } = context;
 
         validateContentReview({ apw });
 
@@ -30,7 +25,7 @@ export default () => [
 
         createReviewerFromIdentity({ security, apw });
 
-        initializeContentReviewSteps({ apw });
+        initializeContentReviewSteps(context);
 
         updatePendingChangeRequestsCount({ apw });
 
@@ -41,5 +36,4 @@ export default () => [
         deleteCommentsAfterChangeRequest({ apw });
 
         deleteChangeRequestsWithContentReview({ apw });
-    })
-];
+    });

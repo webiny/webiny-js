@@ -3,6 +3,227 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.31.0](https://github.com/webiny/webiny-js/compare/v5.31.0-beta.1...v5.31.0) (2022-08-18)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [5.31.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.31.0-beta.0...v5.31.0-beta.1) (2022-08-17)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [5.31.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.30.0...v5.31.0-beta.0) (2022-08-16)
+
+
+### Features
+
+* make all buckets private ([#2558](https://github.com/webiny/webiny-js/issues/2558)) ([6e84b04](https://github.com/webiny/webiny-js/commit/6e84b043f6f5bd37f5e02babdd51bad43f5914b3))
+
+
+
+
+
+# [5.30.0](https://github.com/webiny/webiny-js/compare/v5.30.0-beta.1...v5.30.0) (2022-07-27)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [5.30.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.30.0-beta.0...v5.30.0-beta.1) (2022-07-26)
+
+
+### Bug Fixes
+
+* **app-page-builder:** detect zoom level properly ([937a81b](https://github.com/webiny/webiny-js/commit/937a81bdcb7a0dda507eb1578fde839d89c973cb))
+
+
+
+
+
+# [5.30.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.29.0...v5.30.0-beta.0) (2022-07-25)
+
+
+### Bug Fixes
+
+* **app-page-builder:** improve editor core ([#2536](https://github.com/webiny/webiny-js/issues/2536)) ([1ae77d2](https://github.com/webiny/webiny-js/commit/1ae77d2e4ac514f5dde49ceae62db19c80758dc5))
+* **app-page-builder:** resurrect "click-to-add" element ([#2534](https://github.com/webiny/webiny-js/issues/2534)) ([3f01ac8](https://github.com/webiny/webiny-js/commit/3f01ac8a10006b905f3199c8de1928dce6baee64))
+
+
+### Features
+
+* **ui:** upgrade RMWC to v7 ([#2553](https://github.com/webiny/webiny-js/issues/2553)) ([ee963b0](https://github.com/webiny/webiny-js/commit/ee963b0bee9f50bc24de5cacaeee43b1fd7f8b09))
+* bring back APW into Webiny Projects ([#2535](https://github.com/webiny/webiny-js/issues/2535)) ([4db06af](https://github.com/webiny/webiny-js/commit/4db06afc3778f8451407da6f0a84c1eac37d1ec4))
+* decouple Page Editor and introduce a Block Editor ([#2529](https://github.com/webiny/webiny-js/issues/2529)) ([a455192](https://github.com/webiny/webiny-js/commit/a45519283b1145a57660252c360f3a86c890d363))
+* typescript to 4.7.4 ([#2527](https://github.com/webiny/webiny-js/issues/2527)) ([ee24a3a](https://github.com/webiny/webiny-js/commit/ee24a3a995942ee2588e615e42f604ed7418390a))
+* **api-apw:** cms workflow ([#2450](https://github.com/webiny/webiny-js/issues/2450)) ([57c082d](https://github.com/webiny/webiny-js/commit/57c082d0305ef0316939989ddda1e438efa8dc2f))
+
+
+
+
+
+# [5.29.0](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.2...v5.29.0) (2022-06-28)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [5.29.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.1...v5.29.0-beta.2) (2022-06-27)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [5.29.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.0...v5.29.0-beta.1) (2022-06-25)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [5.29.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.28.0...v5.29.0-beta.0) (2022-06-25)
+
+
+### Bug Fixes
+
+* remove prerendering settings from PB settings ([869ea4a](https://github.com/webiny/webiny-js/commit/869ea4a44a28d2ed1a6bf27f84d0b9a3b4a941e8))
+* **app-page-builder:** add missing useCallback dependency ([#2491](https://github.com/webiny/webiny-js/issues/2491)) ([d84c493](https://github.com/webiny/webiny-js/commit/d84c4938818cbc4b9e9e08bf2588088fd23ec307))
+* **pb-settings:** use PS#SETTINGS record for default website URLs ([da1dde3](https://github.com/webiny/webiny-js/commit/da1dde30cbd155c5695a772d7f1024a96e20fb85))
+
+
+### Features
+
+* simplify prerendering internals and data structure ([#2478](https://github.com/webiny/webiny-js/issues/2478)) ([91b4cd2](https://github.com/webiny/webiny-js/commit/91b4cd2590993624136e5b9b82ae534a83933fee))
+
+
+
+
+
+# [5.28.0](https://github.com/webiny/webiny-js/compare/v5.28.0-beta.0...v5.28.0) (2022-06-07)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [5.28.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.27.0...v5.28.0-beta.0) (2022-06-07)
+
+
+### Bug Fixes
+
+* **app-page-builder:** pass useMemo dependency ([a518e16](https://github.com/webiny/webiny-js/commit/a518e16b82f723e6db9b2f5173c61f3ef7734008))
+
+
+
+
+
+# [5.27.0](https://github.com/webiny/webiny-js/compare/v5.27.0-beta.0...v5.27.0) (2022-05-26)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [5.27.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.26.1-beta.0...v5.27.0-beta.0) (2022-05-25)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+## [5.26.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.26.0...v5.26.1-beta.0) (2022-05-24)
+
+
+### Bug Fixes
+
+* improve Rich Text Editor menu positioning ([#2419](https://github.com/webiny/webiny-js/issues/2419)) ([7a689e4](https://github.com/webiny/webiny-js/commit/7a689e4e6c8991e2f0b38c47d04265a9a0c68027))
+* replace direct usages of RMWC with the ui package ([3e87916](https://github.com/webiny/webiny-js/commit/3e87916073b66db3246fa25ebfcb797804021eb1))
+
+
+
+
+
+# [5.26.0](https://github.com/webiny/webiny-js/compare/v5.26.0-beta.2...v5.26.0) (2022-05-13)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [5.26.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.26.0-beta.1...v5.26.0-beta.2) (2022-05-13)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [5.26.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.26.0-beta.0...v5.26.0-beta.1) (2022-05-12)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [5.26.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.25.1-beta.1...v5.26.0-beta.0) (2022-05-11)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+## [5.25.1-beta.1](https://github.com/webiny/webiny-js/compare/v5.25.1-beta.0...v5.25.1-beta.1) (2022-05-11)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+## [5.25.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.25.0...v5.25.1-beta.0) (2022-05-10)
+
+
+### Bug Fixes
+
+* **app-page-builder:** add AdminPageBuilderContextProvider in PageBuilderProviderHOC ([994b91a](https://github.com/webiny/webiny-js/commit/994b91af51f0f3c897cc1de2ba1d4208d05dfeb0))
+* **app-page-builder:** add mutationOptions to PublishPageOptions ([5b6b30d](https://github.com/webiny/webiny-js/commit/5b6b30d34d1501022aa982e364a4f4371c18ae48))
+* **app-page-builder:** add PageRevisionListItemGraphic as composable component ([397a95d](https://github.com/webiny/webiny-js/commit/397a95d1a181ec91dcc72c78b94707f7aaef8a6a))
+* **app-page-builder:** add update cache logic in DefaultOnPagePublish plugin ([e943d63](https://github.com/webiny/webiny-js/commit/e943d6324749a8217e0f561d0af6c6040593b3b3))
+* **app-page-builder:** improve TS types ([81c8281](https://github.com/webiny/webiny-js/commit/81c8281aa46f38ec0b209200445d72e7e5472eb1))
+* **app-page-builder:** make page action buttons composable ([d8aac1a](https://github.com/webiny/webiny-js/commit/d8aac1a4b96cdf6da09bd961938c19ad7077ce0c))
+
+
+### Features
+
+* **api-apw:** add composeAsync utility ([4a7fe57](https://github.com/webiny/webiny-js/commit/4a7fe57353502526b3660659b9d7ef35f91f8303))
+* **app-page-builder:** add AdminPageBuilder context ([4f90af8](https://github.com/webiny/webiny-js/commit/4f90af84d06d4116da0a67c7e32b3c6088602c12))
+* **app-page-builder:** add DefaultOnPagePublish plugin ([2cec1b4](https://github.com/webiny/webiny-js/commit/2cec1b44e437fefe00a2ea7dcea1d1bc12da58b8))
+* **app-page-builder:** add onPageDelete hook in AdminPageBuilder context ([1a020b6](https://github.com/webiny/webiny-js/commit/1a020b6c103171dbc534a7f6fe8c4fd52960e926))
+* **page-builder:** iframe element ([#2319](https://github.com/webiny/webiny-js/issues/2319)) ([fa4c571](https://github.com/webiny/webiny-js/commit/fa4c57139ff2bcd41b669a0be5127f5f0d80de14))
+
+
+
+
+
 # [5.25.0](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.6...v5.25.0) (2022-04-04)
 
 **Note:** Version bump only for package @webiny/app-page-builder

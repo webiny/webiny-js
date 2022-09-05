@@ -94,19 +94,22 @@ describe("page full URL test", () => {
         await createInitialData();
         const { handler } = useUpdateSettingsHandler();
 
-        await handler({
-            data: {
-                name: "test 1",
-                websiteUrl: "https://www.test.com/",
-                websitePreviewUrl: "https://preview.test.com/",
-                prerendering: {
-                    app: {
-                        url: "https://www.app.com/"
-                    },
-                    storage: { name: "storage-name" }
+        await handler(
+            {
+                data: {
+                    name: "test 1",
+                    websiteUrl: "https://www.test.com/",
+                    websitePreviewUrl: "https://preview.test.com/",
+                    prerendering: {
+                        app: {
+                            url: "https://www.app.com/"
+                        },
+                        storage: { name: "storage-name" }
+                    }
                 }
-            }
-        });
+            },
+            {} as any
+        );
 
         const [listPagesAfterFirstSettingsUpdate] = await until(
             () =>
@@ -156,7 +159,7 @@ describe("page full URL test", () => {
         ]);
     });
 
-    test("`null` must no be part of the page URL", async () => {
+    test("`null` must not be part of the page URL", async () => {
         const initialPages = await createInitialData();
         // Ensure that a settings entry exists in the database.
         await updateSettings({ data: {} });
@@ -170,9 +173,9 @@ describe("page full URL test", () => {
         );
 
         expect(listPagesResponse.data.pageBuilder.listPages.data).toMatchObject([
-            { url: expect.stringMatching(/^\/some-url\/untitled-/) },
-            { url: expect.stringMatching(/^\/some-url\/untitled-/) },
-            { url: expect.stringMatching(/^\/some-url\/untitled-/) }
+            { url: expect.stringMatching(/^https:\/\/www\.test\.com\/some-url\/untitled-/) },
+            { url: expect.stringMatching(/^https:\/\/www\.test\.com\/some-url\/untitled-/) },
+            { url: expect.stringMatching(/^https:\/\/www\.test\.com\/some-url\/untitled-/) }
         ]);
 
         for (const page of initialPages) {
@@ -193,9 +196,9 @@ describe("page full URL test", () => {
         );
 
         expect(listPublishedPagesResponse.data.pageBuilder.listPublishedPages.data).toMatchObject([
-            { url: expect.stringMatching(/^\/some-url\/untitled-/) },
-            { url: expect.stringMatching(/^\/some-url\/untitled-/) },
-            { url: expect.stringMatching(/^\/some-url\/untitled-/) }
+            { url: expect.stringMatching(/^https:\/\/www\.test\.com\/some-url\/untitled-/) },
+            { url: expect.stringMatching(/^https:\/\/www\.test\.com\/some-url\/untitled-/) },
+            { url: expect.stringMatching(/^https:\/\/www\.test\.com\/some-url\/untitled-/) }
         ]);
     });
 });

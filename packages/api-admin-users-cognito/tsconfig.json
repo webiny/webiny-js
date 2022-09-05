@@ -8,13 +8,14 @@
     { "path": "../api-tenancy-so-ddb" },
     { "path": "../db-dynamodb" },
     { "path": "../error" },
+    { "path": "../api" },
     { "path": "../handler" },
     { "path": "../handler-aws" },
     { "path": "../handler-graphql" },
-    { "path": "../handler-http" },
     { "path": "../plugins" },
     { "path": "../pubsub" },
-    { "path": "../validation" }
+    { "path": "../validation" },
+    { "path": "../api-wcp" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -34,20 +35,22 @@
       "@webiny/db-dynamodb": ["../db-dynamodb/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
+      "@webiny/api/*": ["../api/src/*"],
+      "@webiny/api": ["../api/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
       "@webiny/handler-aws": ["../handler-aws/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
       "@webiny/handler-graphql": ["../handler-graphql/src"],
-      "@webiny/handler-http/*": ["../handler-http/src/*"],
-      "@webiny/handler-http": ["../handler-http/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/pubsub/*": ["../pubsub/src/*"],
       "@webiny/pubsub": ["../pubsub/src"],
       "@webiny/validation/*": ["../validation/src/*"],
-      "@webiny/validation": ["../validation/src"]
+      "@webiny/validation": ["../validation/src"],
+      "@webiny/api-wcp/*": ["../api-wcp/src/*"],
+      "@webiny/api-wcp": ["../api-wcp/src"]
     },
     "baseUrl": "."
   }

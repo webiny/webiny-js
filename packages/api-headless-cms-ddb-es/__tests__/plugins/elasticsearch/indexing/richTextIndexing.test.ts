@@ -1,6 +1,7 @@
 import richTextIndexingPlugin from "~/elasticsearch/indexing/richTextIndexing";
-import { CmsModelField } from "@webiny/api-headless-cms/types";
+import { CmsModelField, CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
 import { PluginsContainer } from "@webiny/plugins";
+import { CmsModelFieldToElasticsearchPlugin } from "~/types";
 
 const mockValue = [
     {
@@ -29,17 +30,17 @@ const mockField: CmsModelField = {
     helpText: "text"
 };
 
-const getFieldTypePlugin = () => {
-    return null;
+const getFieldTypePlugin = (): CmsModelFieldToGraphQLPlugin => {
+    return null as unknown as CmsModelFieldToGraphQLPlugin;
 };
 
 const getFieldIndexPlugin = () => {
-    return null;
+    return null as unknown as CmsModelFieldToElasticsearchPlugin;
 };
 
 describe("richTextIndexing", () => {
     test("toIndex should return transformed objects", () => {
-        const plugin = richTextIndexingPlugin();
+        const plugin = richTextIndexingPlugin() as Required<CmsModelFieldToElasticsearchPlugin>;
 
         const result = plugin.toIndex({
             value: mockValue,
@@ -58,7 +59,7 @@ describe("richTextIndexing", () => {
     });
 
     test("fromIndex should return transformed objects", () => {
-        const plugin = richTextIndexingPlugin();
+        const plugin = richTextIndexingPlugin() as Required<CmsModelFieldToElasticsearchPlugin>;
         const result = plugin.fromIndex({
             value: undefined,
             rawValue: mockValue,

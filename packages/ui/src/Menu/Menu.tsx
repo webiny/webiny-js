@@ -62,9 +62,6 @@ class Menu extends React.Component<MenuProps, MenuState> {
         menuIsOpen: false
     };
 
-    anchorRef = React.createRef();
-    menuRef = React.createRef();
-
     private readonly openMenu = () => {
         this.setState({ menuIsOpen: true }, () => this.props.onOpen && this.props.onOpen());
     };
@@ -81,7 +78,7 @@ class Menu extends React.Component<MenuProps, MenuState> {
                 className={this.props.className}
                 onClose={this.closeMenu}
                 onSelect={this.props.onSelect}
-                hoistToBody={true}
+                renderToPortal={true}
             >
                 {this.props.children}
             </BaseMenu>
@@ -107,7 +104,7 @@ class Menu extends React.Component<MenuProps, MenuState> {
 
     public override render(): React.ReactNode {
         return (
-            <MenuSurfaceAnchor ref={this.anchorRef} data-testid={this.props["data-testid"]}>
+            <MenuSurfaceAnchor data-testid={this.props["data-testid"]}>
                 {this.renderMenuContent()}
                 {this.props.handle &&
                     React.cloneElement(this.props.handle, { onClick: this.openMenu })}

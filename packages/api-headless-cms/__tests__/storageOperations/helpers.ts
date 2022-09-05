@@ -11,7 +11,7 @@ import {
     CreatedBy,
     HeadlessCmsStorageOperations
 } from "~/types";
-import { CmsGroupPlugin } from "~/content/plugins/CmsGroupPlugin";
+import { CmsGroupPlugin } from "~/plugins/CmsGroupPlugin";
 import { createIdentifier } from "@webiny/utils";
 import crypto from "crypto";
 

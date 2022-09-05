@@ -109,14 +109,14 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
 
         input ApwCreateWorkflowInput {
             title: String!
-            steps: [ApwCreateWorkflowStepInput]!
+            steps: [ApwCreateWorkflowStepInput!]!
             scope: ApwWorkflowScopeInput!
             app: ApwWorkflowApplication!
         }
 
         input ApwUpdateWorkflowInput {
             title: String
-            steps: [ApwUpdateWorkflowStepInput]
+            steps: [ApwUpdateWorkflowStepInput!]
             scope: ApwWorkflowScopeInput
         }
 

@@ -3,7 +3,7 @@ import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/S
 import PublishingWorkflowsDataList from "./PublishingWorkflowsDataList";
 import PublishingWorkflowForm from "./PublishingWorkflowForm";
 
-export const PublishingWorkflowsView = () => {
+export const PublishingWorkflowsView: React.FC = () => {
     return (
         <SplitView>
             <LeftPanel>

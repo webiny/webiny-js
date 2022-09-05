@@ -1,11 +1,12 @@
-import { useContentGqlHandler } from "../utils/useContentGqlHandler";
+import { useGraphQLHandler } from "../utils/useGraphQLHandler";
 import { CmsGroup } from "~/types";
 import camelCase from "lodash/camelCase";
 
 describe("ContentModel modelId variations", () => {
     const manageHandlerOpts = { path: "manage/en-US" };
 
-    const { createContentModelGroupMutation } = useContentGqlHandler(manageHandlerOpts);
+    const { createContentModelGroupMutation, createContentModelMutation } =
+        useGraphQLHandler(manageHandlerOpts);
 
     let contentModelGroup: CmsGroup;
 
@@ -37,8 +38,6 @@ describe("ContentModel modelId variations", () => {
     test.each(disallowedModelIdEndings)(
         "should not allow to create model with modelId that clashes with GraphQL (%s, %s)",
         async (name, modelId) => {
-            const { createContentModelMutation } = useContentGqlHandler(manageHandlerOpts);
-
             const [response] = await createContentModelMutation({
                 data: {
                     name,

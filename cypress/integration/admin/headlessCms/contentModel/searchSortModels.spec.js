@@ -127,7 +127,7 @@ context("Headless CMS - Search and Sort Content Models", () => {
         });
         // Last model should be on the top
         cy.findByTestId("default-data-list").within(() => {
-            cy.get("div")
+            cy.get("li")
                 .first()
                 .within(() => {
                     cy.findByText(models[models.length - 1].name).should("exist");
@@ -142,7 +142,7 @@ context("Headless CMS - Search and Sort Content Models", () => {
         });
         // Last model should not be on the top
         cy.findByTestId("default-data-list").within(() => {
-            cy.get("div")
+            cy.get("li")
                 .first()
                 .within(() => {
                     cy.findByText(models[models.length - 1].name).should("not.exist");

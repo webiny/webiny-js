@@ -22,8 +22,9 @@ export const validateComment = ({ apw }: Pick<LifeCycleHookCallbackParams, "apw"
          * Assign value for "step" field from "changeRequest".
          */
         const changeRequest = await apw.changeRequest.get(changeRequestId);
-        if (changeRequest) {
-            input.step = changeRequest.step;
+        if (!changeRequest) {
+            return;
         }
+        input.step = changeRequest.step;
     });
 };

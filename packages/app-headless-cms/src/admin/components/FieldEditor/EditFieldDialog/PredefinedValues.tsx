@@ -2,7 +2,7 @@ import React, { useCallback, useRef, cloneElement } from "react";
 import getValue from "./functions/getValue";
 import setValue from "./functions/setValue";
 import { CmsEditorField, CmsEditorFieldTypePlugin } from "~/types";
-import { FormRenderPropParams } from "@webiny/form";
+import { BindComponent, FormRenderPropParams } from "@webiny/form";
 
 export interface PredefinedValuesProps {
     field: CmsEditorField;
@@ -10,11 +10,9 @@ export interface PredefinedValuesProps {
     form: FormRenderPropParams;
 }
 interface MemoizedBindComponents {
-    [key: string]: React.FC<BindProps>;
+    [key: string]: BindComponent;
 }
-interface BindProps {
-    name: string;
-}
+
 const PredefinedValues: React.FC<PredefinedValuesProps> = ({ field, fieldPlugin, form }) => {
     const memoizedBindComponents = useRef<MemoizedBindComponents>({});
     const { Bind: BaseFormBind } = form;
@@ -25,15 +23,15 @@ const PredefinedValues: React.FC<PredefinedValuesProps> = ({ field, fieldPlugin,
             return memoizedBindComponents.current[memoKey];
         }
 
-        const Bind: React.FC<BindProps> = ({ children, name }) => {
+        const Bind: BindComponent = ({ children, name }) => {
             return (
                 <BaseFormBind name={"predefinedValues.values"}>
                     {bind => {
                         const props = {
                             ...bind,
                             value: getValue({ bind, index, name }),
-                            onChange: (value: string[]) => {
-                                setValue({ value, bind, index, name });
+                            onChange: async (value: string[]) => {
+                                await setValue({ value, bind, index, name });
                             }
                         };
 

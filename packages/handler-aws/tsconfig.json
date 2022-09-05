@@ -3,9 +3,7 @@
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
     { "path": "../handler" },
-    { "path": "../handler-args" },
     { "path": "../handler-client" },
-    { "path": "../handler-http" },
     { "path": "../plugins" }
   ],
   "compilerOptions": {
@@ -16,12 +14,8 @@
       "~/*": ["./src/*"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
-      "@webiny/handler-args/*": ["../handler-args/src/*"],
-      "@webiny/handler-args": ["../handler-args/src"],
       "@webiny/handler-client/*": ["../handler-client/src/*"],
       "@webiny/handler-client": ["../handler-client/src"],
-      "@webiny/handler-http/*": ["../handler-http/src/*"],
-      "@webiny/handler-http": ["../handler-http/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"]
     },

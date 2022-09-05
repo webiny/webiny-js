@@ -1,24 +1,18 @@
-import { useAdminGqlHandler } from "../utils/useAdminGqlHandler";
-import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import { createIdentity } from "../utils/helpers";
+import { useGraphQLHandler } from "../utils/useGraphQLHandler";
 
 describe("Settings crud test", () => {
     const manageOpts = {
         path: "manage/en-US"
     };
 
-    const { listContentModelGroupsQuery } = useContentGqlHandler({
-        ...manageOpts
-    });
+    const { introspect, installMutation } = useGraphQLHandler({});
 
-    const { introspect, installMutation } = useAdminGqlHandler({
-        ...manageOpts
-    });
-
-    const { isInstalledQuery, installMutation: installMutationNoPermission } = useAdminGqlHandler({
-        ...manageOpts,
+    const { isInstalledQuery, installMutation: installMutationNoPermission } = useGraphQLHandler({
         permissions: []
     });
+
+    const { listContentModelGroupsQuery } = useGraphQLHandler(manageOpts);
 
     test("graphql schema must not produce error", async () => {
         const [response] = await introspect();

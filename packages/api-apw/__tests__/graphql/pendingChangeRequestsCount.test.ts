@@ -1,6 +1,6 @@
-import { useContentGqlHandler } from "../utils/useContentGqlHandler";
+import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
 import { mocks as changeRequestMock } from "./mocks/changeRequest";
-import { createSetupForContentReview } from "../utils/helpers";
+import { createSetupForPageContentReview } from "../utils/helpers";
 import { ApwContentReview, PageWithWorkflow } from "~/types";
 
 describe(`Pending change requests count test`, () => {
@@ -8,7 +8,7 @@ describe(`Pending change requests count test`, () => {
         path: "manage/en-US"
     };
 
-    const gqlHandler = useContentGqlHandler({
+    const gqlHandler = usePageBuilderHandler({
         ...options
     });
     const {
@@ -46,7 +46,7 @@ describe(`Pending change requests count test`, () => {
     };
 
     test(`should able to update "pendingChangeRequests" count in a content review`, async () => {
-        const { page } = await createSetupForContentReview(gqlHandler);
+        const { page } = await createSetupForPageContentReview(gqlHandler);
         const contentReview = await createContentReview(page);
         const [step1, step2] = contentReview.steps;
 

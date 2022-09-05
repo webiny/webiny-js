@@ -1,6 +1,14 @@
-import { ContextPlugin } from "@webiny/handler";
+import { ContextPlugin } from "@webiny/api";
 import { CmsContext } from "~/types";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
+
+/**
+ * In case version header is enabled via the env vars, add it to expectancy.
+ */
+const versionHeaders: Record<string, any> = {};
+if (process.env.WEBINY_ENABLE_VERSION_HEADER === "true") {
+    versionHeaders["x-webiny-version"] = expect.any(String);
+}
 
 describe("HTTP Options request", () => {
     const manageOpts = {
@@ -20,19 +28,22 @@ describe("HTTP Options request", () => {
             body: undefined
         });
 
-        expect(response).toEqual([
-            null,
+        expect(response).toMatchObject([
+            {},
             {
                 body: "",
                 headers: {
-                    "Access-Control-Allow-Headers": "*",
-                    "Access-Control-Allow-Methods": "OPTIONS,POST",
-                    "Access-Control-Allow-Origin": "*",
-                    "Content-Type": "application/json",
-                    "Access-Control-Max-Age": `30758400`,
-                    "Cache-Control": "public, max-age=30758400"
+                    ...versionHeaders,
+                    "content-type": "application/json; charset=utf-8",
+                    "access-control-allow-headers": "*",
+                    "access-control-allow-methods": ["OPTIONS", "POST"].sort().join(","),
+                    "access-control-allow-origin": "*",
+                    "access-control-max-age": expect.stringMatching(/([0-9]+)/),
+                    "cache-control": expect.stringMatching(/public, max-age=([0-9]+)/),
+                    connection: "keep-alive",
+                    date: expect.any(String)
                 },
-                isBase64Encoded: undefined,
+                isBase64Encoded: false,
                 statusCode: 204
             }
         ]);

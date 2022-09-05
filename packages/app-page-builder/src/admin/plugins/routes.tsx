@@ -9,7 +9,8 @@ import { EditorPluginsLoader } from "../components/EditorPluginsLoader";
 import Categories from "../views/Categories/Categories";
 import Menus from "../views/Menus/Menus";
 import Pages from "../views/Pages/Pages";
-import Editor from "../views/Pages/Editor";
+import { PageEditor } from "~/pageEditor/Editor";
+// import { BlockEditor } from "~/blockEditor/Editor";
 
 const ROLE_PB_CATEGORY = "pb.category";
 const ROLE_PB_MENUS = "pb.menu";
@@ -73,7 +74,7 @@ const plugins: RoutePlugin[] = [
         )
     },
     {
-        name: "route-pb-editor",
+        name: "route-pb-page-editor",
         type: "route",
         route: (
             <Route
@@ -84,14 +85,34 @@ const plugins: RoutePlugin[] = [
                         <SecureRoute permission={ROLE_PB_PAGES}>
                             <EditorPluginsLoader location={location}>
                                 <Helmet title={"Page Builder - Edit page"} />
-                                <Editor />
+                                <PageEditor />
                             </EditorPluginsLoader>
                         </SecureRoute>
                     );
                 }}
             />
         )
-    }
+    } /*,
+    {
+        name: "route-pb-block-editor",
+        type: "route",
+        route: (
+            <Route
+                exact
+                path="/page-builder/block-editor/:id"
+                render={({ location }) => {
+                    return (
+                        <SecureRoute permission={ROLE_PB_PAGES}>
+                            <EditorPluginsLoader location={location}>
+                                <Helmet title={"Page Builder - Edit block"} />
+                                <BlockEditor />
+                            </EditorPluginsLoader>
+                        </SecureRoute>
+                    );
+                }}
+            />
+        )
+    }*/
 ];
 
 export default plugins;

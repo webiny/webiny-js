@@ -7,10 +7,11 @@ import { ReactComponent as RequestReviewIcon } from "./emoji_people-24px.svg";
 import { useRevision } from "~/admin/views/contentEntries/ContentEntry/useRevision";
 import usePermission from "~/admin/hooks/usePermission";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
+import { makeComposable } from "@webiny/react-composition";
 
 const t = i18n.ns("app-headless-cms/admin/content-details/header/request-review");
 
-const RequestReview: React.FC = () => {
+const RequestReviewComponent: React.FC = () => {
     const { entry } = useContentEntry();
     const { requestReview } = useRevision({ revision: entry });
     const { canRequestReview } = usePermission();
@@ -48,4 +49,4 @@ const RequestReview: React.FC = () => {
     );
 };
 
-export default RequestReview;
+export const RequestReview = makeComposable("RequestReview", RequestReviewComponent);

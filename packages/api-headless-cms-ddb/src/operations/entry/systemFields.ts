@@ -38,6 +38,11 @@ export const systemFields: Record<string, CmsModelField> = {
             path: "createdBy.id"
         }
     }),
+    meta: createSystemField({
+        id: "meta",
+        type: "plainObject",
+        fieldId: "meta"
+    }),
     ownedBy: createSystemField({
         id: "ownedBy",
         type: "plainObject",

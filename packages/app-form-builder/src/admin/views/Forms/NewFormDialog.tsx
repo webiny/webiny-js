@@ -96,6 +96,7 @@ const NewFormDialog: React.FC<NewFormDialogProps> = ({ open, onClose }) => {
                         </DialogContent>
                         <DialogActions>
                             <ButtonDefault
+                                data-testid="fb.form.create"
                                 onClick={ev => {
                                     submit(ev);
                                 }}

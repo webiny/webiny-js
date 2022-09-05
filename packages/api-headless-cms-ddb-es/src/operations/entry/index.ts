@@ -109,12 +109,14 @@ export const createEntriesStorageOperations = (
 
     const create = async (model: CmsModel, params: CmsEntryStorageOperationsCreateParams) => {
         const { entry, storageEntry } = params;
+        const isPublished = entry.status === "published";
+        const locked = isPublished ? true : entry.locked;
 
         const esEntry = prepareEntryToIndex({
             plugins,
             model,
-            entry: lodashCloneDeep(entry),
-            storageEntry: lodashCloneDeep(storageEntry)
+            entry: lodashCloneDeep({ ...entry, locked }),
+            storageEntry: lodashCloneDeep({ ...storageEntry, locked })
         });
 
         const { index: esIndex } = configurations.es({
@@ -122,29 +124,60 @@ export const createEntriesStorageOperations = (
         });
 
         const esLatestData = await getESLatestEntryData(plugins, esEntry);
+        const esPublishedData = await getESPublishedEntryData(plugins, esEntry);
 
         const revisionKeys = {
-            PK: createPartitionKey(entry),
+            PK: createPartitionKey({
+                id: entry.id,
+                locale: model.locale,
+                tenant: model.tenant
+            }),
             SK: createRevisionSortKey(entry)
         };
 
         const latestKeys = {
-            PK: createPartitionKey(entry),
+            PK: createPartitionKey({
+                id: entry.id,
+                locale: model.locale,
+                tenant: model.tenant
+            }),
             SK: createLatestSortKey()
+        };
+
+        const publishedKeys = {
+            PK: createPartitionKey({
+                id: entry.id,
+                locale: model.locale,
+                tenant: model.tenant
+            }),
+            SK: createPublishedSortKey()
         };
 
         const items = [
             entity.putBatch({
                 ...storageEntry,
+                locked,
                 ...revisionKeys,
                 TYPE: createType()
             }),
             entity.putBatch({
                 ...storageEntry,
+                locked,
                 ...latestKeys,
                 TYPE: createLatestType()
             })
         ];
+
+        if (isPublished) {
+            items.push(
+                entity.putBatch({
+                    ...storageEntry,
+                    locked,
+                    ...publishedKeys,
+                    TYPE: createPublishedType()
+                })
+            );
+        }
 
         try {
             await batchWriteAll({
@@ -166,11 +199,27 @@ export const createEntriesStorageOperations = (
             );
         }
 
-        try {
-            await esEntity.put({
+        const esItems = [
+            esEntity.putBatch({
                 ...latestKeys,
                 index: esIndex,
                 data: esLatestData
+            })
+        ];
+        if (isPublished) {
+            esItems.push(
+                esEntity.putBatch({
+                    ...publishedKeys,
+                    index: esIndex,
+                    data: esPublishedData
+                })
+            );
+        }
+
+        try {
+            await batchWriteAll({
+                table: esEntity.table,
+                items: esItems
             });
         } catch (ex) {
             throw new WebinyError(
@@ -193,11 +242,19 @@ export const createEntriesStorageOperations = (
     ) => {
         const { entry, storageEntry } = params;
         const revisionKeys = {
-            PK: createPartitionKey(entry),
+            PK: createPartitionKey({
+                id: entry.id,
+                locale: model.locale,
+                tenant: model.tenant
+            }),
             SK: createRevisionSortKey(entry)
         };
         const latestKeys = {
-            PK: createPartitionKey(entry),
+            PK: createPartitionKey({
+                id: entry.id,
+                locale: model.locale,
+                tenant: model.tenant
+            }),
             SK: createLatestSortKey()
         };
 
@@ -272,13 +329,34 @@ export const createEntriesStorageOperations = (
 
     const update = async (model: CmsModel, params: CmsEntryStorageOperationsUpdateParams) => {
         const { entry, storageEntry } = params;
+
+        const isPublished = entry.status === "published";
+        const locked = isPublished ? true : entry.locked;
+
         const revisionKeys = {
-            PK: createPartitionKey(entry),
+            PK: createPartitionKey({
+                id: entry.id,
+                locale: model.locale,
+                tenant: model.tenant
+            }),
             SK: createRevisionSortKey(entry)
         };
         const latestKeys = {
-            PK: createPartitionKey(entry),
+            PK: createPartitionKey({
+                id: entry.id,
+                locale: model.locale,
+                tenant: model.tenant
+            }),
             SK: createLatestSortKey()
+        };
+
+        const publishedKeys = {
+            PK: createPartitionKey({
+                id: entry.id,
+                locale: model.locale,
+                tenant: model.tenant
+            }),
+            SK: createPublishedSortKey()
         };
 
         /**
@@ -289,18 +367,40 @@ export const createEntriesStorageOperations = (
             ids: [entry.id]
         });
 
+        const [publishedStorageEntry] = await dataLoaders.getPublishedRevisionByEntryId({
+            model,
+            ids: [entry.id]
+        });
+
         const items = [
             entity.putBatch({
                 ...storageEntry,
+                locked,
                 ...revisionKeys,
                 TYPE: createType()
             })
         ];
+        if (isPublished) {
+            items.push(
+                entity.putBatch({
+                    ...storageEntry,
+                    locked,
+                    ...publishedKeys,
+                    TYPE: createPublishedType()
+                })
+            );
+        }
+
+        const esItems = [];
+
+        const { index: esIndex } = configurations.es({
+            model
+        });
         /**
          * If the latest entry is the one being updated, we need to create a new latest entry records.
          */
-        let elasticsearchLatestData = null;
-        if (latestStorageEntry.id === entry.id) {
+        let elasticsearchLatestData: any = null;
+        if (latestStorageEntry && latestStorageEntry.id === entry.id) {
             /**
              * First we update the regular DynamoDB table
              */
@@ -317,11 +417,61 @@ export const createEntriesStorageOperations = (
             const esEntry = prepareEntryToIndex({
                 plugins,
                 model,
-                entry: lodashCloneDeep(entry),
-                storageEntry: lodashCloneDeep(storageEntry)
+                entry: lodashCloneDeep({
+                    ...entry,
+                    locked
+                }),
+                storageEntry: lodashCloneDeep({
+                    ...storageEntry,
+                    locked
+                })
             });
 
             elasticsearchLatestData = await getESLatestEntryData(plugins, esEntry);
+
+            esItems.push(
+                esEntity.putBatch({
+                    ...latestKeys,
+                    index: esIndex,
+                    data: elasticsearchLatestData
+                })
+            );
+        }
+        let elasticsearchPublishedData = null;
+        if (isPublished && publishedStorageEntry && publishedStorageEntry.id === entry.id) {
+            if (!elasticsearchLatestData) {
+                /**
+                 * And then update the Elasticsearch table to propagate changes to the Elasticsearch
+                 */
+                const esEntry = prepareEntryToIndex({
+                    plugins,
+                    model,
+                    entry: lodashCloneDeep({
+                        ...entry,
+                        locked
+                    }),
+                    storageEntry: lodashCloneDeep({
+                        ...storageEntry,
+                        locked
+                    })
+                });
+                elasticsearchPublishedData = await getESPublishedEntryData(plugins, esEntry);
+            } else {
+                elasticsearchPublishedData = {
+                    ...elasticsearchLatestData,
+                    published: true,
+                    TYPE: createPublishedType(),
+                    __type: createPublishedType()
+                };
+                delete elasticsearchPublishedData.latest;
+            }
+            esItems.push(
+                esEntity.putBatch({
+                    ...publishedKeys,
+                    index: esIndex,
+                    data: elasticsearchPublishedData
+                })
+            );
         }
         try {
             await batchWriteAll({
@@ -342,21 +492,18 @@ export const createEntriesStorageOperations = (
                 }
             );
         }
-        if (!elasticsearchLatestData) {
+        if (esItems.length === 0) {
             return storageEntry;
         }
-        const { index: esIndex } = configurations.es({
-            model
-        });
+
         try {
-            await esEntity.put({
-                ...latestKeys,
-                index: esIndex,
-                data: elasticsearchLatestData
+            await batchWriteAll({
+                table: esEntity.table,
+                items: esItems
             });
         } catch (ex) {
             throw new WebinyError(
-                ex.message || "Could not update entry DynamoDB Elasticsearch record.",
+                ex.message || "Could not update entry DynamoDB Elasticsearch records.",
                 ex.code || "UPDATE_ES_ENTRY_ERROR",
                 {
                     error: ex,
@@ -370,7 +517,11 @@ export const createEntriesStorageOperations = (
     const deleteEntry = async (model: CmsModel, params: CmsEntryStorageOperationsDeleteParams) => {
         const { entry } = params;
 
-        const partitionKey = createPartitionKey(entry);
+        const partitionKey = createPartitionKey({
+            id: entry.id,
+            locale: model.locale,
+            tenant: model.tenant
+        });
 
         const items = await queryAll<CmsEntry>({
             entity,
@@ -444,7 +595,11 @@ export const createEntriesStorageOperations = (
     ) => {
         const { entry, latestEntry, latestStorageEntry } = params;
 
-        const partitionKey = createPartitionKey(entry);
+        const partitionKey = createPartitionKey({
+            id: entry.id,
+            locale: model.locale,
+            tenant: model.tenant
+        });
 
         const { index } = configurations.es({
             model
@@ -665,15 +820,27 @@ export const createEntriesStorageOperations = (
         });
 
         const revisionKeys = {
-            PK: createPartitionKey(entry),
+            PK: createPartitionKey({
+                id: entry.id,
+                locale: model.locale,
+                tenant: model.tenant
+            }),
             SK: createRevisionSortKey(entry)
         };
         const latestKeys = {
-            PK: createPartitionKey(entry),
+            PK: createPartitionKey({
+                id: entry.id,
+                locale: model.locale,
+                tenant: model.tenant
+            }),
             SK: createLatestSortKey()
         };
         const publishedKeys = {
-            PK: createPartitionKey(entry),
+            PK: createPartitionKey({
+                id: entry.id,
+                locale: model.locale,
+                tenant: model.tenant
+            }),
             SK: createPublishedSortKey()
         };
 
@@ -867,7 +1034,11 @@ export const createEntriesStorageOperations = (
             ids: [entry.id]
         });
 
-        const partitionKey = createPartitionKey(entry);
+        const partitionKey = createPartitionKey({
+            id: entry.id,
+            locale: model.locale,
+            tenant: model.tenant
+        });
 
         const items = [
             entity.deleteBatch({
@@ -971,7 +1142,11 @@ export const createEntriesStorageOperations = (
             ids: [entry.id]
         });
 
-        const partitionKey = createPartitionKey(entry);
+        const partitionKey = createPartitionKey({
+            id: entry.id,
+            locale: model.locale,
+            tenant: model.tenant
+        });
 
         /**
          * If we updated the latest version, then make sure the changes are propagated to ES too.
@@ -1055,7 +1230,11 @@ export const createEntriesStorageOperations = (
             ids: [entry.id]
         });
 
-        const partitionKey = createPartitionKey(entry);
+        const partitionKey = createPartitionKey({
+            id: entry.id,
+            locale: model.locale,
+            tenant: model.tenant
+        });
 
         const items = [
             entity.putBatch({

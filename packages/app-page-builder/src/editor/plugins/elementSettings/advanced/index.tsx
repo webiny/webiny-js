@@ -1,13 +1,7 @@
-import { PbEditorEventActionPlugin } from "~/types";
-import { CreateElementActionEvent } from "../../../recoil/actions";
-import { advancedSettingsEditorAction } from "./advancedSettingsEditorAction";
-
-export default [
-    {
-        name: "pb-editor-event-action-advanced-settings",
-        type: "pb-editor-event-action-plugin",
-        onEditorMount(handler) {
-            return handler.on(CreateElementActionEvent, advancedSettingsEditorAction);
-        }
-    } as PbEditorEventActionPlugin
-];
+/**
+ * NOTE: this file exists only to prevent older projects from breaking, if they still use this import path.
+ */
+console.log(
+    `DEPRECATION WARNING: you're importing a path that is no longer used "@webiny/app-page-builder/editor/plugins/elementSettings/advanced". You should remove this import from your apps.`
+);
+export default [];

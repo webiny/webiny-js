@@ -2,28 +2,27 @@ const dbPlugins = require("@webiny/handler-db").default;
 const { DynamoDbDriver } = require("@webiny/db-dynamodb");
 const { DocumentClient } = require("aws-sdk/clients/dynamodb");
 const elasticsearchClientContextPlugin = require("@webiny/api-elasticsearch").default;
-const { createHandler } = require("@webiny/handler-aws");
-const dynamoToElastic = require("@webiny/api-dynamodb-to-elasticsearch/handler").default;
+const {
+    createEventHandler: createDynamoDBToElasticsearchEventHandler
+} = require("@webiny/api-dynamodb-to-elasticsearch");
 const { simulateStream } = require("@webiny/project-utils/testing/dynamodb");
 const NodeEnvironment = require("jest-environment-node");
 const elasticsearchDataGzipCompression =
     require("@webiny/api-elasticsearch/plugins/GzipCompression").default;
-const { ContextPlugin } = require("@webiny/handler");
+const { ContextPlugin } = require("@webiny/api");
 const {
     elasticIndexManager
 } = require("@webiny/project-utils/testing/helpers/elasticIndexManager");
 const {
     createElasticsearchClient
 } = require("@webiny/project-utils/testing/elasticsearch/createClient");
-
-const modelFieldToGraphQLPlugins =
-    require("@webiny/api-headless-cms/content/plugins/graphqlFields").default;
 /**
  * For this to work it must load plugins that have already been built
  */
 const { createStorageOperations } = require("../../dist/index");
 const { configurations } = require("../../dist/configurations");
 const { base: baseIndexConfigurationPlugin } = require("../../dist/elasticsearch/indices/base");
+const { createHandler: createDynamoDBHandler } = require("@webiny/handler-aws/dynamodb");
 
 if (typeof createStorageOperations !== "function") {
     throw new Error(`Loaded plugins file must export a function that returns an array of plugins.`);
@@ -67,8 +66,12 @@ class CmsTestEnvironment extends NodeEnvironment {
             context.plugins.register([elasticsearchDataGzipCompression()]);
             await elasticsearchClientContext.apply(context);
         });
-        simulateStream(documentClient, createHandler(simulationContext, dynamoToElastic()));
-
+        simulateStream(
+            documentClient,
+            createDynamoDBHandler({
+                plugins: [simulationContext, createDynamoDBToElasticsearchEventHandler()]
+            })
+        );
         /**
          * We need to create model index before entry create because of the direct storage operations tests.
          * When running direct storage ops tests, index is created on the fly otherwise and then it is not cleaned up afterwards.
@@ -114,7 +117,6 @@ class CmsTestEnvironment extends NodeEnvironment {
                     return createStorageOperations({
                         documentClient,
                         elasticsearch: elasticsearchClient,
-                        modelFieldToGraphQLPlugins: modelFieldToGraphQLPlugins(),
                         table: table => ({ ...table, name: process.env.DB_TABLE }),
                         esTable: table => ({ ...table, name: process.env.DB_TABLE_ELASTICSEARCH }),
                         plugins: testPlugins.concat([

@@ -6,7 +6,7 @@ import set from "lodash/set";
 import merge from "lodash/merge";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { IconButton } from "@webiny/ui/Button";
-import { PbEditorPageElementSettingsRenderComponentProps } from "~/types";
+import { PbEditorElement, PbEditorPageElementSettingsRenderComponentProps } from "~/types";
 import { applyFallbackDisplayMode } from "../elementSettingsUtils";
 // Components
 import { ContentWrapper } from "../components/StyledComponents";
@@ -59,7 +59,7 @@ const VerticalAlignSettings: React.FC<PbEditorPageElementSettingsRenderComponent
 }) => {
     const { displayMode, config } = useDisplayMode();
     const propName = `${DATA_NAMESPACE}.${displayMode}`;
-    const element = useActiveElement();
+    const [element] = useActiveElement<PbEditorElement>();
     const updateElement = useUpdateElement();
 
     const fallbackValue = useMemo(

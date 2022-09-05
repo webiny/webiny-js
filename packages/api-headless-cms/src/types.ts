@@ -1,6 +1,6 @@
 import { Plugin } from "@webiny/plugins/types";
 import { I18NContext, I18NLocale } from "@webiny/api-i18n/types";
-import { Context } from "@webiny/handler/types";
+import { Context } from "@webiny/api/types";
 import { TenancyContext } from "@webiny/api-tenancy/types";
 import {
     GraphQLFieldResolver,
@@ -8,7 +8,6 @@ import {
     Resolvers
 } from "@webiny/handler-graphql/types";
 import { SecurityPermission } from "@webiny/api-security/types";
-import { HttpContext } from "@webiny/handler-http/types";
 import { DbContext } from "@webiny/handler-db/types";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
@@ -24,7 +23,7 @@ export interface HeadlessCms
     /**
      * API type
      */
-    type: ApiEndpoint;
+    type: ApiEndpoint | null;
     /**
      * Requested locale
      */
@@ -58,7 +57,7 @@ export interface HeadlessCms
 export interface CmsContext
     extends Context,
         DbContext,
-        HttpContext,
+        // HttpContext,
         I18NContext,
         FileManagerContext,
         TenancyContext {
@@ -421,6 +420,12 @@ export interface CmsModel {
      * The version of Webiny which this record was stored with.
      */
     webinyVersion: string;
+    /**
+     * Is model private?
+     * This is meant to be used for some internal models - will not be visible in the schema.
+     * Only available for the plugin constructed models.
+     */
+    isPrivate?: boolean;
 }
 
 /**
@@ -864,6 +869,12 @@ export interface CmsGroup {
      * Which Webiny version was this record stored with.
      */
     webinyVersion: string;
+    /**
+     * Is group private?
+     * This is meant to be used for some internal groups - will not be visible in the schema.
+     * Only available for the plugin constructed groups.
+     */
+    isPrivate?: boolean;
 }
 
 /**
@@ -1012,6 +1023,26 @@ export interface CmsModelCreateInput {
      * Group where to put the content model in.
      */
     group: string;
+    /**
+     * A list of content model fields to define the entry values.
+     */
+    fields?: CmsModelFieldInput[];
+    /**
+     * Admin UI field layout
+     *
+     * ```ts
+     * layout: [
+     *      [field1id, field2id],
+     *      [field3id]
+     * ]
+     * ```
+     */
+    layout?: string[][];
+    /**
+     * The field that is being displayed as entry title.
+     * It is picked as first available text field. Or user can select own field.
+     */
+    titleFieldId?: string;
 }
 
 /**
@@ -1237,7 +1268,20 @@ export interface CmsEntry {
      *
      * @see CmsModelField
      */
-    values: Record<string, any>;
+    values: {
+        [key: string]: any;
+    };
+    /**
+     * Settings for the given entry.
+     *
+     * Introduced with Advanced Publishing Workflow - will be always inserted after this PR is merged.
+     * Be aware that when accessing properties in it on old systems - it will break if not checked first.
+     *
+     * Available only on the Manage API in entry GraphQL type meta.data property.
+     */
+    meta?: {
+        [key: string]: any;
+    };
 }
 
 export interface CmsStorageEntry extends CmsEntry {
@@ -1442,7 +1486,9 @@ export interface CmsEntryListWhere {
     entryId_in?: string[];
     entryId_not_in?: string[];
     /**
-     * Entry is owned by whom?
+     * Contains the owner of the entry. An "owner" is the identity who originally created the entry.
+     * Subsequent revisions can be created by other identities, and those will be stored in `createdBy`,
+     * but the `owner` is always the original author of the entry.
      *
      * Can be sent via the API or set internal if user can see only their own entries.
      */
@@ -1467,25 +1513,25 @@ export interface CmsEntryListWhere {
     version_lt?: number;
     version_gt?: number;
     /**
-     * Each operations implementation MUST determine how to use this field.
-     * In SQL it can be published field and in DynamoDB can be a secondary key.
+     * Each storage operations implementation MUST determine how to use this field.
+     * In SQL, it can be a `published` field, and in DynamoDB it can be an SK.
      *
      * It is not meant to be used via the API.
      * @internal
      */
     published?: boolean;
     /**
-     * Each operations implementation MUST determine how to use this field.
-     * In SQL it can be published field and in DynamoDB can be a secondary key.
+     * Each storage operations implementation MUST determine how to use this field.
+     * In SQL, it can be a `latest` field, and in DynamoDB it can be an SK.
      *
      * It is not meant to be used via the API.
      * @internal
      */
     latest?: boolean;
     /**
-     * Can be reference field or, actually, anything else.
+     * This is to allow querying by any content model field defined by the user.
      */
-    // [key: string]: any | CmsEntryListWhereRef;
+    [key: string]: any | CmsEntryListWhereRef;
 }
 
 /**
@@ -1742,7 +1788,12 @@ export interface CmsEntryContext {
     /**
      * Update existing entry.
      */
-    updateEntry: (model: CmsModel, id: string, input: UpdateCmsEntryInput) => Promise<CmsEntry>;
+    updateEntry: (
+        model: CmsModel,
+        id: string,
+        input: UpdateCmsEntryInput,
+        meta?: Record<string, any>
+    ) => Promise<CmsEntry>;
     /**
      * Method that republishes entry with given identifier.
      * @internal
@@ -2038,14 +2089,6 @@ export interface CmsEntryStorageOperationsCreateParams<
 export interface CmsEntryStorageOperationsCreateRevisionFromParams<
     T extends CmsStorageEntry = CmsStorageEntry
 > {
-    /**
-     * Latest entry, used to calculate the new version.
-     */
-    latestEntry: CmsEntry | null;
-    /**
-     * Latest entry, used to calculate the new version, directly from storage, with transformations.
-     */
-    latestStorageEntry: T | null;
     /**
      * Real entry, with no transformations on it.
      */
