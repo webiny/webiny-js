@@ -1,7 +1,7 @@
 import useGqlHandler from "./useGqlHandler";
 import mocks from "./mocks/folders";
 
-describe("Folders CRUD", () => {
+describe("`folders` CRUD", () => {
     const { folders } = useGqlHandler();
 
     it("should be able to create, read, update and delete `folders`", async () => {
@@ -19,8 +19,8 @@ describe("Folders CRUD", () => {
         expect(folderC).toEqual({ id: folderC.id, ...mocks.folderC });
 
         // Let's check whether both of the folder exists, listing them by `category`.
-        const [listPageResponse] = await folders.list({ where: { category: "page" } });
-        expect(listPageResponse.data.folders.listFolders).toEqual(
+        const [listResponse] = await folders.list({ where: { category: "page" } });
+        expect(listResponse.data.folders.listFolders).toEqual(
             expect.objectContaining({
                 data: expect.arrayContaining([
                     {
@@ -73,7 +73,7 @@ describe("Folders CRUD", () => {
             }
         });
 
-        // Let's delete "folderB"
+        // Let's delete "folder-b"
         const [deleteB] = await folders.delete({
             id: folderB.id
         });
@@ -106,7 +106,7 @@ describe("Folders CRUD", () => {
             }
         });
 
-        // Should Find "folder-a" by id
+        // Should find "folder-a" by id
         const [getA] = await folders.get({ id: folderA.id });
 
         expect(getA).toEqual({

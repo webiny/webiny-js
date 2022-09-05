@@ -20,6 +20,14 @@ import {
     UPDATE_FOLDER
 } from "./graphql/folders";
 
+import {
+    CREATE_ENTRY,
+    DELETE_ENTRY,
+    GET_ENTRY,
+    LIST_ENTRIES,
+    UPDATE_ENTRY
+} from "./graphql/entries";
+
 export interface UseGqlHandlerParams {
     permissions?: SecurityPermission[];
     identity?: SecurityIdentity;
@@ -113,9 +121,28 @@ export default (params: UseGqlHandlerParams = {}) => {
         }
     };
 
+    const entries = {
+        async create(variables = {}) {
+            return invoke({ body: { query: CREATE_ENTRY, variables } });
+        },
+        async update(variables = {}) {
+            return invoke({ body: { query: UPDATE_ENTRY, variables } });
+        },
+        async delete(variables = {}) {
+            return invoke({ body: { query: DELETE_ENTRY, variables } });
+        },
+        async list(variables = {}) {
+            return invoke({ body: { query: LIST_ENTRIES, variables } });
+        },
+        async get(variables = {}) {
+            return invoke({ body: { query: GET_ENTRY, variables } });
+        }
+    };
+
     return {
         handler,
         invoke,
+        entries,
         folders
     };
 };
