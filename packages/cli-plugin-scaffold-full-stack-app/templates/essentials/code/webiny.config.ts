@@ -7,8 +7,8 @@ import { getStackOutput } from "@webiny/cli-plugin-deploy-pulumi/utils";
 // output to retrieve the URL over which the GraphQL API is accessible. If needed, additional
 // information can be retrieved too, but remember to export it in the cloud infrastructure
 // code, in the following files:
-// - `project-applications-path/api/pulumi/dev/index.ts`
-// - `project-applications-path/api/pulumi/prod/index.ts`
+// - `project-applications-path/apps/api/pulumi/dev/index.ts`
+// - `project-applications-path/apps/api/pulumi/prod/index.ts`
 
 const API_MAP = {
     REACT_APP_API_URL: "${apiUrl}",

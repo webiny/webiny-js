@@ -15,7 +15,13 @@ export const createTable = (params: CreateTableParams): Table => {
         name: (process.env.DB_TABLE_PRERENDERING_SERVICE || process.env.DB_TABLE) as string,
         partitionKey: "PK",
         sortKey: "SK",
-        DocumentClient: documentClient
+        DocumentClient: documentClient,
+        indexes: {
+            GSI1: {
+                partitionKey: "GSI1_PK",
+                sortKey: "GSI1_SK"
+            }
+        }
     };
 
     const config = typeof table === "function" ? table(tableConfig) : tableConfig;

@@ -5,6 +5,8 @@ import {
     ListReviewersQueryVariables
 } from "~/graphql/reviewer.gql";
 import { ApwReviewer } from "~/types";
+import get from "lodash/get";
+import { useMemo } from "react";
 
 interface UseReviewersResult {
     reviewers: ApwReviewer[];
@@ -16,8 +18,15 @@ export const useReviewers = (): UseReviewersResult => {
         LIST_REVIEWS_QUERY
     );
 
+    const reviewers: ApwReviewer[] = useMemo(() => {
+        if (!data) {
+            return [];
+        }
+        return get(data, "apw.listReviewers.data", []);
+    }, [data]);
+
     return {
-        reviewers: data ? data.apw.listReviewers.data : [],
+        reviewers,
         loading
     };
 };

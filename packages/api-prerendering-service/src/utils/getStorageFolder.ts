@@ -1,6 +1,7 @@
-import { Args, Configuration } from "~/types";
+export const getStorageFolder = (path: string) => {
+    if (path.startsWith("/")) {
+        path = path.substring(1);
+    }
 
-export default (args?: Args, configuration?: Configuration) => {
-    const folder = args?.configuration?.storage?.folder ?? configuration?.storage?.folder;
-    return typeof folder === "string" ? folder : "";
+    return path;
 };

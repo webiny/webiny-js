@@ -1,5 +1,4 @@
-import { useContentGqlHandler } from "./useContentGqlHandler";
-import { GQLHandlerCallableParams } from "./useGqlHandler";
+import { GraphQLHandlerParams, useGraphQLHandler } from "./useGraphQLHandler";
 
 const categoryFields = `
     id
@@ -27,6 +26,7 @@ const categoryFields = `
                 version
             }
         }
+        data
     }
     # user defined fields
     title
@@ -181,10 +181,8 @@ const requestCategoryReviewMutation = /* GraphQL */ `
     }
 `;
 
-export const useCategoryManageHandler = (
-    params: Omit<GQLHandlerCallableParams, "createHeadlessCmsApp">
-) => {
-    const contentHandler = useContentGqlHandler(params);
+export const useCategoryManageHandler = (params: GraphQLHandlerParams) => {
+    const contentHandler = useGraphQLHandler(params);
 
     return {
         ...contentHandler,

@@ -3,6 +3,185 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.31.0](https://github.com/webiny/webiny-js/compare/v5.31.0-beta.1...v5.31.0) (2022-08-18)
+
+**Note:** Version bump only for package @webiny/app-form-builder
+
+
+
+
+
+# [5.31.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.31.0-beta.0...v5.31.0-beta.1) (2022-08-17)
+
+**Note:** Version bump only for package @webiny/app-form-builder
+
+
+
+
+
+# [5.31.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.30.0...v5.31.0-beta.0) (2022-08-16)
+
+**Note:** Version bump only for package @webiny/app-form-builder
+
+
+
+
+
+# [5.30.0](https://github.com/webiny/webiny-js/compare/v5.30.0-beta.1...v5.30.0) (2022-07-27)
+
+**Note:** Version bump only for package @webiny/app-form-builder
+
+
+
+
+
+# [5.30.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.30.0-beta.0...v5.30.0-beta.1) (2022-07-26)
+
+**Note:** Version bump only for package @webiny/app-form-builder
+
+
+
+
+
+# [5.30.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.29.0...v5.30.0-beta.0) (2022-07-25)
+
+
+### Features
+
+* **ui:** upgrade RMWC to v7 ([#2553](https://github.com/webiny/webiny-js/issues/2553)) ([ee963b0](https://github.com/webiny/webiny-js/commit/ee963b0bee9f50bc24de5cacaeee43b1fd7f8b09))
+* decouple Page Editor and introduce a Block Editor ([#2529](https://github.com/webiny/webiny-js/issues/2529)) ([a455192](https://github.com/webiny/webiny-js/commit/a45519283b1145a57660252c360f3a86c890d363))
+* typescript to 4.7.4 ([#2527](https://github.com/webiny/webiny-js/issues/2527)) ([ee24a3a](https://github.com/webiny/webiny-js/commit/ee24a3a995942ee2588e615e42f604ed7418390a))
+
+
+
+
+
+# [5.29.0](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.2...v5.29.0) (2022-06-28)
+
+**Note:** Version bump only for package @webiny/app-form-builder
+
+
+
+
+
+# [5.29.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.1...v5.29.0-beta.2) (2022-06-27)
+
+**Note:** Version bump only for package @webiny/app-form-builder
+
+
+
+
+
+# [5.29.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.0...v5.29.0-beta.1) (2022-06-25)
+
+**Note:** Version bump only for package @webiny/app-form-builder
+
+
+
+
+
+# [5.29.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.28.0...v5.29.0-beta.0) (2022-06-25)
+
+**Note:** Version bump only for package @webiny/app-form-builder
+
+
+
+
+
+# [5.28.0](https://github.com/webiny/webiny-js/compare/v5.28.0-beta.0...v5.28.0) (2022-06-07)
+
+**Note:** Version bump only for package @webiny/app-form-builder
+
+
+
+
+
+# [5.28.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.27.0...v5.28.0-beta.0) (2022-06-07)
+
+**Note:** Version bump only for package @webiny/app-form-builder
+
+
+
+
+
+# [5.27.0](https://github.com/webiny/webiny-js/compare/v5.27.0-beta.0...v5.27.0) (2022-05-26)
+
+**Note:** Version bump only for package @webiny/app-form-builder
+
+
+
+
+
+# [5.27.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.26.1-beta.0...v5.27.0-beta.0) (2022-05-25)
+
+**Note:** Version bump only for package @webiny/app-form-builder
+
+
+
+
+
+## [5.26.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.26.0...v5.26.1-beta.0) (2022-05-24)
+
+
+### Bug Fixes
+
+* replace direct usages of RMWC with the ui package ([3e87916](https://github.com/webiny/webiny-js/commit/3e87916073b66db3246fa25ebfcb797804021eb1))
+
+
+
+
+
+# [5.26.0](https://github.com/webiny/webiny-js/compare/v5.26.0-beta.2...v5.26.0) (2022-05-13)
+
+**Note:** Version bump only for package @webiny/app-form-builder
+
+
+
+
+
+# [5.26.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.26.0-beta.1...v5.26.0-beta.2) (2022-05-13)
+
+**Note:** Version bump only for package @webiny/app-form-builder
+
+
+
+
+
+# [5.26.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.26.0-beta.0...v5.26.0-beta.1) (2022-05-12)
+
+**Note:** Version bump only for package @webiny/app-form-builder
+
+
+
+
+
+# [5.26.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.25.1-beta.1...v5.26.0-beta.0) (2022-05-11)
+
+**Note:** Version bump only for package @webiny/app-form-builder
+
+
+
+
+
+## [5.25.1-beta.1](https://github.com/webiny/webiny-js/compare/v5.25.1-beta.0...v5.25.1-beta.1) (2022-05-11)
+
+**Note:** Version bump only for package @webiny/app-form-builder
+
+
+
+
+
+## [5.25.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.25.0...v5.25.1-beta.0) (2022-05-10)
+
+
+### Features
+
+* **page-builder:** iframe element ([#2319](https://github.com/webiny/webiny-js/issues/2319)) ([fa4c571](https://github.com/webiny/webiny-js/commit/fa4c57139ff2bcd41b669a0be5127f5f0d80de14))
+
+
+
+
+
 # [5.25.0](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.6...v5.25.0) (2022-04-04)
 
 **Note:** Version bump only for package @webiny/app-form-builder

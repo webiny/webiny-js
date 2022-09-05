@@ -1,4 +1,5 @@
-import { createHandler } from "@webiny/handler-aws";
+import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
+import { createHandler } from "@webiny/handler-aws/gateway";
 import graphqlHandler from "@webiny/handler-graphql";
 import i18nPlugins from "@webiny/api-i18n/graphql";
 import i18nDynamoDbStorageOperations from "~/index";
@@ -27,29 +28,41 @@ export default (params: UseGqlHandlerParams) => {
         secretAccessKey: "test"
     });
 
-    const handler = createHandler(
-        dbPlugins({
-            table: process.env.DB_TABLE,
-            driver: new DynamoDbDriver({
-                documentClient
-            })
-        }),
-        ...createTenancyAndSecurity(),
-        i18nDynamoDbStorageOperations(),
-        dynamoDbPlugins(),
-        graphqlHandler(),
-        i18nPlugins(),
-        extraPlugins || []
-    );
+    const handler = createHandler({
+        plugins: [
+            createWcpContext(),
+            createWcpGraphQL(),
+            dbPlugins({
+                table: process.env.DB_TABLE,
+                driver: new DynamoDbDriver({
+                    documentClient
+                })
+            }),
+            ...createTenancyAndSecurity(),
+            i18nDynamoDbStorageOperations(),
+            dynamoDbPlugins(),
+            graphqlHandler(),
+            i18nPlugins(),
+            ...(extraPlugins || [])
+        ]
+    });
 
     // Let's also create the "invoke" function. This will make handler invocations in actual tests easier and nicer.
-    const invoke = async ({ httpMethod = "POST", body, headers = {}, ...rest }) => {
-        const response = await handler({
-            httpMethod,
-            headers,
-            body: JSON.stringify(body),
-            ...rest
-        });
+    const invoke = async ({ httpMethod = "POST", body = {}, headers = {}, ...rest }) => {
+        const response = await handler(
+            {
+                path: "/graphql",
+                httpMethod,
+                headers: {
+                    ["x-tenant"]: "root",
+                    ["Content-Type"]: "application/json",
+                    ...headers
+                },
+                body: JSON.stringify(body),
+                ...rest
+            } as any,
+            {} as any
+        );
 
         // The first element is the response body, and the second is the raw response.
         return [JSON.parse(response.body), response];

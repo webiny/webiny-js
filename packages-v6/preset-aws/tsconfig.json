@@ -1,9 +1,16 @@
 {
   "extends": "../../tsconfig.json",
-  "include": ["src"],
+  "include": ["src", "__tests__/**/*.ts"],
+  "references": [{ "path": "../core" }],
   "compilerOptions": {
-    "paths": { "~/*": ["./src/*"] },
+    "rootDirs": ["./src", "./__tests__"],
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {
+      "~/*": ["./src/*"],
+      "@webiny/core/*": ["../core/src/*"],
+      "@webiny/core": ["../core/src"]
+    },
     "baseUrl": "."
-  },
-  "references": [{ "path": "../core" }]
+  }
 }

@@ -1,11 +1,11 @@
 import React from "react";
 import styled from "@emotion/styled";
-import useElementSettings from "../../../plugins/elementSettings/hooks/useElementSettings";
-import AdvancedSettings from "../../../plugins/elementSettings/advanced/AdvancedSettings";
-import { PbEditorElement } from "../../../../types";
-import { COLORS } from "../../../plugins/elementSettings/components/StyledComponents";
 import NoActiveElement from "./NoActiveElement";
 import { ReactComponent as TouchIcon } from "./icons/touch_app.svg";
+import { useActiveElement } from "~/editor/hooks/useActiveElement";
+import { COLORS } from "~/editor/plugins/elementSettings/components/StyledComponents";
+import useElementSettings from "~/editor/plugins/elementSettings/hooks/useElementSettings";
+import { ElementSettings } from "~/editor/plugins/elementSettings/advanced/ElementSettings";
 
 const RootElement = styled("div")({
     height: "calc(100vh - 65px - 48px)", // Subtract top-bar and tab-header height
@@ -32,10 +32,8 @@ const SidebarActionsWrapper = styled("div")({
     justifyContent: "center"
 });
 
-interface ElementSettingsTabContentProps {
-    element: PbEditorElement | null;
-}
-const ElementSettingsTabContent: React.FC<ElementSettingsTabContentProps> = ({ element }) => {
+const ElementSettingsTabContent: React.FC = () => {
+    const [element] = useActiveElement();
     const elementSettings = useElementSettings();
 
     if (!element) {
@@ -59,7 +57,7 @@ const ElementSettingsTabContent: React.FC<ElementSettingsTabContentProps> = ({ e
                     );
                 })}
             </SidebarActionsWrapper>
-            <AdvancedSettings />
+            <ElementSettings />
         </RootElement>
     );
 };

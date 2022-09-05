@@ -1,5 +1,5 @@
-import timeLtePlugin from "~/content/plugins/validators/timeLte";
-import timeGtePlugin from "~/content/plugins/validators/timeGte";
+import { createTimeLteValidator } from "~/validators/timeLte";
+import { createTimeGteValidator } from "~/validators/timeGte";
 import { CmsModelFieldValidation } from "~/types";
 
 const createValidator = (args: Record<string, any>): CmsModelFieldValidation => {
@@ -14,8 +14,8 @@ const createValidator = (args: Record<string, any>): CmsModelFieldValidation => 
 
 describe("time validators", () => {
     const context: any = {};
-    const gtePlugin = timeGtePlugin();
-    const ltePlugin = timeLtePlugin();
+    const gtePlugin = createTimeGteValidator();
+    const ltePlugin = createTimeLteValidator();
 
     const gteValidationCorrectValues = [
         ["11:22:33", "11:22:33"],

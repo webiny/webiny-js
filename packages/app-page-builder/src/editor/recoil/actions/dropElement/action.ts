@@ -1,5 +1,5 @@
 import invariant from "invariant";
-import { DragObjectWithTypeWithTarget } from "../../../components/Droppable";
+import { DragObjectWithTypeWithTarget } from "~/editor/components/Droppable";
 import {
     PbEditorPageElementPlugin,
     EventActionCallable,

@@ -1,12 +1,7 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
-  "references": [
-    { "path": "../api-i18n" },
-    { "path": "../api-security" },
-    { "path": "../handler" },
-    { "path": "../handler-graphql" }
-  ],
+  "references": [{ "path": "../api-i18n" }, { "path": "../api-security" }, { "path": "../api" }],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",
@@ -17,8 +12,8 @@
       "@webiny/api-i18n": ["../api-i18n/src"],
       "@webiny/api-security/*": ["../api-security/src/*"],
       "@webiny/api-security": ["../api-security/src"],
-      "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"]
+      "@webiny/api/*": ["../api/src/*"],
+      "@webiny/api": ["../api/src"]
     },
     "baseUrl": "."
   }

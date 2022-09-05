@@ -1,0 +1,32 @@
+{
+  "name": "@webiny/react-properties",
+  "version": "5.31.0",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "description": "Build pluggable data objects using React components.",
+  "author": "Webiny Ltd",
+  "license": "MIT",
+  "dependencies": {
+    "@babel/runtime": "^7.16.3",
+    "@types/react": "17.0.39",
+    "nanoid": "^3.3.4",
+    "react": "17.0.2"
+  },
+  "devDependencies": {
+    "@testing-library/react": "^12.1.5",
+    "@webiny/cli": "^5.31.0",
+    "@webiny/project-utils": "^5.31.0",
+    "@webiny/react-composition": "^5.31.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "scripts": {
+    "build": "yarn webiny run build",
+    "watch": "yarn webiny run watch"
+  }
+}

@@ -24,7 +24,6 @@ import { ReactComponent as BeenHereIcon } from "~/admin/icons/beenhere.svg";
 import { ReactComponent as GestureIcon } from "~/admin/icons/gesture.svg";
 import { ReactComponent as AddIcon } from "~/admin/icons/add.svg";
 import { ReactComponent as EditIcon } from "~/admin/icons/edit.svg";
-import { ReactComponent as PublishIcon } from "~/admin/icons/publish.svg";
 import { ReactComponent as UnpublishIcon } from "~/admin/icons/unpublish.svg";
 import { ReactComponent as DeleteIcon } from "~/admin/icons/delete.svg";
 import { CmsEditorContentEntry } from "~/types";
@@ -32,6 +31,7 @@ import { i18n } from "@webiny/app/i18n";
 import { useRevision } from "./useRevision";
 import usePermission from "~/admin/hooks/usePermission";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
+import { PublishEntryRevisionListItem } from "./PublishEntryRevisionListItem";
 
 const t = i18n.ns("app-headless-cms/admin/plugins/content-details/content-revisions");
 
@@ -79,7 +79,7 @@ const RevisionListItem: React.FC<RevisionListItemProps> = ({ revision }) => {
             revision
         });
 
-    const { entry, tabs } = useContentEntry();
+    const { entry, tabsRef } = useContentEntry();
     const { canEdit, canDelete, canPublish, canUnpublish } = usePermission();
     const { icon, text: tooltipText } = getIcon(revision);
 
@@ -134,10 +134,10 @@ const RevisionListItem: React.FC<RevisionListItemProps> = ({ revision }) => {
                                 <MenuItem
                                     onClick={() => {
                                         editRevision();
-                                        if (!tabs.current) {
+                                        if (!tabsRef.current) {
                                             return;
                                         }
-                                        tabs.current.switchTab(0);
+                                        tabsRef.current.switchTab(0);
                                     }}
                                 >
                                     <ListItemGraphic>
@@ -150,10 +150,7 @@ const RevisionListItem: React.FC<RevisionListItemProps> = ({ revision }) => {
                             {revision.meta.status !== "published" &&
                                 canPublish("cms.contentEntry") && (
                                     <MenuItem onClick={() => publishRevision(revision.id)}>
-                                        <ListItemGraphic>
-                                            <Icon icon={<PublishIcon />} />
-                                        </ListItemGraphic>
-                                        {t`Publish`}
+                                        <PublishEntryRevisionListItem />
                                     </MenuItem>
                                 )}
 

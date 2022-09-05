@@ -1,17 +1,26 @@
 import { QueueJob } from "~/types";
+/**
+ * Missing types for mdbid package.
+ */
+// @ts-ignore
 import mdbid from "mdbid";
 
+const tenant = "root";
+const locale = "en-US";
+
+interface RenderAllJobParams {
+    index: any;
+    tenant?: string;
+}
+
 const mocks = {
-    job: (index): QueueJob => {
+    job: (index: any): QueueJob => {
         return {
             id: mdbid(),
             args: {
                 render: {
-                    configuration: {
-                        db: {
-                            namespace: "root"
-                        }
-                    },
+                    tenant,
+                    locale,
                     tag: {
                         value: `main-menu-${index}`,
                         key: "pb-menu"
@@ -20,16 +29,13 @@ const mocks = {
             }
         };
     },
-    renderAllJob: ({ index, namespace = "root" }): QueueJob => {
+    renderAllJob: ({ index, tenant = "root" }: RenderAllJobParams): QueueJob => {
         return {
             id: index || mdbid(),
             args: {
                 render: {
-                    configuration: {
-                        db: {
-                            namespace
-                        }
-                    },
+                    tenant,
+                    locale,
                     path: "*"
                 }
             }

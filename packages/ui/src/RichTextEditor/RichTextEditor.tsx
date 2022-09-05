@@ -6,7 +6,7 @@ import {
     OutputData,
     SanitizerConfig,
     ToolSettings
-} from "@editorjs/editorjs/types";
+} from "@editorjs/editorjs";
 import { FormElementMessage } from "~/FormElementMessage";
 import { css } from "emotion";
 import classNames from "classnames";
@@ -37,12 +37,14 @@ export interface OnReadyParams {
     initialData: OutputData;
 }
 
+export type RichTextEditorValue = OutputBlockData[];
+
 export interface RichTextEditorProps {
     autofocus?: boolean;
     context?: { [key: string]: any };
     logLevel?: string;
     minHeight?: number;
-    onChange?: (data: OutputBlockData[]) => void;
+    onChange?: (data: RichTextEditorValue) => void;
     onReady?: (params: OnReadyParams) => void;
     placeholder?: string;
     readOnly?: boolean;
@@ -50,7 +52,7 @@ export interface RichTextEditorProps {
     tools?: {
         [toolName: string]: ToolSettings;
     };
-    value?: OutputBlockData[];
+    value?: RichTextEditorValue;
     label?: string;
     description?: string;
     disabled?: boolean;

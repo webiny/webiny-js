@@ -1,18 +1,19 @@
 name: "\U0001F680 Feature request"
 description: Suggest an idea for the project
+labels: "feature request"
 body:
   - type: markdown
     attributes:
       value: |
         Thank you for suggesting an idea to make Webiny better.
-        Please fill in as much of the template below as you're able.
+        Please fill in as much of the template below as you're able to.
   - type: textarea
     attributes:
       label: Is your feature request related to a problem? Please describe.
       description: Please describe the problem you are trying to solve.
   - type: textarea
     attributes:
-      label: Describe the solution you'd like.
+      label: Describe the feature's behavior.
       description: Please describe the desired behaviour.
   - type: textarea
     attributes:

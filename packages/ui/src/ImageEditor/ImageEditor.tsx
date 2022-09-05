@@ -246,6 +246,7 @@ class ImageEditor extends React.Component<ImageEditorProps, ImageEditorState> {
 
                             <ApplyCancelActions>
                                 <ButtonSecondary
+                                    data-testid="button-cancel"
                                     onClick={() => {
                                         this.cancelActiveTool();
                                     }}
@@ -254,6 +255,7 @@ class ImageEditor extends React.Component<ImageEditorProps, ImageEditorState> {
                                 </ButtonSecondary>
                                 &nbsp;
                                 <ButtonPrimary
+                                    data-testid="button-apply"
                                     onClick={() => {
                                         this.applyActiveTool();
                                     }}

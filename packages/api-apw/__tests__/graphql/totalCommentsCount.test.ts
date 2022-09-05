@@ -1,13 +1,13 @@
-import { useContentGqlHandler } from "../utils/useContentGqlHandler";
+import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
 import { mocks as changeRequestMock, richTextMock } from "./mocks/changeRequest";
-import { createSetupForContentReview } from "../utils/helpers";
+import { createSetupForPageContentReview } from "../utils/helpers";
 
 describe(`Total comments count test`, () => {
     const options = {
         path: "manage/en-US"
     };
 
-    const gqlHandler = useContentGqlHandler({
+    const gqlHandler = usePageBuilderHandler({
         ...options
     });
     const {
@@ -55,7 +55,7 @@ describe(`Total comments count test`, () => {
     };
 
     test(`should able to update "totalComments" count in a content review`, async () => {
-        const { page } = await createSetupForContentReview(gqlHandler);
+        const { page } = await createSetupForPageContentReview(gqlHandler);
         const contentReview = await createContentReview(page);
         const [step1] = contentReview.steps;
 
@@ -260,7 +260,7 @@ describe(`Total comments count test`, () => {
     });
 
     test(`should able to update "totalComments" count in a content review after "change request" delete`, async () => {
-        const { page } = await createSetupForContentReview(gqlHandler);
+        const { page } = await createSetupForPageContentReview(gqlHandler);
         const contentReview = await createContentReview(page);
         const [step1] = contentReview.steps;
 

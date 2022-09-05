@@ -7,9 +7,11 @@ import { createContentReviewStorageOperations } from "./contentReviewStorageOper
 import { createChangeRequestStorageOperations } from "./changeRequestStorageOperations";
 import { createCommentStorageOperations } from "~/storageOperations/commentStorageOperations";
 import { createApwModels } from "./models";
+import { Security } from "@webiny/api-security/types";
 
 export interface CreateApwStorageOperationsParams {
     cms: HeadlessCms;
+    security: Security;
     getCmsContext: () => CmsContext;
 }
 
@@ -23,24 +25,20 @@ export function getFieldValues(entry: CmsEntry, fields: string[]): any {
 
 export const baseFields = ["id", "createdBy", "createdOn", "savedOn"];
 
-export const createStorageOperations = ({
-    cms,
-    getCmsContext
-}: CreateApwStorageOperationsParams): ApwStorageOperations => {
-    const context = getCmsContext();
+export const createStorageOperations = (
+    params: CreateApwStorageOperationsParams
+): ApwStorageOperations => {
+    const context = params.getCmsContext();
     /**
      * Register Apw models.
      */
     createApwModels(context);
 
     return {
-        ...createReviewerStorageOperations({ cms }),
-        ...createWorkflowStorageOperations({ cms }),
-        ...createContentReviewStorageOperations({ cms }),
-        ...createChangeRequestStorageOperations({ cms, getCmsContext }),
-        ...createCommentStorageOperations({
-            cms,
-            getCmsContext
-        })
+        ...createReviewerStorageOperations(params),
+        ...createWorkflowStorageOperations(params),
+        ...createContentReviewStorageOperations(params),
+        ...createChangeRequestStorageOperations(params),
+        ...createCommentStorageOperations(params)
     };
 };

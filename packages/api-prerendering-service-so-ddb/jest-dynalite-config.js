@@ -1,17 +1,16 @@
-module.exports = {
-    tables: [
+const { createDynaliteTables } = require("../../jest.config.base");
+
+module.exports = createDynaliteTables({
+    data: [
         {
-            TableName: process.env.DB_TABLE,
-            KeySchema: [
-                { AttributeName: "PK", KeyType: "HASH" },
-                { AttributeName: "SK", KeyType: "RANGE" }
-            ],
-            AttributeDefinitions: [
-                { AttributeName: "PK", AttributeType: "S" },
-                { AttributeName: "SK", AttributeType: "S" }
-            ],
-            ProvisionedThroughput: { ReadCapacityUnits: 1, WriteCapacityUnits: 1 }
+            PK: "PS#SETTINGS",
+            SK: "default",
+            data: {
+                appUrl: "https://www.test.com",
+                bucket: "bucket",
+                cloudfrontId: "cloudfrontId",
+                deliveryUrl: "https://www.test.com"
+            }
         }
-    ],
-    basePort: 8000
-};
+    ]
+});

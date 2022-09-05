@@ -1,5 +1,4 @@
-import { useContentGqlHandler } from "./useContentGqlHandler";
-import { GQLHandlerCallableParams } from "./useGqlHandler";
+import { useGraphQLHandler, GraphQLHandlerParams } from "./useGraphQLHandler";
 
 const fields = `
     id
@@ -159,9 +158,9 @@ const unpublishArticleMutation = /* GraphQL */ `
 `;
 
 export const useArticleManageHandler = (
-    params: Omit<GQLHandlerCallableParams, "createHeadlessCmsApp">
+    params: Omit<GraphQLHandlerParams, "createHeadlessCmsApp">
 ) => {
-    const contentHandler = useContentGqlHandler(params);
+    const contentHandler = useGraphQLHandler(params);
 
     return {
         ...contentHandler,

@@ -1,7 +1,7 @@
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import { useArticleManageHandler } from "../utils/useArticleManageHandler";
 import { useArticleReadHandler } from "../utils/useArticleReadHandler";
-import { useContentGqlHandler } from "../utils/useContentGqlHandler";
+import { useGraphQLHandler } from "../utils/useGraphQLHandler";
 import { setupContentModelGroup, setupContentModels } from "../utils/setup";
 import { until } from "../utils/helpers";
 
@@ -119,7 +119,7 @@ describe("entry references", () => {
     const manageOpts = { path: "manage/en-US" };
     const readOpts = { path: "read/en-US" };
 
-    const mainManager = useContentGqlHandler(manageOpts);
+    const mainManager = useGraphQLHandler(manageOpts);
 
     it("should get the published references on entries", async () => {
         const group = await setupContentModelGroup(mainManager);

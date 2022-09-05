@@ -142,6 +142,7 @@ const ValidatorsTab: React.FC<ValidatorsTabProps> = props => {
                                                                         <Input
                                                                             {...bind}
                                                                             label={"Message"}
+                                                                            data-testid="cms.editfield.validators.required"
                                                                             description={
                                                                                 "This message will be displayed to the user"
                                                                             }

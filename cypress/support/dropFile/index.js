@@ -15,3 +15,19 @@ Cypress.Commands.add("dropFile", { prevSubject: "element" }, (subject, fileName,
             });
         });
 });
+
+// Drag and drop multiple files.
+Cypress.Commands.add("uploadBulkFiles", (selector, fileUrlArray, type = "") => {
+    const files = [];
+    fileUrlArray.forEach(fileUrl => {
+        cy.fixture(fileUrl, "base64")
+            .then(Cypress.Blob.base64StringToBlob)
+            .then(blob => {
+                const nameSegments = fileUrl.split("/");
+                const name = nameSegments[nameSegments.length - 1];
+                files.push(new File([blob], name, { type }));
+            });
+    });
+    const event = { dataTransfer: { files: files } };
+    return cy.get(selector).trigger("drop", event);
+});

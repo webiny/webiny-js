@@ -1,4 +1,4 @@
-import { useContentGqlHandler } from "../utils/useContentGqlHandler";
+import { useGraphQLHandler } from "../utils/useGraphQLHandler";
 import { CmsEntry, CmsGroup, CmsModel } from "~/types";
 import models from "./mocks/contentModels";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
@@ -11,7 +11,7 @@ describe("Content model locked fields", () => {
         createContentModelMutation,
         updateContentModelMutation,
         createContentModelGroupMutation
-    } = useContentGqlHandler(manageOpts);
+    } = useGraphQLHandler(manageOpts);
 
     // This function is not directly within `beforeEach` as we don't always setup the same content model.
     // We call this function manually at the beginning of each test, where needed.
@@ -136,7 +136,7 @@ describe("Content model locked fields", () => {
                         error: {
                             code: "ENTRY_FIELD_USED",
                             data: null,
-                            message: `Cannot remove the field "${field.alias}@${field.type}@${field.id}" because it's already in use in created content.`
+                            message: `Cannot remove the field "${field.type}@${field.id}" because it's already in use in created content.`
                         }
                     }
                 }
@@ -204,7 +204,7 @@ describe("Content model locked fields", () => {
                         code: "ENTRY_FIELD_USED",
                         data: null,
                         message: expect.stringMatching(
-                            `Cannot remove the field "slug@text@([a-zA-Z0-9\-\_]+)" because it's already in use in created content.`
+                            `Cannot remove the field "text@([a-zA-Z0-9\-\_]+)" because it's already in use in created content.`
                         )
                     }
                 }

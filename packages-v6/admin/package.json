@@ -4,6 +4,6 @@
   "sideEffects": false,
   "main": "./src/index.tsx",
   "dependencies": {
-    "react": "^16.14.0"
+    "react": "^17.0.2"
   }
 }

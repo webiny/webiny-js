@@ -1,5 +1,5 @@
-import dateLtePlugin from "~/content/plugins/validators/dateLte";
-import dateGtePlugin from "~/content/plugins/validators/dateGte";
+import { createDateLteValidator } from "~/validators/dateLte";
+import { createDateGteValidator } from "~/validators/dateGte";
 import { CmsModelFieldValidation } from "~/types";
 
 const createValidator = (args: Record<string, any>): CmsModelFieldValidation => {
@@ -15,8 +15,8 @@ const createValidator = (args: Record<string, any>): CmsModelFieldValidation => 
 
 describe("date validators", () => {
     const context: any = {};
-    const gtePlugin = dateGtePlugin();
-    const ltePlugin = dateLtePlugin();
+    const gtePlugin = createDateGteValidator();
+    const ltePlugin = createDateLteValidator();
 
     const gteValidationDateCorrectValues = [
         ["2020-06-06T16:30:50Z", "2020-06-06T16:30:50Z"],

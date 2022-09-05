@@ -6,6 +6,8 @@ import { CmsProvider } from "./admin/contexts/Cms";
 import { CmsMenuLoader } from "~/admin/menus/CmsMenuLoader";
 import apiInformation from "./admin/plugins/apiInformation";
 import { ContentEntriesModule } from "./admin/views/contentEntries/experiment/ContentEntriesModule";
+import { DefaultOnEntryDelete } from "./admin/plugins/entry/DefaultOnEntryDelete";
+import { DefaultOnEntryPublish } from "~/admin/plugins/entry/DefaultOnEntryPublish";
 
 const createHeadlessCMSProvider =
     (createApolloClient: CreateApolloClient) =>
@@ -39,6 +41,8 @@ const HeadlessCMSExtension = ({ createApolloClient }: HeadlessCMSProps) => {
             <Provider hoc={createHeadlessCMSProvider(createApolloClient)} />
             <Plugins>
                 <CmsMenuLoader />
+                <DefaultOnEntryDelete />
+                <DefaultOnEntryPublish />
             </Plugins>
         </Fragment>
     );

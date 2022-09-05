@@ -1,7 +1,7 @@
 import { useFruitManageHandler } from "../utils/useFruitManageHandler";
 import { Fruit } from "./mocks/contentModels";
 import { setupContentModelGroup, setupContentModels } from "../utils/setup";
-import { useContentGqlHandler } from "../utils/useContentGqlHandler";
+import { useGraphQLHandler } from "../utils/useGraphQLHandler";
 
 const appleData: Fruit = {
     name: "Apple",
@@ -67,7 +67,7 @@ interface FruitExpectancy {
 describe("Content entries", () => {
     const manageOpts = { path: "manage/en-US" };
 
-    const mainManager = useContentGqlHandler(manageOpts);
+    const mainManager = useGraphQLHandler(manageOpts);
 
     const {
         createFruit,

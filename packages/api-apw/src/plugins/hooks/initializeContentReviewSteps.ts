@@ -1,10 +1,10 @@
 import lodashSet from "lodash/set";
-import get from "lodash/get";
-import { ApwContentReviewStepStatus, LifeCycleHookCallbackParams } from "~/types";
+import { ApwContentReviewStepStatus, ApwContext } from "~/types";
 import { getContentReviewStepInitialStatus } from "~/plugins/utils";
 import { NotFoundError } from "@webiny/handler-graphql";
+import { getContentApwSettingsPlugin } from "~/utils/contentApwSettingsPlugin";
 
-export const initializeContentReviewSteps = ({ apw }: Pick<LifeCycleHookCallbackParams, "apw">) => {
+export const initializeContentReviewSteps = ({ apw, plugins }: ApwContext) => {
     apw.contentReview.onBeforeContentReviewCreate.subscribe(async ({ input }) => {
         const { type, id, settings } = input.content;
         /*
@@ -12,12 +12,22 @@ export const initializeContentReviewSteps = ({ apw }: Pick<LifeCycleHookCallback
          */
         const getContent = apw.getContentGetter(type);
         const content = await getContent(id, settings);
-        if (content) {
-            const { title } = content;
-            input = lodashSet(input, "title", title);
+        if (!content) {
+            throw new NotFoundError(`Content "${type}" with id ${id} not found.`);
         }
 
-        const workflowId = get(content, "settings.apw.workflowId");
+        const { title } = content;
+        input = lodashSet(input, "title", title);
+
+        /**
+         * We need to find a plugin which can get a workflow ID for the given type of content.
+         */
+        const contentApwSettingsPlugin = getContentApwSettingsPlugin({
+            plugins,
+            type
+        });
+
+        const workflowId = contentApwSettingsPlugin.getWorkflowId(content);
 
         /**
          * Let's initialize the "ContentReview" steps.
@@ -29,7 +39,7 @@ export const initializeContentReviewSteps = ({ apw }: Pick<LifeCycleHookCallback
         const workflow = await apw.workflow.get(workflowId);
         const workflowSteps = workflow.steps;
 
-        let previousStepStatus: ApwContentReviewStepStatus;
+        let previousStepStatus: ApwContentReviewStepStatus | undefined = undefined;
         const updatedSteps = workflow.steps.map((step, index) => {
             const status = getContentReviewStepInitialStatus(
                 workflowSteps,
@@ -44,7 +54,10 @@ export const initializeContentReviewSteps = ({ apw }: Pick<LifeCycleHookCallback
                 totalComments: 0
             };
         });
-
+        /**
+         * TODO Figure our what does this actually do?
+         * There is no steps property on CreateApwContentReviewParams
+         */
         input = lodashSet(input, "steps", updatedSteps);
     });
 };

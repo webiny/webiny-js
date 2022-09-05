@@ -4,8 +4,10 @@ import {
     deletePersonModel,
     PersonEntriesResult
 } from "./helpers";
-import { useAdminGqlHandler } from "../utils/useAdminGqlHandler";
 import { CmsModel, HeadlessCmsStorageOperations } from "~/types";
+import { useGraphQLHandler } from "../utils/useGraphQLHandler";
+import { createGraphQLFields } from "~/graphqlFields";
+import { PluginsContainer } from "@webiny/plugins";
 
 jest.setTimeout(60000);
 
@@ -43,8 +45,22 @@ const waitPersonRecords = async (params: WaitPersonRecordsParams): Promise<void>
 };
 
 describe("Entries storage operations", () => {
-    const { storageOperations, until } = useAdminGqlHandler({
+    const { storageOperations, until } = useGraphQLHandler({
         path: "manage/en-US"
+    });
+
+    /**
+     * We must load CMS GraphQL field plugins for the storage operations to work.
+     * This is specifically for DDB and DDB+ES storage operations.
+     * Some others might not need them...
+     */
+    beforeAll(async () => {
+        if (!storageOperations.beforeInit) {
+            return;
+        }
+        await storageOperations.beforeInit({
+            plugins: new PluginsContainer(createGraphQLFields())
+        } as any);
     });
 
     beforeEach(async () => {

@@ -25,6 +25,9 @@ resource-types:
     - LambdaFunction
     - CloudFrontDistribution
     - CloudFrontDistributionDeployment
+    - CloudFrontOriginAccessIdentity
+    - CognitoUserPool
+    - CognitoUserPoolClient
     - IAMPolicy
     - IAMRole
     - IAMRolePolicy
@@ -32,3 +35,5 @@ resource-types:
     - DynamoDBTable
     - CloudWatchEventsRule
     - CloudWatchEventsTarget
+    - SQSQueue
+    - EventBus

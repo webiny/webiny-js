@@ -12,8 +12,8 @@ export const waitPage = async (handler: Handler, page: Page) => {
             handler.listPages({
                 sort: ["createdOn_DESC"]
             }),
-        ([response]) => {
-            return response.data.pageBuilder.listPages.data.some(item => {
+        ([response]: any) => {
+            return response.data.pageBuilder.listPages.data.some((item: any) => {
                 return item.id === page.id && item.title === page.title;
             });
         },

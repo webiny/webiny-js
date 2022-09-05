@@ -1,4 +1,4 @@
-import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
+import { cleanupItem, cleanupItems } from "@webiny/db-dynamodb/utils/cleanup";
 import WebinyError from "@webiny/error";
 import { queryAll, QueryAllParams } from "@webiny/db-dynamodb/utils/query";
 import { createListResponse } from "@webiny/db-dynamodb/utils/listResponse";
@@ -15,13 +15,21 @@ import {
     StorageOperationsDeleteScheduleActionParams,
     StorageOperationsListScheduleActionsResponse,
     StorageOperationsUpdateCurrentTaskParams,
-    StorageOperationsDeleteCurrentTaskParams
+    StorageOperationsDeleteCurrentTaskParams,
+    ListWhere
 } from "@webiny/api-apw/scheduler/types";
+import { filterItems } from "@webiny/db-dynamodb/utils/filter";
+import { ApwSchedulerScheduleActionDynamoDbFieldPlugin } from "~/plugins/ApwSchedulerScheduleActionDynamoDbFieldPlugin";
+import { PluginsContainer } from "@webiny/plugins";
+import { createFields } from "~/definitions/fields";
+import dynamoDbFilters from "@webiny/db-dynamodb/plugins/filters";
 
 export const createStorageOperations = (
     params: CreateStorageOperationsParams
 ): ApwScheduleActionStorageOperations => {
     const { table: tableName, documentClient, attributes = {} } = params;
+
+    const plugins = new PluginsContainer([createFields(), dynamoDbFilters()]);
 
     const table = createTable({ table: tableName, documentClient });
 
@@ -76,16 +84,18 @@ export const createStorageOperations = (
         async list(
             params: StorageOperationsListScheduleActionsParams
         ): Promise<StorageOperationsListScheduleActionsResponse> {
-            const { limit = 100, sort, where } = params;
+            const { limit = 100, sort = [], where: initialWhere } = params;
 
             const queryAllParams: QueryAllParams = {
                 entity: entity,
                 partitionKey: PK,
                 options: {
-                    beginsWith: where.datetime_startsWith ? where.datetime_startsWith : "",
+                    beginsWith: initialWhere.datetime_startsWith
+                        ? initialWhere.datetime_startsWith
+                        : "",
                     index: "GSI1",
                     limit: limit || undefined,
-                    reverse: sort === "datetime_DESC"
+                    reverse: sort[0] === "datetime_DESC"
                 }
             };
 
@@ -104,16 +114,27 @@ export const createStorageOperations = (
                 );
             }
 
-            const items = results.map(item =>
-                cleanupItem<ApwScheduleAction>(entity, item)
-            ) as ApwScheduleAction[];
+            const where: ListWhere = {
+                ...initialWhere
+            };
+            delete where.datetime_startsWith;
 
-            // TODO: Implement sort and filter
+            const apwSchedulerDynamoDbFields =
+                plugins.byType<ApwSchedulerScheduleActionDynamoDbFieldPlugin>(
+                    ApwSchedulerScheduleActionDynamoDbFieldPlugin.type
+                );
+
+            const filteredItems = filterItems({
+                plugins,
+                items: results,
+                where,
+                fields: apwSchedulerDynamoDbFields
+            });
 
             return createListResponse({
-                items: items,
+                items: cleanupItems(entity, filteredItems),
                 limit,
-                totalCount: items.length,
+                totalCount: filteredItems.length,
                 after: null
             });
         },

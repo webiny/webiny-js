@@ -132,7 +132,10 @@ export const ApiKeyForm: React.FC<ApiKeyFormProps> = () => {
                             <Grid>
                                 <Cell span={12}>
                                     <Bind name="name" validators={validation.create("required")}>
-                                        <Input label={t`Name`} />
+                                        <Input
+                                            label={t`Name`}
+                                            data-testid="sam.key.new.form.name"
+                                        />
                                     </Bind>
                                 </Cell>
                             </Grid>
@@ -142,7 +145,11 @@ export const ApiKeyForm: React.FC<ApiKeyFormProps> = () => {
                                         name="description"
                                         validators={validation.create("required")}
                                     >
-                                        <Input label={t`Description`} rows={4} />
+                                        <Input
+                                            label={t`Description`}
+                                            rows={4}
+                                            data-testid="sam.key.new.form.description"
+                                        />
                                     </Bind>
                                 </Cell>
                             </Grid>
@@ -200,11 +207,13 @@ export const ApiKeyForm: React.FC<ApiKeyFormProps> = () => {
                             <ButtonWrapper>
                                 <ButtonDefault
                                     onClick={() => history.push("/access-management/api-keys")}
+                                    data-testid="sam.key.new.form.button.cancel"
                                 >{t`Cancel`}</ButtonDefault>
                                 <ButtonPrimary
                                     onClick={ev => {
                                         form.submit(ev);
                                     }}
+                                    data-testid="sam.key.new.form.button.save"
                                 >{t`Save API key`}</ButtonPrimary>
                             </ButtonWrapper>
                         </SimpleFormFooter>

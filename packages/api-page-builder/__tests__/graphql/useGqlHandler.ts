@@ -1,4 +1,5 @@
-import { createHandler } from "@webiny/handler-aws";
+import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
+import { createHandler } from "@webiny/handler-aws/gateway";
 import graphqlHandler from "@webiny/handler-graphql";
 import { createPageBuilderContext, createPageBuilderGraphQL } from "~/graphql";
 import i18nContext from "@webiny/api-i18n/graphql/context";
@@ -70,64 +71,76 @@ export default ({ permissions, identity, plugins, storageOperationPlugins }: Par
         plugins: storageOperationPlugins || []
     });
 
-    const handler = createHandler(
-        ...ops.plugins,
-        // TODO figure out a way to load these automatically
-        fileManagerDdbPlugins(),
-        graphqlHandler(),
-        ...createTenancyAndSecurity({ permissions, identity }),
-        i18nContext(),
-        i18nDynamoDbStorageOperations(),
-        fileManagerPlugins(),
-        mockLocalesPlugins(),
-        createPageBuilderGraphQL(),
-        createPageBuilderContext({
-            storageOperations: ops.storageOperations
-        }),
-        prerenderingHookPlugins(),
-        prerenderingServicePlugins({
-            handlers: {
-                render: "render",
-                flush: "flush",
-                queue: {
-                    add: "add",
-                    process: "process"
-                }
-            }
-        }),
-        {
-            type: "api-file-manager-storage",
-            name: "api-file-manager-storage",
-            async upload(args: any) {
-                // TODO: use tmp OS directory
-                const key = path.join(__dirname, args.name);
-
-                fs.writeFileSync(key, args.buffer);
-
-                return {
-                    file: {
-                        key: args.name,
-                        name: args.name,
-                        type: args.type,
-                        size: args.size
+    const handler = createHandler({
+        plugins: [
+            ...ops.plugins,
+            // TODO figure out a way to load these automatically
+            createWcpContext(),
+            createWcpGraphQL(),
+            fileManagerDdbPlugins(),
+            graphqlHandler(),
+            ...createTenancyAndSecurity({ permissions, identity }),
+            i18nContext(),
+            i18nDynamoDbStorageOperations(),
+            fileManagerPlugins(),
+            mockLocalesPlugins(),
+            createPageBuilderGraphQL(),
+            createPageBuilderContext({
+                storageOperations: ops.storageOperations
+            }),
+            prerenderingHookPlugins(),
+            prerenderingServicePlugins({
+                handlers: {
+                    render: "render",
+                    flush: "flush",
+                    queue: {
+                        add: "add",
+                        process: "process"
                     }
-                };
+                }
+            }),
+            {
+                type: "api-file-manager-storage",
+                name: "api-file-manager-storage",
+                async upload(args: any) {
+                    // TODO: use tmp OS directory
+                    const key = path.join(__dirname, args.name);
+
+                    fs.writeFileSync(key, args.buffer);
+
+                    return {
+                        file: {
+                            key: args.name,
+                            name: args.name,
+                            type: args.type,
+                            size: args.size
+                        }
+                    };
+                },
+                async delete() {
+                    return;
+                }
             },
-            async delete() {
-                return;
-            }
-        },
-        plugins || []
-    );
+            plugins || []
+        ]
+    });
 
     // Let's also create the "invoke" function. This will make handler invocations in actual tests easier and nicer.
-    const invoke = async ({ httpMethod = "POST", body = {}, headers = {}, ...rest }) => {
-        const response = await handler({
-            httpMethod,
-            headers,
-            body: JSON.stringify(body),
-            ...rest
-        });
+    const invoke = async ({ httpMethod = "POST", body = {}, headers = {}, ...rest }: any) => {
+        const response = await handler(
+            {
+                path: "/graphql",
+                httpMethod,
+                headers: {
+                    ["x-tenant"]: "root",
+                    "Content-Type": "application/json",
+                    ...headers
+                },
+                body: JSON.stringify(body),
+                ...rest
+            },
+            {} as any
+        );
 
         // The first element is the response body, and the second is the raw response.
         return [JSON.parse(response.body), response];
@@ -212,13 +225,13 @@ export default ({ permissions, identity, plugins, storageOperationPlugins }: Par
         async deletePage(variables: Record<string, any>) {
             return invoke({ body: { query: DELETE_PAGE, variables } });
         },
-        async listPages(variables: Record<string, any>) {
+        async listPages(variables: Record<string, any> = {}) {
             return invoke({ body: { query: LIST_PAGES, variables } });
         },
         async listPublishedPages(variables = {}) {
             return invoke({ body: { query: LIST_PUBLISHED_PAGES, variables } });
         },
-        async listPageTags(variables: Record<string, any>) {
+        async listPageTags(variables: Record<string, any> = {}) {
             return invoke({ body: { query: LIST_PAGE_TAGS, variables } });
         },
         async getPage(variables: Record<string, any>) {

@@ -1,3 +1,4 @@
+import { generateAlphaNumericId } from "@webiny/utils";
 /**
  * Package mdbid does not have types.
  */
@@ -10,8 +11,8 @@ import {
     CreatedBy,
     HeadlessCmsStorageOperations
 } from "~/types";
-import { CmsGroupPlugin } from "~/content/plugins/CmsGroupPlugin";
-import { createIdentifier, generateAlphaNumericId } from "@webiny/utils";
+import { CmsGroupPlugin } from "~/plugins/CmsGroupPlugin";
+import { createIdentifier } from "@webiny/utils";
 import crypto from "crypto";
 
 const cliPackageJson = require("@webiny/cli/package.json");
@@ -37,7 +38,7 @@ const biographyId = generateAlphaNumericId();
 const personModelFields: Record<string, CmsModelField> = {
     name: {
         id: nameId,
-        fieldId: `name@text@${nameId}`,
+        fieldId: `text@${nameId}`,
         alias: "name",
         label: "Name",
         multipleValues: false,
@@ -45,7 +46,7 @@ const personModelFields: Record<string, CmsModelField> = {
     },
     dateOfBirth: {
         id: dateOfBirthId,
-        fieldId: `dateOfBirth@datetime@${dateOfBirthId}`,
+        fieldId: `datetime@${dateOfBirthId}`,
         alias: "dateOfBirth",
         label: "Date Of Birth",
         multipleValues: false,
@@ -56,7 +57,7 @@ const personModelFields: Record<string, CmsModelField> = {
     },
     children: {
         id: childrenId,
-        fieldId: `children@number@${childrenId}`,
+        fieldId: `number@${childrenId}`,
         alias: "children",
         label: "Children",
         multipleValues: false,
@@ -64,16 +65,16 @@ const personModelFields: Record<string, CmsModelField> = {
     },
     married: {
         id: marriedId,
-        fieldId: `married@boolean@${marriedId}`,
-        alias: `married`,
+        fieldId: "married",
+        alias: `married@boolean@${marriedId}`,
         label: "Married",
         multipleValues: false,
         type: "boolean"
     },
     biography: {
         id: biographyId,
-        fieldId: `biography@text@${biographyId}`,
-        alias: `biography`,
+        fieldId: "biography",
+        alias: `biography@text@${biographyId}`,
         label: "Biography",
         multipleValues: false,
         type: "text"

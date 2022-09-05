@@ -1,4 +1,4 @@
-import { revisionsComment } from "./snippets";
+import { metaDataComment, revisionsComment } from "./snippets";
 
 export default /* GraphQL */ `
     """
@@ -25,6 +25,8 @@ export default /* GraphQL */ `
         ${revisionsComment}
         revisions: [Category]
         title: String
+        ${metaDataComment}
+        data: JSON
     }
 
     input CategoryInput {

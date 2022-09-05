@@ -11,7 +11,7 @@ import { CmsEditorFieldTypePlugin, CmsModel } from "~/types";
 import { ReactComponent as RefIcon } from "./icons/round-link-24px.svg";
 
 import { i18n } from "@webiny/app/i18n";
-import { BindComponentRenderProp } from "@webiny/form/Bind";
+import { BindComponentRenderProp } from "@webiny/form";
 
 const t = i18n.ns("app-headless-cms/admin/fields");
 

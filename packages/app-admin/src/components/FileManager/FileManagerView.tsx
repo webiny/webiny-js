@@ -116,8 +116,8 @@ const FileList = styled("div")({
 });
 
 export interface FileManagerViewProps {
-    onChange: Function;
-    onClose: Function;
+    onChange?: Function;
+    onClose?: Function;
     files?: FilesRules;
     multiple: boolean; // Does not affect <Files> component, it always allows multiple selection.
     accept: Array<string>;
@@ -441,7 +441,7 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
             // We wait 750ms, just for everything to settle down a bit.
             return setTimeout(() => {
                 onUploadCompletion(uploadedFiles);
-                onClose();
+                onClose && onClose();
                 // TODO @ts-refactor
             }, 750) as unknown as number;
         }
@@ -509,9 +509,11 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
                                 disabled={uploading}
                                 onClick={() => {
                                     (async () => {
-                                        await onChange(multiple ? selected : selected[0]);
+                                        if (typeof onChange === "function") {
+                                            await onChange(multiple ? selected : selected[0]);
 
-                                        onClose();
+                                            onClose && onClose();
+                                        }
                                     })();
                                 }}
                             >
@@ -573,20 +575,17 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
                                                       (current: FileItem) =>
                                                           current.src === file.src
                                                   ),
-                                                  onSelect:
-                                                      typeof onChange === "undefined"
-                                                          ? () => {
-                                                                return void 0;
-                                                            }
-                                                          : async () => {
-                                                                if (multiple) {
-                                                                    toggleSelected(file);
-                                                                    return;
-                                                                }
+                                                  onSelect: async () => {
+                                                      if (typeof onChange === "function") {
+                                                          if (multiple) {
+                                                              toggleSelected(file);
+                                                              return;
+                                                          }
 
-                                                                await onChange(file);
-                                                                onClose();
-                                                            }
+                                                          await onChange(file);
+                                                          onClose && onClose();
+                                                      }
+                                                  }
                                               })
                                           )
                                         : renderEmpty({

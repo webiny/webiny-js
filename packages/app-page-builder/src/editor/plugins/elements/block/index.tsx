@@ -4,18 +4,19 @@ import Block from "./Block";
 import {
     CreateElementActionEvent,
     DeleteElementActionEvent,
-    updateElementAction
-} from "../../../recoil/actions";
-import { addElementToParent, createDroppedElement } from "../../../helpers";
+    updateElementAction,
+    UpdateElementActionArgsType
+} from "~/editor/recoil/actions";
+import { addElementToParent, createDroppedElement } from "~/editor/helpers";
 import {
     DisplayMode,
-    EventActionHandlerActionCallableResponse,
     PbEditorPageElementPlugin,
     PbEditorElement,
     PbEditorElementPluginArgs
 } from "~/types";
-import { AfterDropElementActionEvent } from "../../../recoil/actions/afterDropElement";
+import { AfterDropElementActionEvent } from "~/editor/recoil/actions/afterDropElement";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
+import { executeAction } from "~/editor/recoil/eventActions";
 
 export default (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin => {
     const elementSettings = [
@@ -96,10 +97,15 @@ export default (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin
 
             const block = addElementToParent(element, target, position);
 
-            const result = updateElementAction(state, meta, {
-                element: block,
-                history: true
-            }) as EventActionHandlerActionCallableResponse;
+            const result = executeAction<UpdateElementActionArgsType>(
+                state,
+                meta,
+                updateElementAction,
+                {
+                    element: block,
+                    history: true
+                }
+            );
 
             result.actions.push(
                 new AfterDropElementActionEvent({

@@ -3,6 +3,192 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.31.0](https://github.com/webiny/webiny-js/compare/v5.31.0-beta.1...v5.31.0) (2022-08-18)
+
+**Note:** Version bump only for package @webiny/api-tenancy
+
+
+
+
+
+# [5.31.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.31.0-beta.0...v5.31.0-beta.1) (2022-08-17)
+
+**Note:** Version bump only for package @webiny/api-tenancy
+
+
+
+
+
+# [5.31.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.30.0...v5.31.0-beta.0) (2022-08-16)
+
+
+### Features
+
+* **handler-fastify:** add fastify as handler into the system ([#2546](https://github.com/webiny/webiny-js/issues/2546)) ([8d258aa](https://github.com/webiny/webiny-js/commit/8d258aa2ebd8562b79e395d7aeea6316405f7f4e))
+
+
+
+
+
+# [5.30.0](https://github.com/webiny/webiny-js/compare/v5.30.0-beta.1...v5.30.0) (2022-07-27)
+
+**Note:** Version bump only for package @webiny/api-tenancy
+
+
+
+
+
+# [5.30.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.30.0-beta.0...v5.30.0-beta.1) (2022-07-26)
+
+**Note:** Version bump only for package @webiny/api-tenancy
+
+
+
+
+
+# [5.30.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.29.0...v5.30.0-beta.0) (2022-07-25)
+
+
+### Features
+
+* bring back APW into Webiny Projects ([#2535](https://github.com/webiny/webiny-js/issues/2535)) ([4db06af](https://github.com/webiny/webiny-js/commit/4db06afc3778f8451407da6f0a84c1eac37d1ec4))
+* typescript to 4.7.4 ([#2527](https://github.com/webiny/webiny-js/issues/2527)) ([ee24a3a](https://github.com/webiny/webiny-js/commit/ee24a3a995942ee2588e615e42f604ed7418390a))
+
+
+
+
+
+# [5.29.0](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.2...v5.29.0) (2022-06-28)
+
+**Note:** Version bump only for package @webiny/api-tenancy
+
+
+
+
+
+# [5.29.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.1...v5.29.0-beta.2) (2022-06-27)
+
+**Note:** Version bump only for package @webiny/api-tenancy
+
+
+
+
+
+# [5.29.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.0...v5.29.0-beta.1) (2022-06-25)
+
+**Note:** Version bump only for package @webiny/api-tenancy
+
+
+
+
+
+# [5.29.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.28.0...v5.29.0-beta.0) (2022-06-25)
+
+
+### Bug Fixes
+
+* add backwards compatibility ([dc29dfd](https://github.com/webiny/webiny-js/commit/dc29dfda8ebedfe9a231b6db46e7c270e1f90e63))
+* do not rely on env var to determine if MT is enabled ([f983cb9](https://github.com/webiny/webiny-js/commit/f983cb9712276be09b471099ed60ba586d00df26))
+* regenerate TS configs ([b551150](https://github.com/webiny/webiny-js/commit/b5511502b5d690c33988c9e3f6c147bf5f6516d4))
+
+
+### Features
+
+* add WCP-checks to MT ([58b8e1a](https://github.com/webiny/webiny-js/commit/58b8e1a48a33ea368f92ebbae3a13464dc106193))
+* simplify prerendering internals and data structure ([#2478](https://github.com/webiny/webiny-js/issues/2478)) ([91b4cd2](https://github.com/webiny/webiny-js/commit/91b4cd2590993624136e5b9b82ae534a83933fee))
+
+
+
+
+
+# [5.28.0](https://github.com/webiny/webiny-js/compare/v5.28.0-beta.0...v5.28.0) (2022-06-07)
+
+**Note:** Version bump only for package @webiny/api-tenancy
+
+
+
+
+
+# [5.28.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.27.0...v5.28.0-beta.0) (2022-06-07)
+
+**Note:** Version bump only for package @webiny/api-tenancy
+
+
+
+
+
+# [5.27.0](https://github.com/webiny/webiny-js/compare/v5.27.0-beta.0...v5.27.0) (2022-05-26)
+
+**Note:** Version bump only for package @webiny/api-tenancy
+
+
+
+
+
+# [5.27.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.26.1-beta.0...v5.27.0-beta.0) (2022-05-25)
+
+**Note:** Version bump only for package @webiny/api-tenancy
+
+
+
+
+
+## [5.26.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.26.0...v5.26.1-beta.0) (2022-05-24)
+
+**Note:** Version bump only for package @webiny/api-tenancy
+
+
+
+
+
+# [5.26.0](https://github.com/webiny/webiny-js/compare/v5.26.0-beta.2...v5.26.0) (2022-05-13)
+
+**Note:** Version bump only for package @webiny/api-tenancy
+
+
+
+
+
+# [5.26.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.26.0-beta.1...v5.26.0-beta.2) (2022-05-13)
+
+**Note:** Version bump only for package @webiny/api-tenancy
+
+
+
+
+
+# [5.26.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.26.0-beta.0...v5.26.0-beta.1) (2022-05-12)
+
+**Note:** Version bump only for package @webiny/api-tenancy
+
+
+
+
+
+# [5.26.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.25.1-beta.1...v5.26.0-beta.0) (2022-05-11)
+
+**Note:** Version bump only for package @webiny/api-tenancy
+
+
+
+
+
+## [5.25.1-beta.1](https://github.com/webiny/webiny-js/compare/v5.25.1-beta.0...v5.25.1-beta.1) (2022-05-11)
+
+**Note:** Version bump only for package @webiny/api-tenancy
+
+
+
+
+
+## [5.25.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.25.0...v5.25.1-beta.0) (2022-05-10)
+
+**Note:** Version bump only for package @webiny/api-tenancy
+
+
+
+
+
 # [5.25.0](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.6...v5.25.0) (2022-04-04)
 
 **Note:** Version bump only for package @webiny/api-tenancy

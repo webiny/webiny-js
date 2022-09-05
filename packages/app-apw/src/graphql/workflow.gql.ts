@@ -1,12 +1,22 @@
 import gql from "graphql-tag";
-import { ApwWorkflow } from "~/types";
+import { ApwWorkflow, CmsEntry, CmsModel } from "~/types";
 
+interface ErrorResponse {
+    message: string;
+    code: string;
+    data: Record<string, any>;
+}
 const ERROR_FIELDS = `{
     message
     code
     data
 }`;
 
+interface MetaResponse {
+    totalCount: number;
+    hasMoreItems: boolean;
+    cursor: string | null;
+}
 const META_FIELDS = `{
     totalCount
     hasMoreItems
@@ -264,6 +274,92 @@ export const LIST_PAGES = gql`
                 meta ${META_FIELDS}
                 error ${ERROR_FIELDS}
             }
+        }
+    }
+`;
+/**
+ * Headless CMS
+ */
+export interface ListCmsModelsQueryResponse {
+    listContentModels: {
+        data: CmsModel[];
+        meta: MetaResponse;
+        error: ErrorResponse | null;
+    };
+}
+export const LIST_CMS_MODELS = gql`
+    query CmsListModels {
+        listContentModels {
+            data {
+                modelId
+                name
+            }
+            meta ${META_FIELDS}
+            error ${ERROR_FIELDS}
+        }
+    }
+`;
+
+export interface SearchCmsEntriesQueryVariables {
+    modelIds: string[];
+    query?: string;
+    fields: string[];
+    limit?: number;
+}
+export interface SearchCmsEntriesQueryResponse {
+    entries: {
+        data: CmsEntry[];
+        meta: MetaResponse;
+        error: ErrorResponse | null;
+    };
+}
+export const SEARCH_CMS_ENTRIES = gql`
+    query CmsSearchEntries(
+        $modelIds: [ID!]!
+        $query: String
+        $fields: [String!]
+        $limit: Int
+    ) {
+        entries: searchContentEntries(
+            modelIds: $modelIds
+            query: $query
+            fields: $fields
+            limit: $limit
+        ) {
+            data {
+                entryId
+                title
+                model {
+                    modelId
+                    name
+                }
+            }
+            error ${ERROR_FIELDS}
+        }
+    }
+`;
+
+export interface ListLatestCmsEntriesQueryVariables {
+    entries: { id: string; modelId: string }[];
+}
+export interface ListLatestCmsEntriesQueryResponse {
+    entries: {
+        data: CmsEntry[];
+        error: ErrorResponse | null;
+    };
+}
+export const LIST_LATEST_CMS_ENTRIES = gql`
+    query CmsListLatestEntries($entries: [CmsModelEntryInput!]!) {
+        entries: getLatestContentEntries(entries: $entries) {
+            data {
+                entryId
+                title
+                model {
+                    modelId
+                    name
+                }
+            }
+            error ${ERROR_FIELDS}
         }
     }
 `;

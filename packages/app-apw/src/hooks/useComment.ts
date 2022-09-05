@@ -25,7 +25,9 @@ export const useComment = (id?: string): UseCommentResult => {
     const { data, loading } = useQuery<GetCommentQueryResponse, GetCommentQueryVariables>(
         GET_COMMENT_QUERY,
         {
-            variables: { id: id as string },
+            variables: {
+                id: id as string
+            },
             skip: !id
         }
     );

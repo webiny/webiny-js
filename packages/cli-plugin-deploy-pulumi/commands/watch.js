@@ -1,23 +1,29 @@
 const os = require("os");
+const fs = require("fs");
 const chalk = require("chalk");
 const path = require("path");
 const localtunnel = require("localtunnel");
 const express = require("express");
 const bodyParser = require("body-parser");
-const { login, getPulumi, loadEnvVariables, getRandomColorForString } = require("../utils");
 const { getProjectApplication } = require("@webiny/cli/utils");
 const get = require("lodash/get");
 const merge = require("lodash/merge");
 const browserOutput = require("./watch/output/browserOutput");
 const terminalOutput = require("./watch/output/terminalOutput");
+const simpleOutput = require("./watch/output/simpleOutput");
 const minimatch = require("minimatch");
 const glob = require("fast-glob");
 const watchPackages = require("./watch/watchPackages");
+const { login, getPulumi, getRandomColorForString, loadEnvVariables } = require("../utils");
 
 // Do not allow watching "prod" and "production" environments. On the Pulumi CLI side, the command
 // is still in preview mode, so it's definitely not wise to use it on production environments.
 const WATCH_DISABLED_ENVIRONMENTS = ["prod", "production"];
 
+const PULUMI_WATCH_SUPPORTED = os.platform() !== "win32";
+
+// Note: we are not using `createPulumiCommand` here because this command has a bit specific
+// behaviour which is not encapsulated by `createPulumiCommand`. Maybe we can improve in the future.
 module.exports = async (inputs, context) => {
     // 1. Initial checks for deploy and build commands.
     if (!inputs.folder && !inputs.package) {
@@ -33,9 +39,22 @@ module.exports = async (inputs, context) => {
             cwd: path.join(process.cwd(), inputs.folder)
         });
 
-        // If exists - read default inputs from "webiny.application.js" file.
+        // If exists - read default inputs from "webiny.application.ts" file.
         inputs = merge({}, get(projectApplication, "config.cli.watch"), inputs);
 
+        // We don't do anything here. We assume the workspace has already been created
+        // upon running the `webiny deploy` command. We rely on that.
+        // TODO: maybe we can improve this in the future, depending on the feedback.
+        // if (projectApplication.type === "v5-workspaces") {
+        // await createProjectApplicationWorkspace({
+        //     projectApplication,
+        //     env: inputs.env,
+        //     context,
+        //     inputs
+        // });
+        // }
+
+        // Load env vars specified via .env files located in project application folder.
         await loadEnvVariables(inputs, context);
     }
 
@@ -73,9 +92,7 @@ module.exports = async (inputs, context) => {
 
         await login(projectApplication);
 
-        const pulumi = await getPulumi({
-            folder: inputs.folder
-        });
+        const pulumi = await getPulumi({ projectApplication });
 
         let stackExists = true;
         try {
@@ -99,8 +116,22 @@ module.exports = async (inputs, context) => {
         }
     }
 
-    let output = inputs.output === "browser" ? browserOutput : terminalOutput;
-    await output.initialize(inputs);
+    let output = terminalOutput;
+
+    switch (inputs.output) {
+        case "browser":
+            output = browserOutput;
+            break;
+        case "simple":
+            output = simpleOutput;
+            break;
+        default:
+            output = terminalOutput;
+    }
+
+    if (typeof output.initialize === "function") {
+        await output.initialize(inputs);
+    }
 
     const logging = {
         url: null
@@ -173,19 +204,31 @@ module.exports = async (inputs, context) => {
                 message: chalk.green("Watching cloud infrastructure resources...")
             });
 
-            const pulumiFolder = path.join(projectApplication.root, "pulumi");
+            let buildFoldersGlob = [projectApplication.paths.workspace, "**/build/*.js"].join("/");
 
-            const buildFoldersGlob = [
-                projectApplication.project.root,
-                inputs.folder,
-                "**/build"
-            ].join("/");
+            // For non-workspaces projects, we still want to be watching `**/build/*.js` files located
+            // in user's project (for example `api/graphql/code/build/handler.js`).
+            if (projectApplication.type !== "v5-workspaces") {
+                buildFoldersGlob = [
+                    projectApplication.paths.absolute,
+                    inputs.folder,
+                    "**/build/*.js"
+                ].join("/");
+            }
 
             const buildFolders = glob.sync(buildFoldersGlob, { onlyFiles: false });
 
             // The final array of values that will be sent to Pulumi CLI's "--path" argument.
             // NOTE: for Windows, there's a bug in Pulumi preventing us to use path filtering.
-            const pathArg = os.platform() === "win32" ? undefined : [pulumiFolder, ...buildFolders];
+            let pathArg = undefined;
+            if (PULUMI_WATCH_SUPPORTED) {
+                pathArg = [...buildFolders];
+
+                const pulumiFolder = path.join(projectApplication.root, "pulumi");
+                if (fs.existsSync(pulumiFolder)) {
+                    pathArg.push(pulumiFolder);
+                }
+            }
 
             // Log used values if debugging has been enabled.
             if (inputs.debug) {
@@ -202,11 +245,8 @@ module.exports = async (inputs, context) => {
                 });
             }
 
-            const pulumi = await getPulumi({
-                folder: inputs.folder
-            });
+            const pulumi = await getPulumi({ projectApplication });
 
-            // We only watch "code/**/build" and "pulumi" folders.
             const watchCloudInfrastructure = pulumi.run({
                 command: "watch",
                 args: {

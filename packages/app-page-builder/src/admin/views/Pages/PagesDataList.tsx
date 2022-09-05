@@ -224,7 +224,13 @@ const PagesDataList: React.FC<PagesDataListProps> = ({ onCreatePage, canCreate, 
                                 </Bind>
                             </Cell>
                             <Cell span={12}>
-                                <Bind name={"status"}>
+                                <Bind
+                                    name={"status"}
+                                    defaultValue={"all"}
+                                    beforeChange={(value, cb) => {
+                                        cb(value === "all" ? undefined : value);
+                                    }}
+                                >
                                     <Select
                                         label={t`Filter by status`}
                                         description={"Filter by a specific page status."}

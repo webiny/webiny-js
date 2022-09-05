@@ -1,6 +1,6 @@
 import { ApwContentReviewStepStatus } from "~/types";
-import { useContentGqlHandler } from "../utils/useContentGqlHandler";
-import { createSetupForContentReview } from "../utils/helpers";
+import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
+import { createSetupForPageContentReview } from "../utils/helpers";
 import { mocks as changeRequestMock } from "./mocks/changeRequest";
 
 describe("Provide sign off for a step in content review process", function () {
@@ -8,7 +8,7 @@ describe("Provide sign off for a step in content review process", function () {
         path: "manage/en-US"
     };
 
-    const gqlHandler = useContentGqlHandler({
+    const gqlHandler = usePageBuilderHandler({
         ...options
     });
     const {
@@ -20,7 +20,7 @@ describe("Provide sign off for a step in content review process", function () {
     } = gqlHandler;
 
     const setup = async () => {
-        return createSetupForContentReview(gqlHandler);
+        return createSetupForPageContentReview(gqlHandler);
     };
 
     const expectedContent = {
@@ -175,7 +175,7 @@ describe("Provide sign off for a step in content review process", function () {
     });
 
     test(`should throw error when trying to provide sign off by a non-reviewer`, async () => {
-        const gqlHandlerForIdentityA = useContentGqlHandler({
+        const gqlHandlerForIdentityA = usePageBuilderHandler({
             ...options,
             identity: {
                 id: "123456789",

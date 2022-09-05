@@ -14,8 +14,8 @@ import { routePaths } from "~/utils";
 // TODO: Fix this import so that we can import it from root level maybe
 import { PublishRevisionProps } from "@webiny/app-page-builder/admin/plugins/pageDetails/header/publishRevision/PublishRevision";
 import { PublishPageMenuOptionProps } from "@webiny/app-page-builder/admin/plugins/pageDetails/pageRevisions/PublishPageMenuOption";
-import { PublishPageButtonProps } from "@webiny/app-page-builder/editor/plugins/defaultBar/components/PublishPageButton";
 import { PageRevisionListItemGraphicProps } from "@webiny/app-page-builder/admin/plugins/pageDetails/pageRevisions/PageRevisionListItemGraphic";
+import { usePage } from "@webiny/app-page-builder/pageEditor/hooks/usePage";
 
 const t = i18n.ns("app-apw/page-builder/publish-page");
 
@@ -73,15 +73,14 @@ export const PublishPageMenuOptionHoc: HigherOrderComponent<
     };
 };
 
-export const PublishPageButtonHoc: HigherOrderComponent<
-    PublishPageButtonProps
-> = OriginalRenderer => {
-    return function PageReview(props) {
-        const contentReviewId = useContentReviewId(props.page.id as string);
+export const PublishPageButtonHoc: HigherOrderComponent = OriginalRenderer => {
+    return function PageReview() {
+        const [page] = usePage();
+        const contentReviewId = useContentReviewId(page.id as string);
         const navigate = useNavigate();
 
         if (!contentReviewId) {
-            return <OriginalRenderer {...props} />;
+            return <OriginalRenderer />;
         }
 
         return (

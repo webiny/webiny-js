@@ -64,10 +64,6 @@ const GenerateElementsComponent: React.FC<GenerateElementsProps> = ({ name }) =>
             );
         };
     };
-    /**
-     * TODO @ts-refactor @pavel
-     */
-    // @ts-ignore
     return <Compose component={SettingsFields} with={ElementsHOC} />;
 };
 

@@ -4,7 +4,7 @@ import { createStorageOperations as tenancyStorageOperations } from "@webiny/api
 import { createSecurityContext, createSecurityGraphQL } from "@webiny/api-security";
 import { createStorageOperations as securityStorageOperations } from "@webiny/api-security-so-ddb";
 import { SecurityContext, SecurityIdentity } from "@webiny/api-security/types";
-import { ContextPlugin } from "@webiny/handler";
+import { ContextPlugin } from "@webiny/api";
 import { BeforeHandlerPlugin } from "@webiny/handler";
 import { TenancyContext } from "@webiny/api-tenancy/types";
 import { AdminUsersContext } from "~/types";
@@ -53,7 +53,10 @@ export const createTenancyAndSecurity = ({ fullAccess, identity }: Config = {}) 
                 settings: {
                     domains: []
                 },
-                description: ""
+                description: "",
+                createdOn: new Date().toISOString(),
+                savedOn: new Date().toISOString(),
+                webinyVersion: process.env.WEBINY_VERSION as string
             });
 
             context.security.addAuthenticator(async () => {

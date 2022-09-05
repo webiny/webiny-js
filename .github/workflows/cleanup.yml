@@ -2,10 +2,30 @@
 name: Cloud infrastructure Cleanup
 
 on:
+  repository_dispatch:
+    types: [ cleanup-infrastructure ]
   schedule:
     - cron: "0 2 * * *" # Every day at 2AM.
 
 jobs:
+  aws-eventbridge-cleanup:
+    runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 14
+
+      - uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: yarn --immutable
+
+      - name: Run EventBridge Cleanup
+        run: node ./.github/workflows/cleanup/cleanupEventBridge.js
+
   aws-nuke:
     runs-on: ubuntu-latest
     env:

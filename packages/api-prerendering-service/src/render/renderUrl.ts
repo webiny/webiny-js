@@ -6,21 +6,22 @@ import { noopener } from "posthtml-noopener";
  */
 // @ts-ignore
 import posthtmlPluginLinkPreload from "posthtml-plugin-link-preload";
+import absoluteAssetUrls from "./absoluteAssetUrls";
 import injectApolloState from "./injectApolloState";
 import injectRenderId from "./injectRenderId";
 import injectRenderTs from "./injectRenderTs";
 import injectTenantLocale from "./injectTenantLocale";
 import injectNotFoundPageFlag from "./injectNotFoundPageFlag";
 import getPsTags from "./getPsTags";
+import { generateAlphaNumericId } from "@webiny/utils";
 import {
     RenderResult,
     RenderUrlCallableParams,
     RenderUrlParams,
     RenderUrlPostHtmlParams
 } from "./types";
-import { Browser, Page } from "puppeteer";
-import { TagUrlLink } from "~/types";
-import { generateId } from "@webiny/utils";
+import { Browser, Page } from "puppeteer-core";
+import { TagPathLink } from "~/types";
 
 const windowSet = (page: Page, name: string, value: string | boolean) => {
     page.evaluateOnNewDocument(`
@@ -32,7 +33,7 @@ const windowSet = (page: Page, name: string, value: string | boolean) => {
 };
 
 interface Meta {
-    url: string;
+    path: string;
     id: string;
     ts: number;
     render: RenderResult;
@@ -44,13 +45,13 @@ export interface File {
     body: any;
     name: string;
     meta: {
-        tags?: TagUrlLink[];
+        tags?: TagPathLink[];
         [key: string]: any;
     };
 }
 
 export default async (url: string, args: RenderUrlParams): Promise<[File[], Meta]> => {
-    const id = generateId(21);
+    const id = generateAlphaNumericId();
     const ts = new Date().getTime();
 
     console.log(`Rendering "${url}" (render ID: ${id})...`);
@@ -79,9 +80,10 @@ export default async (url: string, args: RenderUrlParams): Promise<[File[], Meta
         render.content = render.content.replace(regex, subst);
     }
 
-    const allArgs: RenderUrlPostHtmlParams = { render, args, url, id, ts };
+    const allArgs: RenderUrlPostHtmlParams = { render, args, path: args.args.path, id, ts };
     const { html } = await posthtml([
         noopener(),
+        absoluteAssetUrls(),
         posthtmlPluginLinkPreload(),
         injectRenderId(allArgs),
         injectRenderTs(allArgs),
@@ -143,22 +145,16 @@ export const defaultRenderUrlFunction = async (
     // Can be used to add additional logic - e.g. skip a GraphQL query to be made when in pre-rendering process.
     windowSet(browserPage, "__PS_RENDER__", true);
 
-    const tenant = params?.args?.configuration?.meta?.tenant;
+    const tenant = params.args.tenant;
     if (tenant) {
         console.log("Setting tenant (__PS_RENDER_TENANT__) to window object....");
         windowSet(browserPage, "__PS_RENDER_TENANT__", tenant);
     }
 
-    const locale = params?.args?.configuration?.meta?.locale;
+    const locale = params.args.locale;
     if (locale) {
         console.log("Setting locale (__PS_RENDER_LOCALE__) to window object....");
         windowSet(browserPage, "__PS_RENDER_LOCALE__", locale);
-    }
-
-    const notFoundPage = params?.args?.configuration?.meta?.notFoundPage;
-    if (notFoundPage) {
-        console.log("Setting locale (__PS_NOT_FOUND_PAGE__) to window object....");
-        windowSet(browserPage, "__PS_NOT_FOUND_PAGE__", true);
     }
 
     // Don't load these resources during prerender.

@@ -1,5 +1,5 @@
 import { useFruitManageHandler } from "../utils/useFruitManageHandler";
-import { useContentGqlHandler } from "../utils/useContentGqlHandler";
+import { useGraphQLHandler } from "../utils/useGraphQLHandler";
 import { useFruitReadHandler } from "../utils/useFruitReadHandler";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import { useProductManageHandler } from "../utils/useProductManageHandler";
@@ -66,7 +66,7 @@ describe("filtering", () => {
     const manageOpts = { path: "manage/en-US" };
     const readOpts = { path: "read/en-US" };
 
-    const mainManager = useContentGqlHandler(manageOpts);
+    const mainManager = useGraphQLHandler(manageOpts);
 
     const { until, createFruit, publishFruit } = useFruitManageHandler({
         ...manageOpts
@@ -112,7 +112,9 @@ describe("filtering", () => {
         // If this `until` resolves successfully, we know entry is accessible via the "read" API
         await until(
             () => listFruits({}).then(([data]: any) => data),
-            ({ data }: any) => data.listFruits.data.length === 3,
+            ({ data }: any) => {
+                return data.listFruits.data.length === 3;
+            },
             { name: `list all fruits - ${name}` }
         );
     };

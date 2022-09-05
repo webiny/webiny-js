@@ -4,7 +4,7 @@ import { createStorageOperations as tenancyStorageOperations } from "@webiny/api
 import { createSecurityContext, createSecurityGraphQL } from "@webiny/api-security";
 import { createStorageOperations as securityStorageOperations } from "@webiny/api-security-so-ddb";
 import { SecurityContext, SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
-import { ContextPlugin } from "@webiny/handler";
+import { ContextPlugin } from "@webiny/api";
 import { BeforeHandlerPlugin } from "@webiny/handler";
 import { TenancyContext } from "@webiny/api-tenancy/types";
 
@@ -41,7 +41,8 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config = {})
             storageOperations: securityStorageOperations({
                 documentClient,
                 table: process.env.DB_TABLE
-            })
+            }),
+            verifyIdentityToTenantLink: false
         }),
         createSecurityGraphQL(),
         new ContextPlugin<SecurityContext & TenancyContext>(context => {
@@ -53,7 +54,9 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config = {})
                 description: "",
                 settings: {
                     domains: []
-                }
+                },
+                createdOn: new Date().toISOString(),
+                savedOn: new Date().toISOString()
             });
 
             context.security.addAuthenticator(async () => {

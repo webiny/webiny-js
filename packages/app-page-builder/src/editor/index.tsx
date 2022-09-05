@@ -1,45 +1,16 @@
-import React from "react";
-import { Editor as EditorComponent } from "./components/Editor";
-import { EditorProvider } from "./contexts/EditorProvider";
-import { RecoilRoot } from "recoil";
-import {
-    rootElementAtom,
-    RevisionsAtomType,
-    pageAtom,
-    elementsAtom,
-    PageAtomType,
-    PageWithContent
-} from "./recoil/modules";
-import { flattenElements } from "./helpers";
-import omit from "lodash/omit";
-
-interface EditorPropsType {
-    page: PageWithContent;
-    revisions: RevisionsAtomType;
-}
-
-export const Editor: React.FC<EditorPropsType> = ({ page, revisions }) => {
-    return (
-        <RecoilRoot
-            initializeState={({ set }) => {
-                /* Here we initialize elementsAtom and rootElement if it exists */
-                set(rootElementAtom, page.content?.id || "");
-
-                const elements = flattenElements(page.content);
-                Object.keys(elements).forEach(key => {
-                    set(elementsAtom(key), elements[key]);
-                });
-                /**
-                 * We always unset the content because we are not using it via the page atom.
-                 */
-                const pageData: PageAtomType = omit(page, ["content"]);
-
-                set(pageAtom, pageData);
-            }}
-        >
-            <EditorProvider>
-                <EditorComponent page={page} revisions={revisions} />
-            </EditorProvider>
-        </RecoilRoot>
-    );
-};
+/**
+ * This file contains the base framework for building editor variations.
+ * Currently, we have 2 editors:
+ * - page editor
+ * - block editor
+ *
+ * This framework provides the basic mechanics, like d&d elements, element settings, toolbars, etc.
+ * Other things, like loading/saving data to and from the GraphQL API, toolbar elements, etc. need
+ * to be provided using the composition API, <EditorConfig> component, and `createStateInitializer` prop.
+ */
+export { EditorConfig } from "./components/Editor/EditorConfig";
+export * from "./components/Editor/EditorBar";
+export * from "./components/Editor/EditorContent";
+export { EditorProvider } from "./contexts/EditorProvider";
+export { EditorSidebarTab, EditorSidebarTabProps } from "./components/Editor/EditorSidebar";
+export { ElementSettingsRenderer } from "./plugins/elementSettings/advanced/ElementSettings";

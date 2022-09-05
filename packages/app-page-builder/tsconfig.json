@@ -11,8 +11,10 @@
     { "path": "../app-tenancy" },
     { "path": "../form" },
     { "path": "../plugins" },
+    { "path": "../react-composition" },
     { "path": "../react-router" },
     { "path": "../ui" },
+    { "path": "../utils" },
     { "path": "../validation" }
   ],
   "compilerOptions": {
@@ -39,10 +41,14 @@
       "@webiny/form": ["../form/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
+      "@webiny/react-composition/*": ["../react-composition/src/*"],
+      "@webiny/react-composition": ["../react-composition/src"],
       "@webiny/react-router/*": ["../react-router/src/*"],
       "@webiny/react-router": ["../react-router/src"],
       "@webiny/ui/*": ["../ui/src/*"],
       "@webiny/ui": ["../ui/src"],
+      "@webiny/utils/*": ["../utils/src/*"],
+      "@webiny/utils": ["../utils/src"],
       "@webiny/validation/*": ["../validation/src/*"],
       "@webiny/validation": ["../validation/src"]
     },

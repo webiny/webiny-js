@@ -50,6 +50,22 @@ export const DELETE_USER = gql`
     }
 `;
 
+export const LIST_USERS = gql`
+    query ListUsers {
+        adminUsers {
+            users: listUsers {
+                data {
+                    ${BASE_FIELDS}
+                }
+                error {
+                    code
+                    message
+                }
+            }
+        }
+    }
+`;
+
 const GROUP_BASE_FIELDS = `
     id
     name

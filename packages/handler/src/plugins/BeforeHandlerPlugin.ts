@@ -24,3 +24,9 @@ export class BeforeHandlerPlugin<T extends Context = Context> extends Plugin {
         return this._callable(context);
     }
 }
+
+export const createBeforeHandlerPlugin = <T extends Context = Context>(
+    callable: BeforeHandlerCallable<T>
+): BeforeHandlerPlugin<T> => {
+    return new BeforeHandlerPlugin<T>(callable);
+};

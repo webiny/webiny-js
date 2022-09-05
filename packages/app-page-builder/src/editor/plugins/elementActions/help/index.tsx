@@ -1,11 +1,7 @@
-import React from "react";
-import { ReactComponent as HelpIcon } from "../../../assets/icons/help_outline.svg";
-import { PbEditorPageElementActionPlugin } from "../../../../types";
-
-export default {
-    name: "pb-editor-element-action-help",
-    type: "pb-editor-page-element-action",
-    render({ plugin }) {
-        return plugin.help ? <HelpIcon onClick={() => window.open(plugin.help, "_blank")} /> : null;
-    }
-} as PbEditorPageElementActionPlugin;
+/**
+ * NOTE: this file exists only to prevent older projects from breaking, if they still use this import path.
+ */
+console.log(
+    `DEPRECATION WARNING: you're importing a path that is no longer used "@webiny/app-page-builder/editor/elementActions/help". You should remove this import from your apps.`
+);
+export default [];

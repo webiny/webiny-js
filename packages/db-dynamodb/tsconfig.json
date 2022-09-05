@@ -4,7 +4,7 @@
   "references": [
     { "path": "../db" },
     { "path": "../error" },
-    { "path": "../handler" },
+    { "path": "../api" },
     { "path": "../handler-db" },
     { "path": "../plugins" }
   ],
@@ -18,8 +18,8 @@
       "@webiny/db": ["../db/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
-      "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"],
+      "@webiny/api/*": ["../api/src/*"],
+      "@webiny/api": ["../api/src"],
       "@webiny/handler-db/*": ["../handler-db/src/*"],
       "@webiny/handler-db": ["../handler-db/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],

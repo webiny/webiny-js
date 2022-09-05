@@ -1,10 +1,5 @@
 import * as aws from "@pulumi/aws";
-import { PulumiInputValue } from "../types";
-import { PulumiApp } from "@webiny/pulumi-sdk";
-
-type OriginConfig = PulumiInputValue<
-    PulumiInputValue<aws.cloudfront.DistributionArgs["origins"]>[number]
->;
+import { PulumiApp } from "@webiny/pulumi";
 
 export function createPublicAppBucket(app: PulumiApp, name: string) {
     const bucket = app.addResource(aws.s3.Bucket, {
@@ -14,12 +9,12 @@ export function createPublicAppBucket(app: PulumiApp, name: string) {
             forceDestroy: true,
             website: {
                 indexDocument: "index.html",
-                errorDocument: "index.html"
+                errorDocument: "_NOT_FOUND_PAGE_/index.html"
             }
         }
     });
 
-    const origin: OriginConfig = {
+    const origin: aws.types.input.cloudfront.DistributionOrigin = {
         originId: bucket.output.arn,
         domainName: bucket.output.websiteEndpoint,
         customOriginConfig: {
@@ -36,8 +31,7 @@ export function createPublicAppBucket(app: PulumiApp, name: string) {
     };
 }
 
-// TODO Currently not used, because of issues with uploading prerendered pages.
-// Allows to have private S3 buckets available only through cloudfront distribution.
+// Forces S3 buckets to be available only through a cloudfront distribution.
 export function createPrivateAppBucket(app: PulumiApp, name: string) {
     const bucket = app.addResource(aws.s3.Bucket, {
         name: name,
@@ -54,9 +48,13 @@ export function createPrivateAppBucket(app: PulumiApp, name: string) {
         config: {}
     });
 
-    const origin: OriginConfig = {
+    const origin: aws.types.input.cloudfront.DistributionOrigin = {
         originId: bucket.output.arn,
-        domainName: bucket.output.bucketDomainName,
+        domainName: bucket.output.bucket.apply(
+            // We need to create a regional domain name. Otherwise, we'll run into the following issue:
+            // https://aws.amazon.com/premiumsupport/knowledge-center/s3-http-307-response/
+            name => `${name}.s3.${String(process.env.AWS_REGION)}.amazonaws.com`
+        ),
         s3OriginConfig: {
             originAccessIdentity: originIdentity.output.cloudfrontAccessIdentityPath
         }

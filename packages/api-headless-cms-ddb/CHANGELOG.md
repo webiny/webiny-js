@@ -3,6 +3,201 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.31.0](https://github.com/webiny/webiny-js/compare/v5.31.0-beta.1...v5.31.0) (2022-08-18)
+
+**Note:** Version bump only for package @webiny/api-headless-cms-ddb
+
+
+
+
+
+# [5.31.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.31.0-beta.0...v5.31.0-beta.1) (2022-08-17)
+
+**Note:** Version bump only for package @webiny/api-headless-cms-ddb
+
+
+
+
+
+# [5.31.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.30.0...v5.31.0-beta.0) (2022-08-16)
+
+
+### Features
+
+* **handler-fastify:** add fastify as handler into the system ([#2546](https://github.com/webiny/webiny-js/issues/2546)) ([8d258aa](https://github.com/webiny/webiny-js/commit/8d258aa2ebd8562b79e395d7aeea6316405f7f4e))
+
+
+
+
+
+# [5.30.0](https://github.com/webiny/webiny-js/compare/v5.30.0-beta.1...v5.30.0) (2022-07-27)
+
+**Note:** Version bump only for package @webiny/api-headless-cms-ddb
+
+
+
+
+
+# [5.30.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.30.0-beta.0...v5.30.0-beta.1) (2022-07-26)
+
+**Note:** Version bump only for package @webiny/api-headless-cms-ddb
+
+
+
+
+
+# [5.30.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.29.0...v5.30.0-beta.0) (2022-07-25)
+
+
+### Features
+
+* **api-headless-cms:** combine cms contexts and graphqls ([#2528](https://github.com/webiny/webiny-js/issues/2528)) ([87bb89b](https://github.com/webiny/webiny-js/commit/87bb89be1d11a97698b9f9d72d383dd8068c27d6))
+* typescript to 4.7.4 ([#2527](https://github.com/webiny/webiny-js/issues/2527)) ([ee24a3a](https://github.com/webiny/webiny-js/commit/ee24a3a995942ee2588e615e42f604ed7418390a))
+* **api-apw:** cms workflow ([#2450](https://github.com/webiny/webiny-js/issues/2450)) ([57c082d](https://github.com/webiny/webiny-js/commit/57c082d0305ef0316939989ddda1e438efa8dc2f))
+* **app-apw:** headless cms workflow ([#2415](https://github.com/webiny/webiny-js/issues/2415)) ([3243fed](https://github.com/webiny/webiny-js/commit/3243fed5f56ff05d0ea7d6168d01c031db6dd493))
+
+
+
+
+
+# [5.29.0](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.2...v5.29.0) (2022-06-28)
+
+**Note:** Version bump only for package @webiny/api-headless-cms-ddb
+
+
+
+
+
+# [5.29.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.1...v5.29.0-beta.2) (2022-06-27)
+
+**Note:** Version bump only for package @webiny/api-headless-cms-ddb
+
+
+
+
+
+# [5.29.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.0...v5.29.0-beta.1) (2022-06-25)
+
+**Note:** Version bump only for package @webiny/api-headless-cms-ddb
+
+
+
+
+
+# [5.29.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.28.0...v5.29.0-beta.0) (2022-06-25)
+
+**Note:** Version bump only for package @webiny/api-headless-cms-ddb
+
+
+
+
+
+# [5.28.0](https://github.com/webiny/webiny-js/compare/v5.28.0-beta.0...v5.28.0) (2022-06-07)
+
+**Note:** Version bump only for package @webiny/api-headless-cms-ddb
+
+
+
+
+
+# [5.28.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.27.0...v5.28.0-beta.0) (2022-06-07)
+
+**Note:** Version bump only for package @webiny/api-headless-cms-ddb
+
+
+
+
+
+# [5.27.0](https://github.com/webiny/webiny-js/compare/v5.27.0-beta.0...v5.27.0) (2022-05-26)
+
+**Note:** Version bump only for package @webiny/api-headless-cms-ddb
+
+
+
+
+
+# [5.27.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.26.1-beta.0...v5.27.0-beta.0) (2022-05-25)
+
+**Note:** Version bump only for package @webiny/api-headless-cms-ddb
+
+
+
+
+
+## [5.26.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.26.0...v5.26.1-beta.0) (2022-05-24)
+
+
+### Bug Fixes
+
+* **api-headless-cms:** storage operations generate pk out of model ([#2414](https://github.com/webiny/webiny-js/issues/2414)) ([45ac1c1](https://github.com/webiny/webiny-js/commit/45ac1c188a85548bec4b9fad9822a3eda75bc03a))
+
+
+### Features
+
+* **api-headless-cms:** remove unnecessary storage entry passed into storage ops ([#2403](https://github.com/webiny/webiny-js/issues/2403)) ([59cf078](https://github.com/webiny/webiny-js/commit/59cf0789389c5f78ee4997854a90d4732d773297))
+
+
+
+
+
+# [5.26.0](https://github.com/webiny/webiny-js/compare/v5.26.0-beta.2...v5.26.0) (2022-05-13)
+
+**Note:** Version bump only for package @webiny/api-headless-cms-ddb
+
+
+
+
+
+# [5.26.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.26.0-beta.1...v5.26.0-beta.2) (2022-05-13)
+
+**Note:** Version bump only for package @webiny/api-headless-cms-ddb
+
+
+
+
+
+# [5.26.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.26.0-beta.0...v5.26.0-beta.1) (2022-05-12)
+
+**Note:** Version bump only for package @webiny/api-headless-cms-ddb
+
+
+
+
+
+# [5.26.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.25.1-beta.1...v5.26.0-beta.0) (2022-05-11)
+
+**Note:** Version bump only for package @webiny/api-headless-cms-ddb
+
+
+
+
+
+## [5.25.1-beta.1](https://github.com/webiny/webiny-js/compare/v5.25.1-beta.0...v5.25.1-beta.1) (2022-05-11)
+
+**Note:** Version bump only for package @webiny/api-headless-cms-ddb
+
+
+
+
+
+## [5.25.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.25.0...v5.25.1-beta.0) (2022-05-10)
+
+
+### Bug Fixes
+
+* **api-headless-cms:** remove unused storageEntry parameter ([2bb322a](https://github.com/webiny/webiny-js/commit/2bb322a7c11b69f326d7af1008b0955894d3b0a7))
+
+
+### Features
+
+* **api-headless-cms:** remove unnecessary types ([#2388](https://github.com/webiny/webiny-js/issues/2388)) ([919c445](https://github.com/webiny/webiny-js/commit/919c445a405a26fcda8f39636d145cea6c6cf88f))
+* elasticsearch japanese index configuration ([#2326](https://github.com/webiny/webiny-js/issues/2326)) ([83fe117](https://github.com/webiny/webiny-js/commit/83fe117e7a7ec9f2d916850cf9fc5148a866442a))
+* **api-headless-cms:** full text search on all or selected fields ([#2347](https://github.com/webiny/webiny-js/issues/2347)) ([ed3f313](https://github.com/webiny/webiny-js/commit/ed3f3137cfc87dbfd23ae62900760f7866304b83))
+
+
+
+
+
 # [5.25.0](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.6...v5.25.0) (2022-04-04)
 
 **Note:** Version bump only for package @webiny/api-headless-cms-ddb

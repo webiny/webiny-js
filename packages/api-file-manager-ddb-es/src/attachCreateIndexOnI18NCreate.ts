@@ -1,5 +1,5 @@
 import WebinyError from "@webiny/error";
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
+import { ContextPlugin } from "@webiny/api";
 import { Client } from "@elastic/elasticsearch";
 import { FileManagerContext } from "~/types";
 import { createElasticsearchIndex } from "~/elasticsearch/createElasticsearchIndex";

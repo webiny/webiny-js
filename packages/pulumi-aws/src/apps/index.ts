@@ -1,5 +1,7 @@
-export * from "./storage";
+export * from "./core";
+export * from "./common";
 export * from "./api";
-export * from "./admin/AdminApp";
-export * from "./website/WebsiteApp";
+export * from "./react";
+export * from "./admin";
+export * from "./website";
 export { CustomDomainParams } from "./customDomain";

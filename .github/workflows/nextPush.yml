@@ -2,7 +2,7 @@ name: Next Branch - Push
 
 on:
   push:
-    branches: [next]
+    branches: [next, before-next]
 
 env:
   NODE_OPTIONS: --max_old_space_size=4096
@@ -206,8 +206,10 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
+      CYPRESS_DEPLOYSENTINEL_KEY: ${{ secrets.CYPRESS_DEPLOYSENTINEL_KEY }}
+      CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
+      PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}${{ needs.e2e-wby-cms-ddb-init.outputs.ts }}_ddb
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
@@ -306,10 +308,6 @@ jobs:
         working-directory: xyz/test-project
         run: yarn webiny --version
 
-      - name: Reduce prerendering service's process-queue schedule
-        working-directory: xyz/test-project
-        run: sed -i 's/5 minutes/1 minute/g' api/pulumi/dev/prerenderingService.ts
-
       - name: Create project-files artifact
         uses: actions/upload-artifact@v2
         with:
@@ -321,9 +319,13 @@ jobs:
             !xyz/test-project/**/node_modules/**/*
             !xyz/test-project/.yarn/cache/**/*
 
+      - name: Deploy Core
+        working-directory: xyz/test-project
+        run: yarn webiny deploy apps/core --env dev
+
       - name: Deploy API
         working-directory: xyz/test-project
-        run: yarn webiny deploy api --env dev
+        run: yarn webiny deploy apps/api --env dev
 
       - name: Deploy Admin Area
         working-directory: xyz/test-project
@@ -347,7 +349,7 @@ jobs:
 
       - name: Cypress - run installation wizard test
         working-directory: next
-        run: yarn cypress run --spec "cypress/integration/adminInstallation/**/*.spec.js"
+        run: yarn cypress run --browser chrome --spec "cypress/integration/adminInstallation/**/*.spec.js"
 
       - name: Upload screenshots to Slack
         uses: trymbill/cypress-slack-video-upload-action@v1.3.0
@@ -372,8 +374,10 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
+      CYPRESS_DEPLOYSENTINEL_KEY: ${{ secrets.CYPRESS_DEPLOYSENTINEL_KEY }}
+      CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
+      PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}${{ needs.e2e-wby-cms-ddb-init.outputs.ts }}_ddb
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
@@ -405,7 +409,8 @@ jobs:
 
       - name: Cypress - run "${{ matrix.cypress-folder }}" tests
         working-directory: next
-        run: yarn cypress run --spec "${{ matrix.cypress-folder }}"
+        timeout-minutes: 40
+        run: yarn cypress run --browser chrome --spec "${{ matrix.cypress-folder }}"
 
       - name: Upload screenshots to Slack
         uses: trymbill/cypress-slack-video-upload-action@v1.3.0
@@ -451,12 +456,14 @@ jobs:
     environment: next
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
-      ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}_
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      CYPRESS_DEPLOYSENTINEL_KEY: ${{ secrets.CYPRESS_DEPLOYSENTINEL_KEY }}
+      CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
-      PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
+      ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}_
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
+      PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}_ddb-es
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
@@ -555,10 +562,6 @@ jobs:
         working-directory: xyz/test-project
         run: yarn webiny --version
 
-      - name: Reduce prerendering service's process-queue schedule
-        working-directory: xyz/test-project
-        run: sed -i 's/5 minutes/1 minute/g' api/pulumi/dev/prerenderingService.ts
-
       - name: Create project-files artifact
         uses: actions/upload-artifact@v2
         with:
@@ -570,9 +573,13 @@ jobs:
             !xyz/test-project/**/node_modules/**/*
             !xyz/test-project/.yarn/cache/**/*
 
+      - name: Deploy Core
+        working-directory: xyz/test-project
+        run: yarn webiny deploy apps/core --env dev
+
       - name: Deploy API
         working-directory: xyz/test-project
-        run: yarn webiny deploy api --env dev
+        run: yarn webiny deploy apps/api --env dev
 
       - name: Deploy Admin Area
         working-directory: xyz/test-project
@@ -596,7 +603,7 @@ jobs:
 
       - name: Cypress - run installation wizard test
         working-directory: next
-        run: yarn cypress run --spec "cypress/integration/adminInstallation/**/*.spec.js"
+        run: yarn cypress run --browser chrome --spec "cypress/integration/adminInstallation/**/*.spec.js"
 
       - name: Upload screenshots to Slack
         uses: trymbill/cypress-slack-video-upload-action@v1.3.0
@@ -620,12 +627,14 @@ jobs:
     environment: next
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
-      ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}_
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      CYPRESS_DEPLOYSENTINEL_KEY: ${{ secrets.CYPRESS_DEPLOYSENTINEL_KEY }}
+      CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
-      PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
+      ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}_
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
+      PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}_ddb-es
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
@@ -657,7 +666,8 @@ jobs:
 
       - name: Cypress - run "${{ matrix.cypress-folder }}" tests
         working-directory: next
-        run: yarn cypress run --spec "${{ matrix.cypress-folder }}"
+        timeout-minutes: 40
+        run: yarn cypress run --browser chrome --spec "${{ matrix.cypress-folder }}"
 
       - name: Upload screenshots to Slack
         uses: trymbill/cypress-slack-video-upload-action@v1.3.0

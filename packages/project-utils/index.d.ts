@@ -1,6 +1,4 @@
-import { Configuration as WebpackConfig, DefinePlugin, Loader } from "webpack";
-
-export function traverseLoaders(loaders: Loader[], onLoader: (loader: Loader) => void): void;
+import { Configuration as WebpackConfig } from "webpack";
 
 // Build commands.
 export type BuildCommand<TOptions = Record<string, any>> = (options: TOptions) => Promise<void>;
@@ -10,7 +8,7 @@ interface BabelConfig {
 }
 
 interface DefinePluginOptions {
-    [key: string]: DefinePlugin.CodeValueObject;
+    [key: string]: any;
 }
 
 // Build commands - apps.
@@ -34,7 +32,7 @@ interface BuildFunctionConfig {
     cwd: string;
     logs?: boolean;
     debug?: boolean;
-    /** 
+    /**
      * Enables or disables source map generation for the function.
      * By default is set to `true`
      */
@@ -54,16 +52,27 @@ interface BuildFunctionConfig {
 export function createBuildFunction(options: BuildFunctionConfig): BuildCommand;
 export function createWatchFunction(options: BuildFunctionConfig): BuildCommand;
 
+export function createBuildHandler(options: BuildFunctionConfig): BuildCommand;
+export function createWatchHandler(options: BuildFunctionConfig): BuildCommand;
+
 // Build commands - packages.
 interface BuildPackageConfig {
     [key: string]: any;
     cwd: string;
     logs?: boolean;
     debug?: boolean;
+
     overrides?: {
         tsConfig?: Record<string, any> | ((tsConfig: Record<string, any>) => Record<string, any>);
     };
 }
 
+interface BabelConfigParams {
+    path: string;
+    esm?: boolean;
+}
+
 export function createBuildPackage(options: BuildPackageConfig): BuildCommand;
 export function createWatchPackage(options: BuildPackageConfig): BuildCommand;
+export function createBabelConfigForNode(options: BabelConfigParams): BabelConfig;
+export function createBabelConfigForReact(options: BabelConfigParams): BabelConfig;

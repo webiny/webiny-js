@@ -1,18 +1,17 @@
 import React, { useEffect, useCallback, useRef, useMemo } from "react";
-import camelCase from "lodash/camelCase";
+import { camelCase } from "lodash";
 import { Input } from "@webiny/ui/Input";
 import { Switch } from "@webiny/ui/Switch";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { validation } from "@webiny/validation";
-import { CmsEditorField, CmsEditorFieldTypePlugin, TemporaryCmsEditorField } from "~/types";
+import { CmsEditorField, CmsEditorFieldTypePlugin } from "~/types";
 import { FormRenderPropParams } from "@webiny/form/types";
 
 import { useFieldEditor } from "~/admin/components/FieldEditor";
 import { useContentModelEditor } from "~/admin/components/ContentModelEditor/useContentModelEditor";
-import { generateAlphaLowerCaseId } from "@webiny/utils";
 
 interface GeneralTabProps {
-    field: CmsEditorField<TemporaryCmsEditorField>;
+    field: CmsEditorField;
     form: FormRenderPropParams;
     fieldPlugin: CmsEditorFieldTypePlugin;
 }
@@ -38,36 +37,25 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ field, form, fieldPlugin }) => 
         }, 200);
     }, []);
 
-    const afterChangeLabel = useCallback(
-        (value: string) => {
-            value = camelCase(value || "");
-            if (field.id) {
-                return;
-            }
-            if (!field._temporaryId) {
-                field._temporaryId = generateAlphaLowerCaseId(8);
-            }
-            setValue("fieldId", value ? `${value}@${field.type}@${field._temporaryId}` : "");
-            setValue("alias", value);
-        },
-        [field]
-    );
+    const afterChangeLabel = useCallback((value: string) => {
+        setValue("fieldId", camelCase(value));
+    }, []);
 
-    const beforeChangeAlias = useCallback(
+    const beforeChangeFieldId = useCallback(
         (value: string, baseOnChange: (value: string) => void) => {
-            value = camelCase(value || "");
+            const newValue = value.trim();
 
-            baseOnChange(value);
+            baseOnChange(newValue);
         },
         []
     );
 
-    const aliasValidator = useCallback((alias: string) => {
-        if ((alias || "").trim().toLowerCase() !== "id") {
+    const fieldIdValidator = useCallback(fieldId => {
+        if (fieldId.trim().toLowerCase() !== "id") {
             return true;
         }
 
-        throw new Error(`Cannot use "id" as Field Alias.`);
+        throw new Error(`Cannot use "id" as Field ID.`);
     }, []);
 
     const uniqueFieldIdValidator = useCallback((fieldId: string) => {
@@ -79,21 +67,8 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ field, form, fieldPlugin }) => 
         if (existingField.id === field.id) {
             return true;
         }
-        throw new Error(
-            "Field ID is not unique for some reason. As it is automatically generated, something must be wrong with the generator."
-        );
+        throw new Error("Please enter a unique Field ID.");
     }, []);
-
-    const uniqueFieldAliasValidator = useCallback(
-        (alias: string) => {
-            const existingField = getField({ alias });
-            if (!existingField || existingField.id === field.id) {
-                return true;
-            }
-            throw new Error("Please enter a unique Field Alias.");
-        },
-        [field]
-    );
 
     let additionalSettings: React.ReactNode | null = null;
     if (typeof fieldPlugin.field.renderSettings === "function") {
@@ -115,39 +90,38 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ field, form, fieldPlugin }) => 
     return (
         <>
             <Grid>
-                <Cell span={4}>
+                <Cell span={6}>
                     <Bind
                         name={"label"}
-                        validators={validation.create("required,maxLength:255")}
+                        validators={validation.create("required")}
                         afterChange={(value: string) => {
+                            if (field.id) {
+                                return;
+                            }
                             afterChangeLabel(value);
                         }}
                     >
                         <Input
                             label={"Label"}
                             inputRef={inputRef}
-                            description={"Name of the field"}
+                            data-testid="cms.editor.field.settings.general.label"
                         />
                     </Bind>
                 </Cell>
-                <Cell span={4}>
-                    <Bind name={"fieldId"}>
-                        <Input label={"Field ID"} disabled={true} />
-                    </Bind>
-                </Cell>
-                <Cell span={4}>
+                <Cell span={6}>
                     <Bind
-                        name={"alias"}
+                        name={"fieldId"}
                         validators={[
-                            validation.create("required,maxLength:255"),
-                            uniqueFieldAliasValidator,
-                            aliasValidator
+                            validation.create("required"),
+                            uniqueFieldIdValidator,
+                            fieldIdValidator
                         ]}
-                        beforeChange={beforeChangeAlias}
+                        beforeChange={beforeChangeFieldId}
                     >
                         <Input
-                            label={"Alias"}
-                            description={`Name of the field to be accessible via GraphQL`}
+                            label={"Field ID"}
+                            disabled={!!field.id}
+                            data-testid={`cms.editor.field.settings.general.label-${field.id}`}
                         />
                     </Bind>
                 </Cell>
@@ -157,6 +131,7 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ field, form, fieldPlugin }) => 
                         <Switch
                             label={fieldPlugin.field.multipleValuesLabel}
                             disabled={!fieldPlugin.field.allowMultipleValues}
+                            data-testid={`cms.editor.field.settings.general.switch-multiplevalues`}
                         />
                     </Bind>
                 </Cell>
@@ -165,13 +140,18 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ field, form, fieldPlugin }) => 
                         <Switch
                             label={"Use predefined values"}
                             disabled={!predefinedValuesEnabled}
+                            data-testid={`cms.editor.field.settings.general.switch-predefinedvalues`}
                         />
                     </Bind>
                 </Cell>
 
                 <Cell span={12}>
                     <Bind name={"helpText"}>
-                        <Input label={"Help text"} description={"Help text (optional)"} />
+                        <Input
+                            label={"Help text"}
+                            description={"Help text (optional)"}
+                            data-testid={`cms.editor.field.settings.general.helptext`}
+                        />
                     </Bind>
                 </Cell>
             </Grid>

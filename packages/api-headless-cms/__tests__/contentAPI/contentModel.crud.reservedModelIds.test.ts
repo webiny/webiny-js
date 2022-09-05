@@ -1,11 +1,12 @@
 import { CmsGroup } from "~/types";
-import { useContentGqlHandler } from "../utils/useContentGqlHandler";
+import { useGraphQLHandler } from "../utils/useGraphQLHandler";
 import { pubSubTracker } from "./mocks/lifecycleHooks";
 
 describe("content model test reserved model ids", () => {
     const manageHandlerOpts = { path: "manage/en-US" };
 
-    const { createContentModelGroupMutation } = useContentGqlHandler(manageHandlerOpts);
+    const { createContentModelGroupMutation, createContentModelMutation } =
+        useGraphQLHandler(manageHandlerOpts);
 
     let contentModelGroup: CmsGroup;
 
@@ -24,8 +25,6 @@ describe("content model test reserved model ids", () => {
     });
 
     test(`should not allow creation of a model the modelId set to blacklisted value`, async () => {
-        const { createContentModelMutation } = useContentGqlHandler(manageHandlerOpts);
-
         const [response1] = await createContentModelMutation({
             data: {
                 name: "Content Model",

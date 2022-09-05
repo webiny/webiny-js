@@ -1,0 +1,565 @@
+on: issue_comment
+
+env:
+  NODE_OPTIONS: --max_old_space_size=4096
+  AWS_REGION: eu-central-1
+  BUILD_OVERRIDES: '{"tsConfig":{"compilerOptions":{"skipLibCheck":true}}}'
+
+name: Pull Requests Command - Cypress
+
+jobs:
+  check_comment:
+    name: Check comment for /cypress
+    runs-on: ubuntu-latest
+    if: ${{ github.event.issue.pull_request }}
+    steps:
+      - name: Check for Command
+        id: command
+        uses: xt0rted/slash-command-action@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          command: cypress
+          reaction: "true"
+          reaction-type: "eyes"
+          allow-edits: "false"
+          permission-level: write
+
+      - name: Create comment
+        uses: peter-evans/create-or-update-comment@v2
+        with:
+          issue-number: ${{ github.event.issue.number }}
+          body: "Cypress E2E tests have been initiated (for more information, click [here](https://github.com/webiny/webiny-js/actions/runs/${{ github.run_id }})). :sparkles:"
+
+  e2e-wby-cms-ddb-init:
+    needs: check_comment
+    name: E2E (DDB) - Init
+    runs-on: ubuntu-latest
+    outputs:
+      day: ${{ steps.get-day.outputs.day }}
+      ts: ${{ steps.get-timestamp.outputs.ts }}
+      cypress-folders: ${{ steps.list-cypress-folders.outputs.cypress-folders }}
+    steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 14
+
+      - uses: actions/checkout@v2
+
+      - name: Checkout Pull Request
+        run: hub pr checkout ${{ github.event.issue.number }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+
+      - name: Get day of the month
+        id: get-day
+        run: echo "::set-output name=day::$(node --eval "console.log(new Date().getDate())")"
+
+      - name: Get timestamp
+        id: get-timestamp
+        run: echo "::set-output name=ts::$(node --eval "console.log(new Date().getTime())")"
+
+      - name: List Cypress tests folders
+        id: list-cypress-folders
+        run: echo "::set-output name=cypress-folders::$(node scripts/listCypressTestsFolders.js)"
+
+  e2e-wby-cms-ddb-project-setup:
+    name: E2E (DDB) - Project setup
+    needs: e2e-wby-cms-ddb-init
+    runs-on: ubuntu-latest
+    outputs:
+      cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
+    environment: next
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      CYPRESS_DEPLOYSENTINEL_KEY: ${{ secrets.CYPRESS_DEPLOYSENTINEL_KEY }}
+      CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
+      PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
+      PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
+      WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}${{ needs.e2e-wby-cms-ddb-init.outputs.ts }}_ddb
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 14
+
+      - uses: actions/checkout@v2
+        with:
+          path: next
+
+      - name: Checkout Pull Request
+        run: hub pr checkout ${{ github.event.issue.number }}
+        working-directory: next
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+
+      - uses: actions/cache@v2
+        id: yarn-cache
+        with:
+          path: next/.yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('next/**/yarn.lock') }}
+
+      - uses: actions/cache@v2
+        id: cached-packages
+        with:
+          path: next/.webiny/cached-packages
+          key: ${{ runner.os }}-${{ needs.e2e-wby-cms-ddb-init.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
+
+      - name: Install dependencies
+        working-directory: next
+        run: yarn --immutable
+
+      - name: Build packages
+        working-directory: next
+        run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
+
+      - uses: actions/cache@v2
+        id: packages-cache
+        with:
+          path: next/.webiny/cached-packages
+          key: packages-cache-${{ needs.e2e-wby-cms-ddb-init.outputs.ts }}
+
+      # Publish built packages to Verdaccio.
+      - name: Start Verdaccio local server
+        working-directory: next
+        run: npx pm2 start verdaccio -- -c .verdaccio.yaml
+
+      - name: Create ".npmrc" file in the project root, with a dummy auth token
+        working-directory: next
+        run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
+
+      - name: Configure NPM to use local registry
+        run: npm config set registry http://localhost:4873
+
+      - name: Set git email
+        run: git config --global user.email "webiny-bot@webiny.com"
+
+      - name: Set git username
+        run: git config --global user.name "webiny-bot"
+
+      - name: Version packages (no push, no changelog)
+        working-directory: next
+        run: yarn lerna:version:verdaccio
+
+      - name: Release to Verdaccio
+        working-directory: next
+        run: yarn lerna:publish:verdaccio
+
+      - name: Create verdaccio-files artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: verdaccio-files
+          retention-days: 1
+          path: |
+            next/.verdaccio/
+            next/.verdaccio.yaml
+
+        # Create a new Webiny project, deploy it, and complete the installation wizard.
+      - name: Disable Webiny telemetry
+        run: >
+          mkdir ~/.webiny &&
+          echo '{ "id": "ci", "telemetry": false }' > ~/.webiny/config
+
+      - name: Create directory
+        run: mkdir xyz
+
+      - name: Create a new Webiny project
+        working-directory: xyz
+        run: >
+          npx create-webiny-project@next test-project
+          --tag next --no-interactive
+          --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
+          --template-options '{"region":"${{ env.AWS_REGION }}","storageOperations":"ddb"}'
+
+      - name: Print CLI version
+        working-directory: xyz/test-project
+        run: yarn webiny --version
+
+      - name: Create project-files artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: project-files
+          retention-days: 1
+          path: |
+            xyz/test-project/
+            !xyz/test-project/node_modules/**/*
+            !xyz/test-project/**/node_modules/**/*
+            !xyz/test-project/.yarn/cache/**/*
+
+      - name: Deploy Core
+        working-directory: xyz/test-project
+        run: yarn webiny deploy apps/core --env dev
+
+      - name: Deploy API
+        working-directory: xyz/test-project
+        run: yarn webiny deploy apps/api --env dev
+
+      - name: Deploy Admin Area
+        working-directory: xyz/test-project
+        run: yarn webiny deploy apps/admin --env dev
+
+      - name: Deploy Website
+        working-directory: xyz/test-project
+        run: yarn webiny deploy apps/website --env dev
+
+      # Generates a new cypress.json config.
+      - name: Create Cypress config
+        working-directory: next
+        run: yarn setup-cypress --projectFolder ../xyz/test-project
+
+      # We also want to store the generated Cypress config as a job output.
+      # This way we don't have to generate it again (which may take ~30s).
+      - name: Save Cypress config
+        id: save-cypress-config
+        working-directory: next
+        run: echo "::set-output name=cypress-config::$(cat cypress.json | tr -d ' \t\n\r')"
+
+      - name: Cypress - run installation wizard test
+        working-directory: next
+        run: yarn cypress run --browser chrome --spec "cypress/integration/adminInstallation/**/*.spec.js"
+
+      - name: Upload screenshots to Slack
+        uses: trymbill/cypress-slack-video-upload-action@v1.3.0
+        if: failure()
+        with:
+          token: ${{ secrets.SLACK_TOKEN }}
+          channels: C027VQG8080
+          workdir: next/cypress
+          message-text: Could not complete Admin Area installation wizard. Screenshots have been placed in this thread, good luck.
+
+  e2e-wby-cms-ddb-cypress-tests:
+    name: ${{ matrix.cypress-folder }} (ddb, ${{ matrix.os }}, Node v${{ matrix.node }})
+    needs: [e2e-wby-cms-ddb-init, e2e-wby-cms-ddb-project-setup]
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        node: [14]
+        cypress-folder: ${{ fromJson(needs.e2e-wby-cms-ddb-init.outputs.cypress-folders) }}
+    runs-on: ubuntu-latest
+    environment: next
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      CYPRESS_DEPLOYSENTINEL_KEY: ${{ secrets.CYPRESS_DEPLOYSENTINEL_KEY }}
+      CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
+      PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
+      PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
+      WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}${{ needs.e2e-wby-cms-ddb-init.outputs.ts }}_ddb
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          path: next
+
+      - name: Checkout Pull Request
+        run: hub pr checkout ${{ github.event.issue.number }}
+        working-directory: next
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+
+      - uses: actions/cache@v2
+        with:
+          path: next/.webiny/cached-packages
+          key: packages-cache-${{ needs.e2e-wby-cms-ddb-init.outputs.ts }}
+
+      - uses: actions/cache@v2
+        with:
+          path: next/.yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('next/**/yarn.lock') }}
+
+      - name: Install dependencies
+        working-directory: next
+        run: yarn --immutable
+
+      - name: Build packages
+        working-directory: next
+        run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
+
+      - name: Set up Cypress config
+        working-directory: next
+        run: echo '${{ needs.e2e-wby-cms-ddb-project-setup.outputs.cypress-config }}' > cypress.json
+
+      - name: Cypress - run "${{ matrix.cypress-folder }}" tests
+        working-directory: next
+        timeout-minutes: 40
+        run: yarn cypress run --browser chrome --spec "${{ matrix.cypress-folder }}"
+
+      - name: Upload screenshots to Slack
+        uses: trymbill/cypress-slack-video-upload-action@v1.3.0
+        if: failure()
+        with:
+          token: ${{ secrets.SLACK_TOKEN }}
+          channels: C027VQG8080
+          workdir: next/cypress
+          message-text: Cypress tests failed! Screenshots have been placed in this thread, good luck.
+
+  e2e-wby-cms-ddb-es-init:
+    name: E2E (DDB+ES) - Init
+    needs: check_comment
+    runs-on: ubuntu-latest
+    outputs:
+      day: ${{ steps.get-day.outputs.day }}
+      ts: ${{ steps.get-timestamp.outputs.ts }}
+      cypress-folders: ${{ steps.list-cypress-folders.outputs.cypress-folders }}
+    steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 14
+
+      - uses: actions/checkout@v2
+
+      - name: Checkout Pull Request
+        run: hub pr checkout ${{ github.event.issue.number }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+
+      - name: Get day of the month
+        id: get-day
+        run: echo "::set-output name=day::$(node --eval "console.log(new Date().getDate())")"
+
+      - name: Get timestamp
+        id: get-timestamp
+        run: echo "::set-output name=ts::$(node --eval "console.log(new Date().getTime())")"
+
+      - name: List Cypress tests folders
+        id: list-cypress-folders
+        run: echo "::set-output name=cypress-folders::$(node scripts/listCypressTestsFolders.js)"
+
+  e2e-wby-cms-ddb-es-project-setup:
+    name: E2E (DDB+ES) - Project setup
+    needs: e2e-wby-cms-ddb-es-init
+    runs-on: ubuntu-latest
+    outputs:
+      cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
+    environment: next
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      CYPRESS_DEPLOYSENTINEL_KEY: ${{ secrets.CYPRESS_DEPLOYSENTINEL_KEY }}
+      CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
+      ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
+      ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}_
+      PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
+      PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
+      WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}_ddb-es
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 14
+
+      - uses: actions/checkout@v2
+        with:
+          path: next
+
+      - name: Checkout Pull Request
+        working-directory: next
+        run: hub pr checkout ${{ github.event.issue.number }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+
+      - uses: actions/cache@v2
+        id: yarn-cache
+        with:
+          path: next/.yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('next/**/yarn.lock') }}
+
+      - uses: actions/cache@v2
+        id: cached-packages
+        with:
+          path: next/.webiny/cached-packages
+          key: ${{ runner.os }}-${{ needs.e2e-wby-cms-ddb-es-init.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
+
+      - name: Install dependencies
+        working-directory: next
+        run: yarn --immutable
+
+      - name: Build packages
+        working-directory: next
+        run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
+
+      - uses: actions/cache@v2
+        id: packages-cache
+        with:
+          path: next/.webiny/cached-packages
+          key: packages-cache-${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}
+
+      # Publish built packages to Verdaccio.
+      - name: Start Verdaccio local server
+        working-directory: next
+        run: npx pm2 start verdaccio -- -c .verdaccio.yaml
+
+      - name: Create ".npmrc" file in the project root, with a dummy auth token
+        working-directory: next
+        run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
+
+      - name: Configure NPM to use local registry
+        run: npm config set registry http://localhost:4873
+
+      - name: Set git email
+        run: git config --global user.email "webiny-bot@webiny.com"
+
+      - name: Set git username
+        run: git config --global user.name "webiny-bot"
+
+      - name: Version packages (no push, no changelog)
+        working-directory: next
+        run: yarn lerna:version:verdaccio
+
+      - name: Release to Verdaccio
+        working-directory: next
+        run: yarn lerna:publish:verdaccio
+
+      - name: Create verdaccio-files artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: verdaccio-files
+          retention-days: 1
+          path: |
+            next/.verdaccio/
+            next/.verdaccio.yaml
+
+        # Create a new Webiny project, deploy it, and complete the installation wizard.
+      - name: Disable Webiny telemetry
+        run: >
+          mkdir ~/.webiny &&
+          echo '{ "id": "ci", "telemetry": false }' > ~/.webiny/config
+
+      - name: Create directory
+        run: mkdir xyz
+
+      - name: Create a new Webiny project
+        working-directory: xyz
+        run: >
+          npx create-webiny-project@next test-project
+          --tag next --no-interactive
+          --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
+          --template-options '{"region":"${{ env.AWS_REGION }}","storageOperations":"ddb-es"}'
+
+      - name: Print CLI version
+        working-directory: xyz/test-project
+        run: yarn webiny --version
+
+      - name: Create project-files artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: project-files
+          retention-days: 1
+          path: |
+            xyz/test-project/
+            !xyz/test-project/node_modules/**/*
+            !xyz/test-project/**/node_modules/**/*
+            !xyz/test-project/.yarn/cache/**/*
+
+      - name: Deploy Core
+        working-directory: xyz/test-project
+        run: yarn webiny deploy apps/core --env dev
+
+      - name: Deploy API
+        working-directory: xyz/test-project
+        run: yarn webiny deploy apps/api --env dev
+
+      - name: Deploy Admin Area
+        working-directory: xyz/test-project
+        run: yarn webiny deploy apps/admin --env dev
+
+      - name: Deploy Website
+        working-directory: xyz/test-project
+        run: yarn webiny deploy apps/website --env dev
+
+      # Generates a new cypress.json config.
+      - name: Create Cypress config
+        working-directory: next
+        run: yarn setup-cypress --projectFolder ../xyz/test-project
+
+      # We also want to store the generated Cypress config as a job output.
+      # This way we don't have to generate it again (which may take ~30s).
+      - name: Save Cypress config
+        id: save-cypress-config
+        working-directory: next
+        run: echo "::set-output name=cypress-config::$(cat cypress.json | tr -d ' \t\n\r')"
+
+      - name: Cypress - run installation wizard test
+        working-directory: next
+        run: yarn cypress run --browser chrome --spec "cypress/integration/adminInstallation/**/*.spec.js"
+
+      - name: Upload screenshots to Slack
+        uses: trymbill/cypress-slack-video-upload-action@v1.3.0
+        if: failure()
+        with:
+          token: ${{ secrets.SLACK_TOKEN }}
+          channels: C027VQG8080
+          workdir: next/cypress
+          message-text: Could not complete Admin Area installation wizard. Screenshots have been placed in this thread, good luck.
+
+  e2e-wby-cms-ddb-es-cypress-tests:
+    name: ${{ matrix.cypress-folder }} (ddb+es, ${{ matrix.os }}, Node v${{ matrix.node }})
+    needs: [e2e-wby-cms-ddb-es-init, e2e-wby-cms-ddb-es-project-setup]
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        node: [14]
+        cypress-folder: ${{ fromJson(needs.e2e-wby-cms-ddb-es-init.outputs.cypress-folders) }}
+    runs-on: ubuntu-latest
+    environment: next
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      CYPRESS_DEPLOYSENTINEL_KEY: ${{ secrets.CYPRESS_DEPLOYSENTINEL_KEY }}
+      CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
+      ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
+      ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}_
+      PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
+      PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
+      WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}_ddb-es
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          path: next
+
+      - name: Checkout Pull Request
+        working-directory: next
+        run: hub pr checkout ${{ github.event.issue.number }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+
+      - uses: actions/cache@v2
+        with:
+          path: next/.webiny/cached-packages
+          key: packages-cache-${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}
+
+      - uses: actions/cache@v2
+        with:
+          path: next/.yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('next/**/yarn.lock') }}
+
+      - name: Install dependencies
+        working-directory: next
+        run: yarn --immutable
+
+      - name: Build packages
+        working-directory: next
+        run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
+
+      - name: Set up Cypress config
+        working-directory: next
+        run: echo '${{ needs.e2e-wby-cms-ddb-es-project-setup.outputs.cypress-config }}' > cypress.json
+
+      - name: Cypress - run "${{ matrix.cypress-folder }}" tests
+        working-directory: next
+        timeout-minutes: 40
+        run: yarn cypress run --browser chrome --spec "${{ matrix.cypress-folder }}"
+
+      - name: Upload screenshots to Slack
+        uses: trymbill/cypress-slack-video-upload-action@v1.3.0
+        if: failure()
+        with:
+          token: ${{ secrets.SLACK_TOKEN }}
+          channels: C027VQG8080
+          workdir: next/cypress
+          message-text: Cypress tests failed! Screenshots have been placed in this thread, good luck.

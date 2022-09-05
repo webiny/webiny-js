@@ -1,11 +1,8 @@
 import React from "react";
 import { makeComposable } from "@webiny/app-admin";
-import { PageWithContent, RevisionsAtomType } from "~/editor/recoil/modules";
+import { EditorProps } from "~/editor/Editor";
 
-export type EditorProps = {
-    page: PageWithContent;
-    revisions: RevisionsAtomType;
-};
+export { EditorProps };
 
 export const Editor = makeComposable<EditorProps>("Editor", props => {
     return <EditorRenderer {...props} />;

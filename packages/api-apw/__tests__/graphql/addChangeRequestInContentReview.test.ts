@@ -1,7 +1,7 @@
-import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import { mocks as changeRequestMock } from "./mocks/changeRequest";
-import { createSetupForContentReview } from "../utils/helpers";
+import { createSetupForPageContentReview } from "../utils/helpers";
 import { ApwContentReview, PageWithWorkflow } from "~/types";
+import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
 
 const richTextMock = [
     {
@@ -33,7 +33,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
         path: "manage/en-US"
     };
 
-    const gqlHandler = useContentGqlHandler({
+    const gqlHandler = usePageBuilderHandler({
         ...options
     });
     const {
@@ -70,12 +70,12 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
     };
 
     test("should able to add change request in a content review", async () => {
-        const { page } = await createSetupForContentReview(gqlHandler);
+        const { page } = await createSetupForPageContentReview(gqlHandler);
         const contentReview = await createContentReview(page);
         const [step1, step2] = contentReview.steps;
 
         await until(
-            () => listContentReviewsQuery({}).then(([data]) => data),
+            () => listContentReviewsQuery({}).then(([data]: any) => data),
             (response: any) => {
                 const list = response.data.apw.listContentReviews.data;
                 return list.length === 1;
@@ -95,7 +95,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
         const changeRequested = createChangeRequestResponse.data.apw.createChangeRequest.data;
 
         await until(
-            () => listChangeRequestsQuery({}).then(([data]) => data),
+            () => listChangeRequestsQuery({}).then(([data]: any) => data),
             (response: any) => {
                 const list = response.data.apw.listChangeRequests.data;
                 return list.length === 1;
@@ -106,7 +106,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
         );
 
         await until(
-            () => listContentReviewsQuery({}).then(([data]) => data),
+            () => listContentReviewsQuery({}).then(([data]: any) => data),
             (response: any) => {
                 const [entry] = response.data.apw.listContentReviews.data as ApwContentReview[];
                 return (
@@ -170,7 +170,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
             changeRequests.push(createChangeRequestResponse.data.apw.createChangeRequest.data);
 
             await until(
-                () => listContentReviewsQuery({}).then(([data]) => data),
+                () => listContentReviewsQuery({}).then(([data]: any) => data),
                 (response: any) => {
                     const [entry] = response.data.apw.listContentReviews.data as ApwContentReview[];
                     return (
@@ -193,7 +193,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
                     where: {
                         step: `${contentReview.id}#${step2.id}`
                     }
-                }).then(([data]) => data),
+                }).then(([data]: any) => data),
             (response: any) => {
                 const list = response.data.apw.listChangeRequests.data;
                 return list.length === 2;
@@ -356,7 +356,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
     });
 
     test(`should delete all "change requests" when a "content review" gets deleted`, async () => {
-        const { page, createPage } = await createSetupForContentReview(gqlHandler);
+        const { page, createPage } = await createSetupForPageContentReview(gqlHandler);
         const page2 = await createPage(gqlHandler);
         const pages = [page, page2];
         /*
@@ -386,7 +386,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
         }
 
         await until(
-            () => listChangeRequestsQuery({}).then(([data]) => data),
+            () => listChangeRequestsQuery({}).then(([data]: any) => data),
             (response: any) => {
                 const list = response.data.apw.listChangeRequests.data;
                 return list.length === 4;
@@ -479,7 +479,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
         });
 
         await until(
-            () => listChangeRequestsQuery({}).then(([data]) => data),
+            () => listChangeRequestsQuery({}).then(([data]: any) => data),
             (response: any) => {
                 const list = response.data.apw.listChangeRequests.data;
                 return list.length === 2;

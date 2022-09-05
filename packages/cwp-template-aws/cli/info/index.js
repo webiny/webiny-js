@@ -1,15 +1,29 @@
 const getStackOutput = require("@webiny/cli-plugin-deploy-pulumi/utils/getStackOutput");
 const { green } = require("chalk");
+const path = require("path");
+const fs = require("fs");
 
 const line = `-------------------------`;
+
+// This function has been created in order to help preserve backwards compatibility
+// (from 5.29.0, the `api` app has been moved into the `apps/api` directory).
+const getApiFolder = context => {
+    if (fs.existsSync(path.join(context.project.root, "api"))) {
+        return "api";
+    }
+
+    return "apps/api";
+};
 
 const printEnvOutput = async (env, context) => {
     console.log(line);
     console.log(`Environment: ${green(env)}`);
     console.log(line);
 
+    const apiFolder = getApiFolder(context);
+
     let stacksDeployedCount = 0;
-    let output = getStackOutput({ folder: "api", env });
+    let output = getStackOutput({ folder: apiFolder, env });
     if (output) {
         stacksDeployedCount++;
         console.log(
@@ -22,7 +36,7 @@ const printEnvOutput = async (env, context) => {
             ].join("\n")
         );
     } else {
-        context.info(`Stack ${green("api")} not deployed yet.`);
+        context.info(`Stack ${green(apiFolder)} not deployed yet.`);
     }
 
     output = getStackOutput({ folder: "apps/admin", env });
@@ -64,7 +78,7 @@ module.exports = {
             `Lists all relevant URLs for deployed project applications.`,
             yargs => {
                 yargs.option("env", {
-                    describe: `Environment`,
+                    describe: `Environment (required if Pulumi state files are not stored locally)`,
                     type: "string",
                     required: false
                 });
@@ -75,23 +89,24 @@ module.exports = {
             },
             async args => {
                 const { env } = args;
-
                 if (!env) {
                     // Get all existing environments
                     const glob = require("fast-glob");
-                    const pulumiFiles = await glob(["**/Pulumi.*.yaml"], {
-                        cwd: context.project.root,
-                        onlyFiles: true,
-                        ignore: ["**/node_modules/**"]
-                    });
 
-                    const existingEnvs = new Set();
-                    const regex = /Pulumi\.(\w+)\.yaml/;
-                    pulumiFiles.forEach(file => {
-                        if (file.match(regex)) {
-                            existingEnvs.add(RegExp.$1);
+                    // We just get stack files for deployed Admin apps. That's enough to determine
+                    // into which environments the user has deployed their Webiny project.
+                    const pulumiAdminStackFilesPaths = glob.sync(
+                        ".pulumi/**/apps/admin/.pulumi/stacks/*.json",
+                        {
+                            cwd: context.project.root,
+                            onlyFiles: true,
+                            dot: true
                         }
-                    });
+                    );
+
+                    const existingEnvs = pulumiAdminStackFilesPaths.map(current =>
+                        path.basename(current, ".json")
+                    );
 
                     for (const env of existingEnvs) {
                         await printEnvOutput(env, context);

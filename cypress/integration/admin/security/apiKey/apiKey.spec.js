@@ -19,7 +19,7 @@ const deleteEntry = () => {
     });
 
     cy.findByTestId("default-data-list.delete-dialog").within(() => {
-        cy.findByText("Confirm").click();
+        cy.findAllByTestId("dialog-accept").next().click();
     });
     cy.findByText(/API\skey\s.*\sdeleted./i).should("exist");
 };
@@ -38,13 +38,13 @@ context("Security -> API Key", () => {
         // Open API key details form
         cy.findAllByTestId("new-record-button").first().click();
         // Add API key's detail
-        cy.findByLabelText("Name").type(name);
-        cy.findByLabelText("Description").type(description);
+        cy.findByTestId("sam.key.new.form.name").type(name);
+        cy.findByTestId("sam.key.new.form.description").type(description);
 
         cy.findByLabelText(/All locales/i).check();
 
         // Save details
-        cy.findByText(/Save api key/i).click();
+        cy.findByTestId("sam.key.new.form.button.save").click();
         // Wait for loading to finish
         cy.get(".react-spinner-material").should("not.exist");
         // Verify success message
@@ -53,14 +53,14 @@ context("Security -> API Key", () => {
         // Update API key
 
         const [newName, newDescription] = [uniqid("new-name-"), uniqid("new-description-")];
-        cy.findByLabelText("Name").should("have.value", name);
+        cy.findByTestId("sam.key.new.form.name").should("have.value", name);
         // Add API key's detail
-        cy.findByLabelText("Name").clear().type(newName);
-        cy.findByLabelText("Description").clear().type(newDescription);
+        cy.findByTestId("sam.key.new.form.name").clear().type(newName);
+        cy.findByTestId("sam.key.new.form.description").clear().type(newDescription);
         // Update permissions
         selectPermission("permission.fm", "full");
         // Save details
-        cy.findByText(/Save api key/i).click();
+        cy.findByTestId("sam.key.new.form.button.save").click();
         // Wait for loading to finish
         cy.get(".react-spinner-material").should("not.exist");
         // Verify success message
@@ -83,8 +83,8 @@ context("Security -> API Key", () => {
         // Open API key details form
         cy.findAllByTestId("new-record-button").first().click();
         // Add API key's detail
-        cy.findByLabelText("Name").type(name);
-        cy.findByLabelText("Description").type(description);
+        cy.findByTestId("sam.key.new.form.name").type(name);
+        cy.findByTestId("sam.key.new.form.description").type(description);
         cy.findByLabelText(/All locales/i).check();
 
         // Add all permissions
@@ -96,7 +96,7 @@ context("Security -> API Key", () => {
         selectPermission("permission.i18n", "full");
 
         // Save details
-        cy.findByText(/Save api key/i).click();
+        cy.findByTestId("sam.key.new.form.button.save").click();
         // Wait for loading to finish
         cy.get(".react-spinner-material").should("not.exist");
         // Verify success message

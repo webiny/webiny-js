@@ -1,5 +1,5 @@
 import { FormBuilderContext, FormBuilderStorageOperations } from "~/types";
-import { ContextPlugin } from "@webiny/handler";
+import { ContextPlugin } from "@webiny/api";
 import { createSystemCrud } from "~/plugins/crud/system.crud";
 import { createSettingsCrud } from "~/plugins/crud/settings.crud";
 import { createFormsCrud } from "~/plugins/crud/forms.crud";

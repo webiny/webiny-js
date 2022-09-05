@@ -8,6 +8,10 @@ const Hamburger: React.FC = () => {
     const { location } = useTags();
     const { visible, setVisible } = useNavigation();
 
+    if (location === "installer") {
+        return null;
+    }
+
     return (
         <IconButton
             icon={<MenuIcon style={{ color: location === "navigation" ? undefined : "white" }} />}

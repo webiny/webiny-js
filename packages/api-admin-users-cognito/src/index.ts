@@ -1,4 +1,4 @@
-import { ContextPlugin } from "@webiny/handler";
+import { ContextPlugin } from "@webiny/api";
 import { createAdminUsers } from "./createAdminUsers";
 import { AdminUsersContext, AdminUsersStorageOperations } from "./types";
 import base from "./graphql/base.gql";
@@ -36,7 +36,21 @@ export default ({ storageOperations }: Config) => {
                 storageOperations,
                 getTenant,
                 getPermission,
-                getIdentity
+                getIdentity,
+                incrementWcpSeats: async () => {
+                    if (!context.wcp) {
+                        return;
+                    }
+
+                    await context.wcp.incrementSeats();
+                },
+                decrementWcpSeats: async () => {
+                    if (!context.wcp) {
+                        return;
+                    }
+
+                    await context.wcp.decrementSeats();
+                }
             });
 
             subscribeToEvents(context);

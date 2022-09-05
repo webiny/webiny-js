@@ -3,6 +3,187 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.31.0](https://github.com/webiny/webiny-js/compare/v5.31.0-beta.1...v5.31.0) (2022-08-18)
+
+**Note:** Version bump only for package @webiny/api-i18n-content
+
+
+
+
+
+# [5.31.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.31.0-beta.0...v5.31.0-beta.1) (2022-08-17)
+
+**Note:** Version bump only for package @webiny/api-i18n-content
+
+
+
+
+
+# [5.31.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.30.0...v5.31.0-beta.0) (2022-08-16)
+
+
+### Features
+
+* **handler-fastify:** add fastify as handler into the system ([#2546](https://github.com/webiny/webiny-js/issues/2546)) ([8d258aa](https://github.com/webiny/webiny-js/commit/8d258aa2ebd8562b79e395d7aeea6316405f7f4e))
+
+
+
+
+
+# [5.30.0](https://github.com/webiny/webiny-js/compare/v5.30.0-beta.1...v5.30.0) (2022-07-27)
+
+**Note:** Version bump only for package @webiny/api-i18n-content
+
+
+
+
+
+# [5.30.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.30.0-beta.0...v5.30.0-beta.1) (2022-07-26)
+
+**Note:** Version bump only for package @webiny/api-i18n-content
+
+
+
+
+
+# [5.30.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.29.0...v5.30.0-beta.0) (2022-07-25)
+
+
+### Features
+
+* typescript to 4.7.4 ([#2527](https://github.com/webiny/webiny-js/issues/2527)) ([ee24a3a](https://github.com/webiny/webiny-js/commit/ee24a3a995942ee2588e615e42f604ed7418390a))
+
+
+
+
+
+# [5.29.0](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.2...v5.29.0) (2022-06-28)
+
+**Note:** Version bump only for package @webiny/api-i18n-content
+
+
+
+
+
+# [5.29.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.1...v5.29.0-beta.2) (2022-06-27)
+
+**Note:** Version bump only for package @webiny/api-i18n-content
+
+
+
+
+
+# [5.29.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.0...v5.29.0-beta.1) (2022-06-25)
+
+**Note:** Version bump only for package @webiny/api-i18n-content
+
+
+
+
+
+# [5.29.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.28.0...v5.29.0-beta.0) (2022-06-25)
+
+
+### Bug Fixes
+
+* regenerate TS configs ([b551150](https://github.com/webiny/webiny-js/commit/b5511502b5d690c33988c9e3f6c147bf5f6516d4))
+
+
+
+
+
+# [5.28.0](https://github.com/webiny/webiny-js/compare/v5.28.0-beta.0...v5.28.0) (2022-06-07)
+
+**Note:** Version bump only for package @webiny/api-i18n-content
+
+
+
+
+
+# [5.28.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.27.0...v5.28.0-beta.0) (2022-06-07)
+
+**Note:** Version bump only for package @webiny/api-i18n-content
+
+
+
+
+
+# [5.27.0](https://github.com/webiny/webiny-js/compare/v5.27.0-beta.0...v5.27.0) (2022-05-26)
+
+**Note:** Version bump only for package @webiny/api-i18n-content
+
+
+
+
+
+# [5.27.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.26.1-beta.0...v5.27.0-beta.0) (2022-05-25)
+
+**Note:** Version bump only for package @webiny/api-i18n-content
+
+
+
+
+
+## [5.26.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.26.0...v5.26.1-beta.0) (2022-05-24)
+
+**Note:** Version bump only for package @webiny/api-i18n-content
+
+
+
+
+
+# [5.26.0](https://github.com/webiny/webiny-js/compare/v5.26.0-beta.2...v5.26.0) (2022-05-13)
+
+**Note:** Version bump only for package @webiny/api-i18n-content
+
+
+
+
+
+# [5.26.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.26.0-beta.1...v5.26.0-beta.2) (2022-05-13)
+
+**Note:** Version bump only for package @webiny/api-i18n-content
+
+
+
+
+
+# [5.26.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.26.0-beta.0...v5.26.0-beta.1) (2022-05-12)
+
+**Note:** Version bump only for package @webiny/api-i18n-content
+
+
+
+
+
+# [5.26.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.25.1-beta.1...v5.26.0-beta.0) (2022-05-11)
+
+**Note:** Version bump only for package @webiny/api-i18n-content
+
+
+
+
+
+## [5.25.1-beta.1](https://github.com/webiny/webiny-js/compare/v5.25.1-beta.0...v5.25.1-beta.1) (2022-05-11)
+
+**Note:** Version bump only for package @webiny/api-i18n-content
+
+
+
+
+
+## [5.25.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.25.0...v5.25.1-beta.0) (2022-05-10)
+
+
+### Bug Fixes
+
+* **api-i18n:** move api-i18n-content methods to api-i18n ([5a6c335](https://github.com/webiny/webiny-js/commit/5a6c33512f31979d94f78246ff4a8a18173b7f96))
+* **api-i18n-content:** deprecate package ([eaf8360](https://github.com/webiny/webiny-js/commit/eaf8360798294743fb63717734949ccb25282f47))
+
+
+
+
+
 # [5.25.0](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.6...v5.25.0) (2022-04-04)
 
 **Note:** Version bump only for package @webiny/api-i18n-content

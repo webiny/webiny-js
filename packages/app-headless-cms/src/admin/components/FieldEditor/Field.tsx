@@ -86,12 +86,12 @@ const Field: React.FC<FieldProps> = props => {
             return { ...data, titleFieldId: field.fieldId };
         });
 
-        if (response.error) {
+        if (response && response.error) {
             return showSnackbar(response.error.message);
         }
 
         showSnackbar(t`Title field set successfully.`);
-    }, [field.fieldId]);
+    }, [field.fieldId, setData]);
 
     const fieldPlugin = getFieldPlugin(field.type);
     const editorFieldOptionPlugins =

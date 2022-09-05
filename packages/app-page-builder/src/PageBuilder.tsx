@@ -1,11 +1,10 @@
 import React, { Fragment } from "react";
 import { HasPermission } from "@webiny/app-security";
 import {
-    Compose,
     Plugins,
     AddMenu as Menu,
-    Provider,
-    HigherOrderComponent
+    createProviderPlugin,
+    createComponentPlugin
 } from "@webiny/app-admin";
 import { PageBuilderProvider as ContextProvider } from "./contexts/PageBuilder";
 import { ReactComponent as PagesIcon } from "./admin/assets/table_chart-24px.svg";
@@ -18,7 +17,7 @@ import { EditorProps, EditorRenderer } from "./admin/components/Editor";
 export type { EditorProps };
 export { EditorRenderer };
 
-const PageBuilderProviderHOC = (Component: React.FC): React.FC => {
+const PageBuilderProviderPlugin = createProviderPlugin(Component => {
     return function PageBuilderProvider({ children }) {
         return (
             <ContextProvider>
@@ -28,7 +27,7 @@ const PageBuilderProviderHOC = (Component: React.FC): React.FC => {
             </ContextProvider>
         );
     };
-};
+});
 
 const PageBuilderMenu: React.FC = () => {
     return (
@@ -66,11 +65,6 @@ const PageBuilderMenu: React.FC = () => {
                             label={"Website"}
                             path={"/settings/page-builder/website"}
                         />
-                        <Menu
-                            name={"settings.pageBuilder.prerendering"}
-                            label={"Prerendering"}
-                            path={"/settings/page-builder/prerendering"}
-                        />
                     </Menu>
                 </Menu>
             </HasPermission>
@@ -79,22 +73,22 @@ const PageBuilderMenu: React.FC = () => {
 };
 
 const EditorLoader = React.lazy(() =>
-    import("./editor").then(m => ({
+    import("./editor/Editor").then(m => ({
         default: m.Editor
     }))
 );
 
-const EditorRendererHOC: HigherOrderComponent<EditorProps> = () => {
+const EditorRendererPlugin = createComponentPlugin(EditorRenderer, () => {
     return function Editor(props) {
         return <EditorLoader {...props} />;
     };
-};
+});
 
 export const PageBuilder: React.FC = () => {
     return (
         <Fragment>
-            <Provider hoc={PageBuilderProviderHOC} />
-            <Compose component={EditorRenderer} with={EditorRendererHOC} />
+            <PageBuilderProviderPlugin />
+            <EditorRendererPlugin />
             <Plugins>
                 <PageBuilderMenu />
                 <WebsiteSettings />

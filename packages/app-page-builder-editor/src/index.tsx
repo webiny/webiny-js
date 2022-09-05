@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from "react";
 import { RecoilRoot } from "recoil";
 import { Compose, HigherOrderComponent } from "@webiny/app-admin";

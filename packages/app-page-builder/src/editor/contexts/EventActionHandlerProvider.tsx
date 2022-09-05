@@ -1,13 +1,21 @@
-import { useApolloClient } from "@apollo/react-hooks";
-import React, { createContext, useEffect, useMemo, useRef } from "react";
+import React, { createContext, useCallback, useEffect, useMemo, useRef } from "react";
+import {
+    Snapshot,
+    useGotoRecoilSnapshot,
+    useRecoilCallback,
+    useRecoilSnapshot,
+    useRecoilState,
+    useRecoilValue,
+    useSetRecoilState
+} from "recoil";
 import merge from "lodash/merge";
+import { useApolloClient } from "@apollo/react-hooks";
+import { makeComposable } from "@webiny/app-admin";
 import { plugins } from "@webiny/plugins";
 import {
     rootElementAtom,
     elementsAtom,
-    pageAtom,
     pluginsAtom,
-    revisionsAtom,
     sidebarAtom,
     uiAtom,
     elementByIdSelector,
@@ -15,10 +23,8 @@ import {
     highlightElementAtom,
     SidebarAtomType,
     RootElementAtom,
-    PageAtomType,
     PluginsAtomType,
-    UiAtomType,
-    RevisionsAtomType
+    UiAtomType
 } from "../recoil/modules";
 
 import { PbState } from "../recoil/modules/types";
@@ -35,15 +41,8 @@ import {
     EventActionHandlerTarget,
     EventActionHandlerCallableState
 } from "~/types";
-import {
-    Snapshot,
-    useGotoRecoilSnapshot,
-    useRecoilCallback,
-    useRecoilSnapshot,
-    useRecoilState,
-    useRecoilValue,
-    useSetRecoilState
-} from "recoil";
+import { composeSync, SyncProcessor } from "@webiny/utils/compose";
+import { UpdateElementTreeActionEvent } from "~/editor/recoil/actions";
 
 type ListType = Map<symbol, EventActionCallable>;
 type RegistryType = Map<string, ListType>;
@@ -57,37 +56,7 @@ interface SnapshotHistory {
     isDisabled: boolean;
 }
 
-export const EventActionHandlerContext = createContext<EventActionHandler>({
-    trigger: async () => {
-        return {};
-    },
-    on: () => {
-        return () => {
-            return true;
-        };
-    },
-    redo: () => {
-        return void 0;
-    },
-    enableHistory: () => {
-        return void 0;
-    },
-    undo: () => {
-        return void 0;
-    },
-    startBatch: () => {
-        return void 0;
-    },
-    endBatch: () => {
-        return void 0;
-    },
-    disableHistory: () => {
-        return void 0;
-    },
-    getElementTree: async () => {
-        return null as unknown as PbEditorElement;
-    }
-});
+export const EventActionHandlerContext = createContext<EventActionHandler | undefined>(undefined);
 
 const createConfiguration = (plugins: PbConfigPluginType[]): PbConfigType => {
     return plugins.reduce(
@@ -118,25 +87,34 @@ const isTrackedAtomChanged = (state: Partial<PbState>): boolean => {
     return false;
 };
 
-export const EventActionHandlerProvider: React.FC<any> = ({ children }) => {
+export type GetCallableState = SyncProcessor<Partial<EventActionHandlerCallableState>>;
+export type SaveCallableResults<TState = Partial<PbState>> = SyncProcessor<{
+    state: TState & Partial<PbState>;
+    history?: boolean;
+}>;
+
+export interface EventActionHandlerProviderProps<TState> {
+    getCallableState?: Array<GetCallableState>;
+    saveCallablesResults?: Array<SaveCallableResults<TState>>;
+}
+
+export const EventActionHandlerProvider = makeComposable<
+    EventActionHandlerProviderProps<Partial<PbState>>
+>("EventActionHandlerProvider", ({ children, ...props }) => {
     const apolloClient = useApolloClient();
     const setActiveElementAtomValue = useSetRecoilState(activeElementAtom);
     const setHighlightElementAtomValue = useSetRecoilState(highlightElementAtom);
     const [sidebarAtomValue, setSidebarAtomValue] = useRecoilState(sidebarAtom);
     const rootElementAtomValue = useRecoilValue(rootElementAtom);
-    const [pageAtomValue, setPageAtomValue] = useRecoilState(pageAtom);
     const [pluginsAtomValue, setPluginsAtomValue] = useRecoilState(pluginsAtom);
     const [uiAtomValue, setUiAtomValue] = useRecoilState(uiAtom);
-    const revisionsAtomValue = useRecoilValue(revisionsAtom);
     const snapshot = useRecoilSnapshot();
 
     const eventActionHandlerRef = useRef<EventActionHandler>();
     const sidebarAtomValueRef = useRef<SidebarAtomType>();
     const rootElementAtomValueRef = useRef<RootElementAtom>();
-    const pageAtomValueRef = useRef<PageAtomType>();
     const pluginsAtomValueRef = useRef<PluginsAtomType>();
     const uiAtomValueRef = useRef<UiAtomType>();
-    const revisionsAtomValueRef = useRef<RevisionsAtomType>();
     const snapshotRef = useRef<Snapshot>();
     const eventElements = useRef<Record<string, PbEditorElement>>({});
     const snapshotsHistory = useRef<SnapshotHistory>({
@@ -152,25 +130,22 @@ export const EventActionHandlerProvider: React.FC<any> = ({ children }) => {
     useEffect(() => {
         sidebarAtomValueRef.current = sidebarAtomValue;
         rootElementAtomValueRef.current = rootElementAtomValue;
-        pageAtomValueRef.current = pageAtomValue;
         pluginsAtomValueRef.current = pluginsAtomValue;
         uiAtomValueRef.current = uiAtomValue;
-        revisionsAtomValueRef.current = revisionsAtomValue;
         snapshotRef.current = snapshot;
-    }, [
-        sidebarAtomValue,
-        rootElementAtomValue,
-        pageAtomValue,
-        pluginsAtomValue,
-        uiAtomValue,
-        revisionsAtomValue
-    ]);
+    }, [sidebarAtomValue, rootElementAtomValue, pluginsAtomValue, uiAtomValue]);
 
     const registry = useRef<RegistryType>(new Map());
 
     const config = useRef<EventActionHandlerConfig>(
         createConfiguration(plugins.byType("pb-config"))
     );
+
+    const updateElementTree = () => {
+        setTimeout(() => {
+            eventActionHandlerRef.current!.trigger(new UpdateElementTreeActionEvent());
+        }, 200);
+    };
 
     const updateElements = useRecoilCallback(({ set }) => (elements: PbEditorElement[] = []) => {
         elements.forEach(item => {
@@ -188,6 +163,7 @@ export const EventActionHandlerProvider: React.FC<any> = ({ children }) => {
             });
             return item.id;
         });
+        updateElementTree();
     });
 
     const takeSnapshot = useRecoilCallback(({ snapshot }) => () => {
@@ -263,21 +239,24 @@ export const EventActionHandlerProvider: React.FC<any> = ({ children }) => {
         ) as Promise<PbEditorElement>;
     };
 
-    const getCallableState = (
-        state: Partial<EventActionHandlerCallableState>
-    ): EventActionHandlerCallableState => {
-        return {
-            sidebar: sidebarAtomValueRef.current as SidebarAtomType,
-            rootElement: rootElementAtomValueRef.current as RootElementAtom,
-            page: pageAtomValueRef.current as PageAtomType,
-            plugins: pluginsAtomValueRef.current as PluginsAtomType,
-            ui: uiAtomValueRef.current as UiAtomType,
-            revisions: revisionsAtomValueRef.current as RevisionsAtomType,
-            getElementById,
-            getElementTree,
-            ...state
-        };
-    };
+    const defaultGetCallableState = useCallback<GetCallableState>(
+        () => state => {
+            return {
+                sidebar: sidebarAtomValueRef.current as SidebarAtomType,
+                rootElement: rootElementAtomValueRef.current as RootElementAtom,
+                plugins: pluginsAtomValueRef.current as PluginsAtomType,
+                ui: uiAtomValueRef.current as UiAtomType,
+                getElementById,
+                getElementTree,
+                ...state
+            };
+        },
+        []
+    );
+
+    const getCallableState = useMemo(() => {
+        return composeSync([...(props.getCallableState || []), defaultGetCallableState]);
+    }, []);
 
     const createStateHistorySnapshot = (): void => {
         if (snapshotsHistory.current.busy === true) {
@@ -292,46 +271,52 @@ export const EventActionHandlerProvider: React.FC<any> = ({ children }) => {
         snapshotsHistory.current.busy = false;
     };
 
-    const saveCallablesResults = (state: Partial<PbState>, history = true): void => {
-        if (Object.values(state).length === 0) {
-            return;
-        } else if (
-            history &&
-            snapshotsHistory.current.isBatching === false &&
-            snapshotsHistory.current.isDisabled === false &&
-            isTrackedAtomChanged(state)
-        ) {
-            createStateHistorySnapshot();
-        }
+    const defaultSaveCallablesResults = useCallback<SaveCallableResults>(
+        () =>
+            ({ state, history = true }) => {
+                if (Object.values(state).length === 0) {
+                    return { state, history };
+                } else if (
+                    history &&
+                    snapshotsHistory.current.isBatching === false &&
+                    snapshotsHistory.current.isDisabled === false &&
+                    isTrackedAtomChanged(state)
+                ) {
+                    createStateHistorySnapshot();
+                }
 
-        if (state.ui) {
-            setUiAtomValue(state.ui);
-        }
+                if (state.ui) {
+                    setUiAtomValue(state.ui);
+                }
 
-        if (state.plugins) {
-            setPluginsAtomValue(state.plugins);
-        }
+                if (state.plugins) {
+                    setPluginsAtomValue(state.plugins);
+                }
 
-        if (state.page) {
-            setPageAtomValue(state.page);
-        }
+                if (state.hasOwnProperty("activeElement")) {
+                    setActiveElementAtomValue(state.activeElement as string);
+                }
 
-        if (state.hasOwnProperty("activeElement")) {
-            setActiveElementAtomValue(state.activeElement as string);
-        }
+                if (state.hasOwnProperty("highlightElement")) {
+                    setHighlightElementAtomValue(state.highlightElement as string);
+                }
 
-        if (state.hasOwnProperty("highlightElement")) {
-            setHighlightElementAtomValue(state.highlightElement as string);
-        }
+                if (state.elements) {
+                    updateElements(Object.values(state.elements));
+                }
 
-        if (state.elements) {
-            updateElements(Object.values(state.elements));
-        }
+                if (state.sidebar) {
+                    setSidebarAtomValue(state.sidebar);
+                }
 
-        if (state.sidebar) {
-            setSidebarAtomValue(state.sidebar);
-        }
-    };
+                return { state, history };
+            },
+        []
+    );
+
+    const saveCallablesResults = useMemo(() => {
+        return composeSync([...(props.saveCallablesResults || []), defaultSaveCallablesResults]);
+    }, [props.saveCallablesResults]);
 
     eventActionHandlerRef.current = useMemo<EventActionHandler>(
         () => ({
@@ -356,7 +341,7 @@ export const EventActionHandlerProvider: React.FC<any> = ({ children }) => {
             },
             trigger: async ev => {
                 const results = await triggerEventAction(ev, {} as unknown as PbState, []);
-                saveCallablesResults(results.state || {});
+                saveCallablesResults({ state: results.state || {} });
                 return results.state || {};
             },
             undo: () => {
@@ -376,6 +361,7 @@ export const EventActionHandlerProvider: React.FC<any> = ({ children }) => {
 
                 goToSnapshot(previousSnapshot);
                 snapshotsHistory.current.busy = false;
+                updateElementTree();
             },
             redo: () => {
                 if (snapshotsHistory.current.busy === true) {
@@ -394,6 +380,7 @@ export const EventActionHandlerProvider: React.FC<any> = ({ children }) => {
 
                 goToSnapshot(nextSnapshot);
                 snapshotsHistory.current.busy = false;
+                updateElementTree();
             },
             startBatch: () => {
                 snapshotsHistory.current.isBatching = true;
@@ -446,6 +433,7 @@ export const EventActionHandlerProvider: React.FC<any> = ({ children }) => {
         for (const cb of callables) {
             const r =
                 (await cb(
+                    // @ts-ignore TODO: figure this out!
                     getCallableState({ ...initialState, ...results.state }),
                     {
                         client: apolloClient,
@@ -466,6 +454,7 @@ export const EventActionHandlerProvider: React.FC<any> = ({ children }) => {
         for (const action of results.actions) {
             const r = await triggerEventAction(
                 action,
+                // @ts-ignore TODO: figure this out!
                 getCallableState({ ...initialState, ...results.state }),
                 initiator.concat([name])
             );
@@ -482,4 +471,4 @@ export const EventActionHandlerProvider: React.FC<any> = ({ children }) => {
             {children}
         </EventActionHandlerContext.Provider>
     );
-};
+});

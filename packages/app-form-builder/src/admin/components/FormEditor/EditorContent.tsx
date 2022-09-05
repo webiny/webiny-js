@@ -1,9 +1,9 @@
-import React, { useRef } from "react";
+import React, { useCallback, useRef } from "react";
 import { css } from "emotion";
 import styled from "@emotion/styled";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
 import { Typography } from "@webiny/ui/Typography";
-import { Tabs, Tab } from "@webiny/ui/Tabs";
+import { Tabs, Tab, TabsImperativeApi } from "@webiny/ui/Tabs";
 import { Icon } from "@webiny/ui/Icon";
 import { EditTab } from "./Tabs/EditTab";
 import { TriggersTab } from "./Tabs/TriggersTab";
@@ -44,7 +44,15 @@ const formTabs = css({
     }
 });
 const EditorContent: React.FC = () => {
-    const tabsRef = useRef<Tabs | null>(null);
+    const tabsRef = useRef<TabsImperativeApi>();
+
+    const onFieldDragStart = useCallback(() => {
+        if (!tabsRef.current) {
+            return;
+        }
+        tabsRef.current.switchTab(0);
+    }, [tabsRef]);
+
     return (
         <ContentContainer>
             <SplitView>
@@ -54,14 +62,7 @@ const EditorContent: React.FC = () => {
                         <Typography use={"headline6"}>Form Elements</Typography>
                     </LeftBarTitle>
                     <LeftBarFieldList>
-                        <Fields
-                            onFieldDragStart={() => {
-                                if (!tabsRef.current) {
-                                    return;
-                                }
-                                tabsRef.current.switchTab(0);
-                            }}
-                        />
+                        <Fields onFieldDragStart={onFieldDragStart} />
                     </LeftBarFieldList>
                 </LeftPanel>
                 <RightPanel span={8}>
