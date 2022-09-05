@@ -1,6 +1,7 @@
 import React, { Fragment, memo } from "react";
 import { plugins } from "@webiny/plugins";
 import { Plugins, Provider } from "@webiny/app-admin";
+import { ApolloCacheObjectIdPlugin } from "@webiny/app";
 import { ApolloClient } from "apollo-client";
 import { CmsProvider } from "./admin/contexts/Cms";
 import { CmsMenuLoader } from "~/admin/menus/CmsMenuLoader";
@@ -34,6 +35,16 @@ export interface HeadlessCMSProps {
 
 const HeadlessCMSExtension = ({ createApolloClient }: HeadlessCMSProps) => {
     plugins.register(apiInformation);
+
+    plugins.register(
+        new ApolloCacheObjectIdPlugin(obj => {
+            if (obj.__typename === "CmsContentModelField") {
+                return null;
+            }
+
+            return undefined;
+        })
+    );
 
     return (
         <Fragment>
