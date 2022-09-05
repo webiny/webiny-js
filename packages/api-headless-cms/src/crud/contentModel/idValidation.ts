@@ -1,4 +1,5 @@
 import { validation } from "@webiny/validation";
+import lodashCamelCase from "lodash/camelCase";
 
 export const validateId = async (value: string): Promise<void> => {
     await validation.validate(value, "required,maxLength:100");
@@ -7,5 +8,10 @@ export const validateId = async (value: string): Promise<void> => {
     }
     if (value.trim().toLowerCase() === "id") {
         throw new Error(`Provided ID ${value} is not valid - "id" is an auto-generated field.`);
+    }
+
+    const fieldId = lodashCamelCase(value);
+    if (fieldId !== value) {
+        throw new Error(`Provided ID ${value} is not valid - must be camel cased string.`);
     }
 };

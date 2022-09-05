@@ -112,14 +112,20 @@ const mapAndCleanCreateInputData = (
     input: CreateCmsEntryInput
 ): CreateCmsEntryInput => {
     return model.fields.reduce((acc, field) => {
+        /**
+         * This should never happen, but let's make it sure.
+         * The fix would be for the user to add the alias on the field definition.
+         */
         if (!field.alias) {
-            return acc;
+            throw new WebinyError("Field does not have an alias.", "MISSING_ALIAS", {
+                field
+            });
         }
         const value = input[field.alias];
         /**
          * We set the default value on create input if value is not defined.
          */
-        acc[field.fieldId] = value === undefined ? getDefaultValue(field) : value;
+        acc[field.alias] = value === undefined ? getDefaultValue(field) : value;
         return acc;
     }, {} as CreateCmsEntryInput);
 };
@@ -131,17 +137,23 @@ const mapAndCleanUpdatedInputData = (
     input: UpdateCmsEntryInput
 ): UpdateCmsEntryInput => {
     return model.fields.reduce((acc, field) => {
+        /**
+         * This should never happen, but let's make it sure.
+         * The fix would be for the user to add the alias on the field definition.
+         */
         if (!field.alias) {
-            return acc;
+            throw new WebinyError("Field does not have an alias.", "MISSING_ALIAS", {
+                field
+            });
         }
         /**
-         * We cannot set default value here because user might want to updated only certain field values.
+         * We cannot set default value here because user might want to update only certain field values.
          */
         const value = input[field.alias];
         if (value === undefined) {
             return acc;
         }
-        acc[field.fieldId] = value;
+        acc[field.alias] = value;
         return acc;
     }, {} as CreateCmsEntryInput);
 };

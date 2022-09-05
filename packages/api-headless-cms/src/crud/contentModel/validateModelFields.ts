@@ -10,6 +10,7 @@ import {
 import { PluginsContainer } from "@webiny/plugins";
 import { GraphQLError } from "graphql";
 import { createManageSDL } from "~/graphql/schema/createManageSDL";
+import lodashCamelCase from "lodash/camelCase";
 
 const defaultTitleFieldId = "id";
 
@@ -115,7 +116,26 @@ interface ValidateModelParams {
     plugins: PluginsContainer;
 }
 
-export const validateModelFields = async (params: ValidateModelParams) => {
+interface CreateFieldIdParams {
+    type: string;
+    id: string;
+}
+export const createFieldId = (params: CreateFieldIdParams): string => {
+    const { type, id } = params;
+    return `${type}@${id}`;
+};
+
+interface CreateFieldIdMatchPatternParams {
+    type: string;
+    id: string;
+}
+
+export const createFieldIdMatchPattern = (params: CreateFieldIdMatchPatternParams): RegExp => {
+    const { type, id } = params;
+    return new RegExp(`^([a-zA-Z0-9]+)@${lodashCamelCase(type)}@${id}$`);
+};
+
+export const validateModelFields = (params: ValidateModelParams) => {
     const { model, plugins } = params;
 
     const modelPlugin = plugins
@@ -143,13 +163,66 @@ export const validateModelFields = async (params: ValidateModelParams) => {
         "cms-model-field-to-graphql"
     );
 
-    for (let i = 0; i < fields.length; i++) {
-        const field = fields[i];
+    const aliases: string[] = [];
+
+    for (const field of fields) {
         if (!fieldTypePlugins.find(item => item.fieldType === field.type)) {
             throw new Error(
                 `Cannot update content model because of the unknown "${field.type}" field.`
             );
         }
+        /**
+         * Field MUST have an alias defined.
+         */
+        if (!field.alias) {
+            throw new WebinyError(
+                `Field does not have an "alias" defined.`,
+                "MISSING_FIELD_ALIAS",
+                {
+                    field
+                }
+            );
+        }
+        /**
+         * If fieldId does not match a certain pattern, add that pattern, but only if field is not locked (used) already.
+         * This is to avoid errors in the already installed systems.
+         *
+         * Why are we using the @?
+         *
+         * It is not part of special characters for the query syntax in the Lucene.
+         *
+         * Relevant links:
+         * https://lucene.apache.org/core/3_4_0/queryparsersyntax.html
+         * https://discuss.elastic.co/t/special-characters-in-field-names/10658/3
+         * https://discuss.elastic.co/t/illegal-characters-in-elasticsearch-field-names/17196/2
+         */
+        const isLocked = lockedFields.some(lockedField => {
+            return lockedField.fieldId === field.fieldId;
+        });
+        const fieldType = lodashCamelCase(field.type);
+        const id = lodashCamelCase(field.id);
+        if (!isLocked) {
+            const pattern = createFieldIdMatchPattern({
+                id,
+                type: field.type
+            });
+            if (field.fieldId.match(pattern) === null) {
+                field.fieldId = createFieldId({
+                    type: fieldType,
+                    id
+                });
+            }
+        }
+
+        /**
+         * Check the field alias against existing ones.
+         */
+        if (aliases.includes(field.alias)) {
+            throw new WebinyError(
+                `Cannot update content model because field "${field.fieldId}" has alias "${field.alias}", which is already used.`
+            );
+        }
+        aliases.push(field.alias);
     }
 
     if (fields.length) {

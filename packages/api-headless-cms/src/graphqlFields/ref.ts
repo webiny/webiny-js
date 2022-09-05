@@ -22,7 +22,7 @@ interface UnionField {
 }
 
 const createUnionTypeName = (model: CmsModel, field: CmsModelField) => {
-    return `${createReadTypeName(model.modelId)}${createReadTypeName(field.fieldId)}`;
+    return `${createReadTypeName(model.modelId)}${createReadTypeName(field.alias)}`;
 };
 
 interface CreateListFilterParams {
@@ -30,7 +30,7 @@ interface CreateListFilterParams {
 }
 const createListFilters = ({ field }: CreateListFilterParams) => {
     return `
-        ${field.fieldId}: RefFieldWhereInput
+        ${field.alias}: RefFieldWhereInput
     `;
 };
 
@@ -85,7 +85,7 @@ export const createRefField = (): CmsModelFieldToGraphQLPlugin => {
                         ? createUnionTypeName(model, field)
                         : createReadTypeName(models[0].modelId);
 
-                return field.fieldId + `: ${field.multipleValues ? `[${gqlType}]` : gqlType}`;
+                return field.alias + `: ${field.multipleValues ? `[${gqlType}]` : gqlType}`;
             },
             /**
              * TS is complaining about mixed types for createResolver.
@@ -104,7 +104,7 @@ export const createRefField = (): CmsModelFieldToGraphQLPlugin => {
                     const { cms } = context;
 
                     // Get field value for this entry
-                    const initialValue = parent[field.fieldId] as RefFieldValue | RefFieldValue[];
+                    const initialValue = parent[field.alias] as RefFieldValue | RefFieldValue[];
 
                     if (!initialValue) {
                         return null;
@@ -256,9 +256,9 @@ export const createRefField = (): CmsModelFieldToGraphQLPlugin => {
             },
             createTypeField({ field }) {
                 if (field.multipleValues) {
-                    return `${field.fieldId}: [RefField!]`;
+                    return `${field.alias}: [RefField!]`;
                 }
-                return `${field.fieldId}: RefField`;
+                return `${field.alias}: RefField`;
             },
             createInputField({ field }) {
                 return createGraphQLInputField(field, "RefFieldInput");

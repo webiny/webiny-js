@@ -11,21 +11,21 @@ export const createRichTextField = (): CmsModelFieldToGraphQLPlugin => {
         read: {
             createTypeField({ field }) {
                 if (field.multipleValues) {
-                    return `${field.fieldId}: [JSON]`;
+                    return `${field.alias}: [JSON]`;
                 }
 
-                return `${field.fieldId}: JSON`;
+                return `${field.alias}: JSON`;
             },
             createGetFilters({ field }) {
-                return `${field.fieldId}: JSON`;
+                return `${field.alias}: JSON`;
             }
         },
         manage: {
             createTypeField({ field }) {
                 if (field.multipleValues) {
-                    return `${field.fieldId}: [JSON]`;
+                    return `${field.alias}: [JSON]`;
                 }
-                return `${field.fieldId}: JSON`;
+                return `${field.alias}: JSON`;
             },
             createInputField({ field }) {
                 return createGraphQLInputField(field, "JSON");

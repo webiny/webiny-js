@@ -498,7 +498,7 @@ describe("MANAGE - Resolvers", () => {
                         data: [
                             {
                                 error: "This field is required",
-                                fieldId: expect.stringMatching("slug@text@")
+                                fieldId: expect.stringMatching("text@")
                             }
                         ],
                         message: "Validation failed."

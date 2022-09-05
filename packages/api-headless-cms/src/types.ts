@@ -124,7 +124,7 @@ export interface CmsModelField {
     type: string;
     /**
      * A unique field ID for mapping values.
-     * Must in form of a-zA-Z0-9.
+     * Must in form of a-zA-Z0-9@a-zA-Z0-9@a-zA-Z0-9.
      *
      * We generate a unique fieldId value when you're building a model via UI,
      * but when user is creating a model via a plugin it is up to them to be careful about this.
@@ -140,7 +140,7 @@ export interface CmsModelField {
      *
      * This value MUST be unique in the CmsModel.
      */
-    alias: string | null;
+    alias: string;
     /**
      * A label for the field
      */

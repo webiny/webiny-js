@@ -106,7 +106,7 @@ export const createModelsSchema = (context: CmsContext): GraphQLSchemaPlugin<Cms
                 helpText: String
                 placeholderText: String
                 fieldId: String!
-                alias: String
+                alias: String!
                 type: String!
                 multipleValues: Boolean
                 predefinedValues: CmsPredefinedValuesInput
@@ -187,7 +187,7 @@ export const createModelsSchema = (context: CmsContext): GraphQLSchemaPlugin<Cms
             type CmsContentModelField {
                 id: ID!
                 fieldId: String!
-                alias: String
+                alias: String!
                 label: String!
                 helpText: String
                 placeholderText: String
