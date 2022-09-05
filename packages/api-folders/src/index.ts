@@ -31,7 +31,6 @@ export const createFoldersContext = ({ storageOperations }: FoldersConfig) => {
 
         const getIdentity = (): SecurityIdentity => {
             const identity = context.security.getIdentity();
-
             return identity;
         };
 

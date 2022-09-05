@@ -13,12 +13,12 @@ import { NotFoundError } from "@webiny/handler-graphql";
 import { validation } from "@webiny/validation";
 
 import {
-    FolderInput,
     Folder,
+    FolderInput,
     FoldersConfig,
     GetFolderParams,
-    ListFoldersParams,
-    IFolders
+    IFolders,
+    ListFoldersParams
 } from "~/types";
 
 const CreateDataModel = withFields({

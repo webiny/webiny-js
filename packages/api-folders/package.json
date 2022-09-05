@@ -2,6 +2,9 @@
   "name": "@webiny/api-folders",
   "version": "5.31.0",
   "main": "index.js",
+  "keywords": [
+    "folders:base"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git",
@@ -23,15 +26,21 @@
     "@babel/core": "^7.18.13",
     "@babel/preset-env": "^7.18.10",
     "@babel/preset-typescript": "^7.18.6",
+    "@babel/runtime": "^7.18.9",
+    "@webiny/api-i18n-ddb": "^5.31.0",
+    "@webiny/api-security-so-ddb": "^5.31.0",
+    "@webiny/api-tenancy-so-ddb": "^5.31.0",
+    "@webiny/api-wcp": "^5.31.0",
     "@webiny/cli": "^5.31.0",
+    "@webiny/handler-aws": "^5.31.0",
+    "@webiny/plugins": "^5.31.0",
     "@webiny/project-utils": "^5.31.0",
-    "jest": "^28.1.3",
     "rimraf": "^3.0.2",
     "ttypescript": "^1.5.13",
     "typescript": "^4.7.4"
   },
   "dependencies": {
-    "@commodo/fields": "^1.2.1",
+    "@commodo/fields": "1.1.2-beta.20",
     "@webiny/api": "^5.31.0",
     "@webiny/api-i18n": "^5.31.0",
     "@webiny/api-security": "^5.31.0",
