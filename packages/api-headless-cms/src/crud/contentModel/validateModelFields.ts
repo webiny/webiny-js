@@ -17,22 +17,26 @@ const defaultTitleFieldId = "id";
 const allowedTitleFieldTypes = ["text", "number"];
 
 const getContentModelTitleFieldId = (fields: CmsModelField[], titleFieldId?: string): string => {
-    // if there is no title field defined either in input data or existing content model data
-    // we will take first text field that has no multiple values enabled
-    // or if initial titleFieldId is the default one also try to find first available text field
+    /**
+     * if there is no title field defined either in input data or existing content model data
+     * we will take first text field that has no multiple values enabled
+     * or if initial titleFieldId is the default one also try to find first available text field
+     */
     if (!titleFieldId || titleFieldId === defaultTitleFieldId) {
         const titleField = fields.find(field => {
             return field.type === "text" && !field.multipleValues;
         });
-        return titleField ? titleField.fieldId : defaultTitleFieldId;
+        return titleField ? titleField.alias : defaultTitleFieldId;
     }
-    // check existing titleFieldId for existence in the model
-    // for correct type
-    // and that it is not multiple values field
-    const target = fields.find(f => f.fieldId === titleFieldId);
+    /**
+     * check existing titleFieldId for existence in the model
+     * for correct type
+     * and that it is not multiple values field
+     */
+    const target = fields.find(f => f.alias === titleFieldId);
     if (!target) {
         throw new WebinyError(`Field does not exist in the model.`, "VALIDATION_ERROR", {
-            fieldId: titleFieldId,
+            alias: titleFieldId,
             fields
         });
     }
@@ -45,6 +49,7 @@ const getContentModelTitleFieldId = (fields: CmsModelField[], titleFieldId?: str
             "ENTRY_TITLE_FIELD_TYPE",
             {
                 fieldId: target.fieldId,
+                alias: target.alias,
                 type: target.type
             }
         );
@@ -56,18 +61,21 @@ const getContentModelTitleFieldId = (fields: CmsModelField[], titleFieldId?: str
             "ENTRY_TITLE_FIELD_TYPE",
             {
                 fieldId: target.fieldId,
+                alias: target.alias,
                 type: target.type
             }
         );
     }
 
-    return target.fieldId;
+    return target.alias;
 };
 
 const extractInvalidField = (model: CmsModel, err: GraphQLError) => {
     const sdl = err.source?.body || "";
 
-    // Find the invalid type
+    /**
+     * Find the invalid type
+     */
     const { line: lineNumber } = err.locations
         ? err.locations[0]
         : {
@@ -154,11 +162,15 @@ export const validateModelFields = (params: ValidateModelParams) => {
 
     const { titleFieldId } = model;
 
-    // There should be fields/locked fields in either model or data to be updated.
+    /**
+     * There should be fields/locked fields in either model or data to be updated.
+     */
     const { fields = [], lockedFields = [] } = model;
 
-    // Let's inspect the fields of the received content model. We prevent saving of a content model if it
-    // contains a field for which a "cms-model-field-to-graphql" plugin does not exist on the backend.
+    /**
+     * Let's inspect the fields of the received content model. We prevent saving of a content model if it
+     * contains a field for which a "cms-model-field-to-graphql" plugin does not exist on the backend.
+     */
     const fieldTypePlugins = plugins.byType<CmsModelFieldToGraphQLPlugin>(
         "cms-model-field-to-graphql"
     );
@@ -226,7 +238,9 @@ export const validateModelFields = (params: ValidateModelParams) => {
     }
 
     if (fields.length) {
-        // Make sure that this model can be safely converted to a GraphQL SDL
+        /**
+         * Make sure that this model can be safely converted to a GraphQL SDL
+         */
         const schema = createManageSDL({
             model,
             fieldTypePlugins: fieldTypePlugins.reduce(
@@ -247,7 +261,9 @@ export const validateModelFields = (params: ValidateModelParams) => {
     const cmsLockedFieldPlugins =
         plugins.byType<CmsModelLockedFieldPlugin>("cms-model-locked-field");
 
-    // We must not allow removal or changes in fields that are already in use in content entries.
+    /**
+     * We must not allow removal or changes in fields that are already in use in content entries.
+     */
     for (const lockedField of lockedFields) {
         const existingField = fields.find(item => item.fieldId === lockedField.fieldId);
         if (!existingField) {
@@ -271,7 +287,9 @@ export const validateModelFields = (params: ValidateModelParams) => {
             );
         }
 
-        // Check `lockedField` invariant for specific field
+        /**
+         * Check `lockedField` invariant for specific field
+         */
         const lockedFieldsByType = cmsLockedFieldPlugins.filter(
             pl => pl.fieldType === lockedField.type
         );

@@ -11,7 +11,7 @@ export interface CreatePathCallable {
 }
 export interface CmsEntryFieldFilterPathPluginParams {
     fieldType: string;
-    fieldId?: string[];
+    alias?: string[];
     path: string | CreatePathCallable;
 }
 export class CmsEntryFieldFilterPathPlugin extends Plugin {
@@ -35,11 +35,11 @@ export class CmsEntryFieldFilterPathPlugin extends Plugin {
         if (field.type !== this.config.fieldType) {
             return false;
         }
-        const fieldId = this.config.fieldId;
-        if (!fieldId || Array.isArray(fieldId) === false || fieldId.length === 0) {
+        const alias = this.config.alias;
+        if (!alias || Array.isArray(alias) === false || alias.length === 0) {
             return true;
         }
-        return fieldId.includes(field.fieldId);
+        return alias.includes(field.alias);
     }
 
     public createPath(params: CreatePathCallableParams): string {

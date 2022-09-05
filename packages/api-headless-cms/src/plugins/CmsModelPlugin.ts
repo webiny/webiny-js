@@ -101,7 +101,7 @@ export class CmsModelPlugin extends Plugin {
             if (aliases.includes(alias) === true) {
                 throw new WebinyError(
                     `Field's "alias" is not unique in the content model "${this.contentModel.modelId}".`,
-                    "ALIAS_ERROR",
+                    "ALIAS_NOT_UNIQUE_ERROR",
                     {
                         model: this.contentModel,
                         field: input

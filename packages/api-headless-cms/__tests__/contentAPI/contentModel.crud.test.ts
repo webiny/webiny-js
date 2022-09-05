@@ -575,7 +575,7 @@ describe("content model test", () => {
                         code: "VALIDATION_ERROR",
                         message: `Field does not exist in the model.`,
                         data: {
-                            fieldId: "nonExistingTitleFieldId",
+                            alias: "nonExistingTitleFieldId",
                             fields: expect.any(Array)
                         }
                     }

@@ -257,7 +257,7 @@ const getSearchableFields = (params: GetSearchableFieldsParams): string[] => {
             }
             return fields.includes(field.alias);
         })
-        .map(field => field.fieldId);
+        .map(field => field.alias);
 };
 
 export interface CreateContentEntryCrudParams {

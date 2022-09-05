@@ -111,6 +111,7 @@ describe("fieldValidations", () => {
                         code: "VALIDATION_FAILED",
                         data: [
                             {
+                                alias: "name",
                                 fieldId: expect.stringMatching("text@"),
                                 error: "Min length is 2."
                             }
@@ -136,6 +137,7 @@ describe("fieldValidations", () => {
                         code: "VALIDATION_FAILED",
                         data: [
                             {
+                                alias: "name",
                                 fieldId: expect.stringMatching("text@"),
                                 error: "Max length is 15."
                             }
@@ -197,6 +199,7 @@ describe("fieldValidations", () => {
                         code: "VALIDATION_FAILED",
                         data: [
                             {
+                                alias: "numbers",
                                 fieldId: expect.stringMatching("number@"),
                                 error: "Numbers must contain at least 2 items."
                             }
@@ -222,6 +225,7 @@ describe("fieldValidations", () => {
                         code: "VALIDATION_FAILED",
                         data: [
                             {
+                                alias: "numbers",
                                 fieldId: expect.stringMatching("number@"),
                                 error: "Numbers can contain at most 7 items."
                             }
@@ -247,6 +251,7 @@ describe("fieldValidations", () => {
                         code: "VALIDATION_FAILED",
                         data: [
                             {
+                                alias: "numbers",
                                 fieldId: expect.stringMatching("number@"),
                                 error: "Number must be greater or equal 5."
                             }
@@ -272,6 +277,7 @@ describe("fieldValidations", () => {
                         code: "VALIDATION_FAILED",
                         data: [
                             {
+                                alias: "numbers",
                                 fieldId: expect.stringMatching("number@"),
                                 error: "Number be less or equal 15."
                             }
@@ -324,6 +330,7 @@ describe("fieldValidations", () => {
                             code: "VALIDATION_FAILED",
                             data: [
                                 {
+                                    alias: "email",
                                     fieldId: expect.stringMatching("text@"),
                                     error: "Must be in a form of an email."
                                 }
@@ -377,6 +384,7 @@ describe("fieldValidations", () => {
                             code: "VALIDATION_FAILED",
                             data: [
                                 {
+                                    alias: "url",
                                     fieldId: expect.stringMatching("text@"),
                                     error: "Must be in a form of a url."
                                 }
@@ -424,6 +432,7 @@ describe("fieldValidations", () => {
                             code: "VALIDATION_FAILED",
                             data: [
                                 {
+                                    alias: "lowerCase",
                                     fieldId: expect.stringMatching("text@"),
                                     error: "Everything must be lowercase."
                                 }
@@ -470,6 +479,7 @@ describe("fieldValidations", () => {
                             code: "VALIDATION_FAILED",
                             data: [
                                 {
+                                    alias: "upperCase",
                                     fieldId: expect.stringMatching("text@"),
                                     error: "Everything must be uppercase."
                                 }
@@ -512,6 +522,7 @@ describe("fieldValidations", () => {
                             code: "VALIDATION_FAILED",
                             data: [
                                 {
+                                    alias: "date",
                                     fieldId: expect.stringMatching("datetime@"),
                                     error: message
                                 }
@@ -554,6 +565,7 @@ describe("fieldValidations", () => {
                             code: "VALIDATION_FAILED",
                             data: [
                                 {
+                                    alias: "dateTime",
                                     fieldId: expect.stringMatching("datetime@"),
                                     error: message
                                 }
@@ -599,6 +611,7 @@ describe("fieldValidations", () => {
                             code: "VALIDATION_FAILED",
                             data: [
                                 {
+                                    alias: "dateTimeZ",
                                     fieldId: expect.stringMatching("datetime@"),
                                     error: message
                                 }
@@ -641,6 +654,7 @@ describe("fieldValidations", () => {
                             code: "VALIDATION_FAILED",
                             data: [
                                 {
+                                    alias: "time",
                                     fieldId: expect.stringMatching("time@datetime@"),
                                     error: message
                                 }

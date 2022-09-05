@@ -43,12 +43,12 @@ const buildReferenceFieldPaths = (params: BuildReferenceFieldPaths): string[] =>
             if (field.type === "ref") {
                 const parentPathsValue = parentPaths.length > 0 ? `${parentPaths.join(".")}.` : "";
                 if (field.multipleValues) {
-                    const inputValue = dotProp.get(input, `${field.fieldId}`, []);
+                    const inputValue = dotProp.get(input, `${field.alias}`, []);
                     if (Array.isArray(inputValue) === false) {
                         return collection;
                     }
                     for (const key in inputValue) {
-                        const path = `${parentPathsValue}${field.fieldId}.${key}`;
+                        const path = `${parentPathsValue}${field.alias}.${key}`;
                         collection.push(path);
                     }
                     return collection;
@@ -56,13 +56,13 @@ const buildReferenceFieldPaths = (params: BuildReferenceFieldPaths): string[] =>
 
                 if (isMultipleValues) {
                     for (const key in input) {
-                        const path = `${parentPathsValue}${key}.${field.fieldId}`;
+                        const path = `${parentPathsValue}${key}.${field.alias}`;
                         collection.push(path);
                     }
                     return collection;
                 }
 
-                collection.push(`${parentPathsValue}${field.fieldId}`);
+                collection.push(`${parentPathsValue}${field.alias}`);
 
                 return collection;
             }
@@ -71,17 +71,17 @@ const buildReferenceFieldPaths = (params: BuildReferenceFieldPaths): string[] =>
              */
             const parentPathsValue = parentPaths.length > 0 ? `${parentPaths.join(".")}.` : "";
             /**
-             * This is if received input is array. We need to map key with fieldId at this point.
+             * This is if received input is array. We need to map key with alias at this point.
              */
             if (isMultipleValues) {
                 for (const key in input) {
-                    const path = `${parentPathsValue}${key}.${field.fieldId}`;
+                    const path = `${parentPathsValue}${key}.${field.alias}`;
                     collection.push(path);
                 }
                 return collection;
             }
 
-            const objFieldPath = `${field.fieldId}`;
+            const objFieldPath = `${field.alias}`;
             const objFieldInputValue = dotProp.get(input, objFieldPath, []);
 
             /**
@@ -95,7 +95,7 @@ const buildReferenceFieldPaths = (params: BuildReferenceFieldPaths): string[] =>
                     const result = buildReferenceFieldPaths({
                         fields: field.settings?.fields || [],
                         input: objFieldInputValue[key],
-                        parentPaths: parentPaths.concat([field.fieldId, key])
+                        parentPaths: parentPaths.concat([field.alias, key])
                     });
                     collection.push(...result);
                 }
@@ -109,7 +109,7 @@ const buildReferenceFieldPaths = (params: BuildReferenceFieldPaths): string[] =>
             const results = buildReferenceFieldPaths({
                 fields: field.settings?.fields || [],
                 input: objFieldInputValue,
-                parentPaths: parentPaths.concat([field.fieldId])
+                parentPaths: parentPaths.concat([field.alias])
             });
 
             return collection.concat(results);

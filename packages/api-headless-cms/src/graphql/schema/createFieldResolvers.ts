@@ -86,7 +86,7 @@ export const createFieldResolversFactory = (factoryParams: CreateFieldResolversF
                 Object.assign(typeResolvers, fieldResolver.typeResolvers);
             }
 
-            const { alias, fieldId } = field;
+            const { alias } = field;
             // TODO @ts-refactor figure out types for parameters
             // @ts-ignore
             fieldResolvers[alias] = async (parent, args, context: CmsContext, info) => {
@@ -95,13 +95,13 @@ export const createFieldResolversFactory = (factoryParams: CreateFieldResolversF
                     context,
                     model,
                     field,
-                    value: isRoot ? parent.values[fieldId] : parent[fieldId]
+                    value: isRoot ? parent.values[alias] : parent[alias]
                 });
 
-                set(isRoot ? parent.values : parent, fieldId, transformedValue);
+                set(isRoot ? parent.values : parent, alias, transformedValue);
 
                 if (!resolver) {
-                    return isRoot ? parent.values[fieldId] : parent[fieldId];
+                    return isRoot ? parent.values[alias] : parent[alias];
                 }
 
                 return await resolver(isRoot ? parent.values : parent, args, context, info);

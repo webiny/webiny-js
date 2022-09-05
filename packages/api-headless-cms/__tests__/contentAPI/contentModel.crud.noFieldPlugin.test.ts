@@ -84,6 +84,7 @@ describe("content model test no field plugin", () => {
                             },
                             label: "test",
                             fieldId: "test",
+                            alias: "test",
                             id: "aaa",
                             predefinedValues: {
                                 enabled: false,
@@ -98,6 +99,7 @@ describe("content model test no field plugin", () => {
                             },
                             label: "test",
                             fieldId: "test",
+                            alias: "test",
                             id: "bbb",
                             predefinedValues: {
                                 enabled: false,

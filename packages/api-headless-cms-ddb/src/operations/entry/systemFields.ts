@@ -1,6 +1,8 @@
 import { CmsModelField } from "@webiny/api-headless-cms/types";
 
-const createSystemField = (field: Partial<CmsModelField>): CmsModelField => {
+type CmsModelFieldInput = Partial<CmsModelField> &
+    Pick<CmsModelField, "id" | "type" | "fieldId" | "alias">;
+const createSystemField = (field: CmsModelFieldInput): CmsModelField => {
     return field as CmsModelField;
 };
 
@@ -41,7 +43,8 @@ export const systemFields: Record<string, CmsModelField> = {
     meta: createSystemField({
         id: "meta",
         type: "plainObject",
-        fieldId: "meta"
+        fieldId: "meta",
+        alias: "meta"
     }),
     ownedBy: createSystemField({
         id: "ownedBy",
