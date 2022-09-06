@@ -1,14 +1,14 @@
 const mocks = {
-    entryA: {
-        id: "entry-a",
+    linkA: {
+        id: "link-a",
         folderId: "folder-1"
     },
-    entryB: {
-        id: "entry-b",
+    linkB: {
+        id: "link-b",
         folderId: "folder-1"
     },
-    entryC: {
-        id: "entry-c",
+    linkC: {
+        id: "link-c",
         folderId: "folder-2"
     }
 };

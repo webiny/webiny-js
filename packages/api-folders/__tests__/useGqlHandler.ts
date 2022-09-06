@@ -20,13 +20,7 @@ import {
     UPDATE_FOLDER
 } from "./graphql/folders";
 
-import {
-    CREATE_ENTRY,
-    DELETE_ENTRY,
-    GET_ENTRY,
-    LIST_ENTRIES,
-    UPDATE_ENTRY
-} from "./graphql/entries";
+import { CREATE_LINK, DELETE_LINK, GET_LINK, LIST_LINKS, UPDATE_LINK } from "./graphql/links";
 
 export interface UseGqlHandlerParams {
     permissions?: SecurityPermission[];
@@ -121,28 +115,28 @@ export default (params: UseGqlHandlerParams = {}) => {
         }
     };
 
-    const entries = {
+    const links = {
         async create(variables = {}) {
-            return invoke({ body: { query: CREATE_ENTRY, variables } });
+            return invoke({ body: { query: CREATE_LINK, variables } });
         },
         async update(variables = {}) {
-            return invoke({ body: { query: UPDATE_ENTRY, variables } });
+            return invoke({ body: { query: UPDATE_LINK, variables } });
         },
         async delete(variables = {}) {
-            return invoke({ body: { query: DELETE_ENTRY, variables } });
+            return invoke({ body: { query: DELETE_LINK, variables } });
         },
         async list(variables = {}) {
-            return invoke({ body: { query: LIST_ENTRIES, variables } });
+            return invoke({ body: { query: LIST_LINKS, variables } });
         },
         async get(variables = {}) {
-            return invoke({ body: { query: GET_ENTRY, variables } });
+            return invoke({ body: { query: GET_LINK, variables } });
         }
     };
 
     return {
         handler,
         invoke,
-        entries,
-        folders
+        folders,
+        links
     };
 };

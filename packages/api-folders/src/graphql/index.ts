@@ -1,5 +1,5 @@
 import { baseSchema } from "./base.gql";
-import { entriesSchema } from "./entries.gql";
+import { linksSchema } from "./links.gql";
 import { foldersSchema } from "./folders.gql";
 
-export const graphqlPlugins = [baseSchema, entriesSchema, foldersSchema];
+export const graphqlPlugins = [baseSchema, linksSchema, foldersSchema];

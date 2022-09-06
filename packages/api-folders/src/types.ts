@@ -74,9 +74,9 @@ export type StorageOperationsCreateFolderParams = CreateFolderParams;
 export type StorageOperationsUpdateFolderParams = UpdateFolderParams;
 export type StorageOperationsDeleteFolderParams = DeleteFolderParams;
 
-export interface Entry {
+export interface Link {
     id: string;
-    eId: string;
+    linkId: string;
     folderId: string;
     createdOn: string;
     createdBy: CreatedBy;
@@ -85,30 +85,30 @@ export interface Entry {
     webinyVersion: string;
 }
 
-export type EntryInput = Pick<Entry, "id" | "folderId">;
+export type LinkInput = Pick<Link, "id" | "folderId">;
 
-export interface ListEntriesWhere {
+export interface ListLinksWhere {
     folderId: string;
 }
 
-export interface ListEntriesParams {
-    where: ListEntriesWhere;
+export interface ListLinksParams {
+    where: ListLinksWhere;
 }
 
-export interface CreateEntryParams {
-    entry: Entry;
+export interface CreateLinkParams {
+    link: Link;
 }
 
-export interface UpdateEntryParams {
-    original: Entry;
-    entry: Entry;
+export interface UpdateLinkParams {
+    original: Link;
+    link: Link;
 }
 
-export interface DeleteEntryParams {
-    entry: Entry;
+export interface DeleteLinkParams {
+    link: Link;
 }
 
-export interface StorageOperationsGetEntryParams {
+export interface StorageOperationsGetLinkParams {
     id?: string;
     eId?: string;
     folderId?: string;
@@ -116,23 +116,23 @@ export interface StorageOperationsGetEntryParams {
     locale: string;
 }
 
-export interface StorageOperationsListEntriesParams extends ListEntriesParams {
-    where: ListEntriesParams["where"] & {
+export interface StorageOperationsListLinksParams extends ListLinksParams {
+    where: ListLinksParams["where"] & {
         tenant: string;
         locale: string;
     };
     sort: string[];
 }
 
-export type StorageOperationsCreateEntryParams = CreateEntryParams;
-export type StorageOperationsUpdateEntryParams = UpdateEntryParams;
-export type StorageOperationsDeleteEntryParams = DeleteEntryParams;
+export type StorageOperationsCreateLinkParams = CreateLinkParams;
+export type StorageOperationsUpdateLinkParams = UpdateLinkParams;
+export type StorageOperationsDeleteLinkParams = DeleteLinkParams;
 
 export interface FoldersContext extends BaseContext, I18NContext, TenancyContext, SecurityContext {
     folders: Folders;
 }
 
-export type Folders = IFolders & IEntries;
+export type Folders = IFolders & ILinks;
 
 export interface IFolders {
     getFolder(params: GetFolderParams): Promise<Folder>;
@@ -142,12 +142,12 @@ export interface IFolders {
     deleteFolder(id: string): Promise<void>;
 }
 
-export interface IEntries {
-    getEntry(id: string): Promise<Entry>;
-    listEntries(params: ListEntriesParams): Promise<Entry[]>;
-    createEntry(input: EntryInput): Promise<Entry>;
-    updateEntry(id: string, input: Partial<Entry>): Promise<Entry>;
-    deleteEntry(id: string): Promise<void>;
+export interface ILinks {
+    getLink(id: string): Promise<Link>;
+    listLinks(params: ListLinksParams): Promise<Link[]>;
+    createLink(input: LinkInput): Promise<Link>;
+    updateLink(id: string, input: Partial<Link>): Promise<Link>;
+    deleteLink(id: string): Promise<void>;
 }
 
 export interface FoldersConfig {
@@ -164,10 +164,10 @@ export interface FoldersStorageOperations {
     createFolder(params: StorageOperationsCreateFolderParams): Promise<Folder>;
     updateFolder(params: StorageOperationsUpdateFolderParams): Promise<Folder>;
     deleteFolder(params: StorageOperationsDeleteFolderParams): Promise<void>;
-    // Entries
-    getEntry(params: StorageOperationsGetEntryParams): Promise<Entry>;
-    listEntries(params: StorageOperationsListEntriesParams): Promise<Entry[]>;
-    createEntry(params: StorageOperationsCreateEntryParams): Promise<Entry>;
-    updateEntry(params: StorageOperationsUpdateEntryParams): Promise<Entry>;
-    deleteEntry(params: StorageOperationsDeleteEntryParams): Promise<void>;
+    // EnLink
+    getLink(params: StorageOperationsGetLinkParams): Promise<Link>;
+    listLinks(params: StorageOperationsListLinksParams): Promise<Link[]>;
+    createLink(params: StorageOperationsCreateLinkParams): Promise<Link>;
+    updateLink(params: StorageOperationsUpdateLinkParams): Promise<Link>;
+    deleteLink(params: StorageOperationsDeleteLinkParams): Promise<void>;
 }

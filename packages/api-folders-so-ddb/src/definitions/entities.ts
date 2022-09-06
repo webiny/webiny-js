@@ -1,5 +1,5 @@
 import { Entity, Table } from "dynamodb-toolbox";
-import { Attributes, ENTITIES } from "../types";
+import { Attributes, ENTITIES } from "~/types";
 
 const createEntity = (entityName: string, table: Table, attributes: Attributes) => {
     return new Entity({
@@ -59,15 +59,15 @@ export const createFolderEntity = (table: Table, attributes: Attributes = {}) =>
     });
 };
 
-export const createEntryEntity = (table: Table, attributes: Attributes = {}) => {
-    return createEntity(ENTITIES.ENTRY, table, {
+export const createLinkEntity = (table: Table, attributes: Attributes = {}) => {
+    return createEntity(ENTITIES.LINK, table, {
         id: {
             type: "string"
         },
         folderId: {
             type: "string"
         },
-        eId: {
+        linkId: {
             type: "string"
         },
         createdOn: {

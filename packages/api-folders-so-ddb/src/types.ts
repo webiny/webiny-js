@@ -4,6 +4,7 @@ import {
     EntityAttributeConfig,
     EntityCompositeAttributes
 } from "dynamodb-toolbox/dist/classes/Entity";
+
 export type AttributeDefinition = DynamoDBTypes | EntityAttributeConfig | EntityCompositeAttributes;
 
 /**
@@ -22,7 +23,7 @@ export type Attributes = Record<string, AttributeDefinition>;
 
 export enum ENTITIES {
     FOLDER = "folder",
-    ENTRY = "entry"
+    LINK = "link"
 }
 
 export interface FoldersStorageParams {

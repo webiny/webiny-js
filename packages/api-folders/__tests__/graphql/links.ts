@@ -1,7 +1,7 @@
 const DATA_FIELD = (extra = "") => /* GraphQL */ `
     {
         id
-        eId
+        linkId
         folderId
         ${extra}
     }
@@ -15,10 +15,10 @@ const ERROR_FIELD = /* GraphQL */ `
     }
 `;
 
-export const CREATE_ENTRY = /* GraphQL */ `
-    mutation CreateEntry($data: EntryCreateInput!) {
+export const CREATE_LINK = /* GraphQL */ `
+    mutation CreateLink($data: LinkCreateInput!) {
         folders {
-            createEntry(data: $data) {
+            createLink(data: $data) {
                 data ${DATA_FIELD("id")}
                 error ${ERROR_FIELD}
             }
@@ -26,10 +26,10 @@ export const CREATE_ENTRY = /* GraphQL */ `
     }
 `;
 
-export const UPDATE_ENTRY = /* GraphQL */ `
-    mutation UpdateEntry($id: ID!, $data: EntryUpdateInput!) {
+export const UPDATE_LINK = /* GraphQL */ `
+    mutation UpdateLink($id: ID!, $data: LinkUpdateInput!) {
         folders {
-            updateEntry(id: $id, data: $data) {
+            updateLink(id: $id, data: $data) {
                 data ${DATA_FIELD()}
                 error ${ERROR_FIELD}
             }
@@ -37,10 +37,10 @@ export const UPDATE_ENTRY = /* GraphQL */ `
     }
 `;
 
-export const DELETE_ENTRY = /* GraphQL */ `
-    mutation DeleteEntry($id: ID!) {
+export const DELETE_LINK = /* GraphQL */ `
+    mutation DeleteLink($id: ID!) {
         folders {
-            deleteEntry(id: $id) {
+            deleteLink(id: $id) {
                 data
                 error ${ERROR_FIELD}
             }
@@ -48,10 +48,10 @@ export const DELETE_ENTRY = /* GraphQL */ `
     }
 `;
 
-export const LIST_ENTRIES = /* GraphQL */ `
-    query ListEntries($where: EntriesListWhereInput!) {
+export const LIST_LINKS = /* GraphQL */ `
+    query ListLinks($where: LinksListWhereInput!) {
         folders {
-            listEntries(where: $where) {
+            listLinks(where: $where) {
                 data ${DATA_FIELD()}
                 error ${ERROR_FIELD}
             }
@@ -59,10 +59,10 @@ export const LIST_ENTRIES = /* GraphQL */ `
     }
 `;
 
-export const GET_ENTRY = /* GraphQL */ `
-    query GetEntry($id: ID!) {
+export const GET_LINK = /* GraphQL */ `
+    query GetLink($id: ID!) {
         folders {
-            getEntry(id: $id ) {
+            getLink(id: $id ) {
                 data ${DATA_FIELD()}
                 error ${ERROR_FIELD}
             }

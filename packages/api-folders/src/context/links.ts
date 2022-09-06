@@ -7,7 +7,7 @@ import WebinyError from "@webiny/error";
 import { NotFoundError } from "@webiny/handler-graphql";
 import joi from "joi";
 
-import { Entry, EntryInput, FoldersConfig, IEntries, ListEntriesParams } from "~/types";
+import { FoldersConfig, ILinks, Link, LinkInput, ListLinksParams } from "~/types";
 
 const requiredString = joi.string().required();
 
@@ -22,52 +22,52 @@ const updateSchema = joi.object({
     folderId: requiredString
 });
 
-export const createEntriesContext = async ({
+export const createLinksContext = async ({
     getTenantId,
     getLocaleCode,
     getIdentity,
     storageOperations
-}: FoldersConfig): Promise<IEntries> => {
+}: FoldersConfig): Promise<ILinks> => {
     const tenant = getTenantId();
     const locale = getLocaleCode();
 
     return {
-        async getEntry(id: string): Promise<Entry> {
-            let entry: Entry | null = null;
+        async getLink(id: string): Promise<Link> {
+            let link: Link | null = null;
             try {
-                entry = await storageOperations.getEntry({ tenant, locale, id });
+                link = await storageOperations.getLink({ tenant, locale, id });
             } catch (error) {
                 throw WebinyError.from(error, {
-                    message: "Could not get entry.",
-                    code: "GET_ENTRY_ERROR",
+                    message: "Could not get link.",
+                    code: "GET_LINK_ERROR",
                     data: { id }
                 });
             }
-            if (!entry) {
-                throw new NotFoundError(`Unable to find entry with id: ${id}`);
+            if (!link) {
+                throw new NotFoundError(`Unable to find link with id: ${id}`);
             }
-            return entry;
+            return link;
         },
 
-        async listEntries({ where }: ListEntriesParams): Promise<Entry[]> {
+        async listLinks({ where }: ListLinksParams): Promise<Link[]> {
             try {
-                return await storageOperations.listEntries({
+                return await storageOperations.listLinks({
                     where: { tenant, locale, ...where },
                     sort: ["createdOn_ASC"]
                 });
             } catch (error) {
                 throw WebinyError.from(error, {
-                    message: "Could not list entries.",
-                    code: "LIST_ENTRIES_ERROR",
+                    message: "Could not list links.",
+                    code: "LIST_LINKS_ERROR",
                     data: { ...where }
                 });
             }
         },
 
-        async createEntry(input: EntryInput): Promise<Entry> {
+        async createLink(input: LinkInput): Promise<Link> {
             await createSchema.validate(input);
 
-            const existing = await storageOperations.getEntry({
+            const existing = await storageOperations.getLink({
                 tenant,
                 locale,
                 folderId: input.folderId,
@@ -75,16 +75,13 @@ export const createEntriesContext = async ({
             });
 
             if (existing) {
-                throw new WebinyError(
-                    `Entry with id "${input.id}" already exists.`,
-                    "ENTRY_EXISTS"
-                );
+                throw new WebinyError(`Link with id "${input.id}" already exists.`, "LINK_EXISTS");
             }
 
             const identity = getIdentity();
 
-            const entry: Entry = {
-                eId: mdbid(),
+            const link: Link = {
+                linkId: mdbid(),
                 tenant,
                 locale,
                 ...input,
@@ -98,58 +95,58 @@ export const createEntriesContext = async ({
             };
 
             try {
-                return await storageOperations.createEntry({ entry });
+                return await storageOperations.createLink({ link });
             } catch (error) {
                 throw WebinyError.from(error, {
-                    message: "Could not create entry.",
-                    code: "CREATE_ENTRY_ERROR",
+                    message: "Could not create link.",
+                    code: "CREATE_LINK_ERROR",
                     data: { ...input }
                 });
             }
         },
 
-        async updateEntry(id: string, input: Record<string, any>): Promise<Entry> {
-            const original = await storageOperations.getEntry({ tenant, locale, id });
+        async updateLink(id: string, input: Record<string, any>): Promise<Link> {
+            const original = await storageOperations.getLink({ tenant, locale, id });
 
             if (!original) {
-                throw new NotFoundError(`Entry "${id}" was not found!`);
+                throw new NotFoundError(`Link "${id}" was not found!`);
             }
 
             await updateSchema.validate(input);
 
-            const entry: Entry = {
+            const link: Link = {
                 ...original,
                 ...input
             };
 
             try {
-                return await storageOperations.updateEntry({ original, entry });
+                return await storageOperations.updateLink({ original, link });
             } catch (error) {
                 throw new WebinyError(
-                    error.message || "Could not update entry.",
-                    error.code || "UPDATE_ENTRY_ERROR",
+                    error.message || "Could not update link.",
+                    error.code || "UPDATE_LINK_ERROR",
                     {
-                        entry
+                        link
                     }
                 );
             }
         },
 
-        async deleteEntry(id: string): Promise<void> {
-            const entry = await storageOperations.getEntry({ tenant, locale, id });
+        async deleteLink(id: string): Promise<void> {
+            const link = await storageOperations.getLink({ tenant, locale, id });
 
-            if (!entry) {
-                throw new NotFoundError(`Entry "${id}" was not found!`);
+            if (!link) {
+                throw new NotFoundError(`Link "${id}" was not found!`);
             }
 
             try {
-                await storageOperations.deleteEntry({ entry });
+                await storageOperations.deleteLink({ link });
             } catch (error) {
                 throw new WebinyError(
-                    error.message || "Could not delete entry.",
-                    error.code || "DELETE_ENTRY_ERROR",
+                    error.message || "Could not delete link.",
+                    error.code || "DELETE_LINK_ERROR",
                     {
-                        entry
+                        link
                     }
                 );
             }

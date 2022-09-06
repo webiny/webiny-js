@@ -2,64 +2,64 @@ import { ErrorResponse, Response } from "@webiny/handler-graphql/responses";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
 import { FoldersContext } from "~/types";
 
-export const entriesSchema = new GraphQLSchemaPlugin<FoldersContext>({
+export const linksSchema = new GraphQLSchemaPlugin<FoldersContext>({
     typeDefs: /* GraphQL */ `
-        type Entry {
+        type Link {
             id: ID!
-            eId: ID!
+            linkId: ID!
             folderId: ID!
             createdOn: DateTime
             createdBy: FolderCreatedBy
         }
 
-        input EntryCreateInput {
+        input LinkCreateInput {
             id: ID!
             folderId: ID!
         }
 
-        input EntryUpdateInput {
+        input LinkUpdateInput {
             folderId: ID!
         }
 
-        input EntriesListWhereInput {
+        input LinksListWhereInput {
             folderId: ID!
         }
 
-        type EntryResponse {
-            data: Entry
+        type LinkResponse {
+            data: Link
             error: FolderError
         }
 
-        type EntriesListResponse {
-            data: [Entry]
+        type LinksListResponse {
+            data: [Link]
             error: FolderError
         }
 
         extend type FoldersQuery {
-            getEntry(id: ID!): EntryResponse
-            listEntries(where: EntriesListWhereInput!): EntriesListResponse
+            getLink(id: ID!): LinkResponse
+            listLinks(where: LinksListWhereInput!): LinksListResponse
         }
 
         extend type FoldersMutation {
-            createEntry(data: EntryCreateInput!): EntryResponse
-            updateEntry(id: ID!, data: EntryUpdateInput!): EntryResponse
-            deleteEntry(id: ID!): FolderBooleanResponse
+            createLink(data: LinkCreateInput!): LinkResponse
+            updateLink(id: ID!, data: LinkUpdateInput!): LinkResponse
+            deleteLink(id: ID!): FolderBooleanResponse
         }
     `,
     resolvers: {
         FoldersQuery: {
-            getEntry: async (_, { id }, context) => {
+            getLink: async (_, { id }, context) => {
                 try {
-                    const entry = await context.folders.getEntry(id);
-                    return new Response(entry);
+                    const link = await context.folders.getLink(id);
+                    return new Response(link);
                 } catch (error) {
                     return new ErrorResponse(error);
                 }
             },
-            listEntries: async (_, { where }, context) => {
+            listLinks: async (_, { where }, context) => {
                 try {
-                    const entries = await context.folders.listEntries({ where });
-                    return new Response(entries);
+                    const links = await context.folders.listLinks({ where });
+                    return new Response(links);
                 } catch (error) {
                     return new ErrorResponse(error);
                 }
@@ -67,25 +67,25 @@ export const entriesSchema = new GraphQLSchemaPlugin<FoldersContext>({
         },
 
         FoldersMutation: {
-            createEntry: async (_, { data }, context) => {
+            createLink: async (_, { data }, context) => {
                 try {
-                    const entry = await context.folders.createEntry(data);
-                    return new Response(entry);
+                    const link = await context.folders.createLink(data);
+                    return new Response(link);
                 } catch (error) {
                     return new ErrorResponse(error);
                 }
             },
-            updateEntry: async (_, { id, data }, context) => {
+            updateLink: async (_, { id, data }, context) => {
                 try {
-                    const entry = await context.folders.updateEntry(id, data);
-                    return new Response(entry);
+                    const link = await context.folders.updateLink(id, data);
+                    return new Response(link);
                 } catch (error) {
                     return new ErrorResponse(error);
                 }
             },
-            deleteEntry: async (_, { id }, context) => {
+            deleteLink: async (_, { id }, context) => {
                 try {
-                    await context.folders.deleteEntry(id);
+                    await context.folders.deleteLink(id);
                     return new Response(true);
                 } catch (error) {
                     return new ErrorResponse(error);
