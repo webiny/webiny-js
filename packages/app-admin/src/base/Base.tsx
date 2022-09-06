@@ -11,6 +11,7 @@ import { FileManager } from "~/components";
 
 import { defaultFileTypePlugin, imageFileTypePlugin } from "~/plugins/fileManager";
 import { globalSearchHotkey } from "~/plugins/globalSearch";
+import { uiLayoutPlugin } from "~/plugins/uiLayoutRenderer";
 
 function registerFileTypePlugins() {
     // This is an ugly hack, which we will replace when we implement file thumbnail rendering via the Composition API.
@@ -31,7 +32,7 @@ function registerFileTypePlugins() {
 }
 
 const BaseExtension: React.FC = () => {
-    plugins.register(globalSearchHotkey);
+    plugins.register([globalSearchHotkey, uiLayoutPlugin]);
 
     registerFileTypePlugins();
 
