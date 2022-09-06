@@ -80,8 +80,8 @@ export const assignWorkflowToPage = async ({ listWorkflow, page }: AssignWorkflo
                 break;
             }
         }
-    } catch (e) {
-        throw new WebinyError(`Failed to assign workflow to page "${page.pid}".`, e.code, e.data);
+    } catch (ex) {
+        throw new WebinyError(`Failed to assign workflow to page "${page.pid}".`, ex.code, ex.data);
     }
 };
 

@@ -23,7 +23,8 @@ const createModelData = (
         fields: [
             {
                 id: "name",
-                fieldId: "name",
+                fieldId: "text@name",
+                alias: "name",
                 label: "Name",
                 type: "text",
                 settings: {},
@@ -36,7 +37,8 @@ const createModelData = (
             },
             {
                 id: "sku",
-                fieldId: "sku",
+                fieldId: "number@sku",
+                alias: "sku",
                 label: "SKU",
                 type: "number",
                 settings: {},
@@ -49,7 +51,8 @@ const createModelData = (
             },
             {
                 id: "description",
-                fieldId: "description",
+                fieldId: "long-text@description",
+                alias: "description",
                 label: "Description",
                 type: "long-text",
                 settings: {},
@@ -76,7 +79,8 @@ const createModelData = (
             },
             {
                 id: "body",
-                fieldId: "body",
+                fieldId: "rich-text@body",
+                alias: "body",
                 label: "Body",
                 type: "rich-text",
                 settings: {},

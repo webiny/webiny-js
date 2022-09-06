@@ -4,7 +4,7 @@ import { entryFieldFromStorageTransform } from "@webiny/api-headless-cms";
 import { ApwBaseFields } from "~/types";
 
 interface Transformer {
-    fieldId: keyof ApwBaseFields;
+    alias: keyof ApwBaseFields;
     model: any;
     field: any;
 }
@@ -27,22 +27,22 @@ export const getFieldValues = async <T extends ApwBaseFields>(
     /**
      * Transform field value for each transformers.
      */
-    for (let i = 0; i < transformers.length; i++) {
-        const { fieldId, model, field } = transformers[i];
+    for (const transformer of transformers) {
+        const { alias, model, field } = transformer;
         // Get transformed value (eg. data decompression)
-        values[fieldId] = await entryFieldFromStorageTransform({
+        values[alias] = await entryFieldFromStorageTransform({
             context,
             model,
             field,
-            value: values[fieldId]
+            value: values[alias]
         });
     }
 
     return values;
 };
 
-export const getTransformer = (model: CmsModel, fieldId: string): Transformer => ({
-    fieldId: fieldId as unknown as keyof ApwBaseFields,
+export const getTransformer = (model: CmsModel, alias: string): Transformer => ({
+    alias: alias as unknown as keyof ApwBaseFields,
     model: model,
-    field: model.fields.find(field => field.fieldId === fieldId)
+    field: model.fields.find(field => field.alias === alias)
 });

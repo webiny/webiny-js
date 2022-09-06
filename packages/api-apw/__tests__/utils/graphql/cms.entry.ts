@@ -17,7 +17,7 @@ const createErrorFields = (): string => {
 
 const createContentEntryFields = (model: CmsModel): string => {
     return ["id", "entryId", "meta { data version status }"]
-        .concat(model.fields.map(field => field.fieldId))
+        .concat(model.fields.map(field => field.alias))
         .join("\n");
 };
 

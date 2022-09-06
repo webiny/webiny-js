@@ -58,7 +58,7 @@ export class CmsModelPlugin extends Plugin {
             /**
              * Field must contain an alias.
              */
-            if (!input.alias.trim()) {
+            if (!(input.alias || "").trim()) {
                 throw new WebinyError(
                     `Field's "fieldId" is not defined for the content model "${this.contentModel.modelId}".`,
                     "FIELD_ID_ERROR",
@@ -165,7 +165,7 @@ export class CmsModelPlugin extends Plugin {
                 `Missing field "${field.id}" in layout.`,
                 "MISSING_FIELD_IN_LAYOUT",
                 {
-                    model,
+                    // model,
                     field
                 }
             );
