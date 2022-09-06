@@ -23,7 +23,7 @@ const testHandler = createHandler({
         createHttpLogsHandlerResultPlugin(),
         new RoutePlugin(context => {
             context.onGet("/test", () => {
-                console.log(forwardUrl)
+                console.log(forwardUrl);
                 return null;
             });
         })
