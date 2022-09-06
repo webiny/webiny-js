@@ -19,7 +19,7 @@
     "@babel/cli": "^7.16.0",
     "@babel/core": "^7.16.0",
     "@webiny/cli": "^5.31.0",
-    "@webiny/handler-db": "workspace:^",
+    "@webiny/handler-db": "^5.31.0",
     "@webiny/project-utils": "^5.31.0",
     "jest": "^28.1.0",
     "jest-dynalite": "^3.2.0",

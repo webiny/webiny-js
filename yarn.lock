@@ -10360,7 +10360,7 @@ __metadata:
     "@webiny/cli": ^5.31.0
     "@webiny/db-dynamodb": ^5.31.0
     "@webiny/error": ^5.31.0
-    "@webiny/handler-db": "workspace:^"
+    "@webiny/handler-db": ^5.31.0
     "@webiny/project-utils": ^5.31.0
     dynamodb-toolbox: ^0.3.4
     jest: ^28.1.0
@@ -12963,7 +12963,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/handler-db@^5.31.0, @webiny/handler-db@workspace:^, @webiny/handler-db@workspace:packages/handler-db":
+"@webiny/handler-db@^5.31.0, @webiny/handler-db@workspace:packages/handler-db":
   version: 0.0.0-use.local
   resolution: "@webiny/handler-db@workspace:packages/handler-db"
   dependencies:
