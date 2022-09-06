@@ -118,7 +118,7 @@ describe("Content model locked fields", () => {
         const fieldsToRemove = productModel.fields.filter(field => field.alias !== "title");
         for (const field of fieldsToRemove) {
             const targetFields = productModel.fields.filter(f => f.id !== field.id);
-            const [removedFieldResponse] = await updateContentModelMutation({
+            const variables = {
                 modelId: contentModel.modelId,
                 data: {
                     titleFieldId: null,
@@ -127,7 +127,8 @@ describe("Content model locked fields", () => {
                         return [f.id];
                     })
                 }
-            });
+            };
+            const [removedFieldResponse] = await updateContentModelMutation(variables);
 
             expect(removedFieldResponse).toEqual({
                 data: {

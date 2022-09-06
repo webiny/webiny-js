@@ -167,6 +167,7 @@ export const validateModelEntryData = async (params: ValidateModelEntryDataParam
             continue;
         }
         invalidFields.push({
+            alias: field.alias,
             fieldId: field.fieldId,
             alias: field.alias,
             error

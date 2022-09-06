@@ -19,7 +19,7 @@ const getCreateFilters = (
 };
 
 export const renderGetFilterFields: RenderGetFilterFields = ({ model, fieldTypePlugins }) => {
-    const fieldIds = model.fields
+    const fieldAliases = model.fields
         .filter(field => {
             // Every time a client updates content model's fields, we check the type of each field. If a field plugin
             // for a particular "field.type" doesn't exist on the backend yet, we throw an error. But still, we also
@@ -31,12 +31,12 @@ export const renderGetFilterFields: RenderGetFilterFields = ({ model, fieldTypeP
             }
             return fieldTypePlugins[field.type].isSearchable;
         })
-        .map(f => f.fieldId);
+        .map(f => f.alias);
 
     const filters: string[] = ["id: ID", "entryId: String"];
 
-    for (const id of fieldIds) {
-        const field = model.fields.find(item => item.fieldId === id);
+    for (const alias of fieldAliases) {
+        const field = model.fields.find(item => item.alias === alias);
         if (!field) {
             continue;
         }

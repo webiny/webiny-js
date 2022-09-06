@@ -132,6 +132,7 @@ describe("predefined values", () => {
                         data: [
                             {
                                 fieldId: expect.stringMatching("text@"),
+                                alias: "bugType",
                                 error: "Value sent does not match any of the available predefined values."
                             }
                         ]
@@ -167,6 +168,7 @@ describe("predefined values", () => {
                         code: "VALIDATION_FAILED",
                         data: [
                             {
+                                alias: "bugValue",
                                 fieldId: expect.stringMatching("number@"),
                                 error: "Value sent does not match any of the available predefined values."
                             }
@@ -203,10 +205,12 @@ describe("predefined values", () => {
                         code: "VALIDATION_FAILED",
                         data: [
                             {
+                                alias: "bugType",
                                 fieldId: expect.stringMatching("text@"),
                                 error: "Value sent does not match any of the available predefined values."
                             },
                             {
+                                alias: "bugValue",
                                 fieldId: expect.stringMatching("number@"),
                                 error: "Value sent does not match any of the available predefined values."
                             }

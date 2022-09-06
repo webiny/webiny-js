@@ -54,8 +54,8 @@ export const createCommentModelDefinition = ({
     return {
         name: "APW - Comment",
         modelId: COMMENT_MODEL_ID,
-        titleFieldId: "displayName",
-        layout: [["comment_body"], ["comment_displayName"]],
+        titleFieldId: "step",
+        layout: [["comment_body"], ["comment_changeRequest"], ["comment_step"], ["comment_media"]],
         fields: [commentBody(), changeRequestRef(modelId), stepField(), mediaField()],
         description: "",
         isPrivate: true

@@ -10,7 +10,7 @@ import {
 import { Topic } from "@webiny/pubsub/types";
 import { PluginsContainer } from "@webiny/plugins";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";
-import { validateModelFields } from "./validateModelFields";
+import { validateModel } from "~/crud/contentModel/validateModel";
 
 const disallowedModelIdList: string[] = [
     "contentModel",
@@ -192,7 +192,7 @@ export const assignBeforeModelCreate = (params: AssignBeforeModelCreateParams) =
         /**
          * Then we move onto fields...
          */
-        await validateModelFields({
+        await validateModel({
             model,
             plugins
         });

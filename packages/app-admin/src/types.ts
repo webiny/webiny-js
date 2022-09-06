@@ -69,7 +69,7 @@ export interface AdminFileManagerFileTypePluginRenderParams {
 }
 export type AdminFileManagerFileTypePlugin = Plugin & {
     type: "admin-file-manager-file-type";
-    types?: string[];
+    types: string[];
     render(params: AdminFileManagerFileTypePluginRenderParams): React.ReactNode;
     fileDetails?: {
         actions: Array<React.FC | React.Component>;

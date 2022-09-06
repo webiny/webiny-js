@@ -29,6 +29,7 @@ const plugin = new StorageTransformPlugin({
         }
         throw new WebinyError("Error converting value to a storage type.", "TO_STORAGE_ERROR", {
             value,
+            alias: field.alias,
             fieldId: field.fieldId
         });
     }

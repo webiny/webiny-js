@@ -285,10 +285,13 @@ export const createContentReviewModelDefinition = ({
     modelId: CONTENT_REVIEW_MODEL_ID,
     titleFieldId: "content",
     layout: [
+        ["contentReview_title"],
         ["contentReview_content"],
+        ["contentReview_status"],
         ["contentReview_reviewRequestedBy"],
         ["contentReview_steps"],
-        ["contentReview_changeRequested"]
+        ["contentReview_changeRequested"],
+        ["contentReview_latestCommentId"]
     ],
     fields: [
         titleField(),
