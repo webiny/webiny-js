@@ -66,7 +66,8 @@ const setupApwContext = (params: CreateApwContextParams) =>
                 /**
                  * TODO: This is required for "entryFieldFromStorageTransform" which access plugins from context.
                  */
-                getCmsContext: () => context
+                getCmsContext: () => context,
+                security
             }),
             scheduler,
             handlerClient,

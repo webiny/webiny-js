@@ -2,7 +2,7 @@ import { ApolloLink } from "apollo-link";
 import { nanoid } from "nanoid";
 import { Plugin } from "@webiny/plugins";
 
-interface ApolloLinkFactory {
+export interface ApolloLinkFactory {
     (): ApolloLink;
 }
 
