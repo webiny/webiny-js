@@ -12907,6 +12907,7 @@ __metadata:
     "@types/node-fetch": ^2.6.1
     "@webiny/cli": ^5.31.0
     "@webiny/handler": ^5.31.0
+    "@webiny/handler-aws": ^5.31.0
     "@webiny/project-utils": ^5.31.0
     node-fetch: ^2.6.1
     rimraf: ^3.0.2
