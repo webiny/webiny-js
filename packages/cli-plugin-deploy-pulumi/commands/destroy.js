@@ -2,7 +2,9 @@ const { createPulumiCommand, processHooks } = require("../utils");
 
 module.exports = createPulumiCommand({
     name: "destroy",
-    createProjectApplicationWorkspace: false,
+    // We want to create a workspace just because there are cases where the destroy command is called
+    // without the deployment happening initially (e.g. CI/CD scaffold's `pullRequestClosed.yml` workflow).
+    createProjectApplicationWorkspace: true,
     command: async ({ inputs, context, projectApplication, pulumi, getDuration }) => {
         const { env, folder } = inputs;
 
