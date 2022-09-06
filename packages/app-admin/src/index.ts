@@ -27,6 +27,8 @@ export type { ViewCompositionContext, ViewElement } from "./base/providers/ViewC
 
 // Plugins
 export * from "./base/plugins/AddGraphQLQuerySelection";
+export * from "./plugins/FileManagerFileTypePlugin";
+export * from "./plugins/PermissionRendererPlugin";
 
 // Components
 export { AppInstaller } from "./components/AppInstaller";

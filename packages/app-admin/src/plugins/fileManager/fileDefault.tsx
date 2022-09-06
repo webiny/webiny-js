@@ -12,7 +12,7 @@ const style = {
     })
 };
 
-export default new FileManagerFileTypePlugin({
+export const defaultFileTypePlugin = new FileManagerFileTypePlugin({
     types: ["*/*"],
     render(): React.ReactNode {
         return (
