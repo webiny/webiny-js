@@ -1,4 +1,4 @@
-const { processHooks } = require("./index");
+const processHooks = require("./processHooks");
 
 module.exports = async function runHook({ hook, skip, args, context }) {
     if (skip) {
@@ -8,4 +8,4 @@ module.exports = async function runHook({ hook, skip, args, context }) {
         await processHooks(hook, args);
         context.success(`Hook "${hook}" completed.`);
     }
-}
+};
