@@ -2,6 +2,7 @@
   "name": "@webiny/api-folders",
   "version": "5.31.0",
   "main": "index.js",
+  "private": true,
   "keywords": [
     "folders:base"
   ],
