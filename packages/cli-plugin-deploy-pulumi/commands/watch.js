@@ -14,7 +14,13 @@ const simpleOutput = require("./watch/output/simpleOutput");
 const minimatch = require("minimatch");
 const glob = require("fast-glob");
 const watchPackages = require("./watch/watchPackages");
-const { login, getPulumi, getRandomColorForString, loadEnvVariables, runHook } = require("../utils");
+const {
+    login,
+    getPulumi,
+    getRandomColorForString,
+    loadEnvVariables,
+    runHook
+} = require("../utils");
 
 // Do not allow watching "prod" and "production" environments. On the Pulumi CLI side, the command
 // is still in preview mode, so it's definitely not wise to use it on production environments.
