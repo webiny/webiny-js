@@ -31,7 +31,7 @@ const updateSchema = joi.object({
     slug: requiredString.min(3)
 });
 
-export default async ({
+export const createFoldersContext = async ({
     getTenantId,
     getLocaleCode,
     getIdentity,

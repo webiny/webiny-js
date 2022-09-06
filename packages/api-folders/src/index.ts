@@ -1,8 +1,8 @@
 import { ContextPlugin } from "@webiny/api";
 import WebinyError from "@webiny/error";
 
-import createContext from "./context";
-import graphqlPlugins from "./graphql";
+import { createContext } from "./context";
+import { graphqlPlugins } from "./graphql";
 
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { FoldersContext, FoldersStorageOperations } from "~/types";
@@ -30,8 +30,7 @@ export const createFoldersContext = ({ storageOperations }: FoldersConfig) => {
         };
 
         const getIdentity = (): SecurityIdentity => {
-            const identity = context.security.getIdentity();
-            return identity;
+            return context.security.getIdentity();
         };
 
         context.folders = await createContext({

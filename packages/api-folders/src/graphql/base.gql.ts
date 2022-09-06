@@ -3,7 +3,7 @@ import { FoldersContext } from "~/types";
 
 const emptyResolver = () => ({});
 
-export default new GraphQLSchemaPlugin<FoldersContext>({
+export const baseSchema = new GraphQLSchemaPlugin<FoldersContext>({
     typeDefs: /* GraphQL */ `
         type FoldersQuery {
             _empty: String

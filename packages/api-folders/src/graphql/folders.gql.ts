@@ -1,8 +1,8 @@
-import { Response, ErrorResponse } from "@webiny/handler-graphql/responses";
+import { ErrorResponse, Response } from "@webiny/handler-graphql/responses";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
 import { FoldersContext } from "~/types";
 
-export default new GraphQLSchemaPlugin<FoldersContext>({
+export const foldersSchema = new GraphQLSchemaPlugin<FoldersContext>({
     typeDefs: /* GraphQL */ `
         type Folder {
             id: ID!

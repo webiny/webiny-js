@@ -22,7 +22,7 @@ const updateSchema = joi.object({
     folderId: requiredString
 });
 
-export default async ({
+export const createEntriesContext = async ({
     getTenantId,
     getLocaleCode,
     getIdentity,
