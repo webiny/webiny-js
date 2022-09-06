@@ -3,27 +3,24 @@
  */
 // @ts-ignore
 import mdbid from "mdbid";
-/**
- * Package @commodo/fields does not have types.
- */
-// @ts-ignore
-import { string, withFields } from "@commodo/fields";
 import WebinyError from "@webiny/error";
 import { NotFoundError } from "@webiny/handler-graphql";
-import { validation } from "@webiny/validation";
+import joi from "joi";
 
-import { FoldersConfig, Entry, ListEntriesParams, EntryInput, IEntries } from "~/types";
+import { Entry, EntryInput, FoldersConfig, IEntries, ListEntriesParams } from "~/types";
 
-const CreateDataModel = withFields({
-    id: string({ validation: validation.create("required") }),
-    folderId: string({ validation: validation.create("required") }),
-    tenant: string({ validation: validation.create("required") }),
-    locale: string({ validation: validation.create("required") })
-})();
+const requiredString = joi.string().required();
 
-const UpdateDataModel = withFields({
-    folderId: string({ validation: validation.create("required") })
-})();
+const createSchema = joi.object({
+    id: requiredString,
+    folderId: requiredString,
+    tenant: requiredString,
+    locale: requiredString
+});
+
+const updateSchema = joi.object({
+    folderId: requiredString
+});
 
 export default async ({
     getTenantId,
@@ -68,7 +65,7 @@ export default async ({
         },
 
         async createEntry(input: EntryInput): Promise<Entry> {
-            await new CreateDataModel().populate({ ...input, tenant, locale }).validate();
+            await createSchema.validate(input);
 
             const existing = await storageOperations.getEntry({
                 tenant,
@@ -112,26 +109,21 @@ export default async ({
         },
 
         async updateEntry(id: string, input: Record<string, any>): Promise<Entry> {
-            const model = await new UpdateDataModel().populate(input);
-
-            await model.validate();
-
             const original = await storageOperations.getEntry({ tenant, locale, id });
 
             if (!original) {
                 throw new NotFoundError(`Entry "${id}" was not found!`);
             }
 
-            const data = await model.toJSON({ onlyDirty: true });
+            await updateSchema.validate(input);
 
             const entry: Entry = {
                 ...original,
-                ...data
+                ...input
             };
 
             try {
-                const result = await storageOperations.updateEntry({ original, entry });
-                return result;
+                return await storageOperations.updateEntry({ original, entry });
             } catch (error) {
                 throw new WebinyError(
                     error.message || "Could not update entry.",

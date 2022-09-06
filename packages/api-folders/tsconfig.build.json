@@ -40,9 +40,6 @@
     },
     {
       "path": "../plugins/tsconfig.build.json"
-    },
-    {
-      "path": "../validation/tsconfig.build.json"
     }
   ],
   "compilerOptions": {

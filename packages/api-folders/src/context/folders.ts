@@ -3,14 +3,9 @@
  */
 // @ts-ignore
 import mdbid from "mdbid";
-/**
- * Package @commodo/fields does not have types.
- */
-// @ts-ignore
-import { string, withFields } from "@commodo/fields";
 import WebinyError from "@webiny/error";
 import { NotFoundError } from "@webiny/handler-graphql";
-import { validation } from "@webiny/validation";
+import joi from "joi";
 
 import {
     Folder,
@@ -21,18 +16,20 @@ import {
     ListFoldersParams
 } from "~/types";
 
-const CreateDataModel = withFields({
-    name: string({ validation: validation.create("required,minLength:3") }),
-    slug: string({ validation: validation.create("required,minLength:3") }),
-    category: string({ validation: validation.create("required,in:page:cms:file") }),
-    tenant: string({ validation: validation.create("required") }),
-    locale: string({ validation: validation.create("required") })
-})();
+const requiredString = joi.string().required();
 
-const UpdateDataModel = withFields({
-    name: string({ validation: validation.create("minLength:3") }),
-    slug: string({ validation: validation.create("minLength:3") })
-})();
+const createSchema = joi.object({
+    name: requiredString.min(3),
+    slug: requiredString.min(3),
+    category: requiredString.pattern(/page|cms|file/),
+    tenant: requiredString,
+    locale: requiredString
+});
+
+const updateSchema = joi.object({
+    name: requiredString.min(3),
+    slug: requiredString.min(3)
+});
 
 export default async ({
     getTenantId,
@@ -77,7 +74,7 @@ export default async ({
         },
 
         async createFolder(input: FolderInput): Promise<Folder> {
-            await new CreateDataModel().populate({ ...input, tenant, locale }).validate();
+            await createSchema.validate(input);
 
             const existing = await storageOperations.getFolder({
                 tenant,
@@ -121,25 +118,20 @@ export default async ({
         },
 
         async updateFolder(id: string, input: Record<string, any>): Promise<Folder> {
-            const model = await new UpdateDataModel().populate(input);
-
-            await model.validate();
-
             const original = await storageOperations.getFolder({ tenant, locale, id });
 
             if (!original) {
                 throw new NotFoundError(`Folder "${id}" was not found!`);
             }
 
-            const data = await model.toJSON({ onlyDirty: true });
+            await updateSchema.validate(input);
 
             const folder: Folder = {
                 ...original,
-                ...data
+                ...input
             };
             try {
-                const result = await storageOperations.updateFolder({ original, folder });
-                return result;
+                return await storageOperations.updateFolder({ original, folder });
             } catch (error) {
                 throw new WebinyError(
                     error.message || "Could not update folder.",

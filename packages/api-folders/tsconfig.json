@@ -40,9 +40,6 @@
     },
     {
       "path": "../plugins"
-    },
-    {
-      "path": "../validation"
     }
   ],
   "compilerOptions": {
@@ -76,9 +73,7 @@
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
       "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"],
-      "@webiny/validation/*": ["../validation/src/*"],
-      "@webiny/validation": ["../validation/src"]
+      "@webiny/plugins": ["../plugins/src"]
     },
     "baseUrl": "."
   }

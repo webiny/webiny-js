@@ -4,7 +4,7 @@ import { sortItems } from "@webiny/db-dynamodb/utils/sort";
 import WebinyError from "@webiny/error";
 
 import { createTable } from "./definitions/table";
-import { createFolderEntity, createEntryEntity } from "./definitions/entities";
+import { createEntryEntity, createFolderEntity } from "./definitions/entities";
 
 import { ENTITIES, FoldersStorageParams } from "./types";
 import { Entry, Folder, FoldersStorageOperations } from "@webiny/api-folders/types";
@@ -12,7 +12,7 @@ import { Entry, Folder, FoldersStorageOperations } from "@webiny/api-folders/typ
 const reservedFields: string[] = ["PK", "SK", "index", "data"];
 
 const isReserved = (name: string): void => {
-    if (reservedFields.includes(name) === false) {
+    if (!reservedFields.includes(name)) {
         return;
     }
     throw new WebinyError(`Attribute name "${name}" is not allowed.`, "ATTRIBUTE_NOT_ALLOWED", {
