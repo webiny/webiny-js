@@ -655,7 +655,7 @@ describe("fieldValidations", () => {
                             data: [
                                 {
                                     alias: "time",
-                                    fieldId: expect.stringMatching("time@datetime@"),
+                                    fieldId: expect.stringMatching("datetime@"),
                                     error: message
                                 }
                             ]
@@ -716,8 +716,9 @@ describe("fieldValidations", () => {
                         code: "VALIDATION_FAILED",
                         data: [
                             {
+                                alias: "slug",
                                 error: "Field value must be unique.",
-                                fieldId: expect.stringMatching("slug@text@")
+                                fieldId: expect.stringMatching("text@")
                             }
                         ]
                     }

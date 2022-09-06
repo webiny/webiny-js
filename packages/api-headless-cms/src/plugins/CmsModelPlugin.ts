@@ -1,7 +1,7 @@
 import { Plugin } from "@webiny/plugins";
 import { CmsModel as CmsModelBase, CmsModelField as CmsModelFieldBase } from "~/types";
 import WebinyError from "@webiny/error";
-import { createFieldId } from "~/crud/contentModel/validateModelFields";
+import { createFieldId } from "~/crud/contentModel/createFieldId";
 import lodashCamelCase from "lodash/camelCase";
 
 interface CmsModelFieldInput extends Omit<CmsModelFieldBase, "fieldId"> {
@@ -68,7 +68,7 @@ export class CmsModelPlugin extends Plugin {
                     }
                 );
             }
-            const alias = lodashCamelCase(input.fieldId);
+            const alias = lodashCamelCase(input.alias);
             /**
              * Alias must be in correct pattern.
              */
@@ -135,8 +135,8 @@ export class CmsModelPlugin extends Plugin {
     private createFieldId(field: CmsModelFieldInput): string {
         if (!field.fieldId) {
             return createFieldId({
-                type: lodashCamelCase(field.type),
-                id: lodashCamelCase(field.id)
+                type: field.type,
+                id: field.id
             });
         }
         return field.fieldId;

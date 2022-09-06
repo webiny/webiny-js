@@ -16,14 +16,22 @@ const privateAuthorsModel = new CmsModelPlugin({
     isPrivate: true,
     modelId: "author",
     name: "Authors",
-    layout: [],
-    fields: [],
-    titleFieldId: "",
+    layout: [["title"]],
+    fields: [
+        {
+            id: "title",
+            fieldId: "text@title",
+            alias: "title",
+            type: "text",
+            label: "Title"
+        }
+    ],
+    titleFieldId: "title",
     group: {
         id: privateGroup.contentModelGroup.id,
         name: privateGroup.contentModelGroup.name
     },
-    description: "Authors model with no fields"
+    description: "Authors model with one basic field"
 });
 
 describe("Private Groups and Models", function () {

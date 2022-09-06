@@ -1,16 +1,15 @@
-import gql from "graphql-tag";
-import WebinyError from "@webiny/error";
-import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";
 import {
     CmsModel,
     CmsModelField,
     CmsModelFieldToGraphQLPlugin,
     CmsModelLockedFieldPlugin
 } from "~/types";
-import { PluginsContainer } from "@webiny/plugins";
-import { GraphQLError } from "graphql";
+import WebinyError from "@webiny/error";
 import { createManageSDL } from "~/graphql/schema/createManageSDL";
-import lodashCamelCase from "lodash/camelCase";
+import gql from "graphql-tag";
+import { PluginsContainer } from "@webiny/plugins";
+import { createFieldId } from "~/crud/contentModel/createFieldId";
+import { GraphQLError } from "graphql";
 
 const defaultTitleFieldId = "id";
 
@@ -119,47 +118,22 @@ const extractInvalidField = (model: CmsModel, err: GraphQLError) => {
     };
 };
 
-interface ValidateModelParams {
-    model: CmsModel;
-    plugins: PluginsContainer;
-}
-
-interface CreateFieldIdParams {
-    type: string;
-    id: string;
-}
-export const createFieldId = (params: CreateFieldIdParams): string => {
-    const { type, id } = params;
-    return `${type}@${id}`;
-};
-
 interface CreateFieldIdMatchPatternParams {
     type: string;
     id: string;
 }
 
-export const createFieldIdMatchPattern = (params: CreateFieldIdMatchPatternParams): RegExp => {
+const createFieldIdMatchPattern = (params: CreateFieldIdMatchPatternParams): RegExp => {
     const { type, id } = params;
-    return new RegExp(`^([a-zA-Z0-9]+)@${lodashCamelCase(type)}@${id}$`);
+    return new RegExp(`^([a-zA-Z0-9]+)@${type}@${id}$`);
 };
 
-export const validateModelFields = (params: ValidateModelParams) => {
+interface ValidateModelFieldsParams {
+    model: CmsModel;
+    plugins: PluginsContainer;
+}
+export const validateModelFields = (params: ValidateModelFieldsParams) => {
     const { model, plugins } = params;
-
-    const modelPlugin = plugins
-        .byType<CmsModelPlugin>(CmsModelPlugin.type)
-        .find(item => item.contentModel.modelId === model.modelId);
-
-    if (modelPlugin) {
-        throw new WebinyError(
-            "Content models defined via plugins cannot be updated.",
-            "CONTENT_MODEL_UPDATE_ERROR",
-            {
-                modelId: model.modelId
-            }
-        );
-    }
-
     const { titleFieldId } = model;
 
     /**
@@ -211,17 +185,15 @@ export const validateModelFields = (params: ValidateModelParams) => {
         const isLocked = lockedFields.some(lockedField => {
             return lockedField.fieldId === field.fieldId;
         });
-        const fieldType = lodashCamelCase(field.type);
-        const id = lodashCamelCase(field.id);
         if (!isLocked) {
             const pattern = createFieldIdMatchPattern({
-                id,
+                id: field.id,
                 type: field.type
             });
             if (field.fieldId.match(pattern) === null) {
                 field.fieldId = createFieldId({
-                    type: fieldType,
-                    id
+                    type: field.type,
+                    id: field.id
                 });
             }
         }
