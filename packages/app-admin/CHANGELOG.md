@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.32.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.31.0...v5.32.0-beta.0) (2022-09-06)
+
+
+### Bug Fixes
+
+* **app-admin:** register and sort file type plugins in the correct order ([a3fa537](https://github.com/webiny/webiny-js/commit/a3fa537c0c6091bbf09e62ad243db33f33bf0de4))
+* **app-admin:** register ui layout renderer plugin ([0176cdb](https://github.com/webiny/webiny-js/commit/0176cdbc597a000874a0f51cb3c46e5822917cab))
+
+
+
+
+
 # [5.31.0](https://github.com/webiny/webiny-js/compare/v5.31.0-beta.1...v5.31.0) (2022-08-18)
 
 **Note:** Version bump only for package @webiny/app-admin

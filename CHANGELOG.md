@@ -3,6 +3,40 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.32.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.31.0...v5.32.0-beta.0) (2022-09-06)
+
+
+### Bug Fixes
+
+* change `createProjectApplicationWorkspace` to `true` ([7e6753a](https://github.com/webiny/webiny-js/commit/7e6753a7371b9df822c6bf5c67c66f2b02c1c6db))
+* **app-admin:** register ui layout renderer plugin ([0176cdb](https://github.com/webiny/webiny-js/commit/0176cdbc597a000874a0f51cb3c46e5822917cab))
+* import `processHooks` directly ([16e1118](https://github.com/webiny/webiny-js/commit/16e111834d10ae3b844f6bc713930f38e6e83397))
+* remove redundant `console.log` call ([12d1849](https://github.com/webiny/webiny-js/commit/12d1849986585e44d9fee3e9c484f2a07e791134))
+* run WCP-related hooks in watch command ([370a381](https://github.com/webiny/webiny-js/commit/370a381b5dad78184803db63ed529ff725cba9f7))
+* use `runHook` from utils ([88642fa](https://github.com/webiny/webiny-js/commit/88642fa3f7121c748e5ac77a3aabba407a3c7e2c))
+* **api-apw:** fine grained permissions ([#2593](https://github.com/webiny/webiny-js/issues/2593)) ([cdefb69](https://github.com/webiny/webiny-js/commit/cdefb69d174643ee1cebe839b627ce31f652b248))
+* **app:** re-export plugin classes ([b327f25](https://github.com/webiny/webiny-js/commit/b327f2537a8c081c700a3cd397646a39f2d40087))
+* **app-admin:** register and sort file type plugins in the correct order ([a3fa537](https://github.com/webiny/webiny-js/commit/a3fa537c0c6091bbf09e62ad243db33f33bf0de4))
+* **app-admin-rmwc:** improve dashboard widget rendering ([982af6d](https://github.com/webiny/webiny-js/commit/982af6de35306b9ec48a6bf58d5e1fb1f0c05f84))
+* **app-headless-cms:** do not normalize CmsContentModelField type ([c365569](https://github.com/webiny/webiny-js/commit/c365569686579c82aeb314203d810e50a44cb543))
+* **app-headless-cms:** remove content model from apollo cache when deleted ([35ec34d](https://github.com/webiny/webiny-js/commit/35ec34d76abad5b983f6e4069bb66dc225a36c24))
+* **app-headless-cms:** use proper plugin class ([138d62e](https://github.com/webiny/webiny-js/commit/138d62e19a68d6fcfb1d8569230f450980e1d1ed))
+* **app-page-builder:** return undefined to use default object id ([4e3d1c0](https://github.com/webiny/webiny-js/commit/4e3d1c04d9fbcf500bd5aa0ee6f6e1edd61910d4))
+* **app-serverless-cms:** re-export createComponentPlugin ([fd53445](https://github.com/webiny/webiny-js/commit/fd534459cb61ef90d0fff79d8869d61f2b0878a3))
+* add `dot: true` to glob call ([#2601](https://github.com/webiny/webiny-js/issues/2601)) ([65dab7c](https://github.com/webiny/webiny-js/commit/65dab7c89223bf262c65e055487226773057dd7c))
+* **pulumi-aws:** use ?? to set default value [skip ci] ([bb1e201](https://github.com/webiny/webiny-js/commit/bb1e201410cee41ca68aa5ef5b8f12770a20248c))
+
+
+### Features
+
+* add `hook-before-watch` hook to the watch command ([8ac0273](https://github.com/webiny/webiny-js/commit/8ac0273564f50f358c4df2e11d38bab418398a4f))
+* move `runHook` into utils ([4e5c576](https://github.com/webiny/webiny-js/commit/4e5c576aa0a5db36d1779054069e210b0defebd4))
+* **wcp:** improve error logging (user seats management) ([9338273](https://github.com/webiny/webiny-js/commit/9338273f46b0be365cbb6fb6f41a9b843484bf81))
+
+
+
+
+
 # [5.31.0](https://github.com/webiny/webiny-js/compare/v5.31.0-beta.1...v5.31.0) (2022-08-18)
 
 **Note:** Version bump only for package webiny-js
