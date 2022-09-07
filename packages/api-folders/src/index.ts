@@ -42,8 +42,4 @@ export const createFoldersContext = ({ storageOperations }: FoldersConfig) => {
     });
 };
 
-export const createFoldersGraphQL = () => {
-    return new ContextPlugin<FoldersContext>(context => {
-        context.plugins.register(graphqlPlugins);
-    });
-};
+export const createFoldersGraphQL = () => graphqlPlugins;
