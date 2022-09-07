@@ -21,7 +21,8 @@ const mockField: CmsModelField = {
     renderer: {
         name: "any"
     },
-    fieldId: "text",
+    storageId: "text",
+    alias: "text",
     predefinedValues: {
         enabled: false,
         values: []
@@ -52,7 +53,7 @@ describe("richTextIndexing", () => {
             getFieldIndexPlugin
         });
 
-        // here we receive new values and rawValues objects that are populated, in rawValues case, and values being without given fieldId
+        // here we receive new values and rawValues objects that are populated, in rawValues case, and values being without given storageId
         expect(result).toEqual({
             rawValue: mockValue
         });

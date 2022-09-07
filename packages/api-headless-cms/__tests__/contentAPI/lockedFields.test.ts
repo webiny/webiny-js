@@ -115,7 +115,7 @@ describe("Content model locked fields", () => {
         });
 
         // when removing field one by one error must be thrown that given field cannot be removed
-        const fieldsToRemove = productModel.fields.filter(field => field.fieldId !== "title");
+        const fieldsToRemove = productModel.fields.filter(field => field.alias !== "title");
         for (const field of fieldsToRemove) {
             const targetFields = productModel.fields.filter(f => f.id !== field.id);
             const variables = {
@@ -184,7 +184,7 @@ describe("Content model locked fields", () => {
         );
 
         const fields = model.fields.filter(field => {
-            return field.fieldId !== slugField.fieldId;
+            return field.storageId !== slugField.storageId;
         });
         const layout = model.layout.filter(layouts => {
             return layouts.includes(slugField.id) === false;

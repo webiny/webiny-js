@@ -26,7 +26,7 @@ const plugin = new StorageTransformPlugin<string, StorageValue>({
             return storageValue as any;
         } else if (typeof storageValue !== "object") {
             throw new WebinyError(
-                `LongText value received in "fromStorage" function is not an object in field "${field.fieldId}".`
+                `LongText value received in "fromStorage" function is not an object in field "${field.storageId}".`
             );
         }
         const { compression, value } = storageValue;
@@ -36,7 +36,7 @@ const plugin = new StorageTransformPlugin<string, StorageValue>({
         if (!compression) {
             throw new WebinyError(
                 `Missing compression in "fromStorage" function in field "${
-                    field.fieldId
+                    field.storageId
                 }": ${JSON.stringify(storageValue)}.`,
                 "MISSING_COMPRESSION",
                 {

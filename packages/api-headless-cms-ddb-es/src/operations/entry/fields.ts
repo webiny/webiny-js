@@ -52,9 +52,9 @@ export const createElasticsearchFields = (
     model: CmsModel
 ): Record<string, CmsEntryElasticsearchFieldPlugin> => {
     return model.fields.reduce((fields, field) => {
-        fields[field.fieldId] = new CmsEntryElasticsearchFieldPlugin({
-            field: field.fieldId,
-            path: `values.${field.fieldId}`,
+        fields[field.storageId] = new CmsEntryElasticsearchFieldPlugin({
+            field: field.storageId,
+            path: `values.${field.storageId}`,
             searchable: true,
             keyword: fieldsWithKeywords.includes(field.type)
         });

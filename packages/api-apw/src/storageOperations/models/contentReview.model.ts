@@ -186,7 +186,7 @@ const stepStatusField = (): CmsModelField => ({
             name: "required"
         }
     ],
-    fieldId: "status",
+    storageId: "status",
     alias: "status"
 });
 
@@ -259,12 +259,12 @@ const stepsField = (fields: CmsModelField[]): CmsModelField => ({
     type: "object",
     settings: {
         fields,
-        layout: fields.map(field => [field.fieldId])
+        layout: fields.map(field => [field.storageId])
     },
     listValidation: [],
     validation: [],
     alias: "steps",
-    fieldId: "steps",
+    storageId: "steps",
     multipleValues: true,
     predefinedValues: {
         values: [],

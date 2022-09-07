@@ -1,14 +1,14 @@
 import { Plugin } from "@webiny/plugins";
 import { CmsModel as CmsModelBase, CmsModelField as CmsModelFieldBase } from "~/types";
 import WebinyError from "@webiny/error";
-import { createFieldId } from "~/crud/contentModel/createFieldId";
+import { createFieldStorageId } from "~/crud/contentModel/createFieldStorageId";
 import lodashCamelCase from "lodash/camelCase";
 
-interface CmsModelFieldInput extends Omit<CmsModelFieldBase, "fieldId"> {
+interface CmsModelFieldInput extends Omit<CmsModelFieldBase, "storageId"> {
     /**
      * If defined, it must be in form of createFieldIdMatchPattern()
      */
-    fieldId?: string;
+    storageId?: string;
 }
 
 interface CmsModelInput
@@ -52,7 +52,7 @@ export class CmsModelPlugin extends Plugin {
             );
         }
         const fields: CmsModelFieldBase[] = [];
-        const fieldIdList: string[] = [];
+        const storageIdList: string[] = [];
         const aliases: string[] = [];
         for (const input of model.fields) {
             /**
@@ -60,7 +60,7 @@ export class CmsModelPlugin extends Plugin {
              */
             if (!(input.alias || "").trim()) {
                 throw new WebinyError(
-                    `Field's "fieldId" is not defined for the content model "${this.contentModel.modelId}".`,
+                    `Field's "storageId" is not defined for the content model "${this.contentModel.modelId}".`,
                     "FIELD_ID_ERROR",
                     {
                         model: this.contentModel,
@@ -110,14 +110,14 @@ export class CmsModelPlugin extends Plugin {
             }
             const field = {
                 ...input,
-                fieldId: this.createFieldId(input)
+                storageId: this.createFieldId(input)
             };
             /**
-             * Fields fieldId must be unique.
+             * Fields storageId must be unique.
              */
-            if (fieldIdList.includes(field.fieldId) === true) {
+            if (storageIdList.includes(field.storageId) === true) {
                 throw new WebinyError(
-                    `Field's "fieldId" is not unique in the content model "${this.contentModel.modelId}".`,
+                    `Field's "storageId" is not unique in the content model "${this.contentModel.modelId}".`,
                     "FIELD_ID_ERROR",
                     {
                         model: this.contentModel,
@@ -126,20 +126,20 @@ export class CmsModelPlugin extends Plugin {
                 );
             }
             fields.push(field);
-            fieldIdList.push(field.fieldId);
+            storageIdList.push(field.storageId);
             aliases.push(field.alias);
         }
         return fields;
     }
 
     private createFieldId(field: CmsModelFieldInput): string {
-        if (!field.fieldId) {
-            return createFieldId({
+        if (!field.storageId) {
+            return createFieldStorageId({
                 type: field.type,
                 id: field.id
             });
         }
-        return field.fieldId;
+        return field.storageId;
     }
 
     private validateLayout(model: CmsModel): void {

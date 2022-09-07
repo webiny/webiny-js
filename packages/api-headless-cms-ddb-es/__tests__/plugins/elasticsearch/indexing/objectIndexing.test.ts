@@ -17,47 +17,47 @@ const getFieldTypePlugin = (fieldType: string) => {
 };
 
 const objectField = {
-    fieldId: "page",
+    storageId: "page",
     type: "object",
     settings: {
         fields: [
             {
-                fieldId: "title",
+                storageId: "title",
                 type: "text"
             },
             {
-                fieldId: "number",
+                storageId: "number",
                 type: "number"
             },
             {
-                fieldId: "richText",
+                storageId: "richText",
                 type: "rich-text"
             },
             {
-                fieldId: "settings",
+                storageId: "settings",
                 type: "object",
                 settings: {
                     fields: [
                         {
-                            fieldId: "title",
+                            storageId: "title",
                             type: "text"
                         },
                         {
-                            fieldId: "snippet",
+                            storageId: "snippet",
                             type: "rich-text"
                         },
                         {
-                            fieldId: "options",
+                            storageId: "options",
                             type: "object",
                             multipleValues: true,
                             settings: {
                                 fields: [
                                     {
-                                        fieldId: "title",
+                                        storageId: "title",
                                         type: "text"
                                     },
                                     {
-                                        fieldId: "price",
+                                        storageId: "price",
                                         type: "number"
                                     }
                                 ]

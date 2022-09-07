@@ -1,5 +1,5 @@
 import { validation } from "@webiny/validation";
-import flow from "lodash/flow";
+// import flow from "lodash/flow";
 /**
  * Package commodo-fields-object does not have types
  */
@@ -9,8 +9,8 @@ import { object } from "commodo-fields-object";
  * Package commodo-fields does not have object.
  */
 // @ts-ignore
-import { withFields, string, setOnce, onSet, boolean, fields } from "@commodo/fields";
-import { validateId } from "./idValidation";
+import { withFields, string, setOnce, boolean, fields } from "@commodo/fields";
+// import { validateId } from "./idValidation";
 import { validateAlias } from "./aliasValidation";
 
 const requiredShortString = validation.create("required,maxLength:255");
@@ -22,10 +22,13 @@ const RendererModel = withFields({
 
 export const ContentModelFieldModel = withFields({
     id: string({ validation: requiredShortString }),
-    fieldId: flow(
+    /**
+     * Should never use user input for storageId
+     storageId: flow(
         onSet((value?: string) => value && value.trim()),
         setOnce()
     )(string({ validation: validateId })),
+    */
     alias: string({
         validation: validateAlias
     }),

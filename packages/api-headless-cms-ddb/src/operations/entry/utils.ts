@@ -667,7 +667,7 @@ export const buildModelFields = ({
 
     return model.fields.reduce((collection, field) => {
         if (!field.alias) {
-            console.log(`Field "${field.fieldId}" in model "${model.modelId}" is missing alias.`);
+            console.log(`Field "${field.storageId}" in model "${model.modelId}" is missing alias.`);
             return collection;
         }
         const transformValuePlugin = transformValuePlugins[field.type];

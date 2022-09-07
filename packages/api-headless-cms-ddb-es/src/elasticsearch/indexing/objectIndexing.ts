@@ -56,19 +56,19 @@ const processToIndex: ProcessToIndex = ({
         const { value, rawValue } = plugin.toIndex({
             model,
             field,
-            value: sourceValue[field.fieldId],
-            rawValue: sourceRawValue[field.fieldId],
+            value: sourceValue[field.storageId],
+            rawValue: sourceRawValue[field.storageId],
             getFieldIndexPlugin,
             getFieldTypePlugin,
             plugins
         });
 
         if (value !== undefined) {
-            values.value[field.fieldId] = value;
+            values.value[field.storageId] = value;
         }
 
         if (rawValue !== undefined) {
-            values.rawValue[field.fieldId] = rawValue;
+            values.rawValue[field.storageId] = rawValue;
         }
 
         return values;
@@ -94,14 +94,14 @@ const processFromIndex: ProcessFromIndex = ({
             plugins,
             model,
             field,
-            value: sourceValue[field.fieldId],
-            rawValue: sourceRawValue[field.fieldId],
+            value: sourceValue[field.storageId],
+            rawValue: sourceRawValue[field.storageId],
             getFieldIndexPlugin,
             getFieldTypePlugin
         });
 
         if (value !== undefined) {
-            values[field.fieldId] = value;
+            values[field.storageId] = value;
         }
 
         return values;

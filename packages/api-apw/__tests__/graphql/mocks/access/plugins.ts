@@ -19,7 +19,7 @@ export const accessTestModel = createCmsModel({
     fields: [
         {
             id: "title",
-            fieldId: "text@title",
+            storageId: "text@title",
             alias: "title",
             type: "text",
             label: "Title"

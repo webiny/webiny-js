@@ -448,7 +448,7 @@ describe("content model test", () => {
 
         const textField: CmsModelFieldInput = {
             id: "someRandomTextFieldId",
-            fieldId: "text@someRandomTextFieldId",
+            storageId: "text@someRandomTextFieldId",
             alias: "textField",
             label: "Text field",
             helpText: "help text",
@@ -468,7 +468,7 @@ describe("content model test", () => {
         };
         const numberField: CmsModelFieldInput = {
             id: "someRandomNumberFieldId",
-            fieldId: "number@someRandomNumberFieldId",
+            storageId: "number@someRandomNumberFieldId",
             alias: "numberField",
             label: "Number field",
             helpText: "number help text",
@@ -539,7 +539,7 @@ describe("content model test", () => {
 
         const field: CmsModelFieldInput = {
             id: "someRandomField1Id",
-            fieldId: "text@someRandomField1Id",
+            storageId: "text@someRandomField1Id",
             alias: "field1",
             label: "Field 1",
             helpText: "help text",

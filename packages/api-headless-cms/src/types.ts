@@ -123,15 +123,16 @@ export interface CmsModelField {
      */
     type: string;
     /**
-     * A unique field ID for mapping values.
+     * A unique storage ID for storing actual values.
      * Must in form of a-zA-Z0-9@a-zA-Z0-9@a-zA-Z0-9.
      *
-     * We generate a unique fieldId value when you're building a model via UI,
-     * but when user is creating a model via a plugin it is up to them to be careful about this.
+     * This is an auto-generated value: uses `id` and `type`
      *
      * This is used as path for the entry value.
+     *
+     * @internal
      */
-    fieldId: string;
+    storageId: string;
     /**
      * Alias for the model field that will be available to the outside world.
      * `fileId` is still used as path (or column) to store the data.
@@ -326,9 +327,9 @@ export interface CmsModelFieldPatternValidatorPlugin extends Plugin {
  */
 export interface LockedField {
     /**
-     * Locked field ID - one used for mapping values.
+     * Locked field storage ID - one used to store values.
      */
-    fieldId: string;
+    storageId: string;
     /**
      * Is the field multiple values field?
      */
@@ -503,7 +504,7 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
          * ```ts
          * read: {
          *     createGetFilters({ field }) {
-         *         return `${field.fieldId}: MyField`;
+         *         return `${field.alias}: MyField`;
          *     }
          * }
          * ```
@@ -516,10 +517,10 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
          * read: {
          *     createListFilters({ field }) {
          *         return `
-         *             ${field.fieldId}: MyType
-         *             ${field.fieldId}_not: MyType
-         *             ${field.fieldId}_in: [MyType]
-         *             ${field.fieldId}_not_in: [MyType]
+         *             ${field.alias}: MyType
+         *             ${field.alias}_not: MyType
+         *             ${field.alias}_in: [MyType]
+         *             ${field.alias}_not_in: [MyType]
          *         `;
          *     }
          * }
@@ -533,10 +534,10 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
          * read: {
          *     createTypeField({ field }) {
          *         if (field.multipleValues) {
-         *             return `${field.fieldId}: [MyFieldType]`;
+         *             return `${field.alias}: [MyFieldType]`;
          *         }
          *
-         *         return `${field.fieldId}: MyField`;
+         *         return `${field.alias}: MyField`;
          *     }
          * }
          * ```
@@ -548,13 +549,13 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
         }): CmsModelFieldDefinition | string | null;
         /**
          * Definition for field resolver.
-         * By default it is simple return of the `instance.values[fieldId]` but if required, users can define their own.
+         * By default it is simple return of the `instance.values[storageId]` but if required, users can define their own.
          *
          * ```ts
          * read: {
          *     createResolver({ field }) {
          *         return instance => {
-         *             return instance.values[field.fieldId];
+         *             return instance.values[field.storageId];
          *         };
          *     }
          * }
@@ -590,10 +591,10 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
          * manage: {
          *     createListFilters({ field }) {
          *         return `
-         *             ${field.fieldId}: MyType
-         *             ${field.fieldId}_not: MyType
-         *             ${field.fieldId}_in: [MyType]
-         *             ${field.fieldId}_not_in: [MyType]
+         *             ${field.alias}: MyType
+         *             ${field.alias}_not: MyType
+         *             ${field.alias}_in: [MyType]
+         *             ${field.alias}_not_in: [MyType]
          *         `;
          *     }
          * }
@@ -625,10 +626,10 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
          * manage: {
          *     createTypeField({ field }) {
          *         if (field.multipleValues) {
-         *             return field.fieldId + ": [MyType]";
+         *             return field.alias + ": [MyType]";
          *         }
          *
-         *         return field.fieldId + ": MyType";
+         *         return field.alias + ": MyType";
          *     }
          * }
          * ```
@@ -645,10 +646,10 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
          * manage: {
          *     createInputField({ field }) {
          *         if (field.multipleValues) {
-         *             return field.fieldId + ": [MyField]";
+         *             return field.alias + ": [MyField]";
          *         }
          *
-         *         return field.fieldId + ": MyField";
+         *         return field.alias + ": MyField";
          *     }
          * }
          * ```
@@ -660,13 +661,13 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
         }) => CmsModelFieldDefinition | string | null;
         /**
          * Definition for field resolver.
-         * By default it is simple return of the `instance.values[fieldId]` but if required, users can define their own.
+         * By default it is simple return of the `instance.values[storageId]` but if required, users can define their own.
          *
          * ```ts
          * manage: {
          *     createResolver({ field }) {
          *         return instance => {
-         *             return instance.values[field.fieldId];
+         *             return instance.values[field.storageId];
          *         };
          *     }
          * }
@@ -1083,7 +1084,7 @@ export interface CmsModelFieldInput {
      *
      * This is used as path for the entry value.
      */
-    fieldId: string;
+    storageId: string;
     /**
      * Alias for the field. Must be unique in the model.
      */
@@ -1264,7 +1265,7 @@ export interface CmsEntry {
      */
     status: CmsEntryStatus;
     /**
-     * A mapped fieldId -> value object.
+     * A mapped storageId -> value object.
      *
      * @see CmsModelField
      */

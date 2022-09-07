@@ -7,7 +7,7 @@ export const createModelField = (params: CreateModelFieldParams): CmsModelField 
     const alias = camelCase(label);
     return {
         id: `${camelCase(parent)}_${alias}`,
-        fieldId: alias,
+        storageId: alias,
         alias,
         label,
         type,

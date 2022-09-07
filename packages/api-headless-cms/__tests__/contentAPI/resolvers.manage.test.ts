@@ -498,7 +498,7 @@ describe("MANAGE - Resolvers", () => {
                         data: [
                             {
                                 error: "This field is required",
-                                fieldId: expect.stringMatching("text@"),
+                                storageId: expect.stringMatching("text@"),
                                 alias: "slug"
                             }
                         ],

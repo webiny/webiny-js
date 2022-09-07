@@ -26,7 +26,7 @@ const plugin = new StorageTransformPlugin<string, StorageValue>({
             return storageValue as unknown as string;
         } else if (typeof storageValue !== "object") {
             throw new WebinyError(
-                `LongText value received in "fromStorage" function is not an object in field "${field.fieldId}" - ${field.alias}.`
+                `LongText value received in "fromStorage" function is not an object in field "${field.storageId}" - ${field.alias}.`
             );
         }
         const { compression, value } = storageValue;

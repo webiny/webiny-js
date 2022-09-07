@@ -16,49 +16,49 @@ const mockTextValue = "some short searchable text";
 const mockModel: any = {
     fields: [
         {
-            fieldId: "notAffectedNumber",
+            storageId: "notAffectedNumber",
             type: "number"
         },
         {
-            fieldId: "notAffectedString",
+            storageId: "notAffectedString",
             type: "text"
         },
         {
-            fieldId: "richText",
+            storageId: "richText",
             type: "rich-text"
         },
         {
-            fieldId: "text",
+            storageId: "text",
             type: "text"
         },
         {
-            fieldId: "page",
+            storageId: "page",
             type: "object",
             settings: {
                 fields: [
                     {
-                        fieldId: "title",
+                        storageId: "title",
                         type: "text"
                     },
                     {
-                        fieldId: "number",
+                        storageId: "number",
                         type: "number"
                     },
                     {
-                        fieldId: "richText",
+                        storageId: "richText",
                         type: "rich-text"
                     },
                     {
-                        fieldId: "settings",
+                        storageId: "settings",
                         type: "object",
                         settings: {
                             fields: [
                                 {
-                                    fieldId: "title",
+                                    storageId: "title",
                                     type: "text"
                                 },
                                 {
-                                    fieldId: "snippet",
+                                    storageId: "snippet",
                                     type: "rich-text"
                                 }
                             ]

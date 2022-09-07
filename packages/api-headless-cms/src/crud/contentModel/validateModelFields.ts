@@ -8,7 +8,7 @@ import WebinyError from "@webiny/error";
 import { createManageSDL } from "~/graphql/schema/createManageSDL";
 import gql from "graphql-tag";
 import { PluginsContainer } from "@webiny/plugins";
-import { createFieldId } from "~/crud/contentModel/createFieldId";
+import { createFieldStorageId } from "./createFieldStorageId";
 import { GraphQLError } from "graphql";
 
 const defaultTitleFieldId = "id";
@@ -47,7 +47,7 @@ const getContentModelTitleFieldId = (fields: CmsModelField[], titleFieldId?: str
             )} and id fields can be used as an entry title.`,
             "ENTRY_TITLE_FIELD_TYPE",
             {
-                fieldId: target.fieldId,
+                storageId: target.storageId,
                 alias: target.alias,
                 type: target.type
             }
@@ -59,7 +59,7 @@ const getContentModelTitleFieldId = (fields: CmsModelField[], titleFieldId?: str
             `Fields that accept multiple values cannot be used as the entry title.`,
             "ENTRY_TITLE_FIELD_TYPE",
             {
-                fieldId: target.fieldId,
+                storageId: target.storageId,
                 alias: target.alias,
                 type: target.type
             }
@@ -118,16 +118,6 @@ const extractInvalidField = (model: CmsModel, err: GraphQLError) => {
     };
 };
 
-interface CreateFieldIdMatchPatternParams {
-    type: string;
-    id: string;
-}
-
-const createFieldIdMatchPattern = (params: CreateFieldIdMatchPatternParams): RegExp => {
-    const { type, id } = params;
-    return new RegExp(`^([a-zA-Z0-9]+)@${type}@${id}$`);
-};
-
 interface ValidateModelFieldsParams {
     model: CmsModel;
     plugins: PluginsContainer;
@@ -170,7 +160,7 @@ export const validateModelFields = (params: ValidateModelFieldsParams) => {
             );
         }
         /**
-         * If fieldId does not match a certain pattern, add that pattern, but only if field is not locked (used) already.
+         * If storageId does not match a certain pattern, add that pattern, but only if field is not locked (used) already.
          * This is to avoid errors in the already installed systems.
          *
          * Why are we using the @?
@@ -183,18 +173,13 @@ export const validateModelFields = (params: ValidateModelFieldsParams) => {
          * https://discuss.elastic.co/t/illegal-characters-in-elasticsearch-field-names/17196/2
          */
         const isLocked = lockedFields.some(lockedField => {
-            return lockedField.fieldId === field.fieldId;
+            return lockedField.storageId === field.storageId;
         });
-        if (!isLocked) {
-            const pattern = createFieldIdMatchPattern({
-                id: field.id,
-                type: field.type
-            });
-            if (field.fieldId.match(pattern) === null) {
-                field.fieldId = createFieldId({
-                    type: field.type,
-                    id: field.id
-                });
+        if (!field.storageId) {
+            if (isLocked) {
+                field.storageId = field.alias;
+            } else {
+                field.storageId = createFieldStorageId(field);
             }
         }
 
@@ -203,7 +188,7 @@ export const validateModelFields = (params: ValidateModelFieldsParams) => {
          */
         if (aliases.includes(field.alias)) {
             throw new WebinyError(
-                `Cannot update content model because field "${field.fieldId}" has alias "${field.alias}", which is already used.`
+                `Cannot update content model because field "${field.storageId}" has alias "${field.alias}", which is already used.`
             );
         }
         aliases.push(field.alias);
@@ -237,24 +222,24 @@ export const validateModelFields = (params: ValidateModelFieldsParams) => {
      * We must not allow removal or changes in fields that are already in use in content entries.
      */
     for (const lockedField of lockedFields) {
-        const existingField = fields.find(item => item.fieldId === lockedField.fieldId);
+        const existingField = fields.find(item => item.storageId === lockedField.storageId);
         if (!existingField) {
             throw new WebinyError(
-                `Cannot remove the field "${lockedField.fieldId}" because it's already in use in created content.`,
+                `Cannot remove the field "${lockedField.storageId}" because it's already in use in created content.`,
                 "ENTRY_FIELD_USED"
             );
         }
 
         if (lockedField.multipleValues !== existingField.multipleValues) {
             throw new WebinyError(
-                `Cannot change "multipleValues" for the "${lockedField.fieldId}" field because it's already in use in created content.`,
+                `Cannot change "multipleValues" for the "${lockedField.storageId}" field because it's already in use in created content.`,
                 "ENTRY_FIELD_USED"
             );
         }
 
         if (lockedField.type !== existingField.type) {
             throw new WebinyError(
-                `Cannot change field type for the "${lockedField.fieldId}" field because it's already in use in created content.`,
+                `Cannot change field type for the "${lockedField.storageId}" field because it's already in use in created content.`,
                 "ENTRY_FIELD_USED"
             );
         }

@@ -29,10 +29,10 @@ const processValue: ProcessValue = async params => {
                 plugins,
                 model,
                 field,
-                value: sourceValue[field.fieldId],
+                value: sourceValue[field.storageId],
                 getStoragePlugin
             });
-            return { ...values, [field.fieldId]: value };
+            return { ...values, [field.storageId]: value };
         },
         {}
     );

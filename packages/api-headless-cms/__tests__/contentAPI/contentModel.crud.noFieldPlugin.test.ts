@@ -9,18 +9,18 @@ const customFieldPlugin = (): CmsModelFieldToGraphQLPlugin => ({
     isSearchable: false,
     read: {
         createTypeField({ field }) {
-            return `${field.fieldId}: String`;
+            return `${field.alias}: String`;
         },
         createGetFilters({ field }) {
-            return `${field.fieldId}: String`;
+            return `${field.alias}: String`;
         }
     },
     manage: {
         createTypeField({ field }) {
-            return `${field.fieldId}: String`;
+            return `${field.alias}: String`;
         },
         createInputField({ field }) {
-            return `${field.fieldId}: String`;
+            return `${field.alias}: String`;
         }
     }
 });
@@ -83,7 +83,7 @@ describe("content model test no field plugin", () => {
                                 name: "text-input"
                             },
                             label: "test",
-                            fieldId: "test",
+                            storageId: "test",
                             alias: "test",
                             id: "aaa",
                             predefinedValues: {
@@ -98,7 +98,7 @@ describe("content model test no field plugin", () => {
                                 name: "text-input"
                             },
                             label: "test",
-                            fieldId: "test",
+                            storageId: "test",
                             alias: "test",
                             id: "bbb",
                             predefinedValues: {
@@ -155,7 +155,7 @@ describe("content model test no field plugin", () => {
                         helpText: "",
                         label: "Title",
                         type: "text",
-                        fieldId: "title",
+                        storageId: "title",
                         validation: [],
                         listValidation: [],
                         placeholderText: "placeholder text",
@@ -169,7 +169,7 @@ describe("content model test no field plugin", () => {
                         helpText: "",
                         label: "Slug",
                         type: "text",
-                        fieldId: "slug",
+                        storageId: "slug",
                         validation: [],
                         listValidation: [],
                         placeholderText: "placeholder text",
@@ -183,7 +183,7 @@ describe("content model test no field plugin", () => {
                         helpText: "",
                         label: "Test",
                         type: "custom-test-field",
-                        fieldId: "test",
+                        storageId: "test",
                         validation: [],
                         listValidation: [],
                         renderer: {

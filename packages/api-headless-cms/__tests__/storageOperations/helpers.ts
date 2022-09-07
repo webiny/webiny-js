@@ -38,7 +38,7 @@ const biographyId = shortId.generate();
 const personModelFields: Record<string, CmsModelField> = {
     name: {
         id: nameId,
-        fieldId: `name@text@${nameId}`,
+        storageId: `name@text@${nameId}`,
         alias: "name",
         label: "Name",
         multipleValues: false,
@@ -46,7 +46,7 @@ const personModelFields: Record<string, CmsModelField> = {
     },
     dateOfBirth: {
         id: dateOfBirthId,
-        fieldId: `dateOfBirth@datetime@${dateOfBirthId}`,
+        storageId: `dateOfBirth@datetime@${dateOfBirthId}`,
         alias: "dateOfBirth",
         label: "Date Of Birth",
         multipleValues: false,
@@ -57,7 +57,7 @@ const personModelFields: Record<string, CmsModelField> = {
     },
     children: {
         id: childrenId,
-        fieldId: `children@number@${childrenId}`,
+        storageId: `children@number@${childrenId}`,
         alias: "children",
         label: "Children",
         multipleValues: false,
@@ -65,7 +65,7 @@ const personModelFields: Record<string, CmsModelField> = {
     },
     married: {
         id: marriedId,
-        fieldId: "married",
+        storageId: "married",
         alias: `married@boolean@${marriedId}`,
         label: "Married",
         multipleValues: false,
@@ -73,7 +73,7 @@ const personModelFields: Record<string, CmsModelField> = {
     },
     biography: {
         id: biographyId,
-        fieldId: "biography",
+        storageId: "biography",
         alias: `biography@text@${biographyId}`,
         label: "Biography",
         multipleValues: false,
