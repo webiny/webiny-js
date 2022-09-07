@@ -11,7 +11,7 @@ const ElementID: React.FC = ({ children }) => {
     return children as unknown as React.ReactElement;
 };
 
-export default new UILayoutPlugin(layout => {
+export const uiLayoutPlugin = new UILayoutPlugin(layout => {
     layout.setRenderer(({ layout, props, hasParentGrid }) => {
         if (!layout.getGrid()) {
             return (

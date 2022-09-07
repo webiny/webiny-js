@@ -14,7 +14,13 @@ const simpleOutput = require("./watch/output/simpleOutput");
 const minimatch = require("minimatch");
 const glob = require("fast-glob");
 const watchPackages = require("./watch/watchPackages");
-const { login, getPulumi, getRandomColorForString, loadEnvVariables } = require("../utils");
+const {
+    login,
+    getPulumi,
+    getRandomColorForString,
+    loadEnvVariables,
+    runHook
+} = require("../utils");
 
 // Do not allow watching "prod" and "production" environments. On the Pulumi CLI side, the command
 // is still in preview mode, so it's definitely not wise to use it on production environments.
@@ -82,6 +88,14 @@ module.exports = async (inputs, context) => {
             inputs.remoteRuntimeLogs = "*";
         }
     }
+
+    const hookArgs = { context, env: inputs.env, inputs, projectApplication };
+
+    await runHook({
+        hook: "hook-before-watch",
+        args: hookArgs,
+        context
+    });
 
     // 1.1. Check if the project application and Pulumi stack exist.
     let PULUMI_SECRETS_PROVIDER = process.env.PULUMI_SECRETS_PROVIDER;

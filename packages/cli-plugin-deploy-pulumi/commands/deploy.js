@@ -1,5 +1,5 @@
 const buildPackages = require("./deploy/buildPackages");
-const { createPulumiCommand, processHooks, login, notify } = require("../utils");
+const { createPulumiCommand, runHook, login, notify } = require("../utils");
 
 module.exports = (params, context) => {
     const command = createPulumiCommand({
@@ -126,13 +126,3 @@ module.exports = (params, context) => {
 
     return command(params, context);
 };
-
-async function runHook({ hook, skip, args, context }) {
-    if (skip) {
-        context.info(`Skipped "${hook}" hook.`);
-    } else {
-        context.info(`Running "${hook}" hook...`);
-        await processHooks(hook, args);
-        context.success(`Hook "${hook}" completed.`);
-    }
-}
