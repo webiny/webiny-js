@@ -47,10 +47,10 @@ export const createStorageOperations = (params: FoldersStorageParams): FoldersSt
     const createFolderGsiKeys = ({
         tenant,
         locale,
-        category,
+        type,
         slug
-    }: Pick<Folder, "tenant" | "locale" | "category" | "slug">) => ({
-        GSI1_PK: `T#${tenant}#L#${locale}#CATEGORY#${category}#FOLDERS`,
+    }: Pick<Folder, "tenant" | "locale" | "type" | "slug">) => ({
+        GSI1_PK: `T#${tenant}#L#${locale}#FOLDERS#${type}`,
         GSI1_SK: slug
     });
 
@@ -92,7 +92,7 @@ export const createStorageOperations = (params: FoldersStorageParams): FoldersSt
             }
         },
 
-        async getFolder({ tenant, locale, id, slug, category }): Promise<Folder> {
+        async getFolder({ tenant, locale, id, slug, type }): Promise<Folder> {
             try {
                 let result;
                 if (id) {
@@ -105,7 +105,7 @@ export const createStorageOperations = (params: FoldersStorageParams): FoldersSt
                 } else if (slug) {
                     result = await queryOne({
                         entity: entities.folders,
-                        partitionKey: `T#${tenant}#L#${locale}#CATEGORY#${category}#FOLDERS`,
+                        partitionKey: `T#${tenant}#L#${locale}#FOLDERS#${type}`,
                         options: {
                             index: "GSI1",
                             eq: slug
@@ -123,13 +123,13 @@ export const createStorageOperations = (params: FoldersStorageParams): FoldersSt
             }
         },
 
-        async listFolders({ where: { tenant, locale, category }, sort }): Promise<Folder[]> {
+        async listFolders({ where: { tenant, locale, type }, sort }): Promise<Folder[]> {
             let items: Folder[] = [];
 
             try {
                 items = await queryAll<Folder>({
                     entity: entities.folders,
-                    partitionKey: `T#${tenant}#L#${locale}#CATEGORY#${category}#FOLDERS`,
+                    partitionKey: `T#${tenant}#L#${locale}#FOLDERS#${type}`,
                     options: {
                         index: "GSI1",
                         beginsWith: ""

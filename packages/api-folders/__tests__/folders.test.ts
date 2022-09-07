@@ -18,29 +18,29 @@ describe("`folders` CRUD", () => {
         const folderC = responseC.data.folders.createFolder.data;
         expect(folderC).toEqual({ id: folderC.id, ...mocks.folderC });
 
-        // Let's check whether both of the folder exists, listing them by `category`.
-        const [listResponse] = await folders.list({ where: { category: "page" } });
+        // Let's check whether both of the folder exists, listing them by `type`.
+        const [listResponse] = await folders.list({ where: { type: "page" } });
         expect(listResponse.data.folders.listFolders).toEqual(
             expect.objectContaining({
                 data: expect.arrayContaining([
                     {
                         name: expect.any(String),
                         slug: expect.stringMatching(/folder-a|folder-b/),
-                        category: expect.stringMatching("page")
+                        type: expect.stringMatching("page")
                     }
                 ]),
                 error: null
             })
         );
 
-        const [listFoldersResponse] = await folders.list({ where: { category: "cms" } });
+        const [listFoldersResponse] = await folders.list({ where: { type: "cms" } });
         expect(listFoldersResponse.data.folders.listFolders).toEqual(
             expect.objectContaining({
                 data: expect.arrayContaining([
                     {
                         name: expect.any(String),
                         slug: expect.stringMatching("folder-c"),
-                        category: expect.stringMatching("cms")
+                        type: expect.stringMatching("cms")
                     }
                 ]),
                 error: null

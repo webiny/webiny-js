@@ -2,17 +2,17 @@ const mocks = {
     folderA: {
         name: "Folder A",
         slug: "folder-a",
-        category: "page"
+        type: "page"
     },
     folderB: {
         name: "Folder B",
         slug: "folder-b",
-        category: "page"
+        type: "page"
     },
     folderC: {
         name: "Folder C",
         slug: "folder-c",
-        category: "cms"
+        type: "cms"
     }
 };
 

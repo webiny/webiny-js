@@ -37,7 +37,7 @@ export const baseSchema = new GraphQLSchemaPlugin<FoldersContext>({
             error: FolderError
         }
 
-        enum FolderCategory {
+        enum FolderType {
             page
             cms
             file

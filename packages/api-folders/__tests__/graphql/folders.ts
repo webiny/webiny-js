@@ -2,7 +2,7 @@ const DATA_FIELD = (extra = "") => /* GraphQL */ `
     {
         name
         slug
-        category
+        type
         ${extra}
     }
 `;

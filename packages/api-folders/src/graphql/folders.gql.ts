@@ -8,7 +8,7 @@ export const foldersSchema = new GraphQLSchemaPlugin<FoldersContext>({
             id: ID!
             name: String!
             slug: String!
-            category: FolderCategory!
+            type: FolderType!
             createdOn: DateTime
             createdBy: FolderCreatedBy
         }
@@ -16,7 +16,7 @@ export const foldersSchema = new GraphQLSchemaPlugin<FoldersContext>({
         input FolderCreateInput {
             name: String!
             slug: String!
-            category: FolderCategory!
+            type: FolderType!
         }
 
         input FolderUpdateInput {
@@ -25,7 +25,7 @@ export const foldersSchema = new GraphQLSchemaPlugin<FoldersContext>({
         }
 
         input FoldersListWhereInput {
-            category: FolderCategory!
+            type: FolderType!
         }
 
         type FolderResponse {

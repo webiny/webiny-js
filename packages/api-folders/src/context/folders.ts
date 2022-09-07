@@ -21,7 +21,7 @@ const requiredString = joi.string().required();
 const createSchema = joi.object({
     name: requiredString.min(3),
     slug: requiredString.min(3),
-    category: requiredString.pattern(/page|cms|file/),
+    type: requiredString.pattern(/page|cms|file/),
     tenant: requiredString,
     locale: requiredString
 });
@@ -79,7 +79,7 @@ export const createFoldersContext = async ({
             const existing = await storageOperations.getFolder({
                 tenant,
                 locale,
-                category: input.category,
+                type: input.type,
                 slug: input.slug
             });
 

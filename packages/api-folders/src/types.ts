@@ -9,7 +9,7 @@ export interface CreatedBy {
     displayName: string | null;
 }
 
-export enum Category {
+export enum Type {
     PAGE = "page",
     CMS = "cms",
     FILE = "file"
@@ -19,7 +19,7 @@ export interface Folder {
     id: string;
     name: string;
     slug: string;
-    category: Category;
+    type: Type;
     createdOn: string;
     createdBy: CreatedBy;
     tenant: string;
@@ -27,14 +27,14 @@ export interface Folder {
     webinyVersion: string;
 }
 
-export type FolderInput = Pick<Folder, "name" | "slug" | "category">;
+export type FolderInput = Pick<Folder, "name" | "slug" | "type">;
 
 export interface GetFolderParams {
     id: string;
 }
 
 export interface ListFoldersWhere {
-    category: Category;
+    type: Type;
 }
 
 export interface ListFoldersParams {
@@ -57,7 +57,7 @@ export interface DeleteFolderParams {
 export interface StorageOperationsGetFolderParams {
     id?: string;
     slug?: string;
-    category?: Category;
+    type?: Type;
     tenant: string;
     locale: string;
 }
