@@ -15,21 +15,21 @@ const contentModelPlugin = new CmsModelPlugin({
     fields: [
         {
             id: "name",
-            storageId: "text@name",
+            // storageId: "text@name",
             fieldId: "name",
             type: "text",
             label: "Product Name"
         },
         {
             id: "sku",
-            storageId: "text@sku",
+            // storageId: "text@sku",
             fieldId: "sku",
             type: "text",
             label: "SKU"
         },
         {
             id: "price",
-            storageId: "number@price",
+            // storageId: "number@price",
             fieldId: "price",
             type: "number",
             label: "Price"

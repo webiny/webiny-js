@@ -20,7 +20,6 @@ const privateAuthorsModel = new CmsModelPlugin({
     fields: [
         {
             id: "title",
-            storageId: "text@title",
             fieldId: "title",
             type: "text",
             label: "Title"
