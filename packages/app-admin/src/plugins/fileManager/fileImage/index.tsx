@@ -15,7 +15,7 @@ const styles = css({
     transform: "translateX(-50%) translateY(-50%)"
 });
 
-export default new FileManagerFileTypePlugin({
+export const imageFileTypePlugin = new FileManagerFileTypePlugin({
     types: ["image/*"],
     actions: [EditAction],
     render({ file }) {

@@ -71,9 +71,10 @@ const footerContainerStyle = css({
     padding: "1rem"
 });
 
-const widgetButtonStyle = css({
-    textAlign: "center"
-});
+const widgetButtonStyle = css`
+    text-align: center;
+    margin-top: auto;
+`;
 
 const footerTextStyle = css({
     backgroundColor: "var(--mdc-theme-on-background)",
@@ -89,19 +90,30 @@ const ContentTheme = styled("div")({
     color: "var(--mdc-theme-text-primary-on-background)"
 });
 
-const Widget = styled("div")({
-    marginLeft: "1.5rem",
-    marginRight: "1.5rem",
-    marginBottom: "2rem"
-});
+const Widget = styled.div`
+    margin-left: 1.5rem;
+    margin-right: 1.5rem;
+    margin-bottom: 2rem;
+    flex: 1 1 21%;
+    max-width: 25%;
+    min-height: 250px;
+`;
 
-const WelcomeScreenWidgetsWrapper = styled("div")({
-    display: "flex",
-    justifyContent: "center",
-    "@media (max-width: 479px)": {
-        flexDirection: "column"
+const WelcomeScreenWidgetsWrapper = styled.div`
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    @media (max-width: 479px) {
+        flex-direction: column;
     }
-});
+`;
+
+const elevation = css`
+    padding: 10px;
+    height: calc(100% - 20px);
+    display: flex;
+    flex-direction: column;
+`;
 
 const Welcome: React.FC = () => {
     const { identity, getPermission } = useSecurity();
@@ -146,7 +158,7 @@ const Welcome: React.FC = () => {
                         {widgets.map(pl => {
                             return (
                                 <Widget key={pl.name} data-testid={pl.name}>
-                                    <Elevation z={2} style={{ padding: 10 }}>
+                                    <Elevation z={2} className={elevation}>
                                         <Typography use={"headline6"}>
                                             <p className={widgetTitleStyle}>{pl.widget.title}</p>
                                         </Typography>

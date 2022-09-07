@@ -1,7 +1,7 @@
 import { Plugin } from "@webiny/plugins";
 import { CmsGroup as BaseCmsGroup } from "~/types";
 
-export interface CmsGroup extends Omit<BaseCmsGroup, "locale" | "tenant" | "webinyVersion"> {
+interface CmsGroup extends Omit<BaseCmsGroup, "locale" | "tenant" | "webinyVersion"> {
     tenant?: string;
     locale?: string;
 }
@@ -14,3 +14,7 @@ export class CmsGroupPlugin extends Plugin {
         this.contentModelGroup = contentModelGroup;
     }
 }
+
+export const createCmsGroup = (group: CmsGroup): CmsGroupPlugin => {
+    return new CmsGroupPlugin(group);
+};
