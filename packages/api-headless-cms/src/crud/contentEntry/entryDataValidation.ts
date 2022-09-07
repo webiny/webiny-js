@@ -82,9 +82,9 @@ const validatePredefinedValue = (field: CmsModelField, value: any | any[]): stri
  */
 const runFieldMultipleValuesValidations = async (args: ValidateArgs): Promise<string | null> => {
     const { field, data } = args;
-    const values = data[field.alias] || [];
+    const values = data[field.fieldId] || [];
     if (Array.isArray(values) === false) {
-        return `Value of the field "${field.alias}" is not an array.`;
+        return `Value of the field "${field.fieldId}" is not an array.`;
     }
     const valuesError = await validateValue(args, field.listValidation || [], values);
     if (valuesError) {
@@ -107,7 +107,7 @@ const runFieldMultipleValuesValidations = async (args: ValidateArgs): Promise<st
  */
 const runFieldValueValidations = async (args: ValidateArgs): Promise<string | null> => {
     const { data, field } = args;
-    const value = data[field.alias];
+    const value = data[field.fieldId];
     const error = await validateValue(args, field.validation || [], value);
     if (error) {
         return error;
@@ -167,7 +167,7 @@ export const validateModelEntryData = async (params: ValidateModelEntryDataParam
             continue;
         }
         invalidFields.push({
-            alias: field.alias,
+            fieldId: field.fieldId,
             storageId: field.storageId,
             error
         });

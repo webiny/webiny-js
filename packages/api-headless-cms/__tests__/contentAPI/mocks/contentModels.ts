@@ -106,7 +106,7 @@ const models: CmsModel[] = [
                 label: "Title",
                 type: "text",
                 storageId: "title",
-                alias: "title",
+                fieldId: "title",
                 validation: [
                     {
                         name: "required",
@@ -137,7 +137,7 @@ const models: CmsModel[] = [
                 label: "Slug",
                 type: "text",
                 storageId: "slug",
-                alias: "slug",
+                fieldId: "slug",
                 validation: [
                     {
                         name: "required",
@@ -193,7 +193,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Title",
                 storageId: "title",
-                alias: "title",
+                fieldId: "title",
                 type: "text",
                 validation: [
                     {
@@ -217,7 +217,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Category",
                 storageId: "category",
-                alias: "category",
+                fieldId: "category",
                 type: "ref",
                 validation: [
                     {
@@ -245,7 +245,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Price",
                 storageId: "price",
-                alias: "price",
+                fieldId: "price",
                 type: "number",
                 validation: [
                     {
@@ -269,7 +269,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Price",
                 storageId: "inStock",
-                alias: "inStock",
+                fieldId: "inStock",
                 type: "boolean",
                 validation: [],
                 listValidation: [],
@@ -288,7 +288,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Price",
                 storageId: "itemsInStock",
-                alias: "itemsInStock",
+                fieldId: "itemsInStock",
                 type: "number",
                 validation: [],
                 listValidation: [],
@@ -307,7 +307,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Available on",
                 storageId: "availableOn",
-                alias: "availableOn",
+                fieldId: "availableOn",
                 type: "datetime",
                 settings: {
                     type: "date"
@@ -329,7 +329,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Color",
                 storageId: "color",
-                alias: "color",
+                fieldId: "color",
                 type: "text",
                 settings: {
                     type: "text"
@@ -373,7 +373,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Available sizes",
                 storageId: "availableSizes",
-                alias: "availableSizes",
+                fieldId: "availableSizes",
                 type: "text",
                 settings: {
                     type: "text"
@@ -417,7 +417,7 @@ const models: CmsModel[] = [
                 helpText: "Upload an image of the product",
                 label: "Image",
                 storageId: "image",
-                alias: "image",
+                fieldId: "image",
                 type: "file",
                 settings: {
                     type: "file"
@@ -444,7 +444,7 @@ const models: CmsModel[] = [
                 helpText: "Rich text",
                 label: "Rich text",
                 storageId: "richText",
-                alias: "richText",
+                fieldId: "richText",
                 type: "rich-text",
                 settings: {
                     type: "text"
@@ -466,7 +466,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Variant",
                 storageId: "variant",
-                alias: "variant",
+                fieldId: "variant",
                 type: "object",
                 settings: {
                     fields: [
@@ -476,7 +476,7 @@ const models: CmsModel[] = [
                             helpText: "",
                             label: "Name",
                             storageId: "name",
-                            alias: "name",
+                            fieldId: "name",
                             type: "text",
                             settings: {
                                 type: "text"
@@ -498,7 +498,7 @@ const models: CmsModel[] = [
                             helpText: "",
                             label: "Price",
                             storageId: "price",
-                            alias: "price",
+                            fieldId: "price",
                             type: "number",
                             settings: {
                                 type: "number"
@@ -520,7 +520,7 @@ const models: CmsModel[] = [
                             helpText: "",
                             label: "Category",
                             storageId: "category",
-                            alias: "category",
+                            fieldId: "category",
                             type: "ref",
                             validation: [
                                 {
@@ -547,7 +547,7 @@ const models: CmsModel[] = [
                             helpText: "",
                             label: "Options",
                             storageId: "options",
-                            alias: "options",
+                            fieldId: "options",
                             type: "object",
                             settings: {
                                 fields: [
@@ -557,7 +557,7 @@ const models: CmsModel[] = [
                                         helpText: "",
                                         label: "Name",
                                         storageId: "name",
-                                        alias: "name",
+                                        fieldId: "name",
                                         type: "text",
                                         settings: {
                                             type: "text"
@@ -579,7 +579,7 @@ const models: CmsModel[] = [
                                         helpText: "",
                                         label: "Price",
                                         storageId: "price",
-                                        alias: "price",
+                                        fieldId: "price",
                                         type: "number",
                                         settings: {
                                             type: "number"
@@ -601,7 +601,7 @@ const models: CmsModel[] = [
                                         helpText: "",
                                         label: "Category",
                                         storageId: "category",
-                                        alias: "category",
+                                        fieldId: "category",
                                         type: "ref",
                                         validation: [
                                             {
@@ -628,7 +628,7 @@ const models: CmsModel[] = [
                                         helpText: "",
                                         label: "Categories",
                                         storageId: "categories",
-                                        alias: "categories",
+                                        fieldId: "categories",
                                         type: "ref",
                                         validation: [],
                                         listValidation: [],
@@ -676,7 +676,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "No fields object",
                 storageId: "fieldsObject",
-                alias: "fieldsObject",
+                fieldId: "fieldsObject",
                 type: "object",
                 settings: {
                     layout: [[ids.field31]],
@@ -688,7 +688,7 @@ const models: CmsModel[] = [
                             label: "Text",
                             type: "text",
                             storageId: "text",
-                            alias: "text",
+                            fieldId: "text",
                             validation: [
                                 {
                                     name: "required",
@@ -745,7 +745,7 @@ const models: CmsModel[] = [
                 label: "Text",
                 type: "text",
                 storageId: "text",
-                alias: "text",
+                fieldId: "text",
                 validation: [
                     {
                         name: "required",
@@ -769,7 +769,7 @@ const models: CmsModel[] = [
                 label: "Product",
                 type: "ref",
                 storageId: "product",
-                alias: "product",
+                fieldId: "product",
                 validation: [],
                 listValidation: [],
                 settings: {
@@ -791,7 +791,7 @@ const models: CmsModel[] = [
                 label: "Rating",
                 type: "number",
                 storageId: "rating",
-                alias: "rating",
+                fieldId: "rating",
                 validation: [],
                 listValidation: [],
                 placeholderText: "placeholder text",
@@ -810,7 +810,7 @@ const models: CmsModel[] = [
                 label: "Author",
                 type: "ref",
                 storageId: "author",
-                alias: "author",
+                fieldId: "author",
                 validation: [],
                 listValidation: [],
                 settings: {
@@ -852,7 +852,7 @@ const models: CmsModel[] = [
                 label: "Full name",
                 type: "text",
                 storageId: "fullName",
-                alias: "fullName",
+                fieldId: "fullName",
                 validation: [
                     {
                         name: "required",
@@ -912,7 +912,7 @@ const models: CmsModel[] = [
                 label: "Name",
                 type: "text",
                 storageId: "name",
-                alias: "name",
+                fieldId: "name",
                 validation: [
                     {
                         name: "required",
@@ -951,7 +951,7 @@ const models: CmsModel[] = [
                 label: "Numbers",
                 type: "number",
                 storageId: "numbers",
-                alias: "numbers",
+                fieldId: "numbers",
                 validation: [
                     {
                         name: "required",
@@ -1005,7 +1005,7 @@ const models: CmsModel[] = [
                 label: "E-mail",
                 type: "text",
                 storageId: "email",
-                alias: "email",
+                fieldId: "email",
                 validation: [
                     {
                         name: "pattern",
@@ -1033,7 +1033,7 @@ const models: CmsModel[] = [
                 label: "Url",
                 type: "text",
                 storageId: "url",
-                alias: "url",
+                fieldId: "url",
                 validation: [
                     {
                         name: "pattern",
@@ -1060,7 +1060,7 @@ const models: CmsModel[] = [
                 label: "LowerCase",
                 type: "text",
                 storageId: "lowerCase",
-                alias: "lowerCase",
+                fieldId: "lowerCase",
                 validation: [
                     {
                         name: "pattern",
@@ -1088,7 +1088,7 @@ const models: CmsModel[] = [
                 label: "UpperCase",
                 type: "text",
                 storageId: "upperCase",
-                alias: "upperCase",
+                fieldId: "upperCase",
                 validation: [
                     {
                         name: "pattern",
@@ -1116,7 +1116,7 @@ const models: CmsModel[] = [
                 label: "Date",
                 type: "datetime",
                 storageId: "date",
-                alias: "date",
+                fieldId: "date",
                 validation: [
                     {
                         name: "dateGte",
@@ -1160,7 +1160,7 @@ const models: CmsModel[] = [
                 label: "DateTime",
                 type: "datetime",
                 storageId: "dateTime",
-                alias: "dateTime",
+                fieldId: "dateTime",
                 validation: [
                     {
                         name: "dateGte",
@@ -1204,7 +1204,7 @@ const models: CmsModel[] = [
                 label: "DateTime",
                 type: "datetime",
                 storageId: "dateTimeZ",
-                alias: "dateTimeZ",
+                fieldId: "dateTimeZ",
                 validation: [
                     {
                         name: "dateGte",
@@ -1248,7 +1248,7 @@ const models: CmsModel[] = [
                 label: "Time",
                 type: "datetime",
                 storageId: "time",
-                alias: "time",
+                fieldId: "time",
                 validation: [
                     {
                         name: "dateGte",
@@ -1292,7 +1292,7 @@ const models: CmsModel[] = [
                 label: "Is Something",
                 type: "boolean",
                 storageId: "isSomething",
-                alias: "isSomething",
+                fieldId: "isSomething",
                 validation: [],
                 settings: {
                     type: "boolean"
@@ -1315,7 +1315,7 @@ const models: CmsModel[] = [
                 label: "Rating",
                 type: "number",
                 storageId: "rating",
-                alias: "rating",
+                fieldId: "rating",
                 validation: [],
                 settings: {
                     type: "number"
@@ -1337,7 +1337,7 @@ const models: CmsModel[] = [
                 label: "Description",
                 type: "long-text",
                 storageId: "description",
-                alias: "description",
+                fieldId: "description",
                 validation: [],
                 settings: {},
                 listValidation: [],
@@ -1357,7 +1357,7 @@ const models: CmsModel[] = [
                 label: "Slug",
                 type: "text",
                 storageId: "slug",
-                alias: "slug",
+                fieldId: "slug",
                 validation: [
                     {
                         name: "unique",
@@ -1402,7 +1402,7 @@ const models: CmsModel[] = [
                 label: "Name",
                 type: "text",
                 storageId: "name",
-                alias: "name",
+                fieldId: "name",
                 validation: [],
                 listValidation: [],
                 placeholderText: "placeholder text",
@@ -1421,7 +1421,7 @@ const models: CmsModel[] = [
                 label: "Bug type",
                 type: "text",
                 storageId: "bugType",
-                alias: "bugType",
+                fieldId: "bugType",
                 validation: [],
                 listValidation: [],
                 placeholderText: "A bug type selectable field",
@@ -1456,7 +1456,7 @@ const models: CmsModel[] = [
                 label: "Bug developer value",
                 type: "number",
                 storageId: "bugValue",
-                alias: "bugValue",
+                fieldId: "bugValue",
                 validation: [],
                 listValidation: [],
                 placeholderText: "A bug developer value selectable field",
@@ -1488,7 +1488,7 @@ const models: CmsModel[] = [
                 label: "Bug fixed?",
                 type: "number",
                 storageId: "bugFixed",
-                alias: "bugFixed",
+                fieldId: "bugFixed",
                 validation: [],
                 listValidation: [],
                 placeholderText: "A bug is fixed",
@@ -1539,7 +1539,7 @@ const models: CmsModel[] = [
                 label: "Title",
                 type: "text",
                 storageId: "title",
-                alias: "title",
+                fieldId: "title",
                 validation: [],
                 listValidation: [],
                 placeholderText: "Title",
@@ -1558,7 +1558,7 @@ const models: CmsModel[] = [
                 label: "Body",
                 type: "rich-text",
                 storageId: "body",
-                alias: "body",
+                fieldId: "body",
                 validation: [],
                 listValidation: [],
                 placeholderText: "Body",
@@ -1577,7 +1577,7 @@ const models: CmsModel[] = [
                 label: "Categories",
                 type: "ref",
                 storageId: "categories",
-                alias: "categories",
+                fieldId: "categories",
                 validation: [],
                 listValidation: [],
                 placeholderText: "Categories",
@@ -1599,7 +1599,7 @@ const models: CmsModel[] = [
                 label: "Category",
                 type: "ref",
                 storageId: "category",
-                alias: "category",
+                fieldId: "category",
                 validation: [],
                 listValidation: [],
                 placeholderText: "Category",

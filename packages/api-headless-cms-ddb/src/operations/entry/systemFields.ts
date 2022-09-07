@@ -1,7 +1,7 @@
 import { CmsModelField } from "@webiny/api-headless-cms/types";
 
 type CmsModelFieldInput = Partial<CmsModelField> &
-    Pick<CmsModelField, "id" | "type" | "storageId" | "alias">;
+    Pick<CmsModelField, "id" | "type" | "storageId" | "fieldId">;
 const createSystemField = (field: CmsModelFieldInput): CmsModelField => {
     return field as CmsModelField;
 };
@@ -11,31 +11,31 @@ export const systemFields: Record<string, CmsModelField> = {
         id: "id",
         type: "text",
         storageId: "id",
-        alias: "id"
+        fieldId: "id"
     }),
     entryId: createSystemField({
         id: "entryId",
         type: "text",
         storageId: "entryId",
-        alias: "entryId"
+        fieldId: "entryId"
     }),
     createdOn: createSystemField({
         id: "createdOn",
         type: "datetime",
         storageId: "createdOn",
-        alias: "createdOn"
+        fieldId: "createdOn"
     }),
     savedOn: createSystemField({
         id: "savedOn",
         type: "datetime",
         storageId: "savedOn",
-        alias: "savedOn"
+        fieldId: "savedOn"
     }),
     createdBy: createSystemField({
         id: "createdBy",
         type: "plainObject",
         storageId: "createdBy",
-        alias: "createdBy",
+        fieldId: "createdBy",
         settings: {
             path: "createdBy.id"
         }
@@ -44,13 +44,13 @@ export const systemFields: Record<string, CmsModelField> = {
         id: "meta",
         type: "plainObject",
         storageId: "meta",
-        alias: "meta"
+        fieldId: "meta"
     }),
     ownedBy: createSystemField({
         id: "ownedBy",
         type: "plainObject",
         storageId: "ownedBy",
-        alias: "ownedBy",
+        fieldId: "ownedBy",
         settings: {
             path: "ownedBy.id"
         }
@@ -59,6 +59,6 @@ export const systemFields: Record<string, CmsModelField> = {
         id: "version",
         type: "number",
         storageId: "version",
-        alias: "version"
+        fieldId: "version"
     })
 };

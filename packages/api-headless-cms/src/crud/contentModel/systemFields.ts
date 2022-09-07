@@ -1,6 +1,7 @@
 export const fieldSystemFields: string[] = [
     "id",
-    "alias",
+    "fieldId",
+    "storageId",
     "label",
     "helpText",
     "placeholderText",

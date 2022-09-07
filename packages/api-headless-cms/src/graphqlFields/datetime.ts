@@ -21,14 +21,14 @@ interface CreateListFiltersParams {
 }
 const createListFilters = ({ field }: CreateListFiltersParams) => {
     return `
-        ${field.alias}: ${getFieldGraphQLType(field)}
-        ${field.alias}_not: ${getFieldGraphQLType(field)}
-        ${field.alias}_in: [${getFieldGraphQLType(field)}]
-        ${field.alias}_not_in: [${getFieldGraphQLType(field)}]
-        ${field.alias}_lt: ${getFieldGraphQLType(field)}
-        ${field.alias}_lte: ${getFieldGraphQLType(field)}
-        ${field.alias}_gt: ${getFieldGraphQLType(field)}
-        ${field.alias}_gte: ${getFieldGraphQLType(field)}
+        ${field.fieldId}: ${getFieldGraphQLType(field)}
+        ${field.fieldId}_not: ${getFieldGraphQLType(field)}
+        ${field.fieldId}_in: [${getFieldGraphQLType(field)}]
+        ${field.fieldId}_not_in: [${getFieldGraphQLType(field)}]
+        ${field.fieldId}_lt: ${getFieldGraphQLType(field)}
+        ${field.fieldId}_lte: ${getFieldGraphQLType(field)}
+        ${field.fieldId}_gt: ${getFieldGraphQLType(field)}
+        ${field.fieldId}_gte: ${getFieldGraphQLType(field)}
     `;
 };
 
@@ -42,20 +42,20 @@ export const createDateTimeField = (): CmsModelFieldToGraphQLPlugin => {
         read: {
             createListFilters,
             createGetFilters({ field }) {
-                return `${field.alias}: ${getFieldGraphQLType(field)}`;
+                return `${field.fieldId}: ${getFieldGraphQLType(field)}`;
             },
             createTypeField({ field }) {
                 if (field.multipleValues) {
-                    return `${field.alias}: [${getFieldGraphQLType(field)}]`;
+                    return `${field.fieldId}: [${getFieldGraphQLType(field)}]`;
                 }
 
-                return `${field.alias}: ${getFieldGraphQLType(field)}`;
+                return `${field.fieldId}: ${getFieldGraphQLType(field)}`;
             }
         },
         manage: {
             createListFilters,
             createTypeField({ field }) {
-                return `${field.alias}: ${getFieldGraphQLType(field)}`;
+                return `${field.fieldId}: ${getFieldGraphQLType(field)}`;
             },
             createInputField({ field }) {
                 return createGraphQLInputField(field, getFieldGraphQLType(field));

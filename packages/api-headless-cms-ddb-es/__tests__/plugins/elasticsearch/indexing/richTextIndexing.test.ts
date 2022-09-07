@@ -22,7 +22,7 @@ const mockField: CmsModelField = {
         name: "any"
     },
     storageId: "text",
-    alias: "text",
+    fieldId: "text",
     predefinedValues: {
         enabled: false,
         values: []

@@ -6,8 +6,8 @@ interface CreateListFiltersParams {
 }
 const createListFilters = ({ field }: CreateListFiltersParams) => {
     return `
-        ${field.alias}: Boolean
-        ${field.alias}_not: Boolean
+        ${field.fieldId}: Boolean
+        ${field.fieldId}_not: Boolean
     `;
 };
 
@@ -21,24 +21,24 @@ export const createBooleanField = (): CmsModelFieldToGraphQLPlugin => {
         read: {
             createListFilters,
             createGetFilters({ field }) {
-                return `${field.alias}: Boolean`;
+                return `${field.fieldId}: Boolean`;
             },
             createTypeField({ field }) {
                 if (field.multipleValues) {
-                    return `${field.alias}: [Boolean]`;
+                    return `${field.fieldId}: [Boolean]`;
                 }
 
-                return `${field.alias}: Boolean`;
+                return `${field.fieldId}: Boolean`;
             }
         },
         manage: {
             createListFilters,
             createTypeField({ field }) {
                 if (field.multipleValues) {
-                    return field.alias + ": [Boolean]";
+                    return field.fieldId + ": [Boolean]";
                 }
 
-                return field.alias + ": Boolean";
+                return field.fieldId + ": Boolean";
             },
             createInputField({ field }) {
                 return createGraphQLInputField(field, "Boolean");

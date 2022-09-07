@@ -39,7 +39,7 @@ const personModelFields: Record<string, CmsModelField> = {
     name: {
         id: nameId,
         storageId: `name@text@${nameId}`,
-        alias: "name",
+        fieldId: "name",
         label: "Name",
         multipleValues: false,
         type: "text"
@@ -47,7 +47,7 @@ const personModelFields: Record<string, CmsModelField> = {
     dateOfBirth: {
         id: dateOfBirthId,
         storageId: `dateOfBirth@datetime@${dateOfBirthId}`,
-        alias: "dateOfBirth",
+        fieldId: "dateOfBirth",
         label: "Date Of Birth",
         multipleValues: false,
         type: "datetime",
@@ -58,7 +58,7 @@ const personModelFields: Record<string, CmsModelField> = {
     children: {
         id: childrenId,
         storageId: `children@number@${childrenId}`,
-        alias: "children",
+        fieldId: "children",
         label: "Children",
         multipleValues: false,
         type: "number"
@@ -66,7 +66,7 @@ const personModelFields: Record<string, CmsModelField> = {
     married: {
         id: marriedId,
         storageId: "married",
-        alias: `married@boolean@${marriedId}`,
+        fieldId: `married@boolean@${marriedId}`,
         label: "Married",
         multipleValues: false,
         type: "boolean"
@@ -74,7 +74,7 @@ const personModelFields: Record<string, CmsModelField> = {
     biography: {
         id: biographyId,
         storageId: "biography",
-        alias: `biography@text@${biographyId}`,
+        fieldId: `biography@text@${biographyId}`,
         label: "Biography",
         multipleValues: false,
         type: "text"

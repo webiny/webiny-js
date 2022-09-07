@@ -11,7 +11,7 @@ import { object } from "commodo-fields-object";
 // @ts-ignore
 import { withFields, string, setOnce, boolean, fields } from "@commodo/fields";
 // import { validateId } from "./idValidation";
-import { validateAlias } from "./aliasValidation";
+import { validateFieldId } from "./fieldIdValidation";
 
 const requiredShortString = validation.create("required,maxLength:255");
 const shortString = validation.create("maxLength:255");
@@ -29,8 +29,8 @@ export const ContentModelFieldModel = withFields({
         setOnce()
     )(string({ validation: validateId })),
     */
-    alias: string({
-        validation: validateAlias
+    fieldId: string({
+        validation: validateFieldId
     }),
     label: string({ validation: requiredShortString }),
     helpText: string({ validation: shortString }),

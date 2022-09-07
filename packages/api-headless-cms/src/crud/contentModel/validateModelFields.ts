@@ -25,17 +25,17 @@ const getContentModelTitleFieldId = (fields: CmsModelField[], titleFieldId?: str
         const titleField = fields.find(field => {
             return field.type === "text" && !field.multipleValues;
         });
-        return titleField ? titleField.alias : defaultTitleFieldId;
+        return titleField ? titleField.fieldId : defaultTitleFieldId;
     }
     /**
      * check existing titleFieldId for existence in the model
      * for correct type
      * and that it is not multiple values field
      */
-    const target = fields.find(f => f.alias === titleFieldId);
+    const target = fields.find(f => f.fieldId === titleFieldId);
     if (!target) {
         throw new WebinyError(`Field does not exist in the model.`, "VALIDATION_ERROR", {
-            alias: titleFieldId,
+            fieldId: titleFieldId,
             fields
         });
     }
@@ -48,7 +48,7 @@ const getContentModelTitleFieldId = (fields: CmsModelField[], titleFieldId?: str
             "ENTRY_TITLE_FIELD_TYPE",
             {
                 storageId: target.storageId,
-                alias: target.alias,
+                fieldId: target.fieldId,
                 type: target.type
             }
         );
@@ -60,13 +60,13 @@ const getContentModelTitleFieldId = (fields: CmsModelField[], titleFieldId?: str
             "ENTRY_TITLE_FIELD_TYPE",
             {
                 storageId: target.storageId,
-                alias: target.alias,
+                fieldId: target.fieldId,
                 type: target.type
             }
         );
     }
 
-    return target.alias;
+    return target.fieldId;
 };
 
 const extractInvalidField = (model: CmsModel, err: GraphQLError) => {
@@ -139,7 +139,7 @@ export const validateModelFields = (params: ValidateModelFieldsParams) => {
         "cms-model-field-to-graphql"
     );
 
-    const aliases: string[] = [];
+    const fieldIdList: string[] = [];
 
     for (const field of fields) {
         if (!fieldTypePlugins.find(item => item.fieldType === field.type)) {
@@ -148,11 +148,11 @@ export const validateModelFields = (params: ValidateModelFieldsParams) => {
             );
         }
         /**
-         * Field MUST have an alias defined.
+         * Field MUST have an fieldId defined.
          */
-        if (!field.alias) {
+        if (!field.fieldId) {
             throw new WebinyError(
-                `Field does not have an "alias" defined.`,
+                `Field does not have an "fieldId" defined.`,
                 "MISSING_FIELD_ALIAS",
                 {
                     field
@@ -177,21 +177,21 @@ export const validateModelFields = (params: ValidateModelFieldsParams) => {
         });
         if (!field.storageId) {
             if (isLocked) {
-                field.storageId = field.alias;
+                field.storageId = field.fieldId;
             } else {
                 field.storageId = createFieldStorageId(field);
             }
         }
 
         /**
-         * Check the field alias against existing ones.
+         * Check the field fieldId against existing ones.
          */
-        if (aliases.includes(field.alias)) {
+        if (fieldIdList.includes(field.fieldId)) {
             throw new WebinyError(
-                `Cannot update content model because field "${field.storageId}" has alias "${field.alias}", which is already used.`
+                `Cannot update content model because field "${field.storageId}" has fieldId "${field.fieldId}", which is already used.`
             );
         }
-        aliases.push(field.alias);
+        fieldIdList.push(field.fieldId);
     }
 
     if (fields.length) {

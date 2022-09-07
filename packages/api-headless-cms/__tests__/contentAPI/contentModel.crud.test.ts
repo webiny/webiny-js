@@ -448,8 +448,7 @@ describe("content model test", () => {
 
         const textField: CmsModelFieldInput = {
             id: "someRandomTextFieldId",
-            storageId: "text@someRandomTextFieldId",
-            alias: "textField",
+            fieldId: "textField",
             label: "Text field",
             helpText: "help text",
             multipleValues: false,
@@ -468,8 +467,7 @@ describe("content model test", () => {
         };
         const numberField: CmsModelFieldInput = {
             id: "someRandomNumberFieldId",
-            storageId: "number@someRandomNumberFieldId",
-            alias: "numberField",
+            fieldId: "numberField",
             label: "Number field",
             helpText: "number help text",
             multipleValues: false,
@@ -507,8 +505,17 @@ describe("content model test", () => {
                         createdBy: helpers.identity,
                         createdOn: expect.stringMatching(/^20/),
                         description: null,
-                        titleFieldId: textField.alias,
-                        fields: [textField, numberField],
+                        titleFieldId: textField.fieldId,
+                        fields: [
+                            {
+                                ...textField,
+                                storageId: `${textField.type}@${textField.id}`
+                            },
+                            {
+                                ...numberField,
+                                storageId: `${numberField.type}@${numberField.id}`
+                            }
+                        ],
                         group: {
                             id: contentModelGroup.id,
                             name: "Group"
@@ -539,8 +546,7 @@ describe("content model test", () => {
 
         const field: CmsModelFieldInput = {
             id: "someRandomField1Id",
-            storageId: "text@someRandomField1Id",
-            alias: "field1",
+            fieldId: "field1",
             label: "Field 1",
             helpText: "help text",
             multipleValues: false,
@@ -575,7 +581,7 @@ describe("content model test", () => {
                         code: "VALIDATION_ERROR",
                         message: `Field does not exist in the model.`,
                         data: {
-                            alias: "nonExistingTitleFieldId",
+                            fieldId: "nonExistingTitleFieldId",
                             fields: expect.any(Array)
                         }
                     }

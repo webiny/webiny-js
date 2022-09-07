@@ -31,12 +31,12 @@ export const renderGetFilterFields: RenderGetFilterFields = ({ model, fieldTypeP
             }
             return fieldTypePlugins[field.type].isSearchable;
         })
-        .map(f => f.alias);
+        .map(f => f.fieldId);
 
     const filters: string[] = ["id: ID", "entryId: String"];
 
-    for (const alias of fieldAliases) {
-        const field = model.fields.find(item => item.alias === alias);
+    for (const fieldId of fieldAliases) {
+        const field = model.fields.find(item => item.fieldId === fieldId);
         if (!field) {
             continue;
         }

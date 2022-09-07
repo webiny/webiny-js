@@ -89,7 +89,7 @@ describe("multiple values in field", () => {
                 helpText: "",
                 label: "Available sizes",
                 storageId: expect.stringMatching("text@"),
-                alias: "availableSizes",
+                fieldId: "availableSizes",
                 type: "text",
                 settings: {
                     type: "text"
@@ -167,7 +167,7 @@ describe("multiple values in field", () => {
                             "Fields that accept multiple values cannot be used as the entry title.",
                         data: {
                             storageId: expect.stringMatching("text@"),
-                            alias: "availableSizes",
+                            fieldId: "availableSizes",
                             type: "text"
                         }
                     }

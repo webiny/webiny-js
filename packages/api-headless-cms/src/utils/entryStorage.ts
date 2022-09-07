@@ -57,11 +57,11 @@ const entryStorageTransform = async (
             );
         }
 
-        transformedValues[field.alias] = await plugin[operation]({
+        transformedValues[field.fieldId] = await plugin[operation]({
             plugins: context.plugins,
             model,
             field,
-            value: entry.values[field.alias],
+            value: entry.values[field.fieldId],
             getStoragePlugin
         });
     }

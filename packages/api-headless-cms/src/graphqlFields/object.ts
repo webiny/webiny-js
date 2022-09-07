@@ -31,7 +31,7 @@ const typeFromField = (params: TypeFromFieldParams): TypeFromFieldResponse | nul
     // `field` is an "object" field
     const fields: CmsModelField[] = field.settings?.fields || [];
 
-    const fieldTypeName = `${mTypeName}_${upperFirst(field.alias)}`;
+    const fieldTypeName = `${mTypeName}_${upperFirst(field.fieldId)}`;
 
     const typeFields = [];
     const nestedTypes = [];
@@ -96,7 +96,7 @@ export const createObjectField = (): CmsModelFieldToGraphQLPlugin => {
                 const { fieldType, typeDefs } = result;
 
                 return {
-                    fields: `${field.alias}: ${
+                    fields: `${field.fieldId}: ${
                         field.multipleValues ? `[${fieldType}!]` : fieldType
                     }`,
                     typeDefs
@@ -107,7 +107,7 @@ export const createObjectField = (): CmsModelFieldToGraphQLPlugin => {
                     return false;
                 }
 
-                const fieldType = `${graphQLType}_${upperFirst(field.alias)}`;
+                const fieldType = `${graphQLType}_${upperFirst(field.fieldId)}`;
 
                 const typeResolvers = createFieldResolvers({
                     graphQLType: fieldType,
@@ -135,7 +135,7 @@ export const createObjectField = (): CmsModelFieldToGraphQLPlugin => {
                 const { fieldType, typeDefs } = result;
 
                 return {
-                    fields: `${field.alias}: ${
+                    fields: `${field.fieldId}: ${
                         field.multipleValues ? `[${fieldType}!]` : fieldType
                     }`,
                     typeDefs
@@ -156,7 +156,7 @@ export const createObjectField = (): CmsModelFieldToGraphQLPlugin => {
 
                 return {
                     fields: attachRequiredFieldValue(
-                        `${field.alias}: ${field.multipleValues ? `[${fieldType}!]` : fieldType}`,
+                        `${field.fieldId}: ${field.multipleValues ? `[${fieldType}!]` : fieldType}`,
                         field
                     ),
                     typeDefs
@@ -166,7 +166,7 @@ export const createObjectField = (): CmsModelFieldToGraphQLPlugin => {
                 if (!field.settings?.fields || field.settings.fields.length === 0) {
                     return false;
                 }
-                const fieldType = `${graphQLType}_${upperFirst(field.alias)}`;
+                const fieldType = `${graphQLType}_${upperFirst(field.fieldId)}`;
                 const typeResolvers = createFieldResolvers({
                     graphQLType: fieldType,
                     fields: field.settings.fields

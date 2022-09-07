@@ -114,18 +114,18 @@ const mapAndCleanCreateInputData = (
     return model.fields.reduce((acc, field) => {
         /**
          * This should never happen, but let's make it sure.
-         * The fix would be for the user to add the alias on the field definition.
+         * The fix would be for the user to add the fieldId on the field definition.
          */
-        if (!field.alias) {
-            throw new WebinyError("Field does not have an alias.", "MISSING_ALIAS", {
+        if (!field.fieldId) {
+            throw new WebinyError("Field does not have an fieldId.", "MISSING_ALIAS", {
                 field
             });
         }
-        const value = input[field.alias];
+        const value = input[field.fieldId];
         /**
          * We set the default value on create input if value is not defined.
          */
-        acc[field.alias] = value === undefined ? getDefaultValue(field) : value;
+        acc[field.fieldId] = value === undefined ? getDefaultValue(field) : value;
         return acc;
     }, {} as CreateCmsEntryInput);
 };
@@ -139,21 +139,21 @@ const mapAndCleanUpdatedInputData = (
     return model.fields.reduce((acc, field) => {
         /**
          * This should never happen, but let's make it sure.
-         * The fix would be for the user to add the alias on the field definition.
+         * The fix would be for the user to add the fieldId on the field definition.
          */
-        if (!field.alias) {
-            throw new WebinyError("Field does not have an alias.", "MISSING_ALIAS", {
+        if (!field.fieldId) {
+            throw new WebinyError("Field does not have an fieldId.", "MISSING_ALIAS", {
                 field
             });
         }
         /**
          * We cannot set default value here because user might want to update only certain field values.
          */
-        const value = input[field.alias];
+        const value = input[field.fieldId];
         if (value === undefined) {
             return acc;
         }
-        acc[field.alias] = value;
+        acc[field.fieldId] = value;
         return acc;
     }, {} as CreateCmsEntryInput);
 };
@@ -244,7 +244,7 @@ const getSearchableFields = (params: GetSearchableFieldsParams): string[] => {
 
     return model.fields
         .filter(field => {
-            if (!field.alias) {
+            if (!field.fieldId) {
                 return false;
             }
             const plugin = fieldPluginMap[field.type];
@@ -255,9 +255,9 @@ const getSearchableFields = (params: GetSearchableFieldsParams): string[] => {
             } else if (!fields || fields.length === 0) {
                 return true;
             }
-            return fields.includes(field.alias);
+            return fields.includes(field.fieldId);
         })
-        .map(field => field.alias);
+        .map(field => field.fieldId);
 };
 
 export interface CreateContentEntryCrudParams {

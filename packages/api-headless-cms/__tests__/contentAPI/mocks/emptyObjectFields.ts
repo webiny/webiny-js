@@ -23,7 +23,7 @@ export const emptyObjectFields: Partial<CmsModel> = {
                         type: "object",
                         validation: [],
                         storageId: "repeat",
-                        alias: "repeat"
+                        fieldId: "repeat"
                     }
                 ],
                 layout: [["123"]]
@@ -42,7 +42,7 @@ export const emptyObjectFields: Partial<CmsModel> = {
             type: "object",
             validation: [],
             storageId: "anotherOne",
-            alias: "anotherOne"
+            fieldId: "anotherOne"
         }
     ]
 };

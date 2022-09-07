@@ -16,21 +16,21 @@ const contentModelPlugin = new CmsModelPlugin({
         {
             id: "name",
             storageId: "text@name",
-            alias: "name",
+            fieldId: "name",
             type: "text",
             label: "Product Name"
         },
         {
             id: "sku",
             storageId: "text@sku",
-            alias: "sku",
+            fieldId: "sku",
             type: "text",
             label: "SKU"
         },
         {
             id: "price",
             storageId: "number@price",
-            alias: "price",
+            fieldId: "price",
             type: "number",
             label: "Price"
         }
@@ -261,7 +261,7 @@ describe("content model plugins", () => {
                             fields: [
                                 {
                                     storageId: "text@name",
-                                    alias: "name",
+                                    fieldId: "name",
                                     helpText: null,
                                     id: "name",
                                     label: "Product Name",
@@ -276,7 +276,7 @@ describe("content model plugins", () => {
                                 },
                                 {
                                     storageId: "text@sku",
-                                    alias: "sku",
+                                    fieldId: "sku",
                                     helpText: null,
                                     id: "sku",
                                     label: "SKU",
@@ -291,7 +291,7 @@ describe("content model plugins", () => {
                                 },
                                 {
                                     storageId: "number@price",
-                                    alias: "price",
+                                    fieldId: "price",
                                     helpText: null,
                                     id: "price",
                                     label: "Price",
@@ -334,7 +334,7 @@ describe("content model plugins", () => {
                                 fields: [
                                     {
                                         storageId: "text@name",
-                                        alias: "name",
+                                        fieldId: "name",
                                         helpText: null,
                                         id: "name",
                                         label: "Product Name",
@@ -349,7 +349,7 @@ describe("content model plugins", () => {
                                     },
                                     {
                                         storageId: "text@sku",
-                                        alias: "sku",
+                                        fieldId: "sku",
                                         helpText: null,
                                         id: "sku",
                                         label: "SKU",
@@ -364,7 +364,7 @@ describe("content model plugins", () => {
                                     },
                                     {
                                         storageId: "number@price",
-                                        alias: "price",
+                                        fieldId: "price",
                                         helpText: null,
                                         id: "price",
                                         label: "Price",

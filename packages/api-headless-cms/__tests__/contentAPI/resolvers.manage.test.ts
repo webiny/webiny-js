@@ -499,7 +499,7 @@ describe("MANAGE - Resolvers", () => {
                             {
                                 error: "This field is required",
                                 storageId: expect.stringMatching("text@"),
-                                alias: "slug"
+                                fieldId: "slug"
                             }
                         ],
                         message: "Validation failed."

@@ -115,7 +115,7 @@ describe("Content model locked fields", () => {
         });
 
         // when removing field one by one error must be thrown that given field cannot be removed
-        const fieldsToRemove = productModel.fields.filter(field => field.alias !== "title");
+        const fieldsToRemove = productModel.fields.filter(field => field.fieldId !== "title");
         for (const field of fieldsToRemove) {
             const targetFields = productModel.fields.filter(f => f.id !== field.id);
             const variables = {
@@ -153,7 +153,7 @@ describe("Content model locked fields", () => {
         const group = await setupGroup();
         const model = await setupCategoryModel(group);
 
-        const slugField = model.fields.find(field => field.alias === "slug");
+        const slugField = model.fields.find(field => field.fieldId === "slug");
         if (!slugField) {
             throw new Error(`Could not find field "slug".`);
         }

@@ -36,7 +36,7 @@ interface CreateFiltersParams {
 }
 
 interface ItemFilter {
-    alias: string;
+    fieldId: string;
     path: string;
     filterPlugin: ValueFilterPlugin;
     negate: boolean;
@@ -63,8 +63,8 @@ const VALUES_ATTRIBUTE = "values";
 
 const extractWhereParams = (key: string) => {
     const result = key.split("_");
-    const alias = result.shift();
-    if (!alias) {
+    const fieldId = result.shift();
+    if (!fieldId) {
         return null;
     }
     const rawOp = result.length === 0 ? "eq" : result.join("_");
@@ -73,7 +73,7 @@ const extractWhereParams = (key: string) => {
      */
     if (rawOp === "not") {
         return {
-            alias,
+            fieldId,
             operation: "eq",
             negate: true
         };
@@ -81,7 +81,7 @@ const extractWhereParams = (key: string) => {
     const negate = rawOp.match("not_") !== null;
     const operation = rawOp.replace("not_", "");
     return {
-        alias,
+        fieldId,
         operation,
         negate
     };
@@ -120,11 +120,11 @@ interface CreateValuePathParams {
 }
 const createValuePath = (params: CreateValuePathParams): string => {
     const { field, plugins, index } = params;
-    const { alias } = field;
+    const { fieldId } = field;
     const valuePathPlugin = plugins[field.type];
-    const basePath = systemFields[alias] ? "" : `${VALUES_ATTRIBUTE}.`;
+    const basePath = systemFields[fieldId] ? "" : `${VALUES_ATTRIBUTE}.`;
     if (!valuePathPlugin || valuePathPlugin.canUse(field) === false) {
-        return `${basePath}${alias}`;
+        return `${basePath}${fieldId}`;
     }
     const path = valuePathPlugin.createPath({
         field,
@@ -187,13 +187,17 @@ const createFilters = (params: CreateFiltersParams): ItemFilter[] => {
             continue;
         }
 
-        const { alias, operation, negate } = whereParams;
+        const { fieldId, operation, negate } = whereParams;
 
-        const field: ModelField = fields[alias];
+        const field: ModelField = fields[fieldId];
         if (!field) {
-            throw new WebinyError(`There is no field with the alias "${alias}".`, "FIELD_ERROR", {
-                alias
-            });
+            throw new WebinyError(
+                `There is no field with the fieldId "${fieldId}".`,
+                "FIELD_ERROR",
+                {
+                    fieldId
+                }
+            );
         }
 
         const transformValuePlugin: CmsFieldFilterValueTransformPlugin =
@@ -225,7 +229,7 @@ const createFilters = (params: CreateFiltersParams): ItemFilter[] => {
                     continue;
                 }
                 const {
-                    alias: propertyId,
+                    fieldId: propertyId,
                     operation: propertyOperation,
                     negate: propertyNegate
                 } = whereParams;
@@ -243,7 +247,7 @@ const createFilters = (params: CreateFiltersParams): ItemFilter[] => {
                 const multiValuesPath = field.def.multipleValues ? "%s." : "";
 
                 filters.push({
-                    alias,
+                    fieldId,
                     path: `${basePath}.${multiValuesPath}${propertyId}`,
                     filterPlugin,
                     negate: propertyNegate,
@@ -261,7 +265,7 @@ const createFilters = (params: CreateFiltersParams): ItemFilter[] => {
         });
 
         filters.push({
-            alias,
+            fieldId,
             path: createValuePath({
                 field: field.def,
                 plugins: valuePathPlugins
@@ -338,7 +342,7 @@ const createFullTextSearch = ({
     return async ({ item, fromStorage, fields }: FullTextSearchParams) => {
         for (const targetField of targetFields) {
             const field = Object.values(fields).find(field => {
-                return field.def.alias === targetField;
+                return field.def.fieldId === targetField;
             });
             if (!field) {
                 throw new WebinyError(
@@ -408,7 +412,7 @@ export const filterItems = async (params: FilterItemsParams): Promise<CmsEntry[]
                 }
 
                 const plainValue = await fromStorage<Record<string, string>[]>(
-                    fields[filter.alias].def,
+                    fields[filter.fieldId].def,
                     rawValue
                 );
                 /**
@@ -437,7 +441,7 @@ export const filterItems = async (params: FilterItemsParams): Promise<CmsEntry[]
                 continue;
             }
 
-            const plainValue = await fromStorage(fields[filter.alias].def, rawValue);
+            const plainValue = await fromStorage(fields[filter.fieldId].def, rawValue);
             /**
              * If raw value is not same as the value after the storage transform, set the value to the items being filtered.
              */
@@ -484,7 +488,7 @@ export const filterItems = async (params: FilterItemsParams): Promise<CmsEntry[]
 interface ExtractSortResult {
     valuePath: string;
     reverse: boolean;
-    alias: string;
+    fieldId: string;
     field: ModelField;
 }
 
@@ -499,10 +503,10 @@ const extractSort = (sortBy: string, fields: ModelFieldRecords): ExtractSortResu
             }
         );
     }
-    const [alias, order] = result;
+    const [fieldId, order] = result;
 
     const modelField = Object.values(fields).find(field => {
-        return field.def.alias === alias;
+        return field.def.fieldId === fieldId;
     });
 
     if (!modelField) {
@@ -510,7 +514,7 @@ const extractSort = (sortBy: string, fields: ModelFieldRecords): ExtractSortResu
             "Sorting field does not exist in the content model.",
             "SORTING_FIELD_ERROR",
             {
-                alias,
+                fieldId,
                 fields
             }
         );
@@ -520,7 +524,7 @@ const extractSort = (sortBy: string, fields: ModelFieldRecords): ExtractSortResu
     });
     return {
         field: modelField,
-        alias,
+        fieldId,
         valuePath,
         reverse: order === "DESC"
     };
@@ -554,7 +558,7 @@ export const sortEntryItems = (params: SortEntryItemsArgs): CmsEntry[] => {
         });
     }
 
-    const { alias, field, valuePath, reverse } = extractSort(firstSort, fields);
+    const { fieldId, field, valuePath, reverse } = extractSort(firstSort, fields);
 
     const itemsToSort = items.map(item => {
         return {
@@ -573,7 +577,7 @@ export const sortEntryItems = (params: SortEntryItemsArgs): CmsEntry[] => {
             "SORTING_ITEMS_ERROR",
             {
                 id: s.id,
-                sortingBy: alias,
+                sortingBy: fieldId,
                 reverse
             }
         );
@@ -634,8 +638,8 @@ export const buildModelFields = ({
         /**
          * This should be caught on the tests runs and never actually happen on live system.
          */
-        if (!field.alias) {
-            throw new WebinyError("Missing system field alias.", "ALIAS_ERROR", {
+        if (!field.fieldId) {
+            throw new WebinyError("Missing system field fieldId.", "ALIAS_ERROR", {
                 field
             });
         }
@@ -643,14 +647,14 @@ export const buildModelFields = ({
         const valuePathPlugin = valuePathPlugins[field.type];
 
         let createPath: CmsEntryFieldFilterPathPluginParams["path"] = params => {
-            return params.field.alias;
+            return params.field.fieldId;
         };
         if (valuePathPlugin) {
             createPath = params => {
                 return valuePathPlugin.createPath(params);
             };
         }
-        collection[field.alias] = {
+        collection[field.fieldId] = {
             def: field,
             valueTransformer: (value: any) => {
                 if (!transformValuePlugin) {
@@ -666,15 +670,17 @@ export const buildModelFields = ({
     }, {} as ModelFieldRecords);
 
     return model.fields.reduce((collection, field) => {
-        if (!field.alias) {
-            console.log(`Field "${field.storageId}" in model "${model.modelId}" is missing alias.`);
+        if (!field.fieldId) {
+            console.log(
+                `Field "${field.storageId}" in model "${model.modelId}" is missing fieldId.`
+            );
             return collection;
         }
         const transformValuePlugin = transformValuePlugins[field.type];
         const valuePathPlugin = valuePathPlugins[field.type];
 
         let createPath: CmsEntryFieldFilterPathPluginParams["path"] = params => {
-            return `${VALUES_ATTRIBUTE}.${params.field.alias}`;
+            return `${VALUES_ATTRIBUTE}.${params.field.fieldId}`;
         };
         if (valuePathPlugin) {
             createPath = params => {
@@ -682,7 +688,7 @@ export const buildModelFields = ({
             };
         }
 
-        collection[field.alias] = {
+        collection[field.fieldId] = {
             def: field,
             valueTransformer: (value: any) => {
                 if (!transformValuePlugin) {

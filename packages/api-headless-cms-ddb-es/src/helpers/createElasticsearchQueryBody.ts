@@ -70,14 +70,14 @@ const createElasticsearchSortParams = (args: CreateElasticsearchSortParams): esS
         return [];
     }
 
-    const aliasToIdMap: Record<string, string> = {};
+    const fieldIdToIdMap: Record<string, string> = {};
 
     const sortPlugins = Object.values(modelFields).reduce((plugins, modelField) => {
         const searchPlugin = searchPlugins[modelField.type];
 
-        const { alias, storageId } = modelField.field;
-        if (!!alias) {
-            aliasToIdMap[alias] = storageId;
+        const { fieldId, storageId } = modelField.field;
+        if (!!fieldId) {
+            fieldIdToIdMap[fieldId] = storageId;
         }
         plugins[storageId] = new CmsEntryElasticsearchFieldPlugin({
             unmappedType: modelField.unmappedType,
@@ -101,9 +101,9 @@ const createElasticsearchSortParams = (args: CreateElasticsearchSortParams): esS
             if (!matched) {
                 return null;
             }
-            const [, alias, order] = matched;
-            if (aliasToIdMap[alias]) {
-                return `${aliasToIdMap[alias]}_${order}`;
+            const [, fieldId, order] = matched;
+            if (fieldIdToIdMap[fieldId]) {
+                return `${fieldIdToIdMap[fieldId]}_${order}`;
             }
 
             return value;
@@ -117,7 +117,7 @@ const createElasticsearchSortParams = (args: CreateElasticsearchSortParams): esS
 
 const findFieldByAliasOrFieldId = (model: CmsModel, id: string): CmsModelField | undefined => {
     return model.fields.find(field => {
-        return field.alias === id || field.storageId === id;
+        return field.fieldId === id || field.storageId === id;
     });
 };
 /**
@@ -467,10 +467,10 @@ const execElasticsearchBuildQueryPlugins = (
         }
         const { field, operator } = parseWhereKey(key);
         /**
-         * TODO This will be required until the storage operations receive the storageId instead of field alias.
+         * TODO This will be required until the storage operations receive the storageId instead of field fieldId.
          * TODO For this to work without field searching, we need to refactor how the query looks like.
          *
-         * Storage operations should NEVER receive an field alias, only exact field path.
+         * Storage operations should NEVER receive an field fieldId, only exact field path.
          */
 
         let storageId = field;

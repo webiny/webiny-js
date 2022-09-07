@@ -9,18 +9,18 @@ const customFieldPlugin = (): CmsModelFieldToGraphQLPlugin => ({
     isSearchable: false,
     read: {
         createTypeField({ field }) {
-            return `${field.alias}: String`;
+            return `${field.fieldId}: String`;
         },
         createGetFilters({ field }) {
-            return `${field.alias}: String`;
+            return `${field.fieldId}: String`;
         }
     },
     manage: {
         createTypeField({ field }) {
-            return `${field.alias}: String`;
+            return `${field.fieldId}: String`;
         },
         createInputField({ field }) {
-            return `${field.alias}: String`;
+            return `${field.fieldId}: String`;
         }
     }
 });
@@ -84,7 +84,7 @@ describe("content model test no field plugin", () => {
                             },
                             label: "test",
                             storageId: "test",
-                            alias: "test",
+                            fieldId: "test",
                             id: "aaa",
                             predefinedValues: {
                                 enabled: false,
@@ -99,7 +99,7 @@ describe("content model test no field plugin", () => {
                             },
                             label: "test",
                             storageId: "test",
-                            alias: "test",
+                            fieldId: "test",
                             id: "bbb",
                             predefinedValues: {
                                 enabled: false,

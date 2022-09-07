@@ -11,18 +11,18 @@ export const createFileField = (): CmsModelFieldToGraphQLPlugin => {
         read: {
             createTypeField({ field }) {
                 if (field.multipleValues) {
-                    return `${field.alias}: [String]`;
+                    return `${field.fieldId}: [String]`;
                 }
 
-                return `${field.alias}: String`;
+                return `${field.fieldId}: String`;
             }
         },
         manage: {
             createTypeField({ field }) {
                 if (field.multipleValues) {
-                    return field.alias + ": [String]";
+                    return field.fieldId + ": [String]";
                 }
-                return field.alias + ": String";
+                return field.fieldId + ": String";
             },
             createInputField({ field }) {
                 return createGraphQLInputField(field, "String");

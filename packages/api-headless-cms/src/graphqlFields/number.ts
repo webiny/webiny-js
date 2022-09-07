@@ -6,14 +6,14 @@ interface CreateListFiltersParams {
 }
 const createListFilters = ({ field }: CreateListFiltersParams) => {
     return `
-        ${field.alias}: Number
-        ${field.alias}_not: Number
-        ${field.alias}_in: [Number]
-        ${field.alias}_not_in: [Number]
-        ${field.alias}_lt: Number
-        ${field.alias}_lte: Number
-        ${field.alias}_gt: Number
-        ${field.alias}_gte: Number
+        ${field.fieldId}: Number
+        ${field.fieldId}_not: Number
+        ${field.fieldId}_in: [Number]
+        ${field.fieldId}_not_in: [Number]
+        ${field.fieldId}_lt: Number
+        ${field.fieldId}_lte: Number
+        ${field.fieldId}_gt: Number
+        ${field.fieldId}_gte: Number
     `;
 };
 
@@ -26,25 +26,25 @@ export const createNumberField = (): CmsModelFieldToGraphQLPlugin => {
         isSearchable: true,
         read: {
             createGetFilters({ field }) {
-                return `${field.alias}: Number`;
+                return `${field.fieldId}: Number`;
             },
             createListFilters,
             createTypeField({ field }) {
                 if (field.multipleValues) {
-                    return `${field.alias}: [Number]`;
+                    return `${field.fieldId}: [Number]`;
                 }
 
-                return `${field.alias}: Number`;
+                return `${field.fieldId}: Number`;
             }
         },
         manage: {
             createListFilters,
             createTypeField({ field }) {
                 if (field.multipleValues) {
-                    return field.alias + ": [Number]";
+                    return field.fieldId + ": [Number]";
                 }
 
-                return field.alias + ": Number";
+                return field.fieldId + ": Number";
             },
             createInputField({ field }) {
                 return createGraphQLInputField(field, "Number");

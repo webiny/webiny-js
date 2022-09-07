@@ -21,7 +21,7 @@ const privateAuthorsModel = new CmsModelPlugin({
         {
             id: "title",
             storageId: "text@title",
-            alias: "title",
+            fieldId: "title",
             type: "text",
             label: "Title"
         }

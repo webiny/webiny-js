@@ -132,7 +132,7 @@ describe("predefined values", () => {
                         data: [
                             {
                                 storageId: expect.stringMatching("text@"),
-                                alias: "bugType",
+                                fieldId: "bugType",
                                 error: "Value sent does not match any of the available predefined values."
                             }
                         ]
@@ -168,7 +168,7 @@ describe("predefined values", () => {
                         code: "VALIDATION_FAILED",
                         data: [
                             {
-                                alias: "bugValue",
+                                fieldId: "bugValue",
                                 storageId: expect.stringMatching("number@"),
                                 error: "Value sent does not match any of the available predefined values."
                             }
@@ -205,12 +205,12 @@ describe("predefined values", () => {
                         code: "VALIDATION_FAILED",
                         data: [
                             {
-                                alias: "bugType",
+                                fieldId: "bugType",
                                 storageId: expect.stringMatching("text@"),
                                 error: "Value sent does not match any of the available predefined values."
                             },
                             {
-                                alias: "bugValue",
+                                fieldId: "bugValue",
                                 storageId: expect.stringMatching("number@"),
                                 error: "Value sent does not match any of the available predefined values."
                             }
@@ -376,7 +376,7 @@ describe("predefined values", () => {
          */
         const fields = bugModel.fields.concat([]);
         for (const field of fields) {
-            if (field.alias !== "bugType") {
+            if (field.fieldId !== "bugType") {
                 continue;
             }
             if (!field.settings) {

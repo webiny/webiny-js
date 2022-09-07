@@ -134,14 +134,14 @@ export interface CmsModelField {
      */
     storageId: string;
     /**
-     * Alias for the model field that will be available to the outside world.
-     * `fileId` is still used as path (or column) to store the data.
+     * Field identifier for the model field that will be available to the outside world.
+     * `storageId` is used as path (or column) to store the data.
      *
      * Must in form of a-zA-Z0-9.
      *
      * This value MUST be unique in the CmsModel.
      */
-    alias: string;
+    fieldId: string;
     /**
      * A label for the field
      */
@@ -504,7 +504,7 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
          * ```ts
          * read: {
          *     createGetFilters({ field }) {
-         *         return `${field.alias}: MyField`;
+         *         return `${field.fieldId}: MyField`;
          *     }
          * }
          * ```
@@ -517,10 +517,10 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
          * read: {
          *     createListFilters({ field }) {
          *         return `
-         *             ${field.alias}: MyType
-         *             ${field.alias}_not: MyType
-         *             ${field.alias}_in: [MyType]
-         *             ${field.alias}_not_in: [MyType]
+         *             ${field.fieldId}: MyType
+         *             ${field.fieldId}_not: MyType
+         *             ${field.fieldId}_in: [MyType]
+         *             ${field.fieldId}_not_in: [MyType]
          *         `;
          *     }
          * }
@@ -534,10 +534,10 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
          * read: {
          *     createTypeField({ field }) {
          *         if (field.multipleValues) {
-         *             return `${field.alias}: [MyFieldType]`;
+         *             return `${field.fieldId}: [MyFieldType]`;
          *         }
          *
-         *         return `${field.alias}: MyField`;
+         *         return `${field.fieldId}: MyField`;
          *     }
          * }
          * ```
@@ -591,10 +591,10 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
          * manage: {
          *     createListFilters({ field }) {
          *         return `
-         *             ${field.alias}: MyType
-         *             ${field.alias}_not: MyType
-         *             ${field.alias}_in: [MyType]
-         *             ${field.alias}_not_in: [MyType]
+         *             ${field.fieldId}: MyType
+         *             ${field.fieldId}_not: MyType
+         *             ${field.fieldId}_in: [MyType]
+         *             ${field.fieldId}_not_in: [MyType]
          *         `;
          *     }
          * }
@@ -626,10 +626,10 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
          * manage: {
          *     createTypeField({ field }) {
          *         if (field.multipleValues) {
-         *             return field.alias + ": [MyType]";
+         *             return field.fieldId + ": [MyType]";
          *         }
          *
-         *         return field.alias + ": MyType";
+         *         return field.fieldId + ": MyType";
          *     }
          * }
          * ```
@@ -646,10 +646,10 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
          * manage: {
          *     createInputField({ field }) {
          *         if (field.multipleValues) {
-         *             return field.alias + ": [MyField]";
+         *             return field.fieldId + ": [MyField]";
          *         }
          *
-         *         return field.alias + ": MyField";
+         *         return field.fieldId + ": MyField";
          *     }
          * }
          * ```
@@ -1079,16 +1079,9 @@ export interface CmsModelFieldInput {
      */
     type: string;
     /**
-     * A unique ID for the field. Values will be mapped via this value.
-     * This field MUST be in range of "a-zA-Z0-9".
-     *
-     * This is used as path for the entry value.
+     * Field outside world identifier for the field. Must be unique in the model.
      */
-    storageId: string;
-    /**
-     * Alias for the field. Must be unique in the model.
-     */
-    alias: string | null;
+    fieldId: string;
     /**
      * Label for the field.
      */

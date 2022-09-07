@@ -6,7 +6,11 @@ import lodashCamelCase from "lodash/camelCase";
 
 interface CmsModelFieldInput extends Omit<CmsModelFieldBase, "storageId"> {
     /**
-     * If defined, it must be in form of createFieldIdMatchPattern()
+     * If defined, it must be camelCased string.
+     * This is for backwards compatibility - before fields had storageId.
+     *
+     * This should only be populated in old model fields.
+     * News ones must have this empty.
      */
     storageId?: string;
 }
@@ -53,12 +57,12 @@ export class CmsModelPlugin extends Plugin {
         }
         const fields: CmsModelFieldBase[] = [];
         const storageIdList: string[] = [];
-        const aliases: string[] = [];
+        const fieldIdList: string[] = [];
         for (const input of model.fields) {
             /**
-             * Field must contain an alias.
+             * Field must contain an fieldId. It is required in the graphql, but lets check it just in case
              */
-            if (!(input.alias || "").trim()) {
+            if (!(input.fieldId || "").trim()) {
                 throw new WebinyError(
                     `Field's "storageId" is not defined for the content model "${this.contentModel.modelId}".`,
                     "FIELD_ID_ERROR",
@@ -68,14 +72,14 @@ export class CmsModelPlugin extends Plugin {
                     }
                 );
             }
-            const alias = lodashCamelCase(input.alias);
+            const fieldId = lodashCamelCase(input.fieldId);
             /**
              * Alias must be in correct pattern.
              */
-            if (alias.match(/^[0-9]/) !== null) {
+            if (fieldId.match(/^[0-9]/) !== null) {
                 throw new WebinyError(
-                    `Field's "alias" does not match correct pattern in the content model "${this.contentModel.modelId}" - cannot start with a number.`,
-                    "FIELD_ALIAS_ERROR",
+                    `Field's "fieldId" does not match correct pattern in the content model "${this.contentModel.modelId}" - cannot start with a number.`,
+                    "FIELD_FIELD_ID_ERROR",
                     {
                         model: this.contentModel,
                         field: input
@@ -85,10 +89,10 @@ export class CmsModelPlugin extends Plugin {
             /**
              * Alias also must be camelCased.
              */
-            if (alias !== input.alias) {
+            if (fieldId !== input.fieldId) {
                 throw new WebinyError(
-                    `Field's "alias" must be a camel cased string in the content model "${this.contentModel.modelId}".`,
-                    "FIELD_ALIAS_ERROR",
+                    `Field's "fieldId" must be a camel cased string in the content model "${this.contentModel.modelId}".`,
+                    "FIELD_FIELD_ID_ERROR",
                     {
                         model: this.contentModel,
                         field: input
@@ -96,21 +100,42 @@ export class CmsModelPlugin extends Plugin {
                 );
             }
             /**
-             * ... and alias must be unique.
+             * ... and fieldId must be unique.
              */
-            if (aliases.includes(alias) === true) {
+            if (fieldIdList.includes(fieldId) === true) {
                 throw new WebinyError(
-                    `Field's "alias" is not unique in the content model "${this.contentModel.modelId}".`,
-                    "ALIAS_NOT_UNIQUE_ERROR",
+                    `Field's "fieldId" is not unique in the content model "${this.contentModel.modelId}".`,
+                    "FIELD_ID_NOT_UNIQUE_ERROR",
                     {
                         model: this.contentModel,
                         field: input
                     }
                 );
             }
+
+            let storageId = input.storageId ? lodashCamelCase(input.storageId) : null;
+            /**
+             * If defined, storageId MUST be camel cased string - for backward compatibility.
+             */
+            if (
+                storageId &&
+                (storageId.match(/^([a-zA-Z-0-9]+)$/) === null || storageId !== input.storageId)
+            ) {
+                throw new WebinyError(
+                    `Field's "storageId" is not camel cased string in the content model "${this.contentModel.modelId}".`,
+                    "STORAGE_ID_NOT_CAMEL_CASED_ERROR",
+                    {
+                        model: this.contentModel,
+                        field: input
+                    }
+                );
+            } else if (!storageId) {
+                storageId = this.createStorageId(input);
+            }
+
             const field = {
                 ...input,
-                storageId: this.createFieldId(input)
+                storageId
             };
             /**
              * Fields storageId must be unique.
@@ -118,7 +143,7 @@ export class CmsModelPlugin extends Plugin {
             if (storageIdList.includes(field.storageId) === true) {
                 throw new WebinyError(
                     `Field's "storageId" is not unique in the content model "${this.contentModel.modelId}".`,
-                    "FIELD_ID_ERROR",
+                    "STORAGE_ID_ERROR",
                     {
                         model: this.contentModel,
                         field
@@ -127,17 +152,14 @@ export class CmsModelPlugin extends Plugin {
             }
             fields.push(field);
             storageIdList.push(field.storageId);
-            aliases.push(field.alias);
+            fieldIdList.push(field.fieldId);
         }
         return fields;
     }
 
-    private createFieldId(field: CmsModelFieldInput): string {
+    private createStorageId(field: CmsModelFieldInput): string {
         if (!field.storageId) {
-            return createFieldStorageId({
-                type: field.type,
-                id: field.id
-            });
+            return createFieldStorageId(field);
         }
         return field.storageId;
     }
