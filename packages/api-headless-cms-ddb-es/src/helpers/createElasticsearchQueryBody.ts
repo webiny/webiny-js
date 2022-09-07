@@ -70,17 +70,28 @@ const createElasticsearchSortParams = (args: CreateElasticsearchSortParams): esS
         return [];
     }
 
+    const fieldIdToIdMap: Record<string, string> = {};
+
     const sortPlugins = Object.values(modelFields).reduce((plugins, modelField) => {
         const searchPlugin = searchPlugins[modelField.type];
 
-        plugins[modelField.field.fieldId] = new CmsEntryElasticsearchFieldPlugin({
+        // TODO bring back storageId when implementing transformations
+        // @ts-ignore
+        const { fieldId } = modelField.field;
+
+        fieldIdToIdMap[fieldId] = fieldId;
+        /**
+         * TODO bring back storageId when implementing transformations
+         * Plugins must be stored via storageId as key because it is later used to find the sorting plugin.
+         */
+        plugins[fieldId] = new CmsEntryElasticsearchFieldPlugin({
             unmappedType: modelField.unmappedType,
             keyword: hasKeyword(modelField),
             sortable: modelField.isSortable,
             searchable: modelField.isSearchable,
-            field: modelField.field.fieldId,
+            field: fieldId,
             path: createFieldPath({
-                key: modelField.field.fieldId,
+                key: fieldId,
                 parentPath,
                 modelField,
                 searchPlugin
@@ -89,9 +100,29 @@ const createElasticsearchSortParams = (args: CreateElasticsearchSortParams): esS
         return plugins;
     }, {} as Record<string, CmsEntryElasticsearchFieldPlugin>);
 
+    const transformedSort = sort
+        .map(value => {
+            const matched = value.match(/^([a-zA-Z-0-9_]+)_(ASC|DESC)$/);
+            if (!matched) {
+                return null;
+            }
+            const [, fieldId, order] = matched;
+            if (fieldIdToIdMap[fieldId]) {
+                return `${fieldIdToIdMap[fieldId]}_${order}`;
+            }
+
+            return value;
+        })
+        .filter(Boolean) as string[];
     return createSort({
         fieldPlugins: sortPlugins,
-        sort
+        sort: transformedSort
+    });
+};
+
+const findFieldByStorageIdOrFieldId = (model: CmsModel, id: string): CmsModelField | undefined => {
+    return model.fields.find(field => {
+        return field.fieldId === id || field.storageId === id;
     });
 };
 /**
@@ -179,12 +210,16 @@ const createFieldPath = ({
             key
         });
     } else if (typeof modelField.path === "function") {
+        // path = modelField.path(modelField.field.storageId);
+        // TODO bring back storageId
         path = modelField.path(modelField.field.fieldId);
     }
     if (!path) {
         /**
          * We know that modelFieldPath is a string or undefined at this point.
          */
+        // TODO bring back storageId
+        // path = (modelField.path as string) || modelField.field.storageId || modelField.field.id;
         path = (modelField.path as string) || modelField.field.fieldId || modelField.field.id;
     }
     return modelField.isSystemField || !parentPath || path.match(parentPath)
@@ -276,7 +311,9 @@ const fieldPathFactory = (params: FieldPathFactoryParams): string => {
         fieldPath = plugin.createPath({ field, value, key });
     }
     if (!fieldPath) {
+        // TODO bring back storageId
         fieldPath = field.fieldId;
+        // fieldPath = field.storageId;
         if (modelField.path) {
             fieldPath =
                 typeof modelField.path === "function" ? modelField.path(value) : modelField.path;
@@ -378,6 +415,7 @@ const applyFullTextSearch = (params: ApplyFullTextSearchParams): void => {
         }
     });
 };
+
 /*
  * Iterate through where keys and apply plugins where necessary
  */
@@ -439,14 +477,29 @@ const execElasticsearchBuildQueryPlugins = (
             continue;
         }
         const { field, operator } = parseWhereKey(key);
-        const modelField = modelFields[field];
+        /**
+         * TODO This will be required until the storage operations receive the fieldId instead of field storageId.
+         * TODO For this to work without field searching, we need to refactor how the query looks like.
+         *
+         * Storage operations should NEVER receive an field storageId, only alias - fieldId.
+         */
+
+        let fieldId = field;
+        const cmsModelField = findFieldByStorageIdOrFieldId(model, fieldId);
+        if (!cmsModelField && !modelFields[fieldId]) {
+            throw new WebinyError(`There is no CMS Model Field field "${fieldId}".`);
+        } else if (cmsModelField) {
+            fieldId = cmsModelField.fieldId;
+        }
+
+        const modelField = modelFields[fieldId];
 
         if (!modelField) {
-            throw new WebinyError(`There is no field "${field}".`);
+            throw new WebinyError(`There is no field "${fieldId}".`);
         }
         const { isSearchable = false, field: cmsField } = modelField;
         if (!isSearchable) {
-            throw new WebinyError(`Field "${field}" is not searchable.`);
+            throw new WebinyError(`Field "${fieldId}" is not searchable.`);
         }
         /**
          * There is a possibility that value is an object.

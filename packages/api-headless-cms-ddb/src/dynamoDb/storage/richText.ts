@@ -33,7 +33,7 @@ const plugin = new StorageTransformPlugin({
             return storageValue;
         } else if (typeof storageValue !== "object") {
             throw new WebinyError(
-                `RichText value received in "fromStorage" function is not an object in field "${field.fieldId}".`
+                `RichText value received in "fromStorage" function is not an object in field "${field.storageId}" - ${field.fieldId}.`
             );
         }
         /**

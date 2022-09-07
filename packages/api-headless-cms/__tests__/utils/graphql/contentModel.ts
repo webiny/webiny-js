@@ -14,6 +14,7 @@ const DATA_FIELD = /* GraphQL*/ `
             label
             helpText
             placeholderText
+            storageId
             fieldId
             type
             multipleValues

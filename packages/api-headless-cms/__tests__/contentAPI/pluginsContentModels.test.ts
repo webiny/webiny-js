@@ -15,18 +15,21 @@ const contentModelPlugin = new CmsModelPlugin({
     fields: [
         {
             id: "name",
+            // storageId: "text@name",
             fieldId: "name",
             type: "text",
             label: "Product Name"
         },
         {
             id: "sku",
+            // storageId: "text@sku",
             fieldId: "sku",
             type: "text",
             label: "SKU"
         },
         {
             id: "price",
+            // storageId: "number@price",
             fieldId: "price",
             type: "number",
             label: "Price"
@@ -257,6 +260,7 @@ describe("content model plugins", () => {
                             description: "",
                             fields: [
                                 {
+                                    storageId: "text@name",
                                     fieldId: "name",
                                     helpText: null,
                                     id: "name",
@@ -271,6 +275,7 @@ describe("content model plugins", () => {
                                     validation: null
                                 },
                                 {
+                                    storageId: "text@sku",
                                     fieldId: "sku",
                                     helpText: null,
                                     id: "sku",
@@ -285,6 +290,7 @@ describe("content model plugins", () => {
                                     validation: null
                                 },
                                 {
+                                    storageId: "number@price",
                                     fieldId: "price",
                                     helpText: null,
                                     id: "price",
@@ -327,6 +333,7 @@ describe("content model plugins", () => {
                                 description: "",
                                 fields: [
                                     {
+                                        storageId: "text@name",
                                         fieldId: "name",
                                         helpText: null,
                                         id: "name",
@@ -341,6 +348,7 @@ describe("content model plugins", () => {
                                         validation: null
                                     },
                                     {
+                                        storageId: "text@sku",
                                         fieldId: "sku",
                                         helpText: null,
                                         id: "sku",
@@ -355,6 +363,7 @@ describe("content model plugins", () => {
                                         validation: null
                                     },
                                     {
+                                        storageId: "number@price",
                                         fieldId: "price",
                                         helpText: null,
                                         id: "price",
@@ -619,6 +628,39 @@ describe("content model plugins", () => {
                     }
                 }
             })
+        );
+    });
+
+    it(`should fail to create model plugin due to invalid "storageId"`, async () => {
+        let error: Error | undefined;
+        try {
+            new CmsModelPlugin({
+                name: "test",
+                layout: [],
+                fields: [
+                    {
+                        type: "text",
+                        fieldId: "something",
+                        id: "something",
+                        label: "Something",
+                        storageId: "text@something",
+                        settings: {}
+                    }
+                ],
+                modelId: "test",
+                group: {
+                    id: "group",
+                    name: "Group"
+                },
+                description: "",
+                titleFieldId: "something"
+            });
+        } catch (ex) {
+            error = ex;
+        }
+        expect(error).toBeInstanceOf(Error);
+        expect(error?.message).toEqual(
+            `Field's "storageId" of the field with "fieldId" something is not camel cased string in the content model "test".`
         );
     });
 });

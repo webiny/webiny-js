@@ -88,6 +88,7 @@ describe("multiple values in field", () => {
                 multipleValues: true,
                 helpText: "",
                 label: "Available sizes",
+                storageId: expect.stringMatching("text@"),
                 fieldId: "availableSizes",
                 type: "text",
                 settings: {
@@ -165,6 +166,7 @@ describe("multiple values in field", () => {
                         message:
                             "Fields that accept multiple values cannot be used as the entry title.",
                         data: {
+                            storageId: expect.stringMatching("text@"),
                             fieldId: "availableSizes",
                             type: "text"
                         }
@@ -313,7 +315,9 @@ describe("multiple values in field", () => {
                     error: {
                         code: "ENTRY_FIELD_USED",
                         data: null,
-                        message: `Cannot remove the field "availableSizes" because it's already in use in created content.`
+                        message: expect.stringMatching(
+                            `Cannot remove the field "text@([a-zA-Z0-9\-\_]+)" because it's already in use in created content.`
+                        )
                     }
                 }
             }
@@ -347,7 +351,9 @@ describe("multiple values in field", () => {
                     error: {
                         code: "ENTRY_FIELD_USED",
                         data: null,
-                        message: `Cannot change "multipleValues" for the "availableSizes" field because it's already in use in created content.`
+                        message: expect.stringMatching(
+                            `Cannot change "multipleValues" for the "text@([a-zA-Z0-9_-]+)" field because it's already in use in created content.`
+                        )
                     }
                 }
             }

@@ -107,8 +107,20 @@ const getDefaultValue = (field: CmsModelField): (DefaultValue | DefaultValue[]) 
 /**
  * Cleans and adds default values to create input data.
  */
-const cleanInputData = (model: CmsModel, input: CreateCmsEntryInput): CreateCmsEntryInput => {
+const mapAndCleanCreateInputData = (
+    model: CmsModel,
+    input: CreateCmsEntryInput
+): CreateCmsEntryInput => {
     return model.fields.reduce((acc, field) => {
+        /**
+         * This should never happen, but let's make it sure.
+         * The fix would be for the user to add the fieldId on the field definition.
+         */
+        if (!field.fieldId) {
+            throw new WebinyError("Field does not have an fieldId.", "MISSING_FIELD_ID", {
+                field
+            });
+        }
         const value = input[field.fieldId];
         /**
          * We set the default value on create input if value is not defined.
@@ -120,18 +132,28 @@ const cleanInputData = (model: CmsModel, input: CreateCmsEntryInput): CreateCmsE
 /**
  * Cleans the update input entry data.
  */
-const cleanUpdatedInputData = (
+const mapAndCleanUpdatedInputData = (
     model: CmsModel,
     input: UpdateCmsEntryInput
 ): UpdateCmsEntryInput => {
     return model.fields.reduce((acc, field) => {
         /**
-         * We cannot set default value here because user might want to updated only certain field values.
+         * This should never happen, but let's make it sure.
+         * The fix would be for the user to add the fieldId on the field definition.
          */
-        if (input[field.fieldId] === undefined) {
+        if (!field.fieldId) {
+            throw new WebinyError("Field does not have an fieldId.", "MISSING_FIELD_ID", {
+                field
+            });
+        }
+        /**
+         * We cannot set default value here because user might want to update only certain field values.
+         */
+        const value = input[field.fieldId];
+        if (value === undefined) {
             return acc;
         }
-        acc[field.fieldId] = input[field.fieldId];
+        acc[field.fieldId] = value;
         return acc;
     }, {} as CreateCmsEntryInput);
 };
@@ -222,6 +244,9 @@ const getSearchableFields = (params: GetSearchableFieldsParams): string[] => {
 
     return model.fields
         .filter(field => {
+            if (!field.fieldId) {
+                return false;
+            }
             const plugin = fieldPluginMap[field.type];
             if (!plugin) {
                 return false;
@@ -478,35 +503,48 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 );
             }
 
-            await onBeforeEntryList.publish({
-                where,
-                model
-            });
-
             const fields = getSearchableFields({
                 model,
                 plugins: context.plugins,
                 fields: params.fields || []
             });
 
-            const { hasMoreItems, totalCount, cursor, items } =
-                await storageOperations.entries.list(model, {
-                    ...params,
+            try {
+                await onBeforeEntryList.publish({
                     where,
-                    fields
+                    model
                 });
 
-            const meta = {
-                hasMoreItems,
-                totalCount,
-                /**
-                 * Cursor should be null if there are no more items to load.
-                 * Just make sure of that, disregarding what is returned from the storageOperations.entries.list method.
-                 */
-                cursor: hasMoreItems ? cursor : null
-            };
+                const { hasMoreItems, totalCount, cursor, items } =
+                    await storageOperations.entries.list(model, {
+                        ...params,
+                        where,
+                        fields
+                    });
 
-            return [items, meta];
+                const meta = {
+                    hasMoreItems,
+                    totalCount,
+                    /**
+                     * Cursor should be null if there are no more items to load.
+                     * Just make sure of that, disregarding what is returned from the storageOperations.entries.list method.
+                     */
+                    cursor: hasMoreItems ? cursor : null
+                };
+
+                return [items, meta];
+            } catch (ex) {
+                throw new WebinyError(
+                    "Error while fetching entries from storage.",
+                    "LIST_ENTRIES_ERROR",
+                    {
+                        params,
+                        error: ex,
+                        model,
+                        fields
+                    }
+                );
+            }
         },
         listLatestEntries: async function (model, params) {
             const where = params?.where || ({} as CmsEntryListWhere);
@@ -539,7 +577,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             /**
              * Make sure we only work with fields that are defined in the model.
              */
-            const initialInput = cleanInputData(model, inputData);
+            const initialInput = mapAndCleanCreateInputData(model, inputData);
 
             await validateModelEntryData({
                 context,
@@ -624,7 +662,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             /**
              * Make sure we only work with fields that are defined in the model.
              */
-            const input = cleanUpdatedInputData(model, inputData);
+            const input = mapAndCleanUpdatedInputData(model, inputData);
 
             /**
              * Entries are identified by a common parent ID + Revision number.
@@ -745,7 +783,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             /**
              * Make sure we only work with fields that are defined in the model.
              */
-            const input = cleanUpdatedInputData(model, inputData);
+            const input = mapAndCleanUpdatedInputData(model, inputData);
 
             /**
              * The entry we are going to update.

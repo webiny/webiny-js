@@ -105,6 +105,8 @@ export const createModelsSchema = (context: CmsContext): GraphQLSchemaPlugin<Cms
                 label: String!
                 helpText: String
                 placeholderText: String
+                # should never use user input - this is here for backward compatibility
+                storageId: String
                 fieldId: String!
                 type: String!
                 multipleValues: Boolean
@@ -185,6 +187,8 @@ export const createModelsSchema = (context: CmsContext): GraphQLSchemaPlugin<Cms
 
             type CmsContentModelField {
                 id: ID!
+                # auto-generated value
+                storageId: String!
                 fieldId: String!
                 label: String!
                 helpText: String

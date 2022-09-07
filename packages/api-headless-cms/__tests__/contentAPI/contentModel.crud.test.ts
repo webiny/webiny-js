@@ -1,5 +1,3 @@
-// @ts-ignore
-import mdbid from "mdbid";
 import { CmsModelFieldInput, CmsGroup, CmsModelField } from "~/types";
 import { useGraphQLHandler } from "../utils/useGraphQLHandler";
 import * as helpers from "../utils/helpers";
@@ -449,7 +447,7 @@ describe("content model test", () => {
         const contentModel = createResponse.data.createContentModel.data;
 
         const textField: CmsModelFieldInput = {
-            id: mdbid(),
+            id: "someRandomTextFieldId",
             fieldId: "textField",
             label: "Text field",
             helpText: "help text",
@@ -468,7 +466,7 @@ describe("content model test", () => {
             listValidation: []
         };
         const numberField: CmsModelFieldInput = {
-            id: mdbid(),
+            id: "someRandomNumberFieldId",
             fieldId: "numberField",
             label: "Number field",
             helpText: "number help text",
@@ -507,8 +505,17 @@ describe("content model test", () => {
                         createdBy: helpers.identity,
                         createdOn: expect.stringMatching(/^20/),
                         description: null,
-                        titleFieldId: "textField",
-                        fields: [textField, numberField],
+                        titleFieldId: textField.fieldId,
+                        fields: [
+                            {
+                                ...textField,
+                                storageId: `${textField.type}@${textField.id}`
+                            },
+                            {
+                                ...numberField,
+                                storageId: `${numberField.type}@${numberField.id}`
+                            }
+                        ],
                         group: {
                             id: contentModelGroup.id,
                             name: "Group"
@@ -538,7 +545,7 @@ describe("content model test", () => {
         const contentModel = createResponse.data.createContentModel.data;
 
         const field: CmsModelFieldInput = {
-            id: mdbid(),
+            id: "someRandomField1Id",
             fieldId: "field1",
             label: "Field 1",
             helpText: "help text",

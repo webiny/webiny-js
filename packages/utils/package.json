@@ -15,7 +15,9 @@
     "directory": "dist"
   },
   "dependencies": {
-    "@webiny/error": "^5.31.0"
+    "@webiny/error": "^5.31.0",
+    "nanoid": "^3.3.4",
+    "nanoid-dictionary": "^4.3.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.16.0",

@@ -22,7 +22,7 @@ describe("numberIndexing", () => {
     ];
     test.each(numbers)("toIndex should transform %j to %j", (num: any, expected: any) => {
         const field: any = {
-            fieldId: "number"
+            storageId: "number"
         };
         const result = plugin.toIndex({ value: num, field } as any);
 
@@ -47,7 +47,7 @@ describe("numberIndexing", () => {
     ];
     test.each(strings)("fromIndex should transform %j back to %j", (str: any, expected: any) => {
         const field: any = {
-            fieldId: "number"
+            storageId: "number"
         };
         const result = plugin.fromIndex({ value: str, field } as any);
 

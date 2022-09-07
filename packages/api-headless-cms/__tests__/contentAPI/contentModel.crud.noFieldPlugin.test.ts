@@ -83,6 +83,7 @@ describe("content model test no field plugin", () => {
                                 name: "text-input"
                             },
                             label: "test",
+                            storageId: "test",
                             fieldId: "test",
                             id: "aaa",
                             predefinedValues: {
@@ -97,6 +98,7 @@ describe("content model test no field plugin", () => {
                                 name: "text-input"
                             },
                             label: "test",
+                            storageId: "test",
                             fieldId: "test",
                             id: "bbb",
                             predefinedValues: {
@@ -153,7 +155,7 @@ describe("content model test no field plugin", () => {
                         helpText: "",
                         label: "Title",
                         type: "text",
-                        fieldId: "title",
+                        storageId: "title",
                         validation: [],
                         listValidation: [],
                         placeholderText: "placeholder text",
@@ -167,7 +169,7 @@ describe("content model test no field plugin", () => {
                         helpText: "",
                         label: "Slug",
                         type: "text",
-                        fieldId: "slug",
+                        storageId: "slug",
                         validation: [],
                         listValidation: [],
                         placeholderText: "placeholder text",
@@ -181,7 +183,7 @@ describe("content model test no field plugin", () => {
                         helpText: "",
                         label: "Test",
                         type: "custom-test-field",
-                        fieldId: "test",
+                        storageId: "test",
                         validation: [],
                         listValidation: [],
                         renderer: {

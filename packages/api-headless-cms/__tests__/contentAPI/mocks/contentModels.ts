@@ -1,6 +1,6 @@
-import shortId from "shortid";
 import contentModelGroup from "./contentModelGroup";
 import { CmsModel } from "~/types";
+import { generateAlphaNumericId } from "@webiny/utils";
 
 const { version: webinyVersion } = require("@webiny/cli/package.json");
 
@@ -25,61 +25,61 @@ export interface Fruit {
 
 const ids = {
     // product category
-    field11: shortId.generate(),
-    field12: shortId.generate(),
+    field11: generateAlphaNumericId(6),
+    field12: generateAlphaNumericId(6),
     // product
-    field201: shortId.generate(),
-    field202: shortId.generate(),
-    field203: shortId.generate(),
-    field204: shortId.generate(),
-    field205: shortId.generate(),
-    field206: shortId.generate(),
-    field207: shortId.generate(),
-    field208: shortId.generate(),
-    field209: shortId.generate(),
-    field210: shortId.generate(),
-    field211: shortId.generate(),
-    field212: shortId.generate(),
-    field213: shortId.generate(),
-    field214: shortId.generate(),
-    field215: shortId.generate(),
-    field216: shortId.generate(),
-    field217: shortId.generate(),
-    field218: shortId.generate(),
-    field219: shortId.generate(),
-    field220: shortId.generate(),
+    field201: generateAlphaNumericId(6),
+    field202: generateAlphaNumericId(6),
+    field203: generateAlphaNumericId(6),
+    field204: generateAlphaNumericId(6),
+    field205: generateAlphaNumericId(6),
+    field206: generateAlphaNumericId(6),
+    field207: generateAlphaNumericId(6),
+    field208: generateAlphaNumericId(6),
+    field209: generateAlphaNumericId(6),
+    field210: generateAlphaNumericId(6),
+    field211: generateAlphaNumericId(6),
+    field212: generateAlphaNumericId(6),
+    field213: generateAlphaNumericId(6),
+    field214: generateAlphaNumericId(6),
+    field215: generateAlphaNumericId(6),
+    field216: generateAlphaNumericId(6),
+    field217: generateAlphaNumericId(6),
+    field218: generateAlphaNumericId(6),
+    field219: generateAlphaNumericId(6),
+    field220: generateAlphaNumericId(6),
     // product review
-    field31: shortId.generate(),
-    field32: shortId.generate(),
-    field33: shortId.generate(),
-    field34: shortId.generate(),
+    field31: generateAlphaNumericId(6),
+    field32: generateAlphaNumericId(6),
+    field33: generateAlphaNumericId(6),
+    field34: generateAlphaNumericId(6),
     // author
-    field40: shortId.generate(),
+    field40: generateAlphaNumericId(6),
     // fruit
-    field501: shortId.generate(),
-    field502: shortId.generate(),
-    field503: shortId.generate(),
-    field504: shortId.generate(),
-    field505: shortId.generate(),
-    field506: shortId.generate(),
-    field507: shortId.generate(),
-    field508: shortId.generate(),
-    field509: shortId.generate(),
-    field510: shortId.generate(),
-    field511: shortId.generate(),
-    field512: shortId.generate(),
-    field513: shortId.generate(),
-    field514: shortId.generate(),
+    field501: generateAlphaNumericId(6),
+    field502: generateAlphaNumericId(6),
+    field503: generateAlphaNumericId(6),
+    field504: generateAlphaNumericId(6),
+    field505: generateAlphaNumericId(6),
+    field506: generateAlphaNumericId(6),
+    field507: generateAlphaNumericId(6),
+    field508: generateAlphaNumericId(6),
+    field509: generateAlphaNumericId(6),
+    field510: generateAlphaNumericId(6),
+    field511: generateAlphaNumericId(6),
+    field512: generateAlphaNumericId(6),
+    field513: generateAlphaNumericId(6),
+    field514: generateAlphaNumericId(6),
     // bug
-    field601: shortId.generate(),
-    field602: shortId.generate(),
-    field603: shortId.generate(),
-    field604: shortId.generate(),
+    field601: generateAlphaNumericId(6),
+    field602: generateAlphaNumericId(6),
+    field603: generateAlphaNumericId(6),
+    field604: generateAlphaNumericId(6),
     // article
-    field701: shortId.generate(),
-    field702: shortId.generate(),
-    field703: shortId.generate(),
-    field704: shortId.generate()
+    field701: generateAlphaNumericId(6),
+    field702: generateAlphaNumericId(6),
+    field703: generateAlphaNumericId(6),
+    field704: generateAlphaNumericId(6)
 };
 
 const models: CmsModel[] = [
@@ -105,6 +105,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Title",
                 type: "text",
+                storageId: "title",
                 fieldId: "title",
                 validation: [
                     {
@@ -135,6 +136,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Slug",
                 type: "text",
+                storageId: "slug",
                 fieldId: "slug",
                 validation: [
                     {
@@ -190,6 +192,7 @@ const models: CmsModel[] = [
                 multipleValues: false,
                 helpText: "",
                 label: "Title",
+                storageId: "title",
                 fieldId: "title",
                 type: "text",
                 validation: [
@@ -213,6 +216,7 @@ const models: CmsModel[] = [
                 multipleValues: false,
                 helpText: "",
                 label: "Category",
+                storageId: "category",
                 fieldId: "category",
                 type: "ref",
                 validation: [
@@ -240,6 +244,7 @@ const models: CmsModel[] = [
                 multipleValues: false,
                 helpText: "",
                 label: "Price",
+                storageId: "price",
                 fieldId: "price",
                 type: "number",
                 validation: [
@@ -263,6 +268,7 @@ const models: CmsModel[] = [
                 multipleValues: false,
                 helpText: "",
                 label: "Price",
+                storageId: "inStock",
                 fieldId: "inStock",
                 type: "boolean",
                 validation: [],
@@ -281,6 +287,7 @@ const models: CmsModel[] = [
                 multipleValues: false,
                 helpText: "",
                 label: "Price",
+                storageId: "itemsInStock",
                 fieldId: "itemsInStock",
                 type: "number",
                 validation: [],
@@ -299,6 +306,7 @@ const models: CmsModel[] = [
                 multipleValues: false,
                 helpText: "",
                 label: "Available on",
+                storageId: "availableOn",
                 fieldId: "availableOn",
                 type: "datetime",
                 settings: {
@@ -320,6 +328,7 @@ const models: CmsModel[] = [
                 multipleValues: false,
                 helpText: "",
                 label: "Color",
+                storageId: "color",
                 fieldId: "color",
                 type: "text",
                 settings: {
@@ -363,6 +372,7 @@ const models: CmsModel[] = [
                 multipleValues: true,
                 helpText: "",
                 label: "Available sizes",
+                storageId: "availableSizes",
                 fieldId: "availableSizes",
                 type: "text",
                 settings: {
@@ -406,6 +416,7 @@ const models: CmsModel[] = [
                 multipleValues: false,
                 helpText: "Upload an image of the product",
                 label: "Image",
+                storageId: "image",
                 fieldId: "image",
                 type: "file",
                 settings: {
@@ -432,6 +443,7 @@ const models: CmsModel[] = [
                 multipleValues: false,
                 helpText: "Rich text",
                 label: "Rich text",
+                storageId: "richText",
                 fieldId: "richText",
                 type: "rich-text",
                 settings: {
@@ -453,6 +465,7 @@ const models: CmsModel[] = [
                 multipleValues: false,
                 helpText: "",
                 label: "Variant",
+                storageId: "variant",
                 fieldId: "variant",
                 type: "object",
                 settings: {
@@ -462,6 +475,7 @@ const models: CmsModel[] = [
                             multipleValues: false,
                             helpText: "",
                             label: "Name",
+                            storageId: "name",
                             fieldId: "name",
                             type: "text",
                             settings: {
@@ -483,6 +497,7 @@ const models: CmsModel[] = [
                             multipleValues: false,
                             helpText: "",
                             label: "Price",
+                            storageId: "price",
                             fieldId: "price",
                             type: "number",
                             settings: {
@@ -504,6 +519,7 @@ const models: CmsModel[] = [
                             multipleValues: false,
                             helpText: "",
                             label: "Category",
+                            storageId: "category",
                             fieldId: "category",
                             type: "ref",
                             validation: [
@@ -530,6 +546,7 @@ const models: CmsModel[] = [
                             multipleValues: true,
                             helpText: "",
                             label: "Options",
+                            storageId: "options",
                             fieldId: "options",
                             type: "object",
                             settings: {
@@ -539,6 +556,7 @@ const models: CmsModel[] = [
                                         multipleValues: false,
                                         helpText: "",
                                         label: "Name",
+                                        storageId: "name",
                                         fieldId: "name",
                                         type: "text",
                                         settings: {
@@ -560,6 +578,7 @@ const models: CmsModel[] = [
                                         multipleValues: false,
                                         helpText: "",
                                         label: "Price",
+                                        storageId: "price",
                                         fieldId: "price",
                                         type: "number",
                                         settings: {
@@ -581,6 +600,7 @@ const models: CmsModel[] = [
                                         multipleValues: false,
                                         helpText: "",
                                         label: "Category",
+                                        storageId: "category",
                                         fieldId: "category",
                                         type: "ref",
                                         validation: [
@@ -607,6 +627,7 @@ const models: CmsModel[] = [
                                         multipleValues: true,
                                         helpText: "",
                                         label: "Categories",
+                                        storageId: "categories",
                                         fieldId: "categories",
                                         type: "ref",
                                         validation: [],
@@ -654,6 +675,7 @@ const models: CmsModel[] = [
                 multipleValues: false,
                 helpText: "",
                 label: "No fields object",
+                storageId: "fieldsObject",
                 fieldId: "fieldsObject",
                 type: "object",
                 settings: {
@@ -665,6 +687,7 @@ const models: CmsModel[] = [
                             helpText: "",
                             label: "Text",
                             type: "text",
+                            storageId: "text",
                             fieldId: "text",
                             validation: [
                                 {
@@ -721,6 +744,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Text",
                 type: "text",
+                storageId: "text",
                 fieldId: "text",
                 validation: [
                     {
@@ -744,6 +768,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Product",
                 type: "ref",
+                storageId: "product",
                 fieldId: "product",
                 validation: [],
                 listValidation: [],
@@ -765,6 +790,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Rating",
                 type: "number",
+                storageId: "rating",
                 fieldId: "rating",
                 validation: [],
                 listValidation: [],
@@ -783,6 +809,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Author",
                 type: "ref",
+                storageId: "author",
                 fieldId: "author",
                 validation: [],
                 listValidation: [],
@@ -824,6 +851,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Full name",
                 type: "text",
+                storageId: "fullName",
                 fieldId: "fullName",
                 validation: [
                     {
@@ -883,6 +911,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Name",
                 type: "text",
+                storageId: "name",
                 fieldId: "name",
                 validation: [
                     {
@@ -921,6 +950,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Numbers",
                 type: "number",
+                storageId: "numbers",
                 fieldId: "numbers",
                 validation: [
                     {
@@ -974,6 +1004,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "E-mail",
                 type: "text",
+                storageId: "email",
                 fieldId: "email",
                 validation: [
                     {
@@ -1001,6 +1032,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Url",
                 type: "text",
+                storageId: "url",
                 fieldId: "url",
                 validation: [
                     {
@@ -1027,6 +1059,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "LowerCase",
                 type: "text",
+                storageId: "lowerCase",
                 fieldId: "lowerCase",
                 validation: [
                     {
@@ -1054,6 +1087,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "UpperCase",
                 type: "text",
+                storageId: "upperCase",
                 fieldId: "upperCase",
                 validation: [
                     {
@@ -1081,6 +1115,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Date",
                 type: "datetime",
+                storageId: "date",
                 fieldId: "date",
                 validation: [
                     {
@@ -1124,6 +1159,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "DateTime",
                 type: "datetime",
+                storageId: "dateTime",
                 fieldId: "dateTime",
                 validation: [
                     {
@@ -1167,6 +1203,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "DateTime",
                 type: "datetime",
+                storageId: "dateTimeZ",
                 fieldId: "dateTimeZ",
                 validation: [
                     {
@@ -1210,6 +1247,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Time",
                 type: "datetime",
+                storageId: "time",
                 fieldId: "time",
                 validation: [
                     {
@@ -1253,6 +1291,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Is Something",
                 type: "boolean",
+                storageId: "isSomething",
                 fieldId: "isSomething",
                 validation: [],
                 settings: {
@@ -1275,6 +1314,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Rating",
                 type: "number",
+                storageId: "rating",
                 fieldId: "rating",
                 validation: [],
                 settings: {
@@ -1296,6 +1336,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Description",
                 type: "long-text",
+                storageId: "description",
                 fieldId: "description",
                 validation: [],
                 settings: {},
@@ -1315,6 +1356,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Slug",
                 type: "text",
+                storageId: "slug",
                 fieldId: "slug",
                 validation: [
                     {
@@ -1359,6 +1401,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Name",
                 type: "text",
+                storageId: "name",
                 fieldId: "name",
                 validation: [],
                 listValidation: [],
@@ -1377,6 +1420,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Bug type",
                 type: "text",
+                storageId: "bugType",
                 fieldId: "bugType",
                 validation: [],
                 listValidation: [],
@@ -1411,6 +1455,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Bug developer value",
                 type: "number",
+                storageId: "bugValue",
                 fieldId: "bugValue",
                 validation: [],
                 listValidation: [],
@@ -1442,6 +1487,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Bug fixed?",
                 type: "number",
+                storageId: "bugFixed",
                 fieldId: "bugFixed",
                 validation: [],
                 listValidation: [],
@@ -1492,6 +1538,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Title",
                 type: "text",
+                storageId: "title",
                 fieldId: "title",
                 validation: [],
                 listValidation: [],
@@ -1510,6 +1557,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Body",
                 type: "rich-text",
+                storageId: "body",
                 fieldId: "body",
                 validation: [],
                 listValidation: [],
@@ -1528,6 +1576,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Categories",
                 type: "ref",
+                storageId: "categories",
                 fieldId: "categories",
                 validation: [],
                 listValidation: [],
@@ -1549,6 +1598,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Category",
                 type: "ref",
+                storageId: "category",
                 fieldId: "category",
                 validation: [],
                 listValidation: [],

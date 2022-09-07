@@ -3,8 +3,8 @@ import { CmsModelField } from "@webiny/api-headless-cms/types";
 
 const createField = (fieldType: string): CmsModelField => {
     return {
-        id: "fieldId",
-        fieldId: "fieldId",
+        id: "storageId",
+        storageId: "storageId",
         type: "datetime",
         settings: {
             type: fieldType
@@ -13,7 +13,7 @@ const createField = (fieldType: string): CmsModelField => {
 };
 
 describe("dynamodb transform datetime", () => {
-    const correctValues = [
+    const correctValues: [string | Date, string, number][] = [
         [new Date("Thu, 13 May 2021 12:32:33.892 GMT"), "date", 1620909153892],
         [new Date("2021-05-13T12:32:33.892Z"), "date", 1620909153892],
         ["2021-05-13T12:32:33.892Z", "date", 1620909153892],
@@ -36,7 +36,7 @@ describe("dynamodb transform datetime", () => {
         }
     );
 
-    const incorrectTimeValues = [
+    const incorrectTimeValues: [any][] = [
         [{}],
         [[]],
         [
@@ -49,7 +49,7 @@ describe("dynamodb transform datetime", () => {
 
     test.each(incorrectTimeValues)(
         "should throw an error when trying to transform time field but value is not a string or a number",
-        (value: any) => {
+        value => {
             const plugin = datetimeTransform();
 
             expect(() => {

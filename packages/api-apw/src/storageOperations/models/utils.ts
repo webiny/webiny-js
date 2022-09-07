@@ -5,9 +5,9 @@ import { CreateModelFieldParams } from "~/plugins/utils";
 export const createModelField = (params: CreateModelFieldParams): CmsModelField => {
     const { label, type, parent } = params;
     const fieldId = camelCase(label);
-
     return {
         id: `${camelCase(parent)}_${fieldId}`,
+        storageId: fieldId,
         fieldId,
         label,
         type,

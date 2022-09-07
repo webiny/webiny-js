@@ -2,7 +2,7 @@ import richTextStoragePlugin from "~/dynamoDb/storage/richText";
 
 const defaultArgs = {
     field: {
-        fieldId: "richTextFieldId"
+        storageId: "richTextFieldId"
     },
     model: {
         modelId: "richTextModel"

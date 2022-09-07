@@ -1,4 +1,3 @@
-import shortId from "shortid";
 /**
  * Package mdbid does not have types.
  */
@@ -12,7 +11,7 @@ import {
     HeadlessCmsStorageOperations
 } from "~/types";
 import { CmsGroupPlugin } from "~/plugins/CmsGroupPlugin";
-import { createIdentifier } from "@webiny/utils";
+import { createIdentifier, generateAlphaNumericId } from "@webiny/utils";
 import crypto from "crypto";
 
 const cliPackageJson = require("@webiny/cli/package.json");
@@ -30,16 +29,23 @@ const baseGroup = new CmsGroupPlugin({
 
 const biography = crypto.randomBytes(65536).toString("hex");
 
+const nameId = generateAlphaNumericId(6);
+const dateOfBirthId = generateAlphaNumericId(6);
+const childrenId = generateAlphaNumericId(6);
+const marriedId = generateAlphaNumericId(6);
+const biographyId = generateAlphaNumericId(6);
 const personModelFields: Record<string, CmsModelField> = {
     name: {
-        id: shortId.generate(),
+        id: nameId,
+        storageId: `text@${nameId}`,
         fieldId: "name",
         label: "Name",
         multipleValues: false,
         type: "text"
     },
     dateOfBirth: {
-        id: shortId.generate(),
+        id: dateOfBirthId,
+        storageId: `datetime@${dateOfBirthId}`,
         fieldId: "dateOfBirth",
         label: "Date Of Birth",
         multipleValues: false,
@@ -49,22 +55,25 @@ const personModelFields: Record<string, CmsModelField> = {
         }
     },
     children: {
-        id: shortId.generate(),
+        id: childrenId,
+        storageId: `number@${childrenId}`,
         fieldId: "children",
         label: "Children",
         multipleValues: false,
         type: "number"
     },
     married: {
-        id: shortId.generate(),
-        fieldId: "married",
+        id: marriedId,
+        storageId: "married",
+        fieldId: `boolean@${marriedId}`,
         label: "Married",
         multipleValues: false,
         type: "boolean"
     },
     biography: {
-        id: shortId.generate(),
-        fieldId: "biography",
+        id: biographyId,
+        storageId: "biography",
+        fieldId: `text@${biographyId}`,
         label: "Biography",
         multipleValues: false,
         type: "text"

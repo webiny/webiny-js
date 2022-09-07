@@ -118,7 +118,7 @@ describe("Content model locked fields", () => {
         const fieldsToRemove = productModel.fields.filter(field => field.fieldId !== "title");
         for (const field of fieldsToRemove) {
             const targetFields = productModel.fields.filter(f => f.id !== field.id);
-            const [removedFieldResponse] = await updateContentModelMutation({
+            const variables = {
                 modelId: contentModel.modelId,
                 data: {
                     titleFieldId: null,
@@ -127,7 +127,8 @@ describe("Content model locked fields", () => {
                         return [f.id];
                     })
                 }
-            });
+            };
+            const [removedFieldResponse] = await updateContentModelMutation(variables);
 
             expect(removedFieldResponse).toEqual({
                 data: {
@@ -136,7 +137,7 @@ describe("Content model locked fields", () => {
                         error: {
                             code: "ENTRY_FIELD_USED",
                             data: null,
-                            message: `Cannot remove the field "${field.fieldId}" because it's already in use in created content.`
+                            message: `Cannot remove the field "${field.type}@${field.id}" because it's already in use in created content.`
                         }
                     }
                 }
@@ -183,7 +184,7 @@ describe("Content model locked fields", () => {
         );
 
         const fields = model.fields.filter(field => {
-            return field.fieldId !== slugField.fieldId;
+            return field.storageId !== slugField.storageId;
         });
         const layout = model.layout.filter(layouts => {
             return layouts.includes(slugField.id) === false;
@@ -203,7 +204,9 @@ describe("Content model locked fields", () => {
                     error: {
                         code: "ENTRY_FIELD_USED",
                         data: null,
-                        message: `Cannot remove the field "slug" because it's already in use in created content.`
+                        message: expect.stringMatching(
+                            `Cannot remove the field "text@([a-zA-Z0-9\-\_]+)" because it's already in use in created content.`
+                        )
                     }
                 }
             }

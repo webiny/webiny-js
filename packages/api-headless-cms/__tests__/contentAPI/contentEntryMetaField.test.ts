@@ -1,7 +1,7 @@
 import models from "./mocks/contentModels";
 import { CmsEntry, CmsGroup, CmsModel } from "~/types";
-import shortId from "shortid";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
+import { generateAlphaNumericId } from "@webiny/utils";
 
 const manageOpts = {
     path: "manage/en-US"
@@ -88,7 +88,7 @@ describe("Content Entry Meta Field", () => {
 
     it("storage operations - should have meta field data in the retrieved record", async () => {
         const { model } = await setup();
-        const entryId = shortId.generate();
+        const entryId = generateAlphaNumericId(6);
         const entry: CmsEntry = {
             id: `${entryId}#0001`,
             entryId,

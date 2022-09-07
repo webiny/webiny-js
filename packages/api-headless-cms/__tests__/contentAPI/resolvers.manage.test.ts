@@ -141,7 +141,9 @@ describe("MANAGE - Resolvers", () => {
         // Wait until the previous revision is indexed
         await until(
             () => listCategories().then(([data]) => data),
-            ({ data }: any) => data.listCategories.data.length === Object.keys(values).length,
+            ({ data }: any) => {
+                return data.listCategories.data.length === Object.keys(values).length;
+            },
             {
                 name: "list all categories after creation in setupCategories"
             }
@@ -327,7 +329,9 @@ describe("MANAGE - Resolvers", () => {
         // If this `until` resolves successfully, we know entry is accessible via the "read" API
         await until(
             () => listCategories().then(([data]) => data),
-            ({ data }: any) => data.listCategories.data[0].meta.status === "published",
+            ({ data }: any) => {
+                return data.listCategories.data[0].meta.status === "published";
+            },
             {
                 name: "wait for entry to be published"
             }
@@ -496,6 +500,7 @@ describe("MANAGE - Resolvers", () => {
                         data: [
                             {
                                 error: "This field is required",
+                                storageId: expect.stringMatching("text@"),
                                 fieldId: "slug"
                             }
                         ],
@@ -1216,7 +1221,7 @@ describe("MANAGE - Resolvers", () => {
         });
     });
 
-    it("should have all entry revisions published", async () => {
+    test("should have all entry revisions published", async () => {
         const { getCategory, createCategory, publishCategory, createCategoryFrom, listCategories } =
             useCategoryManageHandler(manageOpts);
 
@@ -1430,7 +1435,7 @@ describe("MANAGE - Resolvers", () => {
         });
     });
 
-    it("should get latest, published or exact category", async () => {
+    test("should get latest, published or exact category", async () => {
         const { getCategory, createCategory, publishCategory, createCategoryFrom } =
             useCategoryManageHandler(manageOpts);
 

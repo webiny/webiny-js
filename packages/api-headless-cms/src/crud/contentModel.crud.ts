@@ -44,6 +44,7 @@ import { checkPermissions } from "~/utils/permissions";
 import { filterAsync } from "~/utils/filterAsync";
 import { checkOwnership, validateOwnership } from "~/utils/ownership";
 import { checkModelAccess, validateModelAccess } from "~/utils/access";
+import { validateModelFields } from "~/crud/contentModel/validateModelFields";
 
 export interface CreateModelsCrudParams {
     getTenant: () => Tenant;
@@ -99,31 +100,39 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         const tenant = getTenant().id;
         const locale = getLocale().code;
 
-        return (
-            context.plugins
-                .byType<CmsModelPlugin>(CmsModelPlugin.type)
-                /**
-                 * We need to filter out models that are not for this tenant or locale.
-                 * If it does not have tenant or locale define, it is for every locale and tenant
-                 */
-                .filter(plugin => {
-                    const { tenant: t, locale: l } = plugin.contentModel;
-                    if (t && t !== tenant) {
-                        return false;
-                    } else if (l && l !== locale) {
-                        return false;
-                    }
-                    return true;
-                })
-                .map<CmsModel>(plugin => {
-                    return {
-                        ...plugin.contentModel,
-                        tenant,
-                        locale,
-                        webinyVersion: context.WEBINY_VERSION
-                    };
-                })
-        );
+        const models = context.plugins
+            .byType<CmsModelPlugin>(CmsModelPlugin.type)
+            /**
+             * We need to filter out models that are not for this tenant or locale.
+             * If it does not have tenant or locale define, it is for every locale and tenant
+             */
+            .filter(plugin => {
+                const { tenant: t, locale: l } = plugin.contentModel;
+                if (t && t !== tenant) {
+                    return false;
+                } else if (l && l !== locale) {
+                    return false;
+                }
+                return true;
+            })
+            .map<CmsModel>(plugin => {
+                return {
+                    ...plugin.contentModel,
+                    tenant,
+                    locale,
+                    webinyVersion: context.WEBINY_VERSION
+                };
+            });
+        /**
+         * Only point where we can truly validate the user model is in the runtime.
+         */
+        for (const model of models) {
+            validateModelFields({
+                model,
+                plugins: context.plugins
+            });
+        }
+        return models;
     };
 
     const modelsGet = async (modelId: string): Promise<CmsModel> => {

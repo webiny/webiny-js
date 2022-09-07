@@ -1,7 +1,7 @@
 import { Topic } from "@webiny/pubsub/types";
 import { BeforeModelUpdateTopicParams, HeadlessCmsStorageOperations } from "~/types";
 import { PluginsContainer } from "@webiny/plugins";
-import { validateModelFields } from "./validateModelFields";
+import { validateModel } from "./validateModel";
 
 interface AssignBeforeModelUpdateParams {
     onBeforeModelUpdate: Topic<BeforeModelUpdateTopicParams>;
@@ -13,7 +13,7 @@ export const assignBeforeModelUpdate = (params: AssignBeforeModelUpdateParams) =
     const { onBeforeModelUpdate, plugins } = params;
 
     onBeforeModelUpdate.subscribe(async params => {
-        await validateModelFields({
+        await validateModel({
             model: params.model,
             plugins
         });

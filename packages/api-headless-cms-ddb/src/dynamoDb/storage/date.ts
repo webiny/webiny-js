@@ -29,7 +29,8 @@ const plugin = new StorageTransformPlugin({
         }
         throw new WebinyError("Error converting value to a storage type.", "TO_STORAGE_ERROR", {
             value,
-            fieldId: field.fieldId
+            fieldId: field.fieldId,
+            storageId: field.storageId
         });
     }
 });

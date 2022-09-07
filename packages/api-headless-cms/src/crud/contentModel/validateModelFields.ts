@@ -1,33 +1,37 @@
-import gql from "graphql-tag";
-import WebinyError from "@webiny/error";
-import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";
 import {
     CmsModel,
     CmsModelField,
     CmsModelFieldToGraphQLPlugin,
     CmsModelLockedFieldPlugin
 } from "~/types";
-import { PluginsContainer } from "@webiny/plugins";
-import { GraphQLError } from "graphql";
+import WebinyError from "@webiny/error";
 import { createManageSDL } from "~/graphql/schema/createManageSDL";
+import gql from "graphql-tag";
+import { PluginsContainer } from "@webiny/plugins";
+import { createFieldStorageId } from "./createFieldStorageId";
+import { GraphQLError } from "graphql";
 
 const defaultTitleFieldId = "id";
 
 const allowedTitleFieldTypes = ["text", "number"];
 
 const getContentModelTitleFieldId = (fields: CmsModelField[], titleFieldId?: string): string => {
-    // if there is no title field defined either in input data or existing content model data
-    // we will take first text field that has no multiple values enabled
-    // or if initial titleFieldId is the default one also try to find first available text field
+    /**
+     * if there is no title field defined either in input data or existing content model data
+     * we will take first text field that has no multiple values enabled
+     * or if initial titleFieldId is the default one also try to find first available text field
+     */
     if (!titleFieldId || titleFieldId === defaultTitleFieldId) {
         const titleField = fields.find(field => {
             return field.type === "text" && !field.multipleValues;
         });
         return titleField ? titleField.fieldId : defaultTitleFieldId;
     }
-    // check existing titleFieldId for existence in the model
-    // for correct type
-    // and that it is not multiple values field
+    /**
+     * check existing titleFieldId for existence in the model
+     * for correct type
+     * and that it is not multiple values field
+     */
     const target = fields.find(f => f.fieldId === titleFieldId);
     if (!target) {
         throw new WebinyError(`Field does not exist in the model.`, "VALIDATION_ERROR", {
@@ -43,6 +47,7 @@ const getContentModelTitleFieldId = (fields: CmsModelField[], titleFieldId?: str
             )} and id fields can be used as an entry title.`,
             "ENTRY_TITLE_FIELD_TYPE",
             {
+                storageId: target.storageId,
                 fieldId: target.fieldId,
                 type: target.type
             }
@@ -54,6 +59,7 @@ const getContentModelTitleFieldId = (fields: CmsModelField[], titleFieldId?: str
             `Fields that accept multiple values cannot be used as the entry title.`,
             "ENTRY_TITLE_FIELD_TYPE",
             {
+                storageId: target.storageId,
                 fieldId: target.fieldId,
                 type: target.type
             }
@@ -66,7 +72,9 @@ const getContentModelTitleFieldId = (fields: CmsModelField[], titleFieldId?: str
 const extractInvalidField = (model: CmsModel, err: GraphQLError) => {
     const sdl = err.source?.body || "";
 
-    // Find the invalid type
+    /**
+     * Find the invalid type
+     */
     const { line: lineNumber } = err.locations
         ? err.locations[0]
         : {
@@ -110,50 +118,82 @@ const extractInvalidField = (model: CmsModel, err: GraphQLError) => {
     };
 };
 
-interface ValidateModelParams {
+interface ValidateModelFieldsParams {
     model: CmsModel;
     plugins: PluginsContainer;
 }
-
-export const validateModelFields = async (params: ValidateModelParams) => {
+export const validateModelFields = (params: ValidateModelFieldsParams) => {
     const { model, plugins } = params;
-
-    const modelPlugin = plugins
-        .byType<CmsModelPlugin>(CmsModelPlugin.type)
-        .find(item => item.contentModel.modelId === model.modelId);
-
-    if (modelPlugin) {
-        throw new WebinyError(
-            "Content models defined via plugins cannot be updated.",
-            "CONTENT_MODEL_UPDATE_ERROR",
-            {
-                modelId: model.modelId
-            }
-        );
-    }
-
     const { titleFieldId } = model;
 
-    // There should be fields/locked fields in either model or data to be updated.
+    /**
+     * There should be fields/locked fields in either model or data to be updated.
+     */
     const { fields = [], lockedFields = [] } = model;
 
-    // Let's inspect the fields of the received content model. We prevent saving of a content model if it
-    // contains a field for which a "cms-model-field-to-graphql" plugin does not exist on the backend.
+    /**
+     * Let's inspect the fields of the received content model. We prevent saving of a content model if it
+     * contains a field for which a "cms-model-field-to-graphql" plugin does not exist on the backend.
+     */
     const fieldTypePlugins = plugins.byType<CmsModelFieldToGraphQLPlugin>(
         "cms-model-field-to-graphql"
     );
 
-    for (let i = 0; i < fields.length; i++) {
-        const field = fields[i];
+    const fieldIdList: string[] = [];
+
+    for (const field of fields) {
         if (!fieldTypePlugins.find(item => item.fieldType === field.type)) {
             throw new Error(
                 `Cannot update content model because of the unknown "${field.type}" field.`
             );
         }
+        /**
+         * Field MUST have an fieldId defined.
+         */
+        if (!field.fieldId) {
+            throw new WebinyError(`Field does not have an "fieldId" defined.`, "MISSING_FIELD_ID", {
+                field
+            });
+        }
+        /**
+         * If storageId does not match a certain pattern, add that pattern, but only if field is not locked (used) already.
+         * This is to avoid errors in the already installed systems.
+         *
+         * Why are we using the @?
+         *
+         * It is not part of special characters for the query syntax in the Lucene.
+         *
+         * Relevant links:
+         * https://lucene.apache.org/core/3_4_0/queryparsersyntax.html
+         * https://discuss.elastic.co/t/special-characters-in-field-names/10658/3
+         * https://discuss.elastic.co/t/illegal-characters-in-elasticsearch-field-names/17196/2
+         */
+        const isLocked = lockedFields.some(lockedField => {
+            return lockedField.storageId === field.storageId;
+        });
+        if (!field.storageId) {
+            if (isLocked) {
+                field.storageId = field.fieldId;
+            } else {
+                field.storageId = createFieldStorageId(field);
+            }
+        }
+
+        /**
+         * Check the field fieldId against existing ones.
+         */
+        if (fieldIdList.includes(field.fieldId)) {
+            throw new WebinyError(
+                `Cannot update content model because field "${field.storageId}" has fieldId "${field.fieldId}", which is already used.`
+            );
+        }
+        fieldIdList.push(field.fieldId);
     }
 
     if (fields.length) {
-        // Make sure that this model can be safely converted to a GraphQL SDL
+        /**
+         * Make sure that this model can be safely converted to a GraphQL SDL
+         */
         const schema = createManageSDL({
             model,
             fieldTypePlugins: fieldTypePlugins.reduce(
@@ -174,31 +214,35 @@ export const validateModelFields = async (params: ValidateModelParams) => {
     const cmsLockedFieldPlugins =
         plugins.byType<CmsModelLockedFieldPlugin>("cms-model-locked-field");
 
-    // We must not allow removal or changes in fields that are already in use in content entries.
+    /**
+     * We must not allow removal or changes in fields that are already in use in content entries.
+     */
     for (const lockedField of lockedFields) {
-        const existingField = fields.find(item => item.fieldId === lockedField.fieldId);
+        const existingField = fields.find(item => item.storageId === lockedField.storageId);
         if (!existingField) {
             throw new WebinyError(
-                `Cannot remove the field "${lockedField.fieldId}" because it's already in use in created content.`,
+                `Cannot remove the field "${lockedField.storageId}" because it's already in use in created content.`,
                 "ENTRY_FIELD_USED"
             );
         }
 
         if (lockedField.multipleValues !== existingField.multipleValues) {
             throw new WebinyError(
-                `Cannot change "multipleValues" for the "${lockedField.fieldId}" field because it's already in use in created content.`,
+                `Cannot change "multipleValues" for the "${lockedField.storageId}" field because it's already in use in created content.`,
                 "ENTRY_FIELD_USED"
             );
         }
 
         if (lockedField.type !== existingField.type) {
             throw new WebinyError(
-                `Cannot change field type for the "${lockedField.fieldId}" field because it's already in use in created content.`,
+                `Cannot change field type for the "${lockedField.storageId}" field because it's already in use in created content.`,
                 "ENTRY_FIELD_USED"
             );
         }
 
-        // Check `lockedField` invariant for specific field
+        /**
+         * Check `lockedField` invariant for specific field
+         */
         const lockedFieldsByType = cmsLockedFieldPlugins.filter(
             pl => pl.fieldType === lockedField.type
         );

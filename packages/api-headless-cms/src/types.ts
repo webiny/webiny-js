@@ -123,11 +123,23 @@ export interface CmsModelField {
      */
     type: string;
     /**
-     * A unique field ID for mapping values.
+     * A unique storage ID for storing actual values.
+     * Must in form of a-zA-Z0-9@a-zA-Z0-9@a-zA-Z0-9.
+     *
+     * This is an auto-generated value: uses `id` and `type`
+     *
+     * This is used as path for the entry value.
+     *
+     * @internal
+     */
+    storageId: string;
+    /**
+     * Field identifier for the model field that will be available to the outside world.
+     * `storageId` is used as path (or column) to store the data.
+     *
      * Must in form of a-zA-Z0-9.
      *
-     * We generate a unique fieldId value when you're building a model via UI,
-     * but when user is creating a model via a plugin it is up to them to be careful about this.
+     * This value MUST be unique in the CmsModel.
      */
     fieldId: string;
     /**
@@ -315,9 +327,9 @@ export interface CmsModelFieldPatternValidatorPlugin extends Plugin {
  */
 export interface LockedField {
     /**
-     * Locked field ID - one used for mapping values.
+     * Locked field storage ID - one used to store values.
      */
-    fieldId: string;
+    storageId: string;
     /**
      * Is the field multiple values field?
      */
@@ -537,13 +549,13 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
         }): CmsModelFieldDefinition | string | null;
         /**
          * Definition for field resolver.
-         * By default it is simple return of the `instance.values[fieldId]` but if required, users can define their own.
+         * By default it is simple return of the `instance.values[storageId]` but if required, users can define their own.
          *
          * ```ts
          * read: {
          *     createResolver({ field }) {
          *         return instance => {
-         *             return instance.values[field.fieldId];
+         *             return instance.values[field.storageId];
          *         };
          *     }
          * }
@@ -649,13 +661,13 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
         }) => CmsModelFieldDefinition | string | null;
         /**
          * Definition for field resolver.
-         * By default it is simple return of the `instance.values[fieldId]` but if required, users can define their own.
+         * By default it is simple return of the `instance.values[storageId]` but if required, users can define their own.
          *
          * ```ts
          * manage: {
          *     createResolver({ field }) {
          *         return instance => {
-         *             return instance.values[field.fieldId];
+         *             return instance.values[field.storageId];
          *         };
          *     }
          * }
@@ -1067,8 +1079,7 @@ export interface CmsModelFieldInput {
      */
     type: string;
     /**
-     * A unique ID for the field. Values will be mapped via this value.
-     * This field MUST be in range of "a-zA-Z".
+     * Field outside world identifier for the field. Must be unique in the model.
      */
     fieldId: string;
     /**
@@ -1247,7 +1258,7 @@ export interface CmsEntry {
      */
     status: CmsEntryStatus;
     /**
-     * A mapped fieldId -> value object.
+     * A mapped storageId -> value object.
      *
      * @see CmsModelField
      */

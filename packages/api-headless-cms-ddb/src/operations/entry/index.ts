@@ -620,6 +620,7 @@ export const createEntriesStorageOperations = (
         });
 
         const totalCount = filteredItems.length;
+
         /**
          * Sorting is also done via the code.
          * It takes the sort input and sorts by it via the lodash sortBy method.

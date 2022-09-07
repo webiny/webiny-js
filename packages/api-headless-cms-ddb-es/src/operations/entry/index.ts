@@ -768,7 +768,8 @@ export const createEntriesStorageOperations = (
             throw new WebinyError(ex.message, ex.code || "ELASTICSEARCH_ERROR", {
                 error: ex,
                 index,
-                body
+                body,
+                model
             });
         }
 

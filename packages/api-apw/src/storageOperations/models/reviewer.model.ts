@@ -47,7 +47,7 @@ export const createReviewerModelDefinition = (): WorkflowModelDefinition => {
         name: "APW - Reviewer",
         modelId: REVIEWER_MODEL_ID,
         titleFieldId: "displayName",
-        layout: [["reviewer_id"], ["reviewer_displayName"]],
+        layout: [["reviewer_identityId"], ["reviewer_displayName"], ["reviewer_type"]],
         fields: [idField(), displayNameField(), typeField()],
         description: "",
         isPrivate: true

@@ -1,9 +1,9 @@
 import dateStoragePlugin from "~/dynamoDb/storage/date";
 
-const createDefaultArgs = ({ fieldId = "fieldId", type }) => {
+const createDefaultArgs = ({ storageId = "storageId", type }) => {
     return {
         field: {
-            fieldId,
+            storageId,
             settings: {
                 type
             }

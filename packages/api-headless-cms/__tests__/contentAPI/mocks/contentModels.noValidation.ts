@@ -1,12 +1,12 @@
-import shortId from "shortid";
 import contentModelGroup from "./contentModelGroup";
 import { CmsModel } from "~/types";
+import { generateAlphaNumericId } from "@webiny/utils";
 
 const { version: webinyVersion } = require("@webiny/cli/package.json");
 
 const ids = {
-    field11: shortId.generate(),
-    field12: shortId.generate()
+    field11: generateAlphaNumericId(6),
+    field12: generateAlphaNumericId(6)
 };
 
 const models: CmsModel[] = [
@@ -30,6 +30,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Title",
                 type: "text",
+                storageId: `text@${ids.field11}`,
                 fieldId: "title",
                 validation: [],
                 listValidation: [],
@@ -48,6 +49,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Slug",
                 type: "text",
+                storageId: `text@${ids.field12}`,
                 fieldId: "slug",
                 validation: [],
                 listValidation: [],
