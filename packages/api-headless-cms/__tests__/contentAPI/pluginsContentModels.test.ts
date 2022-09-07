@@ -630,4 +630,37 @@ describe("content model plugins", () => {
             })
         );
     });
+
+    it(`should fail to create model plugin due to invalid "storageId"`, async () => {
+        let error: Error | undefined;
+        try {
+            new CmsModelPlugin({
+                name: "test",
+                layout: [],
+                fields: [
+                    {
+                        type: "text",
+                        fieldId: "something",
+                        id: "something",
+                        label: "Something",
+                        storageId: "text@something",
+                        settings: {}
+                    }
+                ],
+                modelId: "test",
+                group: {
+                    id: "group",
+                    name: "Group"
+                },
+                description: "",
+                titleFieldId: "something"
+            });
+        } catch (ex) {
+            error = ex;
+        }
+        expect(error).toBeInstanceOf(Error);
+        expect(error?.message).toEqual(
+            `Field's "storageId" of the field with "fieldId" something is not camel cased string in the content model "test".`
+        );
+    });
 });

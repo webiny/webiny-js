@@ -64,10 +64,10 @@ export class CmsModelPlugin extends Plugin {
              */
             if (!(input.fieldId || "").trim()) {
                 throw new WebinyError(
-                    `Field's "storageId" is not defined for the content model "${this.contentModel.modelId}".`,
+                    `Field's "storageId" is not defined for the content model "${model.modelId}".`,
                     "FIELD_ID_ERROR",
                     {
-                        model: this.contentModel,
+                        model,
                         field: input
                     }
                 );
@@ -78,10 +78,10 @@ export class CmsModelPlugin extends Plugin {
              */
             if (fieldId.match(/^[0-9]/) !== null) {
                 throw new WebinyError(
-                    `Field's "fieldId" does not match correct pattern in the content model "${this.contentModel.modelId}" - cannot start with a number.`,
+                    `Field's "fieldId" does not match correct pattern in the content model "${model.modelId}" - cannot start with a number.`,
                     "FIELD_FIELD_ID_ERROR",
                     {
-                        model: this.contentModel,
+                        model,
                         field: input
                     }
                 );
@@ -91,10 +91,10 @@ export class CmsModelPlugin extends Plugin {
              */
             if (fieldId !== input.fieldId) {
                 throw new WebinyError(
-                    `Field's "fieldId" must be a camel cased string in the content model "${this.contentModel.modelId}".`,
+                    `Field's "fieldId" must be a camel cased string in the content model "${model.modelId}".`,
                     "FIELD_FIELD_ID_ERROR",
                     {
-                        model: this.contentModel,
+                        model,
                         field: input
                     }
                 );
@@ -104,10 +104,10 @@ export class CmsModelPlugin extends Plugin {
              */
             if (fieldIdList.includes(fieldId) === true) {
                 throw new WebinyError(
-                    `Field's "fieldId" is not unique in the content model "${this.contentModel.modelId}".`,
+                    `Field's "fieldId" is not unique in the content model "${model.modelId}".`,
                     "FIELD_ID_NOT_UNIQUE_ERROR",
                     {
-                        model: this.contentModel,
+                        model,
                         field: input
                     }
                 );
@@ -122,10 +122,11 @@ export class CmsModelPlugin extends Plugin {
                 (storageId.match(/^([a-zA-Z-0-9]+)$/) === null || storageId !== input.storageId)
             ) {
                 throw new WebinyError(
-                    `Field's "storageId" is not camel cased string in the content model "${this.contentModel.modelId}".`,
+                    `Field's "storageId" of the field with "fieldId" ${input.fieldId} is not camel cased string in the content model "${model.modelId}".`,
                     "STORAGE_ID_NOT_CAMEL_CASED_ERROR",
                     {
-                        model: this.contentModel,
+                        model,
+                        storageId,
                         field: input
                     }
                 );
@@ -133,7 +134,7 @@ export class CmsModelPlugin extends Plugin {
                 storageId = createFieldStorageId(input);
             }
 
-            const field = {
+            const field: CmsModelFieldBase = {
                 ...input,
                 storageId
             };
@@ -142,10 +143,10 @@ export class CmsModelPlugin extends Plugin {
              */
             if (storageIdList.includes(field.storageId) === true) {
                 throw new WebinyError(
-                    `Field's "storageId" is not unique in the content model "${this.contentModel.modelId}".`,
+                    `Field's "storageId" is not unique in the content model "${model.modelId}".`,
                     "STORAGE_ID_ERROR",
                     {
-                        model: this.contentModel,
+                        model,
                         field
                     }
                 );
@@ -188,6 +189,6 @@ export class CmsModelPlugin extends Plugin {
     }
 }
 
-export const createCmsModel = (model: CmsModel): CmsModelPlugin => {
+export const createCmsModel = (model: CmsModelInput): CmsModelPlugin => {
     return new CmsModelPlugin(model);
 };
