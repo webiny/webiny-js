@@ -28,7 +28,7 @@ interface CmsModel extends Omit<CmsModelBase, "locale" | "tenant" | "webinyVersi
 
 export class CmsModelPlugin extends Plugin {
     public static override readonly type: string = "cms-content-model";
-    contentModel: CmsModel;
+    public readonly contentModel: CmsModel;
 
     constructor(contentModel: CmsModelInput) {
         super();
@@ -130,7 +130,7 @@ export class CmsModelPlugin extends Plugin {
                     }
                 );
             } else if (!storageId) {
-                storageId = this.createStorageId(input);
+                storageId = createFieldStorageId(input);
             }
 
             const field = {
@@ -157,13 +157,6 @@ export class CmsModelPlugin extends Plugin {
         return fields;
     }
 
-    private createStorageId(field: CmsModelFieldInput): string {
-        if (!field.storageId) {
-            return createFieldStorageId(field);
-        }
-        return field.storageId;
-    }
-
     private validateLayout(model: CmsModel): void {
         for (const field of model.fields) {
             let total = 0;
@@ -187,7 +180,7 @@ export class CmsModelPlugin extends Plugin {
                 `Missing field "${field.id}" in layout.`,
                 "MISSING_FIELD_IN_LAYOUT",
                 {
-                    // model,
+                    model,
                     field
                 }
             );
