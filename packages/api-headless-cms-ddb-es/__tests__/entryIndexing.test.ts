@@ -1,7 +1,7 @@
 import { PluginsContainer } from "@webiny/plugins";
 import indexingPlugins from "~/elasticsearch/indexing";
 import { createGraphQLFields } from "@webiny/api-headless-cms";
-import { CmsEntry } from "@webiny/api-headless-cms/types";
+import { CmsEntry, CmsModel, CmsModelField } from "@webiny/api-headless-cms/types";
 import { extractEntriesFromIndex, prepareEntryToIndex } from "~/helpers";
 
 const mockRichTextValue = [
@@ -11,62 +11,73 @@ const mockRichTextValue = [
     }
 ];
 
+const createMockField = (
+    field: Partial<CmsModelField> & Pick<CmsModelField, "fieldId" | "type">
+): CmsModelField => {
+    return {
+        ...field,
+        id: field.fieldId,
+        storageId: field.fieldId,
+        label: field.fieldId
+    };
+};
+
 const mockTextValue = "some short searchable text";
 
-const mockModel: any = {
+const mockModel: Pick<CmsModel, "fields"> = {
     fields: [
-        {
-            storageId: "notAffectedNumber",
+        createMockField({
+            fieldId: "notAffectedNumber",
             type: "number"
-        },
-        {
-            storageId: "notAffectedString",
+        }),
+        createMockField({
+            fieldId: "notAffectedString",
             type: "text"
-        },
-        {
-            storageId: "richText",
+        }),
+        createMockField({
+            fieldId: "richText",
             type: "rich-text"
-        },
-        {
-            storageId: "text",
+        }),
+        createMockField({
+            fieldId: "text",
             type: "text"
-        },
-        {
-            storageId: "page",
+        }),
+        createMockField({
+            fieldId: "page",
             type: "object",
             settings: {
                 fields: [
-                    {
-                        storageId: "title",
+                    createMockField({
+                        fieldId: "title",
                         type: "text"
-                    },
-                    {
-                        storageId: "number",
+                    }),
+                    createMockField({
+                        fieldId: "number",
                         type: "number"
-                    },
-                    {
-                        storageId: "richText",
+                    }),
+                    createMockField({
+                        fieldId: "richText",
                         type: "rich-text"
-                    },
-                    {
-                        storageId: "settings",
+                    }),
+                    createMockField({
+                        fieldId: "settings",
                         type: "object",
                         settings: {
                             fields: [
-                                {
-                                    storageId: "title",
+                                createMockField({
+                                    fieldId: "title",
                                     type: "text"
-                                },
-                                {
-                                    storageId: "snippet",
+                                }),
+                                createMockField({
+                                    fieldId: "snippet",
                                     type: "rich-text"
-                                }
+                                })
                             ]
                         }
-                    }
+                    })
                 ]
             }
-        }
+        })
     ]
 };
 
@@ -139,7 +150,7 @@ describe("entryIndexing", () => {
         const entryToIndex = prepareEntryToIndex({
             entry: mockInputEntry as any,
             storageEntry: mockInputEntry as any,
-            model: mockModel,
+            model: mockModel as unknown as CmsModel,
             plugins
         });
 
@@ -148,7 +159,7 @@ describe("entryIndexing", () => {
 
     test("should extract original entry from indexed data", () => {
         const [entryFromIndex] = extractEntriesFromIndex({
-            model: mockModel,
+            model: mockModel as unknown as CmsModel,
             plugins,
             entries: [mockIndexedEntry as any]
         });

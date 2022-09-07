@@ -44,6 +44,14 @@ const createSystemField = (field: PartialCmsModelField): CmsModelField => {
                 field
             }
         );
+    } else if (!field.fieldId) {
+        throw new WebinyError(
+            `When creating system field it must have a "fieldId".`,
+            "SYSTEM_FIELD_ERROR",
+            {
+                field
+            }
+        );
     } else if (!field.type) {
         throw new WebinyError(
             `When creating system field it must have a "type".`,
@@ -53,7 +61,11 @@ const createSystemField = (field: PartialCmsModelField): CmsModelField => {
             }
         );
     }
-    return field as unknown as CmsModelField;
+    return {
+        ...field,
+        id: field.fieldId,
+        label: field.fieldId
+    };
 };
 
 export const systemFields: ModelFields = {
