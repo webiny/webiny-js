@@ -187,7 +187,7 @@ const stepStatusField = (): CmsModelField => ({
         }
     ],
     storageId: "status",
-    alias: "status"
+    fieldId: "status"
 });
 
 const stepPendingChangeRequests = () =>
@@ -263,7 +263,7 @@ const stepsField = (fields: CmsModelField[]): CmsModelField => ({
     },
     listValidation: [],
     validation: [],
-    alias: "steps",
+    fieldId: "steps",
     storageId: "steps",
     multipleValues: true,
     predefinedValues: {

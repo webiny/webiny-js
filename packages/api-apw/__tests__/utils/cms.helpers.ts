@@ -24,7 +24,7 @@ const createModelData = (
             {
                 id: "name",
                 storageId: "text@name",
-                alias: "name",
+                fieldId: "name",
                 label: "Name",
                 type: "text",
                 settings: {},
@@ -38,7 +38,7 @@ const createModelData = (
             {
                 id: "sku",
                 storageId: "number@sku",
-                alias: "sku",
+                fieldId: "sku",
                 label: "SKU",
                 type: "number",
                 settings: {},
@@ -52,7 +52,7 @@ const createModelData = (
             {
                 id: "description",
                 storageId: "long-text@description",
-                alias: "description",
+                fieldId: "description",
                 label: "Description",
                 type: "long-text",
                 settings: {},
@@ -80,7 +80,7 @@ const createModelData = (
             {
                 id: "body",
                 storageId: "rich-text@body",
-                alias: "body",
+                fieldId: "body",
                 label: "Body",
                 type: "rich-text",
                 settings: {},

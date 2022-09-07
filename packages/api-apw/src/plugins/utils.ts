@@ -19,7 +19,8 @@ import {
 const ALPHANUMERIC = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 export const getNanoid = customAlphabet(ALPHANUMERIC, 10);
 
-export interface CreateModelFieldParams extends Omit<CmsModelField, "id" | "storageId" | "alias"> {
+export interface CreateModelFieldParams
+    extends Omit<CmsModelField, "id" | "storageId" | "fieldId"> {
     parent: string;
 }
 
