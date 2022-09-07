@@ -329,7 +329,9 @@ describe("MANAGE - Resolvers", () => {
         // If this `until` resolves successfully, we know entry is accessible via the "read" API
         await until(
             () => listCategories().then(([data]) => data),
-            ({ data }: any) => data.listCategories.data[0].meta.status === "published",
+            ({ data }: any) => {
+                return data.listCategories.data[0].meta.status === "published";
+            },
             {
                 name: "wait for entry to be published"
             }

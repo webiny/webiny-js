@@ -33,10 +33,12 @@ interface FieldTypePlugin {
 }
 type FieldTypePlugins = Record<string, FieldTypePlugin>;
 
-const createSystemField = (field: Partial<CmsModelField>): CmsModelField => {
+type PartialCmsModelField = Partial<CmsModelField> &
+    Pick<CmsModelField, "storageId" | "fieldId" | "type">;
+const createSystemField = (field: PartialCmsModelField): CmsModelField => {
     if (!field.storageId) {
         throw new WebinyError(
-            `When creating system field it must have a "entryId".`,
+            `When creating system field it must have a "storageId".`,
             "SYSTEM_FIELD_ERROR",
             {
                 field
@@ -62,6 +64,7 @@ export const systemFields: ModelFields = {
         isSortable: true,
         field: createSystemField({
             storageId: "id",
+            fieldId: "id",
             type: "text"
         })
     },
@@ -72,6 +75,7 @@ export const systemFields: ModelFields = {
         isSortable: true,
         field: createSystemField({
             storageId: "entryId",
+            fieldId: "entryId",
             type: "text"
         })
     },
@@ -84,6 +88,7 @@ export const systemFields: ModelFields = {
         isSortable: true,
         field: createSystemField({
             storageId: "savedOn",
+            fieldId: "savedOn",
             type: "date",
             settings: {
                 type: "dateTimeWithoutTimezone"
@@ -99,6 +104,7 @@ export const systemFields: ModelFields = {
         isSortable: true,
         field: createSystemField({
             storageId: "createdOn",
+            fieldId: "createdOn",
             type: "text",
             settings: {
                 type: "dateTimeWithoutTimezone"
@@ -114,6 +120,7 @@ export const systemFields: ModelFields = {
         path: "createdBy.id",
         field: createSystemField({
             storageId: "createdBy",
+            fieldId: "createdBy",
             type: "text"
         })
     },
@@ -126,6 +133,7 @@ export const systemFields: ModelFields = {
         path: "ownedBy.id",
         field: createSystemField({
             storageId: "ownedBy",
+            fieldId: "ownedBy",
             type: "text"
         })
     },
@@ -138,6 +146,7 @@ export const systemFields: ModelFields = {
         isSortable: true,
         field: createSystemField({
             storageId: "version",
+            fieldId: "version",
             type: "number"
         })
     }
@@ -173,12 +182,12 @@ export const createModelFields = (plugins: PluginsContainer, model: CmsModel): M
         }, {} as FieldTypePlugins);
 
     return model.fields.reduce((fields, field) => {
-        const { storageId, type } = field;
+        const { fieldId, type } = field;
         if (!fieldTypePlugins[type]) {
             throw new WebinyError(`There is no plugin for field type "${type}".`);
         }
         const { isSearchable, isSortable, unmappedType } = fieldTypePlugins[type];
-        fields[storageId] = {
+        fields[fieldId] = {
             type,
             isSearchable,
             isSortable,

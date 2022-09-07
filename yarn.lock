@@ -10509,7 +10509,6 @@ __metadata:
     pluralize: ^8.0.0
     prettier: ^2.3.2
     rimraf: ^3.0.2
-    shortid: ^2.2.15
     sinon: ^9.0.2
     slugify: ^1.4.0
     ttypescript: ^1.5.12
@@ -13481,7 +13480,7 @@ __metadata:
     "@webiny/cli": ^5.31.0
     "@webiny/error": ^5.31.0
     "@webiny/project-utils": ^5.31.0
-    nanoid: ^4.0.0
+    nanoid: ^3.3.4
     nanoid-dictionary: ^4.3.0
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
@@ -36256,7 +36255,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"shortid@npm:^2.2.14, shortid@npm:^2.2.15, shortid@npm:^2.2.16":
+"shortid@npm:^2.2.14, shortid@npm:^2.2.16":
   version: 2.2.16
   resolution: "shortid@npm:2.2.16"
   dependencies:

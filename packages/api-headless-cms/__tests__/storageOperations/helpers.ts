@@ -1,4 +1,3 @@
-import shortId from "shortid";
 /**
  * Package mdbid does not have types.
  */
@@ -12,7 +11,7 @@ import {
     HeadlessCmsStorageOperations
 } from "~/types";
 import { CmsGroupPlugin } from "~/plugins/CmsGroupPlugin";
-import { createIdentifier } from "@webiny/utils";
+import { createIdentifier, generateAlphaNumericId } from "@webiny/utils";
 import crypto from "crypto";
 
 const cliPackageJson = require("@webiny/cli/package.json");
@@ -30,15 +29,15 @@ const baseGroup = new CmsGroupPlugin({
 
 const biography = crypto.randomBytes(65536).toString("hex");
 
-const nameId = shortId.generate();
-const dateOfBirthId = shortId.generate();
-const childrenId = shortId.generate();
-const marriedId = shortId.generate();
-const biographyId = shortId.generate();
+const nameId = generateAlphaNumericId(6);
+const dateOfBirthId = generateAlphaNumericId(6);
+const childrenId = generateAlphaNumericId(6);
+const marriedId = generateAlphaNumericId(6);
+const biographyId = generateAlphaNumericId(6);
 const personModelFields: Record<string, CmsModelField> = {
     name: {
         id: nameId,
-        storageId: `name@text@${nameId}`,
+        storageId: `text@${nameId}`,
         fieldId: "name",
         label: "Name",
         multipleValues: false,
@@ -46,7 +45,7 @@ const personModelFields: Record<string, CmsModelField> = {
     },
     dateOfBirth: {
         id: dateOfBirthId,
-        storageId: `dateOfBirth@datetime@${dateOfBirthId}`,
+        storageId: `datetime@${dateOfBirthId}`,
         fieldId: "dateOfBirth",
         label: "Date Of Birth",
         multipleValues: false,
@@ -57,7 +56,7 @@ const personModelFields: Record<string, CmsModelField> = {
     },
     children: {
         id: childrenId,
-        storageId: `children@number@${childrenId}`,
+        storageId: `number@${childrenId}`,
         fieldId: "children",
         label: "Children",
         multipleValues: false,
@@ -66,7 +65,7 @@ const personModelFields: Record<string, CmsModelField> = {
     married: {
         id: marriedId,
         storageId: "married",
-        fieldId: `married@boolean@${marriedId}`,
+        fieldId: `boolean@${marriedId}`,
         label: "Married",
         multipleValues: false,
         type: "boolean"
@@ -74,7 +73,7 @@ const personModelFields: Record<string, CmsModelField> = {
     biography: {
         id: biographyId,
         storageId: "biography",
-        fieldId: `biography@text@${biographyId}`,
+        fieldId: `text@${biographyId}`,
         label: "Biography",
         multipleValues: false,
         type: "text"

@@ -74,7 +74,7 @@ export class CmsModelPlugin extends Plugin {
             }
             const fieldId = lodashCamelCase(input.fieldId);
             /**
-             * Alias must be in correct pattern.
+             * FieldID must be in correct pattern.
              */
             if (fieldId.match(/^[0-9]/) !== null) {
                 throw new WebinyError(
@@ -87,7 +87,7 @@ export class CmsModelPlugin extends Plugin {
                 );
             }
             /**
-             * Alias also must be camelCased.
+             * FieldID also must be camelCased.
              */
             if (fieldId !== input.fieldId) {
                 throw new WebinyError(

@@ -1,12 +1,12 @@
-import shortId from "shortid";
 import contentModelGroup from "./contentModelGroup";
 import { CmsModel } from "~/types";
+import { generateAlphaNumericId } from "@webiny/utils";
 
 const { version: webinyVersion } = require("@webiny/cli/package.json");
 
 const ids = {
-    field11: shortId.generate(),
-    field12: shortId.generate()
+    field11: generateAlphaNumericId(6),
+    field12: generateAlphaNumericId(6)
 };
 
 const models: CmsModel[] = [

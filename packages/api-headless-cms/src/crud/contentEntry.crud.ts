@@ -117,7 +117,7 @@ const mapAndCleanCreateInputData = (
          * The fix would be for the user to add the fieldId on the field definition.
          */
         if (!field.fieldId) {
-            throw new WebinyError("Field does not have an fieldId.", "MISSING_ALIAS", {
+            throw new WebinyError("Field does not have an fieldId.", "MISSING_FIELD_ID", {
                 field
             });
         }
@@ -142,7 +142,7 @@ const mapAndCleanUpdatedInputData = (
          * The fix would be for the user to add the fieldId on the field definition.
          */
         if (!field.fieldId) {
-            throw new WebinyError("Field does not have an fieldId.", "MISSING_ALIAS", {
+            throw new WebinyError("Field does not have an fieldId.", "MISSING_FIELD_ID", {
                 field
             });
         }

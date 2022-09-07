@@ -6,9 +6,9 @@ import {
 
 const createPath: CreatePathCallable<string> = ({ field, key }) => {
     if (key && key.match("entryId") === null) {
-        return `${field.storageId}.id`;
+        return `${field.fieldId}.id`;
     }
-    return `${field.storageId}.entryId`;
+    return `${field.fieldId}.entryId`;
 };
 
 const transform: TransformCallable<string> = params => {

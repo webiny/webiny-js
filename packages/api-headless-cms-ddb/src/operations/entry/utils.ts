@@ -639,7 +639,7 @@ export const buildModelFields = ({
          * This should be caught on the tests runs and never actually happen on live system.
          */
         if (!field.fieldId) {
-            throw new WebinyError("Missing system field fieldId.", "ALIAS_ERROR", {
+            throw new WebinyError("Missing system field `fieldId`.", "FIELD_ID_ERROR", {
                 field
             });
         }

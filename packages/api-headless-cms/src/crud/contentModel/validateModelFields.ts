@@ -151,13 +151,9 @@ export const validateModelFields = (params: ValidateModelFieldsParams) => {
          * Field MUST have an fieldId defined.
          */
         if (!field.fieldId) {
-            throw new WebinyError(
-                `Field does not have an "fieldId" defined.`,
-                "MISSING_FIELD_ALIAS",
-                {
-                    field
-                }
-            );
+            throw new WebinyError(`Field does not have an "fieldId" defined.`, "MISSING_FIELD_ID", {
+                field
+            });
         }
         /**
          * If storageId does not match a certain pattern, add that pattern, but only if field is not locked (used) already.

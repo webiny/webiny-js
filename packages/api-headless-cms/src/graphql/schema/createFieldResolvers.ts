@@ -58,8 +58,8 @@ export const createFieldResolversFactory = (factoryParams: CreateFieldResolversF
              */
             if (!field.fieldId) {
                 throw new WebinyError(
-                    "Field is missing an fieldId. Cannot process field without the fieldId in the resolvers.",
-                    "FIELD_ALIAS_ERROR",
+                    "Field is missing an `fieldId`. Cannot process field without the `fieldId` in the resolvers.",
+                    "FIELD_ID_ERROR",
                     {
                         field
                     }
