@@ -125,7 +125,7 @@ const generateFieldId = (layout: string[]): string => {
     let id = generateAlphaNumericLowerCaseId(8);
 
     let iteration = 0;
-    while (layout.includes(id) || iteration < maxGenerateIdIterations) {
+    while (layout.includes(id) && iteration < maxGenerateIdIterations) {
         id = generateAlphaNumericLowerCaseId(8);
         iteration++;
     }
