@@ -163,7 +163,6 @@ export const LIST_CATEGORIES = gql`
         pageBuilder {
             listCategories {
                 data {
-                    id
                     slug
                 }
                 error {

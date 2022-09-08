@@ -10,7 +10,7 @@ Cypress.Commands.add("pbDeleteAllPages", async () => {
     // Loads admin user with full access permissions.
     const user = await login();
 
-    const pages = await pbListPages({ user });
+    const pages = await pbListPages({ user, variables: { limit: 100 } });
     for (let i = 0; i < pages.length; i++) {
         if (pages[i].path === "/welcome-to-webiny") {
             continue;
@@ -20,7 +20,7 @@ Cypress.Commands.add("pbDeleteAllPages", async () => {
 
     return until(
         () => pbListPages({ user }),
-        result => result.length === 1,
+        result => result.length <= 1,
         { wait: 3000 }
     );
 });

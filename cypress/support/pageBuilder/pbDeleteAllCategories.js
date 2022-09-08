@@ -12,7 +12,7 @@ Cypress.Commands.add("pbDeleteAllCategories", async () => {
 
     const categories = await pbListCategories({ user });
     for (let i = 0; i < categories.length; i++) {
-        if (categories[i].slug !== "static") {
+        if (categories[i].slug === "static") {
             continue;
         }
         await pbDeleteCategory({ user, variables: categories[i] });

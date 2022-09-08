@@ -8,9 +8,15 @@ const sort = {
 };
 
 context("Categories Module", () => {
-    const entries = [];
+    let entries = [];
 
-    before(() => {
+    beforeEach(() => {
+        cy.login();
+
+        cy.pbDeleteAllPages();
+        cy.pbDeleteAllCategories();
+        entries = [];
+
         for (let i = 0; i < 3; i++) {
             const id = uniqid();
             cy.pbCreateCategory({
@@ -22,17 +28,6 @@ context("Categories Module", () => {
                 }
             }).then(menu => {
                 entries.push(menu);
-            });
-        }
-    });
-
-    beforeEach(() => cy.login());
-
-    after(() => {
-        for (let i = 0; i < entries.length; i++) {
-            const { slug } = entries[i];
-            cy.pbDeleteCategory({
-                slug
             });
         }
     });
