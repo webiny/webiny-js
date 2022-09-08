@@ -157,3 +157,19 @@ export const DELETE_CATEGORY = gql`
         }
     }
 `;
+
+export const LIST_CATEGORIES = gql`
+    query PbListCategories {
+        pageBuilder {
+            listCategories {
+                data {
+                    id
+                    slug
+                }
+                error {
+                    ${ERROR_FIELDS}
+                }
+            }
+        }
+    }
+`;
