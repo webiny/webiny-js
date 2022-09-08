@@ -17,6 +17,12 @@ const allowedTitleFieldTypes = ["text", "number"];
 
 const getContentModelTitleFieldId = (fields: CmsModelField[], titleFieldId?: string): string => {
     /**
+     * If there are no fields defined, we will return the default field
+     */
+    if (fields.length === 0) {
+        return defaultTitleFieldId;
+    }
+    /**
      * if there is no title field defined either in input data or existing content model data
      * we will take first text field that has no multiple values enabled
      * or if initial titleFieldId is the default one also try to find first available text field
@@ -25,7 +31,7 @@ const getContentModelTitleFieldId = (fields: CmsModelField[], titleFieldId?: str
         const titleField = fields.find(field => {
             return field.type === "text" && !field.multipleValues;
         });
-        return titleField ? titleField.fieldId : defaultTitleFieldId;
+        return titleField?.fieldId || defaultTitleFieldId;
     }
     /**
      * check existing titleFieldId for existence in the model
@@ -34,10 +40,14 @@ const getContentModelTitleFieldId = (fields: CmsModelField[], titleFieldId?: str
      */
     const target = fields.find(f => f.fieldId === titleFieldId);
     if (!target) {
-        throw new WebinyError(`Field does not exist in the model.`, "VALIDATION_ERROR", {
-            fieldId: titleFieldId,
-            fields
-        });
+        throw new WebinyError(
+            `Field selected for the title field does not exist in the model.`,
+            "VALIDATION_ERROR",
+            {
+                fieldId: titleFieldId,
+                fields
+            }
+        );
     }
 
     if (allowedTitleFieldTypes.includes(target.type) === false) {

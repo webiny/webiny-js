@@ -130,7 +130,7 @@ describe("Content model locked fields", () => {
             };
             const [removedFieldResponse] = await updateContentModelMutation(variables);
 
-            expect(removedFieldResponse).toEqual({
+            expect(removedFieldResponse).toMatchObject({
                 data: {
                     updateContentModel: {
                         data: null,

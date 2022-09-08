@@ -10,7 +10,8 @@ import {
 import { Topic } from "@webiny/pubsub/types";
 import { PluginsContainer } from "@webiny/plugins";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";
-import { validateModel } from "~/crud/contentModel/validateModel";
+import { validateModel } from "./validateModel";
+import { validateLayout } from "./validateLayout";
 
 const disallowedModelIdList: string[] = [
     "contentModel",
@@ -179,7 +180,11 @@ export const assignBeforeModelCreate = (params: AssignBeforeModelCreateParams) =
 
     onBeforeModelCreate.subscribe(async ({ model, input }) => {
         /**
-         * First we need to validate base data of the model.
+         * First the layout...
+         */
+        validateLayout(model.layout, model.fields);
+        /**
+         * then we run the shared create/createFrom methods.
          */
         const cb = createOnBeforeCb({
             storageOperations,
@@ -189,8 +194,9 @@ export const assignBeforeModelCreate = (params: AssignBeforeModelCreateParams) =
             model,
             input
         });
+
         /**
-         * Then we move onto fields...
+         * and then we move onto model and fields...
          */
         await validateModel({
             model,

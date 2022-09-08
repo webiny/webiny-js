@@ -3,11 +3,16 @@ import { nanoid, customAlphabet } from "nanoid";
  * Package nanoid-dictionary is missing types
  */
 // @ts-ignore
-import { lowercase, uppercase, alphanumeric } from "nanoid-dictionary";
+import { lowercase, uppercase, alphanumeric, numbers } from "nanoid-dictionary";
 
 const DEFAULT_SIZE = 21;
 
 export const generateAlphaNumericId = customAlphabet(alphanumeric, DEFAULT_SIZE);
+
+export const generateAlphaNumericLowerCaseId = customAlphabet(
+    `${lowercase}${numbers}`,
+    DEFAULT_SIZE
+);
 
 export const generateAlphaId = customAlphabet(`${lowercase}${uppercase}`, DEFAULT_SIZE);
 
