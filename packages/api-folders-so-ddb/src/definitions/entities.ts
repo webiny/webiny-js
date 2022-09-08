@@ -1,7 +1,7 @@
 import { Entity, Table } from "dynamodb-toolbox";
-import { Attributes, ENTITIES } from "~/types";
+import { Attributes } from "~/types";
 
-const createEntity = (entityName: string, table: Table, attributes: Attributes) => {
+export const createEntity = (entityName: string, table: Table, attributes: Attributes) => {
     return new Entity({
         table,
         name: entityName,
@@ -21,70 +21,10 @@ const createEntity = (entityName: string, table: Table, attributes: Attributes) 
             TYPE: {
                 type: "string"
             },
+            data: {
+                type: "map"
+            },
             ...(attributes || {})
         }
-    });
-};
-
-export const createFolderEntity = (table: Table, attributes: Attributes = {}) => {
-    return createEntity(ENTITIES.FOLDER, table, {
-        id: {
-            type: "string"
-        },
-        name: {
-            type: "string"
-        },
-        slug: {
-            type: "string"
-        },
-        type: {
-            type: "string"
-        },
-        createdOn: {
-            type: "string"
-        },
-        createdBy: {
-            type: "map"
-        },
-        tenant: {
-            type: "string"
-        },
-        locale: {
-            type: "string"
-        },
-        webinyVersion: {
-            type: "string"
-        },
-        ...attributes
-    });
-};
-
-export const createLinkEntity = (table: Table, attributes: Attributes = {}) => {
-    return createEntity(ENTITIES.LINK, table, {
-        id: {
-            type: "string"
-        },
-        folderId: {
-            type: "string"
-        },
-        linkId: {
-            type: "string"
-        },
-        createdOn: {
-            type: "string"
-        },
-        createdBy: {
-            type: "map"
-        },
-        tenant: {
-            type: "string"
-        },
-        locale: {
-            type: "string"
-        },
-        webinyVersion: {
-            type: "string"
-        },
-        ...attributes
     });
 };

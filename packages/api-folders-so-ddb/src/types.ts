@@ -11,13 +11,14 @@ export type AttributeDefinition = DynamoDBTypes | EntityAttributeConfig | Entity
  * @internal
  * @private
  */
-export type DbItem<T> = T & {
+export interface DataContainer<T> {
     PK: string;
     SK: string;
     TYPE: string;
     GSI1_PK?: string;
     GSI1_SK?: string;
-};
+    data: T;
+}
 
 export type Attributes = Record<string, AttributeDefinition>;
 

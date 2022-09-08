@@ -1,12 +1,11 @@
-import { cleanupItem, cleanupItems } from "@webiny/db-dynamodb/utils/cleanup";
 import { queryAll, queryOne } from "@webiny/db-dynamodb/utils/query";
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
 import WebinyError from "@webiny/error";
 
 import { createTable } from "./definitions/table";
-import { createFolderEntity, createLinkEntity } from "./definitions/entities";
+import { createEntity } from "./definitions/entities";
 
-import { ENTITIES, FoldersStorageParams } from "./types";
+import { DataContainer, ENTITIES, FoldersStorageParams } from "./types";
 import { Folder, FoldersStorageOperations, Link } from "@webiny/api-folders/types";
 
 const reservedFields: string[] = ["PK", "SK", "index", "data"];
@@ -31,8 +30,12 @@ export const createStorageOperations = (params: FoldersStorageParams): FoldersSt
     const table = createTable({ table: tableName, documentClient });
 
     const entities = {
-        folders: createFolderEntity(table, attributes ? attributes[ENTITIES.FOLDER] : {}),
-        links: createLinkEntity(table, attributes ? attributes[ENTITIES.LINK] : {})
+        folders: createEntity(
+            ENTITIES.FOLDER,
+            table,
+            attributes ? attributes[ENTITIES.FOLDER] : {}
+        ),
+        links: createEntity(ENTITIES.LINK, table, attributes ? attributes[ENTITIES.LINK] : {})
     };
 
     const createFolderKeys = ({
@@ -78,16 +81,16 @@ export const createStorageOperations = (params: FoldersStorageParams): FoldersSt
 
             try {
                 await entities.folders.put({
-                    ...cleanupItem(entities.folders, folder),
+                    ...keys,
                     TYPE: "folder",
-                    ...keys
+                    data: folder
                 });
                 return folder;
             } catch (error) {
                 throw WebinyError.from(error, {
                     message: "Could not create folder.",
                     code: "CREATE_FOLDER_ERROR",
-                    data: { keys }
+                    data: { folder }
                 });
             }
         },
@@ -113,7 +116,7 @@ export const createStorageOperations = (params: FoldersStorageParams): FoldersSt
                     });
                 }
 
-                return cleanupItem(entities.folders, result);
+                return result?.data;
             } catch (error) {
                 throw WebinyError.from(error, {
                     message: "Could not load folder.",
@@ -124,10 +127,8 @@ export const createStorageOperations = (params: FoldersStorageParams): FoldersSt
         },
 
         async listFolders({ where: { tenant, locale, type }, sort }): Promise<Folder[]> {
-            let items: Folder[] = [];
-
             try {
-                items = await queryAll<Folder>({
+                const items = await queryAll<DataContainer<Folder>>({
                     entity: entities.folders,
                     partitionKey: `T#${tenant}#L#${locale}#FOLDERS#${type}`,
                     options: {
@@ -135,38 +136,33 @@ export const createStorageOperations = (params: FoldersStorageParams): FoldersSt
                         beginsWith: ""
                     }
                 });
+
+                return sortItems({
+                    items,
+                    sort,
+                    fields: []
+                }).map(item => item?.data);
             } catch (error) {
                 throw WebinyError.from(error, {
                     message: "Could not list folders.",
                     code: "LIST_FOLDERS_ERROR"
                 });
             }
-
-            return cleanupItems(
-                entities.folders,
-                sortItems({
-                    items,
-                    sort,
-                    fields: []
-                })
-            );
         },
 
         async updateFolder({ folder }): Promise<Folder> {
-            const keys = createFolderKeys(folder);
-
             try {
                 await entities.folders.put({
-                    ...cleanupItem(entities.folders, folder),
-                    ...keys,
-                    ...createFolderGsiKeys(folder)
+                    ...createFolderKeys(folder),
+                    ...createFolderGsiKeys(folder),
+                    data: folder
                 });
                 return folder;
             } catch (error) {
                 throw WebinyError.from(error, {
                     message: "Could not update folder.",
                     code: "UPDATE_FOLDER_ERROR",
-                    data: { keys, folder }
+                    data: { folder }
                 });
             }
         },
@@ -193,16 +189,16 @@ export const createStorageOperations = (params: FoldersStorageParams): FoldersSt
 
             try {
                 await entities.links.put({
-                    ...cleanupItem(entities.links, link),
+                    ...keys,
                     TYPE: "link",
-                    ...keys
+                    data: link
                 });
                 return link;
             } catch (error) {
                 throw WebinyError.from(error, {
                     message: "Could not create link.",
                     code: "CREATE_LINK_ERROR",
-                    data: { keys }
+                    data: { link }
                 });
             }
         },
@@ -228,7 +224,7 @@ export const createStorageOperations = (params: FoldersStorageParams): FoldersSt
                     });
                 }
 
-                return cleanupItem(entities.links, result);
+                return result?.data;
             } catch (error) {
                 throw WebinyError.from(error, {
                     message: "Could not load link.",
@@ -239,10 +235,8 @@ export const createStorageOperations = (params: FoldersStorageParams): FoldersSt
         },
 
         async listLinks({ where: { tenant, locale, folderId }, sort }): Promise<Link[]> {
-            let items: Link[] = [];
-
             try {
-                items = await queryAll<Link>({
+                const items = await queryAll<DataContainer<Link>>({
                     entity: entities.links,
                     partitionKey: `T#${tenant}#L#${locale}#FOLDER#${folderId}#LINKS`,
                     options: {
@@ -250,38 +244,33 @@ export const createStorageOperations = (params: FoldersStorageParams): FoldersSt
                         beginsWith: ""
                     }
                 });
+
+                return sortItems({
+                    items,
+                    sort,
+                    fields: []
+                }).map(item => item?.data);
             } catch (error) {
                 throw WebinyError.from(error, {
                     message: "Could not list links.",
                     code: "LIST_LINKS_ERROR"
                 });
             }
-
-            return cleanupItems(
-                entities.links,
-                sortItems({
-                    items,
-                    sort,
-                    fields: []
-                })
-            );
         },
 
         async updateLink({ link }): Promise<Link> {
-            const keys = createLinkKeys(link);
-
             try {
                 await entities.links.put({
-                    ...cleanupItem(entities.links, link),
-                    ...keys,
-                    ...createLinkGsiKeys(link)
+                    ...createLinkKeys(link),
+                    ...createLinkGsiKeys(link),
+                    data: link
                 });
                 return link;
             } catch (error) {
                 throw WebinyError.from(error, {
                     message: "Could not update link.",
                     code: "UPDATE_LINK_ERROR",
-                    data: { keys, link }
+                    data: { link }
                 });
             }
         },
@@ -295,7 +284,7 @@ export const createStorageOperations = (params: FoldersStorageParams): FoldersSt
                 throw WebinyError.from(error, {
                     message: "Could not delete link.",
                     code: "DELETE_LINK_ERROR",
-                    data: { keys, link }
+                    data: { link }
                 });
             }
         }
