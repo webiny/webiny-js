@@ -1,5 +1,4 @@
 import React, { Dispatch, SetStateAction, useState } from "react";
-import shortid from "shortid";
 import { i18n } from "@webiny/app/i18n";
 import { IconButton } from "@webiny/ui/Button";
 import { Cell } from "@webiny/ui/Grid";
@@ -24,6 +23,7 @@ import {
     ItemHighLight,
     ObjectItem
 } from "./StyledComponents";
+import { generateAlphaNumericId } from "@webiny/utils";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 
@@ -46,7 +46,7 @@ const Actions: React.FC<ActionsProps> = ({ setHighlightIndex, bind, index }) => 
                     bind.field.moveValueDown(index);
                     setHighlightIndex(map => ({
                         ...map,
-                        [index + 1]: shortid.generate()
+                        [index + 1]: generateAlphaNumericId(8)
                     }));
                 }}
             />
@@ -57,7 +57,7 @@ const Actions: React.FC<ActionsProps> = ({ setHighlightIndex, bind, index }) => 
                     bind.field.moveValueUp(index);
                     setHighlightIndex(map => ({
                         ...map,
-                        [index - 1]: shortid.generate()
+                        [index - 1]: generateAlphaNumericId(8)
                     }));
                 }}
             />

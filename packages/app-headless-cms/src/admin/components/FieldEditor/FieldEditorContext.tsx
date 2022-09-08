@@ -1,6 +1,5 @@
 import React, { useCallback, useState } from "react";
 import dot from "dot-prop-immutable";
-import shortid from "shortid";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import {
     CmsEditorField,
@@ -14,6 +13,7 @@ import * as utils from "./utils";
 import { FieldEditorProps } from "./FieldEditor";
 import { DragObjectWithType, DragSourceMonitor } from "react-dnd";
 import { useFieldEditor } from "~/admin/components/FieldEditor/useFieldEditor";
+import { generateAlphaNumericId } from "@webiny/utils";
 
 interface DropTarget {
     row: number;
@@ -288,7 +288,7 @@ export const FieldEditorProvider: React.FC<FieldEditorProviderProps> = ({
      */
     const insertField: InsertFieldCallable = ({ field, position }) => {
         if (!field.id) {
-            field.id = shortid.generate();
+            field.id = generateAlphaNumericId(8);
         }
 
         if (!field.type) {

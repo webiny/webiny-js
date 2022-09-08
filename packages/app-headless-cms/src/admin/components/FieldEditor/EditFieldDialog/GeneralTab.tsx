@@ -120,7 +120,6 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ field, form, fieldPlugin }) => 
                     >
                         <Input
                             label={"Field ID"}
-                            disabled={!!field.id}
                             data-testid={`cms.editor.field.settings.general.label-${field.id}`}
                         />
                     </Bind>

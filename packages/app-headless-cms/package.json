@@ -52,7 +52,6 @@
     "graphql-tag": "^2.12.6",
     "invariant": "^2.2.4",
     "lodash": "^4.17.10",
-    "nanoid": "^3.3.4",
     "pluralize": "^8.0.0",
     "prop-types": "^15.7.2",
     "raw.macro": "^0.4.2",
@@ -64,7 +63,6 @@
     "react-helmet": "^6.1.0",
     "react-hotkeyz": "^1.0.4",
     "react-virtualized": "^9.21.2",
-    "shortid": "^2.2.14",
     "timeago-react": "^2.0.0",
     "use-deep-compare-effect": "^1.6.1"
   },
@@ -79,7 +77,6 @@
     "babel-plugin-emotion": "^9.2.8",
     "babel-plugin-lodash": "^3.3.4",
     "babel-plugin-module-resolver": "^4.1.0",
-    "execa": "^5.0.0",
     "rimraf": "^3.0.2",
     "ttypescript": "^1.5.12",
     "typescript": "4.7.4"
