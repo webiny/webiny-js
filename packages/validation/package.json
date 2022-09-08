@@ -1,6 +1,6 @@
 {
   "name": "@webiny/validation",
-  "version": "5.31.0",
+  "version": "5.32.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -24,8 +24,8 @@
     "@babel/preset-env": "^7.16.4",
     "@babel/preset-typescript": "^7.16.0",
     "@types/lodash": "^4.14.178",
-    "@webiny/cli": "^5.31.0",
-    "@webiny/project-utils": "^5.31.0",
+    "@webiny/cli": "^5.32.0",
+    "@webiny/project-utils": "^5.32.0",
     "babel-plugin-lodash": "^3.3.4",
     "jest": "^28.1.0",
     "merge": "^1.2.1",

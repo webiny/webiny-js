@@ -15,21 +15,24 @@ jest.mock("node-fetch", () => {
     };
 });
 
-import createPlugin from "~/index";
-import { HandlerResultPlugin } from "@webiny/handler";
+import { createHandler, RoutePlugin } from "@webiny/handler-aws/gateway";
+import createHttpLogsHandlerResultPlugin from "~/index";
+
+const testHandler = createHandler({
+    plugins: [
+        createHttpLogsHandlerResultPlugin(),
+        new RoutePlugin(context => {
+            context.onGet("/test", () => {
+                console.log(forwardUrl);
+                return null;
+            });
+        })
+    ]
+});
 
 describe("logs plugin", () => {
     it("should send data to given url", async () => {
-        const plugin = createPlugin();
-
-        expect(plugin).toBeInstanceOf(HandlerResultPlugin);
-
-        const context = {} as any;
-        const output = {} as any;
-
-        const result = await plugin.handle(context, output);
-
-        expect(result).toEqual(undefined);
+        await testHandler({ path: "/test" } as any, {} as any);
 
         expect(mockResult.url).toEqual(forwardUrl);
         expect(mockResult.opts).toEqual({

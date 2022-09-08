@@ -27,6 +27,8 @@ export {
     createComponentPlugin,
     createProviderPlugin,
     makeComposable,
+    createComponentPlugin,
+    createProviderPlugin,
     MenuItem,
     MenuItemRenderer,
     MenuItems,

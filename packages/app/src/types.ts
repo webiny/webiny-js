@@ -18,11 +18,6 @@ export interface FileItem {
     [key: string]: any;
 }
 
-export type WebinyInitPlugin = Plugin & {
-    type: "webiny-init";
-    init(): void;
-};
-
 export type UploadOptions = {
     apolloClient: ApolloClient<object>;
 };
@@ -80,14 +75,4 @@ export type ImageComponentPlugin = Plugin & {
 export type RoutePlugin = Plugin & {
     type: "route";
     route: React.ReactElement;
-};
-
-interface CacheGetObjectIdPluginObj {
-    __typename: string;
-    modelId: string;
-    [key: string]: any;
-}
-export type CacheGetObjectIdPlugin = Plugin & {
-    type: "cache-get-object-id";
-    getObjectId(obj: CacheGetObjectIdPluginObj): string | undefined;
 };
