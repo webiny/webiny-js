@@ -119,7 +119,12 @@ export const FieldEditorContext = React.createContext<FieldEditorContextValue>(
         field: null
     } as unknown as FieldEditorContextValue
 );
-
+/**
+ * We try to generate the random id string but with the check that it does not exist already.
+ * Chances that the same string exists are quite small, but let's check it anyway.
+ *
+ * In most cases, there will be no iterations anyway...
+ */
 const maxGenerateIdIterations = 100;
 const generateFieldId = (layout: string[]): string => {
     let id = generateAlphaNumericLowerCaseId(8);
