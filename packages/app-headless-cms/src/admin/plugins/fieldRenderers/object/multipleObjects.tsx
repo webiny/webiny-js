@@ -23,7 +23,7 @@ import {
     ItemHighLight,
     ObjectItem
 } from "./StyledComponents";
-import { generateAlphaNumericId } from "@webiny/utils";
+import { generateAlphaNumericLowerCaseId } from "@webiny/utils";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 
@@ -46,7 +46,7 @@ const Actions: React.FC<ActionsProps> = ({ setHighlightIndex, bind, index }) => 
                     bind.field.moveValueDown(index);
                     setHighlightIndex(map => ({
                         ...map,
-                        [index + 1]: generateAlphaNumericId(8)
+                        [index + 1]: generateAlphaNumericLowerCaseId(12)
                     }));
                 }}
             />
@@ -57,7 +57,7 @@ const Actions: React.FC<ActionsProps> = ({ setHighlightIndex, bind, index }) => 
                     bind.field.moveValueUp(index);
                     setHighlightIndex(map => ({
                         ...map,
-                        [index - 1]: generateAlphaNumericId(8)
+                        [index - 1]: generateAlphaNumericLowerCaseId(12)
                     }));
                 }}
             />

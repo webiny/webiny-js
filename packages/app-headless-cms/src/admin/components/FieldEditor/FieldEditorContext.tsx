@@ -13,7 +13,7 @@ import * as utils from "./utils";
 import { FieldEditorProps } from "./FieldEditor";
 import { DragObjectWithType, DragSourceMonitor } from "react-dnd";
 import { useFieldEditor } from "~/admin/components/FieldEditor/useFieldEditor";
-import { generateAlphaNumericId } from "@webiny/utils";
+import { generateAlphaNumericLowerCaseId } from "@webiny/utils";
 
 interface DropTarget {
     row: number;
@@ -119,6 +119,21 @@ export const FieldEditorContext = React.createContext<FieldEditorContextValue>(
         field: null
     } as unknown as FieldEditorContextValue
 );
+
+const maxGenerateIdIterations = 100;
+const generateFieldId = (layout: string[]): string => {
+    let id = generateAlphaNumericLowerCaseId(8);
+
+    let iteration = 0;
+    while (layout.includes(id) || iteration < maxGenerateIdIterations) {
+        id = generateAlphaNumericLowerCaseId(8);
+        iteration++;
+    }
+    if (iteration >= maxGenerateIdIterations) {
+        throw new Error(`Could not generate field ID in ${maxGenerateIdIterations} iterations.`);
+    }
+    return id;
+};
 
 interface State {
     layout: CmsEditorFieldsLayout;
@@ -288,7 +303,7 @@ export const FieldEditorProvider: React.FC<FieldEditorProviderProps> = ({
      */
     const insertField: InsertFieldCallable = ({ field, position }) => {
         if (!field.id) {
-            field.id = generateAlphaNumericId(8);
+            field.id = generateFieldId(layout.flat());
         }
 
         if (!field.type) {
