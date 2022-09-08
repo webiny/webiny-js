@@ -20,7 +20,7 @@ context("Export & Import Pages", () => {
         });
     };
 
-    xit("should be able to export and import a page", () => {
+    it.skip("should be able to export and import a page", () => {
         cy.visit("/page-builder/pages");
         searchForPage(pageTitle);
         // Select page for export
