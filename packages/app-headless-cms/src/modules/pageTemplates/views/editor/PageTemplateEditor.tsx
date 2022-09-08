@@ -23,4 +23,5 @@ const PageTemplateEditor: React.FC = () => {
         </ModelFieldPlugins>
     );
 };
+
 export default PageTemplateEditor;

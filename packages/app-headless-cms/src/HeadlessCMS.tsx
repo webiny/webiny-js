@@ -1,13 +1,14 @@
 import React, { Fragment, memo } from "react";
+import { ApolloClient } from "apollo-client";
 import { plugins } from "@webiny/plugins";
 import { Plugins, Provider } from "@webiny/app-admin";
-import { ApolloClient } from "apollo-client";
-import { CmsProvider } from "./admin/contexts/Cms";
+import { CmsProvider } from "~/admin/contexts/Cms";
 import { CmsMenuLoader } from "~/admin/menus/CmsMenuLoader";
-import apiInformation from "./admin/plugins/apiInformation";
-import { ContentEntriesModule } from "./admin/views/contentEntries/experiment/ContentEntriesModule";
-import { DefaultOnEntryDelete } from "./admin/plugins/entry/DefaultOnEntryDelete";
+import apiInformation from "~/admin/plugins/apiInformation";
+import { ContentEntriesModule } from "~/admin/views/contentEntries/experiment/ContentEntriesModule";
+import { DefaultOnEntryDelete } from "~/admin/plugins/entry/DefaultOnEntryDelete";
 import { DefaultOnEntryPublish } from "~/admin/plugins/entry/DefaultOnEntryPublish";
+import { PageTemplatesModule } from "~/modules/pageTemplates";
 
 const createHeadlessCMSProvider =
     (createApolloClient: CreateApolloClient) =>
@@ -38,6 +39,7 @@ const HeadlessCMSExtension = ({ createApolloClient }: HeadlessCMSProps) => {
     return (
         <Fragment>
             <ContentEntriesModule />
+            <PageTemplatesModule />
             <Provider hoc={createHeadlessCMSProvider(createApolloClient)} />
             <Plugins>
                 <CmsMenuLoader />
