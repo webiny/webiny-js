@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.32.0](https://github.com/webiny/webiny-js/compare/v5.32.0-beta.0...v5.32.0) (2022-09-07)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+# [5.32.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.31.0...v5.32.0-beta.0) (2022-09-06)
+
+
+### Bug Fixes
+
+* **app-headless-cms:** do not normalize CmsContentModelField type ([c365569](https://github.com/webiny/webiny-js/commit/c365569686579c82aeb314203d810e50a44cb543))
+* **app-headless-cms:** remove content model from apollo cache when deleted ([35ec34d](https://github.com/webiny/webiny-js/commit/35ec34d76abad5b983f6e4069bb66dc225a36c24))
+* **app-headless-cms:** use proper plugin class ([138d62e](https://github.com/webiny/webiny-js/commit/138d62e19a68d6fcfb1d8569230f450980e1d1ed))
+
+
+
+
+
 # [5.31.0](https://github.com/webiny/webiny-js/compare/v5.31.0-beta.1...v5.31.0) (2022-08-18)
 
 **Note:** Version bump only for package @webiny/app-headless-cms
