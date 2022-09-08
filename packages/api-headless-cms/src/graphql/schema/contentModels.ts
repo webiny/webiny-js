@@ -105,7 +105,7 @@ export const createModelsSchema = (context: CmsContext): GraphQLSchemaPlugin<Cms
                 label: String!
                 helpText: String
                 placeholderText: String
-                # should never use user input - this is here for backward compatibility
+                # we never use user input - this is here to the GraphQL does not break when posting from our UI
                 storageId: String
                 fieldId: String!
                 type: String!

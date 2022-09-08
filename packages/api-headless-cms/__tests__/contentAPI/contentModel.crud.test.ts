@@ -573,13 +573,13 @@ describe("content model test", () => {
             }
         });
 
-        expect(response).toEqual({
+        expect(response).toMatchObject({
             data: {
                 updateContentModel: {
                     data: null,
                     error: {
                         code: "VALIDATION_ERROR",
-                        message: `Field does not exist in the model.`,
+                        message: `Field selected for the title field does not exist in the model.`,
                         data: {
                             fieldId: "nonExistingTitleFieldId",
                             fields: expect.any(Array)

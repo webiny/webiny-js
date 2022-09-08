@@ -26,7 +26,6 @@ import {
     UpdateContentModelModel
 } from "./contentModel/models";
 import { createFieldModels } from "./contentModel/createFieldModels";
-import { validateLayout } from "./contentModel/validateLayout";
 import WebinyError from "@webiny/error";
 import { Tenant } from "@webiny/api-tenancy/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
@@ -301,8 +300,6 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 webinyVersion: context.WEBINY_VERSION
             };
 
-            validateLayout(model, fields);
-
             await onBeforeModelCreate.publish({
                 input,
                 model
@@ -480,7 +477,6 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 fields,
                 savedOn: new Date().toISOString()
             };
-            validateLayout(model, fields);
 
             await onBeforeModelUpdate.publish({
                 input,
