@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.32.0](https://github.com/webiny/webiny-js/compare/v5.32.0-beta.0...v5.32.0) (2022-09-07)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+# [5.32.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.31.0...v5.32.0-beta.0) (2022-09-06)
+
+
+### Bug Fixes
+
+* change `createProjectApplicationWorkspace` to `true` ([7e6753a](https://github.com/webiny/webiny-js/commit/7e6753a7371b9df822c6bf5c67c66f2b02c1c6db))
+* import `processHooks` directly ([16e1118](https://github.com/webiny/webiny-js/commit/16e111834d10ae3b844f6bc713930f38e6e83397))
+* use `runHook` from utils ([88642fa](https://github.com/webiny/webiny-js/commit/88642fa3f7121c748e5ac77a3aabba407a3c7e2c))
+
+
+### Features
+
+* add `hook-before-watch` hook to the watch command ([8ac0273](https://github.com/webiny/webiny-js/commit/8ac0273564f50f358c4df2e11d38bab418398a4f))
+* move `runHook` into utils ([4e5c576](https://github.com/webiny/webiny-js/commit/4e5c576aa0a5db36d1779054069e210b0defebd4))
+
+
+
+
+
 # [5.31.0](https://github.com/webiny/webiny-js/compare/v5.31.0-beta.1...v5.31.0) (2022-08-18)
 
 **Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi

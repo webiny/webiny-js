@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.32.0](https://github.com/webiny/webiny-js/compare/v5.32.0-beta.0...v5.32.0) (2022-09-07)
+
+**Note:** Version bump only for package @webiny/app-admin-rmwc
+
+
+
+
+
+# [5.32.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.31.0...v5.32.0-beta.0) (2022-09-06)
+
+
+### Bug Fixes
+
+* **app-admin-rmwc:** improve dashboard widget rendering ([982af6d](https://github.com/webiny/webiny-js/commit/982af6de35306b9ec48a6bf58d5e1fb1f0c05f84))
+
+
+
+
+
 # [5.31.0](https://github.com/webiny/webiny-js/compare/v5.31.0-beta.1...v5.31.0) (2022-08-18)
 
 **Note:** Version bump only for package @webiny/app-admin-rmwc
