@@ -22,9 +22,9 @@ export const createMailerCrud = (config?: MailerConfig): MailerContextObject => 
     /**
      * We define possible events to be hooked into.
      */
-    const onBeforeSend = createTopic<OnBeforeMailerSendParams>();
-    const onAfterSend = createTopic<OnAfterMailerSendParams>();
-    const onError = createTopic<OnErrorMailerParams>();
+    const onBeforeSend = createTopic<OnBeforeMailerSendParams>("mailer.onBeforeMailSend");
+    const onAfterSend = createTopic<OnAfterMailerSendParams>("mailer.onAfterMailSend");
+    const onError = createTopic<OnErrorMailerParams>("mailer.onErrorMailSend");
     /**
      * We attach our default ones.
      */
