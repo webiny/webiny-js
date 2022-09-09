@@ -16,7 +16,11 @@ describe("`folders` CRUD", () => {
 
         const [responseC] = await folders.create({ data: mocks.folderC });
         const folderC = responseC.data.folders.createFolder.data;
-        expect(folderC).toEqual({ id: folderC.id, ...mocks.folderC });
+        expect(folderC).toEqual({ id: folderC.id, parentId: null, ...mocks.folderC });
+
+        const [responseD] = await folders.create({ data: mocks.folderD });
+        const folderD = responseD.data.folders.createFolder.data;
+        expect(folderD).toEqual({ id: folderD.id, ...mocks.folderD });
 
         // Let's check whether both of the folder exists, listing them by `type`.
         const [listResponse] = await folders.list({ where: { type: "page" } });
@@ -34,6 +38,12 @@ describe("`folders` CRUD", () => {
                         slug: "folder-b",
                         type: "page",
                         parentId: "parent-folder-a"
+                    }),
+                    expect.objectContaining({
+                        name: "Folder C",
+                        slug: "folder-c",
+                        type: "page",
+                        parentId: null
                     })
                 ]),
                 error: null
@@ -45,8 +55,8 @@ describe("`folders` CRUD", () => {
             expect.objectContaining({
                 data: expect.arrayContaining([
                     expect.objectContaining({
-                        name: "Folder C",
-                        slug: "folder-c",
+                        name: "Folder D",
+                        slug: "folder-d",
                         type: "cms",
                         parentId: "parent-folder-b"
                     })
@@ -126,6 +136,95 @@ describe("`folders` CRUD", () => {
                             parentId: null
                         },
                         error: null
+                    }
+                }
+            }
+        });
+    });
+
+    it("should delete both parent and children folders", async () => {
+        // Let's create a parent folders.
+        const [parentResponse] = await folders.create({ data: mocks.folderA });
+        const parentFolder = parentResponse.data.folders.createFolder.data;
+
+        // Let's create some children folders.
+        const [childResponse1] = await folders.create({
+            data: { ...mocks.folderB, parentId: parentFolder.id }
+        });
+        const childFolder1 = childResponse1.data.folders.createFolder.data;
+
+        expect(childFolder1).toMatchObject({
+            parentId: parentFolder.id
+        });
+
+        const [childResponse2] = await folders.create({
+            data: { ...mocks.folderC, parentId: parentFolder.id }
+        });
+        const childFolder2 = childResponse2.data.folders.createFolder.data;
+
+        expect(childFolder2).toMatchObject({
+            parentId: parentFolder.id
+        });
+
+        // Let's delete parent folder.
+        const [deleteParent] = await folders.delete({
+            id: parentFolder.id
+        });
+
+        expect(deleteParent).toEqual({
+            data: {
+                folders: {
+                    deleteFolder: {
+                        data: true,
+                        error: null
+                    }
+                }
+            }
+        });
+
+        // Should not find parent folder.
+        const [getParentFolder] = await folders.get({ id: parentFolder.id });
+
+        expect(getParentFolder).toMatchObject({
+            data: {
+                folders: {
+                    getFolder: {
+                        data: null,
+                        error: {
+                            code: "NOT_FOUND",
+                            data: null
+                        }
+                    }
+                }
+            }
+        });
+
+        // Should not find children folders.
+        const [getChildFolder1] = await folders.get({ id: childFolder1.id });
+        expect(getChildFolder1).toMatchObject({
+            data: {
+                folders: {
+                    getFolder: {
+                        data: null,
+                        error: {
+                            code: "NOT_FOUND",
+                            data: null
+                        }
+                    }
+                }
+            }
+        });
+
+        const [getChildFolder2] = await folders.get({ id: childFolder2.id });
+        expect(getChildFolder2).toMatchObject({
+            data: {
+                folders: {
+                    getFolder: {
+                        data: null,
+                        error: {
+                            code: "NOT_FOUND",
+                            data: null
+                        }
                     }
                 }
             }

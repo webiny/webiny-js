@@ -13,6 +13,11 @@ const mocks = {
     folderC: {
         name: "Folder C",
         slug: "folder-c",
+        type: "page"
+    },
+    folderD: {
+        name: "Folder D",
+        slug: "folder-d",
         parentId: "parent-folder-b",
         type: "cms"
     }

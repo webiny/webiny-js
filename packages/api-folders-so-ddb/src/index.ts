@@ -1,3 +1,4 @@
+import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
 import { queryAll, queryOne } from "@webiny/db-dynamodb/utils/query";
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
 import WebinyError from "@webiny/error";
@@ -38,8 +39,14 @@ export const createStorageOperations = (params: FoldersStorageParams): FoldersSt
         links: createEntity(ENTITIES.LINK, table, attributes ? attributes[ENTITIES.LINK] : {})
     };
 
-    const createFolderGsiSkKey = ({ slug, parentId }: Pick<Folder, "slug" | "parentId">) =>
-        slug + ((!!parentId && `#${parentId}`) || "");
+    const createFolderGsiPartitionKey = ({
+        tenant,
+        locale,
+        type
+    }: Pick<Folder, "tenant" | "locale" | "type">) => `T#${tenant}#L#${locale}#FOLDERS#${type}`;
+
+    const createFolderGsiSearchKey = ({ slug, parentId }: Pick<Folder, "slug" | "parentId">) =>
+        ((!!parentId && `${parentId}#`) || "") + slug;
 
     const createFolderKeys = ({
         id,
@@ -57,9 +64,16 @@ export const createStorageOperations = (params: FoldersStorageParams): FoldersSt
         slug,
         parentId
     }: Pick<Folder, "tenant" | "locale" | "type" | "slug" | "parentId">) => ({
-        GSI1_PK: `T#${tenant}#L#${locale}#FOLDERS#${type}`,
-        GSI1_SK: createFolderGsiSkKey({ slug, parentId })
+        GSI1_PK: createFolderGsiPartitionKey({ tenant, locale, type }),
+        GSI1_SK: createFolderGsiSearchKey({ slug, parentId })
     });
+
+    const createLinkGsiPartitionKey = ({
+        tenant,
+        locale,
+        folderId
+    }: Pick<Link, "tenant" | "locale" | "folderId">) =>
+        `T#${tenant}#L#${locale}#FOLDER#${folderId}#LINKS`;
 
     const createLinkKeys = ({ id, tenant, locale }: Pick<Link, "id" | "tenant" | "locale">) => ({
         PK: `T#${tenant}#L#${locale}#LINK#${id}`,
@@ -72,7 +86,7 @@ export const createStorageOperations = (params: FoldersStorageParams): FoldersSt
         folderId,
         id
     }: Pick<Link, "tenant" | "locale" | "folderId" | "id">) => ({
-        GSI1_PK: `T#${tenant}#L#${locale}#FOLDER#${folderId}#LINKS`,
+        GSI1_PK: createLinkGsiPartitionKey({ tenant, locale, folderId }),
         GSI1_SK: id
     });
 
@@ -109,13 +123,13 @@ export const createStorageOperations = (params: FoldersStorageParams): FoldersSt
                     if (response.Item) {
                         result = response.Item;
                     }
-                } else if (slug) {
+                } else if (slug && type) {
                     result = await queryOne({
                         entity: entities.folders,
-                        partitionKey: `T#${tenant}#L#${locale}#FOLDERS#${type}`,
+                        partitionKey: createFolderGsiPartitionKey({ tenant, locale, type }),
                         options: {
                             index: "GSI1",
-                            eq: createFolderGsiSkKey({ slug, parentId })
+                            eq: createFolderGsiSearchKey({ slug, parentId })
                         }
                     });
                 }
@@ -134,7 +148,7 @@ export const createStorageOperations = (params: FoldersStorageParams): FoldersSt
             try {
                 const items = await queryAll<DataContainer<Folder>>({
                     entity: entities.folders,
-                    partitionKey: `T#${tenant}#L#${locale}#FOLDERS#${type}`,
+                    partitionKey: createFolderGsiPartitionKey({ tenant, locale, type }),
                     options: {
                         index: "GSI1",
                         beginsWith: ""
@@ -175,7 +189,30 @@ export const createStorageOperations = (params: FoldersStorageParams): FoldersSt
             const keys = createFolderKeys(folder);
 
             try {
+                const { tenant, locale, type } = folder;
                 await entities.folders.delete(keys);
+
+                const children = await queryAll<DataContainer<Folder>>({
+                    entity: entities.folders,
+                    partitionKey: createFolderGsiPartitionKey({ tenant, locale, type }),
+                    options: {
+                        index: "GSI1",
+                        beginsWith: folder.parentId
+                    }
+                });
+                if (children.length > 0) {
+                    const items = children.map(({ PK, SK }) =>
+                        entities.folders.deleteBatch({
+                            PK,
+                            SK
+                        })
+                    );
+
+                    await batchWriteAll({
+                        table,
+                        items
+                    });
+                }
             } catch (error) {
                 throw WebinyError.from(error, {
                     message: "Could not delete folder.",
@@ -220,7 +257,7 @@ export const createStorageOperations = (params: FoldersStorageParams): FoldersSt
                 } else if (folderId) {
                     result = await queryOne({
                         entity: entities.links,
-                        partitionKey: `T#${tenant}#L#${locale}#FOLDER#${folderId}#LINKS`,
+                        partitionKey: createLinkGsiPartitionKey({ tenant, locale, folderId }),
                         options: {
                             index: "GSI1",
                             eq: id
@@ -242,7 +279,7 @@ export const createStorageOperations = (params: FoldersStorageParams): FoldersSt
             try {
                 const items = await queryAll<DataContainer<Link>>({
                     entity: entities.links,
-                    partitionKey: `T#${tenant}#L#${locale}#FOLDER#${folderId}#LINKS`,
+                    partitionKey: createLinkGsiPartitionKey({ tenant, locale, folderId }),
                     options: {
                         index: "GSI1",
                         beginsWith: ""
