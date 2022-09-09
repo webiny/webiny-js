@@ -49,12 +49,15 @@ export function createTenantsMethods(storageOperations: TenancyStorageOperations
     const loaders = createTenantLoaders(storageOperations);
 
     return {
-        onTenantBeforeCreate: createTopic<TenantBeforeCreateEvent>(),
-        onTenantAfterCreate: createTopic<TenantAfterCreateEvent>(),
-        onTenantBeforeUpdate: createTopic<TenantBeforeUpdateEvent>(),
-        onTenantAfterUpdate: createTopic<TenantAfterUpdateEvent>(),
-        onTenantBeforeDelete: createTopic<TenantBeforeDeleteEvent>(),
-        onTenantAfterDelete: createTopic<TenantAfterDeleteEvent>(),
+        // create
+        onTenantBeforeCreate: createTopic<TenantBeforeCreateEvent>("tenancy.onBeforeTenantCreate"),
+        onTenantAfterCreate: createTopic<TenantAfterCreateEvent>("tenancy.onAfterTenantCreate"),
+        // update
+        onTenantBeforeUpdate: createTopic<TenantBeforeUpdateEvent>("tenancy.onBeforeTenantUpdate"),
+        onTenantAfterUpdate: createTopic<TenantAfterUpdateEvent>("tenancy.onAfterTenantUpdate"),
+        // delete
+        onTenantBeforeDelete: createTopic<TenantBeforeDeleteEvent>("tenancy.onBeforeTenantDelete"),
+        onTenantAfterDelete: createTopic<TenantAfterDeleteEvent>("tenancy.onAfterTenantDelete"),
         async getRootTenant() {
             return loaders.getTenant.load("root");
         },
