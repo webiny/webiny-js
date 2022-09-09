@@ -38,6 +38,9 @@ export const createStorageOperations = (params: FoldersStorageParams): FoldersSt
         links: createEntity(ENTITIES.LINK, table, attributes ? attributes[ENTITIES.LINK] : {})
     };
 
+    const createFolderGsiSkKey = ({ slug, parentId }: Pick<Folder, "slug" | "parentId">) =>
+        slug + ((!!parentId && `#${parentId}`) || "");
+
     const createFolderKeys = ({
         id,
         tenant,
@@ -51,10 +54,11 @@ export const createStorageOperations = (params: FoldersStorageParams): FoldersSt
         tenant,
         locale,
         type,
-        slug
-    }: Pick<Folder, "tenant" | "locale" | "type" | "slug">) => ({
+        slug,
+        parentId
+    }: Pick<Folder, "tenant" | "locale" | "type" | "slug" | "parentId">) => ({
         GSI1_PK: `T#${tenant}#L#${locale}#FOLDERS#${type}`,
-        GSI1_SK: slug
+        GSI1_SK: createFolderGsiSkKey({ slug, parentId })
     });
 
     const createLinkKeys = ({ id, tenant, locale }: Pick<Link, "id" | "tenant" | "locale">) => ({
@@ -95,7 +99,7 @@ export const createStorageOperations = (params: FoldersStorageParams): FoldersSt
             }
         },
 
-        async getFolder({ tenant, locale, id, slug, type }): Promise<Folder> {
+        async getFolder({ tenant, locale, id, slug, type, parentId }): Promise<Folder> {
             try {
                 let result;
                 if (id) {
@@ -111,7 +115,7 @@ export const createStorageOperations = (params: FoldersStorageParams): FoldersSt
                         partitionKey: `T#${tenant}#L#${locale}#FOLDERS#${type}`,
                         options: {
                             index: "GSI1",
-                            eq: slug
+                            eq: createFolderGsiSkKey({ slug, parentId })
                         }
                     });
                 }

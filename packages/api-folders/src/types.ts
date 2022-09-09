@@ -20,6 +20,7 @@ export interface Folder {
     name: string;
     slug: string;
     type: Type;
+    parentId?: string;
     createdOn: string;
     createdBy: CreatedBy;
     tenant: string;
@@ -27,7 +28,7 @@ export interface Folder {
     webinyVersion: string;
 }
 
-export type FolderInput = Pick<Folder, "name" | "slug" | "type">;
+export type FolderInput = Pick<Folder, "name" | "slug" | "type" | "parentId">;
 
 export interface GetFolderParams {
     id: string;
@@ -58,6 +59,7 @@ export interface StorageOperationsGetFolderParams {
     id?: string;
     slug?: string;
     type?: Type;
+    parentId?: string;
     tenant: string;
     locale: string;
 }

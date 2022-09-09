@@ -3,6 +3,7 @@ const DATA_FIELD = (extra = "") => /* GraphQL */ `
         name
         slug
         type
+        parentId
         ${extra}
     }
 `;

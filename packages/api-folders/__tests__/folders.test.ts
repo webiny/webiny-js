@@ -8,7 +8,7 @@ describe("`folders` CRUD", () => {
         // Let's create some folders.
         const [responseA] = await folders.create({ data: mocks.folderA });
         const folderA = responseA.data.folders.createFolder.data;
-        expect(folderA).toEqual({ id: folderA.id, ...mocks.folderA });
+        expect(folderA).toEqual({ id: folderA.id, parentId: null, ...mocks.folderA });
 
         const [responseB] = await folders.create({ data: mocks.folderB });
         const folderB = responseB.data.folders.createFolder.data;
@@ -23,11 +23,18 @@ describe("`folders` CRUD", () => {
         expect(listResponse.data.folders.listFolders).toEqual(
             expect.objectContaining({
                 data: expect.arrayContaining([
-                    {
-                        name: expect.any(String),
-                        slug: expect.stringMatching(/folder-a|folder-b/),
-                        type: expect.stringMatching("page")
-                    }
+                    expect.objectContaining({
+                        name: "Folder A",
+                        slug: "folder-a",
+                        type: "page",
+                        parentId: null
+                    }),
+                    expect.objectContaining({
+                        name: "Folder B",
+                        slug: "folder-b",
+                        type: "page",
+                        parentId: "parent-folder-a"
+                    })
                 ]),
                 error: null
             })
@@ -37,25 +44,27 @@ describe("`folders` CRUD", () => {
         expect(listFoldersResponse.data.folders.listFolders).toEqual(
             expect.objectContaining({
                 data: expect.arrayContaining([
-                    {
-                        name: expect.any(String),
-                        slug: expect.stringMatching("folder-c"),
-                        type: expect.stringMatching("cms")
-                    }
+                    expect.objectContaining({
+                        name: "Folder C",
+                        slug: "folder-c",
+                        type: "cms",
+                        parentId: "parent-folder-b"
+                    })
                 ]),
                 error: null
             })
         );
 
-        // Let's update the "folder-b" name.
-        const updatedName = "Folder B - updated";
-        const updatedSlug = "folder-b-updated";
+        // Let's update the "folder-b".
+        const update = {
+            name: "Folder B - updated",
+            slug: "folder-b-updated",
+            parentId: "parent-folder-a-updated"
+        };
+
         const [updateB] = await folders.update({
             id: folderB.id,
-            data: {
-                name: updatedName,
-                slug: updatedSlug
-            }
+            data: update
         });
 
         expect(updateB).toEqual({
@@ -64,8 +73,7 @@ describe("`folders` CRUD", () => {
                     updateFolder: {
                         data: {
                             ...mocks.folderB,
-                            name: updatedName,
-                            slug: updatedSlug
+                            ...update
                         },
                         error: null
                     }
@@ -113,7 +121,10 @@ describe("`folders` CRUD", () => {
             data: {
                 folders: {
                     getFolder: {
-                        data: mocks.folderA,
+                        data: {
+                            ...mocks.folderA,
+                            parentId: null
+                        },
                         error: null
                     }
                 }
@@ -142,6 +153,19 @@ describe("`folders` CRUD", () => {
                 }
             }
         });
+    });
+
+    it("should allow creating a `folder` with same `slug` but different `parentId`", async () => {
+        // Creating a folder
+        await folders.create({ data: mocks.folderA });
+
+        // Creating a folder with same "slug" should not be allowed
+        const [response] = await folders.create({
+            data: { ...mocks.folderA, parentId: "parent-folder-a" }
+        });
+
+        const folder = response.data.folders.createFolder.data;
+        expect(folder).toEqual({ id: folder.id, parentId: folder.parentId, ...mocks.folderA });
     });
 
     it("should not allow updating a non-existing `folder`", async () => {

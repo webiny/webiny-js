@@ -80,7 +80,8 @@ export const createFoldersContext = async ({
                 tenant,
                 locale,
                 type: input.type,
-                slug: input.slug
+                slug: input.slug,
+                parentId: input.parentId
             });
 
             if (existing) {
