@@ -11,12 +11,27 @@ import {
 import { createTopic } from "@webiny/pubsub";
 
 export function createWorkflowMethods({ storageOperations }: CreateApwParams): ApwWorkflowCrud {
-    const onBeforeWorkflowCreate = createTopic<OnBeforeWorkflowCreateTopicParams>();
-    const onAfterWorkflowCreate = createTopic<OnAfterWorkflowCreateTopicParams>();
-    const onBeforeWorkflowUpdate = createTopic<OnBeforeWorkflowUpdateTopicParams>();
-    const onAfterWorkflowUpdate = createTopic<OnAfterWorkflowUpdateTopicParams>();
-    const onBeforeWorkflowDelete = createTopic<OnBeforeWorkflowDeleteTopicParams>();
-    const onAfterWorkflowDelete = createTopic<OnAfterWorkflowDeleteTopicParams>();
+    // create
+    const onBeforeWorkflowCreate = createTopic<OnBeforeWorkflowCreateTopicParams>(
+        "apw.onBeforeWorkflowCreate"
+    );
+    const onAfterWorkflowCreate = createTopic<OnAfterWorkflowCreateTopicParams>(
+        "apw.onAfterWorkflowCreate"
+    );
+    // update
+    const onBeforeWorkflowUpdate = createTopic<OnBeforeWorkflowUpdateTopicParams>(
+        "apw.onBeforeWorkflowUpdate"
+    );
+    const onAfterWorkflowUpdate = createTopic<OnAfterWorkflowUpdateTopicParams>(
+        "apw.onAfterWorkflowUpdate"
+    );
+    // delete
+    const onBeforeWorkflowDelete = createTopic<OnBeforeWorkflowDeleteTopicParams>(
+        "apw.onBeforeWorkflowDelete"
+    );
+    const onAfterWorkflowDelete = createTopic<OnAfterWorkflowDeleteTopicParams>(
+        "apw.onAfterWorkflowDelete"
+    );
     return {
         /**
          * Lifecycle events

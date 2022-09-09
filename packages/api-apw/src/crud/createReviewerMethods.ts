@@ -11,12 +11,27 @@ import {
 import { createTopic } from "@webiny/pubsub";
 
 export function createReviewerMethods({ storageOperations }: CreateApwParams): ApwReviewerCrud {
-    const onBeforeReviewerCreate = createTopic<OnBeforeReviewerCreateTopicParams>();
-    const onAfterReviewerCreate = createTopic<OnAfterReviewerCreateTopicParams>();
-    const onBeforeReviewerUpdate = createTopic<OnBeforeReviewerUpdateTopicParams>();
-    const onAfterReviewerUpdate = createTopic<OnAfterReviewerUpdateTopicParams>();
-    const onBeforeReviewerDelete = createTopic<OnBeforeReviewerDeleteTopicParams>();
-    const onAfterReviewerDelete = createTopic<OnAfterReviewerDeleteTopicParams>();
+    // create
+    const onBeforeReviewerCreate = createTopic<OnBeforeReviewerCreateTopicParams>(
+        "apw.onBeforeReviewerCreate"
+    );
+    const onAfterReviewerCreate = createTopic<OnAfterReviewerCreateTopicParams>(
+        "apw.onAfterReviewerCreate"
+    );
+    // update
+    const onBeforeReviewerUpdate = createTopic<OnBeforeReviewerUpdateTopicParams>(
+        "apw.onBeforeReviewerUpdate"
+    );
+    const onAfterReviewerUpdate = createTopic<OnAfterReviewerUpdateTopicParams>(
+        "apw.onAfterReviewerUpdate"
+    );
+    // delete
+    const onBeforeReviewerDelete = createTopic<OnBeforeReviewerDeleteTopicParams>(
+        "apw.onBeforeReviewerDelete"
+    );
+    const onAfterReviewerDelete = createTopic<OnAfterReviewerDeleteTopicParams>(
+        "apw.onAfterReviewerDelete"
+    );
     return {
         /**
          * Lifecycle events

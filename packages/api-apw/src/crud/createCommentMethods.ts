@@ -11,12 +11,27 @@ import {
 } from "~/types";
 
 export function createCommentMethods({ storageOperations }: CreateApwParams): ApwCommentCrud {
-    const onBeforeCommentCreate = createTopic<OnBeforeCommentCreateTopicParams>();
-    const onAfterCommentCreate = createTopic<OnAfterCommentCreateTopicParams>();
-    const onBeforeCommentUpdate = createTopic<OnBeforeCommentUpdateTopicParams>();
-    const onAfterCommentUpdate = createTopic<OnAfterCommentUpdateTopicParams>();
-    const onBeforeCommentDelete = createTopic<OnBeforeCommentDeleteTopicParams>();
-    const onAfterCommentDelete = createTopic<OnAfterCommentDeleteTopicParams>();
+    // create
+    const onBeforeCommentCreate = createTopic<OnBeforeCommentCreateTopicParams>(
+        "apw.onBeforeCommentCreate"
+    );
+    const onAfterCommentCreate = createTopic<OnAfterCommentCreateTopicParams>(
+        "apw.onAfterCommentCreate"
+    );
+    // update
+    const onBeforeCommentUpdate = createTopic<OnBeforeCommentUpdateTopicParams>(
+        "apw.onBeforeCommentUpdate"
+    );
+    const onAfterCommentUpdate = createTopic<OnAfterCommentUpdateTopicParams>(
+        "apw.onAfterCommentUpdate"
+    );
+    // delete
+    const onBeforeCommentDelete = createTopic<OnBeforeCommentDeleteTopicParams>(
+        "apw.onBeforeCommentDelete"
+    );
+    const onAfterCommentDelete = createTopic<OnAfterCommentDeleteTopicParams>(
+        "apw.onAfterCommentDelete"
+    );
 
     return {
         /**

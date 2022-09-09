@@ -13,12 +13,27 @@ import {
 export function createChangeRequestMethods({
     storageOperations
 }: CreateApwParams): ApwChangeRequestCrud {
-    const onBeforeChangeRequestCreate = createTopic<OnBeforeChangeRequestCreateTopicParams>();
-    const onAfterChangeRequestCreate = createTopic<OnAfterChangeRequestCreateTopicParams>();
-    const onBeforeChangeRequestUpdate = createTopic<OnBeforeChangeRequestUpdateTopicParams>();
-    const onAfterChangeRequestUpdate = createTopic<OnAfterChangeRequestUpdateTopicParams>();
-    const onBeforeChangeRequestDelete = createTopic<OnBeforeChangeRequestDeleteTopicParams>();
-    const onAfterChangeRequestDelete = createTopic<OnAfterChangeRequestDeleteTopicParams>();
+    // create
+    const onBeforeChangeRequestCreate = createTopic<OnBeforeChangeRequestCreateTopicParams>(
+        "apw.onBeforeChangeRequestCreate"
+    );
+    const onAfterChangeRequestCreate = createTopic<OnAfterChangeRequestCreateTopicParams>(
+        "apw.onAfterChangeRequestCreate"
+    );
+    // update
+    const onBeforeChangeRequestUpdate = createTopic<OnBeforeChangeRequestUpdateTopicParams>(
+        "apw.onBeforeChangeRequestUpdate"
+    );
+    const onAfterChangeRequestUpdate = createTopic<OnAfterChangeRequestUpdateTopicParams>(
+        "apw.onAfterChangeRequestUpdate"
+    );
+    // delete
+    const onBeforeChangeRequestDelete = createTopic<OnBeforeChangeRequestDeleteTopicParams>(
+        "apw.onBeforeChangeRequestDelete"
+    );
+    const onAfterChangeRequestDelete = createTopic<OnAfterChangeRequestDeleteTopicParams>(
+        "apw.onAfterChangeRequestDelete"
+    );
 
     return {
         async get(id) {

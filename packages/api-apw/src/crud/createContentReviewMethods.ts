@@ -61,12 +61,27 @@ export function createContentReviewMethods(
         plugins
     } = params;
 
-    const onBeforeContentReviewCreate = createTopic<OnBeforeContentReviewCreateTopicParams>();
-    const onAfterContentReviewCreate = createTopic<OnAfterContentReviewCreateTopicParams>();
-    const onBeforeContentReviewUpdate = createTopic<OnBeforeContentReviewUpdateTopicParams>();
-    const onAfterContentReviewUpdate = createTopic<OnAfterContentReviewUpdateTopicParams>();
-    const onBeforeContentReviewDelete = createTopic<OnBeforeContentReviewDeleteTopicParams>();
-    const onAfterContentReviewDelete = createTopic<OnAfterContentReviewDeleteTopicParams>();
+    // create
+    const onBeforeContentReviewCreate = createTopic<OnBeforeContentReviewCreateTopicParams>(
+        "apw.onBeforeContentReviewCreate"
+    );
+    const onAfterContentReviewCreate = createTopic<OnAfterContentReviewCreateTopicParams>(
+        "apw.onAfterContentReviewCreate"
+    );
+    // update
+    const onBeforeContentReviewUpdate = createTopic<OnBeforeContentReviewUpdateTopicParams>(
+        "apw.onBeforeContentReviewUpdate"
+    );
+    const onAfterContentReviewUpdate = createTopic<OnAfterContentReviewUpdateTopicParams>(
+        "apw.onAfterContentReviewUpdate"
+    );
+    // delete
+    const onBeforeContentReviewDelete = createTopic<OnBeforeContentReviewDeleteTopicParams>(
+        "apw.onBeforeContentReviewDelete"
+    );
+    const onAfterContentReviewDelete = createTopic<OnAfterContentReviewDeleteTopicParams>(
+        "apw.onAfterContentReviewDelete"
+    );
     return {
         /**
          * Lifecycle events
