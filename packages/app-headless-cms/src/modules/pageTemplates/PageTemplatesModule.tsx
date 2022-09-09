@@ -13,40 +13,46 @@ const Loader: React.FC = ({ children, ...props }) => (
 const PageTemplateEditor = lazy(() => import("./views/editor/PageTemplateEditor"));
 const PageTemplatesList = lazy(() => import("./views/list/ContentModels"));
 
-export const PageTemplatesModule = () => {
-    const { canCreateContentModels } = usePermission();
+const MenusAndRoutes = () => {
+    const { canReadContentModels } = usePermission();
 
     return (
-        <Plugins>
+        <>
             <Menu name={"headlessCMS"}>
-                {canCreateContentModels && (
+                {canReadContentModels && (
                     <Menu name={"headlessCMS.contentModels"}>
-                        {canCreateContentModels && (
-                            <Menu
-                                name={"headlessCMS.contentModels.pageTemplates"}
-                                label={"Page Templates"}
-                                path={"/cms/page-templates"}
-                            />
-                        )}
+                        <Menu
+                            name={"headlessCMS.contentModels.pageTemplates"}
+                            label={"Page Templates"}
+                            path={"/cms/page-templates"}
+                        />
                     </Menu>
                 )}
             </Menu>
             <AddRoute exact path={"/cms/page-templates/:modelId"}>
-                <Layout>
+                <>
                     <Helmet title={"Edit a Page Template"} />
                     <Loader>
                         <PageTemplateEditor />
                     </Loader>
-                </Layout>
+                </>
             </AddRoute>
             <AddRoute exact path={"/cms/page-templates"}>
                 <Layout>
-                    <Helmet title={"Content Models"} />
+                    <Helmet title={"Page Templates"} />
                     <Loader>
                         <PageTemplatesList />
                     </Loader>
                 </Layout>
             </AddRoute>
+        </>
+    );
+};
+
+export const PageTemplatesModule = () => {
+    return (
+        <Plugins>
+            <MenusAndRoutes />
         </Plugins>
     );
 };

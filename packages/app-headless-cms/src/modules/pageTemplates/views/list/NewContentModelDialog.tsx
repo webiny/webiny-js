@@ -99,7 +99,7 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
             addModelToListCache(cache, model);
             addModelToGroupCache(cache, model);
 
-            history.push("/cms/content-models/" + model.modelId);
+            history.push("/cms/page-templates/" + model.modelId);
         }
     });
 
@@ -184,8 +184,8 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
                 >
                     {({ Bind, submit }) => (
                         <>
-                            {loading && <CircularProgress label={"Creating content model..."} />}
-                            <UID.DialogTitle>{t`New Content Model`}</UID.DialogTitle>
+                            {loading && <CircularProgress label={"Creating page template..."} />}
+                            <UID.DialogTitle>{t`New Page Template`}</UID.DialogTitle>
                             <UID.DialogContent>
                                 <Grid className={noPadding}>
                                     <Cell span={12}>
@@ -198,7 +198,7 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
                                         >
                                             <Input
                                                 label={t`Name`}
-                                                description={t`The name of the content model. Use the singular form, e.g. Person, not Persons.`}
+                                                description={t`The name of the page template. Use the singular form, e.g. Person, not Persons.`}
                                                 data-testid="cms.newcontentmodeldialog.name"
                                             />
                                         </Bind>
@@ -209,7 +209,7 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
                                             validators={validation.create("required")}
                                         >
                                             <Select
-                                                description={t`Choose a content model group`}
+                                                description={t`Choose a page template group`}
                                                 label={t`Content model group`}
                                                 options={contentModelGroups}
                                                 data-testid="cms.newcontentmodeldialog.selectgroup"

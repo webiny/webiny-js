@@ -24,8 +24,6 @@ export {
     Provider,
     Compose,
     Plugins,
-    createComponentPlugin,
-    createProviderPlugin,
     makeComposable,
     createComponentPlugin,
     createProviderPlugin,

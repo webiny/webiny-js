@@ -41,5 +41,5 @@ export const ModelFieldPlugins: React.FC = ({ children }) => {
         }
     });
 
-    return loaded ? <>{children}</> : <CircularProgress label={"Loading content models..."} />;
+    return loaded ? <>{children}</> : <CircularProgress label={"Loading page template..."} />;
 };

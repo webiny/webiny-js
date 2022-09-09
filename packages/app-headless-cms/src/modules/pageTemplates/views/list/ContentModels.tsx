@@ -7,33 +7,33 @@ import { useSecurity } from "@webiny/app-security";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { CmsModel, CmsSecurityPermission } from "~/types";
 
-const grid = css({
-    "&.mdc-layout-grid": {
-        padding: 0,
-        backgroundColor: "var(--mdc-theme-background)",
-        ">.mdc-layout-grid__inner": {
-            gridGap: 0
+const grid = css`
+    &.mdc-layout-grid {
+        padding: 0;
+        background-color: var(--mdc-theme-background);
+        > .mdc-layout-grid__inner {
+            grid-gap: 0;
         }
     }
-});
+`;
 
-const centeredContent = css({
-    backgroundColor: "var(--mdc-theme-surface)",
-    ">.webiny-data-list": {
-        display: "flex",
-        flexDirection: "column",
-        height: "calc(100vh - 70px)",
-        ".mdc-list": {
-            overflow: "auto"
+const centeredContent = css`
+    background-color: var(--mdc-theme-surface);
+    > .webiny-data-list {
+        display: flex;
+        flex-direction: column;
+        height: calc(100vh - 70px);
+        .mdc-list {
+            overflow: auto;
         }
-    },
-    ">.mdc-list": {
-        display: "flex",
-        flexDirection: "column",
-        maxHeight: "calc(100vh - 70px)",
-        overflow: "auto"
     }
-});
+    > .mdc-list {
+        display: flex;
+        flex-direction: column;
+        max-height: calc(100vh - 70px);
+        overflow: auto;
+    }
+`;
 
 const ContentModels: React.FC = () => {
     const [newContentModelDialogOpened, openNewContentModelDialog] = React.useState(false);
@@ -59,12 +59,9 @@ const ContentModels: React.FC = () => {
         setCloneContentModel(null);
     }, []);
 
-    const onCreate = useCallback((): void => openNewContentModelDialog(true), []);
-    const onClose = useCallback((): void => openNewContentModelDialog(false), []);
-    const onClone = useCallback(
-        (contentModel: CmsModel): void => setCloneContentModel(contentModel),
-        []
-    );
+    const onCreate = useCallback(() => openNewContentModelDialog(true), []);
+    const onClose = useCallback(() => openNewContentModelDialog(false), []);
+    const onClone = useCallback((contentModel: CmsModel) => setCloneContentModel(contentModel), []);
     const onCloneClose = useCallback((): void => setCloneContentModel(null), []);
 
     return (

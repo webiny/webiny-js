@@ -1,5 +1,6 @@
 import dotProp from "dot-prop-immutable";
 import { DataProxy } from "apollo-cache";
+import ApolloClient from "apollo-client";
 import {
     LIST_CONTENT_MODELS,
     LIST_MENU_CONTENT_GROUPS_MODELS,
@@ -47,6 +48,29 @@ export const addModelToGroupCache = (cache: DataProxy, model: CmsEditorContentMo
                 `data.${groupIndex}.contentModels.${newGroupModelIndex}`,
                 model
             )
+        }
+    });
+};
+
+/**
+ * This function is an ugly hack, but I don't know a better way to remove items from cache in Apollo Client v2.
+ * When a Content Model is deleted, we need to remove it from cache, because a model can be recreated with the same
+ * modelId, and it will cause problems, because Apollo will think that the data in cache belongs to this new model.
+ */
+export const removeModelFromCache = (
+    client: ApolloClient<any>,
+    model: CmsEditorContentModel
+): void => {
+    const id = `CmsContentModel:${model.modelId}`;
+
+    // @ts-ignore
+    client.cache.data.delete(id);
+
+    // @ts-ignore
+    Object.keys(client.cache.data.data).forEach(key => {
+        if (key.startsWith(`${id}.`) || key.startsWith(`$${id}.`)) {
+            // @ts-ignore
+            client.cache.data.delete(key);
         }
     });
 };

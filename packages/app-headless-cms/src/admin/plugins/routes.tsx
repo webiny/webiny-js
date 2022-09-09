@@ -17,7 +17,6 @@ const Loader: React.FC = ({ children, ...props }) => (
 );
 
 const ContentModelEditor = lazy(() => import("../views/contentModels/ContentModelEditor"));
-const PageTemplateModelEditor = lazy(() => import("../views/pageTemplates/PageTemplateEditor"));
 const ContentModelsView = lazy(() => import("../views/contentModels/ContentModels"));
 const ContentModelGroupsView = lazy(() => import("../views/contentModelGroups/ContentModelGroups"));
 
@@ -78,26 +77,6 @@ const plugins: RoutePlugin[] = [
                         </Helmet>
                         <Loader>
                             <ContentModelEditor />
-                        </Loader>
-                    </SecureRoute>
-                )}
-            />
-        )
-    },
-    {
-        name: "route-cms-headless-page-model-editor",
-        type: "route",
-        route: (
-            <Route
-                exact
-                path={"/cms/headless-page-templates/:modelId"}
-                render={() => (
-                    <SecureRoute permission={"cms.contentModel"}>
-                        <Helmet>
-                            <title>{t`Edit Headless Page Template`}</title>
-                        </Helmet>
-                        <Loader>
-                            <PageTemplateModelEditor />
                         </Loader>
                     </SecureRoute>
                 )}

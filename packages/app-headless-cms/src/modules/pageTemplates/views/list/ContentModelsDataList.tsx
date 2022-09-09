@@ -1,31 +1,28 @@
 import React, { useCallback, useMemo, useState } from "react";
-/**
- * Package timeago-react does not have types.
- */
-// @ts-ignore
+// @ts-ignore Package `timeago-react` doesn't have types.
 import TimeAgo from "timeago-react";
 import { css } from "emotion";
 import get from "lodash/get";
+import orderBy from "lodash/orderBy";
 import { useRouter } from "@webiny/react-router";
 import { DeleteIcon, EditIcon } from "@webiny/ui/List/DataList/icons";
-import { ReactComponent as ViewListIcon } from "../../icons/view_list.svg";
-import { ReactComponent as CloneIcon } from "../../icons/clone.svg";
-import { useApolloClient, useQuery } from "~/admin/hooks";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import * as UIL from "@webiny/ui/List";
 import { ButtonIcon, ButtonSecondary, IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { i18n } from "@webiny/app/i18n";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
-import { removeModelFromGroupCache, removeModelFromListCache } from "./cache";
-import * as GQL from "~/admin/viewsGraphql";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import SearchUI from "@webiny/app-admin/components/SearchUI";
-import { deserializeSorters } from "~/admin/views/utils";
-import orderBy from "lodash/orderBy";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
+import { removeModelFromGroupCache, removeModelFromListCache, removeModelFromCache } from "./cache";
+import * as GQL from "~/admin/viewsGraphql";
+import { ReactComponent as ViewListIcon } from "~/admin/icons/view_list.svg";
+import { ReactComponent as CloneIcon } from "~/admin/icons/clone.svg";
+import { useApolloClient, useQuery } from "~/admin/hooks";
+import { deserializeSorters } from "~/admin/views/utils";
 import { CmsEditorContentModel, CmsModel } from "~/types";
 import {
     DeleteCmsModelMutationResponse,
@@ -40,6 +37,7 @@ interface Sorter {
     label: string;
     sorters: string;
 }
+
 const SORTERS: Sorter[] = [
     {
         label: t`Newest to oldest`,
@@ -130,6 +128,7 @@ const ContentModelsDataList: React.FC<ContentModelsDataListProps> = ({
 
                     removeModelFromListCache(cache, item);
                     removeModelFromGroupCache(cache, item);
+                    removeModelFromCache(client, item);
 
                     showSnackbar(
                         t`Content model {name} deleted successfully!.`({ name: item.name })
@@ -140,7 +139,7 @@ const ContentModelsDataList: React.FC<ContentModelsDataListProps> = ({
     };
 
     const editRecord = (contentModel: CmsModel): void => {
-        history.push("/cms/content-models/" + contentModel.modelId);
+        history.push("/cms/page-templates/" + contentModel.modelId);
     };
 
     const viewContentEntries = useCallback(contentModel => {
@@ -156,7 +155,7 @@ const ContentModelsDataList: React.FC<ContentModelsDataListProps> = ({
                             value={sort}
                             onChange={setSort}
                             label={t`Sort by`}
-                            description={"Sort content models by"}
+                            description={"Sort page templates by"}
                         >
                             {SORTERS.map(({ label, sorters }) => {
                                 return (
@@ -192,7 +191,7 @@ const ContentModelsDataList: React.FC<ContentModelsDataListProps> = ({
                 <SearchUI
                     value={filter}
                     onChange={setFilter}
-                    inputPlaceholder={t`Search content models`}
+                    inputPlaceholder={t`Search page templates`}
                 />
             }
             modalOverlay={contentModelsDataListModalOverlay}
@@ -252,7 +251,7 @@ const ContentModelsDataList: React.FC<ContentModelsDataListProps> = ({
                                                     </Tooltip>
                                                 ) : (
                                                     <Tooltip
-                                                        content={t`Edit content model`}
+                                                        content={t`Edit page template`}
                                                         placement={"top"}
                                                     >
                                                         <EditIcon
@@ -266,7 +265,7 @@ const ContentModelsDataList: React.FC<ContentModelsDataListProps> = ({
                                             </>
                                         )}
 
-                                        <Tooltip content={"Clone content model"} placement={"top"}>
+                                        <Tooltip content={"Clone page template"} placement={"top"}>
                                             <IconButton
                                                 data-testid={"cms-clone-content-model-button"}
                                                 icon={<CloneIcon />}
@@ -278,7 +277,7 @@ const ContentModelsDataList: React.FC<ContentModelsDataListProps> = ({
                                         {canDelete(contentModel, "cms.contentModel") &&
                                         contentModel.plugin ? (
                                             <Tooltip
-                                                content={t`Content model is registered via a plugin.`}
+                                                content={t`Page template is registered via a plugin.`}
                                                 placement={"top"}
                                             >
                                                 <DeleteIcon
@@ -288,7 +287,7 @@ const ContentModelsDataList: React.FC<ContentModelsDataListProps> = ({
                                             </Tooltip>
                                         ) : (
                                             <Tooltip
-                                                content={t`Delete content model`}
+                                                content={t`Delete page template`}
                                                 placement={"top"}
                                             >
                                                 <DeleteIcon

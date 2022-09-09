@@ -28,16 +28,16 @@ import { CmsGroupOption } from "~/admin/views/contentModels/types";
 
 const t = i18n.ns("app-headless-cms/admin/views/content-models/clone-content-model-dialog");
 
-const narrowDialog = css({
-    ".mdc-dialog__surface": {
-        width: 600,
-        minWidth: 600
+const narrowDialog = css`
+    .mdc-dialog__surface {
+        width: 600px;
+        min-width: 600px;
     }
-});
+`;
 
-const noPadding = css({
-    padding: "5px !important"
-});
+const noPadding = css`
+    padding: 5px !important;
+`;
 
 export interface Props {
     open: boolean;
@@ -108,7 +108,7 @@ const CloneContentModelDialog: React.FC<Props> = ({ open, onClose, contentModel,
             addModelToListCache(cache, model);
             addModelToGroupCache(cache, model);
 
-            history.push("/cms/content-models/");
+            history.push("/cms/page-templates/");
             closeModal();
         }
     });
