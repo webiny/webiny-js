@@ -193,7 +193,7 @@ export const createModel = (): CmsModel => {
     };
 };
 
-export const createRawValues = () => {
+const createRawValues = () => {
     return {
         name: "John Doe",
         age: 45,
@@ -278,7 +278,7 @@ export const createRawValues = () => {
     };
 };
 
-export const createStoredValues = () => {
+const createStoredValues = () => {
     return {
         "text@name": "John Doe",
         "number@age": 45,
