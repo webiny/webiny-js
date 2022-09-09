@@ -495,6 +495,24 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
      */
     isSortable: boolean;
     /**
+     * Optional method which creates the storageId.
+     * Primary use is for the datetime field, but if users has some specific fields, they can customize the storageId to their needs.
+     *
+     * ```ts
+     * createStorageId: ({field}) => {
+     *     if (field.settings.type === "time) {
+     *         return `${field.type}_time@${field.id}`
+     *     }
+     *     // use default method
+     *     return undefined;
+     * }
+     * ```
+     */
+    createStorageId?: (params: {
+        model: CmsModel;
+        field: CmsModelField;
+    }) => string | null | undefined;
+    /**
      * Read API methods.
      */
     read: {
