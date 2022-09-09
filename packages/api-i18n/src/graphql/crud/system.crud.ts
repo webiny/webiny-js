@@ -1,6 +1,14 @@
-import { I18NContext, I18NSystem, I18NSystemStorageOperations, SystemCRUD } from "~/types";
+import {
+    I18NContext,
+    I18NSystem,
+    I18NSystemStorageOperations,
+    OnAfterInstallTopicParams,
+    OnBeforeInstallTopicParams,
+    SystemCRUD
+} from "~/types";
 import WebinyError from "@webiny/error";
 import { NotAuthorizedError } from "@webiny/api-security";
+import { createTopic } from "@webiny/pubsub";
 
 interface CreateSystemCrudParams {
     context: I18NContext;
@@ -13,7 +21,12 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCRUD => 
         return context.tenancy.getCurrentTenant().id;
     };
 
+    const onBeforeInstall = createTopic<OnBeforeInstallTopicParams>("i18n.onBeforeInstall");
+    const onAfterInstall = createTopic<OnAfterInstallTopicParams>("i18n.onAfterInstall");
+
     return {
+        onBeforeInstall,
+        onAfterInstall,
         async getSystemVersion() {
             const system = await storageOperations.get();
 
@@ -71,11 +84,17 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCRUD => 
                     version
                 });
             }
+            await onBeforeInstall.publish({
+                code
+            });
             await i18n.locales.createLocale({
                 code,
                 default: true
             });
             await this.setSystemVersion(context.WEBINY_VERSION);
+            await onAfterInstall.publish({
+                code
+            });
         }
     };
 };

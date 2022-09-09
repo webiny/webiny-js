@@ -22,12 +22,21 @@ export interface CreateLocalesCrudParams {
 export const createLocalesCrud = (params: CreateLocalesCrudParams): LocalesCRUD => {
     const { storageOperations, context } = params;
 
-    const onBeforeCreate = createTopic<OnBeforeCreateLocaleTopicParams>();
-    const onAfterCreate = createTopic<OnAfterCreateLocaleTopicParams>();
-    const onBeforeUpdate = createTopic<OnBeforeUpdateLocaleTopicParams>();
-    const onAfterUpdate = createTopic<OnAfterUpdateLocaleTopicParams>();
-    const onBeforeDelete = createTopic<OnBeforeDeleteLocaleTopicParams>();
-    const onAfterDelete = createTopic<OnAfterDeleteLocaleTopicParams>();
+    // create
+    const onBeforeCreate = createTopic<OnBeforeCreateLocaleTopicParams>(
+        "i18n.onBeforeLocaleCreate"
+    );
+    const onAfterCreate = createTopic<OnAfterCreateLocaleTopicParams>("i18n.onAfterLocaleCreate");
+    // update
+    const onBeforeUpdate = createTopic<OnBeforeUpdateLocaleTopicParams>(
+        "i18n.onBeforeLocaleUpdate"
+    );
+    const onAfterUpdate = createTopic<OnAfterUpdateLocaleTopicParams>("i18n.onAfterLocaleUpdate");
+    // delete
+    const onBeforeDelete = createTopic<OnBeforeDeleteLocaleTopicParams>(
+        "i18n.onBeforeLocaleDelete"
+    );
+    const onAfterDelete = createTopic<OnAfterDeleteLocaleTopicParams>("i18n.onAfterLocaleDelete");
 
     return {
         onBeforeCreate,

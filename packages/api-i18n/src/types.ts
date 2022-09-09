@@ -61,6 +61,11 @@ export interface SystemCRUD {
      * Run the install process for the i18n.
      */
     installSystem(params: SystemInstallParams): Promise<void>;
+    /**
+     * Lifecycle events.
+     */
+    onBeforeInstall: Topic<OnBeforeInstallTopicParams>;
+    onAfterInstall: Topic<OnAfterInstallTopicParams>;
 }
 
 export interface I18NContext extends Context, ClientContext, TenancyContext, SecurityContext {
@@ -102,6 +107,13 @@ export interface LocalesCRUDListParams {
     sort?: string[];
     limit?: number;
     after?: string;
+}
+
+export interface OnBeforeInstallTopicParams {
+    code: string;
+}
+export interface OnAfterInstallTopicParams {
+    code: string;
 }
 
 export interface OnBeforeCreateLocaleTopicParams {
