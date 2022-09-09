@@ -5,10 +5,10 @@ import { createContext } from "./context";
 import { graphqlPlugins } from "./graphql";
 
 import { SecurityIdentity } from "@webiny/api-security/types";
-import { FoldersContext, FoldersStorageOperations } from "~/types";
+import { FoldersContext, StorageOperations } from "~/types";
 
 export interface FoldersConfig {
-    storageOperations: FoldersStorageOperations;
+    storageOperations: StorageOperations;
 }
 
 export const createFoldersContext = ({ storageOperations }: FoldersConfig) => {

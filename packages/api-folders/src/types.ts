@@ -156,17 +156,20 @@ export interface FoldersConfig {
     getTenantId: () => string;
     getLocaleCode: () => string;
     getIdentity: () => SecurityIdentity;
-    storageOperations: FoldersStorageOperations;
+    storageOperations: StorageOperations;
 }
 
+export type StorageOperations = FoldersStorageOperations & LinksStorageOperations;
+
 export interface FoldersStorageOperations {
-    // Folders
     getFolder(params: StorageOperationsGetFolderParams): Promise<Folder>;
     listFolders(params: StorageOperationsListFoldersParams): Promise<Folder[]>;
     createFolder(params: StorageOperationsCreateFolderParams): Promise<Folder>;
     updateFolder(params: StorageOperationsUpdateFolderParams): Promise<Folder>;
     deleteFolder(params: StorageOperationsDeleteFolderParams): Promise<void>;
-    // EnLink
+}
+
+export interface LinksStorageOperations {
     getLink(params: StorageOperationsGetLinkParams): Promise<Link>;
     listLinks(params: StorageOperationsListLinksParams): Promise<Link[]>;
     createLink(params: StorageOperationsCreateLinkParams): Promise<Link>;

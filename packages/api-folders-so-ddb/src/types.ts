@@ -27,7 +27,7 @@ export enum ENTITIES {
     LINK = "link"
 }
 
-export interface FoldersStorageParams {
+export interface StorageParams {
     documentClient: DocumentClient;
     table?: string;
     attributes?: Record<ENTITIES, Attributes>;
