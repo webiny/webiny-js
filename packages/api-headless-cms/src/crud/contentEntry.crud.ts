@@ -37,7 +37,16 @@ import {
     CreateCmsEntryInput,
     CmsModelField,
     CreatedBy,
-    CmsModelFieldToGraphQLPlugin
+    CmsModelFieldToGraphQLPlugin,
+    OnEntryCreateErrorTopicParams,
+    OnEntryCreateRevisionErrorTopicParams,
+    OnEntryUpdateErrorTopicParams,
+    OnEntryPublishErrorTopicParams,
+    OnEntryUnpublishErrorTopicParams,
+    OnEntryRequestChangesErrorTopicParams,
+    OnEntryRequestReviewErrorTopicParams,
+    OnEntryDeleteErrorTopicParams,
+    OnEntryDeleteRevisionErrorTopicParams
 } from "~/types";
 import { validateModelEntryData } from "./contentEntry/entryDataValidation";
 import WebinyError from "@webiny/error";
@@ -246,76 +255,107 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     const { storageOperations, context, getIdentity, getTenant } = params;
 
     // create
-    const onBeforeEntryCreate =
-        createTopic<BeforeEntryCreateTopicParams>("cms.onBeforeEntryCreate");
-    const onAfterEntryCreate = createTopic<AfterEntryCreateTopicParams>("cms.onAfterEntryCreate");
+    const onEntryBeforeCreate =
+        createTopic<BeforeEntryCreateTopicParams>("cms.onEntryBeforeCreate");
+    const onEntryAfterCreate = createTopic<AfterEntryCreateTopicParams>("cms.onEntryAfterCreate");
+    const onEntryCreateError = createTopic<OnEntryCreateErrorTopicParams>("cms.onEntryCreateError");
+
     // create revision
-    const onBeforeEntryCreateRevision = createTopic<BeforeEntryCreateRevisionTopicParams>(
-        "cms.onBeforeEntryCreateRevision"
+    const onEntryBeforeCreateRevision = createTopic<BeforeEntryCreateRevisionTopicParams>(
+        "cms.onEntryBeforeCreateRevision"
     );
-    const onAfterEntryCreateRevision = createTopic<AfterEntryCreateRevisionTopicParams>(
-        "cms.onAfterEntryCreateRevision"
+    const onEntryAfterCreateRevision = createTopic<AfterEntryCreateRevisionTopicParams>(
+        "cms.onEntryAfterCreateRevision"
     );
+    const onEntryCreateRevisionError = createTopic<OnEntryCreateRevisionErrorTopicParams>(
+        "cms.onEntryCreateRevisionError"
+    );
+
     // update
-    const onBeforeEntryUpdate =
-        createTopic<BeforeEntryUpdateTopicParams>("cms.onBeforeEntryUpdate");
-    const onAfterEntryUpdate = createTopic<AfterEntryUpdateTopicParams>("cms.onAfterEntryUpdate");
+    const onEntryBeforeUpdate =
+        createTopic<BeforeEntryUpdateTopicParams>("cms.onEntryBeforeUpdate");
+    const onEntryAfterUpdate = createTopic<AfterEntryUpdateTopicParams>("cms.onEntryAfterUpdate");
+    const onEntryUpdateError = createTopic<OnEntryUpdateErrorTopicParams>("cms.onEntryUpdateError");
+
     // publish
-    const onBeforeEntryPublish = createTopic<BeforeEntryPublishTopicParams>(
-        "cms.onBeforeEntryPublish"
+    const onEntryBeforePublish = createTopic<BeforeEntryPublishTopicParams>(
+        "cms.onEntryBeforePublish"
     );
-    const onAfterEntryPublish = createTopic<AfterEntryPublishTopicParams>("cms.onAfterEntryPublic");
+    const onEntryAfterPublish = createTopic<AfterEntryPublishTopicParams>("cms.onEntryAfterPublic");
+
+    const onEntryPublishError =
+        createTopic<OnEntryPublishErrorTopicParams>("cms.onEntryPublishError");
+
     // unpublish
-    const onBeforeEntryUnpublish = createTopic<BeforeEntryUnpublishTopicParams>(
-        "cms.onBeforeEntryUnpublish"
+    const onEntryBeforeUnpublish = createTopic<BeforeEntryUnpublishTopicParams>(
+        "cms.onEntryBeforeUnpublish"
     );
-    const onAfterEntryUnpublish = createTopic<AfterEntryUnpublishTopicParams>(
-        "cms.onAfterEntryUnpublish"
+    const onEntryAfterUnpublish = createTopic<AfterEntryUnpublishTopicParams>(
+        "cms.onEntryAfterUnpublish"
     );
+    const onEntryUnpublishError = createTopic<OnEntryUnpublishErrorTopicParams>(
+        "cms.onEntryUnpublishError"
+    );
+
     // request changes
-    const onBeforeEntryRequestChanges = createTopic<BeforeEntryRequestChangesTopicParams>(
-        "cms.onBeforeEntryRequestChanges"
+    const onEntryBeforeRequestChanges = createTopic<BeforeEntryRequestChangesTopicParams>(
+        "cms.onEntryBeforeRequestChanges"
     );
-    const onAfterEntryRequestChanges = createTopic<AfterEntryRequestChangesTopicParams>(
-        "cms.onAfterEntryRequestChanges"
+    const onEntryAfterRequestChanges = createTopic<AfterEntryRequestChangesTopicParams>(
+        "cms.onEntryAfterRequestChanges"
     );
+    const onEntryRequestChangesError = createTopic<OnEntryRequestChangesErrorTopicParams>(
+        "cms.onEntryRequestChangesError"
+    );
+
     // request review
-    const onBeforeEntryRequestReview = createTopic<BeforeEntryRequestReviewTopicParams>(
-        "cms.onBeforeEntryRequestReview"
+    const onEntryBeforeRequestReview = createTopic<BeforeEntryRequestReviewTopicParams>(
+        "cms.onEntryBeforeRequestReview"
     );
-    const onAfterEntryRequestReview = createTopic<AfterEntryRequestReviewTopicParams>(
-        "cms.onAfterEntryRequestReview"
+    const onEntryAfterRequestReview = createTopic<AfterEntryRequestReviewTopicParams>(
+        "cms.onEntryAfterRequestReview"
     );
+    const onEntryRequestReviewError = createTopic<OnEntryRequestReviewErrorTopicParams>(
+        "cms.onEntryRequestReviewError"
+    );
+
     // delete
-    const onBeforeEntryDelete =
-        createTopic<BeforeEntryDeleteTopicParams>("cms.onBeforeEntryDelete");
-    const onAfterEntryDelete = createTopic<AfterEntryDeleteTopicParams>("cms.onAfterEntryDelete");
+    const onEntryBeforeDelete =
+        createTopic<BeforeEntryDeleteTopicParams>("cms.onEntryBeforeDelete");
+    const onEntryAfterDelete = createTopic<AfterEntryDeleteTopicParams>("cms.onEntryAfterDelete");
+    const onEntryDeleteError = createTopic<OnEntryDeleteErrorTopicParams>("cms.onEntryDeleteError");
+
     // delete revision
-    const onBeforeEntryDeleteRevision = createTopic<BeforeEntryDeleteRevisionTopicParams>(
-        "cms.onBeforeEntryDeleteRevision"
+    const onEntryBeforeDeleteRevision = createTopic<BeforeEntryDeleteRevisionTopicParams>(
+        "cms.onEntryBeforeDeleteRevision"
     );
-    const onAfterEntryDeleteRevision = createTopic<AfterEntryDeleteRevisionTopicParams>(
-        "cms.onAfterEntryDeleteRevision"
+    const onEntryAfterDeleteRevision = createTopic<AfterEntryDeleteRevisionTopicParams>(
+        "cms.onEntryAfterDeleteRevision"
     );
+    const onEntryDeleteRevisionError = createTopic<OnEntryDeleteRevisionErrorTopicParams>(
+        "cms.onEntryDeleteRevisionError"
+    );
+
     // get
-    const onBeforeEntryGet = createTopic<BeforeEntryGetTopicParams>("cms.onBeforeEntryGet");
+    const onEntryBeforeGet = createTopic<BeforeEntryGetTopicParams>("cms.onEntryBeforeGet");
+
     // list
-    const onBeforeEntryList = createTopic<BeforeEntryListTopicParams>("cms.onBeforeEntryList");
+    const onEntryBeforeList = createTopic<BeforeEntryListTopicParams>("cms.onEntryBeforeList");
 
     /**
      * We need to assign some default behaviors.
      */
     assignBeforeEntryCreate({
         context,
-        onBeforeEntryCreate
+        onEntryBeforeCreate
     });
     assignBeforeEntryUpdate({
         context,
-        onBeforeEntryUpdate
+        onEntryBeforeUpdate
     });
     assignAfterEntryDelete({
         context,
-        onAfterEntryDelete
+        onEntryAfterDelete
     });
 
     const checkEntryPermissions = (check: {
@@ -331,7 +371,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     const deleteEntry = async (params: DeleteEntryParams): Promise<void> => {
         const { model, entry } = params;
         try {
-            await onBeforeEntryDelete.publish({
+            await onEntryBeforeDelete.publish({
                 entry,
                 model
             });
@@ -340,11 +380,15 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 entry
             });
 
-            await onAfterEntryDelete.publish({
+            await onEntryAfterDelete.publish({
                 entry,
                 model
             });
         } catch (ex) {
+            await onEntryDeleteError.publish({
+                entry,
+                model
+            });
             throw new WebinyError(
                 ex.message || "Could not delete entry.",
                 ex.code || "DELETE_ERROR",
@@ -369,26 +413,52 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     };
 
     return {
-        onBeforeEntryCreate,
-        onAfterEntryCreate,
-        onBeforeEntryCreateRevision,
-        onAfterEntryCreateRevision,
-        onBeforeEntryUpdate,
-        onAfterEntryUpdate,
-        onBeforeEntryDelete,
-        onAfterEntryDelete,
-        onBeforeEntryDeleteRevision,
-        onAfterEntryDeleteRevision,
-        onBeforeEntryPublish,
-        onAfterEntryPublish,
-        onBeforeEntryUnpublish,
-        onAfterEntryUnpublish,
-        onBeforeEntryRequestChanges,
-        onAfterEntryRequestChanges,
-        onBeforeEntryRequestReview,
-        onAfterEntryRequestReview,
-        onBeforeEntryGet,
-        onBeforeEntryList,
+        /**
+         * Deprecated - will be removed in 5.35.0
+         */
+        onBeforeEntryCreate: onEntryBeforeCreate,
+        onAfterEntryCreate: onEntryAfterCreate,
+        onBeforeEntryCreateRevision: onEntryBeforeCreateRevision,
+        onAfterEntryCreateRevision: onEntryAfterCreateRevision,
+        onBeforeEntryUpdate: onEntryBeforeUpdate,
+        onAfterEntryUpdate: onEntryAfterUpdate,
+        onBeforeEntryDelete: onEntryBeforeDelete,
+        onAfterEntryDelete: onEntryAfterDelete,
+        onBeforeEntryDeleteRevision: onEntryBeforeDeleteRevision,
+        onAfterEntryDeleteRevision: onEntryAfterDeleteRevision,
+        onBeforeEntryPublish: onEntryBeforePublish,
+        onAfterEntryPublish: onEntryAfterPublish,
+        onBeforeEntryUnpublish: onEntryBeforeUnpublish,
+        onAfterEntryUnpublish: onEntryAfterUnpublish,
+        onBeforeEntryRequestChanges: onEntryBeforeRequestChanges,
+        onAfterEntryRequestChanges: onEntryAfterRequestChanges,
+        onBeforeEntryRequestReview: onEntryBeforeRequestReview,
+        onAfterEntryRequestReview: onEntryAfterRequestReview,
+        onBeforeEntryGet: onEntryBeforeGet,
+        onBeforeEntryList: onEntryBeforeList,
+        /**
+         * Released in 5.33.0
+         */
+        onEntryBeforeCreate,
+        onEntryAfterCreate,
+        onEntryBeforeCreateRevision,
+        onEntryAfterCreateRevision,
+        onEntryBeforeUpdate,
+        onEntryAfterUpdate,
+        onEntryBeforeDelete,
+        onEntryAfterDelete,
+        onEntryBeforeDeleteRevision,
+        onEntryAfterDeleteRevision,
+        onEntryBeforePublish,
+        onEntryAfterPublish,
+        onEntryBeforeUnpublish,
+        onEntryAfterUnpublish,
+        onEntryBeforeRequestChanges,
+        onEntryAfterRequestChanges,
+        onEntryBeforeRequestReview,
+        onEntryAfterRequestReview,
+        onEntryBeforeGet,
+        onEntryBeforeList,
         /**
          * Get entries by exact revision IDs from the database.
          */
@@ -400,7 +470,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             const where: CmsEntryListWhere = {
                 id
             };
-            await onBeforeEntryGet.publish({
+            await onEntryBeforeGet.publish({
                 where,
                 model
             });
@@ -452,7 +522,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
             const { where, sort } = params;
 
-            await onBeforeEntryGet.publish({
+            await onEntryBeforeGet.publish({
                 where,
                 model
             });
@@ -514,7 +584,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 );
             }
 
-            await onBeforeEntryList.publish({
+            await onEntryBeforeList.publish({
                 where,
                 model
             });
@@ -620,7 +690,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
             let storageEntry: CmsStorageEntry | null = null;
             try {
-                await onBeforeEntryCreate.publish({
+                await onEntryBeforeCreate.publish({
                     entry,
                     input,
                     model
@@ -632,7 +702,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                     storageEntry
                 });
 
-                await onAfterEntryCreate.publish({
+                await onEntryAfterCreate.publish({
                     entry,
                     storageEntry: result,
                     model,
@@ -641,6 +711,11 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
                 return result;
             } catch (ex) {
+                await onEntryCreateError.publish({
+                    entry,
+                    model,
+                    input
+                });
                 throw new WebinyError(
                     ex.message || "Could not create content entry.",
                     ex.code || "CREATE_ENTRY_ERROR",
@@ -738,7 +813,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             let storageEntry: CmsStorageEntry | null = null;
 
             try {
-                await onBeforeEntryCreateRevision.publish({
+                await onEntryBeforeCreateRevision.publish({
                     input,
                     entry,
                     original: originalEntry,
@@ -752,7 +827,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                     storageEntry
                 });
 
-                await onAfterEntryCreateRevision.publish({
+                await onEntryAfterCreateRevision.publish({
                     input,
                     entry,
                     model,
@@ -761,6 +836,11 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 });
                 return result;
             } catch (ex) {
+                await onEntryCreateRevisionError.publish({
+                    entry,
+                    model,
+                    input
+                });
                 throw new WebinyError(
                     ex.message || "Could not create entry from existing one.",
                     ex.code || "CREATE_FROM_REVISION_ERROR",
@@ -850,7 +930,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             let storageEntry: CmsStorageEntry | null = null;
 
             try {
-                await onBeforeEntryUpdate.publish({
+                await onEntryBeforeUpdate.publish({
                     entry,
                     model,
                     input,
@@ -864,7 +944,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                     storageEntry
                 });
 
-                await onAfterEntryUpdate.publish({
+                await onEntryAfterUpdate.publish({
                     entry,
                     storageEntry: result,
                     model,
@@ -873,6 +953,11 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 });
                 return result;
             } catch (ex) {
+                await onEntryUpdateError.publish({
+                    entry,
+                    model,
+                    input
+                });
                 throw new WebinyError(
                     ex.message || "Could not update existing entry.",
                     ex.code || "UPDATE_ERROR",
@@ -1029,7 +1114,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             }
 
             try {
-                await onBeforeEntryDeleteRevision.publish({
+                await onEntryBeforeDeleteRevision.publish({
                     entry: entryToDelete,
                     model
                 });
@@ -1041,11 +1126,15 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                     latestStorageEntry: storageEntryToSetAsLatest
                 });
 
-                await onAfterEntryDeleteRevision.publish({
+                await onEntryAfterDeleteRevision.publish({
                     entry: entryToDelete,
                     model
                 });
             } catch (ex) {
+                await onEntryDeleteRevisionError.publish({
+                    entry: entryToDelete,
+                    model
+                });
                 throw new WebinyError(ex.message, ex.code || "DELETE_REVISION_ERROR", {
                     error: ex,
                     entry: entryToDelete,
@@ -1110,7 +1199,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             let storageEntry: CmsStorageEntry | null = null;
 
             try {
-                await onBeforeEntryPublish.publish({
+                await onEntryBeforePublish.publish({
                     entry,
                     model
                 });
@@ -1121,13 +1210,17 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                     storageEntry
                 });
 
-                await onAfterEntryPublish.publish({
+                await onEntryAfterPublish.publish({
                     entry,
                     storageEntry: result,
                     model
                 });
                 return result;
             } catch (ex) {
+                await onEntryPublishError.publish({
+                    entry,
+                    model
+                });
                 throw new WebinyError(
                     ex.message || "Could not publish entry.",
                     ex.code || "PUBLISH_ERROR",
@@ -1183,7 +1276,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             let storageEntry: CmsStorageEntry | null = null;
 
             try {
-                await onBeforeEntryRequestChanges.publish({
+                await onEntryBeforeRequestChanges.publish({
                     entry,
                     model
                 });
@@ -1195,7 +1288,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                     storageEntry
                 });
 
-                await onAfterEntryRequestChanges.publish({
+                await onEntryAfterRequestChanges.publish({
                     entry,
                     storageEntry: result,
                     model
@@ -1203,6 +1296,10 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
                 return result;
             } catch (ex) {
+                await onEntryRequestChangesError.publish({
+                    entry,
+                    model
+                });
                 throw new WebinyError(
                     ex.message || "Could not request changes for the entry.",
                     ex.code || "REQUEST_CHANGES_ERROR",
@@ -1260,7 +1357,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             let storageEntry: CmsStorageEntry | null = null;
 
             try {
-                await onBeforeEntryRequestReview.publish({
+                await onEntryBeforeRequestReview.publish({
                     entry,
                     model
                 });
@@ -1272,7 +1369,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                     storageEntry
                 });
 
-                await onAfterEntryRequestReview.publish({
+                await onEntryAfterRequestReview.publish({
                     entry,
                     storageEntry: result,
                     model
@@ -1280,6 +1377,10 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
                 return result;
             } catch (ex) {
+                await onEntryRequestReviewError.publish({
+                    entry,
+                    model
+                });
                 throw new WebinyError(
                     ex.message || "Could not request review on the entry.",
                     ex.code || "REQUEST_REVIEW_ERROR",
@@ -1326,7 +1427,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             let storageEntry: CmsStorageEntry | null = null;
 
             try {
-                await onBeforeEntryUnpublish.publish({
+                await onEntryBeforeUnpublish.publish({
                     entry,
                     model
                 });
@@ -1338,7 +1439,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                     storageEntry
                 });
 
-                await onAfterEntryUnpublish.publish({
+                await onEntryAfterUnpublish.publish({
                     entry,
                     storageEntry: result,
                     model
@@ -1346,6 +1447,10 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
                 return result;
             } catch (ex) {
+                await onEntryUnpublishError.publish({
+                    entry,
+                    model
+                });
                 throw new WebinyError(
                     ex.message || "Could not unpublish entry.",
                     ex.code || "UNPUBLISH_ERROR",

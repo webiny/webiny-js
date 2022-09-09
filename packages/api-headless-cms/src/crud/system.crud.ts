@@ -34,8 +34,10 @@ interface CreateSystemCrudParams {
 export const createSystemCrud = (params: CreateSystemCrudParams): CmsSystemContext => {
     const { getTenant, getLocale, storageOperations, context, getIdentity } = params;
 
-    const onBeforeInstall = createTopic<BeforeInstallTopicParams>("cms.onBeforeInstall");
-    const onAfterInstall = createTopic<AfterInstallTopicParams>("cms.onAfterInstall");
+    const onSystemBeforeInstall = createTopic<BeforeInstallTopicParams>(
+        "cms.onSystemBeforeInstall"
+    );
+    const onSystemAfterInstall = createTopic<AfterInstallTopicParams>("cms.onSystemAfterInstall");
 
     const createReadAPIKey = () => {
         return crypto.randomBytes(Math.ceil(48 / 2)).toString("hex");
@@ -50,7 +52,7 @@ export const createSystemCrud = (params: CreateSystemCrudParams): CmsSystemConte
             tenant: getTenant().id
         });
 
-        return system ? system.version || null : null;
+        return system?.version || null;
     };
 
     const setVersion = async (version: string) => {
@@ -74,8 +76,16 @@ export const createSystemCrud = (params: CreateSystemCrudParams): CmsSystemConte
     };
 
     return {
-        onBeforeSystemInstall: onBeforeInstall,
-        onAfterSystemInstall: onAfterInstall,
+        /**
+         * Deprecated - will be removed in 5.35.0
+         */
+        onBeforeSystemInstall: onSystemBeforeInstall,
+        onAfterSystemInstall: onSystemAfterInstall,
+        /**
+         * Released in 5.33.0
+         */
+        onSystemBeforeInstall,
+        onSystemAfterInstall,
         getSystemVersion: getVersion,
         setSystemVersion: setVersion,
         getReadAPIKey: async () => {
@@ -114,7 +124,7 @@ export const createSystemCrud = (params: CreateSystemCrudParams): CmsSystemConte
             /**
              * First trigger before install event.
              */
-            await onBeforeInstall.publish({
+            await onSystemBeforeInstall.publish({
                 tenant: getTenant().id,
                 locale: getLocale().code
             });
@@ -144,7 +154,7 @@ export const createSystemCrud = (params: CreateSystemCrudParams): CmsSystemConte
             /**
              * And trigger after install event.
              */
-            await onAfterInstall.publish({
+            await onSystemAfterInstall.publish({
                 tenant: getTenant().id,
                 locale: getLocale().code
             });

@@ -164,8 +164,8 @@ const createOnBeforeCb = ({ plugins, storageOperations }: CreateOnBeforeCreateCb
 };
 
 interface AssignBeforeModelCreateParams {
-    onBeforeModelCreate: Topic<BeforeModelCreateTopicParams>;
-    onBeforeModelCreateFrom: Topic<BeforeModelCreateFromTopicParams>;
+    onModelBeforeCreate: Topic<BeforeModelCreateTopicParams>;
+    onModelBeforeCreateFrom: Topic<BeforeModelCreateFromTopicParams>;
     storageOperations: HeadlessCmsStorageOperations;
     plugins: PluginsContainer;
 }
@@ -175,9 +175,9 @@ interface AssignBeforeModelCreateParams {
  * Callables are identical.
  */
 export const assignBeforeModelCreate = (params: AssignBeforeModelCreateParams) => {
-    const { onBeforeModelCreate, onBeforeModelCreateFrom, storageOperations, plugins } = params;
+    const { onModelBeforeCreate, onModelBeforeCreateFrom, storageOperations, plugins } = params;
 
-    onBeforeModelCreate.subscribe(async ({ model, input }) => {
+    onModelBeforeCreate.subscribe(async ({ model, input }) => {
         /**
          * First we need to validate base data of the model.
          */
@@ -198,7 +198,7 @@ export const assignBeforeModelCreate = (params: AssignBeforeModelCreateParams) =
         });
     });
 
-    onBeforeModelCreateFrom.subscribe(
+    onModelBeforeCreateFrom.subscribe(
         createOnBeforeCb({
             storageOperations,
             plugins

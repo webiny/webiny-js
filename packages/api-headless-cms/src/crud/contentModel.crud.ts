@@ -196,69 +196,83 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
     };
 
     // create
-    const onBeforeModelCreate =
-        createTopic<BeforeModelCreateTopicParams>("cms.onBeforeModelCreate");
-    const onAfterModelCreate = createTopic<AfterModelCreateTopicParams>("cms.onAfterModelCreate");
+    const onModelBeforeCreate =
+        createTopic<BeforeModelCreateTopicParams>("cms.onModelBeforeCreate");
+    const onModelAfterCreate = createTopic<AfterModelCreateTopicParams>("cms.onModelAfterCreate");
     // create from
-    const onBeforeModelCreateFrom = createTopic<BeforeModelCreateFromTopicParams>(
-        "cms.onBeforeModelCreateFrom"
+    const onModelBeforeCreateFrom = createTopic<BeforeModelCreateFromTopicParams>(
+        "cms.onModelBeforeCreateFrom"
     );
-    const onAfterModelCreateFrom = createTopic<AfterModelCreateFromTopicParams>(
-        "cms.onAfterModelCreateFrom"
+    const onModelAfterCreateFrom = createTopic<AfterModelCreateFromTopicParams>(
+        "cms.onModelAfterCreateFrom"
     );
     // update
-    const onBeforeModelUpdate =
-        createTopic<BeforeModelUpdateTopicParams>("cms.onBeforeModelUpdate");
-    const onAfterModelUpdate = createTopic<AfterModelUpdateTopicParams>("cms.onAfterModelUpdate");
+    const onModelBeforeUpdate =
+        createTopic<BeforeModelUpdateTopicParams>("cms.onModelBeforeUpdate");
+    const onModelAfterUpdate = createTopic<AfterModelUpdateTopicParams>("cms.onModelAfterUpdate");
     // delete
-    const onBeforeModelDelete =
-        createTopic<BeforeModelDeleteTopicParams>("cms.onBeforeModelDelete");
-    const onAfterModelDelete = createTopic<AfterModelDeleteTopicParams>("cms.onAfterModelDelete");
+    const onModelBeforeDelete =
+        createTopic<BeforeModelDeleteTopicParams>("cms.onModelBeforeDelete");
+    const onModelAfterDelete = createTopic<AfterModelDeleteTopicParams>("cms.onModelAfterDelete");
     /**
      * We need to assign some default behaviors.
      */
     assignBeforeModelCreate({
-        onBeforeModelCreate,
-        onBeforeModelCreateFrom,
+        onModelBeforeCreate,
+        onModelBeforeCreateFrom,
         plugins: context.plugins,
         storageOperations
     });
     assignAfterModelCreate({
         context,
-        onAfterModelCreate
+        onModelAfterCreate
     });
     assignBeforeModelUpdate({
-        onBeforeModelUpdate,
+        onModelBeforeUpdate,
         plugins: context.plugins,
         storageOperations
     });
     assignAfterModelUpdate({
         context,
-        onAfterModelUpdate
+        onModelAfterUpdate
     });
     assignAfterModelCreateFrom({
         context,
-        onAfterModelCreateFrom
+        onModelAfterCreateFrom
     });
     assignBeforeModelDelete({
-        onBeforeModelDelete,
+        onModelBeforeDelete,
         plugins: context.plugins,
         storageOperations
     });
     assignAfterModelDelete({
         context,
-        onAfterModelDelete
+        onModelAfterDelete
     });
 
     return {
-        onBeforeModelCreate,
-        onAfterModelCreate,
-        onBeforeModelCreateFrom,
-        onAfterModelCreateFrom,
-        onBeforeModelUpdate,
-        onAfterModelUpdate,
-        onBeforeModelDelete,
-        onAfterModelDelete,
+        /**
+         * Deprecated - will be removed in 5.35.0
+         */
+        onBeforeModelCreate: onModelBeforeCreate,
+        onAfterModelCreate: onModelAfterCreate,
+        onBeforeModelCreateFrom: onModelBeforeCreateFrom,
+        onAfterModelCreateFrom: onModelAfterCreateFrom,
+        onBeforeModelUpdate: onModelBeforeUpdate,
+        onAfterModelUpdate: onModelAfterUpdate,
+        onBeforeModelDelete: onModelBeforeDelete,
+        onAfterModelDelete: onModelAfterDelete,
+        /**
+         * Released in 5.33.0
+         */
+        onModelBeforeCreate,
+        onModelAfterCreate,
+        onModelBeforeCreateFrom,
+        onModelAfterCreateFrom,
+        onModelBeforeUpdate,
+        onModelAfterUpdate,
+        onModelBeforeDelete,
+        onModelAfterDelete,
         clearModelsCache,
         getModel,
         listModels,
@@ -305,7 +319,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
 
             validateLayout(model, fields);
 
-            await onBeforeModelCreate.publish({
+            await onModelBeforeCreate.publish({
                 input,
                 model
             });
@@ -318,7 +332,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
 
             await updateManager(context, model);
 
-            await onAfterModelCreate.publish({
+            await onModelAfterCreate.publish({
                 input,
                 model: createdModel
             });
@@ -339,7 +353,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 webinyVersion: context.WEBINY_VERSION
             };
 
-            await onBeforeModelUpdate.publish({
+            await onModelBeforeUpdate.publish({
                 input: {} as CmsModelUpdateInput,
                 original,
                 model
@@ -353,7 +367,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
 
             loaders.listModels.clearAll();
 
-            await onAfterModelUpdate.publish({
+            await onModelAfterUpdate.publish({
                 input: {} as CmsModelUpdateInput,
                 original,
                 model: resultModel
@@ -417,7 +431,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 webinyVersion: context.WEBINY_VERSION
             };
 
-            await onBeforeModelCreateFrom.publish({
+            await onModelBeforeCreateFrom.publish({
                 input,
                 model,
                 original
@@ -431,7 +445,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
 
             await updateManager(context, model);
 
-            await onAfterModelCreateFrom.publish({
+            await onModelAfterCreateFrom.publish({
                 input,
                 original,
                 model: createdModel
@@ -484,7 +498,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
             };
             validateLayout(model, fields);
 
-            await onBeforeModelUpdate.publish({
+            await onModelBeforeUpdate.publish({
                 input,
                 original,
                 model
@@ -496,7 +510,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
 
             await updateManager(context, resultModel);
 
-            await onAfterModelUpdate.publish({
+            await onModelAfterUpdate.publish({
                 input,
                 original,
                 model: resultModel
@@ -509,7 +523,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
 
             const model = await getModel(modelId);
 
-            await onBeforeModelDelete.publish({
+            await onModelBeforeDelete.publish({
                 model
             });
 
@@ -528,7 +542,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 );
             }
 
-            await onAfterModelDelete.publish({
+            await onModelAfterDelete.publish({
                 model
             });
 

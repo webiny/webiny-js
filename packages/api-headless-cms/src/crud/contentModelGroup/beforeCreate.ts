@@ -7,14 +7,14 @@ import { toSlug } from "~/utils/toSlug";
 import { CmsGroupPlugin } from "~/plugins/CmsGroupPlugin";
 
 interface AssignBeforeGroupCreateParams {
-    onBeforeCreate: Topic<BeforeGroupCreateTopicParams>;
+    onGroupBeforeCreate: Topic<BeforeGroupCreateTopicParams>;
     plugins: PluginsContainer;
     storageOperations: HeadlessCmsStorageOperations;
 }
 export const assignBeforeGroupCreate = (params: AssignBeforeGroupCreateParams) => {
-    const { onBeforeCreate, plugins, storageOperations } = params;
+    const { onGroupBeforeCreate, plugins, storageOperations } = params;
 
-    onBeforeCreate.subscribe(async params => {
+    onGroupBeforeCreate.subscribe(async params => {
         const { group } = params;
 
         if (group.slug && group.slug.trim()) {
