@@ -195,14 +195,25 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         return await updateManager(context, model);
     };
 
-    const onBeforeModelCreate = createTopic<BeforeModelCreateTopicParams>();
-    const onAfterModelCreate = createTopic<AfterModelCreateTopicParams>();
-    const onBeforeModelCreateFrom = createTopic<BeforeModelCreateFromTopicParams>();
-    const onAfterModelCreateFrom = createTopic<AfterModelCreateFromTopicParams>();
-    const onBeforeModelUpdate = createTopic<BeforeModelUpdateTopicParams>();
-    const onAfterModelUpdate = createTopic<AfterModelUpdateTopicParams>();
-    const onBeforeModelDelete = createTopic<BeforeModelDeleteTopicParams>();
-    const onAfterModelDelete = createTopic<AfterModelDeleteTopicParams>();
+    // create
+    const onBeforeModelCreate =
+        createTopic<BeforeModelCreateTopicParams>("cms.onBeforeModelCreate");
+    const onAfterModelCreate = createTopic<AfterModelCreateTopicParams>("cms.onAfterModelCreate");
+    // create from
+    const onBeforeModelCreateFrom = createTopic<BeforeModelCreateFromTopicParams>(
+        "cms.onBeforeModelCreateFrom"
+    );
+    const onAfterModelCreateFrom = createTopic<AfterModelCreateFromTopicParams>(
+        "cms.onAfterModelCreateFrom"
+    );
+    // update
+    const onBeforeModelUpdate =
+        createTopic<BeforeModelUpdateTopicParams>("cms.onBeforeModelUpdate");
+    const onAfterModelUpdate = createTopic<AfterModelUpdateTopicParams>("cms.onAfterModelUpdate");
+    // delete
+    const onBeforeModelDelete =
+        createTopic<BeforeModelDeleteTopicParams>("cms.onBeforeModelDelete");
+    const onAfterModelDelete = createTopic<AfterModelDeleteTopicParams>("cms.onAfterModelDelete");
     /**
      * We need to assign some default behaviors.
      */

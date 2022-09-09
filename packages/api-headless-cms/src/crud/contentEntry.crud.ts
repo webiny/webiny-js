@@ -245,26 +245,62 @@ export interface CreateContentEntryCrudParams {
 export const createContentEntryCrud = (params: CreateContentEntryCrudParams): CmsEntryContext => {
     const { storageOperations, context, getIdentity, getTenant } = params;
 
-    const onBeforeEntryCreate = createTopic<BeforeEntryCreateTopicParams>();
-    const onAfterEntryCreate = createTopic<AfterEntryCreateTopicParams>();
-    const onBeforeEntryCreateRevision = createTopic<BeforeEntryCreateRevisionTopicParams>();
-    const onAfterEntryCreateRevision = createTopic<AfterEntryCreateRevisionTopicParams>();
-    const onBeforeEntryUpdate = createTopic<BeforeEntryUpdateTopicParams>();
-    const onAfterEntryUpdate = createTopic<AfterEntryUpdateTopicParams>();
-    const onBeforeEntryPublish = createTopic<BeforeEntryPublishTopicParams>();
-    const onAfterEntryPublish = createTopic<AfterEntryPublishTopicParams>();
-    const onBeforeEntryUnpublish = createTopic<BeforeEntryUnpublishTopicParams>();
-    const onAfterEntryUnpublish = createTopic<AfterEntryUnpublishTopicParams>();
-    const onBeforeEntryRequestChanges = createTopic<BeforeEntryRequestChangesTopicParams>();
-    const onAfterEntryRequestChanges = createTopic<AfterEntryRequestChangesTopicParams>();
-    const onBeforeEntryRequestReview = createTopic<BeforeEntryRequestReviewTopicParams>();
-    const onAfterEntryRequestReview = createTopic<AfterEntryRequestReviewTopicParams>();
-    const onBeforeEntryDelete = createTopic<BeforeEntryDeleteTopicParams>();
-    const onAfterEntryDelete = createTopic<AfterEntryDeleteTopicParams>();
-    const onBeforeEntryDeleteRevision = createTopic<BeforeEntryDeleteRevisionTopicParams>();
-    const onAfterEntryDeleteRevision = createTopic<AfterEntryDeleteRevisionTopicParams>();
-    const onBeforeEntryGet = createTopic<BeforeEntryGetTopicParams>();
-    const onBeforeEntryList = createTopic<BeforeEntryListTopicParams>();
+    // create
+    const onBeforeEntryCreate =
+        createTopic<BeforeEntryCreateTopicParams>("cms.onBeforeEntryCreate");
+    const onAfterEntryCreate = createTopic<AfterEntryCreateTopicParams>("cms.onAfterEntryCreate");
+    // create revision
+    const onBeforeEntryCreateRevision = createTopic<BeforeEntryCreateRevisionTopicParams>(
+        "cms.onBeforeEntryCreateRevision"
+    );
+    const onAfterEntryCreateRevision = createTopic<AfterEntryCreateRevisionTopicParams>(
+        "cms.onAfterEntryCreateRevision"
+    );
+    // update
+    const onBeforeEntryUpdate =
+        createTopic<BeforeEntryUpdateTopicParams>("cms.onBeforeEntryUpdate");
+    const onAfterEntryUpdate = createTopic<AfterEntryUpdateTopicParams>("cms.onAfterEntryUpdate");
+    // publish
+    const onBeforeEntryPublish = createTopic<BeforeEntryPublishTopicParams>(
+        "cms.onBeforeEntryPublish"
+    );
+    const onAfterEntryPublish = createTopic<AfterEntryPublishTopicParams>("cms.onAfterEntryPublic");
+    // unpublish
+    const onBeforeEntryUnpublish = createTopic<BeforeEntryUnpublishTopicParams>(
+        "cms.onBeforeEntryUnpublish"
+    );
+    const onAfterEntryUnpublish = createTopic<AfterEntryUnpublishTopicParams>(
+        "cms.onAfterEntryUnpublish"
+    );
+    // request changes
+    const onBeforeEntryRequestChanges = createTopic<BeforeEntryRequestChangesTopicParams>(
+        "cms.onBeforeEntryRequestChanges"
+    );
+    const onAfterEntryRequestChanges = createTopic<AfterEntryRequestChangesTopicParams>(
+        "cms.onAfterEntryRequestChanges"
+    );
+    // request review
+    const onBeforeEntryRequestReview = createTopic<BeforeEntryRequestReviewTopicParams>(
+        "cms.onBeforeEntryRequestReview"
+    );
+    const onAfterEntryRequestReview = createTopic<AfterEntryRequestReviewTopicParams>(
+        "cms.onAfterEntryRequestReview"
+    );
+    // delete
+    const onBeforeEntryDelete =
+        createTopic<BeforeEntryDeleteTopicParams>("cms.onBeforeEntryDelete");
+    const onAfterEntryDelete = createTopic<AfterEntryDeleteTopicParams>("cms.onAfterEntryDelete");
+    // delete revision
+    const onBeforeEntryDeleteRevision = createTopic<BeforeEntryDeleteRevisionTopicParams>(
+        "cms.onBeforeEntryDeleteRevision"
+    );
+    const onAfterEntryDeleteRevision = createTopic<AfterEntryDeleteRevisionTopicParams>(
+        "cms.onAfterEntryDeleteRevision"
+    );
+    // get
+    const onBeforeEntryGet = createTopic<BeforeEntryGetTopicParams>("cms.onBeforeEntryGet");
+    // list
+    const onBeforeEntryList = createTopic<BeforeEntryListTopicParams>("cms.onBeforeEntryList");
 
     /**
      * We need to assign some default behaviors.

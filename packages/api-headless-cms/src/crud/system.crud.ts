@@ -34,8 +34,8 @@ interface CreateSystemCrudParams {
 export const createSystemCrud = (params: CreateSystemCrudParams): CmsSystemContext => {
     const { getTenant, getLocale, storageOperations, context, getIdentity } = params;
 
-    const onBeforeInstall = createTopic<BeforeInstallTopicParams>();
-    const onAfterInstall = createTopic<AfterInstallTopicParams>();
+    const onBeforeInstall = createTopic<BeforeInstallTopicParams>("cms.onBeforeInstall");
+    const onAfterInstall = createTopic<AfterInstallTopicParams>("cms.onAfterInstall");
 
     const createReadAPIKey = () => {
         return crypto.randomBytes(Math.ceil(48 / 2)).toString("hex");

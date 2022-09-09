@@ -152,12 +152,15 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
         }
     };
 
-    const onBeforeCreate = createTopic<BeforeGroupCreateTopicParams>();
-    const onAfterCreate = createTopic<AfterGroupCreateTopicParams>();
-    const onBeforeUpdate = createTopic<BeforeGroupUpdateTopicParams>();
-    const onAfterUpdate = createTopic<AfterGroupUpdateTopicParams>();
-    const onBeforeDelete = createTopic<BeforeGroupDeleteTopicParams>();
-    const onAfterDelete = createTopic<AfterGroupDeleteTopicParams>();
+    // create
+    const onBeforeCreate = createTopic<BeforeGroupCreateTopicParams>("cms.onBeforeGroupCreate");
+    const onAfterCreate = createTopic<AfterGroupCreateTopicParams>("cms.onAfterGroupCreate");
+    // update
+    const onBeforeUpdate = createTopic<BeforeGroupUpdateTopicParams>("cms.onBeforeGroupUpdate");
+    const onAfterUpdate = createTopic<AfterGroupUpdateTopicParams>("cms.onAfterGroupUpdate");
+    // delete
+    const onBeforeDelete = createTopic<BeforeGroupDeleteTopicParams>("cms.onBeforeGroupDelete");
+    const onAfterDelete = createTopic<AfterGroupDeleteTopicParams>("cms.onAfterGroupDelete");
 
     /**
      * We need to assign some default behaviors.
