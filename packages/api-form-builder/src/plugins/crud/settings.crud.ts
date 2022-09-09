@@ -1,10 +1,22 @@
 import * as utils from "./utils";
 import * as models from "./settings.models";
-import { Settings, FormBuilderContext, SettingsCRUD, FormBuilder } from "~/types";
+import {
+    Settings,
+    FormBuilderContext,
+    SettingsCRUD,
+    FormBuilder,
+    OnBeforeSettingsCreate,
+    OnAfterSettingsCreate,
+    OnBeforeSettingsUpdate,
+    OnAfterSettingsUpdate,
+    OnBeforeSettingsDelete,
+    OnAfterSettingsDelete
+} from "~/types";
 import WebinyError from "@webiny/error";
 import { Tenant } from "@webiny/api-tenancy/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { NotFoundError } from "@webiny/handler-graphql";
+import { createTopic } from "@webiny/pubsub";
 
 export interface CreateSettingsCrudParams {
     getTenant: () => Tenant;
@@ -15,7 +27,37 @@ export interface CreateSettingsCrudParams {
 export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCRUD => {
     const { getTenant, getLocale, context } = params;
 
+    // create
+    const onBeforeSettingsCreate = createTopic<OnBeforeSettingsCreate>(
+        "formBuilder.onBeforeSettingsCreate"
+    );
+    const onAfterSettingsCreate = createTopic<OnAfterSettingsCreate>(
+        "formBuilder.onAfterSettingsCreate"
+    );
+
+    // update
+    const onBeforeSettingsUpdate = createTopic<OnBeforeSettingsUpdate>(
+        "formBuilder.onBeforeSettingsUpdate"
+    );
+    const onAfterSettingsUpdate = createTopic<OnAfterSettingsUpdate>(
+        "formBuilder.onAfterSettingsUpdate"
+    );
+
+    // delete
+    const onBeforeSettingsDelete = createTopic<OnBeforeSettingsDelete>(
+        "formBuilder.onBeforeSettingsDelete"
+    );
+    const onAfterSettingsDelete = createTopic<OnAfterSettingsDelete>(
+        "formBuilder.onAfterSettingsDelete"
+    );
+
     return {
+        onBeforeSettingsCreate,
+        onAfterSettingsCreate,
+        onBeforeSettingsUpdate,
+        onAfterSettingsUpdate,
+        onBeforeSettingsDelete,
+        onAfterSettingsDelete,
         async getSettings(this: FormBuilder, params) {
             const { auth, throwOnNotFound } = params || {};
 
@@ -66,9 +108,16 @@ export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCR
                 locale: getLocale().code
             };
             try {
-                return await this.storageOperations.createSettings({
+                await onBeforeSettingsCreate.publish({
                     settings
                 });
+                const result = await this.storageOperations.createSettings({
+                    settings
+                });
+                await onAfterSettingsCreate.publish({
+                    settings: result
+                });
+                return result;
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not create settings.",
@@ -109,10 +158,21 @@ export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCR
                 } as Settings
             );
             try {
-                return await this.storageOperations.updateSettings({
+                await onBeforeSettingsUpdate.publish({
+                    original,
+                    settings
+                });
+                const result = await this.storageOperations.updateSettings({
                     settings,
                     original
                 });
+
+                await onAfterSettingsUpdate.publish({
+                    original,
+                    settings
+                });
+
+                return result;
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not update settings.",
@@ -124,7 +184,6 @@ export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCR
                 );
             }
         },
-
         async deleteSettings(this: FormBuilder) {
             await utils.checkBaseSettingsPermissions(context);
             const settings = await this.getSettings();
@@ -132,7 +191,15 @@ export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCR
                 return;
             }
             try {
+                await onBeforeSettingsDelete.publish({
+                    settings
+                });
+
                 await this.storageOperations.deleteSettings({ settings });
+
+                await onAfterSettingsDelete.publish({
+                    settings
+                });
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not delete settings.",

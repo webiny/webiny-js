@@ -26,8 +26,8 @@ interface CreateSystemCrudParams {
 export const createSystemCrud = (params: CreateSystemCrudParams): SystemCRUD => {
     const { getTenant, getLocale, getIdentity, context } = params;
 
-    const onBeforeInstall = createTopic<BeforeInstallTopic>();
-    const onAfterInstall = createTopic<AfterInstallTopic>();
+    const onBeforeInstall = createTopic<BeforeInstallTopic>("formBuilder.onBeforeInstall");
+    const onAfterInstall = createTopic<AfterInstallTopic>("formBuilder.onAfterInstall");
 
     return {
         onBeforeInstall,
