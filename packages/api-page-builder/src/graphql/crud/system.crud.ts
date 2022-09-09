@@ -25,8 +25,8 @@ export interface CreateSystemCrudParams {
 }
 export const createSystemCrud = (params: CreateSystemCrudParams): SystemCrud => {
     const { context, storageOperations, getTenantId } = params;
-    const onBeforeInstall = createTopic<OnBeforeInstallTopicParams>();
-    const onAfterInstall = createTopic<OnAfterInstallTopicParams>();
+    const onBeforeInstall = createTopic<OnBeforeInstallTopicParams>("pageBuilder.onBeforeInstall");
+    const onAfterInstall = createTopic<OnAfterInstallTopicParams>("pageBuilder.onAfterInstall");
 
     return {
         onBeforeInstall,

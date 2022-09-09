@@ -55,12 +55,27 @@ export interface CreateMenuCrudParams {
 export const createMenuCrud = (params: CreateMenuCrudParams): MenusCrud => {
     const { context, storageOperations, getLocaleCode, getTenantId } = params;
 
-    const onBeforeMenuCreate = createTopic<OnBeforeMenuCreateTopicParams>();
-    const onAfterMenuCreate = createTopic<OnAfterMenuCreateTopicParams>();
-    const onBeforeMenuUpdate = createTopic<OnBeforeMenuUpdateTopicParams>();
-    const onAfterMenuUpdate = createTopic<OnAfterMenuUpdateTopicParams>();
-    const onBeforeMenuDelete = createTopic<OnBeforeMenuDeleteTopicParams>();
-    const onAfterMenuDelete = createTopic<OnAfterMenuDeleteTopicParams>();
+    // create
+    const onBeforeMenuCreate = createTopic<OnBeforeMenuCreateTopicParams>(
+        "pageBuilder.onBeforeMenuCreate"
+    );
+    const onAfterMenuCreate = createTopic<OnAfterMenuCreateTopicParams>(
+        "pageBuilder.onAfterMenuCreate"
+    );
+    // update
+    const onBeforeMenuUpdate = createTopic<OnBeforeMenuUpdateTopicParams>(
+        "pageBuilder.onBeforeMenuUpdate"
+    );
+    const onAfterMenuUpdate = createTopic<OnAfterMenuUpdateTopicParams>(
+        "pageBuilder.onAfterMenuUpdate"
+    );
+    // delete
+    const onBeforeMenuDelete = createTopic<OnBeforeMenuDeleteTopicParams>(
+        "pageBuilder.onBeforeMenuDelete"
+    );
+    const onAfterMenuDelete = createTopic<OnAfterMenuDeleteTopicParams>(
+        "pageBuilder.onAfterMenuDelete"
+    );
 
     return {
         onBeforeMenuCreate,

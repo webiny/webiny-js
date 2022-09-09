@@ -54,12 +54,24 @@ export const createCategoriesCrud = (params: CreateCategoriesCrudParams): Catego
 
     const getPermission = (name: string) => context.security.getPermission(name);
 
-    const onBeforeCategoryCreate = createTopic<OnBeforeCategoryCreateTopicParams>();
-    const onAfterCategoryCreate = createTopic<OnAfterCategoryCreateTopicParams>();
-    const onBeforeCategoryUpdate = createTopic<OnBeforeCategoryUpdateTopicParams>();
-    const onAfterCategoryUpdate = createTopic<OnAfterCategoryUpdateTopicParams>();
-    const onBeforeCategoryDelete = createTopic<OnBeforeCategoryDeleteTopicParams>();
-    const onAfterCategoryDelete = createTopic<OnAfterCategoryDeleteTopicParams>();
+    const onBeforeCategoryCreate = createTopic<OnBeforeCategoryCreateTopicParams>(
+        "pageBuilder.onBeforeCategoryCreate"
+    );
+    const onAfterCategoryCreate = createTopic<OnAfterCategoryCreateTopicParams>(
+        "pageBuilder.onAfterCategoryCreate"
+    );
+    const onBeforeCategoryUpdate = createTopic<OnBeforeCategoryUpdateTopicParams>(
+        "pageBuilder.onBeforeCategoryUpdate"
+    );
+    const onAfterCategoryUpdate = createTopic<OnAfterCategoryUpdateTopicParams>(
+        "pageBuilder.onAfterCategoryUpdate"
+    );
+    const onBeforeCategoryDelete = createTopic<OnBeforeCategoryDeleteTopicParams>(
+        "pageBuilder.onBeforeCategoryDelete"
+    );
+    const onAfterCategoryDelete = createTopic<OnAfterCategoryDeleteTopicParams>(
+        "pageBuilder.onAfterCategoryDelete"
+    );
 
     return {
         /**

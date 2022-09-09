@@ -61,12 +61,27 @@ export interface CreatePageElementsCrudParams {
 export const createPageElementsCrud = (params: CreatePageElementsCrudParams): PageElementsCrud => {
     const { context, storageOperations, getLocaleCode, getTenantId } = params;
 
-    const onBeforePageElementCreate = createTopic<OnBeforePageElementCreateTopicParams>();
-    const onAfterPageElementCreate = createTopic<OnAfterPageElementCreateTopicParams>();
-    const onBeforePageElementUpdate = createTopic<OnBeforePageElementUpdateTopicParams>();
-    const onAfterPageElementUpdate = createTopic<OnAfterPageElementUpdateTopicParams>();
-    const onBeforePageElementDelete = createTopic<OnBeforePageElementDeleteTopicParams>();
-    const onAfterPageElementDelete = createTopic<OnAfterPageElementDeleteTopicParams>();
+    // create
+    const onBeforePageElementCreate = createTopic<OnBeforePageElementCreateTopicParams>(
+        "pageBuilder.onBeforePageElementCreate"
+    );
+    const onAfterPageElementCreate = createTopic<OnAfterPageElementCreateTopicParams>(
+        "pageBuilder.onAfterPageElementCreate"
+    );
+    // update
+    const onBeforePageElementUpdate = createTopic<OnBeforePageElementUpdateTopicParams>(
+        "pageBuilder.onBeforePageElementUpdate"
+    );
+    const onAfterPageElementUpdate = createTopic<OnAfterPageElementUpdateTopicParams>(
+        "pageBuilder.onAfterPageElementUpdate"
+    );
+    // delete
+    const onBeforePageElementDelete = createTopic<OnBeforePageElementDeleteTopicParams>(
+        "pageBuilder.onBeforePageElementDelete"
+    );
+    const onAfterPageElementDelete = createTopic<OnAfterPageElementDeleteTopicParams>(
+        "pageBuilder.onAfterPageElementDelete"
+    );
 
     return {
         /**

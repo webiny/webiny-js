@@ -204,22 +204,62 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
         }
     };
 
-    const onBeforePageCreate = createTopic<OnBeforePageCreateTopicParams>();
-    const onAfterPageCreate = createTopic<OnAfterPageCreateTopicParams>();
-    const onBeforePageCreateFrom = createTopic<OnBeforePageCreateFromTopicParams>();
-    const onAfterPageCreateFrom = createTopic<OnAfterPageCreateFromTopicParams>();
-    const onBeforePageUpdate = createTopic<OnBeforePageUpdateTopicParams>();
-    const onAfterPageUpdate = createTopic<OnAfterPageUpdateTopicParams>();
-    const onBeforePageDelete = createTopic<OnBeforePageDeleteTopicParams>();
-    const onAfterPageDelete = createTopic<OnAfterPageDeleteTopicParams>();
-    const onBeforePagePublish = createTopic<OnBeforePagePublishTopicParams>();
-    const onAfterPagePublish = createTopic<OnAfterPagePublishTopicParams>();
-    const onBeforePageUnpublish = createTopic<OnBeforePageUnpublishTopicParams>();
-    const onAfterPageUnpublish = createTopic<OnAfterPageUnpublishTopicParams>();
-    const onBeforePageRequestReview = createTopic<OnBeforePageRequestReviewTopicParams>();
-    const onAfterPageRequestReview = createTopic<OnAfterPageRequestReviewTopicParams>();
-    const onBeforePageRequestChanges = createTopic<OnBeforePageRequestChangesTopicParams>();
-    const onAfterPageRequestChanges = createTopic<OnAfterPageRequestChangesTopicParams>();
+    // create
+    const onBeforePageCreate = createTopic<OnBeforePageCreateTopicParams>(
+        "pageBuilder.onBeforeCreatePage"
+    );
+    const onAfterPageCreate = createTopic<OnAfterPageCreateTopicParams>(
+        "pageBuilder.onAfterCreatePage"
+    );
+    // create from
+    const onBeforePageCreateFrom = createTopic<OnBeforePageCreateFromTopicParams>(
+        "pageBuilder.onBeforeCreateFromPage"
+    );
+    const onAfterPageCreateFrom = createTopic<OnAfterPageCreateFromTopicParams>(
+        "pageBuilder.onAfterCreateFromPage"
+    );
+    // update
+    const onBeforePageUpdate = createTopic<OnBeforePageUpdateTopicParams>(
+        "pageBuilder.onBeforeUpdatePage"
+    );
+    const onAfterPageUpdate = createTopic<OnAfterPageUpdateTopicParams>(
+        "pageBuilder.onAfterUpdatePage"
+    );
+    // delete
+    const onBeforePageDelete = createTopic<OnBeforePageDeleteTopicParams>(
+        "pageBuilder.onBeforeDeletePage"
+    );
+    const onAfterPageDelete = createTopic<OnAfterPageDeleteTopicParams>(
+        "pageBuilder.onAfterDeletePage"
+    );
+    // publish
+    const onBeforePagePublish = createTopic<OnBeforePagePublishTopicParams>(
+        "pageBuilder.onBeforePublishPage"
+    );
+    const onAfterPagePublish = createTopic<OnAfterPagePublishTopicParams>(
+        "pageBuilder.onAfterPublishPage"
+    );
+    // unpublish
+    const onBeforePageUnpublish = createTopic<OnBeforePageUnpublishTopicParams>(
+        "pageBuilder.onBeforeUnpublishPage"
+    );
+    const onAfterPageUnpublish = createTopic<OnAfterPageUnpublishTopicParams>(
+        "pageBuilder.onAfterUnpublishPage"
+    );
+    // request review
+    const onBeforePageRequestReview = createTopic<OnBeforePageRequestReviewTopicParams>(
+        "pageBuilder.onBeforeRequestReviewPage"
+    );
+    const onAfterPageRequestReview = createTopic<OnAfterPageRequestReviewTopicParams>(
+        "pageBuilder.onAfterRequestReviewPage"
+    );
+    // request changes
+    const onBeforePageRequestChanges = createTopic<OnBeforePageRequestChangesTopicParams>(
+        "pageBuilder.onBeforeRequestChangesPage"
+    );
+    const onAfterPageRequestChanges = createTopic<OnAfterPageRequestChangesTopicParams>(
+        "pageBuilder.onAfterRequestChangesPage"
+    );
 
     return {
         /**

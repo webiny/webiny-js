@@ -56,8 +56,12 @@ export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCr
         }
     );
 
-    const onBeforeSettingsUpdate = createTopic<OnBeforeSettingsUpdateTopicParams>();
-    const onAfterSettingsUpdate = createTopic<OnAfterSettingsUpdateTopicParams>();
+    const onBeforeSettingsUpdate = createTopic<OnBeforeSettingsUpdateTopicParams>(
+        "pageBuilder.onBeforeSettingsUpdate"
+    );
+    const onAfterSettingsUpdate = createTopic<OnAfterSettingsUpdateTopicParams>(
+        "pageBuilder.onAfterSettingsUpdate"
+    );
 
     return {
         onBeforeSettingsUpdate,
