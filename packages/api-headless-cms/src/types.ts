@@ -170,6 +170,10 @@ export interface CmsModelField {
      */
     multipleValues?: boolean;
     /**
+     * Fields can be tagged to give them contextual meaning.
+     */
+    tags?: string[];
+    /**
      * Any user defined settings.
      *
      * @default {}
@@ -396,6 +400,10 @@ export interface CmsModel {
      * ```
      */
     layout: string[][];
+    /**
+     * Models can be tagged to give them contextual meaning.
+     */
+    tags?: string[];
     /**
      * List of locked fields. Updated when entry is saved and a field has been used.
      */
@@ -1028,6 +1036,10 @@ export interface CmsModelCreateInput {
      */
     layout?: string[][];
     /**
+     * Models can be tagged to give them contextual meaning.
+     */
+    tags?: string[];
+    /**
      * The field that is being displayed as entry title.
      * It is picked as first available text field. Or user can select own field.
      */
@@ -1083,6 +1095,10 @@ export interface CmsModelFieldInput {
      * Text to display in the field.
      */
     placeholderText?: string;
+    /**
+     * Fields can be tagged to give them contextual meaning.
+     */
+    tags?: string[];
     /**
      * Are multiple values allowed?
      */

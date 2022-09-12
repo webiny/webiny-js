@@ -45,6 +45,20 @@ import { filterAsync } from "~/utils/filterAsync";
 import { checkOwnership, validateOwnership } from "~/utils/ownership";
 import { checkModelAccess, validateModelAccess } from "~/utils/access";
 
+/**
+ * Given a model, return an array of tags ensuring the `type` tag is set.
+ */
+const ensureTypeTag = (model: Pick<CmsModel, "tags">) => {
+    // Let's make sure we have a `type` tag assigned.
+    // If `type` tag is not set, set it to a default one (`contentModel`).
+    const tags = model.tags || [];
+    if (!tags.find(tag => tag.startsWith("type:"))) {
+        tags.push("type:contentModel");
+    }
+
+    return tags;
+};
+
 export interface CreateModelsCrudParams {
     getTenant: () => Tenant;
     getLocale: () => I18NLocale;
@@ -52,6 +66,7 @@ export interface CreateModelsCrudParams {
     context: CmsContext;
     getIdentity: () => SecurityIdentity;
 }
+
 export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContext => {
     const { getTenant, getIdentity, getLocale, storageOperations, context } = params;
 
@@ -67,6 +82,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 models.map(model => {
                     return {
                         ...model,
+                        tags: ensureTypeTag(model),
                         tenant: model.tenant || getTenant().id,
                         locale: model.locale || getLocale().code
                     };
@@ -118,6 +134,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 .map<CmsModel>(plugin => {
                     return {
                         ...plugin.contentModel,
+                        tags: ensureTypeTag(plugin.contentModel),
                         tenant,
                         locale,
                         webinyVersion: context.WEBINY_VERSION
@@ -145,6 +162,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
 
         return {
             ...model,
+            tags: ensureTypeTag(model),
             tenant: model.tenant || getTenant().id,
             locale: model.locale || getLocale().code
         };
@@ -155,7 +173,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
 
         const pluginsModels = getModelsAsPlugins();
 
-        return databaseModels.concat(pluginsModels);
+        return [...databaseModels, ...pluginsModels];
     };
 
     const listModels = async () => {
@@ -291,6 +309,8 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 layout: input.layout || [],
                 webinyVersion: context.WEBINY_VERSION
             };
+
+            model.tags = ensureTypeTag(model);
 
             validateLayout(model, fields);
 
@@ -471,6 +491,9 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 fields,
                 savedOn: new Date().toISOString()
             };
+
+            model.tags = ensureTypeTag(model);
+
             validateLayout(model, fields);
 
             await onBeforeModelUpdate.publish({

@@ -8,6 +8,7 @@ const DATA_FIELD = /* GraphQL*/ `
             name
         }
         layout
+        tags
         titleFieldId
         fields {
             id
@@ -16,6 +17,7 @@ const DATA_FIELD = /* GraphQL*/ `
             placeholderText
             fieldId
             type
+            tags
             multipleValues
             predefinedValues {
                 enabled

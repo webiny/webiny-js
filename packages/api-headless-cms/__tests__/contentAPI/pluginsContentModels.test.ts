@@ -268,7 +268,8 @@ describe("content model plugins", () => {
                                     renderer: null,
                                     settings: null,
                                     type: "text",
-                                    validation: null
+                                    validation: null,
+                                    tags: []
                                 },
                                 {
                                     fieldId: "sku",
@@ -282,7 +283,8 @@ describe("content model plugins", () => {
                                     renderer: null,
                                     settings: null,
                                     type: "text",
-                                    validation: null
+                                    validation: null,
+                                    tags: []
                                 },
                                 {
                                     fieldId: "price",
@@ -296,7 +298,8 @@ describe("content model plugins", () => {
                                     renderer: null,
                                     settings: null,
                                     type: "number",
-                                    validation: null
+                                    validation: null,
+                                    tags: []
                                 }
                             ],
                             group: {
@@ -304,6 +307,7 @@ describe("content model plugins", () => {
                                 name: "E-Commerce"
                             },
                             layout: [["name"], ["sku", "price"]],
+                            tags: ["type:contentModel"],
                             modelId: "product",
                             name: "Product",
                             plugin: true,
@@ -338,7 +342,8 @@ describe("content model plugins", () => {
                                         renderer: null,
                                         settings: null,
                                         type: "text",
-                                        validation: null
+                                        validation: null,
+                                        tags: []
                                     },
                                     {
                                         fieldId: "sku",
@@ -352,7 +357,8 @@ describe("content model plugins", () => {
                                         renderer: null,
                                         settings: null,
                                         type: "text",
-                                        validation: null
+                                        validation: null,
+                                        tags: []
                                     },
                                     {
                                         fieldId: "price",
@@ -366,7 +372,8 @@ describe("content model plugins", () => {
                                         renderer: null,
                                         settings: null,
                                         type: "number",
-                                        validation: null
+                                        validation: null,
+                                        tags: []
                                     }
                                 ],
                                 group: {
@@ -374,6 +381,7 @@ describe("content model plugins", () => {
                                     name: "E-Commerce"
                                 },
                                 layout: [["name"], ["sku", "price"]],
+                                tags: ["type:contentModel"],
                                 modelId: "product",
                                 name: "Product",
                                 plugin: true,

@@ -90,6 +90,7 @@ describe("multiple values in field", () => {
                 label: "Available sizes",
                 fieldId: "availableSizes",
                 type: "text",
+                tags: [],
                 settings: {
                     type: "text"
                 },
