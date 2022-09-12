@@ -37,12 +37,13 @@ export const createFoldersContext = async ({
     getIdentity,
     storageOperations
 }: FoldersConfig): Promise<IFolders> => {
-    const tenant = getTenantId();
-    const locale = getLocaleCode();
-
     return {
         async getFolder({ id }: GetFolderParams): Promise<Folder> {
+            const tenant = getTenantId();
+            const locale = getLocaleCode();
+
             let folder: Folder | null = null;
+
             try {
                 folder = await storageOperations.getFolder({ tenant, locale, id });
             } catch (error) {
@@ -59,6 +60,9 @@ export const createFoldersContext = async ({
         },
 
         async listFolders({ where }: ListFoldersParams): Promise<Folder[]> {
+            const tenant = getTenantId();
+            const locale = getLocaleCode();
+
             try {
                 return await storageOperations.listFolders({
                     where: { tenant, locale, ...where },
@@ -75,6 +79,9 @@ export const createFoldersContext = async ({
 
         async createFolder(input: FolderInput): Promise<Folder> {
             await createSchema.validate(input);
+
+            const tenant = getTenantId();
+            const locale = getLocaleCode();
 
             const existing = await storageOperations.getFolder({
                 tenant,
@@ -119,6 +126,9 @@ export const createFoldersContext = async ({
         },
 
         async updateFolder(id: string, input: Record<string, any>): Promise<Folder> {
+            const tenant = getTenantId();
+            const locale = getLocaleCode();
+
             const original = await storageOperations.getFolder({ tenant, locale, id });
 
             if (!original) {
@@ -145,6 +155,9 @@ export const createFoldersContext = async ({
         },
 
         async deleteFolder(id: string): Promise<void> {
+            const tenant = getTenantId();
+            const locale = getLocaleCode();
+
             const folder = await storageOperations.getFolder({ tenant, locale, id });
 
             if (!folder) {

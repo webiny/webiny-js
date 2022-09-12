@@ -28,11 +28,11 @@ export const createLinksContext = async ({
     getIdentity,
     storageOperations
 }: FoldersConfig): Promise<ILinks> => {
-    const tenant = getTenantId();
-    const locale = getLocaleCode();
-
     return {
         async getLink(id: string): Promise<Link> {
+            const tenant = getTenantId();
+            const locale = getLocaleCode();
+
             let link: Link | null = null;
             try {
                 link = await storageOperations.getLink({ tenant, locale, id });
@@ -50,6 +50,9 @@ export const createLinksContext = async ({
         },
 
         async listLinks({ where }: ListLinksParams): Promise<Link[]> {
+            const tenant = getTenantId();
+            const locale = getLocaleCode();
+
             try {
                 return await storageOperations.listLinks({
                     where: { tenant, locale, ...where },
@@ -66,6 +69,9 @@ export const createLinksContext = async ({
 
         async createLink(input: LinkInput): Promise<Link> {
             await createSchema.validate(input);
+
+            const tenant = getTenantId();
+            const locale = getLocaleCode();
 
             const existing = await storageOperations.getLink({
                 tenant,
@@ -106,6 +112,9 @@ export const createLinksContext = async ({
         },
 
         async updateLink(id: string, input: Record<string, any>): Promise<Link> {
+            const tenant = getTenantId();
+            const locale = getLocaleCode();
+
             const original = await storageOperations.getLink({ tenant, locale, id });
 
             if (!original) {
@@ -133,6 +142,9 @@ export const createLinksContext = async ({
         },
 
         async deleteLink(id: string): Promise<void> {
+            const tenant = getTenantId();
+            const locale = getLocaleCode();
+
             const link = await storageOperations.getLink({ tenant, locale, id });
 
             if (!link) {
