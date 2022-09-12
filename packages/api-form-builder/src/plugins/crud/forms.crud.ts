@@ -16,20 +16,20 @@ import {
     FormBuilderContext,
     FormBuilderStorageOperationsListFormsParams,
     FormsCRUD,
-    OnAfterFormCreateTopicParams,
-    OnAfterFormDeleteTopicParams,
-    OnAfterFormPublishTopicParams,
-    OnAfterFormRevisionCreateTopicParams,
-    OnAfterFormRevisionDeleteTopicParams,
-    OnAfterFormUnpublishTopicParams,
-    OnAfterFormUpdateTopicParams,
-    OnBeforeFormCreateTopicParams,
-    OnBeforeFormDeleteTopicParams,
-    OnBeforeFormPublishTopicParams,
-    OnBeforeFormRevisionCreateTopicParams,
-    OnBeforeFormRevisionDeleteTopicParams,
-    OnBeforeFormUnpublishTopicParams,
-    OnBeforeFormUpdateTopicParams
+    OnFormAfterCreateTopicParams,
+    OnFormAfterDeleteTopicParams,
+    OnFormAfterPublishTopicParams,
+    OnFormRevisionAfterCreateTopicParams,
+    OnFormRevisionAfterDeleteTopicParams,
+    OnFormAfterUnpublishTopicParams,
+    OnFormAfterUpdateTopicParams,
+    OnFormBeforeCreateTopicParams,
+    OnFormBeforeDeleteTopicParams,
+    OnFormBeforePublishTopicParams,
+    OnFormRevisionBeforeCreateTopicParams,
+    OnFormRevisionBeforeDeleteTopicParams,
+    OnFormBeforeUnpublishTopicParams,
+    OnFormBeforeUpdateTopicParams
 } from "~/types";
 import WebinyError from "@webiny/error";
 import { Tenant } from "@webiny/api-tenancy/types";
@@ -47,70 +47,70 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
     const { context, getTenant, getLocale } = params;
 
     // create
-    const onBeforeFormCreate = createTopic<OnBeforeFormCreateTopicParams>(
-        "formBuilder.onBeforeFormCreate"
+    const onFormBeforeCreate = createTopic<OnFormBeforeCreateTopicParams>(
+        "formBuilder.onFormBeforeCreate"
     );
-    const onAfterFormCreate = createTopic<OnAfterFormCreateTopicParams>(
-        "formBuilder.onAfterFormCreate"
+    const onFormAfterCreate = createTopic<OnFormAfterCreateTopicParams>(
+        "formBuilder.onFormAfterCreate"
     );
     // create revision
-    const onBeforeFormRevisionCreate = createTopic<OnBeforeFormRevisionCreateTopicParams>(
-        "formBuilder.onBeforeFormRevisionCreate"
+    const onFormRevisionBeforeCreate = createTopic<OnFormRevisionBeforeCreateTopicParams>(
+        "formBuilder.onFormRevisionBeforeCreate"
     );
-    const onAfterFormRevisionCreate = createTopic<OnAfterFormRevisionCreateTopicParams>(
-        "formBuilder.onAfterFormRevisionCreate"
+    const onFormRevisionAfterCreate = createTopic<OnFormRevisionAfterCreateTopicParams>(
+        "formBuilder.onFormRevisionAfterCreate"
     );
     // update
-    const onBeforeFormUpdate = createTopic<OnBeforeFormUpdateTopicParams>(
-        "formBuilder.onBeforeFormUpdate"
+    const onFormBeforeUpdate = createTopic<OnFormBeforeUpdateTopicParams>(
+        "formBuilder.onFormBeforeUpdate"
     );
-    const onAfterFormUpdate = createTopic<OnAfterFormUpdateTopicParams>(
-        "formBuilder.onAfterFormUpdate"
+    const onFormAfterUpdate = createTopic<OnFormAfterUpdateTopicParams>(
+        "formBuilder.onFormAfterUpdate"
     );
     // delete
-    const onBeforeFormDelete = createTopic<OnBeforeFormDeleteTopicParams>(
-        "formBuilder.onBeforeFormDelete"
+    const onFormBeforeDelete = createTopic<OnFormBeforeDeleteTopicParams>(
+        "formBuilder.onFormBeforeDelete"
     );
-    const onAfterFormDelete = createTopic<OnAfterFormDeleteTopicParams>(
-        "formBuilder.onAfterFormDelete"
+    const onFormAfterDelete = createTopic<OnFormAfterDeleteTopicParams>(
+        "formBuilder.onFormAfterDelete"
     );
     // delete form revision
-    const onBeforeFormRevisionDelete = createTopic<OnBeforeFormRevisionDeleteTopicParams>(
-        "formBuilder.onBeforeFormRevisionDelete"
+    const onFormRevisionBeforeDelete = createTopic<OnFormRevisionBeforeDeleteTopicParams>(
+        "formBuilder.onFormRevisionBeforeDelete"
     );
-    const onAfterFormRevisionDelete = createTopic<OnAfterFormRevisionDeleteTopicParams>(
-        "formBuilder.onAfterFormRevisionDelete"
+    const onFormRevisionAfterDelete = createTopic<OnFormRevisionAfterDeleteTopicParams>(
+        "formBuilder.onFormRevisionAfterDelete"
     );
     // publish
-    const onBeforeFormPublish = createTopic<OnBeforeFormPublishTopicParams>(
-        "formBuilder.onBeforeFormPublish"
+    const onFormBeforePublish = createTopic<OnFormBeforePublishTopicParams>(
+        "formBuilder.onFormBeforePublish"
     );
-    const onAfterFormPublish = createTopic<OnAfterFormPublishTopicParams>(
-        "formBuilder.onAfterFormPublish"
+    const onFormAfterPublish = createTopic<OnFormAfterPublishTopicParams>(
+        "formBuilder.onFormAfterPublish"
     );
     // unpublish
-    const onBeforeFormUnpublish = createTopic<OnBeforeFormUnpublishTopicParams>(
-        "formBuilder.onBeforeFormUnpublish"
+    const onFormBeforeUnpublish = createTopic<OnFormBeforeUnpublishTopicParams>(
+        "formBuilder.onFormBeforeUnpublish"
     );
-    const onAfterFormUnpublish = createTopic<OnAfterFormUnpublishTopicParams>(
-        "formBuilder.onAfterFormUnpublish"
+    const onFormAfterUnpublish = createTopic<OnFormAfterUnpublishTopicParams>(
+        "formBuilder.onFormAfterUnpublish"
     );
 
     return {
-        onBeforeFormCreate,
-        onAfterFormCreate,
-        onBeforeFormRevisionCreate,
-        onAfterFormRevisionCreate,
-        onBeforeFormUpdate,
-        onAfterFormUpdate,
-        onBeforeFormDelete,
-        onAfterFormDelete,
-        onBeforeFormRevisionDelete,
-        onAfterFormRevisionDelete,
-        onBeforeFormPublish,
-        onAfterFormPublish,
-        onBeforeFormUnpublish,
-        onAfterFormUnpublish,
+        onFormBeforeCreate,
+        onFormAfterCreate,
+        onFormRevisionBeforeCreate,
+        onFormRevisionAfterCreate,
+        onFormBeforeUpdate,
+        onFormAfterUpdate,
+        onFormBeforeDelete,
+        onFormAfterDelete,
+        onFormRevisionBeforeDelete,
+        onFormRevisionAfterDelete,
+        onFormBeforePublish,
+        onFormAfterPublish,
+        onFormBeforeUnpublish,
+        onFormAfterUnpublish,
         async getForm(this: FormBuilder, id, options) {
             let permission: FbFormPermission | null = null;
             if (!options || options.auth !== false) {
@@ -368,14 +368,14 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
             };
 
             try {
-                await onBeforeFormCreate.publish({
+                await onFormBeforeCreate.publish({
                     form
                 });
                 const result = await this.storageOperations.createForm({
                     input,
                     form
                 });
-                await onAfterFormCreate.publish({
+                await onFormAfterCreate.publish({
                     form: result
                 });
                 return result;
@@ -422,7 +422,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
             };
 
             try {
-                await onBeforeFormUpdate.publish({
+                await onFormBeforeUpdate.publish({
                     form,
                     original
                 });
@@ -431,7 +431,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                     form,
                     original
                 });
-                await onAfterFormUpdate.publish({
+                await onFormAfterUpdate.publish({
                     form,
                     original
                 });
@@ -466,13 +466,13 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
             checkOwnership(form, permission, context);
 
             try {
-                await onBeforeFormDelete.publish({
+                await onFormBeforeDelete.publish({
                     form
                 });
                 await this.storageOperations.deleteForm({
                     form
                 });
-                await onAfterFormDelete.publish({
+                await onFormAfterDelete.publish({
                     form
                 });
                 return true;
@@ -514,7 +514,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
             }
 
             try {
-                await onBeforeFormRevisionDelete.publish({
+                await onFormRevisionBeforeDelete.publish({
                     form,
                     previous,
                     revisions
@@ -524,7 +524,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                     previous,
                     revisions
                 });
-                await onAfterFormRevisionDelete.publish({
+                await onFormRevisionAfterDelete.publish({
                     form,
                     previous,
                     revisions
@@ -566,14 +566,14 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
             };
 
             try {
-                await onBeforeFormPublish.publish({
+                await onFormBeforePublish.publish({
                     form
                 });
                 const result = await this.storageOperations.publishForm({
                     original,
                     form
                 });
-                await onAfterFormPublish.publish({
+                await onFormAfterPublish.publish({
                     form
                 });
                 return result;
@@ -611,14 +611,14 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
             };
 
             try {
-                await onBeforeFormUnpublish.publish({
+                await onFormBeforeUnpublish.publish({
                     form
                 });
                 const result = await this.storageOperations.unpublishForm({
                     original,
                     form
                 });
-                await onAfterFormUnpublish.publish({
+                await onFormAfterUnpublish.publish({
                     form: result
                 });
                 return result;
@@ -693,7 +693,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
             };
 
             try {
-                await onBeforeFormRevisionCreate.publish({
+                await onFormRevisionBeforeCreate.publish({
                     original,
                     latest,
                     form
@@ -703,7 +703,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                     latest,
                     form
                 });
-                await onAfterFormRevisionCreate.publish({
+                await onFormRevisionAfterCreate.publish({
                     original,
                     latest,
                     form: result

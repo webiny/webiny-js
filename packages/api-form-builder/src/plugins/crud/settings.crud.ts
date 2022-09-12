@@ -5,12 +5,12 @@ import {
     FormBuilderContext,
     SettingsCRUD,
     FormBuilder,
-    OnBeforeSettingsCreate,
-    OnAfterSettingsCreate,
-    OnBeforeSettingsUpdate,
-    OnAfterSettingsUpdate,
-    OnBeforeSettingsDelete,
-    OnAfterSettingsDelete
+    OnSettingsBeforeCreate,
+    OnSettingsAfterCreate,
+    OnSettingsBeforeUpdate,
+    OnSettingsAfterUpdate,
+    OnSettingsBeforeDelete,
+    OnSettingsAfterDelete
 } from "~/types";
 import WebinyError from "@webiny/error";
 import { Tenant } from "@webiny/api-tenancy/types";
@@ -28,36 +28,36 @@ export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCR
     const { getTenant, getLocale, context } = params;
 
     // create
-    const onBeforeSettingsCreate = createTopic<OnBeforeSettingsCreate>(
-        "formBuilder.onBeforeSettingsCreate"
+    const onSettingsBeforeCreate = createTopic<OnSettingsBeforeCreate>(
+        "formBuilder.onSettingsBeforeCreate"
     );
-    const onAfterSettingsCreate = createTopic<OnAfterSettingsCreate>(
-        "formBuilder.onAfterSettingsCreate"
+    const onSettingsAfterCreate = createTopic<OnSettingsAfterCreate>(
+        "formBuilder.onSettingsAfterCreate"
     );
 
     // update
-    const onBeforeSettingsUpdate = createTopic<OnBeforeSettingsUpdate>(
-        "formBuilder.onBeforeSettingsUpdate"
+    const onSettingsBeforeUpdate = createTopic<OnSettingsBeforeUpdate>(
+        "formBuilder.onSettingsBeforeUpdate"
     );
-    const onAfterSettingsUpdate = createTopic<OnAfterSettingsUpdate>(
-        "formBuilder.onAfterSettingsUpdate"
+    const onSettingsAfterUpdate = createTopic<OnSettingsAfterUpdate>(
+        "formBuilder.onSettingsAfterUpdate"
     );
 
     // delete
-    const onBeforeSettingsDelete = createTopic<OnBeforeSettingsDelete>(
-        "formBuilder.onBeforeSettingsDelete"
+    const onSettingsBeforeDelete = createTopic<OnSettingsBeforeDelete>(
+        "formBuilder.onSettingsBeforeDelete"
     );
-    const onAfterSettingsDelete = createTopic<OnAfterSettingsDelete>(
-        "formBuilder.onAfterSettingsDelete"
+    const onSettingsAfterDelete = createTopic<OnSettingsAfterDelete>(
+        "formBuilder.onSettingsAfterDelete"
     );
 
     return {
-        onBeforeSettingsCreate,
-        onAfterSettingsCreate,
-        onBeforeSettingsUpdate,
-        onAfterSettingsUpdate,
-        onBeforeSettingsDelete,
-        onAfterSettingsDelete,
+        onSettingsBeforeCreate,
+        onSettingsAfterCreate,
+        onSettingsBeforeUpdate,
+        onSettingsAfterUpdate,
+        onSettingsBeforeDelete,
+        onSettingsAfterDelete,
         async getSettings(this: FormBuilder, params) {
             const { auth, throwOnNotFound } = params || {};
 
@@ -108,13 +108,13 @@ export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCR
                 locale: getLocale().code
             };
             try {
-                await onBeforeSettingsCreate.publish({
+                await onSettingsBeforeCreate.publish({
                     settings
                 });
                 const result = await this.storageOperations.createSettings({
                     settings
                 });
-                await onAfterSettingsCreate.publish({
+                await onSettingsAfterCreate.publish({
                     settings: result
                 });
                 return result;
@@ -158,7 +158,7 @@ export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCR
                 } as Settings
             );
             try {
-                await onBeforeSettingsUpdate.publish({
+                await onSettingsBeforeUpdate.publish({
                     original,
                     settings
                 });
@@ -167,7 +167,7 @@ export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCR
                     original
                 });
 
-                await onAfterSettingsUpdate.publish({
+                await onSettingsAfterUpdate.publish({
                     original,
                     settings
                 });
@@ -191,13 +191,13 @@ export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCR
                 return;
             }
             try {
-                await onBeforeSettingsDelete.publish({
+                await onSettingsBeforeDelete.publish({
                     settings
                 });
 
                 await this.storageOperations.deleteSettings({ settings });
 
-                await onAfterSettingsDelete.publish({
+                await onSettingsAfterDelete.publish({
                     settings
                 });
             } catch (ex) {

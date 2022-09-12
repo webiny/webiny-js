@@ -159,56 +159,56 @@ export interface FormBuilderGetFormRevisionsOptions {
 /**
  * Lifecycle Events for Forms CRUD
  */
-export interface OnBeforeFormCreateTopicParams {
+export interface OnFormBeforeCreateTopicParams {
     form: FbForm;
 }
-export interface OnAfterFormCreateTopicParams {
+export interface OnFormAfterCreateTopicParams {
     form: FbForm;
 }
-export interface OnBeforeFormRevisionCreateTopicParams {
-    form: FbForm;
-    original: FbForm;
-    latest: FbForm;
-}
-export interface OnAfterFormRevisionCreateTopicParams {
+export interface OnFormRevisionBeforeCreateTopicParams {
     form: FbForm;
     original: FbForm;
     latest: FbForm;
 }
-export interface OnBeforeFormUpdateTopicParams {
+export interface OnFormRevisionAfterCreateTopicParams {
+    form: FbForm;
+    original: FbForm;
+    latest: FbForm;
+}
+export interface OnFormBeforeUpdateTopicParams {
     form: FbForm;
     original: FbForm;
 }
-export interface OnAfterFormUpdateTopicParams {
+export interface OnFormAfterUpdateTopicParams {
     form: FbForm;
     original: FbForm;
 }
-export interface OnBeforeFormDeleteTopicParams {
+export interface OnFormBeforeDeleteTopicParams {
     form: FbForm;
 }
-export interface OnAfterFormDeleteTopicParams {
+export interface OnFormAfterDeleteTopicParams {
     form: FbForm;
 }
-export interface OnBeforeFormRevisionDeleteTopicParams {
+export interface OnFormRevisionBeforeDeleteTopicParams {
     form: FbForm;
     previous: FbForm | null;
     revisions: FbForm[];
 }
-export interface OnAfterFormRevisionDeleteTopicParams {
+export interface OnFormRevisionAfterDeleteTopicParams {
     form: FbForm;
     previous: FbForm | null;
     revisions: FbForm[];
 }
-export interface OnBeforeFormPublishTopicParams {
+export interface OnFormBeforePublishTopicParams {
     form: FbForm;
 }
-export interface OnAfterFormPublishTopicParams {
+export interface OnFormAfterPublishTopicParams {
     form: FbForm;
 }
-export interface OnBeforeFormUnpublishTopicParams {
+export interface OnFormBeforeUnpublishTopicParams {
     form: FbForm;
 }
-export interface OnAfterFormUnpublishTopicParams {
+export interface OnFormAfterUnpublishTopicParams {
     form: FbForm;
 }
 
@@ -231,48 +231,48 @@ export interface FormsCRUD {
     /**
      * Lifecycle events
      */
-    onBeforeFormCreate: Topic<OnBeforeFormCreateTopicParams>;
-    onAfterFormCreate: Topic<OnAfterFormCreateTopicParams>;
-    onBeforeFormRevisionCreate: Topic<OnBeforeFormRevisionCreateTopicParams>;
-    onAfterFormRevisionCreate: Topic<OnAfterFormRevisionCreateTopicParams>;
-    onBeforeFormUpdate: Topic<OnBeforeFormUpdateTopicParams>;
-    onAfterFormUpdate: Topic<OnAfterFormUpdateTopicParams>;
-    onBeforeFormDelete: Topic<OnBeforeFormDeleteTopicParams>;
-    onAfterFormDelete: Topic<OnAfterFormDeleteTopicParams>;
-    onBeforeFormRevisionDelete: Topic<OnBeforeFormRevisionDeleteTopicParams>;
-    onAfterFormRevisionDelete: Topic<OnAfterFormRevisionDeleteTopicParams>;
-    onBeforeFormPublish: Topic<OnBeforeFormPublishTopicParams>;
-    onAfterFormPublish: Topic<OnAfterFormPublishTopicParams>;
-    onBeforeFormUnpublish: Topic<OnBeforeFormUnpublishTopicParams>;
-    onAfterFormUnpublish: Topic<OnAfterFormUnpublishTopicParams>;
+    onFormBeforeCreate: Topic<OnFormBeforeCreateTopicParams>;
+    onFormAfterCreate: Topic<OnFormAfterCreateTopicParams>;
+    onFormRevisionBeforeCreate: Topic<OnFormRevisionBeforeCreateTopicParams>;
+    onFormRevisionAfterCreate: Topic<OnFormRevisionAfterCreateTopicParams>;
+    onFormBeforeUpdate: Topic<OnFormBeforeUpdateTopicParams>;
+    onFormAfterUpdate: Topic<OnFormAfterUpdateTopicParams>;
+    onFormBeforeDelete: Topic<OnFormBeforeDeleteTopicParams>;
+    onFormAfterDelete: Topic<OnFormAfterDeleteTopicParams>;
+    onFormRevisionBeforeDelete: Topic<OnFormRevisionBeforeDeleteTopicParams>;
+    onFormRevisionAfterDelete: Topic<OnFormRevisionAfterDeleteTopicParams>;
+    onFormBeforePublish: Topic<OnFormBeforePublishTopicParams>;
+    onFormAfterPublish: Topic<OnFormAfterPublishTopicParams>;
+    onFormBeforeUnpublish: Topic<OnFormBeforeUnpublishTopicParams>;
+    onFormAfterUnpublish: Topic<OnFormAfterUnpublishTopicParams>;
 }
 
 /**
  * Submissions CRUD Lifecycle Events
  */
-export interface OnBeforeFormSubmissionCreate {
+export interface OnFormSubmissionBeforeCreate {
     form: FbForm;
     submission: FbSubmission;
 }
-export interface OnAfterFormSubmissionCreate {
+export interface OnFormSubmissionAfterCreate {
     form: FbForm;
     submission: FbSubmission;
 }
-export interface OnBeforeFormSubmissionUpdate {
-    form: FbForm;
-    original: FbSubmission;
-    submission: FbSubmission;
-}
-export interface OnAfterFormSubmissionUpdate {
+export interface OnFormSubmissionBeforeUpdate {
     form: FbForm;
     original: FbSubmission;
     submission: FbSubmission;
 }
-export interface OnBeforeFormSubmissionDelete {
+export interface OnFormSubmissionAfterUpdate {
+    form: FbForm;
+    original: FbSubmission;
+    submission: FbSubmission;
+}
+export interface OnFormSubmissionBeforeDelete {
     form: FbForm;
     submission: FbSubmission;
 }
-export interface OnAfterFormSubmissionDelete {
+export interface OnFormSubmissionAfterDelete {
     form: FbForm;
     submission: FbSubmission;
 }
@@ -293,20 +293,20 @@ export interface SubmissionsCRUD {
     /**
      * Lifecycle events
      */
-    onBeforeFormSubmissionCreate: Topic<OnBeforeFormSubmissionCreate>;
-    onAfterFormSubmissionCreate: Topic<OnAfterFormSubmissionCreate>;
-    onBeforeFormSubmissionUpdate: Topic<OnBeforeFormSubmissionUpdate>;
-    onAfterFormSubmissionUpdate: Topic<OnAfterFormSubmissionUpdate>;
-    onBeforeFormSubmissionDelete: Topic<OnBeforeFormSubmissionDelete>;
-    onAfterFormSubmissionDelete: Topic<OnAfterFormSubmissionDelete>;
+    onFormSubmissionBeforeCreate: Topic<OnFormSubmissionBeforeCreate>;
+    onFormSubmissionAfterCreate: Topic<OnFormSubmissionAfterCreate>;
+    onFormSubmissionBeforeUpdate: Topic<OnFormSubmissionBeforeUpdate>;
+    onFormSubmissionAfterUpdate: Topic<OnFormSubmissionAfterUpdate>;
+    onFormSubmissionBeforeDelete: Topic<OnFormSubmissionBeforeDelete>;
+    onFormSubmissionAfterDelete: Topic<OnFormSubmissionAfterDelete>;
 }
 
-export interface BeforeInstallTopic {
+export interface OnSystemBeforeInstallTopic {
     tenant: string;
     locale: string;
 }
 
-export interface AfterInstallTopic {
+export interface OnSystemAfterInstallTopic {
     tenant: string;
     locale: string;
 }
@@ -323,8 +323,10 @@ export interface SystemCRUD {
     /**
      * Events
      */
-    onBeforeInstall: Topic<BeforeInstallTopic>;
-    onAfterInstall: Topic<AfterInstallTopic>;
+    onBeforeInstall: Topic<OnSystemBeforeInstallTopic>;
+    onAfterInstall: Topic<OnSystemAfterInstallTopic>;
+    onSystemBeforeInstall: Topic<OnSystemBeforeInstallTopic>;
+    onSystemAfterInstall: Topic<OnSystemAfterInstallTopic>;
 }
 
 export interface FbSubmission {
@@ -381,24 +383,24 @@ export interface SettingsCRUDGetParams {
 /**
  * Settings CRUD Lifecycle Events
  */
-export interface OnBeforeSettingsCreate {
+export interface OnSettingsBeforeCreate {
     settings: Settings;
 }
-export interface OnAfterSettingsCreate {
+export interface OnSettingsAfterCreate {
     settings: Settings;
 }
-export interface OnBeforeSettingsUpdate {
+export interface OnSettingsBeforeUpdate {
     original: Settings;
     settings: Settings;
 }
-export interface OnAfterSettingsUpdate {
+export interface OnSettingsAfterUpdate {
     original: Settings;
     settings: Settings;
 }
-export interface OnBeforeSettingsDelete {
+export interface OnSettingsBeforeDelete {
     settings: Settings;
 }
-export interface OnAfterSettingsDelete {
+export interface OnSettingsAfterDelete {
     settings: Settings;
 }
 
@@ -410,12 +412,12 @@ export interface SettingsCRUD {
     /**
      * Lifecycle Events
      */
-    onBeforeSettingsCreate: Topic<OnBeforeSettingsCreate>;
-    onAfterSettingsCreate: Topic<OnAfterSettingsCreate>;
-    onBeforeSettingsUpdate: Topic<OnBeforeSettingsUpdate>;
-    onAfterSettingsUpdate: Topic<OnAfterSettingsUpdate>;
-    onBeforeSettingsDelete: Topic<OnBeforeSettingsDelete>;
-    onAfterSettingsDelete: Topic<OnAfterSettingsDelete>;
+    onSettingsBeforeCreate: Topic<OnSettingsBeforeCreate>;
+    onSettingsAfterCreate: Topic<OnSettingsAfterCreate>;
+    onSettingsBeforeUpdate: Topic<OnSettingsBeforeUpdate>;
+    onSettingsAfterUpdate: Topic<OnSettingsAfterUpdate>;
+    onSettingsBeforeDelete: Topic<OnSettingsBeforeDelete>;
+    onSettingsAfterDelete: Topic<OnSettingsAfterDelete>;
 }
 
 export interface FbFormPermission extends SecurityPermission {

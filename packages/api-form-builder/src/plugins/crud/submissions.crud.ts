@@ -17,12 +17,12 @@ import {
     FormBuilderStorageOperationsListSubmissionsParams,
     SubmissionsCRUD,
     FbFormFieldValidatorPlugin,
-    OnBeforeFormSubmissionCreate,
-    OnAfterFormSubmissionCreate,
-    OnBeforeFormSubmissionUpdate,
-    OnAfterFormSubmissionUpdate,
-    OnBeforeFormSubmissionDelete,
-    OnAfterFormSubmissionDelete
+    OnFormSubmissionBeforeCreate,
+    OnFormSubmissionAfterCreate,
+    OnFormSubmissionBeforeUpdate,
+    OnFormSubmissionAfterUpdate,
+    OnFormSubmissionBeforeDelete,
+    OnFormSubmissionAfterDelete
 } from "~/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { NotAuthorizedError } from "@webiny/api-security";
@@ -36,36 +36,36 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
     const { context } = params;
 
     // create
-    const onBeforeFormSubmissionCreate = createTopic<OnBeforeFormSubmissionCreate>(
-        "formBuilder.onBeforeFormSubmissionCreate"
+    const onFormSubmissionBeforeCreate = createTopic<OnFormSubmissionBeforeCreate>(
+        "formBuilder.onFormBeforeSubmissionCreate"
     );
-    const onAfterFormSubmissionCreate = createTopic<OnAfterFormSubmissionCreate>(
-        "formBuilder.onAfterFormSubmissionCreate"
+    const onFormSubmissionAfterCreate = createTopic<OnFormSubmissionAfterCreate>(
+        "formBuilder.onFormSubmissionAfterCreate"
     );
 
     // update
-    const onBeforeFormSubmissionUpdate = createTopic<OnBeforeFormSubmissionUpdate>(
-        "formBuilder.onBeforeFormSubmissionUpdate"
+    const onFormSubmissionBeforeUpdate = createTopic<OnFormSubmissionBeforeUpdate>(
+        "formBuilder.onFormSubmissionBeforeUpdate"
     );
-    const onAfterFormSubmissionUpdate = createTopic<OnAfterFormSubmissionUpdate>(
-        "formBuilder.onAfterFormSubmissionUpdate"
+    const onFormSubmissionAfterUpdate = createTopic<OnFormSubmissionAfterUpdate>(
+        "formBuilder.onFormSubmissionAfterUpdate"
     );
 
     // delete
-    const onBeforeFormSubmissionDelete = createTopic<OnBeforeFormSubmissionDelete>(
-        "formBuilder.onBeforeFormSubmissionDelete"
+    const onFormSubmissionBeforeDelete = createTopic<OnFormSubmissionBeforeDelete>(
+        "formBuilder.onFormSubmissionBeforeDelete"
     );
-    const onAfterFormSubmissionDelete = createTopic<OnAfterFormSubmissionDelete>(
-        "formBuilder.onAfterFormSubmissionDelete"
+    const onFormSubmissionAfterDelete = createTopic<OnFormSubmissionAfterDelete>(
+        "formBuilder.onFormSubmissionAfterDelete"
     );
 
     return {
-        onBeforeFormSubmissionCreate,
-        onAfterFormSubmissionCreate,
-        onBeforeFormSubmissionUpdate,
-        onAfterFormSubmissionUpdate,
-        onBeforeFormSubmissionDelete,
-        onAfterFormSubmissionDelete,
+        onFormSubmissionBeforeCreate,
+        onFormSubmissionAfterCreate,
+        onFormSubmissionBeforeUpdate,
+        onFormSubmissionAfterUpdate,
+        onFormSubmissionBeforeDelete,
+        onFormSubmissionAfterDelete,
         async getSubmissionsByIds(this: FormBuilder, formId, submissionIds) {
             let form: FbForm;
             if (typeof formId === "string") {
@@ -285,7 +285,7 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
             };
 
             try {
-                await onBeforeFormSubmissionCreate.publish({
+                await onFormSubmissionBeforeCreate.publish({
                     form,
                     submission
                 });
@@ -294,7 +294,7 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
                     form,
                     submission
                 });
-                await onAfterFormSubmissionCreate.publish({
+                await onFormSubmissionAfterCreate.publish({
                     form,
                     submission
                 });
@@ -387,7 +387,7 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
             };
 
             try {
-                await onBeforeFormSubmissionUpdate.publish({
+                await onFormSubmissionBeforeUpdate.publish({
                     form,
                     original,
                     submission
@@ -398,7 +398,7 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
                     original,
                     submission
                 });
-                await onAfterFormSubmissionUpdate.publish({
+                await onFormSubmissionAfterUpdate.publish({
                     form,
                     original,
                     submission
@@ -425,7 +425,7 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
                 throw new NotFoundError("Submission not found.");
             }
             try {
-                await onBeforeFormSubmissionDelete.publish({
+                await onFormSubmissionBeforeDelete.publish({
                     form,
                     submission
                 });
@@ -433,7 +433,7 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
                     form,
                     submission
                 });
-                await onAfterFormSubmissionDelete.publish({
+                await onFormSubmissionAfterDelete.publish({
                     form,
                     submission
                 });
