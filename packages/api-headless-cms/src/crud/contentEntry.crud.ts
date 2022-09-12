@@ -46,7 +46,7 @@ import {
     OnEntryRequestChangesErrorTopicParams,
     OnEntryRequestReviewErrorTopicParams,
     OnEntryDeleteErrorTopicParams,
-    OnEntryDeleteRevisionErrorTopicParams
+    OnEntryRevisionDeleteErrorTopicParams
 } from "~/types";
 import { validateModelEntryData } from "./contentEntry/entryDataValidation";
 import WebinyError from "@webiny/error";
@@ -264,8 +264,8 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     const onEntryBeforeCreateRevision = createTopic<BeforeEntryCreateRevisionTopicParams>(
         "cms.onEntryBeforeCreateRevision"
     );
-    const onEntryAfterCreateRevision = createTopic<AfterEntryCreateRevisionTopicParams>(
-        "cms.onEntryAfterCreateRevision"
+    const onEntryRevisionAfterCreate = createTopic<AfterEntryCreateRevisionTopicParams>(
+        "cms.onEntryRevisionAfterCreate"
     );
     const onEntryCreateRevisionError = createTopic<OnEntryCreateRevisionErrorTopicParams>(
         "cms.onEntryCreateRevisionError"
@@ -326,14 +326,14 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     const onEntryDeleteError = createTopic<OnEntryDeleteErrorTopicParams>("cms.onEntryDeleteError");
 
     // delete revision
-    const onEntryBeforeDeleteRevision = createTopic<BeforeEntryDeleteRevisionTopicParams>(
-        "cms.onEntryBeforeDeleteRevision"
+    const onEntryRevisionBeforeDelete = createTopic<BeforeEntryDeleteRevisionTopicParams>(
+        "cms.onEntryRevisionBeforeDelete"
     );
-    const onEntryAfterDeleteRevision = createTopic<AfterEntryDeleteRevisionTopicParams>(
-        "cms.onEntryAfterDeleteRevision"
+    const onEntryRevisionAfterDelete = createTopic<AfterEntryDeleteRevisionTopicParams>(
+        "cms.onEntryRevisionAfterDelete"
     );
-    const onEntryDeleteRevisionError = createTopic<OnEntryDeleteRevisionErrorTopicParams>(
-        "cms.onEntryDeleteRevisionError"
+    const onEntryRevisionDeleteError = createTopic<OnEntryRevisionDeleteErrorTopicParams>(
+        "cms.onEntryRevisionDeleteError"
     );
 
     // get
@@ -387,7 +387,8 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         } catch (ex) {
             await onEntryDeleteError.publish({
                 entry,
-                model
+                model,
+                error: ex
             });
             throw new WebinyError(
                 ex.message || "Could not delete entry.",
@@ -419,13 +420,13 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         onBeforeEntryCreate: onEntryBeforeCreate,
         onAfterEntryCreate: onEntryAfterCreate,
         onBeforeEntryCreateRevision: onEntryBeforeCreateRevision,
-        onAfterEntryCreateRevision: onEntryAfterCreateRevision,
+        onAfterEntryCreateRevision: onEntryRevisionAfterCreate,
         onBeforeEntryUpdate: onEntryBeforeUpdate,
         onAfterEntryUpdate: onEntryAfterUpdate,
         onBeforeEntryDelete: onEntryBeforeDelete,
         onAfterEntryDelete: onEntryAfterDelete,
-        onBeforeEntryDeleteRevision: onEntryBeforeDeleteRevision,
-        onAfterEntryDeleteRevision: onEntryAfterDeleteRevision,
+        onBeforeEntryDeleteRevision: onEntryRevisionBeforeDelete,
+        onAfterEntryDeleteRevision: onEntryRevisionAfterDelete,
         onBeforeEntryPublish: onEntryBeforePublish,
         onAfterEntryPublish: onEntryAfterPublish,
         onBeforeEntryUnpublish: onEntryBeforeUnpublish,
@@ -441,22 +442,40 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
          */
         onEntryBeforeCreate,
         onEntryAfterCreate,
+        onEntryCreateError,
+
         onEntryBeforeCreateRevision,
-        onEntryAfterCreateRevision,
+        onEntryRevisionAfterCreate,
+        onEntryCreateRevisionError,
+
         onEntryBeforeUpdate,
         onEntryAfterUpdate,
+        onEntryUpdateError,
+
         onEntryBeforeDelete,
         onEntryAfterDelete,
-        onEntryBeforeDeleteRevision,
-        onEntryAfterDeleteRevision,
+        onEntryDeleteError,
+
+        onEntryRevisionBeforeDelete,
+        onEntryRevisionAfterDelete,
+        onEntryRevisionDeleteError,
+
         onEntryBeforePublish,
         onEntryAfterPublish,
+        onEntryPublishError,
+
         onEntryBeforeUnpublish,
         onEntryAfterUnpublish,
+        onEntryUnpublishError,
+
         onEntryBeforeRequestChanges,
         onEntryAfterRequestChanges,
+        onEntryRequestChangesError,
+
         onEntryBeforeRequestReview,
         onEntryAfterRequestReview,
+        onEntryRequestReviewError,
+
         onEntryBeforeGet,
         onEntryBeforeList,
         /**
@@ -712,6 +731,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 return result;
             } catch (ex) {
                 await onEntryCreateError.publish({
+                    error: ex,
                     entry,
                     model,
                     input
@@ -827,7 +847,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                     storageEntry
                 });
 
-                await onEntryAfterCreateRevision.publish({
+                await onEntryRevisionAfterCreate.publish({
                     input,
                     entry,
                     model,
@@ -839,7 +859,8 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 await onEntryCreateRevisionError.publish({
                     entry,
                     model,
-                    input
+                    input,
+                    error: ex
                 });
                 throw new WebinyError(
                     ex.message || "Could not create entry from existing one.",
@@ -956,7 +977,8 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 await onEntryUpdateError.publish({
                     entry,
                     model,
-                    input
+                    input,
+                    error: ex
                 });
                 throw new WebinyError(
                     ex.message || "Could not update existing entry.",
@@ -1114,7 +1136,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             }
 
             try {
-                await onEntryBeforeDeleteRevision.publish({
+                await onEntryRevisionBeforeDelete.publish({
                     entry: entryToDelete,
                     model
                 });
@@ -1126,14 +1148,15 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                     latestStorageEntry: storageEntryToSetAsLatest
                 });
 
-                await onEntryAfterDeleteRevision.publish({
+                await onEntryRevisionAfterDelete.publish({
                     entry: entryToDelete,
                     model
                 });
             } catch (ex) {
-                await onEntryDeleteRevisionError.publish({
+                await onEntryRevisionDeleteError.publish({
                     entry: entryToDelete,
-                    model
+                    model,
+                    error: ex
                 });
                 throw new WebinyError(ex.message, ex.code || "DELETE_REVISION_ERROR", {
                     error: ex,
@@ -1219,7 +1242,8 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             } catch (ex) {
                 await onEntryPublishError.publish({
                     entry,
-                    model
+                    model,
+                    error: ex
                 });
                 throw new WebinyError(
                     ex.message || "Could not publish entry.",
@@ -1298,7 +1322,8 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             } catch (ex) {
                 await onEntryRequestChangesError.publish({
                     entry,
-                    model
+                    model,
+                    error: ex
                 });
                 throw new WebinyError(
                     ex.message || "Could not request changes for the entry.",
@@ -1379,7 +1404,8 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             } catch (ex) {
                 await onEntryRequestReviewError.publish({
                     entry,
-                    model
+                    model,
+                    error: ex
                 });
                 throw new WebinyError(
                     ex.message || "Could not request review on the entry.",
@@ -1449,7 +1475,8 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             } catch (ex) {
                 await onEntryUnpublishError.publish({
                     entry,
-                    model
+                    model,
+                    error: ex
                 });
                 throw new WebinyError(
                     ex.message || "Could not unpublish entry.",

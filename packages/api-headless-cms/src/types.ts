@@ -768,6 +768,12 @@ export interface AfterInstallTopicParams {
     locale: string;
 }
 
+export interface OnSystemInstallErrorTopicParams {
+    error: Error;
+    tenant: string;
+    locale: string;
+}
+
 export type CmsSystemContext = {
     getSystemVersion: () => Promise<string | null>;
     setSystemVersion: (version: string) => Promise<void>;
@@ -790,6 +796,7 @@ export type CmsSystemContext = {
      */
     onSystemBeforeInstall: Topic<BeforeInstallTopicParams>;
     onSystemAfterInstall: Topic<AfterInstallTopicParams>;
+    onSystemInstallError: Topic<OnSystemInstallErrorTopicParams>;
 };
 
 /**
@@ -1658,6 +1665,7 @@ export interface AfterEntryCreateTopicParams {
 }
 
 export interface OnEntryCreateErrorTopicParams {
+    error: Error;
     input: CreateCmsEntryInput;
     entry: CmsEntry;
     model: CmsModel;
@@ -1679,6 +1687,7 @@ export interface AfterEntryCreateRevisionTopicParams {
 }
 
 export interface OnEntryCreateRevisionErrorTopicParams {
+    error: Error;
     input: CreateFromCmsEntryInput;
     entry: CmsEntry;
     model: CmsModel;
@@ -1699,6 +1708,7 @@ export interface AfterEntryUpdateTopicParams {
 }
 
 export interface OnEntryUpdateErrorTopicParams {
+    error: Error;
     input: CreateFromCmsEntryInput;
     entry: CmsEntry;
     model: CmsModel;
@@ -1716,6 +1726,7 @@ export interface AfterEntryPublishTopicParams {
 }
 
 export interface OnEntryPublishErrorTopicParams {
+    error: Error;
     entry: CmsEntry;
     model: CmsModel;
 }
@@ -1732,6 +1743,7 @@ export interface AfterEntryUnpublishTopicParams {
 }
 
 export interface OnEntryUnpublishErrorTopicParams {
+    error: Error;
     entry: CmsEntry;
     model: CmsModel;
 }
@@ -1748,6 +1760,7 @@ export interface AfterEntryRequestChangesTopicParams {
 }
 
 export interface OnEntryRequestChangesErrorTopicParams {
+    error: Error;
     entry: CmsEntry;
     model: CmsModel;
 }
@@ -1764,6 +1777,7 @@ export interface AfterEntryRequestReviewTopicParams {
 }
 
 export interface OnEntryRequestReviewErrorTopicParams {
+    error: Error;
     entry: CmsEntry;
     model: CmsModel;
 }
@@ -1778,6 +1792,7 @@ export interface AfterEntryDeleteTopicParams {
 }
 
 export interface OnEntryDeleteErrorTopicParams {
+    error: Error;
     entry: CmsEntry;
     model: CmsModel;
 }
@@ -1791,7 +1806,8 @@ export interface AfterEntryDeleteRevisionTopicParams {
     model: CmsModel;
 }
 
-export interface OnEntryDeleteRevisionErrorTopicParams {
+export interface OnEntryRevisionDeleteErrorTopicParams {
+    error: Error;
     entry: CmsEntry;
     model: CmsModel;
 }
@@ -2019,22 +2035,40 @@ export interface CmsEntryContext {
      */
     onEntryBeforeCreate: Topic<BeforeEntryCreateTopicParams>;
     onEntryAfterCreate: Topic<AfterEntryCreateTopicParams>;
+    onEntryCreateError: Topic<OnEntryCreateErrorTopicParams>;
+
     onEntryBeforeCreateRevision: Topic<BeforeEntryCreateRevisionTopicParams>;
-    onEntryAfterCreateRevision: Topic<AfterEntryCreateRevisionTopicParams>;
+    onEntryRevisionAfterCreate: Topic<AfterEntryCreateRevisionTopicParams>;
+    onEntryCreateRevisionError: Topic<OnEntryCreateRevisionErrorTopicParams>;
+
     onEntryBeforeUpdate: Topic<BeforeEntryUpdateTopicParams>;
     onEntryAfterUpdate: Topic<AfterEntryUpdateTopicParams>;
+    onEntryUpdateError: Topic<OnEntryUpdateErrorTopicParams>;
+
     onEntryBeforeDelete: Topic<BeforeEntryDeleteTopicParams>;
     onEntryAfterDelete: Topic<AfterEntryDeleteTopicParams>;
-    onEntryBeforeDeleteRevision: Topic<BeforeEntryDeleteRevisionTopicParams>;
-    onEntryAfterDeleteRevision: Topic<AfterEntryDeleteRevisionTopicParams>;
+    onEntryDeleteError: Topic<OnEntryDeleteErrorTopicParams>;
+
+    onEntryRevisionBeforeDelete: Topic<BeforeEntryDeleteRevisionTopicParams>;
+    onEntryRevisionAfterDelete: Topic<AfterEntryDeleteRevisionTopicParams>;
+    onEntryRevisionDeleteError: Topic<OnEntryRevisionDeleteErrorTopicParams>;
+
     onEntryBeforePublish: Topic<BeforeEntryPublishTopicParams>;
     onEntryAfterPublish: Topic<AfterEntryPublishTopicParams>;
+    onEntryPublishError: Topic<OnEntryPublishErrorTopicParams>;
+
     onEntryBeforeUnpublish: Topic<BeforeEntryUnpublishTopicParams>;
     onEntryAfterUnpublish: Topic<AfterEntryUnpublishTopicParams>;
+    onEntryUnpublishError: Topic<OnEntryUnpublishErrorTopicParams>;
+
     onEntryBeforeRequestChanges: Topic<BeforeEntryRequestChangesTopicParams>;
     onEntryAfterRequestChanges: Topic<AfterEntryRequestChangesTopicParams>;
+    onEntryRequestChangesError: Topic<OnEntryRequestChangesErrorTopicParams>;
+
     onEntryBeforeRequestReview: Topic<BeforeEntryRequestReviewTopicParams>;
     onEntryAfterRequestReview: Topic<AfterEntryRequestReviewTopicParams>;
+    onEntryRequestReviewError: Topic<OnEntryRequestReviewErrorTopicParams>;
+
     onEntryBeforeGet: Topic<BeforeEntryGetTopicParams>;
     onEntryBeforeList: Topic<BeforeEntryListTopicParams>;
 }

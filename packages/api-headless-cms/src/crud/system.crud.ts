@@ -10,7 +10,8 @@ import {
     CmsSystem,
     CmsSystemContext,
     HeadlessCms,
-    HeadlessCmsStorageOperations
+    HeadlessCmsStorageOperations,
+    OnSystemInstallErrorTopicParams
 } from "~/types";
 import { Tenant } from "@webiny/api-tenancy/types";
 import { SecurityIdentity } from "@webiny/api-security/types";
@@ -38,6 +39,10 @@ export const createSystemCrud = (params: CreateSystemCrudParams): CmsSystemConte
         "cms.onSystemBeforeInstall"
     );
     const onSystemAfterInstall = createTopic<AfterInstallTopicParams>("cms.onSystemAfterInstall");
+
+    const onSystemInstallError = createTopic<OnSystemInstallErrorTopicParams>(
+        "cms.onSystemInstallError"
+    );
 
     const createReadAPIKey = () => {
         return crypto.randomBytes(Math.ceil(48 / 2)).toString("hex");
@@ -86,6 +91,7 @@ export const createSystemCrud = (params: CreateSystemCrudParams): CmsSystemConte
          */
         onSystemBeforeInstall,
         onSystemAfterInstall,
+        onSystemInstallError,
         getSystemVersion: getVersion,
         setSystemVersion: setVersion,
         getReadAPIKey: async () => {
@@ -121,43 +127,56 @@ export const createSystemCrud = (params: CreateSystemCrudParams): CmsSystemConte
             if (version) {
                 return;
             }
-            /**
-             * First trigger before install event.
-             */
-            await onSystemBeforeInstall.publish({
-                tenant: getTenant().id,
-                locale: getLocale().code
-            });
-
-            /**
-             * Add default content model group.
-             */
             try {
-                await context.cms.createGroup(initialContentModelGroup);
-            } catch (ex) {
-                throw new WebinyError(ex.message, "CMS_INSTALLATION_CONTENT_MODEL_GROUP_ERROR", {
-                    group: initialContentModelGroup
+                /**
+                 * First trigger before install event.
+                 */
+                await onSystemBeforeInstall.publish({
+                    tenant: getTenant().id,
+                    locale: getLocale().code
                 });
-            }
 
-            const system: CmsSystem = {
-                version: context.WEBINY_VERSION,
-                readAPIKey: createReadAPIKey(),
-                tenant: getTenant().id
-            };
-            /**
-             * We need to create the system data.
-             */
-            await storageOperations.system.create({
-                system
-            });
-            /**
-             * And trigger after install event.
-             */
-            await onSystemAfterInstall.publish({
-                tenant: getTenant().id,
-                locale: getLocale().code
-            });
+                /**
+                 * Add default content model group.
+                 */
+                try {
+                    await context.cms.createGroup(initialContentModelGroup);
+                } catch (ex) {
+                    throw new WebinyError(
+                        ex.message,
+                        "CMS_INSTALLATION_CONTENT_MODEL_GROUP_ERROR",
+                        {
+                            group: initialContentModelGroup
+                        }
+                    );
+                }
+
+                const system: CmsSystem = {
+                    version: context.WEBINY_VERSION,
+                    readAPIKey: createReadAPIKey(),
+                    tenant: getTenant().id
+                };
+                /**
+                 * We need to create the system data.
+                 */
+                await storageOperations.system.create({
+                    system
+                });
+                /**
+                 * And trigger after install event.
+                 */
+                await onSystemAfterInstall.publish({
+                    tenant: getTenant().id,
+                    locale: getLocale().code
+                });
+            } catch (ex) {
+                await onSystemInstallError.publish({
+                    error: ex,
+                    tenant: getTenant().id,
+                    locale: getLocale().code
+                });
+                throw new WebinyError(ex.message, ex.code, ex.data);
+            }
         },
         async upgradeSystem(this: HeadlessCms, version) {
             const identity = getIdentity();
