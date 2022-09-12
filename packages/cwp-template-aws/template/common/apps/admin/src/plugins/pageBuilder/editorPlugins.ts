@@ -19,8 +19,6 @@ import iframe from "@webiny/app-page-builder/editor/plugins/elements/media/ifram
 import pagesList from "@webiny/app-page-builder/editor/plugins/elements/pagesList";
 import imagesList from "@webiny/app-page-builder/editor/plugins/elements/imagesList";
 import heading from "@webiny/app-page-builder/editor/plugins/elements/heading";
-// Icons
-import icons from "@webiny/app-page-builder/editor/plugins/icons";
 // Element groups
 import basicGroup from "@webiny/app-page-builder/editor/plugins/elementGroups/basic";
 import layoutGroup from "@webiny/app-page-builder/editor/plugins/elementGroups/layout";
@@ -83,8 +81,6 @@ export default [
     pagesList(),
     // grid presets
     ...gridPresets,
-    // Icons
-    icons,
     // Element groups
     basicGroup,
     formGroup,
