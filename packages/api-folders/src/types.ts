@@ -112,7 +112,6 @@ export interface DeleteLinkParams {
 
 export interface StorageOperationsGetLinkParams {
     id?: string;
-    eId?: string;
     folderId?: string;
     tenant: string;
     locale: string;
