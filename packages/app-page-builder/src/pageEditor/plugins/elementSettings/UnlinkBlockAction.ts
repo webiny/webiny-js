@@ -16,6 +16,8 @@ const UnlinkBlockAction: React.FC<UnlinkBlockActionPropsType> = ({ children }) =
         return null;
     }
 
+    // we need to drop blockId property wheen unlinking, so it is separated from all other element data
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { blockId, ...newData } = element.data;
 
     const onClick = useCallback((): void => {
