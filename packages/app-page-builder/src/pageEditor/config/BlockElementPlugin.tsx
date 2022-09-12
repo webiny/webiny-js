@@ -34,8 +34,9 @@ const DisableInteractionsPlugin = createComponentPlugin(ElementRoot, Original =>
             return <Original {...props}>{children}</Original>;
         }
 
-        // TODO: add handling of the "empty" block. We don't want to disable interactions on an empty block
-        // because it is considered to be a custom inline block, created for a specific page.
+        if (!element.data?.blockId) {
+            return <Original {...props}>{children}</Original>;
+        }
 
         /**
          * Block element uses the `render prop` version of `ElementRoot` children, so we only need to handle
@@ -63,14 +64,11 @@ const plugins = [DropZone.Below, DropZone.Above].map(Component => {
                 return <Original {...props}>{children}</Original>;
             }
 
-            // TODO: add a check to see if this block can be edited: "empty" block or "unlinked" block
-            // Example code:
-            //
-            // if (block.id !== "dUXdSfGGdW") {
-            //     props.isVisible = () => {
-            //         return false;
-            //     };
-            // }
+            if (block.data?.blockId) {
+                props.isVisible = () => {
+                    return false;
+                };
+            }
 
             return <Original {...props}>{children}</Original>;
         };

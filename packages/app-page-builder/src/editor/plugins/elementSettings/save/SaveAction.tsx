@@ -94,7 +94,15 @@ const SaveAction: React.FC = ({ children }) => {
     const client = useApolloClient();
 
     const onSubmit = async (formData: PbDocumentElement) => {
-        formData.content = pluginOnSave(removeIds((await getElementTree(element)) as PbElement));
+        // TODO: find a way to decouple this.
+        // One option is to have a `save` plugin in `blockEditor` AND in the `pageEditor` where each can be implemented differently, but then we need to extract the image creation logic somewhere.
+        const pbElement = (await getElementTree(element)) as PbElement;
+        if (formData.type === "block") {
+            // We need ids for block editor
+            formData.content = pluginOnSave(pbElement);
+        } else {
+            formData.content = pluginOnSave(removeIds(pbElement));
+        }
 
         const meta = await getDataURLImageDimensions(formData.preview);
         const blob = dataURLtoBlob(formData.preview);
