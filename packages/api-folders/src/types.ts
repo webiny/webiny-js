@@ -9,17 +9,11 @@ export interface CreatedBy {
     displayName: string | null;
 }
 
-export enum Type {
-    PAGE = "page",
-    CMS = "cms",
-    FILE = "file"
-}
-
 export interface Folder {
     id: string;
     name: string;
     slug: string;
-    type: Type;
+    type: string;
     parentId?: string;
     createdOn: string;
     createdBy: CreatedBy;
@@ -35,7 +29,7 @@ export interface GetFolderParams {
 }
 
 export interface ListFoldersWhere {
-    type: Type;
+    type: string;
 }
 
 export interface ListFoldersParams {
@@ -58,7 +52,7 @@ export interface DeleteFolderParams {
 export interface StorageOperationsGetFolderParams {
     id?: string;
     slug?: string;
-    type?: Type;
+    type?: string;
     parentId?: string;
     tenant: string;
     locale: string;

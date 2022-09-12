@@ -36,12 +36,6 @@ export const baseSchema = new GraphQLSchemaPlugin<FoldersContext>({
             data: Boolean
             error: FolderError
         }
-
-        enum FolderType {
-            page
-            cms
-            file
-        }
     `,
     resolvers: {
         Query: {
