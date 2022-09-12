@@ -11,23 +11,28 @@ export const createLinksStorageOperations = (entity: Entity<any>): LinksStorageO
         tenant,
         locale,
         folderId
-    }: Pick<Link, "tenant" | "locale" | "folderId">) =>
-        `T#${tenant}#L#${locale}#FOLDER#${folderId}#LINKS`;
+    }: Pick<Link, "tenant" | "locale" | "folderId">) => {
+        return `T#${tenant}#L#${locale}#FOLDER#${folderId}#LINKS`;
+    };
 
-    const createLinkKeys = ({ id, tenant, locale }: Pick<Link, "id" | "tenant" | "locale">) => ({
-        PK: `T#${tenant}#L#${locale}#LINK#${id}`,
-        SK: `A`
-    });
+    const createLinkKeys = ({ id, tenant, locale }: Pick<Link, "id" | "tenant" | "locale">) => {
+        return {
+            PK: `T#${tenant}#L#${locale}#LINK#${id}`,
+            SK: `A`
+        };
+    };
 
     const createLinkGsiKeys = ({
         tenant,
         locale,
         folderId,
         id
-    }: Pick<Link, "tenant" | "locale" | "folderId" | "id">) => ({
-        GSI1_PK: createLinkGsiPartitionKey({ tenant, locale, folderId }),
-        GSI1_SK: id
-    });
+    }: Pick<Link, "tenant" | "locale" | "folderId" | "id">) => {
+        return {
+            GSI1_PK: createLinkGsiPartitionKey({ tenant, locale, folderId }),
+            GSI1_SK: id
+        };
+    };
 
     return {
         async createLink({ link }): Promise<Link> {

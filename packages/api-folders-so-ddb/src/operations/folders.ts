@@ -17,17 +17,16 @@ export const createFoldersStorageOperations = (
         type
     }: Pick<Folder, "tenant" | "locale" | "type">) => `T#${tenant}#L#${locale}#FOLDERS#${type}`;
 
-    const createFolderGsiSearchKey = ({ slug, parentId }: Pick<Folder, "slug" | "parentId">) =>
-        ((!!parentId && `${parentId}#`) || "") + slug;
+    const createFolderGsiSearchKey = ({ slug, parentId }: Pick<Folder, "slug" | "parentId">) => {
+        return ((!!parentId && `${parentId}#`) || "") + slug;
+    };
 
-    const createFolderKeys = ({
-        id,
-        tenant,
-        locale
-    }: Pick<Folder, "id" | "tenant" | "locale">) => ({
-        PK: `T#${tenant}#L#${locale}#FOLDER#${id}`,
-        SK: `A`
-    });
+    const createFolderKeys = ({ id, tenant, locale }: Pick<Folder, "id" | "tenant" | "locale">) => {
+        return {
+            PK: `T#${tenant}#L#${locale}#FOLDER#${id}`,
+            SK: `A`
+        };
+    };
 
     const createFolderGsiKeys = ({
         tenant,
@@ -35,10 +34,12 @@ export const createFoldersStorageOperations = (
         type,
         slug,
         parentId
-    }: Pick<Folder, "tenant" | "locale" | "type" | "slug" | "parentId">) => ({
-        GSI1_PK: createFolderGsiPartitionKey({ tenant, locale, type }),
-        GSI1_SK: createFolderGsiSearchKey({ slug, parentId })
-    });
+    }: Pick<Folder, "tenant" | "locale" | "type" | "slug" | "parentId">) => {
+        return {
+            GSI1_PK: createFolderGsiPartitionKey({ tenant, locale, type }),
+            GSI1_SK: createFolderGsiSearchKey({ slug, parentId })
+        };
+    };
 
     return {
         async createFolder({ folder }): Promise<Folder> {
