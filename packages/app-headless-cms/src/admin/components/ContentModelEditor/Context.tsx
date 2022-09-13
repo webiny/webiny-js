@@ -173,12 +173,9 @@ export const ContentModelEditorProvider: React.FC<ContentModelEditorProviderProp
         return response.data.updateContentModel;
     };
 
-    const setActiveTabIndex = useCallback(
-        (activeTabIndex: number) => {
-            dispatch({ type: "state", data: { activeTabIndex } });
-        },
-        []
-    );
+    const setActiveTabIndex = useCallback((activeTabIndex: number) => {
+        dispatch({ type: "state", data: { activeTabIndex } });
+    }, []);
 
     /**
      * Set form data by providing a callback, which receives a fresh copy of data on which you can work on.

@@ -36,7 +36,7 @@ const GeneralSettings = ({ Bind }: GeneralSettingsProps) => {
                 </Cell>
                 <Cell span={12}>
                     <Bind name={"tags"}>
-                        <Tags label={"Tags"}/>
+                        <Tags label={"Tags"} />
                     </Bind>
                 </Cell>
             </Grid>
