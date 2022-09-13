@@ -174,7 +174,7 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
         >
             {open && (
                 <Form
-                    data={{ group }}
+                    data={{ group, tags: ["type:pageTemplate"] }}
                     onSubmit={data => {
                         /**
                          * We are positive that data is CmsModelData.
@@ -238,7 +238,7 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
                                         submit(ev);
                                     }}
                                 >
-                                    + {t`Create Model`}
+                                    + {t`Create Page Template`}
                                 </ButtonPrimary>
                             </UID.DialogActions>
                         </>

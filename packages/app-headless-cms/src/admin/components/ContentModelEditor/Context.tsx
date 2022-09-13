@@ -139,6 +139,7 @@ export const ContentModelEditorProvider: React.FC<ContentModelEditorProviderProp
             "group",
             "layout",
             "fields",
+            "tags",
             "name",
             "settings",
             "description",

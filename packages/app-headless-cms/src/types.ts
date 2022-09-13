@@ -305,7 +305,7 @@ export interface CmsEditorContentModel {
     savedOn: string;
     meta: any;
     createdBy: CmsCreatedBy;
-    tags?: string[];
+    tags: string[];
     /**
      * If model is a plugin one (it cannot be changed/deleted)
      */

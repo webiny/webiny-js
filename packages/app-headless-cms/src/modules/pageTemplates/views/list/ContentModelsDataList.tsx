@@ -71,6 +71,11 @@ interface ContentModelsDataListProps {
     onCreate: () => void;
     onClone: (contentModel: CmsEditorContentModel) => void;
 }
+
+const isPageTemplate = (model: CmsModel) => {
+    return Boolean(model.tags.find(tag => tag === "type:pageTemplate"));
+};
+
 const ContentModelsDataList: React.FC<ContentModelsDataListProps> = ({
     canCreate,
     onCreate,
@@ -105,7 +110,9 @@ const ContentModelsDataList: React.FC<ContentModelsDataListProps> = ({
         [sort]
     );
 
-    const models: CmsModel[] = loading ? [] : get(data, "listContentModels.data", []);
+    const models: CmsModel[] = loading
+        ? []
+        : get(data, "listContentModels.data", []).filter(isPageTemplate);
 
     const deleteRecord = async (item: CmsModel): Promise<void> => {
         showConfirmation(async () => {
@@ -179,11 +186,11 @@ const ContentModelsDataList: React.FC<ContentModelsDataListProps> = ({
         <UIL.DataList
             loading={loading}
             data={contentModels}
-            title={t`Content Models`}
+            title={t`Page Templates`}
             actions={
                 canCreate ? (
                     <ButtonSecondary data-testid="new-record-button" onClick={onCreate}>
-                        <ButtonIcon icon={<AddIcon />} /> {t`New Model`}
+                        <ButtonIcon icon={<AddIcon />} /> {t`New Page Template`}
                     </ButtonSecondary>
                 ) : null
             }
@@ -207,7 +214,7 @@ const ContentModelsDataList: React.FC<ContentModelsDataListProps> = ({
                     {data.map(contentModel => {
                         const disableViewContent = contentModel.fields.length === 0;
                         const message = disableViewContent
-                            ? "To view the content, you first need to add a field and save the model"
+                            ? "To view the content, you first need to add a field and save the model."
                             : "View content";
                         return (
                             <UIL.ListItem key={contentModel.modelId} className={listItemMinHeight}>
@@ -239,7 +246,7 @@ const ContentModelsDataList: React.FC<ContentModelsDataListProps> = ({
                                                 </Tooltip>
                                                 {contentModel.plugin ? (
                                                     <Tooltip
-                                                        content={t`Content model is registered via a plugin.`}
+                                                        content={t`Page template is registered via a plugin.`}
                                                         placement={"top"}
                                                     >
                                                         <EditIcon

@@ -11,6 +11,7 @@ export const FIELDS_FIELDS = `
     fieldId
     type
     label
+    tags
     placeholderText
     helpText  
     predefinedValues {
@@ -50,6 +51,7 @@ export const MODEL_FIELDS = `
     titleFieldId
     lockedFields
     layout
+    tags
     fields {
         ${FIELDS_FIELDS}
     }

@@ -73,6 +73,11 @@ interface ContentModelsDataListProps {
     onCreate: () => void;
     onClone: (contentModel: CmsEditorContentModel) => void;
 }
+
+const isContentModel = (model: CmsModel) => {
+    return Boolean(model.tags.find(tag => tag === "type:contentModel"));
+};
+
 const ContentModelsDataList: React.FC<ContentModelsDataListProps> = ({
     canCreate,
     onCreate,
@@ -107,7 +112,9 @@ const ContentModelsDataList: React.FC<ContentModelsDataListProps> = ({
         [sort]
     );
 
-    const models: CmsModel[] = loading ? [] : get(data, "listContentModels.data", []);
+    const models: CmsModel[] = loading
+        ? []
+        : get(data, "listContentModels.data", []).filter(isContentModel);
 
     const deleteRecord = async (item: CmsModel): Promise<void> => {
         showConfirmation(async () => {

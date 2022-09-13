@@ -4,6 +4,7 @@ import { Input } from "@webiny/ui/Input";
 import { Switch } from "@webiny/ui/Switch";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { validation } from "@webiny/validation";
+import { Tags } from "@webiny/ui/Tags";
 import { CmsEditorField, CmsEditorFieldTypePlugin } from "~/types";
 import { FormRenderPropParams } from "@webiny/form/types";
 
@@ -151,6 +152,15 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ field, form, fieldPlugin }) => 
                             label={"Help text"}
                             description={"Help text (optional)"}
                             data-testid={`cms.editor.field.settings.general.helptext`}
+                        />
+                    </Bind>
+                </Cell>
+                <Cell span={12}>
+                    <Bind name={"tags"}>
+                        <Tags
+                            label={"Tags"}
+                            description={"Field tags (optional)"}
+                            data-testid={`cms.editor.field.settings.general.tags`}
                         />
                     </Bind>
                 </Cell>
