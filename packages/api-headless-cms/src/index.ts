@@ -17,6 +17,7 @@ import {
     entryFromStorageTransform,
     entryToStorageTransform
 } from "./utils/entryStorage";
+import { createFieldConverters } from "~/fieldConverters";
 
 export type CreateHeadlessCmsGraphQLParams = CreateGraphQLParams;
 export const createHeadlessCmsGraphQL = (params: CreateHeadlessCmsGraphQLParams = {}) => {
@@ -47,6 +48,7 @@ export const createHeadlessCmsContext = (params: ContentContextParams) => {
          */
         createCrud(params),
         createGraphQLFields(),
+        createFieldConverters(),
         createValidators(),
         createDefaultStorageTransform(),
         createObjectStorageTransform(),

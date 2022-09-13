@@ -212,6 +212,13 @@ export interface CmsModelField {
 }
 
 /**
+ * Used for our internal functionality.
+ */
+export interface CmsModelFieldWithParent extends CmsModelField {
+    parent?: CmsModelFieldWithParent | null;
+}
+
+/**
  * A definition for dateTime field to show possible type of the field in settings.
  */
 export interface CmsModelDateTimeField extends CmsModelField {
@@ -1204,7 +1211,15 @@ export interface ModelManagerPlugin extends Plugin {
      */
     create: (context: CmsContext, model: CmsModel) => Promise<CmsModelManager>;
 }
-
+/**
+ * A content entry values definition for and from the database.
+ *
+ * @category Database model
+ * @category CmsEntry
+ */
+export interface CmsEntryValues {
+    [key: string]: any;
+}
 /**
  * A content entry definition for and from the database.
  *
@@ -1280,9 +1295,7 @@ export interface CmsEntry {
      *
      * @see CmsModelField
      */
-    values: {
-        [key: string]: any;
-    };
+    values: CmsEntryValues;
     /**
      * Settings for the given entry.
      *

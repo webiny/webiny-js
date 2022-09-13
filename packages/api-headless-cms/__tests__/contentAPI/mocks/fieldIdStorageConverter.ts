@@ -1,17 +1,17 @@
-import { CmsEntry, CmsModelField } from "~/types";
+import { CmsEntry, CmsModel, CmsModelField } from "~/types";
 import lodashCamelCase from "lodash/camelCase";
 
 const createModelField = (
     base: Partial<CmsModelField> & Pick<CmsModelField, "fieldId" | "type">
 ): CmsModelField => {
     const { fieldId, type } = base;
-    const id = `${fieldId}Id`;
+    const id = base.id || `${fieldId}Id`;
     return {
+        settings: {},
         ...base,
         id,
         fieldId,
         type,
-        settings: {},
         label: lodashCamelCase(fieldId),
         storageId: `${type}@${id}`
     };
@@ -49,6 +49,12 @@ const createModelFields = (): CmsModelField[] => {
             fieldId: "image",
             type: "file"
         }),
+        createModelField({
+            fieldId: "images",
+            type: "file",
+            multipleValues: true
+        }),
+
         createModelField({
             fieldId: "description",
             type: "long-text"
@@ -151,6 +157,7 @@ const createModelFields = (): CmsModelField[] => {
         createModelField({
             fieldId: "myObjectList",
             type: "object",
+            multipleValues: true,
             settings: {
                 fields: [
                     createModelField({
@@ -175,7 +182,7 @@ const createModelFields = (): CmsModelField[] => {
     ];
 };
 
-export const createModel = (): CmsModel => {
+export const createModel = (base?: Partial<Omit<CmsModel, "fields" | "layout">>): CmsModel => {
     const fields = createModelFields();
     return {
         name: "Test model",
@@ -189,6 +196,10 @@ export const createModel = (): CmsModel => {
         layout: fields.map(field => {
             return [field.id];
         }),
+        webinyVersion: "5.50.0",
+        locale: "en-US",
+        tenant: "root",
+        ...(base || {}),
         fields
     };
 };
@@ -201,6 +212,11 @@ const createRawValues = () => {
         dateOfBirth: "2022-06-08",
         timeOfSleep: "11:12:13",
         image: "https://dkz8lew0z0heu.cloudfront.net/files/9l7u8bvz1-Screenshot2022-09-08at11.13.58.png",
+        images: [
+            "https://dkz8lew0z0heu.cloudfront.net/files/9l7u8bvz1-Screenshot2022-09-08at11.13.58.png",
+            "https://dkz8lew0z0heu.cloudfront.net/files/9l7u8bvz1-Screenshot2022-09-08at11.13.59.png",
+            "https://dkz8lew0z0heu.cloudfront.net/files/9l7u8bvz1-Screenshot2022-09-08at11.14.00.png"
+        ],
         description: "Description text",
         body: [
             {
@@ -232,6 +248,7 @@ const createRawValues = () => {
                 }
             ],
             age: "10",
+            isImportant: false,
             dateOfBirth: "2022-09-01",
             timeWakingUp: "12:13:14",
             dateTimeZ: "2022-09-09T10:42:42+02:00",
@@ -265,13 +282,13 @@ const createRawValues = () => {
             {
                 title: "Title In My Object List #1",
                 myChildObjectInRepeatable: {
-                    title: "Title In My Object List Child Object #1"
+                    titleInRepeatableObjectsObject: "Title In My Object List Child Object #1"
                 }
             },
             {
                 title: "Title In My Object List #2",
                 myChildObjectInRepeatable: {
-                    title: "Title In My Object List Child Object #2"
+                    titleInRepeatableObjectsObject: "Title In My Object List Child Object #2"
                 }
             }
         ]
@@ -280,15 +297,20 @@ const createRawValues = () => {
 
 const createStoredValues = () => {
     return {
-        "text@name": "John Doe",
-        "number@age": 45,
-        "boolean@isImportant": true,
-        "datetime@dateOfBirth": "2022-06-08",
-        "datetime@timeOfSleep": "11:12:13",
-        "file@image":
+        "text@nameId": "John Doe",
+        "number@ageId": 45,
+        "boolean@isImportantId": true,
+        "datetime@dateOfBirthId": "2022-06-08",
+        "datetime@timeOfSleepId": "11:12:13",
+        "file@imageId":
             "https://dkz8lew0z0heu.cloudfront.net/files/9l7u8bvz1-Screenshot2022-09-08at11.13.58.png",
-        "long-text@description": "Description text",
-        "rich-text@body": [
+        "file@imagesId": [
+            "https://dkz8lew0z0heu.cloudfront.net/files/9l7u8bvz1-Screenshot2022-09-08at11.13.58.png",
+            "https://dkz8lew0z0heu.cloudfront.net/files/9l7u8bvz1-Screenshot2022-09-08at11.13.59.png",
+            "https://dkz8lew0z0heu.cloudfront.net/files/9l7u8bvz1-Screenshot2022-09-08at11.14.00.png"
+        ],
+        "long-text@descriptionId": "Description text",
+        "rich-text@bodyId": [
             {
                 id: "viUwgCKdKI",
                 type: "paragraph",
@@ -299,14 +321,14 @@ const createStoredValues = () => {
                 }
             }
         ],
-        "ref@category": {
+        "ref@categoryId": {
             modelId: "category",
             id: "6319b7b95d26da000918db7f#0003"
         },
-        "object@myObject": {
-            "text@title": "Title In Object",
-            "long-text@description": "Description In Object",
-            "rich-text@body": [
+        "object@myObjectId": {
+            "text@titleId": "Title In Object",
+            "long-text@descriptionId": "Description In Object",
+            "rich-text@bodyId": [
                 {
                     id: "WNaw9DNhDu",
                     type: "paragraph",
@@ -317,24 +339,25 @@ const createStoredValues = () => {
                     }
                 }
             ],
-            "number@age": "10",
-            "datetime@dateOfBirth": "2022-09-01",
-            "datetime@timeWakingUp": "12:13:14",
-            "datetime@dateTimeZ": "2022-09-09T10:42:42+02:00",
-            "datetime@dateTime": "2022-09-09 10:42:42",
-            "file@image":
+            "number@ageId": "10",
+            "boolean@isImportantId": false,
+            "datetime@dateOfBirthId": "2022-09-01",
+            "datetime@timeWakingUpId": "12:13:14",
+            "datetime@dateTimeZId": "2022-09-09T10:42:42+02:00",
+            "datetime@dateTimeId": "2022-09-09 10:42:42",
+            "file@imageId":
                 "https://dkz8lew0z0heu.cloudfront.net/files/9l7u8bvz1-Screenshot2022-09-08at11.13.58.png",
-            "file@documents": [
+            "file@documentsId": [
                 "https://dkz8lew0z0heu.cloudfront.net/files/9l7u8dww3-Screenshot2022-08-31at09.29.10.png",
                 "https://dkz8lew0z0heu.cloudfront.net/files/9l7u8bvz1-Screenshot2022-09-08at11.13.58.png",
                 "https://dkz8lew0z0heu.cloudfront.net/files/9l7u8dwxk-Screenshot2022-08-31at09.29.08.png",
                 "https://dkz8lew0z0heu.cloudfront.net/files/9l7u8dwxs-Screenshot2022-08-31at09.29.06.png"
             ],
-            "ref@category": {
+            "ref@categoryId": {
                 modelId: "category",
                 id: "6319b7b95d26da000918db7f#0003"
             },
-            "ref@categories": [
+            "ref@categoriesId": [
                 {
                     modelId: "category",
                     id: "6319b7b95d26da000918db7f#0003"
@@ -344,21 +367,23 @@ const createStoredValues = () => {
                     id: "6319b7ae5d26da000918db7e#0001"
                 }
             ],
-            "object@myChildObject": {
-                "text@title": "Title In My Child Object"
+            "object@myChildObjectId": {
+                "text@titleId": "Title In My Child Object"
             }
         },
-        "object@myObjectList": [
+        "object@myObjectListId": [
             {
-                "text@title": "Title In My Object List #1",
-                "object@myChildObjectInRepeatable": {
-                    "text@title": "Title In My Object List Child Object #1"
+                "text@titleId": "Title In My Object List #1",
+                "object@myChildObjectInRepeatableId": {
+                    "text@titleInRepeatableObjectsObjectId":
+                        "Title In My Object List Child Object #1"
                 }
             },
             {
-                "text@title": "Title In My Object List #2",
-                "object@myChildObjectInRepeatable": {
-                    "text@title": "Title In My Object List Child Object #2"
+                "text@titleId": "Title In My Object List #2",
+                "object@myChildObjectInRepeatableId": {
+                    "text@titleInRepeatableObjectsObjectId":
+                        "Title In My Object List Child Object #2"
                 }
             }
         ]
@@ -373,7 +398,7 @@ export const createRawEntry = (): CmsEntry => {
     return createBaseEntry(createRawValues());
 };
 
-const createBaseEntry = (values: any): CmsEntry => {
+const createBaseEntry = (values: Record<string, any>): CmsEntry => {
     return {
         id: "someEntryId#0001",
         entryId: "someEntryId",
@@ -389,7 +414,7 @@ const createBaseEntry = (values: any): CmsEntry => {
         },
         createdOn: "2022-09-01T12:00:00Z",
         savedOn: "2022-09-01T12:00:00Z",
-        publishedOn: null,
+        publishedOn: undefined,
         modelId: "test",
         locale: "en-US",
         tenant: "root",
