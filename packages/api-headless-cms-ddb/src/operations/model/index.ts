@@ -64,7 +64,7 @@ export const createModelsStorageOperations = (
 
         try {
             await entity.put({
-                ...model,
+                ...cleanupItem(entity, model),
                 ...keys,
                 TYPE: createType()
             });
@@ -85,7 +85,7 @@ export const createModelsStorageOperations = (
 
         try {
             await entity.put({
-                ...model,
+                ...cleanupItem(entity, model),
                 ...keys,
                 TYPE: createType()
             });

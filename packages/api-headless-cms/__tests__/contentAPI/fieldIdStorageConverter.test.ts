@@ -31,11 +31,11 @@ describe("field id storage converter", () => {
         });
 
         const convert = createValueKeyToStorageConverter({
+            model,
             plugins
         });
 
         const result = convert({
-            model,
             fields: model.fields,
             values: entry.values
         });
@@ -64,11 +64,11 @@ describe("field id storage converter", () => {
         });
 
         const convert = createValueKeyFromStorageConverter({
+            model,
             plugins
         });
 
         const result = convert({
-            model,
             fields: model.fields,
             values: entry.values
         });
@@ -101,11 +101,11 @@ describe("field id storage converter", () => {
         });
 
         const convert = createValueKeyToStorageConverter({
+            model,
             plugins
         });
 
         const result = convert({
-            model,
             fields: model.fields,
             values: entry.values
         });
@@ -135,11 +135,11 @@ describe("field id storage converter", () => {
         });
 
         const convert = createValueKeyFromStorageConverter({
+            model,
             plugins
         });
 
         const result = convert({
-            model,
             fields: model.fields,
             values: entry.values
         });
