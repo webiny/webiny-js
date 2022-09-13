@@ -29,6 +29,7 @@ export const ContentModelFieldModel = withFields({
     helpText: string({ validation: shortString }),
     placeholderText: string({ validation: shortString }),
     type: setOnce()(string({ validation: requiredShortString })),
+    tags: object({ value: [], required: false }),
     multipleValues: boolean({ value: false }),
     predefinedValues: fields({
         value: {},

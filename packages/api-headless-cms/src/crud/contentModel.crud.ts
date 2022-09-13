@@ -307,6 +307,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 fields,
                 lockedFields: [],
                 layout: input.layout || [],
+                tags: [...(input.tags || [])],
                 webinyVersion: context.WEBINY_VERSION
             };
 
