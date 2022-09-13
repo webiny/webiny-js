@@ -2,11 +2,12 @@ import {
     CmsModelFieldConverterPlugin,
     ConvertParams
 } from "~/plugins/CmsModelFieldConverterPlugin";
-import { CmsEntryValues, CmsModelFieldWithParent } from "~/types";
-import lodashGet from "lodash.get";
+import { CmsEntryValues, CmsModel, CmsModelFieldWithParent } from "~/types";
+import lodashGet from "lodash/get";
 import { ConverterCollection } from "~/utils/converters/ConverterCollection";
 
 interface ProcessChildFieldsParams {
+    model: CmsModel;
     fields: CmsModelFieldWithParent[];
     value: any;
     converterCollection: ConverterCollection;
@@ -31,7 +32,7 @@ export class CmsModelObjectFieldConverterPlugin extends CmsModelFieldConverterPl
     }
 
     public override convertToStorage(params: ConvertParams): CmsEntryValues {
-        const { field, value, converterCollection } = params;
+        const { field, value, converterCollection, model } = params;
 
         const childFields = this.getChildFields({
             field
@@ -49,6 +50,7 @@ export class CmsModelObjectFieldConverterPlugin extends CmsModelFieldConverterPl
             return {
                 [field.storageId]: value.map((itemValue: any) => {
                     return this.processChildFieldsToStorage({
+                        model,
                         fields: childFields.map(child => {
                             return {
                                 ...child,
@@ -63,6 +65,7 @@ export class CmsModelObjectFieldConverterPlugin extends CmsModelFieldConverterPl
         }
 
         const values = this.processChildFieldsToStorage({
+            model,
             fields: childFields.map(child => {
                 return {
                     ...child,
@@ -79,13 +82,14 @@ export class CmsModelObjectFieldConverterPlugin extends CmsModelFieldConverterPl
     }
 
     private processChildFieldsToStorage(params: ProcessChildFieldsParams): CmsEntryValues {
-        const { fields, value, converterCollection } = params;
+        const { fields, value, converterCollection, model } = params;
         let output: CmsEntryValues = {};
         for (const field of fields) {
             const childFields = field.settings?.fields;
 
             if (childFields) {
                 const values = converterCollection.convertToStorage({
+                    model,
                     fields: (field.settings?.fields || []).map(child => {
                         return {
                             ...child,
@@ -110,7 +114,7 @@ export class CmsModelObjectFieldConverterPlugin extends CmsModelFieldConverterPl
     }
 
     public override convertFromStorage(params: ConvertParams): CmsEntryValues {
-        const { field, value, converterCollection } = params;
+        const { field, value, converterCollection, model } = params;
 
         const childFields = this.getChildFields({
             field
@@ -128,6 +132,7 @@ export class CmsModelObjectFieldConverterPlugin extends CmsModelFieldConverterPl
             return {
                 [field.fieldId]: value.map((itemValue: any) => {
                     return this.processChildFieldsFromStorage({
+                        model,
                         fields: childFields.map(child => {
                             return {
                                 ...child,
@@ -142,6 +147,7 @@ export class CmsModelObjectFieldConverterPlugin extends CmsModelFieldConverterPl
         }
 
         const values = this.processChildFieldsFromStorage({
+            model,
             fields: childFields.map(child => {
                 return {
                     ...child,
@@ -158,13 +164,14 @@ export class CmsModelObjectFieldConverterPlugin extends CmsModelFieldConverterPl
     }
 
     private processChildFieldsFromStorage(params: ProcessChildFieldsParams): CmsEntryValues {
-        const { fields, value, converterCollection } = params;
+        const { fields, value, converterCollection, model } = params;
         let output: CmsEntryValues = {};
         for (const field of fields) {
             const childFields = field.settings?.fields;
 
             if (childFields) {
                 const values = converterCollection.convertFromStorage({
+                    model,
                     fields: (field.settings?.fields || []).map(child => {
                         return {
                             ...child,

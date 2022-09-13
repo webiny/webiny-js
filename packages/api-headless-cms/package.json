@@ -45,6 +45,7 @@
     "p-map": "^4.0.0",
     "p-reduce": "^2.1.0",
     "pluralize": "^8.0.0",
+    "semver": "^6.3.0",
     "slugify": "^1.4.0"
   },
   "devDependencies": {

@@ -27,41 +27,44 @@ const isFeatureEnabled = (model: CmsModel): boolean => {
 };
 
 interface Params {
-    model: CmsModel;
     plugins: PluginsContainer;
 }
 
 export const createValueKeyToStorageConverter = (params: Params) => {
-    const { plugins, model } = params;
-    if (isFeatureEnabled(model) === false) {
-        return (params: ConverterCollectionConvertParams) => {
-            return params.values;
-        };
-    }
+    const { plugins } = params;
 
     const converters = new ConverterCollection({
         plugins
     });
 
-    return (params: ConverterCollectionConvertParams) => {
-        return converters.convertToStorage(params);
+    return ({ fields, values, model }: ConverterCollectionConvertParams) => {
+        if (isFeatureEnabled(model) === false) {
+            return values;
+        }
+        return converters.convertToStorage({
+            fields,
+            values,
+            model
+        });
     };
 };
 
 export const createValueKeyFromStorageConverter = (params: Params) => {
-    const { plugins, model } = params;
-
-    if (isFeatureEnabled(model) === false) {
-        return (params: ConverterCollectionConvertParams) => {
-            return params.values;
-        };
-    }
+    const { plugins } = params;
 
     const converters = new ConverterCollection({
         plugins
     });
 
-    return (params: ConverterCollectionConvertParams) => {
-        return converters.convertFromStorage(params);
+    return ({ fields, values, model }: ConverterCollectionConvertParams) => {
+        if (isFeatureEnabled(model) === false) {
+            return values;
+        }
+
+        return converters.convertFromStorage({
+            fields,
+            values,
+            model
+        });
     };
 };

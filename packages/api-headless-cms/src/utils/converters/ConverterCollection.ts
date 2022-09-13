@@ -1,6 +1,6 @@
 import WebinyError from "@webiny/error";
 import { Converter } from "./Converter";
-import { CmsEntryValues, CmsModelField, CmsModelFieldToGraphQLPlugin } from "~/types";
+import { CmsEntryValues, CmsModel, CmsModelField, CmsModelFieldToGraphQLPlugin } from "~/types";
 import { CmsModelFieldConverterPlugin } from "~/plugins";
 import { PluginsContainer } from "@webiny/plugins";
 
@@ -8,6 +8,13 @@ export interface CmsModelFieldsWithParent extends CmsModelField {
     parent?: CmsModelField | null;
 }
 export interface ConverterCollectionConvertParams {
+    /**
+     * We need a model to determine if the conversion feature is enabled.
+     */
+    model: CmsModel;
+    /**
+     * We are sending fields separately because it can be that they are nested fields.
+     */
     fields: CmsModelFieldsWithParent[];
     values: CmsEntryValues;
 }
@@ -69,7 +76,7 @@ export class ConverterCollection {
     }
 
     public convertToStorage(params: ConverterCollectionConvertParams): CmsEntryValues {
-        const { fields, values: inputValues } = params;
+        const { fields, values: inputValues, model } = params;
         let output: CmsEntryValues = {};
         for (const field of fields) {
             /**
@@ -80,6 +87,7 @@ export class ConverterCollection {
              *
              */
             const values = converter.convertToStorage({
+                model,
                 field,
                 value: inputValues[field.fieldId]
             });
@@ -94,7 +102,7 @@ export class ConverterCollection {
     }
 
     public convertFromStorage(params: ConverterCollectionConvertParams): CmsEntryValues {
-        const { fields, values: inputValues } = params;
+        const { fields, values: inputValues, model } = params;
         let output: CmsEntryValues = {};
         for (const field of fields) {
             /**
@@ -105,6 +113,7 @@ export class ConverterCollection {
              *
              */
             const values = converter.convertFromStorage({
+                model,
                 field,
                 value: inputValues[field.storageId]
             });
