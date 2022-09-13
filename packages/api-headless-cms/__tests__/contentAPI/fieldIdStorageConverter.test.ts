@@ -56,7 +56,7 @@ describe("field id storage converter", () => {
         expect(entry).toMatchObject({
             id: "someEntryId#0001",
             values: {
-                name: "John Doe"
+                "text@nameId": "John Doe"
             }
         });
 
