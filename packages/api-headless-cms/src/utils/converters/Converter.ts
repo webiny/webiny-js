@@ -1,5 +1,5 @@
 import WebinyError from "@webiny/error";
-import { CmsEntryValues, CmsModelField, CmsModel } from "~/types";
+import { CmsEntryValues, CmsModelField } from "~/types";
 import { CmsModelFieldConverterPlugin } from "~/plugins";
 import { ConverterCollection } from "./ConverterCollection";
 
@@ -8,7 +8,6 @@ export interface CmsModelFieldWithParent extends CmsModelField {
 }
 
 interface ConverterConvertParams {
-    model: CmsModel;
     field: CmsModelFieldWithParent;
     value: any;
     parent?: CmsModelFieldWithParent | null;
@@ -55,10 +54,9 @@ export class Converter {
     }
 
     public convertToStorage(params: ConverterConvertParams): CmsEntryValues {
-        const { field, value, model } = params;
+        const { field, value } = params;
 
         return this.plugin.convertToStorage({
-            model,
             field,
             value,
             converterCollection: this.getConverterCollection()
@@ -66,10 +64,9 @@ export class Converter {
     }
 
     public convertFromStorage(params: ConverterConvertParams): CmsEntryValues {
-        const { field, value, model } = params;
+        const { field, value } = params;
 
         return this.plugin.convertFromStorage({
-            model,
             field,
             value,
             converterCollection: this.getConverterCollection()

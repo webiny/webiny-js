@@ -12,16 +12,7 @@ export class CmsModelDefaultFieldConverterPlugin extends CmsModelFieldConverterP
 
     public override convertToStorage({ field, value }: ConvertParams): any {
         /**
-         * TODO Remove distinction if deemed not required later on.
-         * Multiple field conversion.
-         */
-        if (field.multipleValues) {
-            return {
-                [field.storageId]: value
-            };
-        }
-        /**
-         * A single field conversion;
+         * A single and multiple values field conversion;
          */
         return {
             [field.storageId]: value
@@ -30,16 +21,7 @@ export class CmsModelDefaultFieldConverterPlugin extends CmsModelFieldConverterP
 
     public override convertFromStorage({ field, value }: ConvertParams): any {
         /**
-         * TODO Remove distinction if deemed not required later on.
-         * Multiple field conversion.
-         */
-        if (field.multipleValues) {
-            return {
-                [field.fieldId]: value
-            };
-        }
-        /**
-         * A single field conversion;
+         * A single and multiple values field conversion;
          */
         return {
             [field.fieldId]: value

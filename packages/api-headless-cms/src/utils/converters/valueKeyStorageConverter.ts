@@ -1,9 +1,10 @@
 import { PluginsContainer } from "@webiny/plugins";
 import {
+    CmsModelConverterCallable,
     ConverterCollection,
-    ConverterCollectionConvertParams
+    ConverterCollectionConvertParams as BaseConverterCollectionConvertParams
 } from "~/utils/converters/ConverterCollection";
-import { CmsModel } from "~/types";
+import { CmsModel, StorageOperationsCmsModel } from "~/types";
 import semver from "semver";
 
 const featureVersion = "5.33.0";
@@ -27,44 +28,80 @@ const isFeatureEnabled = (model: CmsModel): boolean => {
 };
 
 interface Params {
+    /**
+     * We need a model to determine if the conversion feature is enabled.
+     */
+    model: CmsModel;
     plugins: PluginsContainer;
 }
 
-export const createValueKeyToStorageConverter = (params: Params) => {
-    const { plugins } = params;
+/**
+ * In the first call of the converter we do not need the fields property as it will be taken directly from the model.
+ */
+interface ConverterCollectionConvertParams
+    extends Omit<BaseConverterCollectionConvertParams, "fields"> {
+    fields?: BaseConverterCollectionConvertParams["fields"];
+}
+
+export const createValueKeyToStorageConverter = (params: Params): CmsModelConverterCallable => {
+    const { plugins, model } = params;
+
+    if (isFeatureEnabled(model) === false) {
+        return ({ values }: ConverterCollectionConvertParams) => {
+            return values;
+        };
+    }
 
     const converters = new ConverterCollection({
         plugins
     });
 
-    return ({ fields, values, model }: ConverterCollectionConvertParams) => {
-        if (isFeatureEnabled(model) === false) {
-            return values;
-        }
+    return ({ fields, values }: ConverterCollectionConvertParams) => {
         return converters.convertToStorage({
-            fields,
-            values,
-            model
+            fields: fields || model.fields,
+            values
         });
     };
 };
 
-export const createValueKeyFromStorageConverter = (params: Params) => {
-    const { plugins } = params;
+export const createValueKeyFromStorageConverter = (params: Params): CmsModelConverterCallable => {
+    const { plugins, model } = params;
+
+    if (isFeatureEnabled(model) === false) {
+        return ({ values }: ConverterCollectionConvertParams) => {
+            return values;
+        };
+    }
 
     const converters = new ConverterCollection({
         plugins
     });
 
-    return ({ fields, values, model }: ConverterCollectionConvertParams) => {
-        if (isFeatureEnabled(model) === false) {
-            return values;
-        }
-
+    return ({ fields, values }: ConverterCollectionConvertParams) => {
         return converters.convertFromStorage({
-            fields,
-            values,
-            model
+            fields: fields || model.fields,
+            values
         });
+    };
+};
+
+interface AttachConvertersParams {
+    plugins: PluginsContainer;
+    model: CmsModel;
+}
+export const attachCmsModelFieldConverters = (
+    params: AttachConvertersParams
+): StorageOperationsCmsModel => {
+    const { model, plugins } = params;
+    return {
+        ...model,
+        convertValueKeyFromStorage: createValueKeyToStorageConverter({
+            model,
+            plugins
+        }),
+        convertValueKeyToStorage: createValueKeyFromStorageConverter({
+            model,
+            plugins
+        })
     };
 };
