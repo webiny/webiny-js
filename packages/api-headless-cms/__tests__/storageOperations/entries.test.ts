@@ -4,7 +4,7 @@ import {
     deletePersonModel,
     PersonEntriesResult
 } from "./helpers";
-import { CmsModel, HeadlessCmsStorageOperations } from "~/types";
+import { StorageOperationsCmsModel, HeadlessCmsStorageOperations } from "~/types";
 import { useGraphQLHandler } from "../utils/useGraphQLHandler";
 import { createGraphQLFields } from "~/graphqlFields";
 import { PluginsContainer } from "@webiny/plugins";
@@ -16,7 +16,7 @@ interface WaitPersonRecordsParams {
     storageOperations: HeadlessCmsStorageOperations;
     name: string;
     until: Function;
-    model: CmsModel;
+    model: StorageOperationsCmsModel;
 }
 const waitPersonRecords = async (params: WaitPersonRecordsParams): Promise<void> => {
     const { records, storageOperations, until, model, name } = params;

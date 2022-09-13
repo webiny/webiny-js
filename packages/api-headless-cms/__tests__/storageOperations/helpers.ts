@@ -5,14 +5,16 @@
 import mdbid from "mdbid";
 import {
     CmsEntry,
-    CmsModel,
     CmsModelField,
     CreatedBy,
-    HeadlessCmsStorageOperations
+    HeadlessCmsStorageOperations,
+    StorageOperationsCmsModel
 } from "~/types";
 import { CmsGroupPlugin } from "~/plugins/CmsGroupPlugin";
 import { createIdentifier, generateAlphaNumericId } from "@webiny/utils";
 import crypto from "crypto";
+import { attachCmsModelFieldConverters } from "~/utils/converters/valueKeyStorageConverter";
+import { PluginsContainer } from "@webiny/plugins";
 
 const cliPackageJson = require("@webiny/cli/package.json");
 const webinyVersion = cliPackageJson.version;
@@ -80,24 +82,27 @@ const personModelFields: Record<string, CmsModelField> = {
     }
 };
 
-export const createPersonModel = (): CmsModel => {
-    return {
-        name: "Person Model",
-        group: {
-            id: baseGroup.contentModelGroup.id,
-            name: baseGroup.contentModelGroup.name
-        },
-        modelId: "personEntriesModel",
-        locale: "en-US",
-        tenant: "root",
-        titleFieldId: personModelFields.name.id,
-        fields: Object.values(personModelFields),
-        layout: Object.values(personModelFields).map(field => {
-            return [field.id];
-        }),
-        description: "",
-        webinyVersion
-    };
+export const createPersonModel = (plugins: PluginsContainer): StorageOperationsCmsModel => {
+    return attachCmsModelFieldConverters({
+        plugins,
+        model: {
+            name: "Person Model",
+            group: {
+                id: baseGroup.contentModelGroup.id,
+                name: baseGroup.contentModelGroup.name
+            },
+            modelId: "personEntriesModel",
+            locale: "en-US",
+            tenant: "root",
+            titleFieldId: personModelFields.name.id,
+            fields: Object.values(personModelFields),
+            layout: Object.values(personModelFields).map(field => {
+                return [field.id];
+            }),
+            description: "",
+            webinyVersion
+        }
+    });
 };
 
 const createdBy: CreatedBy = {
@@ -115,6 +120,7 @@ interface CreatePersonEntriesParams {
     amount: number;
     storageOperations: HeadlessCmsStorageOperations;
     maxRevisions?: number;
+    plugins: PluginsContainer;
 }
 
 export interface PersonEntriesResult {
@@ -127,8 +133,8 @@ export interface PersonEntriesResult {
 export const createPersonEntries = async (
     params: CreatePersonEntriesParams
 ): Promise<PersonEntriesResult> => {
-    const { amount, storageOperations, maxRevisions = 1 } = params;
-    const personModel = createPersonModel();
+    const { amount, storageOperations, maxRevisions = 1, plugins } = params;
+    const personModel = createPersonModel(plugins);
 
     const entries: CmsEntry[] = [];
 
@@ -229,12 +235,13 @@ export const createPersonEntries = async (
 
 interface DeletePersonModelParams {
     storageOperations: HeadlessCmsStorageOperations;
+    plugins: PluginsContainer;
 }
 export const deletePersonModel = async (params: DeletePersonModelParams) => {
-    const { storageOperations } = params;
+    const { storageOperations, plugins } = params;
     try {
         await storageOperations.models.delete({
-            model: createPersonModel()
+            model: createPersonModel(plugins)
         });
     } catch (ex) {
         console.log("Trying to delete person model... failed...");
