@@ -136,7 +136,7 @@ export const createModelsSchema = (context: CmsContext): GraphQLSchemaPlugin<Cms
                 layout: [[ID!]!]
                 fields: [CmsContentModelFieldInput!]
                 titleFieldId: String
-                tags: [String]
+                tags: [String!]
             }
 
             input CmsContentModelCreateFromInput {

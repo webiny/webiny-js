@@ -7,7 +7,7 @@ import { CmsEditorFieldTypePlugin, CmsModel } from "~/types";
 import { ReactComponent as ObjectIcon } from "~/admin/icons/ballot_black_24dp.svg";
 
 const isContentModel = (model: CmsModel) => {
-    return Boolean(model.tags.find(tag => tag === "type:contentModel"));
+    return model.tags.some(tag => tag === "type:contentModel");
 };
 
 export const ModelFieldPlugins: React.FC = ({ children }) => {

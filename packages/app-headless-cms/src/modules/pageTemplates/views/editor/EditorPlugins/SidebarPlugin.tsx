@@ -17,8 +17,12 @@ export const SidebarPlugin = createComponentPlugin(Editor.Sidebar, OriginalSideb
         const { tabsRef } = useContentModelEditor();
 
         const onFieldDragStart = useCallback(() => {
-            if (tabsRef.current!.getActiveIndex() > 1) {
-                tabsRef.current!.switchTab(0);
+            if (!tabsRef.current) {
+                return;
+            }
+
+            if (tabsRef.current.getActiveIndex() > 1) {
+                tabsRef.current.switchTab(0);
             }
         }, []);
 

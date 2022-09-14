@@ -172,7 +172,7 @@ export const CMSPermissions: React.FC<CMSPermissionsProps> = ({ value, onChange 
             };
         }
 
-        const hasFullAccess = value.find(
+        const hasFullAccess = value.some(
             item => item.name === CMS_PERMISSION_FULL_ACCESS || item.name === "*"
         );
 

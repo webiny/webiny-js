@@ -73,7 +73,7 @@ interface ContentModelsDataListProps {
 }
 
 const isPageTemplate = (model: CmsModel) => {
-    return Boolean(model.tags.find(tag => tag === "type:pageTemplate"));
+    return model.tags.some(tag => tag === "type:pageTemplate");
 };
 
 const ContentModelsDataList: React.FC<ContentModelsDataListProps> = ({
