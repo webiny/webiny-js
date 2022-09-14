@@ -15,10 +15,12 @@ export const createFoldersStorageOperations = (
         tenant,
         locale,
         type
-    }: Pick<Folder, "tenant" | "locale" | "type">) => `T#${tenant}#L#${locale}#FOLDERS#${type}`;
+    }: Pick<Folder, "tenant" | "locale" | "type">) => {
+        return `T#${tenant}#L#${locale}#FOLDERS#${type}`;
+    };
 
     const createFolderGsiSearchKey = ({ slug, parentId }: Pick<Folder, "slug" | "parentId">) => {
-        return ((!!parentId && `${parentId}#`) || "") + slug;
+        return [parentId, slug].filter(Boolean).join("#");
     };
 
     const createFolderKeys = ({ id, tenant, locale }: Pick<Folder, "id" | "tenant" | "locale">) => {
