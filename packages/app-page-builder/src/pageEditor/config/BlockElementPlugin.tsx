@@ -1,21 +1,9 @@
 import React, { useCallback } from "react";
-import styled from "@emotion/styled";
 import { createComponentPlugin } from "@webiny/app-admin";
 import { ElementRoot, ElementRootChildrenFunction, DropZone } from "~/editor";
 import { useActiveElementId } from "~/editor/hooks/useActiveElementId";
 import { useCurrentBlockElement } from "~/editor/hooks/useCurrentBlockElement";
 import { useCurrentElement } from "~/editor/hooks/useCurrentElement";
-
-const DisableInteractions = styled.div`
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: unset;
-    z-index: 100;
-    cursor: pointer;
-`;
 
 /**
  * Hook into `ElementRoot`, which is a component that renders _every_ element of the page content.
@@ -30,11 +18,11 @@ const DisableInteractionsPlugin = createComponentPlugin(ElementRoot, Original =>
             setActiveElementId(element.id);
         }, [element.id]);
 
-        if (element.type !== "block") {
+        if (props.element.type !== "block") {
             return <Original {...props}>{children}</Original>;
         }
 
-        if (!element.data?.blockId) {
+        if (!props.element.data?.blockId) {
             return <Original {...props}>{children}</Original>;
         }
 
@@ -45,10 +33,10 @@ const DisableInteractionsPlugin = createComponentPlugin(ElementRoot, Original =>
         return (
             <Original {...props}>
                 {params => (
-                    <>
-                        <DisableInteractions onClick={onClick} />
+                    // @ts-ignore
+                    <div inert="" onClick={onClick}>
                         {(children as ElementRootChildrenFunction)(params)}
-                    </>
+                    </div>
                 )}
             </Original>
         );

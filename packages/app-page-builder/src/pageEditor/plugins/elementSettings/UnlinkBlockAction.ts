@@ -12,6 +12,20 @@ const UnlinkBlockAction: React.FC<UnlinkBlockActionPropsType> = ({ children }) =
     const activeElementId = useRecoilValue(activeElementAtom);
     const element = useRecoilValue(elementByIdSelector(activeElementId as string));
 
+    const onClick = useCallback((): void => {
+        if (element) {
+            eventActionHandler.trigger(
+                new UpdateElementActionEvent({
+                    element: {
+                        ...element,
+                        data: newData
+                    },
+                    history: true
+                })
+            );
+        }
+    }, [activeElementId]);
+
     if (!element) {
         return null;
     }
@@ -19,18 +33,6 @@ const UnlinkBlockAction: React.FC<UnlinkBlockActionPropsType> = ({ children }) =
     // we need to drop blockId property wheen unlinking, so it is separated from all other element data
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { blockId, ...newData } = element.data;
-
-    const onClick = useCallback((): void => {
-        eventActionHandler.trigger(
-            new UpdateElementActionEvent({
-                element: {
-                    ...element,
-                    data: newData
-                },
-                history: true
-            })
-        );
-    }, [activeElementId]);
 
     return React.cloneElement(children, { onClick });
 };

@@ -50,14 +50,10 @@ export const BlockElementSidebarPlugin = createComponentPlugin(EditorSidebarTab,
     return function ElementTab({ children, ...props }) {
         const [element] = useActiveElement();
 
-        return (
-            <Tab {...props}>
-                {element !== null && element.type === "block" && element.data?.blockId ? (
-                    <UnlinkTab />
-                ) : (
-                    children
-                )}
-            </Tab>
-        );
+        const isReferenceBlock =
+            element !== null && element.type === "block" && element.data?.blockId;
+        const isStyleTab = props?.label === "Style";
+
+        return <Tab {...props}>{isReferenceBlock && isStyleTab ? <UnlinkTab /> : children}</Tab>;
     };
 });

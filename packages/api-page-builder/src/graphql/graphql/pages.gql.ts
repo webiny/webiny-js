@@ -290,8 +290,9 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                             if (blockId) {
                                 const blockData = await context.pageBuilder.getPageBlock(blockId);
                                 blocks.push({
-                                    ...blockData?.content,
-                                    data: { blockId, ...blockData?.content?.data }
+                                    ...block,
+                                    data: { blockId, ...blockData?.content?.data },
+                                    elements: blockData?.content?.elements || []
                                 });
                             } else {
                                 blocks.push(block);
