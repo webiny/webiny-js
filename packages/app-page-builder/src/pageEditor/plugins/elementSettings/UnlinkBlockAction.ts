@@ -1,38 +1,26 @@
 import React, { useCallback } from "react";
-import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
-import { UpdateElementActionEvent } from "~/editor/recoil/actions";
-import { activeElementAtom, elementByIdSelector } from "~/editor/recoil/modules";
-import { useRecoilValue } from "recoil";
+import { useActiveElement } from "~/editor/hooks/useActiveElement";
+import { useUpdateElement } from "~/editor/hooks/useUpdateElement";
 
 interface UnlinkBlockActionPropsType {
     children: React.ReactElement;
 }
 const UnlinkBlockAction: React.FC<UnlinkBlockActionPropsType> = ({ children }) => {
-    const eventActionHandler = useEventActionHandler();
-    const activeElementId = useRecoilValue(activeElementAtom);
-    const element = useRecoilValue(elementByIdSelector(activeElementId as string));
+    const [element] = useActiveElement();
+    const updateElement = useUpdateElement();
 
     const onClick = useCallback((): void => {
         if (element) {
-            eventActionHandler.trigger(
-                new UpdateElementActionEvent({
-                    element: {
-                        ...element,
-                        data: newData
-                    },
-                    history: true
-                })
-            );
+            // we need to drop blockId property wheen unlinking, so it is separated from all other element data
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { blockId, ...newData } = element.data;
+
+            updateElement({
+                ...element,
+                data: newData
+            });
         }
-    }, [activeElementId]);
-
-    if (!element) {
-        return null;
-    }
-
-    // we need to drop blockId property wheen unlinking, so it is separated from all other element data
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { blockId, ...newData } = element.data;
+    }, [element, updateElement]);
 
     return React.cloneElement(children, { onClick });
 };
