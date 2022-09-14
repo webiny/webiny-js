@@ -8,7 +8,8 @@ import {
     PbEditorPageElementPlugin,
     PbEditorPageElementSettingsPlugin,
     PbEditorPageElementStyleSettingsPlugin,
-    PbEditorElement
+    PbEditorElement,
+    PbElement
 } from "~/types";
 
 const ALPHANUMERIC = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
@@ -145,6 +146,25 @@ export const addElementId = (target: Omit<PbEditorElement, "id">): PbEditorEleme
         });
     }
     return element;
+};
+/**
+ * Remove id from elements recursively
+ */
+export const removeElementId = (el: PbElement): PbElement => {
+    // @ts-ignore
+    delete el.id;
+
+    el.elements = el.elements.map(el => {
+        // @ts-ignore
+        delete el.id;
+        if (el.elements && el.elements.length) {
+            el = removeElementId(el);
+        }
+
+        return el;
+    });
+
+    return el;
 };
 
 export const createBlockElements = (name: string): PbEditorElement => {
