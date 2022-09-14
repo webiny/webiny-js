@@ -2,7 +2,7 @@ import React, { useCallback, useState } from "react";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { i18n } from "@webiny/app/i18n";
-import { useContentModelEditor } from "~/admin/components/ContentModelEditor/useContentModelEditor";
+import { useContentModelEditor } from "~/modelEditor";
 
 const t = i18n.namespace("app-headless-cms/admin/editor/top-bar/save-button");
 

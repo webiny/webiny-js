@@ -16,7 +16,6 @@ const Loader: React.FC = ({ children, ...props }) => (
     </Suspense>
 );
 
-const ContentModelEditor = lazy(() => import("../views/contentModels/ContentModelEditor"));
 const ContentModelsView = lazy(() => import("../views/contentModels/ContentModels"));
 const ContentModelGroupsView = lazy(() => import("../views/contentModelGroups/ContentModelGroups"));
 
@@ -58,26 +57,6 @@ const plugins: RoutePlugin[] = [
                             </Helmet>
                             <ContentEntriesView />
                         </AdminLayout>
-                    </SecureRoute>
-                )}
-            />
-        )
-    },
-    {
-        name: "route-cms-content-models-editor",
-        type: "route",
-        route: (
-            <Route
-                exact
-                path={"/cms/content-models/:modelId"}
-                render={() => (
-                    <SecureRoute permission={"cms.contentModel"}>
-                        <Helmet>
-                            <title>{t`Edit a Content Model`}</title>
-                        </Helmet>
-                        <Loader>
-                            <ContentModelEditor />
-                        </Loader>
                     </SecureRoute>
                 )}
             />

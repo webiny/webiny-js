@@ -1,11 +1,10 @@
 import React, { useCallback } from "react";
 import { css } from "emotion";
 import { createComponentPlugin } from "@webiny/app-admin";
-import { Editor } from "~/admin/components/ContentModelEditor";
 import { plugins } from "@webiny/plugins";
 import { CmsEditorFieldTypePlugin } from "~/types";
 import { ReactComponent as ObjectIcon } from "~/admin/icons/ballot_black_24dp.svg";
-import { useContentModelEditor } from "~/admin/components/ContentModelEditor/useContentModelEditor";
+import { Editor, useContentModelEditor } from "~/modelEditor";
 
 const makeScrollable = css`
     overflow: scroll;

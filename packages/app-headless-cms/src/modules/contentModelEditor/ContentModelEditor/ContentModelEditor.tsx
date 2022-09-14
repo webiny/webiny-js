@@ -1,14 +1,13 @@
 import React from "react";
-import { Editor } from "~/modelEditor/Editor";
+import { Editor } from "~/modelEditor";
 import { useRouter } from "@webiny/react-router";
 import { useCms } from "~/admin/hooks";
 import { CmsModel } from "~/types";
-import { EditorPlugins } from "./EditorPlugins";
-import { ModelFieldPlugins } from "./ModelFieldPlugins";
+import { ContentModelEditorConfig } from "./ContentModelEditorConfig";
 
 type QueryMatch = Pick<Partial<CmsModel>, "modelId">;
 
-const PageTemplateEditor: React.FC = () => {
+export const ContentModelEditor: React.FC = () => {
     const { params } = useRouter();
     const { apolloClient } = useCms();
 
@@ -17,11 +16,9 @@ const PageTemplateEditor: React.FC = () => {
         return null;
     }
     return (
-        <ModelFieldPlugins>
-            <EditorPlugins />
+        <>
+            <ContentModelEditorConfig />
             <Editor modelId={modelId} apolloClient={apolloClient} />
-        </ModelFieldPlugins>
+        </>
     );
 };
-
-export default PageTemplateEditor;

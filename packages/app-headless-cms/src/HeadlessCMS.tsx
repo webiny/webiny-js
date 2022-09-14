@@ -10,6 +10,7 @@ import { ContentEntriesModule } from "~/admin/views/contentEntries/experiment/Co
 import { DefaultOnEntryDelete } from "~/admin/plugins/entry/DefaultOnEntryDelete";
 import { DefaultOnEntryPublish } from "~/admin/plugins/entry/DefaultOnEntryPublish";
 import { PageTemplatesModule } from "~/modules/pageTemplates";
+import { ContentModelEditorModule } from "~/modules/contentModelEditor";
 
 const createHeadlessCMSProvider =
     (createApolloClient: CreateApolloClient) =>
@@ -49,6 +50,7 @@ const HeadlessCMSExtension = ({ createApolloClient }: HeadlessCMSProps) => {
 
     return (
         <Fragment>
+            <ContentModelEditorModule />
             <ContentEntriesModule />
             <PageTemplatesModule />
             <Provider hoc={createHeadlessCMSProvider(createApolloClient)} />

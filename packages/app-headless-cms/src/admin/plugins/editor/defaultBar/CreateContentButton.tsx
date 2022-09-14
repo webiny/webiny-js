@@ -10,7 +10,7 @@ import {
     GetCmsModelQueryResponse,
     GetCmsModelQueryVariables
 } from "~/admin/graphql/contentModels";
-import { useContentModelEditor } from "~/admin/components/ContentModelEditor/useContentModelEditor";
+import { useContentModelEditor } from "~/modelEditor";
 
 const t = i18n.namespace("app-headless-cms/admin/editor/top-bar/save-button");
 
