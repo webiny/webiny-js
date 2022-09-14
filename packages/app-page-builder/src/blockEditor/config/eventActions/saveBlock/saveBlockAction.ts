@@ -6,6 +6,7 @@ import { BlockEventActionCallable } from "~/blockEditor/types";
 import { BlockWithContent } from "~/blockEditor/state";
 import { UPDATE_PAGE_BLOCK } from "~/admin/views/PageBlocks/graphql";
 import getPreviewImage from "./getPreviewImage";
+import { removeElementId } from "~/editor/helpers";
 
 // TODO: add more properties here
 type BlockType = Pick<BlockWithContent, "name" | "content" | "blockCategory">;
@@ -35,7 +36,7 @@ export const saveBlockAction: BlockEventActionCallable<SaveBlockActionArgsType> 
         blockCategory: state.block.blockCategory,
         // We need to grab the contents of the "document" element, and we can safely just grab the first element
         // because we only have 1 block in the block editor.
-        content: element.elements[0]
+        content: removeElementId(element.elements[0])
     };
 
     if (debouncedSave) {

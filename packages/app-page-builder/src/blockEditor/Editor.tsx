@@ -14,7 +14,7 @@ import createElementPlugin from "~/admin/utils/createElementPlugin";
 import { createStateInitializer } from "./createStateInitializer";
 import { BlockEditorConfig } from "./config/BlockEditorConfig";
 import { BlockWithContent } from "~/blockEditor/state";
-import { createElement } from "~/editor/helpers";
+import { createElement, addElementId } from "~/editor/helpers";
 import { PbPageBlock, PbEditorElement } from "~/types";
 
 export const BlockEditor: React.FC = () => {
@@ -52,7 +52,7 @@ export const BlockEditor: React.FC = () => {
                 // We need to wrap all elements into a "document" element, it's a requirement for the editor to work.
                 const content: PbEditorElement = {
                     ...createElement("document"),
-                    elements: [pageBlockData.content]
+                    elements: [addElementId(pageBlockData.content)]
                 };
 
                 setBlock({

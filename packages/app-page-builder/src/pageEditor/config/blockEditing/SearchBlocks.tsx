@@ -36,6 +36,7 @@ import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import { useKeyHandler } from "~/editor/hooks/useKeyHandler";
 import { UpdateElementActionEvent } from "~/editor/recoil/actions";
 import { createBlockElements } from "~/editor/helpers";
+import { createBlockReference } from "~/pageEditor/config/helpers";
 import { DelayedOnChange } from "@webiny/ui/DelayedOnChange";
 import { blocksBrowserStateAtom } from "~/pageEditor/config/blockEditing/state";
 
@@ -111,9 +112,13 @@ const SearchBar = () => {
 
     const addBlockToContent = useCallback(
         plugin => {
+            const blockToAdd =
+                Object.keys(plugin.image).length === 0
+                    ? createBlockElements(plugin.name)
+                    : createBlockReference(plugin.name);
             const element: any = {
                 ...content,
-                elements: [...content.elements, createBlockElements(plugin.name)]
+                elements: [...content.elements, blockToAdd]
             };
             eventActionHandler.trigger(
                 new UpdateElementActionEvent({

@@ -31,23 +31,7 @@ import {
     PbEditorElement
 } from "~/types";
 import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
-
-const removeIds = (el: PbElement): PbElement => {
-    // @ts-ignore
-    delete el.id;
-
-    el.elements = el.elements.map(el => {
-        // @ts-ignore
-        delete el.id;
-        if (el.elements && el.elements.length) {
-            el = removeIds(el);
-        }
-
-        return el;
-    });
-
-    return el;
-};
+import { removeElementId } from "~/editor/helpers";
 
 interface ImageDimensionsType {
     width: number;
@@ -94,7 +78,8 @@ const SaveAction: React.FC = ({ children }) => {
     const client = useApolloClient();
 
     const onSubmit = async (formData: PbDocumentElement) => {
-        formData.content = pluginOnSave(removeIds((await getElementTree(element)) as PbElement));
+        const pbElement = (await getElementTree(element)) as PbElement;
+        formData.content = pluginOnSave(removeElementId(pbElement));
 
         const meta = await getDataURLImageDimensions(formData.preview);
         const blob = dataURLtoBlob(formData.preview);

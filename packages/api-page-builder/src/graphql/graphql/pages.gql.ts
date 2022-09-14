@@ -278,6 +278,28 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                         const settings = await context.pageBuilder.getCurrentSettings();
                         const websiteUrl = lodashGet(settings, "websiteUrl") || "";
                         return websiteUrl + page.path;
+                    },
+                    content: async (page: Page, _, context) => {
+                        if (!page.content?.elements) {
+                            return page.content;
+                        }
+
+                        const blocks = [];
+                        for (const block of page.content?.elements) {
+                            const blockId = block.data?.blockId;
+                            if (blockId) {
+                                const blockData = await context.pageBuilder.getPageBlock(blockId);
+                                blocks.push({
+                                    ...block,
+                                    data: { blockId, ...blockData?.content?.data },
+                                    elements: blockData?.content?.elements || []
+                                });
+                            } else {
+                                blocks.push(block);
+                            }
+                        }
+
+                        return { ...page.content, elements: blocks };
                     }
                 },
                 PbPageListItem: {
