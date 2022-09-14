@@ -13448,7 +13448,6 @@ __metadata:
     load-script: ^1.0.0
     lodash: ^4.17.11
     material-components-web: ^5.1.0
-    minimatch: ^5.1.0
     ncp: ^2.0.0
     nprogress: ^0.2.0
     nuka-carousel: 4.7.1
