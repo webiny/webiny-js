@@ -1,3 +1,13 @@
+/**
+ * TODO remove rawValue when field aliases and field types targeting will be active.
+ *
+ * Currently we use rawValue for the values that we do not want to be indexed.
+ * When field aliases and types in the value path will be active, we can target the keys directly.
+ *
+ * This change will be incompatible with the current systems so we will need to release a major version.
+ *
+ */
+
 import { CmsModelFieldToElasticsearchPlugin } from "~/types";
 import {
     CmsModel,
@@ -56,19 +66,18 @@ const processToIndex: ProcessToIndex = ({
         const { value, rawValue } = plugin.toIndex({
             model,
             field,
-            value: sourceValue[field.fieldId],
-            rawValue: sourceRawValue[field.fieldId],
+            value: sourceValue[field.storageId],
+            rawValue: sourceRawValue[field.storageId],
             getFieldIndexPlugin,
             getFieldTypePlugin,
             plugins
         });
 
         if (value !== undefined) {
-            values.value[field.fieldId] = value;
+            values.value[field.storageId] = value;
         }
-
         if (rawValue !== undefined) {
-            values.rawValue[field.fieldId] = rawValue;
+            values.rawValue[field.storageId] = rawValue;
         }
 
         return values;
@@ -94,14 +103,14 @@ const processFromIndex: ProcessFromIndex = ({
             plugins,
             model,
             field,
-            value: sourceValue[field.fieldId],
-            rawValue: sourceRawValue[field.fieldId],
+            value: sourceValue[field.storageId],
+            rawValue: sourceRawValue[field.storageId],
             getFieldIndexPlugin,
             getFieldTypePlugin
         });
 
         if (value !== undefined) {
-            values[field.fieldId] = value;
+            values[field.storageId] = value;
         }
 
         return values;
