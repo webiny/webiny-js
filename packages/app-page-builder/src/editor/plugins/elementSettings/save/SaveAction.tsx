@@ -31,23 +31,7 @@ import {
     PbEditorElement
 } from "~/types";
 import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
-
-const removeIds = (el: PbElement): PbElement => {
-    // @ts-ignore
-    delete el.id;
-
-    el.elements = el.elements.map(el => {
-        // @ts-ignore
-        delete el.id;
-        if (el.elements && el.elements.length) {
-            el = removeIds(el);
-        }
-
-        return el;
-    });
-
-    return el;
-};
+import { removeElementId } from "~/editor/helpers";
 
 interface ImageDimensionsType {
     width: number;
@@ -94,15 +78,8 @@ const SaveAction: React.FC = ({ children }) => {
     const client = useApolloClient();
 
     const onSubmit = async (formData: PbDocumentElement) => {
-        // TODO: find a way to decouple this.
-        // One option is to have a `save` plugin in `blockEditor` AND in the `pageEditor` where each can be implemented differently, but then we need to extract the image creation logic somewhere.
         const pbElement = (await getElementTree(element)) as PbElement;
-        if (formData.type === "block") {
-            // We need ids for block editor
-            formData.content = pluginOnSave(pbElement);
-        } else {
-            formData.content = pluginOnSave(removeIds(pbElement));
-        }
+        formData.content = pluginOnSave(removeElementId(pbElement));
 
         const meta = await getDataURLImageDimensions(formData.preview);
         const blob = dataURLtoBlob(formData.preview);
