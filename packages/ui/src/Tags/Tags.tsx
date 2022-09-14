@@ -103,7 +103,7 @@ export const Tags: React.FC<TagsProps> = props => {
     const inputProps: InputProps<string> = {
         ...otherInputProps,
         value: inputValue,
-        onChange: (inputValue) => {
+        onChange: inputValue => {
             setInputValue(inputValue);
         },
         onKeyDown: (ev: SyntheticEvent) => {
