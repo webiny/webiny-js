@@ -116,8 +116,14 @@ export class CmsModelObjectFieldConverterPlugin extends CmsModelFieldConverterPl
                         [field.storageId]: values
                     };
                 }
+                /**
+                 * No need to process child fields if no value is provided.
+                 */
+                if (!value[field.fieldId]) {
+                    return output;
+                }
                 const values = converterCollection.convertToStorage({
-                    fields: (field.settings?.fields || []).map(child => {
+                    fields: childFields.map(child => {
                         return {
                             ...child,
                             parent: field
@@ -132,6 +138,10 @@ export class CmsModelObjectFieldConverterPlugin extends CmsModelFieldConverterPl
                     ...output,
                     [field.storageId]: values
                 };
+            }
+
+            if (value[field.fieldId] === undefined) {
+                return output;
             }
 
             return {
@@ -229,8 +239,14 @@ export class CmsModelObjectFieldConverterPlugin extends CmsModelFieldConverterPl
                         [field.fieldId]: values
                     };
                 }
+                /**
+                 * No need to process child fields if no value is provided.
+                 */
+                if (!value[field.storageId]) {
+                    return output;
+                }
                 const values = converterCollection.convertFromStorage({
-                    fields: (field.settings?.fields || []).map(child => {
+                    fields: childFields.map(child => {
                         return {
                             ...child,
                             parent: field
@@ -247,6 +263,9 @@ export class CmsModelObjectFieldConverterPlugin extends CmsModelFieldConverterPl
                 };
             }
 
+            if (value[field.storageId] === undefined) {
+                return output;
+            }
             return {
                 ...output,
                 [field.fieldId]: value[field.storageId]

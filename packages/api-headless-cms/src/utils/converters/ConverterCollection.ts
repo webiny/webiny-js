@@ -81,7 +81,7 @@ export class ConverterCollection {
 
         return fields.reduce<CmsEntryValues>((output, field) => {
             const converter = this.getConverter(field.type);
-            if (inputValues.hasOwnProperty(field.fieldId) === false) {
+            if (inputValues === null || inputValues.hasOwnProperty(field.fieldId) === false) {
                 return output;
             }
             const values = converter.convertToStorage({
@@ -106,7 +106,7 @@ export class ConverterCollection {
 
         return fields.reduce((output, field) => {
             const converter = this.getConverter(field.type);
-            if (inputValues.hasOwnProperty(field.storageId) === false) {
+            if (inputValues === null || inputValues.hasOwnProperty(field.storageId) === false) {
                 return output;
             }
             const values = converter.convertFromStorage({
