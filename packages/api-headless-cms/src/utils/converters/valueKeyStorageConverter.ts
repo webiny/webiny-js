@@ -11,6 +11,19 @@ const featureVersion = "5.33.0";
 
 const isFeatureEnabled = (model: CmsModel): boolean => {
     /**
+     * In case of disabled webinyVersion value, we disable this feature.
+     * This is only for testing...
+     */
+    if (model.webinyVersion === "disable") {
+        return false;
+    }
+    /**
+     * If is a test environment, always have this turned on.
+     */
+    if (process.env.NODE_ENV === "test") {
+        return true;
+    }
+    /**
      * Possibility that the version is not defined, this means it is a quite old system where models did not change.
      */
     if (!model.webinyVersion) {
@@ -48,7 +61,7 @@ export const createValueKeyToStorageConverter = (params: Params): CmsModelConver
 
     if (isFeatureEnabled(model) === false) {
         return ({ values }: ConverterCollectionConvertParams) => {
-            return values;
+            return values || {};
         };
     }
 
@@ -57,10 +70,11 @@ export const createValueKeyToStorageConverter = (params: Params): CmsModelConver
     });
 
     return ({ fields, values }: ConverterCollectionConvertParams) => {
-        return converters.convertToStorage({
+        const result = converters.convertToStorage({
             fields: fields || model.fields,
             values
         });
+        return result || {};
     };
 };
 
@@ -69,7 +83,7 @@ export const createValueKeyFromStorageConverter = (params: Params): CmsModelConv
 
     if (isFeatureEnabled(model) === false) {
         return ({ values }: ConverterCollectionConvertParams) => {
-            return values;
+            return values || {};
         };
     }
 
@@ -78,10 +92,11 @@ export const createValueKeyFromStorageConverter = (params: Params): CmsModelConv
     });
 
     return ({ fields, values }: ConverterCollectionConvertParams) => {
-        return converters.convertFromStorage({
+        const result = converters.convertFromStorage({
             fields: fields || model.fields,
             values
         });
+        return result || {};
     };
 };
 
@@ -95,11 +110,11 @@ export const attachCmsModelFieldConverters = (
     const { model, plugins } = params;
     return {
         ...model,
-        convertValueKeyFromStorage: createValueKeyToStorageConverter({
+        convertValueKeyToStorage: createValueKeyToStorageConverter({
             model,
             plugins
         }),
-        convertValueKeyToStorage: createValueKeyFromStorageConverter({
+        convertValueKeyFromStorage: createValueKeyFromStorageConverter({
             model,
             plugins
         })
