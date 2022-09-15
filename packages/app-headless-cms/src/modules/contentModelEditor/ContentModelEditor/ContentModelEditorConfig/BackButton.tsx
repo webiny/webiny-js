@@ -11,19 +11,19 @@ const backStyles = css({
 });
 
 export const BackButton = createComponentPlugin(Editor.Header.LeftSection, Original => {
-    return function LeftSection({ children }) {
+    return function LeftSection() {
         const { history } = useRouter();
 
         return (
-            <Original>
+            <>
+                <Original />
                 <IconButton
                     data-testid="cms-editor-back-button"
                     className={backStyles}
                     onClick={() => history.push(`/cms/content-models`)}
                     icon={<BackIcon />}
                 />
-                {children}
-            </Original>
+            </>
         );
     };
 });

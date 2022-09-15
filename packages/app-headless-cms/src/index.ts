@@ -8,6 +8,7 @@ export * from "./HeadlessCMS";
  * These exports contain components to experiment with configurable views (currently only ContentEntries view).
  */
 export { ContentEntriesViewConfig } from "./admin/views/contentEntries/experiment/ContentEntriesViewConfig";
+export { ContentModelEditorConfig } from "./modules/contentModelEditor/ContentModelEditor/ContentModelEditorConfig";
 
 export type {
     ContentEntriesViewConfigFilterProps,

@@ -7,7 +7,7 @@ import {
 } from "~/admin/viewsGraphql";
 import { useQuery } from "~/admin/hooks";
 
-export default function GroupSelect({ value, ...props }: FormComponentProps) {
+export function GroupSelect({ value, ...props }: FormComponentProps) {
     const { data, loading } = useQuery<ListMenuCmsGroupsQueryResponse>(
         LIST_MENU_CONTENT_GROUPS_MODELS
     );

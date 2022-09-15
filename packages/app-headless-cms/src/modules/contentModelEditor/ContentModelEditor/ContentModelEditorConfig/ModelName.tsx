@@ -62,7 +62,7 @@ declare global {
 }
 
 export const ModelName = createComponentPlugin(Editor.Header.LeftSection, Original => {
-    return function LeftSection({ children }) {
+    return function LeftSection() {
         const { data, setData } = useContentModelEditor();
         const [localName, setLocalName] = useState<string>("");
         const [editingEnabled, setEditing] = useState<boolean>(false);
@@ -136,10 +136,10 @@ export const ModelName = createComponentPlugin(Editor.Header.LeftSection, Origin
         );
 
         return (
-            <Original>
+            <>
+                <Original />
                 {nameElement}
-                {children}
-            </Original>
+            </>
         );
     };
 });
