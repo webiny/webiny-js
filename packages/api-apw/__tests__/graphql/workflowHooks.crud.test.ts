@@ -83,7 +83,9 @@ describe("Workflow assignment to a PB Page", () => {
 
         await until(
             () => listWorkflowsQuery({}).then(([data]) => data),
-            (response: any) => response.data.apw.listWorkflows.data.length === 5
+            (response: any) => {
+                return response.data.apw.listWorkflows.data.length === 5;
+            }
         );
         const [firstWorkflow] = workflows;
         /**

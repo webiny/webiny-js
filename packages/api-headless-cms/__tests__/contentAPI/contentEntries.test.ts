@@ -197,6 +197,24 @@ describe("Content entries", () => {
         });
         const thirdBanana = thirdBananaResponse.data.createFruitFrom.data;
 
+        const [getThirdBananaResponse] = await getContentEntry({
+            entry: {
+                id: thirdBanana.id,
+                modelId: banana.meta.modelId
+            }
+        });
+
+        expect(getThirdBananaResponse).toMatchObject({
+            data: {
+                getContentEntry: {
+                    data: {
+                        id: thirdBanana.id,
+                        title: thirdBanana.meta.title
+                    }
+                }
+            }
+        });
+
         await waitFruits("should filter fruits by date and sort asc", [
             {
                 id: apple.id,
@@ -212,9 +230,9 @@ describe("Content entries", () => {
             }
         ]);
 
-        await new Promise(resolve => {
-            setTimeout(resolve, 5000);
-        });
+        // await new Promise(resolve => {
+        //     setTimeout(resolve, 5000);
+        // });
         /**
          * Exact entries queries.
          */

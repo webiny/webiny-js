@@ -14,7 +14,7 @@ export interface CmsModelConverterCallable {
 
 export interface ConverterCollectionConvertParams {
     fields: CmsModelFieldsWithParent[];
-    values: CmsEntryValues;
+    values?: CmsEntryValues;
 }
 
 export interface ConverterCollectionParams {
@@ -35,7 +35,7 @@ export class ConverterCollection {
         const defaultFieldConverterPlugin = fieldConverterPlugins.find(
             pl => pl.getFieldType() === "*"
         );
-        if (!defaultFieldConverterPlugin) {
+        if (defaultFieldConverterPlugin === undefined) {
             throw new WebinyError(
                 `Missing default field converter plugin.`,
                 "DEFAULT_FIELD_CONVERTER_ERROR"
@@ -61,7 +61,7 @@ export class ConverterCollection {
 
     public getConverter(type: string): Converter {
         const converter = this.converters.get(type);
-        if (!converter) {
+        if (converter === undefined) {
             throw new WebinyError(
                 `Missing converter for field type "${type}".`,
                 "CONVERTER_ERROR",
@@ -73,53 +73,51 @@ export class ConverterCollection {
         return converter;
     }
 
-    public convertToStorage(params: ConverterCollectionConvertParams): CmsEntryValues {
+    public convertToStorage(params: ConverterCollectionConvertParams): CmsEntryValues | undefined {
         const { fields, values: inputValues } = params;
-        let output: CmsEntryValues = {};
-        for (const field of fields) {
-            /**
-             *
-             */
+        if (inputValues === undefined) {
+            return undefined;
+        }
+
+        return fields.reduce<CmsEntryValues>((output, field) => {
             const converter = this.getConverter(field.type);
-            /**
-             *
-             */
+            if (inputValues === null || inputValues.hasOwnProperty(field.fieldId) === false) {
+                return output;
+            }
             const values = converter.convertToStorage({
                 field,
                 value: inputValues[field.fieldId]
             });
 
-            output = {
+            return {
                 ...output,
                 ...values
             };
-        }
-
-        return output;
+        }, {});
     }
 
-    public convertFromStorage(params: ConverterCollectionConvertParams): CmsEntryValues {
+    public convertFromStorage(
+        params: ConverterCollectionConvertParams
+    ): CmsEntryValues | undefined {
         const { fields, values: inputValues } = params;
-        let output: CmsEntryValues = {};
-        for (const field of fields) {
-            /**
-             *
-             */
+        if (inputValues === undefined) {
+            return undefined;
+        }
+
+        return fields.reduce((output, field) => {
             const converter = this.getConverter(field.type);
-            /**
-             *
-             */
+            if (inputValues === null || inputValues.hasOwnProperty(field.storageId) === false) {
+                return output;
+            }
             const values = converter.convertFromStorage({
                 field,
                 value: inputValues[field.storageId]
             });
 
-            output = {
+            return {
                 ...output,
                 ...values
             };
-        }
-
-        return output;
+        }, {});
     }
 }

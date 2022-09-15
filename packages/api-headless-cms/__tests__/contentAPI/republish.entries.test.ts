@@ -1,5 +1,5 @@
 import { useGraphQLHandler } from "../utils/useGraphQLHandler";
-import { CmsEntry, CmsGroup, CmsModel } from "~/types";
+import { CmsEntry, CmsGroup, CmsModel, StorageOperationsCmsModel } from "~/types";
 import models from "./mocks/contentModels";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import { useCategoryReadHandler } from "../utils/useCategoryReadHandler";
@@ -9,6 +9,7 @@ import { useProductReadHandler } from "../utils/useProductReadHandler";
 import { useProductManageHandler } from "../utils/useProductManageHandler";
 import { PluginsContainer } from "@webiny/plugins";
 import { createGraphQLFields } from "~/graphqlFields";
+import { attachCmsModelFieldConverters } from "~/utils/converters/valueKeyStorageConverter";
 const cliPackageJson = require("@webiny/cli/package.json");
 const webinyVersion = cliPackageJson.version;
 
@@ -25,7 +26,8 @@ describe("Republish entries", () => {
         createContentModelMutation,
         updateContentModelMutation,
         createContentModelGroupMutation,
-        until
+        until,
+        plugins
     } = useGraphQLHandler(manageOpts);
 
     const { createCategory, publishCategory, republishCategory } =
@@ -45,7 +47,10 @@ describe("Republish entries", () => {
         return createCMG.data.createContentModelGroup.data;
     };
 
-    const setupModel = async (contentModelGroup: CmsGroup, modelId: string): Promise<CmsModel> => {
+    const setupModel = async (
+        contentModelGroup: CmsGroup,
+        modelId: string
+    ): Promise<StorageOperationsCmsModel> => {
         const model = models.find(m => m.modelId === modelId);
         if (!model) {
             throw new Error(`Could not find model "${modelId}".`);
@@ -71,11 +76,14 @@ describe("Republish entries", () => {
                 layout: model.layout
             }
         });
-        return {
-            ...update.data.updateContentModel.data,
-            tenant: "root",
-            locale: "en-US"
-        };
+        return attachCmsModelFieldConverters({
+            plugins,
+            model: {
+                ...update.data.updateContentModel.data,
+                tenant: "root",
+                locale: "en-US"
+            }
+        });
     };
 
     const createPublishedCategories = async () => {

@@ -1178,7 +1178,9 @@ describe("READ - Resolvers", () => {
                 listProducts({
                     where: {}
                 }).then(([data]) => data),
-            ({ data }: any) => data.listProducts.data.length === 3,
+            ({ data }: any) => {
+                return data.listProducts.data.length === 3;
+            },
             { name: "list all products in vegetables categories - range" }
         );
 
@@ -1463,7 +1465,21 @@ describe("READ - Resolvers", () => {
 
         const potato = potatoResponse.data.createProduct.data;
 
-        await publishProduct({ revision: potato.id });
+        const [publishResponse] = await publishProduct({ revision: potato.id });
+
+        expect(publishResponse).toMatchObject({
+            data: {
+                publishProduct: {
+                    data: {
+                        id: potato.id,
+                        meta: {
+                            status: "published"
+                        }
+                    },
+                    error: null
+                }
+            }
+        });
 
         const result = await until(
             () =>
@@ -1472,7 +1488,9 @@ describe("READ - Resolvers", () => {
                         id: potato.id
                     }
                 }).then(([data]) => data),
-            ({ data }: any) => !!data.getProduct.data.id
+            ({ data }: any) => {
+                return !!data.getProduct.data.id;
+            }
         );
 
         expect(result.data.getProduct.data).toMatchObject({

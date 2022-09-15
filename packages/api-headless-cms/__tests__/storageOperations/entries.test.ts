@@ -4,10 +4,8 @@ import {
     deletePersonModel,
     PersonEntriesResult
 } from "./helpers";
-import { CmsModel, HeadlessCmsStorageOperations } from "~/types";
+import { StorageOperationsCmsModel, HeadlessCmsStorageOperations } from "~/types";
 import { useGraphQLHandler } from "../utils/useGraphQLHandler";
-import { createGraphQLFields } from "~/graphqlFields";
-import { PluginsContainer } from "@webiny/plugins";
 
 jest.setTimeout(60000);
 
@@ -16,7 +14,7 @@ interface WaitPersonRecordsParams {
     storageOperations: HeadlessCmsStorageOperations;
     name: string;
     until: Function;
-    model: CmsModel;
+    model: StorageOperationsCmsModel;
 }
 const waitPersonRecords = async (params: WaitPersonRecordsParams): Promise<void> => {
     const { records, storageOperations, until, model, name } = params;
@@ -45,7 +43,7 @@ const waitPersonRecords = async (params: WaitPersonRecordsParams): Promise<void>
 };
 
 describe("Entries storage operations", () => {
-    const { storageOperations, until } = useGraphQLHandler({
+    const { storageOperations, until, plugins } = useGraphQLHandler({
         path: "manage/en-US"
     });
 
@@ -59,29 +57,32 @@ describe("Entries storage operations", () => {
             return;
         }
         await storageOperations.beforeInit({
-            plugins: new PluginsContainer(createGraphQLFields())
+            plugins
         } as any);
     });
 
     beforeEach(async () => {
         await deletePersonModel({
-            storageOperations
+            storageOperations,
+            plugins
         });
     });
 
     afterEach(async () => {
         await deletePersonModel({
-            storageOperations
+            storageOperations,
+            plugins
         });
     });
 
     it("getRevisions - should get revisions of all the entries", async () => {
-        const personModel = createPersonModel();
+        const personModel = createPersonModel(plugins);
         const amount = 102;
         const results = await createPersonEntries({
             amount,
             storageOperations,
-            maxRevisions: 3
+            maxRevisions: 3,
+            plugins
         });
         /**
          * We run a check that results have last entry as the amount of revisions.
@@ -138,12 +139,13 @@ describe("Entries storage operations", () => {
     });
 
     it("getByIds - should get all entries by id list", async () => {
-        const personModel = createPersonModel();
+        const personModel = createPersonModel(plugins);
         const amount = 202;
         const results = await createPersonEntries({
             amount,
             storageOperations,
-            maxRevisions: 1
+            maxRevisions: 1,
+            plugins
         });
 
         await waitPersonRecords({
