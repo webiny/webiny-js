@@ -88,15 +88,17 @@ The setup of our Github repo is identical to the one created by `create-webiny-p
    yarn setup-project
    ```
 
-4. Deploy your API to use with local React apps: 
+4. Deploy your Core and API apps to use with local React apps: 
    ```
+   yarn webiny deploy apps/core --env=dev
    yarn webiny deploy apps/api --env=dev
    ```
 
 6. Begin working on the `admin` app:
    ```
-   yarn webiny watch apps/admin --env=dev
+   yarn webiny watch apps/admin --env=dev -p admin
    ```
+   Add more packages to the watch command using `-p` and specifying the name of the package, for example, `-p @webiny/app-admin -p @webiny/app-page-builder`
    
 7. Begin working on the `website` app (OPTIONAL):
    ```
