@@ -24,7 +24,23 @@ const createModelFields = (): CmsModelField[] => {
             type: "text"
         }),
         createModelField({
+            fieldId: "nameUndefined",
+            type: "text"
+        }),
+        createModelField({
+            fieldId: "nameEmpty",
+            type: "text"
+        }),
+        createModelField({
             fieldId: "age",
+            type: "number"
+        }),
+        createModelField({
+            fieldId: "ageEmpty",
+            type: "number"
+        }),
+        createModelField({
+            fieldId: "ageUndefined",
             type: "number"
         }),
         createModelField({
@@ -32,7 +48,29 @@ const createModelFields = (): CmsModelField[] => {
             type: "boolean"
         }),
         createModelField({
+            fieldId: "isImportantEmpty",
+            type: "boolean"
+        }),
+        createModelField({
+            fieldId: "isImportantUndefined",
+            type: "boolean"
+        }),
+        createModelField({
             fieldId: "dateOfBirth",
+            type: "datetime",
+            settings: {
+                type: "date"
+            }
+        }),
+        createModelField({
+            fieldId: "dateOfBirthEmpty",
+            type: "datetime",
+            settings: {
+                type: "date"
+            }
+        }),
+        createModelField({
+            fieldId: "dateOfBirthUndefined",
             type: "datetime",
             settings: {
                 type: "date"
@@ -46,7 +84,18 @@ const createModelFields = (): CmsModelField[] => {
             }
         }),
         createModelField({
+            fieldId: "timeOfSleepUndefined",
+            type: "datetime",
+            settings: {
+                type: "time"
+            }
+        }),
+        createModelField({
             fieldId: "image",
+            type: "file"
+        }),
+        createModelField({
+            fieldId: "imageUndefined",
             type: "file"
         }),
         createModelField({
@@ -54,9 +103,17 @@ const createModelFields = (): CmsModelField[] => {
             type: "file",
             multipleValues: true
         }),
-
+        createModelField({
+            fieldId: "imagesUndefined",
+            type: "file",
+            multipleValues: true
+        }),
         createModelField({
             fieldId: "description",
+            type: "long-text"
+        }),
+        createModelField({
+            fieldId: "descriptionUndefined",
             type: "long-text"
         }),
         createModelField({
@@ -64,11 +121,169 @@ const createModelFields = (): CmsModelField[] => {
             type: "rich-text"
         }),
         createModelField({
+            fieldId: "bodyUndefined",
+            type: "rich-text"
+        }),
+        createModelField({
             fieldId: "category",
             type: "ref"
         }),
         createModelField({
+            fieldId: "categoryUndefined",
+            type: "ref"
+        }),
+        createModelField({
             fieldId: "myObject",
+            type: "object",
+            settings: {
+                fields: [
+                    createModelField({
+                        type: "text",
+                        fieldId: "title"
+                    }),
+                    createModelField({
+                        type: "text",
+                        fieldId: "titleEmpty"
+                    }),
+                    createModelField({
+                        type: "long-text",
+                        fieldId: "description"
+                    }),
+                    createModelField({
+                        type: "rich-text",
+                        fieldId: "body"
+                    }),
+                    createModelField({
+                        type: "number",
+                        fieldId: "age"
+                    }),
+                    createModelField({
+                        type: "boolean",
+                        fieldId: "isImportant"
+                    }),
+                    createModelField({
+                        type: "datetime",
+                        settings: {
+                            type: "date"
+                        },
+                        fieldId: "dateOfBirth"
+                    }),
+                    createModelField({
+                        type: "datetime",
+                        settings: {
+                            type: "time"
+                        },
+                        fieldId: "timeWakingUp"
+                    }),
+                    createModelField({
+                        type: "datetime",
+                        settings: {
+                            type: "dateTimeWithTimezone"
+                        },
+                        fieldId: "dateTimeZ"
+                    }),
+                    createModelField({
+                        type: "datetime",
+                        settings: {
+                            type: "dateTimeWithoutTimezone"
+                        },
+                        fieldId: "dateTime"
+                    }),
+                    createModelField({
+                        type: "file",
+                        fieldId: "image",
+                        settings: {
+                            imageOnly: true
+                        }
+                    }),
+                    createModelField({
+                        type: "file",
+                        fieldId: "documents"
+                    }),
+                    createModelField({
+                        type: "ref",
+                        fieldId: "category"
+                    }),
+                    createModelField({
+                        type: "ref",
+                        fieldId: "categories"
+                    }),
+                    createModelField({
+                        type: "object",
+                        settings: {
+                            fields: [
+                                createModelField({
+                                    type: "text",
+                                    fieldId: "title"
+                                }),
+                                createModelField({
+                                    type: "text",
+                                    fieldId: "titleEmpty"
+                                })
+                            ]
+                        },
+                        fieldId: "myChildObject"
+                    }),
+                    createModelField({
+                        type: "object",
+                        settings: {
+                            fields: [
+                                createModelField({
+                                    type: "text",
+                                    fieldId: "title"
+                                })
+                            ]
+                        },
+                        fieldId: "myChildObjectEmpty"
+                    }),
+                    createModelField({
+                        type: "object",
+                        multipleValues: true,
+                        fieldId: "myObjectOptions",
+                        settings: {
+                            fields: [
+                                createModelField({
+                                    type: "text",
+                                    multipleValues: false,
+                                    fieldId: "titleInMyObjectOptions"
+                                }),
+                                createModelField({
+                                    type: "text",
+                                    multipleValues: false,
+                                    fieldId: "titleEmptyInMyObjectOptions"
+                                }),
+                                createModelField({
+                                    type: "number",
+                                    multipleValues: true,
+                                    fieldId: "valuesInMyObjectOptions"
+                                })
+                            ]
+                        }
+                    }),
+                    createModelField({
+                        type: "object",
+                        multipleValues: true,
+                        fieldId: "myObjectOptionsEmpty",
+                        settings: {
+                            fields: [
+                                createModelField({
+                                    type: "text",
+                                    multipleValues: false,
+                                    fieldId: "titleInMyObjectOptions"
+                                }),
+                                createModelField({
+                                    type: "number",
+                                    multipleValues: true,
+                                    fieldId: "valuesInMyObjectOptions"
+                                })
+                            ]
+                        }
+                    })
+                ]
+            }
+        }),
+        createModelField({
+            fieldId: "myObjectUndefined",
             type: "object",
             settings: {
                 fields: [
@@ -150,6 +365,25 @@ const createModelFields = (): CmsModelField[] => {
                             ]
                         },
                         fieldId: "myChildObject"
+                    }),
+                    createModelField({
+                        type: "object",
+                        multipleValues: true,
+                        fieldId: "myObjectOptions",
+                        settings: {
+                            fields: [
+                                createModelField({
+                                    type: "text",
+                                    multipleValues: false,
+                                    fieldId: "titleInMyObjectOptions"
+                                }),
+                                createModelField({
+                                    type: "number",
+                                    multipleValues: true,
+                                    fieldId: "valuesInMyObjectOptions"
+                                })
+                            ]
+                        }
                     })
                 ]
             }
@@ -175,6 +409,25 @@ const createModelFields = (): CmsModelField[] => {
                             ]
                         },
                         fieldId: "myChildObjectInRepeatable"
+                    }),
+                    createModelField({
+                        type: "object",
+                        multipleValues: true,
+                        fieldId: "myObjectListOptions",
+                        settings: {
+                            fields: [
+                                createModelField({
+                                    type: "text",
+                                    multipleValues: false,
+                                    fieldId: "titleInMyObjectListOptions"
+                                }),
+                                createModelField({
+                                    type: "number",
+                                    multipleValues: true,
+                                    fieldId: "valuesInMyObjectListOptions"
+                                })
+                            ]
+                        }
                     })
                 ]
             }
@@ -207,9 +460,13 @@ export const createModel = (base?: Partial<Omit<CmsModel, "fields" | "layout">>)
 const createRawValues = () => {
     return {
         name: "John Doe",
+        nameEmpty: "",
         age: 45,
+        ageEmpty: 0,
         isImportant: true,
+        isImportantEmpty: false,
         dateOfBirth: "2022-06-08",
+        dateOfBirthEmpty: null,
         timeOfSleep: "11:12:13",
         image: "https://dkz8lew0z0heu.cloudfront.net/files/9l7u8bvz1-Screenshot2022-09-08at11.13.58.png",
         images: [
@@ -298,9 +555,13 @@ const createRawValues = () => {
 const createStoredValues = () => {
     return {
         "text@nameId": "John Doe",
+        "text@nameEmptyId": "",
         "number@ageId": 45,
+        "number@ageEmptyId": 0,
         "boolean@isImportantId": true,
+        "boolean@isImportantEmptyId": false,
         "datetime@dateOfBirthId": "2022-06-08",
+        "datetime@dateOfBirthEmptyId": null,
         "datetime@timeOfSleepId": "11:12:13",
         "file@imageId":
             "https://dkz8lew0z0heu.cloudfront.net/files/9l7u8bvz1-Screenshot2022-09-08at11.13.58.png",

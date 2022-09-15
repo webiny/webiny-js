@@ -3,12 +3,11 @@ import {
     ConvertParams
 } from "~/plugins/CmsModelFieldConverterPlugin";
 import { CmsEntryValues, CmsModelFieldWithParent } from "~/types";
-import lodashGet from "lodash/get";
 import { ConverterCollection } from "~/utils/converters/ConverterCollection";
 
 interface ProcessChildFieldsParams {
     fields: CmsModelFieldWithParent[];
-    value: any;
+    value?: Record<string, any> | null;
     converterCollection: ConverterCollection;
 }
 
@@ -72,19 +71,51 @@ export class CmsModelObjectFieldConverterPlugin extends CmsModelFieldConverterPl
             value,
             converterCollection
         });
+        if (values === undefined) {
+            return {};
+        }
 
         return {
             [field.storageId]: values
         };
     }
 
-    private processChildFieldsToStorage(params: ProcessChildFieldsParams): CmsEntryValues {
+    private processChildFieldsToStorage(
+        params: ProcessChildFieldsParams
+    ): CmsEntryValues | undefined {
         const { fields, value, converterCollection } = params;
-        let output: CmsEntryValues = {};
-        for (const field of fields) {
+
+        if (value === undefined || value === null) {
+            return undefined;
+        }
+
+        return fields.reduce<CmsEntryValues>((output, field) => {
             const childFields = field.settings?.fields;
 
             if (childFields) {
+                if (field.multipleValues) {
+                    if (Array.isArray(value[field.fieldId]) === false) {
+                        return output;
+                    }
+                    const values = value[field.fieldId].map((childValue: any) => {
+                        return converterCollection.convertToStorage({
+                            fields: childFields.map(child => {
+                                return {
+                                    ...child,
+                                    parent: field
+                                };
+                            }),
+                            values: childValue
+                        });
+                    });
+                    if (values === undefined) {
+                        return output;
+                    }
+                    return {
+                        ...output,
+                        [field.storageId]: values
+                    };
+                }
                 const values = converterCollection.convertToStorage({
                     fields: (field.settings?.fields || []).map(child => {
                         return {
@@ -92,21 +123,22 @@ export class CmsModelObjectFieldConverterPlugin extends CmsModelFieldConverterPl
                             parent: field
                         };
                     }),
-                    values: lodashGet(value, `${field.fieldId}`, {})
+                    values: value[field.fieldId]
                 });
-                output = {
+                if (values === undefined) {
+                    return output;
+                }
+                return {
                     ...output,
                     [field.storageId]: values
                 };
-                continue;
             }
 
-            output = {
+            return {
                 ...output,
                 [field.storageId]: value[field.fieldId]
             };
-        }
-        return output;
+        }, {});
     }
 
     public override convertFromStorage(params: ConvertParams): CmsEntryValues {
@@ -152,18 +184,51 @@ export class CmsModelObjectFieldConverterPlugin extends CmsModelFieldConverterPl
             converterCollection
         });
 
+        if (values === undefined) {
+            return {};
+        }
+
         return {
             [field.fieldId]: values
         };
     }
 
-    private processChildFieldsFromStorage(params: ProcessChildFieldsParams): CmsEntryValues {
+    private processChildFieldsFromStorage(
+        params: ProcessChildFieldsParams
+    ): CmsEntryValues | undefined {
         const { fields, value, converterCollection } = params;
-        let output: CmsEntryValues = {};
-        for (const field of fields) {
+
+        if (value === undefined || value === null) {
+            return undefined;
+        }
+
+        return fields.reduce<CmsEntryValues>((output, field) => {
             const childFields = field.settings?.fields;
 
             if (childFields) {
+                if (field.multipleValues) {
+                    if (Array.isArray(value[field.storageId]) === false) {
+                        return output;
+                    }
+                    const values = value[field.storageId].map((childValue: any) => {
+                        return converterCollection.convertToStorage({
+                            fields: childFields.map(child => {
+                                return {
+                                    ...child,
+                                    parent: field
+                                };
+                            }),
+                            values: childValue
+                        });
+                    });
+                    if (values === undefined) {
+                        return output;
+                    }
+                    return {
+                        ...output,
+                        [field.fieldId]: values
+                    };
+                }
                 const values = converterCollection.convertFromStorage({
                     fields: (field.settings?.fields || []).map(child => {
                         return {
@@ -171,20 +236,21 @@ export class CmsModelObjectFieldConverterPlugin extends CmsModelFieldConverterPl
                             parent: field
                         };
                     }),
-                    values: lodashGet(value, `${field.storageId}`, {})
+                    values: value[field.storageId]
                 });
-                output = {
+                if (values === undefined) {
+                    return output;
+                }
+                return {
                     ...output,
                     [field.fieldId]: values
                 };
-                continue;
             }
 
-            output = {
+            return {
                 ...output,
                 [field.fieldId]: value[field.storageId]
             };
-        }
-        return output;
+        }, {});
     }
 }

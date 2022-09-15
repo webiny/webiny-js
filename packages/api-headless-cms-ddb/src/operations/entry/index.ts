@@ -522,7 +522,7 @@ export const createEntriesStorageOperations = (
         if (!item) {
             return null;
         }
-        return convertToStorageEntry({
+        return convertFromStorageEntry({
             storageEntry: item,
             model
         });
@@ -784,14 +784,7 @@ export const createEntriesStorageOperations = (
             ...params,
             limit: 1
         });
-        const item = items.shift() || null;
-        if (!item) {
-            return null;
-        }
-        return convertFromStorageEntry({
-            storageEntry: item,
-            model
-        });
+        return items.shift() || null;
     };
 
     const requestChanges = async (
@@ -923,7 +916,7 @@ export const createEntriesStorageOperations = (
             dataLoaders.clearAll({
                 model
             });
-            return storageEntry;
+            return initialStorageEntry;
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not execute request review batch.",

@@ -12,6 +12,13 @@ export class CmsModelDefaultFieldConverterPlugin extends CmsModelFieldConverterP
 
     public override convertToStorage({ field, value }: ConvertParams): any {
         /**
+         * Do not convert if no value was passed.
+         * Note that we only string undefined.
+         */
+        if (value === undefined) {
+            return {};
+        }
+        /**
          * A single and multiple values field conversion;
          */
         return {
@@ -20,6 +27,13 @@ export class CmsModelDefaultFieldConverterPlugin extends CmsModelFieldConverterP
     }
 
     public override convertFromStorage({ field, value }: ConvertParams): any {
+        /**
+         * Do not convert if no value was passed.
+         * Note that we only string undefined.
+         */
+        if (value === undefined) {
+            return {};
+        }
         /**
          * A single and multiple values field conversion;
          */
