@@ -1,6 +1,6 @@
 import React from "react";
 import { createComponentPlugin } from "@webiny/app-admin";
-import { Editor } from "~/admin/components/ContentModelEditor";
+import { Editor } from "~/modelEditor";
 
 export const ContentTabsPlugin = createComponentPlugin(Editor.ContentTab, OriginalTab => {
     return function ContentTab({ children, ...props }) {

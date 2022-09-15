@@ -1,0 +1,1 @@
+export { ContentModelEditorModule } from "./ContentModelEditorModule";

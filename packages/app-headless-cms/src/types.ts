@@ -3,12 +3,9 @@ import { Plugin } from "@webiny/plugins/types";
 import { ReactElement, ReactNode } from "react";
 import {
     FormRenderPropParams,
-    FormAPI,
-    BindComponent as BaseBindComponent,
     BindComponentRenderProp as BaseBindComponentRenderProp,
     BindComponentProps as BaseBindComponentProps
 } from "@webiny/form";
-import { ApolloClient } from "apollo-client";
 import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
 import Label from "./admin/components/ContentEntryForm/Label";
 import { SecurityPermission } from "@webiny/app-security/types";
@@ -385,11 +382,6 @@ export interface CmsContentDetailsPlugin extends Plugin {
     render: (params: any) => ReactNode;
 }
 
-export interface CmsContentDetailsRevisionContentPlugin extends Plugin {
-    type: "cms-content-details-revision-content";
-    render(params: any): ReactElement;
-}
-
 export interface CmsEditorFieldValidatorPatternPlugin extends Plugin {
     type: "cms-editor-field-validator-pattern";
     pattern: {
@@ -447,17 +439,13 @@ export interface FieldLayoutPosition {
     index: number | null;
 }
 
-export interface CmsEditorFormSettingsPlugin extends Plugin {
-    type: "cms-editor-form-settings";
+export interface CmsEditorModelSettingsPlugin extends Plugin {
+    type: "cms-editor-model-settings";
     title: string;
     description: string;
     icon: React.ReactElement;
-    render(props: { Bind: BaseBindComponent; form: FormAPI; formData: any }): React.ReactNode;
-    renderHeaderActions?(props: {
-        Bind: BaseBindComponent;
-        form: FormAPI;
-        formData: any;
-    }): React.ReactNode;
+    render(): React.ReactNode;
+    renderHeaderActions?(): React.ReactNode;
 }
 
 export interface CmsIcon {
@@ -478,11 +466,6 @@ export interface CmsIcon {
 export interface CmsIconsPlugin extends Plugin {
     type: "cms-icons";
     getIcons(): CmsIcon[];
-}
-
-export interface UseContentModelEditorReducerState {
-    apolloClient: ApolloClient<any>;
-    id: string;
 }
 
 /**
