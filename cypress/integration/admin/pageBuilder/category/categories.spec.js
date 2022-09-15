@@ -106,7 +106,7 @@ context("Categories Module", () => {
         cy.visit("/page-builder/pages");
         cy.get('div.action__container button[data-testid="new-record-button"]').click();
         cy.findByText("+ Create new category").click({ force: true });
-        cy.findByTestId("data-list-new-record-button").should("be.visible");
+        cy.location("pathname").should("include", "/page-builder/categories");
     });
 
     it("should not be able to delete categories if they contain pages", () => {
