@@ -131,9 +131,9 @@ export const createEntriesStorageOperations = (
 
     const create = async (
         model: StorageOperationsCmsModel,
-        args: CmsEntryStorageOperationsCreateParams
+        params: CmsEntryStorageOperationsCreateParams
     ) => {
-        const { entry, storageEntry: initialStorageEntry } = args;
+        const { entry, storageEntry: initialStorageEntry } = params;
 
         const partitionKey = createPartitionKey({
             id: entry.id,
