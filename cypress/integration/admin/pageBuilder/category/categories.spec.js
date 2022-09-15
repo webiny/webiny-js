@@ -102,10 +102,13 @@ context("Categories Module", () => {
         cy.findByText(`Category with slug "${slugValue}" already exists.`).should("exist");
     });
 
-    it("should be able to access new category form via link", () => {
+    it.only("should be able to access new category form via link", () => {
         cy.visit("/page-builder/pages");
         cy.get('div.action__container button[data-testid="new-record-button"]').click();
+
+        cy.wait(1000);
         cy.findByText("+ Create new category").click({ force: true });
+        cy.wait(500);
         cy.location("pathname").should("include", "/page-builder/categories");
     });
 
