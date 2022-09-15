@@ -10635,6 +10635,7 @@ __metadata:
     pluralize: ^8.0.0
     prettier: ^2.3.2
     rimraf: ^3.0.2
+    semver: ^6.3.0
     sinon: ^9.0.2
     slugify: ^1.4.0
     ttypescript: ^1.5.12

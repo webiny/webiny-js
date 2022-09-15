@@ -152,7 +152,8 @@ export const validateModelFields = (params: ValidateModelFieldsParams) => {
     const fieldIdList: string[] = [];
 
     for (const field of fields) {
-        if (!fieldTypePlugins.find(item => item.fieldType === field.type)) {
+        const plugin = fieldTypePlugins.find(item => item.fieldType === field.type);
+        if (!plugin) {
             throw new Error(
                 `Cannot update content model because of the unknown "${field.type}" field.`
             );
