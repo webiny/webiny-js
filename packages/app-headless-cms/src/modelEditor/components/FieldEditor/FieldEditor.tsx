@@ -2,7 +2,7 @@ import React, { Fragment } from "react";
 import get from "lodash/get";
 import { Icon } from "@webiny/ui/Icon";
 import { i18n } from "@webiny/app/i18n";
-import { ReactComponent as HandleIcon } from "~/admin/icons/round-drag_indicator-24px.svg";
+import { ReactComponent as HandleIcon } from "@material-design-icons/svg/round/drag_indicator.svg";
 import { Center, Vertical, Horizontal } from "../DropZone";
 import { Draggable } from "../Draggable";
 import EditFieldDialog from "./EditFieldDialog";
