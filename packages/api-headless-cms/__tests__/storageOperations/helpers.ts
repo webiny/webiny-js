@@ -11,7 +11,7 @@ import {
     StorageOperationsCmsModel
 } from "~/types";
 import { CmsGroupPlugin } from "~/plugins/CmsGroupPlugin";
-import { createIdentifier, generateAlphaNumericId } from "@webiny/utils";
+import { createIdentifier, generateAlphaNumericLowerCaseId } from "@webiny/utils";
 import crypto from "crypto";
 import { attachCmsModelFieldConverters } from "~/utils/converters/valueKeyStorageConverter";
 import { PluginsContainer } from "@webiny/plugins";
@@ -31,11 +31,11 @@ const baseGroup = new CmsGroupPlugin({
 
 const biography = crypto.randomBytes(65536).toString("hex");
 
-const nameId = generateAlphaNumericId(6);
-const dateOfBirthId = generateAlphaNumericId(6);
-const childrenId = generateAlphaNumericId(6);
-const marriedId = generateAlphaNumericId(6);
-const biographyId = generateAlphaNumericId(6);
+const nameId = generateAlphaNumericLowerCaseId(8);
+const dateOfBirthId = generateAlphaNumericLowerCaseId(8);
+const childrenId = generateAlphaNumericLowerCaseId(8);
+const marriedId = generateAlphaNumericLowerCaseId(8);
+const biographyId = generateAlphaNumericLowerCaseId(8);
 const personModelFields: Record<string, CmsModelField> = {
     name: {
         id: nameId,

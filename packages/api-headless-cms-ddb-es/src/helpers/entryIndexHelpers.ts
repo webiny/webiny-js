@@ -41,7 +41,7 @@ export const prepareEntryToIndex = (params: PrepareElasticsearchDataParams): Cms
 
     // We're only interested in current model fields.
     for (const field of model.fields) {
-        if (storageEntry.values.hasOwnProperty(field.fieldId) === false) {
+        if (storageEntry.values.hasOwnProperty(field.storageId) === false) {
             continue;
         }
 
@@ -56,18 +56,18 @@ export const prepareEntryToIndex = (params: PrepareElasticsearchDataParams): Cms
             plugins,
             model,
             field,
-            rawValue: entry.values[field.fieldId],
-            value: storageEntry.values[field.fieldId],
+            rawValue: entry.values[field.storageId],
+            value: storageEntry.values[field.storageId],
             getFieldIndexPlugin,
             getFieldTypePlugin
         });
 
         if (typeof value !== "undefined") {
-            values[field.fieldId] = value;
+            values[field.storageId] = value;
         }
 
         if (typeof rawValue !== "undefined") {
-            rawValues[field.fieldId] = rawValue;
+            rawValues[field.storageId] = rawValue;
         }
     }
     return {
