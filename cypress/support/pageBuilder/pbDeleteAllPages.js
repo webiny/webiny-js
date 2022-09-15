@@ -15,12 +15,16 @@ Cypress.Commands.add("pbDeleteAllPages", async () => {
         if (pages[i].path === "/welcome-to-webiny") {
             continue;
         }
+
+        if (pages[i].path === "/not-found") {
+            continue;
+        }
         await pbDeletePage({ user, variables: pages[i] });
     }
 
     return until(
         () => pbListPages({ user }),
-        result => result.length <= 1,
+        result => result.length <= 2,
         { wait: 3000 }
     );
 });
