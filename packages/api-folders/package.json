@@ -1,0 +1,54 @@
+{
+  "name": "@webiny/api-folders",
+  "version": "5.31.0",
+  "main": "index.js",
+  "private": true,
+  "keywords": [
+    "folders:base"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git",
+    "directory": "packages/api-folders"
+  },
+  "description": "A set of backend folders-related features.",
+  "author": "Webiny Ltd.",
+  "license": "MIT",
+  "scripts": {
+    "build": "yarn webiny run build",
+    "watch": "yarn webiny run watch"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.18.10",
+    "@babel/core": "^7.18.13",
+    "@babel/preset-env": "^7.18.10",
+    "@babel/preset-typescript": "^7.18.6",
+    "@babel/runtime": "^7.18.9",
+    "@webiny/api-i18n-ddb": "^5.31.0",
+    "@webiny/api-security-so-ddb": "^5.31.0",
+    "@webiny/api-tenancy-so-ddb": "^5.31.0",
+    "@webiny/api-wcp": "^5.31.0",
+    "@webiny/cli": "^5.31.0",
+    "@webiny/handler-aws": "^5.31.0",
+    "@webiny/plugins": "^5.31.0",
+    "@webiny/project-utils": "^5.31.0",
+    "rimraf": "^3.0.2",
+    "ttypescript": "^1.5.13",
+    "typescript": "^4.7.4"
+  },
+  "dependencies": {
+    "@webiny/api": "^5.31.0",
+    "@webiny/api-i18n": "^5.31.0",
+    "@webiny/api-security": "^5.31.0",
+    "@webiny/api-tenancy": "^5.31.0",
+    "@webiny/error": "^5.31.0",
+    "@webiny/handler": "^5.31.0",
+    "@webiny/handler-graphql": "^5.31.0",
+    "joi": "^17.6.0",
+    "mdbid": "^1.0.0"
+  }
+}
