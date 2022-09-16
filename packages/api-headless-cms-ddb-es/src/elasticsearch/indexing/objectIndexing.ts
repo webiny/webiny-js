@@ -191,7 +191,7 @@ export default (): CmsModelFieldToElasticsearchPlugin => ({
             return null;
         }
 
-        const fields = (field.settings?.fields || []) as CmsModelField[];
+        const fields = field.settings?.fields || [];
 
         /**
          * In "object" field, value is either an object or an array of objects.

@@ -20,7 +20,9 @@ export interface ModelField {
     path?: ModelFieldPath;
 }
 
-export type ModelFields = Record<string, ModelField>;
+export interface ModelFields {
+    [fieldId: string]: ModelField;
+}
 
 type UnmappedFieldTypes = {
     [type: string]: (field: CmsModelField) => string | undefined;

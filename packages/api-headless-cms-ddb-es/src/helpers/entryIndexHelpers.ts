@@ -142,17 +142,17 @@ export const extractEntriesFromIndex = ({
                 continue;
             }
             try {
-                indexValues[field.fieldId] = targetFieldPlugin.fromIndex({
+                indexValues[field.storageId] = targetFieldPlugin.fromIndex({
                     plugins,
                     model,
                     field,
                     getFieldIndexPlugin,
                     getFieldTypePlugin,
-                    value: entry.values[field.fieldId],
+                    value: entry.values[field.storageId],
                     /**
                      * Possibly no rawValues so we must check for the existence of the field.
                      */
-                    rawValue: entry.rawValues ? entry.rawValues[field.fieldId] : null
+                    rawValue: entry.rawValues ? entry.rawValues[field.storageId] : null
                 });
             } catch (ex) {
                 throw new WebinyError(
