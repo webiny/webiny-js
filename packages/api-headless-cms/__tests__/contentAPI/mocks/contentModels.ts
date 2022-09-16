@@ -1,6 +1,6 @@
 import contentModelGroup from "./contentModelGroup";
 import { CmsModel } from "~/types";
-import { generateAlphaNumericId } from "@webiny/utils";
+import { generateAlphaNumericLowerCaseId } from "@webiny/utils";
 
 const { version: webinyVersion } = require("@webiny/cli/package.json");
 
@@ -25,61 +25,61 @@ export interface Fruit {
 
 const ids = {
     // product category
-    field11: generateAlphaNumericId(6),
-    field12: generateAlphaNumericId(6),
+    field11: generateAlphaNumericLowerCaseId(8),
+    field12: generateAlphaNumericLowerCaseId(8),
     // product
-    field201: generateAlphaNumericId(6),
-    field202: generateAlphaNumericId(6),
-    field203: generateAlphaNumericId(6),
-    field204: generateAlphaNumericId(6),
-    field205: generateAlphaNumericId(6),
-    field206: generateAlphaNumericId(6),
-    field207: generateAlphaNumericId(6),
-    field208: generateAlphaNumericId(6),
-    field209: generateAlphaNumericId(6),
-    field210: generateAlphaNumericId(6),
-    field211: generateAlphaNumericId(6),
-    field212: generateAlphaNumericId(6),
-    field213: generateAlphaNumericId(6),
-    field214: generateAlphaNumericId(6),
-    field215: generateAlphaNumericId(6),
-    field216: generateAlphaNumericId(6),
-    field217: generateAlphaNumericId(6),
-    field218: generateAlphaNumericId(6),
-    field219: generateAlphaNumericId(6),
-    field220: generateAlphaNumericId(6),
+    field201: generateAlphaNumericLowerCaseId(8),
+    field202: generateAlphaNumericLowerCaseId(8),
+    field203: generateAlphaNumericLowerCaseId(8),
+    field204: generateAlphaNumericLowerCaseId(8),
+    field205: generateAlphaNumericLowerCaseId(8),
+    field206: generateAlphaNumericLowerCaseId(8),
+    field207: generateAlphaNumericLowerCaseId(8),
+    field208: generateAlphaNumericLowerCaseId(8),
+    field209: generateAlphaNumericLowerCaseId(8),
+    field210: generateAlphaNumericLowerCaseId(8),
+    field211: generateAlphaNumericLowerCaseId(8),
+    field212: generateAlphaNumericLowerCaseId(8),
+    field213: generateAlphaNumericLowerCaseId(8),
+    field214: generateAlphaNumericLowerCaseId(8),
+    field215: generateAlphaNumericLowerCaseId(8),
+    field216: generateAlphaNumericLowerCaseId(8),
+    field217: generateAlphaNumericLowerCaseId(8),
+    field218: generateAlphaNumericLowerCaseId(8),
+    field219: generateAlphaNumericLowerCaseId(8),
+    field220: generateAlphaNumericLowerCaseId(8),
     // product review
-    field31: generateAlphaNumericId(6),
-    field32: generateAlphaNumericId(6),
-    field33: generateAlphaNumericId(6),
-    field34: generateAlphaNumericId(6),
+    field31: generateAlphaNumericLowerCaseId(8),
+    field32: generateAlphaNumericLowerCaseId(8),
+    field33: generateAlphaNumericLowerCaseId(8),
+    field34: generateAlphaNumericLowerCaseId(8),
     // author
-    field40: generateAlphaNumericId(6),
+    field40: generateAlphaNumericLowerCaseId(8),
     // fruit
-    field501: generateAlphaNumericId(6),
-    field502: generateAlphaNumericId(6),
-    field503: generateAlphaNumericId(6),
-    field504: generateAlphaNumericId(6),
-    field505: generateAlphaNumericId(6),
-    field506: generateAlphaNumericId(6),
-    field507: generateAlphaNumericId(6),
-    field508: generateAlphaNumericId(6),
-    field509: generateAlphaNumericId(6),
-    field510: generateAlphaNumericId(6),
-    field511: generateAlphaNumericId(6),
-    field512: generateAlphaNumericId(6),
-    field513: generateAlphaNumericId(6),
-    field514: generateAlphaNumericId(6),
+    field501: generateAlphaNumericLowerCaseId(8),
+    field502: generateAlphaNumericLowerCaseId(8),
+    field503: generateAlphaNumericLowerCaseId(8),
+    field504: generateAlphaNumericLowerCaseId(8),
+    field505: generateAlphaNumericLowerCaseId(8),
+    field506: generateAlphaNumericLowerCaseId(8),
+    field507: generateAlphaNumericLowerCaseId(8),
+    field508: generateAlphaNumericLowerCaseId(8),
+    field509: generateAlphaNumericLowerCaseId(8),
+    field510: generateAlphaNumericLowerCaseId(8),
+    field511: generateAlphaNumericLowerCaseId(8),
+    field512: generateAlphaNumericLowerCaseId(8),
+    field513: generateAlphaNumericLowerCaseId(8),
+    field514: generateAlphaNumericLowerCaseId(8),
     // bug
-    field601: generateAlphaNumericId(6),
-    field602: generateAlphaNumericId(6),
-    field603: generateAlphaNumericId(6),
-    field604: generateAlphaNumericId(6),
+    field601: generateAlphaNumericLowerCaseId(8),
+    field602: generateAlphaNumericLowerCaseId(8),
+    field603: generateAlphaNumericLowerCaseId(8),
+    field604: generateAlphaNumericLowerCaseId(8),
     // article
-    field701: generateAlphaNumericId(6),
-    field702: generateAlphaNumericId(6),
-    field703: generateAlphaNumericId(6),
-    field704: generateAlphaNumericId(6)
+    field701: generateAlphaNumericLowerCaseId(8),
+    field702: generateAlphaNumericLowerCaseId(8),
+    field703: generateAlphaNumericLowerCaseId(8),
+    field704: generateAlphaNumericLowerCaseId(8)
 };
 
 const models: CmsModel[] = [

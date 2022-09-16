@@ -1258,6 +1258,35 @@ describe("MANAGE - Resolvers", () => {
         const [publishWebinyResponse] = await publishCategory({
             revision: createWebinyResponse.data.createCategory.data.id
         });
+
+        const createdWebinyCategory = createWebinyResponse.data.createCategory.data;
+
+        expect(publishWebinyResponse).toEqual({
+            data: {
+                publishCategory: {
+                    data: {
+                        ...createdWebinyCategory,
+                        meta: {
+                            ...createdWebinyCategory.meta,
+                            locked: true,
+                            status: "published",
+                            publishedOn: expect.any(String),
+                            revisions: createdWebinyCategory.meta.revisions.map((rev: any) => {
+                                return {
+                                    ...rev,
+                                    meta: {
+                                        ...rev.meta,
+                                        status: "published"
+                                    }
+                                };
+                            })
+                        },
+                        savedOn: expect.any(String)
+                    },
+                    error: null
+                }
+            }
+        });
         const webiny = publishWebinyResponse.data.publishCategory.data;
         /**
          * Only publish categories with these versions.
@@ -1270,13 +1299,54 @@ describe("MANAGE - Resolvers", () => {
                 revision: webiny.id
             });
 
+            expect(response).toEqual({
+                data: {
+                    createCategoryFrom: {
+                        data: {
+                            ...webiny,
+                            meta: {
+                                ...webiny.meta,
+                                locked: false,
+                                status: "draft",
+                                publishedOn: null,
+                                version: i + 2,
+                                revisions: expect.any(Array)
+                            },
+                            id: expect.stringMatching(`${webiny.entryId}#000`),
+                            createdOn: expect.any(String),
+                            savedOn: expect.any(String)
+                        },
+                        error: null
+                    }
+                }
+            });
+
             const createdCategory = response.data.createCategoryFrom.data;
             if (publishCategoriesList.includes(createdCategory.meta.version) === false) {
                 continue;
             }
 
-            await publishCategory({
+            const [publishResponse] = await publishCategory({
                 revision: response.data.createCategoryFrom.data.id
+            });
+
+            expect(publishResponse).toEqual({
+                data: {
+                    publishCategory: {
+                        data: {
+                            ...createdCategory,
+                            meta: {
+                                ...createdCategory.meta,
+                                locked: true,
+                                status: "published",
+                                publishedOn: expect.any(String),
+                                revisions: expect.any(Array)
+                            },
+                            savedOn: expect.any(String)
+                        },
+                        error: null
+                    }
+                }
             });
         }
 
