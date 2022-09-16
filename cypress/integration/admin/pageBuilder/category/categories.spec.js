@@ -102,7 +102,7 @@ context("Categories Module", () => {
         cy.findByText(`Category with slug "${slugValue}" already exists.`).should("exist");
     });
 
-    it.only("should be able to access new category form via link", () => {
+    it("should be able to access new category form via link", () => {
         cy.visit("/page-builder/pages");
         cy.get('div.action__container button[data-testid="new-record-button"]').click();
 
