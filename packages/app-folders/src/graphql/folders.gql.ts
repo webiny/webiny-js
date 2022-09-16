@@ -29,7 +29,7 @@ export const LIST_FOLDERS = gql`
 `;
 
 export const UPDATE_FOLDER = gql`
-    mutation UpdateFolder($id: String!, $parentId: String!) {
+    mutation UpdateFolder($id: ID!, $parentId: ID) {
         folders {
             updateFolder(id: $id, data: { parentId: $parentId }) {
                 data ${DATA_FIELD}
