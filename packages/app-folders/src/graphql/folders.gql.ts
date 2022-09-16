@@ -17,6 +17,17 @@ const DATA_FIELD = /* GraphQL */ `
     }
 `;
 
+export const CREATE_FOLDER = gql`
+    mutation CreateFolder($name: String!, $slug: String!, $type: String!, $parentId: ID) {
+        folders {
+            createFolder(data: { name: $name, slug: $slug, type: $type, parentId: $parentId }) {
+                data ${DATA_FIELD}
+                error ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
 export const LIST_FOLDERS = gql`
     query ListFolders {
         folders {
