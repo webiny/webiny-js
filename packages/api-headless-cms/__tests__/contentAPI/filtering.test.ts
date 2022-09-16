@@ -690,6 +690,24 @@ describe("filtering", () => {
             revision: teslaProductUnpublished.id
         });
 
+        expect(publishBananaResponse).toEqual({
+            data: {
+                publishProduct: {
+                    data: {
+                        ...bananaProductUnpublished,
+                        meta: {
+                            ...bananaProductUnpublished.meta,
+                            locked: true,
+                            publishedOn: expect.any(String),
+                            status: "published"
+                        },
+                        savedOn: expect.any(String)
+                    },
+                    error: null
+                }
+            }
+        });
+
         const bananaProduct = publishBananaResponse.data.publishProduct.data;
         const plumProduct = publishPlumResponse.data.publishProduct.data;
         const teslaProduct = publishTeslaResponse.data.publishProduct.data;
