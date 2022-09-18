@@ -9,6 +9,7 @@ import { usePage } from "~/pageEditor/hooks/usePage";
 import { useRevisions } from "~/pageEditor/hooks/useRevisions";
 import { PageAtomType, RevisionsAtomType } from "~/pageEditor/state";
 import { PageEditorEventActionCallableState } from "~/pageEditor/types";
+import { PbElement, PbEditorElement } from "~/types";
 
 type ProviderProps = EventActionHandlerProviderProps<PageEditorEventActionCallableState>;
 
@@ -25,6 +26,39 @@ const PbEventActionHandler = createComponentPlugin(
                 pageAtomValueRef.current = pageAtomValue;
                 revisionsAtomValueRef.current = revisionsAtomValue;
             }, [pageAtomValue, revisionsAtomValue]);
+
+            const getElementTree: ProviderProps["getElementTree"] = useMemo(
+                () => [
+                    ...(props.getElementTree || []),
+                    next => {
+                        return async props => {
+                            const element = props?.element;
+                            const res = (await next({ element })) as PbElement;
+
+                            const cleanUpReferenceBlocks = (
+                                element: PbElement
+                            ): PbEditorElement => {
+                                if (element.data.blockId) {
+                                    return {
+                                        ...element,
+                                        elements: []
+                                    };
+                                } else {
+                                    return {
+                                        ...element,
+                                        elements: element.elements.map((child: PbElement) =>
+                                            cleanUpReferenceBlocks(child)
+                                        )
+                                    };
+                                }
+                            };
+
+                            return cleanUpReferenceBlocks(res);
+                        };
+                    }
+                ],
+                []
+            );
 
             const saveCallablesResults: ProviderProps["saveCallablesResults"] = useMemo(
                 () => [
@@ -56,6 +90,7 @@ const PbEventActionHandler = createComponentPlugin(
             return (
                 <Component
                     {...props}
+                    getElementTree={getElementTree}
                     getCallableState={[...(props.getCallableState || []), getCallableState]}
                     saveCallablesResults={saveCallablesResults}
                 />
