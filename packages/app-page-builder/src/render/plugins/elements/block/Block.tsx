@@ -1,13 +1,14 @@
 import React, { CSSProperties } from "react";
 import { css } from "emotion";
 import kebabCase from "lodash/kebabCase";
-import Element from "../../../components/Element";
-import { ElementRoot } from "../../../components/ElementRoot";
+import Element from "~/render/components/Element";
+import { ElementRoot } from "~/render/components/ElementRoot";
 import { PbElement } from "~/types";
-import ElementAnimation from "../../../components/ElementAnimation";
+import ElementAnimation from "~/render/components/ElementAnimation";
 import { Interpolation } from "@emotion/core";
-import { PageBuilderContext } from "../../../../contexts/PageBuilder";
+import { PageBuilderContext } from "~/contexts/PageBuilder";
 
+// TODO: move to a declaration file
 declare global {
     // eslint-disable-next-line
     namespace JSX {
