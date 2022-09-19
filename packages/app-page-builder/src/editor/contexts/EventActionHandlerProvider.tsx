@@ -92,7 +92,7 @@ export type GetElementTreeResult = {
     path?: string[];
 } | void;
 
-export type GetElementTree = AsyncProcessor<GetElementTreeResult>;
+export type GetElementTree = AsyncProcessor<GetElementTreeResult, PbEditorElement>;
 export type GetCallableState = SyncProcessor<Partial<EventActionHandlerCallableState>>;
 export type SaveCallableResults<TState = Partial<PbState>> = SyncProcessor<{
     state: TState & Partial<PbState>;

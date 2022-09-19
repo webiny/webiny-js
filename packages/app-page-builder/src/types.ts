@@ -692,7 +692,7 @@ export type PbRenderElementPluginArgs = {
 // TODO: at some point, convert this into an interface, and use module augmentation to add new properties.
 export type EventActionHandlerCallableState<TState = PbState> = PbState<TState> & {
     getElementById(id: string): Promise<PbEditorElement>;
-    getElementTree(props?: { element?: PbEditorElement }): Promise<any>;
+    getElementTree(props?: { element?: PbEditorElement }): Promise<PbEditorElement>;
 };
 
 export interface EventActionHandler<TCallableState = unknown> {
@@ -709,7 +709,7 @@ export interface EventActionHandler<TCallableState = unknown> {
     endBatch: () => void;
     enableHistory: () => void;
     disableHistory: () => void;
-    getElementTree: (props?: { element?: PbEditorElement }) => Promise<any>;
+    getElementTree: (props?: { element?: PbEditorElement }) => Promise<PbEditorElement>;
 }
 
 export interface EventActionHandlerTarget {
