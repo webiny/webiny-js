@@ -139,7 +139,7 @@ export const uploadFolderToS3 = async ({
                                 ...fields,
                                 "Content-Type": contentType || "",
                                 "X-Amz-Meta-Checksum": checksum,
-                                file: fs.readFileSync(path, "utf8")
+                                file: fs.readFileSync(path)
                             };
 
                             if (cacheControl) {
