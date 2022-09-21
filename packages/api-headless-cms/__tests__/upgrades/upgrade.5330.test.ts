@@ -12,16 +12,14 @@ const clearStorageId = (fields: CmsModelField[]): CmsModelField[] => {
         }
         const result: CmsModelField = {
             ...field,
-            storageId: "",
+            storageId: null as any,
             settings
         };
-        // @ts-ignore
-        delete result["storageId"];
         return result;
     });
 };
 
-const expectModelFields = (fields: CmsModelField[]): Partial<CmsModelField>[] => {
+const expectModelFieldsBeforeUpgrade = (fields: CmsModelField[]): Partial<CmsModelField>[] => {
     return fields.map(field => {
         const result: Partial<CmsModelField> = {
             id: field.id,
@@ -33,7 +31,29 @@ const expectModelFields = (fields: CmsModelField[]): Partial<CmsModelField>[] =>
                 ...(field.settings || {})
             };
             if (settings.fields && Array.isArray(settings.fields) === true) {
-                settings.fields = expectModelFields(settings.fields);
+                settings.fields = expectModelFieldsBeforeUpgrade(settings.fields);
+            }
+            result.settings = {
+                ...settings
+            };
+        }
+        return result;
+    });
+};
+
+const expectModelFieldsAfterUpgrade = (fields: CmsModelField[]): Partial<CmsModelField>[] => {
+    return fields.map(field => {
+        const result: Partial<CmsModelField> = {
+            id: field.id,
+            fieldId: field.fieldId,
+            storageId: field.fieldId
+        };
+        if (field.settings?.fields) {
+            const settings: any = {
+                ...(field.settings || {})
+            };
+            if (settings.fields && Array.isArray(settings.fields) === true) {
+                settings.fields = expectModelFieldsAfterUpgrade(settings.fields);
             }
             result.settings = {
                 ...settings
@@ -44,9 +64,15 @@ const expectModelFields = (fields: CmsModelField[]): Partial<CmsModelField>[] =>
 };
 
 describe("upgrade for 5.33.0", () => {
-    const { storageOperations, listContentModelsQuery } = useGraphQLHandler({
+    const { listContentModelsQuery } = useGraphQLHandler({
         path: "manage/en-US"
     });
+
+    beforeEach(() => {
+        process.env.WEBINY_VERSION = "5.33.0";
+    });
+
+    const { storageOperations, upgradeMutation } = useGraphQLHandler({});
 
     it("should add storageId to all the models", async () => {
         const modelsToInsert = models.map(model => {
@@ -60,6 +86,17 @@ describe("upgrade for 5.33.0", () => {
                 }
             };
         });
+        /**
+         * These are the models, sorted by name, which we are getting back from the GraphQL API.
+         */
+        const sortedModels = models.sort((a, b) => {
+            if (a.modelId < b.modelId) {
+                return -1;
+            } else if (a.modelId > b.modelId) {
+                return 1;
+            }
+            return 0;
+        });
 
         for (const model of modelsToInsert) {
             try {
@@ -72,19 +109,49 @@ describe("upgrade for 5.33.0", () => {
             }
         }
 
-        const [listContentModelsResult] = await listContentModelsQuery();
+        const [listContentModelsBeforeUpgradeResult] = await listContentModelsQuery();
 
-        const expectedModels = models.map(model => {
+        const expectedModelsBeforeUpgrade = sortedModels.map(model => {
             return {
                 modelId: model.modelId,
-                fields: expectModelFields(model.fields)
+                fields: expectModelFieldsBeforeUpgrade(model.fields)
+            };
+        });
+        expect(listContentModelsBeforeUpgradeResult).toMatchObject({
+            data: {
+                listContentModels: {
+                    data: expectedModelsBeforeUpgrade,
+                    error: null
+                }
+            }
+        });
+
+        const [upgradeResponse] = await upgradeMutation("5.33.0");
+
+        expect(upgradeResponse).toMatchObject({
+            data: {
+                cms: {
+                    upgrade: {
+                        data: true,
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const expectedModelsAfterUpgrade = sortedModels.map(model => {
+            return {
+                modelId: model.modelId,
+                fields: expectModelFieldsAfterUpgrade(model.fields)
             };
         });
 
-        expect(listContentModelsResult).toMatchObject({
+        const [listContentModelsAfterUpgradeResult] = await listContentModelsQuery();
+
+        expect(listContentModelsAfterUpgradeResult).toMatchObject({
             data: {
                 listContentModels: {
-                    data: expectedModels,
+                    data: expectedModelsAfterUpgrade,
                     error: null
                 }
             }

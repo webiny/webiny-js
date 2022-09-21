@@ -190,7 +190,7 @@ export const createModelsSchema = (context: CmsContext): GraphQLSchemaPlugin<Cms
                 id: ID!
                 # auto-generated value
                 # used for debugging purposes
-                storageId: String!
+                storageId: String
                 fieldId: String!
                 label: String!
                 helpText: String

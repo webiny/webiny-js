@@ -28,6 +28,10 @@ export const createUpgrade = (): UpgradePlugin<CmsContext> => {
             const { security, plugins, cms } = context;
 
             const pluginModels = plugins.byType<CmsModelPlugin>(CmsModelPlugin.type);
+
+            const isPluginModel = (model: CmsModel): boolean => {
+                return pluginModels.some(m => m.contentModel.modelId === model.modelId);
+            };
             /**
              * We need to be able to access all data.
              */
@@ -37,7 +41,7 @@ export const createUpgrade = (): UpgradePlugin<CmsContext> => {
                  * We need all the models that are not plugin models.
                  */
                 const models = (await cms.listModels()).filter(model => {
-                    return pluginModels.some(m => m.contentModel.modelId === model.modelId);
+                    return isPluginModel(model) === false;
                 });
 
                 /**
