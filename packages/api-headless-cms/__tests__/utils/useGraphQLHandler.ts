@@ -7,7 +7,7 @@ import { ApiKey, SecurityIdentity } from "@webiny/api-security/types";
 import apiKeyAuthentication from "@webiny/api-security/plugins/apiKeyAuthentication";
 import apiKeyAuthorization from "@webiny/api-security/plugins/apiKeyAuthorization";
 import { createPermissions, until, sleep, PermissionsArg } from "./helpers";
-import { INSTALL_MUTATION, IS_INSTALLED_QUERY } from "./graphql/settings";
+import { INSTALL_MUTATION, IS_INSTALLED_QUERY, UPGRADE_MUTATION } from "./graphql/settings";
 import {
     CREATE_CONTENT_MODEL_GROUP_MUTATION,
     DELETE_CONTENT_MODEL_GROUP_MUTATION,
@@ -189,6 +189,16 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
         },
         async installMutation() {
             return invoke({ body: { query: INSTALL_MUTATION } });
+        },
+        async upgradeMutation(version: string) {
+            return invoke({
+                body: {
+                    query: UPGRADE_MUTATION,
+                    variables: {
+                        version
+                    }
+                }
+            });
         },
         // content model group
         async createContentModelGroupMutation(variables: Record<string, any>) {
