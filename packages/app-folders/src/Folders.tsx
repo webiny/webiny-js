@@ -1,7 +1,7 @@
 import React, { memo } from "react";
 import { AddRoute, Layout, Provider, Plugins, AddMenu } from "@webiny/app-admin";
 import { FoldersProvider as ContextProvider } from "./contexts/Folders";
-import { FoldersTree } from "~/admin/FoldersTree";
+import { FolderTree } from "~/admin/Tree";
 
 const FoldersProviderHOC = (Component: React.FC): React.FC => {
     return function FoldersProvider({ children }) {
@@ -26,7 +26,7 @@ const FoldersExtension: React.FC = () => {
             <Plugins>
                 <AddRoute path={"/folders/list"}>
                     <Layout title={"Folders - List"}>
-                        <FoldersTree type={"page"} />
+                        <FolderTree type={"page"} />
                     </Layout>
                 </AddRoute>
                 <AddMenu name={"settings"}>
