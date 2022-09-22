@@ -62,7 +62,7 @@ export const ElasticSearch = createAppModule({
                 name: domainName,
                 config: {
                     elasticsearchVersion: "7.10",
-                    clusterConfig: prod ? getDevClusterConfig() : getProdClusterConfig(),
+                    clusterConfig: prod ? getProdClusterConfig() : getDevClusterConfig(),
                     vpcOptions: vpc
                         ? {
                               subnetIds: vpc.subnets.private.map(s => s.output.id),
