@@ -33,7 +33,33 @@ const getLabel = (params: Pick<UpgradeState, "error" | "loading" | "upgrading" |
     } else if (done) {
         return `Upgrade done.`;
     }
-    return `There is no correct status, something is wrong...`;
+    return null;
+};
+
+const getLocaleList = (locales?: I18NLocaleItem[] | null) => {
+    if (!locales) {
+        return null;
+    } else if (locales.length === 0) {
+        return (
+            <Grid>
+                <Cell span={12}>
+                    <Typography use={"body1"} tag={"div"}>
+                        There are no locales to be upgraded...? This must be an error, please check
+                        the log.
+                    </Typography>
+                </Cell>
+            </Grid>
+        );
+    }
+    return (
+        <Grid>
+            <Cell span={12}>
+                <Typography use={"body1"} tag={"div"}>
+                    List of locales to be upgraded: {locales.map(locale => locale.code).join(", ")}
+                </Typography>
+            </Cell>
+        </Grid>
+    );
 };
 
 interface UpgradeState {
@@ -44,7 +70,7 @@ interface UpgradeState {
     done: boolean;
 }
 interface UpgradeProps {
-    onInstalled?: () => void;
+    onInstalled: () => void;
 }
 const Upgrade: React.FC<UpgradeProps> = ({ onInstalled }) => {
     const client = useApolloClient();
@@ -95,6 +121,13 @@ const Upgrade: React.FC<UpgradeProps> = ({ onInstalled }) => {
         if (upgrading) {
             return;
         }
+
+        setState(prev => {
+            return {
+                ...prev,
+                upgrading: true
+            };
+        });
         runUpgrade({
             locales,
             client
@@ -108,9 +141,7 @@ const Upgrade: React.FC<UpgradeProps> = ({ onInstalled }) => {
                         done: true
                     };
                 });
-                if (onInstalled) {
-                    onInstalled();
-                }
+                onInstalled();
             })
             .catch((error?: Error) => {
                 setState(prev => {
@@ -150,6 +181,7 @@ const Upgrade: React.FC<UpgradeProps> = ({ onInstalled }) => {
                         </Typography>
                     </Cell>
                 </Grid>
+                {getLocaleList(locales)}
             </SimpleFormContent>
             <SimpleFormFooter>
                 <ButtonPrimary
