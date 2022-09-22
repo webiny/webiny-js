@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 
-import { useQuery, useMutation } from "@apollo/react-hooks";
 import {
     Tree,
     getBackendOptions,
@@ -10,12 +9,16 @@ import {
 } from "@minoru/react-dnd-treeview";
 import { DndProvider } from "react-dnd";
 
-import { LIST_FOLDERS, UPDATE_FOLDER } from "~/graphql/folders.gql";
+import { useListFolders, useUpdateFolder } from "~/hooks";
 
 import { Node } from "./Node";
 import { Container, TreeRoot } from "./styled";
 
 import { DndItem, FolderItem } from "~/types";
+
+type Props = {
+    type: string;
+};
 
 const handleData = (data: FolderItem[]): DndItem[] => {
     return data.map(({ id, parentId, name }) => ({
@@ -26,29 +29,26 @@ const handleData = (data: FolderItem[]): DndItem[] => {
     }));
 };
 
-export const FolderTree: React.FC = ({ type }) => {
+export const FolderTree: React.FC<Props> = ({ type }) => {
     const [treeData, setTreeData] = useState<NodeModel<DndItem>[]>([]);
 
-    const { data = [] } = useQuery(LIST_FOLDERS, {
-        variables: { type }
-    });
-
-    const [updateGqlFolder] = useMutation(UPDATE_FOLDER);
+    const { folders, loading: listLoading } = useListFolders(type);
+    const { update } = useUpdateFolder();
 
     const handleDrop = async (
         newTree: NodeModel<DndItem>[],
         { dragSourceId, dropTargetId }: DropOptions
     ) => {
         setTreeData(newTree);
-        await updateGqlFolder({ variables: { id: dragSourceId, parentId: dropTargetId || null } });
+        await update({ variables: { id: dragSourceId, data: { parentId: dropTargetId } } });
     };
 
     useEffect(() => {
-        if (data?.folders?.listFolders?.data) {
-            const newData = handleData(data?.folders?.listFolders?.data);
+        if (!listLoading) {
+            const newData = handleData(folders);
             setTreeData(newData);
         }
-    }, [data]);
+    }, [folders, listLoading]);
 
     const onNodeClick = (id: any) => {
         console.log("hello", id);

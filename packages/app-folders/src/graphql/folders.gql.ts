@@ -29,9 +29,9 @@ export const CREATE_FOLDER = gql`
 `;
 
 export const LIST_FOLDERS = gql`
-    query ListFolders {
+    query ListFolders ($type: String!) {
         folders {
-            listFolders(where: { type: "page" }) {
+            listFolders(where: { type: $type }) {
                 data ${DATA_FIELD}
                 error ${ERROR_FIELD}
             }
@@ -40,9 +40,9 @@ export const LIST_FOLDERS = gql`
 `;
 
 export const UPDATE_FOLDER = gql`
-    mutation UpdateFolder($id: ID!, $parentId: ID) {
+    mutation UpdateFolder($id: ID!, $name: String, $slug: String, $parentId: ID) {
         folders {
-            updateFolder(id: $id, data: { parentId: $parentId }) {
+            updateFolder(id: $id, data: { parentId: $parentId, name: $name, slug: $slug }) {
                 data ${DATA_FIELD}
                 error ${ERROR_FIELD}
             }

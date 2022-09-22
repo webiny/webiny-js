@@ -9,9 +9,27 @@ export interface FolderItem {
 export interface ListFoldersResponse {
     folders: {
         listFolders: {
-            folders: FolderItem[];
+            data: FolderItem[];
         };
     };
+}
+
+export interface ListFoldersQueryVariables {
+    type: string;
+}
+
+export interface UpdateFolderResponse {
+    folders: {
+        listFolders: {
+            data: FolderItem[];
+            error?: Error | null;
+        };
+    };
+}
+
+export interface UpdateFolderVariables {
+    id: string;
+    data: Partial<FolderItem>;
 }
 
 export interface DndItem {
