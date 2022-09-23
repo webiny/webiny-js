@@ -15,6 +15,7 @@ import { Node } from "./Node";
 import { Container, TreeRoot } from "./styled";
 
 import { DndItem, FolderItem } from "~/types";
+import { NodePreview } from "~/admin/Tree/NodePreview";
 
 type Props = {
     type: string;
@@ -71,6 +72,7 @@ export const FolderTree: React.FC<Props> = ({ type }) => {
                             onClick={onNodeClick}
                         />
                     )}
+                    dragPreviewRender={monitorProps => <NodePreview monitorProps={monitorProps} />}
                     classes={{
                         root: TreeRoot
                     }}
