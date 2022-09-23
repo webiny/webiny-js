@@ -1,4 +1,4 @@
-import datetimeTransform from "~/dynamoDb/transformValue/datetime";
+import { createDatetimeTransformValuePlugin } from "~/dynamoDb/transformValue/datetime";
 import { CmsModelField } from "@webiny/api-headless-cms/types";
 
 const createField = (fieldType: string): CmsModelField => {
@@ -25,7 +25,7 @@ describe("dynamodb transform datetime", () => {
     test.each(correctValues)(
         "should transform date or time into the milliseconds - %s",
         (value: Date | string, fieldType: string, expected: number) => {
-            const plugin = datetimeTransform();
+            const plugin = createDatetimeTransformValuePlugin();
 
             const result = plugin.transform({
                 field: createField(fieldType),
@@ -50,7 +50,7 @@ describe("dynamodb transform datetime", () => {
     test.each(incorrectTimeValues)(
         "should throw an error when trying to transform time field but value is not a string or a number",
         value => {
-            const plugin = datetimeTransform();
+            const plugin = createDatetimeTransformValuePlugin();
 
             expect(() => {
                 plugin.transform({

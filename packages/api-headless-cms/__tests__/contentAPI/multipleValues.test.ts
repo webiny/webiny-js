@@ -308,13 +308,13 @@ describe("multiple values in field", () => {
             }
         });
 
-        expect(removedMultipleValuesResponse).toEqual({
+        expect(removedMultipleValuesResponse).toMatchObject({
             data: {
                 updateContentModel: {
                     data: null,
                     error: {
                         code: "ENTRY_FIELD_USED",
-                        data: null,
+                        data: {},
                         message: expect.stringMatching(
                             `Cannot remove the field "text@([a-zA-Z0-9\-\_]+)" because it's already in use in created content.`
                         )
@@ -344,13 +344,13 @@ describe("multiple values in field", () => {
             }
         });
 
-        expect(changedMultipleValuesResponse).toEqual({
+        expect(changedMultipleValuesResponse).toMatchObject({
             data: {
                 updateContentModel: {
                     data: null,
                     error: {
                         code: "ENTRY_FIELD_USED",
-                        data: null,
+                        data: {},
                         message: expect.stringMatching(
                             `Cannot change "multipleValues" for the "text@([a-zA-Z0-9_-]+)" field because it's already in use in created content.`
                         )

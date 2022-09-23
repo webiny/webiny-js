@@ -1,5 +1,4 @@
 import { validation } from "@webiny/validation";
-// import flow from "lodash/flow";
 /**
  * Package commodo-fields-object does not have types
  */
@@ -10,7 +9,6 @@ import { object } from "commodo-fields-object";
  */
 // @ts-ignore
 import { withFields, string, setOnce, boolean, fields } from "@commodo/fields";
-// import { validateId } from "./idValidation";
 import { validateFieldId } from "./fieldIdValidation";
 
 const requiredShortString = validation.create("required,maxLength:255");
@@ -22,13 +20,6 @@ const RendererModel = withFields({
 
 export const ContentModelFieldModel = withFields({
     id: string({ validation: requiredShortString }),
-    /**
-     * Should never use user input for storageId
-     storageId: flow(
-        onSet((value?: string) => value && value.trim()),
-        setOnce()
-    )(string({ validation: validateId })),
-    */
     fieldId: string({
         validation: validateFieldId
     }),

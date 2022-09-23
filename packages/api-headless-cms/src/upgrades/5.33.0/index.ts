@@ -2,6 +2,22 @@ import WebinyError from "@webiny/error";
 import { UpgradePlugin } from "@webiny/api-upgrade";
 import { CmsContext, CmsModelField } from "~/types";
 
+// const clearStorageId = (fields: CmsModelField[]): CmsModelField[] => {
+//     return fields.map(field => {
+//         const settings = {
+//             ...(field.settings || {})
+//         };
+//         if (settings.fields && Array.isArray(settings.fields) === true) {
+//             settings.fields = clearStorageId(settings.fields);
+//         }
+//         return {
+//             ...field,
+//             storageId: null as any,
+//             settings
+//         };
+//     });
+// };
+
 const assignStorageId = (fields: CmsModelField[]): CmsModelField[] => {
     return fields.map(field => {
         const settings = {
