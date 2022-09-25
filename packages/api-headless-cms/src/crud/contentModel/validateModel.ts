@@ -6,6 +6,7 @@ import { validateModelFields } from "~/crud/contentModel/validateModelFields";
 
 interface ValidateModelParams {
     model: CmsModel;
+    original?: CmsModel;
     plugins: PluginsContainer;
 }
 

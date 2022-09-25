@@ -1,3 +1,6 @@
+/**
+ * File is @internal
+ */
 import WebinyError from "@webiny/error";
 import {
     CmsEntryFieldFilterPathPlugin,

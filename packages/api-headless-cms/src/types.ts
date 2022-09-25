@@ -336,8 +336,9 @@ export interface CmsModelFieldPatternValidatorPlugin extends Plugin {
 export interface LockedField {
     /**
      * Locked field storage ID - one used to store values.
+     * We cannot change this due to old systems.
      */
-    storageId: string;
+    fieldId: string;
     /**
      * Is the field multiple values field?
      */

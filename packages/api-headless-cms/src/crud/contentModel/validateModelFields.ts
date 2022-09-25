@@ -2,7 +2,8 @@ import {
     CmsModel,
     CmsModelField,
     CmsModelFieldToGraphQLPlugin,
-    CmsModelLockedFieldPlugin
+    CmsModelLockedFieldPlugin,
+    LockedField
 } from "~/types";
 import WebinyError from "@webiny/error";
 import { createManageSDL } from "~/graphql/schema/createManageSDL";
@@ -128,36 +129,25 @@ const extractInvalidField = (model: CmsModel, err: GraphQLError) => {
     };
 };
 
-interface ValidateModelFieldsParams {
-    model: CmsModel;
-    plugins: PluginsContainer;
+interface ValidateFieldsParams {
+    plugins: CmsModelFieldToGraphQLPlugin[];
+    fields: CmsModelField[];
+    originalFields: CmsModelField[];
+    lockedFields: LockedField[];
 }
-export const validateModelFields = (params: ValidateModelFieldsParams) => {
-    const { model, plugins } = params;
-    const { titleFieldId } = model;
-
-    /**
-     * There should be fields/locked fields in either model or data to be updated.
-     */
-    const { fields = [], lockedFields = [] } = model;
-
-    /**
-     * Let's inspect the fields of the received content model. We prevent saving of a content model if it
-     * contains a field for which a "cms-model-field-to-graphql" plugin does not exist on the backend.
-     */
-    const fieldTypePlugins = plugins.byType<CmsModelFieldToGraphQLPlugin>(
-        "cms-model-field-to-graphql"
-    );
+const validateFields = (params: ValidateFieldsParams) => {
+    const { plugins, fields, originalFields, lockedFields } = params;
 
     const fieldIdList: string[] = [];
 
     for (const field of fields) {
-        const plugin = fieldTypePlugins.find(item => item.fieldType === field.type);
+        const plugin = plugins.find(item => item.fieldType === field.type);
         if (!plugin) {
             throw new Error(
                 `Cannot update content model because of the unknown "${field.type}" field.`
             );
         }
+        const originalField = originalFields.find(f => f.id === field.id);
         /**
          * Field MUST have an fieldId defined.
          */
@@ -180,18 +170,35 @@ export const validateModelFields = (params: ValidateModelFieldsParams) => {
          * https://discuss.elastic.co/t/illegal-characters-in-elasticsearch-field-names/17196/2
          */
         const isLocked = lockedFields.some(lockedField => {
-            return lockedField.storageId === field.storageId;
+            return lockedField.fieldId === field.storageId;
         });
         if (!field.storageId) {
+            /**
+             * In case field is locked, we must set the storageId to the fieldId value.
+             * This should not happen, because we upgrade all the fields in 5.33.0, but let's have a check just in case of some upgrade miss.
+             */
+            //
             if (isLocked) {
                 field.storageId = field.fieldId;
-            } else {
+            }
+            /**
+             * When having original field, just set the storageId to value from the originalField
+             */
+            //
+            else if (originalField) {
+                field.storageId = originalField.storageId;
+            }
+            /**
+             * The last case is when no original field and not locked - so this is a completely new field.
+             */
+            //
+            else {
                 field.storageId = createFieldStorageId(field);
             }
         }
-
         /**
          * Check the field fieldId against existing ones.
+         * There cannot be two fields with the same fieldId - outside world identifier.
          */
         if (fieldIdList.includes(field.fieldId)) {
             throw new WebinyError(
@@ -199,7 +206,60 @@ export const validateModelFields = (params: ValidateModelFieldsParams) => {
             );
         }
         fieldIdList.push(field.fieldId);
+        /**
+         * TODO maybe make this part pluginable?
+         * We need to check the object field child fields.
+         * It must be recursive.
+         */
+        if (field.type !== "object") {
+            continue;
+        }
+        const childFields = field.settings?.fields || [];
+        const originalChildFields = originalField?.settings?.fields || [];
+        /**
+         * No point in going further if there are no child fields.
+         * Code will break if child fields were removed but used in the entries.
+         */
+        if (childFields.length === 0) {
+            continue;
+        }
+        validateFields({
+            fields: childFields,
+            originalFields: originalChildFields,
+            plugins,
+            lockedFields: []
+        });
     }
+};
+
+interface ValidateModelFieldsParams {
+    model: CmsModel;
+    original?: CmsModel;
+    plugins: PluginsContainer;
+}
+export const validateModelFields = (params: ValidateModelFieldsParams) => {
+    const { model, original, plugins } = params;
+    const { titleFieldId } = model;
+
+    /**
+     * There should be fields/locked fields in either model or data to be updated.
+     */
+    const { fields = [], lockedFields = [] } = model;
+
+    /**
+     * Let's inspect the fields of the received content model. We prevent saving of a content model if it
+     * contains a field for which a "cms-model-field-to-graphql" plugin does not exist on the backend.
+     */
+    const fieldTypePlugins = plugins.byType<CmsModelFieldToGraphQLPlugin>(
+        "cms-model-field-to-graphql"
+    );
+
+    validateFields({
+        fields,
+        originalFields: original?.fields || [],
+        lockedFields,
+        plugins: fieldTypePlugins
+    });
 
     if (fields.length) {
         /**
@@ -229,25 +289,36 @@ export const validateModelFields = (params: ValidateModelFieldsParams) => {
      * We must not allow removal or changes in fields that are already in use in content entries.
      */
     for (const lockedField of lockedFields) {
-        const existingField = fields.find(item => item.storageId === lockedField.storageId);
+        const existingField = fields.find(item => item.storageId === lockedField.fieldId);
+
         if (!existingField) {
             throw new WebinyError(
-                `Cannot remove the field "${lockedField.storageId}" because it's already in use in created content.`,
-                "ENTRY_FIELD_USED"
+                `Cannot remove the field "${lockedField.fieldId}" because it's already in use in created content.`,
+                "ENTRY_FIELD_USED",
+                {
+                    lockedField,
+                    fields
+                }
             );
         }
 
         if (lockedField.multipleValues !== existingField.multipleValues) {
             throw new WebinyError(
-                `Cannot change "multipleValues" for the "${lockedField.storageId}" field because it's already in use in created content.`,
-                "ENTRY_FIELD_USED"
+                `Cannot change "multipleValues" for the "${lockedField.fieldId}" field because it's already in use in created content.`,
+                "ENTRY_FIELD_USED",
+                {
+                    field: existingField
+                }
             );
         }
 
         if (lockedField.type !== existingField.type) {
             throw new WebinyError(
-                `Cannot change field type for the "${lockedField.storageId}" field because it's already in use in created content.`,
-                "ENTRY_FIELD_USED"
+                `Cannot change field type for the "${lockedField.fieldId}" field because it's already in use in created content.`,
+                "ENTRY_FIELD_USED",
+                {
+                    field: existingField
+                }
             );
         }
 

@@ -1,5 +1,5 @@
 import richTextStorage from "./storage/richText";
 import longTextStorage from "./storage/longText";
-import dateStorage from "./storage/date";
+import { createDateStorageTransformPlugin } from "./storage/date";
 
-export default () => [richTextStorage(), longTextStorage(), dateStorage()];
+export default () => [richTextStorage(), longTextStorage(), createDateStorageTransformPlugin()];

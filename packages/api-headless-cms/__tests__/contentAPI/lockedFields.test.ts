@@ -136,7 +136,7 @@ describe("Content model locked fields", () => {
                         data: null,
                         error: {
                             code: "ENTRY_FIELD_USED",
-                            data: null,
+                            data: {},
                             message: `Cannot remove the field "${field.type}@${field.id}" because it's already in use in created content.`
                         }
                     }
@@ -197,13 +197,13 @@ describe("Content model locked fields", () => {
             }
         });
 
-        expect(updateModelFailResponse).toEqual({
+        expect(updateModelFailResponse).toMatchObject({
             data: {
                 updateContentModel: {
                     data: null,
                     error: {
                         code: "ENTRY_FIELD_USED",
-                        data: null,
+                        data: {},
                         message: expect.stringMatching(
                             `Cannot remove the field "text@([a-zA-Z0-9\-\_]+)" because it's already in use in created content.`
                         )

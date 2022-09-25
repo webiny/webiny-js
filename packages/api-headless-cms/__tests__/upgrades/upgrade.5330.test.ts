@@ -75,7 +75,7 @@ describe("upgrade for 5.33.0", () => {
     const { storageOperations, upgradeMutation } = useGraphQLHandler({});
 
     it("should add storageId to all the models", async () => {
-        const modelsToInsert = models.map(model => {
+        const clearedModelsToInsert = models.map(model => {
             return {
                 ...model,
                 fields: clearStorageId(model.fields),
@@ -86,10 +86,19 @@ describe("upgrade for 5.33.0", () => {
                 }
             };
         });
+
+        const modelsToInsert = clearedModelsToInsert.concat(
+            clearedModelsToInsert.map(model => {
+                return {
+                    ...model,
+                    locale: "de-DE"
+                };
+            })
+        );
         /**
          * These are the models, sorted by name, which we are getting back from the GraphQL API.
          */
-        const sortedModels = models.sort((a, b) => {
+        const sortedModels = clearedModelsToInsert.sort((a, b) => {
             if (a.modelId < b.modelId) {
                 return -1;
             } else if (a.modelId > b.modelId) {
@@ -156,5 +165,23 @@ describe("upgrade for 5.33.0", () => {
                 }
             }
         });
+        /**
+         * Also, if we go to fetch the models in de-DE locale via storage operations, they should also have their fields updated.
+         */
+        const deModels = await storageOperations.models.list({
+            where: {
+                tenant: "root",
+                locale: "de-DE"
+            }
+        });
+
+        expect(deModels).toMatchObject(
+            expectedModelsAfterUpgrade.map(model => {
+                return {
+                    ...model,
+                    locale: "de-DE"
+                };
+            })
+        );
     });
 });

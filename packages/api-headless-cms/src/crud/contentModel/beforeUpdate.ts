@@ -13,7 +13,7 @@ interface AssignBeforeModelUpdateParams {
 export const assignBeforeModelUpdate = (params: AssignBeforeModelUpdateParams) => {
     const { onBeforeModelUpdate, plugins } = params;
 
-    onBeforeModelUpdate.subscribe(async ({ model }) => {
+    onBeforeModelUpdate.subscribe(async ({ model, original }) => {
         /**
          * First we go through the layout...
          */
@@ -23,6 +23,7 @@ export const assignBeforeModelUpdate = (params: AssignBeforeModelUpdateParams) =
          */
         await validateModel({
             model,
+            original,
             plugins
         });
     });

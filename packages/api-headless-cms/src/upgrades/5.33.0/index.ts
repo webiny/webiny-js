@@ -1,7 +1,22 @@
 import WebinyError from "@webiny/error";
 import { UpgradePlugin } from "@webiny/api-upgrade";
-import { CmsContext, CmsModel, CmsModelField } from "~/types";
-import { CmsModelPlugin } from "~/plugins";
+import { CmsContext, CmsModelField } from "~/types";
+
+// const clearStorageId = (fields: CmsModelField[]): CmsModelField[] => {
+//     return fields.map(field => {
+//         const settings = {
+//             ...(field.settings || {})
+//         };
+//         if (settings.fields && Array.isArray(settings.fields) === true) {
+//             settings.fields = clearStorageId(settings.fields);
+//         }
+//         return {
+//             ...field,
+//             storageId: null as any,
+//             settings
+//         };
+//     });
+// };
 
 const assignStorageId = (fields: CmsModelField[]): CmsModelField[] => {
     return fields.map(field => {
@@ -25,42 +40,58 @@ export const createUpgrade = (): UpgradePlugin<CmsContext> => {
         version: "5.33.0",
         app: "headless-cms",
         apply: async context => {
-            const { security, plugins, cms } = context;
+            const { security, tenancy, cms, i18n } = context;
 
-            const pluginModels = plugins.byType<CmsModelPlugin>(CmsModelPlugin.type);
-
-            const isPluginModel = (model: CmsModel): boolean => {
-                return pluginModels.some(m => m.contentModel.modelId === model.modelId);
-            };
             /**
              * We need to be able to access all data.
              */
             security.disableAuthorization();
             try {
+                const tenant = tenancy.getCurrentTenant();
                 /**
-                 * We need all the models that are not plugin models.
+                 * We need all locales for this tenant, so we can go and find all models for all the locales.
                  */
-                const models = (await cms.listModels()).filter(model => {
-                    return isPluginModel(model) === false;
-                });
-
-                /**
-                 * Then we need to go into each of the model fields and add the storageId, which is the same as the fieldId
-                 */
-                const updatedModels = models.map(model => {
-                    return {
-                        ...model,
-                        fields: assignStorageId(model.fields)
-                    };
-                });
-                /**
-                 * And update all the models
-                 */
-                for (const model of updatedModels) {
-                    await cms.updateModelDirect({
-                        original: models.find(m => m.modelId === model.modelId) as CmsModel,
-                        model
+                const [locales] = await i18n.locales.listLocales();
+                if (locales.length === 0) {
+                    throw new WebinyError(
+                        "There are no locales in the system. Is that possible? Please contact the Webiny team.",
+                        "MISSING_LOCALES",
+                        {
+                            tenant
+                        }
+                    );
+                }
+                for (const locale of locales) {
+                    /**
+                     * We need all the models that are not plugin models.
+                     */
+                    const models = await cms.storageOperations.models.list({
+                        where: {
+                            tenant: tenant.id,
+                            locale: locale.code
+                        }
                     });
+                    if (models.length === 0) {
+                        continue;
+                    }
+
+                    /**
+                     * Then we need to go into each of the model fields and add the storageId, which is the same as the fieldId
+                     */
+                    const updatedModels = models.map(model => {
+                        return {
+                            ...model,
+                            fields: assignStorageId(model.fields)
+                        };
+                    });
+                    /**
+                     * And update all the models
+                     */
+                    for (const model of updatedModels) {
+                        await cms.storageOperations.models.update({
+                            model
+                        });
+                    }
                 }
             } catch (ex) {
                 throw new WebinyError(

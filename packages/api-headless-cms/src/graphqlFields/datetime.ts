@@ -1,17 +1,19 @@
 import { CmsModelField, CmsModelFieldToGraphQLPlugin } from "~/types";
-import { createGraphQLInputField } from "./helpers";
+import { attachRequiredFieldValue, createGraphQLInputField } from "./helpers";
 
-const fieldGraphQLTypes: Record<string, string> = {
+const fieldGraphQLTypes = {
     time: "Time",
     dateTimeWithoutTimezone: "DateTime",
     dateTimeWithTimezone: "DateTimeZ",
     date: "Date"
 };
 
+type FieldGraphQLKeys = keyof typeof fieldGraphQLTypes;
+
 const getFieldGraphQLType = (field: CmsModelField): string => {
-    const type = field.settings?.type;
+    const type = field.settings?.type as FieldGraphQLKeys | undefined;
     if (!type || !fieldGraphQLTypes[type]) {
-        return "DateTime";
+        return fieldGraphQLTypes.dateTimeWithoutTimezone;
     }
     return fieldGraphQLTypes[type];
 };
@@ -55,6 +57,10 @@ export const createDateTimeField = (): CmsModelFieldToGraphQLPlugin => {
         manage: {
             createListFilters,
             createTypeField({ field }) {
+                if (field.multipleValues) {
+                    const def = attachRequiredFieldValue(getFieldGraphQLType(field), field);
+                    return `${field.fieldId}: [${def}]`;
+                }
                 return `${field.fieldId}: ${getFieldGraphQLType(field)}`;
             },
             createInputField({ field }) {

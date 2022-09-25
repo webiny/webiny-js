@@ -62,7 +62,7 @@ export default /* GraphQL */ `
         name: String
         price: Number
         category: RefFieldInput!
-        categories: [RefFieldInput!]
+        categories: [RefFieldInput]
     }
     
     input Product_VariantInput {
