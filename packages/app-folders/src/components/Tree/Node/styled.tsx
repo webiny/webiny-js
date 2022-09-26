@@ -13,6 +13,8 @@ export const Container = styled("div")<ContainerProps>`
     align-items: center;
     padding: 4px 0;
     background: ${props => props.isFocused && "var(--webiny-theme-color-background)"};
+    color: var(--webiny-theme-color-text-primary);
+    fill: currentColor;
 `;
 
 export const IconContainer = styled("div")`

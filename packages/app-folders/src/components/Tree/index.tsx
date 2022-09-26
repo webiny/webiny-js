@@ -13,10 +13,11 @@ import { useListFolders, useUpdateFolder } from "~/hooks";
 
 import { Node } from "./Node";
 import { NodePreview } from "./NodePreview";
+import { Title } from "./Title";
 
 import { Container } from "./styled";
 
-import { FolderItem, DndItemData } from "~/types";
+import { FolderItem, DndItemData, Types } from "~/types";
 
 const handleData = (data: FolderItem[], focusedNodeId: string): NodeModel<DndItemData>[] => {
     return data.map(({ id, parentId, name }) => ({
@@ -31,7 +32,7 @@ const handleData = (data: FolderItem[], focusedNodeId: string): NodeModel<DndIte
 };
 
 type Props = {
-    type: string;
+    type: keyof Types;
     focusedNodeId: string;
 };
 
@@ -67,6 +68,7 @@ export const FolderTree: React.FC<Props> = ({ type, focusedNodeId }) => {
 
     return (
         <Container>
+            <Title type={type} />
             <DndProvider backend={MultiBackend} options={getBackendOptions()}>
                 <Tree
                     tree={treeData}
