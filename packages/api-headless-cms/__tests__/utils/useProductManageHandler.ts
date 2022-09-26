@@ -30,6 +30,7 @@ const productFields = `
         id
     }
     price
+    image
     inStock
     itemsInStock
     availableOn
@@ -48,6 +49,11 @@ const productFields = `
             name
             price
             category {
+                modelId
+                entryId
+                id
+            }
+            categories {
                 modelId
                 entryId
                 id

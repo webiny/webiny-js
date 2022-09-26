@@ -23,10 +23,7 @@ export class CmsModelObjectFieldConverterPlugin extends CmsModelFieldConverterPl
     }
 
     private getChildFields({ field }: GetChildFieldsParams): CmsModelFieldWithParent[] {
-        if (!field?.settings) {
-            return [];
-        }
-        return field.settings.fields || [];
+        return field?.settings?.fields || [];
     }
 
     public override convertToStorage(params: ConvertParams): CmsEntryValues {
@@ -90,9 +87,11 @@ export class CmsModelObjectFieldConverterPlugin extends CmsModelFieldConverterPl
         }
 
         return fields.reduce<CmsEntryValues>((output, field) => {
-            const childFields = field.settings?.fields;
+            const childFields = this.getChildFields({
+                field
+            });
 
-            if (childFields) {
+            if (childFields.length > 0) {
                 if (field.multipleValues) {
                     if (Array.isArray(value[field.fieldId]) === false) {
                         return output;
@@ -213,15 +212,18 @@ export class CmsModelObjectFieldConverterPlugin extends CmsModelFieldConverterPl
         }
 
         return fields.reduce<CmsEntryValues>((output, field) => {
-            const childFields = field.settings?.fields;
+            const childFields = this.getChildFields({
+                field
+            });
 
-            if (childFields) {
+            if (childFields.length > 0) {
                 if (field.multipleValues) {
-                    if (Array.isArray(value[field.storageId]) === false) {
+                    const inputValues = value[field.storageId] as any[] | undefined;
+                    if (!inputValues || Array.isArray(inputValues) === false) {
                         return output;
                     }
-                    const values = value[field.storageId].map((childValue: any) => {
-                        return converterCollection.convertToStorage({
+                    const values = inputValues.map(childValue => {
+                        return converterCollection.convertFromStorage({
                             fields: childFields.map(child => {
                                 return {
                                     ...child,

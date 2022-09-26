@@ -6,9 +6,6 @@ const defaultArgs = {
     },
     model: {
         modelId: "richTextModel"
-    },
-    entry: {
-        savedOn: new Date()
     }
 };
 

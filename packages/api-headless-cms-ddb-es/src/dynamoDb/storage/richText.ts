@@ -33,82 +33,80 @@ const transformArray = (value: any) => {
     return value;
 };
 
-const plugin = new StorageTransformPlugin({
-    fieldType: "rich-text",
-    fromStorage: async ({ field, value: storageValue }) => {
-        if (!storageValue) {
-            return storageValue;
-        } else if (typeof storageValue !== "object") {
-            throw new WebinyError(
-                `RichText value received in "fromStorage" function is not an object in field "${field.storageId}".`
-            );
-        }
-        /**
-         * This is to circumvent a bug introduced with 5.8.0 storage operations.
-         * Do not remove.
-         */
-        if (storageValue.hasOwnProperty("compression") === false) {
-            return storageValue;
-        }
-        const { compression, value } = storageValue;
-        if (!compression) {
-            throw new WebinyError(
-                `Missing compression in "fromStorage" function in field "${
-                    field.storageId
-                }": ${JSON.stringify(storageValue)}.`,
-                "MISSING_COMPRESSION",
-                {
-                    value: storageValue
+export const createRichTextStorageTransformPlugin = () => {
+    return new StorageTransformPlugin({
+        fieldType: "rich-text",
+        fromStorage: async ({ field, value: storageValue }) => {
+            if (!storageValue) {
+                return storageValue;
+            } else if (typeof storageValue !== "object") {
+                throw new WebinyError(
+                    `RichText value received in "fromStorage" function is not an object in field "${field.storageId}".`
+                );
+            }
+            /**
+             * This is to circumvent a bug introduced with 5.8.0 storage operations.
+             * Do not remove.
+             */
+            if (storageValue.hasOwnProperty("compression") === false) {
+                return storageValue;
+            }
+            const { compression, value } = storageValue;
+            if (!compression) {
+                throw new WebinyError(
+                    `Missing compression in "fromStorage" function in field "${
+                        field.storageId
+                    }": ${JSON.stringify(storageValue)}.`,
+                    "MISSING_COMPRESSION",
+                    {
+                        value: storageValue
+                    }
+                );
+            }
+            if (compression !== "jsonpack") {
+                throw new WebinyError(
+                    `This plugin cannot transform something not packed with "jsonpack".`,
+                    "WRONG_COMPRESSION",
+                    {
+                        compression
+                    }
+                );
+            }
+            try {
+                return jsonpack.unpack(value);
+            } catch (ex) {
+                if (process.env.DEBUG !== "true") {
+                    return null;
                 }
-            );
-        }
-        if (compression !== "jsonpack") {
-            throw new WebinyError(
-                `This plugin cannot transform something not packed with "jsonpack".`,
-                "WRONG_COMPRESSION",
-                {
-                    compression
-                }
-            );
-        }
-        try {
-            return jsonpack.unpack(value);
-        } catch (ex) {
-            if (process.env.DEBUG !== "true") {
+                console.log("Error while decompressing rich-text.");
+                console.log(ex.message);
                 return null;
             }
-            console.log("Error while decompressing rich-text.");
-            console.log(ex.message);
-            return null;
-        }
-    },
-    toStorage: async ({ value }) => {
-        /**
-         * There is a possibility that we are trying to compress already compressed value.
-         * Introduced a bug with 5.8.0 storage operations, so just return the value to correct it.
-         */
-        if (value && value.hasOwnProperty("compression") === true) {
-            return value as any;
-        }
-        value = transformArray(value);
-
-        let jsonValue: string | null = null;
-        try {
-            jsonValue = jsonpack.pack(value);
-        } catch (ex) {
-            if (process.env.DEBUG !== "true") {
-                return null;
+        },
+        toStorage: async ({ value }) => {
+            /**
+             * There is a possibility that we are trying to compress already compressed value.
+             * Introduced a bug with 5.8.0 storage operations, so just return the value to correct it.
+             */
+            if (value && value.hasOwnProperty("compression") === true) {
+                return value as any;
             }
-            console.log("Error while compressing rich-text.");
-            console.log(ex.message);
-        }
-        return {
-            compression: "jsonpack",
-            value: jsonValue
-        };
-    }
-});
+            value = transformArray(value);
 
-export default () => {
-    return plugin;
+            let jsonValue: string | null = null;
+            try {
+                jsonValue = jsonpack.pack(value);
+            } catch (ex) {
+                if (process.env.DEBUG !== "true") {
+                    return null;
+                }
+                console.log("Error while compressing rich-text.");
+                console.log(ex.message);
+            }
+            return {
+                compression: "jsonpack",
+                value: jsonValue
+            };
+        }
+    });
 };

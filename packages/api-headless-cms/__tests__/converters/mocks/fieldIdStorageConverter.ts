@@ -256,6 +256,46 @@ const createModelFields = (): CmsModelField[] => {
                                     type: "number",
                                     multipleValues: true,
                                     fieldId: "valuesInMyObjectOptions"
+                                }),
+                                createModelField({
+                                    type: "object",
+                                    multipleValues: true,
+                                    fieldId: "objectInMyObjectOptions",
+                                    settings: {
+                                        /**
+                                         * TODO THIS!
+                                         * myObject.myObjectOptions.objectInMyObjectOptions
+                                         */
+                                        fields: [
+                                            createModelField({
+                                                type: "text",
+                                                multipleValues: true,
+                                                fieldId: "textInObjectInMyObjectOptions"
+                                            }),
+                                            createModelField({
+                                                type: "number",
+                                                multipleValues: true,
+                                                fieldId: "numberInObjectInMyObjectOptions"
+                                            }),
+                                            createModelField({
+                                                type: "object",
+                                                multipleValues: false,
+                                                fieldId: "objectInObjectInMyObjectOptions",
+                                                settings: {
+                                                    fields: [
+                                                        createModelField({
+                                                            type: "datetime",
+                                                            settings: {
+                                                                type: "dateOnly"
+                                                            },
+                                                            fieldId:
+                                                                "datetimeInObjectInObjectInMyObjectOptions"
+                                                        })
+                                                    ]
+                                                }
+                                            })
+                                        ]
+                                    }
                                 })
                             ]
                         }
@@ -533,7 +573,26 @@ const createRawValues = () => {
             ],
             myChildObject: {
                 title: "Title In My Child Object"
-            }
+            },
+            myObjectOptions: [
+                {
+                    titleInMyObjectOptions: "titleInMyObjectOptions text",
+                    valuesInMyObjectOptions: 1234,
+                    objectInMyObjectOptions: [
+                        {
+                            textInObjectInMyObjectOptions: ["textInObjectInMyObjectOptions text"],
+                            numberInObjectInMyObjectOptions: [123456, 654321],
+                            objectInObjectInMyObjectOptions: {
+                                datetimeInObjectInObjectInMyObjectOptions: [
+                                    "2022-09-01",
+                                    "2022-09-02",
+                                    "2022-09-03"
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
         },
         myObjectList: [
             {
@@ -630,7 +689,28 @@ const createStoredValues = () => {
             ],
             "object@myChildObjectId": {
                 "text@titleId": "Title In My Child Object"
-            }
+            },
+            "object@myObjectOptionsId": [
+                {
+                    "text@titleInMyObjectOptionsId": "titleInMyObjectOptions text",
+                    "number@valuesInMyObjectOptionsId": 1234,
+                    "object@objectInMyObjectOptionsId": [
+                        {
+                            "text@textInObjectInMyObjectOptionsId": [
+                                "textInObjectInMyObjectOptions text"
+                            ],
+                            "number@numberInObjectInMyObjectOptionsId": [123456, 654321],
+                            "object@objectInObjectInMyObjectOptionsId": {
+                                "datetime@datetimeInObjectInObjectInMyObjectOptionsId": [
+                                    "2022-09-01",
+                                    "2022-09-02",
+                                    "2022-09-03"
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
         },
         "object@myObjectListId": [
             {

@@ -20,10 +20,11 @@ const convertToBuffer = (value: string | Buffer): Buffer => {
 export interface StorageValue {
     compression: string;
     value: string;
+    isArray?: boolean;
 }
 
 export const createLongTextStorageTransformPlugin = () => {
-    return new StorageTransformPlugin<string, StorageValue>({
+    return new StorageTransformPlugin<string | string[], StorageValue>({
         fieldType: "long-text",
         fromStorage: async ({ field, value: storageValue }) => {
             const typeOf = typeof storageValue;
@@ -34,7 +35,7 @@ export const createLongTextStorageTransformPlugin = () => {
                     `LongText value received in "fromStorage" function is not an object in field "${field.storageId}" - ${field.fieldId}.`
                 );
             }
-            const { compression, value } = storageValue;
+            const { compression, value, isArray } = storageValue;
             /**
              * Check if possibly undefined, null, empty...
              */
@@ -59,20 +60,31 @@ export const createLongTextStorageTransformPlugin = () => {
             }
             try {
                 const buf = await ungzip(convertToBuffer(value));
-                return buf.toString(FROM_STORAGE_ENCODING);
+                const result = buf.toString(FROM_STORAGE_ENCODING);
+                if (!isArray) {
+                    return result;
+                }
+                return JSON.parse(result);
             } catch (ex) {
                 console.log("Error while transforming long-text.");
                 console.log(ex.message);
                 return "";
             }
         },
-        toStorage: async ({ value }) => {
+        toStorage: async ({ value: initialValue }) => {
+            const isArray = Array.isArray(initialValue);
+            const value = isArray ? JSON.stringify(initialValue) : initialValue;
             const compressedValue = await gzip(value);
 
-            return {
+            const result: StorageValue = {
                 compression: GZIP,
                 value: compressedValue.toString(TO_STORAGE_ENCODING)
             };
+            if (!isArray) {
+                return result;
+            }
+            result.isArray = isArray;
+            return result;
         }
     });
 };

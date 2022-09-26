@@ -61,9 +61,6 @@ export const prepareFormData = (
     const runTransformation = createTransformationRunner();
 
     return fields.reduce<Record<string, any>>((output, field) => {
-        // if (input.hasOwnProperty(field.fieldId) === false) {
-        //     return output;
-        // }
         const inputValue = input[field.fieldId];
         const childFields = field.type === "object" ? field.settings?.fields : undefined;
         /**
@@ -74,6 +71,9 @@ export const prepareFormData = (
              * Field can be repeatable, and in that case, we must go through all values and transform them.
              */
             if (field.multipleValues) {
+                if (!inputValue) {
+                    return output;
+                }
                 const values = Array.isArray(inputValue) ? inputValue : undefined;
                 if (!values) {
                     return output;
@@ -81,6 +81,9 @@ export const prepareFormData = (
                 output[field.fieldId] = values.map(value => {
                     return prepareFormData(value, childFields);
                 });
+                return output;
+            }
+            if (!inputValue) {
                 return output;
             }
             /**

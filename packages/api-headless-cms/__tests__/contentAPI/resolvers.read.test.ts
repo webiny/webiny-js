@@ -1425,7 +1425,11 @@ describe("READ - Resolvers", () => {
 
         const { until, getProduct } = useProductReadHandler({ ...readOpts });
 
-        const { createProduct, publishProduct } = useProductManageHandler({
+        const {
+            createProduct,
+            publishProduct,
+            getProduct: manageGetProduct
+        } = useProductManageHandler({
             ...manageOpts
         });
 
@@ -1434,7 +1438,7 @@ describe("READ - Resolvers", () => {
             id: vegetables.id
         };
 
-        const [potatoResponse] = await createProduct({
+        const [createResponse] = await createProduct({
             data: {
                 title: "Potato",
                 price: 99.9,
@@ -1451,19 +1455,117 @@ describe("READ - Resolvers", () => {
                         {
                             name: "Option 1",
                             price: 10,
-                            category: categoryValue
+                            category: categoryValue,
+                            categories: [categoryValue]
                         },
                         {
                             name: "Option 2",
                             price: 20,
-                            category: categoryValue
+                            category: categoryValue,
+                            categories: [categoryValue]
                         }
                     ]
                 }
             }
         });
 
-        const potato = potatoResponse.data.createProduct.data;
+        expect(createResponse).toMatchObject({
+            data: {
+                createProduct: {
+                    data: {
+                        title: "Potato",
+                        price: 99.9,
+                        availableOn: "2020-12-25",
+                        color: "white",
+                        image: "image.png",
+                        availableSizes: ["s", "m"],
+                        category: {
+                            ...categoryValue,
+                            entryId: vegetables.entryId
+                        },
+                        variant: {
+                            name: "Variant 1",
+                            price: 100,
+                            category: {
+                                ...categoryValue,
+                                entryId: vegetables.entryId
+                            },
+                            options: [
+                                {
+                                    name: "Option 1",
+                                    price: 10,
+                                    category: {
+                                        ...categoryValue,
+                                        entryId: vegetables.entryId
+                                    }
+                                },
+                                {
+                                    name: "Option 2",
+                                    price: 20,
+                                    category: {
+                                        ...categoryValue,
+                                        entryId: vegetables.entryId
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const potato = createResponse.data.createProduct.data;
+        const [getAfterCreateResponse] = await manageGetProduct({
+            revision: potato.id
+        });
+
+        expect(getAfterCreateResponse).toMatchObject({
+            data: {
+                getProduct: {
+                    data: {
+                        id: potato.id,
+                        title: "Potato",
+                        price: 99.9,
+                        availableOn: "2020-12-25",
+                        color: "white",
+                        image: "image.png",
+                        availableSizes: ["s", "m"],
+                        category: {
+                            ...categoryValue,
+                            entryId: vegetables.entryId
+                        },
+                        variant: {
+                            name: "Variant 1",
+                            price: 100,
+                            category: {
+                                ...categoryValue,
+                                entryId: vegetables.entryId
+                            },
+                            options: [
+                                {
+                                    name: "Option 1",
+                                    price: 10,
+                                    category: {
+                                        ...categoryValue,
+                                        entryId: vegetables.entryId
+                                    }
+                                },
+                                {
+                                    name: "Option 2",
+                                    price: 20,
+                                    category: {
+                                        ...categoryValue,
+                                        entryId: vegetables.entryId
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    error: null
+                }
+            }
+        });
 
         const [publishResponse] = await publishProduct({ revision: potato.id });
 
@@ -1474,6 +1576,54 @@ describe("READ - Resolvers", () => {
                         id: potato.id,
                         meta: {
                             status: "published"
+                        },
+                        title: "Potato",
+                        price: 99.9,
+                        availableOn: "2020-12-25",
+                        color: "white",
+                        image: "image.png",
+                        availableSizes: ["s", "m"],
+                        category: {
+                            ...categoryValue,
+                            entryId: vegetables.entryId
+                        },
+                        variant: {
+                            name: "Variant 1",
+                            price: 100,
+                            category: {
+                                ...categoryValue,
+                                entryId: vegetables.entryId
+                            },
+                            options: [
+                                {
+                                    name: "Option 1",
+                                    price: 10,
+                                    category: {
+                                        ...categoryValue,
+                                        entryId: vegetables.entryId
+                                    },
+                                    categories: [
+                                        {
+                                            ...categoryValue,
+                                            entryId: vegetables.entryId
+                                        }
+                                    ]
+                                },
+                                {
+                                    name: "Option 2",
+                                    price: 20,
+                                    category: {
+                                        ...categoryValue,
+                                        entryId: vegetables.entryId
+                                    },
+                                    categories: [
+                                        {
+                                            ...categoryValue,
+                                            entryId: vegetables.entryId
+                                        }
+                                    ]
+                                }
+                            ]
                         }
                     },
                     error: null
