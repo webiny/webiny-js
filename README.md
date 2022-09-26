@@ -160,9 +160,6 @@ Top 5 reasons to do so:
 
 <br />
 
-<!-- CONTREEBUTORS:START - Do not remove or modify this section -->
-<!-- prettier-ignore-start -->
-<!-- markdownlint-disable -->
 ## Contributors
 
 ### 🧡 Thanks goes to these wonderful people!
@@ -170,8 +167,3 @@ Top 5 reasons to do so:
 <a href="https://github.com/webiny/webiny-js/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=webiny/webiny-js" />
 </a>
-
-<!-- markdownlint-enable -->
-<!-- prettier-ignore-end -->
-
-<!-- CONTREEBUTORS:END -->
