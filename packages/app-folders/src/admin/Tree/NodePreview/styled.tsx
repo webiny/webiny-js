@@ -1,6 +1,6 @@
-import { css } from "@emotion/css";
+import styled from "@emotion/styled";
 
-export const Container = css`
+export const Container = styled("div")`
     align-items: center;
     background-color: var(--webiny-theme-color-primary);
     border-radius: var(--webiny-theme-border-radius);

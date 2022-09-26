@@ -12,41 +12,51 @@ import { DndProvider } from "react-dnd";
 import { useListFolders, useUpdateFolder } from "~/hooks";
 
 import { Node } from "./Node";
-import { Container, TreeRoot } from "./styled";
+import { NodePreview } from "./NodePreview";
 
-import { DndItem, FolderItem } from "~/types";
-import { NodePreview } from "~/admin/Tree/NodePreview";
+import { Container } from "./styled";
 
-type Props = {
-    type: string;
-};
+import { FolderItem, DndItemData } from "~/types";
 
-const handleData = (data: FolderItem[]): DndItem[] => {
+const handleData = (data: FolderItem[], focusedNodeId: string): NodeModel<DndItemData>[] => {
     return data.map(({ id, parentId, name }) => ({
         id,
-        parent: parentId || 0,
+        parent: parentId || "root",
         text: name,
-        droppable: true
+        droppable: true,
+        data: {
+            isFocused: focusedNodeId === id
+        }
     }));
 };
 
-export const FolderTree: React.FC<Props> = ({ type }) => {
-    const [treeData, setTreeData] = useState<NodeModel<DndItem>[]>([]);
+type Props = {
+    type: string;
+    focusedNodeId: string;
+};
+
+export const FolderTree: React.FC<Props> = ({ type, focusedNodeId }) => {
+    const [treeData, setTreeData] = useState<NodeModel<DndItemData>[]>([]);
 
     const { folders, loading: listLoading } = useListFolders(type);
     const { update } = useUpdateFolder();
 
     const handleDrop = async (
-        newTree: NodeModel<DndItem>[],
+        newTree: NodeModel<DndItemData>[],
         { dragSourceId, dropTargetId }: DropOptions
     ) => {
         setTreeData(newTree);
-        await update({ variables: { id: dragSourceId, data: { parentId: dropTargetId } } });
+        await update({
+            variables: {
+                id: dragSourceId,
+                data: { parentId: !!dropTargetId ? dropTargetId : null }
+            }
+        });
     };
 
     useEffect(() => {
         if (!listLoading) {
-            const newData = handleData(folders);
+            const newData = handleData(folders, focusedNodeId);
             setTreeData(newData);
         }
     }, [folders, listLoading]);
@@ -56,11 +66,11 @@ export const FolderTree: React.FC<Props> = ({ type }) => {
     };
 
     return (
-        <div className={Container}>
+        <Container>
             <DndProvider backend={MultiBackend} options={getBackendOptions()}>
                 <Tree
                     tree={treeData}
-                    rootId={0}
+                    rootId={"root"}
                     onDrop={handleDrop}
                     sort={false}
                     render={(node, { depth, isOpen, onToggle }) => (
@@ -74,10 +84,11 @@ export const FolderTree: React.FC<Props> = ({ type }) => {
                     )}
                     dragPreviewRender={monitorProps => <NodePreview monitorProps={monitorProps} />}
                     classes={{
-                        root: TreeRoot
+                        root: "treeRoot",
+                        dropTarget: "dropTarget"
                     }}
                 />
             </DndProvider>
-        </div>
+        </Container>
     );
 };

@@ -40,9 +40,9 @@ export const LIST_FOLDERS = gql`
 `;
 
 export const UPDATE_FOLDER = gql`
-    mutation UpdateFolder($id: ID!, $name: String, $slug: String, $parentId: ID) {
+    mutation UpdateFolder($id: ID!, $data: FolderUpdateInput!) {
         folders {
-            updateFolder(id: $id, data: { parentId: $parentId, name: $name, slug: $slug }) {
+            updateFolder(id: $id, data: $data) {
                 data ${DATA_FIELD}
                 error ${ERROR_FIELD}
             }

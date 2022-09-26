@@ -1,10 +1,14 @@
-import { css } from "@emotion/css";
+import styled from "@emotion/styled";
 
-export const Container = css`
+export const Container = styled("div")`
     height: 100%;
-`;
 
-export const TreeRoot = css`
-    box-sizing: border-box;
-    height: 100vh;
+    & .treeRoot {
+        box-sizing: border-box;
+        height: 100vh;
+    }
+
+    & .dropTarget {
+        background: var(--webiny-theme-color-background);
+    }
 `;

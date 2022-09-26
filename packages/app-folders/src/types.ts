@@ -32,9 +32,6 @@ export interface UpdateFolderVariables {
     data: Partial<FolderItem>;
 }
 
-export interface DndItem {
-    id: string;
-    parent: string | number;
-    text: string;
-    droppable: boolean;
+export interface DndItemData {
+    isFocused?: boolean;
 }
