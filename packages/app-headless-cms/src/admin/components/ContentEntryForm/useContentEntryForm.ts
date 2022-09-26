@@ -269,8 +269,6 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
         const formData = pick(data, [...fieldsIds]);
 
         const gqlData = prepareFormData(formData, contentModel.fields);
-        // console.log(gqlData);
-        // return;
         if (!entry.id) {
             return createContent(gqlData);
         }
