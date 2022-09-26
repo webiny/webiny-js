@@ -11,6 +11,7 @@ const productFields = `
         id
         title
     }
+    image
     price
     inStock
     itemsInStock

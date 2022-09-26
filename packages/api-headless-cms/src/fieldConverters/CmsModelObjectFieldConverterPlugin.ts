@@ -217,11 +217,12 @@ export class CmsModelObjectFieldConverterPlugin extends CmsModelFieldConverterPl
 
             if (childFields) {
                 if (field.multipleValues) {
-                    if (Array.isArray(value[field.storageId]) === false) {
+                    const inputValues = value[field.storageId] as any[] | undefined;
+                    if (!inputValues || Array.isArray(inputValues) === false) {
                         return output;
                     }
-                    const values = value[field.storageId].map((childValue: any) => {
-                        return converterCollection.convertToStorage({
+                    const values = inputValues.map(childValue => {
+                        return converterCollection.convertFromStorage({
                             fields: childFields.map(child => {
                                 return {
                                     ...child,

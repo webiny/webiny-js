@@ -261,6 +261,7 @@ describe("multiple values in field", () => {
                         },
                         title: "Potato",
                         color: "white",
+                        image: "file.jpg",
                         price: 100.02,
                         availableOn,
                         availableSizes: ["s", "m"],
