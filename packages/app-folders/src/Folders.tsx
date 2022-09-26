@@ -1,7 +1,7 @@
 import React, { memo } from "react";
 import { AddRoute, Layout, Provider, Plugins, AddMenu } from "@webiny/app-admin";
 import { FoldersProvider as ContextProvider } from "./contexts/Folders";
-import { FolderTree } from "~/admin/Tree";
+import { FolderTree } from "~/components/Tree";
 
 const FoldersProviderHOC = (Component: React.FC): React.FC => {
     return function FoldersProvider({ children }) {
