@@ -33,69 +33,56 @@ const defaultArgs = {
 };
 
 describe("long text storage plugin", () => {
-    it("should compress single long text value", async () => {
+    it("should compress and decompress single long text value", async () => {
         const plugin = createLongTextStorageTransformPlugin();
 
-        const result = await plugin.toStorage({
+        const value = "some text which is going to get compressed";
+
+        const compressResult = await plugin.toStorage({
             ...defaultArgs,
-            value: "some text which is going to get compressed"
+            value
         });
 
-        expect(result).toEqual({
+        expect(compressResult).toEqual({
             compression: "gzip",
-            value: "H4sIAAAAAAAAEwXBwQ0AIAgDwFW6GzbAQzHSRMf3rmsS4hNupAWy4ZXLoYJTsJr7sJvjA4APK+EqAAAA"
+            value: expect.any(String)
         });
+
+        const decompressResult = await plugin.fromStorage({
+            ...defaultArgs,
+            value: compressResult
+        });
+
+        expect(decompressResult).toEqual(value);
     });
 
-    it("should decompress single long text value", async () => {
+    it("should compress and decompress multiple value long text", async () => {
         const plugin = createLongTextStorageTransformPlugin();
 
-        const result = await plugin.fromStorage({
-            ...defaultArgs,
-            value: {
-                compression: "gzip",
-                value: "H4sIAAAAAAAAEwXBwQ0AIAgDwFW6GzbAQzHSRMf3rmsS4hNupAWy4ZXLoYJTsJr7sJvjA4APK+EqAAAA"
-            }
-        });
-
-        expect(result).toEqual("some text which is going to get compressed");
-    });
-
-    it("should compress multiple value long text", async () => {
-        const plugin = createLongTextStorageTransformPlugin();
-
-        const result = await plugin.toStorage({
-            ...defaultArgs,
-            value: [
-                "some text which is going to get compressed",
-                "some text which is going to get compressed 2",
-                "some text which is going to get compressed 3"
-            ]
-        });
-
-        expect(result).toEqual({
-            compression: "gzip",
-            value: "H4sIAAAAAAAAE4tWKs7PTVUoSa0oUSjPyEzOUMgsVkjPz8xLVyjJV0hPLVFIzs8tKEotLk5NUdIhQbGCEWnKjZViAYk+xbqMAAAA",
-            isArray: true
-        });
-    });
-
-    it("should decompress multiple long text values", async () => {
-        const plugin = createLongTextStorageTransformPlugin();
-
-        const result = await plugin.fromStorage({
-            ...defaultArgs,
-            value: {
-                compression: "gzip",
-                value: "H4sIAAAAAAAAE4tWKs7PTVUoSa0oUSjPyEzOUMgsVkjPz8xLVyjJV0hPLVFIzs8tKEotLk5NUdIhQbGCEWnKjZViAYk+xbqMAAAA",
-                isArray: true
-            }
-        });
-
-        expect(result).toEqual([
+        const value: string[] = [
             "some text which is going to get compressed",
             "some text which is going to get compressed 2",
             "some text which is going to get compressed 3"
-        ]);
+        ];
+
+        const compressResult = await plugin.toStorage({
+            ...defaultArgs,
+            value
+        });
+
+        expect(compressResult).toEqual({
+            compression: "gzip",
+            value: expect.any(String),
+            isArray: true
+        });
+
+        /**
+         * In the end, we need to get what we sent in.
+         */
+        const decompressResult = await plugin.fromStorage({
+            ...defaultArgs,
+            value: compressResult
+        });
+        expect(decompressResult).toEqual(value);
     });
 });
