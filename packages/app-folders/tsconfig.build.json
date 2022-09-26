@@ -3,7 +3,8 @@
   "include": ["src"],
   "references": [
     { "path": "../app/tsconfig.build.json" },
-    { "path": "../app-admin/tsconfig.build.json" }
+    { "path": "../app-admin/tsconfig.build.json" },
+    { "path": "../app-validation/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",

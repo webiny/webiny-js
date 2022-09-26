@@ -18,6 +18,8 @@ import { Title } from "./Title";
 import { Container } from "./styled";
 
 import { FolderItem, DndItemData, Types } from "~/types";
+import { CreateButton } from "~/components/Tree/CreateButton";
+import { CreateDialog } from "~/components/Tree/CreateDialog";
 
 const handleData = (data: FolderItem[], focusedNodeId: string): NodeModel<DndItemData>[] => {
     return data.map(({ id, parentId, name }) => ({
@@ -38,6 +40,7 @@ type Props = {
 
 export const FolderTree: React.FC<Props> = ({ type, focusedNodeId }) => {
     const [treeData, setTreeData] = useState<NodeModel<DndItemData>[]>([]);
+    const [createDialogOpen, setCreateDialogOpen] = useState<boolean>(false);
 
     const { folders, loading: listLoading } = useListFolders(type);
     const { update } = useUpdateFolder();
@@ -91,6 +94,12 @@ export const FolderTree: React.FC<Props> = ({ type, focusedNodeId }) => {
                     }}
                 />
             </DndProvider>
+            <CreateButton onClick={() => setCreateDialogOpen(true)} />
+            <CreateDialog
+                open={createDialogOpen}
+                onClose={() => setCreateDialogOpen(false)}
+                type={type}
+            />
         </Container>
     );
 };

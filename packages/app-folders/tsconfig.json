@@ -4,6 +4,7 @@
   "references": [
     { "path": "../app" },
     { "path": "../app-admin" },
+    { "path": "../app-validation" },
     { "path": "../plugins" }
   ],
   "compilerOptions": {
@@ -15,7 +16,9 @@
       "@webiny/app/*": ["../app/src/*"],
       "@webiny/app": ["../app/src"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
-      "@webiny/app-admin": ["../app-admin/src"]
+      "@webiny/app-admin": ["../app-admin/src"],
+      "@webiny/app-validation/*": ["../app-validation/src/*"],
+      "@webiny/app-validation": ["../app-validation/src"]
     },
     "baseUrl": "."
   }

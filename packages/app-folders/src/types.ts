@@ -26,7 +26,7 @@ export interface ListFoldersQueryVariables {
 
 export interface UpdateFolderResponse {
     folders: {
-        listFolders: {
+        updateFolder: {
             data: FolderItem[];
             error?: Error | null;
         };
@@ -35,6 +35,19 @@ export interface UpdateFolderResponse {
 
 export interface UpdateFolderVariables {
     id: string;
+    data: Partial<FolderItem>;
+}
+
+export interface CreateFolderResponse {
+    folders: {
+        createFolder: {
+            data: FolderItem;
+            error?: Error | null;
+        };
+    };
+}
+
+export interface CreateFolderVariables {
     data: Partial<FolderItem>;
 }
 
