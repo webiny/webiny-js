@@ -135,11 +135,11 @@ export const uploadFolderToS3 = async ({
                                 cacheControl: cacheControl ? cacheControl.value : undefined
                             });
 
-                            const data: Record<string, string> = {
+                            const data: Record<string, string | Buffer> = {
                                 ...fields,
                                 "Content-Type": contentType || "",
                                 "X-Amz-Meta-Checksum": checksum,
-                                file: fs.readFileSync(path, "utf8")
+                                file: fs.readFileSync(path)
                             };
 
                             if (cacheControl) {
