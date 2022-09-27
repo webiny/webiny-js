@@ -33,6 +33,8 @@ export const filterModelFields: FilterModelFieldsCallable = params => {
                 type
             });
 
+            fieldIdList.push(field.id);
+
             output.push({
                 ...field,
                 settings: {
