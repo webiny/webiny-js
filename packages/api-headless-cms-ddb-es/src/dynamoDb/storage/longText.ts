@@ -1,3 +1,7 @@
+/**
+ * File is @internal
+ */
+
 import WebinyError from "@webiny/error";
 import { compress as gzip, decompress as ungzip } from "@webiny/utils/compression/gzip";
 import { StorageTransformPlugin } from "@webiny/api-headless-cms";
@@ -24,9 +28,14 @@ export const createLongTextStorageTransformPlugin = () => {
         fieldType: "long-text",
         fromStorage: async ({ field, value: storageValue }) => {
             const typeOf = typeof storageValue;
-            if (!storageValue || typeOf === "string" || typeOf === "number") {
-                return storageValue as unknown as string;
-            } else if (typeof storageValue !== "object") {
+            if (
+                !storageValue ||
+                typeOf === "string" ||
+                typeOf === "number" ||
+                Array.isArray(storageValue) === true
+            ) {
+                return storageValue as unknown as string | string[];
+            } else if (typeOf !== "object") {
                 throw new WebinyError(
                     `LongText value received in "fromStorage" function is not an object in field "${field.storageId}" - ${field.fieldId}.`
                 );
@@ -38,8 +47,8 @@ export const createLongTextStorageTransformPlugin = () => {
             if (!compression) {
                 throw new WebinyError(
                     `Missing compression in "fromStorage" function in field "${
-                        field.fieldId
-                    }": ${JSON.stringify(storageValue)}.`,
+                        field.storageId
+                    }" - ${field.fieldId}.": ${JSON.stringify(storageValue)}.`,
                     "MISSING_COMPRESSION",
                     {
                         value: storageValue

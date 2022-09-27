@@ -1123,7 +1123,14 @@ describe("MANAGE - Resolvers", () => {
                 price: 99.9,
                 availableOn: "2020-12-25",
                 color: "white",
+                inStock: true,
+                itemsInStock: 101,
                 image: "image.png",
+                richText: [
+                    {
+                        type: "p"
+                    }
+                ],
                 availableSizes: ["s", "m"],
                 category: {
                     modelId: "category",
@@ -1149,7 +1156,8 @@ describe("MANAGE - Resolvers", () => {
                                     modelId: "category",
                                     id: vegetables.id
                                 }
-                            ]
+                            ],
+                            longText: [null]
                         },
                         {
                             name: "Option 2",
@@ -1163,22 +1171,38 @@ describe("MANAGE - Resolvers", () => {
                                     modelId: "category",
                                     id: vegetables.id
                                 }
-                            ]
+                            ],
+                            longText: ["long text"]
                         }
                     ]
                 }
             }
         });
 
-        expect(potatoResponse).toMatchObject({
+        expect(potatoResponse.errors).toBeUndefined();
+
+        expect(potatoResponse).toEqual({
             data: {
                 createProduct: {
                     data: {
                         id: expect.any(String),
+                        entryId: expect.any(String),
                         title: "Potato",
                         price: 99.9,
+                        createdBy: expect.any(Object),
+                        meta: expect.any(Object),
+                        createdOn: expect.stringMatching(/^20/),
+                        savedOn: expect.stringMatching(/^20/),
                         availableOn: "2020-12-25",
                         color: "white",
+                        inStock: true,
+                        itemsInStock: 101,
+                        image: "image.png",
+                        richText: [
+                            {
+                                type: "p"
+                            }
+                        ],
                         availableSizes: ["s", "m"],
                         category: {
                             modelId: "category",
@@ -1201,7 +1225,15 @@ describe("MANAGE - Resolvers", () => {
                                         modelId: "category",
                                         id: vegetables.id,
                                         entryId: vegetables.entryId
-                                    }
+                                    },
+                                    categories: [
+                                        {
+                                            modelId: "category",
+                                            id: vegetables.id,
+                                            entryId: vegetables.entryId
+                                        }
+                                    ],
+                                    longText: [null]
                                 },
                                 {
                                     name: "Option 2",
@@ -1210,7 +1242,15 @@ describe("MANAGE - Resolvers", () => {
                                         modelId: "category",
                                         id: vegetables.id,
                                         entryId: vegetables.entryId
-                                    }
+                                    },
+                                    categories: [
+                                        {
+                                            modelId: "category",
+                                            id: vegetables.id,
+                                            entryId: vegetables.entryId
+                                        }
+                                    ],
+                                    longText: ["long text"]
                                 }
                             ]
                         }

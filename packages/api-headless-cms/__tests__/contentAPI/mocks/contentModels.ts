@@ -643,6 +643,26 @@ const models: CmsModel[] = [
                                         renderer: {
                                             name: "renderer"
                                         }
+                                    },
+                                    {
+                                        id: ids.field220,
+                                        multipleValues: true,
+                                        helpText: "",
+                                        label: "Long Text List",
+                                        storageId: "longTextStorageId",
+                                        fieldId: "longText",
+                                        type: "long-text",
+                                        validation: [],
+                                        listValidation: [],
+                                        settings: {},
+                                        placeholderText: "placeholder text",
+                                        predefinedValues: {
+                                            enabled: false,
+                                            values: []
+                                        },
+                                        renderer: {
+                                            name: "renderer"
+                                        }
                                     }
                                 ]
                             },

@@ -85,4 +85,63 @@ describe("long text storage plugin", () => {
         });
         expect(decompressResult).toEqual(value);
     });
+
+    it("should do nothing when decompressing a non-compressed value - string", async () => {
+        const plugin = createLongTextStorageTransformPlugin();
+
+        const value: any = "some text which is going to get compressed";
+
+        const decompressResult = await plugin.fromStorage({
+            ...defaultArgs,
+            value
+        });
+        expect(decompressResult).toEqual(value);
+    });
+
+    it("should do nothing when decompressing a non-compressed value - number", async () => {
+        const plugin = createLongTextStorageTransformPlugin();
+
+        const value: any = 1234567890;
+
+        const decompressResult = await plugin.fromStorage({
+            ...defaultArgs,
+            value
+        });
+        expect(decompressResult).toEqual(value);
+    });
+
+    it("should do nothing when decompressing a non-compressed value - array", async () => {
+        const plugin = createLongTextStorageTransformPlugin();
+
+        const value: any = ["some text which is going to get compressed"];
+
+        const decompressResult = await plugin.fromStorage({
+            ...defaultArgs,
+            value
+        });
+        expect(decompressResult).toEqual(value);
+    });
+
+    it("should fail with decompression because no compression definition value exists", async () => {
+        const plugin = createLongTextStorageTransformPlugin();
+
+        let error: any = undefined;
+        try {
+            await plugin.fromStorage({
+                ...defaultArgs,
+                value: {} as any
+            });
+        } catch (ex: any) {
+            error = {
+                message: ex.message,
+                code: ex.code,
+                data: ex.data
+            };
+        }
+        expect(error).toEqual({
+            message: `Missing compression in "fromStorage" function in field "longTextStorageFieldId" - longTextFieldId.": {}.`,
+            code: "MISSING_COMPRESSION",
+            data: expect.any(Object)
+        });
+    });
 });
