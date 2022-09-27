@@ -18,8 +18,8 @@ import { Title } from "./Title";
 import { Container } from "./styled";
 
 import { FolderItem, DndItemData, Types } from "~/types";
-import { CreateButton } from "~/components/Tree/CreateButton";
-import { CreateDialog } from "~/components/Tree/CreateDialog";
+import { CreateButton } from "~/components/Tree/ButtonCreate";
+import { CreateDialog } from "~/components/Tree/DialogCreate";
 
 const handleData = (data: FolderItem[], focusedNodeId: string): NodeModel<DndItemData>[] => {
     return data.map(({ id, parentId, name }) => ({
