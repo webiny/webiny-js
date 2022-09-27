@@ -17,7 +17,7 @@ export const Container = styled("div")<ContainerProps>`
     fill: currentColor;
 `;
 
-export const IconContainer = styled("div")`
+export const Icon = styled("div")`
     display: flex;
     align-items: center;
     justify-content: center;
@@ -26,17 +26,26 @@ export const IconContainer = styled("div")`
     cursor: pointer;
 `;
 
-export const ArrowIconContainer = styled(IconContainer)<ArrowIconContainerProps>`
+export const ArrowIcon = styled(Icon)<ArrowIconContainerProps>`
     transition: transform linear 0.1s;
     transform: ${props => (props.isOpen ? "rotate(90deg)" : "rotate(0deg)")};
 `;
 
-export const FolderIconContainer = styled(IconContainer)`
+export const FolderIcon = styled(Icon)`
     margin-right: 8px;
 `;
 
-export const Label = styled("div")`
+export const Content = styled("div")`
     display: flex;
     align-items: center;
     cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+`;
+
+export const Text = styled("div")`
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 24px;
 `;

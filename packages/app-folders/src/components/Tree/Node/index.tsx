@@ -3,7 +3,7 @@ import { ReactComponent as ArrowRight } from "@material-design-icons/svg/filled/
 import { ReactComponent as Folder } from "@material-design-icons/svg/filled/folder.svg";
 import { NodeModel, useDragOver } from "@minoru/react-dnd-treeview";
 
-import { Container, ArrowIconContainer, FolderIconContainer, Label } from "./styled";
+import { Container, ArrowIcon, FolderIcon, Text, Content } from "./styled";
 
 import { DndItemData } from "~/types";
 
@@ -37,15 +37,15 @@ export const Node: React.FC<Props> = props => {
             style={{ paddingInlineStart: indent }}
             {...dragOverProps}
         >
-            <ArrowIconContainer isOpen={isOpen} onClick={handleToggle}>
+            <ArrowIcon isOpen={isOpen} onClick={handleToggle}>
                 <ArrowRight />
-            </ArrowIconContainer>
-            <Label onClick={handleClick}>
-                <FolderIconContainer>
+            </ArrowIcon>
+            <Content onClick={handleClick}>
+                <FolderIcon>
                     <Folder />
-                </FolderIconContainer>
-                {node.text}
-            </Label>
+                </FolderIcon>
+                <Text>{node.text}</Text>
+            </Content>
         </Container>
     );
 };
