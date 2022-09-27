@@ -24,7 +24,12 @@ export const createLongTextStorageTransformPlugin = () => {
         fieldType: "long-text",
         fromStorage: async ({ field, value: storageValue }) => {
             const typeOf = typeof storageValue;
-            if (!storageValue || typeOf === "string" || typeOf === "number") {
+            if (
+                !storageValue ||
+                typeOf === "string" ||
+                typeOf === "number" ||
+                Array.isArray(storageValue) === true
+            ) {
                 return storageValue as unknown as string;
             } else if (typeof storageValue !== "object") {
                 throw new WebinyError(

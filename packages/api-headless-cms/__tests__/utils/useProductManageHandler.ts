@@ -58,6 +58,7 @@ const productFields = `
                 entryId
                 id
             }
+            longText
         }
     }
 `;
