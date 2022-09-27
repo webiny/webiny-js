@@ -194,9 +194,13 @@ export interface CmsModelField {
          */
         defaultValue?: string | number | null | undefined;
         /**
-         * Object field.
+         * Object field has child fields.
          */
         fields?: CmsModelField[];
+        /**
+         * Object field has child fields - so it needs to have a layout.
+         */
+        layout?: string[][];
         /**
          * Ref field.
          */
@@ -206,10 +210,15 @@ export interface CmsModelField {
          */
         type?: string;
         /**
-         * There are a lot of other settings that are possible to add so we keep the type opened.
+         * There are a lot of other settings that are possible to add, so we keep the type opened.
          */
         [key: string]: any;
     };
+    /**
+     * Is this field marked as deleted?
+     * Note that we are actually never deleting any of the fields.
+     */
+    isDeleted?: boolean;
 }
 
 /**
