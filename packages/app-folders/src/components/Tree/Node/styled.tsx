@@ -28,7 +28,6 @@ export const IconContainer = styled("div")`
 
 export const ArrowIconContainer = styled(IconContainer)<ArrowIconContainerProps>`
     transition: transform linear 0.1s;
-
     transform: ${props => (props.isOpen ? "rotate(90deg)" : "rotate(0deg)")};
 `;
 

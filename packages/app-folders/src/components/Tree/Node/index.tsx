@@ -1,10 +1,10 @@
 import React from "react";
 import { ReactComponent as ArrowRight } from "@material-design-icons/svg/filled/arrow_right.svg";
 import { ReactComponent as Folder } from "@material-design-icons/svg/filled/folder.svg";
+import { NodeModel, useDragOver } from "@minoru/react-dnd-treeview";
 
 import { Container, ArrowIconContainer, FolderIconContainer, Label } from "./styled";
 
-import { NodeModel } from "@minoru/react-dnd-treeview";
 import { DndItemData } from "~/types";
 
 type Props = {
@@ -19,6 +19,8 @@ export const Node: React.FC<Props> = props => {
     const { node, depth, isOpen, onToggle, onClick } = props;
     const indent = depth * 24;
 
+    const dragOverProps = useDragOver(node.id, isOpen, onToggle);
+
     const handleToggle = (e: React.MouseEvent) => {
         e.stopPropagation();
         onToggle(node.id);
@@ -30,7 +32,11 @@ export const Node: React.FC<Props> = props => {
     };
 
     return (
-        <Container isFocused={!!node.data?.isFocused} style={{ paddingInlineStart: indent }}>
+        <Container
+            isFocused={!!node.data?.isFocused}
+            style={{ paddingInlineStart: indent }}
+            {...dragOverProps}
+        >
             <ArrowIconContainer isOpen={isOpen} onClick={handleToggle}>
                 <ArrowRight />
             </ArrowIconContainer>
