@@ -21,24 +21,34 @@ import { FolderItem, DndItemData, Types } from "~/types";
 import { CreateButton } from "~/components/Tree/ButtonCreate";
 import { CreateDialog } from "~/components/Tree/DialogCreate";
 
-const handleData = (data: FolderItem[], focusedNodeId: string): NodeModel<DndItemData>[] => {
-    return data.map(({ id, parentId, name }) => ({
-        id,
-        parent: parentId || "root",
-        text: name,
-        droppable: true,
-        data: {
-            isFocused: focusedNodeId === id
-        }
-    }));
+const createTreeData = (folders: FolderItem[], focusedNodeId: string): NodeModel<DndItemData>[] => {
+    return folders.map(item => {
+        const { id, parentId, name, slug, type } = item;
+
+        return {
+            id,
+            parent: parentId || "root",
+            text: name,
+            droppable: true,
+            data: {
+                id,
+                name,
+                slug,
+                parentId,
+                type,
+                isFocused: focusedNodeId === id
+            }
+        };
+    });
 };
 
 type Props = {
     type: keyof Types;
     focusedNodeId: string;
+    onNodeClick: (data: NodeModel<DndItemData>["data"]) => void;
 };
 
-export const FolderTree: React.FC<Props> = ({ type, focusedNodeId }) => {
+export const FolderTree: React.FC<Props> = ({ type, focusedNodeId, onNodeClick }) => {
     const [treeData, setTreeData] = useState<NodeModel<DndItemData>[]>([]);
     const [createDialogOpen, setCreateDialogOpen] = useState<boolean>(false);
 
@@ -60,14 +70,10 @@ export const FolderTree: React.FC<Props> = ({ type, focusedNodeId }) => {
 
     useEffect(() => {
         if (!listLoading) {
-            const newData = handleData(folders, focusedNodeId);
-            setTreeData(newData);
+            const data = createTreeData(folders, focusedNodeId);
+            setTreeData(data);
         }
     }, [folders, listLoading]);
-
-    const onNodeClick = (id: any) => {
-        console.log("hello", id);
-    };
 
     return (
         <Container>
@@ -84,7 +90,7 @@ export const FolderTree: React.FC<Props> = ({ type, focusedNodeId }) => {
                             depth={depth}
                             isOpen={isOpen}
                             onToggle={onToggle}
-                            onClick={onNodeClick}
+                            onClick={data => onNodeClick(data)}
                         />
                     )}
                     dragPreviewRender={monitorProps => <NodePreview monitorProps={monitorProps} />}

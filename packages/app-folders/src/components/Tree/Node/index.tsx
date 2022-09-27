@@ -11,8 +11,8 @@ type Props = {
     node: NodeModel<DndItemData>;
     depth: number;
     isOpen: boolean;
-    onToggle: (id: NodeModel["id"]) => void;
-    onClick: (id: NodeModel["id"]) => void;
+    onToggle: (id: NodeModel<DndItemData>["id"]) => void;
+    onClick: (data: NodeModel<DndItemData>["data"]) => void;
 };
 
 export const Node: React.FC<Props> = props => {
@@ -28,7 +28,7 @@ export const Node: React.FC<Props> = props => {
 
     const handleClick = (e: React.MouseEvent) => {
         e.stopPropagation();
-        onClick(node.id);
+        onClick(node.data);
     };
 
     return (

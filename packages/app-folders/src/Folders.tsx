@@ -26,7 +26,11 @@ const FoldersExtension: React.FC = () => {
             <Plugins>
                 <AddRoute path={"/folders/list"}>
                     <Layout title={"Folders - List"}>
-                        <FolderTree type={"page"} focusedNodeId={"631f3285d878490009edd720"} />
+                        <FolderTree
+                            type={"page"}
+                            focusedNodeId={"631f3285d878490009edd720"}
+                            onNodeClick={data => console.log("New Data", data)}
+                        />
                     </Layout>
                 </AddRoute>
                 <AddMenu name={"settings"}>

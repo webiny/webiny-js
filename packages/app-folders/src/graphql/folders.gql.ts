@@ -14,6 +14,7 @@ const DATA_FIELD = /* GraphQL */ `
         name
         slug
         parentId
+        type
     }
 `;
 

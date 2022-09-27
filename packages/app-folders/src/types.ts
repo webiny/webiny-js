@@ -51,6 +51,6 @@ export interface CreateFolderVariables {
     data: Partial<FolderItem>;
 }
 
-export interface DndItemData {
+export interface DndItemData extends FolderItem {
     isFocused?: boolean;
 }
