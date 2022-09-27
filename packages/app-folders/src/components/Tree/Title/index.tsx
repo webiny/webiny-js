@@ -1,5 +1,7 @@
 import React from "react";
+
 import { ReactComponent as Dashboard } from "@material-design-icons/svg/filled/auto_awesome_motion.svg";
+import { i18n } from "@webiny/app/i18n";
 
 import { Types } from "~/types";
 
@@ -9,10 +11,12 @@ type Props = {
     type: keyof Types;
 };
 
+const t = i18n.ns("app-folders/components/tree/title");
+
 const types = {
-    page: "All pages",
-    cms: "All entries",
-    file: "All files"
+    page: t("All pages"),
+    cms: t("All entries"),
+    file: t("All files")
 };
 
 export const Title: React.FC<Props> = ({ type }) => {

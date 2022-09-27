@@ -5,11 +5,14 @@ import get from "lodash/get";
 import { UPDATE_FOLDER } from "~/graphql/folders.gql";
 
 import { UpdateFolderResponse, UpdateFolderVariables } from "~/types";
+import { i18n } from "@webiny/app/i18n";
 
 interface UseUpdateFolder {
     update: Function;
     loading: boolean;
 }
+
+const t = i18n.ns("app-folders/hooks/use-update-folder");
 
 export const useUpdateFolder = (): UseUpdateFolder => {
     const { showSnackbar } = useSnackbar();
@@ -23,7 +26,7 @@ export const useUpdateFolder = (): UseUpdateFolder => {
                     showSnackbar(error.message);
                     return;
                 }
-                showSnackbar("Folder updated successfully!");
+                showSnackbar(t("Folder updated successfully!"));
             }
         }
     );

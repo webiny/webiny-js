@@ -1,5 +1,6 @@
 import { useMutation } from "@apollo/react-hooks";
 import { useSnackbar } from "@webiny/app-admin";
+import { i18n } from "@webiny/app/i18n";
 import get from "lodash/get";
 
 import { CREATE_FOLDER } from "~/graphql/folders.gql";
@@ -10,6 +11,8 @@ interface UseUpdateFolder {
     create: Function;
     loading: boolean;
 }
+
+const t = i18n.ns("app-folders/hooks/use-create-folder");
 
 export const useCreateFolder = (): UseUpdateFolder => {
     const { showSnackbar } = useSnackbar();
@@ -23,7 +26,7 @@ export const useCreateFolder = (): UseUpdateFolder => {
                     showSnackbar(error.message);
                     return;
                 }
-                showSnackbar("Folder created successfully!");
+                showSnackbar(t("Folder created successfully!"));
             }
         }
     );

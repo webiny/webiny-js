@@ -17,13 +17,13 @@ import { CreateDialogContainer, CreateDialogActions } from "./styled";
 
 import { FolderItem, Types } from "~/types";
 
-const t = i18n.ns("app-folders/components/tree/create-dialog");
-
 export type Props = {
     open: boolean;
     onClose: DialogOnClose;
     type: keyof Types;
 };
+
+const t = i18n.ns("app-folders/components/tree/dialog-create");
 
 export const CreateDialog: React.FC<Props> = ({ onClose, open, type }) => {
     const { loading, create } = useCreateFolder();
