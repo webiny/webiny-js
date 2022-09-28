@@ -39,7 +39,8 @@ import {
     PbEditorElement,
     EventActionHandler,
     EventActionHandlerTarget,
-    EventActionHandlerCallableState
+    EventActionHandlerCallableState,
+    GetElementTreeProps
 } from "~/types";
 import { composeAsync, composeSync, AsyncProcessor, SyncProcessor } from "@webiny/utils/compose";
 import { UpdateElementTreeActionEvent } from "~/editor/recoil/actions";
@@ -87,12 +88,7 @@ const isTrackedAtomChanged = (state: Partial<PbState>): boolean => {
     return false;
 };
 
-export type GetElementTreeResult = {
-    element?: PbEditorElement;
-    path?: string[];
-} | void;
-
-export type GetElementTree = AsyncProcessor<GetElementTreeResult, PbEditorElement>;
+export type GetElementTree = AsyncProcessor<GetElementTreeProps, PbEditorElement>;
 export type GetCallableState = SyncProcessor<Partial<EventActionHandlerCallableState>>;
 export type SaveCallableResults<TState = Partial<PbState>> = SyncProcessor<{
     state: TState & Partial<PbState>;
@@ -179,7 +175,7 @@ export const EventActionHandlerProvider = makeComposable<
 
     const defaultGetElementTree = useCallback<GetElementTree>(
         () =>
-            async function getChildElement(props: GetElementTreeResult): Promise<PbEditorElement> {
+            async function getChildElement(props: GetElementTreeProps): Promise<PbEditorElement> {
                 let element = props?.element;
                 if (!element) {
                     element = (await getElementById(rootElementAtomValue)) as PbEditorElement;
