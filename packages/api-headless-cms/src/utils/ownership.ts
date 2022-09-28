@@ -16,8 +16,8 @@ export const checkOwnership = (
     }
 
     const identity = context.security.getIdentity();
-    const owner = identity && record["ownedBy"] && record["ownedBy"].id === identity.id;
-    const creator = identity && record["createdBy"] && record["createdBy"].id === identity.id;
+    const owner = identity && record.ownedBy?.id === identity.id;
+    const creator = identity && record.createdBy?.id === identity.id;
 
     if (!owner && !creator) {
         throw new NotAuthorizedError({

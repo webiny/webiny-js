@@ -1,5 +1,4 @@
 import { ApiEndpoint, CmsFieldTypePlugins, CmsModel, CmsModelFieldToGraphQLPlugin } from "~/types";
-import { filterModelFields } from "~/utils/filterModelFields";
 
 interface RenderListFilterFieldsParams {
     model: CmsModel;
@@ -67,16 +66,8 @@ export const renderListFilterFields: RenderListFilterFields = (params): string =
             "ownedBy_not_in: [String!]"
         ].join("\n")
     ];
-    /**
-     * Depending on the endpoint type we need to get a different set of fields.
-     */
-    const modelFields = filterModelFields({
-        type,
-        fields: model.fields,
-        layout: model.layout
-    });
 
-    for (const field of modelFields.fields) {
+    for (const field of model.fields) {
         // Every time a client updates content model's fields, we check the type of each field. If a field plugin
         // for a particular "field.type" doesn't exist on the backend yet, we throw an error. But still, we also
         // want to be careful when accessing the field plugin here too. It is still possible to have a content model

@@ -1,46 +1,31 @@
-import { ApiEndpoint, CmsModelField } from "~/types";
+import { ApiEndpoint, CmsModel, CmsModelField } from "~/types";
 
-export interface FilterModelFieldsCallableParams {
+/**
+ * Filters deleted fields from the list of fields.
+ *
+ * Used to recursively delete fields - object field.
+ */
+interface FilterModelFieldsCallableParams {
     fields: CmsModelField[];
-    layout: string[][];
-    type: ApiEndpoint;
 }
-export interface FilterModelFieldsCallableResponse {
-    fields: CmsModelField[];
-    layout: string[][];
-}
-export interface FilterModelFieldsCallable {
-    (params: FilterModelFieldsCallableParams): FilterModelFieldsCallableResponse;
+interface FilterModelFieldsCallable {
+    (params: FilterModelFieldsCallableParams): CmsModelField[];
 }
 
-export const filterModelFields: FilterModelFieldsCallable = params => {
-    const { fields, layout, type } = params;
-    if (type === "manage") {
-        return {
-            fields,
-            layout
-        };
-    }
-
-    const fieldIdList: string[] = [];
-    const newFields = fields.reduce<CmsModelField[]>((output, field) => {
+const filterDeletedFields: FilterModelFieldsCallable = params => {
+    return params.fields.reduce<CmsModelField[]>((output, field) => {
         if (!!field.isDeleted) {
             return output;
         } else if (field.settings?.fields) {
-            const { fields: childFields, layout: childLayout } = filterModelFields({
-                fields: field.settings.fields,
-                layout: field.settings.layout || [],
-                type
+            const fields = filterDeletedFields({
+                fields: field.settings.fields
             });
-
-            fieldIdList.push(field.id);
 
             output.push({
                 ...field,
                 settings: {
                     ...field.settings,
-                    fields: childFields,
-                    layout: childLayout
+                    fields
                 }
             });
             return output;
@@ -48,30 +33,44 @@ export const filterModelFields: FilterModelFieldsCallable = params => {
 
         output.push(field);
 
-        fieldIdList.push(field.id);
-
         return output;
     }, []);
+};
 
-    const newLayout = layout.reduce<string[][]>((output, row) => {
-        const cells = row.reduce<string[]>((cellOutput, cell) => {
-            if (fieldIdList.some(id => id === cell)) {
-                cellOutput.push(cell);
-            }
-
-            return cellOutput;
-        }, []);
-
-        if (cells.length === 0) {
-            return output;
-        }
-        output.push(cells);
-
-        return output;
-    }, []);
-
+/**
+ * Filters deleted fields from given model.
+ */
+interface FilterModelDeletedFieldsCallableParams {
+    model: CmsModel;
+}
+interface FilterModelDeletedFieldsCallable {
+    (params: FilterModelDeletedFieldsCallableParams): CmsModel;
+}
+const filterModelDeletedFields: FilterModelDeletedFieldsCallable = ({ model }) => {
+    const fields = filterDeletedFields(model);
     return {
-        fields: newFields,
-        layout: newLayout
+        ...model,
+        fields
     };
+};
+
+/**
+ * Filters deleted fields from all given models.
+ */
+interface FilterModelsDeletedFieldsCallableParams {
+    models: CmsModel[];
+    type: ApiEndpoint;
+}
+interface FilterModelsDeletedFieldsCallable {
+    (params: FilterModelsDeletedFieldsCallableParams): CmsModel[];
+}
+export const filterModelsDeletedFields: FilterModelsDeletedFieldsCallable = ({ models, type }) => {
+    if (type === "manage") {
+        return models;
+    }
+    return models.map(model => {
+        return filterModelDeletedFields({
+            model
+        });
+    });
 };
