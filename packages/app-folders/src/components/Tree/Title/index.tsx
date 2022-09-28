@@ -3,13 +3,8 @@ import React from "react";
 import { ReactComponent as Dashboard } from "@material-design-icons/svg/filled/auto_awesome_motion.svg";
 import { i18n } from "@webiny/app/i18n";
 
-import { Types } from "~/types";
-
 import { Container, IconContainer, Label } from "./styled";
-
-type Props = {
-    type: keyof Types;
-};
+import { useFolders } from "~/hooks";
 
 const t = i18n.ns("app-folders/components/tree/title");
 
@@ -19,13 +14,19 @@ const types = {
     file: t("All files")
 };
 
-export const Title: React.FC<Props> = ({ type }) => {
+export const Title: React.FC = () => {
+    const { folderType } = useFolders();
+
     return (
         <Container>
-            <IconContainer>
-                <Dashboard />
-            </IconContainer>
-            <Label>{types[type]}</Label>
+            {folderType && (
+                <>
+                    <IconContainer>
+                        <Dashboard />
+                    </IconContainer>
+                    <Label>{types[folderType]}</Label>
+                </>
+            )}
         </Container>
     );
 };

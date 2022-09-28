@@ -6,33 +6,36 @@ import get from "lodash/get";
 import { CREATE_FOLDER } from "~/graphql/folders.gql";
 
 import { CreateFolderResponse, CreateFolderVariables } from "~/types";
+import { useListFolders } from "~/hooks/useListFolders";
 
-interface UseUpdateFolder {
-    create: Function;
+interface UseCreateFolder {
+    createFolder: Function;
     loading: boolean;
 }
 
 const t = i18n.ns("app-folders/hooks/use-create-folder");
 
-export const useCreateFolder = (): UseUpdateFolder => {
+export const useCreateFolder = (): UseCreateFolder => {
     const { showSnackbar } = useSnackbar();
+    const { refetchFolders } = useListFolders();
 
-    const [create, { loading }] = useMutation<CreateFolderResponse, CreateFolderVariables>(
+    const [createFolder, { loading }] = useMutation<CreateFolderResponse, CreateFolderVariables>(
         CREATE_FOLDER,
         {
             onCompleted: response => {
                 const error = get(response, "folders.createFolder.error");
                 if (error) {
-                    showSnackbar(error.message);
-                    return;
+                    return showSnackbar(error.message);
                 }
+
+                refetchFolders();
                 showSnackbar(t("Folder created successfully!"));
             }
         }
     );
 
     return {
-        create,
+        createFolder,
         loading
     };
 };

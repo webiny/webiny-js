@@ -1,79 +1,28 @@
-import React, { useState, memo, useMemo } from "react";
-import { useQuery } from "@apollo/react-hooks";
-import gql from "graphql-tag";
+import React, { useState, useMemo, Dispatch, SetStateAction } from "react";
 
-import { FolderItem, ListFoldersResponse } from "~/types";
+import { Types } from "~/types";
 
-export const LIST_FOLDERS = gql`
-    query ListFolders {
-        folders {
-            listFolders(where: { type: "page" }) {
-                data {
-                    id
-                    name
-                    slug
-                    parentId
-                }
-            }
-        }
-    }
-`;
-
-export interface FoldersContextState {
-    folders: FolderItem[];
+export interface FoldersContext {
+    folderType: keyof Types | null;
+    setFolderType: Dispatch<SetStateAction<keyof Types | null>>;
 }
 
-export interface FoldersContextValue {
-    state: FoldersContextState;
-    setState: (state: Partial<FoldersContextState>) => void;
-}
-
-export interface FoldersProviderProps {
-    loader?: React.ReactElement;
-}
-
-export const FoldersContext = React.createContext<FoldersContextValue>({
-    state: {
-        folders: []
-    },
-    setState: () => {
+export const FoldersContext = React.createContext<FoldersContext>({
+    folderType: null,
+    setFolderType: () => {
         return void 0;
     }
 });
 
-const defaultState: FoldersContextState = { folders: [] };
+export const FoldersProvider: React.FC = props => {
+    const [folderType, setFolderType] = useState<keyof Types | null>(null);
 
-const FoldersProviderComponent: React.FC<FoldersProviderProps> = props => {
-    const { children, loader } = props;
-    const [state, setState] = useState<FoldersContextState>(defaultState);
-    const { loading } = useQuery<ListFoldersResponse>(LIST_FOLDERS, {
-        //skip: state.folders.length > 0,
-        onCompleted(data) {
-            const { folders } = data?.folders?.listFolders || {};
-            setState({ folders });
-        }
-    });
+    const value = useMemo(() => {
+        return {
+            folderType,
+            setFolderType
+        };
+    }, [folderType]);
 
-    if (loading && loader) {
-        return loader;
-    }
-
-    const value = useMemo(
-        (): FoldersContextValue => ({
-            state,
-            setState: (newState: Partial<FoldersContextState>) => {
-                return setState(prev => {
-                    return {
-                        ...prev,
-                        ...newState
-                    };
-                });
-            }
-        }),
-        [state]
-    );
-
-    return <FoldersContext.Provider value={value}>{children}</FoldersContext.Provider>;
+    return <FoldersContext.Provider value={value}>{props.children}</FoldersContext.Provider>;
 };
-
-export const FoldersProvider: React.FC<FoldersProviderProps> = memo(FoldersProviderComponent);

@@ -8,7 +8,7 @@ import { UpdateFolderResponse, UpdateFolderVariables } from "~/types";
 import { i18n } from "@webiny/app/i18n";
 
 interface UseUpdateFolder {
-    update: Function;
+    updateFolder: Function;
     loading: boolean;
 }
 
@@ -17,14 +17,13 @@ const t = i18n.ns("app-folders/hooks/use-update-folder");
 export const useUpdateFolder = (): UseUpdateFolder => {
     const { showSnackbar } = useSnackbar();
 
-    const [update, { loading }] = useMutation<UpdateFolderResponse, UpdateFolderVariables>(
+    const [updateFolder, { loading }] = useMutation<UpdateFolderResponse, UpdateFolderVariables>(
         UPDATE_FOLDER,
         {
             onCompleted: response => {
                 const error = get(response, "folders.updateFolder.error");
                 if (error) {
-                    showSnackbar(error.message);
-                    return;
+                    return showSnackbar(error.message);
                 }
                 showSnackbar(t("Folder updated successfully!"));
             }
@@ -32,7 +31,7 @@ export const useUpdateFolder = (): UseUpdateFolder => {
     );
 
     return {
-        update,
+        updateFolder,
         loading
     };
 };

@@ -9,7 +9,7 @@ import {
 } from "@minoru/react-dnd-treeview";
 import { DndProvider } from "react-dnd";
 
-import { useListFolders, useUpdateFolder } from "~/hooks";
+import { useFolders, useListFolders, useUpdateFolder } from "~/hooks";
 
 import { Node } from "./Node";
 import { NodePreview } from "./NodePreview";
@@ -21,7 +21,10 @@ import { FolderItem, DndItemData, Types } from "~/types";
 import { CreateButton } from "~/components/Tree/ButtonCreate";
 import { CreateDialog } from "~/components/Tree/DialogCreate";
 
-const createTreeData = (folders: FolderItem[], focusedNodeId: string): NodeModel<DndItemData>[] => {
+const createTreeData = (
+    folders: FolderItem[] = [],
+    focusedNodeId: string
+): NodeModel<DndItemData>[] => {
     return folders.map(item => {
         const { id, parentId, name, slug, type } = item;
 
@@ -49,18 +52,19 @@ type Props = {
 };
 
 export const FolderTree: React.FC<Props> = ({ type, focusedNodeId, onNodeClick }) => {
+    const { setFolderType } = useFolders();
     const [treeData, setTreeData] = useState<NodeModel<DndItemData>[]>([]);
     const [createDialogOpen, setCreateDialogOpen] = useState<boolean>(false);
 
-    const { folders, loading: listLoading } = useListFolders(type);
-    const { update } = useUpdateFolder();
+    const { folders } = useListFolders();
+    const { updateFolder } = useUpdateFolder();
 
     const handleDrop = async (
         newTree: NodeModel<DndItemData>[],
         { dragSourceId, dropTargetId }: DropOptions
     ) => {
         setTreeData(newTree);
-        await update({
+        await updateFolder({
             variables: {
                 id: dragSourceId,
                 data: { parentId: !!dropTargetId ? dropTargetId : null }
@@ -69,11 +73,20 @@ export const FolderTree: React.FC<Props> = ({ type, focusedNodeId, onNodeClick }
     };
 
     useEffect(() => {
-        if (!listLoading) {
+        if (type) {
+            setFolderType(type);
+        }
+        return () => {
+            setFolderType(null);
+        };
+    }, [type]);
+
+    useEffect(() => {
+        if (folders) {
             const data = createTreeData(folders, focusedNodeId);
             setTreeData(data);
         }
-    }, [folders, listLoading]);
+    }, [folders]);
 
     return (
         <Container>
@@ -101,11 +114,7 @@ export const FolderTree: React.FC<Props> = ({ type, focusedNodeId, onNodeClick }
                 />
             </DndProvider>
             <CreateButton onClick={() => setCreateDialogOpen(true)} />
-            <CreateDialog
-                open={createDialogOpen}
-                onClose={() => setCreateDialogOpen(false)}
-                type={type}
-            />
+            <CreateDialog open={createDialogOpen} onClose={() => setCreateDialogOpen(false)} />
         </Container>
     );
 };

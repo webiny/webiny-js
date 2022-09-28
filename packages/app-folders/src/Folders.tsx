@@ -14,12 +14,6 @@ const FoldersProviderHOC = (Component: React.FC): React.FC => {
 };
 
 const FoldersExtension: React.FC = () => {
-    //plugins.register(i18nPlugins());
-
-    /**
-     * TODO @ts-refactor
-     * Provider.hoc expects ComponentType.
-     */
     return (
         <>
             <Provider hoc={FoldersProviderHOC} />

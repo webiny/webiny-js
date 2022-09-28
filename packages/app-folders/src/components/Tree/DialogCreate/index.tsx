@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 
 import { AutoComplete } from "@webiny/ui/AutoComplete";
 import { ButtonPrimary, ButtonDefault } from "@webiny/ui/Button";
@@ -10,28 +10,28 @@ import { Form } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import { i18n } from "@webiny/app/i18n";
 
-import { useCreateFolder } from "~/hooks";
-import { useListFolders } from "~/hooks";
+import { useListFolders, useCreateFolder } from "~/hooks";
 
 import { CreateDialogContainer, CreateDialogActions } from "./styled";
 
-import { FolderItem, Types } from "~/types";
+import { FolderItem } from "~/types";
+import { FoldersContext } from "~/contexts";
 
-export type Props = {
+type Props = {
     open: boolean;
     onClose: DialogOnClose;
-    type: keyof Types;
 };
 
 const t = i18n.ns("app-folders/components/tree/dialog-create");
 
-export const CreateDialog: React.FC<Props> = ({ onClose, open, type }) => {
-    const { loading, create } = useCreateFolder();
-    const { folders } = useListFolders(type);
+export const CreateDialog: React.FC<Props> = ({ onClose, open }) => {
+    const { folderType } = useContext(FoldersContext);
+    const { loading, createFolder } = useCreateFolder();
+    const { folders } = useListFolders();
 
     const onSubmit = async (data: Partial<FolderItem>) => {
-        await create({
-            variables: { data: { ...data, type } }
+        await createFolder({
+            variables: { data: { ...data, type: folderType } }
         });
     };
 
