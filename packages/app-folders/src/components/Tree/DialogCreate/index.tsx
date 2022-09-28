@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 import { AutoComplete } from "@webiny/ui/AutoComplete";
 import { ButtonPrimary, ButtonDefault } from "@webiny/ui/Button";
@@ -25,6 +25,7 @@ type Props = {
 const t = i18n.ns("app-folders/components/tree/dialog-create");
 
 export const CreateDialog: React.FC<Props> = ({ onClose, open }) => {
+    const [dialogOpen, setDialogOpen] = useState(false);
     const { folderType } = useContext(FoldersContext);
     const { loading, createFolder } = useCreateFolder();
     const { folders } = useListFolders();
@@ -33,6 +34,7 @@ export const CreateDialog: React.FC<Props> = ({ onClose, open }) => {
         await createFolder({
             variables: { data: { ...data, type: folderType } }
         });
+        setDialogOpen(false);
     };
 
     const slugValidator = (slug: string): void => {
@@ -46,9 +48,13 @@ export const CreateDialog: React.FC<Props> = ({ onClose, open }) => {
         throw new Error(t`Slug can contain only letters, numbers, dashes and underscores`);
     };
 
+    useEffect(() => {
+        setDialogOpen(open);
+    }, [open]);
+
     return (
-        <CreateDialogContainer open={open} onClose={onClose}>
-            {open && (
+        <CreateDialogContainer open={dialogOpen} onClose={onClose}>
+            {dialogOpen && (
                 <Form
                     onSubmit={data => {
                         onSubmit(data as unknown as Partial<FolderItem>);
@@ -88,8 +94,8 @@ export const CreateDialog: React.FC<Props> = ({ onClose, open }) => {
                             </DialogContent>
                             <CreateDialogActions>
                                 <ButtonDefault
-                                    onClick={e => {
-                                        onClose(e);
+                                    onClick={() => {
+                                        setDialogOpen(false);
                                     }}
                                 >
                                     {t`Cancel`}
