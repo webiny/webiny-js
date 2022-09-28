@@ -1,4 +1,5 @@
 import afterMenuUpdate from "./afterMenuUpdate";
+import afterPageBlockUpdate from "./afterPageBlockUpdate";
 import afterPageDelete from "./afterPageDelete";
 import afterPagePublish from "./afterPagePublish";
 import afterPageUnpublish from "./afterPageUnpublish";
@@ -9,6 +10,7 @@ import { ContextPlugin } from "@webiny/handler";
 export default (): ContextPlugin<PbContext>[] => {
     return [
         afterMenuUpdate(),
+        afterPageBlockUpdate(),
         afterPageDelete(),
         afterPagePublish(),
         afterPageUnpublish(),
