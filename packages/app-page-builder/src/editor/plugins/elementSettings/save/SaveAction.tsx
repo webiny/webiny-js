@@ -78,7 +78,7 @@ const SaveAction: React.FC = ({ children }) => {
     const client = useApolloClient();
 
     const onSubmit = async (formData: PbDocumentElement) => {
-        const pbElement = (await getElementTree(element)) as PbElement;
+        const pbElement = (await getElementTree({ element })) as PbElement;
         formData.content = pluginOnSave(removeElementId(pbElement));
 
         const meta = await getDataURLImageDimensions(formData.preview);

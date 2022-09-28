@@ -39,9 +39,10 @@ import {
     PbEditorElement,
     EventActionHandler,
     EventActionHandlerTarget,
-    EventActionHandlerCallableState
+    EventActionHandlerCallableState,
+    GetElementTreeProps
 } from "~/types";
-import { composeSync, SyncProcessor } from "@webiny/utils/compose";
+import { composeAsync, composeSync, AsyncProcessor, SyncProcessor } from "@webiny/utils/compose";
 import { UpdateElementTreeActionEvent } from "~/editor/recoil/actions";
 
 type ListType = Map<symbol, EventActionCallable>;
@@ -87,6 +88,7 @@ const isTrackedAtomChanged = (state: Partial<PbState>): boolean => {
     return false;
 };
 
+export type GetElementTree = AsyncProcessor<GetElementTreeProps, PbEditorElement>;
 export type GetCallableState = SyncProcessor<Partial<EventActionHandlerCallableState>>;
 export type SaveCallableResults<TState = Partial<PbState>> = SyncProcessor<{
     state: TState & Partial<PbState>;
@@ -94,6 +96,7 @@ export type SaveCallableResults<TState = Partial<PbState>> = SyncProcessor<{
 }>;
 
 export interface EventActionHandlerProviderProps<TState> {
+    getElementTree?: Array<GetElementTree>;
     getCallableState?: Array<GetCallableState>;
     saveCallablesResults?: Array<SaveCallableResults<TState>>;
 }
@@ -170,33 +173,43 @@ export const EventActionHandlerProvider = makeComposable<
         return snapshot;
     });
 
-    const getElementTree = async (
-        element?: PbEditorElement,
-        path: string[] = []
-    ): Promise<PbEditorElement> => {
-        if (!element) {
-            element = (await getElementById(rootElementAtomValue)) as PbEditorElement;
-        }
-        if (element.parent) {
-            path.push(element.parent);
-        }
-        return {
-            id: element.id,
-            type: element.type,
-            data: element.data,
-            elements: await Promise.all(
-                /**
-                 * We are positive that element.elements is array of strings.
-                 */
-                (element.elements as string[]).map(async child => {
-                    return getElementTree((await getElementById(child)) as PbEditorElement, [
-                        ...path
-                    ]);
-                })
-            ),
-            path
-        };
-    };
+    const defaultGetElementTree = useCallback<GetElementTree>(
+        () =>
+            async function getChildElement(props: GetElementTreeProps): Promise<PbEditorElement> {
+                let element = props?.element;
+                if (!element) {
+                    element = (await getElementById(rootElementAtomValue)) as PbEditorElement;
+                }
+
+                const path = props?.path || [];
+                if (element.parent) {
+                    path.push(element.parent);
+                }
+
+                return {
+                    id: element.id,
+                    type: element.type,
+                    data: element.data,
+                    elements: await Promise.all(
+                        /**
+                         * We are positive that element.elements is array of strings.
+                         */
+                        (element.elements as string[]).map(async child => {
+                            return await getChildElement({
+                                element: (await getElementById(child)) as PbEditorElement,
+                                path: [...path]
+                            });
+                        })
+                    ),
+                    path
+                };
+            },
+        []
+    );
+
+    const getElementTree = useMemo(() => {
+        return composeAsync([...(props.getElementTree || []), defaultGetElementTree]);
+    }, [props.getElementTree]);
 
     const get = (name: string): ListType => {
         const list = registry.current.get(name);
