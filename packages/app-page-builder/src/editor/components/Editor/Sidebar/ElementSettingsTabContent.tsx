@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "@emotion/styled";
+import { makeComposable } from "@webiny/app-admin";
 import NoActiveElement from "./NoActiveElement";
 import { ReactComponent as TouchIcon } from "./icons/touch_app.svg";
 import { useActiveElement } from "~/editor/hooks/useActiveElement";
@@ -47,7 +48,7 @@ const ElementSettingsTabContent: React.FC = () => {
 
     return (
         <RootElement>
-            <SidebarActionsWrapper>
+            <SidebarActions>
                 {elementSettings.map(({ plugin, options }, index) => {
                     return (
                         <div key={plugin.name + "-" + index}>
@@ -56,10 +57,17 @@ const ElementSettingsTabContent: React.FC = () => {
                         </div>
                     );
                 })}
-            </SidebarActionsWrapper>
+            </SidebarActions>
             <ElementSettings />
         </RootElement>
     );
 };
+
+export const SidebarActions = makeComposable(
+    "ElementSettingsTabContent",
+    ({ children, ...props }) => {
+        return <SidebarActionsWrapper {...props}>{children}</SidebarActionsWrapper>;
+    }
+);
 
 export default React.memo(ElementSettingsTabContent);
