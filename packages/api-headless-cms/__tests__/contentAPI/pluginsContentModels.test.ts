@@ -1,5 +1,5 @@
-import { useGraphQLHandler } from "../utils/useGraphQLHandler";
-import { until } from "./../utils/helpers";
+import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
+import { until } from "./../testHelpers/helpers";
 import { CmsGroup, CmsModel } from "~/types";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";
 

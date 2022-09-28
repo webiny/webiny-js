@@ -1,12 +1,12 @@
-import { useFruitManageHandler } from "../utils/useFruitManageHandler";
-import { useGraphQLHandler } from "../utils/useGraphQLHandler";
-import { useFruitReadHandler } from "../utils/useFruitReadHandler";
-import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
-import { useProductManageHandler } from "../utils/useProductManageHandler";
-import { useProductReadHandler } from "../utils/useProductReadHandler";
-import { useArticleManageHandler } from "../utils/useArticleManageHandler";
-import { useArticleReadHandler } from "../utils/useArticleReadHandler";
-import { setupContentModelGroup, setupContentModels } from "../utils/setup";
+import { useFruitManageHandler } from "../testHelpers/useFruitManageHandler";
+import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
+import { useFruitReadHandler } from "../testHelpers/useFruitReadHandler";
+import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
+import { useProductManageHandler } from "../testHelpers/useProductManageHandler";
+import { useProductReadHandler } from "../testHelpers/useProductReadHandler";
+import { useArticleManageHandler } from "../testHelpers/useArticleManageHandler";
+import { useArticleReadHandler } from "../testHelpers/useArticleReadHandler";
+import { setupContentModelGroup, setupContentModels } from "../testHelpers/setup";
 import { Fruit } from "./mocks/contentModels";
 
 const appleData: Fruit = {

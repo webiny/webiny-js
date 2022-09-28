@@ -1,5 +1,5 @@
 import { CmsGroup } from "~/types";
-import { useGraphQLHandler } from "../utils/useGraphQLHandler";
+import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { emptyObjectFields } from "./mocks/emptyObjectFields";
 
 describe("Model - nested field", () => {

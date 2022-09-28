@@ -1,12 +1,12 @@
-import { useGraphQLHandler } from "../utils/useGraphQLHandler";
+import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { CmsEntry, CmsGroup, CmsModel, StorageOperationsCmsModel } from "~/types";
 import models from "./mocks/contentModels";
-import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
-import { useCategoryReadHandler } from "../utils/useCategoryReadHandler";
+import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
+import { useCategoryReadHandler } from "../testHelpers/useCategoryReadHandler";
 // @ts-ignore
 import mdbid from "mdbid";
-import { useProductReadHandler } from "../utils/useProductReadHandler";
-import { useProductManageHandler } from "../utils/useProductManageHandler";
+import { useProductReadHandler } from "../testHelpers/useProductReadHandler";
+import { useProductManageHandler } from "../testHelpers/useProductManageHandler";
 import { PluginsContainer } from "@webiny/plugins";
 import { createGraphQLFields } from "~/graphqlFields";
 import { attachCmsModelFieldConverters } from "~/utils/converters/valueKeyStorageConverter";

@@ -1,7 +1,7 @@
-import { useGraphQLHandler } from "../utils/useGraphQLHandler";
+import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { CmsGroup, CmsModel } from "~/types";
 import models from "./mocks/contentModels";
-import { useFruitManageHandler } from "../utils/useFruitManageHandler";
+import { useFruitManageHandler } from "../testHelpers/useFruitManageHandler";
 
 describe("fieldValidations", () => {
     const manageOpts = { path: "manage/en-US" };
@@ -305,7 +305,7 @@ describe("fieldValidations", () => {
      * testing email pattern
      */
     test.each(emailPatternTestValues)(
-        `should return error when validating "email" field with a pattern`,
+        `should return error when validating "email" field with a pattern - %s`,
         async email => {
             const group = await setupContentModelGroup();
             await setupContentModels(group);
@@ -359,7 +359,7 @@ describe("fieldValidations", () => {
      * testing url pattern
      */
     test.each(urlPatternTestValues)(
-        `should return error when validating "url" field with a pattern`,
+        `should return error when validating "url" field with a pattern - %s`,
         async url => {
             const group = await setupContentModelGroup();
             await setupContentModels(group);
@@ -407,7 +407,7 @@ describe("fieldValidations", () => {
      * testing lowercase
      */
     test.each(lowerCaseTestValues)(
-        `should return error when validating "lowerCase" field`,
+        `should return error when validating "lowerCase" field - %s`,
         async lowerCase => {
             const group = await setupContentModelGroup();
             await setupContentModels(group);
@@ -454,7 +454,7 @@ describe("fieldValidations", () => {
      * testing uppercase
      */
     test.each(upperCaseTestValues)(
-        `should return error when validating "upperCase" field`,
+        `should return error when validating "upperCase" field - %s`,
         async upperCase => {
             const group = await setupContentModelGroup();
             await setupContentModels(group);
@@ -497,7 +497,7 @@ describe("fieldValidations", () => {
     ];
 
     test.each(dateErrorValidations)(
-        `should return error when validating "date" field`,
+        `should return error when validating "date" field - %s`,
         async (date, message) => {
             const group = await setupContentModelGroup();
             await setupContentModels(group);
@@ -540,7 +540,7 @@ describe("fieldValidations", () => {
     ];
 
     test.each(dateTimeErrorValidations)(
-        `should return error when validating "dateTime" field`,
+        `should return error when validating "dateTime" field - %s`,
         async (dateTime, message) => {
             const group = await setupContentModelGroup();
             await setupContentModels(group);
@@ -586,7 +586,7 @@ describe("fieldValidations", () => {
     ];
 
     test.each(dateTimeZErrorValidations)(
-        `should return error when validating "dateTimeZ" field`,
+        `should return error when validating "dateTimeZ" field - %s`,
         async (dateTimeZ, message) => {
             const group = await setupContentModelGroup();
             await setupContentModels(group);
@@ -629,7 +629,7 @@ describe("fieldValidations", () => {
     ];
 
     test.each(timeErrorValidations)(
-        `should return error when validating "time" field`,
+        `should return error when validating "time" field - %s`,
         async (time, message) => {
             const group = await setupContentModelGroup();
             await setupContentModels(group);

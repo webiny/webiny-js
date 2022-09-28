@@ -1,10 +1,10 @@
 import { CmsModelFieldInput, CmsGroup, CmsModelField } from "~/types";
-import { useGraphQLHandler } from "../utils/useGraphQLHandler";
-import * as helpers from "../utils/helpers";
+import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
+import * as helpers from "../testHelpers/helpers";
 import models from "./mocks/contentModels";
-import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
+import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
 import { pubSubTracker, assignModelEvents } from "./mocks/lifecycleHooks";
-import { useBugManageHandler } from "../utils/useBugManageHandler";
+import { useBugManageHandler } from "../testHelpers/useBugManageHandler";
 
 const getTypeFields = (type: any) => {
     return type.fields.filter((f: any) => f.name !== "_empty").map((f: any) => f.name);

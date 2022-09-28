@@ -1,5 +1,5 @@
 import { CmsGroup } from "~/types";
-import { useGraphQLHandler } from "../utils/useGraphQLHandler";
+import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 
 describe("content model test", () => {
     const manageHandlerOpts = { path: "manage/en-US" };

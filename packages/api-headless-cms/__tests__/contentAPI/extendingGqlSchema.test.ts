@@ -1,4 +1,4 @@
-import { useGraphQLHandler } from "../utils/useGraphQLHandler";
+import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
 
 const graphqlSchemaPlugin = new GraphQLSchemaPlugin({

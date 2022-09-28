@@ -1,6 +1,6 @@
 import models from "./mocks/contentModels";
 import { CmsEntry, CmsGroup, StorageOperationsCmsModel } from "~/types";
-import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
+import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
 import { generateAlphaNumericLowerCaseId } from "@webiny/utils";
 import { attachCmsModelFieldConverters } from "~/utils/converters/valueKeyStorageConverter";
 

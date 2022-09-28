@@ -1,4 +1,4 @@
-import { useGraphQLHandler } from "../utils/useGraphQLHandler";
+import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import models from "../contentAPI/mocks/contentModels";
 import { CmsModelField } from "~/types";
 

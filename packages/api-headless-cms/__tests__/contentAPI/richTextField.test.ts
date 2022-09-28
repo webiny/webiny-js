@@ -1,9 +1,9 @@
-import { useGraphQLHandler } from "../utils/useGraphQLHandler";
+import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { CmsEntry, CmsGroup } from "~/types";
 import models from "./mocks/contentModels";
-import { useProductManageHandler } from "../utils/useProductManageHandler";
-import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
-import { useProductReadHandler } from "../utils/useProductReadHandler";
+import { useProductManageHandler } from "../testHelpers/useProductManageHandler";
+import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
+import { useProductReadHandler } from "../testHelpers/useProductReadHandler";
 
 const richTextMock = [
     {

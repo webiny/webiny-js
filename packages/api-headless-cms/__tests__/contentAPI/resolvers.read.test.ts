@@ -1,10 +1,10 @@
 import { CmsGroup } from "~/types";
-import { GraphQLHandlerParams, useGraphQLHandler } from "../utils/useGraphQLHandler";
+import { GraphQLHandlerParams, useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import models from "./mocks/contentModels";
-import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
-import { useCategoryReadHandler } from "../utils/useCategoryReadHandler";
-import { useProductManageHandler } from "../utils/useProductManageHandler";
-import { useProductReadHandler } from "../utils/useProductReadHandler";
+import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
+import { useCategoryReadHandler } from "../testHelpers/useCategoryReadHandler";
+import { useProductManageHandler } from "../testHelpers/useProductManageHandler";
+import { useProductReadHandler } from "../testHelpers/useProductReadHandler";
 
 const createPermissions = ({ groups, models }: { groups?: string[]; models?: string[] }) => [
     {

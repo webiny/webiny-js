@@ -5,7 +5,7 @@ import {
     PersonEntriesResult
 } from "./helpers";
 import { StorageOperationsCmsModel, HeadlessCmsStorageOperations } from "~/types";
-import { useGraphQLHandler } from "../utils/useGraphQLHandler";
+import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 
 jest.setTimeout(60000);
 

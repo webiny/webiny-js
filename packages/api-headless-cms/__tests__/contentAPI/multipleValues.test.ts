@@ -1,8 +1,8 @@
 import { CmsEntry, CmsGroup, CmsModel, CmsModelField } from "~/types";
-import { useGraphQLHandler } from "../utils/useGraphQLHandler";
+import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import models from "./mocks/contentModels";
-import { useProductManageHandler } from "../utils/useProductManageHandler";
-import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
+import { useProductManageHandler } from "../testHelpers/useProductManageHandler";
+import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
 
 describe("multiple values in field", () => {
     const manageOpts = { path: "manage/en-US" };

@@ -1,10 +1,9 @@
 import { CmsModelField } from "~/types";
 
-import { filterModelFields } from "~/utils/filterModelFields";
+import { filterModelsDeletedFields } from "~/utils/filterModelFields";
 
 interface FieldSettings {
     fields: Field[];
-    layout: string[][];
 }
 interface Field {
     id: string;
@@ -55,22 +54,13 @@ const fields: Field[] = [
                                             id: "field_1_4_4_3_deleted",
                                             isDeleted: true
                                         }
-                                    ],
-                                    layout: [
-                                        ["field_1_4_4_1", "field_1_4_4_2"],
-                                        ["field_1_4_4_3_deleted"]
                                     ]
                                 }
                             }
-                        ],
-                        layout: [
-                            ["field_1_4_1", "field_1_4_2"],
-                            ["field_1_4_3_deleted", "field_1_4_4"]
                         ]
                     }
                 }
-            ],
-            layout: [["field_1_1", "field_1_2", "field_1_3_deleted"], ["field_1_4"]]
+            ]
         }
     },
     {
@@ -92,20 +82,20 @@ const fields: Field[] = [
     }
 ];
 
-const layout: string[][] = [
-    ["field_1"],
-    ["field_2_deleted", "field_3"],
-    ["field_4"],
-    ["field_5", "field_6_deleted"]
-];
-
-describe("Filter model fields and layout", () => {
+describe("Filter model fields", () => {
     it("should filter deleted fields in case of not being manage endpoint", () => {
-        const result = filterModelFields({
-            fields: fields as unknown as CmsModelField[],
-            layout,
+        const models = filterModelsDeletedFields({
+            models: [
+                {
+                    fields: fields as unknown as CmsModelField[]
+                }
+            ] as any,
             type: "preview"
         });
+
+        expect(models).toHaveLength(1);
+
+        const result = models.shift();
 
         expect(result).toEqual({
             fields: [
@@ -139,16 +129,13 @@ describe("Filter model fields and layout", () => {
                                                     {
                                                         id: "field_1_4_4_2"
                                                     }
-                                                ],
-                                                layout: [["field_1_4_4_1", "field_1_4_4_2"]]
+                                                ]
                                             }
                                         }
-                                    ],
-                                    layout: [["field_1_4_1", "field_1_4_2"], ["field_1_4_4"]]
+                                    ]
                                 }
                             }
-                        ],
-                        layout: [["field_1_1", "field_1_2"], ["field_1_4"]]
+                        ]
                     }
                 },
                 {
@@ -160,8 +147,7 @@ describe("Filter model fields and layout", () => {
                 {
                     id: "field_5"
                 }
-            ],
-            layout: [["field_1"], ["field_3"], ["field_4"], ["field_5"]]
+            ]
         });
     });
 });

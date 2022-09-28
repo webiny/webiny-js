@@ -1,7 +1,7 @@
 import { CmsModel, CmsGroup } from "~/types";
 import models from "./mocks/contentModels";
-import { useGraphQLHandler } from "../utils/useGraphQLHandler";
-import { useBugManageHandler } from "../utils/useBugManageHandler";
+import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
+import { useBugManageHandler } from "../testHelpers/useBugManageHandler";
 
 describe("predefined values", () => {
     const manageOpts = { path: "manage/en-US" };

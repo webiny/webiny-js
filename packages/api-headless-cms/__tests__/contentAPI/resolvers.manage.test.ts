@@ -1,11 +1,11 @@
 import WebinyError from "@webiny/error";
 import { CmsEntry, CmsGroup, CmsModel } from "~/types";
-import { useGraphQLHandler } from "../utils/useGraphQLHandler";
-import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
-import { useCategoryReadHandler } from "../utils/useCategoryReadHandler";
+import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
+import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
+import { useCategoryReadHandler } from "../testHelpers/useCategoryReadHandler";
 import models from "./mocks/contentModels";
 import modelsWithoutValidation from "./mocks/contentModels.noValidation";
-import { useProductManageHandler } from "../utils/useProductManageHandler";
+import { useProductManageHandler } from "../testHelpers/useProductManageHandler";
 
 interface CreateCategoriesResult {
     fruits: CmsEntry;
