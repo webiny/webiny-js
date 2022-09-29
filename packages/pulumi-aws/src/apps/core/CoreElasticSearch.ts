@@ -167,15 +167,23 @@ export const ElasticSearch = createAppModule({
         });
 
         // Only use `AWSLambdaVPCAccessExecutionRole` policy if VPC feature is enabled.
-        let policyArn: aws.iam.ManagedPolicy = aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole;
         if (vpc) {
-            policyArn = aws.iam.ManagedPolicy.AWSLambdaVPCAccessExecutionRole;
+            app.addResource(aws.iam.RolePolicyAttachment, {
+                name: `${roleName}-AWSLambdaVPCAccessExecutionRole`,
+                config: {
+                    role: role.output,
+                    policyArn: aws.iam.ManagedPolicy.AWSLambdaVPCAccessExecutionRole
+                }
+            });
+        } else {
+            app.addResource(aws.iam.RolePolicyAttachment, {
+                name: `${roleName}-AWSLambdaBasicExecutionRole`,
+                config: {
+                    role: role.output,
+                    policyArn: aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole
+                }
+            });
         }
-
-        app.addResource(aws.iam.RolePolicyAttachment, {
-            name: `${roleName}-AWSLambdaVPCAccessExecutionRole`,
-            config: { role: role.output, policyArn }
-        });
 
         app.addResource(aws.iam.RolePolicyAttachment, {
             name: `${roleName}-AWSLambdaDynamoDBExecutionRole`,
