@@ -1,9 +1,9 @@
-import { useGraphQLHandler } from "../utils/useGraphQLHandler";
+import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { CmsEntry, CmsGroup } from "~/types";
 import models from "./mocks/contentModels";
-import { useProductManageHandler } from "../utils/useProductManageHandler";
-import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
-import { useProductReadHandler } from "../utils/useProductReadHandler";
+import { useProductManageHandler } from "../testHelpers/useProductManageHandler";
+import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
+import { useProductReadHandler } from "../testHelpers/useProductReadHandler";
 
 const richTextMock = [
     {
@@ -140,7 +140,8 @@ describe("richTextField", () => {
                     modelId: "category",
                     id: category.id
                 },
-                richText: richTextMock
+                richText: richTextMock,
+                deletedTextField: "Deleted! Yes!"
             }
         });
 
@@ -172,6 +173,7 @@ describe("richTextField", () => {
                         inStock: null,
                         itemsInStock: null,
                         variant: null,
+                        deletedTextField: "Deleted! Yes!",
                         meta: {
                             locked: false,
                             modelId: "product",
@@ -265,7 +267,8 @@ describe("richTextField", () => {
             category: {
                 modelId: "category",
                 id: category.id
-            }
+            },
+            deletedTextField: "Deleted!"
         };
         /**
          * First we create the product without the rich text populated.
@@ -299,6 +302,7 @@ describe("richTextField", () => {
             inStock: null,
             itemsInStock: null,
             variant: null,
+            deletedTextField: "Deleted!",
             meta: {
                 locked: false,
                 modelId: "product",

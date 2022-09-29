@@ -1,11 +1,11 @@
 import WebinyError from "@webiny/error";
 import { CmsEntry, CmsGroup, CmsModel } from "~/types";
-import { useGraphQLHandler } from "../utils/useGraphQLHandler";
-import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
-import { useCategoryReadHandler } from "../utils/useCategoryReadHandler";
+import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
+import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
+import { useCategoryReadHandler } from "../testHelpers/useCategoryReadHandler";
 import models from "./mocks/contentModels";
 import modelsWithoutValidation from "./mocks/contentModels.noValidation";
-import { useProductManageHandler } from "../utils/useProductManageHandler";
+import { useProductManageHandler } from "../testHelpers/useProductManageHandler";
 
 interface CreateCategoriesResult {
     fruits: CmsEntry;
@@ -1157,7 +1157,8 @@ describe("MANAGE - Resolvers", () => {
                                     id: vegetables.id
                                 }
                             ],
-                            longText: [null]
+                            longText: [null],
+                            longTextDeleted: []
                         },
                         {
                             name: "Option 2",
@@ -1172,7 +1173,8 @@ describe("MANAGE - Resolvers", () => {
                                     id: vegetables.id
                                 }
                             ],
-                            longText: ["long text"]
+                            longText: ["long text"],
+                            longTextDeleted: []
                         }
                     ]
                 }
@@ -1198,6 +1200,7 @@ describe("MANAGE - Resolvers", () => {
                         inStock: true,
                         itemsInStock: 101,
                         image: "image.png",
+                        deletedTextField: null,
                         richText: [
                             {
                                 type: "p"
@@ -1233,7 +1236,8 @@ describe("MANAGE - Resolvers", () => {
                                             entryId: vegetables.entryId
                                         }
                                     ],
-                                    longText: [null]
+                                    longText: [null],
+                                    longTextDeleted: []
                                 },
                                 {
                                     name: "Option 2",
@@ -1250,7 +1254,8 @@ describe("MANAGE - Resolvers", () => {
                                             entryId: vegetables.entryId
                                         }
                                     ],
-                                    longText: ["long text"]
+                                    longText: ["long text"],
+                                    longTextDeleted: []
                                 }
                             ]
                         }

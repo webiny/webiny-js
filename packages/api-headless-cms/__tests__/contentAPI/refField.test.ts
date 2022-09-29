@@ -1,11 +1,11 @@
-import { useGraphQLHandler } from "../utils/useGraphQLHandler";
+import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { CmsEntry, CmsGroup } from "~/types";
 import models from "./mocks/contentModels";
-import { useReviewManageHandler } from "../utils/useReviewManageHandler";
-import { useProductManageHandler } from "../utils/useProductManageHandler";
-import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
-import { useReviewReadHandler } from "../utils/useReviewReadHandler";
-import { useAuthorManageHandler } from "../utils/useAuthorManageHandler";
+import { useReviewManageHandler } from "../testHelpers/useReviewManageHandler";
+import { useProductManageHandler } from "../testHelpers/useProductManageHandler";
+import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
+import { useReviewReadHandler } from "../testHelpers/useReviewReadHandler";
+import { useAuthorManageHandler } from "../testHelpers/useAuthorManageHandler";
 
 describe("refField", () => {
     const manageOpts = { path: "manage/en-US" };

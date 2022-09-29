@@ -116,6 +116,7 @@ export const createModelsSchema = (context: CmsContext): GraphQLSchemaPlugin<Cms
                 validation: [CmsFieldValidationInput]
                 listValidation: [CmsFieldValidationInput]
                 settings: JSON
+                isDeleted: Boolean
             }
 
             input CmsContentModelCreateInput {

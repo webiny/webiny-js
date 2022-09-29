@@ -1,7 +1,7 @@
-import { useFruitManageHandler } from "../utils/useFruitManageHandler";
+import { useFruitManageHandler } from "../testHelpers/useFruitManageHandler";
 import { Fruit } from "./mocks/contentModels";
-import { setupContentModelGroup, setupContentModels } from "../utils/setup";
-import { useGraphQLHandler } from "../utils/useGraphQLHandler";
+import { setupContentModelGroup, setupContentModels } from "../testHelpers/setup";
+import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 
 const appleData: Fruit = {
     name: "Apple",

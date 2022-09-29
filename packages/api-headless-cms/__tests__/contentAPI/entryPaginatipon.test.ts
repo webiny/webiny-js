@@ -1,8 +1,8 @@
-import { useFruitManageHandler } from "../utils/useFruitManageHandler";
+import { useFruitManageHandler } from "../testHelpers/useFruitManageHandler";
 // @ts-ignore
 import mdbid from "mdbid";
 import { CmsEntry, CmsModel, StorageOperationsCmsModel } from "~/types";
-import { setupContentModelGroup, setupContentModels } from "../utils/setup";
+import { setupContentModelGroup, setupContentModels } from "../testHelpers/setup";
 import { attachCmsModelFieldConverters } from "~/utils/converters/valueKeyStorageConverter";
 
 const NUMBER_OF_FRUITS = 200;
