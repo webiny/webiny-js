@@ -4,8 +4,9 @@
   "references": [
     { "path": "../app" },
     { "path": "../app-admin" },
-    { "path": "../app-validation" },
-    { "path": "../plugins" }
+    { "path": "../form" },
+    { "path": "../ui" },
+    { "path": "../validation" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -17,8 +18,12 @@
       "@webiny/app": ["../app/src"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
       "@webiny/app-admin": ["../app-admin/src"],
-      "@webiny/app-validation/*": ["../app-validation/src/*"],
-      "@webiny/app-validation": ["../app-validation/src"]
+      "@webiny/form/*": ["../form/src/*"],
+      "@webiny/form": ["../form/src"],
+      "@webiny/ui/*": ["../ui/src/*"],
+      "@webiny/ui": ["../ui/src"],
+      "@webiny/validation/*": ["../validation/src/*"],
+      "@webiny/validation": ["../validation/src"]
     },
     "baseUrl": "."
   }
