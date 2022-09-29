@@ -6,7 +6,7 @@ export const Container = styled("div")`
     & .treeRoot {
         box-sizing: border-box;
         padding: 4px 0 16px;
-        width: 250px;
+        min-width: 200px;
     }
 
     & .dropTarget {
