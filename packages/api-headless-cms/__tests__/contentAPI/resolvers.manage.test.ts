@@ -1157,7 +1157,8 @@ describe("MANAGE - Resolvers", () => {
                                     id: vegetables.id
                                 }
                             ],
-                            longText: [null]
+                            longText: [null],
+                            longTextDeleted: []
                         },
                         {
                             name: "Option 2",
@@ -1172,7 +1173,8 @@ describe("MANAGE - Resolvers", () => {
                                     id: vegetables.id
                                 }
                             ],
-                            longText: ["long text"]
+                            longText: ["long text"],
+                            longTextDeleted: []
                         }
                     ]
                 }
@@ -1198,6 +1200,7 @@ describe("MANAGE - Resolvers", () => {
                         inStock: true,
                         itemsInStock: 101,
                         image: "image.png",
+                        deletedTextField: null,
                         richText: [
                             {
                                 type: "p"
@@ -1233,7 +1236,8 @@ describe("MANAGE - Resolvers", () => {
                                             entryId: vegetables.entryId
                                         }
                                     ],
-                                    longText: [null]
+                                    longText: [null],
+                                    longTextDeleted: []
                                 },
                                 {
                                     name: "Option 2",
@@ -1250,7 +1254,8 @@ describe("MANAGE - Resolvers", () => {
                                             entryId: vegetables.entryId
                                         }
                                     ],
-                                    longText: ["long text"]
+                                    longText: ["long text"],
+                                    longTextDeleted: []
                                 }
                             ]
                         }

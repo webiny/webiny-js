@@ -684,7 +684,8 @@ const models: CmsModel[] = [
                                         },
                                         renderer: {
                                             name: "renderer"
-                                        }
+                                        },
+                                        isDeleted: true
                                     }
                                 ]
                             },

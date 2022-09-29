@@ -8,7 +8,6 @@ export default /* GraphQL */ `
         category: Category
         categories: [Category]
         longText: [String]
-        longTextDeleted: [String]
     }
 
     type Product_Variant {
@@ -41,7 +40,6 @@ export default /* GraphQL */ `
         richText: JSON
         variant: Product_Variant
         fieldsObject: Product_FieldsObject
-        deletedTextField: String
     }
 
     input ProductGetWhereInput {
@@ -54,7 +52,6 @@ export default /* GraphQL */ `
         availableOn: Date
         color: String
         availableSizes: String
-        deletedTextField: String
     }
 
     input ProductListWhereInput {
@@ -141,13 +138,6 @@ export default /* GraphQL */ `
         availableSizes_not_in: [String]
         availableSizes_contains: String
         availableSizes_not_contains: String
-
-        deletedTextField: String
-        deletedTextField_not: String
-        deletedTextField_in: [String]
-        deletedTextField_not_in: [String]
-        deletedTextField_contains: String
-        deletedTextField_not_contains: String
     }
 
     enum ProductListSorter {
@@ -171,8 +161,6 @@ export default /* GraphQL */ `
         color_DESC
         availableSizes_ASC
         availableSizes_DESC
-        deletedTextField_ASC
-        deletedTextField_DESC
     }
 
     type ProductResponse {

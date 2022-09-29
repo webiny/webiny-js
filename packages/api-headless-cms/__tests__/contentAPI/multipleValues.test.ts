@@ -274,6 +274,7 @@ describe("multiple values in field", () => {
                                 value: "some text"
                             }
                         ],
+                        deletedTextField: null,
                         meta: {
                             locked: false,
                             modelId: "product",
