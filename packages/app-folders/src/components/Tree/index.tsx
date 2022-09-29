@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 
 import {
-    Tree,
+    DropOptions,
     getBackendOptions,
+    InitialOpen,
     MultiBackend,
     NodeModel,
-    DropOptions
+    Tree
 } from "@minoru/react-dnd-treeview";
 import { DndProvider } from "react-dnd";
 
@@ -17,13 +18,13 @@ import { Title } from "./Title";
 
 import { Container } from "./styled";
 
-import { FolderItem, DndItemData, Types } from "~/types";
+import { DndItemData, FolderItem, Types } from "~/types";
 import { CreateButton } from "~/components/Tree/ButtonCreate";
 import { CreateDialog } from "~/components/Tree/DialogCreate";
 
 const createTreeData = (
     folders: FolderItem[] = [],
-    focusedNodeId: string
+    focusedNodeId?: string
 ): NodeModel<DndItemData>[] => {
     return folders.map(item => {
         const { id, parentId, name, slug, type } = item;
@@ -45,9 +46,35 @@ const createTreeData = (
     });
 };
 
+const createInitialOpenList = (
+    folders: FolderItem[] = [],
+    focusedNodeId?: string
+): InitialOpen | undefined => {
+    const focusedFolder = folders.find(folder => {
+        return folder.id === focusedNodeId;
+    });
+
+    if (!focusedNodeId || !focusedFolder?.parentId) {
+        return;
+    }
+
+    const result = folders.reduce(
+        (acc, curr): string[] => {
+            if (curr.parentId && acc.some(el => el === curr?.parentId)) {
+                acc.push(curr.parentId);
+            }
+
+            return acc;
+        },
+        [focusedFolder.parentId]
+    );
+
+    return [...new Set(result)];
+};
+
 type Props = {
     type: keyof Types;
-    focusedNodeId: string;
+    focusedNodeId?: string;
     onNodeClick: (data: NodeModel<DndItemData>["data"]) => void;
 };
 
@@ -55,6 +82,7 @@ export const FolderTree: React.FC<Props> = ({ type, focusedNodeId, onNodeClick }
     const { setFolderType } = useFolders();
     const [treeData, setTreeData] = useState<NodeModel<DndItemData>[]>([]);
     const [createDialogOpen, setCreateDialogOpen] = useState<boolean>(false);
+    const [initialOpenList, setInitialOpenList] = useState<undefined | InitialOpen>(undefined);
 
     const { folders } = useListFolders();
     const { updateFolder } = useUpdateFolder();
@@ -88,6 +116,13 @@ export const FolderTree: React.FC<Props> = ({ type, focusedNodeId, onNodeClick }
         }
     }, [folders]);
 
+    useEffect(() => {
+        if (folders) {
+            const list = createInitialOpenList(folders, focusedNodeId);
+            setInitialOpenList(list);
+        }
+    }, [folders]);
+
     return (
         <Container>
             <Title />
@@ -111,6 +146,7 @@ export const FolderTree: React.FC<Props> = ({ type, focusedNodeId, onNodeClick }
                         root: "treeRoot",
                         dropTarget: "dropTarget"
                     }}
+                    initialOpen={initialOpenList}
                 />
             </DndProvider>
             <CreateButton onClick={() => setCreateDialogOpen(true)} />
