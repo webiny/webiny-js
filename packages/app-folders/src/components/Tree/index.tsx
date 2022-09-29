@@ -90,7 +90,7 @@ export const FolderTree: React.FC<Props> = ({ type, focusedNodeId, onNodeClick }
 
     return (
         <Container>
-            <Title type={type} />
+            <Title />
             <DndProvider backend={MultiBackend} options={getBackendOptions()}>
                 <Tree
                     tree={treeData}
