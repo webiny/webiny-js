@@ -141,6 +141,7 @@ describe("content model test", () => {
                         savedOn: expect.stringMatching(/^20/),
                         fields: [],
                         layout: [],
+                        tags: ["type:contentModel"],
                         plugin: false,
                         group: {
                             id: contentModelGroup.id,
@@ -169,7 +170,7 @@ describe("content model test", () => {
             }
         });
 
-        // nothing is changed in this update - just the date
+        // nothing is changed in this update - just the data
         const [updateResponse] = await updateContentModelMutation({
             modelId: createdContentModel.modelId,
             data: {
@@ -454,6 +455,7 @@ describe("content model test", () => {
             label: "Text field",
             helpText: "help text",
             multipleValues: false,
+            tags: [],
             placeholderText: "placeholder text",
             predefinedValues: {
                 enabled: false,
@@ -473,6 +475,7 @@ describe("content model test", () => {
             label: "Number field",
             helpText: "number help text",
             multipleValues: false,
+            tags: [],
             placeholderText: "number placeholder text",
             predefinedValues: {
                 enabled: false,
@@ -515,6 +518,7 @@ describe("content model test", () => {
                         },
                         modelId: contentModel.modelId,
                         layout: [[textField.id], [numberField.id]],
+                        tags: ["type:contentModel"],
                         name: "new name",
                         plugin: false
                     },

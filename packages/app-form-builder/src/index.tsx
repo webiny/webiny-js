@@ -21,7 +21,12 @@ export const FormBuilder: React.FC = () => {
     return (
         <Plugins>
             <HasPermission name={"fb.form"}>
-                <AddMenu name="formBuilder" label={"Form Builder"} icon={<FormsIcon />}>
+                <AddMenu
+                    name="formBuilder"
+                    label={"Form Builder"}
+                    icon={<FormsIcon />}
+                    pin={"last"}
+                >
                     <AddMenu name="formBuilder.forms" label={"Forms"}>
                         <AddMenu
                             name="formBuilder.forms.forms"

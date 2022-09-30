@@ -1,6 +1,7 @@
 import React from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
+import { Tags } from "@webiny/ui/Tags";
 import { validation } from "@webiny/validation";
 import { BindComponent } from "@webiny/form";
 import GroupSelect from "./GroupSelect";
@@ -31,6 +32,11 @@ const GeneralSettings = ({ Bind }: GeneralSettingsProps) => {
                 <Cell span={12}>
                     <Bind name={"group"} validators={validation.create("required")}>
                         <GroupSelect />
+                    </Bind>
+                </Cell>
+                <Cell span={12}>
+                    <Bind name={"tags"}>
+                        <Tags label={"Tags"} />
                     </Bind>
                 </Cell>
             </Grid>

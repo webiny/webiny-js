@@ -73,7 +73,7 @@ const plugins: RoutePlugin[] = [
                 render={() => (
                     <SecureRoute permission={"cms.contentModel"}>
                         <Helmet>
-                            <title>{t`Edit Content Model`}</title>
+                            <title>{t`Edit a Content Model`}</title>
                         </Helmet>
                         <Loader>
                             <ContentModelEditor />

@@ -3,10 +3,12 @@ import { Editor } from "~/admin/components/ContentModelEditor/Editor";
 import { useRouter } from "@webiny/react-router";
 import { useCms } from "~/admin/hooks";
 import { CmsModel } from "~/types";
+import { EditorPlugins } from "./EditorPlugins";
+import { ModelFieldPlugins } from "./ModelFieldPlugins";
 
 type QueryMatch = Pick<Partial<CmsModel>, "modelId">;
 
-const ContentModelEditorView: React.FC = () => {
+const PageTemplateEditor: React.FC = () => {
     const { params } = useRouter();
     const { apolloClient } = useCms();
 
@@ -14,6 +16,12 @@ const ContentModelEditorView: React.FC = () => {
     if (!apolloClient || !modelId) {
         return null;
     }
-    return <Editor modelId={modelId} apolloClient={apolloClient} />;
+    return (
+        <ModelFieldPlugins>
+            <EditorPlugins />
+            <Editor modelId={modelId} apolloClient={apolloClient} />
+        </ModelFieldPlugins>
+    );
 };
-export default ContentModelEditorView;
+
+export default PageTemplateEditor;

@@ -1,21 +1,25 @@
-import React, { useRef, useState } from "react";
-import { Prompt } from "@webiny/react-router";
+import React, { ComponentProps } from "react";
+import { ApolloClient } from "apollo-client";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
+import { makeComposable } from "@webiny/app-admin";
+import { plugins } from "@webiny/plugins";
 import styled from "@emotion/styled";
 import { css } from "emotion";
+import { Prompt } from "@webiny/react-router";
 import { i18n } from "@webiny/app/i18n";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { LeftPanel, RightPanel, SplitView } from "@webiny/app-admin/components/SplitView";
-import { Icon } from "@webiny/ui/Icon";
-import { Typography } from "@webiny/ui/Typography";
-import { Tab, Tabs, TabsImperativeApi } from "@webiny/ui/Tabs";
+import { Tab, Tabs } from "@webiny/ui/Tabs";
 import { ReactComponent as FormIcon } from "./icons/round-assignment-24px.svg";
-import { FieldsSidebar } from "./FieldsSidebar";
+import { FieldsList, Field } from "./FieldsList";
 import { FieldEditor } from "../FieldEditor";
 import { PreviewTab } from "./PreviewTab";
 import Header from "./Header";
 import DragPreview from "../DragPreview";
 import { useContentModelEditor } from "./useContentModelEditor";
-import { CmsEditorField, CmsEditorFieldsLayout } from "~/types";
+import { CmsEditorField, CmsEditorFieldsLayout, CmsEditorFieldTypePlugin } from "~/types";
+import { ContentModelEditorProvider } from "~/admin/components/ContentModelEditor/Context";
 
 const t = i18n.ns("app-headless-cms/admin/editor");
 
@@ -25,29 +29,9 @@ const ContentContainer = styled("div")({
     paddingTop: 65
 });
 
-export const EditContainer = styled("div")({
+const EditContainer = styled("div")({
     padding: 40,
     position: "relative"
-});
-
-const LeftBarTitle = styled("div")({
-    borderBottom: "1px solid var(--mdc-theme-on-background)",
-    display: "flex",
-    alignItems: "center",
-    padding: 25,
-    color: "var(--mdc-theme-on-surface)"
-});
-
-const titleIcon = css({
-    height: 24,
-    marginRight: 15,
-    color: "var(--mdc-theme-primary)"
-});
-
-const LeftBarFieldList = styled("div")({
-    padding: 40,
-    overflow: "auto",
-    height: "calc(100vh - 250px)"
 });
 
 const formTabs = css({
@@ -63,11 +47,68 @@ interface OnChangeParams {
     layout: CmsEditorFieldsLayout;
 }
 
-export const Editor: React.FC = () => {
-    const { data, setData, isPristine } = useContentModelEditor();
+const Sidebar = makeComposable<ComponentProps<typeof LeftPanel>>(
+    "Sidebar",
+    ({ children, ...props }) => {
+        return (
+            <LeftPanel span={4} {...props}>
+                {children}
+            </LeftPanel>
+        );
+    }
+);
 
-    const tabsRef = useRef<TabsImperativeApi>();
-    const [activeTabIndex, setActiveTabIndex] = useState<number>(0);
+const Content = makeComposable<ComponentProps<typeof RightPanel>>(
+    "Content",
+    ({ children, ...props }) => {
+        return (
+            <RightPanel span={8} {...props}>
+                {children}
+            </RightPanel>
+        );
+    }
+);
+
+const ContentTab = makeComposable<ComponentProps<typeof Tab>>(
+    "ContentTab",
+    ({ children, ...props }) => {
+        return <Tab {...props}>{children}</Tab>;
+    }
+);
+
+const ContentTabs = makeComposable<ComponentProps<typeof Tabs>>(
+    "ContentTabs",
+    ({ children, ...props }) => {
+        const { tabsRef, setActiveTabIndex } = useContentModelEditor();
+
+        return (
+            <Tabs
+                className={formTabs}
+                ref={tabsRef}
+                onActivate={e => setActiveTabIndex(e)}
+                {...props}
+            >
+                {children}
+            </Tabs>
+        );
+    }
+);
+
+interface EditorProps {
+    modelId: string;
+    apolloClient: ApolloClient<any>;
+}
+
+export type Editor = React.FC<EditorProps> & {
+    Sidebar: typeof Sidebar;
+    Content: typeof Content;
+    ContentTab: typeof ContentTab;
+    Field: typeof Field;
+    FieldsList: typeof FieldsList;
+};
+
+const BaseEditor = () => {
+    const { data, setData, isPristine, tabsRef, activeTabIndex } = useContentModelEditor();
 
     const onChange = ({ fields, layout }: OnChangeParams) => {
         setData(data => ({ ...data, fields, layout }));
@@ -77,35 +118,32 @@ export const Editor: React.FC = () => {
         return <CircularProgress label={"Loading content model..."} />;
     }
 
+    const baseFields = plugins
+        .byType<CmsEditorFieldTypePlugin>("cms-editor-field-type")
+        .filter(pl => !pl.tags?.includes("content-model"));
+
     return (
         <div className={"content-model-editor"}>
             <Prompt when={!isPristine} message={prompt} />
             <Header />
             <ContentContainer>
                 <SplitView>
-                    <LeftPanel span={4}>
-                        <LeftBarTitle>
-                            <Icon className={titleIcon} icon={<FormIcon />} />
-                            <Typography use={"headline6"}>Fields</Typography>
-                        </LeftBarTitle>
-                        <LeftBarFieldList>
-                            <FieldsSidebar
-                                onFieldDragStart={() => {
-                                    if (!tabsRef.current) {
-                                        return;
-                                    }
-                                    tabsRef.current.switchTab(0);
-                                }}
-                            />
-                        </LeftBarFieldList>
-                    </LeftPanel>
-                    <RightPanel span={8}>
-                        <Tabs
-                            className={formTabs}
-                            ref={tabsRef}
-                            onActivate={e => setActiveTabIndex(e)}
-                        >
-                            <Tab label={"Edit"} data-testid={"cms.editor.tab.edit"}>
+                    <Sidebar>
+                        <FieldsList
+                            icon={<FormIcon />}
+                            title={"Fields"}
+                            fieldTypePlugins={baseFields}
+                            onFieldDragStart={() => {
+                                if (!tabsRef.current) {
+                                    return;
+                                }
+                                tabsRef.current.switchTab(0);
+                            }}
+                        />
+                    </Sidebar>
+                    <Content>
+                        <ContentTabs>
+                            <ContentTab label={"Edit"} data-testid={"cms.editor.tab.edit"}>
                                 <EditContainer>
                                     <FieldEditor
                                         fields={data.fields}
@@ -113,15 +151,33 @@ export const Editor: React.FC = () => {
                                         onChange={onChange}
                                     />
                                 </EditContainer>
-                            </Tab>
-                            <Tab label={"Preview"} data-testid={"cms.editor.tab.preview"}>
+                            </ContentTab>
+                            <ContentTab label={"Preview"} data-testid={"cms.editor.tab.preview"}>
                                 <PreviewTab activeTab={activeTabIndex === 1} />
-                            </Tab>
-                        </Tabs>
-                    </RightPanel>
+                            </ContentTab>
+                        </ContentTabs>
+                    </Content>
                 </SplitView>
             </ContentContainer>
             <DragPreview />
         </div>
     );
 };
+
+const EditorComponent: React.FC<EditorProps> = ({ modelId, apolloClient }) => {
+    return (
+        <ContentModelEditorProvider key={modelId} apolloClient={apolloClient} modelId={modelId}>
+            <DndProvider backend={HTML5Backend}>
+                <BaseEditor />
+            </DndProvider>
+        </ContentModelEditorProvider>
+    );
+};
+
+export const Editor: Editor = Object.assign(EditorComponent, {
+    Content,
+    ContentTab,
+    Sidebar,
+    Field,
+    FieldsList
+});

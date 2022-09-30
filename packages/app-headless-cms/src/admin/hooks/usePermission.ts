@@ -26,6 +26,11 @@ export const usePermission = () => {
     const canRead = useCallback(
         (permissionName: string): boolean => {
             const permission = getPermission<CmsSecurityPermission>(permissionName);
+
+            if (hasFullAccess) {
+                return true;
+            }
+
             if (!permission) {
                 return false;
             }
@@ -36,7 +41,7 @@ export const usePermission = () => {
 
             return permission.rwd.includes("r");
         },
-        [identity]
+        [identity, hasFullAccess]
     );
 
     const canReadEntries = useCallback(

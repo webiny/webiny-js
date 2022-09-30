@@ -1,0 +1,1 @@
+export { PageTemplatesModule } from "./PageTemplatesModule";
