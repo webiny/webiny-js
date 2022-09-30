@@ -49,7 +49,6 @@ const ids = {
     field219: generateAlphaNumericLowerCaseId(8),
     field220: generateAlphaNumericLowerCaseId(8),
     field221: generateAlphaNumericLowerCaseId(8),
-    field222: `${generateAlphaNumericLowerCaseId(8)}_deleted`,
     // product review
     field31: generateAlphaNumericLowerCaseId(8),
     field32: generateAlphaNumericLowerCaseId(8),
@@ -186,8 +185,7 @@ const models: CmsModel[] = [
             [ids.field209],
             [ids.field210],
             [ids.field211],
-            [ids.field221],
-            [ids.field222]
+            [ids.field221]
         ],
         fields: [
             {
@@ -665,27 +663,6 @@ const models: CmsModel[] = [
                                         renderer: {
                                             name: "renderer"
                                         }
-                                    },
-                                    {
-                                        id: ids.field221,
-                                        multipleValues: true,
-                                        helpText: "",
-                                        label: "Long Text List - Deleted",
-                                        storageId: "longTextDeletedStorageId",
-                                        fieldId: "longTextDeleted",
-                                        type: "long-text",
-                                        validation: [],
-                                        listValidation: [],
-                                        settings: {},
-                                        placeholderText: "placeholder text",
-                                        predefinedValues: {
-                                            enabled: false,
-                                            values: []
-                                        },
-                                        renderer: {
-                                            name: "renderer"
-                                        },
-                                        isDeleted: true
                                     }
                                 ]
                             },
@@ -760,26 +737,6 @@ const models: CmsModel[] = [
                 renderer: {
                     name: "renderer"
                 }
-            },
-            {
-                id: ids.field222,
-                multipleValues: false,
-                helpText: "",
-                label: "Deleted text field",
-                storageId: "deletedTextFieldStorageId",
-                fieldId: "deletedTextField",
-                type: "text",
-                validation: [],
-                listValidation: [],
-                placeholderText: "",
-                predefinedValues: {
-                    enabled: false,
-                    values: []
-                },
-                renderer: {
-                    name: "renderer"
-                },
-                isDeleted: true
             }
         ],
         tenant: "root",

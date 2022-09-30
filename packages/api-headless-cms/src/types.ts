@@ -214,11 +214,6 @@ export interface CmsModelField {
          */
         [key: string]: any;
     };
-    /**
-     * Is this field marked as deleted?
-     * Note that we are actually never deleting any of the fields.
-     */
-    isDeleted?: boolean;
 }
 
 /**

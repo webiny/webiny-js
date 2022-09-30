@@ -913,11 +913,6 @@ describe("filtering", () => {
             sort: ["title_ASC"]
         });
 
-        delete daciaProduct["deletedTextField"];
-        delete teslaProduct["deletedTextField"];
-        delete bananaProduct["deletedTextField"];
-        delete plumProduct["deletedTextField"];
-
         expect(equalReaderResponse).toEqual({
             data: {
                 listProducts: {

@@ -287,19 +287,25 @@ export const validateModelFields = (params: ValidateModelFieldsParams) => {
 
     /**
      * We must not allow removal or changes in fields that are already in use in content entries.
+     * Locked fields still have fieldId (should be storageId) because of the old existing locked fields in the models.
      */
     for (const lockedField of lockedFields) {
         const existingField = fields.find(item => item.storageId === lockedField.fieldId);
 
+        /**
+         * Starting with 5.33.0 fields can be deleted.
+         * Our UI gives a warning upon locked field deletion, but if user is managing fields through API directly - we cannot do anything.
+         */
         if (!existingField) {
-            throw new WebinyError(
-                `Cannot remove the field "${lockedField.fieldId}" because it's already in use in created content.`,
-                "ENTRY_FIELD_USED",
-                {
-                    lockedField,
-                    fields
-                }
-            );
+            continue;
+            // throw new WebinyError(
+            //     `Cannot remove the field "${lockedField.fieldId}" because it's already in use in created content.`,
+            //     "ENTRY_FIELD_USED",
+            //     {
+            //         lockedField,
+            //         fields
+            //     }
+            // );
         }
 
         if (lockedField.multipleValues !== existingField.multipleValues) {

@@ -1,3 +1,7 @@
+/**
+ * We are leaving this file because isDeleted might come back later
+ */
+// @ts-nocheck
 import { ApiEndpoint, CmsModel, CmsModelField } from "~/types";
 
 /**

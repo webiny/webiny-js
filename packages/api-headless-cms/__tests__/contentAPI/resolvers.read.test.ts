@@ -122,12 +122,12 @@ describe("READ - Resolvers", () => {
 
         if (update.errors) {
             console.error(`[beforeEach] ${update.errors[0].message}`);
-            process.exit(1);
+            process.exit(update.errors[0].message);
         }
 
         if (update.data.updateContentModel.error) {
             console.error(`[beforeEach] ${update.data.updateContentModel.error.message}`);
-            process.exit(1);
+            process.exit(update.data.updateContentModel.error.message);
         }
         return targetModel;
     };
