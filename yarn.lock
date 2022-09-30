@@ -7354,13 +7354,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-dnd/shallowequal@npm:^4.0.1":
-  version: 4.0.2
-  resolution: "@react-dnd/shallowequal@npm:4.0.2"
-  checksum: 7f21d691bddbfd4d2830948cbeefecca1600b2b46bcb1934926795f07ae8a1fa60a3dfd3a2112be5ef682c3820c80a99711e9fa15843f7e300acb25a4ecb70ab
-  languageName: node
-  linkType: hard
-
 "@rmwc/base@npm:7.0.3, @rmwc/base@npm:^7.0.3":
   version: 7.0.3
   resolution: "@rmwc/base@npm:7.0.3"
@@ -12071,7 +12064,8 @@ __metadata:
     graphql-tag: ^2.12.6
     lodash: ^4.17.11
     react: 17.0.2
-    react-dnd: ^16.0.1
+    react-dnd: 11.1.3
+    react-dnd-html5-backend: 11.1.3
     react-dom: 17.0.2
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
@@ -24819,7 +24813,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hoist-non-react-statics@npm:^3.1.0, hoist-non-react-statics@npm:^3.3.0, hoist-non-react-statics@npm:^3.3.2":
+"hoist-non-react-statics@npm:^3.1.0, hoist-non-react-statics@npm:^3.3.0":
   version: 3.3.2
   resolution: "hoist-non-react-statics@npm:3.3.2"
   dependencies:
@@ -34334,7 +34328,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dnd-html5-backend@npm:^11.1.3":
+"react-dnd-html5-backend@npm:11.1.3, react-dnd-html5-backend@npm:^11.1.3":
   version: 11.1.3
   resolution: "react-dnd-html5-backend@npm:11.1.3"
   dependencies:
@@ -34362,7 +34356,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dnd@npm:^11.1.3":
+"react-dnd@npm:11.1.3, react-dnd@npm:^11.1.3":
   version: 11.1.3
   resolution: "react-dnd@npm:11.1.3"
   dependencies:
@@ -34374,31 +34368,6 @@ __metadata:
     react: ">= 16.9.0"
     react-dom: ">= 16.9.0"
   checksum: f1fab4c1b4cee234326da4f1c44cb6df9cfac658c45e193a307f0f82ee4c849024d179b31ea91b17970f3703a2dcc63b877e8c4370f4c1125b4e88f94c83e686
-  languageName: node
-  linkType: hard
-
-"react-dnd@npm:^16.0.1":
-  version: 16.0.1
-  resolution: "react-dnd@npm:16.0.1"
-  dependencies:
-    "@react-dnd/invariant": ^4.0.1
-    "@react-dnd/shallowequal": ^4.0.1
-    dnd-core: ^16.0.1
-    fast-deep-equal: ^3.1.3
-    hoist-non-react-statics: ^3.3.2
-  peerDependencies:
-    "@types/hoist-non-react-statics": ">= 3.3.1"
-    "@types/node": ">= 12"
-    "@types/react": ">= 16"
-    react: ">= 16.14"
-  peerDependenciesMeta:
-    "@types/hoist-non-react-statics":
-      optional: true
-    "@types/node":
-      optional: true
-    "@types/react":
-      optional: true
-  checksum: e8da2186aaafcd5bb41c090a995c963a7c3c73c20991667a2cfc0c800d7f7f73913414b2e61c437cdb6221bb2151bd5174088b8b42c17056a896fc4d1da5729f
   languageName: node
   linkType: hard
 
