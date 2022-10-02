@@ -175,8 +175,10 @@ describe("multiple values in field", () => {
             }
         });
     });
-
-    test("should not allow to change or removal of locked multiple values field", async () => {
+    /**
+     * Removed in 5.33.0 because users can now remove fields whenever they want to.
+     */
+    test.skip("should not allow to change or removal of locked multiple values field", async () => {
         const { createCategory } = useCategoryManageHandler({
             ...manageOpts
         });
@@ -274,7 +276,6 @@ describe("multiple values in field", () => {
                                 value: "some text"
                             }
                         ],
-                        deletedTextField: null,
                         meta: {
                             locked: false,
                             modelId: "product",

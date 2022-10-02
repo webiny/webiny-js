@@ -59,10 +59,8 @@ const productFields = `
                 id
             }
             longText
-            longTextDeleted
         }
     }
-    deletedTextField
 `;
 
 const errorFields = `

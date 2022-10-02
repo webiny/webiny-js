@@ -62,11 +62,11 @@ export const ContentModelFieldModel = withFields({
             settings: object({ value: {} })
         })()
     }),
-    settings: object({ value: {} }),
+    settings: object({ value: {} })
     /**
      * By the default, field is not deleted.
      */
-    isDeleted: boolean({ value: false })
+    // isDeleted: boolean({ value: false })
 })();
 
 export const CreateContentModelModel = withFields({

@@ -16,6 +16,7 @@ import { i18n } from "@webiny/app/i18n";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useContentModelEditor } from "~/admin/components/ContentModelEditor/useContentModelEditor";
 import { useFieldEditor } from "~/admin/components/FieldEditor/useFieldEditor";
+import { useConfirmationDialog } from "@webiny/app-admin";
 
 const t = i18n.ns("app-headless-cms/admin/components/editor/field");
 
@@ -77,9 +78,29 @@ const Field: React.FC<FieldProps> = props => {
     const { setData, data } = useContentModelEditor();
     const { getFieldPlugin } = useFieldEditor();
 
+    const { showConfirmation } = useConfirmationDialog({
+        title: t`Warning - You are trying to delete a locked field!`,
+        message: (
+            <>
+                <p>{t`You are about to delete a field which is used in the data storage`}</p>
+                <p>{t`All data in that field will be lost and there is no going back!`}</p>
+                <p>&nbsp;</p>
+                <p>{t`Are you sure you want to continue?`}</p>
+            </>
+        )
+    });
+    const lockedFields = data ? data.lockedFields || [] : [];
+    const isLocked = lockedFields.some(lockedField => lockedField.fieldId === field.storageId);
+
     const onDelete = useCallback(() => {
-        props.onDelete(field);
-    }, [field.fieldId]);
+        if (!isLocked) {
+            props.onDelete(field);
+            return;
+        }
+        showConfirmation(() => {
+            props.onDelete(field);
+        });
+    }, [field.fieldId, lockedFields]);
 
     const setAsTitle = useCallback(async (): Promise<void> => {
         const response = await setData(data => {
@@ -103,7 +124,6 @@ const Field: React.FC<FieldProps> = props => {
 
     const isTitleField = data && field.fieldId === data.titleFieldId && !parent;
 
-    const lockedFields = data ? data.lockedFields || [] : [];
     return (
         <Fragment>
             <FieldContainer>
@@ -138,18 +158,11 @@ const Field: React.FC<FieldProps> = props => {
                             </ListItemGraphic>
                             {t`Use as title`}
                         </MenuItem>
-                        <MenuItem
-                            disabled={lockedFields.some(
-                                lockedField => lockedField.fieldId === field.fieldId
-                            )}
-                            onClick={onDelete}
-                        >
+                        <MenuItem onClick={onDelete}>
                             <ListItemGraphic>
                                 <Icon icon={<DeleteIcon />} />
                             </ListItemGraphic>
-                            {lockedFields.find(lockedField => lockedField.fieldId === field.fieldId)
-                                ? t`Cannot delete`
-                                : t`Delete`}
+                            {t`Delete`}
                         </MenuItem>
                     </Menu>
                 </Actions>

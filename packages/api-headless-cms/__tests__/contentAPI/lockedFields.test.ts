@@ -56,7 +56,10 @@ describe("Content model locked fields", () => {
         return update.data.updateContentModel.data;
     };
 
-    test("must mark fields as used and prevent changes on it, as soon as the first entry is saved", async () => {
+    /**
+     * Removed in 5.33.0 because users can now remove fields whenever they want to.
+     */
+    test.skip("must mark fields as used and prevent changes on it, as soon as the first entry is saved", async () => {
         const { createCategory } = useCategoryManageHandler({
             ...manageOpts
         });
@@ -144,8 +147,10 @@ describe("Content model locked fields", () => {
             });
         }
     });
-
-    it("should allow deleting fields when no entries are present", async () => {
+    /**
+     * Removed in 5.33.0 because users can now remove fields whenever they want to.
+     */
+    it.skip("should allow deleting fields when no entries are present", async () => {
         const { createCategory, deleteCategory, listCategories, until } = useCategoryManageHandler({
             ...manageOpts
         });

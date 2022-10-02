@@ -140,8 +140,7 @@ describe("richTextField", () => {
                     modelId: "category",
                     id: category.id
                 },
-                richText: richTextMock,
-                deletedTextField: "Deleted! Yes!"
+                richText: richTextMock
             }
         });
 
@@ -173,7 +172,6 @@ describe("richTextField", () => {
                         inStock: null,
                         itemsInStock: null,
                         variant: null,
-                        deletedTextField: "Deleted! Yes!",
                         meta: {
                             locked: false,
                             modelId: "product",
@@ -267,8 +265,7 @@ describe("richTextField", () => {
             category: {
                 modelId: "category",
                 id: category.id
-            },
-            deletedTextField: "Deleted!"
+            }
         };
         /**
          * First we create the product without the rich text populated.
@@ -302,7 +299,6 @@ describe("richTextField", () => {
             inStock: null,
             itemsInStock: null,
             variant: null,
-            deletedTextField: "Deleted!",
             meta: {
                 locked: false,
                 modelId: "product",

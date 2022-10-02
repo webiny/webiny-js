@@ -1,3 +1,6 @@
+/**
+ * We will leave the test for isDeleted because it might come back later on.
+ */
 import { CmsModelField } from "~/types";
 
 import { filterModelsDeletedFields } from "~/utils/filterModelFields";
@@ -82,7 +85,7 @@ const fields: Field[] = [
     }
 ];
 
-describe("Filter model fields", () => {
+describe.skip("Filter model fields", () => {
     it("should filter deleted fields in case of not being manage endpoint", () => {
         const models = filterModelsDeletedFields({
             models: [
