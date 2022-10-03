@@ -74,15 +74,16 @@ const createInitialOpenList = (
 
 type Props = {
     type: keyof Types;
-    focusedNodeId?: string;
-    onNodeClick: (data: NodeModel<DndItemData>["data"]) => void;
+    focusedFolderId?: string;
+    onFolderClick: (data: NodeModel<DndItemData>["data"]) => void;
 };
 
-export const FolderTree: React.FC<Props> = ({ type, focusedNodeId, onNodeClick }) => {
+export const FolderTree: React.FC<Props> = ({ type, focusedFolderId, onFolderClick }) => {
     const { setFolderType } = useFolders();
     const [treeData, setTreeData] = useState<NodeModel<DndItemData>[]>([]);
     const [createDialogOpen, setCreateDialogOpen] = useState<boolean>(false);
     const [initialOpenList, setInitialOpenList] = useState<undefined | InitialOpen>(undefined);
+    const [firstRender, setFirstRender] = useState<boolean>(false);
 
     const { folders } = useListFolders();
     const { updateFolder } = useUpdateFolder();
@@ -111,17 +112,18 @@ export const FolderTree: React.FC<Props> = ({ type, focusedNodeId, onNodeClick }
 
     useEffect(() => {
         if (folders) {
-            const data = createTreeData(folders, focusedNodeId);
+            const data = createTreeData(folders, focusedFolderId);
             setTreeData(data);
         }
     }, [folders]);
 
     useEffect(() => {
-        if (folders) {
-            const list = createInitialOpenList(folders, focusedNodeId);
+        if (folders && firstRender) {
+            const list = createInitialOpenList(folders, focusedFolderId);
             setInitialOpenList(list);
+            setFirstRender(false);
         }
-    }, [folders]);
+    }, [folders, firstRender]);
 
     return (
         <Container>
@@ -138,7 +140,7 @@ export const FolderTree: React.FC<Props> = ({ type, focusedNodeId, onNodeClick }
                             depth={depth}
                             isOpen={isOpen}
                             onToggle={onToggle}
-                            onClick={data => onNodeClick(data)}
+                            onClick={data => onFolderClick(data)}
                         />
                     )}
                     dragPreviewRender={monitorProps => <NodePreview monitorProps={monitorProps} />}
