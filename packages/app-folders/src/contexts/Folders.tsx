@@ -7,12 +7,7 @@ export interface FoldersContext {
     setFolderType: Dispatch<SetStateAction<keyof Types | null>>;
 }
 
-export const FoldersContext = React.createContext<FoldersContext>({
-    folderType: null,
-    setFolderType: () => {
-        return void 0;
-    }
-});
+export const FoldersContext = React.createContext<FoldersContext | undefined>(undefined);
 
 export const FoldersProvider: React.FC = props => {
     const [folderType, setFolderType] = useState<keyof Types | null>(null);
