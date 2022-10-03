@@ -5,9 +5,9 @@ import {
     ConverterCollectionConvertParams as BaseConverterCollectionConvertParams
 } from "~/utils/converters/ConverterCollection";
 import { CmsModel, StorageOperationsCmsModel } from "~/types";
-import semver from "semver";
+import semver, { SemVer } from "semver";
 
-const featureVersion = "5.33.0";
+const featureVersion = semver.coerce("5.33.0") as SemVer;
 
 const isFeatureEnabled = (model: CmsModel): boolean => {
     /**
@@ -34,7 +34,11 @@ const isFeatureEnabled = (model: CmsModel): boolean => {
      *
      * TODO change if necessary after the update to the system
      */
-    if (semver.compare(model.webinyVersion, featureVersion) === -1) {
+    const modelVersion = semver.coerce(model.webinyVersion);
+    if (!modelVersion) {
+        console.log(`Warning: Model "${model.modelId}" does not have valid Webiny version set.`);
+        return true;
+    } else if (semver.compare(modelVersion, featureVersion) === -1) {
         return false;
     }
     return true;
