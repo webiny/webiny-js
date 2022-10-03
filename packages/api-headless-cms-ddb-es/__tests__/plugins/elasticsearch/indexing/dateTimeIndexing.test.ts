@@ -137,45 +137,6 @@ describe("Date time indexing plugin", () => {
         }
     );
 
-    const dateTimeWithoutTimezone: (string | string[])[][] = [
-        ["2022-06-10T20:54:53", "2022-06-10T20:54:53", "2022-06-10T18:54:53.000Z"],
-        ["2022-06-15T20:54:53", "2022-06-15T20:54:53", "2022-06-15T18:54:53.000Z"],
-        ["2022-12-06T20:54:53", "2022-12-06T20:54:53", "2022-12-06T19:54:53.000Z"],
-        ["2022-12-20T20:54:53", "2022-12-20T20:54:53", "2022-12-20T19:54:53.000Z"]
-    ];
-
-    it.each(dateTimeWithoutTimezone)(
-        "should properly transform dateTimeWithoutTimezone to index value and back - %s",
-        (value, expected, expectedBack) => {
-            const toIndexResult = getPlugin().toIndex({
-                field: createField("dateTimeWithoutTimezone"),
-                getFieldIndexPlugin,
-                getFieldTypePlugin,
-                plugins,
-                model,
-                value,
-                rawValue: {}
-            });
-
-            expect(toIndexResult).toEqual({
-                value: expected,
-                rawValue: undefined
-            });
-
-            const fromIndexResult = getPlugin().fromIndex({
-                field: createField("dateTimeWithoutTimezone"),
-                getFieldIndexPlugin,
-                getFieldTypePlugin,
-                plugins,
-                model,
-                value: toIndexResult.value,
-                rawValue: {}
-            });
-
-            expect(fromIndexResult).toEqual(expectedBack);
-        }
-    );
-
     const time: ([string, number] | [string[], number[]])[] = [
         ["19:54:53", 71693],
         ["20:54:53", 75293],
