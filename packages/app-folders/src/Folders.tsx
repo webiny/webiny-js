@@ -1,9 +1,9 @@
 import React, { memo } from "react";
-import { AddRoute, Layout, Provider, Plugins, AddMenu } from "@webiny/app-admin";
+import { AddRoute, Layout, Plugins, AddMenu, createProviderPlugin } from "@webiny/app-admin";
 import { FoldersProvider as ContextProvider } from "./contexts/Folders";
 import { FolderTree } from "~/components/Tree";
 
-const FoldersProviderHOC = (Component: React.FC): React.FC => {
+const FoldersProviderHOC = createProviderPlugin(Component => {
     return function FoldersProvider({ children }) {
         return (
             <ContextProvider>
@@ -11,19 +11,23 @@ const FoldersProviderHOC = (Component: React.FC): React.FC => {
             </ContextProvider>
         );
     };
-};
+});
 
 const FoldersExtension: React.FC = () => {
     return (
         <>
-            <Provider hoc={FoldersProviderHOC} />
+            <FoldersProviderHOC />
             <Plugins>
                 <AddRoute path={"/folders/list"}>
                     <Layout title={"Folders - List"}>
                         <FolderTree
                             type={"page"}
-                            focusedNodeId={"631f3285d878490009edd720"}
-                            onNodeClick={data => console.log("New Data", data)}
+                            focusedFolderId={"631f3285d878490009edd720"}
+                            onFolderClick={data => console.log("Page data", data)}
+                        />
+                        <FolderTree
+                            type={"cms"}
+                            onFolderClick={data => console.log("CMS data", data)}
                         />
                     </Layout>
                 </AddRoute>

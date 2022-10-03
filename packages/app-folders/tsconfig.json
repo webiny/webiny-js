@@ -9,7 +9,7 @@
     { "path": "../validation" }
   ],
   "compilerOptions": {
-    "rootDirs": ["./src", "./__tests__"],
+    "rootDirs": ["./src"],
     "outDir": "./dist",
     "declarationDir": "./dist",
     "paths": {
