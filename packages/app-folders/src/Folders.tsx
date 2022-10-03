@@ -22,11 +22,13 @@ const FoldersExtension: React.FC = () => {
                     <Layout title={"Folders - List"}>
                         <FolderTree
                             type={"page"}
+                            title={"All pages"}
                             focusedFolderId={"631f3285d878490009edd720"}
                             onFolderClick={data => console.log("Page data", data)}
                         />
                         <FolderTree
                             type={"cms"}
+                            title={"All entries"}
                             onFolderClick={data => console.log("CMS data", data)}
                         />
                     </Layout>

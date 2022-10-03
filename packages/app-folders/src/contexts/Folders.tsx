@@ -1,21 +1,24 @@
 import React, { useState, useMemo, Dispatch, SetStateAction } from "react";
 
-import { Types } from "~/types";
-
 export interface FoldersContext {
-    folderType: keyof Types | null;
-    setFolderType: Dispatch<SetStateAction<keyof Types | null>>;
+    folderType: string | null;
+    setFolderType: Dispatch<SetStateAction<string | null>>;
 }
 
 export const FoldersContext = React.createContext<FoldersContext | undefined>(undefined);
 
 export const FoldersProvider: React.FC = props => {
-    const [folderType, setFolderType] = useState<keyof Types | null>(null);
+    const [folderType, setFolderType] = useState<string | null>(null);
 
     const value = useMemo(() => {
         return {
-            folderType,
-            setFolderType
+            folderType, //NO
+            setFolderType //NO
+            // listFolders: (type: string) => {
+            //     // return list of folders by type
+            // },
+            // createFolder,
+            // updateFolder
         };
     }, [folderType]);
 

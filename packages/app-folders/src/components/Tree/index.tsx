@@ -18,7 +18,7 @@ import { Title } from "./Title";
 
 import { Container } from "./styled";
 
-import { DndItemData, FolderItem, Types } from "~/types";
+import { DndItemData, FolderItem } from "~/types";
 import { CreateButton } from "~/components/Tree/ButtonCreate";
 import { CreateDialog } from "~/components/Tree/DialogCreate";
 
@@ -73,12 +73,13 @@ const createInitialOpenList = (
 };
 
 type Props = {
-    type: keyof Types;
-    focusedFolderId?: string;
+    type: string;
+    title: string;
     onFolderClick: (data: NodeModel<DndItemData>["data"]) => void;
+    focusedFolderId?: string;
 };
 
-export const FolderTree: React.FC<Props> = ({ type, focusedFolderId, onFolderClick }) => {
+export const FolderTree: React.FC<Props> = ({ type, title, focusedFolderId, onFolderClick }) => {
     const { setFolderType } = useFolders();
     const [treeData, setTreeData] = useState<NodeModel<DndItemData>[]>([]);
     const [createDialogOpen, setCreateDialogOpen] = useState<boolean>(false);
@@ -127,7 +128,7 @@ export const FolderTree: React.FC<Props> = ({ type, focusedFolderId, onFolderCli
 
     return (
         <Container>
-            <Title />
+            <Title title={title} />
             <DndProvider backend={MultiBackend} options={getBackendOptions()}>
                 <Tree
                     tree={treeData}

@@ -1,9 +1,3 @@
-export interface Types {
-    page: string;
-    cms: string;
-    file: string;
-}
-
 export interface FolderItem {
     id: string;
     name: string;
