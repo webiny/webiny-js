@@ -29,6 +29,7 @@ const FoldersExtension: React.FC = () => {
                         <FolderTree
                             type={"cms"}
                             title={"All entries"}
+                            focusedFolderId={"633b47cba9f9560009834b1d"}
                             onFolderClick={data => console.log("CMS data", data)}
                         />
                     </Layout>

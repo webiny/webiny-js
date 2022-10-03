@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { AutoComplete } from "@webiny/ui/AutoComplete";
 import { ButtonPrimary, ButtonDefault } from "@webiny/ui/Button";
@@ -10,33 +10,33 @@ import { Form } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import { i18n } from "@webiny/app/i18n";
 
-import { useListFolders, useCreateFolder } from "~/hooks";
+import { useFolders } from "~/hooks";
 
 import { CreateDialogContainer, CreateDialogActions } from "./styled";
 
 import { FolderItem } from "~/types";
-import { FoldersContext } from "~/contexts";
 
 type Props = {
+    type: string;
     open: boolean;
     onClose: DialogOnClose;
 };
 
 const t = i18n.ns("app-folders/components/tree/dialog-create");
 
-export const CreateDialog: React.FC<Props> = ({ onClose, open }) => {
+export const CreateDialog: React.FC<Props> = ({ type, onClose, open }) => {
     const [dialogOpen, setDialogOpen] = useState(false);
-    const { folderType } = useContext(FoldersContext);
-    const { loading, createFolder } = useCreateFolder();
-    const { folders } = useListFolders();
+    const { folders, createFolder, listFolders, loading } = useFolders();
 
-    const onSubmit = async (data: Partial<FolderItem>) => {
-        await createFolder({
-            variables: { data: { ...data, type: folderType } }
+    const onSubmit = (data: Partial<FolderItem>) => {
+        createFolder({
+            variables: { data: { ...data, type } }
         });
+        listFolders(type);
         setDialogOpen(false);
     };
 
+    // TODO open issue to add new slug validator
     const slugValidator = (slug: string): void => {
         const test = new RegExp("^[a-z0-9_-]*$");
         const matched = slug.match(test);
@@ -87,7 +87,10 @@ export const CreateDialog: React.FC<Props> = ({ onClose, open }) => {
                                     </Cell>
                                     <Cell span={12}>
                                         <Bind name="parentId">
-                                            <AutoComplete options={folders} label={t`Parent`} />
+                                            <AutoComplete
+                                                options={folders[type]}
+                                                label={t`Parent`}
+                                            />
                                         </Bind>
                                     </Cell>
                                 </Grid>
