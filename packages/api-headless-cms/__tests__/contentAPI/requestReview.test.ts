@@ -1,7 +1,7 @@
 import WebinyError from "@webiny/error";
 import { CmsGroup, CmsModel } from "~/types";
-import { useGraphQLHandler } from "../utils/useGraphQLHandler";
-import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
+import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
+import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
 import models from "./mocks/contentModels";
 
 describe("Request review", () => {

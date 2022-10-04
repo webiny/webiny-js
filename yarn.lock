@@ -10600,7 +10600,7 @@ __metadata:
     pluralize: ^8.0.0
     prettier: ^2.3.2
     rimraf: ^3.0.2
-    shortid: ^2.2.15
+    semver: ^6.3.0
     sinon: ^9.0.2
     slugify: ^1.4.0
     ttypescript: ^1.5.12
@@ -11804,12 +11804,10 @@ __metadata:
     classnames: ^2.2.6
     dot-prop-immutable: ^2.1.0
     emotion: ^10.0.17
-    execa: ^5.0.0
     graphql: ^15.7.2
     graphql-tag: ^2.12.6
     invariant: ^2.2.4
     lodash: ^4.17.10
-    nanoid: ^3.3.4
     pluralize: ^8.0.0
     prop-types: ^15.7.2
     raw.macro: ^0.4.2
@@ -11822,7 +11820,6 @@ __metadata:
     react-hotkeyz: ^1.0.4
     react-virtualized: ^9.21.2
     rimraf: ^3.0.2
-    shortid: ^2.2.14
     timeago-react: ^2.0.0
     ttypescript: ^1.5.12
     typescript: 4.7.4
@@ -13572,6 +13569,8 @@ __metadata:
     "@webiny/cli": ^5.32.0
     "@webiny/error": ^5.32.0
     "@webiny/project-utils": ^5.32.0
+    nanoid: ^3.3.4
+    nanoid-dictionary: ^4.3.0
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
     typescript: 4.7.4
@@ -29605,6 +29604,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"nanoid-dictionary@npm:^4.3.0":
+  version: 4.3.0
+  resolution: "nanoid-dictionary@npm:4.3.0"
+  checksum: 254ed606f0ef6cfea6f5b1fcaa69f10d561650c0d2cff8b138290c6abd8cbdc3335be8799d7520b8ad8b598b8a8b2bd774bfea49eac1ddecb222e4d80e558de5
+  languageName: node
+  linkType: hard
+
 "nanoid@npm:^2.1.0":
   version: 2.1.11
   resolution: "nanoid@npm:2.1.11"
@@ -36190,7 +36196,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"shortid@npm:^2.2.14, shortid@npm:^2.2.15, shortid@npm:^2.2.16":
+"shortid@npm:^2.2.14, shortid@npm:^2.2.16":
   version: 2.2.16
   resolution: "shortid@npm:2.2.16"
   dependencies:

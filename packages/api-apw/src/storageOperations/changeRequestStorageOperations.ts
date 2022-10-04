@@ -47,17 +47,21 @@ export const createChangeRequestStorageOperations = (
                 }
             });
             security.enableAuthorization();
-            const all = await Promise.all(
-                entries.map(entry =>
-                    getFieldValues<ApwChangeRequest>({
-                        entry,
-                        fields: baseFields,
-                        context: getCmsContext(),
-                        transformers: [getTransformer(model, "body")]
-                    })
-                )
-            );
-            return [all, meta];
+            try {
+                const all = await Promise.all(
+                    entries.map(entry =>
+                        getFieldValues<ApwChangeRequest>({
+                            entry,
+                            fields: baseFields,
+                            context: getCmsContext(),
+                            transformers: [getTransformer(model, "body")]
+                        })
+                    )
+                );
+                return [all, meta];
+            } catch (ex) {
+                throw new WebinyError(ex.message, ex.code, ex.data);
+            }
         },
         async createChangeRequest(params) {
             const model = await getChangeRequestModel();

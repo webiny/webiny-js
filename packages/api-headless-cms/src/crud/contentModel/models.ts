@@ -1,5 +1,4 @@
 import { validation } from "@webiny/validation";
-import flow from "lodash/flow";
 /**
  * Package commodo-fields-object does not have types
  */
@@ -9,8 +8,8 @@ import { object } from "commodo-fields-object";
  * Package commodo-fields does not have object.
  */
 // @ts-ignore
-import { withFields, string, setOnce, onSet, boolean, fields } from "@commodo/fields";
-import { validateId } from "./idValidation";
+import { withFields, string, setOnce, boolean, fields } from "@commodo/fields";
+import { validateFieldId } from "./fieldIdValidation";
 
 const requiredShortString = validation.create("required,maxLength:255");
 const shortString = validation.create("maxLength:255");
@@ -21,10 +20,9 @@ const RendererModel = withFields({
 
 export const ContentModelFieldModel = withFields({
     id: string({ validation: requiredShortString }),
-    fieldId: flow(
-        onSet((value?: string) => value && value.trim()),
-        setOnce()
-    )(string({ validation: validateId })),
+    fieldId: string({
+        validation: validateFieldId
+    }),
     label: string({ validation: requiredShortString }),
     helpText: string({ validation: shortString }),
     placeholderText: string({ validation: shortString }),
@@ -65,6 +63,10 @@ export const ContentModelFieldModel = withFields({
         })()
     }),
     settings: object({ value: {} })
+    /**
+     * By the default, field is not deleted.
+     */
+    // isDeleted: boolean({ value: false })
 })();
 
 export const CreateContentModelModel = withFields({

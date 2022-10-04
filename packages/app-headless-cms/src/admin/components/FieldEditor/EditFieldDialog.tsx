@@ -22,6 +22,7 @@ import { Elevation } from "@webiny/ui/Elevation";
 import { useFieldEditor } from "~/admin/components/FieldEditor/useFieldEditor";
 import invariant from "invariant";
 import { ButtonDefault, ButtonPrimary } from "@webiny/ui/Button";
+import { useContentModelEditor } from "~/admin/components/ContentModelEditor/useContentModelEditor";
 
 const t = i18n.namespace("app-headless-cms/admin/components/editor");
 
@@ -116,12 +117,15 @@ const fieldEditorDialog = css({
 
 const EditFieldDialog: React.FC<EditFieldDialogProps> = ({ field, onSubmit, ...props }) => {
     const [current, setCurrent] = useState<CmsEditorField | null>(null);
-
     const { getFieldPlugin } = useFieldEditor();
+    const { data: contentModel, setData: setContentModelData } = useContentModelEditor();
+
+    const [isTitleField, setIsTitleField] = useState<boolean>(false);
 
     useEffect((): void => {
         if (!field) {
             setCurrent(field);
+            setIsTitleField(false);
             return;
         }
 
@@ -136,7 +140,11 @@ const EditFieldDialog: React.FC<EditFieldDialogProps> = ({ field, onSubmit, ...p
                 clonedField.renderer = { name: renderPlugin.renderer.rendererName };
             }
         }
-
+        if (contentModel.titleFieldId === field.fieldId) {
+            setIsTitleField(true);
+        } else if (isTitleField === true) {
+            setIsTitleField(false);
+        }
         setCurrent(clonedField);
     }, [field]);
 
@@ -299,6 +307,30 @@ const EditFieldDialog: React.FC<EditFieldDialogProps> = ({ field, onSubmit, ...p
                                 <ButtonPrimary
                                     data-testid="cms.editor.field.settings.save"
                                     onClick={ev => {
+                                        /**
+                                         * In case title field fieldID changed, we need to change it in the model data as well.
+                                         */
+                                        if (
+                                            isTitleField &&
+                                            contentModel.titleFieldId !== form.data.fieldId
+                                        ) {
+                                            setContentModelData(prev => {
+                                                return {
+                                                    ...prev,
+                                                    titleFieldId: form.data.fieldId
+                                                };
+                                            })
+                                                .then(() => {
+                                                    form.submit(ev);
+                                                })
+                                                .catch(ex => {
+                                                    console.error(ex.message);
+                                                });
+                                            return;
+                                        }
+                                        /**
+                                         * Or just continue as usually
+                                         */
                                         form.submit(ev);
                                     }}
                                 >{t`Save Field`}</ButtonPrimary>

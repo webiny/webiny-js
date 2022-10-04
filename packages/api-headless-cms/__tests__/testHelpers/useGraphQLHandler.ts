@@ -6,8 +6,8 @@ import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { ApiKey, SecurityIdentity } from "@webiny/api-security/types";
 import apiKeyAuthentication from "@webiny/api-security/plugins/apiKeyAuthentication";
 import apiKeyAuthorization from "@webiny/api-security/plugins/apiKeyAuthorization";
-import { createPermissions, until, sleep, PermissionsArg } from "./helpers";
-import { INSTALL_MUTATION, IS_INSTALLED_QUERY } from "./graphql/settings";
+import { createPermissions, until, sleep, PermissionsArg, createDummyLocales } from "./helpers";
+import { INSTALL_MUTATION, IS_INSTALLED_QUERY, UPGRADE_MUTATION } from "./graphql/settings";
 import {
     CREATE_CONTENT_MODEL_GROUP_MUTATION,
     DELETE_CONTENT_MODEL_GROUP_MUTATION,
@@ -23,7 +23,7 @@ import {
     LIST_CONTENT_MODELS_QUERY,
     UPDATE_CONTENT_MODEL_MUTATION
 } from "./graphql/contentModel";
-import { Plugin, PluginCollection } from "@webiny/plugins/types";
+import { Plugin, PluginCollection, PluginsContainer } from "@webiny/plugins/types";
 
 /**
  * Unfortunately at we need to import the api-i18n-ddb package manually
@@ -92,56 +92,59 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
         storageOperations: ops.storageOperations
     });
 
-    const handler = createHandler({
-        plugins: [
-            topPlugins,
-            createWcpContext(),
-            ...ops.plugins,
-            ...createTenancyAndSecurity({
-                setupGraphQL: setupTenancyAndSecurityGraphQL,
-                permissions: createPermissions(permissions),
-                identity
-            }),
-            {
-                type: "context",
-                name: "context-security-tenant",
-                async apply(context) {
-                    context.security.getApiKeyByToken = async (
-                        token: string
-                    ): Promise<ApiKey | null> => {
-                        if (!token || token !== "aToken") {
-                            return null;
-                        }
-                        const apiKey = "a1234567890";
-                        return {
-                            id: apiKey,
-                            name: apiKey,
-                            tenant: tenant.id,
-                            // @ts-ignore
-                            permissions: identity?.permissions || [],
-                            token,
-                            createdBy: {
-                                id: "test",
-                                displayName: "test",
-                                type: "admin"
-                            },
-                            description: "test",
-                            createdOn: new Date().toISOString(),
-                            webinyVersion: context.WEBINY_VERSION
-                        };
+    const handlerPlugins = [
+        topPlugins,
+        createWcpContext(),
+        ...ops.plugins,
+        ...createTenancyAndSecurity({
+            setupGraphQL: setupTenancyAndSecurityGraphQL,
+            permissions: createPermissions(permissions),
+            identity
+        }),
+        {
+            type: "context",
+            name: "context-security-tenant",
+            async apply(context) {
+                context.security.getApiKeyByToken = async (
+                    token: string
+                ): Promise<ApiKey | null> => {
+                    if (!token || token !== "aToken") {
+                        return null;
+                    }
+                    const apiKey = "a1234567890";
+                    return {
+                        id: apiKey,
+                        name: apiKey,
+                        tenant: tenant.id,
+                        // @ts-ignore
+                        permissions: identity?.permissions || [],
+                        token,
+                        createdBy: {
+                            id: "test",
+                            displayName: "test",
+                            type: "admin"
+                        },
+                        description: "test",
+                        createdOn: new Date().toISOString(),
+                        webinyVersion: context.WEBINY_VERSION
                     };
-                }
-            } as ContextPlugin<TestContext>,
-            apiKeyAuthentication({ identityType: "api-key" }),
-            apiKeyAuthorization({ identityType: "api-key" }),
-            i18nContext(),
-            i18nDynamoDbStorageOperations(),
-            mockLocalesPlugins(),
-            ...app,
-            createHeadlessCmsGraphQL(),
-            plugins,
-            graphQLHandlerPlugins()
-        ],
+                };
+            }
+        } as ContextPlugin<TestContext>,
+        apiKeyAuthentication({ identityType: "api-key" }),
+        apiKeyAuthorization({ identityType: "api-key" }),
+        i18nContext(),
+        i18nDynamoDbStorageOperations(),
+        createDummyLocales(),
+        mockLocalesPlugins(),
+        ...app,
+        createHeadlessCmsGraphQL(),
+        plugins,
+        graphQLHandlerPlugins()
+    ];
+
+    const handler = createHandler({
+        plugins: handlerPlugins,
         http: {
             debug: false
         }
@@ -176,6 +179,7 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
         invoke,
         tenant,
         identity,
+        plugins: new PluginsContainer(handlerPlugins),
         storageOperations: ops.storageOperations,
         async introspect() {
             return invoke({ body: { query: getIntrospectionQuery() } });
@@ -186,6 +190,16 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
         },
         async installMutation() {
             return invoke({ body: { query: INSTALL_MUTATION } });
+        },
+        async upgradeMutation(version: string) {
+            return invoke({
+                body: {
+                    query: UPGRADE_MUTATION,
+                    variables: {
+                        version
+                    }
+                }
+            });
         },
         // content model group
         async createContentModelGroupMutation(variables: Record<string, any>) {

@@ -1,6 +1,6 @@
-import { identity } from "../utils/helpers";
+import { identity } from "../testHelpers/helpers";
 import { toSlug } from "~/utils/toSlug";
-import { useGraphQLHandler } from "../utils/useGraphQLHandler";
+import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 
 enum TestHelperEnum {
     MODELS_AMOUNT = 3,

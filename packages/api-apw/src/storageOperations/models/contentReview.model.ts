@@ -186,6 +186,7 @@ const stepStatusField = (): CmsModelField => ({
             name: "required"
         }
     ],
+    storageId: "status",
     fieldId: "status"
 });
 
@@ -258,11 +259,12 @@ const stepsField = (fields: CmsModelField[]): CmsModelField => ({
     type: "object",
     settings: {
         fields,
-        layout: fields.map(field => [field.fieldId])
+        layout: fields.map(field => [field.storageId])
     },
     listValidation: [],
     validation: [],
     fieldId: "steps",
+    storageId: "steps",
     multipleValues: true,
     predefinedValues: {
         values: [],
@@ -283,10 +285,13 @@ export const createContentReviewModelDefinition = ({
     modelId: CONTENT_REVIEW_MODEL_ID,
     titleFieldId: "content",
     layout: [
+        ["contentReview_title"],
         ["contentReview_content"],
+        ["contentReview_status"],
         ["contentReview_reviewRequestedBy"],
         ["contentReview_steps"],
-        ["contentReview_changeRequested"]
+        ["contentReview_changeRequested"],
+        ["contentReview_latestCommentId"]
     ],
     fields: [
         titleField(),

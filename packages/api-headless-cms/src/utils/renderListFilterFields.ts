@@ -30,11 +30,8 @@ const getCreateListFilters = (
     return plugins[fieldType][type].createListFilters;
 };
 
-export const renderListFilterFields: RenderListFilterFields = ({
-    model,
-    type,
-    fieldTypePlugins
-}): string => {
+export const renderListFilterFields: RenderListFilterFields = (params): string => {
+    const { model, type, fieldTypePlugins } = params;
     const fields: string[] = [
         [
             "id: ID",

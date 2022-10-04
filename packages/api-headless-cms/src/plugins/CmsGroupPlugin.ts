@@ -7,7 +7,7 @@ interface CmsGroup extends Omit<BaseCmsGroup, "locale" | "tenant" | "webinyVersi
 }
 export class CmsGroupPlugin extends Plugin {
     public static override readonly type: string = "cms-content-model-group";
-    contentModelGroup: CmsGroup;
+    public readonly contentModelGroup: CmsGroup;
 
     constructor(contentModelGroup: CmsGroup) {
         super();

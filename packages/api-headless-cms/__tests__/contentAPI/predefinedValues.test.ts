@@ -1,7 +1,7 @@
 import { CmsModel, CmsGroup } from "~/types";
 import models from "./mocks/contentModels";
-import { useGraphQLHandler } from "../utils/useGraphQLHandler";
-import { useBugManageHandler } from "../utils/useBugManageHandler";
+import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
+import { useBugManageHandler } from "../testHelpers/useBugManageHandler";
 
 describe("predefined values", () => {
     const manageOpts = { path: "manage/en-US" };
@@ -131,6 +131,7 @@ describe("predefined values", () => {
                         code: "VALIDATION_FAILED",
                         data: [
                             {
+                                storageId: expect.stringMatching("text@"),
                                 fieldId: "bugType",
                                 error: "Value sent does not match any of the available predefined values."
                             }
@@ -168,6 +169,7 @@ describe("predefined values", () => {
                         data: [
                             {
                                 fieldId: "bugValue",
+                                storageId: expect.stringMatching("number@"),
                                 error: "Value sent does not match any of the available predefined values."
                             }
                         ]
@@ -204,10 +206,12 @@ describe("predefined values", () => {
                         data: [
                             {
                                 fieldId: "bugType",
+                                storageId: expect.stringMatching("text@"),
                                 error: "Value sent does not match any of the available predefined values."
                             },
                             {
                                 fieldId: "bugValue",
+                                storageId: expect.stringMatching("number@"),
                                 error: "Value sent does not match any of the available predefined values."
                             }
                         ]

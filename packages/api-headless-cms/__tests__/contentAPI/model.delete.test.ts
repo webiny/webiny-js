@@ -1,7 +1,7 @@
 import { CmsGroup } from "~/types";
 import models from "./mocks/contentModels";
-import { useGraphQLHandler } from "../utils/useGraphQLHandler";
-import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
+import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
+import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
 
 describe("model delete", () => {
     const manageOpts = { path: "manage/en-US" };

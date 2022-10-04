@@ -16,19 +16,19 @@ const mockTextValue = "some short searchable text";
 const mockModel = {
     fields: [
         {
-            fieldId: "notAffectedNumber",
+            storageId: "notAffectedNumber",
             type: "number"
         },
         {
-            fieldId: "notAffectedString",
+            storageId: "notAffectedString",
             type: "text"
         },
         {
-            fieldId: "richText",
+            storageId: "richText",
             type: "rich-text"
         },
         {
-            fieldId: "text",
+            storageId: "text",
             type: "text"
         }
     ]
@@ -71,8 +71,8 @@ describe("defaultFieldIndexPlugin", () => {
         const result = mockModel.fields.reduce(
             (entry: any, field: any) => {
                 const { value, rawValue } = plugin.toIndex({
-                    rawValue: mockInputEntry.values[field.fieldId],
-                    value: mockInputEntry.values[field.fieldId],
+                    rawValue: mockInputEntry.values[field.storageId],
+                    value: mockInputEntry.values[field.storageId],
                     plugins: new PluginsContainer(),
                     getFieldIndexPlugin,
                     getFieldTypePlugin,
@@ -81,11 +81,11 @@ describe("defaultFieldIndexPlugin", () => {
                 });
 
                 if (value) {
-                    entry.values[field.fieldId] = value;
+                    entry.values[field.storageId] = value;
                 }
 
                 if (rawValue) {
-                    entry.rawValues[field.fieldId] = rawValue;
+                    entry.rawValues[field.storageId] = rawValue;
                 }
 
                 return entry;
@@ -100,8 +100,8 @@ describe("defaultFieldIndexPlugin", () => {
         const plugin = defaultFieldIndexPlugin() as Required<CmsModelFieldToElasticsearchPlugin>;
         const result = mockModel.fields.reduce((entry: any, field) => {
             const value = plugin.fromIndex({
-                value: mockIndexedEntry.values[field.fieldId],
-                rawValue: mockIndexedEntry.rawValues[field.fieldId],
+                value: mockIndexedEntry.values[field.storageId],
+                rawValue: mockIndexedEntry.rawValues[field.storageId],
                 getFieldIndexPlugin,
                 getFieldTypePlugin,
                 plugins: new PluginsContainer(),
@@ -110,7 +110,7 @@ describe("defaultFieldIndexPlugin", () => {
             });
 
             if (value) {
-                entry[field.fieldId] = value;
+                entry[field.storageId] = value;
             }
 
             return entry;

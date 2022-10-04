@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, lazy } from "react";
 import gql from "graphql-tag";
 import { useApolloClient } from "@apollo/react-hooks";
 import { i18n } from "@webiny/app/i18n";
@@ -149,6 +149,12 @@ const plugin: AdminInstallationPlugin = {
         //         return lazy(() => import("./upgrades/v5.19.0"));
         //     }
         // }
+        {
+            version: "5.33.0",
+            getComponent() {
+                return lazy(() => import("./upgrades/v5.33.0"));
+            }
+        }
     ]
 };
 
