@@ -39,8 +39,6 @@
       "@webiny/app-file-manager": ["../app-file-manager/src"],
       "@webiny/app-file-manager-s3/*": ["../app-file-manager-s3/src/*"],
       "@webiny/app-file-manager-s3": ["../app-file-manager-s3/src"],
-      "@webiny/app-folders/*": ["../app-folders/src/*"],
-      "@webiny/app-folders": ["../app-folders/src"],
       "@webiny/app-form-builder/*": ["../app-form-builder/src/*"],
       "@webiny/app-form-builder": ["../app-form-builder/src"],
       "@webiny/app-graphql-playground/*": ["../app-graphql-playground/src/*"],
