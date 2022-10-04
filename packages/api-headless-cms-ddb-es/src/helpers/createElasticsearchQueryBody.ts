@@ -61,7 +61,7 @@ interface CreateElasticsearchQueryArgs {
 }
 
 const specialFields: (keyof Partial<CmsEntryListWhere>)[] = ["published", "latest"];
-const noKeywordFields = ["date", "number", "boolean"];
+const noKeywordFields = ["date", "datetime", "number", "boolean"];
 
 const createElasticsearchSortParams = (args: CreateElasticsearchSortParams): esSort => {
     const { sort, modelFields, parentPath, searchPlugins } = args;
