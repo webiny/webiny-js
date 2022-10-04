@@ -54,67 +54,62 @@ export const CreateDialog: React.FC<Props> = ({ type, onClose, open }) => {
 
     return (
         <CreateDialogContainer open={dialogOpen} onClose={onClose}>
-            {dialogOpen && (
-                <Form
-                    onSubmit={data => {
-                        onSubmit(data as unknown as Partial<FolderItem>);
-                    }}
-                >
-                    {({ Bind, submit }) => (
-                        <>
-                            {loading && <CircularProgress label={"Creating folder..."} />}
-                            <DialogTitle>{t`Create a new folder`}</DialogTitle>
-                            <DialogContent>
-                                <Grid>
-                                    <Cell span={12}>
-                                        <Bind
-                                            name={"name"}
-                                            validators={[validation.create("required,minLength:3")]}
-                                        >
-                                            <Input label={t`Name`} />
-                                        </Bind>
-                                    </Cell>
-                                    <Cell span={12}>
-                                        <Bind
-                                            name={"slug"}
-                                            validators={[
-                                                validation.create("required,minLength:3"),
-                                                slugValidator
-                                            ]}
-                                        >
-                                            <Input label={t`Slug`} />
-                                        </Bind>
-                                    </Cell>
-                                    <Cell span={12}>
-                                        <Bind name="parentId">
-                                            <AutoComplete
-                                                options={folders[type]}
-                                                label={t`Parent`}
-                                            />
-                                        </Bind>
-                                    </Cell>
-                                </Grid>
-                            </DialogContent>
-                            <CreateDialogActions>
-                                <ButtonDefault
-                                    onClick={() => {
-                                        setDialogOpen(false);
-                                    }}
-                                >
-                                    {t`Cancel`}
-                                </ButtonDefault>
-                                <ButtonPrimary
-                                    onClick={e => {
-                                        submit(e);
-                                    }}
-                                >
-                                    {t`Create Folder`}
-                                </ButtonPrimary>
-                            </CreateDialogActions>
-                        </>
-                    )}
-                </Form>
-            )}
+            <Form
+                onSubmit={data => {
+                    onSubmit(data as unknown as Partial<FolderItem>);
+                }}
+            >
+                {({ Bind, submit }) => (
+                    <>
+                        {loading && <CircularProgress label={"Creating folder..."} />}
+                        <DialogTitle>{t`Create a new folder`}</DialogTitle>
+                        <DialogContent>
+                            <Grid>
+                                <Cell span={12}>
+                                    <Bind
+                                        name={"name"}
+                                        validators={[validation.create("required,minLength:3")]}
+                                    >
+                                        <Input label={t`Name`} />
+                                    </Bind>
+                                </Cell>
+                                <Cell span={12}>
+                                    <Bind
+                                        name={"slug"}
+                                        validators={[
+                                            validation.create("required,minLength:3"),
+                                            slugValidator
+                                        ]}
+                                    >
+                                        <Input label={t`Slug`} />
+                                    </Bind>
+                                </Cell>
+                                <Cell span={12}>
+                                    <Bind name="parentId">
+                                        <AutoComplete options={folders[type]} label={t`Parent`} />
+                                    </Bind>
+                                </Cell>
+                            </Grid>
+                        </DialogContent>
+                        <CreateDialogActions>
+                            <ButtonDefault
+                                onClick={() => {
+                                    setDialogOpen(false);
+                                }}
+                            >
+                                {t`Cancel`}
+                            </ButtonDefault>
+                            <ButtonPrimary
+                                onClick={e => {
+                                    submit(e);
+                                }}
+                            >
+                                {t`Create Folder`}
+                            </ButtonPrimary>
+                        </CreateDialogActions>
+                    </>
+                )}
+            </Form>
         </CreateDialogContainer>
     );
 };
