@@ -12,7 +12,7 @@ const t = i18n.ns("app-folders/components/tree/button-create");
 
 export const CreateButton: React.FC<Props> = ({ onClick }) => {
     return (
-        <Button onClick={() => onClick()}>
+        <Button onClick={onClick}>
             <Icon />
             <Label>{t`Create new folder`}</Label>
         </Button>
