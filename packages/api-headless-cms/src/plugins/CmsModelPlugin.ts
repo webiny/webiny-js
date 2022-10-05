@@ -1,10 +1,21 @@
 import { Plugin } from "@webiny/plugins";
-import { CmsModel as CmsModelBase, CmsModelField as CmsModelFieldBase } from "~/types";
+import {
+    CmsModel as CmsModelBase,
+    CmsModelField as CmsModelFieldBase,
+    CmsModelFieldSettings as BaseCmsModelFieldSettings
+} from "~/types";
 import WebinyError from "@webiny/error";
 import { createFieldStorageId } from "~/crud/contentModel/createFieldStorageId";
 import lodashCamelCase from "lodash/camelCase";
 
-interface CmsModelFieldInput extends Omit<CmsModelFieldBase, "storageId"> {
+interface CmsModelFieldSettings extends Omit<BaseCmsModelFieldSettings, "fields"> {
+    /**
+     * Object field has child fields.
+     */
+    fields?: CmsModelFieldInput[];
+}
+
+interface CmsModelFieldInput extends Omit<CmsModelFieldBase, "storageId" | "settings"> {
     /**
      * If defined, it must be camelCased string.
      * This is for backwards compatibility - before fields had storageId.
@@ -13,6 +24,10 @@ interface CmsModelFieldInput extends Omit<CmsModelFieldBase, "storageId"> {
      * News ones must have this empty.
      */
     storageId?: string;
+    /**
+     * We must have a possibility to have a nested field defined without the storageId.
+     */
+    settings?: CmsModelFieldSettings;
 }
 
 interface CmsModelInput
@@ -36,17 +51,19 @@ export class CmsModelPlugin extends Plugin {
     }
 
     private buildModel(input: CmsModelInput): CmsModel {
-        const fields = this.buildFields(input);
         const model: CmsModel = {
             ...input,
-            fields
+            fields: this.buildFields(input, input.fields)
         };
         this.validateLayout(model);
         return model;
     }
 
-    private buildFields(model: CmsModelInput): CmsModelFieldBase[] {
-        if (model.fields.length === 0) {
+    private buildFields(
+        model: CmsModelInput,
+        inputFields: CmsModelFieldInput[]
+    ): CmsModelFieldBase[] {
+        if (inputFields.length === 0) {
             throw new WebinyError(
                 `Missing fields for the defined model "${model.modelId}".`,
                 "MISSING_FIELDS",
@@ -58,7 +75,7 @@ export class CmsModelPlugin extends Plugin {
         const fields: CmsModelFieldBase[] = [];
         const storageIdList: string[] = [];
         const fieldIdList: string[] = [];
-        for (const input of model.fields) {
+        for (const input of inputFields) {
             /**
              * Field must contain an fieldId. It is required in the graphql, but lets check it just in case
              */
@@ -134,23 +151,42 @@ export class CmsModelPlugin extends Plugin {
                 storageId = createFieldStorageId(input);
             }
 
-            const field: CmsModelFieldBase = {
-                ...input,
-                storageId
-            };
             /**
              * Fields storageId must be unique.
              */
-            if (storageIdList.includes(field.storageId) === true) {
+            if (storageIdList.includes(storageId) === true) {
                 throw new WebinyError(
                     `Field's "storageId" is not unique in the content model "${model.modelId}".`,
                     "STORAGE_ID_ERROR",
                     {
                         model,
-                        field
+                        field: input
                     }
                 );
             }
+
+            /**
+             * We can safely ignore error because we are going through the fields and making sure each has storageId.
+             */
+            // @ts-ignore
+            let settings: BaseCmsModelFieldSettings = input.settings;
+
+            const childFields = settings?.fields || [];
+            if (input.type === "object" && childFields.length > 0) {
+                settings = {
+                    ...(settings || {}),
+                    fields: this.buildFields(model, childFields)
+                };
+            }
+
+            const field: CmsModelFieldBase = {
+                ...input,
+                settings,
+                storageId
+            };
+            /**
+             * Add all relevant data to arrays.
+             */
             fields.push(field);
             storageIdList.push(field.storageId);
             fieldIdList.push(field.fieldId);

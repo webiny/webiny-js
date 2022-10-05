@@ -102,7 +102,39 @@ interface CmsModelFieldRenderer {
      */
     name: string;
 }
-
+/**
+ * A definition for content model field settings.
+ *
+ * @category ModelField
+ * @category Database model
+ */
+export interface CmsModelFieldSettings {
+    /**
+     * Predefined values (text, number)
+     * The default value for the field in case it is not predefined values field.
+     */
+    defaultValue?: string | number | null | undefined;
+    /**
+     * Object field has child fields.
+     */
+    fields?: CmsModelField[];
+    /**
+     * Object field has child fields - so it needs to have a layout.
+     */
+    layout?: string[][];
+    /**
+     * Ref field.
+     */
+    models?: Pick<CmsModel, "modelId">[];
+    /**
+     * Date field.
+     */
+    type?: string;
+    /**
+     * There are a lot of other settings that are possible to add, so we keep the type opened.
+     */
+    [key: string]: any;
+}
 /**
  * A definition for content model field. This type exists on the app side as well.
  *
@@ -120,9 +152,20 @@ export interface CmsModelField {
      */
     id: string;
     /**
-     * A type of the field
+     * A type of the field.
+     * We are defining our built-in fields, so people know which are available by the default.
      */
-    type: string;
+    type:
+        | "boolean"
+        | "datetime"
+        | "file"
+        | "long-text"
+        | "number"
+        | "object"
+        | "ref"
+        | "rich-text"
+        | "text"
+        | string;
     /**
      * A unique storage ID for storing actual values.
      * Must in form of a-zA-Z0-9@a-zA-Z0-9@a-zA-Z0-9.
@@ -187,33 +230,7 @@ export interface CmsModelField {
      *
      * @default {}
      */
-    settings?: {
-        /**
-         * Predefined values (text, number)
-         * The default value for the field in case it is not predefined values field.
-         */
-        defaultValue?: string | number | null | undefined;
-        /**
-         * Object field has child fields.
-         */
-        fields?: CmsModelField[];
-        /**
-         * Object field has child fields - so it needs to have a layout.
-         */
-        layout?: string[][];
-        /**
-         * Ref field.
-         */
-        models?: Pick<CmsModel, "modelId">[];
-        /**
-         * Date field.
-         */
-        type?: string;
-        /**
-         * There are a lot of other settings that are possible to add, so we keep the type opened.
-         */
-        [key: string]: any;
-    };
+    settings?: CmsModelFieldSettings;
 }
 
 /**

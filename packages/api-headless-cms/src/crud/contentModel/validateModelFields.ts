@@ -140,6 +140,8 @@ const validateFields = (params: ValidateFieldsParams) => {
 
     const fieldIdList: string[] = [];
 
+    const storageIdList: string[] = [];
+
     for (const field of fields) {
         const plugin = plugins.find(item => item.fieldType === field.type);
         if (!plugin) {
@@ -197,7 +199,7 @@ const validateFields = (params: ValidateFieldsParams) => {
             }
         }
         /**
-         * Check the field fieldId against existing ones.
+         * Check the field's fieldId against existing ones.
          * There cannot be two fields with the same fieldId - outside world identifier.
          */
         if (fieldIdList.includes(field.fieldId)) {
@@ -206,6 +208,16 @@ const validateFields = (params: ValidateFieldsParams) => {
             );
         }
         fieldIdList.push(field.fieldId);
+        /**
+         * Check the field's storageId against the existing ones.
+         * There cannot be two fields with the same storageId.
+         */
+        if (storageIdList.includes(field.storageId)) {
+            throw new WebinyError(
+                `Cannot update content model because field "${field.label}" has storageId "${field.storageId}", which is already used.`
+            );
+        }
+        storageIdList.push(field.storageId);
         /**
          * TODO maybe make this part pluginable?
          * We need to check the object field child fields.

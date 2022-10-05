@@ -103,7 +103,7 @@ export const systemFields: ModelFields = {
         field: createSystemField({
             storageId: "savedOn",
             fieldId: "savedOn",
-            type: "date",
+            type: "datetime",
             settings: {
                 type: "dateTimeWithoutTimezone"
             }
