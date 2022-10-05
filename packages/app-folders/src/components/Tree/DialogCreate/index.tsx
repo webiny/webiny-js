@@ -10,7 +10,8 @@ import { Form } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import { i18n } from "@webiny/app/i18n";
 
-import { useFolders } from "~/hooks";
+import { useFolders } from "~/hooks/useFolders";
+import { useCreateFolder } from "~/hooks/useCreateFolder";
 
 import { CreateDialogContainer, CreateDialogActions } from "./styled";
 
@@ -26,13 +27,11 @@ const t = i18n.ns("app-folders/components/tree/dialog-create");
 
 export const CreateDialog: React.FC<Props> = ({ type, onClose, open }) => {
     const [dialogOpen, setDialogOpen] = useState(false);
-    const { folders, createFolder, listFolders, loading } = useFolders();
+    const { createFolder, loading } = useCreateFolder();
+    const { folders } = useFolders();
 
-    const onSubmit = (data: Partial<FolderItem>) => {
-        createFolder({
-            variables: { data: { ...data, type } }
-        });
-        listFolders(type);
+    const onSubmit = async (data: Partial<FolderItem>) => {
+        await createFolder(data, type);
         setDialogOpen(false);
     };
 

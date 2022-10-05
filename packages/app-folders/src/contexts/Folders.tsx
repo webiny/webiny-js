@@ -1,7 +1,5 @@
-import React, { useState, useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { useApolloClient, useMutation } from "@apollo/react-hooks";
-import { i18n } from "@webiny/app/i18n";
-import { useSnackbar } from "@webiny/app-admin";
 import get from "lodash.get";
 
 import { CREATE_FOLDER, LIST_FOLDERS, UPDATE_FOLDER } from "~/graphql/folders.gql";
@@ -16,28 +14,39 @@ import {
     UpdateFolderVariables
 } from "~/types";
 
-const t = i18n.ns("app-folders/hooks/use-create-folder");
-
 export interface FoldersContext {
     loading: boolean;
+    setFolders: Function;
     folders: {
         [type: string]: FolderItem[];
     };
-    listFolders: Function;
-    createFolder: Function;
-    updateFolder: Function;
+    listFolders: (type: string, useNetwork?: boolean) => Promise<FolderItem[] | Error>;
+    createFolder: (data: Partial<FolderItem>) => Promise<FolderItem | Error>;
+    updateFolder: (id: string, data: Partial<FolderItem>) => Promise<FolderItem | Error>;
 }
 
 export const FoldersContext = React.createContext<FoldersContext | undefined>(undefined);
 
 export const FoldersProvider: React.FC = props => {
-    const { showSnackbar } = useSnackbar();
     const client = useApolloClient();
 
     const [folders, setFolders] = useState({});
     const [listLoading, setListLoading] = useState<boolean>(false);
 
-    const listFolders = async (type: string) => {
+    const [create, { loading: createLoading }] = useMutation<
+        CreateFolderResponse,
+        CreateFolderVariables
+    >(CREATE_FOLDER);
+
+    const [update, { loading: updateLoading }] = useMutation<
+        UpdateFolderResponse,
+        UpdateFolderVariables
+    >(UPDATE_FOLDER);
+
+    const listFolders = async (
+        type: string,
+        useNetwork?: boolean
+    ): Promise<FolderItem[] | Error> => {
         if (!type) {
             throw new Error("Folder `type` is mandatory");
         }
@@ -48,41 +57,31 @@ export const FoldersProvider: React.FC = props => {
         >({
             query: LIST_FOLDERS,
             variables: { type },
-            fetchPolicy: "network-only"
+            fetchPolicy: useNetwork ? "network-only" : undefined
         });
 
         setListLoading(queryLoading);
-        setFolders({
-            ...folders,
-            [type]: get(data, "folders.listFolders.data", [])
-        });
+        return get(data, "folders.listFolders");
     };
 
-    const [createFolder, { loading: createLoading }] = useMutation<
-        CreateFolderResponse,
-        CreateFolderVariables
-    >(CREATE_FOLDER, {
-        onCompleted: response => {
-            const error = get(response, "folders.createFolder.error");
-            if (error) {
-                return showSnackbar(error.message);
-            }
-            showSnackbar(t("Folder created successfully!"));
-        }
-    });
+    const createFolder = async (data: Partial<FolderItem>): Promise<FolderItem | Error> => {
+        const response = await create({
+            variables: { data }
+        });
 
-    const [updateFolder, { loading: updateLoading }] = useMutation<
-        UpdateFolderResponse,
-        UpdateFolderVariables
-    >(UPDATE_FOLDER, {
-        onCompleted: response => {
-            const error = get(response, "folders.updateFolder.error");
-            if (error) {
-                return showSnackbar(error.message);
-            }
-            showSnackbar(t("Folder updated successfully!"));
-        }
-    });
+        return get(response, "data.folders.createFolder");
+    };
+
+    const updateFolder = async (
+        id: string,
+        data: Partial<FolderItem>
+    ): Promise<FolderItem | Error> => {
+        const response = await update({
+            variables: { id, data }
+        });
+
+        return get(response, "data.folders.updateFolder");
+    };
 
     const loading = [listLoading, updateLoading, createLoading].some(isLoading => isLoading);
 
@@ -90,6 +89,7 @@ export const FoldersProvider: React.FC = props => {
         return {
             loading,
             folders,
+            setFolders,
             listFolders,
             createFolder,
             updateFolder

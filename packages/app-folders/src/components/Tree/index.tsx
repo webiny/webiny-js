@@ -10,7 +10,9 @@ import {
 } from "@minoru/react-dnd-treeview";
 import { DndProvider } from "react-dnd";
 
-import { useFolders } from "~/hooks";
+import { useFolders } from "~/hooks/useFolders";
+import { useListFolders } from "~/hooks/useListFolders";
+import { useUpdateFolder } from "~/hooks/useUpdateFolder";
 
 import { Node } from "./Node";
 import { NodePreview } from "./NodePreview";
@@ -80,7 +82,9 @@ type Props = {
 };
 
 export const FolderTree: React.FC<Props> = ({ type, title, focusedFolderId, onFolderClick }) => {
-    const { listFolders, updateFolder, folders: foldersData } = useFolders();
+    const { folders: foldersData } = useFolders();
+    const { listFolders } = useListFolders();
+    const { updateFolder } = useUpdateFolder();
     const [folders, setFolders] = useState<undefined | FolderItem[]>(undefined);
     const [treeData, setTreeData] = useState<NodeModel<DndItemData>[]>([]);
     const [createDialogOpen, setCreateDialogOpen] = useState<boolean>(false);
@@ -106,11 +110,8 @@ export const FolderTree: React.FC<Props> = ({ type, title, focusedFolderId, onFo
         { dragSourceId, dropTargetId }: DropOptions
     ) => {
         setTreeData(newTree);
-        await updateFolder({
-            variables: {
-                id: dragSourceId,
-                data: { parentId: !!dropTargetId ? dropTargetId : null }
-            }
+        await updateFolder(dragSourceId as string, {
+            parentId: !!dropTargetId ? (dropTargetId as string) : null
         });
     };
 

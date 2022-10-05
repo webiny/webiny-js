@@ -3,7 +3,7 @@ export interface FolderItem {
     name: string;
     slug: string;
     type: string;
-    parentId?: string;
+    parentId?: string | null;
 }
 
 export interface ListFoldersResponse {
