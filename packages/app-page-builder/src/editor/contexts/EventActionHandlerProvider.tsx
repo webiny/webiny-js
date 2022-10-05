@@ -136,7 +136,7 @@ export const EventActionHandlerProvider = makeComposable<
         pluginsAtomValueRef.current = pluginsAtomValue;
         uiAtomValueRef.current = uiAtomValue;
         snapshotRef.current = snapshot;
-    }, [sidebarAtomValue, rootElementAtomValue, pluginsAtomValue, uiAtomValue]);
+    }, [sidebarAtomValue, rootElementAtomValue, pluginsAtomValue, uiAtomValue, snapshot]);
 
     const registry = useRef<RegistryType>(new Map());
 
