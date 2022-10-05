@@ -24,7 +24,7 @@ export const markLockedFields = async (params: MarkLockedFieldsParams): Promise<
     const lockedFields: LockedField[] = [];
     for (const field of model.fields) {
         const alreadyLocked = existingLockedFields.some(
-            lockedField => lockedField.fieldId === field.fieldId
+            lockedField => lockedField.fieldId === field.storageId
         );
         if (alreadyLocked) {
             continue;
@@ -44,7 +44,7 @@ export const markLockedFields = async (params: MarkLockedFieldsParams): Promise<
         }
 
         lockedFields.push({
-            fieldId: field.fieldId,
+            fieldId: field.storageId,
             multipleValues: !!field.multipleValues,
             type: field.type,
             ...lockedFieldData

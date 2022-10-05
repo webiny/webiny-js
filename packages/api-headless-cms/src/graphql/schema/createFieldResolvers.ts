@@ -9,6 +9,7 @@ import {
 } from "~/types";
 import { entryFieldFromStorageTransform } from "~/utils/entryStorage";
 import { Resolvers } from "@webiny/handler-graphql/types";
+import WebinyError from "@webiny/error";
 
 interface CreateFieldResolvers {
     graphQLType: string;
@@ -52,6 +53,18 @@ export const createFieldResolversFactory = (factoryParams: CreateFieldResolversF
             if (!fieldTypePlugins[field.type]) {
                 continue;
             }
+            /**
+             * Field that is passed into this factory MUST have fieldId, so filter it before the method call.
+             */
+            if (!field.fieldId) {
+                throw new WebinyError(
+                    "Field is missing an `fieldId`. Cannot process field without the `fieldId` in the resolvers.",
+                    "FIELD_ID_ERROR",
+                    {
+                        field
+                    }
+                );
+            }
 
             const createResolver = getCreateResolver(fieldTypePlugins, field, endpointType);
 
@@ -61,7 +74,7 @@ export const createFieldResolversFactory = (factoryParams: CreateFieldResolversF
                 : null;
 
             /**
-             * When fieldResolver is false it will completely skip adding fieldId into the resolvers.
+             * When fieldResolver is false it will completely skip adding field fieldId into the resolvers.
              * This is to fix the breaking of GraphQL schema.
              */
             if (fieldResolver === false) {

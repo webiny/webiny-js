@@ -1,7 +1,7 @@
-import { useGraphQLHandler } from "../utils/useGraphQLHandler";
-import { useFruitManageHandler } from "../utils/useFruitManageHandler";
-import { setupContentModelGroup, setupContentModels } from "../utils/setup";
-import { useFruitReadHandler } from "../utils/useFruitReadHandler";
+import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
+import { useFruitManageHandler } from "../testHelpers/useFruitManageHandler";
+import { setupContentModelGroup, setupContentModels } from "../testHelpers/setup";
+import { useFruitReadHandler } from "../testHelpers/useFruitReadHandler";
 import { Fruit } from "./mocks/contentModels";
 
 const appleData: Fruit = {

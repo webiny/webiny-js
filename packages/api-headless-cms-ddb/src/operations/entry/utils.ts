@@ -64,13 +64,16 @@ const VALUES_ATTRIBUTE = "values";
 const extractWhereParams = (key: string) => {
     const result = key.split("_");
     const fieldId = result.shift();
+    if (!fieldId) {
+        return null;
+    }
     const rawOp = result.length === 0 ? "eq" : result.join("_");
     /**
      * When rawOp is not, it means it is equal negated so just return that.
      */
     if (rawOp === "not") {
         return {
-            fieldId: fieldId as string,
+            fieldId,
             operation: "eq",
             negate: true
         };
@@ -78,7 +81,7 @@ const extractWhereParams = (key: string) => {
     const negate = rawOp.match("not_") !== null;
     const operation = rawOp.replace("not_", "");
     return {
-        fieldId: fieldId as string,
+        fieldId,
         operation,
         negate
     };
@@ -121,7 +124,7 @@ const createValuePath = (params: CreateValuePathParams): string => {
     const valuePathPlugin = plugins[field.type];
     const basePath = systemFields[fieldId] ? "" : `${VALUES_ATTRIBUTE}.`;
     if (!valuePathPlugin || valuePathPlugin.canUse(field) === false) {
-        return `${basePath}${field.fieldId}`;
+        return `${basePath}${fieldId}`;
     }
     const path = valuePathPlugin.createPath({
         field,
@@ -179,7 +182,12 @@ const createFilters = (params: CreateFiltersParams): ItemFilter[] => {
             continue;
         }
 
-        const { fieldId, operation, negate } = extractWhereParams(key);
+        const whereParams = extractWhereParams(key);
+        if (!whereParams) {
+            continue;
+        }
+
+        const { fieldId, operation, negate } = whereParams;
 
         const field: ModelField = fields[fieldId];
         if (!field) {
@@ -216,11 +224,15 @@ const createFilters = (params: CreateFiltersParams): ItemFilter[] => {
                 continue;
             }
             for (const propertyFilter of propertyFilters) {
+                const whereParams = extractWhereParams(propertyFilter);
+                if (!whereParams) {
+                    continue;
+                }
                 const {
                     fieldId: propertyId,
                     operation: propertyOperation,
                     negate: propertyNegate
-                } = extractWhereParams(propertyFilter);
+                } = whereParams;
 
                 const filterPlugin = getFilterPlugin({
                     plugins: filterPlugins,
@@ -329,7 +341,19 @@ const createFullTextSearch = ({
     }
     return async ({ item, fromStorage, fields }: FullTextSearchParams) => {
         for (const targetField of targetFields) {
-            const value = await fromStorage(fields[targetField].def, item.values[targetField]);
+            const field = Object.values(fields).find(field => {
+                return field.def.fieldId === targetField;
+            });
+            if (!field) {
+                throw new WebinyError(
+                    `Unknown field "${targetField}" in the model.`,
+                    "UNKNOWN_FIELD",
+                    {
+                        target: targetField
+                    }
+                );
+            }
+            const value = await fromStorage(field.def, item.values[targetField]);
             if (!value) {
                 continue;
             }
@@ -461,15 +485,19 @@ export const filterItems = async (params: FilterItemsParams): Promise<CmsEntry[]
     return results.filter(Boolean) as CmsEntry[];
 };
 
-const extractSort = (
-    sortBy: string,
-    fields: ModelFieldRecords
-): { valuePath: string; reverse: boolean; fieldId: string } => {
+interface ExtractSortResult {
+    valuePath: string;
+    reverse: boolean;
+    fieldId: string;
+    field: ModelField;
+}
+
+const extractSort = (sortBy: string, fields: ModelFieldRecords): ExtractSortResult => {
     const result = sortBy.split("_");
     if (result.length !== 2) {
         throw new WebinyError(
             "Problem in determining the sorting for the entry items.",
-            "SORT_ERROR",
+            "SORT_EXTRACT_ERROR",
             {
                 sortBy
             }
@@ -477,7 +505,9 @@ const extractSort = (
     }
     const [fieldId, order] = result;
 
-    const modelField = fields[fieldId];
+    const modelField = Object.values(fields).find(field => {
+        return field.def.fieldId === fieldId;
+    });
 
     if (!modelField) {
         throw new WebinyError(
@@ -493,6 +523,7 @@ const extractSort = (
         field: modelField.def
     });
     return {
+        field: modelField,
         fieldId,
         valuePath,
         reverse: order === "DESC"
@@ -512,19 +543,22 @@ export const sortEntryItems = (params: SortEntryItemsArgs): CmsEntry[] => {
     } else if (sort.length === 0) {
         sort.push("savedOn_DESC");
     } else if (sort.length > 1) {
-        throw new WebinyError("Sorting is limited to a single field.", "SORT_ERROR", {
-            sort: sort
-        });
+        throw new WebinyError(
+            "Sorting is limited to a single field.",
+            "SORT_MULTIPLE_FIELDS_ERROR",
+            {
+                sort: sort
+            }
+        );
     }
     const [firstSort] = sort;
     if (!firstSort) {
-        throw new WebinyError("Empty sort array item.", "SORT_ERROR", {
+        throw new WebinyError("Empty sort array item.", "SORT_EMPTY_ERROR", {
             sort
         });
     }
 
-    const { fieldId, valuePath, reverse } = extractSort(firstSort, fields);
-    const field = fields[fieldId];
+    const { fieldId, field, valuePath, reverse } = extractSort(firstSort, fields);
 
     const itemsToSort = items.map(item => {
         return {
@@ -601,6 +635,14 @@ export const buildModelFields = ({
         property: "fieldType"
     });
     const fields: ModelFieldRecords = Object.values(systemFields).reduce((collection, field) => {
+        /**
+         * This should be caught on the tests runs and never actually happen on live system.
+         */
+        if (!field.fieldId) {
+            throw new WebinyError("Missing system field `fieldId`.", "FIELD_ID_ERROR", {
+                field
+            });
+        }
         const transformValuePlugin = transformValuePlugins[field.type];
         const valuePathPlugin = valuePathPlugins[field.type];
 
@@ -628,6 +670,12 @@ export const buildModelFields = ({
     }, {} as ModelFieldRecords);
 
     return model.fields.reduce((collection, field) => {
+        if (!field.fieldId) {
+            console.log(
+                `Field "${field.storageId}" in model "${model.modelId}" is missing fieldId.`
+            );
+            return collection;
+        }
         const transformValuePlugin = transformValuePlugins[field.type];
         const valuePathPlugin = valuePathPlugins[field.type];
 

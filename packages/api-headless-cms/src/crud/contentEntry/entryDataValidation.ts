@@ -168,6 +168,7 @@ export const validateModelEntryData = async (params: ValidateModelEntryDataParam
         }
         invalidFields.push({
             fieldId: field.fieldId,
+            storageId: field.storageId,
             error
         });
     }

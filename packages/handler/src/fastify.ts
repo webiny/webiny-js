@@ -274,7 +274,13 @@ export const createHandler = (params: CreateHandlerParams) => {
         const plugins = app.webiny.plugins.byType<HandlerErrorPlugin>(HandlerErrorPlugin.type);
         // Log error to cloud, as these can be extremely annoying to debug!
         console.log("@webiny/handler");
-        console.log(JSON.stringify(error || {}));
+        console.log(
+            JSON.stringify({
+                ...(error || {}),
+                message: error?.message,
+                code: error?.code
+            })
+        );
         const handler = middleware(
             plugins.map(pl => {
                 return (context: Context, error: Error, next: Function) => {

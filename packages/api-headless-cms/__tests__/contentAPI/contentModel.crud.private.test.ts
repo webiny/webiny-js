@@ -1,4 +1,4 @@
-import { useGraphQLHandler } from "../utils/useGraphQLHandler";
+import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { CmsGroupPlugin } from "~/plugins/CmsGroupPlugin";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";
 import { CmsGroup, CmsModel } from "~/types";
@@ -16,14 +16,21 @@ const privateAuthorsModel = new CmsModelPlugin({
     isPrivate: true,
     modelId: "author",
     name: "Authors",
-    layout: [],
-    fields: [],
-    titleFieldId: "",
+    layout: [["title"]],
+    fields: [
+        {
+            id: "title",
+            fieldId: "title",
+            type: "text",
+            label: "Title"
+        }
+    ],
+    titleFieldId: "title",
     group: {
         id: privateGroup.contentModelGroup.id,
         name: privateGroup.contentModelGroup.name
     },
-    description: "Authors model with no fields"
+    description: "Authors model with one basic field"
 });
 
 describe("Private Groups and Models", function () {

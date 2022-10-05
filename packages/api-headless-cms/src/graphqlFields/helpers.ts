@@ -35,7 +35,7 @@ export const createGraphQLInputField = (field: CmsModelField, graphQlType: strin
     }
     const multipleRequired = getIsRequired(field.listValidation) ? "!" : "";
 
-    const itemRequired = envVars.some(v => process.env[v] === "false") ? "" : "!";
+    const itemRequired = envVars.some(v => process.env[v] === "false") ? "" : singleRequired;
 
     return `${field.fieldId}: [${graphQlType}${itemRequired}]${multipleRequired}`;
 };

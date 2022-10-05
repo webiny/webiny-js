@@ -1521,7 +1521,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/cli@npm:^7.16.0, @babel/cli@npm:^7.5.5":
+"@babel/cli@npm:^7.16.0, @babel/cli@npm:^7.18.10, @babel/cli@npm:^7.5.5":
   version: 7.18.10
   resolution: "@babel/cli@npm:7.18.10"
   dependencies:
@@ -1596,6 +1596,29 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/core@npm:^7.18.13":
+  version: 7.18.13
+  resolution: "@babel/core@npm:7.18.13"
+  dependencies:
+    "@ampproject/remapping": ^2.1.0
+    "@babel/code-frame": ^7.18.6
+    "@babel/generator": ^7.18.13
+    "@babel/helper-compilation-targets": ^7.18.9
+    "@babel/helper-module-transforms": ^7.18.9
+    "@babel/helpers": ^7.18.9
+    "@babel/parser": ^7.18.13
+    "@babel/template": ^7.18.10
+    "@babel/traverse": ^7.18.13
+    "@babel/types": ^7.18.13
+    convert-source-map: ^1.7.0
+    debug: ^4.1.0
+    gensync: ^1.0.0-beta.2
+    json5: ^2.2.1
+    semver: ^6.3.0
+  checksum: c7ee5b2c10bc5b0325e31fb5da4cb4bc03f9d5f5c00ec3481a018917bcc6b7b040de0690c606a424f57e5fc26d218d64e7718d0e5d7d8614d39c8cd898fab9b3
+  languageName: node
+  linkType: hard
+
 "@babel/generator@npm:^7.12.11, @babel/generator@npm:^7.18.10, @babel/generator@npm:^7.7.2":
   version: 7.18.10
   resolution: "@babel/generator@npm:7.18.10"
@@ -1604,6 +1627,17 @@ __metadata:
     "@jridgewell/gen-mapping": ^0.3.2
     jsesc: ^2.5.1
   checksum: 6e888448dd018571e2a36859c1722dc389e22abac99180523422112d208b9eff137da57f03325c9b1e78c2e8b9b4e7004c9a880cc04643582177b9252dd1435f
+  languageName: node
+  linkType: hard
+
+"@babel/generator@npm:^7.18.13":
+  version: 7.18.13
+  resolution: "@babel/generator@npm:7.18.13"
+  dependencies:
+    "@babel/types": ^7.18.13
+    "@jridgewell/gen-mapping": ^0.3.2
+    jsesc: ^2.5.1
+  checksum: 27f5e7eb774e4d76ee75dc96e3e1bd26cc0ee7cea13a8f7342b716319c0a4d4e26fc49aa8f19316f7c99383da55eeb2a866c6e034e9deacad58a9de9ed6004fb
   languageName: node
   linkType: hard
 
@@ -1885,6 +1919,15 @@ __metadata:
   bin:
     parser: ./bin/babel-parser.js
   checksum: adf417daccb5bc5edb53cc86b8e60abd911eaee8212703ea702ec17ff7967a9a17a84f6aa19b1cd0faec58e9beaa31a026c85238fd8ca08f2d66ba1db8180dc6
+  languageName: node
+  linkType: hard
+
+"@babel/parser@npm:^7.18.13":
+  version: 7.18.13
+  resolution: "@babel/parser@npm:7.18.13"
+  bin:
+    parser: ./bin/babel-parser.js
+  checksum: 8b41c35607668495d67d9a7c5f61768aaab26acf887efdadc2781aed54046981480ef40aeda0b84d61aed02cf0c4ff4b028d5f83ab85e17e2ddff318f9243b8b
   languageName: node
   linkType: hard
 
@@ -2954,7 +2997,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/preset-env@npm:^7.15.6, @babel/preset-env@npm:^7.16.4, @babel/preset-env@npm:^7.18.2, @babel/preset-env@npm:^7.4.5, @babel/preset-env@npm:^7.5.5":
+"@babel/preset-env@npm:^7.15.6, @babel/preset-env@npm:^7.16.4, @babel/preset-env@npm:^7.18.10, @babel/preset-env@npm:^7.18.2, @babel/preset-env@npm:^7.4.5, @babel/preset-env@npm:^7.5.5":
   version: 7.18.10
   resolution: "@babel/preset-env@npm:7.18.10"
   dependencies:
@@ -3112,7 +3155,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/preset-typescript@npm:^7.15.0, @babel/preset-typescript@npm:^7.16.0, @babel/preset-typescript@npm:^7.17.12, @babel/preset-typescript@npm:^7.8.3":
+"@babel/preset-typescript@npm:^7.15.0, @babel/preset-typescript@npm:^7.16.0, @babel/preset-typescript@npm:^7.17.12, @babel/preset-typescript@npm:^7.18.6, @babel/preset-typescript@npm:^7.8.3":
   version: 7.18.6
   resolution: "@babel/preset-typescript@npm:7.18.6"
   dependencies:
@@ -3159,7 +3202,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.0.0, @babel/runtime@npm:^7.1.2, @babel/runtime@npm:^7.10.3, @babel/runtime@npm:^7.11.2, @babel/runtime@npm:^7.12.13, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.14.5, @babel/runtime@npm:^7.14.6, @babel/runtime@npm:^7.15.4, @babel/runtime@npm:^7.16.3, @babel/runtime@npm:^7.18.3, @babel/runtime@npm:^7.2.0, @babel/runtime@npm:^7.3.1, @babel/runtime@npm:^7.4.4, @babel/runtime@npm:^7.4.5, @babel/runtime@npm:^7.5.0, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.7.2, @babel/runtime@npm:^7.7.6, @babel/runtime@npm:^7.8.4, @babel/runtime@npm:^7.8.7, @babel/runtime@npm:^7.9.2":
+"@babel/runtime@npm:^7.0.0, @babel/runtime@npm:^7.1.2, @babel/runtime@npm:^7.10.3, @babel/runtime@npm:^7.11.2, @babel/runtime@npm:^7.12.13, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.14.5, @babel/runtime@npm:^7.14.6, @babel/runtime@npm:^7.15.4, @babel/runtime@npm:^7.16.3, @babel/runtime@npm:^7.18.3, @babel/runtime@npm:^7.18.9, @babel/runtime@npm:^7.2.0, @babel/runtime@npm:^7.3.1, @babel/runtime@npm:^7.4.4, @babel/runtime@npm:^7.4.5, @babel/runtime@npm:^7.5.0, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.7.2, @babel/runtime@npm:^7.7.6, @babel/runtime@npm:^7.8.4, @babel/runtime@npm:^7.8.7, @babel/runtime@npm:^7.9.2":
   version: 7.18.9
   resolution: "@babel/runtime@npm:7.18.9"
   dependencies:
@@ -3204,6 +3247,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/traverse@npm:^7.18.13":
+  version: 7.18.13
+  resolution: "@babel/traverse@npm:7.18.13"
+  dependencies:
+    "@babel/code-frame": ^7.18.6
+    "@babel/generator": ^7.18.13
+    "@babel/helper-environment-visitor": ^7.18.9
+    "@babel/helper-function-name": ^7.18.9
+    "@babel/helper-hoist-variables": ^7.18.6
+    "@babel/helper-split-export-declaration": ^7.18.6
+    "@babel/parser": ^7.18.13
+    "@babel/types": ^7.18.13
+    debug: ^4.1.0
+    globals: ^11.1.0
+  checksum: 1a2ef738fac4968feba6385787a3f8f7357d08e7739ecc5b37d8ff5668935253a03290f700f02a85ccfd369d5898625f0722d7733bff2ef91504f6cd8b836f19
+  languageName: node
+  linkType: hard
+
 "@babel/types@npm:^7.0.0, @babel/types@npm:^7.0.0-beta.49, @babel/types@npm:^7.16.0, @babel/types@npm:^7.18.10, @babel/types@npm:^7.18.4, @babel/types@npm:^7.18.6, @babel/types@npm:^7.18.9, @babel/types@npm:^7.2.0, @babel/types@npm:^7.3.0, @babel/types@npm:^7.3.3, @babel/types@npm:^7.4.4, @babel/types@npm:^7.7.0, @babel/types@npm:^7.8.3":
   version: 7.18.10
   resolution: "@babel/types@npm:7.18.10"
@@ -3212,6 +3273,17 @@ __metadata:
     "@babel/helper-validator-identifier": ^7.18.6
     to-fast-properties: ^2.0.0
   checksum: 11632c9b106e54021937a6498138014ebc9ad6c327a07b2af3ba8700773945aba4055fd136431cbe3a500d0f363cbf9c68eb4d6d38229897c5de9d06e14c85e8
+  languageName: node
+  linkType: hard
+
+"@babel/types@npm:^7.18.13":
+  version: 7.18.13
+  resolution: "@babel/types@npm:7.18.13"
+  dependencies:
+    "@babel/helper-string-parser": ^7.18.10
+    "@babel/helper-validator-identifier": ^7.18.6
+    to-fast-properties: ^2.0.0
+  checksum: abc3ad1f3b6864df0ea0e778bcdf7d2c5ee2293811192962d50e8a8c05c1aeec90a48275f53b2a45aad882ed8bef9477ae1f8e70ac1d44d039e14930d1388dcc
   languageName: node
   linkType: hard
 
@@ -8278,15 +8350,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@szmarczak/http-timer@npm:^4.0.5":
-  version: 4.0.6
-  resolution: "@szmarczak/http-timer@npm:4.0.6"
-  dependencies:
-    defer-to-connect: ^2.0.0
-  checksum: c29df3bcec6fc3bdec2b17981d89d9c9fc9bd7d0c9bcfe92821dc533f4440bc890ccde79971838b4ceed1921d456973c4180d7175ee1d0023ad0562240a58d95
-  languageName: node
-  linkType: hard
-
 "@testing-library/cypress@npm:^8.0.2":
   version: 8.0.3
   resolution: "@testing-library/cypress@npm:8.0.3"
@@ -8472,18 +8535,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/cacheable-request@npm:^6.0.1":
-  version: 6.0.2
-  resolution: "@types/cacheable-request@npm:6.0.2"
-  dependencies:
-    "@types/http-cache-semantics": "*"
-    "@types/keyv": "*"
-    "@types/node": "*"
-    "@types/responselike": "*"
-  checksum: 667d25808dbf46fe104d6f029e0281ff56058d50c7c1b9182774b3e38bb9c1124f56e4c367ba54f92dbde2d1cc573f26eb0e9748710b2822bc0fd1e5498859c6
-  languageName: node
-  linkType: hard
-
 "@types/classnames@npm:^2.2.7":
   version: 2.3.0
   resolution: "@types/classnames@npm:2.3.0"
@@ -8627,13 +8678,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/http-cache-semantics@npm:*":
-  version: 4.0.1
-  resolution: "@types/http-cache-semantics@npm:4.0.1"
-  checksum: 1048aacf627829f0d5f00184e16548205cd9f964bf0841c29b36bc504509230c40bc57c39778703a1c965a6f5b416ae2cbf4c1d4589c889d2838dd9dbfccf6e9
-  languageName: node
-  linkType: hard
-
 "@types/http-proxy@npm:^1.17.8":
   version: 1.17.9
   resolution: "@types/http-proxy@npm:1.17.9"
@@ -8740,13 +8784,6 @@ __metadata:
   languageName: node
   linkType: soft
 
-"@types/json-buffer@npm:~3.0.0":
-  version: 3.0.0
-  resolution: "@types/json-buffer@npm:3.0.0"
-  checksum: 6b0a371dd603f0eec9d00874574bae195382570e832560dadf2193ee0d1062b8e0694bbae9798bc758632361c227b1e3b19e3bd914043b498640470a2da38b77
-  languageName: node
-  linkType: hard
-
 "@types/json-schema@npm:*, @types/json-schema@npm:^7.0.4, @types/json-schema@npm:^7.0.5, @types/json-schema@npm:^7.0.8, @types/json-schema@npm:^7.0.9":
   version: 7.0.11
   resolution: "@types/json-schema@npm:7.0.11"
@@ -8802,7 +8839,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/keyv@npm:*, @types/keyv@npm:^3.1.1":
+"@types/keyv@npm:^3.1.1":
   version: 3.1.4
   resolution: "@types/keyv@npm:3.1.4"
   dependencies:
@@ -9177,7 +9214,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/responselike@npm:*, @types/responselike@npm:^1.0.0":
+"@types/responselike@npm:^1.0.0":
   version: 1.0.0
   resolution: "@types/responselike@npm:1.0.0"
   dependencies:
@@ -10278,6 +10315,60 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/api-folders-so-ddb@workspace:packages/api-folders-so-ddb":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-folders-so-ddb@workspace:packages/api-folders-so-ddb"
+  dependencies:
+    "@babel/cli": ^7.16.0
+    "@babel/core": ^7.16.0
+    "@webiny/api-folders": ^5.31.0
+    "@webiny/cli": ^5.31.0
+    "@webiny/db-dynamodb": ^5.31.0
+    "@webiny/error": ^5.31.0
+    "@webiny/handler-db": ^5.31.0
+    "@webiny/project-utils": ^5.31.0
+    dynamodb-toolbox: ^0.3.4
+    jest: ^28.1.0
+    jest-dynalite: ^3.2.0
+    jest-environment-node: ^27.0.6
+    rimraf: ^3.0.2
+    ttypescript: ^1.5.12
+    typescript: 4.7.4
+  languageName: unknown
+  linkType: soft
+
+"@webiny/api-folders@^5.31.0, @webiny/api-folders@workspace:packages/api-folders":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-folders@workspace:packages/api-folders"
+  dependencies:
+    "@babel/cli": ^7.18.10
+    "@babel/core": ^7.18.13
+    "@babel/preset-env": ^7.18.10
+    "@babel/preset-typescript": ^7.18.6
+    "@babel/runtime": ^7.18.9
+    "@webiny/api": ^5.31.0
+    "@webiny/api-i18n": ^5.31.0
+    "@webiny/api-i18n-ddb": ^5.31.0
+    "@webiny/api-security": ^5.31.0
+    "@webiny/api-security-so-ddb": ^5.31.0
+    "@webiny/api-tenancy": ^5.31.0
+    "@webiny/api-tenancy-so-ddb": ^5.31.0
+    "@webiny/api-wcp": ^5.31.0
+    "@webiny/cli": ^5.31.0
+    "@webiny/error": ^5.31.0
+    "@webiny/handler": ^5.31.0
+    "@webiny/handler-aws": ^5.31.0
+    "@webiny/handler-graphql": ^5.31.0
+    "@webiny/plugins": ^5.31.0
+    "@webiny/project-utils": ^5.31.0
+    joi: ^17.6.0
+    mdbid: ^1.0.0
+    rimraf: ^3.0.2
+    ttypescript: ^1.5.13
+    typescript: ^4.7.4
+  languageName: unknown
+  linkType: soft
+
 "@webiny/api-form-builder-so-ddb-es@workspace:packages/api-form-builder-so-ddb-es":
   version: 0.0.0-use.local
   resolution: "@webiny/api-form-builder-so-ddb-es@workspace:packages/api-form-builder-so-ddb-es"
@@ -10509,7 +10600,7 @@ __metadata:
     pluralize: ^8.0.0
     prettier: ^2.3.2
     rimraf: ^3.0.2
-    shortid: ^2.2.15
+    semver: ^6.3.0
     sinon: ^9.0.2
     slugify: ^1.4.0
     ttypescript: ^1.5.12
@@ -10535,7 +10626,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-i18n-ddb@^5.32.0, @webiny/api-i18n-ddb@workspace:packages/api-i18n-ddb":
+"@webiny/api-i18n-ddb@^5.31.0, @webiny/api-i18n-ddb@^5.32.0, @webiny/api-i18n-ddb@workspace:packages/api-i18n-ddb":
   version: 0.0.0-use.local
   resolution: "@webiny/api-i18n-ddb@workspace:packages/api-i18n-ddb"
   dependencies:
@@ -10569,7 +10660,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-i18n@^5.32.0, @webiny/api-i18n@workspace:packages/api-i18n":
+"@webiny/api-i18n@^5.31.0, @webiny/api-i18n@^5.32.0, @webiny/api-i18n@workspace:packages/api-i18n":
   version: 0.0.0-use.local
   resolution: "@webiny/api-i18n@workspace:packages/api-i18n"
   dependencies:
@@ -10970,7 +11061,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-security-so-ddb@^5.25.0, @webiny/api-security-so-ddb@^5.32.0, @webiny/api-security-so-ddb@workspace:packages/api-security-so-ddb":
+"@webiny/api-security-so-ddb@^5.25.0, @webiny/api-security-so-ddb@^5.31.0, @webiny/api-security-so-ddb@^5.32.0, @webiny/api-security-so-ddb@workspace:packages/api-security-so-ddb":
   version: 0.0.0-use.local
   resolution: "@webiny/api-security-so-ddb@workspace:packages/api-security-so-ddb"
   dependencies:
@@ -10991,7 +11082,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-security@^5.32.0, @webiny/api-security@workspace:packages/api-security":
+"@webiny/api-security@^5.31.0, @webiny/api-security@^5.32.0, @webiny/api-security@workspace:packages/api-security":
   version: 0.0.0-use.local
   resolution: "@webiny/api-security@workspace:packages/api-security"
   dependencies:
@@ -11025,7 +11116,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-tenancy-so-ddb@^5.25.0, @webiny/api-tenancy-so-ddb@^5.32.0, @webiny/api-tenancy-so-ddb@workspace:packages/api-tenancy-so-ddb":
+"@webiny/api-tenancy-so-ddb@^5.25.0, @webiny/api-tenancy-so-ddb@^5.31.0, @webiny/api-tenancy-so-ddb@^5.32.0, @webiny/api-tenancy-so-ddb@workspace:packages/api-tenancy-so-ddb":
   version: 0.0.0-use.local
   resolution: "@webiny/api-tenancy-so-ddb@workspace:packages/api-tenancy-so-ddb"
   dependencies:
@@ -11046,7 +11137,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-tenancy@^5.32.0, @webiny/api-tenancy@workspace:packages/api-tenancy":
+"@webiny/api-tenancy@^5.31.0, @webiny/api-tenancy@^5.32.0, @webiny/api-tenancy@workspace:packages/api-tenancy":
   version: 0.0.0-use.local
   resolution: "@webiny/api-tenancy@workspace:packages/api-tenancy"
   dependencies:
@@ -11137,7 +11228,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-wcp@^5.32.0, @webiny/api-wcp@workspace:packages/api-wcp":
+"@webiny/api-wcp@^5.31.0, @webiny/api-wcp@^5.32.0, @webiny/api-wcp@workspace:packages/api-wcp":
   version: 0.0.0-use.local
   resolution: "@webiny/api-wcp@workspace:packages/api-wcp"
   dependencies:
@@ -11161,7 +11252,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api@^5.32.0, @webiny/api@workspace:packages/api":
+"@webiny/api@^5.31.0, @webiny/api@^5.32.0, @webiny/api@workspace:packages/api":
   version: 0.0.0-use.local
   resolution: "@webiny/api@workspace:packages/api"
   dependencies:
@@ -11713,12 +11804,10 @@ __metadata:
     classnames: ^2.2.6
     dot-prop-immutable: ^2.1.0
     emotion: ^10.0.17
-    execa: ^5.0.0
     graphql: ^15.7.2
     graphql-tag: ^2.12.6
     invariant: ^2.2.4
     lodash: ^4.17.10
-    nanoid: ^3.3.4
     pluralize: ^8.0.0
     prop-types: ^15.7.2
     raw.macro: ^0.4.2
@@ -11731,7 +11820,6 @@ __metadata:
     react-hotkeyz: ^1.0.4
     react-virtualized: ^9.21.2
     rimraf: ^3.0.2
-    shortid: ^2.2.14
     timeago-react: ^2.0.0
     ttypescript: ^1.5.12
     typescript: 4.7.4
@@ -12613,7 +12701,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/cli@^5.32.0, @webiny/cli@workspace:packages/cli":
+"@webiny/cli@^5.31.0, @webiny/cli@^5.32.0, @webiny/cli@workspace:packages/cli":
   version: 0.0.0-use.local
   resolution: "@webiny/cli@workspace:packages/cli"
   dependencies:
@@ -12684,7 +12772,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/db-dynamodb@^5.32.0, @webiny/db-dynamodb@workspace:packages/db-dynamodb":
+"@webiny/db-dynamodb@^5.31.0, @webiny/db-dynamodb@^5.32.0, @webiny/db-dynamodb@workspace:packages/db-dynamodb":
   version: 0.0.0-use.local
   resolution: "@webiny/db-dynamodb@workspace:packages/db-dynamodb"
   dependencies:
@@ -12725,7 +12813,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/error@^5.32.0, @webiny/error@workspace:packages/error":
+"@webiny/error@^5.31.0, @webiny/error@^5.32.0, @webiny/error@workspace:packages/error":
   version: 0.0.0-use.local
   resolution: "@webiny/error@workspace:packages/error"
   dependencies:
@@ -12791,7 +12879,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/handler-aws@^5.30.0, @webiny/handler-aws@^5.32.0, @webiny/handler-aws@workspace:packages/handler-aws":
+"@webiny/handler-aws@^5.30.0, @webiny/handler-aws@^5.31.0, @webiny/handler-aws@^5.32.0, @webiny/handler-aws@workspace:packages/handler-aws":
   version: 0.0.0-use.local
   resolution: "@webiny/handler-aws@workspace:packages/handler-aws"
   dependencies:
@@ -12836,7 +12924,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/handler-db@^5.32.0, @webiny/handler-db@workspace:packages/handler-db":
+"@webiny/handler-db@^5.31.0, @webiny/handler-db@^5.32.0, @webiny/handler-db@workspace:packages/handler-db":
   version: 0.0.0-use.local
   resolution: "@webiny/handler-db@workspace:packages/handler-db"
   dependencies:
@@ -12853,7 +12941,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/handler-graphql@^5.32.0, @webiny/handler-graphql@workspace:packages/handler-graphql":
+"@webiny/handler-graphql@^5.31.0, @webiny/handler-graphql@^5.32.0, @webiny/handler-graphql@workspace:packages/handler-graphql":
   version: 0.0.0-use.local
   resolution: "@webiny/handler-graphql@workspace:packages/handler-graphql"
   dependencies:
@@ -12915,7 +13003,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/handler@^5.32.0, @webiny/handler@workspace:packages/handler":
+"@webiny/handler@^5.31.0, @webiny/handler@^5.32.0, @webiny/handler@workspace:packages/handler":
   version: 0.0.0-use.local
   resolution: "@webiny/handler@workspace:packages/handler"
   dependencies:
@@ -13003,7 +13091,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/plugins@^5.25.0, @webiny/plugins@^5.32.0, @webiny/plugins@workspace:packages/plugins":
+"@webiny/plugins@^5.25.0, @webiny/plugins@^5.31.0, @webiny/plugins@^5.32.0, @webiny/plugins@workspace:packages/plugins":
   version: 0.0.0-use.local
   resolution: "@webiny/plugins@workspace:packages/plugins"
   dependencies:
@@ -13019,7 +13107,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/project-utils@^5.32.0, @webiny/project-utils@workspace:packages/project-utils":
+"@webiny/project-utils@^5.31.0, @webiny/project-utils@^5.32.0, @webiny/project-utils@workspace:packages/project-utils":
   version: 0.0.0-use.local
   resolution: "@webiny/project-utils@workspace:packages/project-utils"
   dependencies:
@@ -13481,6 +13569,8 @@ __metadata:
     "@webiny/cli": ^5.32.0
     "@webiny/error": ^5.32.0
     "@webiny/project-utils": ^5.32.0
+    nanoid: ^3.3.4
+    nanoid-dictionary: ^4.3.0
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
     typescript: 4.7.4
@@ -16793,13 +16883,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cacheable-lookup@npm:^5.0.3":
-  version: 5.0.4
-  resolution: "cacheable-lookup@npm:5.0.4"
-  checksum: 763e02cf9196bc9afccacd8c418d942fc2677f22261969a4c2c2e760fa44a2351a81557bd908291c3921fe9beb10b976ba8fa50c5ca837c5a0dd945f16468f2d
-  languageName: node
-  linkType: hard
-
 "cacheable-request@npm:^6.0.0":
   version: 6.1.0
   resolution: "cacheable-request@npm:6.1.0"
@@ -16812,21 +16895,6 @@ __metadata:
     normalize-url: ^4.1.0
     responselike: ^1.0.2
   checksum: b510b237b18d17e89942e9ee2d2a077cb38db03f12167fd100932dfa8fc963424bfae0bfa1598df4ae16c944a5484e43e03df8f32105b04395ee9495e9e4e9f1
-  languageName: node
-  linkType: hard
-
-"cacheable-request@npm:^7.0.2":
-  version: 7.0.2
-  resolution: "cacheable-request@npm:7.0.2"
-  dependencies:
-    clone-response: ^1.0.2
-    get-stream: ^5.1.0
-    http-cache-semantics: ^4.0.0
-    keyv: ^4.0.0
-    lowercase-keys: ^2.0.0
-    normalize-url: ^6.0.1
-    responselike: ^2.0.0
-  checksum: 6152813982945a5c9989cb457a6c499f12edcc7ade323d2fbfd759abc860bdbd1306e08096916bb413c3c47e812f8e4c0a0cc1e112c8ce94381a960f115bc77f
   languageName: node
   linkType: hard
 
@@ -17934,16 +18002,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"compress-brotli@npm:^1.3.8":
-  version: 1.3.8
-  resolution: "compress-brotli@npm:1.3.8"
-  dependencies:
-    "@types/json-buffer": ~3.0.0
-    json-buffer: ~3.0.1
-  checksum: de7589d692d40eb362f6c91070b5e51bc10b05a89eabb4a7c76c1aa21b625756f8c101c6999e4df0c4dc6199c5ca2e1353573bfdcca5615810f27485394162a5
-  languageName: node
-  linkType: hard
-
 "compress-commons@npm:^4.1.0":
   version: 4.1.1
   resolution: "compress-commons@npm:4.1.1"
@@ -18120,22 +18178,6 @@ __metadata:
     async-listener: ^0.6.0
     emitter-listener: ^1.1.1
   checksum: 5ac1dcf354563a7121fc1653676ed8dda93565c469698dd7454c3485d9e2c3ca61347d754d02179d13d9e51665d23fffe6bf9e53e89a1865a0c5530384258c2f
-  languageName: node
-  linkType: hard
-
-"contreebutors@npm:^1.1.3":
-  version: 1.1.3
-  resolution: "contreebutors@npm:1.1.3"
-  dependencies:
-    chalk: ^4.0.0
-    got: ^11.3.0
-    load-json-file: ^6.2.0
-    lodash.chunk: ^4.2.0
-    write-json-file: ^4.3.0
-    yargs: ^15.3.1
-  bin:
-    contreebutors: dist/bin/contreebutors.js
-  checksum: 155840a3f74773e2c1559ef94b050bc9353d502d3edbdcde83a20c4646aabc225e9949728f6872fbbdd2bff01bd02c2793e7ba0f51578ac273bc480269e96cfc
   languageName: node
   linkType: hard
 
@@ -19459,15 +19501,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"decompress-response@npm:^6.0.0":
-  version: 6.0.0
-  resolution: "decompress-response@npm:6.0.0"
-  dependencies:
-    mimic-response: ^3.1.0
-  checksum: d377cf47e02d805e283866c3f50d3d21578b779731e8c5072d6ce8c13cc31493db1c2f6784da9d1d5250822120cefa44f1deab112d5981015f2e17444b763812
-  languageName: node
-  linkType: hard
-
 "decompress-tar@npm:^4.0.0, decompress-tar@npm:^4.1.0, decompress-tar@npm:^4.1.1":
   version: 4.1.1
   resolution: "decompress-tar@npm:4.1.1"
@@ -19634,13 +19667,6 @@ __metadata:
   version: 1.1.3
   resolution: "defer-to-connect@npm:1.1.3"
   checksum: 9491b301dcfa04956f989481ba7a43c2231044206269eb4ab64a52d6639ee15b1252262a789eb4239fb46ab63e44d4e408641bae8e0793d640aee55398cb3930
-  languageName: node
-  linkType: hard
-
-"defer-to-connect@npm:^2.0.0":
-  version: 2.0.1
-  resolution: "defer-to-connect@npm:2.0.1"
-  checksum: 8a9b50d2f25446c0bfefb55a48e90afd58f85b21bcf78e9207cd7b804354f6409032a1705c2491686e202e64fc05f147aa5aa45f9aa82627563f045937f5791b
   languageName: node
   linkType: hard
 
@@ -23779,25 +23805,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"got@npm:^11.3.0":
-  version: 11.8.5
-  resolution: "got@npm:11.8.5"
-  dependencies:
-    "@sindresorhus/is": ^4.0.0
-    "@szmarczak/http-timer": ^4.0.5
-    "@types/cacheable-request": ^6.0.1
-    "@types/responselike": ^1.0.0
-    cacheable-lookup: ^5.0.3
-    cacheable-request: ^7.0.2
-    decompress-response: ^6.0.0
-    http2-wrapper: ^1.0.0-beta.5.2
-    lowercase-keys: ^2.0.0
-    p-cancelable: ^2.0.0
-    responselike: ^2.0.0
-  checksum: 2de8a1bbda4e9b6b2b72b2d2100bc055a59adc1740529e631f61feb44a8b9a1f9f8590941ed9da9df0090b6d6d0ed8ffee94cd9ac086ec3409b392b33440f7d2
-  languageName: node
-  linkType: hard
-
 "got@npm:^6.3.0":
   version: 6.7.1
   resolution: "got@npm:6.7.1"
@@ -24600,16 +24607,6 @@ __metadata:
   version: 1.4.0
   resolution: "http-status-codes@npm:1.4.0"
   checksum: c5deb59e23a98dcf151cf73701802508e82d607699f5424b7de4ea7d166550ce978dc99ec668a06f45b15115c6cffe0278c9e66d064f7d0af0b97f74bf51088f
-  languageName: node
-  linkType: hard
-
-"http2-wrapper@npm:^1.0.0-beta.5.2":
-  version: 1.0.3
-  resolution: "http2-wrapper@npm:1.0.3"
-  dependencies:
-    quick-lru: ^5.1.1
-    resolve-alpn: ^1.0.0
-  checksum: 74160b862ec699e3f859739101ff592d52ce1cb207b7950295bf7962e4aa1597ef709b4292c673bece9c9b300efad0559fc86c71b1409c7a1e02b7229456003e
   languageName: node
   linkType: hard
 
@@ -27100,13 +27097,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"json-buffer@npm:3.0.1, json-buffer@npm:~3.0.1":
-  version: 3.0.1
-  resolution: "json-buffer@npm:3.0.1"
-  checksum: 9026b03edc2847eefa2e37646c579300a1f3a4586cfb62bf857832b60c852042d0d6ae55d1afb8926163fa54c2b01d83ae24705f34990348bdac6273a29d4581
-  languageName: node
-  linkType: hard
-
 "json-parse-better-errors@npm:^1.0.0, json-parse-better-errors@npm:^1.0.1, json-parse-better-errors@npm:^1.0.2":
   version: 1.0.2
   resolution: "json-parse-better-errors@npm:1.0.2"
@@ -27409,16 +27399,6 @@ __metadata:
   dependencies:
     json-buffer: 3.0.0
   checksum: bb7e8f3acffdbafbc2dd5b63f377fe6ec4c0e2c44fc82720449ef8ab54f4a7ce3802671ed94c0f475ae0a8549703353a2124561fcf3317010c141b32ca1ce903
-  languageName: node
-  linkType: hard
-
-"keyv@npm:^4.0.0":
-  version: 4.3.3
-  resolution: "keyv@npm:4.3.3"
-  dependencies:
-    compress-brotli: ^1.3.8
-    json-buffer: 3.0.1
-  checksum: bcc946eeec3407fb3b42d831ce985357162113c5f07a8c45c12ede39704ba2d99be4c3dded76d2d2d2a2366627e42440bdde24393216164156928399949c12a1
   languageName: node
   linkType: hard
 
@@ -28055,13 +28035,6 @@ __metadata:
   version: 3.0.0
   resolution: "lodash._reinterpolate@npm:3.0.0"
   checksum: 06d2d5f33169604fa5e9f27b6067ed9fb85d51a84202a656901e5ffb63b426781a601508466f039c720af111b0c685d12f1a5c14ff8df5d5f27e491e562784b2
-  languageName: node
-  linkType: hard
-
-"lodash.chunk@npm:^4.2.0":
-  version: 4.2.0
-  resolution: "lodash.chunk@npm:4.2.0"
-  checksum: 6286c6d06814fbeda502164015c42ef53a9194e6ebaac52ec2b41e83344aefe7bc3d94fdfec525adcd2c66cefdf05dc333b6a1128e4de739797342315c17cbc7
   languageName: node
   linkType: hard
 
@@ -29147,13 +29120,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mimic-response@npm:^3.1.0":
-  version: 3.1.0
-  resolution: "mimic-response@npm:3.1.0"
-  checksum: 25739fee32c17f433626bf19f016df9036b75b3d84a3046c7d156e72ec963dd29d7fc8a302f55a3d6c5a4ff24259676b15d915aad6480815a969ff2ec0836867
-  languageName: node
-  linkType: hard
-
 "min-document@npm:^2.19.0":
   version: 2.19.0
   resolution: "min-document@npm:2.19.0"
@@ -29635,6 +29601,13 @@ __metadata:
   dependencies:
     node-gyp: latest
   checksum: cb16937273ea55b01ea47df244094c12297ce6b29b36e845d349f1f7c268b8d7c5abd126a102c5678a1e1afd0d36bba35ea0cc959e364928ce60561c9306064a
+  languageName: node
+  linkType: hard
+
+"nanoid-dictionary@npm:^4.3.0":
+  version: 4.3.0
+  resolution: "nanoid-dictionary@npm:4.3.0"
+  checksum: 254ed606f0ef6cfea6f5b1fcaa69f10d561650c0d2cff8b138290c6abd8cbdc3335be8799d7520b8ad8b598b8a8b2bd774bfea49eac1ddecb222e4d80e558de5
   languageName: node
   linkType: hard
 
@@ -33341,13 +33314,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"quick-lru@npm:^5.1.1":
-  version: 5.1.1
-  resolution: "quick-lru@npm:5.1.1"
-  checksum: a516faa25574be7947969883e6068dbe4aa19e8ef8e8e0fd96cddd6d36485e9106d85c0041a27153286b0770b381328f4072aa40d3b18a19f5f7d2b78b94b5ed
-  languageName: node
-  linkType: hard
-
 "raf@npm:^3.1.0, raf@npm:^3.2.0, raf@npm:^3.4.0":
   version: 3.4.1
   resolution: "raf@npm:3.4.1"
@@ -35063,13 +35029,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"resolve-alpn@npm:^1.0.0":
-  version: 1.2.1
-  resolution: "resolve-alpn@npm:1.2.1"
-  checksum: f558071fcb2c60b04054c99aebd572a2af97ef64128d59bef7ab73bd50d896a222a056de40ffc545b633d99b304c259ea9d0c06830d5c867c34f0bfa60b8eae0
-  languageName: node
-  linkType: hard
-
 "resolve-cwd@npm:^2.0.0":
   version: 2.0.0
   resolution: "resolve-cwd@npm:2.0.0"
@@ -35242,15 +35201,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"responselike@npm:^2.0.0":
-  version: 2.0.1
-  resolution: "responselike@npm:2.0.1"
-  dependencies:
-    lowercase-keys: ^2.0.0
-  checksum: b122535466e9c97b55e69c7f18e2be0ce3823c5d47ee8de0d9c0b114aa55741c6db8bfbfce3766a94d1272e61bfb1ebf0a15e9310ac5629fbb7446a861b4fd3a
-  languageName: node
-  linkType: hard
-
 "restore-cursor@npm:^1.0.1":
   version: 1.0.1
   resolution: "restore-cursor@npm:1.0.1"
@@ -35420,7 +35370,6 @@ __metadata:
     bufferutil: ^4.0.1
     chalk: ^4.1.0
     commitizen: ^2.10.1
-    contreebutors: ^1.1.3
     cross-env: ^5.2.0
     cypress: ^9.6.0
     cypress-image-snapshot: ^4.0.1
@@ -36247,7 +36196,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"shortid@npm:^2.2.14, shortid@npm:^2.2.15, shortid@npm:^2.2.16":
+"shortid@npm:^2.2.14, shortid@npm:^2.2.16":
   version: 2.2.16
   resolution: "shortid@npm:2.2.16"
   dependencies:
