@@ -51,16 +51,15 @@ export const FoldersProvider: React.FC = props => {
             throw new Error("Folder `type` is mandatory");
         }
 
-        const { data, loading: queryLoading } = await client.query<
-            ListFoldersResponse,
-            ListFoldersQueryVariables
-        >({
+        setListLoading(true);
+
+        const { data } = await client.query<ListFoldersResponse, ListFoldersQueryVariables>({
             query: LIST_FOLDERS,
             variables: { type },
             fetchPolicy: useNetwork ? "network-only" : undefined
         });
 
-        setListLoading(queryLoading);
+        setListLoading(false);
         return get(data, "folders.listFolders");
     };
 
