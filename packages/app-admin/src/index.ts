@@ -32,6 +32,14 @@ export * from "./plugins/PermissionRendererPlugin";
 
 // Components
 export { AppInstaller } from "./components/AppInstaller";
+export { OverlayLayout, OverlayLayoutProps } from "./components/OverlayLayout";
+export {
+    default as SingleImageUpload,
+    SingleImageUploadProps
+} from "./components/SingleImageUpload";
+
+export { FileManager, FileManagerRenderer } from "./components/FileManager";
+export type { FileManagerProps, FileManagerRendererProps, FileManagerFileItem } from "./components/FileManager";
 
 // Hooks
 export * from "./hooks/useSnackbar";

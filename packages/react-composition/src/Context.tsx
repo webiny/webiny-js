@@ -5,8 +5,7 @@ import React, {
     useCallback,
     createContext,
     useContext,
-    useMemo,
-    PropsWithChildren
+    useMemo
 } from "react";
 
 export function compose(...fns: HigherOrderComponent[]) {
@@ -32,7 +31,7 @@ interface ComposedComponent {
  * to let it be `any` in this interface.
  */
 export interface HigherOrderComponent<
-    TInputProps = PropsWithChildren<any>,
+    TInputProps = any,
     TOutputProps = TInputProps
 > {
     (Component: FC<TInputProps>): FC<TOutputProps>;

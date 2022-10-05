@@ -1,5 +1,8 @@
 import { SecurityPermission } from "@webiny/app-security/types";
 
+/**
+ * Represents a file as we receive from the GraphQL API.
+ */
 export interface FileItem {
     id: string;
     name: string;
@@ -12,7 +15,6 @@ export interface FileItem {
     createdBy: {
         id: string;
     };
-    [key: string]: any;
 }
 
 export interface FileManagerSecurityPermission extends SecurityPermission {

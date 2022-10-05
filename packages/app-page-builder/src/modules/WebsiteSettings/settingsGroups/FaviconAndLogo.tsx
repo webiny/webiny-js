@@ -11,7 +11,6 @@ export const FaviconAndLogo: React.FC = () => {
             <Element>
                 <Bind name={"favicon"}>
                     <SingleImageUpload
-                        onChangePick={["id", "src"]}
                         label="Favicon"
                         accept={["image/png", "image/x-icon", "image/vnd.microsoft.icon"]}
                         description={
@@ -25,7 +24,7 @@ export const FaviconAndLogo: React.FC = () => {
             </Element>
             <Element>
                 <Bind name={"logo"}>
-                    <SingleImageUpload label="Logo" onChangePick={["id", "src"]} />
+                    <SingleImageUpload label="Logo" />
                 </Bind>
             </Element>
         </Group>
