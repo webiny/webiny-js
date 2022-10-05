@@ -6493,9 +6493,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@minoru/react-dnd-treeview@npm:^3.1.0":
-  version: 3.1.0
-  resolution: "@minoru/react-dnd-treeview@npm:3.1.0"
+"@minoru/react-dnd-treeview@npm:3.2.0-alpha.2":
+  version: 3.2.0-alpha.2
+  resolution: "@minoru/react-dnd-treeview@npm:3.2.0-alpha.2"
   dependencies:
     dnd-multi-backend: ^7.0.0-alpha.4
     react-dnd-html5-backend: ^16.0.1
@@ -6504,7 +6504,7 @@ __metadata:
     react: ^18.2.0
     react-dnd: ^16.0.1
     react-dom: ^18.2.0
-  checksum: ed6df88de9da9e7acce4da8d3748e8499cf0e2e3e8116803bc22dab3810f18363d42bff74aa08d8b667f5f56333a4af4e9141cdba275f280d621083e3940dc85
+  checksum: 07d03ca189e5b054fa6aa26a389f444f3af6855a345f27091398b578260fa8acb363077530b02781653f793f49d29ae43fad32414acf7798194827a09289794c
   languageName: node
   linkType: hard
 
@@ -12058,7 +12058,7 @@ __metadata:
     "@emotion/core": ^10.0.27
     "@emotion/styled": ^10.0.27
     "@material-design-icons/svg": ^0.12.1
-    "@minoru/react-dnd-treeview": ^3.1.0
+    "@minoru/react-dnd-treeview": 3.2.0-alpha.2
     "@types/react": 17.0.39
     "@webiny/app": ^5.32.0
     "@webiny/app-admin": ^5.32.0
