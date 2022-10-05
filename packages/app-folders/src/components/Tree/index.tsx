@@ -96,15 +96,8 @@ export const FolderTree: React.FC<Props> = ({ type, title, focusedFolderId, onFo
 
     useEffect(() => {
         if (folders) {
-            const data = createTreeData(folders, focusedFolderId);
-            setTreeData(data);
-        }
-    }, [folders]);
-
-    useEffect(() => {
-        if (folders) {
-            const list = createInitialOpenList(folders, focusedFolderId);
-            setInitialOpenList(list);
+            setTreeData(createTreeData(folders, focusedFolderId));
+            setInitialOpenList(createInitialOpenList(folders, focusedFolderId));
         }
     }, [folders]);
 
