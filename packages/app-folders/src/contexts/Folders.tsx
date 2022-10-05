@@ -2,7 +2,7 @@ import React, { useState, useMemo } from "react";
 import { useApolloClient, useMutation } from "@apollo/react-hooks";
 import { i18n } from "@webiny/app/i18n";
 import { useSnackbar } from "@webiny/app-admin";
-import get from "lodash/get";
+import get from "lodash.get";
 
 import { CREATE_FOLDER, LIST_FOLDERS, UPDATE_FOLDER } from "~/graphql/folders.gql";
 
