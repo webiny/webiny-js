@@ -5,7 +5,6 @@ import { SaveRevisionActionArgsType } from "./types";
 import { ToggleSaveRevisionStateActionEvent } from "./event";
 import { PageAtomType } from "~/pageEditor/state";
 import { PageEventActionCallable } from "~/pageEditor/types";
-import { PbEditorElement } from "~/types";
 
 interface PageRevisionType extends Pick<PageAtomType, "title" | "snippet" | "path" | "settings"> {
     category: string;
@@ -27,21 +26,6 @@ const triggerOnFinish = (args?: SaveRevisionActionArgsType): void => {
 // TODO @ts-refactor not worth it
 let debouncedSave: any = null;
 
-const removeElementsFromReferences = (content: any) => {
-    const elements = content.elements.map((element: PbEditorElement) => {
-        if (element.data.blockId) {
-            return {
-                ...element,
-                elements: []
-            };
-        } else {
-            return element;
-        }
-    });
-
-    return { ...content, elements };
-};
-
 export const saveRevisionAction: PageEventActionCallable<SaveRevisionActionArgsType> = async (
     state,
     meta,
@@ -53,14 +37,12 @@ export const saveRevisionAction: PageEventActionCallable<SaveRevisionActionArgsT
         };
     }
 
-    const content = await state.getElementTree();
-
     const data: PageRevisionType = {
         title: state.page.title,
         snippet: state.page.snippet,
         path: state.page.path,
         settings: state.page.settings,
-        content: removeElementsFromReferences(content),
+        content: await state.getElementTree(),
         category: state.page.category ? state.page.category.slug : ""
     };
 
