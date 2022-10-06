@@ -43,7 +43,6 @@ const plugin: GraphQLSchemaPlugin<PbPageImportExportContext> = {
                 # Import pages
                 importPages(
                     category: String!
-                    zipFileKey: String
                     zipFileUrl: String
                 ): PbImportPageResponse
             }

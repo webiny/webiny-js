@@ -18,8 +18,7 @@ export const WrapperWithFileUpload: React.FC<WrapperWithFileUploadProps> = ({
                 if (!uploadedFiles || uploadedFiles.length === 0) {
                     return;
                 }
-                const zipKey = uploadedFiles[0].src;
-                onSelect(zipKey);
+                onSelect(uploadedFiles[0].src);
             }}
             accept={["application/zip"]}
         >
