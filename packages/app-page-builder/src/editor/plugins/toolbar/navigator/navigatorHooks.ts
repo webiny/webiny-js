@@ -74,7 +74,7 @@ export const useSortableList = ({
     const [dropItemAbove, setDropItemAbove] = useState(false);
     const isDraggingDownwardsRef = useRef<boolean>(false);
 
-    const [{ handlerId, isOver }, drop] = useDrop({
+    const [dropData, drop] = useDrop({
         accept: BLOCK,
         collect(monitor) {
             return {
@@ -170,11 +170,11 @@ export const useSortableList = ({
     return {
         ref,
         isDragging,
-        handlerId,
+        handlerId: dropData.handlerId as string | symbol | null,
         drag,
         drop,
         preview,
-        isOver,
+        isOver: dropData.isOver,
         dropItemAbove
     };
 };
