@@ -16,7 +16,7 @@ export const VpcConfig = createAppModule({
                 securityGroupIds: []
             };
 
-            const enabled = params.enabled !== false;
+            const enabled = Boolean(params.enabled);
 
             if (enabled) {
                 // If VPC is not manually disabled we extract details from core.

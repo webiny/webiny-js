@@ -58,9 +58,11 @@ export function createLambdaRole(app: PulumiApp, params: LambdaRoleParams) {
         name: `${params.name}-default-execution-role`,
         config: {
             role: role.output,
-            policyArn: vpc.enabled
-                ? aws.iam.ManagedPolicy.AWSLambdaVPCAccessExecutionRole
-                : aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole
+            policyArn: vpc.enabled.apply(enabled =>
+                enabled
+                    ? aws.iam.ManagedPolicy.AWSLambdaVPCAccessExecutionRole
+                    : aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole
+            )
         }
     });
 
