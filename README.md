@@ -26,7 +26,7 @@
 </p>
 
 
-https://user-images.githubusercontent.com/3808420/143053809-45de6412-31fa-425a-886e-7ce12014603d.mp4
+<iframe width="560" height="315" src="https://www.youtube.com/embed/-KWwVtRUhOQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 
 Webiny Serverless CMS includes:
