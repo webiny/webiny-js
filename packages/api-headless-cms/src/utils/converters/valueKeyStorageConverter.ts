@@ -9,7 +9,7 @@ import semver, { SemVer } from "semver";
 
 const featureVersion = semver.coerce("5.33.0") as SemVer;
 
-const isTesting = (model: CmsModel): boolean => {
+const isBetaOrNext = (model: CmsModel): boolean => {
     return model.webinyVersion.match(/next|beta/) !== null;
 };
 
@@ -22,16 +22,16 @@ const isFeatureEnabled = (model: CmsModel): boolean => {
         return false;
     }
     /**
-     * If is a test environment, always have this turned on.
-     */
-    if (process.env.NODE_ENV === "test") {
-        return true;
-    }
-    /**
      * Possibility that the version is not defined, this means it is a quite old system where models did not change.
      */
     if (!model.webinyVersion) {
         return false;
+    }
+    /**
+     * If is a test environment, always have this turned on.
+     */
+    if (process.env.NODE_ENV === "test" || isBetaOrNext(model) === true) {
+        return true;
     }
     /**
      * In case feature version value is greater than the model version, feature is not enabled as it is an older model with no storageId.
@@ -42,7 +42,6 @@ const isFeatureEnabled = (model: CmsModel): boolean => {
     if (!modelVersion) {
         console.log(`Warning: Model "${model.modelId}" does not have valid Webiny version set.`);
         return true;
-    } else if (isTesting(model)) {
     } else if (semver.compare(modelVersion, featureVersion) === -1) {
         return false;
     }
