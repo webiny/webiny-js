@@ -11,7 +11,7 @@ export const useUpdateFolder = () => {
     const { updateFolder: update, loading } = useFolders();
     const { showSnackbar } = useSnackbar();
 
-    const updateFolder = async (id: string, data: Partial<FolderItem>) => {
+    const updateFolder = async (id: string, data: Omit<FolderItem, "id">) => {
         const response = await update(id, data);
 
         const error = get(response, "error");

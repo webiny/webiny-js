@@ -25,12 +25,14 @@ type Props = {
 
 const t = i18n.ns("app-folders/components/tree/dialog-create");
 
+type SubmitData = Omit<FolderItem, "id" | "type">;
+
 export const CreateDialog: React.FC<Props> = ({ type, onClose, open }) => {
     const [dialogOpen, setDialogOpen] = useState(false);
     const { createFolder, loading } = useCreateFolder();
     const { folders } = useFolders();
 
-    const onSubmit = async (data: Partial<FolderItem>) => {
+    const onSubmit = async (data: SubmitData) => {
         await createFolder(data, type);
         setDialogOpen(false);
     };
@@ -56,7 +58,7 @@ export const CreateDialog: React.FC<Props> = ({ type, onClose, open }) => {
             {dialogOpen && (
                 <Form
                     onSubmit={data => {
-                        onSubmit(data as unknown as Partial<FolderItem>);
+                        onSubmit(data as unknown as SubmitData);
                     }}
                 >
                     {({ Bind, submit }) => (

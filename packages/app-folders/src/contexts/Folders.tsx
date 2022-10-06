@@ -21,8 +21,8 @@ export interface FoldersContext {
         [type: string]: FolderItem[];
     };
     listFolders: (type: string, useNetwork?: boolean) => Promise<FolderItem[] | Error>;
-    createFolder: (data: Partial<FolderItem>) => Promise<FolderItem | Error>;
-    updateFolder: (id: string, data: Partial<FolderItem>) => Promise<FolderItem | Error>;
+    createFolder: (data: Omit<FolderItem, "id">) => Promise<FolderItem | Error>;
+    updateFolder: (id: string, data: Omit<FolderItem, "id">) => Promise<FolderItem | Error>;
 }
 
 export const FoldersContext = React.createContext<FoldersContext | undefined>(undefined);
@@ -63,7 +63,7 @@ export const FoldersProvider: React.FC = props => {
         return get(data, "folders.listFolders");
     };
 
-    const createFolder = async (data: Partial<FolderItem>): Promise<FolderItem | Error> => {
+    const createFolder = async (data: Omit<FolderItem, "id">): Promise<FolderItem | Error> => {
         const response = await create({
             variables: { data }
         });
@@ -73,7 +73,7 @@ export const FoldersProvider: React.FC = props => {
 
     const updateFolder = async (
         id: string,
-        data: Partial<FolderItem>
+        data: Partial<Omit<FolderItem, "id">>
     ): Promise<FolderItem | Error> => {
         const response = await update({
             variables: { id, data }

@@ -29,7 +29,7 @@ export interface UpdateFolderResponse {
 
 export interface UpdateFolderVariables {
     id: string;
-    data: Partial<FolderItem>;
+    data: Partial<Omit<FolderItem, "id">>;
 }
 
 export interface CreateFolderResponse {
@@ -42,7 +42,7 @@ export interface CreateFolderResponse {
 }
 
 export interface CreateFolderVariables {
-    data: Partial<FolderItem>;
+    data: Omit<FolderItem, "id">;
 }
 
 export interface DndItemData extends FolderItem {
