@@ -9,6 +9,13 @@ import semver, { SemVer } from "semver";
 
 const featureVersion = semver.coerce("5.33.0") as SemVer;
 
+const isBetaOrNext = (model: CmsModel): boolean => {
+    if (!model.webinyVersion) {
+        return false;
+    }
+    return model.webinyVersion.match(/next|beta/) !== null;
+};
+
 const isFeatureEnabled = (model: CmsModel): boolean => {
     /**
      * In case of disabled webinyVersion value, we disable this feature.
@@ -20,7 +27,7 @@ const isFeatureEnabled = (model: CmsModel): boolean => {
     /**
      * If is a test environment, always have this turned on.
      */
-    if (process.env.NODE_ENV === "test") {
+    if (process.env.NODE_ENV === "test" || isBetaOrNext(model) === true) {
         return true;
     }
     /**
