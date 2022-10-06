@@ -9,6 +9,10 @@ import semver, { SemVer } from "semver";
 
 const featureVersion = semver.coerce("5.33.0") as SemVer;
 
+const isTesting = (model: CmsModel): boolean => {
+    return model.webinyVersion.match(/next|beta/) !== null;
+};
+
 const isFeatureEnabled = (model: CmsModel): boolean => {
     /**
      * In case of disabled webinyVersion value, we disable this feature.
@@ -38,6 +42,7 @@ const isFeatureEnabled = (model: CmsModel): boolean => {
     if (!modelVersion) {
         console.log(`Warning: Model "${model.modelId}" does not have valid Webiny version set.`);
         return true;
+    } else if (isTesting(model)) {
     } else if (semver.compare(modelVersion, featureVersion) === -1) {
         return false;
     }
