@@ -30,10 +30,7 @@ interface ComposedComponent {
  * You can pass any HigherOrderComponent as a prop, regardless of its TInputProps type. The only way to allow that is
  * to let it be `any` in this interface.
  */
-export interface HigherOrderComponent<
-    TInputProps = any,
-    TOutputProps = TInputProps
-> {
+export interface HigherOrderComponent<TInputProps = any, TOutputProps = TInputProps> {
     (Component: FC<TInputProps>): FC<TOutputProps>;
 }
 

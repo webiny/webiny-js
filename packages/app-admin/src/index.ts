@@ -39,7 +39,11 @@ export {
 } from "./components/SingleImageUpload";
 
 export { FileManager, FileManagerRenderer } from "./components/FileManager";
-export type { FileManagerProps, FileManagerRendererProps, FileManagerFileItem } from "./components/FileManager";
+export type {
+    FileManagerProps,
+    FileManagerRendererProps,
+    FileManagerFileItem
+} from "./components/FileManager";
 
 // Hooks
 export * from "./hooks/useSnackbar";
