@@ -473,7 +473,6 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
             multipleMaxCount={multipleMaxCount}
             accept={accept}
             onSuccess={files => {
-                console.log("onSuccess", files);
                 uploadFile(files.map(file => file.src.file as FileItem).filter(Boolean));
             }}
             onError={errors => {
