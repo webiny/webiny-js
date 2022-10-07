@@ -1,5 +1,5 @@
 import { createHandler, RoutePlugin } from "~/index";
-import { RouteTypes } from "~/types";
+import { DefinedContextRoutes } from "~/types";
 
 describe("route plugins", () => {
     it("should add routes and they must be visible in the defined property", async () => {
@@ -43,14 +43,23 @@ describe("route plugins", () => {
 
         expect(app).not.toBeNull();
 
-        const expected: Record<RouteTypes, string[]> = {
+        const expected: DefinedContextRoutes = {
             PUT: ["/webiny-put", "/webiny-all"],
             PATCH: ["/webiny-patch", "/webiny-all"],
             POST: ["/webiny-post", "/webiny-all"],
             GET: ["/webiny-get", "/webiny-all"],
             DELETE: ["/webiny-delete", "/webiny-all"],
             OPTIONS: ["/webiny-options", "/webiny-all"],
-            HEAD: ["/webiny-get", "/webiny-head", "/webiny-all"]
+            HEAD: ["/webiny-get", "/webiny-head", "/webiny-all"],
+            UNLOCK: ["/webiny-all"],
+            TRACE: ["/webiny-all"],
+            SEARCH: ["/webiny-all"],
+            LOCK: ["/webiny-all"],
+            MOVE: ["/webiny-all"],
+            PROPPATCH: ["/webiny-all"],
+            COPY: ["/webiny-all"],
+            PROPFIND: ["/webiny-all"],
+            MKCOL: ["/webiny-all"]
         };
 
         expect(app.webiny.routes.defined).toEqual(expected);
