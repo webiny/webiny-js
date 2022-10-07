@@ -184,7 +184,7 @@ export const OpenSearch = createAppModule({
             name: "dynamo-to-elastic",
             config: {
                 role: role.output.arn,
-                runtime: "nodejs14.x",
+                runtime: "nodejs16.x",
                 handler: "handler.handler",
                 timeout: 600,
                 memorySize: 512,
