@@ -23,6 +23,8 @@ import { Container } from "./styled";
 
 import { DndItemData, FolderItem } from "~/types";
 
+const ROOT_ID = "root";
+
 const createTreeData = (
     folders: FolderItem[] = [],
     focusedNodeId?: string
@@ -32,7 +34,7 @@ const createTreeData = (
 
         return {
             id,
-            parent: parentId || "root",
+            parent: parentId || ROOT_ID,
             text: name,
             droppable: true,
             data: {
@@ -101,6 +103,8 @@ export const FolderTree: React.FC<Props> = ({ type, title, focusedFolderId, onFo
         try {
             const item = folders.find(folder => folder.id === dragSourceId);
 
+            console.log(dropTargetId);
+
             if (!item) {
                 throw new Error("Folder not found");
             }
@@ -108,7 +112,7 @@ export const FolderTree: React.FC<Props> = ({ type, title, focusedFolderId, onFo
             setTreeData(newTree);
             await updateFolder({
                 ...item,
-                parentId: !!dropTargetId ? (dropTargetId as string) : null
+                parentId: dropTargetId !== ROOT_ID ? (dropTargetId as string) : null
             });
         } catch (error) {
             return showSnackbar(error.message);
@@ -121,7 +125,7 @@ export const FolderTree: React.FC<Props> = ({ type, title, focusedFolderId, onFo
             <DndProvider backend={MultiBackend} options={getBackendOptions()}>
                 <Tree
                     tree={treeData}
-                    rootId={"root"}
+                    rootId={ROOT_ID}
                     onDrop={handleDrop}
                     sort={false}
                     render={(node, { depth, isOpen, onToggle }) => (
