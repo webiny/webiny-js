@@ -26,7 +26,10 @@
 </p>
 
 
-https://github.com/webiny/write-with-webiny/blob/main/images/product-video-2022.mp4
+<video>
+ <source src="https://github.com/webiny/write-with-webiny/blob/main/images/product-video-2022.mp4" type="video/mp4" />
+</video>
+
 
 Webiny Serverless CMS includes:
 
