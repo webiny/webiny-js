@@ -73,7 +73,7 @@ export default () => {
                     data: {
                         message: `Finish uploading page export.`,
                         key: pageExportUpload.Key,
-                        url: pageExportUpload.Location
+                        url: s3Stream.getPresignedUrl(pageExportUpload.Key)
                     }
                 });
 
@@ -94,7 +94,7 @@ export default () => {
                         name: e.name,
                         message: e.message,
                         stack: e.stack,
-                        code: "IMPORT_FAILED"
+                        code: "EXPORT_FAILED"
                     }
                 });
 
