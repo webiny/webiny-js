@@ -11563,6 +11563,7 @@ __metadata:
     apollo-utilities: ^1.3.4
     babel-plugin-emotion: ^9.2.8
     dayjs: ^1.10.4
+    dot-prop-immutable: ^2.1.1
     emotion: ^10.0.17
     graphql: ^15.7.2
     graphql-tag: ^2.10.1
@@ -20300,7 +20301,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dot-prop-immutable@npm:^2.1.0":
+"dot-prop-immutable@npm:^2.1.0, dot-prop-immutable@npm:^2.1.1":
   version: 2.1.1
   resolution: "dot-prop-immutable@npm:2.1.1"
   checksum: d5a2e696e661c6a5f32e6bf41322122cc8a07bbe0d53c56a3c0e6157020e325332a0b635e03308b6a8ec8d70b16b4d5a07e8457cf7f2157d9f49795eded4d744

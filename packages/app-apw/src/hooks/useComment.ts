@@ -1,4 +1,4 @@
-import get from "lodash/get";
+import dotPropImmutable from "dot-prop-immutable";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import { useSnackbar } from "@webiny/app-admin";
 import { ApwComment } from "~/types";
@@ -32,7 +32,7 @@ export const useComment = (id?: string): UseCommentResult => {
         }
     );
 
-    const comment = get(data, "apw.getComment.data");
+    const comment = dotPropImmutable.get(data, "apw.getComment.data");
 
     const listCommentsVariables = useListCommentsVariables();
 
@@ -42,7 +42,7 @@ export const useComment = (id?: string): UseCommentResult => {
     >(CREATE_COMMENT_MUTATION, {
         refetchQueries: [{ query: LIST_COMMENTS_QUERY, variables: listCommentsVariables }],
         onCompleted: response => {
-            const error = get(response, "apw.comment.error");
+            const error = dotPropImmutable.get(response, "apw.comment.error");
             if (error) {
                 showSnackbar(error.message);
                 return;
