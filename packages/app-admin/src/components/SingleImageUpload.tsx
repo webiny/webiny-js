@@ -1,10 +1,11 @@
 import * as React from "react";
 import { Image } from "@webiny/app/components/Image";
 import * as Ui from "@webiny/ui/ImageUpload";
-import { FileManager } from "./FileManager";
+import { FileManager, FileManagerFileItem } from "./FileManager";
 import { FormComponentProps } from "@webiny/ui/types";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 import styled from "@emotion/styled";
+import { useCallback } from "react";
 
 const ImageUploadWrapper = styled("div")({
     position: "relative",
@@ -24,102 +25,136 @@ const ImageUploadWrapper = styled("div")({
 });
 
 export interface SingleImageUploadProps extends FormComponentProps {
-    // Accept types
+    /**
+     * Accept types
+     */
     accept?: string[];
 
-    // Component label.
+    /**
+     * Component label.
+     */
     label?: string;
 
-    // Is component disabled?
+    /**
+     * Is component disabled?
+     */
     disabled?: boolean;
 
-    // Description beneath the image.
+    /**
+     * Description beneath the image.
+     */
     description?: React.ReactNode;
 
-    // A className for the root element.
+    /**
+     * A className for the root element.
+     */
     className?: string;
 
-    // Define file's max allowed size (default is "10mb").
-    // Uses "bytes" (https://www.npmjs.com/package/bytes) library to convert string notation to actual number.
+    /**
+     * Define file's max allowed size (default is "10mb").
+     * Uses "bytes" (https://www.npmjs.com/package/bytes) library to convert string notation to actual number.
+     */
     maxSize?: number | string;
 
-    // Max number of files in a single batch.
-    multipleMaxCount?: number;
+    /**
+     * onChange callback when a file is set or unset.
+     * It is marked as `optional` because this component is often used in conjunction with <Bind>, which injects the
+     * `onChange` into its child element. In that case, that prop is not passed by the developer.
+     */
+    onChange?: (value: FileManagerFileItem | null) => void;
 
-    // Max size of files in a single batch.
-    multipleMaxSize?: number | string;
-
-    // onChange callback.
-    onChange?: (value: any) => void;
-
-    // Optional custom props, passed to the preview image.
+    /**
+     * Optional custom props, passed to the preview image.
+     */
     imagePreviewProps?: any;
 
-    // Is the wrapper round?
+    /**
+     * By default, file meta is not included in the data passed to `onChange`. If you need it, set this flag to true.
+     */
+    includeFileMeta?: boolean;
+
+    /**
+     * Is the wrapper round?
+     */
     round?: boolean;
 
-    // Define the needed properties that are returned on file(s) selection.
+    /**
+     * Define the properties that are returned on file(s) selection.
+     * @deprecated Pick the desired file attributes in the `onChange` callback, or `beforeChange` on the `<Bind>` element.
+     */
     onChangePick?: string[];
 }
 
-export default class SingleImageUpload extends React.Component<SingleImageUploadProps> {
-    public override render() {
-        const {
-            className,
-            onChange,
-            value,
-            validation,
-            label,
-            description,
-            accept,
-            onChangePick,
-            maxSize,
-            multipleMaxCount,
-            multipleMaxSize,
-            imagePreviewProps,
-            round
-        } = this.props;
+const SingleImageUpload: React.FC<SingleImageUploadProps> = props => {
+    const {
+        className,
+        value,
+        validation,
+        label,
+        description,
+        accept,
+        includeFileMeta = false,
+        maxSize,
+        imagePreviewProps,
+        round
+    } = props;
 
-        const { isValid: validationIsValid, message: validationMessage } = validation || {};
+    const { isValid: validationIsValid, message: validationMessage } = validation || {};
 
-        return (
-            <ImageUploadWrapper className={className}>
-                {label && (
-                    <div className="mdc-floating-label mdc-floating-label--float-above">
-                        {label}
-                    </div>
+    const onChange = useCallback(
+        (value: FileManagerFileItem | null) => {
+            if (!props.onChange) {
+                return;
+            }
+
+            if (value && !includeFileMeta) {
+                props.onChange({ id: value.id, src: value.src });
+                return;
+            }
+
+            if (value && includeFileMeta) {
+                props.onChange(value);
+                return;
+            }
+
+            props.onChange(null);
+        },
+        [props.onChange]
+    );
+
+    return (
+        <ImageUploadWrapper className={className}>
+            {label && (
+                <div className="mdc-floating-label mdc-floating-label--float-above">{label}</div>
+            )}
+
+            <FileManager
+                onChange={onChange}
+                accept={accept}
+                images={!accept}
+                maxSize={maxSize}
+                render={({ showFileManager }) => (
+                    <Ui.Image
+                        renderImagePreview={renderImageProps => (
+                            <Image {...renderImageProps} {...imagePreviewProps} />
+                        )}
+                        style={{ width: "100%", height: "auto" }}
+                        value={value}
+                        uploadImage={showFileManager}
+                        removeImage={() => onChange(null)}
+                        round={round}
+                    />
                 )}
+            />
 
-                <FileManager
-                    onChange={onChange}
-                    onChangePick={onChangePick}
-                    accept={accept}
-                    images={!accept}
-                    maxSize={maxSize}
-                    multipleMaxCount={multipleMaxCount}
-                    multipleMaxSize={multipleMaxSize}
-                >
-                    {({ showFileManager }) => (
-                        <Ui.Image
-                            renderImagePreview={renderImageProps => (
-                                <Image {...renderImageProps} {...imagePreviewProps} />
-                            )}
-                            style={{ width: "100%", height: "auto" }}
-                            value={value}
-                            uploadImage={showFileManager}
-                            removeImage={onChange}
-                            round={round}
-                        />
-                    )}
-                </FileManager>
+            {validationIsValid === false && (
+                <FormElementMessage error>{validationMessage}</FormElementMessage>
+            )}
+            {validationIsValid !== false && description && (
+                <FormElementMessage>{description}</FormElementMessage>
+            )}
+        </ImageUploadWrapper>
+    );
+};
 
-                {validationIsValid === false && (
-                    <FormElementMessage error>{validationMessage}</FormElementMessage>
-                )}
-                {validationIsValid !== false && description && (
-                    <FormElementMessage>{description}</FormElementMessage>
-                )}
-            </ImageUploadWrapper>
-        );
-    }
-}
+export default SingleImageUpload;
