@@ -203,7 +203,7 @@ export const ElasticSearch = createAppModule({
             name: "dynamo-to-elastic",
             config: {
                 role: role.output.arn,
-                runtime: "nodejs16.x",
+                runtime: "nodejs14.x",
                 handler: "handler.handler",
                 timeout: 600,
                 memorySize: 512,

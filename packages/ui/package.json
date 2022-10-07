@@ -74,7 +74,6 @@
     "@storybook/addon-links": "^5.0.5",
     "@storybook/react": "^5.2.8",
     "@testing-library/react": "^12.1.2",
-    "@types/classnames": "^2.2.7",
     "@types/nprogress": "^0.2.0",
     "@types/rc-tooltip": "^3.7.2",
     "@types/react-custom-scrollbars": "^4.0.10",

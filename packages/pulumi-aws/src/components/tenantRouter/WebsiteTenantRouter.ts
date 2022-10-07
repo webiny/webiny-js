@@ -89,7 +89,7 @@ export class WebsiteTenantRouter extends pulumi.ComponentResource {
             `${name}-origin-request`,
             {
                 publish: true,
-                runtime: "nodejs16.x",
+                runtime: "nodejs14.x",
                 handler: "index.handler",
                 role: role.arn,
                 timeout: 5,

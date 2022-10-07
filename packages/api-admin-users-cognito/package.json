@@ -28,7 +28,7 @@
     "@webiny/validation": "^5.32.0",
     "commodo-fields-object": "^1.0.6",
     "dataloader": "^2.0.0",
-    "dynamodb-toolbox": "^0.4.3",
+    "dynamodb-toolbox": "^0.3.5",
     "lodash": "^4.5.0",
     "md5": "^2.3.0",
     "mdbid": "^1.0.0"

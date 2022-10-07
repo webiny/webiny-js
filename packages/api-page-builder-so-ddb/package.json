@@ -24,7 +24,7 @@
     "@webiny/handler-db": "^5.32.0",
     "@webiny/utils": "^5.32.0",
     "dataloader": "^2.0.0",
-    "dynamodb-toolbox": "^0.4.3",
+    "dynamodb-toolbox": "^0.3.5",
     "lodash": "^4.17.21"
   },
   "devDependencies": {

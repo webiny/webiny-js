@@ -91,7 +91,7 @@ export function applyTenantRouter(
             `${PREFIX}-origin-request`,
             {
                 publish: true,
-                runtime: "nodejs16.x",
+                runtime: "nodejs14.x",
                 handler: "index.handler",
                 role: role.output.arn,
                 timeout: 5,

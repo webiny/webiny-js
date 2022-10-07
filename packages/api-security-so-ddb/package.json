@@ -19,7 +19,7 @@
     "@webiny/api-security": "^5.32.0",
     "@webiny/db-dynamodb": "^5.32.0",
     "@webiny/error": "^5.32.0",
-    "dynamodb-toolbox": "^0.4.3"
+    "dynamodb-toolbox": "^0.3.5"
   },
   "devDependencies": {
     "@babel/cli": "^7.19.3",

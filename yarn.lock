@@ -3910,13 +3910,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fastify/cookie@npm:^7.2.0":
-  version: 7.4.0
-  resolution: "@fastify/cookie@npm:7.4.0"
+"@fastify/cookie@npm:^8.3.0":
+  version: 8.3.0
+  resolution: "@fastify/cookie@npm:8.3.0"
   dependencies:
     cookie: ^0.5.0
     fastify-plugin: ^4.0.0
-  checksum: cf710f8fcf07d1655bdd76b86076e32d343fdea9291534e0b87b909d978520333663c2aed63609f84c2eec46ac0e9068f462a4b63b5d124e3d31c873adaa66d7
+  checksum: d5dfb5c85d4ae02188aad63c8cf055d3b904287bc2750964ee0b8589c5b5ae32850e8fc9456a8830e9f4e9f24d5059e54dac084835d6ef4cbba7fa4b9c4673b3
   languageName: node
   linkType: hard
 
@@ -8524,15 +8524,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/classnames@npm:^2.2.7":
-  version: 2.3.0
-  resolution: "@types/classnames@npm:2.3.0"
-  dependencies:
-    classnames: "*"
-  checksum: e1bd6de60fc5e4ead601838078b10f378d6a66ad21112922856de59a1f450b1361f597aa3ca34f2cc33bc030f950112872fddfde43c5189bec89737a8b237f24
-  languageName: node
-  linkType: hard
-
 "@types/classnames@npm:^2.3.1":
   version: 2.3.1
   resolution: "@types/classnames@npm:2.3.1"
@@ -9958,7 +9949,7 @@ __metadata:
     "@webiny/db-dynamodb": ^5.32.0
     "@webiny/error": ^5.32.0
     "@webiny/project-utils": ^5.32.0
-    dynamodb-toolbox: ^0.4.3
+    dynamodb-toolbox: ^0.3.5
     jest: ^28.1.0
     jest-dynalite: ^3.2.0
     jest-environment-node: ^27.2.4
@@ -9995,7 +9986,7 @@ __metadata:
     "@webiny/validation": ^5.32.0
     commodo-fields-object: ^1.0.6
     dataloader: ^2.0.0
-    dynamodb-toolbox: ^0.4.3
+    dynamodb-toolbox: ^0.3.5
     lodash: ^4.5.0
     md5: ^2.3.0
     mdbid: ^1.0.0
@@ -10024,7 +10015,7 @@ __metadata:
     "@webiny/handler-graphql": ^5.32.0
     "@webiny/plugins": ^5.32.0
     "@webiny/project-utils": ^5.32.0
-    dynamodb-toolbox: ^0.4.3
+    dynamodb-toolbox: ^0.3.5
     jest: ^28.1.0
     jest-dynalite: ^3.2.0
     jest-environment-node: ^27.2.4
@@ -10216,7 +10207,7 @@ __metadata:
     "@webiny/plugins": ^5.32.0
     "@webiny/project-utils": ^5.32.0
     aws-sdk: ^2.971.0
-    dynamodb-toolbox: ^0.4.3
+    dynamodb-toolbox: ^0.3.5
     jest: ^28.1.0
     jest-dynalite: ^3.2.0
     jsonpack: ^1.1.5
@@ -10243,7 +10234,7 @@ __metadata:
     "@webiny/error": ^5.32.0
     "@webiny/project-utils": ^5.32.0
     aws-sdk: ^2.971.0
-    dynamodb-toolbox: ^0.4.3
+    dynamodb-toolbox: ^0.3.5
     jest: ^28.1.0
     jest-dynalite: ^3.2.0
     jsonpack: ^1.1.5
@@ -10326,7 +10317,7 @@ __metadata:
     "@webiny/error": ^5.31.0
     "@webiny/handler-db": ^5.31.0
     "@webiny/project-utils": ^5.31.0
-    dynamodb-toolbox: ^0.4.3
+    dynamodb-toolbox: ^0.3.5
     jest: ^28.1.0
     jest-dynalite: ^3.2.0
     jest-environment-node: ^27.0.6
@@ -10391,7 +10382,7 @@ __metadata:
     "@webiny/project-utils": ^5.32.0
     "@webiny/utils": ^5.32.0
     csvtojson: ^2.0.10
-    dynamodb-toolbox: ^0.4.3
+    dynamodb-toolbox: ^0.3.5
     elastic-ts: ^0.8.0
     jest: ^28.1.0
     jest-dynalite: ^3.2.0
@@ -10420,7 +10411,7 @@ __metadata:
     "@webiny/project-utils": ^5.32.0
     "@webiny/utils": ^5.32.0
     csvtojson: ^2.0.10
-    dynamodb-toolbox: ^0.4.3
+    dynamodb-toolbox: ^0.3.5
     jest: ^28.1.0
     jest-dynalite: ^3.2.0
     jest-environment-node: ^27.2.4
@@ -10505,7 +10496,7 @@ __metadata:
     "@webiny/project-utils": ^5.32.0
     "@webiny/utils": ^5.32.0
     dataloader: ^2.0.0
-    dynamodb-toolbox: ^0.4.3
+    dynamodb-toolbox: ^0.3.5
     jest: ^28.1.0
     jest-dynalite: ^3.2.0
     jest-environment-node: ^27.2.4
@@ -10649,7 +10640,7 @@ __metadata:
     "@webiny/handler-db": ^5.32.0
     "@webiny/handler-graphql": ^5.32.0
     "@webiny/project-utils": ^5.32.0
-    dynamodb-toolbox: ^0.4.3
+    dynamodb-toolbox: ^0.3.5
     jest: ^28.1.0
     jest-dynalite: ^3.2.0
     jest-environment-node: ^27.2.4
@@ -10736,7 +10727,7 @@ __metadata:
     "@webiny/handler-aws": ^5.32.0
     "@webiny/handler-graphql": ^5.32.0
     "@webiny/project-utils": ^5.32.0
-    dynamodb-toolbox: ^0.4.3
+    dynamodb-toolbox: ^0.3.5
     jest: ^28.1.0
     jest-dynalite: ^3.2.0
     jest-environment-node: ^27.0.6
@@ -10827,7 +10818,7 @@ __metadata:
     "@webiny/project-utils": ^5.32.0
     "@webiny/utils": ^5.32.0
     dataloader: ^2.0.0
-    dynamodb-toolbox: ^0.4.3
+    dynamodb-toolbox: ^0.3.5
     elastic-ts: ^0.8.0
     jest: ^28.1.0
     jest-dynalite: ^3.2.0
@@ -10861,7 +10852,7 @@ __metadata:
     "@webiny/project-utils": ^5.32.0
     "@webiny/utils": ^5.32.0
     dataloader: ^2.0.0
-    dynamodb-toolbox: ^0.4.3
+    dynamodb-toolbox: ^0.3.5
     jest: ^28.1.0
     jest-dynalite: ^3.2.0
     jest-environment-node: ^27.0.6
@@ -10912,7 +10903,7 @@ __metadata:
     "@webiny/validation": ^5.32.0
     commodo-fields-object: ^1.0.6
     dataloader: ^2.0.0
-    dynamodb-toolbox: ^0.4.3
+    dynamodb-toolbox: ^0.3.5
     extract-zip: ^1.6.7
     fs-extra: ^9.1.0
     jest: ^28.1.0
@@ -10972,7 +10963,7 @@ __metadata:
     "@webiny/error": ^5.32.0
     "@webiny/handler-aws": ^5.32.0
     "@webiny/project-utils": ^5.32.0
-    dynamodb-toolbox: ^0.4.3
+    dynamodb-toolbox: ^0.3.5
     jest-dynalite: ^3.3.1
     jest-environment-node: ^27.3.0
     prettier: ^2.3.2
@@ -11071,7 +11062,7 @@ __metadata:
     "@webiny/db-dynamodb": ^5.32.0
     "@webiny/error": ^5.32.0
     "@webiny/project-utils": ^5.32.0
-    dynamodb-toolbox: ^0.4.3
+    dynamodb-toolbox: ^0.3.5
     jest: ^28.1.0
     jest-dynalite: ^3.2.0
     jest-environment-node: ^27.0.6
@@ -11126,7 +11117,7 @@ __metadata:
     "@webiny/db-dynamodb": ^5.32.0
     "@webiny/error": ^5.32.0
     "@webiny/project-utils": ^5.32.0
-    dynamodb-toolbox: ^0.4.3
+    dynamodb-toolbox: ^0.3.5
     jest: ^28.1.0
     jest-dynalite: ^3.2.0
     jest-environment-node: ^27.0.6
@@ -12707,7 +12698,7 @@ __metadata:
   dependencies:
     "@webiny/telemetry": ^5.32.0
     "@webiny/wcp": ^5.32.0
-    boolean: 3.1.4
+    boolean: ^3.1.4
     camelcase: 5.3.1
     chalk: 4.1.2
     dotenv: 8.2.0
@@ -12788,7 +12779,7 @@ __metadata:
     "@webiny/project-utils": ^5.32.0
     date-fns: ^2.22.1
     dot-prop: ^6.0.1
-    dynamodb-toolbox: ^0.4.3
+    dynamodb-toolbox: ^0.3.5
     fuse.js: ^6.4.6
     is-number: ^7.0.0
     jest: ^28.1.0
@@ -13012,7 +13003,7 @@ __metadata:
     "@babel/preset-env": ^7.19.3
     "@babel/preset-typescript": ^7.18.6
     "@babel/runtime": ^7.19.0
-    "@fastify/cookie": ^7.2.0
+    "@fastify/cookie": ^8.3.0
     "@webiny/api": ^5.32.0
     "@webiny/cli": ^5.32.0
     "@webiny/error": ^5.32.0
@@ -13504,7 +13495,6 @@ __metadata:
     "@storybook/react": ^5.2.8
     "@svgr/webpack": ^6.1.1
     "@testing-library/react": ^12.1.2
-    "@types/classnames": ^2.2.7
     "@types/nprogress": ^0.2.0
     "@types/rc-tooltip": ^3.7.2
     "@types/react-custom-scrollbars": ^4.0.10
@@ -16276,14 +16266,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"boolean@npm:3.1.4":
-  version: 3.1.4
-  resolution: "boolean@npm:3.1.4"
-  checksum: 9a48bce4799ccca861be0ec9564f47a96dd01535079624e37b06df45e5dc89d14dcefa04c56f1491a91f0827029f6d9e25690f0b308dfc248b9e64e15593aa35
-  languageName: node
-  linkType: hard
-
-"boolean@npm:^3.0.1":
+"boolean@npm:^3.0.1, boolean@npm:^3.1.4":
   version: 3.2.0
   resolution: "boolean@npm:3.2.0"
   checksum: fb29535b8bf710ef45279677a86d14f5185d604557204abd2ca5fa3fb2a5c80e04d695c8dbf13ab269991977a79bb6c04b048220a6b2a3849853faa94f4a7d77
@@ -20458,19 +20441,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dynamodb-toolbox@npm:^0.3.3":
+"dynamodb-toolbox@npm:^0.3.3, dynamodb-toolbox@npm:^0.3.5":
   version: 0.3.5
   resolution: "dynamodb-toolbox@npm:0.3.5"
   checksum: d75542b529a8dc54c6b0432f3779c62ec9709c94f41356711f042f7d8251950ab41dd25394cca49ee1000fdec263767ca7e08382afac738af76b7d566ef051c9
-  languageName: node
-  linkType: hard
-
-"dynamodb-toolbox@npm:^0.4.3":
-  version: 0.4.3
-  resolution: "dynamodb-toolbox@npm:0.4.3"
-  dependencies:
-    ts-toolbelt: ^6.15.5
-  checksum: 6127ae26fe0bcba91108a83c6d0b6221a2d12a277754db3d6bf703656bda2f7e6f43aa1e01db8fcdb6640ca3044397185f7ea98859e98c8a33333721eb49c229
   languageName: node
   linkType: hard
 
@@ -38258,13 +38232,6 @@ __metadata:
     typescript:
       optional: true
   checksum: c2a698b85d521298fe6f2435fbf2d3dc5834b423ea25abd321805ead3f399dbeedce7ca09492d7eb005b9d2c009c6b9587055bc3ab273dc6b9e40eefd7edb5b2
-  languageName: node
-  linkType: hard
-
-"ts-toolbelt@npm:^6.15.5":
-  version: 6.15.5
-  resolution: "ts-toolbelt@npm:6.15.5"
-  checksum: 24ad00cfd9ce735c76c873a9b1347eac475b94e39ebbdf100c9019dce88dd5f4babed52884cf82bb456a38c28edd0099ab6f704b84b2e5e034852b618472c1f3
   languageName: node
   linkType: hard
 

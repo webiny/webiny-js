@@ -56,7 +56,7 @@ function createExportPagesResources(app: PulumiApp, params: PageBuilderParams) {
         name: "pb-export-pages-combine",
         config: {
             role: role.output.arn,
-            runtime: "nodejs16.x",
+            runtime: "nodejs14.x",
             handler: "handler.handler",
             timeout: 60,
             memorySize: 128,
@@ -80,7 +80,7 @@ function createExportPagesResources(app: PulumiApp, params: PageBuilderParams) {
         name: "pb-export-pages-process",
         config: {
             role: role.output.arn,
-            runtime: "nodejs16.x",
+            runtime: "nodejs14.x",
             handler: "handler.handler",
             timeout: 60,
             memorySize: 128,
@@ -181,7 +181,7 @@ function createImportPagesResources(app: PulumiApp, params: PageBuilderParams) {
         name: "pb-import-page-queue-process",
         config: {
             role: role.output.arn,
-            runtime: "nodejs16.x",
+            runtime: "nodejs14.x",
             handler: "handler.handler",
             timeout: 60,
             memorySize: 512,
@@ -205,7 +205,7 @@ function createImportPagesResources(app: PulumiApp, params: PageBuilderParams) {
         name: "pb-import-page-queue-create",
         config: {
             role: role.output.arn,
-            runtime: "nodejs16.x",
+            runtime: "nodejs14.x",
             handler: "handler.handler",
             timeout: 60,
             memorySize: 512,

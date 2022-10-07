@@ -13,7 +13,7 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.19.0",
-    "@fastify/cookie": "^7.2.0",
+    "@fastify/cookie": "^8.3.0",
     "@webiny/api": "^5.32.0",
     "@webiny/error": "^5.32.0",
     "@webiny/handler-client": "^5.32.0",
