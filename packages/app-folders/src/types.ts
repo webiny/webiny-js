@@ -6,6 +6,8 @@ export interface FolderItem {
     parentId: string | null;
 }
 
+export type LoadingActions = "LIST_FOLDERS" | "CREATE_FOLDER" | "UPDATE_FOLDER" | "DELETE_FOLDER";
+
 export interface FolderError {
     code: string;
     message: string;

@@ -11,12 +11,21 @@ import {
     FolderItem,
     ListFoldersQueryVariables,
     ListFoldersResponse,
+    LoadingActions,
     UpdateFolderResponse,
     UpdateFolderVariables
 } from "~/types";
 
+const loadingDefault = {
+    LIST_FOLDERS: false,
+    CREATE_FOLDER: false,
+    UPDATE_FOLDER: false,
+    DELETE_FOLDER: false
+};
+
 interface FoldersContext {
     folders: Record<string, FolderItem[]>;
+    loading: Record<LoadingActions, boolean>;
     listFolders: (type: string) => Promise<FolderItem[]>;
     createFolder: (folder: Omit<FolderItem, "id">) => Promise<FolderItem>;
     updateFolder: (folder: FolderItem) => Promise<FolderItem>;
@@ -32,15 +41,20 @@ interface Props {
 export const FoldersProvider = ({ children }: Props) => {
     const client = useApolloClient();
     const [folders, setFolders] = useState<Record<string, FolderItem[]>>({});
-
-    //    const [listLoading, setListLoading] = useState<boolean>(false);
+    const [loading, setLoading] = useState<Record<LoadingActions, boolean>>(loadingDefault);
 
     const context: FoldersContext = {
         folders,
+        loading,
         async listFolders(type: string) {
             if (!type) {
                 throw new Error("Folder `type` is mandatory");
             }
+
+            setLoading({
+                ...loading,
+                LIST_FOLDERS: true
+            });
 
             const { data: response } = await client.query<
                 ListFoldersResponse,
@@ -48,7 +62,11 @@ export const FoldersProvider = ({ children }: Props) => {
             >({
                 query: LIST_FOLDERS,
                 variables: { type }
-                //fetchPolicy: useNetwork ? "network-only" : undefined
+            });
+
+            setLoading({
+                ...loading,
+                LIST_FOLDERS: false
             });
 
             const { data, error } = response.folders.listFolders;
@@ -68,6 +86,11 @@ export const FoldersProvider = ({ children }: Props) => {
 
         async createFolder(folder) {
             const { type } = folder;
+
+            setLoading({
+                ...loading,
+                CREATE_FOLDER: true
+            });
 
             const { data: response } = await client.mutate<
                 CreateFolderResponse,
@@ -90,11 +113,21 @@ export const FoldersProvider = ({ children }: Props) => {
 
             setFolders(folders => ({ ...folders, [type]: [...folders[type], data] }));
 
+            setLoading({
+                ...loading,
+                CREATE_FOLDER: false
+            });
+
             return data;
         },
 
         async updateFolder(folder) {
             const { id, type, ...rest } = folder;
+
+            setLoading({
+                ...loading,
+                UPDATE_FOLDER: true
+            });
 
             const { data: response } = await client.mutate<
                 UpdateFolderResponse,
@@ -128,11 +161,21 @@ export const FoldersProvider = ({ children }: Props) => {
                 return { ...folders, [type]: typeFolders };
             });
 
+            setLoading({
+                ...loading,
+                UPDATE_FOLDER: false
+            });
+
             return data;
         },
 
         async deleteFolder(folder) {
             const { id } = folder;
+
+            setLoading({
+                ...loading,
+                DELETE_FOLDER: true
+            });
 
             const { data: response } = await client.mutate<
                 DeleteFolderResponse,
@@ -153,11 +196,14 @@ export const FoldersProvider = ({ children }: Props) => {
                 throw new Error(error?.message || "Could not delete folder");
             }
 
+            setLoading({
+                ...loading,
+                DELETE_FOLDER: false
+            });
+
             return true;
         }
     };
-
-    //const loading = [listLoading, updateLoading, createLoading].some(isLoading => isLoading);
 
     return <FoldersContext.Provider value={context}>{children}</FoldersContext.Provider>;
 };

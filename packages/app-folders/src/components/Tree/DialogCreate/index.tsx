@@ -28,7 +28,7 @@ const t = i18n.ns("app-folders/components/tree/dialog-create");
 type SubmitData = Omit<FolderItem, "id">;
 
 export const CreateDialog: React.FC<Props> = ({ type, onClose, open }) => {
-    const { folders, createFolder } = useFolders(type);
+    const { folders, loading, createFolder } = useFolders(type);
     const [dialogOpen, setDialogOpen] = useState(false);
     const { showSnackbar } = useSnackbar();
 
@@ -68,7 +68,9 @@ export const CreateDialog: React.FC<Props> = ({ type, onClose, open }) => {
                 >
                     {({ Bind, submit }) => (
                         <>
-                            {false && <CircularProgress label={"Creating folder..."} />}
+                            {loading.CREATE_FOLDER && (
+                                <CircularProgress label={"Creating folder..."} />
+                            )}
                             <DialogTitle>{t`Create a new folder`}</DialogTitle>
                             <DialogContent>
                                 <Grid>
