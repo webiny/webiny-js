@@ -103,8 +103,6 @@ export const FolderTree: React.FC<Props> = ({ type, title, focusedFolderId, onFo
         try {
             const item = folders.find(folder => folder.id === dragSourceId);
 
-            console.log(dropTargetId);
-
             if (!item) {
                 throw new Error("Folder not found");
             }
