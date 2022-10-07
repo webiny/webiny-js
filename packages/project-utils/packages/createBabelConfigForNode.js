@@ -19,7 +19,7 @@ module.exports = ({ path, esm }) => {
                 "@babel/plugin-transform-runtime",
                 {
                     useESModules: !!esm,
-                    version: "7.19.0"
+                    version: require("@babel/runtime/package.json").version
                 }
             ],
             ["babel-plugin-dynamic-import-node"],

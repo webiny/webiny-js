@@ -17,8 +17,8 @@
   "author": "Webiny Ltd.",
   "license": "MIT",
   "devDependencies": {
-    "@babel/cli": "^7.16.0",
-    "@babel/core": "^7.16.0",
+    "@babel/cli": "^7.19.3",
+    "@babel/core": "^7.19.3",
     "@webiny/cli": "^5.31.0",
     "@webiny/handler-db": "^5.31.0",
     "@webiny/project-utils": "^5.31.0",

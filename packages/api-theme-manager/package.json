@@ -15,8 +15,8 @@
     "@webiny/handler-graphql": "^5.32.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.5.5",
-    "@babel/core": "^7.5.5",
+    "@babel/cli": "^7.19.3",
+    "@babel/core": "^7.19.3",
     "@webiny/cli": "^5.32.0",
     "@webiny/project-utils": "^5.32.0",
     "jest": "^28.1.0",

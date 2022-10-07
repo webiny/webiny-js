@@ -17,8 +17,8 @@
     "@babel/runtime": "^7.19.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.16.0",
-    "@babel/core": "^7.16.0",
+    "@babel/cli": "^7.19.3",
+    "@babel/core": "^7.19.3",
     "@webiny/cli": "^5.32.0",
     "@webiny/project-utils": "^5.32.0",
     "merge": "^1.2.1",

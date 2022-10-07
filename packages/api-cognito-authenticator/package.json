@@ -17,8 +17,8 @@
     "node-fetch": "^2.6.1"
   },
   "devDependencies": {
-    "@babel/cli": "^7.16.0",
-    "@babel/core": "^7.16.0",
+    "@babel/cli": "^7.19.3",
+    "@babel/core": "^7.19.3",
     "@types/jsonwebtoken": "8.5.1",
     "@types/jwk-to-pem": "^2.0.1",
     "@types/node-fetch": "^2.6.1",

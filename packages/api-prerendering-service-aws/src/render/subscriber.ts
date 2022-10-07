@@ -1,12 +1,12 @@
 import SqsClient, { SendMessageBatchRequestEntry } from "aws-sdk/clients/sqs";
 import lodashChunk from "lodash/chunk";
-import { nanoid } from "nanoid";
 import {
     RenderEvent,
     PrerenderingServiceStorageOperations,
     RenderPagesEvent
 } from "@webiny/api-prerendering-service/types";
 import { createEventBridgeEventHandler } from "@webiny/handler-aws";
+import { generateId } from "@webiny/utils";
 
 export interface HandlerConfig {
     storageOperations: PrerenderingServiceStorageOperations;
@@ -63,7 +63,7 @@ export default (params: HandlerConfig) => {
         const entries: SendMessageBatchRequestEntry[] = [];
 
         for (const item of toRender) {
-            const messageId = nanoid(8);
+            const messageId = generateId(8);
 
             entries.push({
                 // A batch entry ID can only contain alphanumeric characters, hyphens and underscores.
