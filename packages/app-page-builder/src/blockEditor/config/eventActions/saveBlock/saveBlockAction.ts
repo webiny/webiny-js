@@ -7,7 +7,39 @@ import { BlockWithContent } from "~/blockEditor/state";
 import { UPDATE_PAGE_BLOCK } from "~/admin/views/PageBlocks/graphql";
 import getPreviewImage from "./getPreviewImage";
 import { removeElementId } from "~/editor/helpers";
-import { PbElement } from "~/types";
+import { PbElement, PbElementDataType, PbBlockVariable } from "~/types";
+
+function findNestedObj(
+    entireObj: PbElement[],
+    keyToFind: string,
+    valToFind: string
+): PbElementDataType | undefined {
+    let foundObj;
+    JSON.stringify(entireObj, (_, nestedValue) => {
+        if (nestedValue && nestedValue[keyToFind] === valToFind) {
+            foundObj = nestedValue;
+        }
+        return nestedValue;
+    });
+    return foundObj;
+}
+
+const syncBlockVariables = (block: PbElement) => {
+    const syncedVariables = block.data?.variables?.reduce(function (
+        result: Array<PbBlockVariable>,
+        variable: PbBlockVariable
+    ) {
+        const dataObject = findNestedObj(block.elements, "varRef", variable.varRef);
+
+        if (dataObject) {
+            result.push({ ...variable, value: dataObject?.text?.data?.text });
+        }
+        return result;
+    },
+    []);
+
+    return { ...block, data: { ...block.data, variables: syncedVariables } };
+};
 
 // TODO: add more properties here
 type BlockType = Pick<BlockWithContent, "name" | "content" | "blockCategory">;
@@ -37,7 +69,7 @@ export const saveBlockAction: BlockEventActionCallable<SaveBlockActionArgsType> 
         blockCategory: state.block.blockCategory,
         // We need to grab the contents of the "document" element, and we can safely just grab the first element
         // because we only have 1 block in the block editor.
-        content: removeElementId(element.elements[0])
+        content: removeElementId(syncBlockVariables(element.elements[0]))
     };
 
     if (debouncedSave) {

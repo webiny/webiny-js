@@ -29,6 +29,7 @@ const Block: React.FC<BlockProps> = ({ element }) => {
     const {
         responsiveDisplayMode: { displayMode }
     } = React.useContext(PageBuilderContext);
+
     return (
         <>
             <ps-tag data-key={"pb-page-block"} data-value={element.id} />

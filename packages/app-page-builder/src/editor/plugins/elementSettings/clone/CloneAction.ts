@@ -1,10 +1,22 @@
 import React from "react";
+import { cloneDeep } from "lodash";
 import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
 import { activeElementAtom, elementByIdSelector } from "../../../recoil/modules";
 import { plugins } from "@webiny/plugins";
 import { PbEditorPageElementPlugin, PbEditorElement } from "../../../../types";
 import { useRecoilValue } from "recoil";
 import { CloneElementActionEvent } from "../../../recoil/actions/cloneElement";
+
+const removeVarRef = (element: PbEditorElement) => {
+    if (element?.data?.varRef) {
+        const elementCopy = cloneDeep(element);
+        delete elementCopy.data.varRef;
+
+        return elementCopy;
+    } else {
+        return element;
+    }
+};
 
 interface CloneActionPropsType {
     children: React.ReactElement;
@@ -19,10 +31,11 @@ const CloneAction: React.FC<CloneActionPropsType> = ({ children }) => {
     if (!element) {
         return null;
     }
+
     const onClick = () => {
         eventActionHandler.trigger(
             new CloneElementActionEvent({
-                element
+                element: removeVarRef(element)
             })
         );
     };
