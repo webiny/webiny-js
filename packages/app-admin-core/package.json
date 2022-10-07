@@ -10,7 +10,7 @@
   "author": "Pavel Denisjuk",
   "license": "MIT",
   "dependencies": {
-    "@babel/runtime": "^7.5.5",
+    "@babel/runtime": "^7.19.0",
     "@types/react": "17.0.39",
     "@webiny/app": "^5.32.0",
     "@webiny/plugins": "^5.32.0",

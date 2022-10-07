@@ -11,7 +11,7 @@
   "license": "MIT",
   "author": "Webiny Ltd.",
   "dependencies": {
-    "@babel/runtime": "^7.16.3",
+    "@babel/runtime": "^7.19.0",
     "@webiny/api-elasticsearch": "^5.32.0",
     "@webiny/error": "^5.32.0",
     "@webiny/handler-aws": "^5.32.0",

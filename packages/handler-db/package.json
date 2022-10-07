@@ -10,7 +10,7 @@
   "description": "Webiny API plugin that provides a db driver for DynamoDB.",
   "author": "Webiny Ltd.",
   "dependencies": {
-    "@babel/runtime": "^7.16.3",
+    "@babel/runtime": "^7.19.0",
     "@webiny/api": "^5.32.0",
     "@webiny/db": "^5.32.0"
   },

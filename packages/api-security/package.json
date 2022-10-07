@@ -9,7 +9,7 @@
   "description": "Security layer for the Webiny GraphQL API.",
   "license": "MIT",
   "dependencies": {
-    "@babel/runtime": "^7.16.3",
+    "@babel/runtime": "^7.19.0",
     "@commodo/fields": "1.1.2-beta.20",
     "@webiny/api": "^5.32.0",
     "@webiny/api-authentication": "^5.32.0",

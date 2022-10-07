@@ -15,7 +15,13 @@ module.exports = ({ path, esm }) => {
         plugins: [
             ["@babel/plugin-proposal-class-properties"],
             ["@babel/plugin-proposal-object-rest-spread", { useBuiltIns: true }],
-            ["@babel/plugin-transform-runtime", { useESModules: !!esm }],
+            [
+                "@babel/plugin-transform-runtime",
+                {
+                    useESModules: !!esm,
+                    version: "7.19.0"
+                }
+            ],
             ["babel-plugin-dynamic-import-node"],
             ["babel-plugin-lodash"],
             [

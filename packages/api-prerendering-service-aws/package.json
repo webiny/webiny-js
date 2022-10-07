@@ -11,7 +11,7 @@
   "author": "Webiny Ltd",
   "license": "MIT",
   "dependencies": {
-    "@babel/runtime": "^7.16.3",
+    "@babel/runtime": "^7.19.0",
     "@types/aws-lambda": "^8.10.93",
     "@webiny/api": "^5.32.0",
     "@webiny/api-prerendering-service": "^5.32.0",

@@ -12,7 +12,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@babel/runtime": "^7.16.3",
+    "@babel/runtime": "^7.19.0",
     "@fastify/aws-lambda": "^3.1.1",
     "@webiny/handler": "^5.32.0",
     "@webiny/handler-client": "^5.32.0",

@@ -10,7 +10,7 @@
   "author": "Adrian Smijulj",
   "license": "MIT",
   "dependencies": {
-    "@babel/runtime": "^7.16.3",
+    "@babel/runtime": "^7.19.0",
     "@emotion/core": "^10.0.27",
     "@emotion/styled": "^10.0.17",
     "@webiny/app": "^5.32.0",

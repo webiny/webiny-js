@@ -25,7 +25,7 @@
     "@babel/core": "^7.16.0",
     "@babel/preset-env": "^7.16.4",
     "@babel/preset-typescript": "^7.16.0",
-    "@babel/runtime": "^7.16.3",
+    "@babel/runtime": "^7.19.0",
     "@webiny/api-page-builder": "^5.32.0",
     "@webiny/aws-layers": "^5.32.0",
     "@webiny/cli": "^5.32.0",

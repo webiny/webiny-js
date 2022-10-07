@@ -9,7 +9,7 @@
   "author": "Webiny Ltd.",
   "license": "MIT",
   "dependencies": {
-    "@babel/runtime": "^7.5.5",
+    "@babel/runtime": "^7.19.0",
     "@emotion/core": "^10.0.27",
     "@webiny/app": "^5.32.0",
     "@webiny/app-admin": "^5.32.0",
