@@ -10,7 +10,7 @@ const CustomFileManager = createComponentPlugin(FileManagerRenderer, () => {
             const image: FileManagerFileItem = {
                 id: "866",
                 src: "https://picsum.photos/200",
-                meta: [{ key: "source", value: "https://picsum.photos/"}]
+                meta: [{ key: "source", value: "https://picsum.photos/" }]
             };
 
             if (props.multiple) {
@@ -25,7 +25,7 @@ const CustomFileManager = createComponentPlugin(FileManagerRenderer, () => {
             <OverlayLayout onExited={() => props.onClose && props.onClose()}>
                 <button onClick={setRandomImage}>Set a random image</button>
                 {/* @ts-ignore */}
-                <input type={"file"} accept={["image/jpeg"]}/>
+                <input type={"file"} accept={["image/jpeg"]} />
             </OverlayLayout>
         );
     };
