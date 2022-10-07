@@ -8,12 +8,13 @@ import {
     NodeModel,
     Tree
 } from "@minoru/react-dnd-treeview";
+import { useSnackbar } from "@webiny/app-admin";
 import { DndProvider } from "react-dnd";
 
 import { useFolders } from "~/hooks/useFolders";
-import { useListFolders } from "~/hooks/useListFolders";
-import { useUpdateFolder } from "~/hooks/useUpdateFolder";
 
+import { CreateButton } from "./ButtonCreate";
+import { CreateDialog } from "./DialogCreate";
 import { Node } from "./Node";
 import { NodePreview } from "./NodePreview";
 import { Title } from "./Title";
@@ -21,8 +22,6 @@ import { Title } from "./Title";
 import { Container } from "./styled";
 
 import { DndItemData, FolderItem } from "~/types";
-import { CreateButton } from "~/components/Tree/ButtonCreate";
-import { CreateDialog } from "~/components/Tree/DialogCreate";
 
 const createTreeData = (
     folders: FolderItem[] = [],
@@ -82,21 +81,11 @@ type Props = {
 };
 
 export const FolderTree: React.FC<Props> = ({ type, title, focusedFolderId, onFolderClick }) => {
-    const { folders: foldersData } = useFolders();
-    const { listFolders } = useListFolders();
-    const { updateFolder } = useUpdateFolder();
-    const [folders, setFolders] = useState<undefined | FolderItem[]>(undefined);
+    const { folders, updateFolder } = useFolders(type);
     const [treeData, setTreeData] = useState<NodeModel<DndItemData>[]>([]);
     const [createDialogOpen, setCreateDialogOpen] = useState<boolean>(false);
     const [initialOpenList, setInitialOpenList] = useState<undefined | InitialOpen>(undefined);
-
-    useEffect(() => {
-        listFolders(type);
-    }, []);
-
-    useEffect(() => {
-        setFolders(foldersData[type]);
-    }, [foldersData]);
+    const { showSnackbar } = useSnackbar();
 
     useEffect(() => {
         if (folders) {
@@ -109,10 +98,21 @@ export const FolderTree: React.FC<Props> = ({ type, title, focusedFolderId, onFo
         newTree: NodeModel<DndItemData>[],
         { dragSourceId, dropTargetId }: DropOptions
     ) => {
-        setTreeData(newTree);
-        await updateFolder(dragSourceId as string, {
-            parentId: !!dropTargetId ? (dropTargetId as string) : null
-        });
+        try {
+            const item = folders.find(folder => folder.id === dragSourceId);
+
+            if (!item) {
+                throw new Error("Folder not found");
+            }
+
+            setTreeData(newTree);
+            await updateFolder({
+                ...item,
+                parentId: !!dropTargetId ? (dropTargetId as string) : null
+            });
+        } catch (error) {
+            return showSnackbar(error.message);
+        }
     };
 
     return (

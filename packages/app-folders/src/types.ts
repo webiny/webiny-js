@@ -3,13 +3,20 @@ export interface FolderItem {
     name: string;
     slug: string;
     type: string;
-    parentId?: string | null;
+    parentId: string | null;
+}
+
+export interface FolderError {
+    code: string;
+    message: string;
+    data: any;
 }
 
 export interface ListFoldersResponse {
     folders: {
         listFolders: {
-            data: FolderItem[];
+            data: FolderItem[] | null;
+            error: FolderError | null;
         };
     };
 }
@@ -21,8 +28,8 @@ export interface ListFoldersQueryVariables {
 export interface UpdateFolderResponse {
     folders: {
         updateFolder: {
-            data: FolderItem[];
-            error?: Error | null;
+            data: FolderItem;
+            error: FolderError | null;
         };
     };
 }
@@ -36,7 +43,20 @@ export interface CreateFolderResponse {
     folders: {
         createFolder: {
             data: FolderItem;
-            error?: Error | null;
+            error: FolderError | null;
+        };
+    };
+}
+
+export interface DeleteFolderVariables {
+    id: string;
+}
+
+export interface DeleteFolderResponse {
+    folders: {
+        deleteFolder: {
+            data: boolean;
+            error: FolderError | null;
         };
     };
 }

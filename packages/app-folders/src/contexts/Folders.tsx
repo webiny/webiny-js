@@ -1,12 +1,13 @@
-import React, { useMemo, useState } from "react";
-import { useApolloClient, useMutation } from "@apollo/react-hooks";
-import get from "lodash.get";
+import React, { ReactNode, useState } from "react";
+import { useApolloClient } from "@apollo/react-hooks";
 
-import { CREATE_FOLDER, LIST_FOLDERS, UPDATE_FOLDER } from "~/graphql/folders.gql";
+import { CREATE_FOLDER, DELETE_FOLDER, LIST_FOLDERS, UPDATE_FOLDER } from "~/graphql/folders.gql";
 
 import {
     CreateFolderResponse,
     CreateFolderVariables,
+    DeleteFolderResponse,
+    DeleteFolderVariables,
     FolderItem,
     ListFoldersQueryVariables,
     ListFoldersResponse,
@@ -14,86 +15,149 @@ import {
     UpdateFolderVariables
 } from "~/types";
 
-export interface FoldersContext {
-    loading: boolean;
-    setFolders: Function;
-    folders: {
-        [type: string]: FolderItem[];
-    };
-    listFolders: (type: string, useNetwork?: boolean) => Promise<FolderItem[] | Error>;
-    createFolder: (data: Omit<FolderItem, "id">) => Promise<FolderItem | Error>;
-    updateFolder: (id: string, data: Omit<FolderItem, "id">) => Promise<FolderItem | Error>;
+interface FoldersContext {
+    folders: Record<string, FolderItem[]>;
+    listFolders: (type: string) => Promise<FolderItem[]>;
+    createFolder: (folder: Omit<FolderItem, "id">) => Promise<FolderItem>;
+    updateFolder: (folder: FolderItem) => Promise<FolderItem>;
+    deleteFolder(folder: FolderItem): Promise<true>;
 }
 
 export const FoldersContext = React.createContext<FoldersContext | undefined>(undefined);
 
-export const FoldersProvider: React.FC = props => {
+interface Props {
+    children: ReactNode;
+}
+
+export const FoldersProvider = ({ children }: Props) => {
     const client = useApolloClient();
+    const [folders, setFolders] = useState<Record<string, FolderItem[]>>({});
 
-    const [folders, setFolders] = useState({});
-    const [listLoading, setListLoading] = useState<boolean>(false);
+    //    const [listLoading, setListLoading] = useState<boolean>(false);
 
-    const [create, { loading: createLoading }] = useMutation<
-        CreateFolderResponse,
-        CreateFolderVariables
-    >(CREATE_FOLDER);
+    const context: FoldersContext = {
+        folders,
+        async listFolders(type: string) {
+            if (!type) {
+                throw new Error("Folder `type` is mandatory");
+            }
 
-    const [update, { loading: updateLoading }] = useMutation<
-        UpdateFolderResponse,
-        UpdateFolderVariables
-    >(UPDATE_FOLDER);
+            const { data: response } = await client.query<
+                ListFoldersResponse,
+                ListFoldersQueryVariables
+            >({
+                query: LIST_FOLDERS,
+                variables: { type }
+                //fetchPolicy: useNetwork ? "network-only" : undefined
+            });
 
-    const listFolders = async (
-        type: string,
-        useNetwork?: boolean
-    ): Promise<FolderItem[] | Error> => {
-        if (!type) {
-            throw new Error("Folder `type` is mandatory");
+            const { data, error } = response.folders.listFolders;
+
+            // TODO @webiny/error package
+            if (!data) {
+                throw new Error(error?.message || "Could not fetch folders");
+            }
+
+            setFolders({
+                ...folders,
+                [type]: data || []
+            });
+
+            return data;
+        },
+
+        async createFolder(folder) {
+            const { type } = folder;
+
+            const { data: response } = await client.mutate<
+                CreateFolderResponse,
+                CreateFolderVariables
+            >({
+                mutation: CREATE_FOLDER,
+                variables: { data: folder }
+            });
+
+            if (!response) {
+                throw new Error("Network error while creating folder");
+            }
+
+            const { data, error } = response.folders.createFolder;
+
+            // TODO @webiny/error package
+            if (!data) {
+                throw new Error(error?.message || "Could not create folder");
+            }
+
+            setFolders(folders => ({ ...folders, [type]: [...folders[type], data] }));
+
+            return data;
+        },
+
+        async updateFolder(folder) {
+            const { id, type, ...rest } = folder;
+
+            const { data: response } = await client.mutate<
+                UpdateFolderResponse,
+                UpdateFolderVariables
+            >({
+                mutation: UPDATE_FOLDER,
+                variables: { id, data: rest }
+            });
+
+            if (!response) {
+                throw new Error("Network error while updating folder");
+            }
+
+            const { data, error } = response.folders.updateFolder;
+
+            // TODO @webiny/error package
+            if (!data) {
+                throw new Error(error?.message || "Could not update folder");
+            }
+
+            setFolders(folders => {
+                const folderIndex = folders[type].findIndex(f => f.id === id);
+                if (folderIndex === -1) {
+                    return folders;
+                }
+
+                // Set the updated folder into the state
+                const typeFolders = [...folders[type]];
+                typeFolders[folderIndex] = data;
+
+                return { ...folders, [type]: typeFolders };
+            });
+
+            return data;
+        },
+
+        async deleteFolder(folder) {
+            const { id } = folder;
+
+            const { data: response } = await client.mutate<
+                DeleteFolderResponse,
+                DeleteFolderVariables
+            >({
+                mutation: DELETE_FOLDER,
+                variables: { id }
+            });
+
+            if (!response) {
+                throw new Error("Network error while deleting folder");
+            }
+
+            const { data, error } = response.folders.deleteFolder;
+
+            // TODO @webiny/error package
+            if (!data) {
+                throw new Error(error?.message || "Could not delete folder");
+            }
+
+            return true;
         }
-
-        setListLoading(true);
-
-        const { data } = await client.query<ListFoldersResponse, ListFoldersQueryVariables>({
-            query: LIST_FOLDERS,
-            variables: { type },
-            fetchPolicy: useNetwork ? "network-only" : undefined
-        });
-
-        setListLoading(false);
-        return get(data, "folders.listFolders");
     };
 
-    const createFolder = async (data: Omit<FolderItem, "id">): Promise<FolderItem | Error> => {
-        const response = await create({
-            variables: { data }
-        });
+    //const loading = [listLoading, updateLoading, createLoading].some(isLoading => isLoading);
 
-        return get(response, "data.folders.createFolder");
-    };
-
-    const updateFolder = async (
-        id: string,
-        data: Partial<Omit<FolderItem, "id">>
-    ): Promise<FolderItem | Error> => {
-        const response = await update({
-            variables: { id, data }
-        });
-
-        return get(response, "data.folders.updateFolder");
-    };
-
-    const loading = [listLoading, updateLoading, createLoading].some(isLoading => isLoading);
-
-    const value = useMemo(() => {
-        return {
-            loading,
-            folders,
-            setFolders,
-            listFolders,
-            createFolder,
-            updateFolder
-        };
-    }, [loading, folders]);
-
-    return <FoldersContext.Provider value={value}>{props.children}</FoldersContext.Provider>;
+    return <FoldersContext.Provider value={context}>{children}</FoldersContext.Provider>;
 };

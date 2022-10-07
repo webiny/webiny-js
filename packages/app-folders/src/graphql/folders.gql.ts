@@ -50,3 +50,14 @@ export const UPDATE_FOLDER = gql`
         }
     }
 `;
+
+export const DELETE_FOLDER = gql`
+    mutation UpdateFolder($id: ID!) {
+        folders {
+            deleteFolder(id: $id) {
+                data boolean
+                error ${ERROR_FIELD}
+            }
+        }
+    }
+`;
