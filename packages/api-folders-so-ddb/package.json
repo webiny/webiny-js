@@ -33,7 +33,7 @@
     "@webiny/api-folders": "^5.31.0",
     "@webiny/db-dynamodb": "^5.31.0",
     "@webiny/error": "^5.31.0",
-    "dynamodb-toolbox": "^0.3.4"
+    "dynamodb-toolbox": "^0.4.3"
   },
   "publishConfig": {
     "access": "public",

@@ -20,7 +20,7 @@
     "@babel/runtime": "^7.19.0",
     "@webiny/api-prerendering-service": "^5.32.0",
     "@webiny/error": "^5.32.0",
-    "dynamodb-toolbox": "^0.3.4"
+    "dynamodb-toolbox": "^0.4.3"
   },
   "devDependencies": {
     "@babel/cli": "^7.19.3",

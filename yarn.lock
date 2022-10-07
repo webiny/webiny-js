@@ -9958,7 +9958,7 @@ __metadata:
     "@webiny/db-dynamodb": ^5.32.0
     "@webiny/error": ^5.32.0
     "@webiny/project-utils": ^5.32.0
-    dynamodb-toolbox: ^0.3.4
+    dynamodb-toolbox: ^0.4.3
     jest: ^28.1.0
     jest-dynalite: ^3.2.0
     jest-environment-node: ^27.2.4
@@ -9995,7 +9995,7 @@ __metadata:
     "@webiny/validation": ^5.32.0
     commodo-fields-object: ^1.0.6
     dataloader: ^2.0.0
-    dynamodb-toolbox: ^0.3.4
+    dynamodb-toolbox: ^0.4.3
     lodash: ^4.5.0
     md5: ^2.3.0
     mdbid: ^1.0.0
@@ -10024,7 +10024,7 @@ __metadata:
     "@webiny/handler-graphql": ^5.32.0
     "@webiny/plugins": ^5.32.0
     "@webiny/project-utils": ^5.32.0
-    dynamodb-toolbox: ^0.3.4
+    dynamodb-toolbox: ^0.4.3
     jest: ^28.1.0
     jest-dynalite: ^3.2.0
     jest-environment-node: ^27.2.4
@@ -10181,7 +10181,7 @@ __metadata:
     "@webiny/utils": ^5.32.0
     aws-elasticsearch-connector: ^9.0.0
     aws-sdk: ^2.971.0
-    elastic-ts: ^0.7.0
+    elastic-ts: ^0.8.0
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
     typescript: 4.7.4
@@ -10216,7 +10216,7 @@ __metadata:
     "@webiny/plugins": ^5.32.0
     "@webiny/project-utils": ^5.32.0
     aws-sdk: ^2.971.0
-    dynamodb-toolbox: ^0.3.4
+    dynamodb-toolbox: ^0.4.3
     jest: ^28.1.0
     jest-dynalite: ^3.2.0
     jsonpack: ^1.1.5
@@ -10243,7 +10243,7 @@ __metadata:
     "@webiny/error": ^5.32.0
     "@webiny/project-utils": ^5.32.0
     aws-sdk: ^2.971.0
-    dynamodb-toolbox: ^0.3.4
+    dynamodb-toolbox: ^0.4.3
     jest: ^28.1.0
     jest-dynalite: ^3.2.0
     jsonpack: ^1.1.5
@@ -10326,7 +10326,7 @@ __metadata:
     "@webiny/error": ^5.31.0
     "@webiny/handler-db": ^5.31.0
     "@webiny/project-utils": ^5.31.0
-    dynamodb-toolbox: ^0.3.4
+    dynamodb-toolbox: ^0.4.3
     jest: ^28.1.0
     jest-dynalite: ^3.2.0
     jest-environment-node: ^27.0.6
@@ -10391,8 +10391,8 @@ __metadata:
     "@webiny/project-utils": ^5.32.0
     "@webiny/utils": ^5.32.0
     csvtojson: ^2.0.10
-    dynamodb-toolbox: ^0.3.4
-    elastic-ts: ^0.7.0
+    dynamodb-toolbox: ^0.4.3
+    elastic-ts: ^0.8.0
     jest: ^28.1.0
     jest-dynalite: ^3.2.0
     jest-environment-node: ^27.2.4
@@ -10420,7 +10420,7 @@ __metadata:
     "@webiny/project-utils": ^5.32.0
     "@webiny/utils": ^5.32.0
     csvtojson: ^2.0.10
-    dynamodb-toolbox: ^0.3.4
+    dynamodb-toolbox: ^0.4.3
     jest: ^28.1.0
     jest-dynalite: ^3.2.0
     jest-environment-node: ^27.2.4
@@ -10505,7 +10505,7 @@ __metadata:
     "@webiny/project-utils": ^5.32.0
     "@webiny/utils": ^5.32.0
     dataloader: ^2.0.0
-    dynamodb-toolbox: ^0.3.4
+    dynamodb-toolbox: ^0.4.3
     jest: ^28.1.0
     jest-dynalite: ^3.2.0
     jest-environment-node: ^27.2.4
@@ -10649,7 +10649,7 @@ __metadata:
     "@webiny/handler-db": ^5.32.0
     "@webiny/handler-graphql": ^5.32.0
     "@webiny/project-utils": ^5.32.0
-    dynamodb-toolbox: ^0.3.4
+    dynamodb-toolbox: ^0.4.3
     jest: ^28.1.0
     jest-dynalite: ^3.2.0
     jest-environment-node: ^27.2.4
@@ -10736,7 +10736,7 @@ __metadata:
     "@webiny/handler-aws": ^5.32.0
     "@webiny/handler-graphql": ^5.32.0
     "@webiny/project-utils": ^5.32.0
-    dynamodb-toolbox: ^0.3.4
+    dynamodb-toolbox: ^0.4.3
     jest: ^28.1.0
     jest-dynalite: ^3.2.0
     jest-environment-node: ^27.0.6
@@ -10827,8 +10827,8 @@ __metadata:
     "@webiny/project-utils": ^5.32.0
     "@webiny/utils": ^5.32.0
     dataloader: ^2.0.0
-    dynamodb-toolbox: ^0.3.4
-    elastic-ts: ^0.7.0
+    dynamodb-toolbox: ^0.4.3
+    elastic-ts: ^0.8.0
     jest: ^28.1.0
     jest-dynalite: ^3.2.0
     jest-environment-node: ^27.0.6
@@ -10861,7 +10861,7 @@ __metadata:
     "@webiny/project-utils": ^5.32.0
     "@webiny/utils": ^5.32.0
     dataloader: ^2.0.0
-    dynamodb-toolbox: ^0.3.4
+    dynamodb-toolbox: ^0.4.3
     jest: ^28.1.0
     jest-dynalite: ^3.2.0
     jest-environment-node: ^27.0.6
@@ -10912,7 +10912,7 @@ __metadata:
     "@webiny/validation": ^5.32.0
     commodo-fields-object: ^1.0.6
     dataloader: ^2.0.0
-    dynamodb-toolbox: ^0.3.4
+    dynamodb-toolbox: ^0.4.3
     extract-zip: ^1.6.7
     fs-extra: ^9.1.0
     jest: ^28.1.0
@@ -10972,7 +10972,7 @@ __metadata:
     "@webiny/error": ^5.32.0
     "@webiny/handler-aws": ^5.32.0
     "@webiny/project-utils": ^5.32.0
-    dynamodb-toolbox: ^0.3.4
+    dynamodb-toolbox: ^0.4.3
     jest-dynalite: ^3.3.1
     jest-environment-node: ^27.3.0
     prettier: ^2.3.2
@@ -11071,7 +11071,7 @@ __metadata:
     "@webiny/db-dynamodb": ^5.32.0
     "@webiny/error": ^5.32.0
     "@webiny/project-utils": ^5.32.0
-    dynamodb-toolbox: ^0.3.4
+    dynamodb-toolbox: ^0.4.3
     jest: ^28.1.0
     jest-dynalite: ^3.2.0
     jest-environment-node: ^27.0.6
@@ -11126,7 +11126,7 @@ __metadata:
     "@webiny/db-dynamodb": ^5.32.0
     "@webiny/error": ^5.32.0
     "@webiny/project-utils": ^5.32.0
-    dynamodb-toolbox: ^0.3.4
+    dynamodb-toolbox: ^0.4.3
     jest: ^28.1.0
     jest-dynalite: ^3.2.0
     jest-environment-node: ^27.0.6
@@ -12788,7 +12788,7 @@ __metadata:
     "@webiny/project-utils": ^5.32.0
     date-fns: ^2.22.1
     dot-prop: ^6.0.1
-    dynamodb-toolbox: ^0.3.4
+    dynamodb-toolbox: ^0.4.3
     fuse.js: ^6.4.6
     is-number: ^7.0.0
     jest: ^28.1.0
@@ -20458,10 +20458,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dynamodb-toolbox@npm:^0.3.3, dynamodb-toolbox@npm:^0.3.4":
+"dynamodb-toolbox@npm:^0.3.3":
   version: 0.3.5
   resolution: "dynamodb-toolbox@npm:0.3.5"
   checksum: d75542b529a8dc54c6b0432f3779c62ec9709c94f41356711f042f7d8251950ab41dd25394cca49ee1000fdec263767ca7e08382afac738af76b7d566ef051c9
+  languageName: node
+  linkType: hard
+
+"dynamodb-toolbox@npm:^0.4.3":
+  version: 0.4.3
+  resolution: "dynamodb-toolbox@npm:0.4.3"
+  dependencies:
+    ts-toolbelt: ^6.15.5
+  checksum: 6127ae26fe0bcba91108a83c6d0b6221a2d12a277754db3d6bf703656bda2f7e6f43aa1e01db8fcdb6640ca3044397185f7ea98859e98c8a33333721eb49c229
   languageName: node
   linkType: hard
 
@@ -20505,12 +20514,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"elastic-ts@npm:^0.7.0":
-  version: 0.7.0
-  resolution: "elastic-ts@npm:0.7.0"
+"elastic-ts@npm:^0.8.0":
+  version: 0.8.0
+  resolution: "elastic-ts@npm:0.8.0"
   dependencies:
     "@sindresorhus/is": ^4.0.0
-  checksum: 47e6d1c5113a97792d30da7ea2727e9e0890b63b8e64c8b23444492a710770f7980d2756a161e6d64b0155c5a2b85ace11b9055bd11a4f5bb715b6c3524921e2
+  checksum: 52596e695175a49dd1c006fbd99ebb4983e456b02b45324a5430278669132ffdecdec4d82d999061bab647885079a191312a3d319382d693e81b36c7c9857ff8
   languageName: node
   linkType: hard
 
@@ -38249,6 +38258,13 @@ __metadata:
     typescript:
       optional: true
   checksum: c2a698b85d521298fe6f2435fbf2d3dc5834b423ea25abd321805ead3f399dbeedce7ca09492d7eb005b9d2c009c6b9587055bc3ab273dc6b9e40eefd7edb5b2
+  languageName: node
+  linkType: hard
+
+"ts-toolbelt@npm:^6.15.5":
+  version: 6.15.5
+  resolution: "ts-toolbelt@npm:6.15.5"
+  checksum: 24ad00cfd9ce735c76c873a9b1347eac475b94e39ebbdf100c9019dce88dd5f4babed52884cf82bb456a38c28edd0099ab6f704b84b2e5e034852b618472c1f3
   languageName: node
   linkType: hard
 

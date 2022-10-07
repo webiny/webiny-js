@@ -27,7 +27,7 @@
     "@types/is-number": "^7.0.2",
     "@webiny/cli": "^5.32.0",
     "@webiny/project-utils": "^5.32.0",
-    "dynamodb-toolbox": "^0.3.4",
+    "dynamodb-toolbox": "^0.4.3",
     "jest": "^28.1.0",
     "jest-dynalite": "^3.2.0",
     "rimraf": "^3.0.2",

@@ -19,7 +19,7 @@
     "@webiny/utils": "^5.32.0",
     "aws-elasticsearch-connector": "^9.0.0",
     "aws-sdk": "^2.971.0",
-    "elastic-ts": "^0.7.0"
+    "elastic-ts": "^0.8.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.19.3",

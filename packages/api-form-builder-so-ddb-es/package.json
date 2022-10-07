@@ -30,8 +30,8 @@
     "@webiny/error": "^5.32.0",
     "@webiny/plugins": "^5.32.0",
     "@webiny/utils": "^5.32.0",
-    "dynamodb-toolbox": "^0.3.4",
-    "elastic-ts": "^0.7.0"
+    "dynamodb-toolbox": "^0.4.3",
+    "elastic-ts": "^0.8.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.19.3",
