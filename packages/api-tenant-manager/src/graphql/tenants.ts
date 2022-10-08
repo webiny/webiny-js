@@ -125,8 +125,15 @@ export default new GraphQLSchemaPlugin<Context>({
                         });
                     }
 
-                    // You can only update a tenant if it's a child of the current tenant.
-                    if (currentTenant.id !== tenantToUpdate.parent) {
+                    const canUpdate = [
+                        // You can update a tenant if it's a child of the current tenant.
+                        currentTenant.id === tenantToUpdate.parent,
+                        // Root tenant can update itself
+                        currentTenant.id === "root" && tenantToUpdate.id === "root"
+                    ];
+
+                    // If not a single `true` is present in the array...
+                    if (!canUpdate.some(Boolean)) {
                         throw new NotAuthorizedError();
                     }
 
