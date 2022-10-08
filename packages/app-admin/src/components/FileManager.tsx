@@ -61,7 +61,6 @@ export type MultipleProps =
 export type FileManagerProps = {
     accept?: Array<string>;
     images?: boolean;
-    imagesMimeTypes?: Array<string>;
     maxSize?: number | string;
     /**
      * @deprecated This prop is no longer used. The file structure was reduced to a bare minimum so picking is no longer necessary.
@@ -106,23 +105,23 @@ const formatFileItem = ({ id, src, ...rest }: FileItem): FileManagerFileItem => 
     };
 };
 
+/**
+ * If `accept` prop is not passed, and `images` prop is set, use these default mime types.
+ * Defaults can be overridden using the `createComponentPlugin` and `FileManagerRenderer` component.
+ */
+const imagesAccept = [
+    "image/jpg",
+    "image/jpeg",
+    "image/tiff",
+    "image/gif",
+    "image/png",
+    "image/webp",
+    "image/bmp",
+    "image/svg+xml"
+];
+
 const DefaultFileManagerRenderer: React.FC<FileManagerRendererProps> = props => {
-    const {
-        onChange,
-        images,
-        accept,
-        imagesMimeTypes = [
-            "image/jpg",
-            "image/jpeg",
-            "image/tiff",
-            "image/gif",
-            "image/png",
-            "image/webp",
-            "image/bmp",
-            "image/svg+xml"
-        ],
-        ...forwardProps
-    } = props;
+    const { onChange, images, accept, ...forwardProps } = props;
 
     const handleFileOnChange = (value?: FileItem[] | FileItem) => {
         if (!onChange || !value || (Array.isArray(value) && !value.length)) {
@@ -141,11 +140,16 @@ const DefaultFileManagerRenderer: React.FC<FileManagerRendererProps> = props => 
     const viewProps: FileManagerViewProps = {
         ...forwardProps,
         onChange: typeof onChange === "function" ? handleFileOnChange : undefined,
-        accept: images ? imagesMimeTypes : accept || []
+        accept: images ? accept || imagesAccept : accept || []
     };
 
     return (
-        <FileManagerProvider {...props}>
+        <FileManagerProvider
+            accept={viewProps.accept}
+            tags={viewProps.tags || []}
+            own={viewProps.own}
+            scope={viewProps.scope}
+        >
             <FileManagerView {...viewProps} />
         </FileManagerProvider>
     );
