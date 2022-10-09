@@ -28,7 +28,6 @@ export const SocialMedia: React.FC = () => {
             <Element>
                 <Bind name={"social.image"}>
                     <SingleImageUpload
-                        onChangePick={["id", "src"]}
                         label="Default Open Graph image"
                         description={`The default OG image for all pages. Recommended resolution 1596x545.`}
                     />

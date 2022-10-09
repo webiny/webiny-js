@@ -12,7 +12,7 @@ import dataURLtoBlob from "dataurl-to-blob";
 import { ImageEditorDialog } from "@webiny/ui/ImageUpload";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { IconButton } from "@webiny/ui/Button";
-import outputFileSelectionError from "../../../components/FileManager/outputFileSelectionError";
+import { outputFileSelectionError } from "~/components/FileManager/outputFileSelectionError";
 import { useSnackbar } from "~/hooks/useSnackbar";
 import { ReactComponent as EditIcon } from "../icons/edit.svg";
 import { FileItem } from "~/components/FileManager/types";

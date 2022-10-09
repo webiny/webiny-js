@@ -11478,6 +11478,7 @@ __metadata:
     "@webiny/form": ^5.32.0
     "@webiny/plugins": ^5.32.0
     "@webiny/project-utils": ^5.32.0
+    "@webiny/react-composition": ^5.32.0
     "@webiny/react-router": ^5.32.0
     "@webiny/telemetry": ^5.32.0
     "@webiny/ui": ^5.32.0

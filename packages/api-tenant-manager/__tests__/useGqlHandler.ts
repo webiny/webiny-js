@@ -1,6 +1,7 @@
 import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
 import { createHandler } from "@webiny/handler-aws/gateway";
 import graphqlHandler from "@webiny/handler-graphql";
+import { SecurityIdentity } from "@webiny/api-security/types";
 import tenantManagerPlugins from "../src";
 import {
     CREATE_TENANT,
@@ -15,17 +16,18 @@ import { createTenancyAndSecurity } from "./tenancySecurity";
 
 type UseGqlHandlerParams = {
     plugins?: any;
+    identity?: SecurityIdentity | null;
 };
 
 export default (params: UseGqlHandlerParams = {}) => {
-    const { plugins: extraPlugins } = params;
+    const { plugins: extraPlugins, identity } = params;
 
     // Creates the actual handler. Feel free to add additional plugins if needed.
     const handler = createHandler({
         plugins: [
             createWcpContext(),
             createWcpGraphQL(),
-            ...createTenancyAndSecurity(),
+            ...createTenancyAndSecurity({ identity }),
             graphqlHandler(),
             tenantManagerPlugins(),
             extraPlugins || []

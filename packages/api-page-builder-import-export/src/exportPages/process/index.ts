@@ -156,7 +156,7 @@ export default (configuration: Configuration) => {
                                 name: e.name,
                                 message: e.message,
                                 stack: e.stack,
-                                code: "IMPORT_FAILED"
+                                code: "EXPORT_FAILED"
                             }
                         }
                     );

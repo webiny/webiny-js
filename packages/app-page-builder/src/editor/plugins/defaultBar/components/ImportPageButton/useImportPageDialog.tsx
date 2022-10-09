@@ -35,14 +35,10 @@ const separator = css`
 export const importPageDialogTitle = t`Import page`;
 
 interface ImportPageDialogContentProps {
-    onUploadFile: (file: string) => void;
-    onPasteFileLink: (url: string) => void;
+    onFileLink: (url: string) => void;
 }
 
-export const ImportPageDialogContent: React.FC<ImportPageDialogContentProps> = ({
-    onUploadFile,
-    onPasteFileLink
-}) => {
+export const ImportPageDialogContent: React.FC<ImportPageDialogContentProps> = ({ onFileLink }) => {
     const ui = useUi();
     const [showLink, setShowLink] = useState<boolean>(false);
 
@@ -67,11 +63,8 @@ export const ImportPageDialogContent: React.FC<ImportPageDialogContentProps> = (
                 <Form
                     data={{ url: "" }}
                     onSubmit={data => {
-                        if (typeof onPasteFileLink !== "function") {
-                            return;
-                        }
                         closeDialog();
-                        onPasteFileLink(data["url"]);
+                        onFileLink(data["url"]);
                     }}
                 >
                     {({ Bind, submit }) => (
@@ -99,7 +92,7 @@ export const ImportPageDialogContent: React.FC<ImportPageDialogContentProps> = (
                 </Form>
             ) : (
                 <div className={contentContainer}>
-                    <WrapperWithFileUpload onSelect={onUploadFile}>
+                    <WrapperWithFileUpload onSelect={onFileLink}>
                         {({ showFileManager }) => (
                             <ButtonSecondary
                                 onClick={() => {
@@ -130,23 +123,14 @@ const useImportPageDialog = () => {
     const { showDialog } = useDialog();
 
     return {
-        showImportPageDialog: (
-            onUploadFile?: (file: string) => void,
-            onPasteFileLink?: (url: string) => void
-        ) => {
+        showImportPageDialog: (onFileLink?: (url: string) => void) => {
             showDialog(
                 <ImportPageDialogContent
-                    onUploadFile={file => {
-                        if (!onUploadFile) {
+                    onFileLink={url => {
+                        if (!onFileLink) {
                             return;
                         }
-                        onUploadFile(file);
-                    }}
-                    onPasteFileLink={url => {
-                        if (!onPasteFileLink) {
-                            return;
-                        }
-                        onPasteFileLink(url);
+                        onFileLink(url);
                     }}
                 />,
                 {

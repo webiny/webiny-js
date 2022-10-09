@@ -25,9 +25,8 @@ const linkWrapper = css`
 
     & .link-text {
         padding: 8px 0 8px 16px;
-    }
-
-    & .copy-button__wrapper {
+        width: 100%;
+        overflow: hidden;
     }
 `;
 
@@ -93,7 +92,7 @@ const ExportPageDialogMessage: React.FC<ExportPageDialogProps> = ({ exportUrl })
                         <Typography use={"body2"} className={"link-text"}>
                             {exportUrl}
                         </Typography>
-                        <span className={"copy-button__wrapper"}>
+                        <span>
                             <CopyButton
                                 data-testid={"export-pages.export-ready-dialog.copy-button"}
                                 value={exportUrl}

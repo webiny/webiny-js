@@ -5,10 +5,18 @@
 import mdbid from "mdbid";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
 import { ErrorResponse, Response, ListResponse } from "@webiny/handler-graphql";
+import { NotAuthorizedError } from "@webiny/api-security";
 import { SecurityContext } from "@webiny/api-security/types";
 import { TenancyContext } from "@webiny/api-tenancy/types";
 
 type Context = TenancyContext & SecurityContext;
+
+const checkPermissions = (context: SecurityContext) => {
+    const identity = context.security.getIdentity();
+    if (!identity) {
+        throw new NotAuthorizedError();
+    }
+};
 
 export default new GraphQLSchemaPlugin<Context>({
     typeDefs: /* GraphQL */ `
@@ -55,67 +63,110 @@ export default new GraphQLSchemaPlugin<Context>({
     resolvers: {
         TenancyQuery: {
             getTenant: async (_, { where }, context) => {
-                // TODO: add permission checks
-                const tenant = await context.tenancy.getTenantById(where.id);
+                try {
+                    await checkPermissions(context);
+                    const tenant = await context.tenancy.getTenantById(where.id);
+                    const currentTenant = context.tenancy.getCurrentTenant();
+                    const selfOrParent = [tenant.id, tenant.parent];
 
-                // Maybe move this logic into the `tenancy` app, but use storage ops for initializing the `root` tenant?
-                const currentTenant = context.tenancy.getCurrentTenant();
+                    // Make sure the requested tenant is either the current tenant itself, or one of its children.
+                    if (selfOrParent.includes(currentTenant.id)) {
+                        return new Response(tenant);
+                    }
 
-                // Make sure current tenant is allowed to access the requested tenant.
-                if (currentTenant.id !== tenant.parent && currentTenant.id !== tenant.id) {
-                    return undefined;
+                    throw new NotAuthorizedError();
+                } catch (e) {
+                    return new ErrorResponse(e);
                 }
-
-                return new Response(tenant);
             },
             listTenants: async (_, __, context) => {
-                // TODO: add permission checks
-                const tenant = context.tenancy.getCurrentTenant();
-                const tenants = await context.tenancy.listTenants({ parent: tenant.id });
-                return new ListResponse(tenants);
+                // This lists tenants that are subtenants of the current tenant.
+                try {
+                    await checkPermissions(context);
+                    const tenant = context.tenancy.getCurrentTenant();
+                    const tenants = await context.tenancy.listTenants({ parent: tenant.id });
+                    return new ListResponse(tenants);
+                } catch (e) {
+                    return new ErrorResponse(e);
+                }
             }
         },
         TenancyMutation: {
             createTenant: async (_, args: any, context) => {
-                // TODO: add permission checks
-                const tenant = context.tenancy.getCurrentTenant();
-                const newTenant = await context.tenancy.createTenant({
-                    id: mdbid(),
-                    name: args.data.name,
-                    description: args.data.description,
-                    parent: tenant.id,
-                    settings: args.data.settings
-                });
+                /**
+                 * This method creates a subtenant of the current tenant.
+                 */
+                try {
+                    await checkPermissions(context);
+                    const tenant = context.tenancy.getCurrentTenant();
+                    const newTenant = await context.tenancy.createTenant({
+                        id: mdbid(),
+                        name: args.data.name,
+                        description: args.data.description,
+                        parent: tenant.id,
+                        settings: args.data.settings
+                    });
 
-                return new Response(newTenant);
+                    return new Response(newTenant);
+                } catch (e) {
+                    return new ErrorResponse(e);
+                }
             },
             updateTenant: async (_, args: any, context) => {
-                // TODO: add permission checks
-                const tenantToUpdate = await context.tenancy.getTenantById(args.id);
-                if (!tenantToUpdate) {
-                    return new ErrorResponse({
-                        message: `Tenant "${args.id}" was not found!`,
-                        code: "TENANT_NOT_FOUND"
-                    });
+                try {
+                    await checkPermissions(context);
+                    const tenantToUpdate = await context.tenancy.getTenantById(args.id);
+                    const currentTenant = context.tenancy.getCurrentTenant();
+
+                    if (!tenantToUpdate) {
+                        return new ErrorResponse({
+                            message: `Tenant "${args.id}" was not found!`,
+                            code: "TENANT_NOT_FOUND"
+                        });
+                    }
+
+                    const canUpdate = [
+                        // You can update a tenant if it's a child of the current tenant.
+                        currentTenant.id === tenantToUpdate.parent,
+                        // Root tenant can update itself
+                        currentTenant.id === "root" && tenantToUpdate.id === "root"
+                    ];
+
+                    // If not a single `true` is present in the array...
+                    if (!canUpdate.some(Boolean)) {
+                        throw new NotAuthorizedError();
+                    }
+
+                    const updatedTenant = await context.tenancy.updateTenant(args.id, args.data);
+
+                    return new Response(updatedTenant);
+                } catch (e) {
+                    return new ErrorResponse(e);
                 }
-
-                const updatedTenant = await context.tenancy.updateTenant(args.id, args.data);
-
-                return new Response(updatedTenant);
             },
             deleteTenant: async (_, args: any, context) => {
-                // TODO: add permission checks
-                const tenantToUpdate = await context.tenancy.getTenantById(args.id);
-                if (!tenantToUpdate) {
-                    return new ErrorResponse({
-                        message: `Tenant "${args.id}" was not found!`,
-                        code: "TENANT_NOT_FOUND"
-                    });
+                try {
+                    await checkPermissions(context);
+                    const tenantToDelete = await context.tenancy.getTenantById(args.id);
+                    if (!tenantToDelete) {
+                        return new ErrorResponse({
+                            message: `Tenant "${args.id}" was not found!`,
+                            code: "TENANT_NOT_FOUND"
+                        });
+                    }
+
+                    // You can only delete a tenant if it's a child of the current tenant.
+                    const currentTenant = context.tenancy.getCurrentTenant();
+                    if (currentTenant.id !== tenantToDelete.parent) {
+                        throw new NotAuthorizedError();
+                    }
+
+                    await context.tenancy.deleteTenant(args.id);
+
+                    return new Response(true);
+                } catch (e) {
+                    return new ErrorResponse(e);
                 }
-
-                await context.tenancy.deleteTenant(args.id);
-
-                return new Response(true);
             }
         }
     }
