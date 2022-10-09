@@ -12067,6 +12067,8 @@ __metadata:
     "@webiny/project-utils": ^5.32.0
     "@webiny/ui": ^5.32.0
     "@webiny/validation": ^5.32.0
+    apollo-client: ^2.6.10
+    apollo-link: ^1.2.14
     graphql: ^15.7.2
     graphql-tag: ^2.12.6
     react: 17.0.2

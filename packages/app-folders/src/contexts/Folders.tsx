@@ -1,5 +1,7 @@
 import React, { ReactNode, useState } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
+import { ApolloQueryResult } from "apollo-client/core/types";
+import { FetchResult } from "apollo-link";
 
 import { CREATE_FOLDER, DELETE_FOLDER, LIST_FOLDERS, UPDATE_FOLDER } from "~/graphql/folders.gql";
 
@@ -43,6 +45,25 @@ export const FoldersProvider = ({ children }: Props) => {
     const [folders, setFolders] = useState<Record<string, FolderItem[]>>({});
     const [loading, setLoading] = useState<Record<LoadingActions, boolean>>(loadingDefault);
 
+    const apolloActionsWrapper = async (
+        type: LoadingActions,
+        callback: Promise<ApolloQueryResult<any> | FetchResult<any>>
+    ) => {
+        setLoading({
+            ...loading,
+            [type]: true
+        });
+
+        const response = await callback;
+
+        setLoading({
+            ...loading,
+            [type]: false
+        });
+
+        return response;
+    };
+
     const context: FoldersContext = {
         folders,
         loading,
@@ -51,27 +72,16 @@ export const FoldersProvider = ({ children }: Props) => {
                 throw new Error("Folder `type` is mandatory");
             }
 
-            setLoading({
-                ...loading,
-                LIST_FOLDERS: true
-            });
-
-            const { data: response } = await client.query<
-                ListFoldersResponse,
-                ListFoldersQueryVariables
-            >({
-                query: LIST_FOLDERS,
-                variables: { type }
-            });
-
-            setLoading({
-                ...loading,
-                LIST_FOLDERS: false
-            });
+            const { data: response } = await apolloActionsWrapper(
+                "LIST_FOLDERS",
+                client.query<ListFoldersResponse, ListFoldersQueryVariables>({
+                    query: LIST_FOLDERS,
+                    variables: { type }
+                })
+            );
 
             const { data, error } = response.folders.listFolders;
 
-            // TODO @webiny/error package
             if (!data) {
                 throw new Error(error?.message || "Could not fetch folders");
             }
@@ -87,18 +97,13 @@ export const FoldersProvider = ({ children }: Props) => {
         async createFolder(folder) {
             const { type } = folder;
 
-            setLoading({
-                ...loading,
-                CREATE_FOLDER: true
-            });
-
-            const { data: response } = await client.mutate<
-                CreateFolderResponse,
-                CreateFolderVariables
-            >({
-                mutation: CREATE_FOLDER,
-                variables: { data: folder }
-            });
+            const { data: response } = await apolloActionsWrapper(
+                "CREATE_FOLDER",
+                client.mutate<CreateFolderResponse, CreateFolderVariables>({
+                    mutation: CREATE_FOLDER,
+                    variables: { data: folder }
+                })
+            );
 
             if (!response) {
                 throw new Error("Network error while creating folder");
@@ -106,17 +111,11 @@ export const FoldersProvider = ({ children }: Props) => {
 
             const { data, error } = response.folders.createFolder;
 
-            // TODO @webiny/error package
             if (!data) {
                 throw new Error(error?.message || "Could not create folder");
             }
 
             setFolders(folders => ({ ...folders, [type]: [...folders[type], data] }));
-
-            setLoading({
-                ...loading,
-                CREATE_FOLDER: false
-            });
 
             return data;
         },
@@ -124,18 +123,13 @@ export const FoldersProvider = ({ children }: Props) => {
         async updateFolder(folder) {
             const { id, type, ...rest } = folder;
 
-            setLoading({
-                ...loading,
-                UPDATE_FOLDER: true
-            });
-
-            const { data: response } = await client.mutate<
-                UpdateFolderResponse,
-                UpdateFolderVariables
-            >({
-                mutation: UPDATE_FOLDER,
-                variables: { id, data: rest }
-            });
+            const { data: response } = await apolloActionsWrapper(
+                "UPDATE_FOLDER",
+                client.mutate<UpdateFolderResponse, UpdateFolderVariables>({
+                    mutation: UPDATE_FOLDER,
+                    variables: { id, data: rest }
+                })
+            );
 
             if (!response) {
                 throw new Error("Network error while updating folder");
@@ -143,7 +137,6 @@ export const FoldersProvider = ({ children }: Props) => {
 
             const { data, error } = response.folders.updateFolder;
 
-            // TODO @webiny/error package
             if (!data) {
                 throw new Error(error?.message || "Could not update folder");
             }
@@ -154,16 +147,10 @@ export const FoldersProvider = ({ children }: Props) => {
                     return folders;
                 }
 
-                // Set the updated folder into the state
                 const typeFolders = [...folders[type]];
                 typeFolders[folderIndex] = data;
 
                 return { ...folders, [type]: typeFolders };
-            });
-
-            setLoading({
-                ...loading,
-                UPDATE_FOLDER: false
             });
 
             return data;
@@ -172,18 +159,13 @@ export const FoldersProvider = ({ children }: Props) => {
         async deleteFolder(folder) {
             const { id } = folder;
 
-            setLoading({
-                ...loading,
-                DELETE_FOLDER: true
-            });
-
-            const { data: response } = await client.mutate<
-                DeleteFolderResponse,
-                DeleteFolderVariables
-            >({
-                mutation: DELETE_FOLDER,
-                variables: { id }
-            });
+            const { data: response } = await apolloActionsWrapper(
+                "DELETE_FOLDER",
+                client.mutate<DeleteFolderResponse, DeleteFolderVariables>({
+                    mutation: DELETE_FOLDER,
+                    variables: { id }
+                })
+            );
 
             if (!response) {
                 throw new Error("Network error while deleting folder");
@@ -191,15 +173,9 @@ export const FoldersProvider = ({ children }: Props) => {
 
             const { data, error } = response.folders.deleteFolder;
 
-            // TODO @webiny/error package
             if (!data) {
                 throw new Error(error?.message || "Could not delete folder");
             }
-
-            setLoading({
-                ...loading,
-                DELETE_FOLDER: false
-            });
 
             return true;
         }
