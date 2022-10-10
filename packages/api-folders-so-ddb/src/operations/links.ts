@@ -102,7 +102,9 @@ export const createLinksStorageOperations = (entity: Entity<any>): LinksStorageO
                     items,
                     sort,
                     fields: []
-                }).map(item => item?.data);
+                })
+                    .filter(item => Boolean(item))
+                    .map(item => item?.data);
             } catch (error) {
                 throw WebinyError.from(error, {
                     message: "Could not list links.",
