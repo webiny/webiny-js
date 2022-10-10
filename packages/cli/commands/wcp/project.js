@@ -14,7 +14,7 @@ module.exports.command = () => [
                 projectCommand => {
                     projectCommand.command(
                         "init",
-                        `Initialize a Webiny project`,
+                        `Initialize a Webiny project (deprecated, please use the link command instead)`,
                         command => {
                             yargs.option("debug", {
                                 describe: `Turn on debug logs`,
@@ -29,10 +29,28 @@ module.exports.command = () => [
                         },
                         () => handler({ context })
                     );
+
+                    projectCommand.command(
+                        "link",
+                        `Link a Webiny project with Webiny Control Panel (WCP)`,
+                        command => {
+                            yargs.option("debug", {
+                                describe: `Turn on debug logs`,
+                                type: "boolean"
+                            });
+                            yargs.option("debug-level", {
+                                default: 1,
+                                describe: `Set the debug logs verbosity level`,
+                                type: "number"
+                            });
+                            command.example("$0 project link");
+                        },
+                        () => handler({ context })
+                    );
                 }
             );
         }
-    }
+    },
 ];
 
 const handler = async ({ context }) => {
