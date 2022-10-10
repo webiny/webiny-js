@@ -263,9 +263,5 @@ export default /* GraphQL */ `
         republishProduct(revision: ID!): ProductResponse
 
         unpublishProduct(revision: ID!): ProductResponse
-        
-        requestProductReview(revision: ID!): ProductResponse
-        
-        requestProductChanges(revision: ID!): ProductResponse
     }
 `;

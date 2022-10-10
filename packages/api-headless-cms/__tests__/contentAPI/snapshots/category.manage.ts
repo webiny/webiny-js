@@ -92,7 +92,7 @@ export default /* GraphQL */ `
         data: Category
         error: CmsError
     }
-        
+    
     type CategoryArrayResponse {
         data: [Category]
         error: CmsError
@@ -146,9 +146,5 @@ export default /* GraphQL */ `
         republishCategory(revision: ID!): CategoryResponse
 
         unpublishCategory(revision: ID!): CategoryResponse
-        
-        requestCategoryReview(revision: ID!): CategoryResponse
-        
-        requestCategoryChanges(revision: ID!): CategoryResponse
     }
 `;

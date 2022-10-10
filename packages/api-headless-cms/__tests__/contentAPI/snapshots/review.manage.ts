@@ -156,9 +156,5 @@ export default /* GraphQL */ `
         republishReview(revision: ID!): ReviewResponse
 
         unpublishReview(revision: ID!): ReviewResponse
-        
-        requestReviewReview(revision: ID!): ReviewResponse
-        
-        requestReviewChanges(revision: ID!): ReviewResponse
     }
 `;
