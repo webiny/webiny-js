@@ -6,34 +6,34 @@ import { Link, LinksStorageOperations } from "@webiny/api-folders/types";
 import { Entity } from "dynamodb-toolbox";
 import { DataContainer } from "~/types";
 
+const createLinkGsiPartitionKey = ({
+    tenant,
+    locale,
+    folderId
+}: Pick<Link, "tenant" | "locale" | "folderId">) => {
+    return `T#${tenant}#L#${locale}#FOLDER#${folderId}#LINKS`;
+};
+
+const createLinkKeys = ({ id, tenant, locale }: Pick<Link, "id" | "tenant" | "locale">) => {
+    return {
+        PK: `T#${tenant}#L#${locale}#LINK#${id}`,
+        SK: `A`
+    };
+};
+
+const createLinkGsiKeys = ({
+    tenant,
+    locale,
+    folderId,
+    id
+}: Pick<Link, "tenant" | "locale" | "folderId" | "id">) => {
+    return {
+        GSI1_PK: createLinkGsiPartitionKey({ tenant, locale, folderId }),
+        GSI1_SK: id
+    };
+};
+
 export const createLinksStorageOperations = (entity: Entity<any>): LinksStorageOperations => {
-    const createLinkGsiPartitionKey = ({
-        tenant,
-        locale,
-        folderId
-    }: Pick<Link, "tenant" | "locale" | "folderId">) => {
-        return `T#${tenant}#L#${locale}#FOLDER#${folderId}#LINKS`;
-    };
-
-    const createLinkKeys = ({ id, tenant, locale }: Pick<Link, "id" | "tenant" | "locale">) => {
-        return {
-            PK: `T#${tenant}#L#${locale}#LINK#${id}`,
-            SK: `A`
-        };
-    };
-
-    const createLinkGsiKeys = ({
-        tenant,
-        locale,
-        folderId,
-        id
-    }: Pick<Link, "tenant" | "locale" | "folderId" | "id">) => {
-        return {
-            GSI1_PK: createLinkGsiPartitionKey({ tenant, locale, folderId }),
-            GSI1_SK: id
-        };
-    };
-
     return {
         async createLink({ link }): Promise<Link> {
             const keys = {

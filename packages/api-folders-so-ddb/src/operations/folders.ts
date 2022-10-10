@@ -7,42 +7,42 @@ import { Entity, Table } from "dynamodb-toolbox";
 import { Folder, FoldersStorageOperations } from "@webiny/api-folders/types";
 import { DataContainer } from "~/types";
 
+const createFolderGsiPartitionKey = ({
+    tenant,
+    locale,
+    type
+}: Pick<Folder, "tenant" | "locale" | "type">) => {
+    return `T#${tenant}#L#${locale}#FOLDERS#${type}`;
+};
+
+const createFolderGsiSearchKey = ({ slug, parentId }: Pick<Folder, "slug" | "parentId">) => {
+    return [parentId, slug].filter(Boolean).join("#");
+};
+
+const createFolderKeys = ({ id, tenant, locale }: Pick<Folder, "id" | "tenant" | "locale">) => {
+    return {
+        PK: `T#${tenant}#L#${locale}#FOLDER#${id}`,
+        SK: `A`
+    };
+};
+
+const createFolderGsiKeys = ({
+    tenant,
+    locale,
+    type,
+    slug,
+    parentId
+}: Pick<Folder, "tenant" | "locale" | "type" | "slug" | "parentId">) => {
+    return {
+        GSI1_PK: createFolderGsiPartitionKey({ tenant, locale, type }),
+        GSI1_SK: createFolderGsiSearchKey({ slug, parentId })
+    };
+};
+
 export const createFoldersStorageOperations = (
     entity: Entity<any>,
     table: Table
 ): FoldersStorageOperations => {
-    const createFolderGsiPartitionKey = ({
-        tenant,
-        locale,
-        type
-    }: Pick<Folder, "tenant" | "locale" | "type">) => {
-        return `T#${tenant}#L#${locale}#FOLDERS#${type}`;
-    };
-
-    const createFolderGsiSearchKey = ({ slug, parentId }: Pick<Folder, "slug" | "parentId">) => {
-        return [parentId, slug].filter(Boolean).join("#");
-    };
-
-    const createFolderKeys = ({ id, tenant, locale }: Pick<Folder, "id" | "tenant" | "locale">) => {
-        return {
-            PK: `T#${tenant}#L#${locale}#FOLDER#${id}`,
-            SK: `A`
-        };
-    };
-
-    const createFolderGsiKeys = ({
-        tenant,
-        locale,
-        type,
-        slug,
-        parentId
-    }: Pick<Folder, "tenant" | "locale" | "type" | "slug" | "parentId">) => {
-        return {
-            GSI1_PK: createFolderGsiPartitionKey({ tenant, locale, type }),
-            GSI1_SK: createFolderGsiSearchKey({ slug, parentId })
-        };
-    };
-
     return {
         async createFolder({ folder }): Promise<Folder> {
             const keys = {
