@@ -34,7 +34,8 @@ import {
     CmsModelField,
     CreatedBy,
     CmsModelFieldToGraphQLPlugin,
-    StorageOperationsCmsModel
+    StorageOperationsCmsModel,
+    CmsEntryStatus
 } from "~/types";
 import { validateModelEntryData } from "./contentEntry/entryDataValidation";
 import WebinyError from "@webiny/error";
@@ -254,6 +255,12 @@ const getSearchableFields = (params: GetSearchableFieldsParams): string[] => {
             return fields.includes(field.fieldId);
         })
         .map(field => field.fieldId);
+};
+
+const allowedEntryStatus: string[] = ["draft", "published", "unpublished"];
+
+const transformEntryStatus = (status: CmsEntryStatus | string): CmsEntryStatus => {
+    return allowedEntryStatus.includes(status) ? (status as CmsEntryStatus) : "draft";
 };
 
 export interface CreateContentEntryCrudParams {
@@ -885,7 +892,8 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 ...originalEntry,
                 savedOn: new Date().toISOString(),
                 values,
-                meta
+                meta,
+                status: transformEntryStatus(originalEntry.status)
             };
 
             let storageEntry: CmsStorageEntry | null = null;
