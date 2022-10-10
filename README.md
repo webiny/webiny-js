@@ -26,7 +26,7 @@
 </p>
 
 
-https://user-images.githubusercontent.com/3808420/143053809-45de6412-31fa-425a-886e-7ce12014603d.mp4
+https://user-images.githubusercontent.com/2216344/194592342-2a63da40-136c-4190-9776-680d1ac2382f.mp4
 
 
 Webiny Serverless CMS includes:
