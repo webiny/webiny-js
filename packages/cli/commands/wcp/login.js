@@ -183,7 +183,7 @@ module.exports.command = () => ({
                     context.project.config.id || process.env.WCP_PROJECT_ID
                 );
 
-                // If we have `orgId` and `projectId` in PAT's meta data, let's immediately activate the project.
+                // If we have `orgId` and `projectId` in PAT's metadata, let's immediately link the project.
                 if (pat.meta && pat.meta.orgId && pat.meta.projectId) {
                     await sleep();
 
