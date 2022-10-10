@@ -50,7 +50,7 @@ module.exports.command = () => [
                 }
             );
         }
-    },
+    }
 ];
 
 const handler = async ({ context }) => {
