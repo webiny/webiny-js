@@ -192,7 +192,7 @@ module.exports.command = () => ({
                     const { orgId, projectId } = pat.meta;
 
                     const id = `${orgId}/${projectId}`;
-                    console.log(`Project ${chalk.green(id)} detected. Initializing...`);
+                    console.log(`Project ${chalk.green(id)} detected. Linking...`);
 
                     await sleep();
 
@@ -202,7 +202,7 @@ module.exports.command = () => ({
                         projectId
                     });
 
-                    console.log(`Project ${context.success.hl(id)} initialized successfully.`);
+                    console.log(`Project ${context.success.hl(id)} linked successfully.`);
                     projectInitialized = true;
                 }
 
@@ -213,8 +213,8 @@ module.exports.command = () => ({
 
                 if (!projectInitialized) {
                     console.log(
-                        `‣ initialize your project via the ${chalk.green(
-                            "yarn webiny project init"
+                        `‣ link your project via the ${chalk.green(
+                            "yarn webiny project link"
                         )} command`
                     );
                 }
