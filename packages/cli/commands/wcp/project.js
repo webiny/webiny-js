@@ -13,24 +13,6 @@ module.exports.command = () => [
                 `Webiny project-related commands`,
                 projectCommand => {
                     projectCommand.command(
-                        "init",
-                        `Initialize a Webiny project (deprecated, please use the link command instead)`,
-                        command => {
-                            yargs.option("debug", {
-                                describe: `Turn on debug logs`,
-                                type: "boolean"
-                            });
-                            yargs.option("debug-level", {
-                                default: 1,
-                                describe: `Set the debug logs verbosity level`,
-                                type: "number"
-                            });
-                            command.example("$0 project init");
-                        },
-                        () => handler({ context })
-                    );
-
-                    projectCommand.command(
                         "link",
                         `Link a Webiny project with Webiny Control Panel (WCP)`,
                         command => {
@@ -44,6 +26,24 @@ module.exports.command = () => [
                                 type: "number"
                             });
                             command.example("$0 project link");
+                        },
+                        () => handler({ context })
+                    );
+
+                    projectCommand.command(
+                        "init",
+                        `Initialize a Webiny project (deprecated, please use the link command instead)`,
+                        command => {
+                            yargs.option("debug", {
+                                describe: `Turn on debug logs`,
+                                type: "boolean"
+                            });
+                            yargs.option("debug-level", {
+                                default: 1,
+                                describe: `Set the debug logs verbosity level`,
+                                type: "number"
+                            });
+                            command.example("$0 project init");
                         },
                         () => handler({ context })
                     );
