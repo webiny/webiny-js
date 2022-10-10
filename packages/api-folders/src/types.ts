@@ -163,7 +163,7 @@ export interface FoldersStorageOperations {
 }
 
 export interface LinksStorageOperations {
-    getLink(params: StorageOperationsGetLinkParams): Promise<Link>;
+    getLink(params: StorageOperationsGetLinkParams): Promise<Link | undefined>;
     listLinks(params: StorageOperationsListLinksParams): Promise<Link[]>;
     createLink(params: StorageOperationsCreateLinkParams): Promise<Link>;
     updateLink(params: StorageOperationsUpdateLinkParams): Promise<Link>;

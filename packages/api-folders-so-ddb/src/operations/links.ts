@@ -1,4 +1,5 @@
-import { queryAll, queryOne } from "@webiny/db-dynamodb/utils/query";
+import { get } from "@webiny/db-dynamodb/utils/get";
+import { DbItem, queryAll, queryOne } from "@webiny/db-dynamodb/utils/query";
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
 import WebinyError from "@webiny/error";
 
@@ -57,16 +58,16 @@ export const createLinksStorageOperations = (entity: Entity<any>): LinksStorageO
             }
         },
 
-        async getLink({ tenant, locale, id, folderId }): Promise<Link> {
+        async getLink({ tenant, locale, id, folderId }): Promise<Link | undefined> {
             try {
                 let result;
                 if (id) {
-                    const response = await entity.get(createLinkKeys({ id, tenant, locale }));
-                    if (response.Item) {
-                        result = response.Item;
-                    }
+                    result = await get<DbItem<DataContainer<Link>>>({
+                        entity,
+                        keys: createLinkKeys({ id, tenant, locale })
+                    });
                 } else if (folderId) {
-                    result = await queryOne({
+                    result = await queryOne<DataContainer<Link>>({
                         entity,
                         partitionKey: createLinkGsiPartitionKey({ tenant, locale, folderId }),
                         options: {
