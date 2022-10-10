@@ -10243,7 +10243,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-folders-so-ddb@workspace:packages/api-folders-so-ddb":
+"@webiny/api-folders-so-ddb@^5.31.0, @webiny/api-folders-so-ddb@workspace:packages/api-folders-so-ddb":
   version: 0.0.0-use.local
   resolution: "@webiny/api-folders-so-ddb@workspace:packages/api-folders-so-ddb"
   dependencies:
@@ -14407,6 +14407,8 @@ __metadata:
     "@webiny/api-file-manager": ^5.32.0
     "@webiny/api-file-manager-ddb": ^5.32.0
     "@webiny/api-file-manager-s3": ^5.32.0
+    "@webiny/api-folders": ^5.31.0
+    "@webiny/api-folders-so-ddb": ^5.31.0
     "@webiny/api-form-builder": ^5.32.0
     "@webiny/api-form-builder-so-ddb": ^5.32.0
     "@webiny/api-headless-cms": ^5.32.0

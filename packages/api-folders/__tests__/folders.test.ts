@@ -245,7 +245,7 @@ describe("`folders` CRUD", () => {
                         data: null,
                         error: {
                             code: "FOLDER_EXISTS",
-                            message: `Folder with slug "${mocks.folderA.slug}" already exists.`,
+                            message: `Folder with slug "${mocks.folderA.slug}" already exists at this level.`,
                             data: null
                         }
                     }
@@ -282,6 +282,37 @@ describe("`folders` CRUD", () => {
                 code: "NOT_FOUND",
                 message: `Folder "${id}" was not found!`,
                 data: null
+            }
+        });
+    });
+
+    it("should not allow updating in case a folder with same `slug` at the same level (a.k.a. `parentId`) already exists.", async () => {
+        // Creating "Folder A"
+        const [responseA] = await folders.create({ data: mocks.folderA });
+        const folderA = responseA.data.folders.createFolder.data;
+
+        // Creating "Folder B"
+        const [responseB] = await folders.create({ data: mocks.folderB });
+        const folderB = responseB.data.folders.createFolder.data;
+
+        // Updating "Folder B" with same "slug" of "Folder A" should not be allowed
+        const [update] = await folders.update({
+            id: folderB.id,
+            data: { slug: folderA.slug, parentId: null }
+        });
+
+        expect(update).toEqual({
+            data: {
+                folders: {
+                    updateFolder: {
+                        data: null,
+                        error: {
+                            code: "FOLDER_EXISTS",
+                            message: `Folder with slug "${mocks.folderA.slug}" already exists at this level.`,
+                            data: null
+                        }
+                    }
+                }
             }
         });
     });
