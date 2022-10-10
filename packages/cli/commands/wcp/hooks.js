@@ -22,7 +22,7 @@ const { getUser, getProjectEnvironment, updateUserLastActiveOn } = require("./ut
 let projectEnvironment;
 
 const getEnvironmentHookHandler = async (args, context) => {
-    // If the project isn't activated, do nothing.
+    // If the project isn't linked with WCP, do nothing.
     const wcpProjectId = context.project.config.id || process.env.WCP_PROJECT_ID;
     if (!wcpProjectId) {
         return;
