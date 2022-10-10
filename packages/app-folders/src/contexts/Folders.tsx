@@ -47,14 +47,14 @@ export const FoldersProvider = ({ children }: Props) => {
 
     const apolloActionsWrapper = async (
         type: LoadingActions,
-        callback: Promise<ApolloQueryResult<any> | FetchResult<any>>
+        callback: () => Promise<ApolloQueryResult<any> | FetchResult<any>>
     ) => {
         setLoading({
             ...loading,
             [type]: true
         });
 
-        const response = await callback;
+        const response = await callback();
 
         setLoading({
             ...loading,
@@ -72,8 +72,7 @@ export const FoldersProvider = ({ children }: Props) => {
                 throw new Error("Folder `type` is mandatory");
             }
 
-            const { data: response } = await apolloActionsWrapper(
-                "LIST_FOLDERS",
+            const { data: response } = await apolloActionsWrapper("LIST_FOLDERS", () =>
                 client.query<ListFoldersResponse, ListFoldersQueryVariables>({
                     query: LIST_FOLDERS,
                     variables: { type }
@@ -97,8 +96,7 @@ export const FoldersProvider = ({ children }: Props) => {
         async createFolder(folder) {
             const { type } = folder;
 
-            const { data: response } = await apolloActionsWrapper(
-                "CREATE_FOLDER",
+            const { data: response } = await apolloActionsWrapper("CREATE_FOLDER", () =>
                 client.mutate<CreateFolderResponse, CreateFolderVariables>({
                     mutation: CREATE_FOLDER,
                     variables: { data: folder }
@@ -123,8 +121,7 @@ export const FoldersProvider = ({ children }: Props) => {
         async updateFolder(folder) {
             const { id, type, ...rest } = folder;
 
-            const { data: response } = await apolloActionsWrapper(
-                "UPDATE_FOLDER",
+            const { data: response } = await apolloActionsWrapper("UPDATE_FOLDER", () =>
                 client.mutate<UpdateFolderResponse, UpdateFolderVariables>({
                     mutation: UPDATE_FOLDER,
                     variables: { id, data: rest }
@@ -159,8 +156,7 @@ export const FoldersProvider = ({ children }: Props) => {
         async deleteFolder(folder) {
             const { id } = folder;
 
-            const { data: response } = await apolloActionsWrapper(
-                "DELETE_FOLDER",
+            const { data: response } = await apolloActionsWrapper("DELETE_FOLDER", () =>
                 client.mutate<DeleteFolderResponse, DeleteFolderVariables>({
                     mutation: DELETE_FOLDER,
                     variables: { id }
