@@ -311,12 +311,7 @@ export interface CmsEditorContentModel {
     plugin?: boolean;
 }
 
-export type CmsContentEntryStatusType =
-    | "draft"
-    | "published"
-    | "unpublished"
-    | "changesRequested"
-    | "reviewRequested";
+export type CmsContentEntryStatusType = "draft" | "published" | "unpublished";
 
 export interface CmsEditorContentEntry {
     id: string;
