@@ -155,7 +155,7 @@ export interface FoldersConfig {
 export type StorageOperations = FoldersStorageOperations & LinksStorageOperations;
 
 export interface FoldersStorageOperations {
-    getFolder(params: StorageOperationsGetFolderParams): Promise<Folder>;
+    getFolder(params: StorageOperationsGetFolderParams): Promise<Folder | undefined>;
     listFolders(params: StorageOperationsListFoldersParams): Promise<Folder[]>;
     createFolder(params: StorageOperationsCreateFolderParams): Promise<Folder>;
     updateFolder(params: StorageOperationsUpdateFolderParams): Promise<Folder>;

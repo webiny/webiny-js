@@ -1,5 +1,6 @@
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
-import { queryAll, queryOne } from "@webiny/db-dynamodb/utils/query";
+import { get } from "@webiny/db-dynamodb/utils/get";
+import { DbItem, queryAll, queryOne } from "@webiny/db-dynamodb/utils/query";
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
 import WebinyError from "@webiny/error";
 
@@ -66,16 +67,16 @@ export const createFoldersStorageOperations = (
             }
         },
 
-        async getFolder({ tenant, locale, id, slug, type, parentId }): Promise<Folder> {
+        async getFolder({ tenant, locale, id, slug, type, parentId }): Promise<Folder | undefined> {
             try {
                 let result;
                 if (id) {
-                    const response = await entity.get(createFolderKeys({ id, tenant, locale }));
-                    if (response.Item) {
-                        result = response.Item;
-                    }
+                    result = await get<DbItem<DataContainer<Folder>>>({
+                        entity,
+                        keys: createFolderKeys({ id, tenant, locale })
+                    });
                 } else if (slug && type) {
-                    result = await queryOne({
+                    result = await queryOne<DataContainer<Folder>>({
                         entity,
                         partitionKey: createFolderGsiPartitionKey({ tenant, locale, type }),
                         options: {
