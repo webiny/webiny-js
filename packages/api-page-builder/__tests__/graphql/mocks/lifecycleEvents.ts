@@ -47,20 +47,6 @@ export const assignPageLifecycleEvents = () => {
         context.pageBuilder.onAfterPageUnpublish.subscribe(async params => {
             tracker.track("page:afterUnpublish", params);
         });
-
-        context.pageBuilder.onBeforePageRequestReview.subscribe(async params => {
-            tracker.track("page:beforeRequestReview", params);
-        });
-        context.pageBuilder.onAfterPageRequestReview.subscribe(async params => {
-            tracker.track("page:afterRequestReview", params);
-        });
-
-        context.pageBuilder.onBeforePageRequestChanges.subscribe(async params => {
-            tracker.track("page:beforeRequestChanges", params);
-        });
-        context.pageBuilder.onAfterPageRequestChanges.subscribe(async params => {
-            tracker.track("page:afterRequestChanges", params);
-        });
     });
 };
 

@@ -33,15 +33,11 @@ import {
     OnAfterPageCreateTopicParams,
     OnAfterPageDeleteTopicParams,
     OnAfterPagePublishTopicParams,
-    OnAfterPageRequestChangesTopicParams,
-    OnAfterPageRequestReviewTopicParams,
     OnAfterPageUnpublishTopicParams,
     OnAfterPageUpdateTopicParams,
     OnBeforePageCreateFromTopicParams,
     OnBeforePageDeleteTopicParams,
     OnBeforePagePublishTopicParams,
-    OnBeforePageRequestChangesTopicParams,
-    OnBeforePageRequestReviewTopicParams,
     OnBeforePageUnpublishTopicParams,
     OnBeforePageUpdateTopicParams,
     RenderParams
@@ -50,8 +46,6 @@ import { createTopic } from "@webiny/pubsub";
 import { parseIdentifier, zeroPad } from "@webiny/utils";
 import { createCompression } from "~/graphql/crud/pages/compression";
 
-const STATUS_CHANGES_REQUESTED = "changesRequested";
-const STATUS_REVIEW_REQUESTED = "reviewRequested";
 const STATUS_DRAFT = "draft";
 const STATUS_PUBLISHED = "published";
 const STATUS_UNPUBLISHED = "unpublished";
@@ -216,10 +210,6 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
     const onAfterPagePublish = createTopic<OnAfterPagePublishTopicParams>();
     const onBeforePageUnpublish = createTopic<OnBeforePageUnpublishTopicParams>();
     const onAfterPageUnpublish = createTopic<OnAfterPageUnpublishTopicParams>();
-    const onBeforePageRequestReview = createTopic<OnBeforePageRequestReviewTopicParams>();
-    const onAfterPageRequestReview = createTopic<OnAfterPageRequestReviewTopicParams>();
-    const onBeforePageRequestChanges = createTopic<OnBeforePageRequestChangesTopicParams>();
-    const onAfterPageRequestChanges = createTopic<OnAfterPageRequestChangesTopicParams>();
 
     return {
         /**
@@ -237,10 +227,6 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
         onAfterPagePublish,
         onBeforePageUnpublish,
         onAfterPageUnpublish,
-        onBeforePageRequestChanges,
-        onAfterPageRequestChanges,
-        onBeforePageRequestReview,
-        onAfterPageRequestReview,
         async createPage(this: PageBuilderContextObject, slug): Promise<any> {
             await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
 
@@ -895,172 +881,6 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                     ex.code || "UNPUBLISH_PAGE_ERROR",
                     {
                         ...(ex.data || {}),
-                        id,
-                        original,
-                        page,
-                        latestPage
-                    }
-                );
-            }
-        },
-
-        async requestPageReview(this: PageBuilderContextObject, id: string): Promise<any> {
-            await checkBasePermissions(context, PERMISSION_NAME, {
-                pw: "r"
-            });
-
-            const original = await this.getPage(id, {
-                decompress: false
-            });
-
-            const allowedStatuses = [STATUS_DRAFT, STATUS_CHANGES_REQUESTED];
-            if (!allowedStatuses.includes(original.status)) {
-                throw new WebinyError(
-                    `Cannot request review - page is not a draft nor a change request has been issued.`,
-                    "REQUEST_REVIEW_ERROR"
-                );
-            }
-            /**
-             * Latest revision of the this page.
-             */
-            const latestPage = await storageOperations.pages.get({
-                where: {
-                    pid: original.pid,
-                    tenant: getTenantId(),
-                    locale: getLocaleCode(),
-                    latest: true
-                }
-            });
-            if (!latestPage) {
-                throw new WebinyError(
-                    "Could not find latest revision of the page.",
-                    "LATEST_PAGE_REVISION_ERROR",
-                    {
-                        pid: original.pid,
-                        tenant: getTenantId(),
-                        locale: getLocaleCode()
-                    }
-                );
-            }
-
-            const page: Page = {
-                ...original,
-                status: STATUS_REVIEW_REQUESTED,
-                locked: true,
-                savedOn: new Date().toISOString()
-            };
-
-            try {
-                await onBeforePageRequestReview.publish({
-                    latestPage,
-                    page
-                });
-                const result = await storageOperations.pages.requestReview({
-                    original,
-                    page,
-                    latestPage
-                });
-
-                await onAfterPageRequestReview.publish({
-                    latestPage,
-                    page: result
-                });
-
-                clearDataLoaderCache([original, latestPage]);
-                return {
-                    ...result,
-                    content: await decompressContent(result)
-                };
-            } catch (ex) {
-                throw new WebinyError(
-                    ex.message || "Could not request review for the page.",
-                    ex.code || "REQUEST_REVIEW_ERROR",
-                    {
-                        id,
-                        original,
-                        page,
-                        latestPage
-                    }
-                );
-            }
-        },
-
-        async requestPageChanges(this: PageBuilderContextObject, id: string): Promise<any> {
-            await checkBasePermissions(context, PERMISSION_NAME, {
-                pw: "c"
-            });
-
-            const original = await this.getPage(id, {
-                decompress: false
-            });
-            if (original.status !== STATUS_REVIEW_REQUESTED) {
-                throw new WebinyError(
-                    `Cannot request changes on a page that's not under review.`,
-                    "REQUESTED_CHANGES_ON_PAGE_REVISION_NOT_UNDER_REVIEW"
-                );
-            }
-            const identity = context.security.getIdentity();
-            if (original.createdBy.id === identity.id) {
-                throw new WebinyError(
-                    "Cannot request changes on page revision you created.",
-                    "REQUESTED_CHANGES_ON_PAGE_REVISION_YOU_CREATED"
-                );
-            }
-            /**
-             * Latest revision of the this page.
-             */
-            const latestPage = await storageOperations.pages.get({
-                where: {
-                    pid: original.pid,
-                    tenant: getTenantId(),
-                    locale: getLocaleCode(),
-                    latest: true
-                }
-            });
-            if (!latestPage) {
-                throw new WebinyError(
-                    "Could not find latest revision of the page.",
-                    "LATEST_PAGE_REVISION_ERROR",
-                    {
-                        pid: original.pid,
-                        tenant: getTenantId(),
-                        locale: getLocaleCode()
-                    }
-                );
-            }
-
-            const page: Page = {
-                ...original,
-                status: STATUS_CHANGES_REQUESTED,
-                locked: false
-            };
-            try {
-                await onBeforePageRequestChanges.publish({
-                    page,
-                    latestPage
-                });
-                const result = await storageOperations.pages.requestChanges({
-                    original,
-                    page,
-                    latestPage
-                });
-
-                await onAfterPageRequestChanges.publish({
-                    page: result,
-                    latestPage
-                });
-
-                clearDataLoaderCache([original, latestPage]);
-
-                return {
-                    ...result,
-                    content: await decompressContent(result)
-                };
-            } catch (ex) {
-                throw new WebinyError(
-                    ex.message || "Could not request review for the page.",
-                    ex.code || "REQUEST_REVIEW_ERROR",
-                    {
                         id,
                         original,
                         page,

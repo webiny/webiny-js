@@ -210,28 +210,6 @@ export const UNPUBLISH_PAGE = /* GraphQL */ `
     }
 `;
 
-export const REQUEST_REVIEW = /* GraphQL */ `
-    mutation RequestReview($id: ID!) {
-        pageBuilder {
-            requestReview(id: $id) {
-                data ${DATA_FIELD}
-                error ${ERROR_FIELD}
-            }
-        }
-    }
-`;
-
-export const REQUEST_CHANGES = /* GraphQL */ `
-    mutation RequestChanges($id: ID!) {
-        pageBuilder {
-            requestChanges(id: $id) {
-                data ${DATA_FIELD}
-                error ${ERROR_FIELD}
-            }
-        }
-    }
-`;
-
 export const OEMBED_DATA = /* GraphQL */ `
     query GetOEmbedData($url: String!, $width: String, $height: String) {
         pageBuilder {

@@ -149,8 +149,6 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                     published
                     unpublished
                     draft
-                    reviewRequested
-                    changesRequested
                 }
 
                 enum PbListPagesSort {

@@ -148,34 +148,6 @@ export interface OnAfterPageUnpublishTopicParams<TPage extends Page = Page> {
     page: TPage;
     latestPage: TPage;
 }
-/**
- * @category Lifecycle events
- */
-export interface OnBeforePageRequestReviewTopicParams<TPage extends Page = Page> {
-    page: TPage;
-    latestPage: TPage;
-}
-/**
- * @category Lifecycle events
- */
-export interface OnAfterPageRequestReviewTopicParams<TPage extends Page = Page> {
-    page: TPage;
-    latestPage: TPage;
-}
-/**
- * @category Lifecycle events
- */
-export interface OnBeforePageRequestChangesTopicParams<TPage extends Page = Page> {
-    page: TPage;
-    latestPage: TPage;
-}
-/**
- * @category Lifecycle events
- */
-export interface OnAfterPageRequestChangesTopicParams<TPage extends Page = Page> {
-    page: TPage;
-    latestPage: TPage;
-}
 
 /**
  * @category Pages
@@ -202,8 +174,6 @@ export interface PagesCrud {
     deletePage<TPage extends Page = Page>(id: string): Promise<[TPage, TPage]>;
     publishPage<TPage extends Page = Page>(id: string): Promise<TPage>;
     unpublishPage<TPage extends Page = Page>(id: string): Promise<TPage>;
-    requestPageReview<TPage extends Page = Page>(id: string): Promise<TPage>;
-    requestPageChanges<TPage extends Page = Page>(id: string): Promise<TPage>;
     prerendering: {
         render(args: RenderParams): Promise<void>;
         flush(args: FlushParams): Promise<void>;
@@ -223,10 +193,6 @@ export interface PagesCrud {
     onAfterPagePublish: Topic<OnAfterPagePublishTopicParams>;
     onBeforePageUnpublish: Topic<OnBeforePageUnpublishTopicParams>;
     onAfterPageUnpublish: Topic<OnAfterPageUnpublishTopicParams>;
-    onBeforePageRequestReview: Topic<OnBeforePageRequestReviewTopicParams>;
-    onAfterPageRequestReview: Topic<OnAfterPageRequestReviewTopicParams>;
-    onBeforePageRequestChanges: Topic<OnBeforePageRequestChangesTopicParams>;
-    onAfterPageRequestChanges: Topic<OnAfterPageRequestChangesTopicParams>;
 }
 
 export interface ListPageElementsParams {
