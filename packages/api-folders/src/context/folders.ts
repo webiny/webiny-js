@@ -67,7 +67,7 @@ export const createFoldersContext = async ({
             const tenant = getTenantId();
             const locale = getLocaleCode();
 
-            let folder: Folder | null = null;
+            let folder: Folder | undefined;
 
             try {
                 folder = await storageOperations.getFolder({ tenant, locale, id });
