@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.33.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.32.0...v5.33.0-beta.0) (2022-10-11)
+
+
+### Bug Fixes
+
+* add missing `CmsContext` ([9cf89b2](https://github.com/webiny/webiny-js/commit/9cf89b2732bd61c4f6cd4edafd00d12d05533dfc))
+
+
+### Features
+
+* print the actual error when in debug mode ([b47fdc0](https://github.com/webiny/webiny-js/commit/b47fdc02ce9975ed98f1f8d197f36e1587b93c81))
+
+
+
+
+
 # [5.32.0](https://github.com/webiny/webiny-js/compare/v5.32.0-beta.0...v5.32.0) (2022-09-07)
 
 **Note:** Version bump only for package @webiny/cwp-template-aws

@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.33.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.32.0...v5.33.0-beta.0) (2022-10-11)
+
+
+### Bug Fixes
+
+* do not continue if there's no WCP project ID present ([faf54da](https://github.com/webiny/webiny-js/commit/faf54da5d8028c1658ba15429e2c366482727c3a))
+* replace verb "activated" with "linked" ([a4634eb](https://github.com/webiny/webiny-js/commit/a4634eb6b0cf5d05edf9b0ca45e742731af21924))
+* skip PAT auth if the environment is being retrieved via API key ([99214e3](https://github.com/webiny/webiny-js/commit/99214e3b124884eafdc94ba8df03bc9345837b92))
+
+
+
+
+
 # [5.32.0](https://github.com/webiny/webiny-js/compare/v5.32.0-beta.0...v5.32.0) (2022-09-07)
 
 **Note:** Version bump only for package @webiny/cli

@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.33.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.32.0...v5.33.0-beta.0) (2022-10-11)
+
+
+### Bug Fixes
+
+* **api-apw:** schedule publishing ([#2661](https://github.com/webiny/webiny-js/issues/2661)) ([cfcc211](https://github.com/webiny/webiny-js/commit/cfcc211bf234ccd493ad95b0a0f0d02f94a02ad6))
+
+
+### Features
+
+* **api-headless-cms:** model field aliases ([#2352](https://github.com/webiny/webiny-js/issues/2352)) ([5069a6d](https://github.com/webiny/webiny-js/commit/5069a6d449bd95d9d2da95abc591d09f683949d6))
+* **api-headless-cms-ddb:** implement conversion of field paths ([#2620](https://github.com/webiny/webiny-js/issues/2620)) ([6c2c0a1](https://github.com/webiny/webiny-js/commit/6c2c0a197fa69939d61b325f75690877793f4acc))
+
+
+
+
+
 # [5.32.0](https://github.com/webiny/webiny-js/compare/v5.32.0-beta.0...v5.32.0) (2022-09-07)
 
 **Note:** Version bump only for package @webiny/api-apw

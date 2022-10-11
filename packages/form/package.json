@@ -1,6 +1,6 @@
 {
   "name": "@webiny/form",
-  "version": "5.32.0",
+  "version": "5.33.0-beta.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -15,7 +15,7 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.16.3",
-    "@webiny/validation": "^5.32.0",
+    "@webiny/validation": "^5.33.0-beta.0",
     "lodash": "^4.17.5"
   },
   "devDependencies": {
@@ -28,8 +28,8 @@
     "@testing-library/user-event": "^12.8.3",
     "@types/invariant": "^2.2.35",
     "@types/lodash": "^4.14.178",
-    "@webiny/cli": "^5.32.0",
-    "@webiny/project-utils": "^5.32.0",
+    "@webiny/cli": "^5.33.0-beta.0",
+    "@webiny/project-utils": "^5.33.0-beta.0",
     "babel-plugin-lodash": "^3.3.4",
     "rimraf": "^3.0.2",
     "ttypescript": "^1.5.13",

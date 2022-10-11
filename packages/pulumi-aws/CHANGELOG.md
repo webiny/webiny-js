@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.33.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.32.0...v5.33.0-beta.0) (2022-10-11)
+
+
+### Bug Fixes
+
+* only forward Host header if tenant router is configured ([#2663](https://github.com/webiny/webiny-js/issues/2663)) ([b59e76f](https://github.com/webiny/webiny-js/commit/b59e76f45f7628236ba111106e22c0a652eae374))
+* **api-apw:** schedule publishing ([#2661](https://github.com/webiny/webiny-js/issues/2661)) ([cfcc211](https://github.com/webiny/webiny-js/commit/cfcc211bf234ccd493ad95b0a0f0d02f94a02ad6))
+* only use `AWSLambdaVPCAccessExecutionRole` policy if VPC feature is enabled ([63e98b0](https://github.com/webiny/webiny-js/commit/63e98b0f98e2ff1a24a7ee63432869da27513033))
+* only use `AWSLambdaVPCAccessExecutionRole` policy if VPC feature is enabled. ([8a20d1d](https://github.com/webiny/webiny-js/commit/8a20d1d78a3d38309089bb238f6f62dabb4c13a2))
+* remove the utf8 encoding parameter from the call to fs.readFile ([df45289](https://github.com/webiny/webiny-js/commit/df45289025254f1b9398f5ce740185ef326e91d9))
+* removed the utf8 encoding parameter from the call to fs.readFileSync ([34dc0f1](https://github.com/webiny/webiny-js/commit/34dc0f15337cd6a4589bcccc261247e6e51862bc))
+* run `applyTenantRouter` if `WEBINY_MULTI_TENANCY` env var is present ([9e5e920](https://github.com/webiny/webiny-js/commit/9e5e920512ed4d3fa8f3c1506700dfa50f54060b))
+* **pulumi-aws:** prod and dev elasticsearch config change ([#2636](https://github.com/webiny/webiny-js/issues/2636)) ([a202cd2](https://github.com/webiny/webiny-js/commit/a202cd2179487d95ff57525d388e0d86a1c3d36f))
+
+
+### Features
+
+* introduce `previewDomains` config parameter ([a6bf042](https://github.com/webiny/webiny-js/commit/a6bf04256875a3ce0b7584ac22a52c8db7bd8341))
+* make FileManager composable ([#2664](https://github.com/webiny/webiny-js/issues/2664)) ([d279b45](https://github.com/webiny/webiny-js/commit/d279b458a9296611dd3fa87778939421c96fba28))
+
+
+
+
+
 # [5.32.0](https://github.com/webiny/webiny-js/compare/v5.32.0-beta.0...v5.32.0) (2022-09-07)
 
 **Note:** Version bump only for package @webiny/pulumi-aws

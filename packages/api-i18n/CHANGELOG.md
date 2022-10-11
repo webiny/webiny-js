@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.33.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.32.0...v5.33.0-beta.0) (2022-10-11)
+
+
+### Features
+
+* **api-headless-cms:** upgrade for all tenants ([#2679](https://github.com/webiny/webiny-js/issues/2679)) ([1473c3d](https://github.com/webiny/webiny-js/commit/1473c3d1d3f24bc6e37fb2fba2e14044a14e13aa))
+
+
+
+
+
 # [5.32.0](https://github.com/webiny/webiny-js/compare/v5.32.0-beta.0...v5.32.0) (2022-09-07)
 
 **Note:** Version bump only for package @webiny/api-i18n
