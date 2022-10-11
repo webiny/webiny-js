@@ -113,7 +113,7 @@ export const createFoldersStorageOperations = (
                     fields: []
                 })
                     .map(item => item?.data)
-                    .filter(item => Boolean(item));
+                    .filter(Boolean);
             } catch (error) {
                 throw WebinyError.from(error, {
                     message: "Could not list folders.",
