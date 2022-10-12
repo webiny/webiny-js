@@ -22,7 +22,7 @@ export const useFolders = (type: string) => {
          * You'll never need to call `listFolders` from any component. As soon as you call `useFolders()`, you'll initiate
          * fetching of `folders`, which is managed by the FoldersContext.
          */
-        ...context,
+        loading: context.loading,
         folders: context.folders[type],
         createFolder(folder: Omit<FolderItem, "id">) {
             return context.createFolder(folder);
