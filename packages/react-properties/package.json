@@ -1,6 +1,6 @@
 {
   "name": "@webiny/react-properties",
-  "version": "5.33.0-beta.0",
+  "version": "5.33.0-beta.1",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -17,9 +17,9 @@
   },
   "devDependencies": {
     "@testing-library/react": "^12.1.5",
-    "@webiny/cli": "^5.33.0-beta.0",
-    "@webiny/project-utils": "^5.33.0-beta.0",
-    "@webiny/react-composition": "^5.33.0-beta.0"
+    "@webiny/cli": "^5.33.0-beta.1",
+    "@webiny/project-utils": "^5.33.0-beta.1",
+    "@webiny/react-composition": "^5.33.0-beta.1"
   },
   "publishConfig": {
     "access": "public",
