@@ -37,12 +37,37 @@ export const createFoldersContext = async ({
     getIdentity,
     storageOperations
 }: FoldersConfig): Promise<IFolders> => {
+    const checkFolderExists = async ({
+        tenant,
+        locale,
+        type,
+        slug,
+        parentId
+    }: Pick<Folder, "tenant" | "locale" | "type" | "slug" | "parentId">): Promise<void> => {
+        const existing = await storageOperations.getFolder({
+            tenant,
+            locale,
+            type,
+            slug,
+            parentId
+        });
+
+        if (existing) {
+            throw new WebinyError(
+                `Folder with slug "${slug}" already exists at this level.`,
+                "FOLDER_EXISTS"
+            );
+        }
+
+        return;
+    };
+
     return {
         async getFolder({ id }: GetFolderParams): Promise<Folder> {
             const tenant = getTenantId();
             const locale = getLocaleCode();
 
-            let folder: Folder | null = null;
+            let folder: Folder | undefined;
 
             try {
                 folder = await storageOperations.getFolder({ tenant, locale, id });
@@ -82,21 +107,9 @@ export const createFoldersContext = async ({
 
             const tenant = getTenantId();
             const locale = getLocaleCode();
+            const { type, slug, parentId } = input;
 
-            const existing = await storageOperations.getFolder({
-                tenant,
-                locale,
-                type: input.type,
-                slug: input.slug,
-                parentId: input.parentId
-            });
-
-            if (existing) {
-                throw new WebinyError(
-                    `Folder with slug "${input.slug}" already exists.`,
-                    "FOLDER_EXISTS"
-                );
-            }
+            await checkFolderExists({ tenant, locale, type, slug, parentId });
 
             const identity = getIdentity();
 
@@ -126,8 +139,11 @@ export const createFoldersContext = async ({
         },
 
         async updateFolder(id: string, input: Record<string, any>): Promise<Folder> {
+            await updateSchema.validate(input);
+
             const tenant = getTenantId();
             const locale = getLocaleCode();
+            const { slug, parentId } = input;
 
             const original = await storageOperations.getFolder({ tenant, locale, id });
 
@@ -135,7 +151,13 @@ export const createFoldersContext = async ({
                 throw new NotFoundError(`Folder "${id}" was not found!`);
             }
 
-            await updateSchema.validate(input);
+            await checkFolderExists({
+                tenant,
+                locale,
+                type: original.type,
+                slug: slug || original.slug,
+                parentId: parentId !== undefined ? parentId : original.parentId // parentId can be `null`
+            });
 
             const folder: Folder = {
                 ...original,
