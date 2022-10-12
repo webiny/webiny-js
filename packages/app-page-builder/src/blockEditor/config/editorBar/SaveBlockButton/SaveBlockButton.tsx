@@ -18,12 +18,9 @@ const DefaultSaveBlockButton: React.FC = () => {
         eventActionHandler.trigger(
             new SaveBlockActionEvent({
                 debounce: false,
-                onFinish() {
-                    // Let's wait a bit, because we are also redirecting the user.
-                    setTimeout(() => {
-                        showSnackbar(`Block "${block.name}" saved successfully!`);
-                        history.push(`/page-builder/page-blocks`);
-                    }, 500);
+                onFinish: () => {
+                    history.push(`/page-builder/page-blocks`);
+                    showSnackbar(`Block "${block.name}" saved successfully!`);
                 }
             })
         );

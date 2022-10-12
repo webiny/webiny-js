@@ -95,7 +95,7 @@ export const saveBlockAction: BlockEventActionCallable<SaveBlockActionArgsType> 
             setTimeout(resolve, 500);
         });
 
-        meta.eventActionHandler.trigger(new ToggleSaveBlockStateActionEvent({ saving: false }));
+        await meta.eventActionHandler.trigger(new ToggleSaveBlockStateActionEvent({ saving: false }));
         triggerOnFinish(args);
     };
 

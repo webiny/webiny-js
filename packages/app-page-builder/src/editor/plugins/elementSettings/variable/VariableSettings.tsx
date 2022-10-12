@@ -28,17 +28,28 @@ const VariableSettings: React.FC = () => {
                         return variable;
                     }
                 });
-                updateElement({
-                    ...element,
-                    data: {
-                        ...element.data,
-                        variables: newVariables
+                updateElement(
+                    {
+                        ...element,
+                        data: {
+                            ...element.data,
+                            variables: newVariables
+                        }
+                    },
+                    {
+                        history: false
                     }
-                });
+                );
             }
         },
         [element, updateElement]
     );
+
+    const onBlur = useCallback(() => {
+        if (element) {
+            updateElement(element);
+        }
+    }, [element, updateElement]);
 
     return (
         <VariableSettingsWrapper>
@@ -48,6 +59,7 @@ const VariableSettings: React.FC = () => {
                     label={variable?.label}
                     value={variable?.value}
                     onChange={value => onChange(value, variable.varRef)}
+                    onBlur={onBlur}
                 />
             ))}
         </VariableSettingsWrapper>
