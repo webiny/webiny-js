@@ -13,9 +13,8 @@ const removeVarRef = (element: PbEditorElement) => {
         delete elementCopy.data.varRef;
 
         return elementCopy;
-    } else {
-        return element;
     }
+    return element;
 };
 
 interface CloneActionPropsType {
