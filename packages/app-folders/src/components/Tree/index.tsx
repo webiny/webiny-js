@@ -120,29 +120,34 @@ export const FolderTree: React.FC<Props> = ({ type, title, focusedFolderId, onFo
     return (
         <Container>
             <Title title={title} />
-            <DndProvider backend={MultiBackend} options={getBackendOptions()}>
-                <Tree
-                    tree={treeData}
-                    rootId={ROOT_ID}
-                    onDrop={handleDrop}
-                    sort={false}
-                    render={(node, { depth, isOpen, onToggle }) => (
-                        <Node
-                            node={node}
-                            depth={depth}
-                            isOpen={isOpen}
-                            onToggle={onToggle}
-                            onClick={data => onFolderClick(data)}
-                        />
-                    )}
-                    dragPreviewRender={monitorProps => <NodePreview monitorProps={monitorProps} />}
-                    classes={{
-                        root: "treeRoot",
-                        dropTarget: "dropTarget"
-                    }}
-                    initialOpen={initialOpenList}
-                />
-            </DndProvider>
+            {folders && folders.length > 0 && (
+                <DndProvider backend={MultiBackend} options={getBackendOptions()}>
+                    <Tree
+                        tree={treeData}
+                        rootId={ROOT_ID}
+                        onDrop={handleDrop}
+                        sort={false}
+                        render={(node, { depth, isOpen, onToggle }) => (
+                            <Node
+                                node={node}
+                                depth={depth}
+                                isOpen={isOpen}
+                                onToggle={onToggle}
+                                onClick={data => onFolderClick(data)}
+                            />
+                        )}
+                        dragPreviewRender={monitorProps => (
+                            <NodePreview monitorProps={monitorProps} />
+                        )}
+                        classes={{
+                            root: "treeRoot",
+                            dropTarget: "dropTarget"
+                        }}
+                        initialOpen={initialOpenList}
+                    />
+                </DndProvider>
+            )}
+
             <CreateButton onClick={() => setCreateDialogOpen(true)} />
             <CreateDialog
                 type={type}

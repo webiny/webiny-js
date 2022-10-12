@@ -12,14 +12,19 @@ export const Button = styled("button")`
     display: flex;
     align-items: center;
     font-size: 1em;
-    padding: 0 8px;
+    padding: 8px;
+`;
+
+export const IconContainer = styled.div`
+    margin-right: 8px;
+    height: 24px;
+    width: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 `;
 
 export const Icon = styled(Plus)`
     width: 16px;
     height: 16px;
-`;
-
-export const Label = styled("div")`
-    margin-left: 8px;
 `;

@@ -5,10 +5,13 @@ export const Container = styled.div`
     align-items: center;
     color: var(--webiny-theme-color-text-primary);
     fill: currentColor;
+    padding: 8px;
 `;
 
 export const IconContainer = styled.div`
     margin-right: 8px;
+    height: 24px;
+    width: 24px;
 `;
 
 export const Label = styled.strong`

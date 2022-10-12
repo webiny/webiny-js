@@ -17,7 +17,7 @@ type Props = {
 
 export const Node: React.FC<Props> = props => {
     const { node, depth, isOpen, onToggle, onClick } = props;
-    const indent = depth * 24;
+    const indent = depth * 24 + 8;
 
     const dragOverProps = useDragOver(node.id, isOpen, onToggle);
 
