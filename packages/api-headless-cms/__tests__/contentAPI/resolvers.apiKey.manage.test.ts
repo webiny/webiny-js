@@ -1,9 +1,9 @@
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { CmsGroup } from "~/types";
-import { useGraphQLHandler } from "../utils/useGraphQLHandler";
+import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import models from "./mocks/contentModels";
-import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
-import { useCategoryReadHandler } from "../utils/useCategoryReadHandler";
+import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
+import { useCategoryReadHandler } from "../testHelpers/useCategoryReadHandler";
 
 const createIdentity = (permissions: any[] = []): SecurityIdentity => {
     return {

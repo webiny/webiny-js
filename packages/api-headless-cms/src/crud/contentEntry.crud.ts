@@ -37,7 +37,8 @@ import {
     CreateCmsEntryInput,
     CmsModelField,
     CreatedBy,
-    CmsModelFieldToGraphQLPlugin
+    CmsModelFieldToGraphQLPlugin,
+    StorageOperationsCmsModel
 } from "~/types";
 import { validateModelEntryData } from "./contentEntry/entryDataValidation";
 import WebinyError from "@webiny/error";
@@ -55,6 +56,7 @@ import { checkPermissions } from "~/utils/permissions";
 import { checkModelAccess } from "~/utils/access";
 import { checkOwnership, validateOwnership } from "~/utils/ownership";
 import { entryFromStorageTransform, entryToStorageTransform } from "~/utils/entryStorage";
+import { attachCmsModelFieldConverters } from "~/utils/converters/valueKeyStorageConverter";
 
 export const STATUS_DRAFT = "draft";
 export const STATUS_PUBLISHED = "published";
@@ -107,8 +109,20 @@ const getDefaultValue = (field: CmsModelField): (DefaultValue | DefaultValue[]) 
 /**
  * Cleans and adds default values to create input data.
  */
-const cleanInputData = (model: CmsModel, input: CreateCmsEntryInput): CreateCmsEntryInput => {
+const mapAndCleanCreateInputData = (
+    model: CmsModel,
+    input: CreateCmsEntryInput
+): CreateCmsEntryInput => {
     return model.fields.reduce((acc, field) => {
+        /**
+         * This should never happen, but let's make it sure.
+         * The fix would be for the user to add the fieldId on the field definition.
+         */
+        if (!field.fieldId) {
+            throw new WebinyError("Field does not have an fieldId.", "MISSING_FIELD_ID", {
+                field
+            });
+        }
         const value = input[field.fieldId];
         /**
          * We set the default value on create input if value is not defined.
@@ -120,18 +134,28 @@ const cleanInputData = (model: CmsModel, input: CreateCmsEntryInput): CreateCmsE
 /**
  * Cleans the update input entry data.
  */
-const cleanUpdatedInputData = (
+const mapAndCleanUpdatedInputData = (
     model: CmsModel,
     input: UpdateCmsEntryInput
 ): UpdateCmsEntryInput => {
     return model.fields.reduce((acc, field) => {
         /**
-         * We cannot set default value here because user might want to updated only certain field values.
+         * This should never happen, but let's make it sure.
+         * The fix would be for the user to add the fieldId on the field definition.
          */
-        if (input[field.fieldId] === undefined) {
+        if (!field.fieldId) {
+            throw new WebinyError("Field does not have an fieldId.", "MISSING_FIELD_ID", {
+                field
+            });
+        }
+        /**
+         * We cannot set default value here because user might want to update only certain field values.
+         */
+        const value = input[field.fieldId];
+        if (value === undefined) {
             return acc;
         }
-        acc[field.fieldId] = input[field.fieldId];
+        acc[field.fieldId] = value;
         return acc;
     }, {} as CreateCmsEntryInput);
 };
@@ -153,7 +177,7 @@ const createEntryMeta = (input?: Record<string, any>, original?: Record<string, 
 };
 
 interface DeleteEntryParams {
-    model: CmsModel;
+    model: StorageOperationsCmsModel;
     entry: CmsEntry;
 }
 
@@ -222,6 +246,9 @@ const getSearchableFields = (params: GetSearchableFieldsParams): string[] => {
 
     return model.fields
         .filter(field => {
+            if (!field.fieldId) {
+                return false;
+            }
             const plugin = fieldPluginMap[field.type];
             if (!plugin) {
                 return false;
@@ -244,6 +271,8 @@ export interface CreateContentEntryCrudParams {
 
 export const createContentEntryCrud = (params: CreateContentEntryCrudParams): CmsEntryContext => {
     const { storageOperations, context, getIdentity, getTenant } = params;
+
+    const { plugins } = context;
 
     const onBeforeEntryCreate = createTopic<BeforeEntryCreateTopicParams>();
     const onAfterEntryCreate = createTopic<AfterEntryCreateTopicParams>();
@@ -321,9 +350,14 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     /**
      * A helper to get entries by revision IDs
      */
-    const getEntriesByIds = async (model: CmsModel, ids: string[]) => {
+    const getEntriesByIds = async (initialModel: CmsModel, ids: string[]) => {
         const permission = await checkEntryPermissions({ rwd: "r" });
-        await checkModelAccess(context, model);
+        await checkModelAccess(context, initialModel);
+
+        const model = attachCmsModelFieldConverters({
+            model: initialModel,
+            plugins
+        });
 
         const entries = await storageOperations.entries.getByIds(model, {
             ids
@@ -360,10 +394,14 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         /**
          * Get a single entry by revision ID from the database.
          */
-        getEntryById: async (model, id) => {
+        getEntryById: async (initialModel, id) => {
             const where: CmsEntryListWhere = {
                 id
             };
+            const model = attachCmsModelFieldConverters({
+                model: initialModel,
+                plugins
+            });
             await onBeforeEntryGet.publish({
                 where,
                 model
@@ -377,9 +415,14 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         /**
          * Get published revisions by entry IDs.
          */
-        getPublishedEntriesByIds: async (model: CmsModel, ids: string[]) => {
+        getPublishedEntriesByIds: async (initialModel: CmsModel, ids: string[]) => {
             const permission = await checkEntryPermissions({ rwd: "r" });
-            await checkModelAccess(context, model);
+            await checkModelAccess(context, initialModel);
+
+            const model = attachCmsModelFieldConverters({
+                model: initialModel,
+                plugins
+            });
 
             const entries = await storageOperations.entries.getPublishedByIds(model, {
                 ids
@@ -390,9 +433,14 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         /**
          * Get latest revisions by entry IDs.
          */
-        getLatestEntriesByIds: async (model: CmsModel, ids: string[]) => {
+        getLatestEntriesByIds: async (initialModel: CmsModel, ids: string[]) => {
             const permission = await checkEntryPermissions({ rwd: "r" });
-            await checkModelAccess(context, model);
+            await checkModelAccess(context, initialModel);
+
+            const model = attachCmsModelFieldConverters({
+                model: initialModel,
+                plugins
+            });
 
             const entries = await storageOperations.entries.getLatestByIds(model, {
                 ids
@@ -401,7 +449,12 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             return entries.filter(entry => validateOwnership(context, permission, entry));
         },
 
-        getEntryRevisions: async (model, entryId) => {
+        getEntryRevisions: async (initialModel, entryId) => {
+            const model = attachCmsModelFieldConverters({
+                model: initialModel,
+                plugins
+            });
+
             return storageOperations.entries.getRevisions(model, {
                 id: entryId
             });
@@ -411,8 +464,13 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
          *
          * @internal
          */
-        getEntry: async (model, params) => {
+        getEntry: async (initialModel, params) => {
             await checkEntryPermissions({ rwd: "r" });
+
+            const model = attachCmsModelFieldConverters({
+                model: initialModel,
+                plugins
+            });
 
             const { where, sort } = params;
 
@@ -437,9 +495,14 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
          *
          * @internal
          */
-        listEntries: async (model: CmsModel, params) => {
+        listEntries: async (initialModel: CmsModel, params) => {
             const permission = await checkEntryPermissions({ rwd: "r" });
-            await checkModelAccess(context, model);
+            await checkModelAccess(context, initialModel);
+
+            const model = attachCmsModelFieldConverters({
+                model: initialModel,
+                plugins
+            });
 
             const { where: initialWhere } = params;
             /**
@@ -478,35 +541,48 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 );
             }
 
-            await onBeforeEntryList.publish({
-                where,
-                model
-            });
-
             const fields = getSearchableFields({
                 model,
                 plugins: context.plugins,
                 fields: params.fields || []
             });
 
-            const { hasMoreItems, totalCount, cursor, items } =
-                await storageOperations.entries.list(model, {
-                    ...params,
+            try {
+                await onBeforeEntryList.publish({
                     where,
-                    fields
+                    model
                 });
 
-            const meta = {
-                hasMoreItems,
-                totalCount,
-                /**
-                 * Cursor should be null if there are no more items to load.
-                 * Just make sure of that, disregarding what is returned from the storageOperations.entries.list method.
-                 */
-                cursor: hasMoreItems ? cursor : null
-            };
+                const { hasMoreItems, totalCount, cursor, items } =
+                    await storageOperations.entries.list(model, {
+                        ...params,
+                        where,
+                        fields
+                    });
 
-            return [items, meta];
+                const meta = {
+                    hasMoreItems,
+                    totalCount,
+                    /**
+                     * Cursor should be null if there are no more items to load.
+                     * Just make sure of that, disregarding what is returned from the storageOperations.entries.list method.
+                     */
+                    cursor: hasMoreItems ? cursor : null
+                };
+
+                return [items, meta];
+            } catch (ex) {
+                throw new WebinyError(
+                    "Error while fetching entries from storage.",
+                    "LIST_ENTRIES_ERROR",
+                    {
+                        params,
+                        error: ex,
+                        model,
+                        fields
+                    }
+                );
+            }
         },
         listLatestEntries: async function (model, params) {
             const where = params?.where || ({} as CmsEntryListWhere);
@@ -532,14 +608,19 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 }
             });
         },
-        createEntry: async (model, inputData) => {
+        createEntry: async (initialModel, inputData) => {
             await checkEntryPermissions({ rwd: "w" });
-            await checkModelAccess(context, model);
+            await checkModelAccess(context, initialModel);
+
+            const model = attachCmsModelFieldConverters({
+                model: initialModel,
+                plugins
+            });
 
             /**
              * Make sure we only work with fields that are defined in the model.
              */
-            const initialInput = cleanInputData(model, inputData);
+            const initialInput = mapAndCleanCreateInputData(model, inputData);
 
             await validateModelEntryData({
                 context,
@@ -617,14 +698,19 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 );
             }
         },
-        createEntryRevisionFrom: async (model, sourceId, inputData) => {
+        createEntryRevisionFrom: async (initialModel, sourceId, inputData) => {
             const permission = await checkEntryPermissions({ rwd: "w" });
-            await checkModelAccess(context, model);
+            await checkModelAccess(context, initialModel);
+
+            const model = attachCmsModelFieldConverters({
+                model: initialModel,
+                plugins
+            });
 
             /**
              * Make sure we only work with fields that are defined in the model.
              */
-            const input = cleanUpdatedInputData(model, inputData);
+            const input = mapAndCleanUpdatedInputData(model, inputData);
 
             /**
              * Entries are identified by a common parent ID + Revision number.
@@ -738,14 +824,19 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 );
             }
         },
-        updateEntry: async (model, id, inputData, metaInput) => {
+        updateEntry: async (initialModel, id, inputData, metaInput) => {
             const permission = await checkEntryPermissions({ rwd: "w" });
-            await checkModelAccess(context, model);
+            await checkModelAccess(context, initialModel);
+
+            const model = attachCmsModelFieldConverters({
+                model: initialModel,
+                plugins
+            });
 
             /**
              * Make sure we only work with fields that are defined in the model.
              */
-            const input = cleanUpdatedInputData(model, inputData);
+            const input = mapAndCleanUpdatedInputData(model, inputData);
 
             /**
              * The entry we are going to update.
@@ -850,9 +941,14 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 );
             }
         },
-        republishEntry: async (model, id) => {
+        republishEntry: async (initialModel, id) => {
             await checkEntryPermissions({ rwd: "w" });
-            await checkModelAccess(context, model);
+            await checkModelAccess(context, initialModel);
+
+            const model = attachCmsModelFieldConverters({
+                model: initialModel,
+                plugins
+            });
             /**
              * Fetch the entry from the storage.
              */
@@ -932,9 +1028,14 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 );
             }
         },
-        deleteEntryRevision: async (model, revisionId) => {
+        deleteEntryRevision: async (initialModel, revisionId) => {
             const permission = await checkEntryPermissions({ rwd: "d" });
-            await checkModelAccess(context, model);
+            await checkModelAccess(context, initialModel);
+
+            const model = attachCmsModelFieldConverters({
+                model: initialModel,
+                plugins
+            });
 
             const { id: entryId, version } = parseIdentifier(revisionId);
 
@@ -1019,9 +1120,14 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 });
             }
         },
-        deleteEntry: async (model, entryId) => {
+        deleteEntry: async (initialModel, entryId) => {
             const permission = await checkEntryPermissions({ rwd: "d" });
-            await checkModelAccess(context, model);
+            await checkModelAccess(context, initialModel);
+
+            const model = attachCmsModelFieldConverters({
+                model: initialModel,
+                plugins
+            });
 
             const storageEntry = await storageOperations.entries.getLatestRevisionByEntryId(model, {
                 id: entryId
@@ -1040,9 +1146,14 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 entry
             });
         },
-        publishEntry: async (model, id) => {
+        publishEntry: async (initialModel, id) => {
             const permission = await checkEntryPermissions({ pw: "p" });
-            await checkModelAccess(context, model);
+            await checkModelAccess(context, initialModel);
+
+            const model = attachCmsModelFieldConverters({
+                model: initialModel,
+                plugins
+            });
 
             const originalStorageEntry = await storageOperations.entries.getRevisionById(model, {
                 id
@@ -1105,8 +1216,13 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 );
             }
         },
-        requestEntryChanges: async (model, id) => {
+        requestEntryChanges: async (initialModel, id) => {
             const permission = await checkEntryPermissions({ pw: "c" });
+
+            const model = attachCmsModelFieldConverters({
+                model: initialModel,
+                plugins
+            });
 
             const originalStorageEntry = await storageOperations.entries.getRevisionById(model, {
                 id
@@ -1177,9 +1293,14 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 );
             }
         },
-        requestEntryReview: async (model, id) => {
+        requestEntryReview: async (initialModel, id) => {
             const permission = await checkEntryPermissions({ pw: "r" });
             const { id: entryId } = parseIdentifier(id);
+
+            const model = attachCmsModelFieldConverters({
+                model: initialModel,
+                plugins
+            });
 
             const originalStorageEntry = await storageOperations.entries.getRevisionById(model, {
                 id
@@ -1254,8 +1375,13 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 );
             }
         },
-        unpublishEntry: async (model, id) => {
+        unpublishEntry: async (initialModel, id) => {
             const permission = await checkEntryPermissions({ pw: "u" });
+
+            const model = attachCmsModelFieldConverters({
+                model: initialModel,
+                plugins
+            });
 
             const { id: entryId } = parseIdentifier(id);
 

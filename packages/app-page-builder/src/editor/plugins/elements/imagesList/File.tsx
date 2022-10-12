@@ -2,10 +2,15 @@ import React, { SyntheticEvent } from "react";
 import { css } from "emotion";
 import { Image } from "@webiny/app/components";
 import { ReactComponent as RemoveIcon } from "../../../../admin/assets/round-close-24px.svg";
-import { FileItem } from "@webiny/app-admin/components/FileManager/types";
 
 const COMPONENT_WIDTH = 176;
 const COMPONENT_HEIGHT = 176;
+
+interface ImagesListFile {
+    id: string;
+    src: string;
+    name?: string;
+}
 
 const styles = css({
     cursor: "move",
@@ -70,7 +75,7 @@ const imageStyles = css({
 });
 
 interface FileProps {
-    file: FileItem;
+    file: ImagesListFile;
     selected?: boolean;
     uploadFile?: Function;
     onSelect?: (e: SyntheticEvent) => void;
@@ -98,7 +103,7 @@ const File: React.FC<FileProps> = props => {
                     />
                 </div>
             </div>
-            <div className={"label"}>{file.name}</div>
+            <div className={"label"}>{file.name || ""}</div>
         </div>
     );
 };

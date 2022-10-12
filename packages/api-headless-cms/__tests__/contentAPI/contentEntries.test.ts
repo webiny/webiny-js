@@ -1,7 +1,7 @@
-import { useFruitManageHandler } from "../utils/useFruitManageHandler";
+import { useFruitManageHandler } from "../testHelpers/useFruitManageHandler";
 import { Fruit } from "./mocks/contentModels";
-import { setupContentModelGroup, setupContentModels } from "../utils/setup";
-import { useGraphQLHandler } from "../utils/useGraphQLHandler";
+import { setupContentModelGroup, setupContentModels } from "../testHelpers/setup";
+import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 
 const appleData: Fruit = {
     name: "Apple",
@@ -197,6 +197,24 @@ describe("Content entries", () => {
         });
         const thirdBanana = thirdBananaResponse.data.createFruitFrom.data;
 
+        const [getThirdBananaResponse] = await getContentEntry({
+            entry: {
+                id: thirdBanana.id,
+                modelId: banana.meta.modelId
+            }
+        });
+
+        expect(getThirdBananaResponse).toMatchObject({
+            data: {
+                getContentEntry: {
+                    data: {
+                        id: thirdBanana.id,
+                        title: thirdBanana.meta.title
+                    }
+                }
+            }
+        });
+
         await waitFruits("should filter fruits by date and sort asc", [
             {
                 id: apple.id,
@@ -212,9 +230,9 @@ describe("Content entries", () => {
             }
         ]);
 
-        await new Promise(resolve => {
-            setTimeout(resolve, 5000);
-        });
+        // await new Promise(resolve => {
+        //     setTimeout(resolve, 5000);
+        // });
         /**
          * Exact entries queries.
          */
@@ -586,6 +604,8 @@ describe("Content entries", () => {
                 modelsIds: ["fruit"],
                 query
             });
+
+            expect(response.data.entries.data).toHaveLength(titles.length);
 
             expect(response).toMatchObject({
                 data: {

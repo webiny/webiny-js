@@ -106,6 +106,9 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
      * Note that when passing error.data variable we cast as InvalidFieldError[] because we know it is so.
      */
     const setInvalidFieldValues = (errors?: InvalidFieldError[]): void => {
+        if (Array.isArray(errors) === false || !errors) {
+            return;
+        }
         const values = (errors || []).reduce((acc, er) => {
             acc[er.fieldId] = er.error;
             return acc;
@@ -265,7 +268,7 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
         const fieldsIds = contentModel.fields.map(item => item.fieldId);
         const formData = pick(data, [...fieldsIds]);
 
-        const gqlData = prepareFormData(formData, contentModel);
+        const gqlData = prepareFormData(formData, contentModel.fields);
         if (!entry.id) {
             return createContent(gqlData);
         }

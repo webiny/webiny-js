@@ -9,6 +9,7 @@ export default /* GraphQL */ `
         price: Number
         category: RefField
         categories: [RefField!]
+        longText: [String]
     }
     
     type Product_Variant {
@@ -62,7 +63,8 @@ export default /* GraphQL */ `
         name: String
         price: Number
         category: RefFieldInput!
-        categories: [RefFieldInput!]
+        categories: [RefFieldInput]
+        longText: [String]
     }
     
     input Product_VariantInput {
@@ -90,6 +92,7 @@ export default /* GraphQL */ `
         richText: JSON
         variant: Product_VariantInput
         fieldsObject: Product_FieldsObjectInput
+        
     }
 
     input ProductGetWhereInput {
@@ -102,6 +105,7 @@ export default /* GraphQL */ `
         availableOn: Date
         color: String
         availableSizes: String
+        
     }
     
     input ProductListWhereInput {

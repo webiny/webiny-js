@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import get from "lodash/get";
+import dotPropImmutable from "dot-prop-immutable";
 import { useNavigate } from "@webiny/react-router";
 import { useApolloClient } from "@apollo/react-hooks";
 import { i18n } from "@webiny/app/i18n";
@@ -85,7 +85,10 @@ export const ApwOnPublish: React.FC = () => {
                     data: input
                 }
             });
-            const contentReviewId = get(data, "apw.isReviewRequired.data.contentReviewId");
+            const contentReviewId = dotPropImmutable.get(
+                data,
+                "apw.isReviewRequired.data.contentReviewId"
+            );
             if (contentReviewId) {
                 showSnackbar(`A peer review for this content has been already requested.`);
                 return next({
@@ -98,7 +101,10 @@ export const ApwOnPublish: React.FC = () => {
                 });
             }
 
-            const isReviewRequired = get(data, "apw.isReviewRequired.data.isReviewRequired");
+            const isReviewRequired = dotPropImmutable.get(
+                data,
+                "apw.isReviewRequired.data.isReviewRequired"
+            );
             if (isReviewRequired) {
                 setInput(input);
                 return next({

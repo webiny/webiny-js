@@ -25,18 +25,20 @@ export const getWhere = (scope: string | undefined) => {
 interface InitParams {
     accept: string[];
     tags: string[];
-    scope: string;
-    own: boolean;
+    scope?: string;
+    own?: boolean;
     identity: any;
 }
+
 interface StateQueryParams {
     types: string[];
     limit: number;
     sort: number;
     tags: string[];
-    scope: string;
+    scope?: string;
     where: Record<string, any>;
 }
+
 interface State {
     showingFileDetails: string | null;
     selected: FileItem[];
@@ -45,6 +47,7 @@ interface State {
     dragging: boolean;
     uploading: boolean;
 }
+
 const init = ({ accept, tags, scope, own, identity }: InitParams): State => {
     const initialWhere = own ? { createdBy: identity.id } : {};
     return {
@@ -130,13 +133,16 @@ const fileManagerReducer: Reducer = (state: State, action) => {
 
 const FileManagerContext = React.createContext({});
 
-const FileManagerProvider: React.FC = ({ children, ...props }) => {
+export interface FileManagerProviderProps {
+    accept: string[];
+    tags: string[];
+    scope?: string;
+    own?: boolean;
+}
+
+const FileManagerProvider: React.FC<FileManagerProviderProps> = ({ children, ...props }) => {
     const { identity } = useSecurity();
-    /**
-     * TODO @ts-refactor
-     * Figure out how to type the rest of the types.
-     */
-    // @ts-ignore
+
     const [state, dispatch] = React.useReducer(fileManagerReducer, { ...props, identity }, init);
 
     const value = React.useMemo(() => {
@@ -146,11 +152,7 @@ const FileManagerProvider: React.FC = ({ children, ...props }) => {
         };
     }, [state]);
 
-    return (
-        <FileManagerContext.Provider value={value} {...props}>
-            {children}
-        </FileManagerContext.Provider>
-    );
+    return <FileManagerContext.Provider value={value}>{children}</FileManagerContext.Provider>;
 };
 
 function useFileManager() {

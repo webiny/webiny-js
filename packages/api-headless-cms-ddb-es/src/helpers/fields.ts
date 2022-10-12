@@ -6,6 +6,7 @@ import {
 import WebinyError from "@webiny/error";
 import { CmsModelFieldToElasticsearchPlugin } from "~/types";
 import { PluginsContainer } from "@webiny/plugins";
+import lodashCloneDeep from "lodash/cloneDeep";
 
 type ModelFieldPath = string | ((value: string) => string);
 export interface ModelField {
@@ -19,7 +20,9 @@ export interface ModelField {
     path?: ModelFieldPath;
 }
 
-export type ModelFields = Record<string, ModelField>;
+export interface ModelFields {
+    [fieldId: string]: ModelField;
+}
 
 type UnmappedFieldTypes = {
     [type: string]: (field: CmsModelField) => string | undefined;
@@ -32,10 +35,20 @@ interface FieldTypePlugin {
 }
 type FieldTypePlugins = Record<string, FieldTypePlugin>;
 
-const createSystemField = (field: Partial<CmsModelField>): CmsModelField => {
-    if (!field.fieldId) {
+type PartialCmsModelField = Partial<CmsModelField> &
+    Pick<CmsModelField, "storageId" | "fieldId" | "type">;
+const createSystemField = (field: PartialCmsModelField): CmsModelField => {
+    if (!field.storageId) {
         throw new WebinyError(
-            `When creating system field it must have a "entryId".`,
+            `When creating system field it must have a "storageId".`,
+            "SYSTEM_FIELD_ERROR",
+            {
+                field
+            }
+        );
+    } else if (!field.fieldId) {
+        throw new WebinyError(
+            `When creating system field it must have a "fieldId".`,
             "SYSTEM_FIELD_ERROR",
             {
                 field
@@ -50,7 +63,11 @@ const createSystemField = (field: Partial<CmsModelField>): CmsModelField => {
             }
         );
     }
-    return field as unknown as CmsModelField;
+    return {
+        ...field,
+        id: field.fieldId,
+        label: field.fieldId
+    };
 };
 
 export const systemFields: ModelFields = {
@@ -60,6 +77,7 @@ export const systemFields: ModelFields = {
         isSearchable: true,
         isSortable: true,
         field: createSystemField({
+            storageId: "id",
             fieldId: "id",
             type: "text"
         })
@@ -70,6 +88,7 @@ export const systemFields: ModelFields = {
         isSearchable: true,
         isSortable: true,
         field: createSystemField({
+            storageId: "entryId",
             fieldId: "entryId",
             type: "text"
         })
@@ -82,8 +101,9 @@ export const systemFields: ModelFields = {
         isSearchable: true,
         isSortable: true,
         field: createSystemField({
+            storageId: "savedOn",
             fieldId: "savedOn",
-            type: "date",
+            type: "datetime",
             settings: {
                 type: "dateTimeWithoutTimezone"
             }
@@ -97,6 +117,7 @@ export const systemFields: ModelFields = {
         isSearchable: true,
         isSortable: true,
         field: createSystemField({
+            storageId: "createdOn",
             fieldId: "createdOn",
             type: "text",
             settings: {
@@ -112,6 +133,7 @@ export const systemFields: ModelFields = {
         isSortable: false,
         path: "createdBy.id",
         field: createSystemField({
+            storageId: "createdBy",
             fieldId: "createdBy",
             type: "text"
         })
@@ -124,6 +146,7 @@ export const systemFields: ModelFields = {
         isSortable: false,
         path: "ownedBy.id",
         field: createSystemField({
+            storageId: "ownedBy",
             fieldId: "ownedBy",
             type: "text"
         })
@@ -136,6 +159,7 @@ export const systemFields: ModelFields = {
         isSearchable: true,
         isSortable: true,
         field: createSystemField({
+            storageId: "version",
             fieldId: "version",
             type: "number"
         })
@@ -187,5 +211,5 @@ export const createModelFields = (plugins: PluginsContainer, model: CmsModel): M
         };
 
         return fields;
-    }, systemFields);
+    }, lodashCloneDeep(systemFields));
 };

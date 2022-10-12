@@ -12,8 +12,15 @@ import { applyTenantRouter } from "~/apps/tenantRouter";
 export type WebsitePulumiApp = ReturnType<typeof createWebsitePulumiApp>;
 
 export interface CreateWebsitePulumiAppParams {
-    /** Custom domain configuration */
+    /**
+     * Custom domain(s) configuration.
+     */
     domains?: PulumiAppParamCallback<CustomDomainParams>;
+
+    /**
+     * Custom preview domain(s) configuration.
+     */
+    previewDomains?: PulumiAppParamCallback<CustomDomainParams>;
 
     /**
      * Enables or disables VPC for the API.
@@ -186,7 +193,15 @@ export const createWebsitePulumiApp = (projectAppParams: CreateWebsitePulumiAppP
                 applyCustomDomain(deliveryCloudfront, domains);
             }
 
-            if (process.env.WCP_PROJECT_ENVIRONMENT) {
+            const previewDomains = app.getParam(projectAppParams.previewDomains);
+            if (previewDomains) {
+                applyCustomDomain(appCloudfront, previewDomains);
+            }
+
+            if (
+                process.env.WCP_PROJECT_ENVIRONMENT ||
+                process.env.WEBINY_MULTI_TENANCY === "true"
+            ) {
                 applyTenantRouter(app, deliveryCloudfront);
             }
 

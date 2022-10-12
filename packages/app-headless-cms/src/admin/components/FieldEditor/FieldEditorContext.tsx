@@ -1,6 +1,5 @@
 import React, { useCallback, useState } from "react";
 import dot from "dot-prop-immutable";
-import shortid from "shortid";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import {
     CmsEditorField,
@@ -14,6 +13,7 @@ import * as utils from "./utils";
 import { FieldEditorProps } from "./FieldEditor";
 import { DragObjectWithType, DragSourceMonitor } from "react-dnd";
 import { useFieldEditor } from "~/admin/components/FieldEditor/useFieldEditor";
+import { generateAlphaNumericLowerCaseId } from "@webiny/utils";
 
 interface DropTarget {
     row: number;
@@ -119,6 +119,26 @@ export const FieldEditorContext = React.createContext<FieldEditorContextValue>(
         field: null
     } as unknown as FieldEditorContextValue
 );
+/**
+ * We try to generate the random id string but with the check that it does not exist already.
+ * Chances that the same string exists are quite small, but let's check it anyway.
+ *
+ * In most cases, there will be no iterations anyway...
+ */
+const maxGenerateIdIterations = 100;
+const generateFieldId = (layout: string[]): string => {
+    let id = generateAlphaNumericLowerCaseId(8);
+
+    let iteration = 0;
+    while (layout.includes(id) && iteration < maxGenerateIdIterations) {
+        id = generateAlphaNumericLowerCaseId(8);
+        iteration++;
+    }
+    if (iteration >= maxGenerateIdIterations) {
+        throw new Error(`Could not generate field ID in ${maxGenerateIdIterations} iterations.`);
+    }
+    return id;
+};
 
 interface State {
     layout: CmsEditorFieldsLayout;
@@ -288,7 +308,7 @@ export const FieldEditorProvider: React.FC<FieldEditorProviderProps> = ({
      */
     const insertField: InsertFieldCallable = ({ field, position }) => {
         if (!field.id) {
-            field.id = shortid.generate();
+            field.id = generateFieldId(layout.flat());
         }
 
         if (!field.type) {

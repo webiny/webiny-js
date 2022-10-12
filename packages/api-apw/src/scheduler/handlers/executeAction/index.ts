@@ -102,6 +102,16 @@ const createExecuteActionLambda = (params: Configuration) => {
                 }
 
                 const name = plugin.getArn(apwSettings);
+                if (!name) {
+                    console.error(`There is no FunctionName found for type "${item.data.type}".`);
+                    console.log(
+                        JSON.stringify({
+                            item,
+                            settings: apwSettings
+                        })
+                    );
+                    continue;
+                }
 
                 const body = plugin.getGraphQLBody(item.data);
 
@@ -118,18 +128,26 @@ const createExecuteActionLambda = (params: Configuration) => {
                     name,
                     payload: {
                         httpMethod: "POST",
+                        path: `/cms/manage/${locale}`,
                         headers: {
+                            ["content-type"]: "application/json",
                             Authorization: encodeToken({
                                 id: item.id,
                                 locale: item.locale,
                                 tenant: item.tenant
-                            })
+                            }),
+                            ["x-tenant"]: tenant,
+                            ["x-i18n-locale"]: `default:${locale};content:${locale};`
                         },
                         body: JSON.stringify(body)
                     },
                     await: true
                 });
-                console.log(JSON.stringify({ body: response.body }, null, 2));
+                if (response?.body) {
+                    console.log(JSON.stringify({ body: response.body }, null, 2));
+                    continue;
+                }
+                console.log(JSON.stringify({ response }, null, 2));
 
                 // TODO: Maybe update the status like error in original item in DB.
             }

@@ -33,7 +33,6 @@ const streamPipeline = promisify(pipeline);
 const INSTALL_DIR = "/tmp";
 const INSTALL_EXTRACT_DIR = path.join(INSTALL_DIR, "apiPageBuilderImportPage");
 const FILES_COUNT_IN_EACH_BATCH = 15;
-const ZIP_CONTENT_TYPE = "application/zip";
 
 interface UpdateFilesInPageDataParams {
     data: Record<string, any>;
@@ -312,14 +311,6 @@ async function uploadFilesFromS3({
     return Promise.all(promises);
 }
 
-async function getObjectMetaFromS3(Key: string) {
-    const meta = await s3Stream.getObjectHead(Key);
-
-    if (meta.ContentType !== ZIP_CONTENT_TYPE) {
-        throw new WebinyError(`Unsupported file type: "${meta.ContentType}"`, "UNSUPPORTED_FILE");
-    }
-}
-
 function getOldFileKey(key: string) {
     /*
      * Because we know the naming convention, we can extract the old key from new key.
@@ -346,35 +337,25 @@ interface PageImportData {
 
 /**
  * Function will read the given zip file from S3 via stream, extract its content and upload it to S3 bucket.
- * @param zipFileKey
+ * @param zipFileUrl
  * @return PageImportData S3 file keys for all uploaded assets group by page.
  */
 export async function readExtractAndUploadZipFileContents(
-    zipFileKey: string
+    zipFileUrl: string
 ): Promise<PageImportData[]> {
     const log = console.log;
     const pageImportDataList = [];
-    let readStream;
-    // Check whether it is a URL
-    if (zipFileKey.startsWith("http")) {
-        const response = await fetch(zipFileKey);
-        if (!response.ok) {
-            throw new WebinyError(
-                `Unable to downloading file: "${zipFileKey}"`,
-                response.statusText
-            );
-        }
 
-        readStream = response.body;
-    } else {
-        // We're first retrieving object's meta data, just to check whether the file is available at the given Key
-        await getObjectMetaFromS3(zipFileKey);
+    const zipFileName = path.basename(zipFileUrl).split("?")[0];
 
-        readStream = s3Stream.readStream(zipFileKey);
+    const response = await fetch(zipFileUrl);
+    if (!response.ok) {
+        throw new WebinyError(`Unable to downloading file: "${zipFileUrl}"`, response.statusText);
     }
 
+    const readStream = response.body;
+
     const uniquePath = uniqueId("IMPORT_PAGES/");
-    const zipFileName = path.basename(zipFileKey);
     // Read export file and download it in the disk
     const ZIP_FILE_PATH = path.join(INSTALL_DIR, zipFileName);
 
@@ -385,7 +366,7 @@ export async function readExtractAndUploadZipFileContents(
     // Extract the downloaded zip file
     const zipFilePaths = await extractZipToDisk(ZIP_FILE_PATH);
 
-    log(`Removing ZIP file "${zipFileKey}" from ${ZIP_FILE_PATH}`);
+    log(`Removing ZIP file "${zipFileUrl}" from ${ZIP_FILE_PATH}`);
     await deleteFile(ZIP_FILE_PATH);
 
     // Extract each page zip and upload their content's to S3

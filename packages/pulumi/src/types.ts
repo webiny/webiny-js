@@ -11,7 +11,7 @@ export interface ResourceHandler {
     (resource: PulumiAppResource<PulumiAppResourceConstructor>): void;
 }
 
-export type PulumiAppParamCallback<T> = (app: PulumiApp) => T;
+export type PulumiAppParamCallback<T> = (app: PulumiApp) => T | undefined;
 export type PulumiAppParam<T> = T | PulumiAppParamCallback<T>;
 
 export type PulumiProgram<TResources = Record<string, any>> = (
@@ -75,5 +75,5 @@ export interface PulumiApp<TResources = Record<string, unknown>> {
 
     addHandler<T>(handler: () => Promise<T> | T): pulumi.Output<pulumi.Unwrap<T>>;
 
-    getParam<T>(param: T | ((app: PulumiApp) => T)): T;
+    getParam<T>(param: T | ((app: PulumiApp) => T)): T | undefined;
 }

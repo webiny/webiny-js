@@ -1,8 +1,8 @@
-import { useGraphQLHandler } from "../utils/useGraphQLHandler";
+import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { CmsEntry, CmsGroup, CmsModel } from "~/types";
 import models from "./mocks/contentModels";
-import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
-import { useProductManageHandler } from "../utils/useProductManageHandler";
+import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
+import { useProductManageHandler } from "../testHelpers/useProductManageHandler";
 
 describe("Content model locked fields", () => {
     const manageOpts = { path: "manage/en-US" };
@@ -56,7 +56,10 @@ describe("Content model locked fields", () => {
         return update.data.updateContentModel.data;
     };
 
-    test("must mark fields as used and prevent changes on it, as soon as the first entry is saved", async () => {
+    /**
+     * Removed in 5.33.0 because users can now remove fields whenever they want to.
+     */
+    test.skip("must mark fields as used and prevent changes on it, as soon as the first entry is saved", async () => {
         const { createCategory } = useCategoryManageHandler({
             ...manageOpts
         });
@@ -118,7 +121,7 @@ describe("Content model locked fields", () => {
         const fieldsToRemove = productModel.fields.filter(field => field.fieldId !== "title");
         for (const field of fieldsToRemove) {
             const targetFields = productModel.fields.filter(f => f.id !== field.id);
-            const [removedFieldResponse] = await updateContentModelMutation({
+            const variables = {
                 modelId: contentModel.modelId,
                 data: {
                     titleFieldId: null,
@@ -127,24 +130,27 @@ describe("Content model locked fields", () => {
                         return [f.id];
                     })
                 }
-            });
+            };
+            const [removedFieldResponse] = await updateContentModelMutation(variables);
 
-            expect(removedFieldResponse).toEqual({
+            expect(removedFieldResponse).toMatchObject({
                 data: {
                     updateContentModel: {
                         data: null,
                         error: {
                             code: "ENTRY_FIELD_USED",
-                            data: null,
-                            message: `Cannot remove the field "${field.fieldId}" because it's already in use in created content.`
+                            data: {},
+                            message: `Cannot remove the field "${field.type}@${field.id}" because it's already in use in created content.`
                         }
                     }
                 }
             });
         }
     });
-
-    it("should allow deleting fields when no entries are present", async () => {
+    /**
+     * Removed in 5.33.0 because users can now remove fields whenever they want to.
+     */
+    it.skip("should allow deleting fields when no entries are present", async () => {
         const { createCategory, deleteCategory, listCategories, until } = useCategoryManageHandler({
             ...manageOpts
         });
@@ -183,7 +189,7 @@ describe("Content model locked fields", () => {
         );
 
         const fields = model.fields.filter(field => {
-            return field.fieldId !== slugField.fieldId;
+            return field.storageId !== slugField.storageId;
         });
         const layout = model.layout.filter(layouts => {
             return layouts.includes(slugField.id) === false;
@@ -196,14 +202,16 @@ describe("Content model locked fields", () => {
             }
         });
 
-        expect(updateModelFailResponse).toEqual({
+        expect(updateModelFailResponse).toMatchObject({
             data: {
                 updateContentModel: {
                     data: null,
                     error: {
                         code: "ENTRY_FIELD_USED",
-                        data: null,
-                        message: `Cannot remove the field "slug" because it's already in use in created content.`
+                        data: {},
+                        message: expect.stringMatching(
+                            `Cannot remove the field "text@([a-zA-Z0-9\-\_]+)" because it's already in use in created content.`
+                        )
                     }
                 }
             }

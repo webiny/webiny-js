@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import get from "lodash/get";
+import dotPropImmutable from "dot-prop-immutable";
 import { useNavigate } from "@webiny/react-router";
 import { i18n } from "@webiny/app/i18n";
 import { useConfirmationDialog, useSnackbar } from "@webiny/app-admin";
@@ -88,7 +88,10 @@ export const ApwOnEntryPublish: React.FC = () => {
                     data: inputData
                 }
             });
-            const contentReviewId = get(data, "apw.isReviewRequired.data.contentReviewId");
+            const contentReviewId = dotPropImmutable.get(
+                data,
+                "apw.isReviewRequired.data.contentReviewId"
+            );
             if (contentReviewId) {
                 showSnackbar(`A peer review for this content has been already requested.`);
                 return next({
@@ -101,20 +104,23 @@ export const ApwOnEntryPublish: React.FC = () => {
                 });
             }
 
-            const isReviewRequired = get(data, "apw.isReviewRequired.data.isReviewRequired");
-            if (isReviewRequired) {
-                setInput(inputData);
-                return next({
-                    ...params,
-                    error: {
-                        message: `A peer review is required.`,
-                        code: "PEER_REVIEW_REQUIRED",
-                        data: {}
-                    }
-                });
+            const isReviewRequired = dotPropImmutable.get(
+                data,
+                "apw.isReviewRequired.data.isReviewRequired"
+            );
+            if (!isReviewRequired) {
+                return next(params);
             }
 
-            return next(params);
+            setInput(inputData);
+            return next({
+                ...params,
+                error: {
+                    message: `A peer review is required.`,
+                    code: "PEER_REVIEW_REQUIRED",
+                    data: {}
+                }
+            });
         });
     }, []);
 

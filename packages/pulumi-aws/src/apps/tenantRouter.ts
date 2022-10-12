@@ -112,6 +112,13 @@ export function applyTenantRouter(
     cloudfront.config.defaultCacheBehavior(value => {
         return {
             ...value,
+            // We need to forward the `Host` header so the Lambda@Edge knows what custom domain was requested.
+            forwardedValues: {
+                ...value.forwardedValues,
+                queryString: value.forwardedValues?.queryString || false,
+                cookies: value.forwardedValues?.cookies || { forward: "none" },
+                headers: [...(value.forwardedValues?.headers || []), "Host"]
+            },
             lambdaFunctionAssociations: [
                 ...(value.lambdaFunctionAssociations || []),
                 {

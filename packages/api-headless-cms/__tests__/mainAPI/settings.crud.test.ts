@@ -1,5 +1,5 @@
-import { createIdentity } from "../utils/helpers";
-import { useGraphQLHandler } from "../utils/useGraphQLHandler";
+import { createIdentity } from "../testHelpers/helpers";
+import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 
 describe("Settings crud test", () => {
     const manageOpts = {

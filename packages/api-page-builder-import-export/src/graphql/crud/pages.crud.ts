@@ -21,7 +21,7 @@ const IMPORT_PAGES_CREATE_HANDLER = process.env.IMPORT_PAGES_CREATE_HANDLER as s
 
 export default new ContextPlugin<PbPageImportExportContext>(context => {
     const importExportCrud: PagesImportExportCrud = {
-        async importPages({ category: categorySlug, zipFileKey, zipFileUrl }) {
+        async importPages({ category: categorySlug, zipFileUrl }) {
             await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "w"
             });
@@ -37,7 +37,6 @@ export default new ContextPlugin<PbPageImportExportContext>(context => {
                 status: PageImportExportTaskStatus.PENDING,
                 input: {
                     category: categorySlug,
-                    zipFileKey,
                     zipFileUrl
                 }
             });
@@ -51,7 +50,6 @@ export default new ContextPlugin<PbPageImportExportContext>(context => {
                 name: IMPORT_PAGES_CREATE_HANDLER,
                 payload: {
                     category: categorySlug,
-                    zipFileKey,
                     zipFileUrl,
                     task,
                     identity: context.security.getIdentity()

@@ -3,6 +3,54 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.33.0](https://github.com/webiny/webiny-js/compare/v5.33.0-beta.1...v5.33.0) (2022-10-12)
+
+**Note:** Version bump only for package @webiny/api-headless-cms
+
+
+
+
+
+# [5.33.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.33.0-beta.0...v5.33.0-beta.1) (2022-10-12)
+
+
+### Bug Fixes
+
+* **api-headless-cms:** check for beta or next in version ([4857dff](https://github.com/webiny/webiny-js/commit/4857dff17db6f2f44b8e75eb95eec612f8697032))
+
+
+
+
+
+# [5.33.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.32.0...v5.33.0-beta.0) (2022-10-11)
+
+
+### Bug Fixes
+
+* **api-apw:** schedule publishing ([#2661](https://github.com/webiny/webiny-js/issues/2661)) ([cfcc211](https://github.com/webiny/webiny-js/commit/cfcc211bf234ccd493ad95b0a0f0d02f94a02ad6))
+* **api-headless-cms:** field storage plugins ([#2641](https://github.com/webiny/webiny-js/issues/2641)) ([286f56a](https://github.com/webiny/webiny-js/commit/286f56aab9b709c9e0175e7e8b085ecab162f90a))
+* **api-headless-cms:** long text field decompression ([#2642](https://github.com/webiny/webiny-js/issues/2642)) ([4ae86cf](https://github.com/webiny/webiny-js/commit/4ae86cf73d1aa412b2f422da41e10adc60bad573))
+* **api-headless-cms-ddb-es:** date indexing ([#2651](https://github.com/webiny/webiny-js/issues/2651)) ([1c48b20](https://github.com/webiny/webiny-js/commit/1c48b204141873e3f50533cf76997f5828a1bc01))
+
+
+### Features
+
+* **api-headless-cms:** entry values path conversion ([#2614](https://github.com/webiny/webiny-js/issues/2614)) ([650cf77](https://github.com/webiny/webiny-js/commit/650cf77d96afffc00c92bd5bfd138ac4f167f097))
+* **api-headless-cms:** model field aliases ([#2352](https://github.com/webiny/webiny-js/issues/2352)) ([5069a6d](https://github.com/webiny/webiny-js/commit/5069a6d449bd95d9d2da95abc591d09f683949d6))
+* **api-headless-cms:** model fields upgrade ([#2632](https://github.com/webiny/webiny-js/issues/2632)) ([315e94c](https://github.com/webiny/webiny-js/commit/315e94cda101e119d4051e2398ddb2b978944ff1))
+* **api-headless-cms:** soft-delete fields ([#2643](https://github.com/webiny/webiny-js/issues/2643)) ([bb01600](https://github.com/webiny/webiny-js/commit/bb016007f2a9093e0a67423658e90ab32ed89be9))
+* **api-headless-cms:** storage id validation ([#2654](https://github.com/webiny/webiny-js/issues/2654)) ([eac1e31](https://github.com/webiny/webiny-js/commit/eac1e31322c4cd1e0cab7f28d5b89d2142b02d00))
+* **api-headless-cms:** upgrade for all tenants ([#2679](https://github.com/webiny/webiny-js/issues/2679)) ([1473c3d](https://github.com/webiny/webiny-js/commit/1473c3d1d3f24bc6e37fb2fba2e14044a14e13aa))
+* **api-headless-cms-ddb:** implement conversion of field paths ([#2620](https://github.com/webiny/webiny-js/issues/2620)) ([6c2c0a1](https://github.com/webiny/webiny-js/commit/6c2c0a197fa69939d61b325f75690877793f4acc))
+* **api-headless-cms-ddb-es:** transformation of fieldId and storageId paths ([#2622](https://github.com/webiny/webiny-js/issues/2622)) ([145568a](https://github.com/webiny/webiny-js/commit/145568a99099246cd53b24e700e30ef3b37ff09e))
+* **app-headless-cms:** make fieldId changeable ([#2613](https://github.com/webiny/webiny-js/issues/2613)) ([45cc7ac](https://github.com/webiny/webiny-js/commit/45cc7ac6d91e7fae8ecb241e00505a1d12c0e1bd))
+* **app-headless-cms:** model fields upgrade for 5.33.0 ([#2638](https://github.com/webiny/webiny-js/issues/2638)) ([dbe965f](https://github.com/webiny/webiny-js/commit/dbe965f472a30b7f9f4f77a7b9dd77223d24b9c2))
+* **headless-cms:** ability to delete locked field ([#2648](https://github.com/webiny/webiny-js/issues/2648)) ([1e123ac](https://github.com/webiny/webiny-js/commit/1e123acd6049481f056ab0a63d8a6bf8fc8e2f13))
+
+
+
+
+
 # [5.32.0](https://github.com/webiny/webiny-js/compare/v5.32.0-beta.0...v5.32.0) (2022-09-07)
 
 **Note:** Version bump only for package @webiny/api-headless-cms

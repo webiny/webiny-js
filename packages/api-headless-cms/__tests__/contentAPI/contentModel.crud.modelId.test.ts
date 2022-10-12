@@ -1,4 +1,4 @@
-import { useGraphQLHandler } from "../utils/useGraphQLHandler";
+import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { CmsGroup } from "~/types";
 import camelCase from "lodash/camelCase";
 
