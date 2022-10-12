@@ -70,9 +70,17 @@ const attachStorageIdToModelFields = (model: CmsModel): CmsModelField[] => {
     if (!model.webinyVersion) {
         return model.fields;
     }
+
     const version = semver.coerce(model.webinyVersion);
     if (!version) {
         return model.fields;
+    }
+    /**
+     * Unfortunately we need to check for beta and next.
+     * TODO remove after 5.33.0
+     */
+    if (model.webinyVersion.match(/beta|next/)) {
+        return attachStorageIdToFields(model.fields);
     }
     if (semver.compare(version, featureVersion) >= 0) {
         return model.fields;
