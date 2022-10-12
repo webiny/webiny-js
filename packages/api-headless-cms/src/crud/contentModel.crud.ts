@@ -15,7 +15,8 @@ import {
     AfterModelCreateFromTopicParams,
     CmsModelCreateInput,
     CmsModelUpdateInput,
-    CmsModelCreateFromInput
+    CmsModelCreateFromInput,
+    CmsModelField
 } from "~/types";
 import DataLoader from "dataloader";
 import { NotFoundError } from "@webiny/handler-graphql";
@@ -44,6 +45,48 @@ import { filterAsync } from "~/utils/filterAsync";
 import { checkOwnership, validateOwnership } from "~/utils/ownership";
 import { checkModelAccess, validateModelAccess } from "~/utils/access";
 import { validateModelFields } from "~/crud/contentModel/validateModelFields";
+import semver, { SemVer } from "semver";
+
+/**
+ * TODO: remove for 5.34.0
+ * Required because of the 5.33.0 upgrade.
+ * Until the upgrade is done, API will break because there is no storageId assigned.
+ */
+const featureVersion = semver.coerce("5.33.0") as SemVer;
+
+const attachStorageIdToFields = (fields: CmsModelField[]): CmsModelField[] => {
+    return fields.map(field => {
+        if (field.settings?.fields) {
+            field.settings.fields = attachStorageIdToFields(field.settings.fields);
+        }
+        if (!field.storageId) {
+            field.storageId = field.fieldId;
+        }
+        return field;
+    });
+};
+
+const attachStorageIdToModelFields = (model: CmsModel): CmsModelField[] => {
+    if (!model.webinyVersion) {
+        return model.fields;
+    }
+
+    const version = semver.coerce(model.webinyVersion);
+    if (!version) {
+        return model.fields;
+    }
+    /**
+     * Unfortunately we need to check for beta and next.
+     * TODO remove after 5.33.0
+     */
+    if (model.webinyVersion.match(/beta|next/)) {
+        return attachStorageIdToFields(model.fields);
+    }
+    if (semver.compare(version, featureVersion) >= 0) {
+        return model.fields;
+    }
+    return attachStorageIdToFields(model.fields);
+};
 
 export interface CreateModelsCrudParams {
     getTenant: () => Tenant;
@@ -67,6 +110,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 models.map(model => {
                     return {
                         ...model,
+                        fields: attachStorageIdToModelFields(model),
                         tenant: model.tenant || getTenant().id,
                         locale: model.locale || getLocale().code
                     };

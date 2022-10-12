@@ -55,7 +55,14 @@ const Install: React.FC<InstallProps> = ({ onInstalled }) => {
         setLoading(false);
         const { error } = res.adminUsers.install;
         if (error) {
-            setError(error);
+            switch (error.code) {
+                case "COGNITO_ACCOUNT_EXISTS":
+                    setError(`An account with this email already exists.`);
+                    break;
+                default:
+                    setError(error.message);
+            }
+
             return;
         }
 
