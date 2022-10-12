@@ -1,4 +1,5 @@
-import { queryAll, queryOne } from "@webiny/db-dynamodb/utils/query";
+import { get } from "@webiny/db-dynamodb/utils/get";
+import { DbItem, queryAll, queryOne } from "@webiny/db-dynamodb/utils/query";
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
 import WebinyError from "@webiny/error";
 
@@ -6,34 +7,34 @@ import { Link, LinksStorageOperations } from "@webiny/api-folders/types";
 import { Entity } from "dynamodb-toolbox";
 import { DataContainer } from "~/types";
 
+const createLinkGsiPartitionKey = ({
+    tenant,
+    locale,
+    folderId
+}: Pick<Link, "tenant" | "locale" | "folderId">) => {
+    return `T#${tenant}#L#${locale}#FOLDER#${folderId}#LINKS`;
+};
+
+const createLinkKeys = ({ id, tenant, locale }: Pick<Link, "id" | "tenant" | "locale">) => {
+    return {
+        PK: `T#${tenant}#L#${locale}#LINK#${id}`,
+        SK: `A`
+    };
+};
+
+const createLinkGsiKeys = ({
+    tenant,
+    locale,
+    folderId,
+    id
+}: Pick<Link, "tenant" | "locale" | "folderId" | "id">) => {
+    return {
+        GSI1_PK: createLinkGsiPartitionKey({ tenant, locale, folderId }),
+        GSI1_SK: id
+    };
+};
+
 export const createLinksStorageOperations = (entity: Entity<any>): LinksStorageOperations => {
-    const createLinkGsiPartitionKey = ({
-        tenant,
-        locale,
-        folderId
-    }: Pick<Link, "tenant" | "locale" | "folderId">) => {
-        return `T#${tenant}#L#${locale}#FOLDER#${folderId}#LINKS`;
-    };
-
-    const createLinkKeys = ({ id, tenant, locale }: Pick<Link, "id" | "tenant" | "locale">) => {
-        return {
-            PK: `T#${tenant}#L#${locale}#LINK#${id}`,
-            SK: `A`
-        };
-    };
-
-    const createLinkGsiKeys = ({
-        tenant,
-        locale,
-        folderId,
-        id
-    }: Pick<Link, "tenant" | "locale" | "folderId" | "id">) => {
-        return {
-            GSI1_PK: createLinkGsiPartitionKey({ tenant, locale, folderId }),
-            GSI1_SK: id
-        };
-    };
-
     return {
         async createLink({ link }): Promise<Link> {
             const keys = {
@@ -57,16 +58,16 @@ export const createLinksStorageOperations = (entity: Entity<any>): LinksStorageO
             }
         },
 
-        async getLink({ tenant, locale, id, folderId }): Promise<Link> {
+        async getLink({ tenant, locale, id, folderId }): Promise<Link | undefined> {
             try {
                 let result;
                 if (id) {
-                    const response = await entity.get(createLinkKeys({ id, tenant, locale }));
-                    if (response.Item) {
-                        result = response.Item;
-                    }
+                    result = await get<DbItem<DataContainer<Link>>>({
+                        entity,
+                        keys: createLinkKeys({ id, tenant, locale })
+                    });
                 } else if (folderId) {
-                    result = await queryOne({
+                    result = await queryOne<DataContainer<Link>>({
                         entity,
                         partitionKey: createLinkGsiPartitionKey({ tenant, locale, folderId }),
                         options: {
@@ -101,7 +102,9 @@ export const createLinksStorageOperations = (entity: Entity<any>): LinksStorageO
                     items,
                     sort,
                     fields: []
-                }).map(item => item?.data);
+                })
+                    .map(item => item?.data)
+                    .filter(Boolean);
             } catch (error) {
                 throw WebinyError.from(error, {
                     message: "Could not list links.",
