@@ -159,28 +159,6 @@ const unpublishCategoryMutation = /* GraphQL */ `
     }
 `;
 
-const requestCategoryChangesMutation = /* GraphQL */ `
-    mutation RequestCategoryChanges($revision: ID!) {
-        requestCategoryChanges(revision: $revision) {
-            data {
-                ${categoryFields}
-            }
-            ${errorFields}
-        }
-    }
-`;
-
-const requestCategoryReviewMutation = /* GraphQL */ `
-    mutation RequestCategoryReview($revision: ID!) {
-        requestCategoryReview(revision: $revision) {
-            data {
-                ${categoryFields}
-            }
-            ${errorFields}
-        }
-    }
-`;
-
 export const useCategoryManageHandler = (params: GraphQLHandlerParams) => {
     const contentHandler = useGraphQLHandler(params);
 
@@ -265,30 +243,6 @@ export const useCategoryManageHandler = (params: GraphQLHandlerParams) => {
             return await contentHandler.invoke({
                 body: {
                     query: unpublishCategoryMutation,
-                    variables
-                },
-                headers
-            });
-        },
-        async requestCategoryChanges(
-            variables: Record<string, any>,
-            headers: Record<string, any> = {}
-        ) {
-            return await contentHandler.invoke({
-                body: {
-                    query: requestCategoryChangesMutation,
-                    variables
-                },
-                headers
-            });
-        },
-        async requestCategoryReview(
-            variables: Record<string, any>,
-            headers: Record<string, any> = {}
-        ) {
-            return await contentHandler.invoke({
-                body: {
-                    query: requestCategoryReviewMutation,
                     variables
                 },
                 headers

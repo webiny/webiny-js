@@ -1505,12 +1505,7 @@ export interface CmsModelContext {
  *
  * @category CmsEntry
  */
-export type CmsEntryStatus =
-    | "published"
-    | "unpublished"
-    | "reviewRequested"
-    | "changesRequested"
-    | "draft";
+export type CmsEntryStatus = "published" | "unpublished" | "draft";
 
 export interface CmsEntryListWhereRef {
     id?: string;
@@ -1710,28 +1705,6 @@ export interface AfterEntryUnpublishTopicParams {
     storageEntry: CmsEntry;
 }
 
-export interface BeforeEntryRequestChangesTopicParams {
-    entry: CmsEntry;
-    model: StorageOperationsCmsModel;
-}
-
-export interface AfterEntryRequestChangesTopicParams {
-    entry: CmsEntry;
-    model: StorageOperationsCmsModel;
-    storageEntry: CmsEntry;
-}
-
-export interface BeforeEntryRequestReviewTopicParams {
-    entry: CmsEntry;
-    model: StorageOperationsCmsModel;
-}
-
-export interface AfterEntryRequestReviewTopicParams {
-    entry: CmsEntry;
-    model: StorageOperationsCmsModel;
-    storageEntry: CmsEntry;
-}
-
 export interface BeforeEntryDeleteTopicParams {
     entry: CmsEntry;
     model: StorageOperationsCmsModel;
@@ -1874,14 +1847,6 @@ export interface CmsEntryContext {
      */
     unpublishEntry: (model: CmsModel, id: string) => Promise<CmsEntry>;
     /**
-     * Request a review for the entry.
-     */
-    requestEntryReview: (model: CmsModel, id: string) => Promise<CmsEntry>;
-    /**
-     * Request changes for the entry.
-     */
-    requestEntryChanges: (model: CmsModel, id: string) => Promise<CmsEntry>;
-    /**
      * Get all entry revisions.
      */
     getEntryRevisions: (model: CmsModel, id: string) => Promise<CmsEntry[]>;
@@ -1902,10 +1867,6 @@ export interface CmsEntryContext {
     onAfterEntryPublish: Topic<AfterEntryPublishTopicParams>;
     onBeforeEntryUnpublish: Topic<BeforeEntryUnpublishTopicParams>;
     onAfterEntryUnpublish: Topic<AfterEntryUnpublishTopicParams>;
-    onBeforeEntryRequestChanges: Topic<BeforeEntryRequestChangesTopicParams>;
-    onAfterEntryRequestChanges: Topic<AfterEntryRequestChangesTopicParams>;
-    onBeforeEntryRequestReview: Topic<BeforeEntryRequestReviewTopicParams>;
-    onAfterEntryRequestReview: Topic<AfterEntryRequestReviewTopicParams>;
     onBeforeEntryGet: Topic<BeforeEntryGetTopicParams>;
     onBeforeEntryList: Topic<BeforeEntryListTopicParams>;
 }
@@ -2225,32 +2186,6 @@ export interface CmsEntryStorageOperationsUnpublishParams<
     storageEntry: T;
 }
 
-export interface CmsEntryStorageOperationsRequestChangesParams<
-    T extends CmsStorageEntry = CmsStorageEntry
-> {
-    /**
-     * Entry data updated with the required properties.
-     */
-    entry: CmsEntry;
-    /**
-     * Entry that is prepared for the storageOperations, with the transformations.
-     */
-    storageEntry: T;
-}
-
-export interface CmsEntryStorageOperationsRequestReviewParams<
-    T extends CmsStorageEntry = CmsStorageEntry
-> {
-    /**
-     * Entry that is prepared for the storageOperations.
-     */
-    entry: CmsEntry;
-    /**
-     * Entry that is prepared for the storageOperations, with the transformations.
-     */
-    storageEntry: T;
-}
-
 export interface CmsEntryStorageOperationsGetByIdsParams {
     ids: readonly string[];
 }
@@ -2433,28 +2368,12 @@ export interface CmsEntryStorageOperations<T extends CmsStorageEntry = CmsStorag
         model: StorageOperationsCmsModel,
         params: CmsEntryStorageOperationsUnpublishParams<T>
     ) => Promise<T>;
-    /**
-     * Request changes the entry.
-     */
-    requestChanges: (
-        model: StorageOperationsCmsModel,
-        params: CmsEntryStorageOperationsRequestChangesParams<T>
-    ) => Promise<T>;
-    /**
-     * Request review the entry.
-     */
-    requestReview: (
-        model: StorageOperationsCmsModel,
-        params: CmsEntryStorageOperationsRequestReviewParams<T>
-    ) => Promise<CmsEntry>;
 }
 
 export enum CONTENT_ENTRY_STATUS {
     DRAFT = "draft",
     PUBLISHED = "published",
-    UNPUBLISHED = "unpublished",
-    CHANGES_REQUESTED = "changesRequested",
-    REVIEW_REQUESTED = "reviewRequested"
+    UNPUBLISHED = "unpublished"
 }
 
 export interface CmsSettingsStorageOperationsGetParams {

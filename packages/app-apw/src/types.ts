@@ -109,7 +109,7 @@ export interface ApwContentReviewContent {
 
 export interface ApwContentReview extends BaseFields {
     title: string;
-    status: ApwContentReviewStatus;
+    reviewStatus: ApwContentReviewStatus;
     content: ApwContentReviewContent;
     steps: Array<ApwContentReviewStep>;
 }
@@ -118,7 +118,7 @@ export interface ApwContentReviewListItem extends BaseFields {
     title: string;
     steps: [ApwContentReviewStep];
     content: ApwContentReviewContent;
-    status: ApwContentReviewStatus;
+    reviewStatus: ApwContentReviewStatus;
     activeStep: ApwContentReviewStep;
     totalComments: number;
     latestCommentId: string;
