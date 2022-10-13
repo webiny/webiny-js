@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api",
-  "version": "5.32.0",
+  "version": "5.33.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -13,15 +13,15 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.19.0",
-    "@webiny/plugins": "^5.32.0"
+    "@webiny/plugins": "^5.33.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.19.3",
     "@babel/core": "^7.19.3",
     "@babel/preset-env": "^7.19.3",
     "@babel/preset-typescript": "^7.18.6",
-    "@webiny/cli": "^5.32.0",
-    "@webiny/project-utils": "^5.32.0",
+    "@webiny/cli": "^5.33.0",
+    "@webiny/project-utils": "^5.33.0",
     "rimraf": "^3.0.2",
     "ttypescript": "^1.5.13",
     "typescript": "4.7.4"

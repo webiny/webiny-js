@@ -14,6 +14,7 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCRUD => 
     };
 
     return {
+        storageOperations,
         async getSystemVersion() {
             const system = await storageOperations.get();
 

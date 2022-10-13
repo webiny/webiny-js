@@ -1,5 +1,6 @@
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
-import { queryAll, queryOne } from "@webiny/db-dynamodb/utils/query";
+import { get } from "@webiny/db-dynamodb/utils/get";
+import { DbItem, queryAll, queryOne } from "@webiny/db-dynamodb/utils/query";
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
 import WebinyError from "@webiny/error";
 
@@ -7,42 +8,42 @@ import { Entity, Table } from "dynamodb-toolbox";
 import { Folder, FoldersStorageOperations } from "@webiny/api-folders/types";
 import { DataContainer } from "~/types";
 
+const createFolderGsiPartitionKey = ({
+    tenant,
+    locale,
+    type
+}: Pick<Folder, "tenant" | "locale" | "type">) => {
+    return `T#${tenant}#L#${locale}#FOLDERS#${type}`;
+};
+
+const createFolderGsiSearchKey = ({ slug, parentId }: Pick<Folder, "slug" | "parentId">) => {
+    return [parentId, slug].filter(Boolean).join("#");
+};
+
+const createFolderKeys = ({ id, tenant, locale }: Pick<Folder, "id" | "tenant" | "locale">) => {
+    return {
+        PK: `T#${tenant}#L#${locale}#FOLDER#${id}`,
+        SK: `A`
+    };
+};
+
+const createFolderGsiKeys = ({
+    tenant,
+    locale,
+    type,
+    slug,
+    parentId
+}: Pick<Folder, "tenant" | "locale" | "type" | "slug" | "parentId">) => {
+    return {
+        GSI1_PK: createFolderGsiPartitionKey({ tenant, locale, type }),
+        GSI1_SK: createFolderGsiSearchKey({ slug, parentId })
+    };
+};
+
 export const createFoldersStorageOperations = (
     entity: Entity<any>,
     table: Table
 ): FoldersStorageOperations => {
-    const createFolderGsiPartitionKey = ({
-        tenant,
-        locale,
-        type
-    }: Pick<Folder, "tenant" | "locale" | "type">) => {
-        return `T#${tenant}#L#${locale}#FOLDERS#${type}`;
-    };
-
-    const createFolderGsiSearchKey = ({ slug, parentId }: Pick<Folder, "slug" | "parentId">) => {
-        return [parentId, slug].filter(Boolean).join("#");
-    };
-
-    const createFolderKeys = ({ id, tenant, locale }: Pick<Folder, "id" | "tenant" | "locale">) => {
-        return {
-            PK: `T#${tenant}#L#${locale}#FOLDER#${id}`,
-            SK: `A`
-        };
-    };
-
-    const createFolderGsiKeys = ({
-        tenant,
-        locale,
-        type,
-        slug,
-        parentId
-    }: Pick<Folder, "tenant" | "locale" | "type" | "slug" | "parentId">) => {
-        return {
-            GSI1_PK: createFolderGsiPartitionKey({ tenant, locale, type }),
-            GSI1_SK: createFolderGsiSearchKey({ slug, parentId })
-        };
-    };
-
     return {
         async createFolder({ folder }): Promise<Folder> {
             const keys = {
@@ -66,16 +67,16 @@ export const createFoldersStorageOperations = (
             }
         },
 
-        async getFolder({ tenant, locale, id, slug, type, parentId }): Promise<Folder> {
+        async getFolder({ tenant, locale, id, slug, type, parentId }): Promise<Folder | undefined> {
             try {
                 let result;
                 if (id) {
-                    const response = await entity.get(createFolderKeys({ id, tenant, locale }));
-                    if (response.Item) {
-                        result = response.Item;
-                    }
+                    result = await get<DbItem<DataContainer<Folder>>>({
+                        entity,
+                        keys: createFolderKeys({ id, tenant, locale })
+                    });
                 } else if (slug && type) {
-                    result = await queryOne({
+                    result = await queryOne<DataContainer<Folder>>({
                         entity,
                         partitionKey: createFolderGsiPartitionKey({ tenant, locale, type }),
                         options: {
@@ -110,7 +111,9 @@ export const createFoldersStorageOperations = (
                     items,
                     sort,
                     fields: []
-                }).map(item => item?.data);
+                })
+                    .map(item => item?.data)
+                    .filter(Boolean);
             } catch (error) {
                 throw WebinyError.from(error, {
                     message: "Could not list folders.",

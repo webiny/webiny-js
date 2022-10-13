@@ -3,6 +3,83 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.33.0](https://github.com/webiny/webiny-js/compare/v5.33.0-beta.1...v5.33.0) (2022-10-12)
+
+**Note:** Version bump only for package webiny-js
+
+
+
+
+
+# [5.33.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.33.0-beta.0...v5.33.0-beta.1) (2022-10-12)
+
+
+### Bug Fixes
+
+* **api-headless-cms:** check for beta or next in version ([4857dff](https://github.com/webiny/webiny-js/commit/4857dff17db6f2f44b8e75eb95eec612f8697032))
+* deprecate `init` method and introduce `link` ([2fe6bf1](https://github.com/webiny/webiny-js/commit/2fe6bf17fdd0554af6130accb1b88fc0996a0370))
+* folders-api update operation ([#2676](https://github.com/webiny/webiny-js/issues/2676)) ([05a9850](https://github.com/webiny/webiny-js/commit/05a98507f92c17f8ed11c31755113f0e0d4fcc38))
+* replace word `init` with `link` ([8309a57](https://github.com/webiny/webiny-js/commit/8309a57ec98c672382f600c82ca7af2c212caff2))
+* switch the order of commands ([1e37a6a](https://github.com/webiny/webiny-js/commit/1e37a6af290e50366fe625e587c2372f382cb4f5))
+
+
+
+
+
+# [5.33.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.32.0...v5.33.0-beta.0) (2022-10-11)
+
+
+### Bug Fixes
+
+* add missing `CmsContext` ([9cf89b2](https://github.com/webiny/webiny-js/commit/9cf89b2732bd61c4f6cd4edafd00d12d05533dfc))
+* allow root tenant to update itself [skip ci] ([ab99488](https://github.com/webiny/webiny-js/commit/ab99488a80545e7c28a6f6e201535c89ca7a35b8))
+* do not continue if there's no WCP project ID present ([faf54da](https://github.com/webiny/webiny-js/commit/faf54da5d8028c1658ba15429e2c366482727c3a))
+* execute custom ENV modifiers after pulumi output modifiers ([b45ddb7](https://github.com/webiny/webiny-js/commit/b45ddb72b63a184c93601a44f2dc9ac5a2369fb4))
+* only forward Host header if tenant router is configured ([#2663](https://github.com/webiny/webiny-js/issues/2663)) ([b59e76f](https://github.com/webiny/webiny-js/commit/b59e76f45f7628236ba111106e22c0a652eae374))
+* only use `AWSLambdaVPCAccessExecutionRole` policy if VPC feature is enabled ([63e98b0](https://github.com/webiny/webiny-js/commit/63e98b0f98e2ff1a24a7ee63432869da27513033))
+* only use `AWSLambdaVPCAccessExecutionRole` policy if VPC feature is enabled. ([8a20d1d](https://github.com/webiny/webiny-js/commit/8a20d1d78a3d38309089bb238f6f62dabb4c13a2))
+* print error message instead of the error object ([aa86d1b](https://github.com/webiny/webiny-js/commit/aa86d1b54562e3c1c453fabaac76c9bb80845067))
+* remove env vars from `DefinePlugin` ([72f55ea](https://github.com/webiny/webiny-js/commit/72f55ea7d76cf1295fd34721e2ae588bacf22987))
+* remove the utf8 encoding parameter from the call to fs.readFile ([df45289](https://github.com/webiny/webiny-js/commit/df45289025254f1b9398f5ce740185ef326e91d9))
+* removed the utf8 encoding parameter from the call to fs.readFileSync ([34dc0f1](https://github.com/webiny/webiny-js/commit/34dc0f15337cd6a4589bcccc261247e6e51862bc))
+* replace verb "activated" with "linked" ([a4634eb](https://github.com/webiny/webiny-js/commit/a4634eb6b0cf5d05edf9b0ca45e742731af21924))
+* simplify accept prop logic and remove imagesMimeTypes prop ([0ee90f8](https://github.com/webiny/webiny-js/commit/0ee90f8d7c94d02819fa32171d38aee784007763))
+* skip PAT auth if the environment is being retrieved via API key ([99214e3](https://github.com/webiny/webiny-js/commit/99214e3b124884eafdc94ba8df03bc9345837b92))
+* take project level telemetry config into consideration [skip ci] ([65ab8a3](https://github.com/webiny/webiny-js/commit/65ab8a3ad0bd2c9183b121e83ea404368eeea200))
+* **api-apw:** schedule publishing ([#2661](https://github.com/webiny/webiny-js/issues/2661)) ([cfcc211](https://github.com/webiny/webiny-js/commit/cfcc211bf234ccd493ad95b0a0f0d02f94a02ad6))
+* **api-headless-cms:** field storage plugins ([#2641](https://github.com/webiny/webiny-js/issues/2641)) ([286f56a](https://github.com/webiny/webiny-js/commit/286f56aab9b709c9e0175e7e8b085ecab162f90a))
+* **api-headless-cms:** long text field decompression ([#2642](https://github.com/webiny/webiny-js/issues/2642)) ([4ae86cf](https://github.com/webiny/webiny-js/commit/4ae86cf73d1aa412b2f422da41e10adc60bad573))
+* **api-headless-cms-ddb-es:** date indexing ([#2651](https://github.com/webiny/webiny-js/issues/2651)) ([1c48b20](https://github.com/webiny/webiny-js/commit/1c48b204141873e3f50533cf76997f5828a1bc01))
+* **app-apw:** change request body field overflow display ([#2666](https://github.com/webiny/webiny-js/issues/2666)) ([206bbd5](https://github.com/webiny/webiny-js/commit/206bbd5ea5ce951d09ff5c26a8515d9ca7bdb463))
+* **pulumi-aws:** prod and dev elasticsearch config change ([#2636](https://github.com/webiny/webiny-js/issues/2636)) ([a202cd2](https://github.com/webiny/webiny-js/commit/a202cd2179487d95ff57525d388e0d86a1c3d36f))
+* **readme:** add 2022 product video to readme ([#2671](https://github.com/webiny/webiny-js/issues/2671)) ([bd79c3e](https://github.com/webiny/webiny-js/commit/bd79c3e6b9850b1c44c0ae0e2ccf647408255e6f))
+* run `applyTenantRouter` if `WEBINY_MULTI_TENANCY` env var is present ([9e5e920](https://github.com/webiny/webiny-js/commit/9e5e920512ed4d3fa8f3c1506700dfa50f54060b))
+
+
+### Features
+
+* **api-headless-cms:** upgrade for all tenants ([#2679](https://github.com/webiny/webiny-js/issues/2679)) ([1473c3d](https://github.com/webiny/webiny-js/commit/1473c3d1d3f24bc6e37fb2fba2e14044a14e13aa))
+* add ability to return `undefined` ([44f68dd](https://github.com/webiny/webiny-js/commit/44f68ddfbb81f8d2079361fab6874dc0293f6750))
+* introduce `previewDomains` config parameter ([a6bf042](https://github.com/webiny/webiny-js/commit/a6bf04256875a3ce0b7584ac22a52c8db7bd8341))
+* print the actual error when in debug mode ([b47fdc0](https://github.com/webiny/webiny-js/commit/b47fdc02ce9975ed98f1f8d197f36e1587b93c81))
+* **api-folders:** folders CRUD module ([#2592](https://github.com/webiny/webiny-js/issues/2592)) ([955f643](https://github.com/webiny/webiny-js/commit/955f643bcbee01076f3f39687f8202ff21288c02))
+* **api-headless-cms:** entry values path conversion ([#2614](https://github.com/webiny/webiny-js/issues/2614)) ([650cf77](https://github.com/webiny/webiny-js/commit/650cf77d96afffc00c92bd5bfd138ac4f167f097))
+* **api-headless-cms:** model field aliases ([#2352](https://github.com/webiny/webiny-js/issues/2352)) ([5069a6d](https://github.com/webiny/webiny-js/commit/5069a6d449bd95d9d2da95abc591d09f683949d6))
+* **api-headless-cms:** model fields upgrade ([#2632](https://github.com/webiny/webiny-js/issues/2632)) ([315e94c](https://github.com/webiny/webiny-js/commit/315e94cda101e119d4051e2398ddb2b978944ff1))
+* **api-headless-cms:** soft-delete fields ([#2643](https://github.com/webiny/webiny-js/issues/2643)) ([bb01600](https://github.com/webiny/webiny-js/commit/bb016007f2a9093e0a67423658e90ab32ed89be9))
+* **api-headless-cms-ddb:** implement conversion of field paths ([#2620](https://github.com/webiny/webiny-js/issues/2620)) ([6c2c0a1](https://github.com/webiny/webiny-js/commit/6c2c0a197fa69939d61b325f75690877793f4acc))
+* **app-tenancy:** add support for tenantId query parameter ([7f9ae04](https://github.com/webiny/webiny-js/commit/7f9ae04f03f7d0a8cd1f7e0c81349262f12b3af2))
+* make FileManager composable ([#2664](https://github.com/webiny/webiny-js/issues/2664)) ([d279b45](https://github.com/webiny/webiny-js/commit/d279b458a9296611dd3fa87778939421c96fba28))
+* **api-headless-cms:** storage id validation ([#2654](https://github.com/webiny/webiny-js/issues/2654)) ([eac1e31](https://github.com/webiny/webiny-js/commit/eac1e31322c4cd1e0cab7f28d5b89d2142b02d00))
+* **api-headless-cms-ddb-es:** transformation of fieldId and storageId paths ([#2622](https://github.com/webiny/webiny-js/issues/2622)) ([145568a](https://github.com/webiny/webiny-js/commit/145568a99099246cd53b24e700e30ef3b37ff09e))
+* **app-headless-cms:** make fieldId changeable ([#2613](https://github.com/webiny/webiny-js/issues/2613)) ([45cc7ac](https://github.com/webiny/webiny-js/commit/45cc7ac6d91e7fae8ecb241e00505a1d12c0e1bd))
+* **app-headless-cms:** model fields upgrade for 5.33.0 ([#2638](https://github.com/webiny/webiny-js/issues/2638)) ([dbe965f](https://github.com/webiny/webiny-js/commit/dbe965f472a30b7f9f4f77a7b9dd77223d24b9c2))
+* **headless-cms:** ability to delete locked field ([#2648](https://github.com/webiny/webiny-js/issues/2648)) ([1e123ac](https://github.com/webiny/webiny-js/commit/1e123acd6049481f056ab0a63d8a6bf8fc8e2f13))
+
+
+
+
+
 # [5.32.0](https://github.com/webiny/webiny-js/compare/v5.32.0-beta.0...v5.32.0) (2022-09-07)
 
 **Note:** Version bump only for package webiny-js

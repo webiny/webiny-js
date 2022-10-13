@@ -6,8 +6,8 @@ const { globalConfig } = require("@webiny/global-config");
 module.exports.applyDefaults = () => {
     let telemetry;
     const config = getProject().config;
-    if (config.cli && config.cli.telemetry === false) {
-        telemetry = false;
+    if (config.cli && "telemetry" in config.cli) {
+        telemetry = config.cli.telemetry;
     } else {
         telemetry = isEnabled();
     }
