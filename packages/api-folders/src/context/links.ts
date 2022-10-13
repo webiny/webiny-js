@@ -33,7 +33,7 @@ export const createLinksContext = async ({
             const tenant = getTenantId();
             const locale = getLocaleCode();
 
-            let link: Link | null = null;
+            let link: Link | undefined;
             try {
                 link = await storageOperations.getLink({ tenant, locale, id });
             } catch (error) {

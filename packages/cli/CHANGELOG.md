@@ -3,6 +3,40 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.33.0](https://github.com/webiny/webiny-js/compare/v5.33.0-beta.1...v5.33.0) (2022-10-12)
+
+**Note:** Version bump only for package @webiny/cli
+
+
+
+
+
+# [5.33.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.33.0-beta.0...v5.33.0-beta.1) (2022-10-12)
+
+
+### Bug Fixes
+
+* deprecate `init` method and introduce `link` ([2fe6bf1](https://github.com/webiny/webiny-js/commit/2fe6bf17fdd0554af6130accb1b88fc0996a0370))
+* replace word `init` with `link` ([8309a57](https://github.com/webiny/webiny-js/commit/8309a57ec98c672382f600c82ca7af2c212caff2))
+* switch the order of commands ([1e37a6a](https://github.com/webiny/webiny-js/commit/1e37a6af290e50366fe625e587c2372f382cb4f5))
+
+
+
+
+
+# [5.33.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.32.0...v5.33.0-beta.0) (2022-10-11)
+
+
+### Bug Fixes
+
+* do not continue if there's no WCP project ID present ([faf54da](https://github.com/webiny/webiny-js/commit/faf54da5d8028c1658ba15429e2c366482727c3a))
+* replace verb "activated" with "linked" ([a4634eb](https://github.com/webiny/webiny-js/commit/a4634eb6b0cf5d05edf9b0ca45e742731af21924))
+* skip PAT auth if the environment is being retrieved via API key ([99214e3](https://github.com/webiny/webiny-js/commit/99214e3b124884eafdc94ba8df03bc9345837b92))
+
+
+
+
+
 # [5.32.0](https://github.com/webiny/webiny-js/compare/v5.32.0-beta.0...v5.32.0) (2022-09-07)
 
 **Note:** Version bump only for package @webiny/cli

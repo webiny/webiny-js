@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-mailer",
-  "version": "5.32.0",
+  "version": "5.33.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -15,10 +15,10 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.16.3",
-    "@webiny/api": "^5.32.0",
-    "@webiny/error": "^5.32.0",
-    "@webiny/plugins": "^5.32.0",
-    "@webiny/pubsub": "^5.32.0",
+    "@webiny/api": "^5.33.0",
+    "@webiny/error": "^5.33.0",
+    "@webiny/plugins": "^5.33.0",
+    "@webiny/pubsub": "^5.33.0",
     "joi": "^17.6.0",
     "nodemailer": "^6.7.6"
   },
@@ -28,8 +28,8 @@
     "@babel/preset-env": "^7.16.4",
     "@babel/preset-typescript": "^7.16.0",
     "@types/nodemailer": "^6.4.4",
-    "@webiny/cli": "^5.32.0",
-    "@webiny/project-utils": "^5.32.0",
+    "@webiny/cli": "^5.33.0",
+    "@webiny/project-utils": "^5.33.0",
     "jest": "^28.1.0",
     "rimraf": "^3.0.2",
     "ttypescript": "^1.5.12",

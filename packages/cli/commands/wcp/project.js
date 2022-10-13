@@ -13,8 +13,26 @@ module.exports.command = () => [
                 `Webiny project-related commands`,
                 projectCommand => {
                     projectCommand.command(
+                        "link",
+                        `Link a Webiny project with Webiny Control Panel (WCP)`,
+                        command => {
+                            yargs.option("debug", {
+                                describe: `Turn on debug logs`,
+                                type: "boolean"
+                            });
+                            yargs.option("debug-level", {
+                                default: 1,
+                                describe: `Set the debug logs verbosity level`,
+                                type: "number"
+                            });
+                            command.example("$0 project link");
+                        },
+                        () => handler({ context })
+                    );
+
+                    projectCommand.command(
                         "init",
-                        `Initialize a Webiny project`,
+                        `Initialize a Webiny project (deprecated, please use the link command instead)`,
                         command => {
                             yargs.option("debug", {
                                 describe: `Turn on debug logs`,
@@ -39,13 +57,13 @@ const handler = async ({ context }) => {
     // Check login.
     const user = await getUser();
 
-    // User already initialized a project?
+    // User already linked a project?
     const { id: orgProjectId } = context.project.config;
     if (orgProjectId) {
         const [, projectId] = orgProjectId.split("/");
         const project = user.projects.find(item => item.id === projectId);
         if (project) {
-            console.log(`Your ${chalk.green(orgProjectId)} project has already been initialized.`);
+            console.log(`Your ${chalk.green(orgProjectId)} project has already been linked.`);
 
             const prompt = inquirer.createPromptModule();
             const { proceed } = await prompt({
@@ -170,7 +188,7 @@ const handler = async ({ context }) => {
     console.log(
         `${chalk.green("✔")} Project ${context.success.hl(
             selectedProject.name
-        )} initialized successfully.`
+        )} linked successfully.`
     );
 
     await sleep();

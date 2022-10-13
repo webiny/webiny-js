@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.33.0](https://github.com/webiny/webiny-js/compare/v5.33.0-beta.1...v5.33.0) (2022-10-12)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+# [5.33.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.33.0-beta.0...v5.33.0-beta.1) (2022-10-12)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+# [5.33.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.32.0...v5.33.0-beta.0) (2022-10-11)
+
+
+### Bug Fixes
+
+* **api-headless-cms:** field storage plugins ([#2641](https://github.com/webiny/webiny-js/issues/2641)) ([286f56a](https://github.com/webiny/webiny-js/commit/286f56aab9b709c9e0175e7e8b085ecab162f90a))
+
+
+### Features
+
+* make FileManager composable ([#2664](https://github.com/webiny/webiny-js/issues/2664)) ([d279b45](https://github.com/webiny/webiny-js/commit/d279b458a9296611dd3fa87778939421c96fba28))
+* **app-headless-cms:** make fieldId changeable ([#2613](https://github.com/webiny/webiny-js/issues/2613)) ([45cc7ac](https://github.com/webiny/webiny-js/commit/45cc7ac6d91e7fae8ecb241e00505a1d12c0e1bd))
+* **app-headless-cms:** model fields upgrade for 5.33.0 ([#2638](https://github.com/webiny/webiny-js/issues/2638)) ([dbe965f](https://github.com/webiny/webiny-js/commit/dbe965f472a30b7f9f4f77a7b9dd77223d24b9c2))
+* **headless-cms:** ability to delete locked field ([#2648](https://github.com/webiny/webiny-js/issues/2648)) ([1e123ac](https://github.com/webiny/webiny-js/commit/1e123acd6049481f056ab0a63d8a6bf8fc8e2f13))
+
+
+
+
+
 # [5.32.0](https://github.com/webiny/webiny-js/compare/v5.32.0-beta.0...v5.32.0) (2022-09-07)
 
 **Note:** Version bump only for package @webiny/app-headless-cms
