@@ -124,7 +124,7 @@ const extractFieldsFromModels = (models: CmsModel[]): CmsModelField[] => {
     }, []);
 };
 
-describe("upgrade for 5.33.0", () => {
+describe.skip("upgrade for 5.33.0", () => {
     const { listContentModelsQuery } = useGraphQLHandler({
         path: "manage/en-US"
     });
