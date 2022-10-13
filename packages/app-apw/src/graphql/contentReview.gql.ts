@@ -22,7 +22,7 @@ const getDataFields = (fields = "") => `{
         displayName
         type
     }
-    status
+    reviewStatus
     title
     content {
         id
