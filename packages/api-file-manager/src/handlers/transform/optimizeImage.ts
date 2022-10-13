@@ -17,6 +17,7 @@ export default async (buffer: Body, type: string): Promise<Body> => {
         case "image/jpeg":
         case "image/jpg": {
             return await sharp(buffer)
+                .rotate()
                 .resize({ width: 2560, withoutEnlargement: true, fit: "inside" })
                 .toFormat("jpeg", { quality: 90 })
                 .toBuffer();
