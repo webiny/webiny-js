@@ -43,7 +43,7 @@
   "devDependencies": {
     "@babel/cli": "^7.19.3",
     "@babel/core": "^7.19.3",
-    "@babel/preset-env": "^7.19.3",
+    "@babel/preset-env": "^7.19.4",
     "@babel/preset-flow": "^7.0.0",
     "@webiny/api-headless-cms-ddb": "^5.33.0",
     "@webiny/api-page-builder-so-ddb": "^5.33.0",
