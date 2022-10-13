@@ -7,10 +7,10 @@ import { PbEditorPageElementPlugin, PbEditorElement } from "../../../../types";
 import { useRecoilValue } from "recoil";
 import { CloneElementActionEvent } from "../../../recoil/actions/cloneElement";
 
-const removeVarRef = (element: PbEditorElement) => {
-    if (element?.data?.varRef) {
+const removeVariableId = (element: PbEditorElement) => {
+    if (element?.data?.variableId) {
         const elementCopy = cloneDeep(element);
-        delete elementCopy.data.varRef;
+        delete elementCopy.data.variableId;
 
         return elementCopy;
     }
@@ -34,7 +34,7 @@ const CloneAction: React.FC<CloneActionPropsType> = ({ children }) => {
     const onClick = () => {
         eventActionHandler.trigger(
             new CloneElementActionEvent({
-                element: removeVarRef(element)
+                element: removeVariableId(element)
             })
         );
     };

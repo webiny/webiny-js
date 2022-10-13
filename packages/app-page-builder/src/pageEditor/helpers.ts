@@ -24,23 +24,26 @@ export const createBlockReference = (name: string): PbEditorElement => {
 };
 
 /**
- * Remove varRef from elements recursively
+ * Remove variableId from elements recursively
  */
-export const removeElementVarRefs = (el: PbElement, variables: PbBlockVariable[]): PbElement => {
+export const removeElementVariableIds = (
+    el: PbElement,
+    variables: PbBlockVariable[]
+): PbElement => {
     el.elements = el.elements.map(el => {
-        if (el.data?.varRef) {
+        if (el.data?.variableId) {
             const variableValue = variables.find(
-                (variable: PbBlockVariable) => variable.varRef === el.data.varRef
+                (variable: PbBlockVariable) => variable.id === el.data.variableId
             )?.value;
 
             if (el.data?.text?.data?.text && variableValue) {
                 el.data.text.data.text = variableValue;
             }
             // @ts-ignore
-            delete el.data?.varRef;
+            delete el.data?.variableId;
         }
         if (el.elements && el.elements.length) {
-            el = removeElementVarRefs(el, variables);
+            el = removeElementVariableIds(el, variables);
         }
 
         return el;

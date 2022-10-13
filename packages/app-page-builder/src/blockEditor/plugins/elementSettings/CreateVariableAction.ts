@@ -15,10 +15,10 @@ const CreateVariableAction: React.FC<CreateVariableActionPropsType> = ({ childre
     const updateElement = useUpdateElement();
 
     const onClick = useCallback((): void => {
-        if (element && !element.data?.varRef && block && block.id) {
+        if (element && !element.data?.variableId && block && block.id) {
             updateElement({
                 ...element,
-                data: { ...element.data, varRef: element.id }
+                data: { ...element.data, variableId: element.id }
             });
             updateElement({
                 ...block,
@@ -27,7 +27,7 @@ const CreateVariableAction: React.FC<CreateVariableActionPropsType> = ({ childre
                     variables: [
                         ...(block.data?.variables || []),
                         {
-                            varRef: element.id,
+                            id: element.id,
                             label: startCase(camelCase(element.type))
                         }
                     ]

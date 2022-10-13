@@ -12,7 +12,7 @@ export const ElementSettingsTabContentPlugin = createComponentPlugin(
         return function SettingsTabContent({ children, ...props }) {
             const [element] = useActiveElement();
             const canHaveVariable = element && element.type === "heading";
-            const hasVariable = element && element.data?.varRef;
+            const hasVariable = element && element.data?.variableId;
             const isBlock = element && element.type === "block";
 
             return (

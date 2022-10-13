@@ -76,7 +76,7 @@ const VariablesListItem = ({
         dropItemAbove
     } = useSortableList({
         move,
-        id: variable.varRef,
+        id: variable.id,
         index,
         type: "variable"
     });

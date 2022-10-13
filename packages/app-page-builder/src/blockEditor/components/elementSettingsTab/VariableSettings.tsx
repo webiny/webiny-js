@@ -21,7 +21,7 @@ const VariableSettings = ({ element }: { element: PbEditorElement }) => {
 
     const initialData = useMemo(() => {
         const variable = block?.data?.variables?.find(
-            (variable: PbBlockVariable) => variable.varRef === element?.data?.varRef
+            (variable: PbBlockVariable) => variable.id === element?.data?.variableId
         );
 
         return { label: variable?.label };
@@ -31,7 +31,7 @@ const VariableSettings = ({ element }: { element: PbEditorElement }) => {
         formData => {
             if (block && block.id) {
                 const newVariables = block.data?.variables?.map((variable: PbBlockVariable) => {
-                    if (variable?.varRef === element?.data?.varRef) {
+                    if (variable?.id === element?.data?.variableId) {
                         return {
                             ...variable,
                             label: formData.label
@@ -62,7 +62,7 @@ const VariableSettings = ({ element }: { element: PbEditorElement }) => {
             showConfirmation(() => {
                 if (block && block.id) {
                     const updatedVariables = block.data.variables.filter(
-                        (variable: PbBlockVariable) => variable.varRef !== element?.data?.varRef
+                        (variable: PbBlockVariable) => variable.id !== element?.data?.variableId
                     );
                     updateElement({
                         ...block,
@@ -72,9 +72,9 @@ const VariableSettings = ({ element }: { element: PbEditorElement }) => {
                         }
                     });
 
-                    // element "varRef" value should be dropped
+                    // element "variableId" value should be dropped
                     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                    const { varRef, ...updatedElementData } = element.data;
+                    const { variableId, ...updatedElementData } = element.data;
                     updateElement({
                         ...element,
                         data: updatedElementData

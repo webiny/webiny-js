@@ -16,10 +16,10 @@ const VariableSettings: React.FC = () => {
     const updateElement = useUpdateElement();
 
     const onChange = useCallback(
-        (value: string, varRef: string) => {
+        (value: string, variableId: string) => {
             if (element) {
                 const newVariables = element?.data?.variables?.map((variable: PbBlockVariable) => {
-                    if (variable?.varRef === varRef) {
+                    if (variable?.id === variableId) {
                         return {
                             ...variable,
                             value
@@ -58,7 +58,7 @@ const VariableSettings: React.FC = () => {
                     key={index}
                     label={variable?.label}
                     value={variable?.value}
-                    onChange={value => onChange(value, variable.varRef)}
+                    onChange={value => onChange(value, variable.id)}
                     onBlur={onBlur}
                 />
             ))}

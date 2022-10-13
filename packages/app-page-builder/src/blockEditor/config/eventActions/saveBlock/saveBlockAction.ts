@@ -29,7 +29,7 @@ const syncBlockVariables = (block: PbElement) => {
         result: Array<PbBlockVariable>,
         variable: PbBlockVariable
     ) {
-        const dataObject = findNestedObj(block.elements, "varRef", variable.varRef);
+        const dataObject = findNestedObj(block.elements, "variableId", variable.id);
 
         if (dataObject) {
             result.push({ ...variable, value: dataObject?.text?.data?.text });

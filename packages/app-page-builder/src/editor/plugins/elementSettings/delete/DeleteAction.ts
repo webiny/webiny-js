@@ -8,9 +8,9 @@ import { useRecoilValue } from "recoil";
 import { useUpdateElement } from "~/editor/hooks/useUpdateElement";
 import { useParentBlock } from "~/editor/hooks/useParentBlock";
 
-const removeVariableFromBlock = (block: PbEditorElement, varRef: string) => {
+const removeVariableFromBlock = (block: PbEditorElement, variableId: string) => {
     const updatedVariables = block.data.variables.filter(
-        (variable: PbBlockVariable) => variable.varRef !== varRef
+        (variable: PbBlockVariable) => variable.id !== variableId
     );
 
     return {
@@ -38,8 +38,8 @@ const DeleteAction: React.FC<DeleteActionPropsType> = ({ children }) => {
 
     const onClick = useCallback((): void => {
         // We need to remove element variable from block if it exists
-        if (element.data?.varRef && block) {
-            const updatedBlock = removeVariableFromBlock(block, element.data.varRef);
+        if (element.data?.variableId && block) {
+            const updatedBlock = removeVariableFromBlock(block, element.data.variableId);
 
             updateElement(updatedBlock);
         }

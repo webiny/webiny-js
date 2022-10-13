@@ -207,7 +207,7 @@ export interface PbElement {
 }
 
 export interface PbBlockVariable {
-    varRef: string;
+    id: string;
     label: string;
     value?: string;
 }

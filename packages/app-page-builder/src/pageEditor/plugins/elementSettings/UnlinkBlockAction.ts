@@ -3,7 +3,7 @@ import { cloneDeep } from "lodash";
 import { useActiveElement } from "~/editor/hooks/useActiveElement";
 import { useUpdateElement } from "~/editor/hooks/useUpdateElement";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
-import { removeElementVarRefs } from "~/pageEditor/helpers";
+import { removeElementVariableIds } from "~/pageEditor/helpers";
 import { PbElement } from "~/types";
 
 interface UnlinkBlockActionPropsType {
@@ -22,11 +22,11 @@ const UnlinkBlockAction: React.FC<UnlinkBlockActionPropsType> = ({ children }) =
             const pbElement = (await getElementTree({
                 element: { ...element, data: newData }
             })) as PbElement;
-            // we make copy of element to delete varRefs from it
+            // we make copy of element to delete variableIds from it
             const elementCopy = cloneDeep(pbElement);
-            const elementWithoutVarRefs = removeElementVarRefs(elementCopy, variables);
+            const elementWithoutVariableIds = removeElementVariableIds(elementCopy, variables);
 
-            updateElement(elementWithoutVarRefs);
+            updateElement(elementWithoutVariableIds);
         }
     }, [element, updateElement]);
 
