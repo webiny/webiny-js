@@ -50,12 +50,7 @@ export interface Category {
     locale: string;
 }
 
-export type PageStatus =
-    | "published"
-    | "unpublished"
-    | "reviewRequested"
-    | "changesRequested"
-    | "draft";
+export type PageStatus = "published" | "unpublished" | "draft";
 export type PageSpecialType = "home" | "notFound";
 
 export interface PageSettings {
@@ -655,26 +650,6 @@ export interface PageStorageOperationsUnpublishParams {
  * @category StorageOperations
  * @category PageStorageOperations
  */
-export interface PageStorageOperationsRequestReviewParams {
-    original: Page;
-    page: Page;
-    latestPage: Page;
-}
-
-/**
- * @category StorageOperations
- * @category PageStorageOperations
- */
-export interface PageStorageOperationsRequestChangesParams {
-    original: Page;
-    page: Page;
-    latestPage: Page;
-}
-
-/**
- * @category StorageOperations
- * @category PageStorageOperations
- */
 export interface PageStorageOperations {
     get: (params: PageStorageOperationsGetParams) => Promise<Page | null>;
     list: (params: PageStorageOperationsListParams) => Promise<PageStorageOperationsListResponse>;
@@ -695,8 +670,6 @@ export interface PageStorageOperations {
     deleteAll: (params: PageStorageOperationsDeleteAllParams) => Promise<[Page]>;
     publish: (params: PageStorageOperationsPublishParams) => Promise<Page>;
     unpublish: (params: PageStorageOperationsUnpublishParams) => Promise<Page>;
-    requestReview: (params: PageStorageOperationsRequestReviewParams) => Promise<Page>;
-    requestChanges: (params: PageStorageOperationsRequestChangesParams) => Promise<Page>;
 }
 
 export interface PageBuilderStorageOperations {

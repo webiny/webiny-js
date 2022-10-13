@@ -12,7 +12,6 @@ import {
     OnBeforePageCreateFromTopicParams,
     OnBeforePageUpdateTopicParams,
     OnBeforePagePublishTopicParams,
-    OnBeforePageRequestReviewTopicParams,
     PageSettings
 } from "@webiny/api-page-builder/types";
 import { Context } from "@webiny/api/types";
@@ -106,9 +105,6 @@ export type ApwOnBeforePageCreateFromTopicParams =
 export type ApwOnBeforePageUpdateTopicParams = OnBeforePageUpdateTopicParams<PageWithWorkflow>;
 
 export type ApwOnBeforePagePublishTopicParams = OnBeforePagePublishTopicParams<PageWithWorkflow>;
-
-export type ApwOnBeforePageRequestReviewTopicParams =
-    OnBeforePageRequestReviewTopicParams<PageWithWorkflow>;
 
 export enum WorkflowScopeTypes {
     DEFAULT = "default",
