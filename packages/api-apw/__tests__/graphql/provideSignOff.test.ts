@@ -137,7 +137,7 @@ describe("Provide sign off for a step in content review process", function () {
                                 displayName: "John Doe",
                                 type: "admin"
                             },
-                            status: "underReview",
+                            reviewStatus: "underReview",
                             title: expect.any(String),
                             content: expect.objectContaining(expectedContent),
                             steps: [

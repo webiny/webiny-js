@@ -188,7 +188,7 @@ export interface ApwContentReviewStep {
 
 export interface ApwContentReview extends ApwBaseFields {
     title: string;
-    status: ApwContentReviewStatus;
+    reviewStatus: ApwContentReviewStatus;
     content: ApwContentReviewContent;
     steps: Array<ApwContentReviewStep>;
     latestCommentId: string | null;
@@ -323,12 +323,13 @@ export interface ApwContentReviewContent {
 
 export interface CreateApwContentReviewParams {
     content: ApwContentReviewContent;
+    reviewStatus: ApwContentReviewStatus;
 }
 
-interface UpdateApwContentReviewParams {
+export interface UpdateApwContentReviewParams {
     title?: string;
     steps?: ApwContentReviewStep[];
-    status?: ApwContentReviewStatus;
+    reviewStatus?: ApwContentReviewStatus;
     content?: ApwContentReviewContent;
 }
 
@@ -573,7 +574,7 @@ type StorageOperationsGetContentReviewParams = StorageOperationsGetParams;
 
 export interface ApwContentReviewListParams extends ListParams {
     where?: ListWhere & {
-        status?: ApwContentReviewListFilter;
+        reviewStatus?: ApwContentReviewListFilter;
         title?: string;
         title_contains?: string;
     };

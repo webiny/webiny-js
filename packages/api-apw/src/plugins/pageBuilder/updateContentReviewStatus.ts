@@ -32,9 +32,9 @@ export const updateContentReviewStatus = (params: UpdateContentReviewStatusParam
             /**
              * If content review is "readyToBePublished set its status as "published" after page publish.
              */
-            if (contentReview.status === ApwContentReviewStatus.READY_TO_BE_PUBLISHED) {
+            if (contentReview.reviewStatus === ApwContentReviewStatus.READY_TO_BE_PUBLISHED) {
                 await apw.contentReview.update(contentReviewId, {
-                    status: ApwContentReviewStatus.PUBLISHED,
+                    reviewStatus: ApwContentReviewStatus.PUBLISHED,
                     content: {
                         ...contentReview.content,
                         ...INITIAL_CONTENT_REVIEW_CONTENT_SCHEDULE_META,
@@ -59,9 +59,9 @@ export const updateContentReviewStatus = (params: UpdateContentReviewStatusParam
              * If content review is "published set its status as "readyToBePublished" after page unpublish.
              */
 
-            if (contentReview.status === ApwContentReviewStatus.PUBLISHED) {
+            if (contentReview.reviewStatus === ApwContentReviewStatus.PUBLISHED) {
                 await apw.contentReview.update(contentReviewId, {
-                    status: ApwContentReviewStatus.READY_TO_BE_PUBLISHED,
+                    reviewStatus: ApwContentReviewStatus.READY_TO_BE_PUBLISHED,
                     content: {
                         ...contentReview.content,
                         ...INITIAL_CONTENT_REVIEW_CONTENT_SCHEDULE_META,

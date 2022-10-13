@@ -21,6 +21,7 @@ const contentField = (fields: CmsModelField[]) =>
 const contentStatus = () =>
     createModelField({
         label: "Status",
+        fieldId: "reviewStatus",
         parent: "contentReview",
         type: "text",
         predefinedValues: {
@@ -42,7 +43,7 @@ const contentStatus = () =>
         },
         validation: [
             {
-                message: "`status` field value is required in contentReview.",
+                message: "`reviewStatus` field value is required in contentReview.",
                 name: "required"
             }
         ]
@@ -287,7 +288,7 @@ export const createContentReviewModelDefinition = ({
     layout: [
         ["contentReview_title"],
         ["contentReview_content"],
-        ["contentReview_status"],
+        ["contentReview_reviewStatus"],
         ["contentReview_reviewRequestedBy"],
         ["contentReview_steps"],
         ["contentReview_changeRequested"],
