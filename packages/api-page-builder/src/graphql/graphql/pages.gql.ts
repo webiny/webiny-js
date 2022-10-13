@@ -242,12 +242,6 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                     # Unpublish page
                     unpublishPage(id: ID!): PbPageResponse
 
-                    # Signifies that a page needs to be reviewed.
-                    requestReview(id: ID!): PbPageResponse
-
-                    # Signifies that certain changes are needed on given page.
-                    requestChanges(id: ID!): PbPageResponse
-
                     # Delete page and all of its revisions
                     deletePage(id: ID!): PbDeletePageResponse
 
@@ -445,14 +439,6 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
 
                     unpublishPage: async (_, args: any, context) => {
                         return resolve(() => context.pageBuilder.unpublishPage(args.id));
-                    },
-
-                    requestReview: async (_, args: any, context) => {
-                        return resolve(() => context.pageBuilder.requestPageReview(args.id));
-                    },
-
-                    requestChanges: async (_, args: any, context) => {
-                        return resolve(() => context.pageBuilder.requestPageChanges(args.id));
                     },
 
                     rerenderPage: async (_, args: any, context) => {

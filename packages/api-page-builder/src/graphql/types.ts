@@ -518,8 +518,6 @@ export interface PageSecurityPermission extends PbSecurityPermission {
     name: "pb.page";
 
     // Determines which of the following publishing workflow actions are allowed:
-    // "r" - request review (for unpublished page)
-    // "c" - request change (for unpublished page on which a review was requested)
     // "p" - publish
     // "u" - unpublish
     pw: string;
