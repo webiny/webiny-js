@@ -9,14 +9,29 @@ import {
     OnBeforeWorkflowUpdateTopicParams
 } from "~/types";
 import { createTopic } from "@webiny/pubsub";
+import { NotAuthorizedError } from "@webiny/api-security";
 
-export function createWorkflowMethods({ storageOperations }: CreateApwParams): ApwWorkflowCrud {
+export function createWorkflowMethods({
+    storageOperations,
+    getPermission
+}: CreateApwParams): ApwWorkflowCrud {
     const onBeforeWorkflowCreate = createTopic<OnBeforeWorkflowCreateTopicParams>();
     const onAfterWorkflowCreate = createTopic<OnAfterWorkflowCreateTopicParams>();
     const onBeforeWorkflowUpdate = createTopic<OnBeforeWorkflowUpdateTopicParams>();
     const onAfterWorkflowUpdate = createTopic<OnAfterWorkflowUpdateTopicParams>();
     const onBeforeWorkflowDelete = createTopic<OnBeforeWorkflowDeleteTopicParams>();
     const onAfterWorkflowDelete = createTopic<OnAfterWorkflowDeleteTopicParams>();
+
+    const validateAccess = async (): Promise<void> => {
+        const permission = await getPermission("apw.publishingWorkflows");
+        if (!!permission) {
+            return;
+        }
+        throw new NotAuthorizedError({
+            message: "Not authorized to access publishing workflows."
+        });
+    };
+
     return {
         /**
          * Lifecycle events
@@ -34,6 +49,7 @@ export function createWorkflowMethods({ storageOperations }: CreateApwParams): A
             return storageOperations.listWorkflows(params);
         },
         async create(data) {
+            await validateAccess();
             await onBeforeWorkflowCreate.publish({ input: data });
 
             const workflow = await storageOperations.createWorkflow({ data });
@@ -43,6 +59,7 @@ export function createWorkflowMethods({ storageOperations }: CreateApwParams): A
             return workflow;
         },
         async update(id, data) {
+            await validateAccess();
             const original = await storageOperations.getWorkflow({ id });
 
             await onBeforeWorkflowUpdate.publish({ original, input: { id, data } });
@@ -54,6 +71,7 @@ export function createWorkflowMethods({ storageOperations }: CreateApwParams): A
             return workflow;
         },
         async delete(id: string) {
+            await validateAccess();
             const workflow = await storageOperations.getWorkflow({ id });
 
             await onBeforeWorkflowDelete.publish({ workflow });
