@@ -706,7 +706,7 @@ jobs:
       - name: Version packages
         run: |
           yarn lerna version 0.0.0-unstable.$(git rev-parse --short HEAD) --force-publish --no-push --no-git-tag-version --no-changelog --yes
-          git commit -m "chore: version packages"
+          git commit -am "chore: version packages"
 
       - name: Publish packages to NPM
         run: yarn lerna publish from-package --dist-tag unstable --yes
