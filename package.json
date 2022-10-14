@@ -153,6 +153,8 @@
     "lerna:publish:beta": "yarn lerna publish from-package --dist-tag beta --yes",
     "lerna:version:verdaccio": "yarn lerna version --conventional-prerelease --force-publish --preid next --no-push --no-changelog --yes",
     "lerna:publish:verdaccio": "yarn lerna publish from-package --dist-tag next --registry=\"http://localhost:4873\" --no-verify-access --no-verify-registry --yes",
+    "lerna:version:unstable": "yarn lerna version 0.0.0-unstable.$(git rev-parse --short HEAD) --force-publish --no-push --no-git-tag-version --no-changelog --yes",
+    "lerna:publish:unstable": "yarn lerna publish from-package --dist-tag unstable --yes",
     "lerna:version:experimental": "yarn lerna version --conventional-prerelease --preid experimental --force-publish --no-push --no-changelog --yes",
     "lerna:publish:experimental": "yarn lerna publish from-package --dist-tag experimental --yes",
     "verdaccio:start": "yarn verdaccio -c ./.verdaccio.yaml",
