@@ -12,7 +12,7 @@ const APW_PERMISSION = "apw.";
 const YES_STATEMENT = "yes";
 const NO_STATEMENT = "no";
 
-const apwKeys: string[] = ["manageWorkflows"];
+const apwKeys: string[] = ["publishingWorkflows"];
 
 export interface ApwPermissionsProps {
     value: ApwSecurityPermission[];
@@ -44,7 +44,7 @@ export const ApwPermissions: React.FC<ApwPermissionsProps> = ({ value, onChange 
         // This function only runs once on Form mount
         if (!Array.isArray(value)) {
             return {
-                manageWorkflows: NO_STATEMENT
+                publishingWorkflows: NO_STATEMENT
             };
         }
 
@@ -52,7 +52,7 @@ export const ApwPermissions: React.FC<ApwPermissionsProps> = ({ value, onChange 
 
         if (!permissions.length) {
             return {
-                manageWorkflows: NO_STATEMENT
+                publishingWorkflows: NO_STATEMENT
             };
         }
 
@@ -85,7 +85,7 @@ export const ApwPermissions: React.FC<ApwPermissionsProps> = ({ value, onChange 
                                 <PermissionInfo title={t`Manage Workflows`} />
                             </Cell>
                             <Cell span={6}>
-                                <Bind name={"manageWorkflows"}>
+                                <Bind name={"publishingWorkflows"}>
                                     <Select label={t`Manage Workflows`}>
                                         <option value={NO_STATEMENT}>{t`No`}</option>
                                         <option value={YES_STATEMENT}>{t`Yes`}</option>

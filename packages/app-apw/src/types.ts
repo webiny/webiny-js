@@ -177,5 +177,5 @@ export interface CmsEntry {
  * @category SecurityPermission
  */
 export interface ApwSecurityPermission extends SecurityPermission {
-    manageWorkflows?: boolean;
+    publishingWorkflows?: boolean;
 }
