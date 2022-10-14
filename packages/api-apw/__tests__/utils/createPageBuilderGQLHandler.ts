@@ -69,7 +69,7 @@ export interface GQLHandlerCallableParams {
     identity?: SecurityIdentity;
     plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     storageOperationPlugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
-    path: string;
+    path?: string;
 }
 
 export interface InvokeParams {
