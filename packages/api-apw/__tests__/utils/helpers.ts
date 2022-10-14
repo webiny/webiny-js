@@ -57,6 +57,9 @@ export const createPermissions = (permissions?: PermissionsArg[]): PermissionsAr
         {
             name: "content.i18n",
             locales: ["en-US"]
+        },
+        {
+            name: "apw.publishingWorkflows"
         }
     ];
 };
