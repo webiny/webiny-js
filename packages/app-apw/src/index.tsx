@@ -46,6 +46,7 @@ import { Module } from "~/plugins/Module";
 import { WorkflowScope } from "~/views/publishingWorkflows/components/WorkflowScope";
 import { DefaultBar } from "~/plugins/editor/defaultBar";
 import { MenuGroupRenderer } from "~/plugins/cms/MenuGroupRenderer";
+import { ApwPermissions } from "~/plugins/permissionRenderer";
 
 export const AdvancedPublishingWorkflow: React.FC = () => {
     const { canUseFeature } = useWcp();
@@ -85,6 +86,7 @@ export const AdvancedPublishingWorkflow: React.FC = () => {
                 <ApwOnPageDelete />
                 <ApwOnEntryDelete />
                 <ApwOnEntryPublish />
+                <ApwPermissions />
             </Plugins>
         </>
     );
