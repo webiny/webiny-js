@@ -30,10 +30,28 @@ const syncBlockVariables = (block: PbElement) => {
         variable: PbBlockVariable
     ) {
         const dataObject = findNestedObj(block.elements, "variableId", variable.id);
+        const isTextVariable =
+            variable.type === "heading" ||
+            variable.type === "paragraph" ||
+            variable.type === "quote" ||
+            variable.type === "list";
 
-        if (dataObject) {
+        if (dataObject && isTextVariable) {
             result.push({ ...variable, value: dataObject?.text?.data?.text });
         }
+        if (dataObject && variable.type === "image") {
+            result.push({ ...variable, value: dataObject?.image?.file });
+        }
+        if (dataObject && variable.type === "images-list") {
+            result.push({ ...variable, value: dataObject?.images });
+        }
+        if (dataObject && variable.type === "button") {
+            result.push({
+                ...variable,
+                value: { label: dataObject?.buttonText, url: dataObject?.action?.href }
+            });
+        }
+
         return result;
     },
     []);

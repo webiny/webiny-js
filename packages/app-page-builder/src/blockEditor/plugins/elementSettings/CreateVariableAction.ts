@@ -28,6 +28,7 @@ const CreateVariableAction: React.FC<CreateVariableActionPropsType> = ({ childre
                         ...(block.data?.variables || []),
                         {
                             id: element.id,
+                            type: element.type,
                             label: startCase(camelCase(element.type))
                         }
                     ]

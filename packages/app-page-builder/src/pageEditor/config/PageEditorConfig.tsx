@@ -1,5 +1,6 @@
 import React from "react";
 import { EventActionPlugins, EventActionHandlerPlugin } from "./eventActions";
+import { ImageContainerPlugin, ImagesListPlugin } from "./elements";
 import { EditorBarPlugins } from "./editorBar";
 import { BlockEditingPlugin } from "./blockEditing";
 import { BlockElementPlugin } from "./BlockElementPlugin";
@@ -16,6 +17,8 @@ export const PageEditorConfig = React.memo(() => {
             <BlockElementPlugin />
             <BlockElementSidebarPlugin />
             <ElementSettingsTabContentPlugin />
+            <ImageContainerPlugin />
+            <ImagesListPlugin />
         </>
     );
 });

@@ -208,8 +208,9 @@ export interface PbElement {
 
 export interface PbBlockVariable {
     id: string;
+    type: string;
     label: string;
-    value?: string;
+    value?: any;
 }
 
 /**

@@ -6,12 +6,14 @@ import ElementNotLinked from "~/blockEditor/components/elementSettingsTab/Elemen
 import VariableSettings from "~/blockEditor/components/elementSettingsTab/VariableSettings";
 import VariablesList from "~/blockEditor/components/elementSettingsTab/VariablesList";
 
+const elementTypes = ["heading", "paragraph", "image", "images-list", "quote", "list", "button"];
+
 export const ElementSettingsTabContentPlugin = createComponentPlugin(
     SidebarActions,
     SidebarActionsWrapper => {
         return function SettingsTabContent({ children, ...props }) {
             const [element] = useActiveElement();
-            const canHaveVariable = element && element.type === "heading";
+            const canHaveVariable = element && elementTypes.some(type => type === element.type);
             const hasVariable = element && element.data?.variableId;
             const isBlock = element && element.type === "block";
 
