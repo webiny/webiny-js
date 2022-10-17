@@ -40,20 +40,43 @@ export const createAdminUsers = ({
         }
     };
 
-    const adminUsers: AdminUsers = {
-        onUserAfterCreate: createTopic("adminUsers.onCreateAfter"),
-        onUserAfterDelete: createTopic("adminUsers.onDeleteAfter"),
-        onUserAfterUpdate: createTopic("adminUsers.onUpdateAfter"),
-        onUserBeforeCreate: createTopic("adminUsers.onCreateBefore"),
-        onUserBeforeDelete: createTopic("adminUsers.onDeleteBefore"),
-        onUserBeforeUpdate: createTopic("adminUsers.onUpdateBefore"),
-        onUserCreateError: createTopic("adminUsers.onCreateError"),
-        // onUserUpdateError: createTopic("adminUsers.onUpdateError"),
-        // onUserDeleteError: createTopic("adminUsers.onDeleteError"),
-        onBeforeInstall: createTopic("adminUsers.onSystemBeforeInstall"),
-        onInstall: createTopic("adminUsers.onSystemInstall"),
-        onAfterInstall: createTopic("adminUsers.onSystemAfterInstall"),
-        onCleanup: createTopic("adminUsers.onCleanup"),
+    const onUserAfterCreate = createTopic("adminUsers.onCreateAfter");
+    const onUserAfterDelete = createTopic("adminUsers.onDeleteAfter");
+    const onUserAfterUpdate = createTopic("adminUsers.onUpdateAfter");
+    const onUserBeforeCreate = createTopic("adminUsers.onCreateBefore");
+    const onUserBeforeDelete = createTopic("adminUsers.onDeleteBefore");
+    const onUserBeforeUpdate = createTopic("adminUsers.onUpdateBefore");
+    const onUserCreateError = createTopic("adminUsers.onCreateError");
+    // const onUserUpdateError =createTopic("adminUsers.onUpdateError");
+    // const onUserDeleteError =createTopic("adminUsers.onDeleteError");
+    const onBeforeInstall = createTopic("adminUsers.onSystemBeforeInstall");
+    const onSystemBeforeInstall = createTopic("adminUsers.onSystemBeforeInstall");
+    const onInstall = createTopic("adminUsers.onSystemInstall");
+    const onAfterInstall = createTopic("adminUsers.onSystemAfterInstall");
+    const onSystemAfterInstall = createTopic("adminUsers.onSystemAfterInstall");
+    const onCleanup = createTopic("adminUsers.onCleanup");
+
+    attachUserValidation({
+        onUserBeforeCreate,
+        onUserBeforeUpdate
+    });
+
+    return {
+        onUserAfterCreate,
+        onUserAfterDelete,
+        onUserAfterUpdate,
+        onUserBeforeCreate,
+        onUserBeforeDelete,
+        onUserBeforeUpdate,
+        onUserCreateError,
+        // onUserUpdateError,
+        // onUserDeleteError,
+        onBeforeInstall,
+        onSystemBeforeInstall,
+        onInstall,
+        onAfterInstall,
+        onSystemAfterInstall,
+        onCleanup,
         getStorageOperations() {
             return storageOperations;
         },
@@ -321,8 +344,4 @@ export const createAdminUsers = ({
             await this.setVersion(process.env.WEBINY_VERSION as string);
         }
     };
-
-    attachUserValidation(adminUsers);
-
-    return adminUsers;
 };
