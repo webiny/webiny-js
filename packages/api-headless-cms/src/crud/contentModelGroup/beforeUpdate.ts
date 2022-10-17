@@ -1,10 +1,10 @@
 import { Topic } from "@webiny/pubsub/types";
-import { BeforeGroupUpdateTopicParams } from "~/types";
+import { OnGroupBeforeUpdateTopicParams } from "~/types";
 import { CmsGroupPlugin } from "~/plugins/CmsGroupPlugin";
 import { PluginsContainer } from "@webiny/plugins";
 
 interface AssignBeforeGroupUpdateParams {
-    onGroupBeforeUpdate: Topic<BeforeGroupUpdateTopicParams>;
+    onGroupBeforeUpdate: Topic<OnGroupBeforeUpdateTopicParams>;
     plugins: PluginsContainer;
 }
 export const assignBeforeGroupUpdate = (params: AssignBeforeGroupUpdateParams) => {

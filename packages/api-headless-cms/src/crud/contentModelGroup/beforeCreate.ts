@@ -1,4 +1,4 @@
-import { BeforeGroupCreateTopicParams, HeadlessCmsStorageOperations } from "~/types";
+import { OnGroupBeforeCreateTopicParams, HeadlessCmsStorageOperations } from "~/types";
 import { Topic } from "@webiny/pubsub/types";
 import { PluginsContainer } from "@webiny/plugins";
 import WebinyError from "@webiny/error";
@@ -7,7 +7,7 @@ import { toSlug } from "~/utils/toSlug";
 import { CmsGroupPlugin } from "~/plugins/CmsGroupPlugin";
 
 interface AssignBeforeGroupCreateParams {
-    onGroupBeforeCreate: Topic<BeforeGroupCreateTopicParams>;
+    onGroupBeforeCreate: Topic<OnGroupBeforeCreateTopicParams>;
     plugins: PluginsContainer;
     storageOperations: HeadlessCmsStorageOperations;
 }

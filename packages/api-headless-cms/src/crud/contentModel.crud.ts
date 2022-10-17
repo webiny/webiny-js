@@ -5,14 +5,14 @@ import {
     CmsModelManager,
     CmsModelPermission,
     HeadlessCmsStorageOperations,
-    BeforeModelCreateTopicParams,
-    AfterModelCreateTopicParams,
-    BeforeModelUpdateTopicParams,
-    AfterModelUpdateTopicParams,
-    BeforeModelDeleteTopicParams,
-    AfterModelDeleteTopicParams,
-    BeforeModelCreateFromTopicParams,
-    AfterModelCreateFromTopicParams,
+    OnModelBeforeCreateTopicParams,
+    OnModelAfterCreateTopicParams,
+    OnModelBeforeUpdateTopicParams,
+    OnModelAfterUpdateTopicParams,
+    OnModelBeforeDeleteTopicParams,
+    OnModelAfterDeleteTopicParams,
+    OnModelBeforeCreateFromTopicParams,
+    OnModelAfterCreateFromTopicParams,
     CmsModelCreateInput,
     CmsModelUpdateInput,
     CmsModelCreateFromInput
@@ -197,23 +197,23 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
 
     // create
     const onModelBeforeCreate =
-        createTopic<BeforeModelCreateTopicParams>("cms.onModelBeforeCreate");
-    const onModelAfterCreate = createTopic<AfterModelCreateTopicParams>("cms.onModelAfterCreate");
+        createTopic<OnModelBeforeCreateTopicParams>("cms.onModelBeforeCreate");
+    const onModelAfterCreate = createTopic<OnModelAfterCreateTopicParams>("cms.onModelAfterCreate");
     // create from
-    const onModelBeforeCreateFrom = createTopic<BeforeModelCreateFromTopicParams>(
+    const onModelBeforeCreateFrom = createTopic<OnModelBeforeCreateFromTopicParams>(
         "cms.onModelBeforeCreateFrom"
     );
-    const onModelAfterCreateFrom = createTopic<AfterModelCreateFromTopicParams>(
+    const onModelAfterCreateFrom = createTopic<OnModelAfterCreateFromTopicParams>(
         "cms.onModelAfterCreateFrom"
     );
     // update
     const onModelBeforeUpdate =
-        createTopic<BeforeModelUpdateTopicParams>("cms.onModelBeforeUpdate");
-    const onModelAfterUpdate = createTopic<AfterModelUpdateTopicParams>("cms.onModelAfterUpdate");
+        createTopic<OnModelBeforeUpdateTopicParams>("cms.onModelBeforeUpdate");
+    const onModelAfterUpdate = createTopic<OnModelAfterUpdateTopicParams>("cms.onModelAfterUpdate");
     // delete
     const onModelBeforeDelete =
-        createTopic<BeforeModelDeleteTopicParams>("cms.onModelBeforeDelete");
-    const onModelAfterDelete = createTopic<AfterModelDeleteTopicParams>("cms.onModelAfterDelete");
+        createTopic<OnModelBeforeDeleteTopicParams>("cms.onModelBeforeDelete");
+    const onModelAfterDelete = createTopic<OnModelAfterDeleteTopicParams>("cms.onModelAfterDelete");
     /**
      * We need to assign some default behaviors.
      */

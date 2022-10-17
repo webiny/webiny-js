@@ -758,12 +758,12 @@ export interface CmsSettingsContext {
     getModelLastChange: () => Promise<Date>;
 }
 
-export interface BeforeInstallTopicParams {
+export interface OnSystemBeforeInstallTopicParams {
     tenant: string;
     locale: string;
 }
 
-export interface AfterInstallTopicParams {
+export interface OnSystemAfterInstallTopicParams {
     tenant: string;
     locale: string;
 }
@@ -786,16 +786,16 @@ export type CmsSystemContext = {
     /**
      * @deprecated
      */
-    onBeforeSystemInstall: Topic<BeforeInstallTopicParams>;
+    onBeforeSystemInstall: Topic<OnSystemBeforeInstallTopicParams>;
     /**
      * @deprecated
      */
-    onAfterSystemInstall: Topic<AfterInstallTopicParams>;
+    onAfterSystemInstall: Topic<OnSystemAfterInstallTopicParams>;
     /**
      * Released in 5.33.0
      */
-    onSystemBeforeInstall: Topic<BeforeInstallTopicParams>;
-    onSystemAfterInstall: Topic<AfterInstallTopicParams>;
+    onSystemBeforeInstall: Topic<OnSystemBeforeInstallTopicParams>;
+    onSystemAfterInstall: Topic<OnSystemAfterInstallTopicParams>;
     onSystemInstallError: Topic<OnSystemInstallErrorTopicParams>;
 };
 
@@ -902,7 +902,7 @@ export interface CmsGroupListParams {
  * @category CmsGroup
  * @category Topic
  */
-export interface BeforeGroupCreateTopicParams {
+export interface OnGroupBeforeCreateTopicParams {
     group: CmsGroup;
 }
 
@@ -910,7 +910,7 @@ export interface BeforeGroupCreateTopicParams {
  * @category CmsGroup
  * @category Topic
  */
-export interface AfterGroupCreateTopicParams {
+export interface OnGroupAfterCreateTopicParams {
     group: CmsGroup;
 }
 
@@ -918,7 +918,7 @@ export interface AfterGroupCreateTopicParams {
  * @category CmsGroup
  * @category Topic
  */
-export interface BeforeGroupUpdateTopicParams {
+export interface OnGroupBeforeUpdateTopicParams {
     original: CmsGroup;
     group: CmsGroup;
 }
@@ -927,7 +927,7 @@ export interface BeforeGroupUpdateTopicParams {
  * @category CmsGroup
  * @category Topic
  */
-export interface AfterGroupUpdateTopicParams {
+export interface OnGroupAfterUpdateTopicParams {
     original: CmsGroup;
     group: CmsGroup;
 }
@@ -936,7 +936,7 @@ export interface AfterGroupUpdateTopicParams {
  * @category CmsGroup
  * @category Topic
  */
-export interface BeforeGroupDeleteTopicParams {
+export interface OnGroupBeforeDeleteTopicParams {
     group: CmsGroup;
 }
 
@@ -944,7 +944,7 @@ export interface BeforeGroupDeleteTopicParams {
  * @category CmsGroup
  * @category Topic
  */
-export interface AfterGroupDeleteTopicParams {
+export interface OnGroupAfterDeleteTopicParams {
     group: CmsGroup;
 }
 
@@ -985,36 +985,36 @@ export interface CmsGroupContext {
     /**
      * @deprecated
      */
-    onBeforeGroupCreate: Topic<BeforeGroupCreateTopicParams>;
+    onBeforeGroupCreate: Topic<OnGroupBeforeCreateTopicParams>;
     /**
      * @deprecated
      */
-    onAfterGroupCreate: Topic<AfterGroupCreateTopicParams>;
+    onAfterGroupCreate: Topic<OnGroupAfterCreateTopicParams>;
     /**
      * @deprecated
      */
-    onBeforeGroupUpdate: Topic<BeforeGroupUpdateTopicParams>;
+    onBeforeGroupUpdate: Topic<OnGroupBeforeUpdateTopicParams>;
     /**
      * @deprecated
      */
-    onAfterGroupUpdate: Topic<AfterGroupUpdateTopicParams>;
+    onAfterGroupUpdate: Topic<OnGroupAfterUpdateTopicParams>;
     /**
      * @deprecated
      */
-    onBeforeGroupDelete: Topic<BeforeGroupDeleteTopicParams>;
+    onBeforeGroupDelete: Topic<OnGroupBeforeDeleteTopicParams>;
     /**
      * @deprecated
      */
-    onAfterGroupDelete: Topic<AfterGroupDeleteTopicParams>;
+    onAfterGroupDelete: Topic<OnGroupAfterDeleteTopicParams>;
     /**
      * Lifecycle events released in 5.33.0
      */
-    onGroupBeforeCreate: Topic<BeforeGroupCreateTopicParams>;
-    onGroupAfterCreate: Topic<AfterGroupCreateTopicParams>;
-    onGroupBeforeUpdate: Topic<BeforeGroupUpdateTopicParams>;
-    onGroupAfterUpdate: Topic<AfterGroupUpdateTopicParams>;
-    onGroupBeforeDelete: Topic<BeforeGroupDeleteTopicParams>;
-    onGroupAfterDelete: Topic<AfterGroupDeleteTopicParams>;
+    onGroupBeforeCreate: Topic<OnGroupBeforeCreateTopicParams>;
+    onGroupAfterCreate: Topic<OnGroupAfterCreateTopicParams>;
+    onGroupBeforeUpdate: Topic<OnGroupBeforeUpdateTopicParams>;
+    onGroupAfterUpdate: Topic<OnGroupAfterUpdateTopicParams>;
+    onGroupBeforeDelete: Topic<OnGroupBeforeDeleteTopicParams>;
+    onGroupAfterDelete: Topic<OnGroupAfterDeleteTopicParams>;
 }
 
 /**
@@ -1361,38 +1361,38 @@ export interface CmsModelManager {
     delete: (id: string) => Promise<void>;
 }
 
-export interface BeforeModelCreateTopicParams {
+export interface OnModelBeforeCreateTopicParams {
     input: CmsModelCreateInput;
     model: CmsModel;
 }
-export interface AfterModelCreateTopicParams {
+export interface OnModelAfterCreateTopicParams {
     input: CmsModelCreateInput;
     model: CmsModel;
 }
-export interface BeforeModelCreateFromTopicParams {
-    input: CmsModelCreateInput;
-    original: CmsModel;
-    model: CmsModel;
-}
-export interface AfterModelCreateFromTopicParams {
+export interface OnModelBeforeCreateFromTopicParams {
     input: CmsModelCreateInput;
     original: CmsModel;
     model: CmsModel;
 }
-export interface BeforeModelUpdateTopicParams {
+export interface OnModelAfterCreateFromTopicParams {
+    input: CmsModelCreateInput;
+    original: CmsModel;
+    model: CmsModel;
+}
+export interface OnModelBeforeUpdateTopicParams {
     input: CmsModelUpdateInput;
     original: CmsModel;
     model: CmsModel;
 }
-export interface AfterModelUpdateTopicParams {
+export interface OnModelAfterUpdateTopicParams {
     input: CmsModelUpdateInput;
     original: CmsModel;
     model: CmsModel;
 }
-export interface BeforeModelDeleteTopicParams {
+export interface OnModelBeforeDeleteTopicParams {
     model: CmsModel;
 }
-export interface AfterModelDeleteTopicParams {
+export interface OnModelAfterDeleteTopicParams {
     model: CmsModel;
 }
 
@@ -1463,46 +1463,46 @@ export interface CmsModelContext {
     /**
      * @deprecated
      */
-    onBeforeModelCreate: Topic<BeforeModelCreateTopicParams>;
+    onBeforeModelCreate: Topic<OnModelBeforeCreateTopicParams>;
     /**
      * @deprecated
      */
-    onAfterModelCreate: Topic<AfterModelCreateTopicParams>;
+    onAfterModelCreate: Topic<OnModelAfterCreateTopicParams>;
     /**
      * @deprecated
      */
-    onBeforeModelCreateFrom: Topic<BeforeModelCreateFromTopicParams>;
+    onBeforeModelCreateFrom: Topic<OnModelBeforeCreateFromTopicParams>;
     /**
      * @deprecated
      */
-    onAfterModelCreateFrom: Topic<AfterModelCreateFromTopicParams>;
+    onAfterModelCreateFrom: Topic<OnModelAfterCreateFromTopicParams>;
     /**
      * @deprecated
      */
-    onBeforeModelUpdate: Topic<BeforeModelUpdateTopicParams>;
+    onBeforeModelUpdate: Topic<OnModelBeforeUpdateTopicParams>;
     /**
      * @deprecated
      */
-    onAfterModelUpdate: Topic<AfterModelUpdateTopicParams>;
+    onAfterModelUpdate: Topic<OnModelAfterUpdateTopicParams>;
     /**
      * @deprecated
      */
-    onBeforeModelDelete: Topic<BeforeModelDeleteTopicParams>;
+    onBeforeModelDelete: Topic<OnModelBeforeDeleteTopicParams>;
     /**
      * @deprecated
      */
-    onAfterModelDelete: Topic<AfterModelDeleteTopicParams>;
+    onAfterModelDelete: Topic<OnModelAfterDeleteTopicParams>;
     /**
      * Lifecycle events - released in 5.33.0
      */
-    onModelBeforeCreate: Topic<BeforeModelCreateTopicParams>;
-    onModelAfterCreate: Topic<AfterModelCreateTopicParams>;
-    onModelBeforeCreateFrom: Topic<BeforeModelCreateFromTopicParams>;
-    onModelAfterCreateFrom: Topic<AfterModelCreateFromTopicParams>;
-    onModelBeforeUpdate: Topic<BeforeModelUpdateTopicParams>;
-    onModelAfterUpdate: Topic<AfterModelUpdateTopicParams>;
-    onModelBeforeDelete: Topic<BeforeModelDeleteTopicParams>;
-    onModelAfterDelete: Topic<AfterModelDeleteTopicParams>;
+    onModelBeforeCreate: Topic<OnModelBeforeCreateTopicParams>;
+    onModelAfterCreate: Topic<OnModelAfterCreateTopicParams>;
+    onModelBeforeCreateFrom: Topic<OnModelBeforeCreateFromTopicParams>;
+    onModelAfterCreateFrom: Topic<OnModelAfterCreateFromTopicParams>;
+    onModelBeforeUpdate: Topic<OnModelBeforeUpdateTopicParams>;
+    onModelAfterUpdate: Topic<OnModelAfterUpdateTopicParams>;
+    onModelBeforeDelete: Topic<OnModelBeforeDeleteTopicParams>;
+    onModelAfterDelete: Topic<OnModelAfterDeleteTopicParams>;
 }
 
 /**
@@ -1652,12 +1652,12 @@ export interface CmsEntryMeta {
     totalCount: number;
 }
 
-export interface BeforeEntryCreateTopicParams {
+export interface OnEntryBeforeCreateTopicParams {
     input: CreateCmsEntryInput;
     entry: CmsEntry;
     model: CmsModel;
 }
-export interface AfterEntryCreateTopicParams {
+export interface OnEntryAfterCreateTopicParams {
     input: CreateCmsEntryInput;
     entry: CmsEntry;
     model: CmsModel;
@@ -1671,14 +1671,14 @@ export interface OnEntryCreateErrorTopicParams {
     model: CmsModel;
 }
 
-export interface BeforeEntryCreateRevisionTopicParams {
+export interface OnEntryRevisionBeforeCreateTopicParams {
     input: CreateFromCmsEntryInput;
     entry: CmsEntry;
     original: CmsEntry;
     model: CmsModel;
 }
 
-export interface AfterEntryCreateRevisionTopicParams {
+export interface OnEntryRevisionAfterCreateTopicParams {
     input: CreateFromCmsEntryInput;
     entry: CmsEntry;
     original: CmsEntry;
@@ -1693,13 +1693,13 @@ export interface OnEntryCreateRevisionErrorTopicParams {
     model: CmsModel;
 }
 
-export interface BeforeEntryUpdateTopicParams {
+export interface OnEntryBeforeUpdateTopicParams {
     input: UpdateCmsEntryInput;
     original: CmsEntry;
     entry: CmsEntry;
     model: CmsModel;
 }
-export interface AfterEntryUpdateTopicParams {
+export interface OnEntryAfterUpdateTopicParams {
     input: UpdateCmsEntryInput;
     original: CmsEntry;
     entry: CmsEntry;
@@ -1714,12 +1714,12 @@ export interface OnEntryUpdateErrorTopicParams {
     model: CmsModel;
 }
 
-export interface BeforeEntryPublishTopicParams {
+export interface OnEntryBeforePublishTopicParams {
     entry: CmsEntry;
     model: CmsModel;
 }
 
-export interface AfterEntryPublishTopicParams {
+export interface OnEntryAfterPublishTopicParams {
     entry: CmsEntry;
     model: CmsModel;
     storageEntry: CmsEntry;
@@ -1731,12 +1731,12 @@ export interface OnEntryPublishErrorTopicParams {
     model: CmsModel;
 }
 
-export interface BeforeEntryUnpublishTopicParams {
+export interface OnEntryBeforeUnpublishTopicParams {
     entry: CmsEntry;
     model: CmsModel;
 }
 
-export interface AfterEntryUnpublishTopicParams {
+export interface OnEntryAfterUnpublishTopicParams {
     entry: CmsEntry;
     model: CmsModel;
     storageEntry: CmsEntry;
@@ -1748,12 +1748,12 @@ export interface OnEntryUnpublishErrorTopicParams {
     model: CmsModel;
 }
 
-export interface BeforeEntryRequestChangesTopicParams {
+export interface OnEntryBeforeRequestChangesTopicParams {
     entry: CmsEntry;
     model: CmsModel;
 }
 
-export interface AfterEntryRequestChangesTopicParams {
+export interface OnEntryAfterRequestChangesTopicParams {
     entry: CmsEntry;
     model: CmsModel;
     storageEntry: CmsEntry;
@@ -1765,12 +1765,12 @@ export interface OnEntryRequestChangesErrorTopicParams {
     model: CmsModel;
 }
 
-export interface BeforeEntryRequestReviewTopicParams {
+export interface OnEntryBeforeRequestReviewTopicParams {
     entry: CmsEntry;
     model: CmsModel;
 }
 
-export interface AfterEntryRequestReviewTopicParams {
+export interface OnEntryAfterRequestReviewTopicParams {
     entry: CmsEntry;
     model: CmsModel;
     storageEntry: CmsEntry;
@@ -1782,11 +1782,11 @@ export interface OnEntryRequestReviewErrorTopicParams {
     model: CmsModel;
 }
 
-export interface BeforeEntryDeleteTopicParams {
+export interface OnEntryBeforeDeleteTopicParams {
     entry: CmsEntry;
     model: CmsModel;
 }
-export interface AfterEntryDeleteTopicParams {
+export interface OnEntryAfterDeleteTopicParams {
     entry: CmsEntry;
     model: CmsModel;
 }
@@ -1797,11 +1797,11 @@ export interface OnEntryDeleteErrorTopicParams {
     model: CmsModel;
 }
 
-export interface BeforeEntryDeleteRevisionTopicParams {
+export interface OnEntryRevisionBeforeDeleteTopicParams {
     entry: CmsEntry;
     model: CmsModel;
 }
-export interface AfterEntryDeleteRevisionTopicParams {
+export interface OnEntryRevisionAfterDeleteTopicParams {
     entry: CmsEntry;
     model: CmsModel;
 }
@@ -1812,12 +1812,12 @@ export interface OnEntryRevisionDeleteErrorTopicParams {
     model: CmsModel;
 }
 
-export interface BeforeEntryGetTopicParams {
+export interface OnEntryBeforeGetTopicParams {
     model: CmsModel;
     where: CmsEntryListWhere;
 }
 
-export interface BeforeEntryListTopicParams {
+export interface EntryBeforeListTopicParams {
     where: CmsEntryListWhere;
     model: CmsModel;
 }
@@ -1953,124 +1953,124 @@ export interface CmsEntryContext {
     /**
      * @deprecated
      */
-    onBeforeEntryCreate: Topic<BeforeEntryCreateTopicParams>;
+    onBeforeEntryCreate: Topic<OnEntryBeforeCreateTopicParams>;
     /**
      * @deprecated
      */
-    onAfterEntryCreate: Topic<AfterEntryCreateTopicParams>;
+    onAfterEntryCreate: Topic<OnEntryAfterCreateTopicParams>;
     /**
      * @deprecated
      */
-    onBeforeEntryCreateRevision: Topic<BeforeEntryCreateRevisionTopicParams>;
+    onBeforeEntryCreateRevision: Topic<OnEntryRevisionBeforeCreateTopicParams>;
     /**
      * @deprecated
      */
-    onAfterEntryCreateRevision: Topic<AfterEntryCreateRevisionTopicParams>;
+    onAfterEntryCreateRevision: Topic<OnEntryRevisionAfterCreateTopicParams>;
     /**
      * @deprecated
      */
-    onBeforeEntryUpdate: Topic<BeforeEntryUpdateTopicParams>;
+    onBeforeEntryUpdate: Topic<OnEntryBeforeUpdateTopicParams>;
     /**
      * @deprecated
      */
-    onAfterEntryUpdate: Topic<AfterEntryUpdateTopicParams>;
+    onAfterEntryUpdate: Topic<OnEntryAfterUpdateTopicParams>;
     /**
      * @deprecated
      */
-    onBeforeEntryDelete: Topic<BeforeEntryDeleteTopicParams>;
+    onBeforeEntryDelete: Topic<OnEntryBeforeDeleteTopicParams>;
     /**
      * @deprecated
      */
-    onAfterEntryDelete: Topic<AfterEntryDeleteTopicParams>;
+    onAfterEntryDelete: Topic<OnEntryAfterDeleteTopicParams>;
     /**
      * @deprecated
      */
-    onBeforeEntryDeleteRevision: Topic<BeforeEntryDeleteRevisionTopicParams>;
+    onBeforeEntryDeleteRevision: Topic<OnEntryRevisionBeforeDeleteTopicParams>;
     /**
      * @deprecated
      */
-    onAfterEntryDeleteRevision: Topic<AfterEntryDeleteRevisionTopicParams>;
+    onAfterEntryDeleteRevision: Topic<OnEntryRevisionAfterDeleteTopicParams>;
     /**
      * @deprecated
      */
-    onBeforeEntryPublish: Topic<BeforeEntryPublishTopicParams>;
+    onBeforeEntryPublish: Topic<OnEntryBeforePublishTopicParams>;
     /**
      * @deprecated
      */
-    onAfterEntryPublish: Topic<AfterEntryPublishTopicParams>;
+    onAfterEntryPublish: Topic<OnEntryAfterPublishTopicParams>;
     /**
      * @deprecated
      */
-    onBeforeEntryUnpublish: Topic<BeforeEntryUnpublishTopicParams>;
+    onBeforeEntryUnpublish: Topic<OnEntryBeforeUnpublishTopicParams>;
     /**
      * @deprecated
      */
-    onAfterEntryUnpublish: Topic<AfterEntryUnpublishTopicParams>;
+    onAfterEntryUnpublish: Topic<OnEntryAfterUnpublishTopicParams>;
     /**
      * @deprecated
      */
-    onBeforeEntryRequestChanges: Topic<BeforeEntryRequestChangesTopicParams>;
+    onBeforeEntryRequestChanges: Topic<OnEntryBeforeRequestChangesTopicParams>;
     /**
      * @deprecated
      */
-    onAfterEntryRequestChanges: Topic<AfterEntryRequestChangesTopicParams>;
+    onAfterEntryRequestChanges: Topic<OnEntryAfterRequestChangesTopicParams>;
     /**
      * @deprecated
      */
-    onBeforeEntryRequestReview: Topic<BeforeEntryRequestReviewTopicParams>;
+    onBeforeEntryRequestReview: Topic<OnEntryBeforeRequestReviewTopicParams>;
     /**
      * @deprecated
      */
-    onAfterEntryRequestReview: Topic<AfterEntryRequestReviewTopicParams>;
+    onAfterEntryRequestReview: Topic<OnEntryAfterRequestReviewTopicParams>;
     /**
      * @deprecated
      */
-    onBeforeEntryGet: Topic<BeforeEntryGetTopicParams>;
+    onBeforeEntryGet: Topic<OnEntryBeforeGetTopicParams>;
     /**
      * @deprecated
      */
-    onBeforeEntryList: Topic<BeforeEntryListTopicParams>;
+    onBeforeEntryList: Topic<EntryBeforeListTopicParams>;
     /**
      * Lifecycle events released in 5.33.0
      */
-    onEntryBeforeCreate: Topic<BeforeEntryCreateTopicParams>;
-    onEntryAfterCreate: Topic<AfterEntryCreateTopicParams>;
+    onEntryBeforeCreate: Topic<OnEntryBeforeCreateTopicParams>;
+    onEntryAfterCreate: Topic<OnEntryAfterCreateTopicParams>;
     onEntryCreateError: Topic<OnEntryCreateErrorTopicParams>;
 
-    onEntryBeforeCreateRevision: Topic<BeforeEntryCreateRevisionTopicParams>;
-    onEntryRevisionAfterCreate: Topic<AfterEntryCreateRevisionTopicParams>;
-    onEntryCreateRevisionError: Topic<OnEntryCreateRevisionErrorTopicParams>;
+    onEntryRevisionBeforeCreate: Topic<OnEntryRevisionBeforeCreateTopicParams>;
+    onEntryRevisionAfterCreate: Topic<OnEntryRevisionAfterCreateTopicParams>;
+    onEntryRevisionCreateError: Topic<OnEntryCreateRevisionErrorTopicParams>;
 
-    onEntryBeforeUpdate: Topic<BeforeEntryUpdateTopicParams>;
-    onEntryAfterUpdate: Topic<AfterEntryUpdateTopicParams>;
+    onEntryBeforeUpdate: Topic<OnEntryBeforeUpdateTopicParams>;
+    onEntryAfterUpdate: Topic<OnEntryAfterUpdateTopicParams>;
     onEntryUpdateError: Topic<OnEntryUpdateErrorTopicParams>;
 
-    onEntryBeforeDelete: Topic<BeforeEntryDeleteTopicParams>;
-    onEntryAfterDelete: Topic<AfterEntryDeleteTopicParams>;
+    onEntryBeforeDelete: Topic<OnEntryBeforeDeleteTopicParams>;
+    onEntryAfterDelete: Topic<OnEntryAfterDeleteTopicParams>;
     onEntryDeleteError: Topic<OnEntryDeleteErrorTopicParams>;
 
-    onEntryRevisionBeforeDelete: Topic<BeforeEntryDeleteRevisionTopicParams>;
-    onEntryRevisionAfterDelete: Topic<AfterEntryDeleteRevisionTopicParams>;
+    onEntryRevisionBeforeDelete: Topic<OnEntryRevisionBeforeDeleteTopicParams>;
+    onEntryRevisionAfterDelete: Topic<OnEntryRevisionAfterDeleteTopicParams>;
     onEntryRevisionDeleteError: Topic<OnEntryRevisionDeleteErrorTopicParams>;
 
-    onEntryBeforePublish: Topic<BeforeEntryPublishTopicParams>;
-    onEntryAfterPublish: Topic<AfterEntryPublishTopicParams>;
+    onEntryBeforePublish: Topic<OnEntryBeforePublishTopicParams>;
+    onEntryAfterPublish: Topic<OnEntryAfterPublishTopicParams>;
     onEntryPublishError: Topic<OnEntryPublishErrorTopicParams>;
 
-    onEntryBeforeUnpublish: Topic<BeforeEntryUnpublishTopicParams>;
-    onEntryAfterUnpublish: Topic<AfterEntryUnpublishTopicParams>;
+    onEntryBeforeUnpublish: Topic<OnEntryBeforeUnpublishTopicParams>;
+    onEntryAfterUnpublish: Topic<OnEntryAfterUnpublishTopicParams>;
     onEntryUnpublishError: Topic<OnEntryUnpublishErrorTopicParams>;
 
-    onEntryBeforeRequestChanges: Topic<BeforeEntryRequestChangesTopicParams>;
-    onEntryAfterRequestChanges: Topic<AfterEntryRequestChangesTopicParams>;
+    onEntryBeforeRequestChanges: Topic<OnEntryBeforeRequestChangesTopicParams>;
+    onEntryAfterRequestChanges: Topic<OnEntryAfterRequestChangesTopicParams>;
     onEntryRequestChangesError: Topic<OnEntryRequestChangesErrorTopicParams>;
 
-    onEntryBeforeRequestReview: Topic<BeforeEntryRequestReviewTopicParams>;
-    onEntryAfterRequestReview: Topic<AfterEntryRequestReviewTopicParams>;
+    onEntryBeforeRequestReview: Topic<OnEntryBeforeRequestReviewTopicParams>;
+    onEntryAfterRequestReview: Topic<OnEntryAfterRequestReviewTopicParams>;
     onEntryRequestReviewError: Topic<OnEntryRequestReviewErrorTopicParams>;
 
-    onEntryBeforeGet: Topic<BeforeEntryGetTopicParams>;
-    onEntryBeforeList: Topic<BeforeEntryListTopicParams>;
+    onEntryBeforeGet: Topic<OnEntryBeforeGetTopicParams>;
+    onEntryBeforeList: Topic<EntryBeforeListTopicParams>;
 }
 
 /**

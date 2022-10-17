@@ -17,12 +17,12 @@ import {
     CmsContext,
     HeadlessCmsStorageOperations,
     CmsGroupCreateInput,
-    BeforeGroupCreateTopicParams,
-    AfterGroupCreateTopicParams,
-    BeforeGroupUpdateTopicParams,
-    AfterGroupUpdateTopicParams,
-    BeforeGroupDeleteTopicParams,
-    AfterGroupDeleteTopicParams
+    OnGroupBeforeCreateTopicParams,
+    OnGroupAfterCreateTopicParams,
+    OnGroupBeforeUpdateTopicParams,
+    OnGroupAfterUpdateTopicParams,
+    OnGroupBeforeDeleteTopicParams,
+    OnGroupAfterDeleteTopicParams
 } from "~/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import WebinyError from "@webiny/error";
@@ -154,16 +154,16 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
 
     // create
     const onGroupBeforeCreate =
-        createTopic<BeforeGroupCreateTopicParams>("cms.onGroupBeforeCreate");
-    const onGroupAfterCreate = createTopic<AfterGroupCreateTopicParams>("cms.onGroupAfterCreate");
+        createTopic<OnGroupBeforeCreateTopicParams>("cms.onGroupBeforeCreate");
+    const onGroupAfterCreate = createTopic<OnGroupAfterCreateTopicParams>("cms.onGroupAfterCreate");
     // update
     const onGroupBeforeUpdate =
-        createTopic<BeforeGroupUpdateTopicParams>("cms.onGroupBeforeUpdate");
-    const onGroupAfterUpdate = createTopic<AfterGroupUpdateTopicParams>("cms.onGroupAfterUpdate");
+        createTopic<OnGroupBeforeUpdateTopicParams>("cms.onGroupBeforeUpdate");
+    const onGroupAfterUpdate = createTopic<OnGroupAfterUpdateTopicParams>("cms.onGroupAfterUpdate");
     // delete
     const onGroupBeforeDelete =
-        createTopic<BeforeGroupDeleteTopicParams>("cms.onGroupBeforeDelete");
-    const onGroupAfterDelete = createTopic<AfterGroupDeleteTopicParams>("cms.onGroupAfterDelete");
+        createTopic<OnGroupBeforeDeleteTopicParams>("cms.onGroupBeforeDelete");
+    const onGroupAfterDelete = createTopic<OnGroupAfterDeleteTopicParams>("cms.onGroupAfterDelete");
 
     /**
      * We need to assign some default behaviors.

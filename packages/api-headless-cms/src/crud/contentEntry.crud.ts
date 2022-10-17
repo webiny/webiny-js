@@ -12,26 +12,26 @@ import {
     CmsContext,
     CmsStorageEntry,
     HeadlessCmsStorageOperations,
-    BeforeEntryCreateTopicParams,
-    AfterEntryCreateTopicParams,
-    BeforeEntryUpdateTopicParams,
-    AfterEntryUpdateTopicParams,
-    AfterEntryDeleteTopicParams,
-    BeforeEntryDeleteTopicParams,
-    BeforeEntryCreateRevisionTopicParams,
-    AfterEntryCreateRevisionTopicParams,
-    BeforeEntryPublishTopicParams,
-    AfterEntryPublishTopicParams,
-    BeforeEntryUnpublishTopicParams,
-    AfterEntryUnpublishTopicParams,
-    BeforeEntryRequestChangesTopicParams,
-    AfterEntryRequestChangesTopicParams,
-    BeforeEntryRequestReviewTopicParams,
-    AfterEntryRequestReviewTopicParams,
-    BeforeEntryDeleteRevisionTopicParams,
-    AfterEntryDeleteRevisionTopicParams,
-    BeforeEntryGetTopicParams,
-    BeforeEntryListTopicParams,
+    OnEntryBeforeCreateTopicParams,
+    OnEntryAfterCreateTopicParams,
+    OnEntryBeforeUpdateTopicParams,
+    OnEntryAfterUpdateTopicParams,
+    OnEntryAfterDeleteTopicParams,
+    OnEntryBeforeDeleteTopicParams,
+    OnEntryRevisionBeforeCreateTopicParams,
+    OnEntryRevisionAfterCreateTopicParams,
+    OnEntryBeforePublishTopicParams,
+    OnEntryAfterPublishTopicParams,
+    OnEntryBeforeUnpublishTopicParams,
+    OnEntryAfterUnpublishTopicParams,
+    OnEntryBeforeRequestChangesTopicParams,
+    OnEntryAfterRequestChangesTopicParams,
+    OnEntryBeforeRequestReviewTopicParams,
+    OnEntryAfterRequestReviewTopicParams,
+    OnEntryRevisionBeforeDeleteTopicParams,
+    OnEntryRevisionAfterDeleteTopicParams,
+    OnEntryBeforeGetTopicParams,
+    EntryBeforeListTopicParams,
     CmsEntryListWhere,
     UpdateCmsEntryInput,
     CreateCmsEntryInput,
@@ -256,15 +256,15 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
     // create
     const onEntryBeforeCreate =
-        createTopic<BeforeEntryCreateTopicParams>("cms.onEntryBeforeCreate");
-    const onEntryAfterCreate = createTopic<AfterEntryCreateTopicParams>("cms.onEntryAfterCreate");
+        createTopic<OnEntryBeforeCreateTopicParams>("cms.onEntryBeforeCreate");
+    const onEntryAfterCreate = createTopic<OnEntryAfterCreateTopicParams>("cms.onEntryAfterCreate");
     const onEntryCreateError = createTopic<OnEntryCreateErrorTopicParams>("cms.onEntryCreateError");
 
     // create revision
-    const onEntryBeforeCreateRevision = createTopic<BeforeEntryCreateRevisionTopicParams>(
+    const onEntryBeforeCreateRevision = createTopic<OnEntryRevisionBeforeCreateTopicParams>(
         "cms.onEntryBeforeCreateRevision"
     );
-    const onEntryRevisionAfterCreate = createTopic<AfterEntryCreateRevisionTopicParams>(
+    const onEntryRevisionAfterCreate = createTopic<OnEntryRevisionAfterCreateTopicParams>(
         "cms.onEntryRevisionAfterCreate"
     );
     const onEntryCreateRevisionError = createTopic<OnEntryCreateRevisionErrorTopicParams>(
@@ -273,24 +273,25 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
     // update
     const onEntryBeforeUpdate =
-        createTopic<BeforeEntryUpdateTopicParams>("cms.onEntryBeforeUpdate");
-    const onEntryAfterUpdate = createTopic<AfterEntryUpdateTopicParams>("cms.onEntryAfterUpdate");
+        createTopic<OnEntryBeforeUpdateTopicParams>("cms.onEntryBeforeUpdate");
+    const onEntryAfterUpdate = createTopic<OnEntryAfterUpdateTopicParams>("cms.onEntryAfterUpdate");
     const onEntryUpdateError = createTopic<OnEntryUpdateErrorTopicParams>("cms.onEntryUpdateError");
 
     // publish
-    const onEntryBeforePublish = createTopic<BeforeEntryPublishTopicParams>(
+    const onEntryBeforePublish = createTopic<OnEntryBeforePublishTopicParams>(
         "cms.onEntryBeforePublish"
     );
-    const onEntryAfterPublish = createTopic<AfterEntryPublishTopicParams>("cms.onEntryAfterPublic");
+    const onEntryAfterPublish =
+        createTopic<OnEntryAfterPublishTopicParams>("cms.onEntryAfterPublic");
 
     const onEntryPublishError =
         createTopic<OnEntryPublishErrorTopicParams>("cms.onEntryPublishError");
 
     // unpublish
-    const onEntryBeforeUnpublish = createTopic<BeforeEntryUnpublishTopicParams>(
+    const onEntryBeforeUnpublish = createTopic<OnEntryBeforeUnpublishTopicParams>(
         "cms.onEntryBeforeUnpublish"
     );
-    const onEntryAfterUnpublish = createTopic<AfterEntryUnpublishTopicParams>(
+    const onEntryAfterUnpublish = createTopic<OnEntryAfterUnpublishTopicParams>(
         "cms.onEntryAfterUnpublish"
     );
     const onEntryUnpublishError = createTopic<OnEntryUnpublishErrorTopicParams>(
@@ -298,10 +299,10 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     );
 
     // request changes
-    const onEntryBeforeRequestChanges = createTopic<BeforeEntryRequestChangesTopicParams>(
+    const onEntryBeforeRequestChanges = createTopic<OnEntryBeforeRequestChangesTopicParams>(
         "cms.onEntryBeforeRequestChanges"
     );
-    const onEntryAfterRequestChanges = createTopic<AfterEntryRequestChangesTopicParams>(
+    const onEntryAfterRequestChanges = createTopic<OnEntryAfterRequestChangesTopicParams>(
         "cms.onEntryAfterRequestChanges"
     );
     const onEntryRequestChangesError = createTopic<OnEntryRequestChangesErrorTopicParams>(
@@ -309,10 +310,10 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     );
 
     // request review
-    const onEntryBeforeRequestReview = createTopic<BeforeEntryRequestReviewTopicParams>(
+    const onEntryBeforeRequestReview = createTopic<OnEntryBeforeRequestReviewTopicParams>(
         "cms.onEntryBeforeRequestReview"
     );
-    const onEntryAfterRequestReview = createTopic<AfterEntryRequestReviewTopicParams>(
+    const onEntryAfterRequestReview = createTopic<OnEntryAfterRequestReviewTopicParams>(
         "cms.onEntryAfterRequestReview"
     );
     const onEntryRequestReviewError = createTopic<OnEntryRequestReviewErrorTopicParams>(
@@ -321,15 +322,15 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
     // delete
     const onEntryBeforeDelete =
-        createTopic<BeforeEntryDeleteTopicParams>("cms.onEntryBeforeDelete");
-    const onEntryAfterDelete = createTopic<AfterEntryDeleteTopicParams>("cms.onEntryAfterDelete");
+        createTopic<OnEntryBeforeDeleteTopicParams>("cms.onEntryBeforeDelete");
+    const onEntryAfterDelete = createTopic<OnEntryAfterDeleteTopicParams>("cms.onEntryAfterDelete");
     const onEntryDeleteError = createTopic<OnEntryDeleteErrorTopicParams>("cms.onEntryDeleteError");
 
     // delete revision
-    const onEntryRevisionBeforeDelete = createTopic<BeforeEntryDeleteRevisionTopicParams>(
+    const onEntryRevisionBeforeDelete = createTopic<OnEntryRevisionBeforeDeleteTopicParams>(
         "cms.onEntryRevisionBeforeDelete"
     );
-    const onEntryRevisionAfterDelete = createTopic<AfterEntryDeleteRevisionTopicParams>(
+    const onEntryRevisionAfterDelete = createTopic<OnEntryRevisionAfterDeleteTopicParams>(
         "cms.onEntryRevisionAfterDelete"
     );
     const onEntryRevisionDeleteError = createTopic<OnEntryRevisionDeleteErrorTopicParams>(
@@ -337,10 +338,10 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     );
 
     // get
-    const onEntryBeforeGet = createTopic<BeforeEntryGetTopicParams>("cms.onEntryBeforeGet");
+    const onEntryBeforeGet = createTopic<OnEntryBeforeGetTopicParams>("cms.onEntryBeforeGet");
 
     // list
-    const onEntryBeforeList = createTopic<BeforeEntryListTopicParams>("cms.onEntryBeforeList");
+    const onEntryBeforeList = createTopic<EntryBeforeListTopicParams>("cms.onEntryBeforeList");
 
     /**
      * We need to assign some default behaviors.
@@ -444,9 +445,9 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         onEntryAfterCreate,
         onEntryCreateError,
 
-        onEntryBeforeCreateRevision,
+        onEntryRevisionBeforeCreate: onEntryBeforeCreateRevision,
         onEntryRevisionAfterCreate,
-        onEntryCreateRevisionError,
+        onEntryRevisionCreateError: onEntryCreateRevisionError,
 
         onEntryBeforeUpdate,
         onEntryAfterUpdate,

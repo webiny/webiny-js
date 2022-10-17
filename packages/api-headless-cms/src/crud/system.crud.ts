@@ -4,8 +4,8 @@ import { ErrorCode, getApplicablePlugin } from "@webiny/api-upgrade";
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
 import WebinyError from "@webiny/error";
 import {
-    AfterInstallTopicParams,
-    BeforeInstallTopicParams,
+    OnSystemAfterInstallTopicParams,
+    OnSystemBeforeInstallTopicParams,
     CmsContext,
     CmsSystem,
     CmsSystemContext,
@@ -35,10 +35,12 @@ interface CreateSystemCrudParams {
 export const createSystemCrud = (params: CreateSystemCrudParams): CmsSystemContext => {
     const { getTenant, getLocale, storageOperations, context, getIdentity } = params;
 
-    const onSystemBeforeInstall = createTopic<BeforeInstallTopicParams>(
+    const onSystemBeforeInstall = createTopic<OnSystemBeforeInstallTopicParams>(
         "cms.onSystemBeforeInstall"
     );
-    const onSystemAfterInstall = createTopic<AfterInstallTopicParams>("cms.onSystemAfterInstall");
+    const onSystemAfterInstall = createTopic<OnSystemAfterInstallTopicParams>(
+        "cms.onSystemAfterInstall"
+    );
 
     const onSystemInstallError = createTopic<OnSystemInstallErrorTopicParams>(
         "cms.onSystemInstallError"

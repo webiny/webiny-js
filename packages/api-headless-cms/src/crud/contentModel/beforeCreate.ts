@@ -2,8 +2,8 @@ import WebinyError from "@webiny/error";
 import camelCase from "lodash/camelCase";
 import pluralize from "pluralize";
 import {
-    BeforeModelCreateFromTopicParams,
-    BeforeModelCreateTopicParams,
+    OnModelBeforeCreateFromTopicParams,
+    OnModelBeforeCreateTopicParams,
     CmsModel,
     HeadlessCmsStorageOperations
 } from "~/types";
@@ -123,7 +123,7 @@ interface CreateOnBeforeCreateCbParams {
     storageOperations: HeadlessCmsStorageOperations;
 }
 const createOnBeforeCb = ({ plugins, storageOperations }: CreateOnBeforeCreateCbParams) => {
-    return async (params: BeforeModelCreateTopicParams | BeforeModelCreateFromTopicParams) => {
+    return async (params: OnModelBeforeCreateTopicParams | OnModelBeforeCreateFromTopicParams) => {
         const { model } = params;
 
         const modelId = getModelId(model);
@@ -164,8 +164,8 @@ const createOnBeforeCb = ({ plugins, storageOperations }: CreateOnBeforeCreateCb
 };
 
 interface AssignBeforeModelCreateParams {
-    onModelBeforeCreate: Topic<BeforeModelCreateTopicParams>;
-    onModelBeforeCreateFrom: Topic<BeforeModelCreateFromTopicParams>;
+    onModelBeforeCreate: Topic<OnModelBeforeCreateTopicParams>;
+    onModelBeforeCreateFrom: Topic<OnModelBeforeCreateFromTopicParams>;
     storageOperations: HeadlessCmsStorageOperations;
     plugins: PluginsContainer;
 }

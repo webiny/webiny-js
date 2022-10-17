@@ -69,7 +69,7 @@ export const assignEntryEvents = () => {
         context.cms.onEntryAfterCreate.subscribe(async () => {
             pubSubTracker.track("contentEntry:afterCreate");
         });
-        context.cms.onEntryBeforeCreateRevision.subscribe(async () => {
+        context.cms.onEntryRevisionBeforeCreate.subscribe(async () => {
             pubSubTracker.track("contentEntry:beforeCreateRevisionFrom");
         });
         context.cms.onEntryRevisionAfterCreate.subscribe(async () => {

@@ -1,8 +1,8 @@
-import { AfterModelUpdateTopicParams, CmsContext } from "~/types";
+import { OnModelAfterUpdateTopicParams, CmsContext } from "~/types";
 import { Topic } from "@webiny/pubsub/types";
 
 interface AssignAfterModelUpdateParams {
-    onModelAfterUpdate: Topic<AfterModelUpdateTopicParams>;
+    onModelAfterUpdate: Topic<OnModelAfterUpdateTopicParams>;
     context: CmsContext;
 }
 export const assignAfterModelUpdate = (params: AssignAfterModelUpdateParams) => {
