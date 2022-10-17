@@ -2,8 +2,8 @@ import {
     I18NContext,
     I18NSystem,
     I18NSystemStorageOperations,
-    OnAfterInstallTopicParams,
-    OnBeforeInstallTopicParams,
+    OnSystemAfterInstallTopicParams,
+    OnSystemBeforeInstallTopicParams,
     SystemCRUD
 } from "~/types";
 import WebinyError from "@webiny/error";
@@ -21,12 +21,24 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCRUD => 
         return context.tenancy.getCurrentTenant().id;
     };
 
-    const onBeforeInstall = createTopic<OnBeforeInstallTopicParams>("i18n.onBeforeInstall");
-    const onAfterInstall = createTopic<OnAfterInstallTopicParams>("i18n.onAfterInstall");
+    const onSystemBeforeInstall = createTopic<OnSystemBeforeInstallTopicParams>(
+        "i18n.onSystemBeforeInstall"
+    );
+    const onSystemAfterInstall = createTopic<OnSystemAfterInstallTopicParams>(
+        "i18n.onSystemAfterInstall"
+    );
 
     return {
-        onBeforeInstall,
-        onAfterInstall,
+        /**
+         * Deprecated in 5.34.0
+         */
+        onBeforeInstall: onSystemBeforeInstall,
+        onAfterInstall: onSystemAfterInstall,
+        /**
+         * Introduced in 5.34.0
+         */
+        onSystemBeforeInstall,
+        onSystemAfterInstall,
         storageOperations,
         async getSystemVersion() {
             const system = await storageOperations.get();
@@ -85,7 +97,7 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCRUD => 
                     version
                 });
             }
-            await onBeforeInstall.publish({
+            await onSystemBeforeInstall.publish({
                 code
             });
             await i18n.locales.createLocale({
@@ -93,7 +105,7 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCRUD => 
                 default: true
             });
             await this.setSystemVersion(context.WEBINY_VERSION);
-            await onAfterInstall.publish({
+            await onSystemAfterInstall.publish({
                 code
             });
         }

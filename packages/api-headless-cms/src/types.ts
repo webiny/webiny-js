@@ -862,7 +862,7 @@ export type CmsSystemContext = {
      */
     onAfterSystemInstall: Topic<OnSystemAfterInstallTopicParams>;
     /**
-     * Released in 5.33.0
+     * Released in 5.34.0
      */
     onSystemBeforeInstall: Topic<OnSystemBeforeInstallTopicParams>;
     onSystemAfterInstall: Topic<OnSystemAfterInstallTopicParams>;

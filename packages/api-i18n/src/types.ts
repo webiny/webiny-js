@@ -63,10 +63,21 @@ export interface SystemCRUD {
      */
     installSystem(params: SystemInstallParams): Promise<void>;
     /**
-     * Lifecycle events.
+     * Lifecycle events - deprecated in 5.34.0 - will be removed in 5.36.0
      */
-    onBeforeInstall: Topic<OnBeforeInstallTopicParams>;
-    onAfterInstall: Topic<OnAfterInstallTopicParams>;
+    /**
+     * @deprecated
+     */
+    onBeforeInstall: Topic<OnSystemBeforeInstallTopicParams>;
+    /**
+     * @deprecated
+     */
+    onAfterInstall: Topic<OnSystemAfterInstallTopicParams>;
+    /**
+     * Introduced in 5.34.0
+     */
+    onSystemBeforeInstall: Topic<OnSystemBeforeInstallTopicParams>;
+    onSystemAfterInstall: Topic<OnSystemAfterInstallTopicParams>;
 }
 
 export interface I18NContext extends Context, ClientContext, TenancyContext, SecurityContext {
@@ -110,41 +121,41 @@ export interface LocalesCRUDListParams {
     after?: string;
 }
 
-export interface OnBeforeInstallTopicParams {
+export interface OnSystemBeforeInstallTopicParams {
     code: string;
 }
-export interface OnAfterInstallTopicParams {
+export interface OnSystemAfterInstallTopicParams {
     code: string;
 }
 
-export interface OnBeforeCreateLocaleTopicParams {
+export interface OnLocaleBeforeCreateTopicParams {
     context: I18NContext;
     locale: I18NLocaleData;
     tenant: string;
 }
-export interface OnAfterCreateLocaleTopicParams {
+export interface OnLocaleAfterCreateTopicParams {
     context: I18NContext;
     locale: I18NLocaleData;
     tenant: string;
 }
-export interface OnBeforeUpdateLocaleTopicParams {
-    context: I18NContext;
-    original: I18NLocaleData;
-    locale: I18NLocaleData;
-    tenant: string;
-}
-export interface OnAfterUpdateLocaleTopicParams {
+export interface OnLocaleBeforeUpdateTopicParams {
     context: I18NContext;
     original: I18NLocaleData;
     locale: I18NLocaleData;
     tenant: string;
 }
-export interface OnBeforeDeleteLocaleTopicParams {
+export interface OnLocaleAfterUpdateTopicParams {
+    context: I18NContext;
+    original: I18NLocaleData;
+    locale: I18NLocaleData;
+    tenant: string;
+}
+export interface OnLocaleBeforeDeleteTopicParams {
     context: I18NContext;
     locale: I18NLocaleData;
     tenant: string;
 }
-export interface OnAfterDeleteLocaleTopicParams {
+export interface OnLocaleAfterDeleteTopicParams {
     context: I18NContext;
     locale: I18NLocaleData;
     tenant: string;
@@ -155,14 +166,41 @@ export interface OnAfterDeleteLocaleTopicParams {
 export interface LocalesCRUD {
     storageOperations: I18NLocalesStorageOperations;
     /**
-     * Lifecycle events.
+     * Lifecycle events - deprecated in 5.34.0 - will be removed in 5.36.0
      */
-    onBeforeCreate: Topic<OnBeforeCreateLocaleTopicParams>;
-    onAfterCreate: Topic<OnAfterCreateLocaleTopicParams>;
-    onBeforeUpdate: Topic<OnBeforeUpdateLocaleTopicParams>;
-    onAfterUpdate: Topic<OnAfterUpdateLocaleTopicParams>;
-    onBeforeDelete: Topic<OnBeforeDeleteLocaleTopicParams>;
-    onAfterDelete: Topic<OnAfterDeleteLocaleTopicParams>;
+    /**
+     * Lifecycle events - deprecated in 5.34.0 - will be removed in 5.36.0
+     */
+    onBeforeCreate: Topic<OnLocaleBeforeCreateTopicParams>;
+    /**
+     * Lifecycle events - deprecated in 5.34.0 - will be removed in 5.36.0
+     */
+    onAfterCreate: Topic<OnLocaleAfterCreateTopicParams>;
+    /**
+     * Lifecycle events - deprecated in 5.34.0 - will be removed in 5.36.0
+     */
+    onBeforeUpdate: Topic<OnLocaleBeforeUpdateTopicParams>;
+    /**
+     * Lifecycle events - deprecated in 5.34.0 - will be removed in 5.36.0
+     */
+    onAfterUpdate: Topic<OnLocaleAfterUpdateTopicParams>;
+    /**
+     * Lifecycle events - deprecated in 5.34.0 - will be removed in 5.36.0
+     */
+    onBeforeDelete: Topic<OnLocaleBeforeDeleteTopicParams>;
+    /**
+     * Lifecycle events - deprecated in 5.34.0 - will be removed in 5.36.0
+     */
+    onAfterDelete: Topic<OnLocaleAfterDeleteTopicParams>;
+    /**
+     * Introduced in 5.34.0
+     */
+    onLocaleBeforeCreate: Topic<OnLocaleBeforeCreateTopicParams>;
+    onLocaleAfterCreate: Topic<OnLocaleAfterCreateTopicParams>;
+    onLocaleBeforeUpdate: Topic<OnLocaleBeforeUpdateTopicParams>;
+    onLocaleAfterUpdate: Topic<OnLocaleAfterUpdateTopicParams>;
+    onLocaleBeforeDelete: Topic<OnLocaleBeforeDeleteTopicParams>;
+    onLocaleAfterDelete: Topic<OnLocaleAfterDeleteTopicParams>;
     /**
      * Get the default locale.
      */

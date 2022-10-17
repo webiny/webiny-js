@@ -280,9 +280,9 @@ export interface CreateContentEntryCrudParams {
 
 export const createContentEntryCrud = (params: CreateContentEntryCrudParams): CmsEntryContext => {
     const { storageOperations, context, getIdentity, getTenant } = params;
-    
+
     const { plugins } = context;
-    
+
     // create
     const onEntryBeforeCreate =
         createTopic<OnEntryBeforeCreateTopicParams>("cms.onEntryBeforeCreate");
@@ -473,7 +473,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         onBeforeEntryGet: onEntryBeforeGet,
         onBeforeEntryList: onEntryBeforeList,
         /**
-         * Released in 5.33.0
+         * Released in 5.34.0
          */
         onEntryBeforeCreate,
         onEntryAfterCreate,

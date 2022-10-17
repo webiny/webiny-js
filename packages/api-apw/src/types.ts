@@ -8,11 +8,11 @@ import {
 } from "@webiny/api-headless-cms/types";
 import {
     Page,
-    OnBeforePageCreateTopicParams,
-    OnBeforePageCreateFromTopicParams,
-    OnBeforePageUpdateTopicParams,
-    OnBeforePagePublishTopicParams,
-    OnBeforePageRequestReviewTopicParams,
+    OnPageBeforeCreateTopicParams,
+    OnPageBeforeCreateFromTopicParams,
+    OnPageBeforeUpdateTopicParams,
+    OnPageBeforePublishTopicParams,
+    OnPageBeforeRequestReviewTopicParams,
     PageSettings
 } from "@webiny/api-page-builder/types";
 import { Context } from "@webiny/api/types";
@@ -98,17 +98,17 @@ export interface PageWithWorkflow extends Page {
     settings: PageSettingsWithWorkflow;
 }
 
-export type ApwOnPageBeforeCreateTopicParams = OnBeforePageCreateTopicParams<PageWithWorkflow>;
+export type ApwOnPageBeforeCreateTopicParams = OnPageBeforeCreateTopicParams<PageWithWorkflow>;
 
 export type ApwOnPageBeforeCreateFromTopicParams =
-    OnBeforePageCreateFromTopicParams<PageWithWorkflow>;
+    OnPageBeforeCreateFromTopicParams<PageWithWorkflow>;
 
-export type ApwOnPageBeforeUpdateTopicParams = OnBeforePageUpdateTopicParams<PageWithWorkflow>;
+export type ApwOnPageBeforeUpdateTopicParams = OnPageBeforeUpdateTopicParams<PageWithWorkflow>;
 
-export type ApwOnPageBeforePublishTopicParams = OnBeforePagePublishTopicParams<PageWithWorkflow>;
+export type ApwOnPageBeforePublishTopicParams = OnPageBeforePublishTopicParams<PageWithWorkflow>;
 
 export type ApwOnPageBeforeRequestReviewTopicParams =
-    OnBeforePageRequestReviewTopicParams<PageWithWorkflow>;
+    OnPageBeforeRequestReviewTopicParams<PageWithWorkflow>;
 
 export enum WorkflowScopeTypes {
     DEFAULT = "default",

@@ -185,7 +185,7 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
 
     return {
         /**
-         * Deprecated - will be removed in 5.35.0
+         * Deprecated - will be removed in 5.36.0
          */
         onBeforeGroupCreate: onGroupBeforeCreate,
         onAfterGroupCreate: onGroupAfterCreate,
@@ -194,7 +194,7 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
         onBeforeGroupDelete: onGroupBeforeDelete,
         onAfterGroupDelete: onGroupAfterDelete,
         /**
-         * Released in 5.33.0
+         * Released in 5.34.0
          */
         onGroupBeforeCreate,
         onGroupAfterCreate,

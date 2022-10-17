@@ -304,7 +304,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
 
     return {
         /**
-         * Deprecated - will be removed in 5.35.0
+         * Deprecated - will be removed in 5.36.0
          */
         onBeforeModelCreate: onModelBeforeCreate,
         onAfterModelCreate: onModelAfterCreate,
@@ -315,7 +315,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         onBeforeModelDelete: onModelBeforeDelete,
         onAfterModelDelete: onModelAfterDelete,
         /**
-         * Released in 5.33.0
+         * Released in 5.34.0
          */
         onModelBeforeCreate,
         onModelAfterCreate,
@@ -368,7 +368,6 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 layout: input.layout || [],
                 webinyVersion: context.WEBINY_VERSION
             };
-            
 
             await onModelBeforeCreate.publish({
                 input,
