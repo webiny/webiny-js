@@ -29,7 +29,7 @@ import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/fil
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 
 import { PbBlockCategory, PbPageBlock } from "~/types";
-import { LIST_PAGE_BLOCKS_AND_CATEGORIES, CREATE_PAGE_BLOCK } from "./graphql";
+import { LIST_PAGE_BLOCKS_AND_CATEGORIES, LIST_PAGE_BLOCKS, CREATE_PAGE_BLOCK } from "./graphql";
 
 import { addElementId } from "~/editor/helpers";
 
@@ -179,7 +179,10 @@ const BlocksByCategoriesDataList = ({ canCreate }: PageBuilderBlocksByCategories
                     preview: {}
                 }
             },
-            refetchQueries: [{ query: LIST_PAGE_BLOCKS_AND_CATEGORIES }]
+            refetchQueries: [
+                { query: LIST_PAGE_BLOCKS_AND_CATEGORIES },
+                { query: LIST_PAGE_BLOCKS }
+            ]
         });
         const { error, data } = get(res, `pageBuilder.pageBlock`);
         if (data) {
