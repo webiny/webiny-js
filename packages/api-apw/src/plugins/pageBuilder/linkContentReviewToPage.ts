@@ -43,7 +43,7 @@ export const linkContentReviewToPage = (params: LinkContentReviewToPageParams) =
         }
     });
 
-    pageBuilder.onBeforePageDelete.subscribe(async ({ page }) => {
+    pageBuilder.onPageBeforeDelete.subscribe(async ({ page }) => {
         const contentReviewId = get(page, "settings.apw.contentReviewId");
         if (!contentReviewId) {
             return;

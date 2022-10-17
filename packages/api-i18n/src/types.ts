@@ -169,27 +169,27 @@ export interface LocalesCRUD {
      * Lifecycle events - deprecated in 5.34.0 - will be removed in 5.36.0
      */
     /**
-     * Lifecycle events - deprecated in 5.34.0 - will be removed in 5.36.0
+     * @deprecated
      */
     onBeforeCreate: Topic<OnLocaleBeforeCreateTopicParams>;
     /**
-     * Lifecycle events - deprecated in 5.34.0 - will be removed in 5.36.0
+     * @deprecated
      */
     onAfterCreate: Topic<OnLocaleAfterCreateTopicParams>;
     /**
-     * Lifecycle events - deprecated in 5.34.0 - will be removed in 5.36.0
+     * @deprecated
      */
     onBeforeUpdate: Topic<OnLocaleBeforeUpdateTopicParams>;
     /**
-     * Lifecycle events - deprecated in 5.34.0 - will be removed in 5.36.0
+     * @deprecated
      */
     onAfterUpdate: Topic<OnLocaleAfterUpdateTopicParams>;
     /**
-     * Lifecycle events - deprecated in 5.34.0 - will be removed in 5.36.0
+     * @deprecated
      */
     onBeforeDelete: Topic<OnLocaleBeforeDeleteTopicParams>;
     /**
-     * Lifecycle events - deprecated in 5.34.0 - will be removed in 5.36.0
+     * @deprecated
      */
     onAfterDelete: Topic<OnLocaleAfterDeleteTopicParams>;
     /**

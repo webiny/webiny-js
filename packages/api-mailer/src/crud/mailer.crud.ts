@@ -3,12 +3,12 @@ import {
     MailerContextObject,
     Mailer,
     MailerSetterParams,
-    OnAfterMailerSendParams,
-    OnBeforeMailerSendParams,
-    OnErrorMailerParams
+    OnMailAfterSendParams,
+    OnMailBeforeSendParams,
+    OnMailErrorParams
 } from "~/types";
 import { createTopic } from "@webiny/pubsub";
-import { attachOnBeforeSend } from "~/crud/mailer/onBeforeSend";
+import { attachOnMailBeforeSend } from "~/crud/mailer/onMailBeforeSend";
 import WebinyError from "@webiny/error";
 
 const createDefaultMailer = async () => {
@@ -22,14 +22,14 @@ export const createMailerCrud = (config?: MailerConfig): MailerContextObject => 
     /**
      * We define possible events to be hooked into.
      */
-    const onBeforeSend = createTopic<OnBeforeMailerSendParams>("mailer.onBeforeMailSend");
-    const onAfterSend = createTopic<OnAfterMailerSendParams>("mailer.onAfterMailSend");
-    const onError = createTopic<OnErrorMailerParams>("mailer.onErrorMailSend");
+    const onMailBeforeSend = createTopic<OnMailBeforeSendParams>("mailer.onMailBeforeSend");
+    const onMailAfterSend = createTopic<OnMailAfterSendParams>("mailer.onMailAfterSend");
+    const onMailError = createTopic<OnMailErrorParams>("mailer.onMailError");
     /**
      * We attach our default ones.
      */
-    attachOnBeforeSend({
-        onBeforeSend
+    attachOnMailBeforeSend({
+        onMailBeforeSend
     });
 
     let initializedMailer: Mailer | undefined;
@@ -62,9 +62,9 @@ export const createMailerCrud = (config?: MailerConfig): MailerContextObject => 
     };
 
     return {
-        onBeforeSend,
-        onAfterSend,
-        onError,
+        onMailBeforeSend,
+        onMailAfterSend,
+        onMailError,
         getMailer,
         setMailer: target => {
             initializedMailer = undefined;
@@ -73,11 +73,11 @@ export const createMailerCrud = (config?: MailerConfig): MailerContextObject => 
         send: async ({ data }) => {
             const mailer = await getMailer();
             try {
-                await onBeforeSend.publish({
+                await onMailBeforeSend.publish({
                     data
                 });
                 const response = await mailer.send(data);
-                await onAfterSend.publish({
+                await onMailAfterSend.publish({
                     data
                 });
 
@@ -86,7 +86,7 @@ export const createMailerCrud = (config?: MailerConfig): MailerContextObject => 
                     error: response.error
                 };
             } catch (ex) {
-                await onError.publish({
+                await onMailError.publish({
                     error: ex,
                     data
                 });

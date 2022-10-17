@@ -5,7 +5,7 @@ interface AssignAfterModelCreateFromParams {
     onModelAfterCreateFrom: Topic<OnModelAfterCreateFromTopicParams>;
     context: CmsContext;
 }
-export const assignAfterModelCreateFrom = (params: AssignAfterModelCreateFromParams) => {
+export const assignModelAfterCreateFrom = (params: AssignAfterModelCreateFromParams) => {
     const { onModelAfterCreateFrom, context } = params;
 
     onModelAfterCreateFrom.subscribe(async () => {

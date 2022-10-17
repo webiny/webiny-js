@@ -23,10 +23,10 @@ interface LinkWorkflowToPageParams {
 export const linkWorkflowToPage = (params: LinkWorkflowToPageParams) => {
     const { apw, pageBuilder } = params;
 
-    pageBuilder.onBeforePageCreate.subscribe<ApwOnPageBeforeCreateTopicParams>(async ({ page }) => {
+    pageBuilder.onPageBeforeCreate.subscribe<ApwOnPageBeforeCreateTopicParams>(async ({ page }) => {
         await assignWorkflowToPage({ listWorkflow: apw.workflow.list, page });
     });
-    pageBuilder.onBeforePageCreateFrom.subscribe<ApwOnPageBeforeCreateFromTopicParams>(
+    pageBuilder.onPageBeforeCreateFrom.subscribe<ApwOnPageBeforeCreateFromTopicParams>(
         async params => {
             const { page, original } = params;
             /**
@@ -52,7 +52,7 @@ export const linkWorkflowToPage = (params: LinkWorkflowToPageParams) => {
             await assignWorkflowToPage({ listWorkflow: apw.workflow.list, page });
         }
     );
-    pageBuilder.onBeforePageUpdate.subscribe<ApwOnPageBeforeUpdateTopicParams>(async params => {
+    pageBuilder.onPageBeforeUpdate.subscribe<ApwOnPageBeforeUpdateTopicParams>(async params => {
         const { page, original } = params;
         const prevApwWorkflowId = get(original, "settings.apw");
         const currentApwWorkflowId = get(page, "settings.apw");

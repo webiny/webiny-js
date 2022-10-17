@@ -119,11 +119,14 @@ const getModelId = (model: CmsModel): string => {
     );
 };
 
-interface CreateOnBeforeCreateCbParams {
+interface CreateOnModelBeforeCreateCbParams {
     plugins: PluginsContainer;
     storageOperations: HeadlessCmsStorageOperations;
 }
-const createOnBeforeCb = ({ plugins, storageOperations }: CreateOnBeforeCreateCbParams) => {
+const createOnModelBeforeCb = ({
+    plugins,
+    storageOperations
+}: CreateOnModelBeforeCreateCbParams) => {
     return async (params: OnModelBeforeCreateTopicParams | OnModelBeforeCreateFromTopicParams) => {
         const { model } = params;
 
@@ -175,7 +178,7 @@ interface AssignBeforeModelCreateParams {
  * We attach both on before create and createFrom events here.
  * Callables are identical.
  */
-export const assignBeforeModelCreate = (params: AssignBeforeModelCreateParams) => {
+export const assignModelBeforeCreate = (params: AssignBeforeModelCreateParams) => {
     const { onModelBeforeCreate, onModelBeforeCreateFrom, storageOperations, plugins } = params;
 
     onModelBeforeCreate.subscribe(async ({ model, input }) => {
@@ -186,7 +189,7 @@ export const assignBeforeModelCreate = (params: AssignBeforeModelCreateParams) =
         /**
          * then we run the shared create/createFrom methods.
          */
-        const cb = createOnBeforeCb({
+        const cb = createOnModelBeforeCb({
             storageOperations,
             plugins
         });
@@ -205,7 +208,7 @@ export const assignBeforeModelCreate = (params: AssignBeforeModelCreateParams) =
     });
 
     onModelBeforeCreateFrom.subscribe(
-        createOnBeforeCb({
+        createOnModelBeforeCb({
             storageOperations,
             plugins
         })

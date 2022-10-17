@@ -15,7 +15,7 @@ interface TriggerContentReviewParams {
 export const triggerContentReview = (params: TriggerContentReviewParams) => {
     const { pageBuilder, apw } = params;
 
-    pageBuilder.onBeforePagePublish.subscribe<ApwOnPageBeforePublishTopicParams>(
+    pageBuilder.onPageBeforePublish.subscribe<ApwOnPageBeforePublishTopicParams>(
         async ({ page }) => {
             const contentReviewId = get(page, "settings.apw.contentReviewId");
             if (contentReviewId) {

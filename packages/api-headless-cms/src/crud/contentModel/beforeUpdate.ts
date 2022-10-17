@@ -10,7 +10,7 @@ interface AssignBeforeModelUpdateParams {
     plugins: PluginsContainer;
 }
 
-export const assignBeforeModelUpdate = (params: AssignBeforeModelUpdateParams) => {
+export const assignModelBeforeUpdate = (params: AssignBeforeModelUpdateParams) => {
     const { onModelBeforeUpdate, plugins } = params;
 
     onModelBeforeUpdate.subscribe(async ({ model, original }) => {

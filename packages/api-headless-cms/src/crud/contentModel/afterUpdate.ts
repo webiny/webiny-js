@@ -5,7 +5,7 @@ interface AssignAfterModelUpdateParams {
     onModelAfterUpdate: Topic<OnModelAfterUpdateTopicParams>;
     context: CmsContext;
 }
-export const assignAfterModelUpdate = (params: AssignAfterModelUpdateParams) => {
+export const assignModelAfterUpdate = (params: AssignAfterModelUpdateParams) => {
     const { onModelAfterUpdate, context } = params;
 
     onModelAfterUpdate.subscribe(async () => {

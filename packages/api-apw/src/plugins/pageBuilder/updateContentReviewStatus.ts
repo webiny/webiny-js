@@ -17,7 +17,7 @@ interface UpdateContentReviewStatusParams {
 export const updateContentReviewStatus = (params: UpdateContentReviewStatusParams) => {
     const { apw, pageBuilder, security } = params;
 
-    pageBuilder.onAfterPagePublish.subscribe<ApwOnPageBeforePublishTopicParams>(
+    pageBuilder.onPageAfterPublish.subscribe<ApwOnPageBeforePublishTopicParams>(
         async ({ page }) => {
             const contentReviewId = get(page, "settings.apw.contentReviewId");
             /**
@@ -44,7 +44,7 @@ export const updateContentReviewStatus = (params: UpdateContentReviewStatusParam
             }
         }
     );
-    pageBuilder.onAfterPageUnpublish.subscribe<ApwOnPageBeforePublishTopicParams>(
+    pageBuilder.onPageAfterUnpublish.subscribe<ApwOnPageBeforePublishTopicParams>(
         async ({ page }) => {
             const contentReviewId = get(page, "settings.apw.contentReviewId");
             /**

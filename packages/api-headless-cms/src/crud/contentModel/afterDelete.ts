@@ -5,7 +5,7 @@ interface AssignAfterModelDeleteParams {
     onModelAfterDelete: Topic<OnModelAfterDeleteTopicParams>;
     context: CmsContext;
 }
-export const assignAfterModelDelete = (params: AssignAfterModelDeleteParams) => {
+export const assignModelAfterDelete = (params: AssignAfterModelDeleteParams) => {
     const { onModelAfterDelete, context } = params;
 
     onModelAfterDelete.subscribe(async () => {

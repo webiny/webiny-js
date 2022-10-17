@@ -32,13 +32,13 @@ import { Tenant } from "@webiny/api-tenancy/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { createTopic } from "@webiny/pubsub";
-import { assignBeforeModelCreate } from "./contentModel/beforeCreate";
-import { assignBeforeModelUpdate } from "./contentModel/beforeUpdate";
-import { assignBeforeModelDelete } from "./contentModel/beforeDelete";
-import { assignAfterModelCreate } from "./contentModel/afterCreate";
-import { assignAfterModelUpdate } from "./contentModel/afterUpdate";
-import { assignAfterModelDelete } from "./contentModel/afterDelete";
-import { assignAfterModelCreateFrom } from "./contentModel/afterCreateFrom";
+import { assignModelBeforeCreate } from "./contentModel/beforeCreate";
+import { assignModelBeforeUpdate } from "./contentModel/beforeUpdate";
+import { assignModelBeforeDelete } from "./contentModel/beforeDelete";
+import { assignModelAfterCreate } from "./contentModel/afterCreate";
+import { assignModelAfterUpdate } from "./contentModel/afterUpdate";
+import { assignModelAfterDelete } from "./contentModel/afterDelete";
+import { assignModelAfterCreateFrom } from "./contentModel/afterCreateFrom";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";
 import { checkPermissions } from "~/utils/permissions";
 import { filterAsync } from "~/utils/filterAsync";
@@ -269,35 +269,35 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
     /**
      * We need to assign some default behaviors.
      */
-    assignBeforeModelCreate({
+    assignModelBeforeCreate({
         onModelBeforeCreate,
         onModelBeforeCreateFrom,
         plugins: context.plugins,
         storageOperations
     });
-    assignAfterModelCreate({
+    assignModelAfterCreate({
         context,
         onModelAfterCreate
     });
-    assignBeforeModelUpdate({
+    assignModelBeforeUpdate({
         onModelBeforeUpdate,
         plugins: context.plugins,
         storageOperations
     });
-    assignAfterModelUpdate({
+    assignModelAfterUpdate({
         context,
         onModelAfterUpdate
     });
-    assignAfterModelCreateFrom({
+    assignModelAfterCreateFrom({
         context,
         onModelAfterCreateFrom
     });
-    assignBeforeModelDelete({
+    assignModelBeforeDelete({
         onModelBeforeDelete,
         plugins: context.plugins,
         storageOperations
     });
-    assignAfterModelDelete({
+    assignModelAfterDelete({
         context,
         onModelAfterDelete
     });

@@ -10,7 +10,7 @@ interface AssignBeforeModelDeleteParams {
     storageOperations: HeadlessCmsStorageOperations;
     plugins: PluginsContainer;
 }
-export const assignBeforeModelDelete = (params: AssignBeforeModelDeleteParams) => {
+export const assignModelBeforeDelete = (params: AssignBeforeModelDeleteParams) => {
     const { onModelBeforeDelete, storageOperations, plugins } = params;
 
     onModelBeforeDelete.subscribe(async params => {

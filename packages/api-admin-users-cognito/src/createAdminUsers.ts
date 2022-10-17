@@ -41,18 +41,18 @@ export const createAdminUsers = ({
     };
 
     const adminUsers: AdminUsers = {
-        onUserAfterCreate: createTopic("adminUsers.onAfterCreate"),
-        onUserAfterDelete: createTopic("adminUsers.onAfterDelete"),
-        onUserAfterUpdate: createTopic("adminUsers.onAfterUpdate"),
-        onUserBeforeCreate: createTopic("adminUsers.onBeforeCreate"),
-        onUserBeforeDelete: createTopic("adminUsers.onBeforeDelete"),
-        onUserBeforeUpdate: createTopic("adminUsers.onBeforeUpdate"),
+        onUserAfterCreate: createTopic("adminUsers.onCreateAfter"),
+        onUserAfterDelete: createTopic("adminUsers.onDeleteAfter"),
+        onUserAfterUpdate: createTopic("adminUsers.onUpdateAfter"),
+        onUserBeforeCreate: createTopic("adminUsers.onCreateBefore"),
+        onUserBeforeDelete: createTopic("adminUsers.onDeleteBefore"),
+        onUserBeforeUpdate: createTopic("adminUsers.onUpdateBefore"),
         onUserCreateError: createTopic("adminUsers.onCreateError"),
         // onUserUpdateError: createTopic("adminUsers.onUpdateError"),
         // onUserDeleteError: createTopic("adminUsers.onDeleteError"),
-        onBeforeInstall: createTopic("adminUsers.onBeforeInstall"),
-        onInstall: createTopic("adminUsers.onInstall"),
-        onAfterInstall: createTopic("adminUsers.onAfterInstall"),
+        onBeforeInstall: createTopic("adminUsers.onSystemBeforeInstall"),
+        onInstall: createTopic("adminUsers.onSystemInstall"),
+        onAfterInstall: createTopic("adminUsers.onSystemAfterInstall"),
         onCleanup: createTopic("adminUsers.onCleanup"),
         getStorageOperations() {
             return storageOperations;
@@ -308,9 +308,9 @@ export const createAdminUsers = ({
             const installEvent = { tenant: getTenant(), user };
 
             try {
-                await this.onBeforeInstall.publish(installEvent);
+                await this.onSystemBeforeInstall.publish(installEvent);
                 await this.onInstall.publish(installEvent);
-                await this.onAfterInstall.publish(installEvent);
+                await this.onSystemAfterInstall.publish(installEvent);
             } catch (err) {
                 await this.onCleanup.publish({ error: err, tenant: getTenant(), user });
 
