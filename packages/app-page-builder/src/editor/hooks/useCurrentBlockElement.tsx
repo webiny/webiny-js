@@ -11,7 +11,7 @@ export interface UseCurrentBlock {
 /**
  * This selector will traverse the "elements" atom, going up the tree, until it finds the root block element.
  */
-const blockByElementSelector = selectorFamily<PbEditorElement | null, string | undefined>({
+export const blockByElementSelector = selectorFamily<PbEditorElement | null, string | undefined>({
     key: "blockByElementSelector",
     get: id => {
         return ({ get }) => {

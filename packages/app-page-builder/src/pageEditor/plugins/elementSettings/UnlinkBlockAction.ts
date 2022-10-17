@@ -1,24 +1,32 @@
 import React, { useCallback } from "react";
+import { cloneDeep } from "lodash";
 import { useActiveElement } from "~/editor/hooks/useActiveElement";
 import { useUpdateElement } from "~/editor/hooks/useUpdateElement";
+import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
+import { removeElementVariableIds } from "~/pageEditor/helpers";
+import { PbElement } from "~/types";
 
 interface UnlinkBlockActionPropsType {
     children: React.ReactElement;
 }
 const UnlinkBlockAction: React.FC<UnlinkBlockActionPropsType> = ({ children }) => {
     const [element] = useActiveElement();
+    const { getElementTree } = useEventActionHandler();
     const updateElement = useUpdateElement();
 
-    const onClick = useCallback((): void => {
+    const onClick = useCallback(async (): Promise<void> => {
         if (element) {
-            // we need to drop blockId property wheen unlinking, so it is separated from all other element data
+            // we need to drop blockId and variables properties when unlinking, so they are separated from all other element data
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const { blockId, ...newData } = element.data;
+            const { blockId, variables, ...newData } = element.data;
+            const pbElement = (await getElementTree({
+                element: { ...element, data: newData }
+            })) as PbElement;
+            // we make copy of element to delete variableIds from it
+            const elementCopy = cloneDeep(pbElement);
+            const elementWithoutVariableIds = removeElementVariableIds(elementCopy, variables);
 
-            updateElement({
-                ...element,
-                data: newData
-            });
+            updateElement(elementWithoutVariableIds);
         }
     }, [element, updateElement]);
 

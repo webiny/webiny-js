@@ -206,6 +206,12 @@ export interface PbElement {
     text?: string;
 }
 
+export interface PbBlockVariable {
+    id: string;
+    label: string;
+    value?: string;
+}
+
 /**
  * Determine types for elements
  */
