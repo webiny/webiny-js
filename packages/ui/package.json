@@ -21,6 +21,7 @@
     "@rmwc/button": "7.0.3",
     "@rmwc/checkbox": "7.0.3",
     "@rmwc/chip": "7.0.3",
+    "@rmwc/data-table": "7.0.3",
     "@rmwc/dialog": "7.0.3",
     "@rmwc/drawer": "7.0.3",
     "@rmwc/elevation": "7.0.3",

@@ -5554,6 +5554,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@material-design-icons/svg@npm:^0.12.1":
+  version: 0.12.1
+  resolution: "@material-design-icons/svg@npm:0.12.1"
+  checksum: c0e482fd0be54d3cc5aa84ab12bc4286443acb22bb6e0be3c5ec8e4405977031b4559a4ffbc892e59cd25f5694f65e61af647666926c0768766bfa6acd218f33
+  languageName: node
+  linkType: hard
+
 "@material/animation@npm:^5.1.0":
   version: 5.1.0
   resolution: "@material/animation@npm:5.1.0"
@@ -7049,7 +7056,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rmwc/checkbox@npm:7.0.3":
+"@rmwc/checkbox@npm:7.0.3, @rmwc/checkbox@npm:^7.0.3":
   version: 7.0.3
   resolution: "@rmwc/checkbox@npm:7.0.3"
   dependencies:
@@ -7080,6 +7087,24 @@ __metadata:
     react: ">=16.8.x"
     react-dom: ">=16.8.x"
   checksum: c4d34f9f9cd63e66f94271c04148d2215bf127025847c7b3bbabd40d3a12a57b69572e48b9ba322555a3314c30374ccfdfcfc6156b2a6eaf65cd572060fea963
+  languageName: node
+  linkType: hard
+
+"@rmwc/data-table@npm:7.0.3":
+  version: 7.0.3
+  resolution: "@rmwc/data-table@npm:7.0.3"
+  dependencies:
+    "@material/data-table": ^5.1.0
+    "@rmwc/base": ^7.0.3
+    "@rmwc/checkbox": ^7.0.3
+    "@rmwc/icon": ^7.0.3
+    "@rmwc/select": ^7.0.3
+    "@rmwc/switch": ^7.0.3
+    "@rmwc/types": ^7.0.3
+  peerDependencies:
+    react: ">=16.8.x"
+    react-dom: ">=16.8.x"
+  checksum: d39c6d3ce15f593228c1d3a56fc8da8d98da8a501a98291656172688bbda2ba8d68367c8266ef0ca6b9e5e95c1c76651ec6fa18d2d477adb8c8f881c222d4831
   languageName: node
   linkType: hard
 
@@ -7322,7 +7347,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rmwc/select@npm:7.0.3":
+"@rmwc/select@npm:7.0.3, @rmwc/select@npm:^7.0.3":
   version: 7.0.3
   resolution: "@rmwc/select@npm:7.0.3"
   dependencies:
@@ -7374,7 +7399,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rmwc/switch@npm:7.0.3":
+"@rmwc/switch@npm:7.0.3, @rmwc/switch@npm:^7.0.3":
   version: 7.0.3
   resolution: "@rmwc/switch@npm:7.0.3"
   dependencies:
@@ -11679,6 +11704,7 @@ __metadata:
     "@editorjs/editorjs": ^2.20.1
     "@emotion/core": ^10.0.17
     "@emotion/styled": ^10.0.17
+    "@material-design-icons/svg": ^0.12.1
     "@svgr/webpack": ^6.1.1
     "@types/react": 17.0.39
     "@types/react-google-recaptcha": ^1.1.2
@@ -13481,6 +13507,7 @@ __metadata:
     "@rmwc/button": 7.0.3
     "@rmwc/checkbox": 7.0.3
     "@rmwc/chip": 7.0.3
+    "@rmwc/data-table": 7.0.3
     "@rmwc/dialog": 7.0.3
     "@rmwc/drawer": 7.0.3
     "@rmwc/elevation": 7.0.3
