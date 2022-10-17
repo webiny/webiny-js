@@ -15,7 +15,8 @@ import {
     OnModelAfterCreateFromTopicParams,
     CmsModelCreateInput,
     CmsModelUpdateInput,
-    CmsModelCreateFromInput
+    CmsModelCreateFromInput,
+    CmsModelField
 } from "~/types";
 import DataLoader from "dataloader";
 import { NotFoundError } from "@webiny/handler-graphql";
@@ -26,7 +27,6 @@ import {
     UpdateContentModelModel
 } from "./contentModel/models";
 import { createFieldModels } from "./contentModel/createFieldModels";
-import { validateLayout } from "./contentModel/validateLayout";
 import WebinyError from "@webiny/error";
 import { Tenant } from "@webiny/api-tenancy/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
@@ -44,6 +44,49 @@ import { checkPermissions } from "~/utils/permissions";
 import { filterAsync } from "~/utils/filterAsync";
 import { checkOwnership, validateOwnership } from "~/utils/ownership";
 import { checkModelAccess, validateModelAccess } from "~/utils/access";
+import { validateModelFields } from "~/crud/contentModel/validateModelFields";
+import semver, { SemVer } from "semver";
+
+/**
+ * TODO: remove for 5.34.0
+ * Required because of the 5.33.0 upgrade.
+ * Until the upgrade is done, API will break because there is no storageId assigned.
+ */
+const featureVersion = semver.coerce("5.33.0") as SemVer;
+
+const attachStorageIdToFields = (fields: CmsModelField[]): CmsModelField[] => {
+    return fields.map(field => {
+        if (field.settings?.fields) {
+            field.settings.fields = attachStorageIdToFields(field.settings.fields);
+        }
+        if (!field.storageId) {
+            field.storageId = field.fieldId;
+        }
+        return field;
+    });
+};
+
+const attachStorageIdToModelFields = (model: CmsModel): CmsModelField[] => {
+    if (!model.webinyVersion) {
+        return model.fields;
+    }
+
+    const version = semver.coerce(model.webinyVersion);
+    if (!version) {
+        return model.fields;
+    }
+    /**
+     * Unfortunately we need to check for beta and next.
+     * TODO remove after 5.33.0
+     */
+    if (model.webinyVersion.match(/beta|next/)) {
+        return attachStorageIdToFields(model.fields);
+    }
+    if (semver.compare(version, featureVersion) >= 0) {
+        return model.fields;
+    }
+    return attachStorageIdToFields(model.fields);
+};
 
 export interface CreateModelsCrudParams {
     getTenant: () => Tenant;
@@ -67,6 +110,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 models.map(model => {
                     return {
                         ...model,
+                        fields: attachStorageIdToModelFields(model),
                         tenant: model.tenant || getTenant().id,
                         locale: model.locale || getLocale().code
                     };
@@ -99,31 +143,39 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         const tenant = getTenant().id;
         const locale = getLocale().code;
 
-        return (
-            context.plugins
-                .byType<CmsModelPlugin>(CmsModelPlugin.type)
-                /**
-                 * We need to filter out models that are not for this tenant or locale.
-                 * If it does not have tenant or locale define, it is for every locale and tenant
-                 */
-                .filter(plugin => {
-                    const { tenant: t, locale: l } = plugin.contentModel;
-                    if (t && t !== tenant) {
-                        return false;
-                    } else if (l && l !== locale) {
-                        return false;
-                    }
-                    return true;
-                })
-                .map<CmsModel>(plugin => {
-                    return {
-                        ...plugin.contentModel,
-                        tenant,
-                        locale,
-                        webinyVersion: context.WEBINY_VERSION
-                    };
-                })
-        );
+        const models = context.plugins
+            .byType<CmsModelPlugin>(CmsModelPlugin.type)
+            /**
+             * We need to filter out models that are not for this tenant or locale.
+             * If it does not have tenant or locale define, it is for every locale and tenant
+             */
+            .filter(plugin => {
+                const { tenant: t, locale: l } = plugin.contentModel;
+                if (t && t !== tenant) {
+                    return false;
+                } else if (l && l !== locale) {
+                    return false;
+                }
+                return true;
+            })
+            .map<CmsModel>(plugin => {
+                return {
+                    ...plugin.contentModel,
+                    tenant,
+                    locale,
+                    webinyVersion: context.WEBINY_VERSION
+                };
+            });
+        /**
+         * Only point where we can truly validate the user model is in the runtime.
+         */
+        for (const model of models) {
+            validateModelFields({
+                model,
+                plugins: context.plugins
+            });
+        }
+        return models;
     };
 
     const modelsGet = async (modelId: string): Promise<CmsModel> => {
@@ -316,8 +368,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 layout: input.layout || [],
                 webinyVersion: context.WEBINY_VERSION
             };
-
-            validateLayout(model, fields);
+            
 
             await onModelBeforeCreate.publish({
                 input,
@@ -496,7 +547,6 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 fields,
                 savedOn: new Date().toISOString()
             };
-            validateLayout(model, fields);
 
             await onModelBeforeUpdate.publish({
                 input,

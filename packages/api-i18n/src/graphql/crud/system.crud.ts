@@ -27,6 +27,7 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCRUD => 
     return {
         onBeforeInstall,
         onAfterInstall,
+        storageOperations,
         async getSystemVersion() {
             const system = await storageOperations.get();
 

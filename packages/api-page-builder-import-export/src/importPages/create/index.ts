@@ -19,8 +19,7 @@ interface Configuration {
 
 export interface Payload {
     category: string;
-    zipFileKey?: string;
-    zipFileUrl?: string;
+    zipFileUrl: string;
     task: PageImportExportTask;
     identity: SecurityIdentity;
 }
@@ -38,26 +37,22 @@ export default (configuration: Configuration) => {
             const log = console.log;
 
             const { pageBuilder } = context;
-            const { task, category, zipFileKey, zipFileUrl, identity } = payload;
+            const { task, category, zipFileUrl, identity } = payload;
             try {
                 log("RUNNING Import Pages Create");
-                if (!zipFileKey && !zipFileUrl) {
+                if (!zipFileUrl) {
                     return {
                         data: null,
                         error: {
-                            message:
-                                "Missing zipFileKey and zipFileUrl parameters. One must be defined."
+                            message: `Missing "zipFileUrl"!`
                         }
                     };
                 }
                 mockSecurity(identity, context);
                 // Step 1: Read the zip file
-                const pageImportDataList = await readExtractAndUploadZipFileContents(
-                    zipFileKey || (zipFileUrl as string)
-                );
-                // Once we have map we can start processing each page
+                const pageImportDataList = await readExtractAndUploadZipFileContents(zipFileUrl);
 
-                // For each page create a sub task and invoke the process handler
+                // For each page create a subtask and invoke the process handler
                 for (let i = 0; i < pageImportDataList.length; i++) {
                     const pagesDirMap = pageImportDataList[i];
                     // Create sub task
@@ -69,7 +64,6 @@ export default (configuration: Configuration) => {
                             data: {
                                 pageKey: pagesDirMap.key,
                                 category,
-                                zipFileKey,
                                 zipFileUrl,
                                 input: {
                                     fileUploadsData: pagesDirMap

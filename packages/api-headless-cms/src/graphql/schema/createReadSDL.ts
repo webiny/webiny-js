@@ -1,4 +1,4 @@
-import { CmsModel, CmsFieldTypePlugins } from "~/types";
+import { CmsModel, CmsFieldTypePlugins, ApiEndpoint } from "~/types";
 import { createReadTypeName, createTypeName } from "~/utils/createTypeName";
 import { renderListFilterFields } from "~/utils/renderListFilterFields";
 import { renderSortEnum } from "~/utils/renderSortEnum";
@@ -18,15 +18,27 @@ export const createReadSDL: CreateReadSDL = ({ model, fieldTypePlugins }): strin
     const typeName = createTypeName(model.modelId);
     const rTypeName = createReadTypeName(typeName);
 
+    const type: ApiEndpoint = "read";
+
     const listFilterFieldsRender = renderListFilterFields({
         model,
-        type: "read",
+        type,
         fieldTypePlugins
     });
 
-    const sortEnumRender = renderSortEnum({ model, fieldTypePlugins });
-    const getFilterFieldsRender = renderGetFilterFields({ model, fieldTypePlugins });
-    const fieldsRender = renderFields({ model, type: "read", fieldTypePlugins });
+    const sortEnumRender = renderSortEnum({
+        model,
+        fieldTypePlugins
+    });
+    const getFilterFieldsRender = renderGetFilterFields({
+        model,
+        fieldTypePlugins
+    });
+    const fieldsRender = renderFields({
+        model,
+        type,
+        fieldTypePlugins
+    });
 
     if (fieldsRender.length === 0) {
         return "";

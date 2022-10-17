@@ -14,7 +14,7 @@ env:
 jobs:
   npm-release-latest:
     name: NPM release ("latest" tag)
-    runs-on: ubuntu-latest
+    runs-on: webiny-js-4-cores
     environment: release
     steps:
       - uses: actions/setup-node@v2

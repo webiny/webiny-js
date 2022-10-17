@@ -1,6 +1,6 @@
-import shortId from "shortid";
 import contentModelGroup from "./contentModelGroup";
 import { CmsModel } from "~/types";
+import { generateAlphaNumericLowerCaseId } from "@webiny/utils";
 
 const { version: webinyVersion } = require("@webiny/cli/package.json");
 
@@ -25,61 +25,62 @@ export interface Fruit {
 
 const ids = {
     // product category
-    field11: shortId.generate(),
-    field12: shortId.generate(),
+    field11: generateAlphaNumericLowerCaseId(8),
+    field12: generateAlphaNumericLowerCaseId(8),
     // product
-    field201: shortId.generate(),
-    field202: shortId.generate(),
-    field203: shortId.generate(),
-    field204: shortId.generate(),
-    field205: shortId.generate(),
-    field206: shortId.generate(),
-    field207: shortId.generate(),
-    field208: shortId.generate(),
-    field209: shortId.generate(),
-    field210: shortId.generate(),
-    field211: shortId.generate(),
-    field212: shortId.generate(),
-    field213: shortId.generate(),
-    field214: shortId.generate(),
-    field215: shortId.generate(),
-    field216: shortId.generate(),
-    field217: shortId.generate(),
-    field218: shortId.generate(),
-    field219: shortId.generate(),
-    field220: shortId.generate(),
+    field201: generateAlphaNumericLowerCaseId(8),
+    field202: generateAlphaNumericLowerCaseId(8),
+    field203: generateAlphaNumericLowerCaseId(8),
+    field204: generateAlphaNumericLowerCaseId(8),
+    field205: generateAlphaNumericLowerCaseId(8),
+    field206: generateAlphaNumericLowerCaseId(8),
+    field207: generateAlphaNumericLowerCaseId(8),
+    field208: generateAlphaNumericLowerCaseId(8),
+    field209: generateAlphaNumericLowerCaseId(8),
+    field210: generateAlphaNumericLowerCaseId(8),
+    field211: generateAlphaNumericLowerCaseId(8),
+    field212: generateAlphaNumericLowerCaseId(8),
+    field213: generateAlphaNumericLowerCaseId(8),
+    field214: generateAlphaNumericLowerCaseId(8),
+    field215: generateAlphaNumericLowerCaseId(8),
+    field216: generateAlphaNumericLowerCaseId(8),
+    field217: generateAlphaNumericLowerCaseId(8),
+    field218: generateAlphaNumericLowerCaseId(8),
+    field219: generateAlphaNumericLowerCaseId(8),
+    field220: generateAlphaNumericLowerCaseId(8),
+    field221: generateAlphaNumericLowerCaseId(8),
     // product review
-    field31: shortId.generate(),
-    field32: shortId.generate(),
-    field33: shortId.generate(),
-    field34: shortId.generate(),
+    field31: generateAlphaNumericLowerCaseId(8),
+    field32: generateAlphaNumericLowerCaseId(8),
+    field33: generateAlphaNumericLowerCaseId(8),
+    field34: generateAlphaNumericLowerCaseId(8),
     // author
-    field40: shortId.generate(),
+    field40: generateAlphaNumericLowerCaseId(8),
     // fruit
-    field501: shortId.generate(),
-    field502: shortId.generate(),
-    field503: shortId.generate(),
-    field504: shortId.generate(),
-    field505: shortId.generate(),
-    field506: shortId.generate(),
-    field507: shortId.generate(),
-    field508: shortId.generate(),
-    field509: shortId.generate(),
-    field510: shortId.generate(),
-    field511: shortId.generate(),
-    field512: shortId.generate(),
-    field513: shortId.generate(),
-    field514: shortId.generate(),
+    field501: generateAlphaNumericLowerCaseId(8),
+    field502: generateAlphaNumericLowerCaseId(8),
+    field503: generateAlphaNumericLowerCaseId(8),
+    field504: generateAlphaNumericLowerCaseId(8),
+    field505: generateAlphaNumericLowerCaseId(8),
+    field506: generateAlphaNumericLowerCaseId(8),
+    field507: generateAlphaNumericLowerCaseId(8),
+    field508: generateAlphaNumericLowerCaseId(8),
+    field509: generateAlphaNumericLowerCaseId(8),
+    field510: generateAlphaNumericLowerCaseId(8),
+    field511: generateAlphaNumericLowerCaseId(8),
+    field512: generateAlphaNumericLowerCaseId(8),
+    field513: generateAlphaNumericLowerCaseId(8),
+    field514: generateAlphaNumericLowerCaseId(8),
     // bug
-    field601: shortId.generate(),
-    field602: shortId.generate(),
-    field603: shortId.generate(),
-    field604: shortId.generate(),
+    field601: generateAlphaNumericLowerCaseId(8),
+    field602: generateAlphaNumericLowerCaseId(8),
+    field603: generateAlphaNumericLowerCaseId(8),
+    field604: generateAlphaNumericLowerCaseId(8),
     // article
-    field701: shortId.generate(),
-    field702: shortId.generate(),
-    field703: shortId.generate(),
-    field704: shortId.generate()
+    field701: generateAlphaNumericLowerCaseId(8),
+    field702: generateAlphaNumericLowerCaseId(8),
+    field703: generateAlphaNumericLowerCaseId(8),
+    field704: generateAlphaNumericLowerCaseId(8)
 };
 
 const models: CmsModel[] = [
@@ -105,6 +106,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Title",
                 type: "text",
+                storageId: "titleStorageId",
                 fieldId: "title",
                 validation: [
                     {
@@ -135,6 +137,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Slug",
                 type: "text",
+                storageId: "slugStorageId",
                 fieldId: "slug",
                 validation: [
                     {
@@ -182,7 +185,7 @@ const models: CmsModel[] = [
             [ids.field209],
             [ids.field210],
             [ids.field211],
-            [ids.field220]
+            [ids.field221]
         ],
         fields: [
             {
@@ -190,6 +193,7 @@ const models: CmsModel[] = [
                 multipleValues: false,
                 helpText: "",
                 label: "Title",
+                storageId: "titleStorageId",
                 fieldId: "title",
                 type: "text",
                 validation: [
@@ -213,6 +217,7 @@ const models: CmsModel[] = [
                 multipleValues: false,
                 helpText: "",
                 label: "Category",
+                storageId: "categoryStorageId",
                 fieldId: "category",
                 type: "ref",
                 validation: [
@@ -234,12 +239,12 @@ const models: CmsModel[] = [
                     name: "renderer"
                 }
             },
-
             {
                 id: ids.field203,
                 multipleValues: false,
                 helpText: "",
                 label: "Price",
+                storageId: "priceStorageId",
                 fieldId: "price",
                 type: "number",
                 validation: [
@@ -263,6 +268,7 @@ const models: CmsModel[] = [
                 multipleValues: false,
                 helpText: "",
                 label: "Price",
+                storageId: "inStockStorageId",
                 fieldId: "inStock",
                 type: "boolean",
                 validation: [],
@@ -281,6 +287,7 @@ const models: CmsModel[] = [
                 multipleValues: false,
                 helpText: "",
                 label: "Price",
+                storageId: "itemsInStockStorageId",
                 fieldId: "itemsInStock",
                 type: "number",
                 validation: [],
@@ -299,6 +306,7 @@ const models: CmsModel[] = [
                 multipleValues: false,
                 helpText: "",
                 label: "Available on",
+                storageId: "availableOnStorageId",
                 fieldId: "availableOn",
                 type: "datetime",
                 settings: {
@@ -320,6 +328,7 @@ const models: CmsModel[] = [
                 multipleValues: false,
                 helpText: "",
                 label: "Color",
+                storageId: "colorStorageId",
                 fieldId: "color",
                 type: "text",
                 settings: {
@@ -363,6 +372,7 @@ const models: CmsModel[] = [
                 multipleValues: true,
                 helpText: "",
                 label: "Available sizes",
+                storageId: "availableSizesStorageId",
                 fieldId: "availableSizes",
                 type: "text",
                 settings: {
@@ -406,6 +416,7 @@ const models: CmsModel[] = [
                 multipleValues: false,
                 helpText: "Upload an image of the product",
                 label: "Image",
+                storageId: "imageStorageId",
                 fieldId: "image",
                 type: "file",
                 settings: {
@@ -432,6 +443,7 @@ const models: CmsModel[] = [
                 multipleValues: false,
                 helpText: "Rich text",
                 label: "Rich text",
+                storageId: "richTextStorageId",
                 fieldId: "richText",
                 type: "rich-text",
                 settings: {
@@ -453,6 +465,7 @@ const models: CmsModel[] = [
                 multipleValues: false,
                 helpText: "",
                 label: "Variant",
+                storageId: "variantStorageId",
                 fieldId: "variant",
                 type: "object",
                 settings: {
@@ -462,6 +475,7 @@ const models: CmsModel[] = [
                             multipleValues: false,
                             helpText: "",
                             label: "Name",
+                            storageId: "nameStorageId",
                             fieldId: "name",
                             type: "text",
                             settings: {
@@ -483,6 +497,7 @@ const models: CmsModel[] = [
                             multipleValues: false,
                             helpText: "",
                             label: "Price",
+                            storageId: "priceStorageId",
                             fieldId: "price",
                             type: "number",
                             settings: {
@@ -504,6 +519,7 @@ const models: CmsModel[] = [
                             multipleValues: false,
                             helpText: "",
                             label: "Category",
+                            storageId: "categoryStorageId",
                             fieldId: "category",
                             type: "ref",
                             validation: [
@@ -530,6 +546,7 @@ const models: CmsModel[] = [
                             multipleValues: true,
                             helpText: "",
                             label: "Options",
+                            storageId: "optionsStorageId",
                             fieldId: "options",
                             type: "object",
                             settings: {
@@ -539,6 +556,7 @@ const models: CmsModel[] = [
                                         multipleValues: false,
                                         helpText: "",
                                         label: "Name",
+                                        storageId: "nameStorageId",
                                         fieldId: "name",
                                         type: "text",
                                         settings: {
@@ -560,6 +578,7 @@ const models: CmsModel[] = [
                                         multipleValues: false,
                                         helpText: "",
                                         label: "Price",
+                                        storageId: "priceStorageId",
                                         fieldId: "price",
                                         type: "number",
                                         settings: {
@@ -581,6 +600,7 @@ const models: CmsModel[] = [
                                         multipleValues: false,
                                         helpText: "",
                                         label: "Category",
+                                        storageId: "categoryStorageId",
                                         fieldId: "category",
                                         type: "ref",
                                         validation: [
@@ -607,6 +627,7 @@ const models: CmsModel[] = [
                                         multipleValues: true,
                                         helpText: "",
                                         label: "Categories",
+                                        storageId: "categoriesStorageId",
                                         fieldId: "categories",
                                         type: "ref",
                                         validation: [],
@@ -614,6 +635,26 @@ const models: CmsModel[] = [
                                         settings: {
                                             models: [{ modelId: "category" }]
                                         },
+                                        placeholderText: "placeholder text",
+                                        predefinedValues: {
+                                            enabled: false,
+                                            values: []
+                                        },
+                                        renderer: {
+                                            name: "renderer"
+                                        }
+                                    },
+                                    {
+                                        id: ids.field220,
+                                        multipleValues: true,
+                                        helpText: "",
+                                        label: "Long Text List",
+                                        storageId: "longTextStorageId",
+                                        fieldId: "longText",
+                                        type: "long-text",
+                                        validation: [],
+                                        listValidation: [],
+                                        settings: {},
                                         placeholderText: "placeholder text",
                                         predefinedValues: {
                                             enabled: false,
@@ -650,10 +691,11 @@ const models: CmsModel[] = [
                 }
             },
             {
-                id: ids.field220,
+                id: ids.field221,
                 multipleValues: false,
                 helpText: "",
                 label: "No fields object",
+                storageId: "fieldsObjectStorageId",
                 fieldId: "fieldsObject",
                 type: "object",
                 settings: {
@@ -665,6 +707,7 @@ const models: CmsModel[] = [
                             helpText: "",
                             label: "Text",
                             type: "text",
+                            storageId: "textStorageId",
                             fieldId: "text",
                             validation: [
                                 {
@@ -721,6 +764,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Text",
                 type: "text",
+                storageId: "textStorageId",
                 fieldId: "text",
                 validation: [
                     {
@@ -744,6 +788,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Product",
                 type: "ref",
+                storageId: "productStorageId",
                 fieldId: "product",
                 validation: [],
                 listValidation: [],
@@ -765,6 +810,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Rating",
                 type: "number",
+                storageId: "ratingStorageId",
                 fieldId: "rating",
                 validation: [],
                 listValidation: [],
@@ -783,6 +829,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Author",
                 type: "ref",
+                storageId: "authorStorageId",
                 fieldId: "author",
                 validation: [],
                 listValidation: [],
@@ -824,6 +871,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Full name",
                 type: "text",
+                storageId: "fullNameStorageId",
                 fieldId: "fullName",
                 validation: [
                     {
@@ -883,6 +931,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Name",
                 type: "text",
+                storageId: "nameStorageId",
                 fieldId: "name",
                 validation: [
                     {
@@ -921,6 +970,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Numbers",
                 type: "number",
+                storageId: "numbersStorageId",
                 fieldId: "numbers",
                 validation: [
                     {
@@ -974,6 +1024,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "E-mail",
                 type: "text",
+                storageId: "emailStorageId",
                 fieldId: "email",
                 validation: [
                     {
@@ -1001,6 +1052,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Url",
                 type: "text",
+                storageId: "urlStorageId",
                 fieldId: "url",
                 validation: [
                     {
@@ -1027,6 +1079,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "LowerCase",
                 type: "text",
+                storageId: "lowerCaseStorageId",
                 fieldId: "lowerCase",
                 validation: [
                     {
@@ -1054,6 +1107,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "UpperCase",
                 type: "text",
+                storageId: "upperCaseStorageId",
                 fieldId: "upperCase",
                 validation: [
                     {
@@ -1081,6 +1135,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Date",
                 type: "datetime",
+                storageId: "dateStorageId",
                 fieldId: "date",
                 validation: [
                     {
@@ -1124,6 +1179,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "DateTime",
                 type: "datetime",
+                storageId: "dateTimeStorageId",
                 fieldId: "dateTime",
                 validation: [
                     {
@@ -1167,6 +1223,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "DateTime",
                 type: "datetime",
+                storageId: "dateTimeZStorageId",
                 fieldId: "dateTimeZ",
                 validation: [
                     {
@@ -1210,6 +1267,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Time",
                 type: "datetime",
+                storageId: "timeStorageId",
                 fieldId: "time",
                 validation: [
                     {
@@ -1253,6 +1311,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Is Something",
                 type: "boolean",
+                storageId: "isSomethingStorageId",
                 fieldId: "isSomething",
                 validation: [],
                 settings: {
@@ -1275,6 +1334,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Rating",
                 type: "number",
+                storageId: "ratingStorageId",
                 fieldId: "rating",
                 validation: [],
                 settings: {
@@ -1296,6 +1356,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Description",
                 type: "long-text",
+                storageId: "descriptionStorageId",
                 fieldId: "description",
                 validation: [],
                 settings: {},
@@ -1315,6 +1376,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Slug",
                 type: "text",
+                storageId: "slugStorageId",
                 fieldId: "slug",
                 validation: [
                     {
@@ -1359,6 +1421,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Name",
                 type: "text",
+                storageId: "nameStorageId",
                 fieldId: "name",
                 validation: [],
                 listValidation: [],
@@ -1377,6 +1440,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Bug type",
                 type: "text",
+                storageId: "bugTypeStorageId",
                 fieldId: "bugType",
                 validation: [],
                 listValidation: [],
@@ -1411,6 +1475,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Bug developer value",
                 type: "number",
+                storageId: "bugValueStorageId",
                 fieldId: "bugValue",
                 validation: [],
                 listValidation: [],
@@ -1442,6 +1507,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Bug fixed?",
                 type: "number",
+                storageId: "bugFixedStorageId",
                 fieldId: "bugFixed",
                 validation: [],
                 listValidation: [],
@@ -1492,6 +1558,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Title",
                 type: "text",
+                storageId: "titleStorageId",
                 fieldId: "title",
                 validation: [],
                 listValidation: [],
@@ -1510,6 +1577,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Body",
                 type: "rich-text",
+                storageId: "bodyStorageId",
                 fieldId: "body",
                 validation: [],
                 listValidation: [],
@@ -1528,6 +1596,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Categories",
                 type: "ref",
+                storageId: "categoriesStorageId",
                 fieldId: "categories",
                 validation: [],
                 listValidation: [],
@@ -1549,6 +1618,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Category",
                 type: "ref",
+                storageId: "categoryStorageId",
                 fieldId: "category",
                 validation: [],
                 listValidation: [],

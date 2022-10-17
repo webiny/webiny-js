@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import get from "lodash/get";
+import dotPropImmutable from "dot-prop-immutable";
 import { useNavigate } from "@webiny/react-router";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import { useCurrentWorkflowId } from "./useLocationSearch";
@@ -89,7 +89,7 @@ export const usePublishingWorkflowsList: UsePublishingWorkflowsListHook = (confi
                     }
                 });
 
-                const error = get(response, "data.apw.deleteWorkflow.error");
+                const error = dotPropImmutable.get(response, "data.apw.deleteWorkflow.error");
                 if (error) {
                     showSnackbar(error.message);
                     return;

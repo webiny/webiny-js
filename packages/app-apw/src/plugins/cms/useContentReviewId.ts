@@ -1,5 +1,5 @@
 import { useQuery } from "@apollo/react-hooks";
-import get from "lodash/get";
+import dotPropImmutable from "dot-prop-immutable";
 import { CmsModel } from "~/types";
 import { IS_REVIEW_REQUIRED_QUERY } from "~/plugins/graphql";
 
@@ -17,5 +17,5 @@ export const useContentReviewId = (id: string, model: CmsModel): string | null =
         skip: !id
     });
 
-    return get(data, "apw.isReviewRequired.data.contentReviewId", null);
+    return dotPropImmutable.get(data, "apw.isReviewRequired.data.contentReviewId", null);
 };

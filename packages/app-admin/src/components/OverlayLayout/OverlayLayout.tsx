@@ -50,7 +50,7 @@ const transitionStyles: Record<string, any> = {
     }
 };
 
-interface OverlayLayoutProps {
+export interface OverlayLayoutProps {
     barMiddle?: React.ReactNode;
     barLeft?: React.ReactNode;
     barRight?: React.ReactNode;

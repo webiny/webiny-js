@@ -2,7 +2,7 @@ import { createGraphQLFields } from "@webiny/api-headless-cms";
 import defaultIndexingPlugin from "~/elasticsearch/indexing/defaultFieldIndexing";
 import objectIndexing from "~/elasticsearch/indexing/objectIndexing";
 import elasticsearchIndexingPlugins from "~/elasticsearch/indexing";
-import { CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
+import { CmsModelField, CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
 import { CmsModelFieldToElasticsearchPlugin } from "~/types";
 
 const indexingPlugins = elasticsearchIndexingPlugins();
@@ -16,105 +16,147 @@ const getFieldTypePlugin = (fieldType: string) => {
     return fieldTypePlugins.find(pl => pl.fieldType === fieldType) as CmsModelFieldToGraphQLPlugin;
 };
 
-const objectField = {
+const objectField: CmsModelField = {
+    id: "101",
+    label: "Page",
     fieldId: "page",
+    storageId: "pageStorageId",
     type: "object",
     settings: {
         fields: [
             {
                 fieldId: "title",
-                type: "text"
+                storageId: "titleStorageId",
+                type: "text",
+                id: "1",
+                label: "Title"
             },
             {
                 fieldId: "number",
-                type: "number"
+                storageId: "numberStorageId",
+                type: "number",
+                id: "2",
+                label: "Number"
             },
             {
                 fieldId: "richText",
-                type: "rich-text"
+                storageId: "richTextStorageId",
+                type: "rich-text",
+                id: "3",
+                label: "Rich Text"
             },
             {
                 fieldId: "settings",
+                storageId: "settingsStorageId",
                 type: "object",
                 settings: {
                     fields: [
                         {
                             fieldId: "title",
-                            type: "text"
+                            storageId: "titleStorageId",
+                            type: "text",
+                            id: "41",
+                            label: "Settings title"
                         },
                         {
                             fieldId: "snippet",
-                            type: "rich-text"
+                            storageId: "snippetStorageId",
+                            type: "rich-text",
+                            id: "42",
+                            label: "Settings Rich Text"
                         },
                         {
                             fieldId: "options",
+                            storageId: "optionsStorageId",
                             type: "object",
                             multipleValues: true,
                             settings: {
                                 fields: [
                                     {
                                         fieldId: "title",
-                                        type: "text"
+                                        storageId: "titleStorageId",
+                                        type: "text",
+                                        id: "431",
+                                        label: "Options Title"
                                     },
                                     {
                                         fieldId: "price",
-                                        type: "number"
+                                        storageId: "priceStorageId",
+                                        type: "number",
+                                        id: "432",
+                                        label: "Options Price"
                                     }
                                 ]
-                            }
+                            },
+                            id: "43",
+                            label: "Settings Object"
                         }
                     ]
-                }
+                },
+                id: "4",
+                label: "Settings"
             }
         ]
     }
 };
 
 const input = {
-    title: "Title",
-    number: 155.75,
-    richText: [
+    titleStorageId: "Title",
+    numberStorageId: 155.75,
+    richTextStorageId: [
         {
             tag: "p",
             content: "full"
         }
     ],
-    settings: {
-        title: "Settings Title",
-        snippet: [
+    settingsStorageId: {
+        titleStorageId: "Settings Title",
+        snippetStorageId: [
             {
                 tag: "p",
                 content: "snippet"
             }
         ],
-        options: [
-            { title: "Option 1", price: 100 },
-            { title: "Option 2", price: 200 }
+        optionsStorageId: [
+            {
+                titleStorageId: "Option 1",
+                priceStorageId: 100
+            },
+            {
+                titleStorageId: "Option 2",
+                priceStorageId: 200
+            }
         ]
     }
 };
 
 const expectedValue = {
-    title: "Title",
-    number: 155.75,
-    settings: {
-        title: "Settings Title",
-        options: [
-            { title: "Option 1", price: 100 },
-            { title: "Option 2", price: 200 }
+    titleStorageId: "Title",
+    numberStorageId: 155.75,
+    settingsStorageId: {
+        titleStorageId: "Settings Title",
+        optionsStorageId: [
+            {
+                titleStorageId: "Option 1",
+                priceStorageId: 100
+            },
+            {
+                titleStorageId: "Option 2",
+                priceStorageId: 200
+            }
         ]
     }
 };
 
 const expectedRawValue = {
-    richText: [
+    richTextStorageId: [
         {
             tag: "p",
             content: "full"
         }
     ],
-    settings: {
-        snippet: [
+    settingsStorageId: {
+        snippetStorageId: [
             {
                 tag: "p",
                 content: "snippet"

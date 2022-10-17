@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect } from "react";
 import { useQuery } from "@apollo/react-hooks";
-import get from "lodash/get";
+import dotPropImmutable from "dot-prop-immutable";
 import pick from "lodash/pick";
 import debounce from "lodash/debounce";
 import { LIST_PAGES } from "~/graphql/workflow.gql";
@@ -41,7 +41,7 @@ export const usePbPages = ({ bind }: UsePbPagesParams): UsePbPagesResult => {
         }
     });
 
-    const pagesList = get(data, "pageBuilder.listPages.data", []);
+    const pagesList = dotPropImmutable.get(data, "pageBuilder.listPages.data", []);
     /**
      * Prepare the list of options for the AutoComplete.
      */

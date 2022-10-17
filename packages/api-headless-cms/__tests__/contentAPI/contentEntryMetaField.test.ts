@@ -1,7 +1,8 @@
 import models from "./mocks/contentModels";
-import { CmsEntry, CmsGroup, CmsModel } from "~/types";
-import shortId from "shortid";
-import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
+import { CmsEntry, CmsGroup, StorageOperationsCmsModel } from "~/types";
+import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
+import { generateAlphaNumericLowerCaseId } from "@webiny/utils";
+import { attachCmsModelFieldConverters } from "~/utils/converters/valueKeyStorageConverter";
 
 const manageOpts = {
     path: "manage/en-US"
@@ -41,7 +42,8 @@ describe("Content Entry Meta Field", () => {
         updateContentModelMutation,
         createContentModelGroupMutation,
         storageOperations,
-        until
+        until,
+        plugins
     } = useCategoryManageHandler(manageOpts);
 
     const setup = async () => {
@@ -74,11 +76,14 @@ describe("Content Entry Meta Field", () => {
                 layout: targetModel.layout
             }
         });
-        const model: CmsModel = {
-            ...updateModelResponse.data.updateContentModel.data,
-            tenant: "root",
-            locale: "en-US"
-        };
+        const model: StorageOperationsCmsModel = attachCmsModelFieldConverters({
+            plugins,
+            model: {
+                ...updateModelResponse.data.updateContentModel.data,
+                tenant: "root",
+                locale: "en-US"
+            }
+        });
 
         return {
             model,
@@ -88,7 +93,7 @@ describe("Content Entry Meta Field", () => {
 
     it("storage operations - should have meta field data in the retrieved record", async () => {
         const { model } = await setup();
-        const entryId = shortId.generate();
+        const entryId = generateAlphaNumericLowerCaseId(8);
         const entry: CmsEntry = {
             id: `${entryId}#0001`,
             entryId,

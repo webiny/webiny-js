@@ -105,6 +105,9 @@ export const createModelsSchema = (context: CmsContext): GraphQLSchemaPlugin<Cms
                 label: String!
                 helpText: String
                 placeholderText: String
+                # we never use user input - this is here to the GraphQL does not break when posting from our UI
+                # used for debugging purposes
+                storageId: String
                 fieldId: String!
                 type: String!
                 multipleValues: Boolean
@@ -185,6 +188,9 @@ export const createModelsSchema = (context: CmsContext): GraphQLSchemaPlugin<Cms
 
             type CmsContentModelField {
                 id: ID!
+                # auto-generated value
+                # used for debugging purposes
+                storageId: String
                 fieldId: String!
                 label: String!
                 helpText: String

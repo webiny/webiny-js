@@ -1,9 +1,9 @@
-import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
-import { useArticleManageHandler } from "../utils/useArticleManageHandler";
-import { useArticleReadHandler } from "../utils/useArticleReadHandler";
-import { useGraphQLHandler } from "../utils/useGraphQLHandler";
-import { setupContentModelGroup, setupContentModels } from "../utils/setup";
-import { until } from "../utils/helpers";
+import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
+import { useArticleManageHandler } from "../testHelpers/useArticleManageHandler";
+import { useArticleReadHandler } from "../testHelpers/useArticleReadHandler";
+import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
+import { setupContentModelGroup, setupContentModels } from "../testHelpers/setup";
+import { until } from "../testHelpers/helpers";
 
 const createCategoryItem = async ({ manager, from = null, publish, data }: any) => {
     const [response] = await (from

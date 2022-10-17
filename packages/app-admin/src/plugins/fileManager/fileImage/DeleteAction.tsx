@@ -4,14 +4,14 @@ import { IconButton } from "@webiny/ui/Button";
 import { useSnackbar } from "~/hooks/useSnackbar";
 import { useMutation } from "@apollo/react-hooks";
 import { i18n } from "@webiny/app/i18n";
-import { FileItem } from "~/components/FileManager/types";
+import { FileManagerFileItem } from "~/components/FileManager";
 const t = i18n.ns("app-admin/file-manager/files/delete-action");
 
 import { ReactComponent as DeleteIcon } from "../../../components/FileManager/icons/delete.svg";
 import { DELETE_FILE } from "~/components/FileManager/graphql";
 
 interface DeleteActionProps {
-    file: FileItem;
+    file: FileManagerFileItem;
 }
 const DeleteAction: React.FC<DeleteActionProps> = props => {
     const { file } = props;

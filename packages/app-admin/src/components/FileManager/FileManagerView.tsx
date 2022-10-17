@@ -20,7 +20,7 @@ import getFileTypePlugin from "./getFileTypePlugin";
 import get from "lodash/get";
 import debounce from "lodash/debounce";
 import getFileUploader from "./getFileUploader";
-import outputFileSelectionError from "./outputFileSelectionError";
+import { outputFileSelectionError } from "./outputFileSelectionError";
 import DropFilesHere from "./DropFilesHere";
 import NoResults from "./NoResults";
 import FileDetails from "./FileDetails";
@@ -119,11 +119,11 @@ export interface FileManagerViewProps {
     onChange?: Function;
     onClose?: Function;
     files?: FilesRules;
-    multiple: boolean; // Does not affect <Files> component, it always allows multiple selection.
+    multiple?: boolean; // Does not affect <Files> component, it always allows multiple selection.
     accept: Array<string>;
-    maxSize: number | string;
-    multipleMaxCount: number;
-    multipleMaxSize: number | string;
+    maxSize?: number | string;
+    multipleMaxCount?: number;
+    multipleMaxSize?: number | string;
     onUploadCompletion?: Function;
     tags?: string[];
     scope?: string;
@@ -193,7 +193,7 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
         onClose,
         onChange,
         accept,
-        multiple,
+        multiple = false,
         maxSize,
         multipleMaxCount,
         multipleMaxSize,
@@ -476,6 +476,7 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
                 uploadFile(files.map(file => file.src.file as FileItem).filter(Boolean));
             }}
             onError={errors => {
+                console.log("onError", errors);
                 /**
                  * TODO @ts-refactor
                  * Figure out if incoming errors var is wrong or the one in the outputFileSelectionError

@@ -2,9 +2,9 @@ import { OnGroupBeforeCreateTopicParams, HeadlessCmsStorageOperations } from "~/
 import { Topic } from "@webiny/pubsub/types";
 import { PluginsContainer } from "@webiny/plugins";
 import WebinyError from "@webiny/error";
-import shortid from "shortid";
 import { toSlug } from "~/utils/toSlug";
 import { CmsGroupPlugin } from "~/plugins/CmsGroupPlugin";
+import { generateAlphaNumericId } from "@webiny/utils";
 
 interface AssignBeforeGroupCreateParams {
     onGroupBeforeCreate: Topic<OnGroupBeforeCreateTopicParams>;
@@ -44,7 +44,7 @@ export const assignBeforeGroupCreate = (params: AssignBeforeGroupCreateParams) =
             if (groups.length === 0) {
                 group.slug = slug;
             } else {
-                group.slug = `${slug}-${shortid.generate()}`;
+                group.slug = `${slug}-${generateAlphaNumericId(8)}`;
             }
         }
 

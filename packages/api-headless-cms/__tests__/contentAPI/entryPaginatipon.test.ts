@@ -1,8 +1,9 @@
-import { useFruitManageHandler } from "../utils/useFruitManageHandler";
+import { useFruitManageHandler } from "../testHelpers/useFruitManageHandler";
 // @ts-ignore
 import mdbid from "mdbid";
-import { CmsEntry, CmsModel } from "~/types";
-import { setupContentModelGroup, setupContentModels } from "../utils/setup";
+import { CmsEntry, CmsModel, StorageOperationsCmsModel } from "~/types";
+import { setupContentModelGroup, setupContentModels } from "../testHelpers/setup";
+import { attachCmsModelFieldConverters } from "~/utils/converters/valueKeyStorageConverter";
 
 const NUMBER_OF_FRUITS = 200;
 
@@ -56,21 +57,25 @@ const createFruitData = (counter: number): CmsEntry => {
 describe("entry pagination", () => {
     const manageOpts = { path: "manage/en-US" };
 
-    let fruitContentModel: CmsModel;
+    let fruitContentModel: StorageOperationsCmsModel;
 
     const manager = useFruitManageHandler(manageOpts);
-    const { storageOperations, until } = manager;
+    const { storageOperations, until, plugins } = manager;
     /**
      * We need to create N fruit entries
      */
     beforeEach(async () => {
         const group = await setupContentModelGroup(manager);
         await setupContentModels(manager, group, ["fruit"]);
-        fruitContentModel = (await storageOperations.models.get({
+        const model = (await storageOperations.models.get({
             locale: "en-US",
             tenant: "root",
             modelId: "fruit"
         })) as CmsModel;
+        fruitContentModel = attachCmsModelFieldConverters({
+            plugins,
+            model
+        });
         for (let i = 1; i <= NUMBER_OF_FRUITS; i++) {
             const fruit = createFruitData(i);
             await storageOperations.entries.create(fruitContentModel, {

@@ -11,16 +11,14 @@ export const WrapperWithFileUpload: React.FC<WrapperWithFileUploadProps> = ({
 }) => {
     return (
         <FileManager
-            onChange={files => {
-                const file = Array.isArray(files) ? files[0] : files;
-                onSelect(file.key);
+            onChange={file => {
+                onSelect(file.src);
             }}
             onUploadCompletion={uploadedFiles => {
                 if (!uploadedFiles || uploadedFiles.length === 0) {
                     return;
                 }
-                const zipKey = uploadedFiles[0].key;
-                onSelect(zipKey);
+                onSelect(uploadedFiles[0].src);
             }}
             accept={["application/zip"]}
         >

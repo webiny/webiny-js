@@ -1,5 +1,5 @@
 import React from "react";
-import get from "lodash/get";
+import dotPropImmutable from "dot-prop-immutable";
 import isEmpty from "lodash/isEmpty";
 import { CmsScopeSettings } from "./CmsScopeSettings";
 import { i18n } from "@webiny/app/i18n";
@@ -15,8 +15,8 @@ const t = i18n.ns("app-apw/admin/publishing-workflows/form/cms");
 const HeadlessCmsWorkflowScope: React.FC<WorkflowScopeProps> = props => {
     const { Bind, workflow } = props;
     const { scope } = workflow;
-    const noEntries = isEmpty(get(scope, "data.entries"));
-    const noModels = isEmpty(get(scope, "data.models"));
+    const noEntries = isEmpty(dotPropImmutable.get(scope, "data.entries"));
+    const noModels = isEmpty(dotPropImmutable.get(scope, "data.models"));
     return (
         <Stack space={6}>
             <Box>

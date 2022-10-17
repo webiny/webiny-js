@@ -1,6 +1,6 @@
 import { ContextPlugin } from "@webiny/api";
 import { CmsContext } from "~/types";
-import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
+import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
 
 /**
  * In case version header is enabled via the env vars, add it to expectancy.

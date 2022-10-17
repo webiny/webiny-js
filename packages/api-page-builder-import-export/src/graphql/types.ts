@@ -22,8 +22,7 @@ export interface ExportPagesParams {
 
 export interface ImportPagesParams {
     category: string;
-    zipFileKey?: string;
-    zipFileUrl?: string;
+    zipFileUrl: string;
 }
 
 export type PagesImportExportCrud = {

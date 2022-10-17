@@ -19,7 +19,7 @@ interface GeneralTabProps {
 const GeneralTab: React.FC<GeneralTabProps> = ({ field, form, fieldPlugin }) => {
     const { Bind, setValue } = form;
     const inputRef = useRef<HTMLInputElement | null>(null);
-    const { data } = useContentModelEditor();
+    const { data: contentModel } = useContentModelEditor();
     const { getField } = useFieldEditor();
 
     // Had problems with auto-focusing the "label" field. A couple of comments on this.
@@ -76,7 +76,7 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ field, form, fieldPlugin }) => 
             form,
             afterChangeLabel,
             uniqueFieldIdValidator,
-            contentModel: data
+            contentModel
         });
     }
 
@@ -120,7 +120,6 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ field, form, fieldPlugin }) => 
                     >
                         <Input
                             label={"Field ID"}
-                            disabled={!!field.id}
                             data-testid={`cms.editor.field.settings.general.label-${field.id}`}
                         />
                     </Bind>

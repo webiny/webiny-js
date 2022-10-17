@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import get from "lodash/get";
+import dotPropImmutable from "dot-prop-immutable";
 import { useApolloClient } from "@apollo/react-hooks";
 import { i18n } from "@webiny/app/i18n";
 import { useConfirmationDialog, useSnackbar } from "@webiny/app-admin";
@@ -40,7 +40,10 @@ export const ApwOnPageDelete: React.FC = () => {
                 },
                 fetchPolicy: "network-only"
             });
-            const contentReviewId = get(data, "apw.isReviewRequired.data.contentReviewId");
+            const contentReviewId = dotPropImmutable.get(
+                data,
+                "apw.isReviewRequired.data.contentReviewId"
+            );
             if (contentReviewId) {
                 const response = await new Promise(resolve => {
                     showDeleteReviewConfirmation(async () => {
@@ -55,7 +58,7 @@ export const ApwOnPageDelete: React.FC = () => {
                     });
                 });
 
-                const error = get(response, "data.apw.deleteContentReview.error");
+                const error = dotPropImmutable.get(response, "data.apw.deleteContentReview.error");
                 if (error) {
                     showSnackbar(error.message);
                     return next({ ...params, error });

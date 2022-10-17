@@ -12,7 +12,7 @@ env:
 jobs:
   init:
     name: Init
-    runs-on: ubuntu-latest
+    runs-on: webiny-js-4-cores
     outputs:
       jest-packages: ${{ steps.list-jest-packages.outputs.jest-packages }}
       day: ${{ steps.get-day.outputs.day }}
@@ -39,7 +39,7 @@ jobs:
   build:
     name: Build
     needs: init
-    runs-on: ubuntu-latest
+    runs-on: webiny-js-4-cores
     steps:
       - uses: actions/setup-node@v2
         with:
@@ -74,7 +74,7 @@ jobs:
   code-analysis:
     name: Static code analysis
     needs: [init, build]
-    runs-on: ubuntu-latest
+    runs-on: webiny-js-4-cores
     steps:
       - uses: actions/setup-node@v2
         with:
@@ -109,7 +109,7 @@ jobs:
 
   code-analysis-typescript:
     name: Static code analysis (TypeScript)
-    runs-on: ubuntu-latest
+    runs-on: webiny-js-4-cores
     steps:
       - uses: actions/setup-node@v2
         with:
@@ -172,7 +172,7 @@ jobs:
 
   e2e-wby-cms-ddb-init:
     name: E2E (DDB) - Init
-    runs-on: ubuntu-latest
+    runs-on: webiny-js-4-cores
     outputs:
       day: ${{ steps.get-day.outputs.day }}
       ts: ${{ steps.get-timestamp.outputs.ts }}
@@ -199,7 +199,7 @@ jobs:
   e2e-wby-cms-ddb-project-setup:
     name: E2E (DDB) - Project setup
     needs: e2e-wby-cms-ddb-init
-    runs-on: ubuntu-latest
+    runs-on: webiny-js-4-cores
     outputs:
       cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
     environment: next
@@ -369,7 +369,7 @@ jobs:
         os: [ ubuntu-latest ]
         node: [ 14 ]
         cypress-folder: ${{ fromJson(needs.e2e-wby-cms-ddb-init.outputs.cypress-folders) }}
-    runs-on: ubuntu-latest
+    runs-on: webiny-js-4-cores
     environment: next
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -423,7 +423,7 @@ jobs:
 
   e2e-wby-cms-ddb-es-init:
     name: E2E (DDB+ES) - Init
-    runs-on: ubuntu-latest
+    runs-on: webiny-js-4-cores
     outputs:
       day: ${{ steps.get-day.outputs.day }}
       ts: ${{ steps.get-timestamp.outputs.ts }}
@@ -450,7 +450,7 @@ jobs:
   e2e-wby-cms-ddb-es-project-setup:
     name: E2E (DDB+ES) - Project setup
     needs: e2e-wby-cms-ddb-es-init
-    runs-on: ubuntu-latest
+    runs-on: webiny-js-4-cores
     outputs:
       cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
     environment: next
@@ -623,7 +623,7 @@ jobs:
         os: [ ubuntu-latest ]
         node: [ 14 ]
         cypress-folder: ${{ fromJson(needs.e2e-wby-cms-ddb-es-init.outputs.cypress-folders) }}
-    runs-on: ubuntu-latest
+    runs-on: webiny-js-4-cores
     environment: next
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}

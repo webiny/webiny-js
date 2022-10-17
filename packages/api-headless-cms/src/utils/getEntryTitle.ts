@@ -4,14 +4,16 @@ export function getEntryTitle(model: CmsModel, entry: CmsEntry): string {
     if (!model.titleFieldId) {
         return entry.id;
     }
-    const titleValue = entry.values[model.titleFieldId];
+    const field = model.fields.find(f => f.fieldId === model.titleFieldId);
+    if (!field) {
+        return entry.id;
+    }
+    const titleFieldId = field.fieldId;
+    const titleValue = entry.values[titleFieldId];
     if (!titleValue) {
         return entry.id;
     }
-    const field = model.fields.find(f => f.fieldId === model.titleFieldId);
-    if (!field) {
-        return titleValue;
-    }
+
     const { enabled = false, values } = field.predefinedValues || {};
     if (!enabled || !values || Array.isArray(values) === false) {
         return titleValue;

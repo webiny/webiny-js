@@ -12,6 +12,7 @@ import { DbContext } from "@webiny/handler-db/types";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
 import { Topic } from "@webiny/pubsub/types";
+import { CmsModelConverterCallable } from "~/utils/converters/ConverterCollection";
 
 export type ApiEndpoint = "manage" | "preview" | "read";
 export interface HeadlessCms
@@ -101,7 +102,39 @@ interface CmsModelFieldRenderer {
      */
     name: string;
 }
-
+/**
+ * A definition for content model field settings.
+ *
+ * @category ModelField
+ * @category Database model
+ */
+export interface CmsModelFieldSettings {
+    /**
+     * Predefined values (text, number)
+     * The default value for the field in case it is not predefined values field.
+     */
+    defaultValue?: string | number | null | undefined;
+    /**
+     * Object field has child fields.
+     */
+    fields?: CmsModelField[];
+    /**
+     * Object field has child fields - so it needs to have a layout.
+     */
+    layout?: string[][];
+    /**
+     * Ref field.
+     */
+    models?: Pick<CmsModel, "modelId">[];
+    /**
+     * Date field.
+     */
+    type?: string;
+    /**
+     * There are a lot of other settings that are possible to add, so we keep the type opened.
+     */
+    [key: string]: any;
+}
 /**
  * A definition for content model field. This type exists on the app side as well.
  *
@@ -119,15 +152,38 @@ export interface CmsModelField {
      */
     id: string;
     /**
-     * A type of the field
+     * A type of the field.
+     * We are defining our built-in fields, so people know which are available by the default.
      */
-    type: string;
+    type:
+        | "boolean"
+        | "datetime"
+        | "file"
+        | "long-text"
+        | "number"
+        | "object"
+        | "ref"
+        | "rich-text"
+        | "text"
+        | string;
     /**
-     * A unique field ID for mapping values.
+     * A unique storage ID for storing actual values.
+     * Must in form of a-zA-Z0-9@a-zA-Z0-9@a-zA-Z0-9.
+     *
+     * This is an auto-generated value: uses `id` and `type`
+     *
+     * This is used as path for the entry value.
+     *
+     * @internal
+     */
+    storageId: string;
+    /**
+     * Field identifier for the model field that will be available to the outside world.
+     * `storageId` is used as path (or column) to store the data.
+     *
      * Must in form of a-zA-Z0-9.
      *
-     * We generate a unique fieldId value when you're building a model via UI,
-     * but when user is creating a model via a plugin it is up to them to be careful about this.
+     * This value MUST be unique in the CmsModel.
      */
     fieldId: string;
     /**
@@ -174,29 +230,14 @@ export interface CmsModelField {
      *
      * @default {}
      */
-    settings?: {
-        /**
-         * Predefined values (text, number)
-         * The default value for the field in case it is not predefined values field.
-         */
-        defaultValue?: string | number | null | undefined;
-        /**
-         * Object field.
-         */
-        fields?: CmsModelField[];
-        /**
-         * Ref field.
-         */
-        models?: Pick<CmsModel, "modelId">[];
-        /**
-         * Date field.
-         */
-        type?: string;
-        /**
-         * There are a lot of other settings that are possible to add so we keep the type opened.
-         */
-        [key: string]: any;
-    };
+    settings?: CmsModelFieldSettings;
+}
+
+/**
+ * Used for our internal functionality.
+ */
+export interface CmsModelFieldWithParent extends CmsModelField {
+    parent?: CmsModelFieldWithParent | null;
 }
 
 /**
@@ -315,7 +356,8 @@ export interface CmsModelFieldPatternValidatorPlugin extends Plugin {
  */
 export interface LockedField {
     /**
-     * Locked field ID - one used for mapping values.
+     * Locked field storage ID - one used to store values.
+     * We cannot change this due to old systems.
      */
     fieldId: string;
     /**
@@ -418,6 +460,16 @@ export interface CmsModel {
 }
 
 /**
+ * When sending model to the storage operations, it must contain createValueKeyToStorageConverter and createValueKeyFromStorageConverter
+ *
+ * @category CmsModel
+ */
+export interface StorageOperationsCmsModel extends CmsModel {
+    convertValueKeyToStorage: CmsModelConverterCallable;
+    convertValueKeyFromStorage: CmsModelConverterCallable;
+}
+
+/**
  * @category ModelField
  */
 export interface CmsModelFieldDefinition {
@@ -483,6 +535,24 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
      */
     isSortable: boolean;
     /**
+     * Optional method which creates the storageId.
+     * Primary use is for the datetime field, but if users has some specific fields, they can customize the storageId to their needs.
+     *
+     * ```ts
+     * createStorageId: ({field}) => {
+     *     if (field.settings.type === "time) {
+     *         return `${field.type}_time@${field.id}`
+     *     }
+     *     // use default method
+     *     return undefined;
+     * }
+     * ```
+     */
+    createStorageId?: (params: {
+        model: CmsModel;
+        field: CmsModelField;
+    }) => string | null | undefined;
+    /**
      * Read API methods.
      */
     read: {
@@ -537,13 +607,13 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
         }): CmsModelFieldDefinition | string | null;
         /**
          * Definition for field resolver.
-         * By default it is simple return of the `instance.values[fieldId]` but if required, users can define their own.
+         * By default it is simple return of the `instance.values[storageId]` but if required, users can define their own.
          *
          * ```ts
          * read: {
          *     createResolver({ field }) {
          *         return instance => {
-         *             return instance.values[field.fieldId];
+         *             return instance.values[field.storageId];
          *         };
          *     }
          * }
@@ -649,13 +719,13 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
         }) => CmsModelFieldDefinition | string | null;
         /**
          * Definition for field resolver.
-         * By default it is simple return of the `instance.values[fieldId]` but if required, users can define their own.
+         * By default it is simple return of the `instance.values[storageId]` but if required, users can define their own.
          *
          * ```ts
          * manage: {
          *     createResolver({ field }) {
          *         return instance => {
-         *             return instance.values[field.fieldId];
+         *             return instance.values[field.storageId];
          *         };
          *     }
          * }
@@ -1112,8 +1182,7 @@ export interface CmsModelFieldInput {
      */
     type: string;
     /**
-     * A unique ID for the field. Values will be mapped via this value.
-     * This field MUST be in range of "a-zA-Z".
+     * Field outside world identifier for the field. Must be unique in the model.
      */
     fieldId: string;
     /**
@@ -1220,7 +1289,15 @@ export interface ModelManagerPlugin extends Plugin {
      */
     create: (context: CmsContext, model: CmsModel) => Promise<CmsModelManager>;
 }
-
+/**
+ * A content entry values definition for and from the database.
+ *
+ * @category Database model
+ * @category CmsEntry
+ */
+export interface CmsEntryValues {
+    [key: string]: any;
+}
 /**
  * A content entry definition for and from the database.
  *
@@ -1292,13 +1369,11 @@ export interface CmsEntry {
      */
     status: CmsEntryStatus;
     /**
-     * A mapped fieldId -> value object.
+     * A mapped storageId -> value object.
      *
      * @see CmsModelField
      */
-    values: {
-        [key: string]: any;
-    };
+    values: CmsEntryValues;
     /**
      * Settings for the given entry.
      *
@@ -1655,12 +1730,12 @@ export interface CmsEntryMeta {
 export interface OnEntryBeforeCreateTopicParams {
     input: CreateCmsEntryInput;
     entry: CmsEntry;
-    model: CmsModel;
+    model: StorageOperationsCmsModel;
 }
 export interface OnEntryAfterCreateTopicParams {
     input: CreateCmsEntryInput;
     entry: CmsEntry;
-    model: CmsModel;
+    model: StorageOperationsCmsModel;
     storageEntry: CmsEntry;
 }
 
@@ -1675,14 +1750,14 @@ export interface OnEntryRevisionBeforeCreateTopicParams {
     input: CreateFromCmsEntryInput;
     entry: CmsEntry;
     original: CmsEntry;
-    model: CmsModel;
+    model: StorageOperationsCmsModel;
 }
 
 export interface OnEntryRevisionAfterCreateTopicParams {
     input: CreateFromCmsEntryInput;
     entry: CmsEntry;
     original: CmsEntry;
-    model: CmsModel;
+    model: StorageOperationsCmsModel;
     storageEntry: CmsEntry;
 }
 
@@ -1697,13 +1772,13 @@ export interface OnEntryBeforeUpdateTopicParams {
     input: UpdateCmsEntryInput;
     original: CmsEntry;
     entry: CmsEntry;
-    model: CmsModel;
+    model: StorageOperationsCmsModel;
 }
 export interface OnEntryAfterUpdateTopicParams {
     input: UpdateCmsEntryInput;
     original: CmsEntry;
     entry: CmsEntry;
-    model: CmsModel;
+    model: StorageOperationsCmsModel;
     storageEntry: CmsEntry;
 }
 
@@ -1716,29 +1791,29 @@ export interface OnEntryUpdateErrorTopicParams {
 
 export interface OnEntryBeforePublishTopicParams {
     entry: CmsEntry;
-    model: CmsModel;
+    model: StorageOperationsCmsModel;
 }
 
 export interface OnEntryAfterPublishTopicParams {
     entry: CmsEntry;
-    model: CmsModel;
+    model: StorageOperationsCmsModel;
     storageEntry: CmsEntry;
 }
 
 export interface OnEntryPublishErrorTopicParams {
     error: Error;
     entry: CmsEntry;
-    model: CmsModel;
+    model: StorageOperationsCmsModel;
 }
 
 export interface OnEntryBeforeUnpublishTopicParams {
     entry: CmsEntry;
-    model: CmsModel;
+    model: StorageOperationsCmsModel;
 }
 
 export interface OnEntryAfterUnpublishTopicParams {
     entry: CmsEntry;
-    model: CmsModel;
+    model: StorageOperationsCmsModel;
     storageEntry: CmsEntry;
 }
 
@@ -1750,12 +1825,12 @@ export interface OnEntryUnpublishErrorTopicParams {
 
 export interface OnEntryBeforeRequestChangesTopicParams {
     entry: CmsEntry;
-    model: CmsModel;
+    model: StorageOperationsCmsModel;
 }
 
 export interface OnEntryAfterRequestChangesTopicParams {
     entry: CmsEntry;
-    model: CmsModel;
+    model: StorageOperationsCmsModel;
     storageEntry: CmsEntry;
 }
 
@@ -1767,59 +1842,59 @@ export interface OnEntryRequestChangesErrorTopicParams {
 
 export interface OnEntryBeforeRequestReviewTopicParams {
     entry: CmsEntry;
-    model: CmsModel;
+    model: StorageOperationsCmsModel;
 }
 
 export interface OnEntryAfterRequestReviewTopicParams {
     entry: CmsEntry;
-    model: CmsModel;
+    model: StorageOperationsCmsModel;
     storageEntry: CmsEntry;
 }
 
 export interface OnEntryRequestReviewErrorTopicParams {
     error: Error;
     entry: CmsEntry;
-    model: CmsModel;
+    model: StorageOperationsCmsModel;
 }
 
 export interface OnEntryBeforeDeleteTopicParams {
     entry: CmsEntry;
-    model: CmsModel;
+    model: StorageOperationsCmsModel;
 }
 export interface OnEntryAfterDeleteTopicParams {
     entry: CmsEntry;
-    model: CmsModel;
+    model: StorageOperationsCmsModel;
 }
 
 export interface OnEntryDeleteErrorTopicParams {
     error: Error;
     entry: CmsEntry;
-    model: CmsModel;
+    model: StorageOperationsCmsModel;
 }
 
 export interface OnEntryRevisionBeforeDeleteTopicParams {
     entry: CmsEntry;
-    model: CmsModel;
+    model: StorageOperationsCmsModel;
 }
 export interface OnEntryRevisionAfterDeleteTopicParams {
     entry: CmsEntry;
-    model: CmsModel;
+    model: StorageOperationsCmsModel;
 }
 
 export interface OnEntryRevisionDeleteErrorTopicParams {
     error: Error;
     entry: CmsEntry;
-    model: CmsModel;
+    model: StorageOperationsCmsModel;
 }
 
 export interface OnEntryBeforeGetTopicParams {
-    model: CmsModel;
+    model: StorageOperationsCmsModel;
     where: CmsEntryListWhere;
 }
 
 export interface EntryBeforeListTopicParams {
     where: CmsEntryListWhere;
-    model: CmsModel;
+    model: StorageOperationsCmsModel;
 }
 
 /**
@@ -2480,113 +2555,134 @@ export interface CmsEntryStorageOperations<T extends CmsStorageEntry = CmsStorag
     /**
      * Get all the entries of the ids.
      */
-    getByIds: (model: CmsModel, params: CmsEntryStorageOperationsGetByIdsParams) => Promise<T[]>;
+    getByIds: (
+        model: StorageOperationsCmsModel,
+        params: CmsEntryStorageOperationsGetByIdsParams
+    ) => Promise<T[]>;
     /**
      * Get all the published entries of the ids.
      */
     getPublishedByIds: (
-        model: CmsModel,
+        model: StorageOperationsCmsModel,
         params: CmsEntryStorageOperationsGetPublishedByIdsParams
     ) => Promise<T[]>;
     /**
      * Get all the latest entries of the ids.
      */
     getLatestByIds: (
-        model: CmsModel,
+        model: StorageOperationsCmsModel,
         params: CmsEntryStorageOperationsGetLatestByIdsParams
     ) => Promise<T[]>;
     /**
      * Get all revisions of the given entry id.
      */
     getRevisions: (
-        model: CmsModel,
+        model: StorageOperationsCmsModel,
         params: CmsEntryStorageOperationsGetRevisionsParams
     ) => Promise<T[]>;
     /**
      * Get the entry by the given revision id.
      */
     getRevisionById: (
-        model: CmsModel,
+        model: StorageOperationsCmsModel,
         params: CmsEntryStorageOperationsGetRevisionParams
     ) => Promise<T | null>;
     /**
      * Get the published entry by given entryId.
      */
     getPublishedRevisionByEntryId: (
-        model: CmsModel,
+        model: StorageOperationsCmsModel,
         params: CmsEntryStorageOperationsGetPublishedRevisionParams
     ) => Promise<T | null>;
     /**
      * Get the latest entry by given entryId.
      */
     getLatestRevisionByEntryId: (
-        model: CmsModel,
+        model: StorageOperationsCmsModel,
         params: CmsEntryStorageOperationsGetLatestRevisionParams
     ) => Promise<T | null>;
     /**
      * Get the revision of the entry before given one.
      */
     getPreviousRevision: (
-        model: CmsModel,
+        model: StorageOperationsCmsModel,
         params: CmsEntryStorageOperationsGetPreviousRevisionParams
     ) => Promise<T | null>;
     /**
      * Gets entry by given params.
      */
-    get: (model: CmsModel, params: CmsEntryStorageOperationsGetParams) => Promise<T | null>;
+    get: (
+        model: StorageOperationsCmsModel,
+        params: CmsEntryStorageOperationsGetParams
+    ) => Promise<T | null>;
     /**
      * List all entries. Filterable via params.
      */
     list: (
-        model: CmsModel,
+        model: StorageOperationsCmsModel,
         params: CmsEntryStorageOperationsListParams
     ) => Promise<CmsEntryStorageOperationsListResponse<T>>;
     /**
      * Create a new entry.
      */
-    create: (model: CmsModel, params: CmsEntryStorageOperationsCreateParams<T>) => Promise<T>;
+    create: (
+        model: StorageOperationsCmsModel,
+        params: CmsEntryStorageOperationsCreateParams<T>
+    ) => Promise<T>;
     /**
      * Create a new entry from existing one.
      */
     createRevisionFrom: (
-        model: CmsModel,
+        model: StorageOperationsCmsModel,
         params: CmsEntryStorageOperationsCreateRevisionFromParams<T>
     ) => Promise<T>;
     /**
      * Update existing entry.
      */
-    update: (model: CmsModel, params: CmsEntryStorageOperationsUpdateParams<T>) => Promise<T>;
+    update: (
+        model: StorageOperationsCmsModel,
+        params: CmsEntryStorageOperationsUpdateParams<T>
+    ) => Promise<T>;
     /**
      * Delete the entry revision.
      */
     deleteRevision: (
-        model: CmsModel,
+        model: StorageOperationsCmsModel,
         params: CmsEntryStorageOperationsDeleteRevisionParams<T>
     ) => Promise<void>;
     /**
      * Delete the entry.
      */
-    delete: (model: CmsModel, params: CmsEntryStorageOperationsDeleteParams) => Promise<void>;
+    delete: (
+        model: StorageOperationsCmsModel,
+        params: CmsEntryStorageOperationsDeleteParams
+    ) => Promise<void>;
     /**
      * Publish the entry.
      */
-    publish: (model: CmsModel, params: CmsEntryStorageOperationsPublishParams<T>) => Promise<T>;
+    publish: (
+        model: StorageOperationsCmsModel,
+        params: CmsEntryStorageOperationsPublishParams<T>
+    ) => Promise<T>;
     /**
      * Unpublish the entry.
      */
-    unpublish: (model: CmsModel, params: CmsEntryStorageOperationsUnpublishParams<T>) => Promise<T>;
+    unpublish: (
+        model: StorageOperationsCmsModel,
+        params: CmsEntryStorageOperationsUnpublishParams<T>
+    ) => Promise<T>;
     /**
      * Request changes the entry.
      */
     requestChanges: (
-        model: CmsModel,
+        model: StorageOperationsCmsModel,
         params: CmsEntryStorageOperationsRequestChangesParams<T>
     ) => Promise<T>;
     /**
      * Request review the entry.
      */
     requestReview: (
-        model: CmsModel,
+        model: StorageOperationsCmsModel,
         params: CmsEntryStorageOperationsRequestReviewParams<T>
     ) => Promise<CmsEntry>;
 }

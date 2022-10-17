@@ -66,48 +66,24 @@ export abstract class ElasticsearchFieldPlugin extends Plugin {
     public static override readonly type: string = "elasticsearch.fieldDefinition";
     public static readonly ALL: string = "*";
 
-    private readonly _field: string;
-    private readonly _path: string;
-    private readonly _keyword: boolean;
-    private readonly _unmappedType?: string;
-    private readonly _sortable: boolean;
-    private readonly _searchable: boolean;
-
-    public get field(): string {
-        return this._field;
-    }
-
-    public get path(): string {
-        return this._path;
-    }
-
-    public get keyword(): boolean {
-        return this._keyword;
-    }
-
-    public get unmappedType(): string | undefined {
-        return this._unmappedType;
-    }
-
-    public get sortable(): boolean {
-        return this._sortable;
-    }
-
-    public get searchable(): boolean {
-        return this._searchable;
-    }
+    public readonly field: string;
+    public readonly path: string;
+    public readonly keyword: boolean;
+    public readonly unmappedType?: string;
+    public readonly sortable: boolean;
+    public readonly searchable: boolean;
 
     constructor(params: ElasticsearchFieldPluginParams) {
         super();
-        this._field = params.field;
-        this._path = params.path || params.field;
-        this._keyword = params.keyword === undefined ? true : params.keyword;
-        this._unmappedType = params.unmappedType;
+        this.field = params.field;
+        this.path = params.path || params.field;
+        this.keyword = params.keyword === undefined ? true : params.keyword;
+        this.unmappedType = params.unmappedType;
         if (unmappedTypeHasKeyword(params.unmappedType) === false) {
-            this._keyword = false;
+            this.keyword = false;
         }
-        this._sortable = params.sortable === undefined ? true : params.sortable;
-        this._searchable = params.searchable === undefined ? true : params.searchable;
+        this.sortable = params.sortable === undefined ? true : params.sortable;
+        this.searchable = params.searchable === undefined ? true : params.searchable;
     }
     /**
      * The default sort options. Extend in your own plugin if you want to add more options.
@@ -116,12 +92,12 @@ export abstract class ElasticsearchFieldPlugin extends Plugin {
         const options = {
             order
         };
-        if (!this._unmappedType) {
+        if (!this.unmappedType) {
             return options;
         }
         return {
             ...options,
-            unmapped_type: this._unmappedType
+            unmapped_type: this.unmappedType
         };
     }
     /**
@@ -129,7 +105,7 @@ export abstract class ElasticsearchFieldPlugin extends Plugin {
      * Field parameter is here because there is a possibility that this is the ALL field plugin, so we need to know which field are we working on.
      */
     public getPath(field: string): string {
-        return `${this.getBasePath(field)}${this._keyword ? ".keyword" : ""}`;
+        return `${this.getBasePath(field)}${this.keyword ? ".keyword" : ""}`;
     }
     /**
      * @see getPath
@@ -137,10 +113,10 @@ export abstract class ElasticsearchFieldPlugin extends Plugin {
      * This is the default base path generator. Basically it replaces ALL with given field name.
      */
     public getBasePath(field: string): string {
-        if (this._path === (this.constructor as any).ALL) {
+        if (this.path === ElasticsearchFieldPlugin.ALL) {
             return field;
         }
-        return this._path;
+        return this.path;
     }
     /**
      * The default transformer. Just returns the value by default.

@@ -49,6 +49,7 @@ export interface SystemInstallParams {
  * Definition for the system part crud of the i18n.
  */
 export interface SystemCRUD {
+    storageOperations: I18NSystemStorageOperations;
     /**
      * Get the current version of the i18n.
      */
@@ -152,6 +153,7 @@ export interface OnAfterDeleteLocaleTopicParams {
  * Definition for the locales part crud of the i18n.
  */
 export interface LocalesCRUD {
+    storageOperations: I18NLocalesStorageOperations;
     /**
      * Lifecycle events.
      */
@@ -189,8 +191,18 @@ export interface LocalesCRUD {
     deleteLocale: (code: string) => Promise<I18NLocaleData>;
 }
 
+export interface I18NLocalesStorageOperationsGetDefaultParams {
+    tenant: string;
+}
+
+export interface I18NLocalesStorageOperationsGetParams {
+    code: string;
+    tenant: string;
+}
+
 export interface I18NLocalesStorageOperationsListParams {
-    where?: {
+    where: {
+        tenant: string;
         code?: string;
         default?: boolean;
         createdBy?: string;
@@ -238,8 +250,10 @@ export interface I18NLocalesStorageOperationsDeleteParams {
 }
 
 export interface I18NLocalesStorageOperations {
-    getDefault: () => Promise<I18NLocaleData | null>;
-    get: (code: string) => Promise<I18NLocaleData | null>;
+    getDefault: (
+        params: I18NLocalesStorageOperationsGetDefaultParams
+    ) => Promise<I18NLocaleData | null>;
+    get: (params: I18NLocalesStorageOperationsGetParams) => Promise<I18NLocaleData | null>;
     list: (
         params: I18NLocalesStorageOperationsListParams
     ) => Promise<I18NLocalesStorageOperationsListResponse>;

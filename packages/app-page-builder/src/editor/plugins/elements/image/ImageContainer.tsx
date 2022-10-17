@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import { useRecoilValue } from "recoil";
 import styled from "@emotion/styled";
-import SingleImageUpload from "@webiny/app-admin/components/SingleImageUpload";
+import { SingleImageUpload, SingleImageUploadProps } from "@webiny/app-admin";
 import {
     DisplayMode,
     PbEditorElement,
@@ -11,6 +11,7 @@ import {
 import { uiAtom } from "~/editor/recoil/modules";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import { UpdateElementActionEvent } from "~/editor/recoil/actions";
+import pick from "lodash/pick";
 
 const AlignImage = styled("div")((props: any) => ({
     img: {
@@ -31,6 +32,7 @@ const getHorizontalAlignFlexAlign = (
 interface ImageContainerType {
     element: PbEditorElement;
 }
+
 const ImageContainer: React.FC<ImageContainerType> = ({ element }) => {
     const { displayMode } = useRecoilValue(uiAtom);
     const handler = useEventActionHandler();
@@ -51,8 +53,8 @@ const ImageContainer: React.FC<ImageContainerType> = ({ element }) => {
         imgStyle.height = height;
     }
 
-    const onChange = useCallback(
-        async (data: { [key: string]: string }) => {
+    const onChange = useCallback<NonNullable<SingleImageUploadProps["onChange"]>>(
+        file => {
             handler.trigger(
                 new UpdateElementActionEvent({
                     element: {
@@ -61,7 +63,7 @@ const ImageContainer: React.FC<ImageContainerType> = ({ element }) => {
                             ...element.data,
                             image: {
                                 ...(element.data.image || {}),
-                                file: data
+                                file: file ? pick(file, ["id", "src"]) : undefined
                             }
                         }
                     },

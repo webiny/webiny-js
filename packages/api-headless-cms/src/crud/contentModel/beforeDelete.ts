@@ -3,6 +3,7 @@ import { OnModelBeforeDeleteTopicParams, HeadlessCmsStorageOperations } from "~/
 import { PluginsContainer } from "@webiny/plugins";
 import WebinyError from "@webiny/error";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";
+import { attachCmsModelFieldConverters } from "~/utils/converters/valueKeyStorageConverter";
 
 interface AssignBeforeModelDeleteParams {
     onModelBeforeDelete: Topic<OnModelBeforeDeleteTopicParams>;
@@ -31,12 +32,18 @@ export const assignBeforeModelDelete = (params: AssignBeforeModelDeleteParams) =
 
         let entries = [];
         try {
-            const result = await storageOperations.entries.list(model, {
-                where: {
-                    latest: true
-                },
-                limit: 1
-            });
+            const result = await storageOperations.entries.list(
+                attachCmsModelFieldConverters({
+                    model,
+                    plugins
+                }),
+                {
+                    where: {
+                        latest: true
+                    },
+                    limit: 1
+                }
+            );
             entries = result.items;
         } catch (ex) {
             throw new WebinyError(

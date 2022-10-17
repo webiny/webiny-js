@@ -1,13 +1,13 @@
-import richTextStorage from "./storage/richText";
-import longTextStorage from "./storage/longText";
-import dateStorage from "./storage/date";
+import { createRichTextStorageTransformPlugin } from "./storage/richText";
+import { createLongTextStorageTransformPlugin } from "./storage/longText";
+import { createDateStorageTransformPlugin } from "./storage/date";
 import { createPlainObjectPathPlugin } from "./path/plainObject";
-import datetimeTransformValue from "./transformValue/datetime";
+import { createDatetimeTransformValuePlugin } from "./transformValue/datetime";
 
 export default () => [
-    richTextStorage(),
-    longTextStorage(),
-    dateStorage(),
+    createRichTextStorageTransformPlugin(),
+    createLongTextStorageTransformPlugin(),
+    createDateStorageTransformPlugin(),
     createPlainObjectPathPlugin(),
-    datetimeTransformValue()
+    createDatetimeTransformValuePlugin()
 ];

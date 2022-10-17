@@ -10,8 +10,8 @@
  * More on this a bit later, if the experiment is successful.
  */
 import React, { createContext, FC, useContext, useMemo, useRef, useState } from "react";
-import { nanoid } from "nanoid";
 import useDeepCompareEffect from "use-deep-compare-effect";
+import { generateAlphaNumericId } from "@webiny/utils";
 
 export function toObject<T = unknown>(property: Property): T {
     if (property.value !== undefined) {
@@ -135,7 +135,7 @@ interface PropertyProps {
 }
 
 export const Property: FC<PropertyProps> = ({ children, name, value, ...props }) => {
-    const id = useRef(props.id || nanoid());
+    const id = useRef(props.id || generateAlphaNumericId(21));
     const [properties, setProperties] = useState([]);
     const { updateContainer } = useContext(PropertyContainerContext);
     const parentProperty = useProperty();

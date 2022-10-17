@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.33.0](https://github.com/webiny/webiny-js/compare/v5.33.0-beta.1...v5.33.0) (2022-10-12)
+
+**Note:** Version bump only for package @webiny/api-elasticsearch
+
+
+
+
+
+# [5.33.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.33.0-beta.0...v5.33.0-beta.1) (2022-10-12)
+
+**Note:** Version bump only for package @webiny/api-elasticsearch
+
+
+
+
+
+# [5.33.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.32.0...v5.33.0-beta.0) (2022-10-11)
+
+
+### Features
+
+* **api-headless-cms:** model field aliases ([#2352](https://github.com/webiny/webiny-js/issues/2352)) ([5069a6d](https://github.com/webiny/webiny-js/commit/5069a6d449bd95d9d2da95abc591d09f683949d6))
+* **api-headless-cms-ddb-es:** transformation of fieldId and storageId paths ([#2622](https://github.com/webiny/webiny-js/issues/2622)) ([145568a](https://github.com/webiny/webiny-js/commit/145568a99099246cd53b24e700e30ef3b37ff09e))
+
+
+
+
+
 # [5.32.0](https://github.com/webiny/webiny-js/compare/v5.32.0-beta.0...v5.32.0) (2022-09-07)
 
 **Note:** Version bump only for package @webiny/api-elasticsearch
