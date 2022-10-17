@@ -2,7 +2,7 @@ import WebinyError from "@webiny/error";
 import { LifeCycleHookCallbackParams } from "~/types";
 
 export const validateComment = ({ apw }: Pick<LifeCycleHookCallbackParams, "apw">) => {
-    apw.comment.onBeforeCommentCreate.subscribe(async ({ input }) => {
+    apw.comment.onCommentBeforeCreate.subscribe(async ({ input }) => {
         const { changeRequest: changeRequestId } = input;
         /**
          * We need changeRequest to be in a particular format i.e. "contentReviewUniqueId#version"

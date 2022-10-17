@@ -13,7 +13,7 @@ interface LinkContentReviewToPageParams {
 export const linkContentReviewToPage = (params: LinkContentReviewToPageParams) => {
     const { apw, pageBuilder } = params;
 
-    apw.contentReview.onAfterContentReviewCreate.subscribe(async ({ contentReview }) => {
+    apw.contentReview.onContentReviewAfterCreate.subscribe(async ({ contentReview }) => {
         const { content } = contentReview;
 
         if (content.type === ApwContentTypes.PAGE) {
@@ -28,7 +28,7 @@ export const linkContentReviewToPage = (params: LinkContentReviewToPageParams) =
         }
     });
 
-    apw.contentReview.onAfterContentReviewDelete.subscribe(async ({ contentReview }) => {
+    apw.contentReview.onContentReviewAfterDelete.subscribe(async ({ contentReview }) => {
         const { content } = contentReview;
 
         if (content.type === ApwContentTypes.PAGE) {

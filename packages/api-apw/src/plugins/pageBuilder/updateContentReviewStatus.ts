@@ -2,7 +2,7 @@ import get from "lodash/get";
 import {
     AdvancedPublishingWorkflow,
     ApwContentReviewStatus,
-    ApwOnBeforePagePublishTopicParams
+    ApwOnPageBeforePublishTopicParams
 } from "~/types";
 import { INITIAL_CONTENT_REVIEW_CONTENT_SCHEDULE_META } from "~/crud/utils";
 import { PageBuilderContextObject } from "@webiny/api-page-builder/graphql/types";
@@ -17,7 +17,7 @@ interface UpdateContentReviewStatusParams {
 export const updateContentReviewStatus = (params: UpdateContentReviewStatusParams) => {
     const { apw, pageBuilder, security } = params;
 
-    pageBuilder.onAfterPagePublish.subscribe<ApwOnBeforePagePublishTopicParams>(
+    pageBuilder.onAfterPagePublish.subscribe<ApwOnPageBeforePublishTopicParams>(
         async ({ page }) => {
             const contentReviewId = get(page, "settings.apw.contentReviewId");
             /**
@@ -44,7 +44,7 @@ export const updateContentReviewStatus = (params: UpdateContentReviewStatusParam
             }
         }
     );
-    pageBuilder.onAfterPageUnpublish.subscribe<ApwOnBeforePagePublishTopicParams>(
+    pageBuilder.onAfterPageUnpublish.subscribe<ApwOnPageBeforePublishTopicParams>(
         async ({ page }) => {
             const contentReviewId = get(page, "settings.apw.contentReviewId");
             /**

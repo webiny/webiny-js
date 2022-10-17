@@ -1,9 +1,9 @@
 import get from "lodash/get";
 import set from "lodash/set";
 import {
-    ApwOnBeforePageCreateTopicParams,
-    ApwOnBeforePageCreateFromTopicParams,
-    ApwOnBeforePageUpdateTopicParams,
+    ApwOnPageBeforeCreateTopicParams,
+    ApwOnPageBeforeCreateFromTopicParams,
+    ApwOnPageBeforeUpdateTopicParams,
     AdvancedPublishingWorkflow
 } from "~/types";
 import {
@@ -23,10 +23,10 @@ interface LinkWorkflowToPageParams {
 export const linkWorkflowToPage = (params: LinkWorkflowToPageParams) => {
     const { apw, pageBuilder } = params;
 
-    pageBuilder.onBeforePageCreate.subscribe<ApwOnBeforePageCreateTopicParams>(async ({ page }) => {
+    pageBuilder.onBeforePageCreate.subscribe<ApwOnPageBeforeCreateTopicParams>(async ({ page }) => {
         await assignWorkflowToPage({ listWorkflow: apw.workflow.list, page });
     });
-    pageBuilder.onBeforePageCreateFrom.subscribe<ApwOnBeforePageCreateFromTopicParams>(
+    pageBuilder.onBeforePageCreateFrom.subscribe<ApwOnPageBeforeCreateFromTopicParams>(
         async params => {
             const { page, original } = params;
             /**
@@ -52,7 +52,7 @@ export const linkWorkflowToPage = (params: LinkWorkflowToPageParams) => {
             await assignWorkflowToPage({ listWorkflow: apw.workflow.list, page });
         }
     );
-    pageBuilder.onBeforePageUpdate.subscribe<ApwOnBeforePageUpdateTopicParams>(async params => {
+    pageBuilder.onBeforePageUpdate.subscribe<ApwOnPageBeforeUpdateTopicParams>(async params => {
         const { page, original } = params;
         const prevApwWorkflowId = get(original, "settings.apw");
         const currentApwWorkflowId = get(page, "settings.apw");
@@ -79,7 +79,7 @@ export const linkWorkflowToPage = (params: LinkWorkflowToPageParams) => {
     /**
      * Link created workflow to associated pages.
      */
-    apw.workflow.onAfterWorkflowCreate.subscribe(async ({ workflow }) => {
+    apw.workflow.onWorkflowAfterCreate.subscribe(async ({ workflow }) => {
         const { scope } = workflow;
         /**
          * If the workflow has pages in it's scope, we'll link that workflow for each of those pages.
@@ -103,7 +103,7 @@ export const linkWorkflowToPage = (params: LinkWorkflowToPageParams) => {
     /**
      * Link updated workflow to associated pages.
      */
-    apw.workflow.onAfterWorkflowUpdate.subscribe(async ({ workflow, original }) => {
+    apw.workflow.onWorkflowAfterUpdate.subscribe(async ({ workflow, original }) => {
         const { scope } = workflow;
         const { scope: prevScope } = original;
         /**

@@ -2,9 +2,9 @@ import {
     CmsContext,
     CmsEntry as BaseCmsEntry,
     CmsModel,
-    BeforeEntryPublishTopicParams,
-    AfterEntryPublishTopicParams,
-    AfterEntryUnpublishTopicParams
+    OnEntryBeforePublishTopicParams,
+    OnEntryAfterPublishTopicParams,
+    OnEntryAfterUnpublishTopicParams
 } from "@webiny/api-headless-cms/types";
 import {
     Page,
@@ -98,16 +98,16 @@ export interface PageWithWorkflow extends Page {
     settings: PageSettingsWithWorkflow;
 }
 
-export type ApwOnBeforePageCreateTopicParams = OnBeforePageCreateTopicParams<PageWithWorkflow>;
+export type ApwOnPageBeforeCreateTopicParams = OnBeforePageCreateTopicParams<PageWithWorkflow>;
 
-export type ApwOnBeforePageCreateFromTopicParams =
+export type ApwOnPageBeforeCreateFromTopicParams =
     OnBeforePageCreateFromTopicParams<PageWithWorkflow>;
 
-export type ApwOnBeforePageUpdateTopicParams = OnBeforePageUpdateTopicParams<PageWithWorkflow>;
+export type ApwOnPageBeforeUpdateTopicParams = OnBeforePageUpdateTopicParams<PageWithWorkflow>;
 
-export type ApwOnBeforePagePublishTopicParams = OnBeforePagePublishTopicParams<PageWithWorkflow>;
+export type ApwOnPageBeforePublishTopicParams = OnBeforePagePublishTopicParams<PageWithWorkflow>;
 
-export type ApwOnBeforePageRequestReviewTopicParams =
+export type ApwOnPageBeforeRequestReviewTopicParams =
     OnBeforePageRequestReviewTopicParams<PageWithWorkflow>;
 
 export enum WorkflowScopeTypes {
@@ -349,12 +349,12 @@ export interface ApwWorkflowCrud
     /**
      * Lifecycle events
      */
-    onBeforeWorkflowCreate: Topic<OnBeforeWorkflowCreateTopicParams>;
-    onAfterWorkflowCreate: Topic<OnAfterWorkflowCreateTopicParams>;
-    onBeforeWorkflowUpdate: Topic<OnBeforeWorkflowUpdateTopicParams>;
-    onAfterWorkflowUpdate: Topic<OnAfterWorkflowUpdateTopicParams>;
-    onBeforeWorkflowDelete: Topic<OnBeforeWorkflowDeleteTopicParams>;
-    onAfterWorkflowDelete: Topic<OnAfterWorkflowDeleteTopicParams>;
+    onWorkflowBeforeCreate: Topic<OnWorkflowBeforeCreateTopicParams>;
+    onWorkflowAfterCreate: Topic<OnWorkflowAfterCreateTopicParams>;
+    onWorkflowBeforeUpdate: Topic<OnWorkflowBeforeUpdateTopicParams>;
+    onWorkflowAfterUpdate: Topic<OnWorkflowAfterUpdateTopicParams>;
+    onWorkflowBeforeDelete: Topic<OnWorkflowBeforeDeleteTopicParams>;
+    onWorkflowAfterDelete: Topic<OnWorkflowAfterDeleteTopicParams>;
 }
 
 export interface ApwReviewerListParams extends ListParams {
@@ -370,12 +370,12 @@ export interface ApwReviewerCrud
     /**
      * Lifecycle events
      */
-    onBeforeReviewerCreate: Topic<OnBeforeReviewerCreateTopicParams>;
-    onAfterReviewerCreate: Topic<OnAfterReviewerCreateTopicParams>;
-    onBeforeReviewerUpdate: Topic<OnBeforeReviewerUpdateTopicParams>;
-    onAfterReviewerUpdate: Topic<OnAfterReviewerUpdateTopicParams>;
-    onBeforeReviewerDelete: Topic<OnBeforeReviewerDeleteTopicParams>;
-    onAfterReviewerDelete: Topic<OnAfterReviewerDeleteTopicParams>;
+    onReviewerBeforeCreate: Topic<OnReviewerBeforeCreateTopicParams>;
+    onReviewerAfterCreate: Topic<OnReviewerAfterCreateTopicParams>;
+    onReviewerBeforeUpdate: Topic<OnReviewerBeforeUpdateTopicParams>;
+    onReviewerAfterUpdate: Topic<OnReviewerAfterUpdateTopicParams>;
+    onReviewerBeforeDelete: Topic<OnReviewerBeforeDeleteTopicParams>;
+    onReviewerAfterDelete: Topic<OnReviewerAfterDeleteTopicParams>;
 }
 
 export interface ApwCommentListParams extends ListParams {
@@ -393,12 +393,12 @@ export interface ApwCommentCrud
     /**
      * Lifecycle events
      */
-    onBeforeCommentCreate: Topic<OnBeforeCommentCreateTopicParams>;
-    onAfterCommentCreate: Topic<OnAfterCommentCreateTopicParams>;
-    onBeforeCommentUpdate: Topic<OnBeforeCommentUpdateTopicParams>;
-    onAfterCommentUpdate: Topic<OnAfterCommentUpdateTopicParams>;
-    onBeforeCommentDelete: Topic<OnBeforeCommentDeleteTopicParams>;
-    onAfterCommentDelete: Topic<OnAfterCommentDeleteTopicParams>;
+    onCommentBeforeCreate: Topic<OnCommentBeforeCreateTopicParams>;
+    onCommentAfterCreate: Topic<OnCommentAfterCreateTopicParams>;
+    onCommentBeforeUpdate: Topic<OnCommentBeforeUpdateTopicParams>;
+    onCommentAfterUpdate: Topic<OnCommentAfterUpdateTopicParams>;
+    onCommentBeforeDelete: Topic<OnCommentBeforeDeleteTopicParams>;
+    onCommentAfterDelete: Topic<OnCommentAfterDeleteTopicParams>;
 }
 
 export interface ApwChangeRequestListParams extends ListParams {
@@ -418,12 +418,12 @@ export interface ApwChangeRequestCrud
     /**
      * Lifecycle events
      */
-    onBeforeChangeRequestCreate: Topic<OnBeforeChangeRequestCreateTopicParams>;
-    onAfterChangeRequestCreate: Topic<OnAfterChangeRequestCreateTopicParams>;
-    onBeforeChangeRequestUpdate: Topic<OnBeforeChangeRequestUpdateTopicParams>;
-    onAfterChangeRequestUpdate: Topic<OnAfterChangeRequestUpdateTopicParams>;
-    onBeforeChangeRequestDelete: Topic<OnBeforeChangeRequestDeleteTopicParams>;
-    onAfterChangeRequestDelete: Topic<OnAfterChangeRequestDeleteTopicParams>;
+    onChangeRequestBeforeCreate: Topic<OnChangeRequestBeforeCreateTopicParams>;
+    onChangeRequestAfterCreate: Topic<OnChangeRequestAfterCreateTopicParams>;
+    onChangeRequestBeforeUpdate: Topic<OnChangeRequestBeforeUpdateTopicParams>;
+    onChangeRequestAfterUpdate: Topic<OnChangeRequestAfterUpdateTopicParams>;
+    onChangeRequestBeforeDelete: Topic<OnChangeRequestBeforeDeleteTopicParams>;
+    onChangeRequestAfterDelete: Topic<OnChangeRequestAfterDeleteTopicParams>;
 }
 
 export interface ApwContentReviewCrud
@@ -454,12 +454,12 @@ export interface ApwContentReviewCrud
     /**
      * Lifecycle events
      */
-    onBeforeContentReviewCreate: Topic<OnBeforeContentReviewCreateTopicParams>;
-    onAfterContentReviewCreate: Topic<OnAfterContentReviewCreateTopicParams>;
-    onBeforeContentReviewUpdate: Topic<OnBeforeContentReviewUpdateTopicParams>;
-    onAfterContentReviewUpdate: Topic<OnAfterContentReviewUpdateTopicParams>;
-    onBeforeContentReviewDelete: Topic<OnBeforeContentReviewDeleteTopicParams>;
-    onAfterContentReviewDelete: Topic<OnAfterContentReviewDeleteTopicParams>;
+    onContentReviewBeforeCreate: Topic<OnContentReviewBeforeCreateTopicParams>;
+    onContentReviewAfterCreate: Topic<OnContentReviewAfterCreateTopicParams>;
+    onContentReviewBeforeUpdate: Topic<OnContentReviewBeforeUpdateTopicParams>;
+    onContentReviewAfterUpdate: Topic<OnContentReviewAfterUpdateTopicParams>;
+    onContentReviewBeforeDelete: Topic<OnContentReviewBeforeDeleteTopicParams>;
+    onContentReviewAfterDelete: Topic<OnContentReviewAfterDeleteTopicParams>;
 }
 
 export type ContentGetter = (
@@ -717,21 +717,21 @@ export interface ApwStorageOperations
 /**
  * @category Lifecycle events
  */
-export interface OnBeforeCommentCreateTopicParams {
+export interface OnCommentBeforeCreateTopicParams {
     input: CreateApwCommentParams;
 }
 
 /**
  * @category Lifecycle events
  */
-export interface OnAfterCommentCreateTopicParams {
+export interface OnCommentAfterCreateTopicParams {
     comment: ApwComment;
 }
 
 /**
  * @category Lifecycle events
  */
-export interface OnBeforeCommentUpdateTopicParams {
+export interface OnCommentBeforeUpdateTopicParams {
     original: ApwComment;
     input: Record<string, any>;
 }
@@ -739,7 +739,7 @@ export interface OnBeforeCommentUpdateTopicParams {
 /**
  * @category Lifecycle events
  */
-export interface OnAfterCommentUpdateTopicParams {
+export interface OnCommentAfterUpdateTopicParams {
     original: ApwComment;
     comment: ApwComment;
     input: Record<string, any>;
@@ -748,35 +748,35 @@ export interface OnAfterCommentUpdateTopicParams {
 /**
  * @category Lifecycle events
  */
-export interface OnBeforeCommentDeleteTopicParams {
+export interface OnCommentBeforeDeleteTopicParams {
     comment: ApwComment;
 }
 
 /**
  * @category Lifecycle events
  */
-export interface OnAfterCommentDeleteTopicParams {
+export interface OnCommentAfterDeleteTopicParams {
     comment: ApwComment;
 }
 
 /**
  * @category Lifecycle events
  */
-export interface OnBeforeChangeRequestCreateTopicParams {
+export interface OnChangeRequestBeforeCreateTopicParams {
     input: CreateApwChangeRequestParams;
 }
 
 /**
  * @category Lifecycle events
  */
-export interface OnAfterChangeRequestCreateTopicParams {
+export interface OnChangeRequestAfterCreateTopicParams {
     changeRequest: ApwChangeRequest;
 }
 
 /**
  * @category Lifecycle events
  */
-export interface OnBeforeChangeRequestUpdateTopicParams {
+export interface OnChangeRequestBeforeUpdateTopicParams {
     original: ApwChangeRequest;
     input: Record<string, any>;
 }
@@ -784,7 +784,7 @@ export interface OnBeforeChangeRequestUpdateTopicParams {
 /**
  * @category Lifecycle events
  */
-export interface OnAfterChangeRequestUpdateTopicParams {
+export interface OnChangeRequestAfterUpdateTopicParams {
     original: ApwChangeRequest;
     changeRequest: ApwChangeRequest;
     input: Record<string, any>;
@@ -793,35 +793,35 @@ export interface OnAfterChangeRequestUpdateTopicParams {
 /**
  * @category Lifecycle events
  */
-export interface OnBeforeChangeRequestDeleteTopicParams {
+export interface OnChangeRequestBeforeDeleteTopicParams {
     changeRequest: ApwChangeRequest;
 }
 
 /**
  * @category Lifecycle events
  */
-export interface OnAfterChangeRequestDeleteTopicParams {
+export interface OnChangeRequestAfterDeleteTopicParams {
     changeRequest: ApwChangeRequest;
 }
 
 /**
  * @category Lifecycle events
  */
-export interface OnBeforeContentReviewCreateTopicParams {
+export interface OnContentReviewBeforeCreateTopicParams {
     input: CreateApwContentReviewParams;
 }
 
 /**
  * @category Lifecycle events
  */
-export interface OnAfterContentReviewCreateTopicParams {
+export interface OnContentReviewAfterCreateTopicParams {
     contentReview: ApwContentReview;
 }
 
 /**
  * @category Lifecycle events
  */
-export interface OnBeforeContentReviewUpdateTopicParams {
+export interface OnContentReviewBeforeUpdateTopicParams {
     original: ApwContentReview;
     input: Record<string, any>;
 }
@@ -829,7 +829,7 @@ export interface OnBeforeContentReviewUpdateTopicParams {
 /**
  * @category Lifecycle events
  */
-export interface OnAfterContentReviewUpdateTopicParams {
+export interface OnContentReviewAfterUpdateTopicParams {
     original: ApwContentReview;
     contentReview: ApwContentReview;
     input: Record<string, any>;
@@ -838,14 +838,14 @@ export interface OnAfterContentReviewUpdateTopicParams {
 /**
  * @category Lifecycle events
  */
-export interface OnBeforeContentReviewDeleteTopicParams {
+export interface OnContentReviewBeforeDeleteTopicParams {
     contentReview: ApwContentReview;
 }
 
 /**
  * @category Lifecycle events
  */
-export interface OnAfterContentReviewDeleteTopicParams {
+export interface OnContentReviewAfterDeleteTopicParams {
     contentReview: ApwContentReview;
 }
 
@@ -856,21 +856,21 @@ export interface CreateApwReviewerParams {
 /**
  * @category Lifecycle events
  */
-export interface OnBeforeReviewerCreateTopicParams {
+export interface OnReviewerBeforeCreateTopicParams {
     input: CreateApwReviewerParams;
 }
 
 /**
  * @category Lifecycle events
  */
-export interface OnAfterReviewerCreateTopicParams {
+export interface OnReviewerAfterCreateTopicParams {
     reviewer: ApwReviewer;
 }
 
 /**
  * @category Lifecycle events
  */
-export interface OnBeforeReviewerUpdateTopicParams {
+export interface OnReviewerBeforeUpdateTopicParams {
     original: ApwReviewer;
     input: Record<string, any>;
 }
@@ -878,7 +878,7 @@ export interface OnBeforeReviewerUpdateTopicParams {
 /**
  * @category Lifecycle events
  */
-export interface OnAfterReviewerUpdateTopicParams {
+export interface OnReviewerAfterUpdateTopicParams {
     original: ApwReviewer;
     reviewer: ApwReviewer;
     input: Record<string, any>;
@@ -887,35 +887,35 @@ export interface OnAfterReviewerUpdateTopicParams {
 /**
  * @category Lifecycle events
  */
-export interface OnBeforeReviewerDeleteTopicParams {
+export interface OnReviewerBeforeDeleteTopicParams {
     reviewer: ApwReviewer;
 }
 
 /**
  * @category Lifecycle events
  */
-export interface OnAfterReviewerDeleteTopicParams {
+export interface OnReviewerAfterDeleteTopicParams {
     reviewer: ApwReviewer;
 }
 
 /**
  * @category Lifecycle events
  */
-export interface OnBeforeWorkflowCreateTopicParams {
+export interface OnWorkflowBeforeCreateTopicParams {
     input: CreateApwWorkflowParams;
 }
 
 /**
  * @category Lifecycle events
  */
-export interface OnAfterWorkflowCreateTopicParams {
+export interface OnWorkflowAfterCreateTopicParams {
     workflow: ApwWorkflow;
 }
 
 /**
  * @category Lifecycle events
  */
-export interface OnBeforeWorkflowUpdateTopicParams {
+export interface OnWorkflowBeforeUpdateTopicParams {
     original: ApwWorkflow;
     input: Record<string, any>;
 }
@@ -923,7 +923,7 @@ export interface OnBeforeWorkflowUpdateTopicParams {
 /**
  * @category Lifecycle events
  */
-export interface OnAfterWorkflowUpdateTopicParams {
+export interface OnWorkflowAfterUpdateTopicParams {
     original: ApwWorkflow;
     workflow: ApwWorkflow;
     input: Record<string, any>;
@@ -932,14 +932,14 @@ export interface OnAfterWorkflowUpdateTopicParams {
 /**
  * @category Lifecycle events
  */
-export interface OnBeforeWorkflowDeleteTopicParams {
+export interface OnWorkflowBeforeDeleteTopicParams {
     workflow: ApwWorkflow;
 }
 
 /**
  * @category Lifecycle events
  */
-export interface OnAfterWorkflowDeleteTopicParams {
+export interface OnWorkflowAfterDeleteTopicParams {
     workflow: ApwWorkflow;
 }
 
@@ -951,15 +951,15 @@ export type WorkflowModelDefinition = Pick<
 /**
  * Headless CMS
  */
-export interface OnBeforeCmsEntryPublishTopicParams
-    extends Omit<BeforeEntryPublishTopicParams, "entry"> {
+export interface OnCmsEntryBeforePublishTopicParams
+    extends Omit<OnEntryBeforePublishTopicParams, "entry"> {
     entry: ApwCmsEntry;
 }
-export interface OnAfterCmsEntryPublishTopicParams
-    extends Omit<AfterEntryPublishTopicParams, "entry"> {
+export interface OnCmsEntryAfterPublishTopicParams
+    extends Omit<OnEntryAfterPublishTopicParams, "entry"> {
     entry: ApwCmsEntry;
 }
-export interface OnAfterCmsEntryUnpublishTopicParams
-    extends Omit<AfterEntryUnpublishTopicParams, "entry"> {
+export interface OnCmsEntryAfterUnpublishTopicParams
+    extends Omit<OnEntryAfterUnpublishTopicParams, "entry"> {
     entry: ApwCmsEntry;
 }

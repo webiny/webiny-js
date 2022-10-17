@@ -5,7 +5,7 @@ import { NotFoundError } from "@webiny/handler-graphql";
 import { getContentApwSettingsPlugin } from "~/utils/contentApwSettingsPlugin";
 
 export const initializeContentReviewSteps = ({ apw, plugins }: ApwContext) => {
-    apw.contentReview.onBeforeContentReviewCreate.subscribe(async ({ input }) => {
+    apw.contentReview.onContentReviewBeforeCreate.subscribe(async ({ input }) => {
         const { type, id, settings } = input.content;
         /*
          * Let's set "title" field value.
