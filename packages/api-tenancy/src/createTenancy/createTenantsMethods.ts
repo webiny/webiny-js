@@ -50,14 +50,14 @@ export function createTenantsMethods(storageOperations: TenancyStorageOperations
 
     return {
         // create
-        onTenantBeforeCreate: createTopic<TenantBeforeCreateEvent>("tenancy.onBeforeTenantCreate"),
-        onTenantAfterCreate: createTopic<TenantAfterCreateEvent>("tenancy.onAfterTenantCreate"),
+        onTenantBeforeCreate: createTopic<TenantBeforeCreateEvent>("tenancy.onTenantBeforeCreate"),
+        onTenantAfterCreate: createTopic<TenantAfterCreateEvent>("tenancy.onTenantAfterCreate"),
         // update
-        onTenantBeforeUpdate: createTopic<TenantBeforeUpdateEvent>("tenancy.onBeforeTenantUpdate"),
-        onTenantAfterUpdate: createTopic<TenantAfterUpdateEvent>("tenancy.onAfterTenantUpdate"),
+        onTenantBeforeUpdate: createTopic<TenantBeforeUpdateEvent>("tenancy.onTenantBeforeUpdate"),
+        onTenantAfterUpdate: createTopic<TenantAfterUpdateEvent>("tenancy.onTenantAfterUpdate"),
         // delete
-        onTenantBeforeDelete: createTopic<TenantBeforeDeleteEvent>("tenancy.onBeforeTenantDelete"),
-        onTenantAfterDelete: createTopic<TenantAfterDeleteEvent>("tenancy.onAfterTenantDelete"),
+        onTenantBeforeDelete: createTopic<TenantBeforeDeleteEvent>("tenancy.onTenantBeforeDelete"),
+        onTenantAfterDelete: createTopic<TenantAfterDeleteEvent>("tenancy.onTenantAfterDelete"),
         async getRootTenant() {
             return loaders.getTenant.load("root");
         },
