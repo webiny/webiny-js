@@ -7,8 +7,8 @@ import { notFoundPageData } from "./install/notFoundPageData";
 import savePageAssets from "./install/utils/savePageAssets";
 import {
     Category,
-    OnAfterInstallTopicParams,
-    OnBeforeInstallTopicParams,
+    OnSystemAfterInstallTopicParams,
+    OnSystemBeforeInstallTopicParams,
     Page,
     PageBuilderContextObject,
     PageBuilderStorageOperations,
@@ -25,12 +25,24 @@ export interface CreateSystemCrudParams {
 }
 export const createSystemCrud = (params: CreateSystemCrudParams): SystemCrud => {
     const { context, storageOperations, getTenantId } = params;
-    const onBeforeInstall = createTopic<OnBeforeInstallTopicParams>("pageBuilder.onBeforeInstall");
-    const onAfterInstall = createTopic<OnAfterInstallTopicParams>("pageBuilder.onAfterInstall");
+    const onSystemBeforeInstall = createTopic<OnSystemBeforeInstallTopicParams>(
+        "pageBuilder.onSystemBeforeInstall"
+    );
+    const onSystemAfterInstall = createTopic<OnSystemAfterInstallTopicParams>(
+        "pageBuilder.onSystemAfterInstall"
+    );
 
     return {
-        onBeforeInstall,
-        onAfterInstall,
+        /**
+         * Lifecycle events - deprecated in 5.34.0 - will be removed in 5.36.0
+         */
+        onBeforeInstall: onSystemBeforeInstall,
+        onAfterInstall: onSystemAfterInstall,
+        /**
+         * Introduced in 5.34.0
+         */
+        onSystemBeforeInstall,
+        onSystemAfterInstall,
         async getSystem() {
             try {
                 return await storageOperations.system.get({
@@ -109,7 +121,7 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCrud => 
             /**
              * 1. Execute all beforeInstall installation hooks.
              */
-            await onBeforeInstall.publish({
+            await onSystemBeforeInstall.publish({
                 tenant: getTenantId()
             });
 
@@ -197,7 +209,7 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCrud => 
             // 6. Mark the Page Builder app as installed.
             await this.setSystemVersion(context.WEBINY_VERSION);
 
-            await onAfterInstall.publish({
+            await onSystemAfterInstall.publish({
                 tenant: getTenantId()
             });
         },

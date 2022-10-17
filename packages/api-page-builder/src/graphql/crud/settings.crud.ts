@@ -1,6 +1,6 @@
 import {
-    OnAfterSettingsUpdateTopicParams,
-    OnBeforeSettingsUpdateTopicParams,
+    OnSettingsAfterUpdateTopicParams,
+    OnSettingsBeforeUpdateTopicParams,
     PageBuilderContextObject,
     PageBuilderStorageOperations,
     PageSpecialType,
@@ -56,16 +56,24 @@ export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCr
         }
     );
 
-    const onBeforeSettingsUpdate = createTopic<OnBeforeSettingsUpdateTopicParams>(
-        "pageBuilder.onBeforeSettingsUpdate"
+    const onSettingsBeforeUpdate = createTopic<OnSettingsBeforeUpdateTopicParams>(
+        "pageBuilder.onSettingsBeforeUpdate"
     );
-    const onAfterSettingsUpdate = createTopic<OnAfterSettingsUpdateTopicParams>(
-        "pageBuilder.onAfterSettingsUpdate"
+    const onSettingsAfterUpdate = createTopic<OnSettingsAfterUpdateTopicParams>(
+        "pageBuilder.onSettingsAfterUpdate"
     );
 
     return {
-        onBeforeSettingsUpdate,
-        onAfterSettingsUpdate,
+        /**
+         * Lifecycle events - deprecated in 5.34.0 - will be removed in 5.36.0
+         */
+        onBeforeSettingsUpdate: onSettingsBeforeUpdate,
+        onAfterSettingsUpdate: onSettingsAfterUpdate,
+        /**
+         * Introduced in 5.34.0
+         */
+        onSettingsBeforeUpdate,
+        onSettingsAfterUpdate,
         async getCurrentSettings(this: PageBuilderContextObject) {
             // With this line commented, we made this endpoint public.
             // We did this because of the public website pages which need to access the settings.
@@ -192,7 +200,7 @@ export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCr
                 }
             };
             try {
-                await onBeforeSettingsUpdate.publish({
+                await onSettingsBeforeUpdate.publish({
                     original,
                     settings,
                     meta
@@ -204,7 +212,7 @@ export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCr
                     settings
                 });
 
-                await onAfterSettingsUpdate.publish({
+                await onSettingsAfterUpdate.publish({
                     original,
                     settings,
                     meta

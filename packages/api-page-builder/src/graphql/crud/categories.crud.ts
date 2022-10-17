@@ -9,12 +9,12 @@ import {
     Category,
     CategoryStorageOperationsGetParams,
     CategoryStorageOperationsListParams,
-    OnAfterCategoryCreateTopicParams,
-    OnAfterCategoryDeleteTopicParams,
-    OnAfterCategoryUpdateTopicParams,
-    OnBeforeCategoryCreateTopicParams,
-    OnBeforeCategoryDeleteTopicParams,
-    OnBeforeCategoryUpdateTopicParams,
+    OnCategoryAfterCreateTopicParams,
+    OnCategoryAfterDeleteTopicParams,
+    OnCategoryAfterUpdateTopicParams,
+    OnCategoryBeforeCreateTopicParams,
+    OnCategoryBeforeDeleteTopicParams,
+    OnCategoryBeforeUpdateTopicParams,
     PageBuilderContextObject,
     PageBuilderStorageOperations,
     PbContext,
@@ -54,35 +54,44 @@ export const createCategoriesCrud = (params: CreateCategoriesCrudParams): Catego
 
     const getPermission = (name: string) => context.security.getPermission(name);
 
-    const onBeforeCategoryCreate = createTopic<OnBeforeCategoryCreateTopicParams>(
-        "pageBuilder.onBeforeCategoryCreate"
+    const onCategoryBeforeCreate = createTopic<OnCategoryBeforeCreateTopicParams>(
+        "pageBuilder.onCategoryBeforeCreate"
     );
-    const onAfterCategoryCreate = createTopic<OnAfterCategoryCreateTopicParams>(
-        "pageBuilder.onAfterCategoryCreate"
+    const onCategoryAfterCreate = createTopic<OnCategoryAfterCreateTopicParams>(
+        "pageBuilder.onCategoryAfterCreate"
     );
-    const onBeforeCategoryUpdate = createTopic<OnBeforeCategoryUpdateTopicParams>(
-        "pageBuilder.onBeforeCategoryUpdate"
+    const onCategoryBeforeUpdate = createTopic<OnCategoryBeforeUpdateTopicParams>(
+        "pageBuilder.onCategoryBeforeUpdate"
     );
-    const onAfterCategoryUpdate = createTopic<OnAfterCategoryUpdateTopicParams>(
-        "pageBuilder.onAfterCategoryUpdate"
+    const onCategoryAfterUpdate = createTopic<OnCategoryAfterUpdateTopicParams>(
+        "pageBuilder.onCategoryAfterUpdate"
     );
-    const onBeforeCategoryDelete = createTopic<OnBeforeCategoryDeleteTopicParams>(
-        "pageBuilder.onBeforeCategoryDelete"
+    const onCategoryBeforeDelete = createTopic<OnCategoryBeforeDeleteTopicParams>(
+        "pageBuilder.onCategoryBeforeDelete"
     );
-    const onAfterCategoryDelete = createTopic<OnAfterCategoryDeleteTopicParams>(
-        "pageBuilder.onAfterCategoryDelete"
+    const onCategoryAfterDelete = createTopic<OnCategoryAfterDeleteTopicParams>(
+        "pageBuilder.onCategoryAfterDelete"
     );
 
     return {
         /**
-         * Lifecycle events
+         * Lifecycle events - deprecated in 5.34.0 - will be removed from 5.36.0
          */
-        onBeforeCategoryCreate,
-        onAfterCategoryCreate,
-        onBeforeCategoryUpdate,
-        onAfterCategoryUpdate,
-        onBeforeCategoryDelete,
-        onAfterCategoryDelete,
+        onBeforeCategoryCreate: onCategoryBeforeCreate,
+        onAfterCategoryCreate: onCategoryAfterCreate,
+        onBeforeCategoryUpdate: onCategoryBeforeUpdate,
+        onAfterCategoryUpdate: onCategoryAfterUpdate,
+        onBeforeCategoryDelete: onCategoryBeforeDelete,
+        onAfterCategoryDelete: onCategoryAfterDelete,
+        /**
+         * Introduced in 5.34.0
+         */
+        onCategoryBeforeCreate,
+        onCategoryAfterCreate,
+        onCategoryBeforeUpdate,
+        onCategoryAfterUpdate,
+        onCategoryBeforeDelete,
+        onCategoryAfterDelete,
         /**
          * This method should return category or null. No error throwing on not found.
          */
@@ -223,14 +232,14 @@ export const createCategoriesCrud = (params: CreateCategoriesCrudParams): Catego
             };
 
             try {
-                await onBeforeCategoryCreate.publish({
+                await onCategoryBeforeCreate.publish({
                     category
                 });
                 const result = await storageOperations.categories.create({
                     input: data,
                     category
                 });
-                await onAfterCategoryCreate.publish({
+                await onCategoryAfterCreate.publish({
                     category: result
                 });
                 return result;
@@ -268,7 +277,7 @@ export const createCategoriesCrud = (params: CreateCategoriesCrudParams): Catego
                 ...data
             };
             try {
-                await onBeforeCategoryUpdate.publish({
+                await onCategoryBeforeUpdate.publish({
                     original,
                     category
                 });
@@ -277,7 +286,7 @@ export const createCategoriesCrud = (params: CreateCategoriesCrudParams): Catego
                     original,
                     category
                 });
-                await onAfterCategoryUpdate.publish({
+                await onCategoryAfterUpdate.publish({
                     original,
                     category
                 });
@@ -328,13 +337,13 @@ export const createCategoriesCrud = (params: CreateCategoriesCrudParams): Catego
             }
 
             try {
-                await onBeforeCategoryDelete.publish({
+                await onCategoryBeforeDelete.publish({
                     category
                 });
                 const result = await storageOperations.categories.delete({
                     category
                 });
-                await onAfterCategoryDelete.publish({
+                await onCategoryAfterDelete.publish({
                     category: result
                 });
                 return result;

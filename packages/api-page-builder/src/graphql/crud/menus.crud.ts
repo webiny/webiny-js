@@ -3,12 +3,12 @@ import {
     Menu,
     PbContext,
     MenuStorageOperationsListParams,
-    OnBeforeMenuCreateTopicParams,
-    OnAfterMenuCreateTopicParams,
-    OnBeforeMenuUpdateTopicParams,
-    OnAfterMenuUpdateTopicParams,
-    OnBeforeMenuDeleteTopicParams,
-    OnAfterMenuDeleteTopicParams,
+    OnMenuBeforeCreateTopicParams,
+    OnMenuAfterCreateTopicParams,
+    OnMenuBeforeUpdateTopicParams,
+    OnMenuAfterUpdateTopicParams,
+    OnMenuBeforeDeleteTopicParams,
+    OnMenuAfterDeleteTopicParams,
     MenusCrud,
     PageBuilderContextObject,
     PageBuilderStorageOperations
@@ -56,34 +56,46 @@ export const createMenuCrud = (params: CreateMenuCrudParams): MenusCrud => {
     const { context, storageOperations, getLocaleCode, getTenantId } = params;
 
     // create
-    const onBeforeMenuCreate = createTopic<OnBeforeMenuCreateTopicParams>(
-        "pageBuilder.onBeforeMenuCreate"
+    const onMenuBeforeCreate = createTopic<OnMenuBeforeCreateTopicParams>(
+        "pageBuilder.onMenuBeforeCreate"
     );
-    const onAfterMenuCreate = createTopic<OnAfterMenuCreateTopicParams>(
-        "pageBuilder.onAfterMenuCreate"
+    const onMenuAfterCreate = createTopic<OnMenuAfterCreateTopicParams>(
+        "pageBuilder.onMenuAfterCreate"
     );
     // update
-    const onBeforeMenuUpdate = createTopic<OnBeforeMenuUpdateTopicParams>(
-        "pageBuilder.onBeforeMenuUpdate"
+    const onMenuBeforeUpdate = createTopic<OnMenuBeforeUpdateTopicParams>(
+        "pageBuilder.onMenuBeforeUpdate"
     );
-    const onAfterMenuUpdate = createTopic<OnAfterMenuUpdateTopicParams>(
-        "pageBuilder.onAfterMenuUpdate"
+    const onMenuAfterUpdate = createTopic<OnMenuAfterUpdateTopicParams>(
+        "pageBuilder.onMenuAfterUpdate"
     );
     // delete
-    const onBeforeMenuDelete = createTopic<OnBeforeMenuDeleteTopicParams>(
-        "pageBuilder.onBeforeMenuDelete"
+    const onMenuBeforeDelete = createTopic<OnMenuBeforeDeleteTopicParams>(
+        "pageBuilder.onMenuBeforeDelete"
     );
-    const onAfterMenuDelete = createTopic<OnAfterMenuDeleteTopicParams>(
-        "pageBuilder.onAfterMenuDelete"
+    const onMenuAfterDelete = createTopic<OnMenuAfterDeleteTopicParams>(
+        "pageBuilder.onMenuAfterDelete"
     );
 
     return {
-        onBeforeMenuCreate,
-        onAfterMenuCreate,
-        onBeforeMenuUpdate,
-        onAfterMenuUpdate,
-        onBeforeMenuDelete,
-        onAfterMenuDelete,
+        /**
+         * Deprecated in 5.34.0 - will be removed in 5.36.0
+         */
+        onBeforeMenuCreate: onMenuBeforeCreate,
+        onAfterMenuCreate: onMenuAfterCreate,
+        onBeforeMenuUpdate: onMenuBeforeUpdate,
+        onAfterMenuUpdate: onMenuAfterUpdate,
+        onBeforeMenuDelete: onMenuBeforeDelete,
+        onAfterMenuDelete: onMenuAfterDelete,
+        /**
+         *
+         */
+        onMenuBeforeCreate,
+        onMenuAfterCreate,
+        onMenuBeforeUpdate,
+        onMenuAfterUpdate,
+        onMenuBeforeDelete,
+        onMenuAfterDelete,
         async getMenu(slug, options) {
             let permission = undefined;
             const { auth = true } = options || {};
@@ -214,7 +226,7 @@ export const createMenuCrud = (params: CreateMenuCrudParams): MenusCrud => {
             };
 
             try {
-                await onBeforeMenuCreate.publish({
+                await onMenuBeforeCreate.publish({
                     input: data,
                     menu
                 });
@@ -223,7 +235,7 @@ export const createMenuCrud = (params: CreateMenuCrudParams): MenusCrud => {
                     input: data,
                     menu
                 });
-                await onAfterMenuCreate.publish({
+                await onMenuAfterCreate.publish({
                     input: data,
                     menu: result
                 });
@@ -264,7 +276,7 @@ export const createMenuCrud = (params: CreateMenuCrudParams): MenusCrud => {
             };
 
             try {
-                await onBeforeMenuUpdate.publish({
+                await onMenuBeforeUpdate.publish({
                     original,
                     menu
                 });
@@ -275,7 +287,7 @@ export const createMenuCrud = (params: CreateMenuCrudParams): MenusCrud => {
                     menu
                 });
 
-                await onAfterMenuUpdate.publish({
+                await onMenuAfterUpdate.publish({
                     original,
                     menu: result
                 });
@@ -307,7 +319,7 @@ export const createMenuCrud = (params: CreateMenuCrudParams): MenusCrud => {
             checkOwnPermissions(identity, permission, menu);
 
             try {
-                await onBeforeMenuDelete.publish({
+                await onMenuBeforeDelete.publish({
                     menu
                 });
 
@@ -315,7 +327,7 @@ export const createMenuCrud = (params: CreateMenuCrudParams): MenusCrud => {
                     menu
                 });
 
-                await onAfterMenuDelete.publish({
+                await onMenuAfterDelete.publish({
                     menu: result
                 });
 

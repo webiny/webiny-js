@@ -9,7 +9,7 @@ import DataLoader from "dataloader";
 import { NotFoundError } from "@webiny/handler-graphql";
 import {
     CreatedBy,
-    OnBeforePageCreateTopicParams,
+    OnPageBeforeCreateTopicParams,
     Page,
     PageBuilderContextObject,
     PageBuilderStorageOperations,
@@ -29,21 +29,21 @@ import WebinyError from "@webiny/error";
 import lodashTrimEnd from "lodash/trimEnd";
 import {
     FlushParams,
-    OnAfterPageCreateFromTopicParams,
-    OnAfterPageCreateTopicParams,
-    OnAfterPageDeleteTopicParams,
-    OnAfterPagePublishTopicParams,
-    OnAfterPageRequestChangesTopicParams,
-    OnAfterPageRequestReviewTopicParams,
-    OnAfterPageUnpublishTopicParams,
-    OnAfterPageUpdateTopicParams,
-    OnBeforePageCreateFromTopicParams,
-    OnBeforePageDeleteTopicParams,
-    OnBeforePagePublishTopicParams,
-    OnBeforePageRequestChangesTopicParams,
-    OnBeforePageRequestReviewTopicParams,
-    OnBeforePageUnpublishTopicParams,
-    OnBeforePageUpdateTopicParams,
+    OnPageAfterCreateFromTopicParams,
+    OnPageAfterCreateTopicParams,
+    OnPageAfterDeleteTopicParams,
+    OnPageAfterPublishTopicParams,
+    OnPageAfterRequestChangesTopicParams,
+    OnPageAfterRequestReviewTopicParams,
+    OnPageAfterUnpublishTopicParams,
+    OnPageAfterUpdateTopicParams,
+    OnPageBeforeCreateFromTopicParams,
+    OnPageBeforeDeleteTopicParams,
+    OnPageBeforePublishTopicParams,
+    OnPageBeforeRequestChangesTopicParams,
+    OnPageBeforeRequestReviewTopicParams,
+    OnPageBeforeUnpublishTopicParams,
+    OnPageBeforeUpdateTopicParams,
     RenderParams
 } from "~/graphql/types";
 import { createTopic } from "@webiny/pubsub";
@@ -205,82 +205,101 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
     };
 
     // create
-    const onBeforePageCreate = createTopic<OnBeforePageCreateTopicParams>(
-        "pageBuilder.onBeforeCreatePage"
+    const onPageBeforeCreate = createTopic<OnPageBeforeCreateTopicParams>(
+        "pageBuilder.onPageBeforeCreate"
     );
-    const onAfterPageCreate = createTopic<OnAfterPageCreateTopicParams>(
-        "pageBuilder.onAfterCreatePage"
+    const onPageAfterCreate = createTopic<OnPageAfterCreateTopicParams>(
+        "pageBuilder.onPageAfterCreate"
     );
     // create from
-    const onBeforePageCreateFrom = createTopic<OnBeforePageCreateFromTopicParams>(
-        "pageBuilder.onBeforeCreateFromPage"
+    const onPageBeforeCreateFrom = createTopic<OnPageBeforeCreateFromTopicParams>(
+        "pageBuilder.onPageBeforeCreateFrom"
     );
-    const onAfterPageCreateFrom = createTopic<OnAfterPageCreateFromTopicParams>(
-        "pageBuilder.onAfterCreateFromPage"
+    const onPageAfterCreateFrom = createTopic<OnPageAfterCreateFromTopicParams>(
+        "pageBuilder.onPageAfterCreateFrom"
     );
     // update
-    const onBeforePageUpdate = createTopic<OnBeforePageUpdateTopicParams>(
-        "pageBuilder.onBeforeUpdatePage"
+    const onPageBeforeUpdate = createTopic<OnPageBeforeUpdateTopicParams>(
+        "pageBuilder.onPageBeforeUpdate"
     );
-    const onAfterPageUpdate = createTopic<OnAfterPageUpdateTopicParams>(
-        "pageBuilder.onAfterUpdatePage"
+    const onPageAfterUpdate = createTopic<OnPageAfterUpdateTopicParams>(
+        "pageBuilder.onPageAfterUpdate"
     );
     // delete
-    const onBeforePageDelete = createTopic<OnBeforePageDeleteTopicParams>(
-        "pageBuilder.onBeforeDeletePage"
+    const onPageBeforeDelete = createTopic<OnPageBeforeDeleteTopicParams>(
+        "pageBuilder.onPageBeforeDelete"
     );
-    const onAfterPageDelete = createTopic<OnAfterPageDeleteTopicParams>(
-        "pageBuilder.onAfterDeletePage"
+    const onPageAfterDelete = createTopic<OnPageAfterDeleteTopicParams>(
+        "pageBuilder.onPageAfterDelete"
     );
     // publish
-    const onBeforePagePublish = createTopic<OnBeforePagePublishTopicParams>(
-        "pageBuilder.onBeforePublishPage"
+    const onPageBeforePublish = createTopic<OnPageBeforePublishTopicParams>(
+        "pageBuilder.onPageBeforePublish"
     );
-    const onAfterPagePublish = createTopic<OnAfterPagePublishTopicParams>(
-        "pageBuilder.onAfterPublishPage"
+    const onPageAfterPublish = createTopic<OnPageAfterPublishTopicParams>(
+        "pageBuilder.onPageAfterPublish"
     );
     // unpublish
-    const onBeforePageUnpublish = createTopic<OnBeforePageUnpublishTopicParams>(
-        "pageBuilder.onBeforeUnpublishPage"
+    const onPageBeforeUnpublish = createTopic<OnPageBeforeUnpublishTopicParams>(
+        "pageBuilder.onPageBeforeUnpublish"
     );
-    const onAfterPageUnpublish = createTopic<OnAfterPageUnpublishTopicParams>(
-        "pageBuilder.onAfterUnpublishPage"
+    const onPageAfterUnpublish = createTopic<OnPageAfterUnpublishTopicParams>(
+        "pageBuilder.onPageAfterUnpublish"
     );
     // request review
-    const onBeforePageRequestReview = createTopic<OnBeforePageRequestReviewTopicParams>(
-        "pageBuilder.onBeforeRequestReviewPage"
+    const onPageBeforeRequestReview = createTopic<OnPageBeforeRequestReviewTopicParams>(
+        "pageBuilder.onPageBeforeRequestReview"
     );
-    const onAfterPageRequestReview = createTopic<OnAfterPageRequestReviewTopicParams>(
-        "pageBuilder.onAfterRequestReviewPage"
+    const onPageAfterRequestReview = createTopic<OnPageAfterRequestReviewTopicParams>(
+        "pageBuilder.onPageAfterRequestReview"
     );
     // request changes
-    const onBeforePageRequestChanges = createTopic<OnBeforePageRequestChangesTopicParams>(
-        "pageBuilder.onBeforeRequestChangesPage"
+    const onPageBeforeRequestChanges = createTopic<OnPageBeforeRequestChangesTopicParams>(
+        "pageBuilder.onPageBeforeRequestChanges"
     );
-    const onAfterPageRequestChanges = createTopic<OnAfterPageRequestChangesTopicParams>(
-        "pageBuilder.onAfterRequestChangesPage"
+    const onPageAfterRequestChanges = createTopic<OnPageAfterRequestChangesTopicParams>(
+        "pageBuilder.onPageAfterRequestChanges"
     );
 
     return {
         /**
-         * Lifecycle events
+         * Lifecycle events - deprecated in 5.34.0 - will be removed in 5.36.0
          */
-        onBeforePageCreate,
-        onAfterPageCreate,
-        onBeforePageCreateFrom,
-        onAfterPageCreateFrom,
-        onBeforePageUpdate,
-        onAfterPageUpdate,
-        onBeforePageDelete,
-        onAfterPageDelete,
-        onBeforePagePublish,
-        onAfterPagePublish,
-        onBeforePageUnpublish,
-        onAfterPageUnpublish,
-        onBeforePageRequestChanges,
-        onAfterPageRequestChanges,
-        onBeforePageRequestReview,
-        onAfterPageRequestReview,
+        onBeforePageCreate: onPageBeforeCreate,
+        onAfterPageCreate: onPageAfterCreate,
+        onBeforePageCreateFrom: onPageBeforeCreateFrom,
+        onAfterPageCreateFrom: onPageAfterCreateFrom,
+        onBeforePageUpdate: onPageBeforeUpdate,
+        onAfterPageUpdate: onPageAfterUpdate,
+        onBeforePageDelete: onPageBeforeDelete,
+        onAfterPageDelete: onPageAfterDelete,
+        onBeforePagePublish: onPageBeforePublish,
+        onAfterPagePublish: onPageAfterPublish,
+        onBeforePageUnpublish: onPageBeforeUnpublish,
+        onAfterPageUnpublish: onPageAfterUnpublish,
+        onBeforePageRequestChanges: onPageBeforeRequestChanges,
+        onAfterPageRequestChanges: onPageAfterRequestChanges,
+        onBeforePageRequestReview: onPageBeforeRequestReview,
+        onAfterPageRequestReview: onPageAfterRequestReview,
+        /**
+         * Introduced in 5.34.0
+         */
+        onPageBeforeCreate,
+        onPageAfterCreate,
+        onPageBeforeCreateFrom,
+        onPageAfterCreateFrom,
+        onPageBeforeUpdate,
+        onPageAfterUpdate,
+        onPageBeforeDelete,
+        onPageAfterDelete,
+        onPageBeforePublish,
+        onPageAfterPublish,
+        onPageBeforeUnpublish,
+        onPageAfterUnpublish,
+        onPageBeforeRequestChanges,
+        onPageAfterRequestChanges,
+        onPageBeforeRequestReview,
+        onPageAfterRequestReview,
         async createPage(this: PageBuilderContextObject, slug): Promise<any> {
             await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
 
@@ -345,7 +364,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
             page.content = await compressContent(page);
 
             try {
-                await onBeforePageCreate.publish({
+                await onPageBeforeCreate.publish({
                     page
                 });
 
@@ -355,7 +374,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                     },
                     page
                 });
-                await onAfterPageCreate.publish({
+                await onPageAfterCreate.publish({
                     page: result
                 });
 
@@ -429,7 +448,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
             };
 
             try {
-                await onBeforePageCreateFrom.publish({
+                await onPageBeforeCreateFrom.publish({
                     original,
                     page
                 });
@@ -439,7 +458,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                     latestPage,
                     page
                 });
-                await onAfterPageCreateFrom.publish({
+                await onPageAfterCreateFrom.publish({
                     original,
                     page: result
                 });
@@ -506,7 +525,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
             }
 
             try {
-                await onBeforePageUpdate.publish({
+                await onPageBeforeUpdate.publish({
                     original,
                     page,
                     input
@@ -518,7 +537,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                     page
                 });
 
-                await onAfterPageUpdate.publish({
+                await onPageAfterUpdate.publish({
                     original,
                     page: result,
                     input
@@ -662,7 +681,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
             }
 
             try {
-                await onBeforePageDelete.publish({
+                await onPageBeforeDelete.publish({
                     page,
                     latestPage,
                     publishedPage
@@ -675,7 +694,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                 });
                 latestPage = resultLatestPage || latestPage;
 
-                await onAfterPageDelete.publish({
+                await onPageAfterDelete.publish({
                     page: resultPage,
                     latestPage: resultLatestPage || null,
                     publishedPage
@@ -804,7 +823,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
             };
 
             try {
-                await onBeforePagePublish.publish({
+                await onPageBeforePublish.publish({
                     page,
                     latestPage,
                     publishedPage
@@ -818,7 +837,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                     publishedPathPage
                 });
 
-                await onAfterPagePublish.publish({
+                await onPageAfterPublish.publish({
                     page: result,
                     latestPage,
                     publishedPage
@@ -908,7 +927,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
             };
 
             try {
-                await onBeforePageUnpublish.publish({
+                await onPageBeforeUnpublish.publish({
                     page,
                     latestPage
                 });
@@ -918,7 +937,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                     page,
                     latestPage
                 });
-                await onAfterPageUnpublish.publish({
+                await onPageAfterUnpublish.publish({
                     page: result,
                     latestPage
                 });
@@ -991,7 +1010,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
             };
 
             try {
-                await onBeforePageRequestReview.publish({
+                await onPageBeforeRequestReview.publish({
                     latestPage,
                     page
                 });
@@ -1001,7 +1020,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                     latestPage
                 });
 
-                await onAfterPageRequestReview.publish({
+                await onPageAfterRequestReview.publish({
                     latestPage,
                     page: result
                 });
@@ -1075,7 +1094,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                 locked: false
             };
             try {
-                await onBeforePageRequestChanges.publish({
+                await onPageBeforeRequestChanges.publish({
                     page,
                     latestPage
                 });
@@ -1085,7 +1104,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                     latestPage
                 });
 
-                await onAfterPageRequestChanges.publish({
+                await onPageAfterRequestChanges.publish({
                     page: result,
                     latestPage
                 });

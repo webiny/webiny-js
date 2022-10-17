@@ -15,12 +15,12 @@ import { withFields, string } from "@commodo/fields";
 import { object } from "commodo-fields-object";
 import { validation } from "@webiny/validation";
 import {
-    OnAfterPageElementCreateTopicParams,
-    OnAfterPageElementDeleteTopicParams,
-    OnAfterPageElementUpdateTopicParams,
-    OnBeforePageElementCreateTopicParams,
-    OnBeforePageElementDeleteTopicParams,
-    OnBeforePageElementUpdateTopicParams,
+    OnPageElementAfterCreateTopicParams,
+    OnPageElementAfterDeleteTopicParams,
+    OnPageElementAfterUpdateTopicParams,
+    OnPageElementBeforeCreateTopicParams,
+    OnPageElementBeforeDeleteTopicParams,
+    OnPageElementBeforeUpdateTopicParams,
     PageBuilderContextObject,
     PageBuilderStorageOperations,
     PageElement,
@@ -62,37 +62,46 @@ export const createPageElementsCrud = (params: CreatePageElementsCrudParams): Pa
     const { context, storageOperations, getLocaleCode, getTenantId } = params;
 
     // create
-    const onBeforePageElementCreate = createTopic<OnBeforePageElementCreateTopicParams>(
-        "pageBuilder.onBeforePageElementCreate"
+    const onPageElementBeforeCreate = createTopic<OnPageElementBeforeCreateTopicParams>(
+        "pageBuilder.onPageElementBeforeCreate"
     );
-    const onAfterPageElementCreate = createTopic<OnAfterPageElementCreateTopicParams>(
-        "pageBuilder.onAfterPageElementCreate"
+    const onPageElementAfterCreate = createTopic<OnPageElementAfterCreateTopicParams>(
+        "pageBuilder.onPageElementAfterCreate"
     );
     // update
-    const onBeforePageElementUpdate = createTopic<OnBeforePageElementUpdateTopicParams>(
-        "pageBuilder.onBeforePageElementUpdate"
+    const onPageElementBeforeUpdate = createTopic<OnPageElementBeforeUpdateTopicParams>(
+        "pageBuilder.onPageElementBeforeUpdate"
     );
-    const onAfterPageElementUpdate = createTopic<OnAfterPageElementUpdateTopicParams>(
-        "pageBuilder.onAfterPageElementUpdate"
+    const onPageElementAfterUpdate = createTopic<OnPageElementAfterUpdateTopicParams>(
+        "pageBuilder.onPageElementAfterUpdate"
     );
     // delete
-    const onBeforePageElementDelete = createTopic<OnBeforePageElementDeleteTopicParams>(
-        "pageBuilder.onBeforePageElementDelete"
+    const onPageElementBeforeDelete = createTopic<OnPageElementBeforeDeleteTopicParams>(
+        "pageBuilder.onPageElementBeforeDelete"
     );
-    const onAfterPageElementDelete = createTopic<OnAfterPageElementDeleteTopicParams>(
-        "pageBuilder.onAfterPageElementDelete"
+    const onPageElementAfterDelete = createTopic<OnPageElementAfterDeleteTopicParams>(
+        "pageBuilder.onPageElementAfterDelete"
     );
 
     return {
         /**
-         * Lifecycle events
+         * Lifecycle events - deprecated in 5.34.0 - will be removed in 5.36.0
          */
-        onBeforePageElementCreate,
-        onAfterPageElementCreate,
-        onBeforePageElementUpdate,
-        onAfterPageElementUpdate,
-        onBeforePageElementDelete,
-        onAfterPageElementDelete,
+        onBeforePageElementCreate: onPageElementBeforeCreate,
+        onAfterPageElementCreate: onPageElementAfterCreate,
+        onBeforePageElementUpdate: onPageElementBeforeUpdate,
+        onAfterPageElementUpdate: onPageElementAfterUpdate,
+        onBeforePageElementDelete: onPageElementBeforeDelete,
+        onAfterPageElementDelete: onPageElementAfterDelete,
+        /**
+         * Introduced in 5.34.0
+         */
+        onPageElementBeforeCreate,
+        onPageElementAfterCreate,
+        onPageElementBeforeUpdate,
+        onPageElementAfterUpdate,
+        onPageElementBeforeDelete,
+        onPageElementAfterDelete,
         async getPageElement(id) {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "r"
@@ -189,14 +198,14 @@ export const createPageElementsCrud = (params: CreatePageElementsCrudParams): Pa
             };
 
             try {
-                await onBeforePageElementCreate.publish({
+                await onPageElementBeforeCreate.publish({
                     pageElement
                 });
                 const result = await storageOperations.pageElements.create({
                     input: data,
                     pageElement
                 });
-                await onAfterPageElementCreate.publish({
+                await onPageElementAfterCreate.publish({
                     pageElement
                 });
                 return result;
@@ -235,7 +244,7 @@ export const createPageElementsCrud = (params: CreatePageElementsCrudParams): Pa
             };
 
             try {
-                await onBeforePageElementUpdate.publish({
+                await onPageElementBeforeUpdate.publish({
                     original,
                     pageElement
                 });
@@ -244,7 +253,7 @@ export const createPageElementsCrud = (params: CreatePageElementsCrudParams): Pa
                     original,
                     pageElement
                 });
-                await onAfterPageElementUpdate.publish({
+                await onPageElementAfterUpdate.publish({
                     original,
                     pageElement: result
                 });
@@ -276,13 +285,13 @@ export const createPageElementsCrud = (params: CreatePageElementsCrudParams): Pa
             checkOwnPermissions(identity, permission, pageElement);
 
             try {
-                await onBeforePageElementDelete.publish({
+                await onPageElementBeforeDelete.publish({
                     pageElement
                 });
                 const result = await storageOperations.pageElements.delete({
                     pageElement
                 });
-                await onAfterPageElementDelete.publish({
+                await onPageElementAfterDelete.publish({
                     pageElement: result
                 });
                 return result;
