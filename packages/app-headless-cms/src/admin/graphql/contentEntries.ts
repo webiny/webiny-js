@@ -146,7 +146,7 @@ export const createListQuery = (model: CmsEditorContentModel) => {
                     cursor
                     hasMoreItems
                     totalCount
-                }            
+                }
                 error ${ERROR_FIELD}
             }
         }
@@ -274,8 +274,8 @@ export const createUpdateMutation = (model: CmsEditorContentModel) => {
                     id
                     ${createFieldsList(model.fields)}
                     savedOn
-                    meta { 
-                        ${CONTENT_META_FIELDS} 
+                    meta {
+                        ${CONTENT_META_FIELDS}
                     }
                 }
                 error ${ERROR_FIELD}
@@ -331,65 +331,6 @@ export const createUnpublishMutation = (model: CmsEditorContentModel) => {
     return gql`
         mutation CmsUnpublish${ucFirstModelId}($revision: ID!) {
             content: unpublish${ucFirstModelId}(revision: $revision) {
-                data {
-                    id
-                    meta {
-                        ${CONTENT_META_FIELDS}
-                    }
-                }
-                error ${ERROR_FIELD}
-            }
-        }`;
-};
-/**
- * ############################################
- * Request Review Mutation
- */
-export interface CmsEntryRequestReviewMutationResponse {
-    content: {
-        data?: CmsEditorContentEntry;
-        error?: CmsErrorResponse;
-    };
-}
-export interface CmsEntryRequestReviewMutationVariables {
-    revision: string;
-}
-export const createRequestReviewMutation = (model: CmsEditorContentModel) => {
-    const ucFirstModelId = upperFirst(model.modelId);
-
-    return gql`
-        mutation CmsRequest${ucFirstModelId}Review($revision: ID!) {
-            content: request${ucFirstModelId}Review(revision: $revision) {
-                data {
-                    id
-                    meta {
-                        ${CONTENT_META_FIELDS}
-                    }
-                }
-                error ${ERROR_FIELD}
-            }
-        }`;
-};
-
-/**
- * ############################################
- * Request Changes Mutation
- */
-export interface CmsEntryRequestChangesMutationResponse {
-    content: {
-        data?: CmsEditorContentEntry;
-        error?: CmsErrorResponse;
-    };
-}
-export interface CmsEntryRequestChangesMutationVariables {
-    revision: string;
-}
-export const createRequestChangesMutation = (model: CmsEditorContentModel) => {
-    const ucFirstModelId = upperFirst(model.modelId);
-
-    return gql`
-        mutation CmsRequest${ucFirstModelId}Changes($revision: ID!) {
-            content: request${ucFirstModelId}Changes(revision: $revision) {
                 data {
                     id
                     meta {

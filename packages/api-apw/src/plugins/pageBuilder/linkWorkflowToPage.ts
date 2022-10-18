@@ -1,6 +1,7 @@
 import get from "lodash/get";
 import set from "lodash/set";
 import {
+    ApwWorkflowApplications,
     ApwOnPageBeforeCreateTopicParams,
     ApwOnPageBeforeCreateFromTopicParams,
     ApwOnPageBeforeUpdateTopicParams,
@@ -81,6 +82,9 @@ export const linkWorkflowToPage = (params: LinkWorkflowToPageParams) => {
      */
     apw.workflow.onWorkflowAfterCreate.subscribe(async ({ workflow }) => {
         const { scope } = workflow;
+        if (workflow.app !== ApwWorkflowApplications.PB) {
+            return;
+        }
         /**
          * If the workflow has pages in it's scope, we'll link that workflow for each of those pages.
          */
@@ -105,6 +109,9 @@ export const linkWorkflowToPage = (params: LinkWorkflowToPageParams) => {
      */
     apw.workflow.onWorkflowAfterUpdate.subscribe(async ({ workflow, original }) => {
         const { scope } = workflow;
+        if (workflow.app !== ApwWorkflowApplications.PB) {
+            return;
+        }
         const { scope: prevScope } = original;
         /**
          * If the workflow has pages in it's scope and there is a change in that page list,

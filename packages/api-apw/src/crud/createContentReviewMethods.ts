@@ -10,13 +10,15 @@ import {
     ApwReviewerCrud,
     ApwScheduleActionData,
     ApwWorkflowStepTypes,
+    CreateApwContentReviewParams,
     CreateApwParams,
     OnContentReviewAfterCreateTopicParams,
     OnContentReviewAfterDeleteTopicParams,
     OnContentReviewAfterUpdateTopicParams,
     OnContentReviewBeforeCreateTopicParams,
     OnContentReviewBeforeDeleteTopicParams,
-    OnContentReviewBeforeUpdateTopicParams
+    OnContentReviewBeforeUpdateTopicParams,
+    UpdateApwContentReviewParams
 } from "~/types";
 import { getNextStepStatus, hasReviewer } from "~/plugins/utils";
 import {
@@ -96,7 +98,7 @@ export function createContentReviewMethods(
             return storageOperations.getContentReview({ id });
         },
         async list(params) {
-            if (params.where && params.where.status === "requiresMyAttention") {
+            if (params.where?.reviewStatus === "requiresMyAttention") {
                 return filterContentReviewsByRequiresMyAttention({
                     listParams: params,
                     listContentReviews: storageOperations.listContentReviews,
@@ -107,10 +109,10 @@ export function createContentReviewMethods(
 
             return storageOperations.listContentReviews(params);
         },
-        async create(data) {
-            const input = {
+        async create(data: Omit<CreateApwContentReviewParams, "reviewStatus">) {
+            const input: CreateApwContentReviewParams = {
                 ...data,
-                status: ApwContentReviewStatus.UNDER_REVIEW
+                reviewStatus: ApwContentReviewStatus.UNDER_REVIEW
             };
             await onContentReviewBeforeCreate.publish({ input });
 
@@ -122,7 +124,7 @@ export function createContentReviewMethods(
 
             return contentReview;
         },
-        async update(id, data) {
+        async update(id, data: UpdateApwContentReviewParams) {
             const original = await storageOperations.getContentReview({ id });
 
             await onContentReviewBeforeUpdate.publish({ original, input: { id, data } });
@@ -153,7 +155,7 @@ export function createContentReviewMethods(
         },
         async provideSignOff(this: ApwContentReviewCrud, id, stepId) {
             const entry: ApwContentReview = await this.get(id);
-            const { steps, status } = entry;
+            const { steps, reviewStatus } = entry;
             const stepIndex = steps.findIndex(step => step.id === stepId);
             const currentStep = steps[stepIndex];
             const previousStep = steps[stepIndex - 1];
@@ -225,7 +227,7 @@ export function createContentReviewMethods(
             /**
              * Check for pending steps
              */
-            let newStatus = status;
+            let newStatus = reviewStatus;
             const pendingRequiredSteps = getPendingRequiredSteps(
                 updatedSteps,
                 step => typeof step.signOffProvidedOn !== "string"
@@ -243,13 +245,13 @@ export function createContentReviewMethods(
              */
             await this.update(id, {
                 steps: updatedSteps,
-                status: newStatus
+                reviewStatus: newStatus
             });
             return true;
         },
         async retractSignOff(this: ApwContentReviewCrud, id, stepId) {
             const entry: ApwContentReview = await this.get(id);
-            const { steps, status } = entry;
+            const { steps, reviewStatus } = entry;
             const stepIndex = steps.findIndex(step => step.id === stepId);
             const currentStep = steps[stepIndex];
 
@@ -308,7 +310,7 @@ export function createContentReviewMethods(
             /**
              * Check for pending steps
              */
-            let newStatus = status;
+            let newStatus = reviewStatus;
             const pendingRequiredSteps = getPendingRequiredSteps(
                 updatedSteps,
                 step => step.signOffProvidedOn === null
@@ -322,7 +324,7 @@ export function createContentReviewMethods(
 
             await this.update(id, {
                 steps: updatedSteps,
-                status: newStatus
+                reviewStatus: newStatus
             });
             return true;
         },
@@ -352,16 +354,16 @@ export function createContentReviewMethods(
             };
         },
         async publishContent(this: ApwContentReviewCrud, id: string, datetime) {
-            const { content, status } = await this.get(id);
+            const { content, reviewStatus } = await this.get(id);
             const identity = getIdentity();
 
-            if (status !== ApwContentReviewStatus.READY_TO_BE_PUBLISHED) {
+            if (reviewStatus !== ApwContentReviewStatus.READY_TO_BE_PUBLISHED) {
                 throw new Error({
                     message: `Cannot publish content because it is not yet ready to be published.`,
                     code: "NOT_READY_TO_BE_PUBLISHED",
                     data: {
                         id,
-                        status,
+                        status: reviewStatus,
                         content
                     }
                 });
@@ -404,16 +406,16 @@ export function createContentReviewMethods(
             return true;
         },
         async unpublishContent(this: ApwContentReviewCrud, id: string, datetime) {
-            const { content, status } = await this.get(id);
+            const { content, reviewStatus } = await this.get(id);
             const identity = getIdentity();
 
-            if (status !== ApwContentReviewStatus.PUBLISHED) {
+            if (reviewStatus !== ApwContentReviewStatus.PUBLISHED) {
                 throw new Error({
                     message: `Cannot unpublish content because it is not yet published.`,
                     code: "NOT_YET_PUBLISHED",
                     data: {
                         id,
-                        status,
+                        status: reviewStatus,
                         content
                     }
                 });

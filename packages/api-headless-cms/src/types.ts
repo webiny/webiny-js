@@ -1585,12 +1585,7 @@ export interface CmsModelContext {
  *
  * @category CmsEntry
  */
-export type CmsEntryStatus =
-    | "published"
-    | "unpublished"
-    | "reviewRequested"
-    | "changesRequested"
-    | "draft";
+export type CmsEntryStatus = "published" | "unpublished" | "draft";
 
 export interface CmsEntryListWhereRef {
     id?: string;
@@ -2010,14 +2005,6 @@ export interface CmsEntryContext {
      * Unpublish entry.
      */
     unpublishEntry: (model: CmsModel, id: string) => Promise<CmsEntry>;
-    /**
-     * Request a review for the entry.
-     */
-    requestEntryReview: (model: CmsModel, id: string) => Promise<CmsEntry>;
-    /**
-     * Request changes for the entry.
-     */
-    requestEntryChanges: (model: CmsModel, id: string) => Promise<CmsEntry>;
     /**
      * Get all entry revisions.
      */
@@ -2463,32 +2450,6 @@ export interface CmsEntryStorageOperationsUnpublishParams<
     storageEntry: T;
 }
 
-export interface CmsEntryStorageOperationsRequestChangesParams<
-    T extends CmsStorageEntry = CmsStorageEntry
-> {
-    /**
-     * Entry data updated with the required properties.
-     */
-    entry: CmsEntry;
-    /**
-     * Entry that is prepared for the storageOperations, with the transformations.
-     */
-    storageEntry: T;
-}
-
-export interface CmsEntryStorageOperationsRequestReviewParams<
-    T extends CmsStorageEntry = CmsStorageEntry
-> {
-    /**
-     * Entry that is prepared for the storageOperations.
-     */
-    entry: CmsEntry;
-    /**
-     * Entry that is prepared for the storageOperations, with the transformations.
-     */
-    storageEntry: T;
-}
-
 export interface CmsEntryStorageOperationsGetByIdsParams {
     ids: readonly string[];
 }
@@ -2671,28 +2632,12 @@ export interface CmsEntryStorageOperations<T extends CmsStorageEntry = CmsStorag
         model: StorageOperationsCmsModel,
         params: CmsEntryStorageOperationsUnpublishParams<T>
     ) => Promise<T>;
-    /**
-     * Request changes the entry.
-     */
-    requestChanges: (
-        model: StorageOperationsCmsModel,
-        params: CmsEntryStorageOperationsRequestChangesParams<T>
-    ) => Promise<T>;
-    /**
-     * Request review the entry.
-     */
-    requestReview: (
-        model: StorageOperationsCmsModel,
-        params: CmsEntryStorageOperationsRequestReviewParams<T>
-    ) => Promise<CmsEntry>;
 }
 
 export enum CONTENT_ENTRY_STATUS {
     DRAFT = "draft",
     PUBLISHED = "published",
-    UNPUBLISHED = "unpublished",
-    CHANGES_REQUESTED = "changesRequested",
-    REVIEW_REQUESTED = "reviewRequested"
+    UNPUBLISHED = "unpublished"
 }
 
 export interface CmsSettingsStorageOperationsGetParams {

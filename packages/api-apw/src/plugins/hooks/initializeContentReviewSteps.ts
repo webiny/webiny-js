@@ -36,6 +36,8 @@ export const initializeContentReviewSteps = ({ apw, plugins }: ApwContext) => {
             throw new NotFoundError(`Unable to initiate a "Content review". No workflow found!`);
         }
 
+        input.workflowId = workflowId;
+
         const workflow = await apw.workflow.get(workflowId);
         const workflowSteps = workflow.steps;
 

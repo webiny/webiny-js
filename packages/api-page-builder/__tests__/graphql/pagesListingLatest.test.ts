@@ -1,5 +1,4 @@
 import useGqlHandler from "./useGqlHandler";
-import { identityB } from "./mocks";
 import { Page } from "~/types";
 import { waitPage } from "./utils/waitPage";
 
@@ -8,8 +7,7 @@ jest.setTimeout(100000);
 describe("listing latest pages", () => {
     const handler = useGqlHandler();
 
-    const { createPage, publishPage, unpublishPage, requestReview, listPages, updatePage, until } =
-        handler;
+    const { createPage, publishPage, unpublishPage, listPages, updatePage, until } = handler;
 
     const createInitialCategory = async () => {
         const { createCategory } = useGqlHandler();
@@ -434,77 +432,6 @@ describe("listing latest pages", () => {
                 pageBuilder: {
                     listPages: {
                         data: []
-                    }
-                }
-            }
-        });
-
-        // 5. Let's test filtering by `reviewRequested` and `changesNeeded` statuses.
-        await requestReview({ id: initialData.pages[2].id });
-        await requestReview({ id: initialData.pages[3].id });
-
-        const [listPagesReviewRequestedCreatedOnDesc] = await until(
-            () =>
-                listPages({
-                    where: { status: "reviewRequested" },
-                    sort: ["createdOn_DESC"]
-                }),
-            ([res]: any) => res.data.pageBuilder.listPages.data.length === 2,
-            {
-                name: "list pages review requested createdOn desc"
-            }
-        );
-        expect(listPagesReviewRequestedCreatedOnDesc).toMatchObject({
-            data: {
-                pageBuilder: {
-                    listPages: {
-                        data: [
-                            { title: "page-x", status: "reviewRequested" },
-                            { title: "page-b", status: "reviewRequested" }
-                        ]
-                    }
-                }
-            }
-        });
-
-        const { requestChanges } = useGqlHandler({
-            identity: identityB
-        });
-
-        await requestChanges({ id: initialData.pages[2].id });
-        await requestChanges({ id: initialData.pages[3].id });
-
-        await until(
-            () =>
-                listPages({
-                    where: { status: "reviewRequested" }
-                }),
-            ([res]: any) => res.data.pageBuilder.listPages.data.length === 0,
-            {
-                name: "list pages review requested after request changes"
-            }
-        );
-
-        const [listPagesChangesRequestedCreatedOnDesc] = await until(
-            () =>
-                listPages({
-                    where: { status: "changesRequested" },
-                    sort: ["createdOn_DESC"]
-                }),
-            ([res]: any) => res.data.pageBuilder.listPages.data.length === 2,
-            {
-                name: "list pages changes requested createdOn desc"
-            }
-        );
-
-        expect(listPagesChangesRequestedCreatedOnDesc).toMatchObject({
-            data: {
-                pageBuilder: {
-                    listPages: {
-                        data: [
-                            { title: "page-x", status: "changesRequested" },
-                            { title: "page-b", status: "changesRequested" }
-                        ]
                     }
                 }
             }

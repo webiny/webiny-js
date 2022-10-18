@@ -21,7 +21,7 @@ export const triggerContentReview = (params: TriggerContentReviewParams) => {
             if (contentReviewId) {
                 const contentReview = await apw.contentReview.get(contentReviewId);
 
-                if (contentReview.status === ApwContentReviewStatus.UNDER_REVIEW) {
+                if (contentReview.reviewStatus === ApwContentReviewStatus.UNDER_REVIEW) {
                     throw new Error(
                         `A peer review for this content has been already requested.`,
                         "REVIEW_ALREADY_EXIST",

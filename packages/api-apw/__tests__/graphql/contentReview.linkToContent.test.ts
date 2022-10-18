@@ -35,6 +35,19 @@ describe("Content Review assignment to a PB Page", () => {
             }
         });
 
+        expect(createContentReviewResponse).toMatchObject({
+            data: {
+                apw: {
+                    createContentReview: {
+                        data: {
+                            id: expect.any(String)
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
         const createdContentReview = createContentReviewResponse.data.apw.createContentReview.data;
 
         /**

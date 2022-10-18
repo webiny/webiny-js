@@ -38,6 +38,9 @@ import {
     CmsModelField,
     CreatedBy,
     CmsModelFieldToGraphQLPlugin,
+    StorageOperationsCmsModel,
+    HeadlessCms,
+    CmsEntryStatus,
     OnEntryCreateErrorTopicParams,
     OnEntryCreateRevisionErrorTopicParams,
     OnEntryUpdateErrorTopicParams,
@@ -46,8 +49,7 @@ import {
     OnEntryRequestChangesErrorTopicParams,
     OnEntryRequestReviewErrorTopicParams,
     OnEntryDeleteErrorTopicParams,
-    OnEntryRevisionDeleteErrorTopicParams,
-    StorageOperationsCmsModel
+    OnEntryRevisionDeleteErrorTopicParams
 } from "~/types";
 import { validateModelEntryData } from "./contentEntry/entryDataValidation";
 import WebinyError from "@webiny/error";
@@ -70,8 +72,6 @@ import { attachCmsModelFieldConverters } from "~/utils/converters/valueKeyStorag
 export const STATUS_DRAFT = "draft";
 export const STATUS_PUBLISHED = "published";
 export const STATUS_UNPUBLISHED = "unpublished";
-export const STATUS_CHANGES_REQUESTED = "changesRequested";
-export const STATUS_REVIEW_REQUESTED = "reviewRequested";
 
 type DefaultValue = boolean | number | string | null;
 /**
@@ -269,6 +269,12 @@ const getSearchableFields = (params: GetSearchableFieldsParams): string[] => {
             return fields.includes(field.fieldId);
         })
         .map(field => field.fieldId);
+};
+
+const allowedEntryStatus: string[] = ["draft", "published", "unpublished"];
+
+const transformEntryStatus = (status: CmsEntryStatus | string): CmsEntryStatus => {
+    return allowedEntryStatus.includes(status) ? (status as CmsEntryStatus) : "draft";
 };
 
 export interface CreateContentEntryCrudParams {
@@ -520,7 +526,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         /**
          * Get a single entry by revision ID from the database.
          */
-        getEntryById: async (initialModel, id) => {
+        async getEntryById(initialModel, id) {
             const where: CmsEntryListWhere = {
                 id
             };
@@ -541,7 +547,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         /**
          * Get published revisions by entry IDs.
          */
-        getPublishedEntriesByIds: async (initialModel: CmsModel, ids: string[]) => {
+        async getPublishedEntriesByIds(initialModel: CmsModel, ids: string[]) {
             const permission = await checkEntryPermissions({ rwd: "r" });
             await checkModelAccess(context, initialModel);
 
@@ -559,7 +565,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         /**
          * Get latest revisions by entry IDs.
          */
-        getLatestEntriesByIds: async (initialModel: CmsModel, ids: string[]) => {
+        async getLatestEntriesByIds(initialModel: CmsModel, ids: string[]) {
             const permission = await checkEntryPermissions({ rwd: "r" });
             await checkModelAccess(context, initialModel);
 
@@ -574,8 +580,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
             return entries.filter(entry => validateOwnership(context, permission, entry));
         },
-
-        getEntryRevisions: async (initialModel, entryId) => {
+        async getEntryRevisions(initialModel, entryId) {
             const model = attachCmsModelFieldConverters({
                 model: initialModel,
                 plugins
@@ -590,7 +595,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
          *
          * @internal
          */
-        getEntry: async (initialModel, params) => {
+        async getEntry(this: HeadlessCms, initialModel, params) {
             await checkEntryPermissions({ rwd: "r" });
 
             const model = attachCmsModelFieldConverters({
@@ -605,7 +610,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 model
             });
 
-            const [items] = await context.cms.listEntries(model, {
+            const [items] = await this.listEntries(model, {
                 where,
                 sort,
                 limit: 1
@@ -621,7 +626,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
          *
          * @internal
          */
-        listEntries: async (initialModel: CmsModel, params) => {
+        async listEntries(initialModel: CmsModel, params) {
             const permission = await checkEntryPermissions({ rwd: "r" });
             await checkModelAccess(context, initialModel);
 
@@ -703,17 +708,21 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                     "LIST_ENTRIES_ERROR",
                     {
                         params,
-                        error: ex,
+                        error: {
+                            message: ex.message,
+                            code: ex.code,
+                            data: ex.data
+                        },
                         model,
                         fields
                     }
                 );
             }
         },
-        listLatestEntries: async function (model, params) {
+        async listLatestEntries(this: HeadlessCms, model, params) {
             const where = params?.where || ({} as CmsEntryListWhere);
 
-            return context.cms.listEntries(model, {
+            return this.listEntries(model, {
                 sort: ["createdOn_DESC"],
                 ...(params || {}),
                 where: {
@@ -722,10 +731,10 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 }
             });
         },
-        listPublishedEntries: async function (model, params) {
+        async listPublishedEntries(this: HeadlessCms, model, params) {
             const where = params?.where || ({} as CmsEntryListWhere);
 
-            return context.cms.listEntries(model, {
+            return this.listEntries(model, {
                 sort: ["createdOn_DESC"],
                 ...(params || {}),
                 where: {
@@ -734,7 +743,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 }
             });
         },
-        createEntry: async (initialModel, inputData) => {
+        async createEntry(this: HeadlessCms, initialModel, inputData) {
             await checkEntryPermissions({ rwd: "w" });
             await checkModelAccess(context, initialModel);
 
@@ -762,7 +771,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             });
 
             const identity = context.security.getIdentity();
-            const locale = context.cms.getLocale();
+            const locale = this.getLocale();
 
             const owner: CreatedBy = {
                 id: identity.id,
@@ -830,7 +839,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 );
             }
         },
-        createEntryRevisionFrom: async (initialModel, sourceId, inputData) => {
+        async createEntryRevisionFrom(initialModel, sourceId, inputData) {
             const permission = await checkEntryPermissions({ rwd: "w" });
             await checkModelAccess(context, initialModel);
 
@@ -962,7 +971,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 );
             }
         },
-        updateEntry: async (initialModel, id, inputData, metaInput) => {
+        async updateEntry(initialModel, id, inputData, metaInput) {
             const permission = await checkEntryPermissions({ rwd: "w" });
             await checkModelAccess(context, initialModel);
 
@@ -1037,7 +1046,8 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 ...originalEntry,
                 savedOn: new Date().toISOString(),
                 values,
-                meta
+                meta,
+                status: transformEntryStatus(originalEntry.status)
             };
 
             let storageEntry: CmsStorageEntry | null = null;
@@ -1085,7 +1095,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 );
             }
         },
-        republishEntry: async (initialModel, id) => {
+        async republishEntry(initialModel, id) {
             await checkEntryPermissions({ rwd: "w" });
             await checkModelAccess(context, initialModel);
 
@@ -1172,7 +1182,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 );
             }
         },
-        deleteEntryRevision: async (initialModel, revisionId) => {
+        async deleteEntryRevision(initialModel, revisionId) {
             const permission = await checkEntryPermissions({ rwd: "d" });
             await checkModelAccess(context, initialModel);
 
@@ -1269,7 +1279,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 });
             }
         },
-        deleteEntry: async (initialModel, entryId) => {
+        async deleteEntry(initialModel, entryId) {
             const permission = await checkEntryPermissions({ rwd: "d" });
             await checkModelAccess(context, initialModel);
 
@@ -1295,7 +1305,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 entry
             });
         },
-        publishEntry: async (initialModel, id) => {
+        async publishEntry(initialModel, id) {
             const permission = await checkEntryPermissions({ pw: "p" });
             await checkModelAccess(context, initialModel);
 
@@ -1370,176 +1380,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 );
             }
         },
-        requestEntryChanges: async (initialModel, id) => {
-            const permission = await checkEntryPermissions({ pw: "c" });
-
-            const model = attachCmsModelFieldConverters({
-                model: initialModel,
-                plugins
-            });
-
-            const originalStorageEntry = await storageOperations.entries.getRevisionById(model, {
-                id
-            });
-
-            if (!originalStorageEntry) {
-                throw new NotFoundError(`Entry "${id}" of model "${model.modelId}" was not found.`);
-            }
-
-            const originalEntry = await entryFromStorageTransform(
-                context,
-                model,
-                originalStorageEntry
-            );
-
-            if (originalEntry.status !== STATUS_REVIEW_REQUESTED) {
-                throw new WebinyError(
-                    "Cannot request changes on an entry that's not under review.",
-                    "ENTRY_NOT_UNDER_REVIEW"
-                );
-            }
-
-            const identity = context.security.getIdentity();
-            if (originalEntry.ownedBy.id === identity.id) {
-                throw new WebinyError(
-                    "You cannot request changes on your own entry.",
-                    "CANNOT_REQUEST_CHANGES_ON_OWN_ENTRY"
-                );
-            }
-
-            checkOwnership(context, permission, originalEntry);
-
-            const entry: CmsEntry = {
-                ...originalEntry,
-                status: STATUS_CHANGES_REQUESTED
-            };
-
-            let storageEntry: CmsStorageEntry | null = null;
-
-            try {
-                await onEntryBeforeRequestChanges.publish({
-                    entry,
-                    model
-                });
-
-                storageEntry = await entryToStorageTransform(context, model, entry);
-
-                const result = await storageOperations.entries.requestChanges(model, {
-                    entry,
-                    storageEntry
-                });
-
-                await onEntryAfterRequestChanges.publish({
-                    entry,
-                    storageEntry: result,
-                    model
-                });
-
-                return result;
-            } catch (ex) {
-                await onEntryRequestChangesError.publish({
-                    entry,
-                    model,
-                    error: ex
-                });
-                throw new WebinyError(
-                    ex.message || "Could not request changes for the entry.",
-                    ex.code || "REQUEST_CHANGES_ERROR",
-                    {
-                        entry,
-                        originalEntry
-                    }
-                );
-            }
-        },
-        requestEntryReview: async (initialModel, id) => {
-            const permission = await checkEntryPermissions({ pw: "r" });
-            const { id: entryId } = parseIdentifier(id);
-
-            const model = attachCmsModelFieldConverters({
-                model: initialModel,
-                plugins
-            });
-
-            const originalStorageEntry = await storageOperations.entries.getRevisionById(model, {
-                id
-            });
-            const latestEntryRevision = await storageOperations.entries.getLatestRevisionByEntryId(
-                model,
-                {
-                    id: entryId
-                }
-            );
-
-            if (!originalStorageEntry) {
-                throw new NotFoundError(`Entry "${id}" of model "${model.modelId}" was not found.`);
-            } else if (!latestEntryRevision) {
-                throw new NotFoundError(`Entry "${id}" does not have latest record`);
-            }
-
-            const originalEntry = await entryFromStorageTransform(
-                context,
-                model,
-                originalStorageEntry
-            );
-
-            const allowedStatuses = [STATUS_DRAFT, STATUS_CHANGES_REQUESTED];
-            if (!allowedStatuses.includes(originalEntry.status)) {
-                throw new WebinyError(
-                    "Cannot request review - entry is not a draft nor was a change request issued.",
-                    "REQUEST_REVIEW_ERROR",
-                    {
-                        entry: originalEntry
-                    }
-                );
-            }
-
-            checkOwnership(context, permission, originalEntry);
-
-            const entry: CmsEntry = {
-                ...originalEntry,
-                status: STATUS_REVIEW_REQUESTED
-            };
-
-            let storageEntry: CmsStorageEntry | null = null;
-
-            try {
-                await onEntryBeforeRequestReview.publish({
-                    entry,
-                    model
-                });
-
-                storageEntry = await entryToStorageTransform(context, model, entry);
-
-                const result = await storageOperations.entries.requestReview(model, {
-                    entry,
-                    storageEntry
-                });
-
-                await onEntryAfterRequestReview.publish({
-                    entry,
-                    storageEntry: result,
-                    model
-                });
-
-                return result;
-            } catch (ex) {
-                await onEntryRequestReviewError.publish({
-                    entry,
-                    model,
-                    error: ex
-                });
-                throw new WebinyError(
-                    ex.message || "Could not request review on the entry.",
-                    ex.code || "REQUEST_REVIEW_ERROR",
-                    {
-                        originalEntry,
-                        entry
-                    }
-                );
-            }
-        },
-        unpublishEntry: async (initialModel, id) => {
+        async unpublishEntry(initialModel, id) {
             const permission = await checkEntryPermissions({ pw: "u" });
 
             const model = attachCmsModelFieldConverters({

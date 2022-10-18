@@ -73,7 +73,7 @@ describe(`Schedule action in a content review process`, function () {
             id: createdContentReview.id
         });
         const updatedContentReview = getContentReviewResponse.data.apw.getContentReview.data;
-        expect(updatedContentReview.status).toEqual("readyToBePublished");
+        expect(updatedContentReview.reviewStatus).toEqual("readyToBePublished");
 
         return createdContentReview;
     };

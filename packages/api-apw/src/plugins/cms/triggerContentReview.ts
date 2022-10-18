@@ -23,7 +23,7 @@ export const triggerContentReview = (params: TriggerContentReviewParams) => {
             if (contentReviewId) {
                 const contentReview = await apw.contentReview.get(contentReviewId);
 
-                if (contentReview.status !== ApwContentReviewStatus.UNDER_REVIEW) {
+                if (contentReview.reviewStatus !== ApwContentReviewStatus.UNDER_REVIEW) {
                     return;
                 }
                 throw new Error(

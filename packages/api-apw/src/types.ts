@@ -12,7 +12,6 @@ import {
     OnPageBeforeCreateFromTopicParams,
     OnPageBeforeUpdateTopicParams,
     OnPageBeforePublishTopicParams,
-    OnPageBeforeRequestReviewTopicParams,
     PageSettings
 } from "@webiny/api-page-builder/types";
 import { Context } from "@webiny/api/types";
@@ -107,9 +106,6 @@ export type ApwOnPageBeforeUpdateTopicParams = OnPageBeforeUpdateTopicParams<Pag
 
 export type ApwOnPageBeforePublishTopicParams = OnPageBeforePublishTopicParams<PageWithWorkflow>;
 
-export type ApwOnPageBeforeRequestReviewTopicParams =
-    OnPageBeforeRequestReviewTopicParams<PageWithWorkflow>;
-
 export enum WorkflowScopeTypes {
     DEFAULT = "default",
     CUSTOM = "custom"
@@ -148,6 +144,7 @@ export interface CreatedBy {
 
 export interface ApwBaseFields {
     id: string;
+    entryId: string;
     createdOn: string;
     savedOn: string;
     createdBy: CreatedBy;
@@ -188,10 +185,11 @@ export interface ApwContentReviewStep {
 
 export interface ApwContentReview extends ApwBaseFields {
     title: string;
-    status: ApwContentReviewStatus;
+    reviewStatus: ApwContentReviewStatus;
     content: ApwContentReviewContent;
     steps: Array<ApwContentReviewStep>;
     latestCommentId: string | null;
+    workflowId: string;
 }
 
 export interface ApwWorkflow extends ApwBaseFields {
@@ -255,7 +253,7 @@ export interface UpdateApwWorkflowParams<TReviewer = string> {
 }
 
 export interface ListWorkflowsParams extends ListParams {
-    where: ListWhere & {
+    where?: ListWhere & {
         app?: ApwWorkflowApplications;
     };
 }
@@ -323,12 +321,14 @@ export interface ApwContentReviewContent {
 
 export interface CreateApwContentReviewParams {
     content: ApwContentReviewContent;
+    reviewStatus: ApwContentReviewStatus;
+    workflowId?: string;
 }
 
-interface UpdateApwContentReviewParams {
+export interface UpdateApwContentReviewParams {
     title?: string;
     steps?: ApwContentReviewStep[];
-    status?: ApwContentReviewStatus;
+    reviewStatus?: ApwContentReviewStatus;
     content?: ApwContentReviewContent;
 }
 
@@ -344,7 +344,7 @@ interface BaseApwCrud<TEntry, TCreateEntryParams, TUpdateEntryParams> {
 
 export interface ApwWorkflowCrud
     extends BaseApwCrud<ApwWorkflow, CreateApwWorkflowParams, UpdateApwWorkflowParams> {
-    list(params: ListWorkflowsParams): Promise<[ApwWorkflow[], ListMeta]>;
+    list(params?: ListWorkflowsParams): Promise<[ApwWorkflow[], ListMeta]>;
 
     /**
      * Lifecycle events
@@ -573,7 +573,7 @@ type StorageOperationsGetContentReviewParams = StorageOperationsGetParams;
 
 export interface ApwContentReviewListParams extends ListParams {
     where?: ListWhere & {
-        status?: ApwContentReviewListFilter;
+        reviewStatus?: ApwContentReviewListFilter;
         title?: string;
         title_contains?: string;
     };

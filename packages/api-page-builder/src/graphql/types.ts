@@ -148,34 +148,6 @@ export interface OnPageAfterUnpublishTopicParams<TPage extends Page = Page> {
     page: TPage;
     latestPage: TPage;
 }
-/**
- * @category Lifecycle events
- */
-export interface OnPageBeforeRequestReviewTopicParams<TPage extends Page = Page> {
-    page: TPage;
-    latestPage: TPage;
-}
-/**
- * @category Lifecycle events
- */
-export interface OnPageAfterRequestReviewTopicParams<TPage extends Page = Page> {
-    page: TPage;
-    latestPage: TPage;
-}
-/**
- * @category Lifecycle events
- */
-export interface OnPageBeforeRequestChangesTopicParams<TPage extends Page = Page> {
-    page: TPage;
-    latestPage: TPage;
-}
-/**
- * @category Lifecycle events
- */
-export interface OnPageAfterRequestChangesTopicParams<TPage extends Page = Page> {
-    page: TPage;
-    latestPage: TPage;
-}
 
 /**
  * @category Pages
@@ -202,8 +174,6 @@ export interface PagesCrud {
     deletePage<TPage extends Page = Page>(id: string): Promise<[TPage, TPage]>;
     publishPage<TPage extends Page = Page>(id: string): Promise<TPage>;
     unpublishPage<TPage extends Page = Page>(id: string): Promise<TPage>;
-    requestPageReview<TPage extends Page = Page>(id: string): Promise<TPage>;
-    requestPageChanges<TPage extends Page = Page>(id: string): Promise<TPage>;
     prerendering: {
         render(args: RenderParams): Promise<void>;
         flush(args: FlushParams): Promise<void>;
@@ -260,22 +230,6 @@ export interface PagesCrud {
      */
     onAfterPageUnpublish: Topic<OnPageAfterUnpublishTopicParams>;
     /**
-     * @deprecated
-     */
-    onBeforePageRequestReview: Topic<OnPageBeforeRequestReviewTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterPageRequestReview: Topic<OnPageAfterRequestReviewTopicParams>;
-    /**
-     * @deprecated
-     */
-    onBeforePageRequestChanges: Topic<OnPageBeforeRequestChangesTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterPageRequestChanges: Topic<OnPageAfterRequestChangesTopicParams>;
-    /**
      * Lifecycle events introduced in 5.34.0
      */
     onPageBeforeCreate: Topic<OnPageBeforeCreateTopicParams>;
@@ -290,10 +244,6 @@ export interface PagesCrud {
     onPageAfterPublish: Topic<OnPageAfterPublishTopicParams>;
     onPageBeforeUnpublish: Topic<OnPageBeforeUnpublishTopicParams>;
     onPageAfterUnpublish: Topic<OnPageAfterUnpublishTopicParams>;
-    onPageBeforeRequestReview: Topic<OnPageBeforeRequestReviewTopicParams>;
-    onPageAfterRequestReview: Topic<OnPageAfterRequestReviewTopicParams>;
-    onPageBeforeRequestChanges: Topic<OnPageBeforeRequestChangesTopicParams>;
-    onPageAfterRequestChanges: Topic<OnPageAfterRequestChangesTopicParams>;
 }
 
 export interface ListPageElementsParams {
@@ -681,6 +631,9 @@ export interface PageBuilderContextObject
         SystemCrud {
     setPrerenderingHandlers: (configuration: PrerenderingHandlers) => void;
     getPrerenderingHandlers: () => PrerenderingHandlers;
+    /**
+     * Lifecycle events
+     */
     onPageBeforeRender: Topic<PageBeforeRenderEvent>;
     onPageAfterRender: Topic<PageAfterRenderEvent>;
     onPageBeforeFlush: Topic<PageBeforeFlushEvent>;
@@ -722,8 +675,6 @@ export interface PageSecurityPermission extends PbSecurityPermission {
     name: "pb.page";
 
     // Determines which of the following publishing workflow actions are allowed:
-    // "r" - request review (for unpublished page)
-    // "c" - request change (for unpublished page on which a review was requested)
     // "p" - publish
     // "u" - unpublish
     pw: string;
