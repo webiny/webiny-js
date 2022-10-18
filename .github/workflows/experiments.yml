@@ -26,19 +26,19 @@ jobs:
 
       - name: Get day of the month
         id: get-day
-        run: echo "::set-output name=day::$(node --eval "console.log(new Date().getDate())")"
+        run: echo "day=$(node --eval "console.log(new Date().getDate())")" >> $GITHUB_OUTPUT
 
       - name: Get timestamp
         id: get-timestamp
-        run: echo "::set-output name=ts::$(node --eval "console.log(new Date().getTime())")"
+        run: echo "ts=$(node --eval "console.log(new Date().getTime())")" >> $GITHUB_OUTPUT
 
       - name: List packages with Jest tests
         id: list-jest-packages
-        run: echo "::set-output name=jest-packages::$(node scripts/listPackagesWithTests.js)"
+        run: echo "jest-packages=$(node scripts/listPackagesWithTests.js)" >> $GITHUB_OUTPUT
 
       - name: Experimental version
         id: get-experimental-version
-        run: echo "::set-output name=experimental-version::$(node --eval '"${{ github.event.head_commit.message }}".match(/release=/) && console.log("0.0.0-" + "${{ github.event.head_commit.message }}".match(/release=(.*)?]/)[1])')"
+        run: echo "experimental-version=$(node --eval '"${{ github.event.head_commit.message }}".match(/release=/) && console.log("0.0.0-" + "${{ github.event.head_commit.message }}".match(/release=(.*)?]/)[1])')" >> $GITHUB_OUTPUT
 
       - name: Experimental version release
         if: ${{ steps.get-experimental-version.outputs.experimental-version }}

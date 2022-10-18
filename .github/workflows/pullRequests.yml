@@ -31,24 +31,24 @@ jobs:
 
       - name: Get day of the month
         id: get-day
-        run: echo "::set-output name=day::$(node --eval "console.log(new Date().getDate())")"
+        run: echo "day=$(node --eval "console.log(new Date().getDate())")" >> $GITHUB_OUTPUT
 
       - name: Get timestamp
         id: get-timestamp
-        run: echo "::set-output name=ts::$(node --eval "console.log(new Date().getTime())")"
+        run: echo "ts=$(node --eval "console.log(new Date().getTime())")" >> $GITHUB_OUTPUT
 
       - name: Is a PR from a fork
         id: is-fork-pr
-        run: echo "::set-output name=is-fork-pr::${{ github.event.pull_request.head.repo.fork }}"
+        run: echo "is-fork-pr=${{ github.event.pull_request.head.repo.fork }}" >> $GITHUB_OUTPUT
 
       - name: Ignored Jest packages
         id: get-ignored-jest-packages
         if: steps.is-fork-pr.outputs.is-fork-pr == 'true'
-        run: echo "::set-output name=ignored-jest-packages::ddb-es"
+        run: echo "ignored-jest-packages=ddb-es" >> $GITHUB_OUTPUT
 
       - name: List packages with Jest tests
         id: list-jest-packages
-        run: echo "::set-output name=jest-packages::$(node scripts/listPackagesWithTests.js --ignore-packages=${{ steps.get-ignored-jest-packages.outputs.ignored-jest-packages }})"
+        run: echo "jest-packages=$(node scripts/listPackagesWithTests.js --ignore-packages=${{ steps.get-ignored-jest-packages.outputs.ignored-jest-packages }})" >> $GITHUB_OUTPUT
 
       - uses: actions/cache@v3
         id: yarn-cache

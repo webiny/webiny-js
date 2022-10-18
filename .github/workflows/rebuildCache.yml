@@ -18,7 +18,7 @@ jobs:
     steps:
       - name: Create cache key (day)
         id: create-cache-keys
-        run: echo "::set-output name=day::$(node --eval "console.log(new Date().getDate())")"
+        run: echo "day=$(node --eval "console.log(new Date().getDate())")" >> $GITHUB_OUTPUT
 
   cache-dependencies-packages-root:
     name: Cache dependencies and packages

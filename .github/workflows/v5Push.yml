@@ -26,15 +26,18 @@ jobs:
 
       - name: Get current version of Webiny
         id: get-webiny-version
-        run: echo "::set-output name=webiny-version::$(node --eval "console.log(require('./lerna.json').version)")"
+        run: echo "webiny-version=$(node --eval "console.log(require('./lerna.json').version)")" >> $GITHUB_OUTPUT
 
       - name: Get timestamp
         id: get-timestamp
-        run: echo "::set-output name=ts::$(node --eval "console.log(new Date().getTime())")"
+        # run: echo "ts=$(node --eval "console.log(new Date().getTime())")" >> $GITHUB_OUTPUT
+        run: echo "ts=$(node --eval "console.log(new Date().getTime())")" >> $GITHUB_OUTPUT
+
 
       - name: List packages with Jest tests
         id: list-jest-packages
-        run: echo "::set-output name=jest-packages::$(node scripts/listPackagesWithTests.js)"
+        # run: echo "jest-packages=$(node scripts/listPackagesWithTests.js)" >> $GITHUB_OUTPUT
+        run: echo "jest-packages=$(node scripts/listPackagesWithTests.js)" >> $GITHUB_OUTPUT
 
   build:
     needs: init
@@ -188,15 +191,15 @@ jobs:
 
       - name: Get current version of Webiny
         id: get-webiny-version
-        run: echo "::set-output name=webiny-version::$(node --eval "console.log(require('./lerna.json').version)")"
+        run: echo "webiny-version=$(node --eval "console.log(require('./lerna.json').version)")" >> $GITHUB_OUTPUT
 
       - name: Get timestamp
         id: get-timestamp
-        run: echo "::set-output name=ts::$(node --eval "console.log(new Date().getTime())")"
+        run: echo "ts=$(node --eval "console.log(new Date().getTime())")" >> $GITHUB_OUTPUT
 
       - name: List Cypress tests folders
         id: list-cypress-folders
-        run: echo "::set-output name=cypress-folders::$(node scripts/listCypressTestsFolders.js)"
+        run: echo "cypress-folders=$(node scripts/listCypressTestsFolders.js)" >> $GITHUB_OUTPUT
 
   e2e-wby-cms-ddb-project-setup:
     name: E2E (DDB) - Project setup
@@ -341,7 +344,7 @@ jobs:
       - name: Save Cypress config
         id: save-cypress-config
         working-directory: v5
-        run: echo "::set-output name=cypress-config::$(cat cypress.json | tr -d ' \t\n\r')"
+        run: echo "cypress-config=$(cat cypress.json | tr -d ' \t\n\r')" >> $GITHUB_OUTPUT
 
       - name: Cypress - run installation wizard test
         working-directory: v5
@@ -432,15 +435,15 @@ jobs:
 #
 #      - name: Get current version of Webiny
 #        id: get-webiny-version
-#        run: echo "::set-output name=webiny-version::$(node --eval "console.log(require('./lerna.json').version)")"
+#        run: echo "webiny-version=$(node --eval "console.log(require('./lerna.json').version)")" >> $GITHUB_OUTPUT
 #
 #      - name: Get timestamp
 #        id: get-timestamp
-#        run: echo "::set-output name=ts::$(node --eval "console.log(new Date().getTime())")"
+#        run: echo "ts=$(node --eval "console.log(new Date().getTime())")" >> $GITHUB_OUTPUT
 #
 #      - name: List Cypress tests folders
 #        id: list-cypress-folders
-#        run: echo "::set-output name=cypress-folders::$(node scripts/listCypressTestsFolders.js)"
+#        run: echo "cypress-folders=$(node scripts/listCypressTestsFolders.js)" >> $GITHUB_OUTPUT
 
 #  e2e-wby-cms-ddb-es-project-setup:
 #    name: E2E (DDB+ES) - Project setup
@@ -588,7 +591,7 @@ jobs:
 #      - name: Save Cypress config
 #        id: save-cypress-config
 #        working-directory: v5
-#        run: echo "::set-output name=cypress-config::$(cat cypress.json | tr -d ' \t\n\r')"
+#        run: echo "cypress-config=$(cat cypress.json | tr -d ' \t\n\r')" >> $GITHUB_OUTPUT
 #
 #      - name: Cypress - run installation wizard test
 #        working-directory: v5
