@@ -46,7 +46,7 @@ export function createWorkflowMethods({
             return storageOperations.getWorkflow({ id });
         },
         async list(params) {
-            return storageOperations.listWorkflows(params);
+            return storageOperations.listWorkflows(params || {});
         },
         async create(data) {
             await validateAccess();
