@@ -18,11 +18,11 @@ jobs:
       day: ${{ steps.get-day.outputs.day }}
       ts: ${{ steps.get-timestamp.outputs.ts }}
     steps:
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: 14
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Get day of the month
         id: get-day
@@ -41,19 +41,19 @@ jobs:
     needs: init
     runs-on: webiny-js-4-cores
     steps:
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: 14
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         id: yarn-cache
         with:
           path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         id: global-daily-packages-cache
         with:
           path: .webiny/cached-packages
@@ -65,7 +65,7 @@ jobs:
       - name: Build packages
         run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         id: packages-cache
         with:
           path: .webiny/cached-packages
@@ -76,18 +76,18 @@ jobs:
     needs: [init, build]
     runs-on: webiny-js-4-cores
     steps:
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: 14
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: .webiny/cached-packages
           key: packages-cache-${{ needs.init.outputs.ts }}
@@ -111,13 +111,13 @@ jobs:
     name: Static code analysis (TypeScript)
     runs-on: webiny-js-4-cores
     steps:
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: 14
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
@@ -145,13 +145,13 @@ jobs:
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.init.outputs.ts }}_
     steps:
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
@@ -159,7 +159,7 @@ jobs:
       - name: Install dependencies
         run: yarn --immutable
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: .webiny/cached-packages
           key: packages-cache-${{ needs.init.outputs.ts }}
@@ -178,11 +178,11 @@ jobs:
       ts: ${{ steps.get-timestamp.outputs.ts }}
       cypress-folders: ${{ steps.list-cypress-folders.outputs.cypress-folders }}
     steps:
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: 14
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Get day of the month
         id: get-day
@@ -213,11 +213,11 @@ jobs:
       WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}${{ needs.e2e-wby-cms-ddb-init.outputs.ts }}_ddb
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: 14
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           # We want to make sure all commits are present and that the next release version is calculated correctly.
           fetch-depth: 0
@@ -226,13 +226,13 @@ jobs:
           # Fixes Lerna's detached HEAD issue (https://github.com/lerna/lerna/issues/2443).
           # ref: ${{ github.event.pull_request.head.ref }}
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         id: yarn-cache
         with:
           path: next/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('next/**/yarn.lock') }}
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         id: cached-packages
         with:
           path: next/.webiny/cached-packages
@@ -246,7 +246,7 @@ jobs:
         working-directory: next
         run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         id: packages-cache
         with:
           path: next/.webiny/cached-packages
@@ -381,16 +381,16 @@ jobs:
       WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}${{ needs.e2e-wby-cms-ddb-init.outputs.ts }}_ddb
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           path: next
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: next/.webiny/cached-packages
           key: packages-cache-${{ needs.e2e-wby-cms-ddb-init.outputs.ts }}
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: next/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('next/**/yarn.lock') }}
@@ -429,11 +429,11 @@ jobs:
       ts: ${{ steps.get-timestamp.outputs.ts }}
       cypress-folders: ${{ steps.list-cypress-folders.outputs.cypress-folders }}
     steps:
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: 14
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Get day of the month
         id: get-day
@@ -467,11 +467,11 @@ jobs:
       WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}_ddb-es
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: 14
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           # We want to make sure all commits are present and that the next release version is calculated correctly.
           fetch-depth: 0
@@ -480,13 +480,13 @@ jobs:
           # Fixes Lerna's detached HEAD issue (https://github.com/lerna/lerna/issues/2443).
           # ref: ${{ github.event.pull_request.head.ref }}
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         id: yarn-cache
         with:
           path: next/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('next/**/yarn.lock') }}
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         id: cached-packages
         with:
           path: next/.webiny/cached-packages
@@ -500,7 +500,7 @@ jobs:
         working-directory: next
         run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         id: packages-cache
         with:
           path: next/.webiny/cached-packages
@@ -638,16 +638,16 @@ jobs:
       WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}_ddb-es
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           path: next
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: next/.webiny/cached-packages
           key: packages-cache-${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: next/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('next/**/yarn.lock') }}

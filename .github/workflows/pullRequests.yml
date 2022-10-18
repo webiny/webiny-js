@@ -11,8 +11,8 @@ jobs:
     name: Validate commit messages
     runs-on: webiny-js-4-cores
     steps:
-      - uses: actions/checkout@v2
-      - uses: webiny/action-conventional-commits@v1.0.3
+      - uses: actions/checkout@v3
+      - uses: webiny/action-conventional-commits@v1.1.0
 
   init:
     name: Init
@@ -23,11 +23,11 @@ jobs:
       ts: ${{ steps.get-timestamp.outputs.ts }}
       is-fork-pr: ${{ steps.is-fork-pr.outputs.is-fork-pr }}
     steps:
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: 14
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Get day of the month
         id: get-day
@@ -50,13 +50,13 @@ jobs:
         id: list-jest-packages
         run: echo "::set-output name=jest-packages::$(node scripts/listPackagesWithTests.js --ignore-packages=${{ steps.get-ignored-jest-packages.outputs.ignored-jest-packages }})"
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         id: yarn-cache
         with:
           path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         id: cached-packages
         with:
           path: .webiny/cached-packages
@@ -68,7 +68,7 @@ jobs:
       - name: Build packages
         run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         id: packages-cache
         with:
           path: .webiny/cached-packages
@@ -79,18 +79,18 @@ jobs:
     name: Static code analysis
     runs-on: webiny-js-4-cores
     steps:
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: 14
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: .webiny/cached-packages
           key: packages-cache-${{ needs.init.outputs.ts }}
@@ -114,13 +114,13 @@ jobs:
     name: Static code analysis (TypeScript)
     runs-on: webiny-js-4-cores
     steps:
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: 14
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
@@ -150,18 +150,18 @@ jobs:
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.init.outputs.ts }}_
 
     steps:
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: .webiny/cached-packages
           key: packages-cache-${{ needs.init.outputs.ts }}
@@ -181,23 +181,23 @@ jobs:
     name: Publish to Verdaccio
     runs-on: webiny-js-4-cores
     steps:
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: 14
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           # We want to make sure all commits are present and that the next release version is calculated correctly.
           fetch-depth: 0
           # Fixes Lerna's detached HEAD issue (https://github.com/lerna/lerna/issues/2443).
           ref: ${{ github.event.pull_request.head.ref }}
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: .webiny/cached-packages
           key: packages-cache-${{ needs.init.outputs.ts }}
@@ -265,7 +265,7 @@ jobs:
     env:
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
 
