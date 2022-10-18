@@ -113,7 +113,7 @@ describe(`Pending change requests count test`, () => {
                                 displayName: expect.any(String),
                                 type: "admin"
                             },
-                            status: "underReview",
+                            reviewStatus: "underReview",
                             title: expect.any(String),
                             content: expect.objectContaining(expectedContent),
                             steps: [
@@ -194,7 +194,7 @@ describe(`Pending change requests count test`, () => {
                                 displayName: expect.any(String),
                                 type: "admin"
                             },
-                            status: "underReview",
+                            reviewStatus: "underReview",
                             title: expect.any(String),
                             content: expect.objectContaining(expectedContent),
                             steps: [
@@ -254,7 +254,7 @@ describe(`Pending change requests count test`, () => {
                                 displayName: expect.any(String),
                                 type: "admin"
                             },
-                            status: "underReview",
+                            reviewStatus: "underReview",
                             title: expect.any(String),
                             content: expect.objectContaining(expectedContent),
                             steps: [
@@ -314,7 +314,7 @@ describe(`Pending change requests count test`, () => {
                                 displayName: expect.any(String),
                                 type: "admin"
                             },
-                            status: "underReview",
+                            reviewStatus: "underReview",
                             title: expect.any(String),
                             content: expect.objectContaining(expectedContent),
                             steps: [
@@ -374,7 +374,7 @@ describe(`Pending change requests count test`, () => {
                                 displayName: expect.any(String),
                                 type: "admin"
                             },
-                            status: "underReview",
+                            reviewStatus: "underReview",
                             title: expect.any(String),
                             content: expect.objectContaining(expectedContent),
                             steps: [
@@ -441,7 +441,7 @@ describe(`Pending change requests count test`, () => {
                                 displayName: expect.any(String),
                                 type: "admin"
                             },
-                            status: "underReview",
+                            reviewStatus: "underReview",
                             title: expect.any(String),
                             content: expect.objectContaining(expectedContent),
                             steps: [
@@ -538,7 +538,7 @@ describe(`Pending change requests count test`, () => {
                                 displayName: expect.any(String),
                                 type: "admin"
                             },
-                            status: "underReview",
+                            reviewStatus: "underReview",
                             title: expect.any(String),
                             content: expect.objectContaining(expectedContent),
                             steps: [

@@ -24,10 +24,6 @@ import {
     AfterEntryPublishTopicParams,
     BeforeEntryUnpublishTopicParams,
     AfterEntryUnpublishTopicParams,
-    BeforeEntryRequestChangesTopicParams,
-    AfterEntryRequestChangesTopicParams,
-    BeforeEntryRequestReviewTopicParams,
-    AfterEntryRequestReviewTopicParams,
     BeforeEntryDeleteRevisionTopicParams,
     AfterEntryDeleteRevisionTopicParams,
     BeforeEntryGetTopicParams,
@@ -39,7 +35,8 @@ import {
     CreatedBy,
     CmsModelFieldToGraphQLPlugin,
     StorageOperationsCmsModel,
-    HeadlessCms
+    HeadlessCms,
+    CmsEntryStatus
 } from "~/types";
 import { validateModelEntryData } from "./contentEntry/entryDataValidation";
 import WebinyError from "@webiny/error";
@@ -62,8 +59,6 @@ import { attachCmsModelFieldConverters } from "~/utils/converters/valueKeyStorag
 export const STATUS_DRAFT = "draft";
 export const STATUS_PUBLISHED = "published";
 export const STATUS_UNPUBLISHED = "unpublished";
-export const STATUS_CHANGES_REQUESTED = "changesRequested";
-export const STATUS_REVIEW_REQUESTED = "reviewRequested";
 
 type DefaultValue = boolean | number | string | null;
 /**
@@ -263,6 +258,12 @@ const getSearchableFields = (params: GetSearchableFieldsParams): string[] => {
         .map(field => field.fieldId);
 };
 
+const allowedEntryStatus: string[] = ["draft", "published", "unpublished"];
+
+const transformEntryStatus = (status: CmsEntryStatus | string): CmsEntryStatus => {
+    return allowedEntryStatus.includes(status) ? (status as CmsEntryStatus) : "draft";
+};
+
 export interface CreateContentEntryCrudParams {
     storageOperations: HeadlessCmsStorageOperations;
     context: CmsContext;
@@ -285,10 +286,6 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     const onAfterEntryPublish = createTopic<AfterEntryPublishTopicParams>();
     const onBeforeEntryUnpublish = createTopic<BeforeEntryUnpublishTopicParams>();
     const onAfterEntryUnpublish = createTopic<AfterEntryUnpublishTopicParams>();
-    const onBeforeEntryRequestChanges = createTopic<BeforeEntryRequestChangesTopicParams>();
-    const onAfterEntryRequestChanges = createTopic<AfterEntryRequestChangesTopicParams>();
-    const onBeforeEntryRequestReview = createTopic<BeforeEntryRequestReviewTopicParams>();
-    const onAfterEntryRequestReview = createTopic<AfterEntryRequestReviewTopicParams>();
     const onBeforeEntryDelete = createTopic<BeforeEntryDeleteTopicParams>();
     const onAfterEntryDelete = createTopic<AfterEntryDeleteTopicParams>();
     const onBeforeEntryDeleteRevision = createTopic<BeforeEntryDeleteRevisionTopicParams>();
@@ -382,10 +379,6 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         onAfterEntryPublish,
         onBeforeEntryUnpublish,
         onAfterEntryUnpublish,
-        onBeforeEntryRequestChanges,
-        onAfterEntryRequestChanges,
-        onBeforeEntryRequestReview,
-        onAfterEntryRequestReview,
         onBeforeEntryGet,
         onBeforeEntryList,
         /**
@@ -903,7 +896,8 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 ...originalEntry,
                 savedOn: new Date().toISOString(),
                 values,
-                meta
+                meta,
+                status: transformEntryStatus(originalEntry.status)
             };
 
             let storageEntry: CmsStorageEntry | null = null;
@@ -1216,165 +1210,6 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                         storageEntry,
                         originalEntry,
                         originalStorageEntry
-                    }
-                );
-            }
-        },
-        async requestEntryChanges(initialModel, id) {
-            const permission = await checkEntryPermissions({ pw: "c" });
-
-            const model = attachCmsModelFieldConverters({
-                model: initialModel,
-                plugins
-            });
-
-            const originalStorageEntry = await storageOperations.entries.getRevisionById(model, {
-                id
-            });
-
-            if (!originalStorageEntry) {
-                throw new NotFoundError(`Entry "${id}" of model "${model.modelId}" was not found.`);
-            }
-
-            const originalEntry = await entryFromStorageTransform(
-                context,
-                model,
-                originalStorageEntry
-            );
-
-            if (originalEntry.status !== STATUS_REVIEW_REQUESTED) {
-                throw new WebinyError(
-                    "Cannot request changes on an entry that's not under review.",
-                    "ENTRY_NOT_UNDER_REVIEW"
-                );
-            }
-
-            const identity = context.security.getIdentity();
-            if (originalEntry.ownedBy.id === identity.id) {
-                throw new WebinyError(
-                    "You cannot request changes on your own entry.",
-                    "CANNOT_REQUEST_CHANGES_ON_OWN_ENTRY"
-                );
-            }
-
-            checkOwnership(context, permission, originalEntry);
-
-            const entry: CmsEntry = {
-                ...originalEntry,
-                status: STATUS_CHANGES_REQUESTED
-            };
-
-            let storageEntry: CmsStorageEntry | null = null;
-
-            try {
-                await onBeforeEntryRequestChanges.publish({
-                    entry,
-                    model
-                });
-
-                storageEntry = await entryToStorageTransform(context, model, entry);
-
-                const result = await storageOperations.entries.requestChanges(model, {
-                    entry,
-                    storageEntry
-                });
-
-                await onAfterEntryRequestChanges.publish({
-                    entry,
-                    storageEntry: result,
-                    model
-                });
-
-                return result;
-            } catch (ex) {
-                throw new WebinyError(
-                    ex.message || "Could not request changes for the entry.",
-                    ex.code || "REQUEST_CHANGES_ERROR",
-                    {
-                        entry,
-                        originalEntry
-                    }
-                );
-            }
-        },
-        async requestEntryReview(initialModel, id) {
-            const permission = await checkEntryPermissions({ pw: "r" });
-            const { id: entryId } = parseIdentifier(id);
-
-            const model = attachCmsModelFieldConverters({
-                model: initialModel,
-                plugins
-            });
-
-            const originalStorageEntry = await storageOperations.entries.getRevisionById(model, {
-                id
-            });
-            const latestEntryRevision = await storageOperations.entries.getLatestRevisionByEntryId(
-                model,
-                {
-                    id: entryId
-                }
-            );
-
-            if (!originalStorageEntry) {
-                throw new NotFoundError(`Entry "${id}" of model "${model.modelId}" was not found.`);
-            } else if (!latestEntryRevision) {
-                throw new NotFoundError(`Entry "${id}" does not have latest record`);
-            }
-
-            const originalEntry = await entryFromStorageTransform(
-                context,
-                model,
-                originalStorageEntry
-            );
-
-            const allowedStatuses = [STATUS_DRAFT, STATUS_CHANGES_REQUESTED];
-            if (!allowedStatuses.includes(originalEntry.status)) {
-                throw new WebinyError(
-                    "Cannot request review - entry is not a draft nor was a change request issued.",
-                    "REQUEST_REVIEW_ERROR",
-                    {
-                        entry: originalEntry
-                    }
-                );
-            }
-
-            checkOwnership(context, permission, originalEntry);
-
-            const entry: CmsEntry = {
-                ...originalEntry,
-                status: STATUS_REVIEW_REQUESTED
-            };
-
-            let storageEntry: CmsStorageEntry | null = null;
-
-            try {
-                await onBeforeEntryRequestReview.publish({
-                    entry,
-                    model
-                });
-
-                storageEntry = await entryToStorageTransform(context, model, entry);
-
-                const result = await storageOperations.entries.requestReview(model, {
-                    entry,
-                    storageEntry
-                });
-
-                await onAfterEntryRequestReview.publish({
-                    entry,
-                    storageEntry: result,
-                    model
-                });
-
-                return result;
-            } catch (ex) {
-                throw new WebinyError(
-                    ex.message || "Could not request review on the entry.",
-                    ex.code || "REQUEST_REVIEW_ERROR",
-                    {
-                        originalEntry,
-                        entry
                     }
                 );
             }
