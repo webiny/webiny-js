@@ -1818,40 +1818,6 @@ export interface OnEntryUnpublishErrorTopicParams {
     model: CmsModel;
 }
 
-export interface OnEntryBeforeRequestChangesTopicParams {
-    entry: CmsEntry;
-    model: StorageOperationsCmsModel;
-}
-
-export interface OnEntryAfterRequestChangesTopicParams {
-    entry: CmsEntry;
-    model: StorageOperationsCmsModel;
-    storageEntry: CmsEntry;
-}
-
-export interface OnEntryRequestChangesErrorTopicParams {
-    error: Error;
-    entry: CmsEntry;
-    model: CmsModel;
-}
-
-export interface OnEntryBeforeRequestReviewTopicParams {
-    entry: CmsEntry;
-    model: StorageOperationsCmsModel;
-}
-
-export interface OnEntryAfterRequestReviewTopicParams {
-    entry: CmsEntry;
-    model: StorageOperationsCmsModel;
-    storageEntry: CmsEntry;
-}
-
-export interface OnEntryRequestReviewErrorTopicParams {
-    error: Error;
-    entry: CmsEntry;
-    model: StorageOperationsCmsModel;
-}
-
 export interface OnEntryBeforeDeleteTopicParams {
     entry: CmsEntry;
     model: StorageOperationsCmsModel;
@@ -2071,22 +2037,6 @@ export interface CmsEntryContext {
     /**
      * @deprecated
      */
-    onBeforeEntryRequestChanges: Topic<OnEntryBeforeRequestChangesTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterEntryRequestChanges: Topic<OnEntryAfterRequestChangesTopicParams>;
-    /**
-     * @deprecated
-     */
-    onBeforeEntryRequestReview: Topic<OnEntryBeforeRequestReviewTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterEntryRequestReview: Topic<OnEntryAfterRequestReviewTopicParams>;
-    /**
-     * @deprecated
-     */
     onBeforeEntryGet: Topic<OnEntryBeforeGetTopicParams>;
     /**
      * @deprecated
@@ -2122,14 +2072,6 @@ export interface CmsEntryContext {
     onEntryBeforeUnpublish: Topic<OnEntryBeforeUnpublishTopicParams>;
     onEntryAfterUnpublish: Topic<OnEntryAfterUnpublishTopicParams>;
     onEntryUnpublishError: Topic<OnEntryUnpublishErrorTopicParams>;
-
-    onEntryBeforeRequestChanges: Topic<OnEntryBeforeRequestChangesTopicParams>;
-    onEntryAfterRequestChanges: Topic<OnEntryAfterRequestChangesTopicParams>;
-    onEntryRequestChangesError: Topic<OnEntryRequestChangesErrorTopicParams>;
-
-    onEntryBeforeRequestReview: Topic<OnEntryBeforeRequestReviewTopicParams>;
-    onEntryAfterRequestReview: Topic<OnEntryAfterRequestReviewTopicParams>;
-    onEntryRequestReviewError: Topic<OnEntryRequestReviewErrorTopicParams>;
 
     onEntryBeforeGet: Topic<OnEntryBeforeGetTopicParams>;
     onEntryBeforeList: Topic<EntryBeforeListTopicParams>;

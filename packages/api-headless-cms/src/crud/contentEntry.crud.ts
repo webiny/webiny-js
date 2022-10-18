@@ -24,10 +24,6 @@ import {
     OnEntryAfterPublishTopicParams,
     OnEntryBeforeUnpublishTopicParams,
     OnEntryAfterUnpublishTopicParams,
-    OnEntryBeforeRequestChangesTopicParams,
-    OnEntryAfterRequestChangesTopicParams,
-    OnEntryBeforeRequestReviewTopicParams,
-    OnEntryAfterRequestReviewTopicParams,
     OnEntryRevisionBeforeDeleteTopicParams,
     OnEntryRevisionAfterDeleteTopicParams,
     OnEntryBeforeGetTopicParams,
@@ -46,8 +42,6 @@ import {
     OnEntryUpdateErrorTopicParams,
     OnEntryPublishErrorTopicParams,
     OnEntryUnpublishErrorTopicParams,
-    OnEntryRequestChangesErrorTopicParams,
-    OnEntryRequestReviewErrorTopicParams,
     OnEntryDeleteErrorTopicParams,
     OnEntryRevisionDeleteErrorTopicParams
 } from "~/types";
@@ -333,28 +327,6 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         "cms.onEntryUnpublishError"
     );
 
-    // request changes
-    const onEntryBeforeRequestChanges = createTopic<OnEntryBeforeRequestChangesTopicParams>(
-        "cms.onEntryBeforeRequestChanges"
-    );
-    const onEntryAfterRequestChanges = createTopic<OnEntryAfterRequestChangesTopicParams>(
-        "cms.onEntryAfterRequestChanges"
-    );
-    const onEntryRequestChangesError = createTopic<OnEntryRequestChangesErrorTopicParams>(
-        "cms.onEntryRequestChangesError"
-    );
-
-    // request review
-    const onEntryBeforeRequestReview = createTopic<OnEntryBeforeRequestReviewTopicParams>(
-        "cms.onEntryBeforeRequestReview"
-    );
-    const onEntryAfterRequestReview = createTopic<OnEntryAfterRequestReviewTopicParams>(
-        "cms.onEntryAfterRequestReview"
-    );
-    const onEntryRequestReviewError = createTopic<OnEntryRequestReviewErrorTopicParams>(
-        "cms.onEntryRequestReviewError"
-    );
-
     // delete
     const onEntryBeforeDelete =
         createTopic<OnEntryBeforeDeleteTopicParams>("cms.onEntryBeforeDelete");
@@ -472,10 +444,6 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         onAfterEntryPublish: onEntryAfterPublish,
         onBeforeEntryUnpublish: onEntryBeforeUnpublish,
         onAfterEntryUnpublish: onEntryAfterUnpublish,
-        onBeforeEntryRequestChanges: onEntryBeforeRequestChanges,
-        onAfterEntryRequestChanges: onEntryAfterRequestChanges,
-        onBeforeEntryRequestReview: onEntryBeforeRequestReview,
-        onAfterEntryRequestReview: onEntryAfterRequestReview,
         onBeforeEntryGet: onEntryBeforeGet,
         onBeforeEntryList: onEntryBeforeList,
         /**
@@ -508,14 +476,6 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         onEntryBeforeUnpublish,
         onEntryAfterUnpublish,
         onEntryUnpublishError,
-
-        onEntryBeforeRequestChanges,
-        onEntryAfterRequestChanges,
-        onEntryRequestChangesError,
-
-        onEntryBeforeRequestReview,
-        onEntryAfterRequestReview,
-        onEntryRequestReviewError,
 
         onEntryBeforeGet,
         onEntryBeforeList,

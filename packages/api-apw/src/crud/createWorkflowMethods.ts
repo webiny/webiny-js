@@ -11,7 +11,10 @@ import {
 import { createTopic } from "@webiny/pubsub";
 import { NotAuthorizedError } from "@webiny/api-security";
 
-export function createWorkflowMethods({ storageOperations, getPermission }: CreateApwParams): ApwWorkflowCrud {
+export function createWorkflowMethods({
+    storageOperations,
+    getPermission
+}: CreateApwParams): ApwWorkflowCrud {
     // create
     const onWorkflowBeforeCreate = createTopic<OnWorkflowBeforeCreateTopicParams>(
         "apw.onWorkflowBeforeCreate"
@@ -33,7 +36,7 @@ export function createWorkflowMethods({ storageOperations, getPermission }: Crea
     const onWorkflowAfterDelete = createTopic<OnWorkflowAfterDeleteTopicParams>(
         "apw.onWorkflowAfterDelete"
     );
-    
+
     const validateAccess = async (): Promise<void> => {
         const permission = await getPermission("apw.publishingWorkflows");
         if (!!permission) {
@@ -43,7 +46,7 @@ export function createWorkflowMethods({ storageOperations, getPermission }: Crea
             message: "Not authorized to access publishing workflows."
         });
     };
-    
+
     return {
         /**
          * Lifecycle events
