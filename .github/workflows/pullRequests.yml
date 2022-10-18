@@ -245,7 +245,7 @@ jobs:
         run: yarn lerna:publish:verdaccio
 
       - name: Upload verdaccio files
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: verdaccio-files
           retention-days: 1
@@ -269,7 +269,7 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
 
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v3
         with:
           name: verdaccio-files
           path: verdaccio-files

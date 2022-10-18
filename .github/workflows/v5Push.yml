@@ -278,7 +278,7 @@ jobs:
         run: yarn lerna:publish:verdaccio
 
       - name: Create verdaccio-files artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: verdaccio-files
           retention-days: 1
@@ -308,7 +308,7 @@ jobs:
         run: yarn webiny --version
 
       - name: Create project-files artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: project-files
           retention-days: 1
@@ -525,7 +525,7 @@ jobs:
 #        run: yarn lerna:publish:verdaccio
 #
 #      - name: Create verdaccio-files artifact
-#        uses: actions/upload-artifact@v2
+#        uses: actions/upload-artifact@v3
 #        with:
 #          name: verdaccio-files
 #          retention-days: 1
@@ -555,7 +555,7 @@ jobs:
 #        run: yarn webiny --version
 #
 #      - name: Create project-files artifact
-#        uses: actions/upload-artifact@v2
+#        uses: actions/upload-artifact@v3
 #        with:
 #          name: project-files
 #          retention-days: 1
