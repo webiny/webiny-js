@@ -12,7 +12,6 @@ import {
     OnBeforePageCreateFromTopicParams,
     OnBeforePageUpdateTopicParams,
     OnBeforePagePublishTopicParams,
-    OnBeforePageRequestReviewTopicParams,
     PageSettings
 } from "@webiny/api-page-builder/types";
 import { Context } from "@webiny/api/types";
@@ -107,9 +106,6 @@ export type ApwOnBeforePageUpdateTopicParams = OnBeforePageUpdateTopicParams<Pag
 
 export type ApwOnBeforePagePublishTopicParams = OnBeforePagePublishTopicParams<PageWithWorkflow>;
 
-export type ApwOnBeforePageRequestReviewTopicParams =
-    OnBeforePageRequestReviewTopicParams<PageWithWorkflow>;
-
 export enum WorkflowScopeTypes {
     DEFAULT = "default",
     CUSTOM = "custom"
@@ -189,7 +185,7 @@ export interface ApwContentReviewStep {
 
 export interface ApwContentReview extends ApwBaseFields {
     title: string;
-    status: ApwContentReviewStatus;
+    reviewStatus: ApwContentReviewStatus;
     content: ApwContentReviewContent;
     steps: Array<ApwContentReviewStep>;
     latestCommentId: string | null;
@@ -325,13 +321,14 @@ export interface ApwContentReviewContent {
 
 export interface CreateApwContentReviewParams {
     content: ApwContentReviewContent;
+    reviewStatus: ApwContentReviewStatus;
     workflowId?: string;
 }
 
-interface UpdateApwContentReviewParams {
+export interface UpdateApwContentReviewParams {
     title?: string;
     steps?: ApwContentReviewStep[];
-    status?: ApwContentReviewStatus;
+    reviewStatus?: ApwContentReviewStatus;
     content?: ApwContentReviewContent;
 }
 
@@ -576,7 +573,7 @@ type StorageOperationsGetContentReviewParams = StorageOperationsGetParams;
 
 export interface ApwContentReviewListParams extends ListParams {
     where?: ListWhere & {
-        status?: ApwContentReviewListFilter;
+        reviewStatus?: ApwContentReviewListFilter;
         title?: string;
         title_contains?: string;
     };

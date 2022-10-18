@@ -163,6 +163,19 @@ export const systemFields: ModelFields = {
             fieldId: "version",
             type: "number"
         })
+    },
+    status: {
+        type: "string",
+        unmappedType: undefined,
+        keyword: false,
+        isSystemField: true,
+        isSearchable: true,
+        isSortable: false,
+        field: createSystemField({
+            storageId: "status",
+            fieldId: "status",
+            type: "string"
+        })
     }
 };
 
@@ -189,8 +202,8 @@ export const createModelFields = (plugins: PluginsContainer, model: CmsModel): M
             const { fieldType, isSearchable, isSortable } = plugin;
             types[fieldType] = {
                 unmappedType: unmappedTypes[fieldType],
-                isSearchable: isSearchable === true,
-                isSortable: isSortable === true
+                isSearchable,
+                isSortable
             };
             return types;
         }, {} as FieldTypePlugins);

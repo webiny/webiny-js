@@ -105,18 +105,6 @@ export const assignEntryEvents = () => {
         context.cms.onAfterEntryUnpublish.subscribe(async () => {
             pubSubTracker.track("contentEntry:afterUnpublish");
         });
-        context.cms.onBeforeEntryRequestReview.subscribe(async () => {
-            pubSubTracker.track("contentEntry:beforeRequestReview");
-        });
-        context.cms.onAfterEntryRequestReview.subscribe(async () => {
-            pubSubTracker.track("contentEntry:afterRequestReview");
-        });
-        context.cms.onBeforeEntryRequestChanges.subscribe(async () => {
-            pubSubTracker.track("contentEntry:beforeRequestChanges");
-        });
-        context.cms.onAfterEntryRequestChanges.subscribe(async () => {
-            pubSubTracker.track("contentEntry:afterRequestChanges");
-        });
         context.cms.onBeforeEntryGet.subscribe(async () => {
             pubSubTracker.track("contentEntry:beforeGet");
         });

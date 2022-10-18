@@ -239,12 +239,6 @@ const PagesDataList: React.FC<PagesDataListProps> = ({ onCreatePage, canCreate, 
                                         <option value={"draft"}>{t`Draft`}</option>
                                         <option value={"published"}>{t`Published`}</option>
                                         <option value={"unpublished"}>{t`Unpublished`}</option>
-                                        <option
-                                            value={"reviewRequested"}
-                                        >{t`Review requested`}</option>
-                                        <option
-                                            value={"changesRequested"}
-                                        >{t`Changes requested`}</option>
                                     </Select>
                                 </Bind>
                             </Cell>

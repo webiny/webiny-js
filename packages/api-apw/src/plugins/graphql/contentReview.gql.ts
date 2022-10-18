@@ -21,7 +21,7 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
             title: String
             steps: [ApwContentReviewStep]
             content: ApwContentReviewContent
-            status: ApwContentReviewStatus
+            reviewStatus: ApwContentReviewStatus
             activeStep: ApwContentReviewStep
             totalComments: Int
             latestCommentId: String
@@ -86,7 +86,7 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
             steps: [ApwContentReviewStep]
             content: ApwContentReviewContent
             workflow: ID
-            status: ApwContentReviewStatus
+            reviewStatus: ApwContentReviewStatus
         }
 
         type ApwContentReviewResponse {
@@ -169,7 +169,7 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
 
         input ApwListContentReviewsWhereInput {
             id: ID
-            status: ApwContentReviewStatus
+            reviewStatus: ApwContentReviewStatus
             title: String
             title_contains: String
         }
