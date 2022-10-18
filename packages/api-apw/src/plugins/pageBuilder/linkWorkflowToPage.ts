@@ -4,7 +4,8 @@ import {
     ApwOnBeforePageCreateTopicParams,
     ApwOnBeforePageCreateFromTopicParams,
     ApwOnBeforePageUpdateTopicParams,
-    AdvancedPublishingWorkflow
+    AdvancedPublishingWorkflow,
+    ApwWorkflowApplications
 } from "~/types";
 import {
     getPagesDiff,
@@ -81,6 +82,9 @@ export const linkWorkflowToPage = (params: LinkWorkflowToPageParams) => {
      */
     apw.workflow.onAfterWorkflowCreate.subscribe(async ({ workflow }) => {
         const { scope } = workflow;
+        if (workflow.app !== ApwWorkflowApplications.PB) {
+            return;
+        }
         /**
          * If the workflow has pages in it's scope, we'll link that workflow for each of those pages.
          */
@@ -105,6 +109,9 @@ export const linkWorkflowToPage = (params: LinkWorkflowToPageParams) => {
      */
     apw.workflow.onAfterWorkflowUpdate.subscribe(async ({ workflow, original }) => {
         const { scope } = workflow;
+        if (workflow.app !== ApwWorkflowApplications.PB) {
+            return;
+        }
         const { scope: prevScope } = original;
         /**
          * If the workflow has pages in it's scope and there is a change in that page list,

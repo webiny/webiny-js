@@ -9,6 +9,7 @@ import { updateTotalCommentsCount, updateLatestCommentId } from "./updateTotalCo
 import { validateChangeRequest } from "./validateChangeRequest";
 import { validateContentReview } from "./validateContentReview";
 import { validateComment } from "./validateComment";
+import { listContentReviews } from "~/plugins/hooks/listContentReviews";
 
 export const attachApwHooks = () =>
     /**
@@ -36,4 +37,6 @@ export const attachApwHooks = () =>
         deleteCommentsAfterChangeRequest({ apw });
 
         deleteChangeRequestsWithContentReview({ apw });
+
+        listContentReviews(context);
     });

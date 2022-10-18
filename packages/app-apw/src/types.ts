@@ -1,3 +1,4 @@
+import { SecurityPermission } from "@webiny/app-security/types";
 import { RichTextEditorProps } from "@webiny/ui/RichTextEditor";
 
 export interface CreatedBy {
@@ -168,4 +169,13 @@ export interface CmsEntry {
         modelId: string;
         name: string;
     };
+}
+
+/**
+ * A base security permission for APW.
+ *
+ * @category SecurityPermission
+ */
+export interface ApwSecurityPermission extends SecurityPermission {
+    publishingWorkflows?: boolean;
 }

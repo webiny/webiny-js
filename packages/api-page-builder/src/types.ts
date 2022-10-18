@@ -71,6 +71,10 @@ export interface PageSettings {
         layout: string;
         image: File;
     };
+    /**
+     * Basically we can have anything in page settings.
+     */
+    [key: string]: any;
 }
 export interface Page {
     id: string;

@@ -75,11 +75,11 @@ const contentIdField = () =>
         ]
     });
 
-const contentWorkflowIdField = () =>
+const workflowIdField = () =>
     createModelField({
         label: "Workflow Id",
         type: "text",
-        parent: "contentReview Content",
+        parent: "contentReview",
         validation: [
             {
                 message: "`workflowId` field value is required in contentReview Content.",
@@ -292,14 +292,14 @@ export const createContentReviewModelDefinition = ({
         ["contentReview_reviewRequestedBy"],
         ["contentReview_steps"],
         ["contentReview_changeRequested"],
-        ["contentReview_latestCommentId"]
+        ["contentReview_latestCommentId"],
+        ["contentReview_workflowId"]
     ],
     fields: [
         titleField(),
         contentField([
             contentIdField(),
             contentTypeField(),
-            contentWorkflowIdField(),
             contentSettingsField([contentSettingsModelIdField()]),
             contentScheduledOnField(),
             contentScheduledByField(),
@@ -318,7 +318,8 @@ export const createContentReviewModelDefinition = ({
             stepSignOffProvidedOn(),
             stepSignOffProvidedBy([stepSignOffProvidedById(), stepSignOffProvidedByDisplayName()])
         ]),
-        latestCommentId()
+        latestCommentId(),
+        workflowIdField()
     ],
     description: "",
     isPrivate: true
