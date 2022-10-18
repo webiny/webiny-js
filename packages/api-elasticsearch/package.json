@@ -19,11 +19,11 @@
     "@webiny/utils": "^5.33.0",
     "aws-elasticsearch-connector": "^9.0.0",
     "aws-sdk": "^2.971.0",
-    "elastic-ts": "^0.7.0"
+    "elastic-ts": "^0.8.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.16.0",
-    "@babel/core": "^7.16.0",
+    "@babel/cli": "^7.19.3",
+    "@babel/core": "^7.19.3",
     "@webiny/cli": "^5.33.0",
     "@webiny/project-utils": "^5.33.0",
     "rimraf": "^3.0.2",

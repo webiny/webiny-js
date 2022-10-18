@@ -17,8 +17,8 @@
   "author": "Webiny Ltd.",
   "license": "MIT",
   "devDependencies": {
-    "@babel/cli": "^7.16.0",
-    "@babel/core": "^7.16.0",
+    "@babel/cli": "^7.19.3",
+    "@babel/core": "^7.19.3",
     "@webiny/cli": "^5.33.0",
     "@webiny/handler-db": "^5.33.0",
     "@webiny/project-utils": "^5.33.0",
@@ -33,7 +33,7 @@
     "@webiny/api-folders": "^5.33.0",
     "@webiny/db-dynamodb": "^5.33.0",
     "@webiny/error": "^5.33.0",
-    "dynamodb-toolbox": "^0.3.4"
+    "dynamodb-toolbox": "^0.3.5"
   },
   "publishConfig": {
     "access": "public",

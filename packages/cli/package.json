@@ -15,7 +15,7 @@
   "dependencies": {
     "@webiny/telemetry": "^5.33.0",
     "@webiny/wcp": "^5.33.0",
-    "boolean": "3.1.4",
+    "boolean": "^3.1.4",
     "camelcase": "5.3.1",
     "chalk": "4.1.2",
     "dotenv": "8.2.0",
