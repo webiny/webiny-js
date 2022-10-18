@@ -17,8 +17,8 @@
     "@webiny/api-security": "^5.33.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.16.0",
-    "@babel/core": "^7.16.0",
+    "@babel/cli": "^7.19.3",
+    "@babel/core": "^7.19.3",
     "@types/jsonwebtoken": "8.5.1",
     "@webiny/cli": "^5.33.0",
     "@webiny/project-utils": "^5.33.0",
