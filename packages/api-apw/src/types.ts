@@ -148,6 +148,7 @@ export interface CreatedBy {
 
 export interface ApwBaseFields {
     id: string;
+    entryId: string;
     createdOn: string;
     savedOn: string;
     createdBy: CreatedBy;
@@ -192,6 +193,7 @@ export interface ApwContentReview extends ApwBaseFields {
     content: ApwContentReviewContent;
     steps: Array<ApwContentReviewStep>;
     latestCommentId: string | null;
+    workflowId: string;
 }
 
 export interface ApwWorkflow extends ApwBaseFields {
@@ -255,7 +257,7 @@ export interface UpdateApwWorkflowParams<TReviewer = string> {
 }
 
 export interface ListWorkflowsParams extends ListParams {
-    where: ListWhere & {
+    where?: ListWhere & {
         app?: ApwWorkflowApplications;
     };
 }
@@ -323,6 +325,7 @@ export interface ApwContentReviewContent {
 
 export interface CreateApwContentReviewParams {
     content: ApwContentReviewContent;
+    workflowId?: string;
 }
 
 interface UpdateApwContentReviewParams {
@@ -344,7 +347,7 @@ interface BaseApwCrud<TEntry, TCreateEntryParams, TUpdateEntryParams> {
 
 export interface ApwWorkflowCrud
     extends BaseApwCrud<ApwWorkflow, CreateApwWorkflowParams, UpdateApwWorkflowParams> {
-    list(params: ListWorkflowsParams): Promise<[ApwWorkflow[], ListMeta]>;
+    list(params?: ListWorkflowsParams): Promise<[ApwWorkflow[], ListMeta]>;
 
     /**
      * Lifecycle events
