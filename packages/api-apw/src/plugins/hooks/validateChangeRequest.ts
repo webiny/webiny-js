@@ -3,7 +3,7 @@ import { NotFoundError } from "@webiny/handler-graphql";
 import { LifeCycleHookCallbackParams } from "~/types";
 
 export const validateChangeRequest = ({ apw }: Pick<LifeCycleHookCallbackParams, "apw">) => {
-    apw.changeRequest.onBeforeChangeRequestCreate.subscribe(async ({ input }) => {
+    apw.changeRequest.onChangeRequestBeforeCreate.subscribe(async ({ input }) => {
         const { step } = input;
         /**
          * We need step to be in a particular format i.e. "contentReviewId#version#stepId"
