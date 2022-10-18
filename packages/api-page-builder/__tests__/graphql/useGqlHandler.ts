@@ -38,8 +38,6 @@ import {
     GET_PUBLISHED_PAGE,
     PUBLISH_PAGE,
     UNPUBLISH_PAGE,
-    REQUEST_REVIEW,
-    REQUEST_CHANGES,
     OEMBED_DATA
 } from "./graphql/pages";
 
@@ -215,12 +213,6 @@ export default ({ permissions, identity, plugins, storageOperationPlugins }: Par
         },
         async unpublishPage(variables: Record<string, any>) {
             return invoke({ body: { query: UNPUBLISH_PAGE, variables } });
-        },
-        async requestReview(variables: Record<string, any>) {
-            return invoke({ body: { query: REQUEST_REVIEW, variables } });
-        },
-        async requestChanges(variables: Record<string, any>) {
-            return invoke({ body: { query: REQUEST_CHANGES, variables } });
         },
         async deletePage(variables: Record<string, any>) {
             return invoke({ body: { query: DELETE_PAGE, variables } });

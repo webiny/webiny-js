@@ -21,6 +21,7 @@ export const getNanoid = customAlphabet(ALPHANUMERIC, 10);
 
 export interface CreateModelFieldParams
     extends Omit<CmsModelField, "id" | "storageId" | "fieldId"> {
+    fieldId?: string;
     parent: string;
 }
 

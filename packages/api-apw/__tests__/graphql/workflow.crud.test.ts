@@ -3,10 +3,6 @@ import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
 import mocks from "./mocks/workflows";
 
 describe("Workflow crud test", () => {
-    const options = {
-        path: "manage/en-US"
-    };
-
     const {
         getWorkflowQuery,
         listWorkflowsQuery,
@@ -16,9 +12,7 @@ describe("Workflow crud test", () => {
         securityIdentity,
         reviewer: reviewerGQL,
         until
-    } = usePageBuilderHandler({
-        ...options
-    });
+    } = usePageBuilderHandler();
 
     const login = async () => {
         await securityIdentity.login();
@@ -379,6 +373,172 @@ describe("Workflow crud test", () => {
                             totalCount: 3
                         },
                         error: null
+                    }
+                }
+            }
+        });
+    });
+
+    /**
+     * With this test we make sure that the user without apw workflow permissions cannot access create, update and delete methods.
+     * List and get are always available.
+     */
+    it("should not be possible to access create, update and delete workflow methods", async () => {
+        const noAccessHandler = usePageBuilderHandler({
+            permissions: []
+        });
+        const reviewer = await setupReviewer();
+        const workflowData = mocks.createWorkflow(
+            {
+                app: ApwWorkflowApplications.PB
+            },
+            [reviewer]
+        );
+        const [createWorkflowResponse] = await noAccessHandler.createWorkflowMutation({
+            data: workflowData
+        });
+
+        expect(createWorkflowResponse).toEqual({
+            data: {
+                apw: {
+                    createWorkflow: {
+                        data: null,
+                        error: {
+                            message: "Not authorized to access publishing workflows.",
+                            code: "SECURITY_NOT_AUTHORIZED",
+                            data: null
+                        }
+                    }
+                }
+            }
+        });
+
+        const [updateWorkflowResponse] = await noAccessHandler.updateWorkflowMutation({
+            id: "abcde#0001",
+            data: {}
+        });
+
+        expect(updateWorkflowResponse).toEqual({
+            data: {
+                apw: {
+                    updateWorkflow: {
+                        data: null,
+                        error: {
+                            message: "Not authorized to access publishing workflows.",
+                            code: "SECURITY_NOT_AUTHORIZED",
+                            data: null
+                        }
+                    }
+                }
+            }
+        });
+
+        const [deleteWorkflowResponse] = await noAccessHandler.deleteWorkflowMutation({
+            id: "abcde#0001"
+        });
+
+        expect(deleteWorkflowResponse).toEqual({
+            data: {
+                apw: {
+                    deleteWorkflow: {
+                        data: null,
+                        error: {
+                            message: "Not authorized to access publishing workflows.",
+                            code: "SECURITY_NOT_AUTHORIZED",
+                            data: null
+                        }
+                    }
+                }
+            }
+        });
+
+        const [getWorkflowResponse] = await noAccessHandler.getWorkflowQuery({
+            id: "abcde#0001"
+        });
+
+        expect(getWorkflowResponse).toEqual({
+            data: {
+                apw: {
+                    getWorkflow: {
+                        data: null,
+                        error: {
+                            message: `Entry by ID \"abcde#0001\" not found.`,
+                            code: "NOT_FOUND",
+                            data: null
+                        }
+                    }
+                }
+            }
+        });
+
+        const [listWorkflowsResponse] = await noAccessHandler.listWorkflowsQuery();
+
+        expect(listWorkflowsResponse).toEqual({
+            data: {
+                apw: {
+                    listWorkflows: {
+                        data: [],
+                        error: null,
+                        meta: {
+                            hasMoreItems: false,
+                            totalCount: 0,
+                            cursor: null
+                        }
+                    }
+                }
+            }
+        });
+    });
+    /**
+     * With this test we need to make sure that even the person with no apw permissions can access the list and get workflow methods.
+     */
+    it("should be possible to access get and list methods", async () => {
+        const noAccessHandler = usePageBuilderHandler({
+            permissions: []
+        });
+        const reviewer = await setupReviewer();
+        const workflowData = mocks.createWorkflow(
+            {
+                app: ApwWorkflowApplications.PB
+            },
+            [reviewer]
+        );
+        const [createWorkflowResponse] = await createWorkflowMutation({
+            data: workflowData
+        });
+
+        const workflow = createWorkflowResponse.data.apw.createWorkflow.data;
+
+        const [getWorkflowResponse] = await noAccessHandler.getWorkflowQuery({
+            id: workflow.id
+        });
+
+        expect(getWorkflowResponse).toEqual({
+            data: {
+                apw: {
+                    getWorkflow: {
+                        data: {
+                            ...workflow
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const [listWorkflowsResponse] = await listWorkflowsQuery();
+
+        expect(listWorkflowsResponse).toEqual({
+            data: {
+                apw: {
+                    listWorkflows: {
+                        data: [workflow],
+                        error: null,
+                        meta: {
+                            hasMoreItems: false,
+                            totalCount: 1,
+                            cursor: null
+                        }
                     }
                 }
             }

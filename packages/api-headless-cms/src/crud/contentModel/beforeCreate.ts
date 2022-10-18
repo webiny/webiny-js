@@ -2,8 +2,8 @@ import WebinyError from "@webiny/error";
 import camelCase from "lodash/camelCase";
 import pluralize from "pluralize";
 import {
-    BeforeModelCreateFromTopicParams,
-    BeforeModelCreateTopicParams,
+    OnModelBeforeCreateFromTopicParams,
+    OnModelBeforeCreateTopicParams,
     CmsModel,
     HeadlessCmsStorageOperations
 } from "~/types";
@@ -119,12 +119,15 @@ const getModelId = (model: CmsModel): string => {
     );
 };
 
-interface CreateOnBeforeCreateCbParams {
+interface CreateOnModelBeforeCreateCbParams {
     plugins: PluginsContainer;
     storageOperations: HeadlessCmsStorageOperations;
 }
-const createOnBeforeCb = ({ plugins, storageOperations }: CreateOnBeforeCreateCbParams) => {
-    return async (params: BeforeModelCreateTopicParams | BeforeModelCreateFromTopicParams) => {
+const createOnModelBeforeCb = ({
+    plugins,
+    storageOperations
+}: CreateOnModelBeforeCreateCbParams) => {
+    return async (params: OnModelBeforeCreateTopicParams | OnModelBeforeCreateFromTopicParams) => {
         const { model } = params;
 
         const modelId = getModelId(model);
@@ -165,8 +168,8 @@ const createOnBeforeCb = ({ plugins, storageOperations }: CreateOnBeforeCreateCb
 };
 
 interface AssignBeforeModelCreateParams {
-    onBeforeModelCreate: Topic<BeforeModelCreateTopicParams>;
-    onBeforeModelCreateFrom: Topic<BeforeModelCreateFromTopicParams>;
+    onModelBeforeCreate: Topic<OnModelBeforeCreateTopicParams>;
+    onModelBeforeCreateFrom: Topic<OnModelBeforeCreateFromTopicParams>;
     storageOperations: HeadlessCmsStorageOperations;
     plugins: PluginsContainer;
 }
@@ -175,10 +178,10 @@ interface AssignBeforeModelCreateParams {
  * We attach both on before create and createFrom events here.
  * Callables are identical.
  */
-export const assignBeforeModelCreate = (params: AssignBeforeModelCreateParams) => {
-    const { onBeforeModelCreate, onBeforeModelCreateFrom, storageOperations, plugins } = params;
+export const assignModelBeforeCreate = (params: AssignBeforeModelCreateParams) => {
+    const { onModelBeforeCreate, onModelBeforeCreateFrom, storageOperations, plugins } = params;
 
-    onBeforeModelCreate.subscribe(async ({ model, input }) => {
+    onModelBeforeCreate.subscribe(async ({ model, input }) => {
         /**
          * First the layout...
          */
@@ -186,7 +189,7 @@ export const assignBeforeModelCreate = (params: AssignBeforeModelCreateParams) =
         /**
          * then we run the shared create/createFrom methods.
          */
-        const cb = createOnBeforeCb({
+        const cb = createOnModelBeforeCb({
             storageOperations,
             plugins
         });
@@ -204,8 +207,8 @@ export const assignBeforeModelCreate = (params: AssignBeforeModelCreateParams) =
         });
     });
 
-    onBeforeModelCreateFrom.subscribe(
-        createOnBeforeCb({
+    onModelBeforeCreateFrom.subscribe(
+        createOnModelBeforeCb({
             storageOperations,
             plugins
         })

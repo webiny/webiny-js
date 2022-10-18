@@ -18,7 +18,7 @@ type ContentReviewItemProps = Pick<
     | "title"
     | "activeStep"
     | "reviewers"
-    | "status"
+    | "reviewStatus"
     | "totalComments"
     | "createdOn"
     | "createdBy"
@@ -31,7 +31,7 @@ export const ContentReviewListItem: React.FC<ContentReviewItemProps> = props => 
         activeStep,
         title,
         reviewers,
-        status,
+        reviewStatus,
         latestCommentId,
         content,
         createdOn,
@@ -75,7 +75,7 @@ export const ContentReviewListItem: React.FC<ContentReviewItemProps> = props => 
             </Box>
             <ContentReviewStatus
                 width={STATUS_BOX_WIDTH}
-                status={status}
+                status={reviewStatus}
                 comments={totalComments}
                 reviewers={reviewers}
                 content={content}
