@@ -12,12 +12,12 @@ import {
     ApwWorkflowStepTypes,
     CreateApwContentReviewParams,
     CreateApwParams,
-    OnAfterContentReviewCreateTopicParams,
-    OnAfterContentReviewDeleteTopicParams,
-    OnAfterContentReviewUpdateTopicParams,
-    OnBeforeContentReviewCreateTopicParams,
-    OnBeforeContentReviewDeleteTopicParams,
-    OnBeforeContentReviewUpdateTopicParams,
+    OnContentReviewAfterCreateTopicParams,
+    OnContentReviewAfterDeleteTopicParams,
+    OnContentReviewAfterUpdateTopicParams,
+    OnContentReviewBeforeCreateTopicParams,
+    OnContentReviewBeforeDeleteTopicParams,
+    OnContentReviewBeforeUpdateTopicParams,
     UpdateApwContentReviewParams
 } from "~/types";
 import { getNextStepStatus, hasReviewer } from "~/plugins/utils";
@@ -63,22 +63,37 @@ export function createContentReviewMethods(
         plugins
     } = params;
 
-    const onBeforeContentReviewCreate = createTopic<OnBeforeContentReviewCreateTopicParams>();
-    const onAfterContentReviewCreate = createTopic<OnAfterContentReviewCreateTopicParams>();
-    const onBeforeContentReviewUpdate = createTopic<OnBeforeContentReviewUpdateTopicParams>();
-    const onAfterContentReviewUpdate = createTopic<OnAfterContentReviewUpdateTopicParams>();
-    const onBeforeContentReviewDelete = createTopic<OnBeforeContentReviewDeleteTopicParams>();
-    const onAfterContentReviewDelete = createTopic<OnAfterContentReviewDeleteTopicParams>();
+    // create
+    const onContentReviewBeforeCreate = createTopic<OnContentReviewBeforeCreateTopicParams>(
+        "apw.onContentReviewBeforeCreate"
+    );
+    const onContentReviewAfterCreate = createTopic<OnContentReviewAfterCreateTopicParams>(
+        "apw.onContentReviewAfterCreate"
+    );
+    // update
+    const onContentReviewBeforeUpdate = createTopic<OnContentReviewBeforeUpdateTopicParams>(
+        "apw.onContentReviewBeforeUpdate"
+    );
+    const onContentReviewAfterUpdate = createTopic<OnContentReviewAfterUpdateTopicParams>(
+        "apw.onContentReviewAfterUpdate"
+    );
+    // delete
+    const onContentReviewBeforeDelete = createTopic<OnContentReviewBeforeDeleteTopicParams>(
+        "apw.onContentReviewBeforeDelete"
+    );
+    const onContentReviewAfterDelete = createTopic<OnContentReviewAfterDeleteTopicParams>(
+        "apw.onContentReviewAfterDelete"
+    );
     return {
         /**
          * Lifecycle events
          */
-        onBeforeContentReviewCreate,
-        onAfterContentReviewCreate,
-        onBeforeContentReviewUpdate,
-        onAfterContentReviewUpdate,
-        onBeforeContentReviewDelete,
-        onAfterContentReviewDelete,
+        onContentReviewBeforeCreate,
+        onContentReviewAfterCreate,
+        onContentReviewBeforeUpdate,
+        onContentReviewAfterUpdate,
+        onContentReviewBeforeDelete,
+        onContentReviewAfterDelete,
         async get(id) {
             return storageOperations.getContentReview({ id });
         },
@@ -99,27 +114,27 @@ export function createContentReviewMethods(
                 ...data,
                 reviewStatus: ApwContentReviewStatus.UNDER_REVIEW
             };
-            await onBeforeContentReviewCreate.publish({ input });
+            await onContentReviewBeforeCreate.publish({ input });
 
             const contentReview = await storageOperations.createContentReview({
                 data: input
             });
 
-            await onAfterContentReviewCreate.publish({ contentReview });
+            await onContentReviewAfterCreate.publish({ contentReview });
 
             return contentReview;
         },
         async update(id, data: UpdateApwContentReviewParams) {
             const original = await storageOperations.getContentReview({ id });
 
-            await onBeforeContentReviewUpdate.publish({ original, input: { id, data } });
+            await onContentReviewBeforeUpdate.publish({ original, input: { id, data } });
 
             const contentReview = await storageOperations.updateContentReview({
                 id,
                 data
             });
 
-            await onAfterContentReviewUpdate.publish({
+            await onContentReviewAfterUpdate.publish({
                 original,
                 input: { id, data },
                 contentReview
@@ -130,11 +145,11 @@ export function createContentReviewMethods(
         async delete(id) {
             const contentReview = await storageOperations.getContentReview({ id });
 
-            await onBeforeContentReviewDelete.publish({ contentReview });
+            await onContentReviewBeforeDelete.publish({ contentReview });
 
             await storageOperations.deleteContentReview({ id });
 
-            await onAfterContentReviewDelete.publish({ contentReview });
+            await onContentReviewAfterDelete.publish({ contentReview });
 
             return true;
         },

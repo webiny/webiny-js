@@ -50,9 +50,17 @@ export interface GetGroupWhere {
 }
 
 export interface Security<TIdentity = SecurityIdentity> extends Authentication<TIdentity> {
+    /**
+     * @deprecated
+     */
     onBeforeInstall: Topic<InstallEvent>;
+    onSystemBeforeInstall: Topic<InstallEvent>;
     onInstall: Topic<InstallEvent>;
+    /**
+     * @deprecated
+     */
     onAfterInstall: Topic<InstallEvent>;
+    onSystemAfterInstall: Topic<InstallEvent>;
     onCleanup: Topic<ErrorEvent>;
     onBeforeLogin: Topic<LoginEvent<TIdentity>>;
     onLogin: Topic<LoginEvent<TIdentity>>;

@@ -125,7 +125,7 @@ export const createStorageOperations: StorageOperationsFactory = params => {
 
     return {
         init: async context => {
-            context.i18n.locales.onBeforeCreate.subscribe(async ({ locale, tenant }) => {
+            context.i18n.locales.onLocaleBeforeCreate.subscribe(async ({ locale, tenant }) => {
                 await createElasticsearchIndex({
                     elasticsearch,
                     plugins,

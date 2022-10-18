@@ -2,7 +2,7 @@ import Error from "@webiny/error";
 import {
     AdvancedPublishingWorkflow,
     ApwContentReviewStatus,
-    OnBeforeCmsEntryPublishTopicParams
+    OnCmsEntryBeforePublishTopicParams
 } from "~/types";
 import { HeadlessCms } from "@webiny/api-headless-cms/types";
 import { isAwpModel } from "~/plugins/cms/utils";
@@ -14,7 +14,7 @@ interface TriggerContentReviewParams {
 export const triggerContentReview = (params: TriggerContentReviewParams) => {
     const { cms, apw } = params;
 
-    cms.onBeforeEntryPublish.subscribe<OnBeforeCmsEntryPublishTopicParams>(
+    cms.onEntryBeforePublish.subscribe<OnCmsEntryBeforePublishTopicParams>(
         async ({ entry, model }) => {
             if (isAwpModel(model)) {
                 return;

@@ -1,19 +1,19 @@
 import { Topic } from "@webiny/pubsub/types";
-import { BeforeModelDeleteTopicParams, HeadlessCmsStorageOperations } from "~/types";
+import { OnModelBeforeDeleteTopicParams, HeadlessCmsStorageOperations } from "~/types";
 import { PluginsContainer } from "@webiny/plugins";
 import WebinyError from "@webiny/error";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";
 import { attachCmsModelFieldConverters } from "~/utils/converters/valueKeyStorageConverter";
 
 interface AssignBeforeModelDeleteParams {
-    onBeforeModelDelete: Topic<BeforeModelDeleteTopicParams>;
+    onModelBeforeDelete: Topic<OnModelBeforeDeleteTopicParams>;
     storageOperations: HeadlessCmsStorageOperations;
     plugins: PluginsContainer;
 }
-export const assignBeforeModelDelete = (params: AssignBeforeModelDeleteParams) => {
-    const { onBeforeModelDelete, storageOperations, plugins } = params;
+export const assignModelBeforeDelete = (params: AssignBeforeModelDeleteParams) => {
+    const { onModelBeforeDelete, storageOperations, plugins } = params;
 
-    onBeforeModelDelete.subscribe(async params => {
+    onModelBeforeDelete.subscribe(async params => {
         const { model } = params;
 
         const modelPlugin = plugins

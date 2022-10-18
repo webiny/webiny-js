@@ -12,9 +12,9 @@ export interface MailerSetter {
 }
 
 export interface MailerContextObject {
-    onBeforeSend: Topic<OnBeforeMailerSendParams>;
-    onAfterSend: Topic<OnAfterMailerSendParams>;
-    onError: Topic<OnErrorMailerParams>;
+    onMailBeforeSend: Topic<OnMailBeforeSendParams>;
+    onMailAfterSend: Topic<OnMailAfterSendParams>;
+    onMailError: Topic<OnMailErrorParams>;
     setMailer: MailerSetter;
     getMailer: <T extends Mailer = Mailer>() => Promise<T>;
     send: <T>(params: MailerContextObjectSendParams) => Promise<MailerSendResponse<T>>;
@@ -27,13 +27,13 @@ export interface MailerConfig<T extends Mailer = Mailer> {
     mailer?: T;
 }
 
-export interface OnBeforeMailerSendParams {
+export interface OnMailBeforeSendParams {
     data: MailerSendData;
 }
-export interface OnAfterMailerSendParams {
+export interface OnMailAfterSendParams {
     data: MailerSendData;
 }
-export interface OnErrorMailerParams {
+export interface OnMailErrorParams {
     error: Error;
     data: MailerSendData;
 }

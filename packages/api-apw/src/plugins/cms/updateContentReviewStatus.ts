@@ -1,8 +1,8 @@
 import {
     AdvancedPublishingWorkflow,
     ApwContentReviewStatus,
-    OnAfterCmsEntryPublishTopicParams,
-    OnAfterCmsEntryUnpublishTopicParams
+    OnCmsEntryAfterPublishTopicParams,
+    OnCmsEntryAfterUnpublishTopicParams
 } from "~/types";
 import { INITIAL_CONTENT_REVIEW_CONTENT_SCHEDULE_META } from "~/crud/utils";
 import { HeadlessCms } from "@webiny/api-headless-cms/types";
@@ -18,7 +18,7 @@ interface UpdateContentReviewStatusParams {
 export const updateContentReviewStatus = (params: UpdateContentReviewStatusParams) => {
     const { apw, cms, security } = params;
 
-    cms.onAfterEntryPublish.subscribe<OnAfterCmsEntryPublishTopicParams>(
+    cms.onEntryAfterPublish.subscribe<OnCmsEntryAfterPublishTopicParams>(
         async ({ entry, model }) => {
             if (isAwpModel(model)) {
                 return;
@@ -49,7 +49,7 @@ export const updateContentReviewStatus = (params: UpdateContentReviewStatusParam
             });
         }
     );
-    cms.onAfterEntryUnpublish.subscribe<OnAfterCmsEntryUnpublishTopicParams>(
+    cms.onEntryAfterUnpublish.subscribe<OnCmsEntryAfterUnpublishTopicParams>(
         async ({ entry, model }) => {
             if (isAwpModel(model)) {
                 return;
