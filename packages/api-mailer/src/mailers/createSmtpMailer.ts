@@ -11,6 +11,7 @@ import { createDummyMailer, DummyMailer } from "~/mailers/createDummyMailer";
 export type SmtpMailerConfig = Options;
 
 export interface SmtpMailer extends Mailer {
+    name: "smtp";
     transporter: Transporter<SMTPTransport.SentMessageInfo>;
 }
 
@@ -54,6 +55,7 @@ export const createSmtpMailer = (config?: SmtpMailerConfig): SmtpMailer | DummyM
     });
 
     return {
+        name: "smtp",
         transporter,
         send: async params => {
             const { replyTo, text, html, to, bcc, cc, from, subject } = params;

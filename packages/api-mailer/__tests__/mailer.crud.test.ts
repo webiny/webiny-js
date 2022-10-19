@@ -1,5 +1,5 @@
 import { createContext } from "./createContext";
-import { MailerContextObjectSendParams } from "~/types";
+import { MailerSendData } from "~/types";
 import { createDummyMailer, DummyMailer } from "~/mailers/createDummyMailer";
 
 const to = ["to@test.com"];
@@ -15,23 +15,21 @@ describe("Mailer crud", () => {
     it("should set dummy mailer via factory and send e-mail", async () => {
         const context = await createContext();
 
-        context.mailer.setMailer(async () => {
-            return import("~/mailers/createDummyMailer").then(module => {
-                return module.createDummyMailer();
-            });
+        const dummyMailer = await import("~/mailers/createDummyMailer").then(module => {
+            return module.createDummyMailer();
         });
 
-        const params: MailerContextObjectSendParams = {
-            data: {
-                to,
-                cc,
-                bcc,
-                from,
-                replyTo,
-                subject,
-                text,
-                html
-            }
+        context.mailer.setMailer(dummyMailer);
+
+        const params: MailerSendData = {
+            to,
+            cc,
+            bcc,
+            from,
+            replyTo,
+            subject,
+            text,
+            html
         };
 
         const result = await context.mailer.send(params);
@@ -41,7 +39,7 @@ describe("Mailer crud", () => {
             error: null
         });
 
-        const mailer = await context.mailer.getMailer<DummyMailer>();
+        const mailer = await context.mailer.getMailer() as DummyMailer;
 
         expect(mailer.getAllSent()).toEqual([
             {
@@ -64,17 +62,15 @@ describe("Mailer crud", () => {
 
         context.mailer.setMailer(mailer);
 
-        const params: MailerContextObjectSendParams = {
-            data: {
-                to,
-                cc,
-                bcc,
-                from,
-                replyTo,
-                subject,
-                text,
-                html
-            }
+        const params: MailerSendData = {
+            to,
+            cc,
+            bcc,
+            from,
+            replyTo,
+            subject,
+            text,
+            html
         };
 
         const result = await context.mailer.send(params);
@@ -101,17 +97,15 @@ describe("Mailer crud", () => {
     it(`should throw error before sending because of missing "to"`, async () => {
         const context = await createContext();
 
-        const params: MailerContextObjectSendParams = {
-            data: {
-                to: [""],
-                cc,
-                bcc,
-                from,
-                replyTo,
-                subject,
-                text,
-                html
-            }
+        const params: MailerSendData = {
+            to: [""],
+            cc,
+            bcc,
+            from,
+            replyTo,
+            subject,
+            text,
+            html
         };
 
         const result = await context.mailer.send(params);
@@ -122,7 +116,7 @@ describe("Mailer crud", () => {
                 message: "Error while validating e-mail params.",
                 code: "VALIDATION_ERROR",
                 data: {
-                    data: params.data
+                    data: params
                 }
             }
         });
@@ -135,17 +129,15 @@ describe("Mailer crud", () => {
 
         context.mailer.setMailer(mailer);
 
-        const params: MailerContextObjectSendParams = {
-            data: {
-                to,
-                cc,
-                bcc,
-                from: "",
-                replyTo,
-                subject,
-                text,
-                html
-            }
+        const params: MailerSendData = {
+            to,
+            cc,
+            bcc,
+            from: "",
+            replyTo,
+            subject,
+            text,
+            html
         };
 
         const result = await context.mailer.send(params);
@@ -156,7 +148,7 @@ describe("Mailer crud", () => {
                 message: "Error while validating e-mail params.",
                 code: "VALIDATION_ERROR",
                 data: {
-                    data: params.data
+                    data: params
                 }
             }
         });
@@ -169,17 +161,15 @@ describe("Mailer crud", () => {
 
         context.mailer.setMailer(mailer);
 
-        const params: MailerContextObjectSendParams = {
-            data: {
-                to,
-                cc,
-                bcc,
-                from,
-                replyTo,
-                subject: "",
-                text,
-                html
-            }
+        const params: MailerSendData = {
+            to,
+            cc,
+            bcc,
+            from,
+            replyTo,
+            subject: "",
+            text,
+            html
         };
 
         const result = await context.mailer.send(params);
@@ -190,7 +180,7 @@ describe("Mailer crud", () => {
                 message: "Error while validating e-mail params.",
                 code: "VALIDATION_ERROR",
                 data: {
-                    data: params.data
+                    data: params
                 }
             }
         });
@@ -203,17 +193,15 @@ describe("Mailer crud", () => {
 
         context.mailer.setMailer(mailer);
 
-        const params: MailerContextObjectSendParams = {
-            data: {
-                to,
-                cc,
-                bcc,
-                from,
-                replyTo,
-                subject,
-                text: "",
-                html
-            }
+        const params: MailerSendData = {
+            to,
+            cc,
+            bcc,
+            from,
+            replyTo,
+            subject,
+            text: "",
+            html
         };
 
         const result = await context.mailer.send(params);
@@ -224,7 +212,7 @@ describe("Mailer crud", () => {
                 message: "Error while validating e-mail params.",
                 code: "VALIDATION_ERROR",
                 data: {
-                    data: params.data
+                    data: params
                 }
             }
         });

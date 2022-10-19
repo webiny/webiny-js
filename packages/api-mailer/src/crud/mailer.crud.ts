@@ -2,82 +2,72 @@ import {
     MailerConfig,
     MailerContextObject,
     Mailer,
-    MailerSetterParams,
-    OnMailAfterSendParams,
-    OnMailBeforeSendParams,
-    OnMailErrorParams
+    OnMailerAfterSendParams,
+    OnMailerBeforeSendParams,
+    OnMailerErrorParams,
+    OnMailerBeforeInitParams,
+    OnMailerAfterInitParams,
+    OnMailerInitErrorParams
 } from "~/types";
 import { createTopic } from "@webiny/pubsub";
-import { attachOnMailBeforeSend } from "~/crud/mailer/onMailBeforeSend";
-import WebinyError from "@webiny/error";
+import { attachOnMailerBeforeSend } from "~/crud/mailer/onMailerBeforeSend";
 
-const createDefaultMailer = async () => {
-    return import("~/mailers/createSmtpMailer").then(module => {
-        return module.createSmtpMailer();
-    });
-};
-
-export const createMailerCrud = (config?: MailerConfig): MailerContextObject => {
-    let defaultMailer: MailerSetterParams | undefined = config?.mailer || createDefaultMailer;
+export const createMailerCrud = <T extends Mailer = Mailer>(
+    config: MailerConfig<T>
+): MailerContextObject<T> => {
+    let mailer = config.mailer;
     /**
      * We define possible events to be hooked into.
      */
-    const onMailBeforeSend = createTopic<OnMailBeforeSendParams>("mailer.onMailBeforeSend");
-    const onMailAfterSend = createTopic<OnMailAfterSendParams>("mailer.onMailAfterSend");
-    const onMailError = createTopic<OnMailErrorParams>("mailer.onMailError");
+    const onMailerBeforeInit = createTopic<OnMailerBeforeInitParams>("mailer.onMailerBeforeInit");
+    const onMailerInitError = createTopic<OnMailerInitErrorParams>("mailer.onMailerInitError");
+    const onMailerAfterInit = createTopic<OnMailerAfterInitParams>("mailer.onMailerAfterInit");
+    const onMailerBeforeSend = createTopic<OnMailerBeforeSendParams>("mailer.onMailerBeforeSend");
+    const onMailerAfterSend = createTopic<OnMailerAfterSendParams>("mailer.onMailerAfterSend");
+    const onMailerError = createTopic<OnMailerErrorParams>("mailer.onMailerError");
     /**
      * We attach our default ones.
      */
-    attachOnMailBeforeSend({
-        onMailBeforeSend
+    attachOnMailerBeforeSend({
+        onMailerBeforeSend
     });
 
-    let initializedMailer: Mailer | undefined;
+    const getMailer = (): T => {
+        return mailer;
+    };
 
-    const getMailer = async <T extends Mailer = Mailer>(): Promise<T> => {
-        if (initializedMailer) {
-            return initializedMailer as T;
-        } else if (!defaultMailer) {
-            throw new WebinyError({
-                message: "Mailer is not set.",
-                code: "MAILER_NOT_SET_ERROR"
-            });
-        } else if (typeof defaultMailer === "function") {
-            try {
-                initializedMailer = await defaultMailer();
-
-                return initializedMailer as T;
-            } catch (ex) {
-                throw new WebinyError({
-                    message: "Error while getting mailer.",
-                    code: "MAILER_ERROR",
-                    data: {
-                        error: ex
-                    }
-                });
-            }
-        }
-        initializedMailer = defaultMailer;
-        return initializedMailer as T;
+    const isAvailable = (): boolean => {
+        return mailer.name !== "dummy";
     };
 
     return {
-        onMailBeforeSend,
-        onMailAfterSend,
-        onMailError,
+        onMailerBeforeInit,
+        onMailerInitError,
+        onMailerAfterInit,
+        onMailerBeforeSend,
+        onMailerAfterSend,
+        onMailerError,
         getMailer,
         setMailer: target => {
-            initializedMailer = undefined;
-            defaultMailer = target;
+            mailer = target;
         },
-        send: async ({ data }) => {
-            const mailer = await getMailer();
+        isAvailable,
+        send: async data => {
+            if (!mailer) {
+                return {
+                    result: null,
+                    error: {
+                        message: "There is no mailer available.",
+                        code: "NO_MAILER_DEFINED"
+                    }
+                };
+            }
             try {
-                await onMailBeforeSend.publish({
+                await onMailerBeforeSend.publish({
                     data
                 });
                 const response = await mailer.send(data);
-                await onMailAfterSend.publish({
+                await onMailerAfterSend.publish({
                     data
                 });
 
@@ -86,7 +76,7 @@ export const createMailerCrud = (config?: MailerConfig): MailerContextObject => 
                     error: response.error
                 };
             } catch (ex) {
-                await onMailError.publish({
+                await onMailerError.publish({
                     error: ex,
                     data
                 });

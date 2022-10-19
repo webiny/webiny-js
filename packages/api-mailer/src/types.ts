@@ -1,39 +1,50 @@
 import { Context } from "@webiny/api/types";
 import { Topic } from "@webiny/pubsub/types";
 
-export interface MailerContextObjectSendParams {
-    data: MailerSendData;
-}
-
-export type MailerSetterParams = Mailer | (() => Promise<Mailer>);
-
-export interface MailerSetter {
-    (mailer: MailerSetterParams): void;
-}
-
-export interface MailerContextObject {
-    onMailBeforeSend: Topic<OnMailBeforeSendParams>;
-    onMailAfterSend: Topic<OnMailAfterSendParams>;
-    onMailError: Topic<OnMailErrorParams>;
-    setMailer: MailerSetter;
-    getMailer: <T extends Mailer = Mailer>() => Promise<T>;
-    send: <T>(params: MailerContextObjectSendParams) => Promise<MailerSendResponse<T>>;
+export interface MailerContextObject<T extends Mailer = Mailer> {
+    onMailerBeforeInit: Topic<OnMailerBeforeInitParams>;
+    onMailerInitError: Topic<OnMailerInitErrorParams>;
+    onMailerAfterInit: Topic<OnMailerAfterInitParams>;
+    onMailerBeforeSend: Topic<OnMailerBeforeSendParams>;
+    onMailerAfterSend: Topic<OnMailerAfterSendParams>;
+    onMailerError: Topic<OnMailerErrorParams>;
+    isAvailable: () => boolean;
+    setMailer: (mailer: T) => void;
+    getMailer: () => T;
+    send: <D>(data: MailerSendData) => Promise<MailerSendResponse<D>>;
 }
 export interface MailerContext extends Context {
     mailer: MailerContextObject;
 }
 
 export interface MailerConfig<T extends Mailer = Mailer> {
-    mailer?: T;
+    mailer: T;
+    [key: string]: any;
 }
 
-export interface OnMailBeforeSendParams {
+export interface OnMailerBeforeInitParams {
+    config: any;
+}
+
+export interface OnMailerInitErrorParams {
+    error: Error;
+    /**
+     * If we change silent to true in the subscriber function, we will not throw the error.
+     */
+    silent?: boolean;
+}
+
+export interface OnMailerAfterInitParams {
+    config: any;
+}
+
+export interface OnMailerBeforeSendParams {
     data: MailerSendData;
 }
-export interface OnMailAfterSendParams {
+export interface OnMailerAfterSendParams {
     data: MailerSendData;
 }
-export interface OnMailErrorParams {
+export interface OnMailerErrorParams {
     error: Error;
     data: MailerSendData;
 }
@@ -46,22 +57,36 @@ export interface MailerSendResponse<T = any> {
     error: {
         message: string;
         code: string;
-        data: {
+        data?: {
             [key: string]: any;
         };
     } | null;
 }
 
-export interface MailerSendData {
+interface MailerSendToData {
     to: string[];
-    from: string;
+}
+interface MailerSendCcData {
+    cc: string[];
+}
+interface MailerSendBccData {
+    bcc: string[];
+}
+
+interface BaseMailerSendData {
+    to?: string[];
+    cc?: string[];
+    bcc?: string[];
+    from?: string;
     subject: string;
     text: string;
     html?: string;
     replyTo?: string;
-    cc?: string[];
-    bcc?: string[];
 }
+
+export type MailerSendData = BaseMailerSendData &
+    (MailerSendToData | MailerSendBccData | MailerSendCcData);
 export interface Mailer<T = any> {
+    name: string;
     send: (params: MailerSendData) => Promise<MailerSendResponse<T>>;
 }
