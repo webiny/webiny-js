@@ -39,7 +39,7 @@ describe("Mailer crud", () => {
             error: null
         });
 
-        const mailer = await context.mailer.getMailer() as DummyMailer;
+        const mailer = (await context.mailer.getMailer()) as DummyMailer;
 
         expect(mailer.getAllSent()).toEqual([
             {
