@@ -9,7 +9,7 @@ import apiKeyAuthorization from "@webiny/api-security/plugins/apiKeyAuthorizatio
 import { createPermissions, until, sleep, PermissionsArg } from "./context/helpers";
 import { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb";
-import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
+import { createHeadlessCmsContext } from "@webiny/api-headless-cms";
 /**
  * Unfortunately at we need to import the api-i18n-ddb package manually
  */
@@ -19,7 +19,10 @@ import { createMailer } from "~/index";
 import { ContextPlugin } from "@webiny/api";
 import { MailerContext } from "~/types";
 import { Tenant } from "@webiny/api-tenancy/types";
-// import createGraphQLHandler from "@webiny/handler-graphql";
+import createGraphQLHandler from "@webiny/handler-graphql";
+import { GET_SETTINGS_QUERY, SAVE_SETTINGS_MUTATION } from "./graphql/settings";
+import dbPlugins from "@webiny/handler-db";
+import { DynamoDbDriver } from "@webiny/db-dynamodb";
 
 interface ContextTenantParams {
     tenant: Pick<Tenant, "id" | "name" | "parent">;
@@ -56,12 +59,10 @@ export const contextSecurity = ({
     ];
 };
 
-export interface CreateHeadlessCmsGQLHandlerParams {
+export interface CreateGraphQLHandlerParams {
     permissions?: PermissionsArg[];
     identity?: SecurityIdentity;
     plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
-    storageOperationPlugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
-    path: string;
 }
 
 export interface InvokeParams {
@@ -82,13 +83,13 @@ const documentClient = new DocumentClient({
     secretAccessKey: "test"
 });
 
-export const createHeadlessCmsGQLHandler = (params: CreateHeadlessCmsGQLHandlerParams) => {
+export const createMailerHandler = (params?: CreateGraphQLHandlerParams) => {
     const tenant = {
         id: "root",
         name: "Root",
         parent: null
     };
-    const { permissions, identity, plugins = [], path } = params;
+    const { permissions, identity, plugins = [] } = params || {};
     /**
      * We're using ddb-only storageOperations here because current jest setup doesn't allow
      * usage of more than one storageOperations at a time with the help of --keyword flag.
@@ -101,9 +102,15 @@ export const createHeadlessCmsGQLHandler = (params: CreateHeadlessCmsGQLHandlerP
 
     const handler = createHandler({
         plugins: [
-            // createGraphQLHandler(),
+            dbPlugins({
+                table: process.env.DB_TABLE,
+                driver: new DynamoDbDriver({
+                    documentClient
+                })
+            }),
+            createGraphQLHandler(),
             ...createTenancyAndSecurity({
-                permissions: [...createPermissions(permissions), { name: "pb.*" }],
+                permissions: [...createPermissions(permissions)],
                 identity
             }),
             contextSecurity({ tenant, identity }),
@@ -113,19 +120,18 @@ export const createHeadlessCmsGQLHandler = (params: CreateHeadlessCmsGQLHandlerP
             i18nDynamoDbStorageOperations(),
             mockLocalesPlugins(),
             ...headlessCmsApp,
-            createHeadlessCmsGraphQL(),
             ...createMailer(),
             plugins
         ],
         http: {
-            debug: false
+            debug: true
         }
     });
 
     const invoke = async ({ httpMethod = "POST", body, headers = {}, ...rest }: InvokeParams) => {
         const response = await handler(
             {
-                path: path ? `/cms/${path}` : "/graphql",
+                path: "/graphql",
                 httpMethod,
                 headers: {
                     ["x-tenant"]: "root",
@@ -151,6 +157,12 @@ export const createHeadlessCmsGQLHandler = (params: CreateHeadlessCmsGQLHandlerP
         invoke,
         async introspect() {
             return invoke({ body: { query: getIntrospectionQuery() } });
+        },
+        async getSettings() {
+            return invoke({ body: { query: GET_SETTINGS_QUERY } });
+        },
+        async saveSettings(variables: Record<string, any>) {
+            return invoke({ body: { query: SAVE_SETTINGS_MUTATION, variables } });
         }
     };
 };

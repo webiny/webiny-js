@@ -10,7 +10,7 @@ const subject = "Some dummy subject";
 const text = "Some dummy body";
 const html = "<p>Some dummy body</p>";
 
-describe("Mailer crud", () => {
+describe("Mailer Transporter Operations", () => {
     beforeEach(() => {
         process.env.WEBINY_MAILER_HOST = "localhost";
         process.env.WEBINY_MAILER_USER = "user";

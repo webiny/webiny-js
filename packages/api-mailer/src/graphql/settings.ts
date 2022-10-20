@@ -27,7 +27,7 @@ export const createSettingsGraphQL = () => {
             }
         
             type MailerQuery {
-                getSettings: MailerSettingsResponse
+                getSettings: MailerSettingsResponse!
             }
             
             input TransportSettingsInput {
@@ -39,7 +39,7 @@ export const createSettingsGraphQL = () => {
             }
             
             type MailerMutation {
-                saveSettings(input: TransportSettingsInput): MailerSettingsResponse
+                saveSettings(data: TransportSettingsInput!): MailerSettingsResponse!
             }
             
             extend type Query {
