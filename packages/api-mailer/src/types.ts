@@ -1,58 +1,134 @@
-import { Context } from "@webiny/api/types";
+import { CmsContext } from "@webiny/api-headless-cms/types";
 import { Topic } from "@webiny/pubsub/types";
 
-export interface MailerContextObject<T extends Mailer = Mailer> {
-    onMailerBeforeInit: Topic<OnMailerBeforeInitParams>;
-    onMailerInitError: Topic<OnMailerInitErrorParams>;
-    onMailerAfterInit: Topic<OnMailerAfterInitParams>;
-    onMailerBeforeSend: Topic<OnMailerBeforeSendParams>;
-    onMailerAfterSend: Topic<OnMailerAfterSendParams>;
-    onMailerError: Topic<OnMailerErrorParams>;
-    isAvailable: () => boolean;
-    setMailer: (mailer: T) => void;
-    getMailer: () => T;
-    send: <D>(data: MailerSendData) => Promise<MailerSendResponse<D>>;
+export interface MailerTransporterContext<T extends Transport = Transport> {
+    onTransportBeforeSend: Topic<OnTransportBeforeSendParams>;
+    onTransportAfterSend: Topic<OnTransportAfterSendParams>;
+    onTransportError: Topic<OnTransportErrorParams>;
+    getTransport: () => Promise<T | null>;
+    sendMail: <D>(data: TransportSendData) => Promise<TransportSendResponse<D>>;
 }
-export interface MailerContext extends Context {
+
+export interface MailerSettingsCreateParams {
+    input: Partial<TransportSettings>;
+}
+export interface MailerSettingsUpdateParams {
+    input: Partial<TransportSettings>;
+    original?: ExtendedTransportSettings | null;
+}
+
+export interface MailerSettingsSaveParams {
+    input: Partial<TransportSettings>;
+}
+
+export interface OnSettingsBeforeGetTopicParams {
+    tenant: string;
+}
+
+export interface OnSettingsAfterGetTopicParams {
+    tenant: string;
+    settings: TransportSettings | null;
+}
+
+export interface OnSettingsGetErrorTopicParams {
+    tenant: string;
+    error: Error;
+}
+
+export interface OnSettingsBeforeCreateTopicParams {
+    input: Partial<TransportSettings>;
+    settings: TransportSettings;
+}
+
+export interface OnSettingsAfterCreateTopicParams {
+    input: Partial<TransportSettings>;
+    settings: TransportSettings;
+}
+
+export interface OnSettingsCreateErrorTopicParams {
+    input: Partial<TransportSettings>;
+    settings: TransportSettings;
+    error: Error;
+}
+
+export interface OnSettingsBeforeUpdateTopicParams {
+    input: Partial<TransportSettings>;
+    settings: TransportSettings;
+    original: TransportSettings;
+}
+
+export interface OnSettingsAfterUpdateTopicParams {
+    input: Partial<TransportSettings>;
+    original: TransportSettings;
+    settings: TransportSettings;
+}
+
+export interface OnSettingsUpdateErrorTopicParams {
+    input: Partial<TransportSettings>;
+    original: TransportSettings;
+    settings: TransportSettings;
+    error: Error;
+}
+
+export interface ExtendedTransportSettings extends TransportSettings {
+    id: string;
+}
+
+export interface MailerSettingsContext {
+    getSettings: () => Promise<ExtendedTransportSettings | null>;
+    /**
+     * Method should not be used outside of mailer
+     * @internal
+     */
+    createSettings: (params: MailerSettingsCreateParams) => Promise<TransportSettings>;
+    /**
+     * Method should not be used outside of mailer
+     * @internal
+     */
+    updateSettings: (params: MailerSettingsUpdateParams) => Promise<TransportSettings>;
+    /**
+     * Use to store the settings data.
+     */
+    saveSettings: (params: MailerSettingsSaveParams) => Promise<TransportSettings>;
+    /**
+     * Lifecycle events
+     */
+    onSettingsBeforeGet: Topic<OnSettingsBeforeGetTopicParams>;
+    onSettingsAfterGet: Topic<OnSettingsAfterGetTopicParams>;
+    onSettingsGetError: Topic<OnSettingsGetErrorTopicParams>;
+    onSettingsBeforeCreate: Topic<OnSettingsBeforeCreateTopicParams>;
+    onSettingsAfterCreate: Topic<OnSettingsAfterCreateTopicParams>;
+    onSettingsCreateError: Topic<OnSettingsCreateErrorTopicParams>;
+    onSettingsBeforeUpdate: Topic<OnSettingsBeforeUpdateTopicParams>;
+    onSettingsAfterUpdate: Topic<OnSettingsAfterUpdateTopicParams>;
+    onSettingsUpdateError: Topic<OnSettingsUpdateErrorTopicParams>;
+}
+
+export interface MailerContextObject<T extends Transport = Transport>
+    extends MailerTransporterContext<T>,
+        MailerSettingsContext {}
+export interface MailerContext extends CmsContext {
     mailer: MailerContextObject;
 }
 
-export interface MailerConfig<T extends Mailer = Mailer> {
-    mailer: T;
-    [key: string]: any;
+export interface OnTransportBeforeSendParams {
+    data: TransportSendData;
+    transport: Transport;
 }
-
-export interface OnMailerBeforeInitParams {
-    config: any;
+export interface OnTransportAfterSendParams {
+    data: TransportSendData;
+    transport: Transport;
 }
-
-export interface OnMailerInitErrorParams {
+export interface OnTransportErrorParams {
     error: Error;
-    /**
-     * If we change silent to true in the subscriber function, we will not throw the error.
-     */
-    silent?: boolean;
-}
-
-export interface OnMailerAfterInitParams {
-    config: any;
-}
-
-export interface OnMailerBeforeSendParams {
-    data: MailerSendData;
-}
-export interface OnMailerAfterSendParams {
-    data: MailerSendData;
-}
-export interface OnMailerErrorParams {
-    error: Error;
-    data: MailerSendData;
+    data: TransportSendData;
+    transport: Transport;
 }
 
 /**
  * Interface to implement the actual mailer.
  */
-export interface MailerSendResponse<T = any> {
+export interface TransportSendResponse<T = any> {
     result: T | null;
     error: {
         message: string;
@@ -63,17 +139,17 @@ export interface MailerSendResponse<T = any> {
     } | null;
 }
 
-interface MailerSendToData {
+interface TransportSendToData {
     to: string[];
 }
-interface MailerSendCcData {
+interface TransportSendCcData {
     cc: string[];
 }
-interface MailerSendBccData {
+interface TransportSendBccData {
     bcc: string[];
 }
 
-interface BaseMailerSendData {
+interface BaseTransportSendData {
     to?: string[];
     cc?: string[];
     bcc?: string[];
@@ -84,9 +160,17 @@ interface BaseMailerSendData {
     replyTo?: string;
 }
 
-export type MailerSendData = BaseMailerSendData &
-    (MailerSendToData | MailerSendBccData | MailerSendCcData);
-export interface Mailer<T = any> {
+export type TransportSendData = BaseTransportSendData &
+    (TransportSendToData | TransportSendBccData | TransportSendCcData);
+export interface Transport<T = any> {
     name: string;
-    send: (params: MailerSendData) => Promise<MailerSendResponse<T>>;
+    send: (params: TransportSendData) => Promise<TransportSendResponse<T>>;
+}
+
+export interface TransportSettings {
+    host: string;
+    user: string;
+    password: string;
+    from: string;
+    replyTo?: string;
 }

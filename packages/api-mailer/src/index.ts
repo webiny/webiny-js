@@ -1,31 +1,42 @@
 import { PluginCollection } from "@webiny/plugins/types";
 import { createMailerContext } from "~/context";
-import { createDummyMailer, DummyMailer } from "~/mailers/createDummyMailer";
-import { createSmtpMailer, SmtpMailerConfig, SmtpMailer } from "~/mailers/createSmtpMailer";
-import { createBuildMailerPlugin } from "~/plugins/CreateBuildMailerPlugin";
+import { createDummyTransport, DummyTransport } from "~/transports/createDummyTransport";
+import {
+    createSmtpTransport,
+    SmtpTransport,
+    SmtpTransportConfig
+} from "~/transports/createSmtpTransport";
+import { createTransport } from "~/plugins";
+import { createSettingsModel } from "~/crud/settings/model";
+import { createGroup } from "~/crud/group";
+import { createGraphQL } from "~/graphql";
 
-export { createDummyMailer, createSmtpMailer };
-export type { SmtpMailerConfig, SmtpMailer, DummyMailer };
-
-export {
-    CreateBuildMailerPlugin,
-    createBuildMailerPlugin
-} from "~/plugins/CreateBuildMailerPlugin";
+export { createDummyTransport, createSmtpTransport, createTransport };
+export type { SmtpTransport, SmtpTransportConfig, DummyTransport };
 
 export const createMailer = (): PluginCollection => {
+    const group = createGroup();
     return [
+        group,
+        /**
+         * Groups and models to use via the CMS
+         */
+        createSettingsModel(group),
         /**
          * If something is wrong with the smtp mailer, we will initialize the dummy one.
          */
-        createBuildMailerPlugin(async () => {
-            return createDummyMailer();
+        createTransport(async () => {
+            return createDummyTransport();
         }),
         /**
          * Smtp mailer goes into the plugins after the dummy one because plugins are loaded in reverse.
          */
-        createBuildMailerPlugin(async () => {
-            return createSmtpMailer();
+        createTransport(async params => {
+            return createSmtpTransport({
+                ...params.settings
+            });
         }),
-        createMailerContext()
+        createMailerContext(),
+        createGraphQL()
     ];
 };
