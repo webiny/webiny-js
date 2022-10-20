@@ -1,6 +1,5 @@
 import { createContext } from "./createContext";
-import { MailerSendData } from "~/types";
-import { createDummyMailer, DummyMailer } from "~/mailers/createDummyMailer";
+import { TransportSendData } from "~/types";
 
 const to = ["to@test.com"];
 const cc = ["cc@test.com"];
@@ -12,92 +11,18 @@ const text = "Some dummy body";
 const html = "<p>Some dummy body</p>";
 
 describe("Mailer crud", () => {
-    it("should set dummy mailer via factory and send e-mail", async () => {
-        const context = await createContext();
-
-        const dummyMailer = await import("~/mailers/createDummyMailer").then(module => {
-            return module.createDummyMailer();
-        });
-
-        context.mailer.setMailer(dummyMailer);
-
-        const params: MailerSendData = {
-            to,
-            cc,
-            bcc,
-            from,
-            replyTo,
-            subject,
-            text,
-            html
-        };
-
-        const result = await context.mailer.send(params);
-
-        expect(result).toEqual({
-            result: true,
-            error: null
-        });
-
-        const mailer = (await context.mailer.getMailer()) as DummyMailer;
-
-        expect(mailer.getAllSent()).toEqual([
-            {
-                to,
-                cc,
-                bcc,
-                from,
-                replyTo,
-                subject,
-                text,
-                html
-            }
-        ]);
-    });
-
-    it("should send e-mail via dummy mailer", async () => {
-        const mailer = createDummyMailer();
-
-        const context = await createContext();
-
-        context.mailer.setMailer(mailer);
-
-        const params: MailerSendData = {
-            to,
-            cc,
-            bcc,
-            from,
-            replyTo,
-            subject,
-            text,
-            html
-        };
-
-        const result = await context.mailer.send(params);
-
-        expect(result).toEqual({
-            result: true,
-            error: null
-        });
-
-        expect(mailer.getAllSent()).toEqual([
-            {
-                to,
-                cc,
-                bcc,
-                from,
-                replyTo,
-                subject,
-                text,
-                html
-            }
-        ]);
+    beforeEach(() => {
+        process.env.WEBINY_MAILER_HOST = "localhost";
+        process.env.WEBINY_MAILER_USER = "user";
+        process.env.WEBINY_MAILER_PASSWORD = "password";
+        process.env.WEBINY_MAILER_REPLY_TO = "replyTo@localhost.com";
+        process.env.WEBINY_MAILER_FROM = "from@localhost.com";
     });
 
     it(`should throw error before sending because of missing "to"`, async () => {
         const context = await createContext();
 
-        const params: MailerSendData = {
+        const params: TransportSendData = {
             to: [""],
             cc,
             bcc,
@@ -108,7 +33,7 @@ describe("Mailer crud", () => {
             html
         };
 
-        const result = await context.mailer.send(params);
+        const result = await context.mailer.sendMail(params);
 
         expect(result).toMatchObject({
             result: null,
@@ -123,13 +48,9 @@ describe("Mailer crud", () => {
     });
 
     it(`should throw error before sending because of missing "from"`, async () => {
-        const mailer = createDummyMailer();
-
         const context = await createContext();
 
-        context.mailer.setMailer(mailer);
-
-        const params: MailerSendData = {
+        const params: TransportSendData = {
             to,
             cc,
             bcc,
@@ -140,7 +61,7 @@ describe("Mailer crud", () => {
             html
         };
 
-        const result = await context.mailer.send(params);
+        const result = await context.mailer.sendMail(params);
 
         expect(result).toMatchObject({
             result: null,
@@ -155,13 +76,9 @@ describe("Mailer crud", () => {
     });
 
     it(`should throw error before sending because of missing "subject"`, async () => {
-        const mailer = createDummyMailer();
-
         const context = await createContext();
 
-        context.mailer.setMailer(mailer);
-
-        const params: MailerSendData = {
+        const params: TransportSendData = {
             to,
             cc,
             bcc,
@@ -172,7 +89,7 @@ describe("Mailer crud", () => {
             html
         };
 
-        const result = await context.mailer.send(params);
+        const result = await context.mailer.sendMail(params);
 
         expect(result).toMatchObject({
             result: null,
@@ -187,13 +104,9 @@ describe("Mailer crud", () => {
     });
 
     it(`should throw error before sending because of missing "text"`, async () => {
-        const mailer = createDummyMailer();
-
         const context = await createContext();
 
-        context.mailer.setMailer(mailer);
-
-        const params: MailerSendData = {
+        const params: TransportSendData = {
             to,
             cc,
             bcc,
@@ -204,7 +117,7 @@ describe("Mailer crud", () => {
             html
         };
 
-        const result = await context.mailer.send(params);
+        const result = await context.mailer.sendMail(params);
 
         expect(result).toMatchObject({
             result: null,
