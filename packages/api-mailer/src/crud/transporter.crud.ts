@@ -105,7 +105,13 @@ export const createTransporterCrud = async (
             return transporters[tenant];
         }
 
-        const settings = await context.mailer.getSettings();
+        let settings: TransportSettings | null = null;
+        try {
+            settings = await context.mailer.getSettings();
+        } catch (ex) {
+            console.log(ex.message);
+            console.log(ex.code);
+        }
         if (!settings && !defaultSettings) {
             console.log(`There are no Mailer transport settings for tenant "${tenant}".`);
             return null;
