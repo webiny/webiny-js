@@ -16,7 +16,9 @@
     { "path": "../api-tenancy" },
     { "path": "../api-tenancy-so-ddb" },
     { "path": "../handler" },
-    { "path": "../handler-aws" }
+    { "path": "../db-dynamodb" },
+    { "path": "../handler-aws" },
+    { "path": "../handler-db" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -48,8 +50,12 @@
       "@webiny/api-tenancy-so-ddb": ["../api-tenancy-so-ddb/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
+      "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
+      "@webiny/db-dynamodb": ["../db-dynamodb/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
       "@webiny/handler-aws": ["../handler-aws/src"],
+      "@webiny/handler-db/*": ["../handler-db/src/*"],
+      "@webiny/handler-db": ["../handler-db/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/pubsub/*": ["../pubsub/src/*"],
