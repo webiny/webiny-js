@@ -1,4 +1,4 @@
-import { createContextHandler } from "./createContextHandler";
+import { createContextHandler } from "./contextHandler";
 import { TransportSendData } from "~/types";
 
 jest.mock("nodemailer", () => {
