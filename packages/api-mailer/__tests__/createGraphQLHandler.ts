@@ -134,7 +134,7 @@ export const createGraphQLHandler = (params?: CreateGraphQLHandlerParams) => {
             plugins
         ],
         http: {
-            debug: true
+            debug: false
         }
     });
 

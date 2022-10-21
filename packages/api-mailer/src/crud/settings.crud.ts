@@ -16,10 +16,11 @@ import {
 } from "~/types";
 import { createTopic } from "@webiny/pubsub";
 import { SETTINGS_MODEL_ID } from "./settings/model";
-import { transformValuesFromEntry } from "~/crud/settings/transform";
+import { transformValuesFromEntry, transformInputToEntryValues } from "~/crud/settings/transform";
 import { getSecret } from "~/crud/settings/secret";
 import { validation } from "~/crud/settings/validation";
 import { CmsEntry, CmsModel } from "@webiny/api-headless-cms/types";
+import { attachPasswordObfuscatingHooks } from "~/crud/settings/hooks";
 
 /**
  * Note that settings cannot be used if there is no secret defined.
@@ -27,6 +28,11 @@ import { CmsEntry, CmsModel } from "@webiny/api-headless-cms/types";
 export const createSettingsCrud = async (
     context: MailerContext
 ): Promise<MailerSettingsContext> => {
+    /**
+     * We need to remove password from all references on create and update in the CMS.
+     */
+    attachPasswordObfuscatingHooks(context);
+
     let secret: string | null = null;
     try {
         secret = getSecret();
@@ -106,18 +112,22 @@ export const createSettingsCrud = async (
                     sort: ["createdOn_DESC"]
                 });
                 const [entry] = entries;
-                /**
-                 * We know that entry is the transport settings entry, and it has required values.
-                 */
-
+                if (!entry) {
+                    return null;
+                }
                 const settings = transformValuesFromEntry({
                     entry: entry as CmsEntry<TransportSettings>,
                     secret
                 });
 
+                const passwordlessSettings: TransportSettings = {
+                    ...settings,
+                    password: ""
+                };
+
                 await onSettingsAfterGet.publish({
                     tenant,
-                    settings
+                    settings: passwordlessSettings
                 });
 
                 return settings;
@@ -147,32 +157,36 @@ export const createSettingsCrud = async (
                 });
             }
 
-            const settings: TransportSettings = {
-                /**
-                 * We can safely cast because input passed the validation.
-                 */
-                ...(input as TransportSettings)
+            const { password, ...settings } = result.value;
+
+            const passwordlessSettings: TransportSettings = {
+                ...settings,
+                password: ""
             };
 
             try {
                 await onSettingsBeforeCreate.publish({
-                    input,
-                    settings
+                    settings: passwordlessSettings
                 });
 
-                await context.cms.createEntry(model, {
-                    ...settings
-                });
+                await context.cms.createEntry(
+                    model,
+                    transformInputToEntryValues({
+                        values: {
+                            ...settings,
+                            password
+                        },
+                        secret
+                    })
+                );
 
                 await onSettingsAfterCreate.publish({
-                    input,
-                    settings
+                    settings: passwordlessSettings
                 });
-                return settings;
+                return passwordlessSettings;
             } catch (ex) {
                 await onSettingsCreateError.publish({
-                    settings,
-                    input,
+                    settings: passwordlessSettings,
                     error: ex
                 });
                 throw new WebinyError(ex.message, ex.code, ex.data);
@@ -183,7 +197,7 @@ export const createSettingsCrud = async (
          * @internal
          */
         async updateSettings(this: MailerContextObject, params) {
-            const { input } = params;
+            const { input, original: initialOriginal } = params;
 
             const model = await getModel();
 
@@ -195,7 +209,7 @@ export const createSettingsCrud = async (
                     errors: error.details
                 });
             }
-            let original = params.original;
+            let original = initialOriginal;
             if (!original) {
                 original = await this.getSettings();
                 if (!original) {
@@ -206,41 +220,51 @@ export const createSettingsCrud = async (
                 }
             }
 
-            const settings: TransportSettings = {
-                /**
-                 * We can safely cast because input passed the validation.
-                 */
-                ...(input as TransportSettings)
-            };
+            const { password, ...settings } = result.value;
 
+            const passwordlessSettings: TransportSettings = {
+                ...settings,
+                password: ""
+            };
             try {
                 await onSettingsBeforeUpdate.publish({
-                    input,
-                    settings,
+                    settings: passwordlessSettings,
                     original
                 });
 
-                await context.cms.updateEntry(model, original.id, {
-                    ...settings
-                });
+                await context.cms.updateEntry(
+                    model,
+                    original.id,
+                    transformInputToEntryValues({
+                        values: {
+                            ...settings,
+                            password
+                        },
+                        secret
+                    })
+                );
 
                 await onSettingsAfterUpdate.publish({
-                    input,
-                    settings,
+                    settings: passwordlessSettings,
                     original
                 });
-                return settings;
+                return passwordlessSettings;
             } catch (ex) {
                 await onSettingsUpdateError.publish({
                     original,
-                    settings,
-                    input,
+                    settings: passwordlessSettings,
                     error: ex
                 });
                 throw new WebinyError(ex.message, ex.code, ex.data);
             }
         },
         async saveSettings(this: MailerContextObject, params) {
+            if (!secret) {
+                throw new WebinyError(
+                    `There is no "WEBINY_MAILER_PASSWORD_SECRET" environment variable defined.`,
+                    "WEBINY_SECRET_ERROR"
+                );
+            }
             const { input } = params;
 
             const original = await this.getSettings();

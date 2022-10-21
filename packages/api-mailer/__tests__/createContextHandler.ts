@@ -133,7 +133,7 @@ export const createContextHandler = (params?: CreateGraphQLHandlerParams) => {
             plugins
         ],
         http: {
-            debug: true
+            debug: false
         }
     });
 

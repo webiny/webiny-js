@@ -3,12 +3,12 @@ import WebinyError from "@webiny/error";
 
 interface Params {
     value?: string | null;
-    secret: string;
+    secret?: string | null;
 }
 
 export const decrypt = (params: Params): string => {
     const { value, secret } = params;
-    if (!String(secret).trim()) {
+    if (!secret) {
         throw new WebinyError(`Cannot call decrypt without passing the secret.`);
     }
     if (!value) {
@@ -30,7 +30,7 @@ export const decrypt = (params: Params): string => {
 
 export const encrypt = (params: Params): string => {
     const { value, secret } = params;
-    if (!String(secret).trim()) {
+    if (!secret) {
         throw new WebinyError(`Cannot call decrypt without passing the secret.`);
     }
     if (!value) {

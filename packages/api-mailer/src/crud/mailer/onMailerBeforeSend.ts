@@ -1,10 +1,14 @@
 import { Topic } from "@webiny/pubsub/types";
 import { TransportSendData, OnTransportBeforeSendParams } from "~/types";
-import joi from "joi";
+import joi, { EmailOptions } from "joi";
 import WebinyError from "@webiny/error";
 
+const options: EmailOptions = {
+    tlds: false
+};
+
 const requiredString = joi.string().required();
-const requiredEmail = requiredString.email();
+const requiredEmail = requiredString.email(options);
 
 const schema = joi.object<TransportSendData>({
     to: joi.array().items(requiredEmail),
@@ -12,7 +16,7 @@ const schema = joi.object<TransportSendData>({
     subject: requiredString.max(1024),
     cc: joi.array().items(requiredEmail),
     bcc: joi.array().items(requiredEmail),
-    replyTo: joi.string().email(),
+    replyTo: joi.string().email(options),
     text: requiredString.min(10),
     html: joi.string()
 });

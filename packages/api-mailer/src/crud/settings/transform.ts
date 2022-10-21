@@ -4,37 +4,35 @@ import { decrypt, encrypt } from "./password";
 import { CmsEntry } from "@webiny/api-headless-cms/types";
 
 interface TransformValuesFromEntryParams {
-    entry?: CmsEntry<TransportSettings> | null;
+    entry: CmsEntry<TransportSettings>;
     secret: string | null;
 }
 export const transformValuesFromEntry = (
     params: TransformValuesFromEntryParams
-): ExtendedTransportSettings | null => {
+): ExtendedTransportSettings => {
     const { entry, secret } = params;
     if (!secret) {
         throw new WebinyError(
             `There is no secret defined. Without it we cannot decrypt the password.`
         );
-    } else if (!entry) {
-        return null;
     }
     return {
         id: entry.id,
         ...entry.values,
         password: decrypt({
-            value: entry.values["password"],
+            value: entry.values.password,
             secret
         })
     };
 };
 
-interface TransformValuesToEntryParams {
+interface TransformValuesToEntryValuesParams {
     values: TransportSettings;
     secret: string | null;
 }
-export const transformValuesToEntry = (
-    params: TransformValuesToEntryParams
-): TransportSettings | null => {
+export const transformInputToEntryValues = (
+    params: TransformValuesToEntryValuesParams
+): TransportSettings => {
     const { values, secret } = params;
 
     if (!secret) {

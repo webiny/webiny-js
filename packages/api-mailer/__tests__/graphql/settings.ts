@@ -5,7 +5,6 @@ export const GET_SETTINGS_QUERY = `
                 data {
                     host
                     user
-                    password
                     from
                     replyTo
                 }
@@ -20,13 +19,12 @@ export const GET_SETTINGS_QUERY = `
 `;
 
 export const SAVE_SETTINGS_MUTATION = `
-    mutation SaveSettings($data: MailerSettingsResponse!) {
+    mutation SaveSettings($data: TransportSettingsInput!) {
         mailer {
             saveSettings(data: $data) {
                 data {
                     host
                     user
-                    password
                     from
                     replyTo
                 }

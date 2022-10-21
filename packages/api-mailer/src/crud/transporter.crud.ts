@@ -61,8 +61,6 @@ const getDefaultSettings = (): TransportSettings | null => {
         if (!result.error) {
             return result.value;
         }
-        console.log(result.error.message);
-        console.log(result.error.details);
     } catch (ex) {}
 
     return null;

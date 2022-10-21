@@ -1,5 +1,5 @@
 import { ErrorResponse, GraphQLSchemaPlugin, Response } from "@webiny/handler-graphql";
-import { MailerContext, MailerSettingsSaveParams } from "~/types";
+import { MailerContext } from "~/types";
 
 const emptyResolver = () => ({});
 
@@ -15,8 +15,6 @@ export const createSettingsGraphQL = () => {
             type MailerTransportSettings {
                 host: String
                 user: String
-                # note that we never output password, just a random number of *
-                password: String
                 from: String
                 replyTo: String
             }
@@ -69,9 +67,9 @@ export const createSettingsGraphQL = () => {
             MailerMutation: {
                 saveSettings: async (_, args: any, context) => {
                     try {
-                        const response = await context.mailer.saveSettings(
-                            args as MailerSettingsSaveParams
-                        );
+                        const response = await context.mailer.saveSettings({
+                            input: args.data
+                        });
                         return new Response(response);
                     } catch (ex) {
                         return new ErrorResponse(ex);

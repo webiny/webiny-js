@@ -21,11 +21,11 @@ jest.mock("nodemailer", () => {
     };
 });
 
-const to = ["to@test.com"];
-const cc = ["cc@test.com"];
-const bcc = ["bcc@test.com"];
-const from = "from@test.com";
-const replyTo = "replyTo@test.com";
+const to = ["to@dummy-host.webiny"];
+const cc = ["cc@dummy-host.webiny"];
+const bcc = ["bcc@dummy-host.webiny"];
+const from = "from@dummy-host.webiny";
+const replyTo = "replyTo@dummy-host.webiny";
 const subject = "Some dummy subject";
 const text = "Some dummy body";
 const html = "<p>Some dummy body</p>";
@@ -34,11 +34,12 @@ describe("Mailer Transporter Operations", () => {
     const { handle } = createContextHandler();
 
     beforeEach(() => {
-        process.env.WEBINY_MAILER_HOST = "localhost";
+        process.env.WEBINY_MAILER_HOST = "dummy-host.webiny";
         process.env.WEBINY_MAILER_USER = "user";
         process.env.WEBINY_MAILER_PASSWORD = "password";
-        process.env.WEBINY_MAILER_REPLY_TO = "replyTo@localhost.com";
-        process.env.WEBINY_MAILER_FROM = "from@localhost.com";
+        process.env.WEBINY_MAILER_REPLY_TO = "replyTo@dummy-host.webiny";
+        process.env.WEBINY_MAILER_FROM = "from@dummy-host.webiny";
+        process.env.WEBINY_MAILER_PASSWORD_SECRET = "really secret secret";
     });
 
     it(`should throw error before sending because of missing "to"`, async () => {

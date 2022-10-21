@@ -36,35 +36,29 @@ export interface OnSettingsGetErrorTopicParams {
 }
 
 export interface OnSettingsBeforeCreateTopicParams {
-    input: Partial<TransportSettings>;
     settings: TransportSettings;
 }
 
 export interface OnSettingsAfterCreateTopicParams {
-    input: Partial<TransportSettings>;
     settings: TransportSettings;
 }
 
 export interface OnSettingsCreateErrorTopicParams {
-    input: Partial<TransportSettings>;
     settings: TransportSettings;
     error: Error;
 }
 
 export interface OnSettingsBeforeUpdateTopicParams {
-    input: Partial<TransportSettings>;
     settings: TransportSettings;
     original: TransportSettings;
 }
 
 export interface OnSettingsAfterUpdateTopicParams {
-    input: Partial<TransportSettings>;
     original: TransportSettings;
     settings: TransportSettings;
 }
 
 export interface OnSettingsUpdateErrorTopicParams {
-    input: Partial<TransportSettings>;
     original: TransportSettings;
     settings: TransportSettings;
     error: Error;
