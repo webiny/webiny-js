@@ -4,10 +4,6 @@ import mocks from "./mocks/workflows";
 import { ApwWorkflowApplications, WorkflowScopeTypes } from "~/types";
 
 describe("Workflow assignment to a PB Page", () => {
-    const options = {
-        path: "manage/en-US"
-    };
-
     const {
         createWorkflowMutation,
         updateWorkflowMutation,
@@ -21,9 +17,7 @@ describe("Workflow assignment to a PB Page", () => {
         until,
         reviewer: reviewerGQL,
         securityIdentity
-    } = usePageBuilderHandler({
-        ...options
-    });
+    } = usePageBuilderHandler();
 
     const login = async () => {
         return await securityIdentity.login();

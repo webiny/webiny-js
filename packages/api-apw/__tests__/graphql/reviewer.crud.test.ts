@@ -5,23 +5,16 @@ const identityRoot = { id: "root", displayName: "root", type: "admin" };
 const updatedDisplayName = "Robert Downey";
 
 describe("Reviewer crud test", () => {
-    const options = {
-        path: "manage/en-US"
-    };
-
     const { securityIdentity, reviewer, until } = usePageBuilderHandler({
-        ...options,
         plugins: [defaultIdentity()]
     });
 
     const { securityIdentity: securityIdentityRoot } = usePageBuilderHandler({
-        ...options,
         plugins: [defaultIdentity()],
         identity: identityRoot
     });
 
     const { securityIdentity: securityIdentityRootUpdated } = usePageBuilderHandler({
-        ...options,
         plugins: [defaultIdentity()],
         identity: {
             ...identityRoot,

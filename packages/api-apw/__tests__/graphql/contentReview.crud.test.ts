@@ -3,18 +3,11 @@ import { createSetupForPageContentReview } from "../utils/helpers";
 import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
 
 describe("Content Review crud test", () => {
-    const options = {
-        path: "manage/en-US"
-    };
-
     const identityRoot = { id: "root", displayName: "root", type: "admin" };
 
-    const gqlHandler = usePageBuilderHandler({
-        ...options
-    });
+    const gqlHandler = usePageBuilderHandler();
 
     const rootGqlHandler = usePageBuilderHandler({
-        ...options,
         identity: identityRoot
     });
 
