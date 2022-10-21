@@ -18,42 +18,45 @@ jobs:
       ts: ${{ steps.get-timestamp.outputs.ts }}
       webiny-version: ${{ steps.get-webiny-version.outputs.webiny-version }}
     steps:
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: 14
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Get current version of Webiny
         id: get-webiny-version
-        run: echo "::set-output name=webiny-version::$(node --eval "console.log(require('./lerna.json').version)")"
+        run: echo "webiny-version=$(node --eval "console.log(require('./lerna.json').version)")" >> $GITHUB_OUTPUT
 
       - name: Get timestamp
         id: get-timestamp
-        run: echo "::set-output name=ts::$(node --eval "console.log(new Date().getTime())")"
+        # run: echo "ts=$(node --eval "console.log(new Date().getTime())")" >> $GITHUB_OUTPUT
+        run: echo "ts=$(node --eval "console.log(new Date().getTime())")" >> $GITHUB_OUTPUT
+
 
       - name: List packages with Jest tests
         id: list-jest-packages
-        run: echo "::set-output name=jest-packages::$(node scripts/listPackagesWithTests.js)"
+        # run: echo "jest-packages=$(node scripts/listPackagesWithTests.js)" >> $GITHUB_OUTPUT
+        run: echo "jest-packages=$(node scripts/listPackagesWithTests.js)" >> $GITHUB_OUTPUT
 
   build:
     needs: init
     name: Build
     runs-on: webiny-js-4-cores
     steps:
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: 14
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         id: yarn-cache
         with:
           path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         id: cached-packages
         with:
           path: .webiny/cached-packages
@@ -67,7 +70,7 @@ jobs:
         if: steps.cached-packages.outputs.cache-hit != 'true'
         run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         id: packages-cache
         with:
           path: .webiny/cached-packages
@@ -78,18 +81,18 @@ jobs:
     name: Static code analysis
     runs-on: webiny-js-4-cores
     steps:
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: 14
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: .webiny/cached-packages
           key: packages-cache-${{ needs.init.outputs.ts }}
@@ -113,13 +116,13 @@ jobs:
     name: Static code analysis (TypeScript)
     runs-on: webiny-js-4-cores
     steps:
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: 14
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
@@ -147,13 +150,13 @@ jobs:
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.init.outputs.ts }}_
     steps:
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
@@ -161,7 +164,7 @@ jobs:
       - name: Install dependencies
         run: yarn --immutable
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: .webiny/cached-packages
           key: packages-cache-${{ needs.init.outputs.ts }}
@@ -180,23 +183,23 @@ jobs:
       ts: ${{ steps.get-timestamp.outputs.ts }}
       webiny-version: ${{ steps.get-webiny-version.outputs.webiny-version }}
     steps:
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: 14
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Get current version of Webiny
         id: get-webiny-version
-        run: echo "::set-output name=webiny-version::$(node --eval "console.log(require('./lerna.json').version)")"
+        run: echo "webiny-version=$(node --eval "console.log(require('./lerna.json').version)")" >> $GITHUB_OUTPUT
 
       - name: Get timestamp
         id: get-timestamp
-        run: echo "::set-output name=ts::$(node --eval "console.log(new Date().getTime())")"
+        run: echo "ts=$(node --eval "console.log(new Date().getTime())")" >> $GITHUB_OUTPUT
 
       - name: List Cypress tests folders
         id: list-cypress-folders
-        run: echo "::set-output name=cypress-folders::$(node scripts/listCypressTestsFolders.js)"
+        run: echo "cypress-folders=$(node scripts/listCypressTestsFolders.js)" >> $GITHUB_OUTPUT
 
   e2e-wby-cms-ddb-project-setup:
     name: E2E (DDB) - Project setup
@@ -215,11 +218,11 @@ jobs:
       WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}_${{ needs.e2e-wby-cms-ddb-init.outputs.ts }}
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: 14
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           # We want to make sure all commits are present and that the next release version is calculated correctly.
           fetch-depth: 0
@@ -228,13 +231,13 @@ jobs:
           # Fixes Lerna's detached HEAD issue (https://github.com/lerna/lerna/issues/2443).
           # ref: ${{ github.event.pull_request.head.ref }}
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         id: yarn-cache
         with:
           path: v5/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('v5/**/yarn.lock') }}
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         id: cached-packages
         with:
           path: v5/.webiny/cached-packages
@@ -275,7 +278,7 @@ jobs:
         run: yarn lerna:publish:verdaccio
 
       - name: Create verdaccio-files artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: verdaccio-files
           retention-days: 1
@@ -305,7 +308,7 @@ jobs:
         run: yarn webiny --version
 
       - name: Create project-files artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: project-files
           retention-days: 1
@@ -341,7 +344,7 @@ jobs:
       - name: Save Cypress config
         id: save-cypress-config
         working-directory: v5
-        run: echo "::set-output name=cypress-config::$(cat cypress.json | tr -d ' \t\n\r')"
+        run: echo "cypress-config=$(cat cypress.json | tr -d ' \t\n\r')" >> $GITHUB_OUTPUT
 
       - name: Cypress - run installation wizard test
         working-directory: v5
@@ -377,16 +380,16 @@ jobs:
       WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}_${{ needs.e2e-wby-cms-ddb-init.outputs.ts }}
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           path: v5
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: v5/.webiny/cached-packages
           key: ${{ runner.os }}-${{ needs.e2e-wby-cms-ddb-init.outputs.webiny-version }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: v5/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('v5/**/yarn.lock') }}
@@ -424,23 +427,23 @@ jobs:
 #      ts: ${{ steps.get-timestamp.outputs.ts }}
 #      webiny-version: ${{ steps.get-webiny-version.outputs.webiny-version }}
 #    steps:
-#      - uses: actions/setup-node@v2
+#      - uses: actions/setup-node@v3
 #        with:
 #          node-version: 14
 #
-#      - uses: actions/checkout@v2
+#      - uses: actions/checkout@v3
 #
 #      - name: Get current version of Webiny
 #        id: get-webiny-version
-#        run: echo "::set-output name=webiny-version::$(node --eval "console.log(require('./lerna.json').version)")"
+#        run: echo "webiny-version=$(node --eval "console.log(require('./lerna.json').version)")" >> $GITHUB_OUTPUT
 #
 #      - name: Get timestamp
 #        id: get-timestamp
-#        run: echo "::set-output name=ts::$(node --eval "console.log(new Date().getTime())")"
+#        run: echo "ts=$(node --eval "console.log(new Date().getTime())")" >> $GITHUB_OUTPUT
 #
 #      - name: List Cypress tests folders
 #        id: list-cypress-folders
-#        run: echo "::set-output name=cypress-folders::$(node scripts/listCypressTestsFolders.js)"
+#        run: echo "cypress-folders=$(node scripts/listCypressTestsFolders.js)" >> $GITHUB_OUTPUT
 
 #  e2e-wby-cms-ddb-es-project-setup:
 #    name: E2E (DDB+ES) - Project setup
@@ -462,11 +465,11 @@ jobs:
 #      WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}_${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}
 #      YARN_ENABLE_IMMUTABLE_INSTALLS: false
 #    steps:
-#      - uses: actions/setup-node@v2
+#      - uses: actions/setup-node@v3
 #        with:
 #          node-version: 14
 #
-#      - uses: actions/checkout@v2
+#      - uses: actions/checkout@v3
 #        with:
 #          # We want to make sure all commits are present and that the next release version is calculated correctly.
 #          fetch-depth: 0
@@ -475,13 +478,13 @@ jobs:
 #          # Fixes Lerna's detached HEAD issue (https://github.com/lerna/lerna/issues/2443).
 #          # ref: ${{ github.event.pull_request.head.ref }}
 #
-#      - uses: actions/cache@v2
+#      - uses: actions/cache@v3
 #        id: yarn-cache
 #        with:
 #          path: v5/.yarn/cache
 #          key: yarn-${{ runner.os }}-${{ hashFiles('v5/**/yarn.lock') }}
 #
-#      - uses: actions/cache@v2
+#      - uses: actions/cache@v3
 #        id: cached-packages
 #        with:
 #          path: v5/.webiny/cached-packages
@@ -522,7 +525,7 @@ jobs:
 #        run: yarn lerna:publish:verdaccio
 #
 #      - name: Create verdaccio-files artifact
-#        uses: actions/upload-artifact@v2
+#        uses: actions/upload-artifact@v3
 #        with:
 #          name: verdaccio-files
 #          retention-days: 1
@@ -552,7 +555,7 @@ jobs:
 #        run: yarn webiny --version
 #
 #      - name: Create project-files artifact
-#        uses: actions/upload-artifact@v2
+#        uses: actions/upload-artifact@v3
 #        with:
 #          name: project-files
 #          retention-days: 1
@@ -588,7 +591,7 @@ jobs:
 #      - name: Save Cypress config
 #        id: save-cypress-config
 #        working-directory: v5
-#        run: echo "::set-output name=cypress-config::$(cat cypress.json | tr -d ' \t\n\r')"
+#        run: echo "cypress-config=$(cat cypress.json | tr -d ' \t\n\r')" >> $GITHUB_OUTPUT
 #
 #      - name: Cypress - run installation wizard test
 #        working-directory: v5
@@ -627,16 +630,16 @@ jobs:
 #      WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}_${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}
 #      YARN_ENABLE_IMMUTABLE_INSTALLS: false
 #    steps:
-#      - uses: actions/checkout@v2
+#      - uses: actions/checkout@v3
 #        with:
 #          path: v5
 #
-#      - uses: actions/cache@v2
+#      - uses: actions/cache@v3
 #        with:
 #          path: v5/.webiny/cached-packages
 #          key: ${{ runner.os }}-${{ needs.e2e-wby-cms-ddb-es-init.outputs.webiny-version }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
 #
-#      - uses: actions/cache@v2
+#      - uses: actions/cache@v3
 #        with:
 #          path: v5/.yarn/cache
 #          key: yarn-${{ runner.os }}-${{ hashFiles('v5/**/yarn.lock') }}
@@ -676,20 +679,20 @@ jobs:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: 14
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: .webiny/cached-packages
           key: packages-cache-${{ needs.init.outputs.ts }}
