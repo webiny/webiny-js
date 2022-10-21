@@ -26,15 +26,19 @@ export const createMailer = (): PluginCollection => {
          * If something is wrong with the smtp mailer, we will initialize the dummy one.
          */
         createTransport(async () => {
-            return createDummyTransport();
+            const plugin = await createDummyTransport();
+            plugin.name = "dummy-default";
+            return plugin;
         }),
         /**
          * Smtp mailer goes into the plugins after the dummy one because plugins are loaded in reverse.
          */
         createTransport(async params => {
-            return createSmtpTransport({
+            const plugin = await createSmtpTransport({
                 ...params.settings
             });
+            plugin.name = "smtp-default";
+            return plugin;
         }),
         createMailerContext(),
         createGraphQL()

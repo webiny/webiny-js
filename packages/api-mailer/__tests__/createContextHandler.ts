@@ -1,7 +1,6 @@
-import { getIntrospectionQuery } from "graphql";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import i18nContext from "@webiny/api-i18n/graphql/context";
-import { createHandler } from "@webiny/handler-aws/gateway";
+import { createHandler, createEventHandler } from "@webiny/handler-aws/raw";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { ApiKey, SecurityIdentity } from "@webiny/api-security/types";
 import apiKeyAuthentication from "@webiny/api-security/plugins/apiKeyAuthentication";
@@ -19,8 +18,6 @@ import { createMailer } from "~/index";
 import { ContextPlugin } from "@webiny/api";
 import { MailerContext } from "~/types";
 import { Tenant } from "@webiny/api-tenancy/types";
-import createGraphQLHandlerPlugins from "@webiny/handler-graphql";
-import { GET_SETTINGS_QUERY, SAVE_SETTINGS_MUTATION } from "./graphql/settings";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 
@@ -83,7 +80,7 @@ const documentClient = new DocumentClient({
     secretAccessKey: "test"
 });
 
-export const createGraphQLHandler = (params?: CreateGraphQLHandlerParams) => {
+export const createContextHandler = (params?: CreateGraphQLHandlerParams) => {
     const tenant = {
         id: "root",
         name: "Root",
@@ -91,15 +88,17 @@ export const createGraphQLHandler = (params?: CreateGraphQLHandlerParams) => {
     };
     const { permissions, identity, plugins = [] } = params || {};
 
-    const handler = createHandler({
+    const handle = createHandler<any, MailerContext>({
         plugins: [
+            createEventHandler(async ({ context }) => {
+                return context;
+            }),
             dbPlugins({
                 table: process.env.DB_TABLE,
                 driver: new DynamoDbDriver({
                     documentClient
                 })
             }),
-            createGraphQLHandlerPlugins(),
             ...createTenancyAndSecurity({
                 permissions: [...createPermissions(permissions)],
                 identity
@@ -138,41 +137,19 @@ export const createGraphQLHandler = (params?: CreateGraphQLHandlerParams) => {
         }
     });
 
-    const invoke = async ({ httpMethod = "POST", body, headers = {}, ...rest }: InvokeParams) => {
-        const response = await handler(
-            {
-                path: "/graphql",
-                httpMethod,
-                headers: {
-                    ["x-tenant"]: "root",
-                    ["Content-Type"]: "application/json",
-                    ...headers
-                },
-                body: JSON.stringify(body),
-                ...rest
-            } as any,
-            {} as any
-        );
-        if (httpMethod === "OPTIONS" && !response.body) {
-            return [null, response];
-        }
-        // The first element is the response body, and the second is the raw response.
-        return [JSON.parse(response.body), response];
-    };
-
     return {
         until,
         sleep,
-        handler,
-        invoke,
-        async introspect() {
-            return invoke({ body: { query: getIntrospectionQuery() } });
-        },
-        async getSettings() {
-            return invoke({ body: { query: GET_SETTINGS_QUERY } });
-        },
-        async saveSettings(variables: Record<string, any>) {
-            return invoke({ body: { query: SAVE_SETTINGS_MUTATION, variables } });
+        handle: async () => {
+            return handle(
+                {
+                    headers: {
+                        ["x-tenant"]: tenant.id,
+                        ["Content-Type"]: "application/json"
+                    }
+                },
+                {} as any
+            );
         }
     };
 };

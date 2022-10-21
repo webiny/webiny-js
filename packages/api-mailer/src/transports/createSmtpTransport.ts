@@ -17,6 +17,7 @@ export const createSmtpTransport = (config?: Partial<SmtpTransportConfig>): Smtp
     if (!config) {
         throw new WebinyError("There is no configuration for the SMTP transport.");
     }
+
     const transporter = nodemailer.createTransport(config);
 
     return {

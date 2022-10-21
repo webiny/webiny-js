@@ -1,5 +1,25 @@
-import { createContext } from "./createContext";
+import { createContextHandler } from "./createContextHandler";
 import { TransportSendData } from "~/types";
+
+jest.mock("nodemailer", () => {
+    return {
+        createTransport: (config: any) => {
+            console.log(`Creating test transport with config: ${JSON.stringify(config)}`);
+            return {
+                sendMail: async (params: TransportSendData) => {
+                    return {
+                        envelope: "envelope",
+                        messageId: "123",
+                        accepted: [params.to],
+                        rejected: [],
+                        pending: [],
+                        response: "ok"
+                    };
+                }
+            };
+        }
+    };
+});
 
 const to = ["to@test.com"];
 const cc = ["cc@test.com"];
@@ -11,6 +31,8 @@ const text = "Some dummy body";
 const html = "<p>Some dummy body</p>";
 
 describe("Mailer Transporter Operations", () => {
+    const { handle } = createContextHandler();
+
     beforeEach(() => {
         process.env.WEBINY_MAILER_HOST = "localhost";
         process.env.WEBINY_MAILER_USER = "user";
@@ -20,7 +42,7 @@ describe("Mailer Transporter Operations", () => {
     });
 
     it(`should throw error before sending because of missing "to"`, async () => {
-        const context = await createContext();
+        const context = await handle();
 
         const params: TransportSendData = {
             to: [""],
@@ -48,7 +70,7 @@ describe("Mailer Transporter Operations", () => {
     });
 
     it(`should throw error before sending because of missing "from"`, async () => {
-        const context = await createContext();
+        const context = await handle();
 
         const params: TransportSendData = {
             to,
@@ -76,7 +98,7 @@ describe("Mailer Transporter Operations", () => {
     });
 
     it(`should throw error before sending because of missing "subject"`, async () => {
-        const context = await createContext();
+        const context = await handle();
 
         const params: TransportSendData = {
             to,
@@ -104,7 +126,7 @@ describe("Mailer Transporter Operations", () => {
     });
 
     it(`should throw error before sending because of missing "text"`, async () => {
-        const context = await createContext();
+        const context = await handle();
 
         const params: TransportSendData = {
             to,
@@ -128,6 +150,27 @@ describe("Mailer Transporter Operations", () => {
                     data: params
                 }
             }
+        });
+    });
+
+    it("should send an email", async () => {
+        const context = await handle();
+
+        const params: TransportSendData = {
+            to,
+            cc,
+            bcc,
+            from,
+            replyTo,
+            subject,
+            text,
+            html
+        };
+
+        const result = await context.mailer.sendMail(params);
+        expect(result).toEqual({
+            result: true,
+            error: null
         });
     });
 });
