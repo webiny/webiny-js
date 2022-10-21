@@ -103,4 +103,50 @@ describe("Mailer Settings GraphQL", () => {
             }
         });
     });
+
+    it("should not be possibly to get or save settings when no secret is available", async () => {
+        delete process.env.WEBINY_MAILER_PASSWORD_SECRET;
+
+        const [getResponse] = await handler.getSettings();
+
+        expect(getResponse).toEqual({
+            data: {
+                mailer: {
+                    getSettings: {
+                        data: null,
+                        error: {
+                            message: "There is no password secret define.",
+                            code: "PASSWORD_SECRET_ERROR",
+                            data: null
+                        }
+                    }
+                }
+            }
+        });
+
+        const [saveResponse] = await handler.saveSettings({
+            data: {
+                host: "dummy-host.webiny",
+                user: "user",
+                password: "password",
+                from: "from@dummy-host.webiny",
+                replyTo: "replyTo@dummy-host.webiny"
+            }
+        });
+
+        expect(saveResponse).toEqual({
+            data: {
+                mailer: {
+                    saveSettings: {
+                        data: null,
+                        error: {
+                            message: "There is no password secret define.",
+                            code: "PASSWORD_SECRET_ERROR",
+                            data: null
+                        }
+                    }
+                }
+            }
+        });
+    });
 });

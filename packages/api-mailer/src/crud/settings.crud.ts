@@ -85,6 +85,13 @@ export const createSettingsCrud = async (
         "mailer.onSettingsUpdateError"
     );
 
+    const checkSecret = (): void => {
+        if (secret) {
+            return;
+        }
+        throw new WebinyError("There is no password secret define.", "PASSWORD_SECRET_ERROR");
+    };
+
     return {
         onSettingsAfterGet,
         onSettingsBeforeGet,
@@ -96,6 +103,7 @@ export const createSettingsCrud = async (
         onSettingsAfterUpdate,
         onSettingsUpdateError,
         getSettings: async () => {
+            checkSecret();
             const model = await getModel();
 
             const tenant = getTenant();
@@ -144,6 +152,7 @@ export const createSettingsCrud = async (
          * @internal
          */
         async createSettings(this: MailerContextObject, params) {
+            checkSecret();
             const { input } = params;
 
             const model = await getModel();
@@ -197,6 +206,7 @@ export const createSettingsCrud = async (
          * @internal
          */
         async updateSettings(this: MailerContextObject, params) {
+            checkSecret();
             const { input, original: initialOriginal } = params;
 
             const model = await getModel();
@@ -259,12 +269,6 @@ export const createSettingsCrud = async (
             }
         },
         async saveSettings(this: MailerContextObject, params) {
-            if (!secret) {
-                throw new WebinyError(
-                    `There is no "WEBINY_MAILER_PASSWORD_SECRET" environment variable defined.`,
-                    "WEBINY_SECRET_ERROR"
-                );
-            }
             const { input } = params;
 
             const original = await this.getSettings();
