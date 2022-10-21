@@ -115,7 +115,7 @@ describe("Mailer Settings GraphQL", () => {
                     getSettings: {
                         data: null,
                         error: {
-                            message: "There is no password secret define.",
+                            message: "There is no password secret defined.",
                             code: "PASSWORD_SECRET_ERROR",
                             data: null
                         }
@@ -140,7 +140,7 @@ describe("Mailer Settings GraphQL", () => {
                     saveSettings: {
                         data: null,
                         error: {
-                            message: "There is no password secret define.",
+                            message: "There is no password secret defined.",
                             code: "PASSWORD_SECRET_ERROR",
                             data: null
                         }

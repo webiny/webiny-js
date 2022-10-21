@@ -109,8 +109,10 @@ export const createTransporterCrud = async (
         try {
             settings = await context.mailer.getSettings();
         } catch (ex) {
-            console.log(ex.message);
-            console.log(ex.code);
+            if (ex.code !== "PASSWORD_SECRET_ERROR") {
+                console.log(ex.message);
+                console.log(ex.code);
+            }
         }
         if (!settings && !defaultSettings) {
             console.log(`There are no Mailer transport settings for tenant "${tenant}".`);

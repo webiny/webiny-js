@@ -39,7 +39,6 @@ describe("Mailer Transporter Operations", () => {
         process.env.WEBINY_MAILER_PASSWORD = "password";
         process.env.WEBINY_MAILER_REPLY_TO = "replyTo@dummy-host.webiny";
         process.env.WEBINY_MAILER_FROM = "from@dummy-host.webiny";
-        process.env.WEBINY_MAILER_PASSWORD_SECRET = "really secret secret";
     });
 
     it(`should throw error before sending because of missing "to"`, async () => {

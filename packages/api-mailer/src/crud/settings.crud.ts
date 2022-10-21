@@ -89,7 +89,7 @@ export const createSettingsCrud = async (
         if (secret) {
             return;
         }
-        throw new WebinyError("There is no password secret define.", "PASSWORD_SECRET_ERROR");
+        throw new WebinyError("There is no password secret defined.", "PASSWORD_SECRET_ERROR");
     };
 
     return {
