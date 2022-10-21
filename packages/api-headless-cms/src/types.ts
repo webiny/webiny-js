@@ -1,7 +1,6 @@
 import { Plugin } from "@webiny/plugins/types";
 import { I18NContext, I18NLocale } from "@webiny/api-i18n/types";
 import { Context } from "@webiny/api/types";
-import { TenancyContext } from "@webiny/api-tenancy/types";
 import {
     GraphQLFieldResolver,
     GraphQLSchemaDefinition,
@@ -60,8 +59,7 @@ export interface CmsContext
         DbContext,
         // HttpContext,
         I18NContext,
-        FileManagerContext,
-        TenancyContext {
+        FileManagerContext {
     cms: HeadlessCms;
 }
 
@@ -1304,7 +1302,7 @@ export interface CmsEntryValues {
  * @category Database model
  * @category CmsEntry
  */
-export interface CmsEntry {
+export interface CmsEntry<T = CmsEntryValues> {
     /**
      * A version of the webiny this entry was created with.
      * This can be used when upgrading the system so we know which entries to update.
@@ -1373,7 +1371,7 @@ export interface CmsEntry {
      *
      * @see CmsModelField
      */
-    values: CmsEntryValues;
+    values: T;
     /**
      * Settings for the given entry.
      *

@@ -2,13 +2,7 @@ import { createSetupForPageContentReview } from "../utils/helpers";
 import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
 
 describe("Page publishing workflow", () => {
-    const options = {
-        path: "manage/en-US"
-    };
-
-    const gqlHandler = usePageBuilderHandler({
-        ...options
-    });
+    const gqlHandler = usePageBuilderHandler();
     const {
         createContentReviewMutation,
         getContentReviewQuery,

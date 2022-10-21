@@ -3,13 +3,7 @@ import { mocks as changeRequestMock, richTextMock } from "./mocks/changeRequest"
 import { createSetupForPageContentReview } from "../utils/helpers";
 
 describe(`Total comments count test`, () => {
-    const options = {
-        path: "manage/en-US"
-    };
-
-    const gqlHandler = usePageBuilderHandler({
-        ...options
-    });
+    const gqlHandler = usePageBuilderHandler();
     const {
         createChangeRequestMutation,
         createContentReviewMutation,
