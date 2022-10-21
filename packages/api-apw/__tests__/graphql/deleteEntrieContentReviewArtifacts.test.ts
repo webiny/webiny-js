@@ -3,13 +3,7 @@ import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
 import { mocks as changeRequestMock, richTextMock } from "./mocks/changeRequest";
 
 describe(`Delete "content review" and associated "change requests" and "comments"`, () => {
-    const options = {
-        path: "manage/en-US"
-    };
-
-    const gqlHandler = usePageBuilderHandler({
-        ...options
-    });
+    const gqlHandler = usePageBuilderHandler();
     const {
         createContentReviewMutation,
         getContentReviewQuery,

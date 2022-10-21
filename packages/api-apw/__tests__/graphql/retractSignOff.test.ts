@@ -3,13 +3,7 @@ import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
 import { createSetupForPageContentReview } from "../utils/helpers";
 
 describe("Retract sign off for a step in content review process", function () {
-    const options = {
-        path: "manage/en-US"
-    };
-
-    const gqlHandler = usePageBuilderHandler({
-        ...options
-    });
+    const gqlHandler = usePageBuilderHandler();
     const {
         getContentReviewQuery,
         createContentReviewMutation,
@@ -263,7 +257,6 @@ describe("Retract sign off for a step in content review process", function () {
 
     test(`should throw error when trying to retract sign off by a non-reviewer`, async () => {
         const gqlHandlerForIdentityA = usePageBuilderHandler({
-            ...options,
             identity: {
                 id: "123456789",
                 type: "admin",

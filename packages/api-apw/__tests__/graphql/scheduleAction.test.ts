@@ -2,13 +2,7 @@ import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
 import { createSetupForPageContentReview } from "../utils/helpers";
 
 describe(`Schedule action in a content review process`, function () {
-    const options = {
-        path: "manage/en-US"
-    };
-
-    const gqlHandler = usePageBuilderHandler({
-        ...options
-    });
+    const gqlHandler = usePageBuilderHandler();
     const {
         getContentReviewQuery,
         createContentReviewMutation,

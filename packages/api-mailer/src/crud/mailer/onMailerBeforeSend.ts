@@ -1,30 +1,34 @@
 import { Topic } from "@webiny/pubsub/types";
-import { MailerSendData, OnMailBeforeSendParams } from "~/types";
-import joi from "joi";
+import { TransportSendData, OnTransportBeforeSendParams } from "~/types";
+import joi, { EmailOptions } from "joi";
 import WebinyError from "@webiny/error";
 
-const requiredString = joi.string().required();
-const requiredEmail = requiredString.email();
+const options: EmailOptions = {
+    tlds: false
+};
 
-const schema = joi.object<MailerSendData>({
-    to: joi.array().items(requiredEmail).required(),
+const requiredString = joi.string().required();
+const requiredEmail = requiredString.email(options);
+
+const schema = joi.object<TransportSendData>({
+    to: joi.array().items(requiredEmail),
     from: requiredEmail,
     subject: requiredString.max(1024),
     cc: joi.array().items(requiredEmail),
     bcc: joi.array().items(requiredEmail),
-    replyTo: joi.string().email(),
+    replyTo: joi.string().email(options),
     text: requiredString.min(10),
     html: joi.string()
 });
 
 interface Params {
-    onMailBeforeSend: Topic<OnMailBeforeSendParams>;
+    onTransportBeforeSend: Topic<OnTransportBeforeSendParams>;
 }
-export const attachOnMailBeforeSend = (params: Params) => {
-    const { onMailBeforeSend } = params;
+export const attachOnTransportBeforeSend = (params: Params) => {
+    const { onTransportBeforeSend } = params;
 
-    onMailBeforeSend.subscribe(async ({ data: input }) => {
-        let result: joi.ValidationResult<MailerSendData>;
+    onTransportBeforeSend.subscribe(async ({ data: input }) => {
+        let result: joi.ValidationResult<TransportSendData>;
         try {
             result = await schema.validate(input);
 
