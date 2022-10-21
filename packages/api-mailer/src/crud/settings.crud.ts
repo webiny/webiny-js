@@ -36,9 +36,7 @@ export const createSettingsCrud = async (
     let secret: string | null = null;
     try {
         secret = getSecret();
-    } catch (ex) {
-        console.log(`There is no password secret defined.`);
-    }
+    } catch (ex) {}
 
     const getModel = async (): Promise<CmsModel> => {
         const model = await context.cms.getModel(SETTINGS_MODEL_ID);

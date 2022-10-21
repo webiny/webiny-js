@@ -3,9 +3,7 @@ import { createGraphQLHandler } from "./createGraphQLHandler";
 jest.mock("nodemailer", () => {
     return {
         createTransport: () => {
-            const message = "Transport should not be created at this point.";
-            console.log("Transport should not be created at this point.");
-            throw new Error(message);
+            throw new Error("Transport should not be created at this point.");
         }
     };
 });

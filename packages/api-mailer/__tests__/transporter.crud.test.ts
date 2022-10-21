@@ -3,8 +3,7 @@ import { TransportSendData } from "~/types";
 
 jest.mock("nodemailer", () => {
     return {
-        createTransport: (config: any) => {
-            console.log(`Creating test transport with config: ${JSON.stringify(config)}`);
+        createTransport: () => {
             return {
                 sendMail: async (params: TransportSendData) => {
                     return {
@@ -30,7 +29,7 @@ const subject = "Some dummy subject";
 const text = "Some dummy body";
 const html = "<p>Some dummy body</p>";
 
-describe("Mailer Transporter Operations", () => {
+describe("Mailer Transporter CRUD", () => {
     const { handle } = createContextHandler();
 
     beforeEach(() => {
