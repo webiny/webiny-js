@@ -6189,18 +6189,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@minoru/react-dnd-treeview@npm:3.2.0-alpha.2":
-  version: 3.2.0-alpha.2
-  resolution: "@minoru/react-dnd-treeview@npm:3.2.0-alpha.2"
+"@minoru/react-dnd-treeview@npm:3.2.1":
+  version: 3.2.1
+  resolution: "@minoru/react-dnd-treeview@npm:3.2.1"
   dependencies:
     dnd-multi-backend: ^7.0.0-alpha.4
     react-dnd-html5-backend: ^16.0.1
     react-dnd-touch-backend: ^16.0.1
   peerDependencies:
-    react: ^18.2.0
-    react-dnd: ^16.0.1
-    react-dom: ^18.2.0
-  checksum: 07d03ca189e5b054fa6aa26a389f444f3af6855a345f27091398b578260fa8acb363077530b02781653f793f49d29ae43fad32414acf7798194827a09289794c
+    react: 17.x || 18.x
+    react-dnd: 15.x || 16.x
+    react-dom: 17.x || 18.x
+  checksum: a994176a95d1b3f51bc55b1f2ee4e7f9cc78fd7d3e2a2d40568bddb230a8d5236bbe0b6ff119038b91f4e49342fcf3e108d7abcf0abf19aa827e32dc149954fb
   languageName: node
   linkType: hard
 
@@ -11500,7 +11500,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/app-admin@^5.32.0, @webiny/app-admin@^5.33.0, @webiny/app-admin@workspace:packages/app-admin":
+"@webiny/app-admin@^5.33.0, @webiny/app-admin@workspace:packages/app-admin":
   version: 0.0.0-use.local
   resolution: "@webiny/app-admin@workspace:packages/app-admin"
   dependencies:
@@ -11707,7 +11707,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/app-folders@workspace:packages/app-folders":
+"@webiny/app-folders@^5.33.0, @webiny/app-folders@workspace:packages/app-folders":
   version: 0.0.0-use.local
   resolution: "@webiny/app-folders@workspace:packages/app-folders"
   dependencies:
@@ -11721,15 +11721,15 @@ __metadata:
     "@emotion/core": ^10.0.27
     "@emotion/styled": ^10.0.27
     "@material-design-icons/svg": ^0.12.1
-    "@minoru/react-dnd-treeview": 3.2.0-alpha.2
+    "@minoru/react-dnd-treeview": 3.2.1
     "@types/react": 17.0.39
-    "@webiny/app": ^5.32.0
-    "@webiny/app-admin": ^5.32.0
-    "@webiny/cli": ^5.32.0
-    "@webiny/form": ^5.32.0
-    "@webiny/project-utils": ^5.32.0
-    "@webiny/ui": ^5.32.0
-    "@webiny/validation": ^5.32.0
+    "@webiny/app": ^5.33.0
+    "@webiny/app-admin": ^5.33.0
+    "@webiny/cli": ^5.33.0
+    "@webiny/form": ^5.33.0
+    "@webiny/project-utils": ^5.33.0
+    "@webiny/ui": ^5.33.0
+    "@webiny/validation": ^5.33.0
     apollo-client: ^2.6.10
     apollo-link: ^1.2.14
     graphql: ^15.7.2
@@ -11763,6 +11763,7 @@ __metadata:
     "@types/react-google-recaptcha": ^1.1.2
     "@webiny/app": ^5.33.0
     "@webiny/app-admin": ^5.33.0
+    "@webiny/app-folders": ^5.33.0
     "@webiny/app-page-builder": ^5.33.0
     "@webiny/app-plugin-admin-welcome-screen": ^5.33.0
     "@webiny/app-security": ^5.33.0
@@ -12445,7 +12446,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/app@^5.32.0, @webiny/app@^5.33.0, @webiny/app@workspace:packages/app":
+"@webiny/app@^5.33.0, @webiny/app@workspace:packages/app":
   version: 0.0.0-use.local
   resolution: "@webiny/app@workspace:packages/app"
   dependencies:
@@ -12782,7 +12783,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/cli@^5.32.0, @webiny/cli@^5.33.0, @webiny/cli@workspace:packages/cli":
+"@webiny/cli@^5.33.0, @webiny/cli@workspace:packages/cli":
   version: 0.0.0-use.local
   resolution: "@webiny/cli@workspace:packages/cli"
   dependencies:
@@ -12907,7 +12908,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/form@^5.32.0, @webiny/form@^5.33.0, @webiny/form@workspace:packages/form":
+"@webiny/form@^5.33.0, @webiny/form@workspace:packages/form":
   version: 0.0.0-use.local
   resolution: "@webiny/form@workspace:packages/form"
   dependencies:
@@ -13188,7 +13189,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/project-utils@^5.32.0, @webiny/project-utils@^5.33.0, @webiny/project-utils@workspace:packages/project-utils":
+"@webiny/project-utils@^5.33.0, @webiny/project-utils@workspace:packages/project-utils":
   version: 0.0.0-use.local
   resolution: "@webiny/project-utils@workspace:packages/project-utils"
   dependencies:
@@ -13544,7 +13545,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/ui@^5.32.0, @webiny/ui@^5.33.0, @webiny/ui@workspace:packages/ui":
+"@webiny/ui@^5.33.0, @webiny/ui@workspace:packages/ui":
   version: 0.0.0-use.local
   resolution: "@webiny/ui@workspace:packages/ui"
   dependencies:
@@ -13658,7 +13659,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/validation@^5.32.0, @webiny/validation@^5.33.0, @webiny/validation@workspace:packages/validation":
+"@webiny/validation@^5.33.0, @webiny/validation@workspace:packages/validation":
   version: 0.0.0-use.local
   resolution: "@webiny/validation@workspace:packages/validation"
   dependencies:
@@ -14045,6 +14046,7 @@ __metadata:
     "@types/react": 17.0.39
     "@webiny/app-admin": ^5.33.0
     "@webiny/app-admin-users-cognito": ^5.33.0
+    "@webiny/app-folders": ^5.33.0
     "@webiny/app-form-builder": ^5.33.0
     "@webiny/app-headless-cms": ^5.33.0
     "@webiny/app-page-builder": ^5.33.0
@@ -14558,6 +14560,7 @@ __metadata:
     "@webiny/api-file-manager": ^5.33.0
     "@webiny/api-file-manager-ddb": ^5.33.0
     "@webiny/api-file-manager-s3": ^5.33.0
+    "@webiny/api-folders": ^5.33.0
     "@webiny/api-form-builder": ^5.33.0
     "@webiny/api-form-builder-so-ddb": ^5.33.0
     "@webiny/api-headless-cms": ^5.33.0
