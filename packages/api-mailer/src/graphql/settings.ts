@@ -31,7 +31,7 @@ export const createSettingsGraphQL = () => {
             input TransportSettingsInput {
                 host: String!
                 user: String!
-                password: String!
+                password: String
                 from: String!
                 replyTo: String
             }

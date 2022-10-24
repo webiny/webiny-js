@@ -12,13 +12,14 @@ import { attachOnTransportBeforeSend } from "~/crud/mailer/onMailerBeforeSend";
 import { CreateTransportPlugin } from "~/plugins";
 import WebinyError from "@webiny/error";
 
-import { validation } from "./settings/validation";
+import { createValidation } from "./settings/validation";
 
 interface BuildMailerParams {
     plugins: CreateTransportPlugin[];
     settings: TransportSettings;
     context: MailerContext;
 }
+
 const buildTransporter = async (params: BuildMailerParams): Promise<Transport> => {
     const { settings, context, plugins } = params;
 
@@ -56,7 +57,7 @@ const getDefaultSettings = (): TransportSettings | null => {
     }
 
     try {
-        const result = validation.validate(input);
+        const result = createValidation.validate(input);
 
         if (!result.error) {
             return result.value;
