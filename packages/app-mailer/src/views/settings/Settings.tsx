@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { CenteredView, useSnackbar } from "@webiny/app-admin";
 import { Mutation, Query } from "@apollo/react-components";
 import { Form } from "@webiny/form";
@@ -20,14 +20,33 @@ import {
     SaveSettingsMutationVariables,
     SaveSettingsMutationResponse
 } from "./graphql";
-import { TransportSettings } from "~/types";
+import { TransportSettings, ValidationError } from "~/types";
 import { Alert } from "@webiny/ui/Alert";
 import { Validator } from "@webiny/validation/types";
+
+const displayErrors = (errors?: ValidationError[]) => {
+    if (!errors) {
+        return null;
+    }
+    return (
+        <>
+            {errors.map(error => {
+                const field = error.path[0];
+                if (!field) {
+                    return null;
+                }
+                return <Alert key={`${field}`} title={error.message} type="danger" />;
+            })}
+        </>
+    );
+};
 
 export const Settings: React.FC = () => {
     const { showSnackbar } = useSnackbar();
 
     const password = useRef<HTMLInputElement>();
+
+    const [errors, setErrors] = useState<ValidationError[] | undefined>();
 
     useEffect(() => {
         const t = setTimeout(() => {
@@ -54,6 +73,7 @@ export const Settings: React.FC = () => {
                         const { loading: mutationInProgress } = result;
 
                         const onSubmit = async (data: TransportSettings): Promise<void> => {
+                            setErrors([]);
                             await update({
                                 variables: {
                                     data
@@ -62,19 +82,32 @@ export const Settings: React.FC = () => {
                                     const data = structuredClone(
                                         cache.readQuery({ query: GET_SETTINGS_QUERY })
                                     );
+                                    console.log(result.data);
+
+                                    const { data: updateData, error: updateError } =
+                                        result.data?.mailer.settings || {};
+
+                                    const errors = updateError?.data.errors;
+                                    if (errors) {
+                                        setErrors(errors);
+                                        showSnackbar(
+                                            "Settings not updated! Please check your network and console logs for detailed information."
+                                        );
+                                        return;
+                                    }
 
                                     data.mailer.settings.data = {
                                         ...settingsData,
-                                        ...result.data?.mailer.settings.data
+                                        ...updateData
                                     };
 
                                     cache.writeQuery({
                                         query: GET_SETTINGS_QUERY,
                                         data
                                     });
+                                    showSnackbar("Settings updated successfully.");
                                 }
                             });
-                            showSnackbar("Settings updated successfully.");
                         };
                         if (settingsError) {
                             return (
@@ -115,6 +148,7 @@ export const Settings: React.FC = () => {
                                             )}
                                             <SimpleFormHeader title="Mailer Settings" />
                                             <SimpleFormContent>
+                                                {displayErrors(errors)}
                                                 <Grid>
                                                     <Cell span={12}>
                                                         <Bind
@@ -133,7 +167,7 @@ export const Settings: React.FC = () => {
                                                             name={"user"}
                                                             validators={[
                                                                 validation.create(
-                                                                    "required,minLength:1"
+                                                                    "required,minLength:1,email"
                                                                 )
                                                             ]}
                                                         >
@@ -164,7 +198,7 @@ export const Settings: React.FC = () => {
                                                             name={"from"}
                                                             validators={[
                                                                 validation.create(
-                                                                    "required,minLength:1"
+                                                                    "required,minLength:1,email"
                                                                 )
                                                             ]}
                                                         >
@@ -172,7 +206,12 @@ export const Settings: React.FC = () => {
                                                         </Bind>
                                                     </Cell>
                                                     <Cell span={12}>
-                                                        <Bind name={"replyTo"}>
+                                                        <Bind
+                                                            name={"replyTo"}
+                                                            validators={[
+                                                                validation.create("email")
+                                                            ]}
+                                                        >
                                                             <Input
                                                                 type="text"
                                                                 label="Mail reply-to"

@@ -1,5 +1,5 @@
 import gql from "graphql-tag";
-import { ApiError, TransportSettings } from "~/types";
+import { ApiError, TransportSettings, ValidationErrors } from "~/types";
 
 const SETTINGS_FIELDS = `
     {
@@ -47,7 +47,7 @@ export interface SaveSettingsMutationResponse {
     mailer: {
         settings: {
             data: TransportSettings | null;
-            error: ApiError | null;
+            error: ApiError<ValidationErrors> | null;
         };
     };
 }

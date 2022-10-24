@@ -29,3 +29,17 @@ export interface ApiError<T = Record<string, any>> {
     code: string;
     data: T;
 }
+
+/**
+ * Description of the JOI validation errors received from the API.
+ *
+ * @category GraphQL
+ */
+export interface ValidationError {
+    message: string;
+    path: string[];
+}
+
+export interface ValidationErrors {
+    errors: ValidationError[];
+}
