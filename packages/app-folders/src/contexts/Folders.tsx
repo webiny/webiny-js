@@ -3,11 +3,19 @@ import { useApolloClient } from "@apollo/react-hooks";
 import { ApolloQueryResult } from "apollo-client/core/types";
 import { FetchResult } from "apollo-link";
 
-import { CREATE_FOLDER, DELETE_FOLDER, LIST_FOLDERS, UPDATE_FOLDER } from "~/graphql/folders.gql";
+import {
+    CREATE_FOLDER,
+    DELETE_FOLDER,
+    GET_FOLDER,
+    LIST_FOLDERS,
+    UPDATE_FOLDER
+} from "~/graphql/folders.gql";
 
 import {
     CreateFolderResponse,
     CreateFolderVariables,
+    GetFolderResponse,
+    GetFolderQueryVariables,
     DeleteFolderResponse,
     DeleteFolderVariables,
     FolderItem,
@@ -20,6 +28,7 @@ import {
 
 const loadingDefault = {
     LIST_FOLDERS: false,
+    GET_FOLDER: false,
     CREATE_FOLDER: false,
     UPDATE_FOLDER: false,
     DELETE_FOLDER: false
@@ -29,6 +38,7 @@ interface FoldersContext {
     folders: Record<string, FolderItem[]>;
     loading: Record<LoadingActions, boolean>;
     listFolders: (type: string) => Promise<FolderItem[]>;
+    getFolder: (id: string) => Promise<FolderItem>;
     createFolder: (folder: Omit<FolderItem, "id">) => Promise<FolderItem>;
     updateFolder: (folder: FolderItem) => Promise<FolderItem>;
     deleteFolder(folder: FolderItem): Promise<true>;
@@ -89,6 +99,27 @@ export const FoldersProvider = ({ children }: Props) => {
                 ...folders,
                 [type]: data || []
             });
+
+            return data;
+        },
+
+        async getFolder(id) {
+            if (!id) {
+                throw new Error("Folder `id` is mandatory");
+            }
+
+            const { data: response } = await apolloActionsWrapper("GET_FOLDER", () =>
+                client.query<GetFolderResponse, GetFolderQueryVariables>({
+                    query: GET_FOLDER,
+                    variables: { id }
+                })
+            );
+
+            const { data, error } = response.folders.getFolder;
+
+            if (!data) {
+                throw new Error(error?.message || `Could not fetch folder with id: ${id}`);
+            }
 
             return data;
         },

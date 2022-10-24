@@ -24,6 +24,9 @@ export const useFolders = (type: string) => {
          */
         loading: context.loading,
         folders: context.folders[type],
+        getFolder(id: string) {
+            return context.getFolder(id);
+        },
         createFolder(folder: Omit<FolderItem, "id">) {
             return context.createFolder(folder);
         },

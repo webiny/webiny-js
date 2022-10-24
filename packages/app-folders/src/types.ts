@@ -6,7 +6,12 @@ export interface FolderItem {
     parentId: string | null;
 }
 
-export type LoadingActions = "LIST_FOLDERS" | "CREATE_FOLDER" | "UPDATE_FOLDER" | "DELETE_FOLDER";
+export type LoadingActions =
+    | "LIST_FOLDERS"
+    | "GET_FOLDER"
+    | "CREATE_FOLDER"
+    | "UPDATE_FOLDER"
+    | "DELETE_FOLDER";
 
 export interface FolderError {
     code: string;
@@ -25,6 +30,19 @@ export interface ListFoldersResponse {
 
 export interface ListFoldersQueryVariables {
     type: string;
+}
+
+export interface GetFolderResponse {
+    folders: {
+        getFolder: {
+            data: FolderItem | null;
+            error: FolderError | null;
+        };
+    };
+}
+
+export interface GetFolderQueryVariables {
+    id: string;
 }
 
 export interface UpdateFolderResponse {

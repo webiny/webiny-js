@@ -42,8 +42,7 @@ import { FolderTree } from "@webiny/app-folders";
 ```jsx
 import { useFolders } from "@webiny/app-folders";
 
-const { folders, loading, createFolder, updateFolder, deleteFolder } = useFolders("page"); // IMPORTANT: pass the `type` of folder you want to interact with.
-
+const { folders, loading, getFolder, createFolder, updateFolder, deleteFolder } = useFolders("page"); // IMPORTANT: pass the `type` of folder you want to interact with.
 ```
 
 As you might notice, there is not `listFolders` method available from `useFolder()` hook: this is because on first mount, `listFolders` is called internally, which will either issue a network request, or load folders from cache.

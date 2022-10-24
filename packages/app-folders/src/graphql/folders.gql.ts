@@ -40,6 +40,17 @@ export const LIST_FOLDERS = gql`
     }
 `;
 
+export const GET_FOLDER = gql`
+    query GetFolder ($id: ID!) {
+        folders {
+            getFolder(id: $id) {
+                data ${DATA_FIELD}
+                error ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
 export const UPDATE_FOLDER = gql`
     mutation UpdateFolder($id: ID!, $data: FolderUpdateInput!) {
         folders {
