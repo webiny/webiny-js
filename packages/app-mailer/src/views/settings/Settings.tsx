@@ -82,7 +82,6 @@ export const Settings: React.FC = () => {
                                     const data = structuredClone(
                                         cache.readQuery({ query: GET_SETTINGS_QUERY })
                                     );
-                                    console.log(result.data);
 
                                     const { data: updateData, error: updateError } =
                                         result.data?.mailer.settings || {};
@@ -167,7 +166,7 @@ export const Settings: React.FC = () => {
                                                             name={"user"}
                                                             validators={[
                                                                 validation.create(
-                                                                    "required,minLength:1,email"
+                                                                    "required,minLength:1"
                                                                 )
                                                             ]}
                                                         >

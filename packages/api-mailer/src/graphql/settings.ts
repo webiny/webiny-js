@@ -54,8 +54,15 @@ export const createSettingsGraphQL = () => {
             MailerQuery: {
                 getSettings: async (_, __, context) => {
                     try {
-                        const response = await context.mailer.getSettings();
-                        return new Response(response);
+                        const settings = await context.mailer.getSettings();
+                        /**
+                         * We want to remove the password from the response
+                         */
+                        if (settings) {
+                            // @ts-ignore
+                            delete settings.password;
+                        }
+                        return new Response(settings);
                     } catch (ex) {
                         return new ErrorResponse(ex);
                     }
@@ -67,10 +74,17 @@ export const createSettingsGraphQL = () => {
             MailerMutation: {
                 saveSettings: async (_, args: any, context) => {
                     try {
-                        const response = await context.mailer.saveSettings({
+                        const settings = await context.mailer.saveSettings({
                             input: args.data
                         });
-                        return new Response(response);
+                        /**
+                         * We want to remove the password from the response
+                         */
+                        if (settings) {
+                            // @ts-ignore
+                            delete settings.password;
+                        }
+                        return new Response(settings);
                     } catch (ex) {
                         return new ErrorResponse(ex);
                     }
