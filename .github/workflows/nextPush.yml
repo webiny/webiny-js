@@ -2,7 +2,7 @@ name: Next Branch - Push
 
 on:
   push:
-    branches: [next, before-next]
+    branches: [next]
 
 env:
   NODE_OPTIONS: --max_old_space_size=4096
@@ -17,6 +17,7 @@ jobs:
       jest-packages: ${{ steps.list-jest-packages.outputs.jest-packages }}
       day: ${{ steps.get-day.outputs.day }}
       ts: ${{ steps.get-timestamp.outputs.ts }}
+
     steps:
       - uses: actions/setup-node@v3
         with:
@@ -299,8 +300,8 @@ jobs:
       - name: Create a new Webiny project
         working-directory: xyz
         run: >
-          npx create-webiny-project@next test-project
-          --tag next --no-interactive
+          npx create-webiny-project@verdaccio test-project
+          --tag verdaccio --no-interactive
           --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"region":"${{ env.AWS_REGION }}","storageOperations":"ddb"}'
 
@@ -366,8 +367,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest ]
-        node: [ 14 ]
+        os: [ubuntu-latest]
+        node: [14]
         cypress-folder: ${{ fromJson(needs.e2e-wby-cms-ddb-init.outputs.cypress-folders) }}
     runs-on: webiny-js-4-cores
     environment: next
@@ -553,8 +554,8 @@ jobs:
       - name: Create a new Webiny project
         working-directory: xyz
         run: >
-          npx create-webiny-project@next test-project
-          --tag next --no-interactive
+          npx create-webiny-project@verdaccio test-project
+          --tag verdaccio --no-interactive
           --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"region":"${{ env.AWS_REGION }}","storageOperations":"ddb-es"}'
 
@@ -620,8 +621,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest ]
-        node: [ 14 ]
+        os: [ubuntu-latest]
+        node: [14]
         cypress-folder: ${{ fromJson(needs.e2e-wby-cms-ddb-es-init.outputs.cypress-folders) }}
     runs-on: webiny-js-4-cores
     environment: next
@@ -677,3 +678,51 @@ jobs:
           channels: C027VQG8080
           workdir: next/cypress
           message-text: Cypress tests failed! Screenshots have been placed in this thread, good luck.
+  npm-release-unstable:
+    needs: [init, code-analysis, jest-tests, e2e-wby-cms-ddb-cypress-tests, e2e-wby-cms-ddb-es-cypress-tests]
+    name: NPM release ("unstable" tag)
+    runs-on: webiny-js-4-cores
+    env:
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16
+
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - uses: actions/cache@v2
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
+      - uses: actions/cache@v2
+        with:
+          path: .webiny/cached-packages
+          key: packages-cache-${{ needs.init.outputs.ts }}
+
+      - name: Install dependencies
+        run: yarn --immutable
+
+      - name: Build packages
+        run: yarn build
+
+      - name: Create ".npmrc" file in the project root
+        run: echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
+
+      - name: Set git info
+        run: |
+          git config --global user.email "webiny-bot@webiny.com"
+          git config --global user.name "webiny-bot"
+
+      - name: Version packages
+        run: |
+          yarn lerna version 0.0.0-unstable.$(git rev-parse --short HEAD) --force-publish --no-push --no-git-tag-version --no-changelog --yes
+          git commit -am "chore: version packages"
+
+      - name: Publish packages to NPM
+        run: yarn lerna publish from-package --dist-tag unstable --yes
