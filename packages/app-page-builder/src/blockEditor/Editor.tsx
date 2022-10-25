@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
 import { useRouter } from "@webiny/react-router";
+import { plugins } from "@webiny/plugins";
 import get from "lodash/get";
 import { Editor as PbEditor } from "~/admin/components/Editor";
 import { EditorLoadingScreen } from "~/admin/components/EditorLoadingScreen";
@@ -16,8 +17,10 @@ import { BlockEditorConfig } from "./config/BlockEditorConfig";
 import { BlockWithContent } from "~/blockEditor/state";
 import { createElement, addElementId } from "~/editor/helpers";
 import { PbPageBlock, PbEditorElement } from "~/types";
+import elementVariablePlugins from "~/blockEditor/plugins/elementVariables";
 
 export const BlockEditor: React.FC = () => {
+    plugins.register(elementVariablePlugins());
     const client = useApolloClient();
     const { params } = useRouter();
     const [block, setBlock] = useState<BlockWithContent>();

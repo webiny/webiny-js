@@ -1,4 +1,4 @@
-import React, { useEffect, createElement } from "react";
+import React, { useEffect, createElement, useCallback } from "react";
 import MediumEditor, { CoreOptions } from "medium-editor";
 import { css } from "emotion";
 import merge from "lodash/merge";
@@ -14,7 +14,7 @@ const editorClass = css({
 interface ReactMediumEditorProps {
     value: string;
     onChange: (value: string) => void;
-    onSelect: () => void;
+    onSelect: (value: string) => void;
     tag: string | [string, Record<string, any>];
     options?: CoreOptions;
     [key: string]: any;
@@ -30,19 +30,25 @@ const ReactMediumEditor: React.FC<ReactMediumEditorProps> = ({
     const elementRef = React.useRef<HTMLElement>(null);
     const editorRef = React.useRef<MediumEditor.MediumEditor>();
 
-    const handleChange = (_: any, editable: HTMLElement): void => {
-        if (typeof onChange !== "function") {
-            return;
-        }
-        onChange(editable.innerHTML);
-    };
+    const handleChange = useCallback(
+        (_: any, editable: HTMLElement): void => {
+            if (typeof onChange !== "function") {
+                return;
+            }
+            onChange(editable.innerHTML);
+        },
+        [onChange]
+    );
 
-    const handleSelect = (): void => {
-        if (typeof onSelect !== "function") {
-            return;
-        }
-        onSelect();
-    };
+    const handleSelect = useCallback(
+        (_: any, editable: HTMLElement): void => {
+            if (typeof onSelect !== "function") {
+                return;
+            }
+            onSelect(editable.innerHTML);
+        },
+        [onSelect]
+    );
 
     const tagName = Array.isArray(tag) ? tag[0] : tag;
     const tagProps = Array.isArray(tag) && tag[1] ? tag[1] : {};
@@ -73,9 +79,6 @@ const ReactMediumEditor: React.FC<ReactMediumEditorProps> = ({
         // Create "MediumEditor" instance
         editorRef.current = new MediumEditor(elementRef.current, mediumEditorOptions);
 
-        editorRef.current.subscribe("blur", handleChange);
-        editorRef.current.subscribe("editableInput", handleSelect);
-
         return () => {
             if (!editorRef.current) {
                 return;
@@ -83,6 +86,25 @@ const ReactMediumEditor: React.FC<ReactMediumEditorProps> = ({
             editorRef.current.destroy();
         };
     }, [options, tagName]);
+
+    // We need to resubscribe "blur" and "editableInput" to use
+    // up-to-date versions of onChange and onSelect functions
+    useEffect(() => {
+        if (!editorRef || !editorRef.current) {
+            return;
+        }
+
+        editorRef.current.subscribe("blur", handleChange);
+        editorRef.current.subscribe("editableInput", handleSelect);
+
+        return () => {
+            if (!editorRef.current) {
+                return;
+            }
+            editorRef.current.unsubscribe("blur", handleChange);
+            editorRef.current.unsubscribe("editableInput", handleSelect);
+        };
+    }, [handleChange, handleSelect]);
 
     return createElement(tagName, {
         dangerouslySetInnerHTML: { __html: value },

@@ -1,7 +1,13 @@
 import invariant from "invariant";
 import { plugins } from "@webiny/plugins";
 import { getNanoid, addElementId } from "~/editor/helpers";
-import { PbEditorBlockPlugin, PbEditorElement, PbElement, PbBlockVariable } from "~/types";
+import {
+    PbEditorBlockPlugin,
+    PbEditorElement,
+    PbElement,
+    PbBlockVariable,
+    PbEditorPageElementVariableRendererPlugin
+} from "~/types";
 
 export const createBlockReference = (name: string): PbEditorElement => {
     const plugin = plugins.byName<PbEditorBlockPlugin>(name);
@@ -32,13 +38,21 @@ export const removeElementVariableIds = (
 ): PbElement => {
     el.elements = el.elements.map(el => {
         if (el.data?.variableId) {
-            const variableValue = variables.find(
-                (variable: PbBlockVariable) => variable.id === el.data.variableId
-            )?.value;
+            const elementVariables =
+                variables.filter(
+                    (variable: PbBlockVariable) => variable.id.split(".")[0] === el.data.variableId
+                ) || [];
+            const elementVariableRendererPlugins =
+                plugins.byType<PbEditorPageElementVariableRendererPlugin>(
+                    "pb-editor-page-element-variable-renderer"
+                );
+            const elementVariablePlugin = elementVariableRendererPlugins.find(
+                plugin => plugin.elementType === el?.type
+            );
 
-            if (el.data?.text?.data?.text && variableValue) {
-                el.data.text.data.text = variableValue;
-            }
+            // we need to replace element value with the one from variables before removing variableId
+            el = elementVariablePlugin?.setElementValue(el, elementVariables) || el;
+
             // @ts-ignore
             delete el.data?.variableId;
         }

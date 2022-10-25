@@ -4,7 +4,7 @@ import { ButtonPrimary } from "@webiny/ui/Button";
 import { ReactComponent as InfoIcon } from "@webiny/app-admin/assets/icons/info.svg";
 import CreateVariableAction from "~/blockEditor/plugins/elementSettings/CreateVariableAction";
 
-const ElementNotLinkedWrapper = styled("div")({
+export const ElementLinkStatusWrapper = styled("div")({
     padding: "16px",
     display: "grid",
     rowGap: "16px",
@@ -28,7 +28,7 @@ const ElementNotLinkedWrapper = styled("div")({
 
 const ElementNotLinked = () => {
     return (
-        <ElementNotLinkedWrapper>
+        <ElementLinkStatusWrapper>
             <strong>Element not linked</strong>
             To allow users to change the value of this element inside a page, you need to link it to
             a variable.
@@ -40,7 +40,7 @@ const ElementNotLinked = () => {
             <div className="info-wrapper">
                 <InfoIcon /> Click here to learn more about how block variables work
             </div>
-        </ElementNotLinkedWrapper>
+        </ElementLinkStatusWrapper>
     );
 };
 

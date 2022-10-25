@@ -1,13 +1,14 @@
 import React, { useCallback, useMemo } from "react";
 import styled from "@emotion/styled";
-import { ButtonPrimary, ButtonSecondary } from "@webiny/ui/Button";
+import capitalize from "lodash/capitalize";
+import { ButtonPrimary } from "@webiny/ui/Button";
+import { ReactComponent as InfoIcon } from "@webiny/app-admin/assets/icons/info.svg";
 import { PbEditorElement, PbBlockVariable } from "~/types";
-import { Form } from "@webiny/form";
-import { validation } from "@webiny/validation";
-import { Input } from "@webiny/ui/Input";
+import TextInput from "./TextInput";
 import { useCurrentBlockElement } from "~/editor/hooks/useCurrentBlockElement";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
 import { useUpdateElement } from "~/editor/hooks/useUpdateElement";
+import { ElementLinkStatusWrapper } from "./ElementNotLinked";
 
 const FormWrapper = styled("div")({
     padding: "16px",
@@ -19,34 +20,39 @@ const VariableSettings = ({ element }: { element: PbEditorElement }) => {
     const { block } = useCurrentBlockElement();
     const updateElement = useUpdateElement();
 
-    const initialData = useMemo(() => {
-        const variable = block?.data?.variables?.find(
-            (variable: PbBlockVariable) => variable.id === element?.data?.variableId
+    const elementVariables = useMemo(() => {
+        const variables = block?.data?.variables?.filter(
+            (variable: PbBlockVariable) => variable.id.split(".")[0] === element?.data?.variableId
         );
 
-        return { label: variable?.label };
+        return variables;
     }, [block, element]);
 
-    const onSubmit = useCallback(
-        formData => {
+    const onChange = useCallback(
+        (label: string, variableId: string) => {
             if (block && block.id) {
                 const newVariables = block.data?.variables?.map((variable: PbBlockVariable) => {
-                    if (variable?.id === element?.data?.variableId) {
+                    if (variable?.id === variableId) {
                         return {
                             ...variable,
-                            label: formData.label
+                            label
                         };
                     } else {
                         return variable;
                     }
                 });
-                updateElement({
-                    ...block,
-                    data: {
-                        ...block.data,
-                        variables: newVariables
+                updateElement(
+                    {
+                        ...block,
+                        data: {
+                            ...block.data,
+                            variables: newVariables
+                        }
+                    },
+                    {
+                        history: false
                     }
-                });
+                );
             }
         },
         [block, element]
@@ -62,7 +68,8 @@ const VariableSettings = ({ element }: { element: PbEditorElement }) => {
             showConfirmation(() => {
                 if (block && block.id) {
                     const updatedVariables = block.data.variables.filter(
-                        (variable: PbBlockVariable) => variable.id !== element?.data?.variableId
+                        (variable: PbBlockVariable) =>
+                            variable.id.split(".")[0] !== element?.data?.variableId
                     );
                     updateElement({
                         ...block,
@@ -75,34 +82,44 @@ const VariableSettings = ({ element }: { element: PbEditorElement }) => {
                     // element "variableId" value should be dropped
                     // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     const { variableId, ...updatedElementData } = element.data;
-                    updateElement({
-                        ...element,
-                        data: updatedElementData
-                    });
+                    updateElement(
+                        {
+                            ...element,
+                            data: updatedElementData
+                        },
+                        {
+                            history: false
+                        }
+                    );
                 }
             }),
         [block, element]
     );
 
     return (
-        <Form data={initialData} onSubmit={onSubmit}>
-            {({ data, form, Bind }) => (
-                <FormWrapper>
-                    <Bind name="label" validators={validation.create("required")}>
-                        <Input label="Label" />
-                    </Bind>
-                    <ButtonPrimary
-                        disabled={data.label === initialData.label}
-                        onClick={ev => {
-                            form.submit(ev);
-                        }}
-                    >
-                        Save
-                    </ButtonPrimary>
-                    <ButtonSecondary onClick={onRemove}>Remove Variable</ButtonSecondary>
-                </FormWrapper>
-            )}
-        </Form>
+        <>
+            <FormWrapper>
+                {elementVariables?.map((variable: PbBlockVariable, index: string) => (
+                    <TextInput
+                        key={index}
+                        label={`${capitalize(variable.type)} ${capitalize(
+                            variable.id.split(".")[1]
+                        )} Variable Label`}
+                        value={variable?.label}
+                        onChange={value => onChange(value, variable.id)}
+                    />
+                ))}
+            </FormWrapper>
+            <ElementLinkStatusWrapper>
+                <strong>Element is linked</strong>
+                To prevent users to change the value of this element inside a page, you need to
+                unlink it from variables.
+                <ButtonPrimary onClick={onRemove}>Unlink Element</ButtonPrimary>
+                <div className="info-wrapper">
+                    <InfoIcon /> Click here to learn more about how block variables work
+                </div>
+            </ElementLinkStatusWrapper>
+        </>
     );
 };
 

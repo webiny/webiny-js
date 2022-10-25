@@ -11,6 +11,7 @@ import {
 import { uiAtom } from "~/editor/recoil/modules";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import { UpdateElementActionEvent } from "~/editor/recoil/actions";
+import { makeComposable } from "@webiny/react-composition";
 
 const AlignImage = styled("div")((props: any) => ({
     img: {
@@ -87,4 +88,9 @@ const ImageContainer: React.FC<ImageContainerType> = ({ element }) => {
     );
 };
 
-export default React.memo(ImageContainer);
+export default makeComposable(
+    "ImageContainer",
+    React.memo(({ element }: { element: PbEditorElement }) => {
+        return <ImageContainer element={element} />;
+    })
+);

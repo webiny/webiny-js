@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { useApolloClient, useMutation } from "@apollo/react-hooks";
+import { plugins } from "@webiny/plugins";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import get from "lodash/get";
@@ -29,6 +30,7 @@ import createBlockCategoryPlugin from "~/admin/utils/createBlockCategoryPlugin";
 import { PageWithContent, RevisionsAtomType } from "~/pageEditor/state";
 import { createStateInitializer } from "./createStateInitializer";
 import { PageEditorConfig } from "./config/PageEditorConfig";
+import elementVariableRendererPlugins from "~/editor/plugins/elementVariables";
 
 interface PageDataAndRevisionsState {
     page: PageWithContent | null;
@@ -60,6 +62,7 @@ const getBlocksWithUniqueElementIds = (blocks: PbEditorElement[]): PbEditorEleme
 };
 
 export const PageEditor: React.FC = () => {
+    plugins.register(elementVariableRendererPlugins());
     const client = useApolloClient();
     const { history, params } = useRouter();
     const { showSnackbar } = useSnackbar();
