@@ -63,10 +63,10 @@ export const UPDATE_FOLDER = gql`
 `;
 
 export const DELETE_FOLDER = gql`
-    mutation UpdateFolder($id: ID!) {
+    mutation DeleteFolder($id: ID!) {
         folders {
             deleteFolder(id: $id) {
-                data boolean
+                data
                 error ${ERROR_FIELD}
             }
         }
