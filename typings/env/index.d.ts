@@ -55,5 +55,6 @@ declare namespace NodeJS {
         WEBINY_MAILER_PASSWORD?: string;
         WEBINY_MAILER_REPLY_TO?: string;
         WEBINY_MAILER_FROM?: string;
+        WEBINY_MAILER_PASSWORD_SECRET?: string;
     }
 }
