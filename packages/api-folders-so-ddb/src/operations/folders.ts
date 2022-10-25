@@ -151,7 +151,7 @@ export const createFoldersStorageOperations = (
                     partitionKey: createFolderGsiPartitionKey({ tenant, locale, type }),
                     options: {
                         index: "GSI1",
-                        beginsWith: folder.id
+                        beginsWith: `${folder.id}#`
                     }
                 });
                 if (children.length > 0) {
