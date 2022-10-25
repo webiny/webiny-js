@@ -52,7 +52,7 @@ interface Props {
 
 export const FoldersProvider = ({ children }: Props) => {
     const client = useApolloClient();
-    const [folders, setFolders] = useState<Record<string, FolderItem[]>>({});
+    const [folders, setFolders] = useState<Record<string, FolderItem[]>>(Object.create(null));
     const [loading, setLoading] = useState<Record<FolderLoadingActions, boolean>>(loadingDefault);
 
     const apolloActionsWrapper = async (
