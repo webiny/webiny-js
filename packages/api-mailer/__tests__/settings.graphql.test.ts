@@ -74,7 +74,9 @@ describe("Mailer Settings GraphQL", () => {
                 }
             }
         });
-
+        /**
+         * We change some data in second save
+         */
         const [secondSaveResponse] = await handler.saveSettings({
             data: {
                 host: "dummy-host2.webiny",
@@ -100,6 +102,32 @@ describe("Mailer Settings GraphQL", () => {
                 }
             }
         });
+        /**
+         * And in third save, we do not send the password into the api.
+         */
+        const [thirdSaveResponse] = await handler.saveSettings({
+            data: {
+                host: "dummy-host3.webiny",
+                user: "user3",
+                from: "from3@dummy-host.webiny",
+                replyTo: "replyTo3@dummy-host.webiny"
+            }
+        });
+        expect(thirdSaveResponse).toEqual({
+            data: {
+                mailer: {
+                    saveSettings: {
+                        data: {
+                            host: "dummy-host3.webiny",
+                            user: "user3",
+                            from: "from3@dummy-host.webiny",
+                            replyTo: "replyTo3@dummy-host.webiny"
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
     });
 
     it("should not be possibly to get or save settings when no secret is available", async () => {
@@ -113,9 +141,12 @@ describe("Mailer Settings GraphQL", () => {
                     getSettings: {
                         data: null,
                         error: {
-                            message: "There is no password secret defined.",
-                            code: "PASSWORD_SECRET_ERROR",
-                            data: null
+                            data: {
+                                description:
+                                    "To store the Mailer settings, you must have a password secret environment variable defined."
+                            },
+                            message: "There must be a password secret defined!",
+                            code: "PASSWORD_SECRET_ERROR"
                         }
                     }
                 }
@@ -138,9 +169,12 @@ describe("Mailer Settings GraphQL", () => {
                     saveSettings: {
                         data: null,
                         error: {
-                            message: "There is no password secret defined.",
-                            code: "PASSWORD_SECRET_ERROR",
-                            data: null
+                            data: {
+                                description:
+                                    "To store the Mailer settings, you must have a password secret environment variable defined."
+                            },
+                            message: "There must be a password secret defined!",
+                            code: "PASSWORD_SECRET_ERROR"
                         }
                     }
                 }

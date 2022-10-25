@@ -23,6 +23,10 @@ jest.mock("nodemailer", () => {
 describe("Settings Transporter CRUD", () => {
     const { handle } = createContextHandler();
 
+    beforeEach(() => {
+        delete process.env["WEBINY_MAILER_PASSWORD_SECRET"];
+    });
+
     it("should not be possible to get or save settings without secret", async () => {
         expect.assertions(4);
         const context = await handle();
@@ -30,7 +34,7 @@ describe("Settings Transporter CRUD", () => {
         try {
             await context.mailer.getSettings();
         } catch (ex) {
-            expect(ex.message).toEqual("There is no password secret defined.");
+            expect(ex.message).toEqual("There must be a password secret defined!");
         }
 
         try {
@@ -38,7 +42,7 @@ describe("Settings Transporter CRUD", () => {
                 input: {}
             });
         } catch (ex) {
-            expect(ex.message).toEqual("There is no password secret defined.");
+            expect(ex.message).toEqual("There must be a password secret defined!");
         }
 
         try {
@@ -46,7 +50,7 @@ describe("Settings Transporter CRUD", () => {
                 input: {}
             });
         } catch (ex) {
-            expect(ex.message).toEqual("There is no password secret defined.");
+            expect(ex.message).toEqual("There must be a password secret defined!");
         }
 
         try {
@@ -54,7 +58,7 @@ describe("Settings Transporter CRUD", () => {
                 input: {}
             });
         } catch (ex) {
-            expect(ex.message).toEqual("There is no password secret defined.");
+            expect(ex.message).toEqual("There must be a password secret defined!");
         }
     });
 
@@ -134,6 +138,45 @@ describe("Settings Transporter CRUD", () => {
             ...input,
             host: "dummy-host3.webiny",
             password: ""
+        });
+    });
+
+    it("should be possible to update settings without password", async () => {
+        process.env.WEBINY_MAILER_PASSWORD_SECRET = "really secret secret";
+
+        const context = await handle();
+
+        await context.mailer.createSettings({
+            input
+        });
+
+        const settings = await context.mailer.getSettings();
+
+        const removedPasswordInput: Partial<typeof input> = {
+            ...input
+        };
+        delete removedPasswordInput["password"];
+
+        const response = await context.mailer.updateSettings({
+            input: {
+                ...input,
+                host: "dummy-host2.webiny"
+            },
+            original: settings
+        });
+
+        expect(response).toEqual({
+            ...input,
+            host: "dummy-host2.webiny",
+            password: ""
+        });
+
+        const afterUpdate = await context.mailer.getSettings();
+
+        expect(afterUpdate).toEqual({
+            ...settings,
+            password: input.password,
+            host: "dummy-host2.webiny"
         });
     });
 });

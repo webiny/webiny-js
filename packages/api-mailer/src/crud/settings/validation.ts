@@ -5,12 +5,24 @@ const options: EmailOptions = {
     tlds: false
 };
 
-export const validation = joi
+const password = joi.string().label("Password");
+const common = {
+    from: joi.string().email(options).required().label("Mail from"),
+    replyTo: joi.string().email(options).optional().label("Mail reply-to"),
+    host: joi.string().required().label("Hostname"),
+    user: joi.string().required().label("User")
+};
+
+export const createValidation = joi
     .object<TransportSettings>({
-        from: joi.string().email(options).required(),
-        replyTo: joi.string().email(options).optional(),
-        host: joi.string().required(),
-        user: joi.string().required(),
-        password: joi.string().required()
+        ...common,
+        password: password.required()
+    })
+    .required();
+
+export const updateValidation = joi
+    .object<TransportSettings>({
+        ...common,
+        password
     })
     .required();
