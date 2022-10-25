@@ -35,22 +35,20 @@ export const Module: React.FC = () => {
                     />
                 </Menu>
             </Menu>
-            {
-                <AddRoute
-                    exact
-                    path={"/mailer/settings"}
-                    render={() => (
-                        <SecureRoute permission={"mailer.settings"}>
-                            <AdminLayout>
-                                <Helmet title={"Mailer - Settings"} />
-                                <Loader>
-                                    <Settings />
-                                </Loader>
-                            </AdminLayout>
-                        </SecureRoute>
-                    )}
-                />
-            }
+            <AddRoute
+                exact
+                path={"/mailer/settings"}
+                render={() => (
+                    <SecureRoute permission={"mailer.settings"}>
+                        <AdminLayout>
+                            <Helmet title={"Mailer - Settings"} />
+                            <Loader>
+                                <Settings />
+                            </Loader>
+                        </AdminLayout>
+                    </SecureRoute>
+                )}
+            />
         </>
     );
 };
