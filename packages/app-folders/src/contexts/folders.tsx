@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from "react";
+import React, { ReactNode, useState, useCallback } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
 import { ApolloQueryResult } from "apollo-client/core/types";
 import { FetchResult } from "apollo-link";
@@ -55,24 +55,27 @@ export const FoldersProvider = ({ children }: Props) => {
     const [folders, setFolders] = useState<Record<string, FolderItem[]>>(Object.create(null));
     const [loading, setLoading] = useState<Record<FolderLoadingActions, boolean>>(loadingDefault);
 
-    const apolloActionsWrapper = async (
-        type: FolderLoadingActions,
-        callback: () => Promise<ApolloQueryResult<any> | FetchResult<any>>
-    ) => {
-        setLoading({
-            ...loading,
-            [type]: true
-        });
+    const apolloActionsWrapper = useCallback(
+        async (
+            type: FolderLoadingActions,
+            callback: () => Promise<ApolloQueryResult<any> | FetchResult<any>>
+        ) => {
+            setLoading({
+                ...loading,
+                [type]: true
+            });
 
-        const response = await callback();
+            const response = await callback();
 
-        setLoading({
-            ...loading,
-            [type]: false
-        });
+            setLoading({
+                ...loading,
+                [type]: false
+            });
 
-        return response;
-    };
+            return response;
+        },
+        []
+    );
 
     const context: FoldersContext = {
         folders,

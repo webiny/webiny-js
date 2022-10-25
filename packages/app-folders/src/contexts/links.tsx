@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from "react";
+import React, { ReactNode, useCallback, useState } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
 import { ApolloQueryResult } from "apollo-client/core/types";
 import { FetchResult } from "apollo-link";
@@ -49,24 +49,27 @@ export const LinksProvider = ({ children }: Props) => {
     const [links, setLinks] = useState<LinkItem[]>([]);
     const [loading, setLoading] = useState<Record<LinkLoadingActions, boolean>>(loadingDefault);
 
-    const apolloActionsWrapper = async (
-        type: LinkLoadingActions,
-        callback: () => Promise<ApolloQueryResult<any> | FetchResult<any>>
-    ) => {
-        setLoading({
-            ...loading,
-            [type]: true
-        });
+    const apolloActionsWrapper = useCallback(
+        async (
+            type: LinkLoadingActions,
+            callback: () => Promise<ApolloQueryResult<any> | FetchResult<any>>
+        ) => {
+            setLoading({
+                ...loading,
+                [type]: true
+            });
 
-        const response = await callback();
+            const response = await callback();
 
-        setLoading({
-            ...loading,
-            [type]: false
-        });
+            setLoading({
+                ...loading,
+                [type]: false
+            });
 
-        return response;
-    };
+            return response;
+        },
+        []
+    );
 
     const context: LinksContext = {
         links,
