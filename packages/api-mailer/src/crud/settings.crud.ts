@@ -18,7 +18,7 @@ import { createTopic } from "@webiny/pubsub";
 import { SETTINGS_MODEL_ID } from "./settings/model";
 import { transformValuesFromEntry, transformInputToEntryValues } from "~/crud/settings/transform";
 import { getSecret } from "~/crud/settings/secret";
-import { validation } from "~/crud/settings/validation";
+import { createValidation, updateValidation } from "~/crud/settings/validation";
 import { CmsEntry, CmsModel } from "@webiny/api-headless-cms/types";
 import { attachPasswordObfuscatingHooks } from "~/crud/settings/hooks";
 
@@ -87,7 +87,10 @@ export const createSettingsCrud = async (
         if (secret) {
             return;
         }
-        throw new WebinyError("There is no password secret defined.", "PASSWORD_SECRET_ERROR");
+        throw new WebinyError("There must be a password secret defined!", "PASSWORD_SECRET_ERROR", {
+            description:
+                "To store the Mailer settings, you must have a password secret environment variable defined."
+        });
     };
 
     return {
@@ -155,7 +158,7 @@ export const createSettingsCrud = async (
 
             const model = await getModel();
 
-            const result = validation.validate(input);
+            const result = createValidation.validate(input);
 
             const error = result.error;
             if (error) {
@@ -209,7 +212,7 @@ export const createSettingsCrud = async (
 
             const model = await getModel();
 
-            const result = validation.validate(input);
+            const result = updateValidation.validate(input);
 
             const error = result.error;
             if (error) {
@@ -240,17 +243,17 @@ export const createSettingsCrud = async (
                     original
                 });
 
-                await context.cms.updateEntry(
-                    model,
-                    original.id,
-                    transformInputToEntryValues({
-                        values: {
-                            ...settings,
-                            password
-                        },
-                        secret
-                    })
-                );
+                const transformedInput = transformInputToEntryValues({
+                    values: {
+                        ...settings,
+                        password: password || original.password
+                    },
+                    secret
+                });
+                /**
+                 * We want to make sure that old password gets stored again in case no password was sent in update input.
+                 */
+                await context.cms.updateEntry(model, original.id, transformedInput);
 
                 await onSettingsAfterUpdate.publish({
                     settings: passwordlessSettings,

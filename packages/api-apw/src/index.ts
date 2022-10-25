@@ -8,13 +8,14 @@ import {
     createApwPageBuilderContext as createPageBuilder
 } from "./plugins/context";
 import { CreateApwContextParams } from "./scheduler/types";
+import { createMailer } from "@webiny/api-mailer";
 
 export const createApwHeadlessCmsContext = (params: CreateApwContextParams) => {
-    return createHeadlessCms(params);
+    return [createHeadlessCms(params)];
 };
 
 export const createApwPageBuilderContext = (params: CreateApwContextParams) => {
-    return createPageBuilder(params);
+    return [...createMailer(), createPageBuilder(params)];
 };
 
 export const createApwGraphQL = () => {
