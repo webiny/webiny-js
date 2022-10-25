@@ -181,4 +181,36 @@ describe("Mailer Settings GraphQL", () => {
             }
         });
     });
+
+    it("should not have access to saving settings", async () => {
+        const noAccessHandler = createGraphQLHandler({
+            permissions: []
+        });
+        const [response] = await noAccessHandler.saveSettings({
+            data: {
+                host: "dummy-host.webiny",
+                user: "user",
+                password: "password",
+                from: "from@dummy-host.webiny",
+                replyTo: "replyTo@dummy-host.webiny"
+            }
+        });
+
+        expect(response).toEqual({
+            data: {
+                mailer: {
+                    saveSettings: {
+                        data: null,
+                        error: {
+                            code: "SECURITY_NOT_AUTHORIZED",
+                            data: {
+                                reason: "Not allowed to update the mailer settings."
+                            },
+                            message: "Not authorized!"
+                        }
+                    }
+                }
+            }
+        });
+    });
 });

@@ -179,4 +179,85 @@ describe("Settings Transporter CRUD", () => {
             host: "dummy-host2.webiny"
         });
     });
+
+    it("should be possible to access settings when no permissions", async () => {
+        process.env.WEBINY_MAILER_PASSWORD_SECRET = "really secret secret";
+
+        const fullCtx = await handle();
+
+        await fullCtx.mailer.createSettings({
+            input
+        });
+
+        const { handle: noAccessHandle } = createContextHandler({
+            permissions: []
+        });
+
+        const context = await noAccessHandle();
+
+        const response = await context.mailer.getSettings();
+
+        expect(response).toEqual({
+            ...input,
+            id: expect.any(String)
+        });
+    });
+
+    it("should not be possible to create or update settings due to no permissions", async () => {
+        process.env.WEBINY_MAILER_PASSWORD_SECRET = "really secret secret";
+
+        const { handle: noAccessHandle } = createContextHandler({
+            permissions: []
+        });
+
+        const context = await noAccessHandle();
+
+        let createResponse: any = null;
+        let createError: any = null;
+
+        try {
+            createResponse = await context.mailer.createSettings({
+                input
+            });
+        } catch (ex) {
+            createError = {
+                message: ex.message,
+                code: ex.code,
+                data: ex.data
+            };
+        }
+
+        expect(createResponse).toEqual(null);
+        expect(createError).toEqual({
+            message: "Not authorized!",
+            code: "SECURITY_NOT_AUTHORIZED",
+            data: {
+                reason: "Not allowed to update the mailer settings."
+            }
+        });
+
+        let updateResponse: any = null;
+        let updateError: any = null;
+
+        try {
+            updateResponse = await context.mailer.updateSettings({
+                input
+            });
+        } catch (ex) {
+            updateError = {
+                message: ex.message,
+                code: ex.code,
+                data: ex.data
+            };
+        }
+
+        expect(updateResponse).toEqual(null);
+        expect(updateError).toEqual({
+            message: "Not authorized!",
+            code: "SECURITY_NOT_AUTHORIZED",
+            data: {
+                reason: "Not allowed to update the mailer settings."
+            }
+        });
+    });
 });
