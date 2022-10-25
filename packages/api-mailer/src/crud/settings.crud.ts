@@ -21,6 +21,7 @@ import { getSecret } from "~/crud/settings/secret";
 import { createValidation, updateValidation } from "~/crud/settings/validation";
 import { CmsEntry, CmsModel } from "@webiny/api-headless-cms/types";
 import { attachPasswordObfuscatingHooks } from "~/crud/settings/hooks";
+import { NotAuthorizedError } from "@webiny/api-security";
 
 /**
  * Note that settings cannot be used if there is no secret defined.
@@ -33,23 +34,43 @@ export const createSettingsCrud = async (
      */
     attachPasswordObfuscatingHooks(context);
 
+    const getTenant = () => {
+        return context.tenancy.getCurrentTenant().id;
+    };
+
+    const validateAccess = async () => {
+        const permission = await context.security.getPermission("mailer.settings");
+
+        if (permission) {
+            return;
+        }
+        throw new NotAuthorizedError({
+            data: {
+                reason: `Not allowed to update the mailer settings.`
+            }
+        });
+    };
+
     let secret: string | null = null;
     try {
         secret = getSecret();
     } catch (ex) {}
 
     const getModel = async (): Promise<CmsModel> => {
-        const model = await context.cms.getModel(SETTINGS_MODEL_ID);
-        if (model) {
-            return model;
+        try {
+            context.security.disableAuthorization();
+            const model = await context.cms.getModel(SETTINGS_MODEL_ID);
+            if (model) {
+                return model;
+            }
+        } catch (ex) {
+            throw new WebinyError(ex.message, ex.code, ex.data);
+        } finally {
+            context.security.enableAuthorization();
         }
         throw new WebinyError(`Missing CMS Model "${SETTINGS_MODEL_ID}".`, "CMS_MODEL_MISSING", {
             modelId: SETTINGS_MODEL_ID
         });
-    };
-
-    const getTenant = () => {
-        return context.tenancy.getCurrentTenant().id;
     };
 
     // get
@@ -105,10 +126,12 @@ export const createSettingsCrud = async (
         onSettingsUpdateError,
         getSettings: async () => {
             checkSecret();
+
             const model = await getModel();
 
             const tenant = getTenant();
             try {
+                context.security.disableAuthorization();
                 await onSettingsBeforeGet.publish({
                     tenant
                 });
@@ -145,6 +168,8 @@ export const createSettingsCrud = async (
                     tenant,
                     error: ex
                 });
+            } finally {
+                context.security.enableAuthorization();
             }
             return null;
         },
@@ -154,6 +179,8 @@ export const createSettingsCrud = async (
          */
         async createSettings(this: MailerContextObject, params) {
             checkSecret();
+            await validateAccess();
+
             const { input } = params;
 
             const model = await getModel();
@@ -175,6 +202,8 @@ export const createSettingsCrud = async (
             };
 
             try {
+                context.security.disableAuthorization();
+
                 await onSettingsBeforeCreate.publish({
                     settings: passwordlessSettings
                 });
@@ -200,6 +229,8 @@ export const createSettingsCrud = async (
                     error: ex
                 });
                 throw new WebinyError(ex.message, ex.code, ex.data);
+            } finally {
+                context.security.enableAuthorization();
             }
         },
         /**
@@ -208,6 +239,8 @@ export const createSettingsCrud = async (
          */
         async updateSettings(this: MailerContextObject, params) {
             checkSecret();
+            await validateAccess();
+
             const { input, original: initialOriginal } = params;
 
             const model = await getModel();
@@ -238,6 +271,8 @@ export const createSettingsCrud = async (
                 password: ""
             };
             try {
+                context.security.disableAuthorization();
+
                 await onSettingsBeforeUpdate.publish({
                     settings: passwordlessSettings,
                     original
@@ -267,6 +302,8 @@ export const createSettingsCrud = async (
                     error: ex
                 });
                 throw new WebinyError(ex.message, ex.code, ex.data);
+            } finally {
+                context.security.enableAuthorization();
             }
         },
         async saveSettings(this: MailerContextObject, params) {
