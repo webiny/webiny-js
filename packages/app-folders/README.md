@@ -19,7 +19,7 @@ yarn add @webiny/app-folders
 ```
 
 ## Usage
-Make sure `FoldersProvider` has been included within the admin.
+Make sure `FoldersProvider` has been included within the admin app.
 
 ### FolderTree component
 `FolderTree` component shows the tree list of folders for a particular `type`.
@@ -45,6 +45,19 @@ import { useFolders } from "@webiny/app-folders";
 const { folders, loading, getFolder, createFolder, updateFolder, deleteFolder } = useFolders("page"); // IMPORTANT: pass the `type` of folder you want to interact with.
 ```
 
-As you might notice, there is not `listFolders` method available from `useFolder()` hook: this is because on first mount, `listFolders` is called internally, which will either issue a network request, or load folders from cache.
+As you might notice, there is not `listFolders` method available from `useFolders()` hook: this is because on first mount, `listFolders` is called internally, which will either issue a network request, or load folders from cache.
+
+You don't need to store the result of it to any local state; that is managed by the context provider.
+
+### useFolderLinks hook
+`useFolderLinks()` hook allows you to interact with folders links state and related APIs while building your custom component.
+
+```jsx
+import { useLinks } from "@webiny/app-folders";
+
+const { links, loading, getLink, createLink, updateLink, deleteLink } = useLinks("anyFolderid"); // IMPORTANT: pass the `folderId` of links you want to interact with.
+```
+
+As you might notice, there is not `listLinks` method available from `useLinks()` hook: this is because on first mount, `listLinks` is called internally, which will either issue a network request, or load links from cache.
 
 You don't need to store the result of it to any local state; that is managed by the context provider.

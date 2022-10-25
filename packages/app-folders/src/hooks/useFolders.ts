@@ -1,5 +1,5 @@
 import { useContext, useEffect } from "react";
-import { FoldersContext } from "~/contexts";
+import { FoldersContext } from "~/contexts/folders";
 import { FolderItem } from "~/types";
 
 export const useFolders = (type: string) => {

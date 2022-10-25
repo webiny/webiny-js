@@ -6,14 +6,27 @@ export interface FolderItem {
     parentId: string | null;
 }
 
-export type LoadingActions =
+export interface LinkItem {
+    id: string;
+    linkId: string;
+    folderId: string;
+}
+
+export type FolderLoadingActions =
     | "LIST_FOLDERS"
     | "GET_FOLDER"
     | "CREATE_FOLDER"
     | "UPDATE_FOLDER"
     | "DELETE_FOLDER";
 
-export interface FolderError {
+export type LinkLoadingActions =
+    | "LIST_LINKS"
+    | "GET_LINK"
+    | "CREATE_LINK"
+    | "UPDATE_LINK"
+    | "DELETE_LINK";
+
+export interface Error {
     code: string;
     message: string;
     data: any;
@@ -23,7 +36,7 @@ export interface ListFoldersResponse {
     folders: {
         listFolders: {
             data: FolderItem[] | null;
-            error: FolderError | null;
+            error: Error | null;
         };
     };
 }
@@ -36,7 +49,7 @@ export interface GetFolderResponse {
     folders: {
         getFolder: {
             data: FolderItem | null;
-            error: FolderError | null;
+            error: Error | null;
         };
     };
 }
@@ -49,7 +62,7 @@ export interface UpdateFolderResponse {
     folders: {
         updateFolder: {
             data: FolderItem;
-            error: FolderError | null;
+            error: Error | null;
         };
     };
 }
@@ -63,9 +76,13 @@ export interface CreateFolderResponse {
     folders: {
         createFolder: {
             data: FolderItem;
-            error: FolderError | null;
+            error: Error | null;
         };
     };
+}
+
+export interface CreateFolderVariables {
+    data: Omit<FolderItem, "id">;
 }
 
 export interface DeleteFolderVariables {
@@ -76,13 +93,75 @@ export interface DeleteFolderResponse {
     folders: {
         deleteFolder: {
             data: boolean;
-            error: FolderError | null;
+            error: Error | null;
         };
     };
 }
 
-export interface CreateFolderVariables {
-    data: Omit<FolderItem, "id">;
+export interface ListLinksResponse {
+    folders: {
+        listLinks: {
+            data: LinkItem[] | null;
+            error: Error | null;
+        };
+    };
+}
+
+export interface ListLinksQueryVariables {
+    folderId: string;
+}
+
+export interface GetLinkResponse {
+    folders: {
+        getLink: {
+            data: LinkItem | null;
+            error: Error | null;
+        };
+    };
+}
+
+export interface GetLinkQueryVariables {
+    id: string;
+}
+
+export interface CreateLinkResponse {
+    folders: {
+        createLink: {
+            data: LinkItem;
+            error: Error | null;
+        };
+    };
+}
+
+export interface CreateLinkVariables {
+    data: Omit<LinkItem, "linkId">;
+}
+
+export interface UpdateLinkResponse {
+    folders: {
+        updateLink: {
+            data: LinkItem;
+            error: Error | null;
+        };
+    };
+}
+
+export interface UpdateLinkVariables {
+    id: string;
+    data: Pick<LinkItem, "folderId">;
+}
+
+export interface DeleteLinkVariables {
+    id: string;
+}
+
+export interface DeleteLinkResponse {
+    folders: {
+        deleteLink: {
+            data: boolean;
+            error: Error | null;
+        };
+    };
 }
 
 export interface DndItemData extends FolderItem {

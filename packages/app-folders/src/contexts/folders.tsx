@@ -21,9 +21,9 @@ import {
     FolderItem,
     ListFoldersQueryVariables,
     ListFoldersResponse,
-    LoadingActions,
     UpdateFolderResponse,
-    UpdateFolderVariables
+    UpdateFolderVariables,
+    FolderLoadingActions
 } from "~/types";
 
 const loadingDefault = {
@@ -36,7 +36,7 @@ const loadingDefault = {
 
 interface FoldersContext {
     folders: Record<string, FolderItem[]>;
-    loading: Record<LoadingActions, boolean>;
+    loading: Record<FolderLoadingActions, boolean>;
     listFolders: (type: string) => Promise<FolderItem[]>;
     getFolder: (id: string) => Promise<FolderItem>;
     createFolder: (folder: Omit<FolderItem, "id">) => Promise<FolderItem>;
@@ -53,10 +53,10 @@ interface Props {
 export const FoldersProvider = ({ children }: Props) => {
     const client = useApolloClient();
     const [folders, setFolders] = useState<Record<string, FolderItem[]>>({});
-    const [loading, setLoading] = useState<Record<LoadingActions, boolean>>(loadingDefault);
+    const [loading, setLoading] = useState<Record<FolderLoadingActions, boolean>>(loadingDefault);
 
     const apolloActionsWrapper = async (
-        type: LoadingActions,
+        type: FolderLoadingActions,
         callback: () => Promise<ApolloQueryResult<any> | FetchResult<any>>
     ) => {
         setLoading({
@@ -175,7 +175,7 @@ export const FoldersProvider = ({ children }: Props) => {
                     return folders;
                 }
 
-                const typeFolders = [...folders[type]];
+                const typeFolders = folders[type];
                 typeFolders[folderIndex] = data;
 
                 return { ...folders, [type]: typeFolders };
@@ -185,7 +185,7 @@ export const FoldersProvider = ({ children }: Props) => {
         },
 
         async deleteFolder(folder) {
-            const { id } = folder;
+            const { id, type } = folder;
 
             const { data: response } = await apolloActionsWrapper("DELETE_FOLDER", () =>
                 client.mutate<DeleteFolderResponse, DeleteFolderVariables>({
@@ -203,6 +203,11 @@ export const FoldersProvider = ({ children }: Props) => {
             if (!data) {
                 throw new Error(error?.message || "Could not delete folder");
             }
+
+            setFolders(folders => {
+                const updatedFolders = folders[type].filter(f => f.id !== id);
+                return { ...folders, [type]: updatedFolders };
+            });
 
             return true;
         }
