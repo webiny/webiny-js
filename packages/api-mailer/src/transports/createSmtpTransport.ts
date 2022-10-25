@@ -13,8 +13,10 @@ export interface SmtpTransport extends Transport {
     transporter: Transporter<SMTPTransport.SentMessageInfo>;
 }
 
-export const createSmtpTransport = (config?: Partial<SmtpTransportConfig>): SmtpTransport => {
-    if (!config) {
+export const createSmtpTransport = (
+    config?: Partial<SmtpTransportConfig> | null
+): SmtpTransport => {
+    if (!config || typeof config !== "object" || Object.keys(config).length === 0) {
         throw new WebinyError("There is no configuration for the SMTP transport.");
     }
 

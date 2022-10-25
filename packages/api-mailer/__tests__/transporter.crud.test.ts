@@ -172,4 +172,22 @@ describe("Mailer Transporter CRUD", () => {
             error: null
         });
     });
+
+    it("should use dummy transporter because of non-existing settings", async () => {
+        delete process.env.WEBINY_MAILER_HOST;
+        delete process.env.WEBINY_MAILER_USER;
+        delete process.env.WEBINY_MAILER_PASSWORD;
+        delete process.env.WEBINY_MAILER_REPLY_TO;
+        delete process.env.WEBINY_MAILER_FROM;
+
+        const context = await handle();
+
+        const result = await context.mailer.getTransport();
+
+        expect(result).toEqual({
+            name: "dummy-default",
+            send: expect.any(Function),
+            getAllSent: expect.any(Function)
+        });
+    });
 });

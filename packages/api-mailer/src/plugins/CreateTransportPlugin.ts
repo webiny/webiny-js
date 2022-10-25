@@ -2,7 +2,7 @@ import { Plugin as BasePlugin } from "@webiny/plugins";
 import { Transport, MailerContext, TransportSettings } from "~/types";
 
 interface TransportParams {
-    settings: TransportSettings;
+    settings: TransportSettings | null;
     context: MailerContext;
 }
 
