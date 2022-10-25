@@ -8,7 +8,7 @@ import {
     MailerTransporterContext
 } from "~/types";
 import { createTopic } from "@webiny/pubsub";
-import { attachOnTransportBeforeSend } from "~/crud/mailer/onMailerBeforeSend";
+import { attachOnTransportBeforeSend } from "~/crud/transport/onTransportBeforeSend";
 import { CreateTransportPlugin } from "~/plugins";
 import WebinyError from "@webiny/error";
 
@@ -16,7 +16,7 @@ import { createValidation } from "./settings/validation";
 
 interface BuildMailerParams {
     plugins: CreateTransportPlugin[];
-    settings: TransportSettings;
+    settings: TransportSettings | null;
     context: MailerContext;
 }
 
@@ -117,10 +117,9 @@ export const createTransporterCrud = async (
         }
         if (!settings && !defaultSettings) {
             console.log(`There are no Mailer transport settings for tenant "${tenant}".`);
-            return null;
         }
         const transporter = await buildTransporter({
-            settings: (settings || defaultSettings) as TransportSettings,
+            settings: settings || defaultSettings,
             plugins,
             context
         });
@@ -141,8 +140,8 @@ export const createTransporterCrud = async (
                 return {
                     result: null,
                     error: {
-                        message: "There is no mailer available.",
-                        code: "NO_MAILER_DEFINED"
+                        message: "There is no transport available.",
+                        code: "NO_TRANSPORT_DEFINED"
                     }
                 };
             }

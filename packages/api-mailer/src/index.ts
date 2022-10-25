@@ -34,9 +34,7 @@ export const createMailer = (): PluginCollection => {
          * Smtp mailer goes into the plugins after the dummy one because plugins are loaded in reverse.
          */
         createTransport(async params => {
-            const plugin = await createSmtpTransport({
-                ...params.settings
-            });
+            const plugin = await createSmtpTransport(params.settings);
             plugin.name = "smtp-default";
             return plugin;
         }),
