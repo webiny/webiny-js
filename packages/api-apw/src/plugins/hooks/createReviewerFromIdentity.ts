@@ -18,6 +18,7 @@ export const createReviewerFromIdentity = ({ security, apw }: LifeCycleHookCallb
                 throw e;
             }
         }
+        const email = (identity as any).email || null;
         /**
          * Create a reviewer if it doesn't exist already.
          */
@@ -25,7 +26,8 @@ export const createReviewerFromIdentity = ({ security, apw }: LifeCycleHookCallb
             await apw.reviewer.create({
                 identityId: identity.id,
                 displayName: identity.displayName,
-                type: identity.type
+                type: identity.type,
+                email
             });
             return;
         }
@@ -33,11 +35,12 @@ export const createReviewerFromIdentity = ({ security, apw }: LifeCycleHookCallb
          * If "displayName" doesn't match it means it has been updated in the identity,
          * therefore, we need to update it on reviewer as well keep them in sync.
          */
-        if (reviewer.displayName !== identity.displayName) {
+        if (reviewer.displayName !== identity.displayName || reviewer.email !== identity.email) {
             await apw.reviewer.update(reviewer.id, {
                 identityId: reviewer.identityId,
                 type: reviewer.type,
-                displayName: identity.displayName
+                displayName: identity.displayName,
+                email
             });
         }
     });

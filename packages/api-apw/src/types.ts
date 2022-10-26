@@ -154,6 +154,7 @@ export interface ApwReviewer extends ApwBaseFields {
     identityId: string;
     displayName: string | null;
     type: string;
+    email?: string;
 }
 
 export interface ApwComment extends ApwBaseFields {
@@ -258,12 +259,6 @@ export interface ListWorkflowsParams extends ListParams {
     };
 }
 
-interface CreateReviewerParams {
-    identityId: string;
-    displayName: string | null;
-    type: string;
-}
-
 interface CreateApwCommentParams {
     body: Record<string, any>;
     changeRequest: string;
@@ -364,7 +359,7 @@ export interface ApwReviewerListParams extends ListParams {
 }
 
 export interface ApwReviewerCrud
-    extends BaseApwCrud<ApwReviewer, CreateReviewerParams, UpdateApwReviewerData> {
+    extends BaseApwCrud<ApwReviewer, CreateApwReviewerData, UpdateApwReviewerData> {
     list(params: ApwReviewerListParams): Promise<[ApwReviewer[], ListMeta]>;
 
     /**
@@ -526,12 +521,14 @@ interface CreateApwReviewerData {
     identityId: string;
     displayName: string | null;
     type: string;
+    email?: string | null;
 }
 
 interface UpdateApwReviewerData {
     identityId: string;
     displayName: string | null;
     type: string;
+    email?: string | null;
 }
 
 interface StorageOperationsCreateReviewerParams {

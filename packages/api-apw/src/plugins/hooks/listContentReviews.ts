@@ -14,6 +14,12 @@ export const listContentReviews = ({ apw, cms, security }: ListWorkflowsParams) 
      * When listing content review entries, we need to check which ones current user can actually see.
      */
     cms.onEntryBeforeList.subscribe(async ({ model, where }) => {
+        /**
+         * If there is workflowId_in attached on where, we will not change it.
+         */
+        if (where.workflowId_in) {
+            return;
+        }
         const identity = security.getIdentity();
         if (!identity?.id || model.modelId !== CONTENT_REVIEW_MODEL_ID) {
             return;
@@ -26,25 +32,13 @@ export const listContentReviews = ({ apw, cms, security }: ListWorkflowsParams) 
             return;
         }
         /**
-         * We need to find the reviewer entryId to be able to match it to the reviewer entryId in the workflow steps.
-         */
-        const [reviewers] = await apw.reviewer.list({
-            where: {
-                identityId: identity.id
-            }
-        });
-        if (reviewers.length === 0) {
-            return;
-        }
-        const reviewerList = reviewers.map(reviewer => reviewer.entryId);
-        /**
          * Find all workflows which user has access to.
          * User access is buried quite deep in the workflow data, so we need to do some traversing.
          */
         const userWorkflows = workflows.filter(workflow => {
             return workflow.steps.some(step => {
                 return step.reviewers.some(reviewer => {
-                    return reviewerList.includes(reviewer.entryId);
+                    return identity.id === reviewer.identityId;
                 });
             });
         });
