@@ -29,7 +29,7 @@ export const apolloFetchingHandler = async (
  * @param action: the `action` that has been performed.
  * @param setState: the logic to update the loading state.
  */
-export const loadingHandler = <T extends string | number | symbol>(
+export const loadingHandler = <T extends string>(
     context: string,
     action: T,
     setState: Dispatch<SetStateAction<Loading<T>>>

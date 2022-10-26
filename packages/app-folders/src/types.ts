@@ -12,7 +12,7 @@ export interface LinkItem {
     folderId: string;
 }
 
-export type Loading<T extends string | number | symbol> = Record<string, Record<T, boolean>>;
+export type Loading<T extends string> = Record<string, { [P in T]?: boolean }>;
 
 export type FoldersActions =
     | "LIST_FOLDERS"
