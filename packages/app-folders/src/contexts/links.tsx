@@ -1,7 +1,7 @@
 import React, { ReactNode, useCallback, useState } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
-import { ApolloQueryResult } from "apollo-client/core/types";
-import { FetchResult } from "apollo-link";
+
+import { apolloFetchingWrapper } from "./apolloWrapper";
 
 import { CREATE_LINK, DELETE_LINK, GET_LINK, LIST_LINKS, UPDATE_LINK } from "~/graphql/links.gql";
 
@@ -49,27 +49,12 @@ export const LinksProvider = ({ children }: Props) => {
     const [links, setLinks] = useState<LinkItem[]>([]);
     const [loading, setLoading] = useState<Record<LinkLoadingActions, boolean>>(loadingDefault);
 
-    const apolloActionsWrapper = useCallback(
-        async (
-            type: LinkLoadingActions,
-            callback: () => Promise<ApolloQueryResult<any> | FetchResult<any>>
-        ) => {
-            setLoading({
-                ...loading,
-                [type]: true
-            });
-
-            const response = await callback();
-
-            setLoading({
-                ...loading,
-                [type]: false
-            });
-
-            return response;
-        },
-        []
-    );
+    const handleLoading = useCallback((type: LinkLoadingActions): void => {
+        setLoading(loading => ({
+            ...loading,
+            [type]: !loading[type]
+        }));
+    }, []);
 
     const context: LinksContext = {
         links,
@@ -79,11 +64,13 @@ export const LinksProvider = ({ children }: Props) => {
                 throw new Error("Link `folderId` is mandatory");
             }
 
-            const { data: response } = await apolloActionsWrapper("LIST_LINKS", () =>
-                client.query<ListLinksResponse, ListLinksQueryVariables>({
-                    query: LIST_LINKS,
-                    variables: { folderId }
-                })
+            const { data: response } = await apolloFetchingWrapper(
+                () => handleLoading("LIST_LINKS"),
+                () =>
+                    client.query<ListLinksResponse, ListLinksQueryVariables>({
+                        query: LIST_LINKS,
+                        variables: { folderId }
+                    })
             );
 
             const { data, error } = response.folders.listLinks;
@@ -102,11 +89,13 @@ export const LinksProvider = ({ children }: Props) => {
                 throw new Error("Link `id` is mandatory");
             }
 
-            const { data: response } = await apolloActionsWrapper("GET_LINK", () =>
-                client.query<GetLinkResponse, GetLinkQueryVariables>({
-                    query: GET_LINK,
-                    variables: { id }
-                })
+            const { data: response } = await apolloFetchingWrapper(
+                () => handleLoading("GET_LINK"),
+                () =>
+                    client.query<GetLinkResponse, GetLinkQueryVariables>({
+                        query: GET_LINK,
+                        variables: { id }
+                    })
             );
 
             const { data, error } = response.folders.getLink;
@@ -119,11 +108,13 @@ export const LinksProvider = ({ children }: Props) => {
         },
 
         async createLink(link) {
-            const { data: response } = await apolloActionsWrapper("CREATE_LINK", () =>
-                client.mutate<CreateLinkResponse, CreateLinkVariables>({
-                    mutation: CREATE_LINK,
-                    variables: { data: link }
-                })
+            const { data: response } = await apolloFetchingWrapper(
+                () => handleLoading("CREATE_LINK"),
+                () =>
+                    client.mutate<CreateLinkResponse, CreateLinkVariables>({
+                        mutation: CREATE_LINK,
+                        variables: { data: link }
+                    })
             );
 
             if (!response) {
@@ -144,11 +135,13 @@ export const LinksProvider = ({ children }: Props) => {
         async updateLink(link, contextFolderId) {
             const { id, folderId } = link;
 
-            const { data: response } = await apolloActionsWrapper("UPDATE_LINK", () =>
-                client.mutate<UpdateLinkResponse, UpdateLinkVariables>({
-                    mutation: UPDATE_LINK,
-                    variables: { id, data: { folderId } }
-                })
+            const { data: response } = await apolloFetchingWrapper(
+                () => handleLoading("UPDATE_LINK"),
+                () =>
+                    client.mutate<UpdateLinkResponse, UpdateLinkVariables>({
+                        mutation: UPDATE_LINK,
+                        variables: { id, data: { folderId } }
+                    })
             );
 
             if (!response) {
@@ -173,11 +166,13 @@ export const LinksProvider = ({ children }: Props) => {
         async deleteLink(link) {
             const { id } = link;
 
-            const { data: response } = await apolloActionsWrapper("DELETE_LINK", () =>
-                client.mutate<DeleteLinkResponse, DeleteLinkVariables>({
-                    mutation: DELETE_LINK,
-                    variables: { id }
-                })
+            const { data: response } = await apolloFetchingWrapper(
+                () => handleLoading("DELETE_LINK"),
+                () =>
+                    client.mutate<DeleteLinkResponse, DeleteLinkVariables>({
+                        mutation: DELETE_LINK,
+                        variables: { id }
+                    })
             );
 
             if (!response) {
