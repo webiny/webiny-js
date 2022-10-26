@@ -25,10 +25,10 @@ export const useLinks = (folderId: string) => {
              * You'll never need to call `listLinks` from any component. As soon as you call `useLinks()`, you'll initiate
              * fetching of `links`, which is managed by the LinksContext.
              */
-            loading,
+            loading: loading[folderId] || {},
             links,
             getLink(id: string) {
-                return getLink(id);
+                return getLink(id, folderId);
             },
             createLink(link: Omit<LinkItem, "linkId">) {
                 return createLink(link);

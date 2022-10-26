@@ -12,14 +12,16 @@ export interface LinkItem {
     folderId: string;
 }
 
-export type FolderLoadingActions =
+export type Loading<T extends string | number | symbol> = Record<string, Record<T, boolean>>;
+
+export type FoldersActions =
     | "LIST_FOLDERS"
     | "GET_FOLDER"
     | "CREATE_FOLDER"
     | "UPDATE_FOLDER"
     | "DELETE_FOLDER";
 
-export type LinkLoadingActions =
+export type LinksActions =
     | "LIST_LINKS"
     | "GET_LINK"
     | "CREATE_LINK"
