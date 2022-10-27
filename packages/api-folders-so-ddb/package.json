@@ -2,7 +2,6 @@
   "name": "@webiny/api-folders-so-ddb",
   "version": "5.33.0",
   "main": "index.js",
-  "private": true,
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"

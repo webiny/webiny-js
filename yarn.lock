@@ -10358,7 +10358,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-folders-so-ddb@^5.33.0, @webiny/api-folders-so-ddb@workspace:packages/api-folders-so-ddb":
+"@webiny/api-folders-so-ddb@workspace:packages/api-folders-so-ddb":
   version: 0.0.0-use.local
   resolution: "@webiny/api-folders-so-ddb@workspace:packages/api-folders-so-ddb"
   dependencies:
@@ -11707,7 +11707,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/app-folders@^5.33.0, @webiny/app-folders@workspace:^, @webiny/app-folders@workspace:packages/app-folders":
+"@webiny/app-folders@workspace:packages/app-folders":
   version: 0.0.0-use.local
   resolution: "@webiny/app-folders@workspace:packages/app-folders"
   dependencies:
@@ -11763,7 +11763,6 @@ __metadata:
     "@types/react-google-recaptcha": ^1.1.2
     "@webiny/app": ^5.33.0
     "@webiny/app-admin": ^5.33.0
-    "@webiny/app-folders": ^5.33.0
     "@webiny/app-page-builder": ^5.33.0
     "@webiny/app-plugin-admin-welcome-screen": ^5.33.0
     "@webiny/app-security": ^5.33.0
@@ -14046,7 +14045,6 @@ __metadata:
     "@types/react": 17.0.39
     "@webiny/app-admin": ^5.33.0
     "@webiny/app-admin-users-cognito": ^5.33.0
-    "@webiny/app-folders": ^5.33.0
     "@webiny/app-form-builder": ^5.33.0
     "@webiny/app-headless-cms": ^5.33.0
     "@webiny/app-page-builder": ^5.33.0
@@ -14560,8 +14558,6 @@ __metadata:
     "@webiny/api-file-manager": ^5.33.0
     "@webiny/api-file-manager-ddb": ^5.33.0
     "@webiny/api-file-manager-s3": ^5.33.0
-    "@webiny/api-folders": ^5.33.0
-    "@webiny/api-folders-so-ddb": ^5.33.0
     "@webiny/api-form-builder": ^5.33.0
     "@webiny/api-form-builder-so-ddb": ^5.33.0
     "@webiny/api-headless-cms": ^5.33.0
@@ -35507,7 +35503,6 @@ __metadata:
     "@types/react-dom": 17.0.11
     "@typescript-eslint/eslint-plugin": ^5.5.0
     "@typescript-eslint/parser": ^5.5.0
-    "@webiny/app-folders": "workspace:^"
     adio: ^1.0.1
     amazon-cognito-identity-js: ^4.5.3
     babel-core: ^7.0.0-bridge.0
