@@ -15,12 +15,13 @@
   "license": "MIT",
   "dependencies": {
     "@aws-sdk/client-cloudwatch-events": "^3.54.1",
-    "@babel/runtime": "^7.5.5",
+    "@babel/runtime": "^7.19.0",
     "@commodo/fields": "1.1.2-beta.20",
     "@webiny/api": "^5.33.0",
     "@webiny/api-headless-cms": "^5.33.0",
     "@webiny/api-i18n": "^5.33.0",
     "@webiny/api-i18n-ddb": "^5.33.0",
+    "@webiny/api-mailer": "^5.33.0",
     "@webiny/api-page-builder": "^5.33.0",
     "@webiny/api-security": "^5.33.0",
     "@webiny/api-tenancy": "^5.33.0",
@@ -41,9 +42,9 @@
     "nanoid": "^3.1.23"
   },
   "devDependencies": {
-    "@babel/cli": "^7.5.5",
-    "@babel/core": "^7.5.5",
-    "@babel/preset-env": "^7.5.5",
+    "@babel/cli": "^7.19.3",
+    "@babel/core": "^7.19.3",
+    "@babel/preset-env": "^7.19.4",
     "@babel/preset-flow": "^7.0.0",
     "@webiny/api-headless-cms-ddb": "^5.33.0",
     "@webiny/api-page-builder-so-ddb": "^5.33.0",

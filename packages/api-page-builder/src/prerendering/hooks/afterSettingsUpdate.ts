@@ -3,7 +3,7 @@ import { ContextPlugin } from "@webiny/api";
 
 export default () => {
     return new ContextPlugin<PbContext>(async ({ pageBuilder }) => {
-        pageBuilder.onAfterSettingsUpdate.subscribe(async params => {
+        pageBuilder.onSettingsAfterUpdate.subscribe(async params => {
             const { settings, meta } = params;
             if (!settings) {
                 return;

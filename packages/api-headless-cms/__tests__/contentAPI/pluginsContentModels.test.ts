@@ -663,4 +663,44 @@ describe("content model plugins", () => {
             `Field's "storageId" of the field with "fieldId" something is not camel cased string in the content model "test".`
         );
     });
+
+    const testModel = {
+        modelId: "testModel",
+        fields: [
+            {
+                id: "title",
+                fieldId: "title",
+                label: "Title",
+                type: "text"
+            }
+        ],
+        layout: [],
+        titleFieldId: "title",
+        name: "Test Model",
+        description: "",
+        group: {
+            id: "id",
+            name: "name"
+        }
+    };
+
+    it("should validate model fields layout", () => {
+        let error: Error | undefined;
+        try {
+            new CmsModelPlugin(testModel);
+        } catch (ex) {
+            error = ex;
+        }
+
+        expect(error).toBeInstanceOf(Error);
+        expect(error?.message).toEqual(`Missing field "title" in layout.`);
+    });
+
+    it("should not validate model fields layout", () => {
+        const model = new CmsModelPlugin(testModel, {
+            validateLayout: false
+        });
+
+        expect(model).toBeInstanceOf(CmsModelPlugin);
+    });
 });

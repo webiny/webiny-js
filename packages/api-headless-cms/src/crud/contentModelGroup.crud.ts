@@ -17,12 +17,12 @@ import {
     CmsContext,
     HeadlessCmsStorageOperations,
     CmsGroupCreateInput,
-    BeforeGroupCreateTopicParams,
-    AfterGroupCreateTopicParams,
-    BeforeGroupUpdateTopicParams,
-    AfterGroupUpdateTopicParams,
-    BeforeGroupDeleteTopicParams,
-    AfterGroupDeleteTopicParams
+    OnGroupBeforeCreateTopicParams,
+    OnGroupAfterCreateTopicParams,
+    OnGroupBeforeUpdateTopicParams,
+    OnGroupAfterUpdateTopicParams,
+    OnGroupBeforeDeleteTopicParams,
+    OnGroupAfterDeleteTopicParams
 } from "~/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import WebinyError from "@webiny/error";
@@ -152,38 +152,56 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
         }
     };
 
-    const onBeforeCreate = createTopic<BeforeGroupCreateTopicParams>();
-    const onAfterCreate = createTopic<AfterGroupCreateTopicParams>();
-    const onBeforeUpdate = createTopic<BeforeGroupUpdateTopicParams>();
-    const onAfterUpdate = createTopic<AfterGroupUpdateTopicParams>();
-    const onBeforeDelete = createTopic<BeforeGroupDeleteTopicParams>();
-    const onAfterDelete = createTopic<AfterGroupDeleteTopicParams>();
+    // create
+    const onGroupBeforeCreate =
+        createTopic<OnGroupBeforeCreateTopicParams>("cms.onGroupBeforeCreate");
+    const onGroupAfterCreate = createTopic<OnGroupAfterCreateTopicParams>("cms.onGroupAfterCreate");
+    // update
+    const onGroupBeforeUpdate =
+        createTopic<OnGroupBeforeUpdateTopicParams>("cms.onGroupBeforeUpdate");
+    const onGroupAfterUpdate = createTopic<OnGroupAfterUpdateTopicParams>("cms.onGroupAfterUpdate");
+    // delete
+    const onGroupBeforeDelete =
+        createTopic<OnGroupBeforeDeleteTopicParams>("cms.onGroupBeforeDelete");
+    const onGroupAfterDelete = createTopic<OnGroupAfterDeleteTopicParams>("cms.onGroupAfterDelete");
 
     /**
      * We need to assign some default behaviors.
      */
     assignBeforeGroupCreate({
-        onBeforeCreate,
+        onGroupBeforeCreate,
         plugins: context.plugins,
         storageOperations
     });
     assignBeforeGroupUpdate({
-        onBeforeUpdate,
+        onGroupBeforeUpdate,
         plugins: context.plugins
     });
     assignBeforeGroupDelete({
-        onBeforeDelete,
+        onGroupBeforeDelete,
         plugins: context.plugins,
         storageOperations
     });
 
     return {
-        onBeforeGroupCreate: onBeforeCreate,
-        onAfterGroupCreate: onAfterCreate,
-        onBeforeGroupUpdate: onBeforeUpdate,
-        onAfterGroupUpdate: onAfterUpdate,
-        onBeforeGroupDelete: onBeforeDelete,
-        onAfterGroupDelete: onAfterDelete,
+        /**
+         * Deprecated - will be removed in 5.36.0
+         */
+        onBeforeGroupCreate: onGroupBeforeCreate,
+        onAfterGroupCreate: onGroupAfterCreate,
+        onBeforeGroupUpdate: onGroupBeforeUpdate,
+        onAfterGroupUpdate: onGroupAfterUpdate,
+        onBeforeGroupDelete: onGroupBeforeDelete,
+        onAfterGroupDelete: onGroupAfterDelete,
+        /**
+         * Released in 5.34.0
+         */
+        onGroupBeforeCreate,
+        onGroupAfterCreate,
+        onGroupBeforeUpdate,
+        onGroupAfterUpdate,
+        onGroupBeforeDelete,
+        onGroupAfterDelete,
         clearGroupsCache,
         getGroup: async id => {
             const permission = await checkPermissions("r");
@@ -246,7 +264,7 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
                 webinyVersion: context.WEBINY_VERSION
             };
             try {
-                await onBeforeCreate.publish({
+                await onGroupBeforeCreate.publish({
                     group
                 });
 
@@ -256,7 +274,7 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
 
                 clearGroupsCache();
 
-                await onAfterCreate.publish({
+                await onGroupAfterCreate.publish({
                     group: result
                 });
 
@@ -303,7 +321,7 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
             };
 
             try {
-                await onBeforeUpdate.publish({
+                await onGroupBeforeUpdate.publish({
                     original,
                     group
                 });
@@ -313,7 +331,7 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
                 });
                 clearGroupsCache();
 
-                await onAfterUpdate.publish({
+                await onGroupAfterUpdate.publish({
                     original,
                     group: updatedGroup
                 });
@@ -336,14 +354,14 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
             checkOwnership(context, permission, group);
 
             try {
-                await onBeforeDelete.publish({
+                await onGroupBeforeDelete.publish({
                     group
                 });
 
                 await storageOperations.groups.delete({ group });
                 clearGroupsCache();
 
-                await onAfterDelete.publish({
+                await onGroupAfterDelete.publish({
                     group
                 });
             } catch (ex) {

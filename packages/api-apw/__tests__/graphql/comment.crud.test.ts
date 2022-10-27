@@ -53,13 +53,7 @@ const updatedRichText = [
 ];
 
 describe("Comment crud test", () => {
-    const options = {
-        path: "manage/en-US"
-    };
-
-    const gqlHandler = usePageBuilderHandler({
-        ...options
-    });
+    const gqlHandler = usePageBuilderHandler();
 
     const {
         getCommentQuery,

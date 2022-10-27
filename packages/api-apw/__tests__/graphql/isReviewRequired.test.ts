@@ -3,13 +3,7 @@ import { ApwContentTypes } from "~/types";
 import { createSetupForPageContentReview } from "../utils/helpers";
 
 describe("Is review required test", () => {
-    const options = {
-        path: "manage/en-US"
-    };
-
-    const gqlHandler = usePageBuilderHandler({
-        ...options
-    });
+    const gqlHandler = usePageBuilderHandler();
     const { isReviewRequiredQuery, createContentReviewMutation } = gqlHandler;
 
     const setup = async () => {

@@ -2,58 +2,28 @@
  * Nodemailer docs
  * https://nodemailer.com/about/
  */
-import { Mailer } from "~/types";
+import { Transport } from "~/types";
 import WebinyError from "@webiny/error";
 import nodemailer, { Transporter } from "nodemailer";
 import SMTPTransport, { Options } from "nodemailer/lib/smtp-transport";
-import { createDummyMailer, DummyMailer } from "~/mailers/createDummyMailer";
 
-export type SmtpMailerConfig = Options;
+export type SmtpTransportConfig = Options;
 
-export interface SmtpMailer extends Mailer {
+export interface SmtpTransport extends Transport {
     transporter: Transporter<SMTPTransport.SentMessageInfo>;
 }
 
-interface SmtpMailerEnvironmentVariables {
-    host?: string;
-    user?: string;
-    password?: string;
-}
-const variables: SmtpMailerEnvironmentVariables = {
-    host: process.env.WEBINY_MAILER_HOST,
-    user: process.env.WEBINY_MAILER_USER,
-    password: process.env.WEBINY_MAILER_PASSWORD
-};
-
-export const createSmtpMailer = (config?: SmtpMailerConfig): SmtpMailer | DummyMailer => {
-    /**
-     * If we have environment variables, use those as config.
-     */
-    if (variables.host && variables.user && variables.password) {
-        if (config) {
-            throw new WebinyError({
-                message: `Cannot use both config and environment variables to setup the nodemailer.`,
-                code: "SMTP_MAILER_INIT_ERROR"
-            });
-        }
-        config = {
-            host: variables.host,
-            auth: {
-                user: variables.user,
-                pass: variables.password
-            }
-        };
-    } else if (!config) {
-        console.log(
-            "There is no config or required environment variables defined. Using dummy mailer."
-        );
-        return createDummyMailer();
+export const createSmtpTransport = (
+    config?: Partial<SmtpTransportConfig> | null
+): SmtpTransport => {
+    if (!config || typeof config !== "object" || Object.keys(config).length === 0) {
+        throw new WebinyError("There is no configuration for the SMTP transport.");
     }
-    const transporter = nodemailer.createTransport({
-        ...config
-    });
+
+    const transporter = nodemailer.createTransport(config);
 
     return {
+        name: "smtp-default",
         transporter,
         send: async params => {
             const { replyTo, text, html, to, bcc, cc, from, subject } = params;

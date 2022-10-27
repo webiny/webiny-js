@@ -1,4 +1,4 @@
-import { PluginsContainer } from "../src";
+import { PluginsContainer } from "~/index";
 
 const mockPlugins = [
     {
@@ -36,7 +36,7 @@ const mockPlugins = [
 ];
 
 describe("plugins", () => {
-    let plugins;
+    let plugins: PluginsContainer;
 
     beforeEach(() => {
         plugins = new PluginsContainer();
@@ -138,9 +138,11 @@ describe("plugins", () => {
         expect(initialized).toBe(true);
     });
 
+    const findByTypeMethodName = "findByType" as keyof typeof plugins;
+
     test("load a type only once internally", async () => {
         const byTypeSpy = jest.spyOn(plugins, "byType");
-        const findByTypeSpy = jest.spyOn(plugins, "findByType");
+        const findByTypeSpy = jest.spyOn(plugins, findByTypeMethodName);
 
         plugins.register(mockPlugins);
 
@@ -157,7 +159,7 @@ describe("plugins", () => {
 
     test("it should clear internal cache when registering a new plugin", async () => {
         const byTypeSpy = jest.spyOn(plugins, "byType");
-        const findByTypeSpy = jest.spyOn(plugins, "findByType");
+        const findByTypeSpy = jest.spyOn(plugins, findByTypeMethodName);
 
         plugins.register(mockPlugins);
 
@@ -193,7 +195,7 @@ describe("plugins", () => {
 
     test("it should clear internal cache when unregistering a plugin", async () => {
         const byTypeSpy = jest.spyOn(plugins, "byType");
-        const findByTypeSpy = jest.spyOn(plugins, "findByType");
+        const findByTypeSpy = jest.spyOn(plugins, findByTypeMethodName);
 
         plugins.register(mockPlugins);
 

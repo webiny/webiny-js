@@ -19,7 +19,11 @@ import {
 import { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { createApwPageBuilderContext, createApwGraphQL } from "~/index";
 import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb";
-import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
+import {
+    CmsParametersPlugin,
+    createHeadlessCmsContext,
+    createHeadlessCmsGraphQL
+} from "@webiny/api-headless-cms";
 /**
  * Unfortunately at we need to import the api-i18n-ddb package manually
  */
@@ -69,7 +73,6 @@ export interface GQLHandlerCallableParams {
     identity?: SecurityIdentity;
     plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     storageOperationPlugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
-    path: string;
 }
 
 export interface InvokeParams {
@@ -101,16 +104,7 @@ export const createPageBuilderGQLHandler = (params: GQLHandlerCallableParams) =>
         name: "Root",
         parent: null
     };
-    const { permissions, identity, plugins = [], path } = params;
-    /**
-     * We're using ddb-only storageOperations here because current jest setup doesn't allow
-     * usage of more than one storageOperations at a time with the help of --keyword flag.
-     */
-    const headlessCmsApp = createHeadlessCmsContext({
-        storageOperations: createHeadlessCmsStorageOperations({
-            documentClient
-        })
-    });
+    const { permissions, identity, plugins = [] } = params;
 
     const handler = createHandler({
         plugins: [
@@ -127,6 +121,17 @@ export const createPageBuilderGQLHandler = (params: GQLHandlerCallableParams) =>
             apiKeyAuthentication({ identityType: "api-key" }),
             apiKeyAuthorization({ identityType: "api-key" }),
             i18nContext(),
+            /**
+             * for the page builder we must define the current locale and type
+             * we can do that via the CmsParametersPlugin
+             */
+            new CmsParametersPlugin(async context => {
+                const locale = context.i18n.getContentLocale()?.code || "en-US";
+                return {
+                    type: "read",
+                    locale
+                };
+            }),
             i18nDynamoDbStorageOperations(),
             mockLocalesPlugins(),
             createPageBuilderGraphQL(),
@@ -137,7 +142,15 @@ export const createPageBuilderGQLHandler = (params: GQLHandlerCallableParams) =>
             createPageBuilderContext({
                 storageOperations: createPageBuilderStorageOperations({ documentClient })
             }),
-            ...headlessCmsApp,
+            /**
+             * We're using ddb-only storageOperations here because current jest setup doesn't allow
+             * usage of more than one storageOperations at a time with the help of --keyword flag.
+             */
+            createHeadlessCmsContext({
+                storageOperations: createHeadlessCmsStorageOperations({
+                    documentClient
+                })
+            }),
             createHeadlessCmsGraphQL(),
             createApwPageBuilderContext({
                 storageOperations: ops.storageOperations
@@ -153,7 +166,7 @@ export const createPageBuilderGQLHandler = (params: GQLHandlerCallableParams) =>
     const invoke = async ({ httpMethod = "POST", body, headers = {}, ...rest }: InvokeParams) => {
         const response = await handler(
             {
-                path: path ? `/cms/${path}` : "/graphql",
+                path: "/graphql",
                 httpMethod,
                 headers: {
                     ["x-tenant"]: "root",

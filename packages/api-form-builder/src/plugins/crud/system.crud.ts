@@ -3,8 +3,8 @@ import { NotAuthorizedError } from "@webiny/api-security";
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
 import { getApplicablePlugin } from "@webiny/api-upgrade";
 import {
-    AfterInstallTopic,
-    BeforeInstallTopic,
+    OnSystemBeforeInstallTopic,
+    OnSystemAfterInstallTopic,
     FormBuilder,
     FormBuilderContext,
     Settings,
@@ -26,12 +26,25 @@ interface CreateSystemCrudParams {
 export const createSystemCrud = (params: CreateSystemCrudParams): SystemCRUD => {
     const { getTenant, getLocale, getIdentity, context } = params;
 
-    const onBeforeInstall = createTopic<BeforeInstallTopic>();
-    const onAfterInstall = createTopic<AfterInstallTopic>();
+    const onSystemBeforeInstall = createTopic<OnSystemBeforeInstallTopic>(
+        "formBuilder.onSystemBeforeInstall"
+    );
+    const onSystemAfterInstall = createTopic<OnSystemAfterInstallTopic>(
+        "formBuilder.onSystemAfterInstall"
+    );
 
     return {
-        onBeforeInstall,
-        onAfterInstall,
+        /**
+         * TODO remove
+         * Deprecated in 5.34.0 - will be removed in 5.36.0
+         */
+        onBeforeInstall: onSystemBeforeInstall,
+        onAfterInstall: onSystemAfterInstall,
+        /**
+         * Released in 5.34.0
+         */
+        onSystemBeforeInstall,
+        onSystemAfterInstall,
         async getSystem(this: FormBuilder) {
             try {
                 return await this.storageOperations.getSystem({
@@ -110,14 +123,14 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCRUD => 
             }
 
             try {
-                await onBeforeInstall.publish({
+                await onSystemBeforeInstall.publish({
                     tenant: getTenant().id,
                     locale: getLocale().code
                 });
 
                 await this.createSettings(data);
 
-                await onAfterInstall.publish({
+                await onSystemAfterInstall.publish({
                     tenant: getTenant().id,
                     locale: getLocale().code
                 });
