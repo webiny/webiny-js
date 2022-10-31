@@ -33,6 +33,7 @@ export default new GraphQLSchemaPlugin<AdminUsersContext>({
             avatar: JSON
             gravatar: String
             group: SecurityGroup
+            team: SecurityTeam
             createdOn: DateTime
         }
 
@@ -46,6 +47,7 @@ export default new GraphQLSchemaPlugin<AdminUsersContext>({
             password: String!
             avatar: JSON
             group: String!
+            team: String!
         }
 
         """
@@ -58,6 +60,7 @@ export default new GraphQLSchemaPlugin<AdminUsersContext>({
             password: String
             avatar: JSON
             group: String
+            team: String
         }
 
         """
@@ -144,6 +147,9 @@ export default new GraphQLSchemaPlugin<AdminUsersContext>({
             },
             group(user, _, context) {
                 return context.security.getGroup({ where: { id: user.group } });
+            },
+            team(user, _, context) {
+                return context.security.getTeam({ where: { id: user.team } });
             }
         },
         AdminUsersQuery: {

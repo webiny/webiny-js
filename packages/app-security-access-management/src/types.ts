@@ -7,6 +7,15 @@ export interface Group {
     slug: string;
     system?: boolean;
 }
+
+export interface Team {
+    id: string;
+    name: string;
+    description: string;
+    slug: string;
+    system?: boolean;
+}
+
 export interface ApiKey {
     id: string;
     token: string;

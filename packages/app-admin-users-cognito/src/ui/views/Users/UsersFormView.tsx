@@ -149,6 +149,8 @@ export class UsersFormView extends UIView {
         );
 
         const groupAccordion = accordion.getElement<AccordionItemElement>("groups");
+
+        // todo: if EE, show TEAM
         if (groupAccordion) {
             groupAccordion.addElement(
                 new GroupAutocompleteElement("group", {

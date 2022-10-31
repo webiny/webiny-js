@@ -9,11 +9,6 @@ import mdbid from "mdbid";
 // @ts-ignore
 import deepEqual from "deep-equal";
 /**
- * Package commodo-fields-object does not have types.
- */
-// @ts-ignore
-import { object } from "commodo-fields-object";
-/**
  * Package @commodo/fields does not have types.
  */
 // @ts-ignore
@@ -21,23 +16,17 @@ import { withFields, string } from "@commodo/fields";
 import { validation } from "@webiny/validation";
 import WebinyError from "@webiny/error";
 import { NotFoundError } from "@webiny/handler-graphql";
-import {
-    GetGroupParams,
-    Group,
-    GroupInput,
-    GroupTenantLink,
-    ListGroupsParams,
-    Security
-} from "~/types";
+import { GetTeamParams, Team, TeamInput, TeamTenantLink, Security } from "~/types";
 import NotAuthorizedError from "../NotAuthorizedError";
 import { SecurityConfig } from "~/types";
+import { mergeSecurityGroupsPermissions } from "~/createSecurity/mergeSecurityPermissions";
 
 const CreateDataModel = withFields({
     tenant: string({ validation: validation.create("required") }),
     name: string({ validation: validation.create("required,minLength:3") }),
     slug: string({ validation: validation.create("required,minLength:3") }),
     description: string({ validation: validation.create("maxLength:500") }),
-    permissions: object({
+    groups: string({
         list: true,
         validation: validation.create("required")
     })
@@ -46,39 +35,47 @@ const CreateDataModel = withFields({
 const UpdateDataModel = withFields({
     name: string({ validation: validation.create("minLength:3") }),
     description: string({ validation: validation.create("maxLength:500") }),
-    permissions: object({ list: true })
+    groups: string({ list: true })
 })();
 
 async function checkPermission(security: Security): Promise<void> {
-    const permission = await security.getPermission("security.group");
+    const permission = await security.getPermission("security.team");
 
     if (!permission) {
         throw new NotAuthorizedError();
     }
 }
 
-async function updateTenantLinks(security: Security, tenant: string, group: Group): Promise<void> {
-    const links = await security.listTenantLinksByType<GroupTenantLink>({ tenant, type: "permissions" });
+async function updateTenantLinks(security: Security, tenant: string, team: Team): Promise<void> {
+    const links = await security.listTenantLinksByType<TeamTenantLink>({
+        tenant,
+        type: "permissions"
+    });
 
     if (!links.length) {
         return;
     }
 
+    const teamGroups = await security.listGroups({ where: { id_in: team.groups } });
+    const permissions = mergeSecurityGroupsPermissions(teamGroups);
+
     await security.updateTenantLinks(
         links
-            .filter(link => link.data && link.data.group === group.id)
+            .filter(link => link.data && link.data.team === team.id)
             .map(link => ({
                 ...link,
                 data: {
                     ...link.data,
-                    group: group.id,
-                    permissions: group.permissions
+                    team: {
+                        id: team.id,
+                        permissions
+                    }
                 }
             }))
     );
 }
 
-export const createGroupsMethods = ({
+export const createTeamsMethods = ({
     getTenant: initialGetTenant,
     storageOperations
 }: SecurityConfig) => {
@@ -90,33 +87,32 @@ export const createGroupsMethods = ({
         return tenant;
     };
     return {
-        async getGroup(this: Security, { where }: GetGroupParams): Promise<Group> {
+        async getTeam(this: Security, { where }: GetTeamParams): Promise<Team> {
             await checkPermission(this);
 
-            let group: Group | null = null;
+            let team: Team | null = null;
             try {
-                group = await storageOperations.getGroup({
+                team = await storageOperations.getTeam({
                     where: { ...where, tenant: where.tenant || getTenant() }
                 });
             } catch (ex) {
                 throw new WebinyError(
-                    ex.message || "Could not get group.",
-                    ex.code || "GET_GROUP_ERROR",
+                    ex.message || "Could not get team.",
+                    ex.code || "GET_TEAM_ERROR",
                     where
                 );
             }
-            if (!group) {
-                throw new NotFoundError(`Unable to find group : ${JSON.stringify(where)}`);
+            if (!team) {
+                throw new NotFoundError(`Unable to find team : ${JSON.stringify(where)}`);
             }
-            return group;
+            return team;
         },
 
-        async listGroups(this: Security, { where }: ListGroupsParams = {}) {
+        async listTeams(this: Security) {
             await checkPermission(this);
             try {
-                return await storageOperations.listGroups({
+                return await storageOperations.listTeams({
                     where: {
-                        ...where,
                         tenant: getTenant()
                     },
                     sort: ["createdOn_ASC"]
@@ -129,7 +125,7 @@ export const createGroupsMethods = ({
             }
         },
 
-        async createGroup(this: Security, input: GroupInput): Promise<Group> {
+        async createTeam(this: Security, input: TeamInput): Promise<Team> {
             await checkPermission(this);
 
             const identity = this.getIdentity();
@@ -137,7 +133,7 @@ export const createGroupsMethods = ({
 
             await new CreateDataModel().populate({ ...input, tenant: currentTenant }).validate();
 
-            const existing = await storageOperations.getGroup({
+            const existing = await storageOperations.getTeam({
                 where: {
                     tenant: currentTenant,
                     slug: input.slug
@@ -146,12 +142,12 @@ export const createGroupsMethods = ({
 
             if (existing) {
                 throw new WebinyError(
-                    `Group with slug "${input.slug}" already exists.`,
-                    "GROUP_EXISTS"
+                    `Team with slug "${input.slug}" already exists.`,
+                    "TEAM_EXISTS"
                 );
             }
 
-            const group: Group = {
+            const team: Team = {
                 id: mdbid(),
                 tenant: currentTenant,
                 ...input,
@@ -168,71 +164,71 @@ export const createGroupsMethods = ({
             };
 
             try {
-                return await storageOperations.createGroup({ group });
+                return await storageOperations.createTeam({ team });
             } catch (ex) {
                 throw new WebinyError(
-                    ex.message || "Could not create group.",
-                    ex.code || "CREATE_GROUP_ERROR",
+                    ex.message || "Could not create team.",
+                    ex.code || "CREATE_TEAM_ERROR",
                     {
-                        group
+                        team
                     }
                 );
             }
         },
 
-        async updateGroup(this: Security, id: string, input: Record<string, any>): Promise<Group> {
+        async updateTeam(this: Security, id: string, input: Record<string, any>): Promise<Team> {
             await checkPermission(this);
 
             const model = await new UpdateDataModel().populate(input);
             await model.validate();
 
-            const original = await storageOperations.getGroup({
+            const original = await storageOperations.getTeam({
                 where: { tenant: getTenant(), id }
             });
             if (!original) {
-                throw new NotFoundError(`Group "${id}" was not found!`);
+                throw new NotFoundError(`Team "${id}" was not found!`);
             }
 
             const data = await model.toJSON({ onlyDirty: true });
 
-            const permissionsChanged = !deepEqual(data.permissions, original.permissions);
+            const groupsChanged = !deepEqual(data.groups, original.groups);
 
-            const group: Group = {
+            const team: Team = {
                 ...original,
                 ...data
             };
             try {
-                const result = await storageOperations.updateGroup({ original, group });
-                if (permissionsChanged) {
+                const result = await storageOperations.updateTeam({ original, team });
+                if (groupsChanged) {
                     await updateTenantLinks(this, getTenant(), result);
                 }
                 return result;
             } catch (ex) {
                 throw new WebinyError(
-                    ex.message || "Could not update group.",
-                    ex.code || "UPDATE_GROUP_ERROR",
+                    ex.message || "Could not update team.",
+                    ex.code || "UPDATE_TEAM_ERROR",
                     {
-                        group
+                        team
                     }
                 );
             }
         },
 
-        async deleteGroup(this: Security, id: string): Promise<void> {
+        async deleteTeam(this: Security, id: string): Promise<void> {
             await checkPermission(this);
 
-            const group = await storageOperations.getGroup({ where: { tenant: getTenant(), id } });
-            if (!group) {
-                throw new NotFoundError(`Group "${id}" was not found!`);
+            const team = await storageOperations.getTeam({ where: { tenant: getTenant(), id } });
+            if (!team) {
+                throw new NotFoundError(`Team "${id}" was not found!`);
             }
             try {
-                await storageOperations.deleteGroup({ group });
+                await storageOperations.deleteTeam({ team });
             } catch (ex) {
                 throw new WebinyError(
-                    ex.message || "Could not delete group.",
-                    ex.code || "DELETE_GROUP_ERROR",
+                    ex.message || "Could not delete team.",
+                    ex.code || "DELETE_TEAM_ERROR",
                     {
-                        group
+                        team
                     }
                 );
             }

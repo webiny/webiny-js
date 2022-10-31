@@ -87,12 +87,24 @@ module.exports = options => {
                     loader: require.resolve("babel-loader"),
                     exclude: /node_modules/,
                     options: babelOptions
+                },
+                {
+                    test: /\.(js|ts)$/,
+                    loader: "aacl-add-authenticator-loader",
+                    exclude: [/node_modules/, /packages\/.*?\/dist/]
                 }
             ].filter(Boolean)
         },
         resolve: {
             modules: [path.resolve(path.join(cwd, "node_modules")), "node_modules"],
             extensions: [".ts", ".mjs", ".js", ".json"]
+        },
+        resolveLoader: {
+            alias: {
+                "aacl-add-authenticator-loader": path.resolve(
+                    path.join(__dirname, "loaders", "aacl.js")
+                )
+            }
         }
     };
 };

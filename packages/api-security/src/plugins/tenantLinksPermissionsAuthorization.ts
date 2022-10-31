@@ -8,7 +8,7 @@ export interface Config {
     identityType?: string;
 }
 
-export const createGroupAuthorizer =
+export const tenantLinksPermissionsAuthorization =
     (config: Config) =>
     ({ security, tenancy }: Context) =>
     async () => {
@@ -33,6 +33,6 @@ export const createGroupAuthorizer =
 
 export default (config: Config) => {
     return new ContextPlugin<SecurityContext & TenancyContext>(context => {
-        context.security.addAuthorizer(createGroupAuthorizer(config)(context));
+        context.security.addAuthorizer(tenantLinksPermissionsAuthorization(config)(context));
     });
 };

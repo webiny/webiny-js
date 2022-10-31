@@ -50,6 +50,12 @@ export interface GetGroupWhere {
     tenant?: string;
 }
 
+export interface GetTeamWhere {
+    id?: string;
+    slug?: string;
+    tenant?: string;
+}
+
 export interface Security<TIdentity = SecurityIdentity> extends Authentication<TIdentity> {
     onBeforeInstall: Topic<InstallEvent>;
     onInstall: Topic<InstallEvent>;
@@ -82,6 +88,12 @@ export interface Security<TIdentity = SecurityIdentity> extends Authentication<T
     createGroup(input: GroupInput): Promise<Group>;
     updateGroup(id: string, input: Partial<GroupInput>): Promise<Group>;
     deleteGroup(id: string): Promise<void>;
+    // Teams
+    getTeam(params: GetTeamParams): Promise<Team>;
+    listTeams(params?: ListTeamsParams): Promise<Team[]>;
+    createTeam(input: TeamInput): Promise<Team>;
+    updateTeam(id: string, input: Partial<TeamInput>): Promise<Team>;
+    deleteTeam(id: string): Promise<void>;
     // Links
     createTenantLinks(params: CreateTenantLinkParams[]): Promise<void>;
     updateTenantLinks(params: UpdateTenantLinkParams[]): Promise<void>;
@@ -106,6 +118,11 @@ export interface SecurityStorageOperations {
     createGroup(params: StorageOperationsCreateGroupParams): Promise<Group>;
     updateGroup(params: StorageOperationsUpdateGroupParams): Promise<Group>;
     deleteGroup(params: StorageOperationsDeleteGroupParams): Promise<void>;
+    getTeam(params: StorageOperationsGetTeamParams): Promise<Team | null>;
+    listTeams(params: StorageOperationsListTeamsParams): Promise<Team[]>;
+    createTeam(params: StorageOperationsCreateTeamParams): Promise<Team>;
+    updateTeam(params: StorageOperationsUpdateTeamParams): Promise<Team>;
+    deleteTeam(params: StorageOperationsDeleteTeamParams): Promise<void>;
     getSystemData(params: StorageOperationsGetSystemParams): Promise<System | null>;
     createSystemData(params: StorageOperationsCreateSystemParams): Promise<System>;
     updateSystemData(params: StorageOperationsUpdateSystemParams): Promise<System>;
@@ -193,6 +210,51 @@ export interface DeleteGroupParams {
     group: Group;
 }
 
+export interface Team {
+    tenant: string;
+    createdOn: string;
+    createdBy: CreatedBy | null;
+    id: string;
+    name: string;
+    slug: string;
+    description: string;
+    system: boolean;
+    groups: string[]
+    webinyVersion: string;
+}
+
+export type TeamInput = Pick<Team, "name" | "slug" | "description" | "groups"> & {
+    system?: boolean;
+};
+
+export interface GetTeamParams {
+    where: GetTeamWhere;
+}
+
+export interface ListTeamsParams {
+    where?: {
+        id_in?: string[];
+    };
+    sort?: string[];
+}
+
+export interface TeamsCreateParams {
+    team: Team;
+}
+
+export interface CreateTeamParams {
+    team: Team;
+}
+
+export interface UpdateTeamParams {
+    original: Team;
+    team: Team;
+}
+
+export interface DeleteTeamParams {
+    team: Team;
+}
+
 export interface System {
     tenant: string;
     version: string;
@@ -259,6 +321,8 @@ export interface TenantLink<TData = any> {
 }
 
 export type GroupTenantLink = TenantLink<{ group: string; permissions: SecurityPermission[] }>;
+
+export type TeamTenantLink = TenantLink<{ team: string; permissions: SecurityPermission[] }>;
 
 export interface ApiKey {
     id: string;
@@ -330,6 +394,23 @@ export interface StorageOperationsListGroupsParams extends ListGroupsParams {
 export type StorageOperationsCreateGroupParams = CreateGroupParams;
 export type StorageOperationsUpdateGroupParams = UpdateGroupParams;
 export type StorageOperationsDeleteGroupParams = DeleteGroupParams;
+
+export interface StorageOperationsGetTeamParams extends GetTeamParams {
+    where: GetTeamParams["where"] & {
+        tenant: string;
+    };
+}
+
+export interface StorageOperationsListTeamsParams extends ListTeamsParams {
+    where: ListTeamsParams["where"] & {
+        tenant: string;
+    };
+}
+
+export type StorageOperationsCreateTeamParams = CreateTeamParams;
+export type StorageOperationsUpdateTeamParams = UpdateTeamParams;
+export type StorageOperationsDeleteTeamParams = DeleteTeamParams;
+
 export type StorageOperationsGetSystemParams = GetSystemParams;
 export type StorageOperationsCreateSystemParams = CreateSystemParams;
 export type StorageOperationsUpdateSystemParams = UpdateSystemParams;

@@ -8,7 +8,7 @@ import { ContextPlugin } from "@webiny/handler";
 import { BeforeHandlerPlugin } from "@webiny/handler";
 import { TenancyContext } from "@webiny/api-tenancy/types";
 import { AdminUsersContext } from "~/types";
-import { createGroupAuthorizer } from "@webiny/api-security/plugins/groupAuthorization";
+import { createTenantLinksPermissionsAuthorizer } from "@webiny/api-security/plugins/groupAuthorization";
 
 // IMPORTANT: This must be removed from here in favor of a dynamic SO setup.
 const documentClient = new DocumentClient({
@@ -66,7 +66,7 @@ export const createTenancyAndSecurity = ({ fullAccess, identity }: Config = {}) 
                 );
             });
 
-            const groupAuthorizer = createGroupAuthorizer({ identityType: "admin" })(context);
+            const groupAuthorizer = createTenantLinksPermissionsAuthorizer({ identityType: "admin" })(context);
             context.security.addAuthorizer(async () => {
                 if (fullAccess) {
                     return [{ name: "*" }];

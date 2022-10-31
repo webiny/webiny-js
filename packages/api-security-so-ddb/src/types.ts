@@ -24,7 +24,8 @@ export enum ENTITIES {
     SYSTEM = "SecuritySystem",
     TENANT_LINK = "SecurityIdentity2Tenant",
     API_KEY = "SecurityApiKey",
-    GROUP = "SecurityGroup"
+    GROUP = "SecurityGroup",
+    TEAM = "SecurityTeam"
 }
 
 export interface SecurityStorageParams {

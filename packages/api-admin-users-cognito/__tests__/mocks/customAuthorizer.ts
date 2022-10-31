@@ -3,7 +3,7 @@ import { ContextPlugin } from "@webiny/handler";
 import { SecurityContext } from "@webiny/api-security/types";
 import { AdminUsersContext } from "~/types";
 import { TenancyContext } from "@webiny/api-tenancy/types";
-import { createGroupAuthorizer } from "@webiny/api-security/plugins/groupAuthorization";
+import { createTenantLinksPermissionsAuthorizer } from "@webiny/api-security/plugins/groupAuthorization";
 
 interface Context extends HttpContext, TenancyContext, SecurityContext, AdminUsersContext {}
 
@@ -13,7 +13,7 @@ interface Options {
 
 export const customAuthorizer = (opts: Options) => {
     return new ContextPlugin<Context>(context => {
-        const groupAuthorizer = createGroupAuthorizer({ identityType: "admin" })(context);
+        const groupAuthorizer = createTenantLinksPermissionsAuthorizer({ identityType: "admin" })(context);
         context.security.addAuthorizer(async () => {
             if (opts.fullAccess) {
                 return [{ name: "*" }];

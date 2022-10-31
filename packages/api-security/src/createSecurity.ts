@@ -3,6 +3,7 @@ import { createAuthentication } from "@webiny/api-authentication/createAuthentic
 import { Authorizer, Security, SecurityPermission, SecurityConfig } from "./types";
 import { createApiKeysMethods } from "~/createSecurity/createApiKeysMethods";
 import { createGroupsMethods } from "~/createSecurity/createGroupsMethods";
+import { createTeamsMethods } from "~/createSecurity/createTeamsMethods";
 import { createSystemMethods } from "~/createSecurity/createSystemMethods";
 import { createTenantLinksMethods } from "~/createSecurity/createTenantLinksMethods";
 import { filterOutCustomWbyAppsPermissions } from "~/createSecurity/filterOutCustomWbyAppsPermissions";
@@ -155,6 +156,7 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
         },
         ...createTenantLinksMethods(config),
         ...createGroupsMethods(config),
+        ...createTeamsMethods(config),
         ...createApiKeysMethods(config),
         ...createSystemMethods(config)
     };

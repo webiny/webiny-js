@@ -61,6 +61,41 @@ export const createGroupEntity = (table: Table, attributes: Attributes = {}) => 
         ...attributes
     });
 };
+export const createTeamEntity = (table: Table, attributes: Attributes = {}) => {
+    return createEntity(ENTITIES.TEAM, table, {
+        id: {
+            type: "string"
+        },
+        tenant: {
+            type: "string"
+        },
+        system: {
+            type: "boolean"
+        },
+        createdBy: {
+            type: "map"
+        },
+        createdOn: {
+            type: "string"
+        },
+        name: {
+            type: "string"
+        },
+        slug: {
+            type: "string"
+        },
+        description: {
+            type: "string"
+        },
+        groups: {
+            type: "list"
+        },
+        webinyVersion: {
+            type: "string"
+        },
+        ...attributes
+    });
+};
 
 export const createApiKeyEntity = (table: Table, attributes: Attributes = {}) => {
     return createEntity(ENTITIES.API_KEY, table, {

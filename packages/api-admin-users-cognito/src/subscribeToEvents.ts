@@ -33,7 +33,7 @@ export const subscribeToEvents = (context: Context): void => {
                 // Use the `id` that was assigned in the user creation process.
                 // `syncWithCognito` will assign the `sub` value to the user id, so that the identity id matches the user id.
                 identity: user.id,
-                type: "group",
+                type: "permissions",
                 data: {
                     group: group.id,
                     permissions: group.permissions
@@ -60,7 +60,7 @@ export const subscribeToEvents = (context: Context): void => {
                 // @ts-ignore
                 tenant,
                 identity: updatedUser.id,
-                type: "group",
+                type: "permissions",
                 data: { group: group.id, permissions: group.permissions }
             }
         ]);

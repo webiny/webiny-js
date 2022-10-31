@@ -11,7 +11,7 @@ export interface GroupAuthorizerConfig {
     getGroupSlug(context: Context): string;
 }
 
-export const createGroupAuthorizer = (config: GroupAuthorizerConfig) => {
+export const createTenantLinksPermissionsAuthorizer = (config: GroupAuthorizerConfig) => {
     return new ContextPlugin<Context>(context => {
         const { security } = context;
         security.addAuthorizer(async () => {
