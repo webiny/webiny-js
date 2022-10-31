@@ -5554,10 +5554,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material-design-icons/svg@npm:^0.12.1":
-  version: 0.12.1
-  resolution: "@material-design-icons/svg@npm:0.12.1"
-  checksum: c0e482fd0be54d3cc5aa84ab12bc4286443acb22bb6e0be3c5ec8e4405977031b4559a4ffbc892e59cd25f5694f65e61af647666926c0768766bfa6acd218f33
+"@material-design-icons/svg@npm:^0.13.0":
+  version: 0.13.0
+  resolution: "@material-design-icons/svg@npm:0.13.0"
+  checksum: 9e95051db5eed70557e3ac10ad044fc485ba92a783b1288bd89be5a0448d88b76cb6e3c8991b4d6e7bc99150fac8e788e4c9a60445ffdf3bcb9fc0e6ac2a9ea3
   languageName: node
   linkType: hard
 
@@ -8372,6 +8372,25 @@ __metadata:
   dependencies:
     defer-to-connect: ^1.0.1
   checksum: 4d9158061c5f397c57b4988cde33a163244e4f02df16364f103971957a32886beb104d6180902cbe8b38cb940e234d9f98a4e486200deca621923f62f50a06fe
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-table@npm:^8.5.22":
+  version: 8.5.22
+  resolution: "@tanstack/react-table@npm:8.5.22"
+  dependencies:
+    "@tanstack/table-core": 8.5.22
+  peerDependencies:
+    react: ">=16"
+    react-dom: ">=16"
+  checksum: dc200b5a4e1a3c634b8d926574deb9290b23c7ac4b8ff53e3b760a6a7be8c44213f23aa8fa257c6b66cfff92ca7c88fd09b9389f001d0c49a24f1e59af5de9f8
+  languageName: node
+  linkType: hard
+
+"@tanstack/table-core@npm:8.5.22":
+  version: 8.5.22
+  resolution: "@tanstack/table-core@npm:8.5.22"
+  checksum: ee273094b3257f21156a53523b6aa5a2f46a6c4b34a21b0989031c08d69f389205cade5811fe9d0ca744e9128d5f6046568050b649b3422ff52e18fd59cee2b0
   languageName: node
   linkType: hard
 
@@ -11704,7 +11723,6 @@ __metadata:
     "@editorjs/editorjs": ^2.20.1
     "@emotion/core": ^10.0.17
     "@emotion/styled": ^10.0.17
-    "@material-design-icons/svg": ^0.12.1
     "@svgr/webpack": ^6.1.1
     "@types/react": 17.0.39
     "@types/react-google-recaptcha": ^1.1.2
@@ -11803,6 +11821,7 @@ __metadata:
     "@fortawesome/free-regular-svg-icons": ^6.0.0
     "@fortawesome/free-solid-svg-icons": ^6.0.0
     "@fortawesome/react-fontawesome": ^0.1.17
+    "@material-design-icons/svg": ^0.13.0
     "@svgr/webpack": ^6.1.1
     "@types/react": 17.0.39
     "@webiny/app": ^5.33.0
@@ -13531,6 +13550,7 @@ __metadata:
     "@storybook/addon-links": ^5.0.5
     "@storybook/react": ^5.2.8
     "@svgr/webpack": ^6.1.1
+    "@tanstack/react-table": ^8.5.22
     "@testing-library/react": ^12.1.2
     "@types/classnames": ^2.2.7
     "@types/nprogress": ^0.2.0

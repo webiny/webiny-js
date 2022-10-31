@@ -1,42 +1,72 @@
 import React from "react";
 import {
-    DataTable as RmwcDataTable,
-    DataTableContent as RmwcDataTableContent,
-    DataTableHead as RmwcDataTableHead,
-    DataTableRow as RmwcDataTableRow,
-    DataTableHeadCell as RmwcDataTableHeadCell,
-    DataTableBody as RmwcDataTableBody,
-    DataTableCell as RmwcDataTableCell
+    DataTableContent,
+    DataTableHead,
+    DataTableRow,
+    DataTableHeadCell,
+    DataTableBody,
+    DataTableCell,
+    DataTable
 } from "@rmwc/data-table";
 
-import "@material/data-table/dist/mdc.data-table.css";
-import "@rmwc/data-table/data-table.css";
-import "@rmwc/icon/icon.css";
+import { flexRender, getCoreRowModel, useReactTable, ColumnDef } from "@tanstack/react-table";
 
-export const DataTableCell = (props: any) => {
-    return <RmwcDataTableCell {...props}>{props.children}</RmwcDataTableCell>;
-};
+interface Column {
+    id: string;
+    header: string;
+}
 
-export const DataTableRow = (props: any) => {
-    return <RmwcDataTableRow {...props}>{props.children}</RmwcDataTableRow>;
-};
+interface TableProps<T> {
+    columns: Column[];
+    data: T[];
+}
 
-export const DataTableBody = (props: any) => {
-    return <RmwcDataTableBody {...props}>{props.children}</RmwcDataTableBody>;
-};
+export const Table = <T extends object>({ data, columns }: TableProps<T>) => {
+    const defaultColumns: ColumnDef<T>[] = columns.map(column => {
+        return {
+            accessorKey: column.id,
+            header: column.header,
+            cell: info => info.getValue()
+        };
+    });
 
-export const DataTableHeadCell = (props: any) => {
-    return <RmwcDataTableHeadCell {...props}>{props.children}</RmwcDataTableHeadCell>;
-};
+    const table = useReactTable({
+        data,
+        columns: defaultColumns,
+        getCoreRowModel: getCoreRowModel()
+    });
 
-export const DataTableHead = (props: any) => {
-    return <RmwcDataTableHead {...props}>{props.children}</RmwcDataTableHead>;
-};
-
-export const DataTableContent = (props: any) => {
-    return <RmwcDataTableContent {...props}>{props.children}</RmwcDataTableContent>;
-};
-
-export const DataTable = (props: any) => {
-    return <RmwcDataTable {...props}>{props.children}</RmwcDataTable>;
+    return (
+        <DataTable>
+            <DataTableContent>
+                <DataTableHead>
+                    {table.getHeaderGroups().map(headerGroup => (
+                        <DataTableRow key={headerGroup.id}>
+                            {headerGroup.headers.map(header => (
+                                <DataTableHeadCell key={header.id}>
+                                    {header.isPlaceholder
+                                        ? null
+                                        : flexRender(
+                                              header.column.columnDef.header,
+                                              header.getContext()
+                                          )}
+                                </DataTableHeadCell>
+                            ))}
+                        </DataTableRow>
+                    ))}
+                </DataTableHead>
+                <DataTableBody>
+                    {table.getRowModel().rows.map(row => (
+                        <DataTableRow key={row.id}>
+                            {row.getVisibleCells().map(cell => (
+                                <DataTableCell key={cell.id}>
+                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                </DataTableCell>
+                            ))}
+                        </DataTableRow>
+                    ))}
+                </DataTableBody>
+            </DataTableContent>
+        </DataTable>
+    );
 };
