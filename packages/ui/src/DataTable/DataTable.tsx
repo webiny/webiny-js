@@ -14,18 +14,23 @@ import { flexRender, getCoreRowModel, useReactTable, ColumnDef } from "@tanstack
 import { DataTable } from "./styled";
 
 export interface Column {
-    id: string;
     header: string | ReactElement;
     meta?: DataTableCellProps;
 }
 
+type Columns<T> = Record<keyof T, Column>;
+
 interface TableProps<T extends object> {
-    columns: Column[];
+    columns: Columns<T>;
     data: T[];
 }
 
 export const Table = <T extends object>({ data, columns }: TableProps<T>) => {
-    const columnsDefinition: ColumnDef<T>[] = columns.map(column => {
+    const cols = Object.keys(columns).map(key => ({
+        id: key,
+        ...columns[key as keyof typeof columns]
+    }));
+    const columnsDefinition: ColumnDef<T>[] = cols.map(column => {
         return {
             accessorKey: column.id,
             header: () => column.header,
