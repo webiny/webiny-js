@@ -119,8 +119,8 @@ const ExportPageLoadingDialogContent: React.FC<ExportPageLoadingDialogContent> =
                         <LoadingDialog.ProgressContainer>
                             <LoadingDialog.StatusTitle use={"subtitle2"}>
                                 {t`{completed} of {total} completed`({
-                                    completed: stats.completed,
-                                    total: stats.total
+                                    completed: `${stats.completed}`,
+                                    total: `${stats.total}`
                                 })}
                             </LoadingDialog.StatusTitle>
                             <ProgressBar
