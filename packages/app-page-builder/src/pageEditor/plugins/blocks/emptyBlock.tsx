@@ -8,7 +8,7 @@ const height = 117;
 const aspectRatio = width / height;
 
 const plugin: PbEditorBlockPlugin = {
-    name: "pb-editor-empty-block",
+    name: "pb-editor-block-empty",
     type: "pb-editor-block",
     blockCategory: "general",
     title: "Empty block",

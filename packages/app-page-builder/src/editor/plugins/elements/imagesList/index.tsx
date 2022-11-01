@@ -76,8 +76,7 @@ export default (args: PbEditorElementPluginArgs = {}) => {
                 return typeof args.create === "function" ? args.create(defaultValue) : defaultValue;
             },
             render({ element }) {
-                // TODO @ts-refactor
-                return <ImagesList data={element.data as any} />;
+                return <ImagesList element={element} />;
             }
         } as PbEditorPageElementPlugin,
         {

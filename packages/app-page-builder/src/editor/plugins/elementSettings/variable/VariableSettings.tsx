@@ -1,68 +1,44 @@
-import React, { useCallback } from "react";
-import styled from "@emotion/styled";
-import { useUpdateElement } from "~/editor/hooks/useUpdateElement";
+import React from "react";
+import { css } from "emotion";
+import { plugins } from "@webiny/plugins";
 import { useActiveElement } from "~/editor/hooks/useActiveElement";
-import { Input } from "@webiny/ui/Input";
-import { PbBlockVariable } from "~/types";
+import { Typography } from "@webiny/ui/Typography";
+import { PbBlockVariable, PbEditorPageElementVariableRendererPlugin } from "~/types";
 
-const VariableSettingsWrapper = styled("div")({
+const wrapperStyle = css({
     padding: "16px",
     display: "grid",
-    rowGap: "16px"
+    rowGap: "20px"
+});
+
+const labelStyle = css({
+    marginBottom: "8px",
+    "& span": {
+        color: "var(--mdc-theme-text-primary-on-background)"
+    }
 });
 
 const VariableSettings: React.FC = () => {
     const [element] = useActiveElement();
-    const updateElement = useUpdateElement();
 
-    const onChange = useCallback(
-        (value: string, variableId: string) => {
-            if (element) {
-                const newVariables = element?.data?.variables?.map((variable: PbBlockVariable) => {
-                    if (variable?.id === variableId) {
-                        return {
-                            ...variable,
-                            value
-                        };
-                    } else {
-                        return variable;
-                    }
-                });
-                updateElement(
-                    {
-                        ...element,
-                        data: {
-                            ...element.data,
-                            variables: newVariables
-                        }
-                    },
-                    {
-                        history: false
-                    }
-                );
-            }
-        },
-        [element, updateElement]
-    );
-
-    const onBlur = useCallback(() => {
-        if (element) {
-            updateElement(element);
-        }
-    }, [element, updateElement]);
+    const elementVariableRendererPlugins =
+        plugins.byType<PbEditorPageElementVariableRendererPlugin>(
+            "pb-editor-page-element-variable-renderer"
+        );
 
     return (
-        <VariableSettingsWrapper>
+        <div className={wrapperStyle}>
             {element?.data?.variables?.map((variable: PbBlockVariable, index: number) => (
-                <Input
-                    key={index}
-                    label={variable?.label}
-                    value={variable?.value}
-                    onChange={value => onChange(value, variable.id)}
-                    onBlur={onBlur}
-                />
+                <div key={index}>
+                    <div className={labelStyle}>
+                        <Typography use={"subtitle2"}>{variable.label}</Typography>
+                    </div>
+                    {elementVariableRendererPlugins
+                        .find(plugin => plugin.elementType === variable?.type)
+                        ?.renderVariableInput(variable.id)}
+                </div>
             ))}
-        </VariableSettingsWrapper>
+        </div>
     );
 };
 

@@ -1,13 +1,18 @@
-import React from "react";
+import React, { useCallback } from "react";
 import styled from "@emotion/styled";
-import { PbEditorElement, PbBlockVariable } from "~/types";
+import { PbEditorElement, PbBlockVariable, PbElement } from "~/types";
 import { Typography } from "@webiny/ui/Typography";
 import {
     useSortableList,
     useMoveVariable
 } from "~/blockEditor/components/elementSettingsTab/variablesListHooks";
 import { Collapsable } from "~/editor/plugins/toolbar/navigator/StyledComponents";
+import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
+import { useUpdateElement } from "~/editor/hooks/useUpdateElement";
 import { ReactComponent as DragIndicatorIcon } from "~/editor/plugins/toolbar/navigator/assets/drag_indicator_24px.svg";
+import { ReactComponent as DeleteIcon } from "~/editor/assets/icons/delete.svg";
+import { findElementByVariableId } from "~/blockEditor/config/eventActions/saveBlock";
+import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 
 const TitleWrapper = styled("div")({
     padding: "16px",
@@ -23,11 +28,34 @@ const VariableItem = styled("div")({
 
     "&:hover": {
         backgroundColor: "var(--mdc-theme-background)",
-        color: "var(--mdc-theme-primary)"
+        color: "var(--mdc-theme-primary)",
+
+        "&>div": {
+            display: "block"
+        }
     },
 
     "&>svg": {
         cursor: "move"
+    }
+});
+
+const DeleteIconWrapper = styled("div")({
+    display: "none",
+    marginLeft: "auto",
+    marginRight: "16px",
+    height: "24px",
+    cursor: "pointer",
+
+    "&>svg": {
+        fill: "var(--mdc-theme-text-secondary-on-background)",
+        transition: "fill 0.2s"
+    },
+
+    "&:hover": {
+        "&>svg": {
+            fill: "var(--mdc-theme-text-primary-on-background)"
+        }
     }
 });
 
@@ -63,11 +91,13 @@ const getHighlightItemProps = ({
 const VariablesListItem = ({
     variable,
     index,
-    move
+    move,
+    onRemove
 }: {
     variable: PbBlockVariable;
     index: number;
     move: (current: number, next: number) => void;
+    onRemove: (variableId: string) => void;
 }) => {
     const {
         ref: dragAndDropRef,
@@ -91,22 +121,83 @@ const VariablesListItem = ({
         <Collapsable ref={dragAndDropRef} data-handler-id={handlerId} highlightItem={highlightItem}>
             <VariableItem>
                 {variable?.label}
+                <DeleteIconWrapper>
+                    <DeleteIcon onClick={() => onRemove(variable.id)} />
+                </DeleteIconWrapper>
                 <DragIndicatorIcon />
             </VariableItem>
         </Collapsable>
     );
 };
 
-const VariablesList = ({ element }: { element: PbEditorElement }) => {
-    const { move } = useMoveVariable(element);
+const VariablesList = ({ block }: { block: PbEditorElement }) => {
+    const { move } = useMoveVariable(block);
+    const updateElement = useUpdateElement();
+    const { getElementTree } = useEventActionHandler();
+
+    const { showConfirmation } = useConfirmationDialog({
+        title: "Remove variable",
+        message: <p>Are you sure you want to remove this variable?</p>
+    });
+
+    const onRemove = useCallback(
+        (variableId: string) => {
+            showConfirmation(async () => {
+                if (block && block.id) {
+                    // remove variable from block
+                    const updatedVariables = block.data.variables.filter(
+                        (variable: PbBlockVariable) => variable.id !== variableId
+                    );
+                    updateElement({
+                        ...block,
+                        data: {
+                            ...block.data,
+                            variables: updatedVariables
+                        }
+                    });
+
+                    // check if there are more variables of this element
+                    const isLastVariableOfElement = !updatedVariables.some(
+                        (variable: PbBlockVariable) =>
+                            variable.id.split(".")[0] === variableId.split(".")[0]
+                    );
+
+                    // if there are not, then remove variableId from element
+                    if (isLastVariableOfElement) {
+                        const pbBlockElement = (await getElementTree()) as PbElement;
+                        const element = findElementByVariableId(
+                            pbBlockElement.elements,
+                            variableId.split(".")[0]
+                        );
+
+                        // element "variableId" value should be dropped
+                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                        const { variableId: elementVariableId, ...updatedElementData } =
+                            element.data;
+                        updateElement({
+                            ...element,
+                            data: updatedElementData
+                        });
+                    }
+                }
+            });
+        },
+        [block]
+    );
 
     return (
         <>
             <TitleWrapper>
                 <Typography use="headline6">Block variables</Typography>
             </TitleWrapper>
-            {element?.data?.variables?.map((variable: PbBlockVariable, index: number) => (
-                <VariablesListItem key={index} index={index} variable={variable} move={move} />
+            {block?.data?.variables?.map((variable: PbBlockVariable, index: number) => (
+                <VariablesListItem
+                    key={index}
+                    index={index}
+                    variable={variable}
+                    move={move}
+                    onRemove={onRemove}
+                />
             ))}
         </>
     );

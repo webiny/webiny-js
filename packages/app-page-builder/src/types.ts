@@ -206,11 +206,27 @@ export interface PbElement {
     text?: string;
 }
 
-export interface PbBlockVariable {
+export interface PbBlockVariable<TValue = any> {
     id: string;
+    type: string;
     label: string;
-    value?: string;
+    value: TValue;
 }
+
+export type PbBlockEditorCreateVariablePlugin = Plugin & {
+    type: "pb-block-editor-create-variable";
+    elementType: string;
+    createVariables: (params: { element: PbEditorElement }) => PbBlockVariable[];
+    getVariableValue: (params: { element: PbEditorElement; variableId?: string }) => any;
+};
+
+export type PbEditorPageElementVariableRendererPlugin = Plugin & {
+    type: "pb-editor-page-element-variable-renderer";
+    elementType: string;
+    getVariableValue: (element: PbEditorElement | null) => any;
+    renderVariableInput: (variableId: string) => ReactNode;
+    setElementValue: (element: PbElement, variables: PbBlockVariable[]) => PbElement;
+};
 
 /**
  * Determine types for elements

@@ -1,5 +1,6 @@
 // import gql from "graphql-tag";
 import lodashDebounce from "lodash/debounce";
+import { plugins } from "@webiny/plugins";
 import { SaveBlockActionArgsType } from "./types";
 import { ToggleSaveBlockStateActionEvent } from "./event";
 import { BlockEventActionCallable } from "~/blockEditor/types";
@@ -7,33 +8,43 @@ import { BlockWithContent } from "~/blockEditor/state";
 import { UPDATE_PAGE_BLOCK } from "~/admin/views/PageBlocks/graphql";
 import getPreviewImage from "./getPreviewImage";
 import { removeElementId } from "~/editor/helpers";
-import { PbElement, PbElementDataType, PbBlockVariable } from "~/types";
+import { PbElement, PbBlockVariable, PbBlockEditorCreateVariablePlugin } from "~/types";
 
-function findNestedObj(
-    entireObj: PbElement[],
-    keyToFind: string,
-    valToFind: string
-): PbElementDataType | undefined {
-    let foundObj;
-    JSON.stringify(entireObj, (_, nestedValue) => {
-        if (nestedValue && nestedValue[keyToFind] === valToFind) {
-            foundObj = nestedValue;
+export const findElementByVariableId = (elements: PbElement[], variableId: string): any => {
+    for (const element of elements) {
+        if (element.data?.variableId === variableId) {
+            return element;
         }
-        return nestedValue;
-    });
-    return foundObj;
-}
+        if (element.elements?.length > 0) {
+            const found = findElementByVariableId(element.elements, variableId);
+            if (found) {
+                return found;
+            }
+        }
+    }
+};
 
 const syncBlockVariables = (block: PbElement) => {
+    const createVariablePlugins = plugins.byType<PbBlockEditorCreateVariablePlugin>(
+        "pb-block-editor-create-variable"
+    );
+
     const syncedVariables = block.data?.variables?.reduce(function (
         result: Array<PbBlockVariable>,
         variable: PbBlockVariable
     ) {
-        const dataObject = findNestedObj(block.elements, "variableId", variable.id);
+        const element = findElementByVariableId(block.elements, variable.id.split(".")[0]);
+        const createVariablePlugin = createVariablePlugins.find(
+            plugin => plugin.elementType === element?.type
+        );
 
-        if (dataObject) {
-            result.push({ ...variable, value: dataObject?.text?.data?.text });
+        if (createVariablePlugin) {
+            result.push({
+                ...variable,
+                value: createVariablePlugin.getVariableValue({ element, variableId: variable.id })
+            });
         }
+
         return result;
     },
     []);
