@@ -11,7 +11,7 @@ import {
 
 import { flexRender, getCoreRowModel, useReactTable, ColumnDef } from "@tanstack/react-table";
 
-import { DataTable } from "./styled";
+import { Table } from "./styled";
 
 interface Column {
     header: string | number | ReactElement;
@@ -20,12 +20,12 @@ interface Column {
 
 export type Columns<T> = Record<keyof T, Column>;
 
-interface TableProps<T> {
+interface Props<T> {
     columns: Columns<T>;
     data: T[];
 }
 
-export const Table = <T,>({ data, columns }: TableProps<T>) => {
+export const DataTable = <T,>({ data, columns }: Props<T>) => {
     const cols = Object.keys(columns).map(key => ({
         id: key,
         ...columns[key as keyof typeof columns]
@@ -51,7 +51,7 @@ export const Table = <T,>({ data, columns }: TableProps<T>) => {
     });
 
     return (
-        <DataTable>
+        <Table>
             <DataTableContent>
                 <DataTableHead>
                     {table.getHeaderGroups().map(headerGroup => (
@@ -84,6 +84,6 @@ export const Table = <T,>({ data, columns }: TableProps<T>) => {
                     ))}
                 </DataTableBody>
             </DataTableContent>
-        </DataTable>
+        </Table>
     );
 };
