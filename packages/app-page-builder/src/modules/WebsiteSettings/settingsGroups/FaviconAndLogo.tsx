@@ -14,6 +14,9 @@ export const FaviconAndLogo: React.FC = () => {
                         onChangePick={["id", "src"]}
                         label="Favicon"
                         accept={["image/png", "image/x-icon", "image/vnd.microsoft.icon"]}
+                        imagePreviewProps={{
+                            style: { height: 91 }
+                        }}
                         description={
                             <span>
                                 Supported file types: <strong>.png</strong> and{" "}
