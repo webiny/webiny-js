@@ -31,11 +31,13 @@ export const Table = <T extends object>({ data, columns }: TableProps<T>) => {
         ...columns[key as keyof typeof columns]
     }));
     const columnsDefinition: ColumnDef<T>[] = cols.map(column => {
+        const { id, header, meta } = column;
+
         return {
-            accessorKey: column.id,
-            header: () => column.header,
+            accessorKey: id,
+            header: () => header,
             cell: info => info.getValue(),
-            meta: column.meta
+            meta
         };
     });
 
