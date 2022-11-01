@@ -78,8 +78,8 @@ const SpacingPicker: React.FC<SpacingPickerProps> = ({
     useDefaultStyle = true
 }) => {
     const formData = useMemo(() => {
-        const parsedValue = parseInt(value);
-        const regx = new RegExp(`${parsedValue}`, "g");
+        const parsedValue = parseFloat(value);
+        const regx = new RegExp(`[0-9.+-]+`, "g");
         const unit = value.replace(regx, "");
 
         if (Number.isNaN(parsedValue) && unit === "auto") {
@@ -100,11 +100,8 @@ const SpacingPicker: React.FC<SpacingPickerProps> = ({
         if (formData.unit === "auto") {
             onChange(formData.unit);
             return;
-        } else if (formData.value !== undefined && formData.value !== "") {
-            onChange(formData.value + (formData.unit || defaultUnitValue));
-            return;
         }
-        onChange("");
+        onChange((formData.value || "0") + (formData.unit || defaultUnitValue));
     }, []);
 
     return (
@@ -133,6 +130,9 @@ const SpacingPicker: React.FC<SpacingPickerProps> = ({
                                     })}
                                     disabled={data.unit === "auto" || disabled}
                                     type={"number"}
+                                    onFocus={(event: React.ChangeEvent<HTMLInputElement>) =>
+                                        event.target.select()
+                                    }
                                 />
                             </Bind>
                             <Bind name={"unit"}>
