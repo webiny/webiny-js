@@ -59,7 +59,10 @@ const PbText: React.FC<TextElementProps> = ({ elementId, mediumEditorOptions, ro
         return null;
     }
 
-    const textContent = variableValue || get(element, `${DATA_NAMESPACE}.data.text`);
+    // only used to set initial value, so no reason to update it every time
+    const textContent = useMemo(() => {
+        return variableValue || get(element, `${DATA_NAMESPACE}.data.text`);
+    }, []);
     const tag = get(value, "tag");
     const typography = get(value, "typography");
 
