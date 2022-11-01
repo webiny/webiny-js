@@ -2,68 +2,71 @@ import React from "react";
 import { storiesOf } from "@storybook/react";
 import { Story, StoryReadme, StorySandbox } from "@webiny/storybook-utils/Story";
 import readme from "./../DataTable/README.md";
-import {
-    DataTable,
-    DataTableHead,
-    DataTableHeadCell,
-    DataTableContent,
-    DataTableBody,
-    DataTableRow,
-    DataTableCell
-} from "./DataTable";
+import { Columns, DataTable } from "./DataTable";
 
 const story = storiesOf("Components/DataTable", module);
+
+interface Entry {
+    name: string;
+    createdBy: string;
+    lastModified: string;
+    status: string;
+}
 
 story.add(
     "usage",
     () => {
+        const data: Entry[] = [
+            {
+                name: "Page 1",
+                createdBy: "John Doe",
+                lastModified: "3 days ago",
+                status: "Draft"
+            },
+            {
+                name: "Page 2",
+                createdBy: "John Doe",
+                lastModified: "1 day ago",
+                status: "Published"
+            },
+            {
+                name: "Page 3",
+                createdBy: "John Doe",
+                lastModified: "1 hour ago",
+                status: "Published"
+            }
+        ];
+
+        const columns: Columns<Entry> = {
+            name: {
+                header: "Title"
+            },
+            createdBy: {
+                header: "Author"
+            },
+            lastModified: {
+                header: "Last Modified"
+            },
+            status: {
+                header: "Status",
+                meta: {
+                    alignEnd: true
+                }
+            }
+        };
+
         return (
             <Story>
                 <StoryReadme>{readme}</StoryReadme>
                 <StorySandbox title={"A simple DataTable."}>
-                    <DataTable>
-                        <DataTableContent>
-                            <DataTableHead>
-                                <DataTableRow>
-                                    <DataTableHeadCell>Name</DataTableHeadCell>
-                                    <DataTableHeadCell>Author</DataTableHeadCell>
-                                    <DataTableHeadCell>Status</DataTableHeadCell>
-                                </DataTableRow>
-                            </DataTableHead>
-                            <DataTableBody>
-                                <DataTableRow>
-                                    <DataTableCell>Home</DataTableCell>
-                                    <DataTableCell>John Doe</DataTableCell>
-                                    <DataTableCell>Published</DataTableCell>
-                                </DataTableRow>
-                                <DataTableRow>
-                                    <DataTableCell>Testimonials</DataTableCell>
-                                    <DataTableCell>Jane Smith</DataTableCell>
-                                    <DataTableCell>Draft</DataTableCell>
-                                </DataTableRow>
-                                <DataTableRow>
-                                    <DataTableCell>About us</DataTableCell>
-                                    <DataTableCell>John Smith</DataTableCell>
-                                    <DataTableCell>Published</DataTableCell>
-                                </DataTableRow>
-                            </DataTableBody>
-                        </DataTableContent>
-                    </DataTable>
+                    <DataTable data={data} columns={columns} />
                 </StorySandbox>
             </Story>
         );
     },
     {
         info: {
-            propTables: [
-                DataTable,
-                DataTableContent,
-                DataTableHead,
-                DataTableHeadCell,
-                DataTableBody,
-                DataTableRow,
-                DataTableCell
-            ]
+            propTables: [DataTable]
         }
     }
 );
