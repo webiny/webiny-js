@@ -6,11 +6,12 @@ import {
     DataTableHeadCell,
     DataTableBody,
     DataTableCell,
-    DataTable,
     DataTableCellProps
 } from "@rmwc/data-table";
 
 import { flexRender, getCoreRowModel, useReactTable, ColumnDef } from "@tanstack/react-table";
+
+import { DataTable } from "./styled";
 
 export interface Column {
     id: string;
@@ -43,7 +44,7 @@ export const Table = <T extends object>({ data, columns }: TableProps<T>) => {
     });
 
     return (
-        <DataTable style={{ width: "100%" }}>
+        <DataTable>
             <DataTableContent>
                 <DataTableHead>
                     {table.getHeaderGroups().map(headerGroup => (
