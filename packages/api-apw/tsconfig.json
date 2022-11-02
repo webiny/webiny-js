@@ -26,7 +26,8 @@
     { "path": "../api-page-builder-so-ddb" },
     { "path": "../api-security-so-ddb" },
     { "path": "../api-tenancy-so-ddb" },
-    { "path": "../api-mailer" }
+    { "path": "../api-mailer" },
+    { "path": "../utils" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -72,6 +73,8 @@
       "@webiny/pubsub": ["../pubsub/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"],
+      "@webiny/utils/*": ["../utils/src/*"],
+      "@webiny/utils": ["../utils/src"],
       "@webiny/validation/*": ["../validation/src/*"],
       "@webiny/validation": ["../validation/src"],
       "@webiny/api-headless-cms-ddb/*": ["../api-headless-cms-ddb/src/*"],

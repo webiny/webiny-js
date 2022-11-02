@@ -35,11 +35,11 @@
     "@webiny/handler-logs": "^5.33.0",
     "@webiny/plugins": "^5.33.0",
     "@webiny/pubsub": "^5.33.0",
+    "@webiny/utils": "^5.33.0",
     "@webiny/validation": "^5.33.0",
     "dayjs": "^1.10.4",
     "lodash": "^4.5.0",
-    "mdbid": "^1.0.0",
-    "nanoid": "^3.1.23"
+    "mdbid": "^1.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.19.3",
