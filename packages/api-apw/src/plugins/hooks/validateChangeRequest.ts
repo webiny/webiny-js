@@ -30,7 +30,7 @@ export const validateChangeRequest = ({ apw }: Pick<LifeCycleHookCallbackParams,
             console.log({
                 message: ex.message,
                 code: ex.data,
-                data: ex.data,
+                data: ex.data
             });
         }
         if (!contentReview) {
