@@ -1,6 +1,6 @@
 import WebinyError from "@webiny/error";
 import { NotFoundError } from "@webiny/handler-graphql";
-import { LifeCycleHookCallbackParams } from "~/types";
+import { ApwContentReview, LifeCycleHookCallbackParams } from "~/types";
 
 export const validateChangeRequest = ({ apw }: Pick<LifeCycleHookCallbackParams, "apw">) => {
     apw.changeRequest.onChangeRequestBeforeCreate.subscribe(async ({ input }) => {
@@ -23,7 +23,16 @@ export const validateChangeRequest = ({ apw }: Pick<LifeCycleHookCallbackParams,
          */
         const revisionId = `${entryId}#${version}`;
 
-        const contentReview = await apw.contentReview.get(revisionId);
+        let contentReview: ApwContentReview | undefined = undefined;
+        try {
+            contentReview = await apw.contentReview.get(revisionId);
+        } catch (ex) {
+            console.log({
+                message: ex.message,
+                code: ex.data,
+                data: ex.data,
+            });
+        }
         if (!contentReview) {
             throw new NotFoundError(
                 `Unable to found "ContentReview" with given id "${revisionId}"`
