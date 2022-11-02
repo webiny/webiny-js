@@ -1,4 +1,4 @@
-import React, { ReactElement } from "react";
+import React, { ReactElement, useMemo } from "react";
 import {
     DataTableContent,
     DataTableHead,
@@ -14,8 +14,18 @@ import { flexRender, getCoreRowModel, useReactTable, ColumnDef } from "@tanstack
 import { Table } from "./styled";
 
 interface Column {
+    /*
+     * Column header component.
+     */
     header: string | number | ReactElement;
+    /*
+     * Additional props to add to both header and row cells. Refer to RMWC documentation.
+     */
     meta?: DataTableCellProps;
+    /*
+     * Cell renderer, receives the cell value and returns the value to render inside the cell.
+     */
+    cell?: (value: unknown) => unknown;
 }
 
 export type Columns<T> = Record<keyof T, Column>;
@@ -26,28 +36,36 @@ interface Props<T> {
 }
 
 export const DataTable = <T,>({ data, columns }: Props<T>) => {
-    const cols = Object.keys(columns).map(key => ({
-        id: key,
-        ...columns[key as keyof typeof columns]
-    }));
-    const columnsDefinition: ColumnDef<T>[] = cols.map(column => {
-        const { id, header, meta } = column;
+    const columnsDefinition: ColumnDef<T>[] = useMemo(() => {
+        const columnsList = Object.keys(columns).map(key => ({
+            id: key,
+            ...columns[key as keyof typeof columns]
+        }));
 
-        return {
-            accessorKey: id,
-            header: () => header,
-            cell: info => info.getValue(),
-            meta
-        };
-    });
+        return columnsList.map(column => {
+            const { id, header, meta, cell } = column;
+
+            return {
+                accessorKey: id,
+                header: () => header,
+                cell: info => {
+                    const value = info.getValue();
+
+                    if (cell && typeof cell === "function") {
+                        return cell(value);
+                    } else {
+                        return value;
+                    }
+                },
+                meta
+            };
+        });
+    }, [columns]);
 
     const table = useReactTable({
         data,
         columns: columnsDefinition,
-        getCoreRowModel: getCoreRowModel(),
-        debugTable: true,
-        debugHeaders: true,
-        debugColumns: true
+        getCoreRowModel: getCoreRowModel()
     });
 
     return (
