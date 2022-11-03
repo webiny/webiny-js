@@ -9,6 +9,8 @@ import {
     DataTableCellProps
 } from "@rmwc/data-table";
 
+import { Checkbox } from "~/Checkbox";
+
 import { flexRender, getCoreRowModel, useReactTable, ColumnDef } from "@tanstack/react-table";
 
 import "@rmwc/data-table/data-table.css";
@@ -39,6 +41,33 @@ interface Props<T> {
 }
 
 export const DataTable = <T,>({ data, columns }: Props<T>) => {
+    const [rowSelection, setRowSelection] = React.useState({});
+
+    console.log(rowSelection);
+
+    const filterColumn: ColumnDef<T> = {
+        id: "select",
+        header: ({ table }) => (
+            <>
+                <Checkbox
+                    indeterminate={table.getIsSomeRowsSelected()}
+                    value={table.getIsAllRowsSelected()}
+                    onChange={e => table.toggleAllPageRowsSelected(e.target)}
+                />
+            </>
+        ),
+        cell: ({ row }) => (
+            <Checkbox
+                indeterminate={row.getIsSomeSelected()}
+                value={row.getIsSelected()}
+                onChange={row.getToggleSelectedHandler()}
+            />
+        ),
+        meta: {
+            hasFormControl: true
+        }
+    };
+
     const columnsDefinition: ColumnDef<T>[] = useMemo(() => {
         const columnsList = Object.keys(columns).map(key => ({
             id: key,
@@ -67,8 +96,12 @@ export const DataTable = <T,>({ data, columns }: Props<T>) => {
 
     const table = useReactTable({
         data,
-        columns: columnsDefinition,
-        getCoreRowModel: getCoreRowModel()
+        columns: [filterColumn, ...columnsDefinition],
+        getCoreRowModel: getCoreRowModel(),
+        state: {
+            rowSelection
+        },
+        onRowSelectionChange: setRowSelection
     });
 
     return (
