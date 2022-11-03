@@ -13,22 +13,24 @@ import { flexRender, getCoreRowModel, useReactTable, ColumnDef } from "@tanstack
 
 import { Table } from "./styled";
 
-interface Column {
+interface Column<T> {
     /*
      * Column header component.
      */
     header: string | number | ReactElement;
     /*
+     * Cell renderer, receives the cell value and returns the value to render inside the cell.
+     */
+    cell?: (value: T) => unknown;
+    /*
      * Additional props to add to both header and row cells. Refer to RMWC documentation.
      */
     meta?: DataTableCellProps;
-    /*
-     * Cell renderer, receives the cell value and returns the value to render inside the cell.
-     */
-    cell?: (value: unknown) => unknown;
 }
 
-export type Columns<T> = Record<keyof T, Column>;
+export type Columns<T> = {
+    [P in keyof T]: Column<T[P]>;
+};
 
 interface Props<T> {
     columns: Columns<T>;
@@ -49,7 +51,7 @@ export const DataTable = <T,>({ data, columns }: Props<T>) => {
                 accessorKey: id,
                 header: () => header,
                 cell: info => {
-                    const value = info.getValue();
+                    const value = info.getValue() as any;
 
                     if (cell && typeof cell === "function") {
                         return cell(value);
