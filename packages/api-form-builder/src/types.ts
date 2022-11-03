@@ -156,6 +156,62 @@ export interface FormBuilderGetFormRevisionsOptions {
     auth?: boolean;
 }
 
+/**
+ * Lifecycle Events for Forms CRUD
+ */
+export interface OnFormBeforeCreateTopicParams {
+    form: FbForm;
+}
+export interface OnFormAfterCreateTopicParams {
+    form: FbForm;
+}
+export interface OnFormRevisionBeforeCreateTopicParams {
+    form: FbForm;
+    original: FbForm;
+    latest: FbForm;
+}
+export interface OnFormRevisionAfterCreateTopicParams {
+    form: FbForm;
+    original: FbForm;
+    latest: FbForm;
+}
+export interface OnFormBeforeUpdateTopicParams {
+    form: FbForm;
+    original: FbForm;
+}
+export interface OnFormAfterUpdateTopicParams {
+    form: FbForm;
+    original: FbForm;
+}
+export interface OnFormBeforeDeleteTopicParams {
+    form: FbForm;
+}
+export interface OnFormAfterDeleteTopicParams {
+    form: FbForm;
+}
+export interface OnFormRevisionBeforeDeleteTopicParams {
+    form: FbForm;
+    previous: FbForm | null;
+    revisions: FbForm[];
+}
+export interface OnFormRevisionAfterDeleteTopicParams {
+    form: FbForm;
+    previous: FbForm | null;
+    revisions: FbForm[];
+}
+export interface OnFormBeforePublishTopicParams {
+    form: FbForm;
+}
+export interface OnFormAfterPublishTopicParams {
+    form: FbForm;
+}
+export interface OnFormBeforeUnpublishTopicParams {
+    form: FbForm;
+}
+export interface OnFormAfterUnpublishTopicParams {
+    form: FbForm;
+}
+
 export interface FormsCRUD {
     getForm(id: string, options?: FormBuilderGetFormOptions): Promise<FbForm>;
     getFormStats(id: string): Promise<FbFormStats>;
@@ -172,8 +228,54 @@ export interface FormsCRUD {
     getPublishedFormRevisionById(revisionId: string): Promise<FbForm>;
     getLatestPublishedFormRevision(formId: string): Promise<FbForm>;
     deleteFormRevision(id: string): Promise<boolean>;
+    /**
+     * Lifecycle events
+     */
+    onFormBeforeCreate: Topic<OnFormBeforeCreateTopicParams>;
+    onFormAfterCreate: Topic<OnFormAfterCreateTopicParams>;
+    onFormRevisionBeforeCreate: Topic<OnFormRevisionBeforeCreateTopicParams>;
+    onFormRevisionAfterCreate: Topic<OnFormRevisionAfterCreateTopicParams>;
+    onFormBeforeUpdate: Topic<OnFormBeforeUpdateTopicParams>;
+    onFormAfterUpdate: Topic<OnFormAfterUpdateTopicParams>;
+    onFormBeforeDelete: Topic<OnFormBeforeDeleteTopicParams>;
+    onFormAfterDelete: Topic<OnFormAfterDeleteTopicParams>;
+    onFormRevisionBeforeDelete: Topic<OnFormRevisionBeforeDeleteTopicParams>;
+    onFormRevisionAfterDelete: Topic<OnFormRevisionAfterDeleteTopicParams>;
+    onFormBeforePublish: Topic<OnFormBeforePublishTopicParams>;
+    onFormAfterPublish: Topic<OnFormAfterPublishTopicParams>;
+    onFormBeforeUnpublish: Topic<OnFormBeforeUnpublishTopicParams>;
+    onFormAfterUnpublish: Topic<OnFormAfterUnpublishTopicParams>;
 }
 
+/**
+ * Submissions CRUD Lifecycle Events
+ */
+export interface OnFormSubmissionBeforeCreate {
+    form: FbForm;
+    submission: FbSubmission;
+}
+export interface OnFormSubmissionAfterCreate {
+    form: FbForm;
+    submission: FbSubmission;
+}
+export interface OnFormSubmissionBeforeUpdate {
+    form: FbForm;
+    original: FbSubmission;
+    submission: FbSubmission;
+}
+export interface OnFormSubmissionAfterUpdate {
+    form: FbForm;
+    original: FbSubmission;
+    submission: FbSubmission;
+}
+export interface OnFormSubmissionBeforeDelete {
+    form: FbForm;
+    submission: FbSubmission;
+}
+export interface OnFormSubmissionAfterDelete {
+    form: FbForm;
+    submission: FbSubmission;
+}
 export interface SubmissionsCRUD {
     getSubmissionsByIds(form: string | FbForm, submissionIds: string[]): Promise<FbSubmission[]>;
     listFormSubmissions(
@@ -188,14 +290,23 @@ export interface SubmissionsCRUD {
     ): Promise<FbSubmission>;
     updateSubmission(formId: string, data: FbSubmission): Promise<boolean>;
     deleteSubmission(formId: string, submissionId: string): Promise<boolean>;
+    /**
+     * Lifecycle events
+     */
+    onFormSubmissionBeforeCreate: Topic<OnFormSubmissionBeforeCreate>;
+    onFormSubmissionAfterCreate: Topic<OnFormSubmissionAfterCreate>;
+    onFormSubmissionBeforeUpdate: Topic<OnFormSubmissionBeforeUpdate>;
+    onFormSubmissionAfterUpdate: Topic<OnFormSubmissionAfterUpdate>;
+    onFormSubmissionBeforeDelete: Topic<OnFormSubmissionBeforeDelete>;
+    onFormSubmissionAfterDelete: Topic<OnFormSubmissionAfterDelete>;
 }
 
-export interface BeforeInstallTopic {
+export interface OnSystemBeforeInstallTopic {
     tenant: string;
     locale: string;
 }
 
-export interface AfterInstallTopic {
+export interface OnSystemAfterInstallTopic {
     tenant: string;
     locale: string;
 }
@@ -212,8 +323,10 @@ export interface SystemCRUD {
     /**
      * Events
      */
-    onBeforeInstall: Topic<BeforeInstallTopic>;
-    onAfterInstall: Topic<AfterInstallTopic>;
+    onBeforeInstall: Topic<OnSystemBeforeInstallTopic>;
+    onAfterInstall: Topic<OnSystemAfterInstallTopic>;
+    onSystemBeforeInstall: Topic<OnSystemBeforeInstallTopic>;
+    onSystemAfterInstall: Topic<OnSystemAfterInstallTopic>;
 }
 
 export interface FbSubmission {
@@ -267,11 +380,44 @@ export interface SettingsCRUDGetParams {
     throwOnNotFound?: boolean;
 }
 
+/**
+ * Settings CRUD Lifecycle Events
+ */
+export interface OnSettingsBeforeCreate {
+    settings: Settings;
+}
+export interface OnSettingsAfterCreate {
+    settings: Settings;
+}
+export interface OnSettingsBeforeUpdate {
+    original: Settings;
+    settings: Settings;
+}
+export interface OnSettingsAfterUpdate {
+    original: Settings;
+    settings: Settings;
+}
+export interface OnSettingsBeforeDelete {
+    settings: Settings;
+}
+export interface OnSettingsAfterDelete {
+    settings: Settings;
+}
+
 export interface SettingsCRUD {
     getSettings(params?: SettingsCRUDGetParams): Promise<Settings | null>;
     createSettings(data: Partial<Settings>): Promise<Settings>;
     updateSettings(data: Partial<Settings>): Promise<Settings>;
     deleteSettings(): Promise<void>;
+    /**
+     * Lifecycle Events
+     */
+    onSettingsBeforeCreate: Topic<OnSettingsBeforeCreate>;
+    onSettingsAfterCreate: Topic<OnSettingsAfterCreate>;
+    onSettingsBeforeUpdate: Topic<OnSettingsBeforeUpdate>;
+    onSettingsAfterUpdate: Topic<OnSettingsAfterUpdate>;
+    onSettingsBeforeDelete: Topic<OnSettingsBeforeDelete>;
+    onSettingsAfterDelete: Topic<OnSettingsAfterDelete>;
 }
 
 export interface FbFormPermission extends SecurityPermission {

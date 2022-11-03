@@ -31,10 +31,10 @@ const createPageBuilder = () => {
     };
 
     return {
-        onPageBeforeRender: createTopic("pageBuilder.onBeforeRenderPage"),
-        onPageAfterRender: createTopic("pageBuilder.onAfterRenderPage"),
-        onPageBeforeFlush: createTopic("pageBuilder.onBeforeFlushPage"),
-        onPageAfterFlush: createTopic("pageBuilder.onAfterFlushPage"),
+        onPageBeforeRender: createTopic("pageBuilder.onPageBeforeRender"),
+        onPageAfterRender: createTopic("pageBuilder.onPageAfterRender"),
+        onPageBeforeFlush: createTopic("pageBuilder.onPageBeforeFlush"),
+        onPageAfterFlush: createTopic("pageBuilder.onPageAfterFlush"),
         setPrerenderingHandlers: (handlers: PrerenderingHandlers) => {
             prerenderingHandlers = handlers;
         },

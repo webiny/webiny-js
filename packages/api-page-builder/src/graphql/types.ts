@@ -63,19 +63,19 @@ export interface GetPagesOptions {
 /**
  * @category Lifecycle events
  */
-export interface OnBeforePageCreateTopicParams<TPage extends Page = Page> {
+export interface OnPageBeforeCreateTopicParams<TPage extends Page = Page> {
     page: TPage;
 }
 /**
  * @category Lifecycle events
  */
-export interface OnAfterPageCreateTopicParams<TPage extends Page = Page> {
+export interface OnPageAfterCreateTopicParams<TPage extends Page = Page> {
     page: TPage;
 }
 /**
  * @category Lifecycle events
  */
-export interface OnBeforePageUpdateTopicParams<TPage extends Page = Page> {
+export interface OnPageBeforeUpdateTopicParams<TPage extends Page = Page> {
     original: TPage;
     page: TPage;
     input: Record<string, any>;
@@ -83,7 +83,7 @@ export interface OnBeforePageUpdateTopicParams<TPage extends Page = Page> {
 /**
  * @category Lifecycle events
  */
-export interface OnAfterPageUpdateTopicParams<TPage extends Page = Page> {
+export interface OnPageAfterUpdateTopicParams<TPage extends Page = Page> {
     original: TPage;
     page: TPage;
     input: Record<string, any>;
@@ -91,21 +91,21 @@ export interface OnAfterPageUpdateTopicParams<TPage extends Page = Page> {
 /**
  * @category Lifecycle events
  */
-export interface OnBeforePageCreateFromTopicParams<TPage extends Page = Page> {
+export interface OnPageBeforeCreateFromTopicParams<TPage extends Page = Page> {
     original: TPage;
     page: TPage;
 }
 /**
  * @category Lifecycle events
  */
-export interface OnAfterPageCreateFromTopicParams<TPage extends Page = Page> {
+export interface OnPageAfterCreateFromTopicParams<TPage extends Page = Page> {
     original: TPage;
     page: TPage;
 }
 /**
  * @category Lifecycle events
  */
-export interface OnBeforePageDeleteTopicParams<TPage extends Page = Page> {
+export interface OnPageBeforeDeleteTopicParams<TPage extends Page = Page> {
     page: TPage;
     latestPage: TPage;
     publishedPage: TPage | null;
@@ -113,7 +113,7 @@ export interface OnBeforePageDeleteTopicParams<TPage extends Page = Page> {
 /**
  * @category Lifecycle events
  */
-export interface OnAfterPageDeleteTopicParams<TPage extends Page = Page> {
+export interface OnPageAfterDeleteTopicParams<TPage extends Page = Page> {
     page: TPage;
     latestPage: TPage | null;
     publishedPage: TPage | null;
@@ -121,7 +121,7 @@ export interface OnAfterPageDeleteTopicParams<TPage extends Page = Page> {
 /**
  * @category Lifecycle events
  */
-export interface OnBeforePagePublishTopicParams<TPage extends Page = Page> {
+export interface OnPageBeforePublishTopicParams<TPage extends Page = Page> {
     page: TPage;
     latestPage: TPage;
     publishedPage: TPage | null;
@@ -129,7 +129,7 @@ export interface OnBeforePagePublishTopicParams<TPage extends Page = Page> {
 /**
  * @category Lifecycle events
  */
-export interface OnAfterPagePublishTopicParams<TPage extends Page = Page> {
+export interface OnPageAfterPublishTopicParams<TPage extends Page = Page> {
     page: TPage;
     latestPage: TPage;
     publishedPage: TPage | null;
@@ -137,42 +137,14 @@ export interface OnAfterPagePublishTopicParams<TPage extends Page = Page> {
 /**
  * @category Lifecycle events
  */
-export interface OnBeforePageUnpublishTopicParams<TPage extends Page = Page> {
+export interface OnPageBeforeUnpublishTopicParams<TPage extends Page = Page> {
     page: TPage;
     latestPage: TPage;
 }
 /**
  * @category Lifecycle events
  */
-export interface OnAfterPageUnpublishTopicParams<TPage extends Page = Page> {
-    page: TPage;
-    latestPage: TPage;
-}
-/**
- * @category Lifecycle events
- */
-export interface OnBeforePageRequestReviewTopicParams<TPage extends Page = Page> {
-    page: TPage;
-    latestPage: TPage;
-}
-/**
- * @category Lifecycle events
- */
-export interface OnAfterPageRequestReviewTopicParams<TPage extends Page = Page> {
-    page: TPage;
-    latestPage: TPage;
-}
-/**
- * @category Lifecycle events
- */
-export interface OnBeforePageRequestChangesTopicParams<TPage extends Page = Page> {
-    page: TPage;
-    latestPage: TPage;
-}
-/**
- * @category Lifecycle events
- */
-export interface OnAfterPageRequestChangesTopicParams<TPage extends Page = Page> {
+export interface OnPageAfterUnpublishTopicParams<TPage extends Page = Page> {
     page: TPage;
     latestPage: TPage;
 }
@@ -202,31 +174,76 @@ export interface PagesCrud {
     deletePage<TPage extends Page = Page>(id: string): Promise<[TPage, TPage]>;
     publishPage<TPage extends Page = Page>(id: string): Promise<TPage>;
     unpublishPage<TPage extends Page = Page>(id: string): Promise<TPage>;
-    requestPageReview<TPage extends Page = Page>(id: string): Promise<TPage>;
-    requestPageChanges<TPage extends Page = Page>(id: string): Promise<TPage>;
     prerendering: {
         render(args: RenderParams): Promise<void>;
         flush(args: FlushParams): Promise<void>;
     };
     /**
-     * Lifecycle events
+     * Lifecycle events - deprecated in 5.34.0 - will be removed in 5.36.0
      */
-    onBeforePageCreate: Topic<OnBeforePageCreateTopicParams>;
-    onAfterPageCreate: Topic<OnAfterPageCreateTopicParams>;
-    onBeforePageCreateFrom: Topic<OnBeforePageCreateFromTopicParams>;
-    onAfterPageCreateFrom: Topic<OnAfterPageCreateFromTopicParams>;
-    onBeforePageUpdate: Topic<OnBeforePageUpdateTopicParams>;
-    onAfterPageUpdate: Topic<OnAfterPageUpdateTopicParams>;
-    onBeforePageDelete: Topic<OnBeforePageDeleteTopicParams>;
-    onAfterPageDelete: Topic<OnAfterPageDeleteTopicParams>;
-    onBeforePagePublish: Topic<OnBeforePagePublishTopicParams>;
-    onAfterPagePublish: Topic<OnAfterPagePublishTopicParams>;
-    onBeforePageUnpublish: Topic<OnBeforePageUnpublishTopicParams>;
-    onAfterPageUnpublish: Topic<OnAfterPageUnpublishTopicParams>;
-    onBeforePageRequestReview: Topic<OnBeforePageRequestReviewTopicParams>;
-    onAfterPageRequestReview: Topic<OnAfterPageRequestReviewTopicParams>;
-    onBeforePageRequestChanges: Topic<OnBeforePageRequestChangesTopicParams>;
-    onAfterPageRequestChanges: Topic<OnAfterPageRequestChangesTopicParams>;
+    /**
+     * @deprecated
+     */
+    onBeforePageCreate: Topic<OnPageBeforeCreateTopicParams>;
+    /**
+     * @deprecated
+     */
+    onAfterPageCreate: Topic<OnPageAfterCreateTopicParams>;
+    /**
+     * @deprecated
+     */
+    onBeforePageCreateFrom: Topic<OnPageBeforeCreateFromTopicParams>;
+    /**
+     * @deprecated
+     */
+    onAfterPageCreateFrom: Topic<OnPageAfterCreateFromTopicParams>;
+    /**
+     * @deprecated
+     */
+    onBeforePageUpdate: Topic<OnPageBeforeUpdateTopicParams>;
+    /**
+     * @deprecated
+     */
+    onAfterPageUpdate: Topic<OnPageAfterUpdateTopicParams>;
+    /**
+     * @deprecated
+     */
+    onBeforePageDelete: Topic<OnPageBeforeDeleteTopicParams>;
+    /**
+     * @deprecated
+     */
+    onAfterPageDelete: Topic<OnPageAfterDeleteTopicParams>;
+    /**
+     * @deprecated
+     */
+    onBeforePagePublish: Topic<OnPageBeforePublishTopicParams>;
+    /**
+     * @deprecated
+     */
+    onAfterPagePublish: Topic<OnPageAfterPublishTopicParams>;
+    /**
+     * @deprecated
+     */
+    onBeforePageUnpublish: Topic<OnPageBeforeUnpublishTopicParams>;
+    /**
+     * @deprecated
+     */
+    onAfterPageUnpublish: Topic<OnPageAfterUnpublishTopicParams>;
+    /**
+     * Lifecycle events introduced in 5.34.0
+     */
+    onPageBeforeCreate: Topic<OnPageBeforeCreateTopicParams>;
+    onPageAfterCreate: Topic<OnPageAfterCreateTopicParams>;
+    onPageBeforeCreateFrom: Topic<OnPageBeforeCreateFromTopicParams>;
+    onPageAfterCreateFrom: Topic<OnPageAfterCreateFromTopicParams>;
+    onPageBeforeUpdate: Topic<OnPageBeforeUpdateTopicParams>;
+    onPageAfterUpdate: Topic<OnPageAfterUpdateTopicParams>;
+    onPageBeforeDelete: Topic<OnPageBeforeDeleteTopicParams>;
+    onPageAfterDelete: Topic<OnPageAfterDeleteTopicParams>;
+    onPageBeforePublish: Topic<OnPageBeforePublishTopicParams>;
+    onPageAfterPublish: Topic<OnPageAfterPublishTopicParams>;
+    onPageBeforeUnpublish: Topic<OnPageBeforeUnpublishTopicParams>;
+    onPageAfterUnpublish: Topic<OnPageAfterUnpublishTopicParams>;
 }
 
 export interface ListPageElementsParams {
@@ -236,39 +253,39 @@ export interface ListPageElementsParams {
 /**
  * @category Lifecycle events
  */
-export interface OnBeforePageElementCreateTopicParams {
+export interface OnPageElementBeforeCreateTopicParams {
     pageElement: PageElement;
 }
 /**
  * @category Lifecycle events
  */
-export interface OnAfterPageElementCreateTopicParams {
+export interface OnPageElementAfterCreateTopicParams {
     pageElement: PageElement;
 }
 /**
  * @category Lifecycle events
  */
-export interface OnBeforePageElementUpdateTopicParams {
+export interface OnPageElementBeforeUpdateTopicParams {
     original: PageElement;
     pageElement: PageElement;
 }
 /**
  * @category Lifecycle events
  */
-export interface OnAfterPageElementUpdateTopicParams {
+export interface OnPageElementAfterUpdateTopicParams {
     original: PageElement;
     pageElement: PageElement;
 }
 /**
  * @category Lifecycle events
  */
-export interface OnBeforePageElementDeleteTopicParams {
+export interface OnPageElementBeforeDeleteTopicParams {
     pageElement: PageElement;
 }
 /**
  * @category Lifecycle events
  */
-export interface OnAfterPageElementDeleteTopicParams {
+export interface OnPageElementAfterDeleteTopicParams {
     pageElement: PageElement;
 }
 
@@ -282,52 +299,79 @@ export interface PageElementsCrud {
     updatePageElement(id: string, data: Record<string, any>): Promise<PageElement>;
     deletePageElement(id: string): Promise<PageElement>;
     /**
+     * Lifecycle events - deprecated in 5.34.0 - will be removed in 5.36.0
+     */
+    /**
+     * @deprecated
+     */
+    onBeforePageElementCreate: Topic<OnPageElementBeforeCreateTopicParams>;
+    /**
+     * @deprecated
+     */
+    onAfterPageElementCreate: Topic<OnPageElementAfterCreateTopicParams>;
+    /**
+     * @deprecated
+     */
+    onBeforePageElementUpdate: Topic<OnPageElementBeforeUpdateTopicParams>;
+    /**
+     * @deprecated
+     */
+    onAfterPageElementUpdate: Topic<OnPageElementAfterUpdateTopicParams>;
+    /**
+     * @deprecated
+     */
+    onBeforePageElementDelete: Topic<OnPageElementBeforeDeleteTopicParams>;
+    /**
+     * @deprecated
+     */
+    onAfterPageElementDelete: Topic<OnPageElementAfterDeleteTopicParams>;
+    /**
      * Lifecycle events
      */
-    onBeforePageElementCreate: Topic<OnBeforePageElementCreateTopicParams>;
-    onAfterPageElementCreate: Topic<OnAfterPageElementCreateTopicParams>;
-    onBeforePageElementUpdate: Topic<OnBeforePageElementUpdateTopicParams>;
-    onAfterPageElementUpdate: Topic<OnAfterPageElementUpdateTopicParams>;
-    onBeforePageElementDelete: Topic<OnBeforePageElementDeleteTopicParams>;
-    onAfterPageElementDelete: Topic<OnAfterPageElementDeleteTopicParams>;
+    onPageElementBeforeCreate: Topic<OnPageElementBeforeCreateTopicParams>;
+    onPageElementAfterCreate: Topic<OnPageElementAfterCreateTopicParams>;
+    onPageElementBeforeUpdate: Topic<OnPageElementBeforeUpdateTopicParams>;
+    onPageElementAfterUpdate: Topic<OnPageElementAfterUpdateTopicParams>;
+    onPageElementBeforeDelete: Topic<OnPageElementBeforeDeleteTopicParams>;
+    onPageElementAfterDelete: Topic<OnPageElementAfterDeleteTopicParams>;
 }
 
 /**
  * @category Lifecycle events
  */
-export interface OnBeforeCategoryCreateTopicParams {
+export interface OnCategoryBeforeCreateTopicParams {
     category: Category;
 }
 /**
  * @category Lifecycle events
  */
-export interface OnAfterCategoryCreateTopicParams {
+export interface OnCategoryAfterCreateTopicParams {
     category: Category;
 }
 /**
  * @category Lifecycle events
  */
-export interface OnBeforeCategoryUpdateTopicParams {
+export interface OnCategoryBeforeUpdateTopicParams {
     original: Category;
     category: Category;
 }
 /**
  * @category Lifecycle events
  */
-export interface OnAfterCategoryUpdateTopicParams {
+export interface OnCategoryAfterUpdateTopicParams {
     original: Category;
     category: Category;
 }
 /**
  * @category Lifecycle events
  */
-export interface OnBeforeCategoryDeleteTopicParams {
+export interface OnCategoryBeforeDeleteTopicParams {
     category: Category;
 }
 /**
  * @category Lifecycle events
  */
-export interface OnAfterCategoryDeleteTopicParams {
+export interface OnCategoryAfterDeleteTopicParams {
     category: Category;
 }
 
@@ -341,14 +385,44 @@ export interface CategoriesCrud {
     updateCategory(slug: string, data: PbCategoryInput): Promise<Category>;
     deleteCategory(slug: string): Promise<Category>;
     /**
-     * Lifecycle events
+     * Lifecycle events - deprecated in 5.34.0 - will be removed in 5.36.0
      */
-    onBeforeCategoryCreate: Topic<OnBeforeCategoryCreateTopicParams>;
-    onAfterCategoryCreate: Topic<OnAfterCategoryCreateTopicParams>;
-    onBeforeCategoryUpdate: Topic<OnBeforeCategoryUpdateTopicParams>;
-    onAfterCategoryUpdate: Topic<OnAfterCategoryUpdateTopicParams>;
-    onBeforeCategoryDelete: Topic<OnBeforeCategoryDeleteTopicParams>;
-    onAfterCategoryDelete: Topic<OnAfterCategoryDeleteTopicParams>;
+    /**
+     * @deprecated
+     */
+    /**
+     * @deprecated
+     */
+    onBeforeCategoryCreate: Topic<OnCategoryBeforeCreateTopicParams>;
+    /**
+     * @deprecated
+     */
+    onAfterCategoryCreate: Topic<OnCategoryAfterCreateTopicParams>;
+    /**
+     * @deprecated
+     */
+    onBeforeCategoryUpdate: Topic<OnCategoryBeforeUpdateTopicParams>;
+    /**
+     * @deprecated
+     */
+    onAfterCategoryUpdate: Topic<OnCategoryAfterUpdateTopicParams>;
+    /**
+     * @deprecated
+     */
+    onBeforeCategoryDelete: Topic<OnCategoryBeforeDeleteTopicParams>;
+    /**
+     * @deprecated
+     */
+    onAfterCategoryDelete: Topic<OnCategoryAfterDeleteTopicParams>;
+    /**
+     * Introduced in 5.34.0
+     */
+    onCategoryBeforeCreate: Topic<OnCategoryBeforeCreateTopicParams>;
+    onCategoryAfterCreate: Topic<OnCategoryAfterCreateTopicParams>;
+    onCategoryBeforeUpdate: Topic<OnCategoryBeforeUpdateTopicParams>;
+    onCategoryAfterUpdate: Topic<OnCategoryAfterUpdateTopicParams>;
+    onCategoryBeforeDelete: Topic<OnCategoryBeforeDeleteTopicParams>;
+    onCategoryAfterDelete: Topic<OnCategoryAfterDeleteTopicParams>;
 }
 
 export interface MenuGetOptions {
@@ -362,41 +436,41 @@ export interface ListMenuParams {
 /**
  * @category Lifecycle events
  */
-export interface OnBeforeMenuCreateTopicParams {
+export interface OnMenuBeforeCreateTopicParams {
     menu: Menu;
     input: Record<string, any>;
 }
 /**
  * @category Lifecycle events
  */
-export interface OnAfterMenuCreateTopicParams {
+export interface OnMenuAfterCreateTopicParams {
     menu: Menu;
     input: Record<string, any>;
 }
 /**
  * @category Lifecycle events
  */
-export interface OnBeforeMenuUpdateTopicParams {
+export interface OnMenuBeforeUpdateTopicParams {
     original: Menu;
     menu: Menu;
 }
 /**
  * @category Lifecycle events
  */
-export interface OnAfterMenuUpdateTopicParams {
+export interface OnMenuAfterUpdateTopicParams {
     original: Menu;
     menu: Menu;
 }
 /**
  * @category Lifecycle events
  */
-export interface OnBeforeMenuDeleteTopicParams {
+export interface OnMenuBeforeDeleteTopicParams {
     menu: Menu;
 }
 /**
  * @category Lifecycle events
  */
-export interface OnAfterMenuDeleteTopicParams {
+export interface OnMenuAfterDeleteTopicParams {
     menu: Menu;
 }
 
@@ -411,14 +485,41 @@ export interface MenusCrud {
     updateMenu(slug: string, data: Record<string, any>): Promise<Menu>;
     deleteMenu(slug: string): Promise<Menu>;
     /**
-     * Lifecycle events
+     * Lifecycle events - deprecated in 5.34.0 - will be removed in 5.36.0
      */
-    onBeforeMenuCreate: Topic<OnBeforeMenuCreateTopicParams>;
-    onAfterMenuCreate: Topic<OnAfterMenuCreateTopicParams>;
-    onBeforeMenuUpdate: Topic<OnBeforeMenuUpdateTopicParams>;
-    onAfterMenuUpdate: Topic<OnAfterMenuUpdateTopicParams>;
-    onBeforeMenuDelete: Topic<OnBeforeMenuDeleteTopicParams>;
-    onAfterMenuDelete: Topic<OnAfterMenuDeleteTopicParams>;
+    /**
+     * @deprecated
+     */
+    onBeforeMenuCreate: Topic<OnMenuBeforeCreateTopicParams>;
+    /**
+     * @deprecated
+     */
+    onAfterMenuCreate: Topic<OnMenuAfterCreateTopicParams>;
+    /**
+     * @deprecated
+     */
+    onBeforeMenuUpdate: Topic<OnMenuBeforeUpdateTopicParams>;
+    /**
+     * @deprecated
+     */
+    onAfterMenuUpdate: Topic<OnMenuAfterUpdateTopicParams>;
+    /**
+     * @deprecated
+     */
+    onBeforeMenuDelete: Topic<OnMenuBeforeDeleteTopicParams>;
+    /**
+     * @deprecated
+     */
+    onAfterMenuDelete: Topic<OnMenuAfterDeleteTopicParams>;
+    /**
+     * Lifecycle events introduced in 5.34.0
+     */
+    onMenuBeforeCreate: Topic<OnMenuBeforeCreateTopicParams>;
+    onMenuAfterCreate: Topic<OnMenuAfterCreateTopicParams>;
+    onMenuBeforeUpdate: Topic<OnMenuBeforeUpdateTopicParams>;
+    onMenuAfterUpdate: Topic<OnMenuAfterUpdateTopicParams>;
+    onMenuBeforeDelete: Topic<OnMenuBeforeDeleteTopicParams>;
+    onMenuAfterDelete: Topic<OnMenuAfterDeleteTopicParams>;
 }
 
 /**
@@ -437,7 +538,7 @@ export interface SettingsUpdateTopicMetaParams {
 /**
  * @category Lifecycle events
  */
-export interface OnBeforeSettingsUpdateTopicParams {
+export interface OnSettingsBeforeUpdateTopicParams {
     original: Settings;
     settings: Settings;
     meta: SettingsUpdateTopicMetaParams;
@@ -445,7 +546,7 @@ export interface OnBeforeSettingsUpdateTopicParams {
 /**
  * @category Lifecycle events
  */
-export interface OnAfterSettingsUpdateTopicParams {
+export interface OnSettingsAfterUpdateTopicParams {
     original: Settings;
     settings: Settings;
     meta: SettingsUpdateTopicMetaParams;
@@ -465,22 +566,33 @@ export interface SettingsCrud {
         options?: { auth?: boolean } & DefaultSettingsCrudOptions
     ) => Promise<Settings>;
     /**
-     * Lifecycle events
+     * Lifecycle events - deprecated in 5.34.0 - will be removed in 5.36.0
      */
-    onBeforeSettingsUpdate: Topic<OnBeforeSettingsUpdateTopicParams>;
-    onAfterSettingsUpdate: Topic<OnAfterSettingsUpdateTopicParams>;
+    /**
+     * @deprecated
+     */
+    onBeforeSettingsUpdate: Topic<OnSettingsBeforeUpdateTopicParams>;
+    /**
+     * @deprecated
+     */
+    onAfterSettingsUpdate: Topic<OnSettingsAfterUpdateTopicParams>;
+    /**
+     * Lifecycle events introduced in 5.34.0
+     */
+    onSettingsBeforeUpdate: Topic<OnSettingsBeforeUpdateTopicParams>;
+    onSettingsAfterUpdate: Topic<OnSettingsAfterUpdateTopicParams>;
 }
 
 /**
  * @category Lifecycle events
  */
-export interface OnBeforeInstallTopicParams {
+export interface OnSystemBeforeInstallTopicParams {
     tenant: string;
 }
 /**
  * @category Lifecycle events
  */
-export interface OnAfterInstallTopicParams {
+export interface OnSystemAfterInstallTopicParams {
     tenant: string;
 }
 /**
@@ -493,10 +605,21 @@ export interface SystemCrud {
     installSystem(args: { name: string; insertDemoData: boolean }): Promise<void>;
     upgradeSystem(version: string, data?: Record<string, any>): Promise<boolean>;
     /**
+     * Lifecycle events - deprecated in 5.34.0 - will be removed in 5.36.0
+     */
+    /**
+     * @deprecated
+     */
+    onBeforeInstall: Topic<OnSystemBeforeInstallTopicParams>;
+    /**
+     * @deprecated
+     */
+    onAfterInstall: Topic<OnSystemBeforeInstallTopicParams>;
+    /**
      * Lifecycle events
      */
-    onBeforeInstall: Topic<OnBeforeInstallTopicParams>;
-    onAfterInstall: Topic<OnBeforeInstallTopicParams>;
+    onSystemBeforeInstall: Topic<OnSystemBeforeInstallTopicParams>;
+    onSystemAfterInstall: Topic<OnSystemBeforeInstallTopicParams>;
 }
 
 export interface PageBuilderContextObject
@@ -552,8 +675,6 @@ export interface PageSecurityPermission extends PbSecurityPermission {
     name: "pb.page";
 
     // Determines which of the following publishing workflow actions are allowed:
-    // "r" - request review (for unpublished page)
-    // "c" - request change (for unpublished page on which a review was requested)
     // "p" - publish
     // "u" - unpublish
     pw: string;

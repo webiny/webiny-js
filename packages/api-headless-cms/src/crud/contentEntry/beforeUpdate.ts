@@ -1,15 +1,15 @@
 import { Topic } from "@webiny/pubsub/types";
-import { BeforeEntryUpdateTopicParams, CmsContext } from "~/types";
+import { OnEntryBeforeUpdateTopicParams, CmsContext } from "~/types";
 import { markLockedFields } from "./markLockedFields";
 
 interface AssignBeforeEntryUpdateParams {
     context: CmsContext;
-    onBeforeEntryUpdate: Topic<BeforeEntryUpdateTopicParams>;
+    onEntryBeforeUpdate: Topic<OnEntryBeforeUpdateTopicParams>;
 }
 export const assignBeforeEntryUpdate = (params: AssignBeforeEntryUpdateParams) => {
-    const { context, onBeforeEntryUpdate } = params;
+    const { context, onEntryBeforeUpdate } = params;
 
-    onBeforeEntryUpdate.subscribe(async params => {
+    onEntryBeforeUpdate.subscribe(async params => {
         const { entry, model } = params;
 
         await markLockedFields({

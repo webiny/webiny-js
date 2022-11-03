@@ -10,7 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "@apollo/react-hooks": "^3.1.5",
-    "@babel/runtime": "^7.5.5",
+    "@babel/runtime": "^7.19.0",
     "@emotion/core": "^10.0.27",
     "@emotion/is-prop-valid": "^1.1.1",
     "@emotion/styled": "^10.0.27",
@@ -19,6 +19,7 @@
     "@webiny/app-admin": "^5.33.0",
     "@webiny/app-headless-cms": "^5.33.0",
     "@webiny/app-i18n": "^5.33.0",
+    "@webiny/app-mailer": "^5.33.0",
     "@webiny/app-page-builder": "^5.33.0",
     "@webiny/app-security": "^5.33.0",
     "@webiny/form": "^5.33.0",
@@ -44,11 +45,11 @@
     "react-spinner-material": "1.1.4"
   },
   "devDependencies": {
-    "@babel/cli": "^7.5.5",
-    "@babel/core": "^7.5.5",
-    "@babel/preset-env": "^7.5.5",
+    "@babel/cli": "^7.19.3",
+    "@babel/core": "^7.19.3",
+    "@babel/preset-env": "^7.19.4",
     "@babel/preset-react": "^7.0.0",
-    "@babel/preset-typescript": "^7.8.3",
+    "@babel/preset-typescript": "^7.18.6",
     "@webiny/cli": "^5.33.0",
     "@webiny/project-utils": "^5.33.0",
     "babel-plugin-emotion": "^9.2.8",

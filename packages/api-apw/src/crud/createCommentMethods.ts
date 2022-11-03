@@ -2,32 +2,47 @@ import { createTopic } from "@webiny/pubsub";
 import {
     ApwCommentCrud,
     CreateApwParams,
-    OnBeforeCommentCreateTopicParams,
-    OnAfterCommentCreateTopicParams,
-    OnBeforeCommentUpdateTopicParams,
-    OnAfterCommentUpdateTopicParams,
-    OnBeforeCommentDeleteTopicParams,
-    OnAfterCommentDeleteTopicParams
+    OnCommentBeforeCreateTopicParams,
+    OnCommentAfterCreateTopicParams,
+    OnCommentBeforeUpdateTopicParams,
+    OnCommentAfterUpdateTopicParams,
+    OnCommentBeforeDeleteTopicParams,
+    OnCommentAfterDeleteTopicParams
 } from "~/types";
 
 export function createCommentMethods({ storageOperations }: CreateApwParams): ApwCommentCrud {
-    const onBeforeCommentCreate = createTopic<OnBeforeCommentCreateTopicParams>();
-    const onAfterCommentCreate = createTopic<OnAfterCommentCreateTopicParams>();
-    const onBeforeCommentUpdate = createTopic<OnBeforeCommentUpdateTopicParams>();
-    const onAfterCommentUpdate = createTopic<OnAfterCommentUpdateTopicParams>();
-    const onBeforeCommentDelete = createTopic<OnBeforeCommentDeleteTopicParams>();
-    const onAfterCommentDelete = createTopic<OnAfterCommentDeleteTopicParams>();
+    // create
+    const onCommentBeforeCreate = createTopic<OnCommentBeforeCreateTopicParams>(
+        "apw.onCommentBeforeCreate"
+    );
+    const onCommentAfterCreate = createTopic<OnCommentAfterCreateTopicParams>(
+        "apw.onCommentAfterCreate"
+    );
+    // update
+    const onCommentBeforeUpdate = createTopic<OnCommentBeforeUpdateTopicParams>(
+        "apw.onCommentBeforeUpdate"
+    );
+    const onCommentAfterUpdate = createTopic<OnCommentAfterUpdateTopicParams>(
+        "apw.onCommentAfterUpdate"
+    );
+    // delete
+    const onCommentBeforeDelete = createTopic<OnCommentBeforeDeleteTopicParams>(
+        "apw.onCommentBeforeDelete"
+    );
+    const onCommentAfterDelete = createTopic<OnCommentAfterDeleteTopicParams>(
+        "apw.onCommentAfterDelete"
+    );
 
     return {
         /**
          * Lifecycle events
          */
-        onBeforeCommentCreate,
-        onAfterCommentCreate,
-        onBeforeCommentUpdate,
-        onAfterCommentUpdate,
-        onBeforeCommentDelete,
-        onAfterCommentDelete,
+        onCommentBeforeCreate,
+        onCommentAfterCreate,
+        onCommentBeforeUpdate,
+        onCommentAfterUpdate,
+        onCommentBeforeDelete,
+        onCommentAfterDelete,
         async get(id) {
             return storageOperations.getComment({ id });
         },
@@ -35,34 +50,34 @@ export function createCommentMethods({ storageOperations }: CreateApwParams): Ap
             return storageOperations.listComments(params);
         },
         async create(data) {
-            await onBeforeCommentCreate.publish({ input: data });
+            await onCommentBeforeCreate.publish({ input: data });
 
             const comment = await storageOperations.createComment({
                 data
             });
-            await onAfterCommentCreate.publish({ comment });
+            await onCommentAfterCreate.publish({ comment });
 
             return comment;
         },
         async update(id, data) {
             const original = await storageOperations.getComment({ id });
 
-            await onBeforeCommentUpdate.publish({ original, input: { id, data } });
+            await onCommentBeforeUpdate.publish({ original, input: { id, data } });
 
             const comment = await storageOperations.updateComment({ id, data });
 
-            await onAfterCommentUpdate.publish({ original, comment, input: { id, data } });
+            await onCommentAfterUpdate.publish({ original, comment, input: { id, data } });
 
             return comment;
         },
         async delete(id: string) {
             const comment = await storageOperations.getComment({ id });
 
-            await onBeforeCommentDelete.publish({ comment });
+            await onCommentBeforeDelete.publish({ comment });
 
             await storageOperations.deleteComment({ id });
 
-            await onAfterCommentDelete.publish({ comment });
+            await onCommentAfterDelete.publish({ comment });
 
             return true;
         }

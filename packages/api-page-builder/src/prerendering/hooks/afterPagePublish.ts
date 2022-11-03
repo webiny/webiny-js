@@ -7,7 +7,7 @@ export default () => {
         /**
          * After a page was published, we need to render the page.
          */
-        pageBuilder.onAfterPagePublish.subscribe(async params => {
+        pageBuilder.onPageAfterPublish.subscribe(async params => {
             const { page, publishedPage } = params;
             /**
              * First, let's load settings.

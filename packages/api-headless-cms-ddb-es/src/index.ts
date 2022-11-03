@@ -129,21 +129,21 @@ export const createStorageOperations: StorageOperationsFactory = params => {
              * We need to create indexes on before model create and on clone (create from).
              * Other apps create indexes on locale creation.
              */
-            context.cms.onBeforeModelCreate.subscribe(async ({ model }) => {
+            context.cms.onModelBeforeCreate.subscribe(async ({ model }) => {
                 await createElasticsearchIndex({
                     elasticsearch,
                     model,
                     plugins
                 });
             });
-            context.cms.onBeforeModelCreateFrom.subscribe(async ({ model }) => {
+            context.cms.onModelBeforeCreateFrom.subscribe(async ({ model }) => {
                 await createElasticsearchIndex({
                     elasticsearch,
                     model,
                     plugins
                 });
             });
-            context.cms.onAfterModelDelete.subscribe(async ({ model }) => {
+            context.cms.onModelAfterDelete.subscribe(async ({ model }) => {
                 await deleteElasticsearchIndex({
                     elasticsearch,
                     model

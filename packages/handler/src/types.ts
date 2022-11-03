@@ -9,8 +9,6 @@ import {
 export { FastifyInstance, HTTPMethods } from "fastify";
 import { ClientContext } from "@webiny/handler-client/types";
 
-export type RouteTypes = HTTPMethods;
-
 export interface RouteMethodOptions {
     override?: boolean;
 }
@@ -23,7 +21,7 @@ export interface RouteMethod {
 export type Request = FastifyRequest;
 export type Reply = FastifyReply;
 
-export type DefinedContextRoutes = Record<RouteTypes, string[]>;
+export type DefinedContextRoutes = Record<HTTPMethods, string[]>;
 export interface ContextRoutes {
     defined: DefinedContextRoutes;
     onGet: RouteMethod;

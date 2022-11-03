@@ -3,18 +3,11 @@ import { createSetupForPageContentReview } from "../utils/helpers";
 import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
 
 describe("Content Review crud test", () => {
-    const options = {
-        path: "manage/en-US"
-    };
-
     const identityRoot = { id: "root", displayName: "root", type: "admin" };
 
-    const gqlHandler = usePageBuilderHandler({
-        ...options
-    });
+    const gqlHandler = usePageBuilderHandler();
 
     const rootGqlHandler = usePageBuilderHandler({
-        ...options,
         identity: identityRoot
     });
 
@@ -71,7 +64,7 @@ describe("Content Review crud test", () => {
                                 type: "admin"
                             },
                             title: expect.any(String),
-                            status: "underReview",
+                            reviewStatus: "underReview",
                             steps: workflow.steps.map((_, index) => ({
                                 status:
                                     index === 0
@@ -118,7 +111,7 @@ describe("Content Review crud test", () => {
                                 type: "admin"
                             },
                             title: expect.any(String),
-                            status: "underReview",
+                            reviewStatus: "underReview",
                             steps: workflow.steps.map((_, index) => ({
                                 status:
                                     index === 0
@@ -167,7 +160,7 @@ describe("Content Review crud test", () => {
                                     type: "admin"
                                 },
                                 title: expect.any(String),
-                                status: "underReview",
+                                reviewStatus: "underReview",
                                 steps: workflow.steps.map((_, index) => ({
                                     status:
                                         index === 0
@@ -252,11 +245,24 @@ describe("Content Review crud test", () => {
         /*
          Create a content review entry.
         */
-        await createContentReviewMutation({
+        const [createContentReviewResponse] = await createContentReviewMutation({
             data: {
                 content: {
                     id: page.id,
                     type: "page"
+                }
+            }
+        });
+
+        expect(createContentReviewResponse).toMatchObject({
+            data: {
+                apw: {
+                    createContentReview: {
+                        data: {
+                            id: expect.any(String)
+                        },
+                        error: null
+                    }
                 }
             }
         });
@@ -266,7 +272,7 @@ describe("Content Review crud test", () => {
          */
         const [listContentReviewsResponse] = await listContentReviewsQuery({
             where: {
-                status: "requiresMyAttention"
+                reviewStatus: "requiresMyAttention"
             }
         });
         expect(listContentReviewsResponse).toEqual({
@@ -284,7 +290,7 @@ describe("Content Review crud test", () => {
                                     type: "admin"
                                 },
                                 title: expect.any(String),
-                                status: "underReview",
+                                reviewStatus: "underReview",
                                 steps: workflow.steps.map((_, index) => ({
                                     status:
                                         index === 0
@@ -320,7 +326,7 @@ describe("Content Review crud test", () => {
          */
         const [listContentReviewsRootResponse] = await rootGqlHandler.listContentReviewsQuery({
             where: {
-                status: "requiresMyAttention"
+                reviewStatus: "requiresMyAttention"
             }
         });
         expect(listContentReviewsRootResponse).toEqual({
@@ -358,7 +364,7 @@ describe("Content Review crud test", () => {
                                     type: "admin"
                                 },
                                 title: expect.any(String),
-                                status: "underReview",
+                                reviewStatus: "underReview",
                                 steps: expect.arrayContaining([
                                     expect.objectContaining({
                                         status: expect.any(String),

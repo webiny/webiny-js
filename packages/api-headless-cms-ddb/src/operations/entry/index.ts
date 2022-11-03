@@ -18,8 +18,6 @@ import {
     CmsEntryStorageOperationsGetRevisionsParams,
     CmsEntryStorageOperationsListParams,
     CmsEntryStorageOperationsPublishParams,
-    CmsEntryStorageOperationsRequestChangesParams,
-    CmsEntryStorageOperationsRequestReviewParams,
     CmsEntryStorageOperationsUnpublishParams,
     CmsEntryStorageOperationsUpdateParams,
     StorageOperationsCmsModel,
@@ -787,148 +785,6 @@ export const createEntriesStorageOperations = (
         return items.shift() || null;
     };
 
-    const requestChanges = async (
-        model: StorageOperationsCmsModel,
-        params: CmsEntryStorageOperationsRequestChangesParams
-    ) => {
-        const { entry, storageEntry: initialStorageEntry } = params;
-
-        const partitionKey = createPartitionKey({
-            id: entry.id,
-            locale: model.locale,
-            tenant: model.tenant
-        });
-
-        const storageEntry = convertToStorageEntry({
-            storageEntry: initialStorageEntry,
-            model
-        });
-
-        /**
-         * We need to:
-         *  - update the existing entry
-         *  - update latest version - if existing entry is the latest version
-         */
-        const items = [
-            entity.putBatch({
-                ...storageEntry,
-                TYPE: createType(),
-                PK: partitionKey,
-                SK: createRevisionSortKey(entry),
-                GSI1_PK: createGSIPartitionKey(model, "A"),
-                GSI1_SK: createGSISortKey(entry)
-            })
-        ];
-
-        /**
-         * We need the latest entry to see if something needs to be updated along side the request changes one.
-         */
-        const latestStorageEntry = await getLatestRevisionByEntryId(model, entry);
-
-        if (latestStorageEntry && latestStorageEntry.id === entry.id) {
-            items.push(
-                entity.putBatch({
-                    ...storageEntry,
-                    PK: partitionKey,
-                    SK: createLatestSortKey(),
-                    TYPE: createLatestType(),
-                    GSI1_PK: createGSIPartitionKey(model, "L"),
-                    GSI1_SK: createGSISortKey(entry)
-                })
-            );
-        }
-
-        try {
-            await batchWriteAll({
-                table: entity.table,
-                items
-            });
-            dataLoaders.clearAll({
-                model
-            });
-        } catch (ex) {
-            throw new WebinyError(
-                ex.message || "Could not execute the request changes batch.",
-                ex.code || "REQUEST_CHANGES_ERROR",
-                {
-                    entry
-                }
-            );
-        }
-        return entry;
-    };
-
-    const requestReview = async (
-        model: StorageOperationsCmsModel,
-        params: CmsEntryStorageOperationsRequestReviewParams
-    ) => {
-        const { entry, storageEntry: initialStorageEntry } = params;
-
-        const partitionKey = createPartitionKey({
-            id: entry.id,
-            locale: model.locale,
-            tenant: model.tenant
-        });
-
-        const storageEntry = convertToStorageEntry({
-            storageEntry: initialStorageEntry,
-            model
-        });
-        /**
-         * We need to:
-         *  - update existing entry
-         *  - update latest entry - if existing entry is the latest entry
-         */
-        const items = [
-            entity.putBatch({
-                ...storageEntry,
-                TYPE: createType(),
-                PK: partitionKey,
-                SK: createRevisionSortKey(entry),
-                GSI1_PK: createGSIPartitionKey(model, "A"),
-                GSI1_SK: createGSISortKey(entry)
-            })
-        ];
-
-        /**
-         * We need the latest entry to see if something needs to be updated along side the request review one.
-         */
-        const latestStorageEntry = await getLatestRevisionByEntryId(model, entry);
-
-        if (latestStorageEntry && latestStorageEntry.id === entry.id) {
-            items.push(
-                entity.putBatch({
-                    ...storageEntry,
-                    PK: partitionKey,
-                    SK: createLatestSortKey(),
-                    TYPE: createLatestType(),
-                    GSI1_PK: createGSIPartitionKey(model, "L"),
-                    GSI1_SK: createGSISortKey(entry)
-                })
-            );
-        }
-
-        try {
-            await batchWriteAll({
-                table: entity.table,
-                items
-            });
-            dataLoaders.clearAll({
-                model
-            });
-            return initialStorageEntry;
-        } catch (ex) {
-            throw new WebinyError(
-                ex.message || "Could not execute request review batch.",
-                ex.code || "REQUEST_REVIEW_ERROR",
-                {
-                    entry,
-                    storageEntry
-                }
-            );
-        }
-    };
-
     const publish = async (
         model: StorageOperationsCmsModel,
         params: CmsEntryStorageOperationsPublishParams
@@ -1119,8 +975,6 @@ export const createEntriesStorageOperations = (
         getLatestRevisionByEntryId,
         get,
         getRevisions,
-        requestChanges,
-        requestReview,
         publish,
         list,
         unpublish

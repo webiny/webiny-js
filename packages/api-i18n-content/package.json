@@ -10,15 +10,15 @@
   "description": "A small package that contains content-I18N-related security utilities.",
   "license": "MIT",
   "dependencies": {
-    "@babel/runtime": "^7.16.3",
+    "@babel/runtime": "^7.19.0",
     "@webiny/api": "^5.33.0",
     "@webiny/api-i18n": "^5.33.0",
     "@webiny/api-security": "^5.33.0",
     "graphql": "^15.7.2"
   },
   "devDependencies": {
-    "@babel/cli": "^7.16.0",
-    "@babel/core": "^7.16.0",
+    "@babel/cli": "^7.19.3",
+    "@babel/core": "^7.19.3",
     "@webiny/cli": "^5.33.0",
     "@webiny/project-utils": "^5.33.0",
     "rimraf": "^3.0.2",

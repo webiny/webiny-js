@@ -1,13 +1,15 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Compose, Plugins } from "@webiny/app-admin";
 import { useBind } from "@webiny/form";
 import { Select } from "@webiny/ui/Select";
 import { ContentEntriesViewRenderer, ContentEntriesViewConfig } from "./ContentEntriesViewConfig";
 import { ContentEntriesRenderer } from "./ContentEntriesRenderer";
+import { plugins } from "@webiny/plugins";
+import { CmsEntryFilterStatusPlugin } from "~/types";
 
 const { Filter, Sorter } = ContentEntriesViewConfig;
 
-const FilterByStatus = () => {
+const FilterByStatus: React.FC = () => {
     const bind = useBind({
         name: "status",
         defaultValue: "all",
@@ -15,6 +17,10 @@ const FilterByStatus = () => {
             cb(value === "all" ? undefined : value);
         }
     });
+
+    const filterStatusPlugins = useMemo(() => {
+        return plugins.byType<CmsEntryFilterStatusPlugin>("cms.entry.filter.status");
+    }, []);
 
     return (
         <Select
@@ -26,13 +32,18 @@ const FilterByStatus = () => {
             <option value={"draft"}>Draft</option>
             <option value={"published"}>Published</option>
             <option value={"unpublished"}>Unpublished</option>
-            <option value={"reviewRequested"}>Review requested</option>
-            <option value={"changesRequested"}>Changes requested</option>
+            {filterStatusPlugins.map(pl => {
+                return (
+                    <option key={pl.value} value={pl.value}>
+                        {pl.label}
+                    </option>
+                );
+            })}
         </Select>
     );
 };
 
-export const ContentEntriesModule = () => {
+export const ContentEntriesModule: React.FC = () => {
     return (
         <>
             <Compose component={ContentEntriesViewRenderer} with={ContentEntriesRenderer} />
