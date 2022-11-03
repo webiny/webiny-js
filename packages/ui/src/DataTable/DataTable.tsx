@@ -11,6 +11,7 @@ import {
 
 import { flexRender, getCoreRowModel, useReactTable, ColumnDef } from "@tanstack/react-table";
 
+import "@rmwc/data-table/data-table.css";
 import { Table } from "./styled";
 
 interface Column<T> {
