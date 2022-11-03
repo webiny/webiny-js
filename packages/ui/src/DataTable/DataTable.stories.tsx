@@ -42,7 +42,8 @@ story.add(
                 header: "Title"
             },
             createdBy: {
-                header: "Author"
+                header: "Author",
+                cell: value => value.toUpperCase()
             },
             lastModified: {
                 header: "Last Modified"
