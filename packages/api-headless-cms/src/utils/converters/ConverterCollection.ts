@@ -79,6 +79,8 @@ export class ConverterCollection {
             return undefined;
         }
 
+        this.attachHasOwnProperty(inputValues);
+
         return fields.reduce<CmsEntryValues>((output, field) => {
             const converter = this.getConverter(field.type);
             if (inputValues === null || inputValues.hasOwnProperty(field.fieldId) === false) {
@@ -119,5 +121,34 @@ export class ConverterCollection {
                 ...values
             };
         }, {});
+    }
+
+    /**
+     * This method attaches hasOwnProperty when received object was created via Object.create(null) - no inheritance of Object.
+     * At that point, hasOwnProperty does not exist, and we need to add it.
+     *
+     * TODO add more checks if required
+     */
+    private attachHasOwnProperty(values: CmsEntryValues) {
+        if (
+            // null or undefined?
+            values === null ||
+            values === undefined ||
+            // not an object?
+            typeof values !== "object" ||
+            // maybe it's an array?
+            Array.isArray(values) ||
+            // and in the end, check if hasOwnProperty is a function already
+            typeof values?.hasOwnProperty === "function"
+        ) {
+            return;
+        }
+        Object.defineProperty(values, "hasOwnProperty", {
+            enumerable: false,
+            writable: false,
+            value: function (property: string) {
+                return this[property] !== undefined;
+            }
+        });
     }
 }
