@@ -1,4 +1,4 @@
-import React, { ReactElement, useMemo } from "react";
+import React, { ReactElement, useEffect, useMemo } from "react";
 import {
     DataTableContent,
     DataTableHead,
@@ -32,18 +32,22 @@ interface Column<T> {
 }
 
 export type Columns<T> = {
-    [P in keyof T]: Column<T[P]>;
+    [P in keyof T]?: Column<T[P]>;
 };
 
 interface Props<T> {
     columns: Columns<T>;
     data: T[];
+    onSelectRow?: (rows: T[] | []) => void;
 }
 
-export const DataTable = <T,>({ data, columns }: Props<T>) => {
+export const DataTable = <T,>({ data, columns, onSelectRow }: Props<T>) => {
     const [rowSelection, setRowSelection] = React.useState({});
 
-    console.log(rowSelection);
+    useEffect(() => {
+        const dataSelected = table.getSelectedRowModel().flatRows.map(row => row.original);
+        onSelectRow?.(dataSelected);
+    }, [rowSelection]);
 
     const filterColumn: ColumnDef<T> = {
         id: "select",
