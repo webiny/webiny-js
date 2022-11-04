@@ -1,5 +1,4 @@
 import {
-    CmsContext,
     CmsEntry as BaseCmsEntry,
     CmsModel,
     OnEntryBeforePublishTopicParams,
@@ -24,6 +23,7 @@ import { ApwScheduleActionCrud, ScheduleActionContext } from "~/scheduler/types"
 import HandlerClient from "@webiny/handler-client/HandlerClient";
 import { PluginsContainer } from "@webiny/plugins";
 import { WcpContextObject } from "@webiny/api-wcp/types";
+import { MailerContext } from "@webiny/api-mailer/types";
 
 export interface ApwCmsEntry extends BaseCmsEntry {
     title: string;
@@ -455,6 +455,7 @@ export interface ApwContentReviewCrud
     onContentReviewAfterUpdate: Topic<OnContentReviewAfterUpdateTopicParams>;
     onContentReviewBeforeDelete: Topic<OnContentReviewBeforeDeleteTopicParams>;
     onContentReviewAfterDelete: Topic<OnContentReviewAfterDeleteTopicParams>;
+    onContentReviewBeforeList: Topic<OnContentReviewBeforeListTopicParams>;
 }
 
 export type ContentGetter = (
@@ -487,7 +488,7 @@ export interface AdvancedPublishingWorkflow {
     scheduleAction: ApwScheduleActionCrud;
 }
 
-export interface ApwContext extends Context, CmsContext {
+export interface ApwContext extends Context, MailerContext {
     apw: AdvancedPublishingWorkflow;
     pageBuilder: PageBuilderContextObject;
     wcp: WcpContextObject;
@@ -569,10 +570,12 @@ type StorageOperationsDeleteWorkflowParams = StorageOperationsDeleteParams;
 type StorageOperationsGetContentReviewParams = StorageOperationsGetParams;
 
 export interface ApwContentReviewListParams extends ListParams {
-    where?: ListWhere & {
+    where: ListWhere & {
         reviewStatus?: ApwContentReviewListFilter;
         title?: string;
         title_contains?: string;
+        workflowId?: string;
+        workflowId_in?: string[];
     };
 }
 
@@ -844,6 +847,13 @@ export interface OnContentReviewBeforeDeleteTopicParams {
  */
 export interface OnContentReviewAfterDeleteTopicParams {
     contentReview: ApwContentReview;
+}
+
+/**
+ * @category Lifecycle events
+ */
+export interface OnContentReviewBeforeListTopicParams {
+    where: ApwContentReviewListParams["where"];
 }
 
 export interface CreateApwReviewerParams {
