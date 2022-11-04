@@ -132,7 +132,10 @@ export const DataTable = <T,>({ data, columns, onSelectRow }: Props<T>) => {
                 </DataTableHead>
                 <DataTableBody>
                     {table.getRowModel().rows.map(row => (
-                        <DataTableRow key={row.id}>
+                        <DataTableRow
+                            key={row.id}
+                            selected={rowSelection.hasOwnProperty(row.index)}
+                        >
                             {row.getVisibleCells().map(cell => (
                                 <DataTableCell key={cell.id} {...cell.column.columnDef.meta}>
                                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
