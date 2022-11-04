@@ -11,7 +11,6 @@ import { elementWithChildrenByIdSelector, uiAtom } from "~/editor/recoil/modules
 const GridContainerStyle = styled("div")({
     position: "relative",
     color: "#666",
-    padding: 5,
     boxSizing: "border-box",
     display: "flex"
 });
