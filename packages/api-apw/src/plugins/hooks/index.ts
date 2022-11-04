@@ -41,5 +41,5 @@ export const attachApwHooks = () =>
 
         listContentReviews(context);
 
-        // initializeNotifications(context);
+        initializeNotifications(context);
     });

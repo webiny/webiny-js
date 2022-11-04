@@ -1,13 +1,14 @@
 import { AdvancedPublishingWorkflow } from "~/types";
-import { apwEntryPlugins } from "~/plugins/cms/apwEntryPlugins";
-import { linkContentReviewToEntry } from "~/plugins/cms/linkContentReviewToEntry";
-import { linkWorkflowToEntry } from "~/plugins/cms/linkWorkflowToEntry";
-import { triggerContentReview } from "~/plugins/cms/triggerContentReview";
-import { updateContentReviewStatus } from "~/plugins/cms/updateContentReviewStatus";
+import { apwEntryPlugins } from "./apwEntryPlugins";
+import { linkContentReviewToEntry } from "./linkContentReviewToEntry";
+import { linkWorkflowToEntry } from "./linkWorkflowToEntry";
+import { triggerContentReview } from "./triggerContentReview";
+import { updateContentReviewStatus } from "./updateContentReviewStatus";
 import { HeadlessCms } from "@webiny/api-headless-cms/types";
 import { Security } from "@webiny/api-security/types";
 import { PluginsContainer } from "@webiny/plugins";
-import { CmsEntryApwSettingsGetterPlugin } from "~/plugins/cms/CmsEntryApwSettingsGetterPlugin";
+import { CmsEntryApwSettingsGetterPlugin } from "./CmsEntryApwSettingsGetterPlugin";
+import { createCommentNotification } from "./notifications/commentNotification";
 
 interface ApwCmsHooksParams {
     apw: AdvancedPublishingWorkflow;
@@ -24,7 +25,7 @@ export const apwCmsHooks = (params: ApwCmsHooksParams) => {
         return;
     }
 
-    params.plugins.register(new CmsEntryApwSettingsGetterPlugin());
+    params.plugins.register([new CmsEntryApwSettingsGetterPlugin(), createCommentNotification()]);
 
     apwEntryPlugins(params);
 
