@@ -38,6 +38,11 @@ const PbText: React.FC<TextElementProps> = ({ elementId, mediumEditorOptions, ro
         [displayMode]
     );
 
+    const initialText = useMemo(
+        () => variableValue || get(element, `${DATA_NAMESPACE}.data.text`),
+        []
+    );
+
     const value = get(element, `${DATA_NAMESPACE}.${displayMode}`, fallbackValue);
 
     const onChange = useCallback(
@@ -59,10 +64,6 @@ const PbText: React.FC<TextElementProps> = ({ elementId, mediumEditorOptions, ro
         return null;
     }
 
-    // only used to set initial value, so no reason to update it every time
-    const textContent = useMemo(() => {
-        return variableValue || get(element, `${DATA_NAMESPACE}.data.text`);
-    }, []);
     const tag = get(value, "tag");
     const typography = get(value, "typography");
 
@@ -74,7 +75,7 @@ const PbText: React.FC<TextElementProps> = ({ elementId, mediumEditorOptions, ro
             <ReactMediumEditor
                 elementId={elementId}
                 tag={tag}
-                value={textContent}
+                value={initialText}
                 onChange={onChange}
                 options={mediumEditorOptions}
                 onSelect={onSelect}
