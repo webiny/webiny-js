@@ -8,7 +8,7 @@ import {
     ApwWorkflow
 } from "~/types";
 
-interface ApwChangeRequestNotificationCbParams {
+export interface ApwChangeRequestNotificationCbParams {
     context: ApwContext;
     reviewers: ApwReviewerWithEmail[];
     changeRequestUrl: string;
@@ -17,11 +17,11 @@ interface ApwChangeRequestNotificationCbParams {
     contentReview: ApwContentReview;
     workflow: ApwWorkflow;
 }
-interface ApwChangeRequestNotificationCbParamsResponse {
+export interface ApwChangeRequestNotificationCbParamsResponse {
     text: string;
     html?: string;
 }
-interface ApwChangeRequestNotificationCb {
+export interface ApwChangeRequestNotificationCb {
     (params: ApwChangeRequestNotificationCbParams):
         | ApwChangeRequestNotificationCbParamsResponse
         | null

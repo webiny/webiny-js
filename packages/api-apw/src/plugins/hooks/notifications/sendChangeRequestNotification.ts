@@ -1,34 +1,20 @@
-import {
-    ApwChangeRequest,
-    ApwContentReview,
-    ApwContext,
-    ApwReviewerWithEmail,
-    ApwWorkflow
-} from "~/types";
 import { getLastChangeRequestNotificationPlugin } from "./lastChangeRequestNotificationPlugin";
+import { ApwChangeRequestNotificationCbParams } from "~/ApwChangeRequestNotification";
 
-interface Params {
-    context: ApwContext;
-    reviewers: ApwReviewerWithEmail[];
-    changeRequestUrl: string;
-    contentUrl: string;
-    changeRequest: ApwChangeRequest;
-    contentReview: ApwContentReview;
-    workflow: ApwWorkflow;
-}
-
-export const sendChangeRequestNotification = async (params: Params): Promise<void> => {
+export const sendChangeRequestNotification = async (
+    params: ApwChangeRequestNotificationCbParams
+): Promise<void> => {
     const { context, reviewers, contentReview } = params;
 
-    const commentPlugin = getLastChangeRequestNotificationPlugin({
+    const changeRequestPlugin = getLastChangeRequestNotificationPlugin({
         context,
         type: contentReview.content.type
     });
-    if (!commentPlugin) {
+    if (!changeRequestPlugin) {
         return;
     }
 
-    const body = commentPlugin.create(params);
+    const body = changeRequestPlugin.create(params);
     if (!body) {
         return;
     }

@@ -1,23 +1,9 @@
-import {
-    ApwChangeRequest,
-    ApwContentReview,
-    ApwContext,
-    ApwReviewerWithEmail,
-    ApwWorkflow
-} from "~/types";
 import { getLastCommentNotificationPlugin } from "./lastCommentNotificationPlugin";
+import { ApwCommentNotificationCbParams } from "~/ApwCommentNotification";
 
-interface Params {
-    context: ApwContext;
-    reviewers: ApwReviewerWithEmail[];
-    commentUrl: string;
-    contentUrl: string;
-    changeRequest: ApwChangeRequest;
-    contentReview: ApwContentReview;
-    workflow: ApwWorkflow;
-}
-
-export const sendCommentNotification = async (params: Params): Promise<void> => {
+export const sendCommentNotification = async (
+    params: ApwCommentNotificationCbParams
+): Promise<void> => {
     const { context, reviewers, contentReview } = params;
 
     const commentPlugin = getLastCommentNotificationPlugin({

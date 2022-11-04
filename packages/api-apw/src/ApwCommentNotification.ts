@@ -8,7 +8,7 @@ import {
     ApwWorkflow
 } from "~/types";
 
-interface ApwCommentNotificationCbParams {
+export interface ApwCommentNotificationCbParams {
     context: ApwContext;
     reviewers: ApwReviewerWithEmail[];
     commentUrl: string;
@@ -17,11 +17,11 @@ interface ApwCommentNotificationCbParams {
     contentReview: ApwContentReview;
     workflow: ApwWorkflow;
 }
-interface ApwCommentNotificationCbParamsResponse {
+export interface ApwCommentNotificationCbParamsResponse {
     text: string;
     html?: string;
 }
-interface ApwCommentNotificationCb {
+export interface ApwCommentNotificationCb {
     (params: ApwCommentNotificationCbParams):
         | ApwCommentNotificationCbParamsResponse
         | null
