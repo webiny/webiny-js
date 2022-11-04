@@ -1,6 +1,5 @@
 import { AdvancedPublishingWorkflow } from "~/types";
 import { HeadlessCms } from "@webiny/api-headless-cms/types";
-import { CONTENT_REVIEW_MODEL_ID } from "~/storageOperations/models/contentReview.model";
 import { Security } from "@webiny/api-security/types";
 
 interface ListWorkflowsParams {
@@ -8,12 +7,12 @@ interface ListWorkflowsParams {
     cms: HeadlessCms;
     security: Security;
 }
-export const listContentReviews = ({ apw, cms, security }: ListWorkflowsParams) => {
+export const listContentReviews = ({ apw, security }: ListWorkflowsParams) => {
     /**
      * We need to hook into listing the content review entries.
      * When listing content review entries, we need to check which ones current user can actually see.
      */
-    cms.onEntryBeforeList.subscribe(async ({ model, where }) => {
+    apw.contentReview.onContentReviewBeforeList.subscribe(async ({ where }) => {
         /**
          * If there is workflowId_in attached on where, we will not change it.
          */
@@ -21,7 +20,7 @@ export const listContentReviews = ({ apw, cms, security }: ListWorkflowsParams) 
             return;
         }
         const identity = security.getIdentity();
-        if (!identity?.id || model.modelId !== CONTENT_REVIEW_MODEL_ID) {
+        if (!identity?.id) {
             return;
         }
         /**
