@@ -2,7 +2,6 @@ import React from "react";
 import { css } from "emotion";
 import { merge } from "dot-prop-immutable";
 import { Form } from "@webiny/form";
-import { validation } from "@webiny/validation";
 import { withActiveElement } from "~/editor/components";
 import { DelayedOnChange } from "@webiny/ui/DelayedOnChange";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
@@ -24,6 +23,15 @@ const classes = {
         justifySelf: "end"
     })
 };
+
+const isValidUrl = (urlString: string) => {
+    try {
+        return Boolean(new URL(urlString));
+    } catch (e) {
+        return false;
+    }
+};
+
 interface LinkSettingsFormData {
     url?: string;
 }
@@ -53,9 +61,7 @@ const LinkSettingsComponent: React.FC<
             return;
         }
 
-        const isValidUrl = data.url && validation.validateSync(data.url, "url:allowHref");
-
-        if (!isValidUrl) {
+        if (data.url && !isValidUrl(data.url)) {
             return;
         }
 
@@ -70,7 +76,7 @@ const LinkSettingsComponent: React.FC<
                 {({ Bind }) => (
                     <>
                         <Wrapper label={"URL"} containerClassName={classes.gridClass}>
-                            <Bind name={"url"} validators={validation.create("url:allowHref")}>
+                            <Bind name={"url"}>
                                 <DelayedOnChange>
                                     {props => (
                                         <InputField
