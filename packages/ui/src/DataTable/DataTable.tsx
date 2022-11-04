@@ -30,7 +30,7 @@ interface Column<T> {
 }
 
 export type Columns<T> = {
-    [P in keyof T]: Column<T[P]>;
+    [P in keyof T]?: Column<T[P]>;
 };
 
 interface Props<T> {
