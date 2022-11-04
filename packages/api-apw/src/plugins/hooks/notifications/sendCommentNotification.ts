@@ -1,10 +1,17 @@
-import { ApwChangeRequest, ApwContentReview, ApwContext, ApwReviewer, ApwWorkflow } from "~/types";
-import { getLastNotificationPlugin } from "~/plugins/hooks/notifications/utils";
+import {
+    ApwChangeRequest,
+    ApwContentReview,
+    ApwContext,
+    ApwReviewerWithEmail,
+    ApwWorkflow
+} from "~/types";
+import { getLastCommentNotificationPlugin } from "./lastCommentNotificationPlugin";
 
 interface Params {
     context: ApwContext;
-    reviewers: ApwReviewer[];
+    reviewers: ApwReviewerWithEmail[];
     commentUrl: string;
+    contentUrl: string;
     changeRequest: ApwChangeRequest;
     contentReview: ApwContentReview;
     workflow: ApwWorkflow;
@@ -13,7 +20,7 @@ interface Params {
 export const sendCommentNotification = async (params: Params): Promise<void> => {
     const { context, reviewers, contentReview } = params;
 
-    const commentPlugin = getLastNotificationPlugin({
+    const commentPlugin = getLastCommentNotificationPlugin({
         context,
         type: contentReview.content.type
     });
@@ -27,12 +34,9 @@ export const sendCommentNotification = async (params: Params): Promise<void> => 
     }
 
     await context.mailer.sendMail({
-        /**
-         * Filter empty emails just in case...
-         */
-        to: reviewers.map(r => r.email).filter(Boolean) as string[],
+        bcc: reviewers.map(r => r.email),
         subject: "There is a new comment on the Content Review you are assigned on.",
-        text: body,
-        html: body
+        text: body.text,
+        html: body.html || body.text
     });
 };

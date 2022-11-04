@@ -17,7 +17,8 @@ export interface PermissionsArg {
 export const identity = {
     id: "12345678",
     displayName: "John Doe",
-    type: "admin"
+    type: "admin",
+    email: "testing@webiny.com"
 };
 
 const getSecurityIdentity = () => {

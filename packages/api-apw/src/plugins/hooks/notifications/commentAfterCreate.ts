@@ -1,8 +1,10 @@
 import WebinyError from "@webiny/error";
 import { ApwContext } from "~/types";
-import { createCommentUrl, getReviewers } from "./utils";
 import { extractContentReviewIdAndStep } from "~/plugins/utils";
-import { sendCommentNotification } from "./comment/sendCommentNotification";
+import { createContentUrl } from "./contentUrl";
+import { createCommentUrl } from "./commentUrl";
+import { fetchReviewers } from "./reviewers";
+import { sendCommentNotification } from "./sendCommentNotification";
 
 export const attachCommentAfterCreate = (context: ApwContext): void => {
     context.apw.comment.onCommentAfterCreate.subscribe(async ({ comment }) => {
@@ -59,11 +61,21 @@ export const attachCommentAfterCreate = (context: ApwContext): void => {
             );
         }
 
-        const reviewers = Object.values(
-            getReviewers({
-                steps: workflow.steps
-            })
-        );
+        const contentUrl = createContentUrl({
+            plugins: context.plugins,
+            baseUrl: process.env.APP_URL as string,
+            contentReview,
+            changeRequest,
+            workflow
+        });
+        if (!contentUrl) {
+            return;
+        }
+
+        const reviewers = await fetchReviewers({
+            context,
+            workflow
+        });
 
         if (reviewers.length === 0) {
             return;
@@ -76,7 +88,8 @@ export const attachCommentAfterCreate = (context: ApwContext): void => {
                 changeRequest,
                 contentReview,
                 workflow,
-                commentUrl
+                commentUrl,
+                contentUrl
             });
         } catch (ex) {
             throw new WebinyError(
@@ -88,6 +101,7 @@ export const attachCommentAfterCreate = (context: ApwContext): void => {
                     changeRequestId: changeRequest.id,
                     contentReviewId,
                     commentUrl,
+                    contentUrl,
                     error: {
                         message: ex.message,
                         code: ex.code,

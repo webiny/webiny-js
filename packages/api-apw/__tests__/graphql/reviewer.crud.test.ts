@@ -1,7 +1,12 @@
 import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
 import { defaultIdentity } from "../utils/defaultIdentity";
 
-const identityRoot = { id: "root", displayName: "root", type: "admin" };
+const identityRoot = {
+    id: "root",
+    displayName: "root",
+    type: "admin",
+    email: "testing@webiny.com"
+};
 const updatedDisplayName = "Robert Downey";
 
 describe("Reviewer crud test", () => {

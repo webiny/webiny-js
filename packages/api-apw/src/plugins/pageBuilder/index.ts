@@ -8,6 +8,7 @@ import { linkWorkflowToPage } from "./linkWorkflowToPage";
 import { PluginsContainer } from "@webiny/plugins";
 import { PageApwSettingsGetterPlugin } from "~/plugins/pageBuilder/PageApwSettingsGetterPlugin";
 import { createCommentNotification } from "~/plugins/pageBuilder/notifications/commentNotification";
+import { createContentUrlPlugin } from "~/plugins/pageBuilder/notifications/contentUrl";
 
 export interface ApwPageBuilderPluginsParams {
     pageBuilder: PageBuilderContextObject;
@@ -19,7 +20,11 @@ export interface ApwPageBuilderPluginsParams {
 export const apwPageBuilderHooks = (params: ApwPageBuilderPluginsParams) => {
     const { pageBuilder, apw, security, plugins } = params;
 
-    plugins.register([new PageApwSettingsGetterPlugin(), createCommentNotification()]);
+    plugins.register([
+        new PageApwSettingsGetterPlugin(),
+        createCommentNotification(),
+        createContentUrlPlugin()
+    ]);
 
     triggerContentReview({
         apw,

@@ -156,6 +156,9 @@ export interface ApwReviewer extends ApwBaseFields {
     type: string;
     email?: string;
 }
+export interface ApwReviewerWithEmail extends Omit<ApwReviewer, "email"> {
+    email: string;
+}
 
 export interface ApwComment extends ApwBaseFields {
     body: Record<string, any>;

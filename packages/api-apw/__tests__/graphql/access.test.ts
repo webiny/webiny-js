@@ -48,7 +48,8 @@ describe("access", () => {
         identity: {
             id: "someUserId",
             displayName: "User",
-            type: "user"
+            type: "user",
+            email: "testing@webiny.com"
         },
         permissions,
         plugins: [accessTestGroup, accessTestModel]

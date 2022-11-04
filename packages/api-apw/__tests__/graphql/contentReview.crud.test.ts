@@ -3,7 +3,12 @@ import { createSetupForPageContentReview } from "../utils/helpers";
 import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
 
 describe("Content Review crud test", () => {
-    const identityRoot = { id: "root", displayName: "root", type: "admin" };
+    const identityRoot = {
+        id: "root",
+        displayName: "root",
+        type: "admin",
+        email: "testing@webiny.com"
+    };
 
     const gqlHandler = usePageBuilderHandler();
 

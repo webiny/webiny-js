@@ -1,6 +1,8 @@
 import { mocks as changeRequestMock } from "./mocks/changeRequest";
 import { createPageContentReviewSetup } from "../utils/helpers";
 import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
+import { createApwCommentNotification } from "~/ApwCommentNotification";
+import { ApwContentTypes } from "~/types";
 
 const richTextMock = [
     {
@@ -65,8 +67,12 @@ describe("Comment crud test", () => {
         until
     } = gqlHandler;
 
-    const setupChangeRequest = async () => {
-        const { contentReview } = await createPageContentReviewSetup(gqlHandler);
+    beforeEach(() => {
+        process.env.APP_URL = "https://webiny.localhost";
+    });
+
+    const setupChangeRequest = async (handler?: typeof gqlHandler) => {
+        const { contentReview } = await createPageContentReviewSetup(handler || gqlHandler);
         const changeRequestStep = `${contentReview.id}#${contentReview.steps[0].id}`;
         /*
          * Create a new entry.
@@ -292,5 +298,45 @@ describe("Comment crud test", () => {
                 }
             }
         });
+    });
+
+    it("should send an e-mail to all reviewers after the comment was created", async () => {
+        const fn = jest.fn(() => {
+            return null;
+        });
+        const commentNotification = createApwCommentNotification(ApwContentTypes.PAGE, fn);
+        const handler = usePageBuilderHandler({
+            plugins: [commentNotification]
+        });
+        const changeRequest = await setupChangeRequest(handler);
+        /*
+         * Create a new entry.
+         */
+        const [createCommentResponse] = await handler.createCommentMutation({
+            data: {
+                body: richTextMock,
+                changeRequest: changeRequest.id,
+                media: {
+                    src: "cloudfront.net/my-file"
+                }
+            }
+        });
+
+        expect(createCommentResponse).toMatchObject({
+            data: {
+                apw: {
+                    createComment: {
+                        data: {
+                            id: expect.any(String)
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+        /**
+         * Test expects the mock function to be called as it represents creating notification text and body.
+         */
+        expect(fn).toBeCalledTimes(1);
     });
 });

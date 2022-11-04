@@ -8,32 +8,32 @@ import {
     ApwWorkflow
 } from "~/types";
 
-interface ApwCommentNotificationCbParams {
+interface ApwChangeRequestNotificationCbParams {
     context: ApwContext;
     reviewers: ApwReviewerWithEmail[];
-    commentUrl: string;
+    changeRequestUrl: string;
     contentUrl: string;
     changeRequest: ApwChangeRequest;
     contentReview: ApwContentReview;
     workflow: ApwWorkflow;
 }
-interface ApwCommentNotificationCbParamsResponse {
+interface ApwChangeRequestNotificationCbParamsResponse {
     text: string;
     html?: string;
 }
-interface ApwCommentNotificationCb {
-    (params: ApwCommentNotificationCbParams):
-        | ApwCommentNotificationCbParamsResponse
+interface ApwChangeRequestNotificationCb {
+    (params: ApwChangeRequestNotificationCbParams):
+        | ApwChangeRequestNotificationCbParamsResponse
         | null
         | undefined;
 }
-export class ApwCommentNotification extends Plugin {
+export class ApwChangeRequestNotification extends Plugin {
     public static override readonly type: string = "apw.notification.comment";
 
     private readonly contentType: ApwContentTypes;
-    private readonly cb: ApwCommentNotificationCb;
+    private readonly cb: ApwChangeRequestNotificationCb;
 
-    public constructor(contentType: ApwContentTypes, cb: ApwCommentNotificationCb) {
+    public constructor(contentType: ApwContentTypes, cb: ApwChangeRequestNotificationCb) {
         super();
         this.contentType = contentType;
         this.cb = cb;
@@ -43,14 +43,14 @@ export class ApwCommentNotification extends Plugin {
         return contentType === this.contentType;
     }
 
-    public create(params: ApwCommentNotificationCbParams) {
+    public create(params: ApwChangeRequestNotificationCbParams) {
         return this.cb(params);
     }
 }
 
-export const createApwCommentNotification = (
+export const createApwChangeRequestNotification = (
     contentType: ApwContentTypes,
-    cb: ApwCommentNotificationCb
+    cb: ApwChangeRequestNotificationCb
 ) => {
-    return new ApwCommentNotification(contentType, cb);
+    return new ApwChangeRequestNotification(contentType, cb);
 };
