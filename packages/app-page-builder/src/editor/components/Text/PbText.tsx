@@ -9,7 +9,7 @@ import { ElementRoot } from "~/render/components/ElementRoot";
 import useUpdateHandlers from "../../plugins/elementSettings/useUpdateHandlers";
 import ReactMediumEditor from "../../components/MediumEditor";
 import { applyFallbackDisplayMode } from "../../plugins/elementSettings/elementSettingsUtils";
-import { useElementVariableValue } from "~/editor/hooks/useElementVariableValue";
+import { useElementVariableValue } from "~/hooks/useElementVariableValue";
 
 export const textClassName = "webiny-pb-base-page-element-style webiny-pb-page-element-text";
 const DATA_NAMESPACE = "data.text";
@@ -40,7 +40,7 @@ const PbText: React.FC<TextElementProps> = ({ elementId, mediumEditorOptions, ro
 
     const initialText = useMemo(
         () => variableValue || get(element, `${DATA_NAMESPACE}.data.text`),
-        []
+        [variableValue]
     );
 
     const value = get(element, `${DATA_NAMESPACE}.${displayMode}`, fallbackValue);
