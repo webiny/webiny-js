@@ -626,6 +626,7 @@ export interface PageBlocksCrud {
     createPageBlock(data: Record<string, any>): Promise<PageBlock>;
     updatePageBlock(id: string, data: Record<string, any>): Promise<PageBlock>;
     deletePageBlock(id: string): Promise<PageBlock>;
+    resolvePageBlocks(page: Page): Promise<any>;
 
     /**
      * Lifecycle events

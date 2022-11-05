@@ -8,7 +8,6 @@ import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { Page, PbContext, PageSecurityPermission } from "~/types";
 import WebinyError from "@webiny/error";
 import resolve from "./utils/resolve";
-import resolvePageBlocks from "./utils/resolvePageBlocks";
 import { createPageSettingsGraphQL } from "./pages/pageSettings";
 import { fetchEmbed, findProvider } from "./pages/oEmbed";
 import lodashGet from "lodash/get";
@@ -284,7 +283,7 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                         if (!page.content?.elements) {
                             return page.content;
                         }
-                        const blocks = await resolvePageBlocks(page, context);
+                        const blocks = await context.pageBuilder.resolvePageBlocks(page);
                         return { ...page.content, elements: blocks };
                     }
                 },
