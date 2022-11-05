@@ -102,7 +102,6 @@ export const saveBlockAction: BlockEventActionCallable<SaveBlockActionArgsType> 
         });
 
         await new Promise(resolve => {
-            console.log("Saving block", data);
             setTimeout(resolve, 500);
         });
 

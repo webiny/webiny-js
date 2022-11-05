@@ -5,8 +5,6 @@ import { BlockEventActionCallable } from "~/blockEditor/types";
 export const updateBlockAction: BlockEventActionCallable<
     UpdateDocumentActionArgsType<BlockAtomType>
 > = async (state, _, args) => {
-    console.log("updateBlockAction", state, args);
-
     return {
         state: {
             block: {
