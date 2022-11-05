@@ -13,6 +13,7 @@ import {
     Page,
     PageBuilderContextObject,
     PageBuilderStorageOperations,
+    PageElementProcessor,
     PagesCrud,
     PageSecurityPermission,
     PageStorageOperationsGetWhereParams,
@@ -25,6 +26,7 @@ import checkBasePermissions from "./utils/checkBasePermissions";
 import checkOwnPermissions from "./utils/checkOwnPermissions";
 import normalizePath from "./pages/normalizePath";
 import { CreateDataModel, UpdateSettingsModel } from "./pages/models";
+import { processPageContent } from "./pages/processPageContent";
 import WebinyError from "@webiny/error";
 import lodashTrimEnd from "lodash/trimEnd";
 import {
@@ -221,6 +223,8 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
     const onBeforePageRequestChanges = createTopic<OnBeforePageRequestChangesTopicParams>();
     const onAfterPageRequestChanges = createTopic<OnAfterPageRequestChangesTopicParams>();
 
+    const pageElementProcessors: PageElementProcessor[] = [];
+
     return {
         /**
          * Lifecycle events
@@ -241,6 +245,12 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
         onAfterPageRequestChanges,
         onBeforePageRequestReview,
         onAfterPageRequestReview,
+        addPageElementProcessor(processor) {
+            pageElementProcessors.push(processor);
+        },
+        async processPageContent(page) {
+            return processPageContent(page, pageElementProcessors);
+        },
         async createPage(this: PageBuilderContextObject, slug): Promise<any> {
             await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
 

@@ -179,10 +179,39 @@ export interface OnAfterPageRequestChangesTopicParams<TPage extends Page = Page>
     latestPage: TPage;
 }
 
+export interface PbPageElement {
+    id: string;
+    type: string;
+    data: any; // TODO: somehow type `data`
+    elements: PbPageElement[];
+}
+
+export interface PbBlockVariable<TValue = any> {
+    id: string;
+    type: string;
+    label: string;
+    value: TValue;
+}
+
+interface PageElementProcessorParams {
+    page: Page;
+    block: PbPageElement;
+    element: PbPageElement;
+}
+
+/**
+ * Element processors modify elements by reference, without creating a new object.
+ */
+export interface PageElementProcessor {
+    (params: PageElementProcessorParams): Promise<void> | void;
+}
+
 /**
  * @category Pages
  */
 export interface PagesCrud {
+    addPageElementProcessor(processor: PageElementProcessor): void;
+    processPageContent(content: Page): Promise<Page>;
     getPage<TPage extends Page = Page>(id: string, options?: GetPagesOptions): Promise<TPage>;
     listLatestPages<TPage extends Page = Page>(
         args: ListPagesParams,
@@ -680,14 +709,6 @@ export interface PbSecurityPermission extends SecurityPermission {
     // "w" - write
     // "d" - delete
     rwd?: string;
-}
-
-export interface MenuSecurityPermission extends PbSecurityPermission {
-    name: "pb.menu";
-}
-
-export interface CategorySecurityPermission extends PbSecurityPermission {
-    name: "pb.category";
 }
 
 export interface PageSecurityPermission extends PbSecurityPermission {

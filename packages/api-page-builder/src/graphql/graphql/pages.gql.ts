@@ -283,8 +283,20 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                         if (!page.content?.elements) {
                             return page.content;
                         }
+
+                        // Map block references
                         const blocks = await context.pageBuilder.resolvePageBlocks(page);
-                        return { ...page.content, elements: blocks };
+                        const pageWithNewContent = {
+                            ...page,
+                            content: { ...page.content, elements: blocks }
+                        };
+
+                        // Run element processors on the full page content for potential transformations.
+                        const processedPage = await context.pageBuilder.processPageContent(
+                            pageWithNewContent
+                        );
+
+                        return processedPage.content;
                     }
                 },
                 PbPageListItem: {
