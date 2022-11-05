@@ -69,7 +69,6 @@ const PagePreview: React.FC<PagePreviewProps> = ({ page }) => {
     return (
         <Zoom>
             {({ zoom, setZoom }) => {
-                console.log("zoom", zoom);
                 return (
                     <div
                         ref={pageElementRef}
