@@ -1,33 +1,20 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import { useRecoilValue } from "recoil";
 import styled from "@emotion/styled";
+import get from "lodash/get";
 import SingleImageUpload from "@webiny/app-admin/components/SingleImageUpload";
-import {
-    DisplayMode,
-    PbEditorElement,
-    PbElementDataImageType,
-    PbElementDataSettingsType
-} from "~/types";
+import { PbEditorElement, PbElementDataImageType } from "~/types";
 import { uiAtom } from "~/editor/recoil/modules";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import { UpdateElementActionEvent } from "~/editor/recoil/actions";
 import { makeComposable } from "@webiny/react-composition";
+import { applyFallbackDisplayMode } from "~/editor/plugins/elementSettings/elementSettingsUtils";
 
 const AlignImage = styled("div")((props: any) => ({
     img: {
         alignSelf: props.align
     }
 }));
-
-const getHorizontalAlignFlexAlign = (
-    element: PbEditorElement | null,
-    displayMode: DisplayMode
-): PbElementDataSettingsType["horizontalAlignFlex"] => {
-    if (!element || !element.data || !element.data.settings) {
-        return "center";
-    }
-    return (element.data.settings.horizontalAlignFlex as any)[displayMode] || "center";
-};
 
 interface ImageContainerType {
     element: PbEditorElement;
@@ -40,7 +27,23 @@ const ImageContainer: React.FC<ImageContainerType> = ({ element }) => {
     const image = element?.data?.image || {};
 
     // Use per-device style
-    const align = getHorizontalAlignFlexAlign(element, displayMode);
+    const align = useMemo(() => {
+        const elementValue = get(element, `data.settings.horizontalAlignFlex.${displayMode}`);
+
+        if (elementValue) {
+            return elementValue;
+        }
+
+        const fallbackValue = applyFallbackDisplayMode(displayMode, mode =>
+            get(element, `data.settings.horizontalAlignFlex.${mode}`)
+        );
+
+        if (fallbackValue) {
+            return fallbackValue;
+        }
+
+        return "center";
+    }, [displayMode, element]);
 
     const imgStyle: PbElementDataImageType = {};
     if (!!image.width) {
