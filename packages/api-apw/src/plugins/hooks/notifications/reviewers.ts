@@ -27,6 +27,8 @@ export const fetchReviewers = async (
 
     const idList = getReviewerIdList(workflow);
 
+    context.security.disableAuthorization();
+
     const [reviewers] = await context.apw.reviewer.list({
         where: {
             id_in: idList

@@ -1,5 +1,5 @@
 import { PluginCollection } from "@webiny/plugins/types";
-import { createMailerContext } from "~/context";
+import { createMailerContext as createMailerContextPlugin } from "~/context";
 import { createDummyTransport, DummyTransport } from "~/transports/createDummyTransport";
 import {
     createSmtpTransport,
@@ -14,7 +14,7 @@ import { createGraphQL } from "~/graphql";
 export { createDummyTransport, createSmtpTransport, createTransport };
 export type { SmtpTransport, SmtpTransportConfig, DummyTransport };
 
-export const createMailer = (): PluginCollection => {
+export const createMailerContext = (): PluginCollection => {
     const group = createGroup();
     return [
         group,
@@ -38,7 +38,10 @@ export const createMailer = (): PluginCollection => {
             plugin.name = "smtp-default";
             return plugin;
         }),
-        createMailerContext(),
-        createGraphQL()
+        createMailerContextPlugin()
     ];
+};
+
+export const createMailerGraphQL = () => {
+    return [...createGraphQL()];
 };
