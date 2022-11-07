@@ -11,14 +11,21 @@ export const createReviewerStorageOperations = ({
     security
 }: CreateApwStorageOperationsParams): ApwReviewerStorageOperations => {
     const getReviewerModel = async () => {
-        const model = await cms.getModel("apwReviewerModelDefinition");
-        if (!model) {
-            throw new WebinyError(
-                "Could not find `apwReviewerModelDefinition` model.",
-                "MODEL_NOT_FOUND_ERROR"
-            );
+        security.disableAuthorization();
+        try {
+            const model = await cms.getModel("apwReviewerModelDefinition");
+            if (!model) {
+                throw new WebinyError(
+                    "Could not find `apwReviewerModelDefinition` model.",
+                    "MODEL_NOT_FOUND_ERROR"
+                );
+            }
+            return model;
+        } catch (ex) {
+            throw ex;
+        } finally {
+            security.enableAuthorization();
         }
-        return model;
     };
     const getReviewer: ApwReviewerStorageOperations["getReviewer"] = async ({ id }) => {
         const model = await getReviewerModel();

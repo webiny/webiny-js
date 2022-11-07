@@ -69,7 +69,8 @@ export const attachChangeRequestAfterCreate = (context: ApwContext): void => {
 
             const reviewers = await fetchReviewers({
                 context,
-                workflow
+                workflow,
+                exclude: [changeRequest.createdBy.id]
             });
             if (reviewers.length === 0) {
                 return;

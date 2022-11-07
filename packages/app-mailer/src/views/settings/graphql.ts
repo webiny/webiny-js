@@ -4,6 +4,7 @@ import { ApiError, TransportSettings, ValidationErrors } from "~/types";
 const SETTINGS_FIELDS = `
     {
         host
+        port
         user
         from
         replyTo

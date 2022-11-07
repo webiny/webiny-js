@@ -6,6 +6,7 @@ export const createGroup = (): CmsGroupPlugin => {
         description: "Mailer Group for CMS",
         id: "mailerGroup",
         slug: "mailerGroup",
-        icon: "none"
+        icon: "none",
+        isPrivate: true
     });
 };

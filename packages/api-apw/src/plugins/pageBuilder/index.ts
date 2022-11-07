@@ -9,6 +9,7 @@ import { PluginsContainer } from "@webiny/plugins";
 import { PageApwSettingsGetterPlugin } from "~/plugins/pageBuilder/PageApwSettingsGetterPlugin";
 import { createCommentNotification } from "~/plugins/pageBuilder/notifications/commentNotification";
 import { createContentUrlPlugin } from "~/plugins/pageBuilder/notifications/contentUrl";
+import { createChangeRequestNotification } from "~/plugins/pageBuilder/notifications/changeRequestNotification";
 
 export interface ApwPageBuilderPluginsParams {
     pageBuilder: PageBuilderContextObject;
@@ -23,6 +24,7 @@ export const apwPageBuilderHooks = (params: ApwPageBuilderPluginsParams) => {
     plugins.register([
         new PageApwSettingsGetterPlugin(),
         createCommentNotification(),
+        createChangeRequestNotification(),
         createContentUrlPlugin()
     ]);
 

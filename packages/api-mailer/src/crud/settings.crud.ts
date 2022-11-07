@@ -196,6 +196,10 @@ export const createSettingsCrud = async (
 
             const { password, ...settings } = result.value;
 
+            if (!settings.port) {
+                settings.port = 25;
+            }
+
             const passwordlessSettings: TransportSettings = {
                 ...settings,
                 password: ""
@@ -265,6 +269,10 @@ export const createSettingsCrud = async (
             }
 
             const { password, ...settings } = result.value;
+
+            if (!settings.port) {
+                settings.port = original.port || 25;
+            }
 
             const passwordlessSettings: TransportSettings = {
                 ...settings,

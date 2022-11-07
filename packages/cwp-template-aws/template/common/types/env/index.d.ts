@@ -45,7 +45,6 @@ declare namespace NodeJS {
         APW_SCHEDULER_SCHEDULE_ACTION_HANDLER?: string;
         ELASTIC_SEARCH_ENDPOINT?: string;
         EVENT_BUS?: string;
-        APP_URL?: string;
         /**
          * api-mailer
          */

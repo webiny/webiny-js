@@ -9,6 +9,9 @@ interface GetReviewerIdList {
 export const getReviewerIdList: GetReviewerIdList = ({ steps }) => {
     return steps.reduce<string[]>((collection, step) => {
         for (const reviewer of step.reviewers) {
+            if (collection.includes(reviewer.id)) {
+                return collection;
+            }
             collection.push(reviewer.id);
         }
 
@@ -19,11 +22,12 @@ export const getReviewerIdList: GetReviewerIdList = ({ steps }) => {
 interface FetchReviewersParams {
     context: ApwContext;
     workflow: ApwWorkflow;
+    exclude: string[];
 }
 export const fetchReviewers = async (
     params: FetchReviewersParams
 ): Promise<ApwReviewerWithEmail[]> => {
-    const { context, workflow } = params;
+    const { context, workflow, exclude } = params;
 
     const idList = getReviewerIdList(workflow);
 
@@ -35,5 +39,13 @@ export const fetchReviewers = async (
         },
         limit: 10000
     });
-    return reviewers.filter(item => !!item.email) as ApwReviewerWithEmail[];
+    return reviewers.filter(item => {
+        if (!item.email) {
+            return false;
+        } else if (exclude.includes(item.identityId)) {
+            return false;
+        }
+
+        return true;
+    }) as ApwReviewerWithEmail[];
 };

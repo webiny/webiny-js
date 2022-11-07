@@ -35,6 +35,7 @@ export const attachCommentAfterCreate = (context: ApwContext): void => {
                 stepId
             });
             if (!commentUrl) {
+                console.log("No comment url.");
                 return;
             }
             /**
@@ -72,15 +73,18 @@ export const attachCommentAfterCreate = (context: ApwContext): void => {
                 workflow
             });
             if (!contentUrl) {
+                console.log("No content url.");
                 return;
             }
 
             const reviewers = await fetchReviewers({
                 context,
-                workflow
+                workflow,
+                exclude: [comment.createdBy.id]
             });
 
             if (reviewers.length === 0) {
+                console.log("No reviewers to send the e-mail notification to.");
                 return;
             }
 

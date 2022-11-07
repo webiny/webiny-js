@@ -33,8 +33,20 @@ export const createMailerContext = (): PluginCollection => {
         /**
          * Smtp mailer goes into the plugins after the dummy one because plugins are loaded in reverse.
          */
-        createTransport(async params => {
-            const plugin = await createSmtpTransport(params.settings);
+        createTransport(async ({ settings }) => {
+            /**
+             * We need to map our settings to the required settings for the SMTP NodeMailer transport.
+             */
+            const config: SmtpTransportConfig = {
+                ...(settings || {})
+            };
+            if (settings) {
+                config.auth = {
+                    user: settings.user,
+                    pass: settings.password
+                };
+            }
+            const plugin = await createSmtpTransport(config);
             plugin.name = "smtp-default";
             return plugin;
         }),

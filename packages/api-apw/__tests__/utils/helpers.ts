@@ -100,7 +100,7 @@ const setupReviewer = async (gqlHandler: any) => {
     await gqlHandler.until(
         () => gqlHandler.reviewer.listReviewersQuery({}).then(([data]: any[]) => data),
         (response: any) => {
-            return response.data.apw.listReviewers.data.length === 1;
+            return response.data.apw.listReviewers.data.length > 0;
         },
         {
             name: "Wait for listReviewer query"

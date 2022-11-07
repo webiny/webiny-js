@@ -162,6 +162,11 @@ export const Settings: React.FC = () => {
                                                         </Bind>
                                                     </Cell>
                                                     <Cell span={12}>
+                                                        <Bind name={"port"}>
+                                                            <Input type="number" label="Port" />
+                                                        </Bind>
+                                                    </Cell>
+                                                    <Cell span={12}>
                                                         <Bind
                                                             name={"user"}
                                                             validators={[

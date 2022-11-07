@@ -306,8 +306,18 @@ describe("Comment crud test", () => {
         });
         const commentNotification = createApwCommentNotification(ApwContentTypes.PAGE, fn);
         const handler = usePageBuilderHandler({
+            identity: {
+                id: "mockIdentityId",
+                type: "admin",
+                displayName: "Mock Identity",
+                email: "mock@webiny.local"
+            },
             plugins: [commentNotification]
         });
+
+        await handler.securityIdentity.login();
+        await gqlHandler.securityIdentity.login();
+
         const changeRequest = await setupChangeRequest(handler);
         /*
          * Create a new entry.
