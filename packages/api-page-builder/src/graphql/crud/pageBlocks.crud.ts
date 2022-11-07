@@ -34,6 +34,7 @@ import checkOwnPermissions from "./utils/checkOwnPermissions";
 import { NotFoundError } from "@webiny/handler-graphql";
 import WebinyError from "@webiny/error";
 import { createTopic } from "@webiny/pubsub";
+import cloneDeep from "lodash/cloneDeep";
 
 const CreateDataModel = withFields({
     name: string({ validation: validation.create("required,maxLength:100") }),
@@ -347,15 +348,17 @@ export const createPageBlocksCrud = (params: CreatePageBlocksCrudParams): PageBl
                     };
                 });
 
-                blocks.push({
-                    ...pageBlock,
-                    data: {
-                        blockId,
-                        ...blockData?.content?.data,
-                        variables
-                    },
-                    elements: blockData?.content?.elements || []
-                });
+                blocks.push(
+                    cloneDeep({
+                        ...pageBlock,
+                        data: {
+                            blockId,
+                            ...blockData?.content?.data,
+                            variables
+                        },
+                        elements: blockData?.content?.elements || []
+                    })
+                );
             }
 
             return blocks;
