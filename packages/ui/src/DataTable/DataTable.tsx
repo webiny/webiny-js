@@ -1,4 +1,4 @@
-import React, { ReactElement, useMemo } from "react";
+import React, { useMemo } from "react";
 import {
     DataTableContent,
     DataTableHead,
@@ -18,11 +18,11 @@ interface Column<T> {
     /*
      * Column header component.
      */
-    header: string | number | ReactElement;
+    header: string | number | JSX.Element;
     /*
-     * Cell renderer, receives the cell value and returns the value to render inside the cell.
+     * Cell renderer, receives the full row and returns the value to render inside the cell.
      */
-    cell?: (value: T) => unknown;
+    cell?: (row: T) => string | number | JSX.Element;
     /*
      * Additional props to add to both header and row cells. Refer to RMWC documentation.
      */
@@ -30,7 +30,7 @@ interface Column<T> {
 }
 
 export type Columns<T> = {
-    [P in keyof T]?: Column<T[P]>;
+    [P in keyof T]?: Column<T>;
 };
 
 interface Props<T> {
@@ -52,12 +52,10 @@ export const DataTable = <T,>({ data, columns }: Props<T>) => {
                 accessorKey: id,
                 header: () => header,
                 cell: info => {
-                    const value = info.getValue() as any;
-
                     if (cell && typeof cell === "function") {
-                        return cell(value);
+                        return cell(info.row.original);
                     } else {
-                        return value;
+                        return info.getValue();
                     }
                 },
                 meta
