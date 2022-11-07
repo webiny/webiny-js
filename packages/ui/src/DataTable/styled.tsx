@@ -9,4 +9,8 @@ export const Table = styled(RmwcDataTable)`
     td {
         vertical-align: middle;
     }
+
+    .webiny-select-column {
+        width: 56px;
+    }
 `;

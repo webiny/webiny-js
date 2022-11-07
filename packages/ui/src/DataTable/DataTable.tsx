@@ -8,10 +8,9 @@ import {
     DataTableCell,
     DataTableCellProps
 } from "@rmwc/data-table";
+import { flexRender, getCoreRowModel, useReactTable, ColumnDef } from "@tanstack/react-table";
 
 import { Checkbox } from "~/Checkbox";
-
-import { flexRender, getCoreRowModel, useReactTable, ColumnDef } from "@tanstack/react-table";
 
 import "@rmwc/data-table/data-table.css";
 import { Table } from "./styled";
@@ -29,6 +28,10 @@ interface Column<T> {
      * Additional props to add to both header and row cells. Refer to RMWC documentation.
      */
     meta?: DataTableCellProps;
+    /*
+     * Column class names.
+     */
+    className?: string;
 }
 
 export type Columns<T> = {
@@ -41,45 +44,18 @@ interface Props<T> {
     onSelectRow?: (rows: T[] | []) => void;
 }
 
-export const DataTable = <T,>({ data, columns, onSelectRow }: Props<T>) => {
-    const [rowSelection, setRowSelection] = React.useState({});
-
-    useEffect(() => {
-        const dataSelected = table.getSelectedRowModel().flatRows.map(row => row.original);
-        onSelectRow?.(dataSelected);
-    }, [rowSelection]);
-
-    const filterColumn: ColumnDef<T> = {
-        id: "select",
-        header: ({ table }) => (
-            <>
-                <Checkbox
-                    indeterminate={table.getIsSomeRowsSelected()}
-                    value={table.getIsAllRowsSelected()}
-                    onChange={e => table.toggleAllPageRowsSelected(e.target)}
-                />
-            </>
-        ),
-        cell: ({ row }) => (
-            <Checkbox
-                indeterminate={row.getIsSomeSelected()}
-                value={row.getIsSelected()}
-                onChange={row.getToggleSelectedHandler()}
-            />
-        ),
-        meta: {
-            hasFormControl: true
-        }
-    };
-
-    const columnsDefinition: ColumnDef<T>[] = useMemo(() => {
+const defineColumns = <T,>(
+    columns: Props<T>["columns"],
+    onSelectRow: Props<T>["onSelectRow"]
+): ColumnDef<T>[] =>
+    useMemo(() => {
         const columnsList = Object.keys(columns).map(key => ({
             id: key,
             ...columns[key as keyof typeof columns]
         }));
 
-        return columnsList.map(column => {
-            const { id, header, meta, cell } = column;
+        const defaults: ColumnDef<T>[] = columnsList.map(column => {
+            const { id, header, meta, cell, className } = column;
 
             return {
                 accessorKey: id,
@@ -93,20 +69,62 @@ export const DataTable = <T,>({ data, columns, onSelectRow }: Props<T>) => {
                         return value;
                     }
                 },
-                meta
+                meta: {
+                    ...meta,
+                    className
+                }
             };
         });
-    }, [columns]);
+
+        const select: ColumnDef<T>[] = !!onSelectRow
+            ? [
+                  {
+                      id: "select",
+                      header: ({ table }) => (
+                          <Checkbox
+                              indeterminate={table.getIsSomeRowsSelected()}
+                              value={table.getIsAllRowsSelected()}
+                              onChange={e => table.toggleAllPageRowsSelected(e.target)}
+                          />
+                      ),
+                      cell: ({ row }) => (
+                          <Checkbox
+                              indeterminate={row.getIsSomeSelected()}
+                              value={row.getIsSelected()}
+                              onChange={row.getToggleSelectedHandler()}
+                          />
+                      ),
+                      meta: {
+                          hasFormControl: true,
+                          className: "webiny-select-column"
+                      }
+                  }
+              ]
+            : [];
+
+        return [...select, ...defaults];
+    }, [columns, onSelectRow]);
+
+export const DataTable = <T,>({ data, columns, onSelectRow }: Props<T>) => {
+    const [rowSelection, setRowSelection] = React.useState({});
 
     const table = useReactTable({
         data,
-        columns: [filterColumn, ...columnsDefinition],
+        columns: defineColumns(columns, onSelectRow),
         getCoreRowModel: getCoreRowModel(),
         state: {
             rowSelection
         },
+        enableRowSelection: !!onSelectRow,
         onRowSelectionChange: setRowSelection
     });
+
+    useEffect(() => {
+        if (onSelectRow && typeof onSelectRow === "function") {
+            const dataSelected = table.getSelectedRowModel().flatRows.map(row => row.original);
+            onSelectRow(dataSelected);
+        }
+    }, [rowSelection]);
 
     return (
         <Table>
