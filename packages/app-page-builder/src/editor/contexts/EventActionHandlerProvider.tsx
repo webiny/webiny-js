@@ -43,7 +43,7 @@ import {
     GetElementTreeProps
 } from "~/types";
 import { composeAsync, composeSync, AsyncProcessor, SyncProcessor } from "@webiny/utils/compose";
-import { UpdateElementTreeActionEvent } from "~/editor/recoil/actions";
+import { UpdateElementTreeActionEvent, UpdateDocumentActionEvent } from "~/editor/recoil/actions";
 
 type ListType = Map<symbol, EventActionCallable>;
 type RegistryType = Map<string, ListType>;
@@ -147,6 +147,14 @@ export const EventActionHandlerProvider = makeComposable<
     const updateElementTree = () => {
         setTimeout(() => {
             eventActionHandlerRef.current!.trigger(new UpdateElementTreeActionEvent());
+        }, 200);
+    };
+
+    const updateDocument = () => {
+        setTimeout(() => {
+            eventActionHandlerRef.current!.trigger(
+                new UpdateDocumentActionEvent({ history: false, debounce: true })
+            );
         }, 200);
     };
 
@@ -375,6 +383,7 @@ export const EventActionHandlerProvider = makeComposable<
                 goToSnapshot(previousSnapshot);
                 snapshotsHistory.current.busy = false;
                 updateElementTree();
+                updateDocument();
             },
             redo: () => {
                 if (snapshotsHistory.current.busy === true) {
@@ -394,6 +403,7 @@ export const EventActionHandlerProvider = makeComposable<
                 goToSnapshot(nextSnapshot);
                 snapshotsHistory.current.busy = false;
                 updateElementTree();
+                updateDocument();
             },
             startBatch: () => {
                 snapshotsHistory.current.isBatching = true;
