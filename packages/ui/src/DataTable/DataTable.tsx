@@ -74,7 +74,7 @@ const defineColumns = <T,>(
         const select: ColumnDef<T>[] = !!onSelectRow
             ? [
                   {
-                      id: "select",
+                      id: "datatable-select-column",
                       header: ({ table }) => (
                           <Checkbox
                               indeterminate={table.getIsSomeRowsSelected()}
@@ -93,7 +93,7 @@ const defineColumns = <T,>(
                       ),
                       meta: {
                           hasFormControl: true,
-                          className: "webiny-select-column"
+                          className: "datatable-select-column"
                       }
                   }
               ]

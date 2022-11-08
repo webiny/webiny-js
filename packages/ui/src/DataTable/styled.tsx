@@ -10,7 +10,7 @@ export const Table = styled(RmwcDataTable)`
         vertical-align: middle;
     }
 
-    .webiny-select-column {
+    .datatable-select-column {
         width: 56px;
     }
 `;
