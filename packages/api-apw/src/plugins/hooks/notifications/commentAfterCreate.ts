@@ -63,10 +63,10 @@ export const attachCommentAfterCreate = (context: ApwContext): void => {
             const workflow = await context.apw.workflow.get(contentReview.workflowId);
             if (!workflow) {
                 throw new WebinyError(
-                    `There is no workflow with stepId "${stepId}".`,
+                    `There is no workflow with workflowId "${contentReview.workflowId}".`,
                     "WORKFLOW_NOT_FOUND",
                     {
-                        stepId
+                        workflowId: contentReview.workflowId
                     }
                 );
             }
@@ -75,7 +75,6 @@ export const attachCommentAfterCreate = (context: ApwContext): void => {
                 plugins: context.plugins,
                 baseUrl: settings.appUrl,
                 contentReview,
-                changeRequest,
                 workflow
             });
             if (!contentUrl) {

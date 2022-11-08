@@ -1,6 +1,17 @@
 import { ApwContentReviewStepStatus } from "~/types";
 import { createSetupForPageContentReview } from "../utils/helpers";
 import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
+import { createTransport } from "@webiny/api-mailer";
+
+jest.mock("~/plugins/hooks/notifications/appUrl", () => {
+    return {
+        getAppUrl: async () => {
+            return {
+                appUrl: "https://webiny.local"
+            };
+        }
+    };
+});
 
 describe("Content Review crud test", () => {
     const identityRoot = {
@@ -398,5 +409,68 @@ describe("Content Review crud test", () => {
                 }
             }
         });
+    });
+
+    it("should send an e-mail to all reviewers after the content review was created", async () => {
+        const fn = jest.fn(() => {
+            return null;
+        });
+
+        const handler = usePageBuilderHandler({
+            identity: {
+                id: "mockIdentityId",
+                type: "admin",
+                displayName: "Mock Identity",
+                email: "mock@webiny.local"
+            },
+            plugins: [
+                createTransport(async () => {
+                    return {
+                        name: "test-dummy-transport",
+                        send: async () => {
+                            fn.apply(null);
+                            return {
+                                result: null,
+                                error: null
+                            };
+                        }
+                    };
+                })
+            ]
+        });
+
+        await handler.securityIdentity.login();
+        await gqlHandler.securityIdentity.login();
+        await rootGqlHandler.securityIdentity.login();
+
+        const { page } = await setup();
+        /*
+         Create a content review entry.
+        */
+        const [createContentReviewResponse] = await createContentReviewMutation({
+            data: {
+                content: {
+                    id: page.id,
+                    type: "page"
+                }
+            }
+        });
+
+        expect(createContentReviewResponse).toMatchObject({
+            data: {
+                apw: {
+                    createContentReview: {
+                        data: {
+                            id: expect.any(String)
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+        /**
+         * Test expects the mock function to be called as it represents creating notification text and body.
+         */
+        expect(fn).toBeCalledTimes(1);
     });
 });

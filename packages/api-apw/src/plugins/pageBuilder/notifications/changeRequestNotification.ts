@@ -6,9 +6,9 @@ export const createChangeRequestNotification = () => {
         const { changeRequestUrl, contentUrl } = params;
         return {
             text: `
-                Hi,
+                Hi,<br /><br />
                 
-                You have received a <a href="${changeRequestUrl}">change request</a>, for <a href="${contentUrl}">this</a> page.
+                You have received a <a href="${changeRequestUrl}">change request</a>, for <a href="${contentUrl}">this</a> page.<br /><br />
                 
                 Here are the full URLs:<br /><br />
         

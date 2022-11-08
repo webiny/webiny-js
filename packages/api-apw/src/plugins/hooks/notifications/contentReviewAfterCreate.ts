@@ -1,60 +1,42 @@
 import WebinyError from "@webiny/error";
 import { ApwContext } from "~/types";
-import { extractContentReviewIdAndStep } from "~/plugins/utils";
+import { getAppUrl } from "./appUrl";
+import { createContentReviewUrl } from "./contentReviewUrl";
 import { createContentUrl } from "./contentUrl";
-import { sendChangeRequestNotification } from "./sendChangeRequestNotification";
 import { fetchReviewers } from "./reviewers";
-import { createChangeRequestUrl } from "./changeRequestUrl";
-import { getAppUrl } from "~/plugins/hooks/notifications/appUrl";
+import { sendContentReviewNotification } from "./sendContentReviewNotification";
 
-export const attachChangeRequestAfterCreate = (context: ApwContext): void => {
-    context.apw.changeRequest.onChangeRequestAfterCreate.subscribe(async ({ changeRequest }) => {
+export const attachContentReviewAfterCreate = (context: ApwContext): void => {
+    context.apw.contentReview.onContentReviewAfterCreate.subscribe(async ({ contentReview }) => {
         const execute = async () => {
-            const { id: contentReviewId, stepId } = extractContentReviewIdAndStep(
-                changeRequest.step
-            );
-            if (!stepId) {
-                throw new WebinyError("Malformed changeRequest.step value.", "MALFORMED_VALUE", {
-                    step: changeRequest.step
-                });
+            if (contentReview.steps.length === 0) {
+                return;
             }
-
+            const [step] = contentReview.steps;
+            if (!step?.id) {
+                return;
+            }
             const settings = await getAppUrl(context);
             if (!settings) {
                 return;
             }
-            /**
-             * We will check if we can create a comment url before we go digging further into the database.
-             */
-            const changeRequestUrl = createChangeRequestUrl({
+
+            const contentReviewUrl = createContentReviewUrl({
                 baseUrl: settings.appUrl,
-                changeRequestId: changeRequest.id,
-                contentReviewId,
-                stepId
+                contentReviewId: contentReview.id,
+                stepId: step.id
             });
-            if (!changeRequestUrl) {
+            if (!contentReviewUrl) {
                 return;
             }
-            /**
-             * Let's see if content review exists.
-             */
-            const contentReview = await context.apw.contentReview.get(contentReviewId);
-            if (!contentReview) {
-                throw new WebinyError(
-                    `There is no contentReview with id "${contentReviewId}".`,
-                    "CONTENT_REVIEW_NOT_FOUND",
-                    {
-                        contentReviewId
-                    }
-                );
-            }
+
             /**
              * We go and check the workflow.
              */
             const workflow = await context.apw.workflow.get(contentReview.workflowId);
             if (!workflow) {
                 throw new WebinyError(
-                    `There is no workflow with workflowId "${contentReview.workflowId}".`,
+                    `There is no workflow with Id "${contentReview.workflowId}".`,
                     "WORKFLOW_NOT_FOUND",
                     {
                         workflowId: contentReview.workflowId
@@ -75,31 +57,29 @@ export const attachChangeRequestAfterCreate = (context: ApwContext): void => {
             const reviewers = await fetchReviewers({
                 context,
                 workflow,
-                exclude: [changeRequest.createdBy.id]
+                exclude: [contentReview.createdBy.id]
             });
             if (reviewers.length === 0) {
                 return;
             }
 
             try {
-                await sendChangeRequestNotification({
+                await sendContentReviewNotification({
                     context,
                     reviewers,
-                    changeRequest,
                     contentReview,
                     workflow,
-                    changeRequestUrl,
+                    contentReviewUrl,
                     contentUrl
                 });
             } catch (ex) {
                 throw new WebinyError(
-                    `Could not send change request notifications.`,
-                    "CHANGE_REQUEST_NOTIFICATIONS_NOT_SENT",
+                    `Could not send content review notifications.`,
+                    "CONTENT_REVIEW_NOTIFICATIONS_NOT_SENT",
                     {
                         workflowId: workflow.id,
-                        changeRequestId: changeRequest.id,
-                        contentReviewId,
-                        changeRequestUrl,
+                        contentReviewId: contentReview.id,
+                        contentReviewUrl,
                         contentUrl,
                         error: {
                             message: ex.message,

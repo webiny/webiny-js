@@ -9,8 +9,9 @@ import { Security } from "@webiny/api-security/types";
 import { PluginsContainer } from "@webiny/plugins";
 import { CmsEntryApwSettingsGetterPlugin } from "./CmsEntryApwSettingsGetterPlugin";
 import { createCommentNotification } from "./notifications/commentNotification";
-import { createContentUrlPlugin } from "~/plugins/cms/notifications/contentUrl";
-import { createChangeRequestNotification } from "~/plugins/cms/notifications/changeRequestNotification";
+import { createContentUrlPlugin } from "./notifications/contentUrl";
+import { createChangeRequestNotification } from "./notifications/changeRequestNotification";
+import { createContentReviewNotification } from "./notifications/contentReviewNotification";
 
 interface ApwCmsHooksParams {
     apw: AdvancedPublishingWorkflow;
@@ -31,7 +32,8 @@ export const apwCmsHooks = (params: ApwCmsHooksParams) => {
         new CmsEntryApwSettingsGetterPlugin(),
         createCommentNotification(),
         createChangeRequestNotification(),
-        createContentUrlPlugin()
+        createContentUrlPlugin(),
+        createContentReviewNotification()
     ]);
 
     apwEntryPlugins(params);

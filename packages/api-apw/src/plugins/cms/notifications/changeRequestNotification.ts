@@ -7,9 +7,9 @@ export const createChangeRequestNotification = () => {
 
         return {
             text: `
-                Hi,
+                Hi,<br /><br />
                 
-                You have received a <a href="${changeRequestUrl}">change request</a>, for <a href="${contentUrl}">this</a> content entry.
+                You have received a <a href="${changeRequestUrl}">change request</a>, for <a href="${contentUrl}">this</a> content entry.<br /><br />
                 
                 Here are the full URLs:<br /><br />
         

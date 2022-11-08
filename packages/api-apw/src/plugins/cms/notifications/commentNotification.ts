@@ -7,9 +7,9 @@ export const createCommentNotification = () => {
 
         return {
             text: `
-                Hi,
+                Hi,<br /><br />
                 
-                You have received a <a href="${commentUrl}">comment</a>, on a change request, for <a href="${contentUrl}">this</a> content entry.
+                You have received a <a href="${commentUrl}">comment</a>, on a change request, for <a href="${contentUrl}">this</a> content entry.<br />
                 
                 Here are the full URLs:<br /><br />
         
