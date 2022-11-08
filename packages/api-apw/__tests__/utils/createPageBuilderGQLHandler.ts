@@ -66,8 +66,7 @@ import {
     UPDATE_CHANGE_REQUEST_MUTATION
 } from "./graphql/changeRequest";
 import { contextCommon, contextSecurity } from "./context";
-import { createApwCommentNotification } from "~/ApwCommentNotification";
-import { ApwContentTypes } from "~/types";
+import { createDummyTransport, createTransport } from "@webiny/api-mailer";
 
 export interface GQLHandlerCallableParams {
     setupTenancyAndSecurityGraphQL?: boolean;
@@ -75,7 +74,6 @@ export interface GQLHandlerCallableParams {
     identity?: SecurityIdentity;
     plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     storageOperationPlugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
-    bodyFn?: () => null;
 }
 
 export interface InvokeParams {
@@ -109,22 +107,13 @@ export const createPageBuilderGQLHandler = (params: GQLHandlerCallableParams) =>
     };
     const { permissions, identity, plugins = [] } = params;
 
-    let { bodyFn } = params;
-
-    if (!bodyFn) {
-        bodyFn = () => {
-            return null;
-        };
-    }
-
-    const commentPageNotification = createApwCommentNotification(ApwContentTypes.PAGE, bodyFn);
-    const commentEntryNotification = createApwCommentNotification(
-        ApwContentTypes.CMS_ENTRY,
-        bodyFn
-    );
-
     const handler = createHandler({
         plugins: [
+            createTransport(async () => {
+                const plugin = await createDummyTransport();
+                plugin.name = "dummy-default.test";
+                return plugin;
+            }),
             createGraphQLHandler(),
             createWcpContext(),
             createWcpGraphQL(),
@@ -173,9 +162,7 @@ export const createPageBuilderGQLHandler = (params: GQLHandlerCallableParams) =>
                 storageOperations: ops.storageOperations
             }),
             createApwGraphQL(),
-            plugins,
-            commentPageNotification,
-            commentEntryNotification
+            plugins
         ],
         http: {
             debug: false

@@ -24,8 +24,6 @@ export const sendCommentNotification = async (
         return;
     }
 
-    console.log(`Sending mail after comment was created.`);
-
     const result = await context.mailer.sendMail({
         bcc: reviewers.map(r => r.email),
         subject: "There is a new comment on the Content Review you are assigned on.",

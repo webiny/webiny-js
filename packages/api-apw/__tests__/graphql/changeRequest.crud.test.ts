@@ -1,6 +1,7 @@
 import { createPageContentReviewSetup } from "../utils/helpers";
 import { mocks as changeRequestMock } from "./mocks/changeRequest";
 import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
+import { createTransport } from "@webiny/api-mailer";
 
 const updatedRichText = [
     {
@@ -307,6 +308,7 @@ describe("ChangeRequest crud test", () => {
         const fn = jest.fn(() => {
             return null;
         });
+
         const handler = usePageBuilderHandler({
             identity: {
                 id: "mockIdentityId",
@@ -314,8 +316,22 @@ describe("ChangeRequest crud test", () => {
                 displayName: "Mock Identity",
                 email: "mock@webiny.local"
             },
-            bodyFn: fn
+            plugins: [
+                createTransport(async () => {
+                    return {
+                        name: "test-dummy-transport",
+                        send: async () => {
+                            fn.apply(null);
+                            return {
+                                result: null,
+                                error: null
+                            };
+                        }
+                    };
+                })
+            ]
         });
+
         await handler.securityIdentity.login();
         await gqlHandler.securityIdentity.login();
 
