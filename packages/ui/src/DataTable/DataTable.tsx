@@ -38,14 +38,14 @@ interface Props<T> {
     data: T[];
 }
 
-export const DataTable = <T,>({ data, columns }: Props<T>) => {
-    const columnsDefinition: ColumnDef<T>[] = useMemo(() => {
+const defineColumns = <T,>(columns: Props<T>["columns"]): ColumnDef<T>[] =>
+    useMemo(() => {
         const columnsList = Object.keys(columns).map(key => ({
             id: key,
             ...columns[key as keyof typeof columns]
         }));
 
-        return columnsList.map(column => {
+        const defaults: ColumnDef<T>[] = columnsList.map(column => {
             const { id, header, meta, cell } = column;
 
             return {
@@ -61,11 +61,14 @@ export const DataTable = <T,>({ data, columns }: Props<T>) => {
                 meta
             };
         });
+
+        return defaults;
     }, [columns]);
 
+export const DataTable = <T,>({ data, columns }: Props<T>) => {
     const table = useReactTable({
         data,
-        columns: columnsDefinition,
+        columns: defineColumns(columns),
         getCoreRowModel: getCoreRowModel()
     });
 
