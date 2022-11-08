@@ -5,6 +5,7 @@ import { createContentUrl } from "./contentUrl";
 import { createCommentUrl } from "./commentUrl";
 import { fetchReviewers } from "./reviewers";
 import { sendCommentNotification } from "./sendCommentNotification";
+import { getAppUrl } from "~/plugins/hooks/notifications/appUrl";
 
 export const attachCommentAfterCreate = (context: ApwContext): void => {
     context.apw.comment.onCommentAfterCreate.subscribe(async ({ comment }) => {
@@ -25,11 +26,16 @@ export const attachCommentAfterCreate = (context: ApwContext): void => {
                     step: changeRequest.step
                 });
             }
+
+            const settings = await getAppUrl(context);
+            if (!settings) {
+                return;
+            }
             /**
              * We will check if we can create a comment url before we go digging further into the database.
              */
             const commentUrl = createCommentUrl({
-                baseUrl: process.env.APP_URL,
+                baseUrl: settings.appUrl,
                 changeRequestId: changeRequest.id,
                 contentReviewId,
                 stepId
@@ -67,7 +73,7 @@ export const attachCommentAfterCreate = (context: ApwContext): void => {
 
             const contentUrl = createContentUrl({
                 plugins: context.plugins,
-                baseUrl: process.env.APP_URL as string,
+                baseUrl: settings.appUrl,
                 contentReview,
                 changeRequest,
                 workflow

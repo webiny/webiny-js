@@ -28,7 +28,7 @@ export interface ApwChangeRequestNotificationCb {
         | undefined;
 }
 export class ApwChangeRequestNotification extends Plugin {
-    public static override readonly type: string = "apw.notification.comment";
+    public static override readonly type: string = "apw.notification.changeRequest";
 
     private readonly contentType: ApwContentTypes;
     private readonly cb: ApwChangeRequestNotificationCb;

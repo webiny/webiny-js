@@ -12,7 +12,7 @@ export const createCommentNotification = () => {
                 
                 Here are the full URLs:<br /><br />
         
-                Change Request: ${commentUrl}<br />
+                Comment: ${commentUrl}<br />
                 Page: ${contentUrl}
             `
         };

@@ -62,6 +62,8 @@ import {
     contentEntryUpdateMutationFactory
 } from "./graphql/cms.entry";
 import { contextSecurity, contextCommon } from "./context";
+import { createApwCommentNotification } from "~/ApwCommentNotification";
+import { ApwContentTypes } from "~/types";
 // import createGraphQLHandler from "@webiny/handler-graphql";
 
 export interface CreateHeadlessCmsGQLHandlerParams {
@@ -70,6 +72,7 @@ export interface CreateHeadlessCmsGQLHandlerParams {
     plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     storageOperationPlugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     path: string;
+    bodyFn?: () => any;
 }
 
 export interface InvokeParams {
@@ -102,6 +105,21 @@ export const createHeadlessCmsGQLHandler = (params: CreateHeadlessCmsGQLHandlerP
         parent: null
     };
     const { permissions, identity, plugins = [], path } = params;
+
+    let { bodyFn } = params;
+
+    if (!bodyFn) {
+        bodyFn = () => {
+            console.log("We always have comment body set to null so we skip sending e-mails.");
+            return null;
+        };
+    }
+
+    const commentPageNotification = createApwCommentNotification(ApwContentTypes.PAGE, bodyFn);
+    const commentEntryNotification = createApwCommentNotification(
+        ApwContentTypes.CMS_ENTRY,
+        bodyFn
+    );
     /**
      * We're using ddb-only storageOperations here because current jest setup doesn't allow
      * usage of more than one storageOperations at a time with the help of --keyword flag.
@@ -133,7 +151,9 @@ export const createHeadlessCmsGQLHandler = (params: CreateHeadlessCmsGQLHandlerP
                 storageOperations: ops.storageOperations
             }),
             createApwGraphQL(),
-            plugins
+            plugins,
+            commentPageNotification,
+            commentEntryNotification
         ],
         http: {
             debug: false

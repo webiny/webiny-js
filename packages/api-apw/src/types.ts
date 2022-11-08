@@ -24,6 +24,7 @@ import HandlerClient from "@webiny/handler-client/HandlerClient";
 import { PluginsContainer } from "@webiny/plugins";
 import { WcpContextObject } from "@webiny/api-wcp/types";
 import { MailerContext } from "@webiny/api-mailer/types";
+import { AdminSettingsContext } from "@webiny/api-admin-settings/types";
 
 export interface ApwCmsEntry extends BaseCmsEntry {
     title: string;
@@ -491,7 +492,7 @@ export interface AdvancedPublishingWorkflow {
     scheduleAction: ApwScheduleActionCrud;
 }
 
-export interface ApwContext extends Context, MailerContext {
+export interface ApwContext extends Context, MailerContext, AdminSettingsContext {
     apw: AdvancedPublishingWorkflow;
     pageBuilder: PageBuilderContextObject;
     wcp: WcpContextObject;

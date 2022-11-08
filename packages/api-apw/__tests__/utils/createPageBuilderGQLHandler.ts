@@ -66,6 +66,8 @@ import {
     UPDATE_CHANGE_REQUEST_MUTATION
 } from "./graphql/changeRequest";
 import { contextCommon, contextSecurity } from "./context";
+import { createApwCommentNotification } from "~/ApwCommentNotification";
+import { ApwContentTypes } from "~/types";
 
 export interface GQLHandlerCallableParams {
     setupTenancyAndSecurityGraphQL?: boolean;
@@ -73,6 +75,7 @@ export interface GQLHandlerCallableParams {
     identity?: SecurityIdentity;
     plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     storageOperationPlugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
+    bodyFn?: () => null;
 }
 
 export interface InvokeParams {
@@ -105,6 +108,20 @@ export const createPageBuilderGQLHandler = (params: GQLHandlerCallableParams) =>
         parent: null
     };
     const { permissions, identity, plugins = [] } = params;
+
+    let { bodyFn } = params;
+
+    if (!bodyFn) {
+        bodyFn = () => {
+            return null;
+        };
+    }
+
+    const commentPageNotification = createApwCommentNotification(ApwContentTypes.PAGE, bodyFn);
+    const commentEntryNotification = createApwCommentNotification(
+        ApwContentTypes.CMS_ENTRY,
+        bodyFn
+    );
 
     const handler = createHandler({
         plugins: [
@@ -156,7 +173,9 @@ export const createPageBuilderGQLHandler = (params: GQLHandlerCallableParams) =>
                 storageOperations: ops.storageOperations
             }),
             createApwGraphQL(),
-            plugins
+            plugins,
+            commentPageNotification,
+            commentEntryNotification
         ],
         http: {
             debug: false

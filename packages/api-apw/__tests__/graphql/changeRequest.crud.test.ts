@@ -1,8 +1,6 @@
 import { createPageContentReviewSetup } from "../utils/helpers";
 import { mocks as changeRequestMock } from "./mocks/changeRequest";
 import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
-import { createApwCommentNotification } from "~/ApwCommentNotification";
-import { ApwContentTypes } from "~/types";
 
 const updatedRichText = [
     {
@@ -28,6 +26,16 @@ const updatedRichText = [
         ]
     }
 ];
+
+jest.mock("~/plugins/hooks/notifications/appUrl", () => {
+    return {
+        getAppUrl: async () => {
+            return {
+                appUrl: "https://webiny.local"
+            };
+        }
+    };
+});
 
 describe("ChangeRequest crud test", () => {
     const gqlHandler = usePageBuilderHandler();
@@ -299,7 +307,6 @@ describe("ChangeRequest crud test", () => {
         const fn = jest.fn(() => {
             return null;
         });
-        const commentNotification = createApwCommentNotification(ApwContentTypes.PAGE, fn);
         const handler = usePageBuilderHandler({
             identity: {
                 id: "mockIdentityId",
@@ -307,7 +314,7 @@ describe("ChangeRequest crud test", () => {
                 displayName: "Mock Identity",
                 email: "mock@webiny.local"
             },
-            plugins: [commentNotification]
+            bodyFn: fn
         });
         await handler.securityIdentity.login();
         await gqlHandler.securityIdentity.login();

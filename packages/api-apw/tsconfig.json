@@ -3,6 +3,7 @@
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
     { "path": "../api-headless-cms" },
+    { "path": "../api-admin-settings" },
     { "path": "../api-i18n" },
     { "path": "../api-i18n-ddb" },
     { "path": "../api-page-builder" },
@@ -37,6 +38,8 @@
       "~/*": ["./src/*"],
       "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
       "@webiny/api-headless-cms": ["../api-headless-cms/src"],
+      "@webiny/api-admin-settings/*": ["../api-admin-settings/src/*"],
+      "@webiny/api-admin-settings": ["../api-admin-settings/src"],
       "@webiny/api-i18n/*": ["../api-i18n/src/*"],
       "@webiny/api-i18n": ["../api-i18n/src"],
       "@webiny/api-i18n-ddb/*": ["../api-i18n-ddb/src/*"],

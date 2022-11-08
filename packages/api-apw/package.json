@@ -18,6 +18,7 @@
     "@babel/runtime": "^7.19.0",
     "@commodo/fields": "1.1.2-beta.20",
     "@webiny/api": "^5.33.0",
+    "@webiny/api-admin-settings": "^5.33.1",
     "@webiny/api-headless-cms": "^5.33.0",
     "@webiny/api-i18n": "^5.33.0",
     "@webiny/api-i18n-ddb": "^5.33.0",
