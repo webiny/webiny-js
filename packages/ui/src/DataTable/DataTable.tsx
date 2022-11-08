@@ -39,8 +39,17 @@ export type Columns<T> = {
 };
 
 interface Props<T> {
+    /*
+     * Columns definition.
+     */
     columns: Columns<T>;
+    /*
+     * Data to display into DataTable body.
+     */
     data: T[];
+    /*
+     * Callback that receives the selected rows.
+     */
     onSelectRow?: (rows: T[] | []) => void;
 }
 
