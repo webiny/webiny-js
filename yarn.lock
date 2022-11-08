@@ -10092,6 +10092,36 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@webiny/api-admin-settings@^5.33.1, @webiny/api-admin-settings@workspace:packages/api-admin-settings":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-admin-settings@workspace:packages/api-admin-settings"
+  dependencies:
+    "@babel/cli": ^7.19.3
+    "@babel/core": ^7.19.3
+    "@babel/preset-env": ^7.19.4
+    "@babel/preset-flow": ^7.16.0
+    "@babel/runtime": ^7.19.0
+    "@webiny/api-tenancy": ^5.33.0
+    "@webiny/cli": ^5.33.0
+    "@webiny/db-dynamodb": ^5.33.0
+    "@webiny/error": ^5.33.0
+    "@webiny/handler": ^5.33.0
+    "@webiny/handler-aws": ^5.33.0
+    "@webiny/handler-db": ^5.33.0
+    "@webiny/project-utils": ^5.33.0
+    apollo-graphql: ^0.9.5
+    dynamodb-toolbox: ^0.3.4
+    get-yarn-workspaces: ^1.0.2
+    jest: ^28.1.0
+    jest-dynalite: ^3.6.1
+    prettier: ^2.3.2
+    rimraf: ^3.0.2
+    sinon: ^9.0.2
+    ttypescript: ^1.5.12
+    typescript: 4.7.4
+  languageName: unknown
+  linkType: soft
+
 "@webiny/api-admin-users-cognito-so-ddb@^5.33.0, @webiny/api-admin-users-cognito-so-ddb@workspace:packages/api-admin-users-cognito-so-ddb":
   version: 0.0.0-use.local
   resolution: "@webiny/api-admin-users-cognito-so-ddb@workspace:packages/api-admin-users-cognito-so-ddb"
@@ -10191,6 +10221,7 @@ __metadata:
     "@babel/runtime": ^7.19.0
     "@commodo/fields": 1.1.2-beta.20
     "@webiny/api": ^5.33.0
+    "@webiny/api-admin-settings": ^5.33.1
     "@webiny/api-headless-cms": ^5.33.0
     "@webiny/api-headless-cms-ddb": ^5.33.0
     "@webiny/api-i18n": ^5.33.0
@@ -20653,7 +20684,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dynamodb-toolbox@npm:^0.3.3, dynamodb-toolbox@npm:^0.3.5":
+"dynamodb-toolbox@npm:^0.3.3, dynamodb-toolbox@npm:^0.3.4, dynamodb-toolbox@npm:^0.3.5":
   version: 0.3.5
   resolution: "dynamodb-toolbox@npm:0.3.5"
   checksum: d75542b529a8dc54c6b0432f3779c62ec9709c94f41356711f042f7d8251950ab41dd25394cca49ee1000fdec263767ca7e08382afac738af76b7d566ef051c9
