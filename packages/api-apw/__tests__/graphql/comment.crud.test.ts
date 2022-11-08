@@ -364,7 +364,8 @@ describe("Comment crud test", () => {
         });
         /**
          * Test expects the mock function to be called as it represents creating notification text and body.
+         * We expect 2 calls, because change request creation produces an e-mail.
          */
-        expect(fn).toBeCalledTimes(1);
+        expect(fn).toBeCalledTimes(2);
     });
 });
