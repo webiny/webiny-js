@@ -79,9 +79,7 @@ const defineColumns = <T,>(
                           <Checkbox
                               indeterminate={table.getIsSomeRowsSelected()}
                               value={table.getIsAllRowsSelected()}
-                              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                                  table.toggleAllPageRowsSelected(e.target)
-                              }
+                              onChange={e => table.toggleAllPageRowsSelected(e)}
                           />
                       ),
                       cell: ({ row }) => (
