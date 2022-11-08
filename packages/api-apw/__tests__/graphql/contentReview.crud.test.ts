@@ -447,7 +447,7 @@ describe("Content Review crud test", () => {
         /*
          Create a content review entry.
         */
-        const [createContentReviewResponse] = await createContentReviewMutation({
+        const [createContentReviewResponse] = await handler.createContentReviewMutation({
             data: {
                 content: {
                     id: page.id,
