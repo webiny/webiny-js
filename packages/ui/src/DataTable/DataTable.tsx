@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import {
     DataTableContent,
     DataTableHead,
@@ -19,11 +19,11 @@ interface Column<T> {
     /*
      * Column header component.
      */
-    header: string | number | ReactElement;
+    header: string | number | JSX.Element;
     /*
-     * Cell renderer, receives the cell value and returns the value to render inside the cell.
+     * Cell renderer, receives the full row and returns the value to render inside the cell.
      */
-    cell?: (value: T) => unknown;
+    cell?: (row: T) => string | number | JSX.Element;
     /*
      * Additional props to add to both header and row cells. Refer to RMWC documentation.
      */
@@ -35,7 +35,7 @@ interface Column<T> {
 }
 
 export type Columns<T> = {
-    [P in keyof T]?: Column<T[P]>;
+    [P in keyof T]?: Column<T>;
 };
 
 interface Props<T> {
@@ -55,24 +55,19 @@ const defineColumns = <T,>(
         }));
 
         const defaults: ColumnDef<T>[] = columnsList.map(column => {
-            const { id, header, meta, cell, className } = column;
+            const { id, header, meta, cell } = column;
 
             return {
                 accessorKey: id,
                 header: () => header,
                 cell: info => {
-                    const value = info.getValue() as any;
-
                     if (cell && typeof cell === "function") {
-                        return cell(value);
+                        return cell(info.row.original);
                     } else {
-                        return value;
+                        return info.getValue();
                     }
                 },
-                meta: {
-                    ...meta,
-                    className
-                }
+                meta
             };
         });
 
@@ -84,7 +79,9 @@ const defineColumns = <T,>(
                           <Checkbox
                               indeterminate={table.getIsSomeRowsSelected()}
                               value={table.getIsAllRowsSelected()}
-                              onChange={e => table.toggleAllPageRowsSelected(e.target)}
+                              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                                  table.toggleAllPageRowsSelected(e.target)
+                              }
                           />
                       ),
                       cell: ({ row }) => (

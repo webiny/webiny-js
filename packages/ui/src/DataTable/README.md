@@ -50,7 +50,7 @@ const columns: Columns<Entry> = {
     },
     createdBy: {
         header: "Author",
-        cell: value => value.toUpperCase()
+        cell: row => <em>{row.createdBy.toUpperCase()}</em>
     },
     lastModified: {
         header: "Last Modified"
