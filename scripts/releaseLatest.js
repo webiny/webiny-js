@@ -9,7 +9,7 @@ const { Octokit } = require("@octokit/rest");
  * Latest releases are deployed from the "v5" branch.
  */
 
-const RELEASE_BRANCH = "v5";
+const RELEASE_BRANCH = "stable";
 
 (async () => {
     try {
