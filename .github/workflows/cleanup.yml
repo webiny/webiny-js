@@ -45,9 +45,6 @@ jobs:
       - name: Install dependencies
         run: yarn --immutable
 
-      - name: Run EventBridge Cleanup
-        run: node ./.github/workflows/cleanup/cleanupEventBridge.js
-
   aws-cloudfront-functions-cleanup:
     runs-on: webiny-js-4-cores
     needs: [aws-nuke]
