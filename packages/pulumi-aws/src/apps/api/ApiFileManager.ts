@@ -128,6 +128,83 @@ export const ApiFileManager = createAppModule({
             }
         });
 
+        // ------------------------------------------------------------------------
+        const role2 = app.addResource(aws.iam.Role, {
+            name: `fm-get-s3-object-role`,
+            config: {
+                managedPolicyArns: [
+                    aws.iam.ManagedPolicies.AdministratorAccess,
+                ],
+                assumeRolePolicy: {
+                    Version: "2012-10-17",
+                    Statement: [
+                        {
+                            Action: "sts:AssumeRole",
+                            Principal: aws.iam.Principals.LambdaPrincipal,
+                            Effect: "Allow"
+                        },
+                    ]
+                }
+            }
+        });
+
+        const getS3Object = app.addResource(aws.lambda.Function, {
+            name: "fm-get-s3-object",
+            config: {
+                role: role2.output.arn,
+                runtime: "nodejs14.x",
+                handler: "handler.handler",
+                timeout: 30,
+                memorySize: 512,
+                description: "Serves uploaded files.",
+                code: new pulumi.asset.AssetArchive({
+                    ".": new pulumi.asset.FileArchive(
+                        path.join(app.paths.workspace, "fileManager/getS3Object/build")
+                    )
+                }),
+                layers: [getLayerArn("sharp")],
+                environment: {
+                    variables: getCommonLambdaEnvVariables().apply(value => ({
+                        ...value,
+                        S3_BUCKET: core.fileManagerBucketId,
+                        IMAGE_TRANSFORMER_FUNCTION: transform.output.arn
+                    }))
+                },
+                vpcConfig: app.getModule(VpcConfig).functionVpcConfig
+            }
+        });
+
+        const fileManagerBucketAccessPoint = new aws.s3.AccessPoint(
+            "fileManagerBucketAccessPoint",
+            {
+                name: core.fileManagerBucketId.apply((id: string) => `${id}-ap`),
+                bucket: core.fileManagerBucketId
+            }
+        );
+
+        const fileManagerBucketObjectLambdaAccessPoint = new aws.s3control.ObjectLambdaAccessPoint(
+            "fileManagerBucketObjectLambdaAccessPoint",
+            {
+                name: core.fileManagerBucketId.apply((id: string) => `${id}-object-lambda-ap`),
+                configuration: {
+                    supportingAccessPoint: fileManagerBucketAccessPoint.arn,
+                    transformationConfigurations: [
+                        {
+                            actions: ["GetObject"],
+                            contentTransformation: {
+                                awsLambda: {
+                                    functionArn: getS3Object.output.arn
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        );
+
+
+        // ------------------------------------------------------------------------
+
         const functions = {
             transform,
             manage,
@@ -136,7 +213,9 @@ export const ApiFileManager = createAppModule({
 
         return {
             functions,
-            bucketNotification
+            bucketNotification,
+            fileManagerBucketAccessPoint,
+            fileManagerBucketObjectLambdaAccessPoint
         };
     }
 });

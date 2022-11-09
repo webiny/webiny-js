@@ -31,6 +31,7 @@ export const CoreOutput = createAppModule({
                 vpcPublicSubnetIds: output["vpcPublicSubnetIds"] as string[] | undefined,
                 vpcPrivateSubnetIds: output["vpcPrivateSubnetIds"] as string[] | undefined,
                 vpcSecurityGroupIds: output["vpcSecurityGroupIds"] as string[] | undefined,
+                fileManagerBucketAccessPoint: output["fileManagerBucketAccessPoint"] as string[] | undefined,
 
                 elasticsearchDomainArn: output["elasticsearchDomainArn"] as string | undefined,
                 elasticsearchDomainEndpoint: output["elasticsearchDomainEndpoint"] as

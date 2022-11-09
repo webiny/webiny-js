@@ -192,7 +192,9 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 apwSchedulerEventRule: apwScheduler.eventRule.output.name,
                 apwSchedulerEventTargetId: apwScheduler.eventTarget.output.targetId,
                 dynamoDbTable: core.primaryDynamodbTableName,
-                dynamoDbElasticsearchTable: core.elasticsearchDynamodbTableName
+                dynamoDbElasticsearchTable: core.elasticsearchDynamodbTableName,
+                fileManagerBucketAccessPoint: fileManager.fileManagerBucketAccessPoint.domainName,
+                fileManagerBucketObjectLambdaAccessPoint: fileManager.fileManagerBucketObjectLambdaAccessPoint.arn
             });
 
             tagResources({

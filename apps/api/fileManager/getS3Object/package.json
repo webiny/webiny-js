@@ -1,0 +1,16 @@
+{
+  "name": "api-file-manager-files-get-s3-object",
+  "version": "0.1.0",
+  "scripts": {
+    "build": "yarn webiny run build",
+    "watch": "yarn webiny run watch"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.154.0",
+    "@webiny/cli": "^5.33.0",
+    "@webiny/project-utils": "^5.33.0",
+    "axios": "^0.27.2",
+    "exif-reader": "^1.0.3",
+    "sharp": "^0.30.7"
+  }
+}
