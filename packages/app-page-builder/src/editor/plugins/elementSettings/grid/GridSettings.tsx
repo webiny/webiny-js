@@ -158,7 +158,7 @@ export const GridSettings: React.FC<PbEditorPageElementSettingsRenderComponentPr
     }, 0);
 
     return (
-        <Accordion title={"Grid"} defaultValue={defaultAccordionValue}>
+        <Accordion title={"Grid Settings"} defaultValue={defaultAccordionValue}>
             <ContentWrapper direction={"column"}>
                 <Grid className={classes.grid}>
                     {presetPlugins.map(pl => {
