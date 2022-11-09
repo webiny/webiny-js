@@ -21,6 +21,7 @@
     "@webiny/api-headless-cms": "^5.33.1",
     "@webiny/api-i18n": "^5.33.1",
     "@webiny/api-i18n-ddb": "^5.33.1",
+    "@webiny/api-mailer": "^5.33.1",
     "@webiny/api-page-builder": "^5.33.1",
     "@webiny/api-security": "^5.33.1",
     "@webiny/api-tenancy": "^5.33.1",

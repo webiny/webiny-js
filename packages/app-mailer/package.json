@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-mailer",
-  "version": "5.33.0",
+  "version": "5.33.1",
   "main": "index.js",
   "repository": {
     "type": "git",

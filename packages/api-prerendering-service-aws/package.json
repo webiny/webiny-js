@@ -18,8 +18,8 @@
     "@webiny/error": "^5.33.1",
     "@webiny/handler-aws": "^5.33.1",
     "@webiny/handler-client": "^5.33.1",
-    "lodash": "^4.17.21",
-    "nanoid": "^4.0.0"
+    "@webiny/utils": "^5.33.1",
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "@babel/cli": "^7.19.3",

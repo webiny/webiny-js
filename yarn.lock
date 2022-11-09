@@ -8902,6 +8902,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/crypto-js@npm:^4.1.1":
+  version: 4.1.1
+  resolution: "@types/crypto-js@npm:4.1.1"
+  checksum: ea3d6a67b69f88baeb6af96004395903d2367a41bd5cd86306da23a44dd96589749495da50974a9b01bb5163c500764c8a33706831eade036bddae016417e3ea
+  languageName: node
+  linkType: hard
+
 "@types/eslint-scope@npm:^3.7.3":
   version: 3.7.4
   resolution: "@types/eslint-scope@npm:3.7.4"
@@ -10392,6 +10399,7 @@ __metadata:
     "@webiny/api-headless-cms-ddb": ^5.33.1
     "@webiny/api-i18n": ^5.33.1
     "@webiny/api-i18n-ddb": ^5.33.1
+    "@webiny/api-mailer": ^5.33.1
     "@webiny/api-page-builder": ^5.33.1
     "@webiny/api-page-builder-so-ddb": ^5.33.1
     "@webiny/api-security": ^5.33.1
@@ -11032,7 +11040,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-mailer@workspace:packages/api-mailer":
+"@webiny/api-mailer@^5.33.1, @webiny/api-mailer@workspace:packages/api-mailer":
   version: 0.0.0-use.local
   resolution: "@webiny/api-mailer@workspace:packages/api-mailer"
   dependencies:
@@ -11041,15 +11049,33 @@ __metadata:
     "@babel/preset-env": ^7.19.4
     "@babel/preset-typescript": ^7.18.6
     "@babel/runtime": ^7.19.0
+    "@types/crypto-js": ^4.1.1
     "@types/nodemailer": ^6.4.4
     "@webiny/api": ^5.33.1
+    "@webiny/api-headless-cms": ^5.33.1
+    "@webiny/api-headless-cms-ddb": ^5.33.1
+    "@webiny/api-i18n": ^5.33.1
+    "@webiny/api-i18n-ddb": ^5.33.1
+    "@webiny/api-security": ^5.33.1
+    "@webiny/api-security-so-ddb": ^5.33.1
+    "@webiny/api-tenancy": ^5.33.1
+    "@webiny/api-tenancy-so-ddb": ^5.33.1
     "@webiny/cli": ^5.33.1
+    "@webiny/db-dynamodb": ^5.33.1
     "@webiny/error": ^5.33.1
+    "@webiny/handler": ^5.33.1
+    "@webiny/handler-aws": ^5.33.1
+    "@webiny/handler-db": ^5.33.1
+    "@webiny/handler-graphql": ^5.33.1
     "@webiny/plugins": ^5.33.1
     "@webiny/project-utils": ^5.33.1
     "@webiny/pubsub": ^5.33.1
+    crypto-js: ^4.1.1
+    graphql: ^15.7.2
     jest: ^28.1.0
+    jest-dynalite: ^3.6.1
     joi: ^17.6.0
+    lodash: ^4.17.21
     nodemailer: ^6.7.6
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
@@ -11287,8 +11313,8 @@ __metadata:
     "@webiny/handler-aws": ^5.33.1
     "@webiny/handler-client": ^5.33.1
     "@webiny/project-utils": ^5.33.1
+    "@webiny/utils": ^5.33.1
     lodash: ^4.17.21
-    nanoid: ^4.0.0
     rimraf: ^3.0.2
     typescript: 4.7.4
   languageName: unknown
@@ -11887,6 +11913,7 @@ __metadata:
     "@webiny/app-admin": ^5.33.1
     "@webiny/app-headless-cms": ^5.33.1
     "@webiny/app-i18n": ^5.33.1
+    "@webiny/app-mailer": ^5.33.1
     "@webiny/app-page-builder": ^5.33.1
     "@webiny/app-security": ^5.33.1
     "@webiny/cli": ^5.33.1
@@ -12274,7 +12301,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/app-mailer@workspace:packages/app-mailer":
+"@webiny/app-mailer@^5.33.1, @webiny/app-mailer@workspace:packages/app-mailer":
   version: 0.0.0-use.local
   resolution: "@webiny/app-mailer@workspace:packages/app-mailer"
   dependencies:
@@ -26814,7 +26841,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest-dynalite@npm:^3.2.0, jest-dynalite@npm:^3.3.1":
+"jest-dynalite@npm:^3.2.0, jest-dynalite@npm:^3.3.1, jest-dynalite@npm:^3.6.1":
   version: 3.6.1
   resolution: "jest-dynalite@npm:3.6.1"
   dependencies:
@@ -30091,15 +30118,6 @@ __metadata:
   bin:
     nanoid: bin/nanoid.cjs
   checksum: 2fddd6dee994b7676f008d3ffa4ab16035a754f4bb586c61df5a22cf8c8c94017aadd360368f47d653829e0569a92b129979152ff97af23a558331e47e37cd9c
-  languageName: node
-  linkType: hard
-
-"nanoid@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "nanoid@npm:4.0.0"
-  bin:
-    nanoid: bin/nanoid.js
-  checksum: 7d5946df5c6d383694195b781ae7b5067c149d164ec71e910d6b06676309c3459b68af570b944fb5ecd5065d19df464f05700d141d70bb712ff8ca06642fd8df
   languageName: node
   linkType: hard
 
