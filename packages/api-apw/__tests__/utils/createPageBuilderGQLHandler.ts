@@ -66,6 +66,7 @@ import {
     UPDATE_CHANGE_REQUEST_MUTATION
 } from "./graphql/changeRequest";
 import { contextCommon, contextSecurity } from "./context";
+import { createDummyTransport, createTransport } from "@webiny/api-mailer";
 
 export interface GQLHandlerCallableParams {
     setupTenancyAndSecurityGraphQL?: boolean;
@@ -108,6 +109,11 @@ export const createPageBuilderGQLHandler = (params: GQLHandlerCallableParams) =>
 
     const handler = createHandler({
         plugins: [
+            createTransport(async () => {
+                const plugin = await createDummyTransport();
+                plugin.name = "dummy-default.test";
+                return plugin;
+            }),
             createGraphQLHandler(),
             createWcpContext(),
             createWcpGraphQL(),

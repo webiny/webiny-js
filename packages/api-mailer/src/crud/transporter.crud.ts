@@ -40,9 +40,18 @@ const buildTransporter = async (params: BuildMailerParams): Promise<Transport> =
     );
 };
 
+const getPort = (value: any) => {
+    const port = Number(value);
+    if (!!value && isNaN(port) === false) {
+        return port;
+    }
+    return 25;
+};
+
 const getDefaultSettings = (): TransportSettings | null => {
     const input: Partial<TransportSettings> = {
         host: process.env.WEBINY_MAILER_HOST,
+        port: getPort(process.env.WEBINY_MAILER_PORT),
         user: process.env.WEBINY_MAILER_USER,
         password: process.env.WEBINY_MAILER_PASSWORD,
         replyTo: process.env.WEBINY_MAILER_REPLY_TO,

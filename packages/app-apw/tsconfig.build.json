@@ -13,7 +13,8 @@
     { "path": "../react-router/tsconfig.build.json" },
     { "path": "../ui/tsconfig.build.json" },
     { "path": "../validation/tsconfig.build.json" },
-    { "path": "../app-mailer/tsconfig.build.json" }
+    { "path": "../app-mailer/tsconfig.build.json" },
+    { "path": "../utils/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",

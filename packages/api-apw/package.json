@@ -18,6 +18,7 @@
     "@babel/runtime": "^7.19.0",
     "@commodo/fields": "1.1.2-beta.20",
     "@webiny/api": "^5.33.1",
+    "@webiny/api-admin-settings": "^5.33.1",
     "@webiny/api-headless-cms": "^5.33.1",
     "@webiny/api-i18n": "^5.33.1",
     "@webiny/api-i18n-ddb": "^5.33.1",
@@ -35,11 +36,11 @@
     "@webiny/handler-logs": "^5.33.1",
     "@webiny/plugins": "^5.33.1",
     "@webiny/pubsub": "^5.33.1",
+    "@webiny/utils": "^5.33.1",
     "@webiny/validation": "^5.33.1",
     "dayjs": "^1.10.4",
     "lodash": "^4.5.0",
-    "mdbid": "^1.0.0",
-    "nanoid": "^3.1.23"
+    "mdbid": "^1.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.19.3",

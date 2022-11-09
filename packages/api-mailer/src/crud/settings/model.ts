@@ -5,11 +5,12 @@ import lodashCamelCase from "lodash/camelCase";
 export const SETTINGS_MODEL_ID = "mailerSettings";
 
 interface CreateFieldParams {
+    type: string;
     label: string;
     required?: boolean;
 }
 const createField = (params: CreateFieldParams): CmsModelField => {
-    const { label, required } = params;
+    const { label, required, type } = params;
     const id = lodashCamelCase(label);
 
     const validation: CmsModelFieldValidation[] = [];
@@ -25,9 +26,22 @@ const createField = (params: CreateFieldParams): CmsModelField => {
         id,
         fieldId: id,
         storageId: id,
-        type: "text",
+        type,
         validation
     };
+};
+
+const createTextField = (params: Omit<CreateFieldParams, "type">) => {
+    return createField({
+        ...params,
+        type: "text"
+    });
+};
+const createNumberField = (params: Omit<CreateFieldParams, "type">) => {
+    return createField({
+        ...params,
+        type: "number"
+    });
 };
 
 export const createSettingsModel = (group: CmsGroupPlugin) => {
@@ -39,28 +53,32 @@ export const createSettingsModel = (group: CmsGroupPlugin) => {
             name: group.contentModelGroup.name
         },
         fields: [
-            createField({
+            createTextField({
                 label: "Host",
                 required: true
             }),
-            createField({
+            createNumberField({
+                label: "Port"
+            }),
+            createTextField({
                 label: "User",
                 required: true
             }),
-            createField({
+            createTextField({
                 label: "Password",
                 required: true
             }),
-            createField({
+            createTextField({
                 label: "From",
                 required: true
             }),
-            createField({
+            createTextField({
                 label: "Reply-To"
             })
         ],
-        layout: [["host", "user", "password", "from", "replyTo"]],
+        layout: [["host", "port", "user", "password", "from", "replyTo"]],
         description: "Mailer Settings",
-        titleFieldId: ""
+        titleFieldId: "",
+        isPrivate: true
     });
 };

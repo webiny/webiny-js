@@ -62,7 +62,6 @@ import {
     contentEntryUpdateMutationFactory
 } from "./graphql/cms.entry";
 import { contextSecurity, contextCommon } from "./context";
-// import createGraphQLHandler from "@webiny/handler-graphql";
 
 export interface CreateHeadlessCmsGQLHandlerParams {
     permissions?: PermissionsArg[];

@@ -17,7 +17,7 @@ import { validation } from "@webiny/validation";
 import { RichTextEditor } from "@webiny/app-admin/components/RichTextEditor";
 import { FileManager } from "@webiny/app-admin/components";
 import { ApwFile } from "./ApwFile";
-import { getNanoid } from "~/utils";
+import { generateAlphaNumericId } from "@webiny/utils";
 
 const t = i18n.ns("app-apw/content-review/editor/change-request");
 
@@ -137,7 +137,7 @@ export const ChangeRequestDialog: React.FC = () => {
     const { create, changeRequest, update, loading } = useChangeRequest({ id });
 
     const resetFormAndCloseDialog = () => {
-        setChangeRequestId(getNanoid());
+        setChangeRequestId(generateAlphaNumericId(12));
         closeDialog();
     };
 

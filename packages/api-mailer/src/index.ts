@@ -1,5 +1,5 @@
 import { PluginCollection } from "@webiny/plugins/types";
-import { createMailerContext } from "~/context";
+import { createMailerContext as createMailerContextPlugin } from "~/context";
 import { createDummyTransport, DummyTransport } from "~/transports/createDummyTransport";
 import {
     createSmtpTransport,
@@ -14,7 +14,7 @@ import { createGraphQL } from "~/graphql";
 export { createDummyTransport, createSmtpTransport, createTransport };
 export type { SmtpTransport, SmtpTransportConfig, DummyTransport };
 
-export const createMailer = (): PluginCollection => {
+export const createMailerContext = (): PluginCollection => {
     const group = createGroup();
     return [
         group,
@@ -33,12 +33,27 @@ export const createMailer = (): PluginCollection => {
         /**
          * Smtp mailer goes into the plugins after the dummy one because plugins are loaded in reverse.
          */
-        createTransport(async params => {
-            const plugin = await createSmtpTransport(params.settings);
+        createTransport(async ({ settings }) => {
+            /**
+             * We need to map our settings to the required settings for the SMTP NodeMailer transport.
+             */
+            const config: SmtpTransportConfig = {
+                ...(settings || {})
+            };
+            if (settings) {
+                config.auth = {
+                    user: settings.user,
+                    pass: settings.password
+                };
+            }
+            const plugin = await createSmtpTransport(config);
             plugin.name = "smtp-default";
             return plugin;
         }),
-        createMailerContext(),
-        createGraphQL()
+        createMailerContextPlugin()
     ];
+};
+
+export const createMailerGraphQL = () => {
+    return [...createGraphQL()];
 };

@@ -163,6 +163,7 @@ export interface Transport<T = any> {
 
 export interface TransportSettings {
     host: string;
+    port: number;
     user: string;
     password: string;
     from: string;

@@ -12,7 +12,7 @@ const requiredEmail = requiredString.email(options);
 
 const schema = joi.object<TransportSendData>({
     to: joi.array().items(requiredEmail),
-    from: requiredEmail,
+    from: joi.string().email(options),
     subject: requiredString.max(1024),
     cc: joi.array().items(requiredEmail),
     bcc: joi.array().items(requiredEmail),

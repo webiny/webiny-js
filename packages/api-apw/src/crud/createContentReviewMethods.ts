@@ -17,6 +17,7 @@ import {
     OnContentReviewAfterUpdateTopicParams,
     OnContentReviewBeforeCreateTopicParams,
     OnContentReviewBeforeDeleteTopicParams,
+    OnContentReviewBeforeListTopicParams,
     OnContentReviewBeforeUpdateTopicParams,
     UpdateApwContentReviewParams
 } from "~/types";
@@ -84,6 +85,10 @@ export function createContentReviewMethods(
     const onContentReviewAfterDelete = createTopic<OnContentReviewAfterDeleteTopicParams>(
         "apw.onContentReviewAfterDelete"
     );
+    // list
+    const onContentReviewBeforeList = createTopic<OnContentReviewBeforeListTopicParams>(
+        "apw.onContentReviewBeforeList"
+    );
     return {
         /**
          * Lifecycle events
@@ -94,20 +99,33 @@ export function createContentReviewMethods(
         onContentReviewAfterUpdate,
         onContentReviewBeforeDelete,
         onContentReviewAfterDelete,
+        onContentReviewBeforeList,
         async get(id) {
             return storageOperations.getContentReview({ id });
         },
         async list(params) {
-            if (params.where?.reviewStatus === "requiresMyAttention") {
+            const where = params.where || {};
+
+            await onContentReviewBeforeList.publish({
+                where
+            });
+
+            if (where.reviewStatus === "requiresMyAttention") {
                 return filterContentReviewsByRequiresMyAttention({
-                    listParams: params,
+                    listParams: {
+                        ...params,
+                        where
+                    },
                     listContentReviews: storageOperations.listContentReviews,
                     getReviewer,
                     getIdentity
                 });
             }
 
-            return storageOperations.listContentReviews(params);
+            return storageOperations.listContentReviews({
+                ...params,
+                where
+            });
         },
         async create(data: Omit<CreateApwContentReviewParams, "reviewStatus">) {
             const input: CreateApwContentReviewParams = {
