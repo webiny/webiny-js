@@ -16,6 +16,7 @@ import { ButtonIcon, ButtonSecondary } from "@webiny/ui/Button";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
 import { Select } from "@webiny/ui/Select";
+import { Tooltip } from "@webiny/ui/Tooltip";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
 import SearchUI from "@webiny/app-admin/components/SearchUI";
@@ -152,9 +153,20 @@ const ContentEntriesList: React.FC = () => {
                     <Typography use={"subtitle1"}>
                         <ModelId>
                             Model ID:{" "}
-                            <Link to={`/cms/content-models/${contentModel.modelId}`}>
-                                {contentModel.modelId}
-                            </Link>
+                            {contentModel.plugin ? (
+                                <Tooltip
+                                    content={t`Content model is registered via a plugin.`}
+                                    placement={"top"}
+                                >
+                                    {contentModel.modelId}
+                                </Tooltip>
+                            ) : (
+                                <Tooltip content={t`Edit content model`} placement={"top"}>
+                                    <Link to={`/cms/content-models/${contentModel.modelId}`}>
+                                        {contentModel.modelId}
+                                    </Link>
+                                </Tooltip>
+                            )}
                         </ModelId>
                     </Typography>
                 </span>
