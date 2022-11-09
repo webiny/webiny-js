@@ -7,10 +7,11 @@ interface ContentPermission {
 
 export const hasI18NContentPermission = async (context: I18NContext): Promise<boolean> => {
     // If `content.i18n` permission is not present, immediately throw.
-    const contentPermission = await context.security.getPermission<
+    const contentPermissions = await context.security.getPermissions<
         SecurityPermission<ContentPermission>
     >("content.i18n");
-    if (!contentPermission) {
+
+    if (!contentPermissions.length) {
         return false;
     }
 
@@ -24,7 +25,7 @@ export const hasI18NContentPermission = async (context: I18NContext): Promise<bo
         throw new Error("Missing content locale in 'hasI18NContentPermission'!");
     }
 
-    return (
-        !Array.isArray(contentPermission.locales) || contentPermission.locales.includes(locale.code)
-    );
+    return contentPermissions.some(current => {
+        return !Array.isArray(current.locales) || current.locales.includes(locale)
+    })
 };

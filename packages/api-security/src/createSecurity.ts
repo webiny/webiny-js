@@ -112,7 +112,24 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
             return null;
         },
 
-        async getPermissions(this: Security): Promise<SecurityPermission[]> {
+        async getPermissions<TPermission extends SecurityPermission = SecurityPermission>(this: Security, permission: string): Promise<TPermission[]> {
+            if (!performAuthorization) {
+                return [{ name: "*" }] as TPermission[];
+            }
+
+            const permissions = await loadPermissions(this);
+            return permissions.filter<TPermission>((current) => {
+                const exactMatch = current.name === permission;
+                if (exactMatch) {
+                    return true;
+                }
+
+                // Try matching using patterns.
+                return minimatch(permission, current.name);
+            })
+        },
+
+        async listPermissions(this: Security): Promise<SecurityPermission[]> {
             const permissions = await loadPermissions(this);
 
             // Now we start checking whether we want to return all permissions, or we
@@ -150,7 +167,7 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
         },
 
         async hasFullAccess(this: Security): Promise<boolean> {
-            const permissions = (await this.getPermissions()) as SecurityPermission[];
+            const permissions = (await this.listPermissions()) as SecurityPermission[];
 
             return permissions.some(p => p.name === "*");
         },

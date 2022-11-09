@@ -336,7 +336,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
         },
 
         async createPageFrom(this: PageBuilderContextObject, id): Promise<any> {
-            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+            const permissions = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "w"
             });
 
@@ -352,7 +352,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
              * Must not be able to create a new page (revision) from a page of another author.
              */
             const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permission, original, "ownedBy");
+            checkOwnPermissions(identity, permissions, original, "ownedBy");
 
             const latestPage = await storageOperations.pages.get({
                 where: {
@@ -427,7 +427,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
         },
 
         async updatePage(id, input): Promise<any> {
-            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+            const pbPagePermissions = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "w"
             });
             const original = await storageOperations.pages.get({
@@ -445,7 +445,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
             }
 
             const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permission, original, "ownedBy");
+            checkOwnPermissions(identity, pbPagePermissions, original, "ownedBy");
 
             const page: Page = {
                 ...original,
