@@ -10233,14 +10233,14 @@ __metadata:
     "@babel/preset-env": ^7.19.4
     "@babel/preset-flow": ^7.16.0
     "@babel/runtime": ^7.19.0
-    "@webiny/api-tenancy": ^5.33.0
-    "@webiny/cli": ^5.33.0
-    "@webiny/db-dynamodb": ^5.33.0
-    "@webiny/error": ^5.33.0
-    "@webiny/handler": ^5.33.0
-    "@webiny/handler-aws": ^5.33.0
-    "@webiny/handler-db": ^5.33.0
-    "@webiny/project-utils": ^5.33.0
+    "@webiny/api-tenancy": ^5.33.1
+    "@webiny/cli": ^5.33.1
+    "@webiny/db-dynamodb": ^5.33.1
+    "@webiny/error": ^5.33.1
+    "@webiny/handler": ^5.33.1
+    "@webiny/handler-aws": ^5.33.1
+    "@webiny/handler-db": ^5.33.1
+    "@webiny/project-utils": ^5.33.1
     apollo-graphql: ^0.9.5
     dynamodb-toolbox: ^0.3.4
     get-yarn-workspaces: ^1.0.2
@@ -11459,7 +11459,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-tenancy@^5.33.0, @webiny/api-tenancy@^5.33.1, @webiny/api-tenancy@workspace:packages/api-tenancy":
+"@webiny/api-tenancy@^5.33.1, @webiny/api-tenancy@workspace:packages/api-tenancy":
   version: 0.0.0-use.local
   resolution: "@webiny/api-tenancy@workspace:packages/api-tenancy"
   dependencies:
@@ -13093,7 +13093,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/cli@^5.33.0, @webiny/cli@^5.33.1, @webiny/cli@workspace:packages/cli":
+"@webiny/cli@^5.33.1, @webiny/cli@workspace:packages/cli":
   version: 0.0.0-use.local
   resolution: "@webiny/cli@workspace:packages/cli"
   dependencies:
@@ -13164,7 +13164,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/db-dynamodb@^5.33.0, @webiny/db-dynamodb@^5.33.1, @webiny/db-dynamodb@workspace:packages/db-dynamodb":
+"@webiny/db-dynamodb@^5.33.1, @webiny/db-dynamodb@workspace:packages/db-dynamodb":
   version: 0.0.0-use.local
   resolution: "@webiny/db-dynamodb@workspace:packages/db-dynamodb"
   dependencies:
@@ -13205,7 +13205,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/error@^5.33.0, @webiny/error@^5.33.1, @webiny/error@workspace:packages/error":
+"@webiny/error@^5.33.1, @webiny/error@workspace:packages/error":
   version: 0.0.0-use.local
   resolution: "@webiny/error@workspace:packages/error"
   dependencies:
@@ -13255,7 +13255,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/handler-aws@^5.30.0, @webiny/handler-aws@^5.33.0, @webiny/handler-aws@^5.33.1, @webiny/handler-aws@workspace:packages/handler-aws":
+"@webiny/handler-aws@^5.30.0, @webiny/handler-aws@^5.33.1, @webiny/handler-aws@workspace:packages/handler-aws":
   version: 0.0.0-use.local
   resolution: "@webiny/handler-aws@workspace:packages/handler-aws"
   dependencies:
@@ -13300,7 +13300,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/handler-db@^5.33.0, @webiny/handler-db@^5.33.1, @webiny/handler-db@workspace:packages/handler-db":
+"@webiny/handler-db@^5.33.1, @webiny/handler-db@workspace:packages/handler-db":
   version: 0.0.0-use.local
   resolution: "@webiny/handler-db@workspace:packages/handler-db"
   dependencies:
@@ -13364,7 +13364,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/handler@^5.33.0, @webiny/handler@^5.33.1, @webiny/handler@workspace:packages/handler":
+"@webiny/handler@^5.33.1, @webiny/handler@workspace:packages/handler":
   version: 0.0.0-use.local
   resolution: "@webiny/handler@workspace:packages/handler"
   dependencies:
@@ -13469,7 +13469,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/project-utils@^5.33.0, @webiny/project-utils@^5.33.1, @webiny/project-utils@workspace:packages/project-utils":
+"@webiny/project-utils@^5.33.1, @webiny/project-utils@workspace:packages/project-utils":
   version: 0.0.0-use.local
   resolution: "@webiny/project-utils@workspace:packages/project-utils"
   dependencies:
