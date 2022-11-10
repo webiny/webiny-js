@@ -35,9 +35,7 @@ export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
 }) => {
     // Styles-related callback customization.
     const [customAssignStylesCallback, setCustomAssignStylesCallback] =
-        useState<AssignStylesCallback>(() => {
-            return {};
-        });
+        useState<AssignStylesCallback>();
     const [customElementStylesCallback, setCustomElementStylesCallback] =
         useState<ElementStylesCallback>();
     const [customThemeStylesCallback, setCustomThemeStylesCallback] =

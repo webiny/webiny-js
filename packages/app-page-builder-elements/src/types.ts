@@ -5,7 +5,7 @@ import { Property } from "csstype";
 /**
  * TODO @ts-refactor
  * We should have a single type for all page builder apps elements.
- * Currently we have Element, bElement and PbEditorElement.
+ * Currently we have Element, PbElement and PbEditorElement.
  */
 export interface Element {
     id: string;
