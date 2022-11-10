@@ -44,7 +44,7 @@ import { createTenancyAndSecurity } from "./tenancySecurity";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/client";
 import { configurations } from "~/configurations";
-import { base as baseIndexConfiguration } from "@webiny/api-elasticsearch/indexConfiguration/base";
+import { getBaseConfiguration } from "@webiny/api-elasticsearch";
 
 type UseGqlHandlerParams = {
     permissions?: SecurityPermission[];
@@ -105,9 +105,7 @@ export default (params?: UseGqlHandlerParams) => {
     const createElasticsearchIndice = async (params: ElasticsearchIndiceParams) => {
         return elasticsearchClient.indices.create({
             index: getIndexName(params),
-            body: {
-                ...baseIndexConfiguration
-            }
+            body: getBaseConfiguration()
         });
     };
     // Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)
