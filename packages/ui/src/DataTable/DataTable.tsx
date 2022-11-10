@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import {
     DataTableContent,
     DataTableHead,
@@ -8,8 +8,9 @@ import {
     DataTableCell,
     DataTableCellProps
 } from "@rmwc/data-table";
-
 import { flexRender, getCoreRowModel, useReactTable, ColumnDef } from "@tanstack/react-table";
+
+import { Checkbox } from "~/Checkbox";
 
 import "@rmwc/data-table/data-table.css";
 import { Table } from "./styled";
@@ -27,6 +28,10 @@ interface Column<T> {
      * Additional props to add to both header and row cells. Refer to RMWC documentation.
      */
     meta?: DataTableCellProps;
+    /*
+     * Column class names.
+     */
+    className?: string;
 }
 
 export type Columns<T> = {
@@ -34,11 +39,24 @@ export type Columns<T> = {
 };
 
 interface Props<T> {
+    /*
+     * Columns definition.
+     */
     columns: Columns<T>;
+    /*
+     * Data to display into DataTable body.
+     */
     data: T[];
+    /*
+     * Callback that receives the selected rows.
+     */
+    onSelectRow?: (rows: T[] | []) => void;
 }
 
-const defineColumns = <T,>(columns: Props<T>["columns"]): ColumnDef<T>[] =>
+const defineColumns = <T,>(
+    columns: Props<T>["columns"],
+    onSelectRow: Props<T>["onSelectRow"]
+): ColumnDef<T>[] =>
     useMemo(() => {
         const columnsList = Object.keys(columns).map(key => ({
             id: key,
@@ -62,15 +80,55 @@ const defineColumns = <T,>(columns: Props<T>["columns"]): ColumnDef<T>[] =>
             };
         });
 
-        return defaults;
-    }, [columns]);
+        const select: ColumnDef<T>[] = !!onSelectRow
+            ? [
+                  {
+                      id: "datatable-select-column",
+                      header: ({ table }) => (
+                          <Checkbox
+                              indeterminate={table.getIsSomeRowsSelected()}
+                              value={table.getIsAllRowsSelected()}
+                              onChange={e => table.toggleAllPageRowsSelected(e)}
+                          />
+                      ),
+                      cell: ({ row }) => (
+                          <Checkbox
+                              indeterminate={row.getIsSomeSelected()}
+                              value={row.getIsSelected()}
+                              onChange={row.getToggleSelectedHandler()}
+                          />
+                      ),
+                      meta: {
+                          hasFormControl: true,
+                          className: "datatable-select-column"
+                      }
+                  }
+              ]
+            : [];
 
-export const DataTable = <T,>({ data, columns }: Props<T>) => {
+        return [...select, ...defaults];
+    }, [columns, onSelectRow]);
+
+export const DataTable = <T,>({ data, columns, onSelectRow }: Props<T>) => {
+    const [rowSelection, setRowSelection] = React.useState({});
+
     const table = useReactTable({
         data,
-        columns: defineColumns(columns),
-        getCoreRowModel: getCoreRowModel()
+        columns: defineColumns(columns, onSelectRow),
+        getCoreRowModel: getCoreRowModel(),
+        state: {
+            rowSelection
+        },
+        enableRowSelection: !!onSelectRow,
+        onRowSelectionChange: setRowSelection
     });
+
+    useEffect(() => {
+        if (onSelectRow && typeof onSelectRow === "function") {
+            const dataSelected = table.getSelectedRowModel().flatRows.map(row => row.original);
+            onSelectRow(dataSelected);
+        }
+    }, [rowSelection]);
 
     return (
         <Table>
@@ -96,7 +154,10 @@ export const DataTable = <T,>({ data, columns }: Props<T>) => {
                 </DataTableHead>
                 <DataTableBody>
                     {table.getRowModel().rows.map(row => (
-                        <DataTableRow key={row.id}>
+                        <DataTableRow
+                            key={row.id}
+                            selected={rowSelection.hasOwnProperty(row.index)}
+                        >
                             {row.getVisibleCells().map(cell => (
                                 <DataTableCell key={cell.id} {...cell.column.columnDef.meta}>
                                     {flexRender(cell.column.columnDef.cell, cell.getContext())}

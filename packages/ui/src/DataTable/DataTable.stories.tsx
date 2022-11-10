@@ -62,6 +62,15 @@ story.add(
                 <StorySandbox title={"A simple DataTable."}>
                     <DataTable data={data} columns={columns} />
                 </StorySandbox>
+                <StorySandbox title={"DataTable with selectable rows"}>
+                    <DataTable
+                        data={data}
+                        columns={columns}
+                        onSelectRow={row =>
+                            console.log("Do whatever you like with the selected row data", row)
+                        }
+                    />
+                </StorySandbox>
             </Story>
         );
     },

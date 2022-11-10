@@ -9,4 +9,8 @@ export const Table = styled(RmwcDataTable)`
     td {
         vertical-align: middle;
     }
+
+    .datatable-select-column {
+        width: 56px;
+    }
 `;
