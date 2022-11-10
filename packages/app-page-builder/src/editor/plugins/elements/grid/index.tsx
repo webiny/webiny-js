@@ -35,7 +35,7 @@ const createDefaultCells = (cellsType: string) => {
 export default (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin => {
     const defaultSettings = [
         "pb-editor-page-element-style-settings-grid",
-        "pb-editor-page-element-style-settings-grid-options",
+        "pb-editor-page-element-style-settings-grid-settings",
         "pb-editor-page-element-style-settings-background",
         "pb-editor-page-element-style-settings-animation",
         "pb-editor-page-element-style-settings-border",
@@ -112,7 +112,7 @@ export default (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin
                         grid: {
                             cellsType
                         },
-                        gridOptions: {
+                        gridSettings: {
                             ...createInitialPerDeviceSettingValue(
                                 { flexDirection: "row" },
                                 DisplayMode.DESKTOP

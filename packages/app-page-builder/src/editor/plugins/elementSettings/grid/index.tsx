@@ -1,6 +1,6 @@
 import React from "react";
+import { GridSize } from "./GridSize";
 import { GridSettings } from "./GridSettings";
-import { GridOptions } from "./GridOptions";
 import { PbEditorPageElementStyleSettingsPlugin } from "../../../../types";
 
 export default [
@@ -8,14 +8,14 @@ export default [
         name: "pb-editor-page-element-style-settings-grid",
         type: "pb-editor-page-element-style-settings",
         render() {
-            return <GridSettings />;
+            return <GridSize />;
         }
     } as PbEditorPageElementStyleSettingsPlugin,
     {
-        name: "pb-editor-page-element-style-settings-grid-options",
+        name: "pb-editor-page-element-style-settings-grid-settings",
         type: "pb-editor-page-element-style-settings",
         render() {
-            return <GridOptions />;
+            return <GridSettings />;
         }
     } as PbEditorPageElementStyleSettingsPlugin
 ];

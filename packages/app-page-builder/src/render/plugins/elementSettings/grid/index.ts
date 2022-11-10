@@ -7,7 +7,7 @@ export default {
     name: "pb-render-page-element-style-grid",
     type: "pb-render-page-element-style",
     renderStyle({ element, style }) {
-        const gridOptions = get(element, "data.settings.gridOptions");
+        const gridSettings = get(element, "data.settings.gridSettings");
 
         // Set per-device property value
         applyPerDeviceStyleWithFallback(({ displayMode, fallbackMode }) => {
@@ -16,7 +16,7 @@ export default {
                 `--${kebabCase(fallbackMode)}-flex-direction`,
                 "unset"
             );
-            const flexDirection = get(gridOptions, `${displayMode}.flexDirection`, fallbackValue);
+            const flexDirection = get(gridSettings, `${displayMode}.flexDirection`, fallbackValue);
 
             style[`--${kebabCase(displayMode)}-flex-direction`] = flexDirection;
 
