@@ -53,17 +53,17 @@ export const createStorageOperations: StorageOperationsFactory = params => {
 
     const plugins = new PluginsContainer([
         /**
-         * User defined custom plugins.
-         */
-        ...(userPlugins || []),
-        /**
          * DynamoDB filter plugins for the where conditions.
          */
         dynamoDbValueFilters(),
         /**
          * Field plugins for DynamoDB.
          */
-        dynamoDbPlugins()
+        dynamoDbPlugins(),
+        /**
+         * User defined custom plugins.
+         */
+        ...(userPlugins || [])
     ]);
 
     return {
