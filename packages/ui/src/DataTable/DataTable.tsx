@@ -11,6 +11,8 @@ import {
 
 import { flexRender, getCoreRowModel, useReactTable, ColumnDef } from "@tanstack/react-table";
 
+import { Skeleton } from "~/Skeleton";
+
 import "@rmwc/data-table/data-table.css";
 import { Table } from "./styled";
 
@@ -36,9 +38,13 @@ export type Columns<T> = {
 interface Props<T> {
     columns: Columns<T>;
     data: T[];
+    loading?: boolean;
 }
 
-const defineColumns = <T,>(columns: Props<T>["columns"]): ColumnDef<T>[] =>
+const defineColumns = <T,>(
+    columns: Props<T>["columns"],
+    loading: Props<T>["loading"]
+): ColumnDef<T>[] =>
     useMemo(() => {
         const columnsList = Object.keys(columns).map(key => ({
             id: key,
@@ -52,6 +58,10 @@ const defineColumns = <T,>(columns: Props<T>["columns"]): ColumnDef<T>[] =>
                 accessorKey: id,
                 header: () => header,
                 cell: info => {
+                    if (loading) {
+                        return <Skeleton />;
+                    }
+
                     if (cell && typeof cell === "function") {
                         return cell(info.row.original);
                     } else {
@@ -65,10 +75,13 @@ const defineColumns = <T,>(columns: Props<T>["columns"]): ColumnDef<T>[] =>
         return defaults;
     }, [columns]);
 
-export const DataTable = <T,>({ data, columns }: Props<T>) => {
+const defineData = <T,>(data: Props<T>["data"], loading: Props<T>["loading"]): T[] =>
+    useMemo(() => (loading ? Array(10).fill({}) : data), [loading, data]);
+
+export const DataTable = <T,>({ data, columns, loading }: Props<T>) => {
     const table = useReactTable({
-        data,
-        columns: defineColumns(columns),
+        data: defineData(data, loading),
+        columns: defineColumns(columns, loading),
         getCoreRowModel: getCoreRowModel()
     });
 
