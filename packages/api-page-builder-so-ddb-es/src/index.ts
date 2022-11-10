@@ -11,7 +11,7 @@ import { createPageElementEntity } from "~/definitions/pageElementEntity";
 import { createPageEntity } from "~/definitions/pageEntity";
 import { createPageElasticsearchEntity } from "~/definitions/pageElasticsearchEntity";
 import { PluginsContainer } from "@webiny/plugins";
-import { getElasticsearchOperators } from "@webiny/api-elasticsearch/operators";
+import { getElasticsearchOperators } from "@webiny/api-elasticsearch";
 import { createElasticsearchIndex } from "~/elasticsearch/createElasticsearchIndex";
 import { createSettingsStorageOperations } from "~/operations/settings";
 import { createCategoryDynamoDbFields } from "~/operations/category/fields";
