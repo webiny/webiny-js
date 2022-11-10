@@ -96,13 +96,16 @@ const SpacingPicker: React.FC<SpacingPickerProps> = ({
 
     const defaultUnitValue: string | undefined = options[0] ? options[0].value : undefined;
 
-    const onFormChange = useCallback((formData: SpacingPickerFormData) => {
-        if (formData.unit === "auto") {
-            onChange(formData.unit);
-            return;
-        }
-        onChange((formData.value || "0") + (formData.unit || defaultUnitValue));
-    }, []);
+    const onFormChange = useCallback(
+        (formData: SpacingPickerFormData) => {
+            if (formData.unit === "auto") {
+                onChange(formData.unit);
+                return;
+            }
+            onChange(formData.value + (formData.unit || defaultUnitValue));
+        },
+        [defaultUnitValue, onChange]
+    );
 
     return (
         <Form
@@ -130,9 +133,14 @@ const SpacingPicker: React.FC<SpacingPickerProps> = ({
                                     })}
                                     disabled={data.unit === "auto" || disabled}
                                     type={"number"}
-                                    onFocus={(event: React.ChangeEvent<HTMLInputElement>) =>
+                                    onFocus={(event: React.FocusEvent<HTMLInputElement>) =>
                                         event.target.select()
                                     }
+                                    onBlur={(event: React.FocusEvent<HTMLInputElement>) => {
+                                        if (event.target.value === "") {
+                                            onChange("0" + (formData.unit || defaultUnitValue));
+                                        }
+                                    }}
                                 />
                             </Bind>
                             <Bind name={"unit"}>
