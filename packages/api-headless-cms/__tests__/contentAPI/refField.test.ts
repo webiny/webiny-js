@@ -186,7 +186,7 @@ describe("refField", () => {
                         entryId: review.entryId,
                         createdOn: review.createdOn,
                         createdBy: {
-                            id: "12345678",
+                            id: "id-12345678",
                             displayName: "John Doe",
                             type: "admin"
                         },
@@ -246,7 +246,7 @@ describe("refField", () => {
                             },
                             createdOn: review.createdOn,
                             createdBy: {
-                                id: "12345678",
+                                id: "id-12345678",
                                 displayName: "John Doe",
                                 type: "admin"
                             },
