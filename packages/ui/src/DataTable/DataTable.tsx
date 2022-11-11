@@ -53,6 +53,9 @@ interface Props<T> {
      * Callback that receives the selected rows.
      */
     onSelectRow?: (rows: T[] | []) => void;
+    /*
+     * Render the skeleton state while data are loading.
+     */
     loading?: boolean;
 }
 
