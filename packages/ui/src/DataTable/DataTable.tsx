@@ -54,15 +54,15 @@ interface Props<T> {
      */
     onSelectRow?: (rows: T[] | []) => void;
     /*
-     * Render the skeleton state while data are loading.
+     * Render the skeleton state at the initial data loading.
      */
-    loading?: boolean;
+    loadingInitial?: boolean;
 }
 
 const defineColumns = <T,>(
     columns: Props<T>["columns"],
     onSelectRow: Props<T>["onSelectRow"],
-    loading: Props<T>["loading"]
+    loadingInitial: Props<T>["loadingInitial"]
 ): ColumnDef<T>[] =>
     useMemo(() => {
         const columnsList = Object.keys(columns).map(key => ({
@@ -77,7 +77,7 @@ const defineColumns = <T,>(
                 accessorKey: id,
                 header: () => header,
                 cell: info => {
-                    if (loading) {
+                    if (loadingInitial) {
                         return <Skeleton />;
                     }
                     if (cell && typeof cell === "function") {
@@ -117,23 +117,26 @@ const defineColumns = <T,>(
             : [];
 
         return [...select, ...defaults];
-    }, [columns, onSelectRow]);
+    }, [columns, onSelectRow, loadingInitial]);
 
-const defineData = <T,>(data: Props<T>["data"], loading: Props<T>["loading"]): T[] => {
+const defineData = <T,>(
+    data: Props<T>["data"],
+    loadingInitial: Props<T>["loadingInitial"]
+): T[] => {
     return useMemo(() => {
-        if (loading) {
+        if (loadingInitial) {
             return Array(10).fill({});
         }
         return data;
-    }, [data, loading]);
+    }, [data, loadingInitial]);
 };
 
-export const DataTable = <T,>({ data, columns, onSelectRow, loading }: Props<T>) => {
+export const DataTable = <T,>({ data, columns, onSelectRow, loadingInitial }: Props<T>) => {
     const [rowSelection, setRowSelection] = React.useState({});
 
     const table = useReactTable({
-        data: defineData(data, loading),
-        columns: defineColumns(columns, onSelectRow, loading),
+        data: defineData(data, loadingInitial),
+        columns: defineColumns(columns, onSelectRow, loadingInitial),
         getCoreRowModel: getCoreRowModel(),
         state: {
             rowSelection
