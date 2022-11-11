@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import {
     DataTableContent,
     DataTableHead,
@@ -141,6 +141,13 @@ export const DataTable = <T,>({ data, columns, onSelectRow, loading }: Props<T>)
         enableRowSelection: !!onSelectRow,
         onRowSelectionChange: setRowSelection
     });
+
+    useEffect(() => {
+        if (onSelectRow && typeof onSelectRow === "function") {
+            const dataSelected = table.getSelectedRowModel().flatRows.map(row => row.original);
+            onSelectRow(dataSelected);
+        }
+    }, [rowSelection]);
 
     return (
         <Table>
