@@ -34,6 +34,7 @@ interface Column<T> {
      * Column class names.
      */
     className?: string;
+    isSelectable?: boolean;
 }
 
 export type Columns<T> = {
@@ -77,9 +78,6 @@ const defineColumns = <T,>(
                 accessorKey: id,
                 header: () => header,
                 cell: info => {
-                    if (loadingInitial) {
-                        return <Skeleton />;
-                    }
                     if (cell && typeof cell === "function") {
                         return cell(info.row.original);
                     } else {
@@ -94,13 +92,14 @@ const defineColumns = <T,>(
             ? [
                   {
                       id: "datatable-select-column",
-                      header: ({ table }) => (
-                          <Checkbox
-                              indeterminate={table.getIsSomeRowsSelected()}
-                              value={table.getIsAllRowsSelected()}
-                              onChange={e => table.toggleAllPageRowsSelected(e)}
-                          />
-                      ),
+                      header: ({ table }) =>
+                          !loadingInitial && (
+                              <Checkbox
+                                  indeterminate={table.getIsSomeRowsSelected()}
+                                  value={table.getIsAllRowsSelected()}
+                                  onChange={e => table.toggleAllPageRowsSelected(e)}
+                              />
+                          ),
                       cell: ({ row }) => (
                           <Checkbox
                               indeterminate={row.getIsSomeSelected()}
@@ -116,7 +115,16 @@ const defineColumns = <T,>(
               ]
             : [];
 
-        return [...select, ...defaults];
+        return [...select, ...defaults].map(column => {
+            if (loadingInitial) {
+                return {
+                    ...column,
+                    cell: () => <Skeleton />
+                };
+            }
+
+            return column;
+        });
     }, [columns, onSelectRow, loadingInitial]);
 
 const defineData = <T,>(
