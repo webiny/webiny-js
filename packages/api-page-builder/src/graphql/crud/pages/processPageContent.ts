@@ -25,7 +25,7 @@ async function traverse(element: PbPageElement, callback: ElementCallback) {
         await callback(element);
     }
 
-    for (const child of element.elements) {
+    for (const child of element.elements || []) {
         await traverse(child, callback);
     }
 }
