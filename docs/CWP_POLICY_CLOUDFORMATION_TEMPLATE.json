@@ -24,13 +24,18 @@
                   "Effect": "Allow",
                   "Action": [
                     "cloudfront:CreateDistribution",
-                    "cloudfront:CreateDistributionWithTags",
-                    "cloudfront:DeleteDistribution",
                     "cloudfront:GetDistribution",
                     "cloudfront:ListTagsForResource",
                     "cloudfront:TagResource",
                     "cloudfront:UntagResource",
-                    "cloudfront:UpdateDistribution"
+                    "cloudfront:UpdateDistribution",
+                    "cloudfront:CreateFunction",
+                    "cloudfront:GetFunction",
+                    "cloudfront:DescribeFunction",
+                    "cloudfront:PublishFunction",
+                    "cloudfront:DeleteFunction",
+                    "cloudfront:CreateCloudFrontOriginAccessIdentity",
+                    "cloudfront:GetCloudFrontOriginAccessIdentity"
                   ],
                   "Resource": "*"
                 },
@@ -67,7 +72,10 @@
                     "dynamodb:DescribeTimeToLive",
                     "dynamodb:ListTagsOfResource",
                     "dynamodb:TagResource",
-                    "dynamodb:UntagResource"
+                    "dynamodb:UntagResource",
+                    "dynamodb:PutItem",
+                    "dynamodb:GetItem",
+                    "dynamodb:DeleteItem"
                   ],
                   "Resource": "*"
                 },
@@ -98,7 +106,11 @@
                     "events:PutTargets",
                     "events:RemoveTargets",
                     "events:TagResource",
-                    "events:UntagResource"
+                    "events:UntagResource",
+                    "events:PutEvents",
+                    "events:CreateEventBus",
+                    "events:DescribeEventBus",
+                    "events:DeleteEventBus"
                   ],
                   "Resource": "*"
                 },
