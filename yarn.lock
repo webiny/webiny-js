@@ -13903,7 +13903,7 @@ __metadata:
     react-custom-scrollbars: ^4.2.1
     react-docgen: ^5.0.0
     react-docgen-typescript-loader: ^3.6.0
-    react-loading-skeleton: ^0.5.0
+    react-loading-skeleton: ^3.1.0
     react-spinner-material: 1.1.4
     react-transition-group: ^4.3.0
     regenerator-runtime: ^0.13.2
@@ -34392,12 +34392,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-loading-skeleton@npm:^0.5.0":
-  version: 0.5.0
-  resolution: "react-loading-skeleton@npm:0.5.0"
+"react-loading-skeleton@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "react-loading-skeleton@npm:3.1.0"
   peerDependencies:
-    react: ^15.6.1 || ^16.0.0
-  checksum: df04dc52a0525a685874eb42169dd2ccbb28f21ecde583c1be8fa3c7bc0be339f4ff315503471ae39cd2cc95ccc7a93461bacd62ba507f2161dc789674ba3414
+    react: ">=16.8.0"
+  checksum: 53d257c88e442e979fb9148ae826fc998a5a54c08a01e894395cf1ebb1e1c83e426f9c4884800e5564ba3308cf33e32d3abc75e07589ae0b48e4a2ed544fda2a
   languageName: node
   linkType: hard
 
