@@ -54,6 +54,7 @@ export const MODEL_FIELDS = `
     fields {
         ${FIELDS_FIELDS}
     }
+    plugin
 `;
 /**
  * ############################

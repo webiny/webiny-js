@@ -58,6 +58,11 @@ const listItemMinHeight = css({
     minHeight: "66px !important"
 });
 
+const disabled = css({
+    color: "rgba(0, 0, 0, 0.54)",
+    cursor: "default"
+});
+
 const ContentEntriesList: React.FC = () => {
     const {
         contentModel,
@@ -158,7 +163,9 @@ const ContentEntriesList: React.FC = () => {
                                     content={t`Content model is registered via a plugin.`}
                                     placement={"top"}
                                 >
-                                    {contentModel.modelId}
+                                    <Link to="#" className={disabled}>
+                                        {contentModel.modelId}
+                                    </Link>
                                 </Tooltip>
                             ) : (
                                 <Tooltip content={t`Edit content model`} placement={"top"}>
