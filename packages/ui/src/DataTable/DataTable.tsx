@@ -34,7 +34,6 @@ interface Column<T> {
      * Column class names.
      */
     className?: string;
-    isSelectable?: boolean;
 }
 
 export type Columns<T> = {
