@@ -1,6 +1,6 @@
 {
   "name": "@webiny/handler-aws",
-  "version": "5.33.0",
+  "version": "5.33.1",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -14,19 +14,19 @@
   "dependencies": {
     "@babel/runtime": "^7.19.0",
     "@fastify/aws-lambda": "^3.1.1",
-    "@webiny/handler": "^5.33.0",
-    "@webiny/handler-client": "^5.33.0",
-    "@webiny/plugins": "^5.33.0",
+    "@webiny/handler": "^5.33.1",
+    "@webiny/handler-client": "^5.33.1",
+    "@webiny/plugins": "^5.33.1",
     "aws-lambda": "^1.0.7",
-    "fastify": "^4.3.0"
+    "fastify": "^4.7.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.19.3",
     "@babel/core": "^7.19.3",
     "@babel/preset-env": "^7.19.4",
     "@babel/preset-typescript": "^7.18.6",
-    "@webiny/cli": "^5.33.0",
-    "@webiny/project-utils": "^5.33.0",
+    "@webiny/cli": "^5.33.1",
+    "@webiny/project-utils": "^5.33.1",
     "rimraf": "^3.0.2",
     "ttypescript": "^1.5.13",
     "typescript": "4.7.4"

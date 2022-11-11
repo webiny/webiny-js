@@ -1,5 +1,4 @@
 import {
-    CmsContext,
     CmsEntry as BaseCmsEntry,
     CmsModel,
     OnEntryBeforePublishTopicParams,
@@ -24,6 +23,8 @@ import { ApwScheduleActionCrud, ScheduleActionContext } from "~/scheduler/types"
 import HandlerClient from "@webiny/handler-client/HandlerClient";
 import { PluginsContainer } from "@webiny/plugins";
 import { WcpContextObject } from "@webiny/api-wcp/types";
+import { MailerContext } from "@webiny/api-mailer/types";
+import { AdminSettingsContext } from "@webiny/api-admin-settings/types";
 
 export interface ApwCmsEntry extends BaseCmsEntry {
     title: string;
@@ -154,6 +155,10 @@ export interface ApwReviewer extends ApwBaseFields {
     identityId: string;
     displayName: string | null;
     type: string;
+    email?: string;
+}
+export interface ApwReviewerWithEmail extends Omit<ApwReviewer, "email"> {
+    email: string;
 }
 
 export interface ApwComment extends ApwBaseFields {
@@ -258,12 +263,6 @@ export interface ListWorkflowsParams extends ListParams {
     };
 }
 
-interface CreateReviewerParams {
-    identityId: string;
-    displayName: string | null;
-    type: string;
-}
-
 interface CreateApwCommentParams {
     body: Record<string, any>;
     changeRequest: string;
@@ -364,7 +363,7 @@ export interface ApwReviewerListParams extends ListParams {
 }
 
 export interface ApwReviewerCrud
-    extends BaseApwCrud<ApwReviewer, CreateReviewerParams, UpdateApwReviewerData> {
+    extends BaseApwCrud<ApwReviewer, CreateApwReviewerData, UpdateApwReviewerData> {
     list(params: ApwReviewerListParams): Promise<[ApwReviewer[], ListMeta]>;
 
     /**
@@ -460,6 +459,7 @@ export interface ApwContentReviewCrud
     onContentReviewAfterUpdate: Topic<OnContentReviewAfterUpdateTopicParams>;
     onContentReviewBeforeDelete: Topic<OnContentReviewBeforeDeleteTopicParams>;
     onContentReviewAfterDelete: Topic<OnContentReviewAfterDeleteTopicParams>;
+    onContentReviewBeforeList: Topic<OnContentReviewBeforeListTopicParams>;
 }
 
 export type ContentGetter = (
@@ -492,7 +492,7 @@ export interface AdvancedPublishingWorkflow {
     scheduleAction: ApwScheduleActionCrud;
 }
 
-export interface ApwContext extends Context, CmsContext {
+export interface ApwContext extends Context, MailerContext, AdminSettingsContext {
     apw: AdvancedPublishingWorkflow;
     pageBuilder: PageBuilderContextObject;
     wcp: WcpContextObject;
@@ -526,12 +526,14 @@ interface CreateApwReviewerData {
     identityId: string;
     displayName: string | null;
     type: string;
+    email?: string | null;
 }
 
 interface UpdateApwReviewerData {
     identityId: string;
     displayName: string | null;
     type: string;
+    email?: string | null;
 }
 
 interface StorageOperationsCreateReviewerParams {
@@ -572,10 +574,12 @@ type StorageOperationsDeleteWorkflowParams = StorageOperationsDeleteParams;
 type StorageOperationsGetContentReviewParams = StorageOperationsGetParams;
 
 export interface ApwContentReviewListParams extends ListParams {
-    where?: ListWhere & {
+    where: ListWhere & {
         reviewStatus?: ApwContentReviewListFilter;
         title?: string;
         title_contains?: string;
+        workflowId?: string;
+        workflowId_in?: string[];
     };
 }
 
@@ -847,6 +851,13 @@ export interface OnContentReviewBeforeDeleteTopicParams {
  */
 export interface OnContentReviewAfterDeleteTopicParams {
     contentReview: ApwContentReview;
+}
+
+/**
+ * @category Lifecycle events
+ */
+export interface OnContentReviewBeforeListTopicParams {
+    where: ApwContentReviewListParams["where"];
 }
 
 export interface CreateApwReviewerParams {

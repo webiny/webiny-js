@@ -13,12 +13,41 @@ export interface SmtpTransport extends Transport {
     transporter: Transporter<SMTPTransport.SentMessageInfo>;
 }
 
+const configDefaults: Partial<SmtpTransportConfig> = {
+    socketTimeout: 15000,
+    connectionTimeout: 15000,
+    greetingTimeout: 15000
+};
+
+const applyDefaults = (
+    initialConfig: Partial<SmtpTransportConfig>
+): Partial<SmtpTransportConfig> => {
+    return Object.keys(configDefaults).reduce<Partial<SmtpTransportConfig>>(
+        (config, key) => {
+            const configKey = key as unknown as keyof SmtpTransportConfig;
+            if (config[configKey] === undefined || config[configKey] === null) {
+                // @ts-ignore
+                config[configKey] = configDefaults[configKey];
+            }
+
+            return config;
+        },
+        { ...initialConfig }
+    );
+};
+
 export const createSmtpTransport = (
-    config?: Partial<SmtpTransportConfig> | null
+    initialConfig?: Partial<SmtpTransportConfig> | null
 ): SmtpTransport => {
-    if (!config || typeof config !== "object" || Object.keys(config).length === 0) {
+    if (
+        !initialConfig ||
+        typeof initialConfig !== "object" ||
+        Object.keys(initialConfig).length === 0
+    ) {
         throw new WebinyError("There is no configuration for the SMTP transport.");
     }
+
+    const config = applyDefaults(initialConfig);
 
     const transporter = nodemailer.createTransport(config);
 
@@ -41,7 +70,7 @@ export const createSmtpTransport = (
                 });
                 if (result.messageId) {
                     return {
-                        result: true,
+                        result: result.response,
                         error: null
                     };
                 }

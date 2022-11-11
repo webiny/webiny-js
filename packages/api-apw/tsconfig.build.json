@@ -3,6 +3,7 @@
   "include": ["src"],
   "references": [
     { "path": "../api-headless-cms/tsconfig.build.json" },
+    { "path": "../api-admin-settings/tsconfig.build.json" },
     { "path": "../api-i18n/tsconfig.build.json" },
     { "path": "../api-i18n-ddb/tsconfig.build.json" },
     { "path": "../api-page-builder/tsconfig.build.json" },
@@ -26,7 +27,8 @@
     { "path": "../api-security-so-ddb/tsconfig.build.json" },
     { "path": "../api-tenancy-so-ddb/tsconfig.build.json" },
     { "path": "../wcp/tsconfig.build.json" },
-    { "path": "../api-mailer/tsconfig.build.json" }
+    { "path": "../api-mailer/tsconfig.build.json" },
+    { "path": "../utils/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",

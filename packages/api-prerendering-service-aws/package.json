@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-prerendering-service-aws",
-  "version": "5.33.0",
+  "version": "5.33.1",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -13,12 +13,12 @@
   "dependencies": {
     "@babel/runtime": "^7.19.0",
     "@types/aws-lambda": "^8.10.93",
-    "@webiny/api": "^5.33.0",
-    "@webiny/api-prerendering-service": "^5.33.0",
-    "@webiny/error": "^5.33.0",
-    "@webiny/handler-aws": "^5.33.0",
-    "@webiny/handler-client": "^5.33.0",
-    "@webiny/utils": "^5.33.0",
+    "@webiny/api": "^5.33.1",
+    "@webiny/api-prerendering-service": "^5.33.1",
+    "@webiny/error": "^5.33.1",
+    "@webiny/handler-aws": "^5.33.1",
+    "@webiny/handler-client": "^5.33.1",
+    "@webiny/utils": "^5.33.1",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
@@ -27,8 +27,8 @@
     "@babel/plugin-proposal-export-default-from": "^7.16.0",
     "@babel/preset-env": "^7.19.4",
     "@babel/preset-typescript": "^7.18.6",
-    "@webiny/cli": "^5.33.0",
-    "@webiny/project-utils": "^5.33.0",
+    "@webiny/cli": "^5.33.1",
+    "@webiny/project-utils": "^5.33.1",
     "rimraf": "^3.0.2",
     "typescript": "4.7.4"
   },

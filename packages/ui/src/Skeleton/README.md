@@ -6,7 +6,7 @@
 
 ### Description
 
-`Skeleton` component is used to animated loading skeletons within Webiny.
+`Skeleton` component is used to render animated loading skeletons within Webiny.
 
 ### Usage
 

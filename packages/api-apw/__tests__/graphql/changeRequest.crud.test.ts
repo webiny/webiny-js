@@ -1,6 +1,7 @@
 import { createPageContentReviewSetup } from "../utils/helpers";
 import { mocks as changeRequestMock } from "./mocks/changeRequest";
 import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
+import { createTransport } from "@webiny/api-mailer";
 
 const updatedRichText = [
     {
@@ -26,6 +27,16 @@ const updatedRichText = [
         ]
     }
 ];
+
+jest.mock("~/plugins/hooks/notifications/appUrl", () => {
+    return {
+        getAppUrl: async () => {
+            return {
+                appUrl: "https://webiny.local"
+            };
+        }
+    };
+});
 
 describe("ChangeRequest crud test", () => {
     const gqlHandler = usePageBuilderHandler();
@@ -291,5 +302,63 @@ describe("ChangeRequest crud test", () => {
                 }
             }
         });
+    });
+
+    it("should send an e-mail to all reviewers after the change request was created", async () => {
+        const fn = jest.fn(() => {
+            return null;
+        });
+
+        const handler = usePageBuilderHandler({
+            identity: {
+                id: "mockIdentityId",
+                type: "admin",
+                displayName: "Mock Identity",
+                email: "mock@webiny.local"
+            },
+            plugins: [
+                createTransport(async () => {
+                    return {
+                        name: "test-dummy-transport",
+                        send: async () => {
+                            fn.apply(null);
+                            return {
+                                result: null,
+                                error: null
+                            };
+                        }
+                    };
+                })
+            ]
+        });
+
+        await handler.securityIdentity.login();
+        await gqlHandler.securityIdentity.login();
+
+        const { contentReview } = await createPageContentReviewSetup(gqlHandler);
+        const changeRequestStep = `${contentReview.id}#${contentReview.steps[0].id}`;
+        /*
+         * Create a new entry.
+         */
+        const [createChangeRequestResponse] = await handler.createChangeRequestMutation({
+            data: changeRequestMock.createChangeRequestInput({ step: changeRequestStep })
+        });
+
+        expect(createChangeRequestResponse).toMatchObject({
+            data: {
+                apw: {
+                    createChangeRequest: {
+                        data: {
+                            id: expect.any(String)
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+        /**
+         * Test expects the mock function to be called as it represents creating notification text and body.
+         */
+        expect(fn).toBeCalledTimes(1);
     });
 });

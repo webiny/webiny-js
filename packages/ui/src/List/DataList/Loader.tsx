@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactElement } from "react";
 import styled from "@emotion/styled";
 
 import { Skeleton } from "~/Skeleton";
@@ -49,12 +49,13 @@ const Actions = styled("div")`
     }
 `;
 
-const Loader: React.FC = () => (
-    <LoaderUl data-testid={"default-data-list.loading"}>
-        {Array(5)
-            .fill("")
-            .map(item => (
-                <li key={"list-" + item}>
+const Loader = (): ReactElement => {
+    const lines = Array.from(Array(5).keys());
+
+    return (
+        <LoaderUl data-testid={"default-data-list.loading"}>
+            {lines.map(line => (
+                <li key={"list-" + line}>
                     <LoaderWrapper>
                         <Graphic>
                             <Skeleton height={36} />
@@ -77,7 +78,8 @@ const Loader: React.FC = () => (
                     </LoaderWrapper>
                 </li>
             ))}
-    </LoaderUl>
-);
+        </LoaderUl>
+    );
+};
 
 export default Loader;

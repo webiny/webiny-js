@@ -1,5 +1,6 @@
 import { ApwReviewer, ApwWorkflowApplications, ApwWorkflowStepTypes } from "~/types";
-import { getNanoid } from "~/plugins/utils";
+
+import { generateAlphaNumericId } from "@webiny/utils";
 
 export interface CreateWorkflowParams {
     title?: string;
@@ -18,7 +19,7 @@ interface CreateWorkflowStepParams {
 
 const createWorkflowStep = (params: CreateWorkflowStepParams) => ({
     ...params,
-    id: getNanoid(),
+    id: generateAlphaNumericId(12),
     reviewers: params.reviewers.map(reviewer => reviewer.id)
 });
 
