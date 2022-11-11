@@ -104,7 +104,7 @@ const ReactMediumEditor: React.FC<ReactMediumEditorProps> = ({
             editorRef.current.unsubscribe("blur", handleChange);
             editorRef.current.unsubscribe("editableInput", handleSelect);
         };
-    }, [handleChange, handleSelect]);
+    }, [handleChange, handleSelect, tagName]);
 
     return createElement(tagName, {
         dangerouslySetInnerHTML: { __html: value },
