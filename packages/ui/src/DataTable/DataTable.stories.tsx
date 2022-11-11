@@ -71,6 +71,9 @@ story.add(
                         }
                     />
                 </StorySandbox>
+                <StorySandbox title={"DataTable in loading state"}>
+                    <DataTable data={data} columns={columns} loading={true} />
+                </StorySandbox>
             </Story>
         );
     },
