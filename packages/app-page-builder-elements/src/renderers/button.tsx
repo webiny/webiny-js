@@ -29,12 +29,12 @@ const DefaultLinkComponent: React.FC<DefaultLinkComponentProps> = ({ href, newTa
     );
 };
 
-export const createButton = (args: CreateButtonParams = {}): ElementRenderer => {
-    const LinkComponent = args?.LinkComponent || DefaultLinkComponent;
+export const createButton = (params: CreateButtonParams = {}): ElementRenderer => {
+    const LinkComponent = params?.LinkComponent || DefaultLinkComponent;
 
     // TODO @ts-refactor fix "Component definition is missing display name"
     // eslint-disable-next-line
-    return ({ element }) => {
+    const AA = ({ element }) => {
         const { buttonText, link, type, icon } = element.data;
 
         const { getElementClassNames, getThemeClassNames, combineClassNames } = usePageElements();
@@ -61,4 +61,6 @@ export const createButton = (args: CreateButtonParams = {}): ElementRenderer => 
             </pb-button>
         );
     };
+
+    return <AA/>
 };

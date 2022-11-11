@@ -15,6 +15,7 @@ declare global {
 const defaultStyles = { display: "block" };
 
 const Cell: ElementRenderer = ({ element }) => {
+    const element = usePageElement();
     const { getClassNames, getElementClassNames, combineClassNames } = usePageElements();
     const classNames = combineClassNames(
         getClassNames(defaultStyles),

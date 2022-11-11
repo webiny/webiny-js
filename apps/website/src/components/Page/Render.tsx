@@ -63,6 +63,7 @@ const Render: React.FC<RenderProps> = ({ page, error, settings }) => {
     };
 
     return (
+        // Page Provider ovdje.
         <div className="webiny-pb-page">
             <ps-tag data-key={"pb-page"} data-value={page.id} />
             <Helmet>
@@ -103,6 +104,7 @@ const Render: React.FC<RenderProps> = ({ page, error, settings }) => {
                     return <meta key={index} property={preparedProperty} content={content} />;
                 })}
             </Helmet>
+            {/*Ovjde bi trebao provider. */}
             <div className={responsiveClassName} ref={pageElementRef}>
                 <Layout page={page} settings={settings}>
                     <Element element={page.content} />

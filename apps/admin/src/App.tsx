@@ -4,12 +4,25 @@ import { Cognito } from "@webiny/app-admin-users-cognito";
 import "./App.scss";
 import { PageElementsProvider } from "./components/PageElementsProvider";
 
+const SpaceX = element => {
+    console.log('asd')
+    const {x} = usePageElements();
+    return <div>spacex</div>;
+}
+
+// probat cu samo
+const a = <SpaceX/>;
+
 export const App: React.FC = () => {
     return (
-        <PageElementsProvider>
-            <Admin>
-                <Cognito />
-            </Admin>
-        </PageElementsProvider>
+        <Admin>
+            <Cognito />
+            <AddPageElementRenderer
+                type={"spacex"}
+                // Ovo je React komponenta ili f-ja koja vrace element?
+                component={SpaceX}
+            />
+            <AddGraphQLQuerySelection />
+        </Admin>
     );
 };
