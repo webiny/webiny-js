@@ -119,8 +119,14 @@ const defineColumns = <T,>(
         return [...select, ...defaults];
     }, [columns, onSelectRow]);
 
-const defineData = <T,>(data: Props<T>["data"], loading: Props<T>["loading"]): T[] =>
-    useMemo(() => (loading ? Array(10).fill({}) : data), [loading, data]);
+const defineData = <T,>(data: Props<T>["data"], loading: Props<T>["loading"]): T[] => {
+    return useMemo(() => {
+        if (loading) {
+            return Array(10).fill({});
+        }
+        return data;
+    }, [data, loading]);
+};
 
 export const DataTable = <T,>({ data, columns, onSelectRow, loading }: Props<T>) => {
     const [rowSelection, setRowSelection] = React.useState({});
