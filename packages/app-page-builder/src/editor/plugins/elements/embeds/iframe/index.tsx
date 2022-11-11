@@ -28,7 +28,7 @@ export default () => {
             elementType: "iframe",
             toolbar: {
                 title: "iFrame",
-                group: "pb-editor-element-group-media",
+                group: "pb-editor-element-group-embeds",
                 preview() {
                     return (
                         <PreviewBox>

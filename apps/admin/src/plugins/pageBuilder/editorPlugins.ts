@@ -9,10 +9,10 @@ import list from "@webiny/app-page-builder/editor/plugins/elements/list";
 import quote from "@webiny/app-page-builder/editor/plugins/elements/quote";
 import icon from "@webiny/app-page-builder/editor/plugins/elements/icon";
 import button from "@webiny/app-page-builder/editor/plugins/elements/button";
-import soundcloud from "@webiny/app-page-builder/editor/plugins/elements/media/soundcloud";
-import vimeo from "@webiny/app-page-builder/editor/plugins/elements/media/vimeo";
-import youtube from "@webiny/app-page-builder/editor/plugins/elements/media/youtube";
-import iframe from "@webiny/app-page-builder/editor/plugins/elements/media/iframe";
+import soundcloud from "@webiny/app-page-builder/editor/plugins/elements/embeds/soundcloud";
+import vimeo from "@webiny/app-page-builder/editor/plugins/elements/embeds/vimeo";
+import youtube from "@webiny/app-page-builder/editor/plugins/elements/embeds/youtube";
+import iframe from "@webiny/app-page-builder/editor/plugins/elements/embeds/iframe";
 import pinterest from "@webiny/app-page-builder/editor/plugins/elements/social/pinterest";
 import twitter from "@webiny/app-page-builder/editor/plugins/elements/social/twitter";
 import codesandbox from "@webiny/app-page-builder/editor/plugins/elements/code/codesandbox";
@@ -23,6 +23,7 @@ import heading from "@webiny/app-page-builder/editor/plugins/elements/heading";
 import basicGroup from "@webiny/app-page-builder/editor/plugins/elementGroups/basic";
 import layoutGroup from "@webiny/app-page-builder/editor/plugins/elementGroups/layout";
 import mediaGroup from "@webiny/app-page-builder/editor/plugins/elementGroups/media";
+import embedsGroup from "@webiny/app-page-builder/editor/plugins/elementGroups/embeds";
 import formGroup from "@webiny/app-page-builder/editor/plugins/elementGroups/form";
 import socialGroup from "@webiny/app-page-builder/editor/plugins/elementGroups/social";
 import codeGroup from "@webiny/app-page-builder/editor/plugins/elementGroups/code";
@@ -89,6 +90,7 @@ export default [
     formGroup,
     layoutGroup,
     mediaGroup,
+    embedsGroup,
     socialGroup,
     codeGroup,
     savedGroup,
