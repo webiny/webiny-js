@@ -94,7 +94,7 @@ export const FolderTree: React.FC<Props> = ({ type, title, focusedFolderId, onFo
             setTreeData(createTreeData(folders, focusedFolderId));
             setInitialOpenList(createInitialOpenList(folders, focusedFolderId));
         }
-    }, [folders]);
+    }, [folders, focusedFolderId]);
 
     const handleDrop = async (
         newTree: NodeModel<DndItemData>[],
@@ -120,6 +120,7 @@ export const FolderTree: React.FC<Props> = ({ type, title, focusedFolderId, onFo
     return (
         <Container>
             <Title title={title} />
+
             {folders && folders.length > 0 && (
                 <DndProvider backend={MultiBackend} options={getBackendOptions()}>
                     <Tree
