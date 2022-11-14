@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "Creates two Amazon IAM user groups with required permissions for deploying a Webiny project and adds given Amazon IAM user into them.",
+  "Description": "Creates two Amazon IAM user groups with required permissions for deploying a Webiny project and adds given Amazon IAM user to them.",
   "Parameters": {
     "Username": {
       "Type": "String",
