@@ -71,6 +71,9 @@ story.add(
                         }
                     />
                 </StorySandbox>
+                <StorySandbox title={"DataTable at initial loading state"}>
+                    <DataTable data={data} columns={columns} loadingInitial={true} />
+                </StorySandbox>
             </Story>
         );
     },

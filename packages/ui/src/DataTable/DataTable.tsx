@@ -8,9 +8,11 @@ import {
     DataTableCell,
     DataTableCellProps
 } from "@rmwc/data-table";
+
 import { flexRender, getCoreRowModel, useReactTable, ColumnDef } from "@tanstack/react-table";
 
 import { Checkbox } from "~/Checkbox";
+import { Skeleton } from "~/Skeleton";
 
 import "@rmwc/data-table/data-table.css";
 import { Table } from "./styled";
@@ -51,11 +53,16 @@ interface Props<T> {
      * Callback that receives the selected rows.
      */
     onSelectRow?: (rows: T[] | []) => void;
+    /*
+     * Render the skeleton state at the initial data loading.
+     */
+    loadingInitial?: boolean;
 }
 
 const defineColumns = <T,>(
     columns: Props<T>["columns"],
-    onSelectRow: Props<T>["onSelectRow"]
+    onSelectRow: Props<T>["onSelectRow"],
+    loadingInitial: Props<T>["loadingInitial"]
 ): ColumnDef<T>[] =>
     useMemo(() => {
         const columnsList = Object.keys(columns).map(key => ({
@@ -84,13 +91,14 @@ const defineColumns = <T,>(
             ? [
                   {
                       id: "datatable-select-column",
-                      header: ({ table }) => (
-                          <Checkbox
-                              indeterminate={table.getIsSomeRowsSelected()}
-                              value={table.getIsAllRowsSelected()}
-                              onChange={e => table.toggleAllPageRowsSelected(e)}
-                          />
-                      ),
+                      header: ({ table }) =>
+                          !loadingInitial && (
+                              <Checkbox
+                                  indeterminate={table.getIsSomeRowsSelected()}
+                                  value={table.getIsAllRowsSelected()}
+                                  onChange={e => table.toggleAllPageRowsSelected(e)}
+                              />
+                          ),
                       cell: ({ row }) => (
                           <Checkbox
                               indeterminate={row.getIsSomeSelected()}
@@ -106,15 +114,36 @@ const defineColumns = <T,>(
               ]
             : [];
 
-        return [...select, ...defaults];
-    }, [columns, onSelectRow]);
+        return [...select, ...defaults].map(column => {
+            if (loadingInitial) {
+                return {
+                    ...column,
+                    cell: () => <Skeleton />
+                };
+            }
 
-export const DataTable = <T,>({ data, columns, onSelectRow }: Props<T>) => {
+            return column;
+        });
+    }, [columns, onSelectRow, loadingInitial]);
+
+const defineData = <T,>(
+    data: Props<T>["data"],
+    loadingInitial: Props<T>["loadingInitial"]
+): T[] => {
+    return useMemo(() => {
+        if (loadingInitial) {
+            return Array(10).fill({});
+        }
+        return data;
+    }, [data, loadingInitial]);
+};
+
+export const DataTable = <T,>({ data, columns, onSelectRow, loadingInitial }: Props<T>) => {
     const [rowSelection, setRowSelection] = React.useState({});
 
     const table = useReactTable({
-        data,
-        columns: defineColumns(columns, onSelectRow),
+        data: defineData(data, loadingInitial),
+        columns: defineColumns(columns, onSelectRow, loadingInitial),
         getCoreRowModel: getCoreRowModel(),
         state: {
             rowSelection
