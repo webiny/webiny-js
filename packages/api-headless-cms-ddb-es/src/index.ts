@@ -17,11 +17,13 @@ import { createSettingsEntity } from "~/definitions/settings";
 import { createElasticsearchIndex } from "~/elasticsearch/createElasticsearchIndex";
 import { PluginsContainer } from "@webiny/plugins";
 import { createGroupsStorageOperations } from "~/operations/group";
-import { getElasticsearchOperators } from "@webiny/api-elasticsearch/operators";
+import { getElasticsearchOperators } from "@webiny/api-elasticsearch";
 import { elasticsearchFields as cmsEntryElasticsearchFields } from "~/operations/entry/elasticsearchFields";
 import { elasticsearchIndexPlugins } from "./elasticsearch/indices";
 import { deleteElasticsearchIndex } from "./elasticsearch/deleteElasticsearchIndex";
 import { CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
+
+export * from "./plugins";
 
 export const createStorageOperations: StorageOperationsFactory = params => {
     const {
@@ -77,10 +79,6 @@ export const createStorageOperations: StorageOperationsFactory = params => {
 
     const plugins = new PluginsContainer([
         /**
-         * User defined custom plugins.
-         */
-        ...(userPlugins || []),
-        /**
          * Plugins of type CmsModelFieldToGraphQLPlugin.
          */
         /**
@@ -106,11 +104,22 @@ export const createStorageOperations: StorageOperationsFactory = params => {
         /**
          * Built-in Elasticsearch index templates.
          */
-        elasticsearchIndexPlugins()
+        elasticsearchIndexPlugins(),
+        /**
+         * User defined custom plugins.
+         * They are at the end because we can then override existing plugins.
+         */
+        ...(userPlugins || [])
     ]);
 
     return {
         beforeInit: async context => {
+            /**
+             * Attach the elasticsearch into context if it is not already attached.
+             */
+            if (!context.elasticsearch) {
+                context.elasticsearch = elasticsearch;
+            }
             /**
              * Collect all required plugins from parent context.
              */
@@ -147,6 +156,14 @@ export const createStorageOperations: StorageOperationsFactory = params => {
                 await deleteElasticsearchIndex({
                     elasticsearch,
                     model
+                });
+            });
+
+            context.cms.onModelInitialize.subscribe(async ({ model }) => {
+                await createElasticsearchIndex({
+                    elasticsearch,
+                    model,
+                    plugins
                 });
             });
         },

@@ -7,8 +7,7 @@ const {
 } = require("@webiny/api-dynamodb-to-elasticsearch");
 const { simulateStream } = require("@webiny/project-utils/testing/dynamodb");
 const NodeEnvironment = require("jest-environment-node");
-const elasticsearchDataGzipCompression =
-    require("@webiny/api-elasticsearch/plugins/GzipCompression").default;
+const { createGzipCompression } = require("@webiny/api-elasticsearch");
 const { ContextPlugin } = require("@webiny/api");
 const {
     elasticIndexManager
@@ -52,7 +51,7 @@ class FileManagerTestEnvironment extends NodeEnvironment {
          * Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)
          */
         const simulationContext = new ContextPlugin(async context => {
-            context.plugins.register([elasticsearchDataGzipCompression()]);
+            context.plugins.register([createGzipCompression()]);
             await elasticsearchClientContext.apply(context);
         });
         simulateStream(
@@ -75,7 +74,7 @@ class FileManagerTestEnvironment extends NodeEnvironment {
                     })
                 });
                 return [
-                    elasticsearchDataGzipCompression(),
+                    createGzipCompression(),
                     ...pluginsValue,
                     ...dbPluginsValue,
                     elasticsearchClientContext

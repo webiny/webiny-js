@@ -1,5 +1,6 @@
 import { Plugin, PluginCollection } from "@webiny/plugins/types";
 import {
+    CmsContext as BaseCmsContext,
     CmsEntry,
     CmsModel,
     CmsModelField,
@@ -15,6 +16,7 @@ import {
 import { Client } from "@elastic/elasticsearch";
 import { Entity, Table } from "dynamodb-toolbox";
 import { PluginsContainer } from "@webiny/plugins";
+import { ElasticsearchContext } from "@webiny/api-elasticsearch/types";
 
 /**
  * A definition of the entry that is being prepared for the Elasticsearch.
@@ -170,7 +172,7 @@ export interface StorageOperationsFactoryParams {
     plugins?: PluginCollection;
 }
 
-export interface HeadlessCmsStorageOperations extends BaseHeadlessCmsStorageOperations {
+export interface HeadlessCmsStorageOperations extends BaseHeadlessCmsStorageOperations<CmsContext> {
     getTable: () => Table;
     getEsTable: () => Table;
     getEntities: () => Record<
@@ -182,3 +184,5 @@ export interface HeadlessCmsStorageOperations extends BaseHeadlessCmsStorageOper
 export interface StorageOperationsFactory {
     (params: StorageOperationsFactoryParams): HeadlessCmsStorageOperations;
 }
+
+export interface CmsContext extends BaseCmsContext, ElasticsearchContext {}

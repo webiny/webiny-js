@@ -15,7 +15,7 @@ import { createFormStorageOperations } from "~/operations/form";
 import { createElasticsearchTable } from "~/definitions/tableElasticsearch";
 import { PluginsContainer } from "@webiny/plugins";
 import { createElasticsearchEntity } from "~/definitions/elasticsearch";
-import { getElasticsearchOperators } from "@webiny/api-elasticsearch/operators";
+import { getElasticsearchOperators } from "@webiny/api-elasticsearch";
 import { elasticsearchIndexPlugins } from "~/elasticsearch/indices";
 import { createElasticsearchIndex } from "~/elasticsearch/createElasticsearchIndex";
 

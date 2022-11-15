@@ -13,11 +13,16 @@ import {
     Sort as esSort,
     ElasticsearchBoolQueryConfig
 } from "@webiny/api-elasticsearch/types";
-import { decodeCursor } from "@webiny/api-elasticsearch/cursors";
-import { createSort } from "@webiny/api-elasticsearch/sort";
+import {
+    decodeCursor,
+    createSort,
+    parseWhereKey,
+    ElasticsearchQueryBuilderOperatorPlugin,
+    normalizeValue,
+    getElasticsearchOperatorPluginsByLocale
+} from "@webiny/api-elasticsearch";
 import { createModelFields, ModelField, ModelFields } from "./fields";
 import { CmsEntryElasticsearchFieldPlugin } from "~/plugins/CmsEntryElasticsearchFieldPlugin";
-import { parseWhereKey } from "@webiny/api-elasticsearch/where";
 import { PluginsContainer } from "@webiny/plugins";
 import { createLatestType, createPublishedType } from "~/operations/entry";
 import { CmsEntryElasticsearchQueryModifierPlugin } from "~/plugins/CmsEntryElasticsearchQueryModifierPlugin";
@@ -27,9 +32,6 @@ import {
     CmsEntryElasticsearchQueryBuilderValueSearchPlugin,
     CreatePathCallableParams
 } from "~/plugins/CmsEntryElasticsearchQueryBuilderValueSearchPlugin";
-import { getElasticsearchOperatorPluginsByLocale } from "@webiny/api-elasticsearch/operators";
-import { normalizeValue } from "@webiny/api-elasticsearch/normalize";
-import { ElasticsearchQueryBuilderOperatorPlugin } from "@webiny/api-elasticsearch/plugins/definition/ElasticsearchQueryBuilderOperatorPlugin";
 
 interface CreateElasticsearchParams {
     plugins: PluginsContainer;

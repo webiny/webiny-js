@@ -76,6 +76,16 @@ export const createModelsSchema = (context: CmsContext): GraphQLSchemaPlugin<Cms
                 } catch (e) {
                     return new ErrorResponse(e);
                 }
+            },
+            initializeModel: async (_, args, context) => {
+                const { modelId } = args;
+
+                try {
+                    const result = await context.cms.initializeModel(modelId);
+                    return new Response(result);
+                } catch (e) {
+                    return new ErrorResponse(e);
+                }
             }
         };
 
@@ -145,6 +155,11 @@ export const createModelsSchema = (context: CmsContext): GraphQLSchemaPlugin<Cms
                 titleFieldId: String
             }
 
+            type InitializeModelResponse {
+                data: Boolean
+                error: CmsError
+            }
+
             extend type Mutation {
                 createContentModel(data: CmsContentModelCreateInput!): CmsContentModelResponse
 
@@ -159,6 +174,8 @@ export const createModelsSchema = (context: CmsContext): GraphQLSchemaPlugin<Cms
                 ): CmsContentModelResponse
 
                 deleteContentModel(modelId: ID!): CmsDeleteResponse
+
+                initializeModel(modelId: ID!): InitializeModelResponse!
             }
         `;
     }
