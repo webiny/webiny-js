@@ -11,6 +11,7 @@ import Menus from "../views/Menus/Menus";
 import Pages from "../views/Pages/Pages";
 import { PageEditor } from "~/pageEditor/Editor";
 // import { BlockEditor } from "~/blockEditor/Editor";
+import PagesTable from "~/admin/views/Pages/Table";
 
 const ROLE_PB_CATEGORY = "pb.category";
 const ROLE_PB_MENUS = "pb.menu";
@@ -66,6 +67,26 @@ const plugins: RoutePlugin[] = [
                             <AdminLayout>
                                 <Helmet title={"Page Builder - Pages"} />
                                 <Pages />
+                            </AdminLayout>
+                        </EditorPluginsLoader>
+                    </SecureRoute>
+                )}
+            />
+        )
+    },
+    {
+        name: "route-pb-pages-table",
+        type: "route",
+        route: (
+            <Route
+                exact
+                path="/page-builder/pages-table"
+                render={({ location }) => (
+                    <SecureRoute permission={ROLE_PB_PAGES}>
+                        <EditorPluginsLoader location={location}>
+                            <AdminLayout>
+                                <Helmet title={"Page Builder - Pages Table"} />
+                                <PagesTable />
                             </AdminLayout>
                         </EditorPluginsLoader>
                     </SecureRoute>
