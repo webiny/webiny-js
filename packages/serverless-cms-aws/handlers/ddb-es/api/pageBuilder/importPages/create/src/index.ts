@@ -16,7 +16,7 @@ import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
 import elasticSearch from "@webiny/api-elasticsearch";
 import logsPlugins from "@webiny/handler-logs";
 import securityPlugins from "./security";
-import { createElasticsearchClient } from "@webiny/api-elasticsearch/client";
+import { createElasticsearchClient } from "@webiny/api-elasticsearch";
 
 const documentClient = new DocumentClient({
     convertEmptyValues: true,

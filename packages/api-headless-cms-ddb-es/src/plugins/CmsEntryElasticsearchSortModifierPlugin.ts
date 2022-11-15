@@ -2,7 +2,7 @@ import {
     ElasticsearchSortModifierPlugin,
     ModifySortCallable,
     ModifySortParams as BaseModifySortParams
-} from "@webiny/api-elasticsearch/plugins/definition/ElasticsearchSortModifierPlugin";
+} from "@webiny/api-elasticsearch";
 import { CmsModel } from "@webiny/api-headless-cms/types";
 
 export interface ModifySortParams extends BaseModifySortParams {

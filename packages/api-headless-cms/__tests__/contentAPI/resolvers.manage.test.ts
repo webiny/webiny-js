@@ -177,7 +177,7 @@ describe("MANAGE - Resolvers", () => {
             entryId,
             createdOn: expect.stringMatching(/^20/),
             createdBy: {
-                id: "12345678",
+                id: "id-12345678",
                 displayName: "John Doe",
                 type: "admin"
             },
@@ -276,7 +276,7 @@ describe("MANAGE - Resolvers", () => {
             entryId,
             createdOn: expect.stringMatching(/^20/),
             createdBy: {
-                id: "12345678",
+                id: "id-12345678",
                 displayName: "John Doe",
                 type: "admin"
             },
@@ -350,7 +350,7 @@ describe("MANAGE - Resolvers", () => {
                             slug: category.slug,
                             createdOn: category.createdOn,
                             createdBy: {
-                                id: "12345678",
+                                id: "id-12345678",
                                 displayName: "John Doe",
                                 type: "admin"
                             },
@@ -447,7 +447,7 @@ describe("MANAGE - Resolvers", () => {
             entryId: expect.any(String),
             createdOn: expect.stringMatching(/^20/),
             createdBy: {
-                id: "12345678",
+                id: "id-12345678",
                 displayName: "John Doe",
                 type: "admin"
             },
@@ -525,7 +525,7 @@ describe("MANAGE - Resolvers", () => {
             entryId: expect.any(String),
             createdOn: expect.stringMatching(/^20/),
             createdBy: {
-                id: "12345678",
+                id: "id-12345678",
                 displayName: "John Doe",
                 type: "admin"
             },
@@ -593,7 +593,7 @@ describe("MANAGE - Resolvers", () => {
                         savedOn: expect.stringMatching(/^20/),
                         createdOn: expect.stringMatching(/^20/),
                         createdBy: {
-                            id: "12345678",
+                            id: "id-12345678",
                             displayName: "John Doe",
                             type: "admin"
                         },
@@ -685,7 +685,7 @@ describe("MANAGE - Resolvers", () => {
                         entryId: expect.any(String),
                         createdOn: expect.stringMatching(/^20/),
                         createdBy: {
-                            id: "12345678",
+                            id: "id-12345678",
                             displayName: "John Doe",
                             type: "admin"
                         },

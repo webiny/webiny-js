@@ -1,7 +1,7 @@
 import updateSettingsPlugins from "@webiny/api-page-builder/updateSettings";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { createHandler } from "@webiny/handler-aws/raw";
-import { createElasticsearchClient } from "@webiny/api-elasticsearch/client";
+import { createElasticsearchClient } from "@webiny/api-elasticsearch";
 import { createStorageOperations as createPageBuilderStorageOperations } from "@webiny/api-page-builder-so-ddb-es";
 
 const documentClient = new DocumentClient({
