@@ -21,7 +21,7 @@ const requiredString = joi.string().required();
 const createSchema = joi.object({
     name: requiredString.min(3),
     slug: requiredString.min(3),
-    type: requiredString.pattern(/page|cms|file/),
+    type: requiredString,
     tenant: requiredString,
     locale: requiredString
 });
