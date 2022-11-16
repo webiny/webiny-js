@@ -7,6 +7,9 @@ import { CmsModel } from "@webiny/api-headless-cms/types";
 
 export interface ModifyBodyParams extends BaseModifyBodyParams {
     model: CmsModel;
+    where: {
+        [key: string]: any;
+    };
 }
 
 export interface CmsEntryElasticsearchBodyModifierPluginConfig {
