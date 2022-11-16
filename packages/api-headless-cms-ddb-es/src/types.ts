@@ -16,7 +16,6 @@ import {
 import { Client } from "@elastic/elasticsearch";
 import { Entity, Table } from "dynamodb-toolbox";
 import { PluginsContainer } from "@webiny/plugins";
-import { ElasticsearchContext } from "@webiny/api-elasticsearch/types";
 
 /**
  * A definition of the entry that is being prepared for the Elasticsearch.
@@ -185,4 +184,6 @@ export interface StorageOperationsFactory {
     (params: StorageOperationsFactoryParams): HeadlessCmsStorageOperations;
 }
 
-export interface CmsContext extends BaseCmsContext, ElasticsearchContext {}
+export interface CmsContext extends BaseCmsContext {
+    [key: string]: any;
+}

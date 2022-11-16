@@ -540,12 +540,17 @@ export const createElasticsearchQueryBody = (params: CreateElasticsearchParams):
     const searchPlugins = searchPluginsList(plugins);
 
     const fullTextSearchFields: CmsModelField[] = [];
-    for (const fieldId of fields) {
-        const field = model.fields.find(f => f.fieldId === fieldId);
-        if (!field) {
-            continue;
+    /**
+     * No point in going through fields if there is no search performed.
+     */
+    if (!!search) {
+        for (const fieldId of fields) {
+            const field = model.fields.find(f => f.fieldId === fieldId);
+            if (!field) {
+                continue;
+            }
+            fullTextSearchFields.push(field);
         }
-        fullTextSearchFields.push(field);
     }
 
     const query = execElasticsearchBuildQueryPlugins({
@@ -622,7 +627,8 @@ export const createElasticsearchQueryBody = (params: CreateElasticsearchParams):
     for (const pl of bodyPlugins) {
         pl.modifyBody({
             body,
-            model
+            model,
+            where
         });
     }
 
