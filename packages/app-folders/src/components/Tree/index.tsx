@@ -30,7 +30,7 @@ const createTreeData = (
     focusedNodeId?: string
 ): NodeModel<DndItemData>[] => {
     return folders.map(item => {
-        const { id, parentId, name, slug, type } = item;
+        const { id, parentId, name, slug, type, createdOn, createdBy } = item;
 
         return {
             id,
@@ -43,6 +43,8 @@ const createTreeData = (
                 slug,
                 parentId,
                 type,
+                createdOn,
+                createdBy,
                 isFocused: focusedNodeId === id
             }
         };
