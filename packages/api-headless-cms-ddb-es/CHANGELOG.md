@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.33.2-beta.1](https://github.com/webiny/webiny-js/compare/v5.33.2-beta.0...v5.33.2-beta.1) (2022-11-16)
+
+
+### Bug Fixes
+
+* **api-headless-cms-ddb-es:** body modifier ([#2779](https://github.com/webiny/webiny-js/issues/2779)) ([56c04ac](https://github.com/webiny/webiny-js/commit/56c04aca7710e2120ca80331b2cdb88bbb112400))
+
+
+
+
+
 ## [5.33.2-beta.0](https://github.com/webiny/webiny-js/compare/v5.33.1...v5.33.2-beta.0) (2022-11-15)
 
 
