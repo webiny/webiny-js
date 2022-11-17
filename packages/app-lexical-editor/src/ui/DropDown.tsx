@@ -170,25 +170,26 @@ export default function DropDown({
 
     useEffect(() => {
         const button = buttonRef.current;
-
-        if (button !== null && showDropDown) {
-            const handle = (event: MouseEvent) => {
-                const target = event.target;
-                if (stopCloseOnClickSelf) {
-                    if (dropDownRef.current && dropDownRef.current.contains(target as Node)) {
-                        return;
-                    }
-                }
-                if (!button.contains(target as Node)) {
-                    setShowDropDown(false);
-                }
-            };
-            document.addEventListener("click", handle);
-
-            return () => {
-                document.removeEventListener("click", handle);
-            };
+        if (button === null || !showDropDown) {
+            return;
         }
+
+        const handle = (event: MouseEvent) => {
+            const target = event.target;
+            if (stopCloseOnClickSelf) {
+                if (dropDownRef.current && dropDownRef.current.contains(target as Node)) {
+                    return;
+                }
+            }
+            if (!button.contains(target as Node)) {
+                setShowDropDown(false);
+            }
+        };
+        document.addEventListener("click", handle);
+
+        return () => {
+            document.removeEventListener("click", handle);
+        };
     }, [dropDownRef, buttonRef, showDropDown, stopCloseOnClickSelf]);
 
     return (
