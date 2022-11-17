@@ -8,7 +8,7 @@ import { List } from "~/admin/views/Pages/Table/List";
 const Index: React.FC = () => {
     const { location } = useRouter();
     const query = new URLSearchParams(location.search);
-    const currentFolderId = query.get("folderId");
+    const currentFolderId = query.get("folderId") || undefined;
 
     return (
         <SplitView>

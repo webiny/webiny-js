@@ -14,9 +14,11 @@ interface EmptyPageDetailsProps {
 export const Empty: React.FC<EmptyPageDetailsProps> = ({ onCreatePage, canCreate }) => {
     return (
         <EmptyView
-            title={t`Click on the left side list to display page details {message} `({
-                message: canCreate ? "or create a..." : ""
-            })}
+            title={t`No entries found here, click on the left side to navigate to a different folder {message} `(
+                {
+                    message: canCreate ? "or create a..." : ""
+                }
+            )}
             action={
                 canCreate ? (
                     <ButtonDefault data-testid="new-record-button" onClick={onCreatePage}>

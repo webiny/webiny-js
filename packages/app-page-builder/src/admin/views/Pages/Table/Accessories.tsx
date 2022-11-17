@@ -3,7 +3,7 @@ import { FolderTree } from "@webiny/app-folders";
 import { useRouter } from "@webiny/react-router";
 
 interface Props {
-    currentFolderId: string | null;
+    currentFolderId?: string;
 }
 
 export const Accessories = ({ currentFolderId }: Props): ReactElement => {

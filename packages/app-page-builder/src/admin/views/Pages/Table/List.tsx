@@ -21,27 +21,95 @@ PROBLEMS:
 - Should we run an upgrade script to create a linkId for each entry within the system?
 */
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import { useFolders, useLinks } from "@webiny/app-folders";
+import { useApolloClient } from "@apollo/react-hooks";
+import { GET_PAGE } from "~/admin/graphql/pages";
+
+import { GetPageQueryResponse, GetPageQueryVariables } from "~/pageEditor/graphql";
+import { PbPageData } from "~/types";
+
+import { FolderItem, LinkItem } from "@webiny/app-folders/types";
+import { Table } from "~/admin/components/Table/Table";
+import { Empty } from "~/admin/views/Pages/Table/Empty";
 
 interface Props {
     currentFolderId?: string;
 }
 
+const getCurrentFolderList = (
+    folders: FolderItem[],
+    currentFolderId?: string
+): FolderItem[] | [] => {
+    if (!folders) {
+        return [];
+    }
+
+    if (currentFolderId) {
+        return folders.filter(folder => folder.parentId === currentFolderId);
+    } else {
+        return folders.filter(folder => !folder.parentId);
+    }
+};
+
 export const List = ({ currentFolderId }: Props) => {
-    const { folders } = useFolders("page");
-    const { links } = useLinks(currentFolderId as string);
+    const client = useApolloClient();
+    const { folders, loading: foldersLoading } = useFolders("page");
+    const { links } = useLinks(currentFolderId);
+    const [pages, setPages] = useState<PbPageData[]>([]);
+    const [subFolders, setSubFolders] = useState<FolderItem[]>([]);
+    const [pagesLoading, setPagesLoading] = useState<boolean>(false);
 
-    const currentSubFolders =
-        folders && folders.filter(folder => currentFolderId && folder.parentId === currentFolderId);
+    const getPagesByLinks = async (links: LinkItem[]) => {
+        setPagesLoading(true);
+        const results = Promise.all(
+            links.map(async link => {
+                const { data: response } = await client.query<
+                    GetPageQueryResponse,
+                    GetPageQueryVariables
+                >({
+                    query: GET_PAGE,
+                    variables: { id: link.id }
+                });
 
-    return (
-        <>
-            {"FolderId"} {currentFolderId}
-            {JSON.stringify(currentSubFolders)}
-            {"LINKS"}
-            {JSON.stringify(links)}
-        </>
+                const { data, error } = response.pageBuilder.getPage;
+
+                if (!data) {
+                    throw new Error(error?.message || "Could not fetch page");
+                }
+
+                return data;
+            })
+        );
+
+        return results.then(data => {
+            setPagesLoading(false);
+            return data;
+        });
+    };
+
+    useEffect(() => {
+        async function getPagesData() {
+            const linkedPages = await getPagesByLinks(links);
+            setPages(linkedPages);
+        }
+
+        getPagesData();
+    }, [links]);
+
+    useEffect(() => {
+        const subFolders = getCurrentFolderList(folders, currentFolderId);
+        setSubFolders(subFolders);
+    }, [folders, currentFolderId]);
+
+    return pages.length === 0 && subFolders.length === 0 ? (
+        <Empty canCreate={true} onCreatePage={() => console.log("ciao")} />
+    ) : (
+        <Table
+            folders={subFolders}
+            pages={pages}
+            loading={pagesLoading || !!foldersLoading.LIST_FOLDERS}
+        />
     );
 };
