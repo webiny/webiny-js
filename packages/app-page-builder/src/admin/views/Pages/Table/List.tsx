@@ -21,9 +21,9 @@ PROBLEMS:
 - Should we run an upgrade script to create a linkId for each entry within the system?
 */
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
-import { useFolders, useLinks } from "@webiny/app-folders";
+import { useFolders, useLinks, FolderDialogCreate } from "@webiny/app-folders";
 import { useApolloClient } from "@apollo/react-hooks";
 import { GET_PAGE } from "~/admin/graphql/pages";
 
@@ -34,10 +34,22 @@ import { FolderItem, LinkItem } from "@webiny/app-folders/types";
 import { Table } from "~/admin/components/Table/Table";
 import { Empty } from "~/admin/views/Pages/Table/Empty";
 import { Header } from "~/admin/components/Table/Header";
+import useCreatePage from "~/admin/views/Pages/hooks/useCreatePage";
+import { CircularProgress } from "@webiny/ui/Progress";
+import CategoriesDialog from "~/admin/views/Categories/CategoriesDialog";
+import styled from "@emotion/styled";
 
 interface Props {
     currentFolderId?: string;
 }
+
+enum LoadingLabel {
+    CREATING_PAGE = "Creating page..."
+}
+
+const Container = styled("div")`
+    padding: 24px;
+`;
 
 const getCurrentFolderList = (
     folders: FolderItem[],
@@ -55,10 +67,20 @@ const getCurrentFolderList = (
 
 export const List = ({ currentFolderId }: Props) => {
     const client = useApolloClient();
+
     const { folders } = useFolders("page");
     const { links } = useLinks(currentFolderId);
     const [pages, setPages] = useState<PbPageData[]>([]);
     const [subFolders, setSubFolders] = useState<FolderItem[]>([]);
+
+    const [loadingLabel, setLoadingLabel] = useState<string | null>(null);
+    const [showCategoriesDialog, setCategoriesDialog] = useState(false);
+    const openCategoryDialog = useCallback(() => setCategoriesDialog(true), []);
+    const closeCategoryDialog = useCallback(() => setCategoriesDialog(false), []);
+
+    const [showFoldersDialog, setFoldersDialog] = useState(false);
+    const openFoldersDialog = useCallback(() => setFoldersDialog(true), []);
+    const closeFoldersDialog = useCallback(() => setFoldersDialog(false), []);
 
     const getPagesByLinks = async (links: LinkItem[]) => {
         return Promise.all(
@@ -92,16 +114,46 @@ export const List = ({ currentFolderId }: Props) => {
     }, [links]);
 
     useEffect(() => {
+        console.log(folders);
         const subFolders = getCurrentFolderList(folders, currentFolderId);
         setSubFolders(subFolders);
     }, [folders, currentFolderId]);
 
-    return pages.length === 0 && subFolders.length === 0 ? (
-        <Empty canCreate={true} onCreatePage={() => console.log("ciao")} />
-    ) : (
+    const { createPageMutation } = useCreatePage({
+        setLoadingLabel: () => setLoadingLabel(LoadingLabel.CREATING_PAGE),
+        clearLoadingLabel: () => setLoadingLabel(null),
+        closeDialog: closeCategoryDialog
+    });
+
+    return (
         <>
-            <Header />
-            <Table folders={subFolders} pages={pages} />
+            <FolderDialogCreate
+                type={"page"}
+                open={showFoldersDialog}
+                onClose={closeFoldersDialog}
+                parentId={currentFolderId || null}
+            />
+
+            <CategoriesDialog
+                open={showCategoriesDialog}
+                onClose={closeCategoryDialog}
+                onSelect={createPageMutation}
+            >
+                {loadingLabel && <CircularProgress label={loadingLabel} />}
+            </CategoriesDialog>
+
+            {pages.length === 0 && subFolders.length === 0 ? (
+                <Empty
+                    canCreate={true}
+                    onCreatePage={openCategoryDialog}
+                    onCreateFolder={openFoldersDialog}
+                />
+            ) : (
+                <Container>
+                    <Header onCreatePage={openCategoryDialog} onCreateFolder={openFoldersDialog} />
+                    <Table folders={subFolders} pages={pages} />
+                </Container>
+            )}
         </>
     );
 };

@@ -128,9 +128,5 @@ export const Table = ({ folders, pages }: Props) => {
         }
     };
 
-    return (
-        <div style={{ padding: 24 }}>
-            <DataTable columns={columns} data={data} />
-        </div>
-    );
+    return <DataTable columns={columns} data={data} />;
 };
