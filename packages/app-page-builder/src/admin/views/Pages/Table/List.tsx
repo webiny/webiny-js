@@ -33,6 +33,7 @@ import { PbPageData } from "~/types";
 import { FolderItem, LinkItem } from "@webiny/app-folders/types";
 import { Table } from "~/admin/components/Table/Table";
 import { Empty } from "~/admin/views/Pages/Table/Empty";
+import { Header } from "~/admin/components/Table/Header";
 
 interface Props {
     currentFolderId?: string;
@@ -45,7 +46,6 @@ const getCurrentFolderList = (
     if (!folders) {
         return [];
     }
-
     if (currentFolderId) {
         return folders.filter(folder => folder.parentId === currentFolderId);
     } else {
@@ -55,15 +55,13 @@ const getCurrentFolderList = (
 
 export const List = ({ currentFolderId }: Props) => {
     const client = useApolloClient();
-    const { folders, loading: foldersLoading } = useFolders("page");
+    const { folders } = useFolders("page");
     const { links } = useLinks(currentFolderId);
     const [pages, setPages] = useState<PbPageData[]>([]);
     const [subFolders, setSubFolders] = useState<FolderItem[]>([]);
-    const [pagesLoading, setPagesLoading] = useState<boolean>(false);
 
     const getPagesByLinks = async (links: LinkItem[]) => {
-        setPagesLoading(true);
-        const results = Promise.all(
+        return Promise.all(
             links.map(async link => {
                 const { data: response } = await client.query<
                     GetPageQueryResponse,
@@ -82,11 +80,6 @@ export const List = ({ currentFolderId }: Props) => {
                 return data;
             })
         );
-
-        return results.then(data => {
-            setPagesLoading(false);
-            return data;
-        });
     };
 
     useEffect(() => {
@@ -106,10 +99,9 @@ export const List = ({ currentFolderId }: Props) => {
     return pages.length === 0 && subFolders.length === 0 ? (
         <Empty canCreate={true} onCreatePage={() => console.log("ciao")} />
     ) : (
-        <Table
-            folders={subFolders}
-            pages={pages}
-            loading={pagesLoading || !!foldersLoading.LIST_FOLDERS}
-        />
+        <>
+            <Header />
+            <Table folders={subFolders} pages={pages} />
+        </>
     );
 };
