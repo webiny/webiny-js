@@ -14,10 +14,10 @@ import { DndProvider } from "react-dnd";
 import { useFolders } from "~/hooks/useFolders";
 
 import { CreateButton } from "./ButtonCreate";
-import { CreateDialog } from "./DialogCreate";
 import { Node } from "./Node";
 import { NodePreview } from "./NodePreview";
 import { Title } from "./Title";
+import { FolderDialogCreate } from "~/components";
 
 import { Container } from "./styled";
 
@@ -152,10 +152,11 @@ export const FolderTree: React.FC<Props> = ({ type, title, focusedFolderId, onFo
             )}
 
             <CreateButton onClick={() => setCreateDialogOpen(true)} />
-            <CreateDialog
+            <FolderDialogCreate
                 type={type}
                 open={createDialogOpen}
                 onClose={() => setCreateDialogOpen(false)}
+                parentId={undefined}
             />
         </Container>
     );
