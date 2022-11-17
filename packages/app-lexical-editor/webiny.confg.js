@@ -1,4 +1,4 @@
-const { createWatchPackage, createBuildPackage } = require("@webiny/app-lexical-editor");
+const { createWatchPackage, createBuildPackage } = require("@webiny/project-utils");
 
 module.exports = {
     commands: {

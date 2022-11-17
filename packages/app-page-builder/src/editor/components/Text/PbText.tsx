@@ -8,6 +8,7 @@ import { elementWithChildrenByIdSelector, activeElementAtom, uiAtom } from "../.
 import { ElementRoot } from "~/render/components/ElementRoot";
 import useUpdateHandlers from "../../plugins/elementSettings/useUpdateHandlers";
 import ReactMediumEditor from "../../components/MediumEditor";
+import TextLexicalEditor from "../../components/LexicalEditor";
 import { applyFallbackDisplayMode } from "../../plugins/elementSettings/elementSettingsUtils";
 
 export const textClassName = "webiny-pb-base-page-element-style webiny-pb-page-element-text";
@@ -66,14 +67,7 @@ const PbText: React.FC<TextElementProps> = ({ elementId, mediumEditorOptions, ro
             element={element}
             className={classNames(textClassName, rootClassName, typography)}
         >
-            <ReactMediumEditor
-                elementId={elementId}
-                tag={tag}
-                value={textContent}
-                onChange={onChange}
-                options={mediumEditorOptions}
-                onSelect={onSelect}
-            />
+            <TextLexicalEditor />
         </ElementRoot>
     );
 };
