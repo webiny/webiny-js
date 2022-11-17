@@ -11,11 +11,12 @@ import statusLabels from "~/admin/constants/pageStatusesLabels";
 import { FolderItem } from "@webiny/app-folders/types";
 import { PbPageData } from "~/types";
 import { orderBy } from "lodash";
+import { ReactComponent as More } from "@material-design-icons/svg/filled/more_vert.svg";
+import { Menu, MenuItem } from "@webiny/ui/Menu";
 
 interface Props {
     pages: PbPageData[];
     folders: FolderItem[];
-    loading: boolean;
 }
 
 interface Entry {
@@ -27,9 +28,10 @@ interface Entry {
     status?: string;
     version?: number;
     category?: string;
+    actions: boolean;
 }
 
-export const Table = ({ folders, pages, loading }: Props) => {
+export const Table = ({ folders, pages }: Props) => {
     const [data, setData] = useState<Entry[]>([]);
 
     const createPagesData = useCallback(
@@ -42,7 +44,8 @@ export const Table = ({ folders, pages, loading }: Props) => {
                 savedOn: item?.savedOn,
                 status: item.status,
                 version: item.version,
-                category: item.category.name
+                category: item.category.name,
+                actions: true
             }));
         },
         [pages]
@@ -55,7 +58,8 @@ export const Table = ({ folders, pages, loading }: Props) => {
                 type: "FOLDER",
                 title: item.name,
                 createdBy: item.createdBy.displayName || "-",
-                savedOn: item.createdOn
+                savedOn: item.createdOn,
+                actions: false
             }));
         },
         [folders]
@@ -100,12 +104,33 @@ export const Table = ({ folders, pages, loading }: Props) => {
                     return "-";
                 }
             }
+        },
+        actions: {
+            header: "",
+            meta: {
+                hasFormControl: true,
+                alignMiddle: true
+            },
+            cell: ({ actions }) => {
+                if (actions) {
+                    return (
+                        <Menu handle={<More />}>
+                            <MenuItem>Edit</MenuItem>
+                            <MenuItem>Preview</MenuItem>
+                            <MenuItem>Publish</MenuItem>
+                            <MenuItem>Delete</MenuItem>
+                        </Menu>
+                    );
+                } else {
+                    return <></>;
+                }
+            }
         }
     };
 
     return (
-        <>
-            <DataTable columns={columns} data={data} loadingInitial={loading} />
-        </>
+        <div style={{ padding: 24 }}>
+            <DataTable columns={columns} data={data} />
+        </div>
     );
 };
