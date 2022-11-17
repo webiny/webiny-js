@@ -15,6 +15,8 @@ import { createModelsStorageOperations } from "~/operations/model";
 import { createEntriesStorageOperations } from "./operations/entry";
 import { CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
 
+export * from "./plugins";
+
 export const createStorageOperations: StorageOperationsFactory = params => {
     const { attributes, table, documentClient, plugins: userPlugins } = params;
 
