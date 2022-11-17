@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-lexical-editor",
-  "version": "0.0.1",
+  "version": "5.33.1",
   "description": "Core framework of the Webiny admin app.",
   "repository": {
     "type": "git",
@@ -8,17 +8,18 @@
   },
   "private": true,
   "dependencies": {
-    "@lexical/link": "^0.6.0",
-    "@lexical/plain-text": "^0.6.0",
+    "@lexical/code": "0.6.0",
     "@lexical/react": "^0.6.0",
-    "@types/node": "^16.18.3",
-    "@types/react": "^18.0.25",
-    "@types/react-dom": "^18.0.9",
+    "@lexical/selection": "0.6.0",
+    "@lexical/utils": "0.6.0",
     "lexical": "^0.6.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-scripts": "5.0.1",
-    "typescript": "^4.8.4"
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@lexical/link": "^0.6.0",
+    "@webiny/cli": "^5.33.1",
+    "@webiny/project-utils": "^5.33.1"
   },
   "publishConfig": {
     "access": "public",

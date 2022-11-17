@@ -12,7 +12,6 @@ import { $isCodeHighlightNode } from "@lexical/code";
 import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
-import { $patchStyleText } from "@lexical/selection";
 import {
     $getSelection,
     $isRangeSelection,

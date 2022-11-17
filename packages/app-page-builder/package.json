@@ -27,6 +27,7 @@
     "@webiny/app": "^5.33.1",
     "@webiny/app-admin": "^5.33.1",
     "@webiny/app-i18n": "^5.33.1",
+    "@webiny/app-lexical-editor": "^5.33.1",
     "@webiny/app-page-builder-elements": "^5.33.1",
     "@webiny/app-plugin-admin-welcome-screen": "^5.33.1",
     "@webiny/app-security": "^5.33.1",

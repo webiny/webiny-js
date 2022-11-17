@@ -16,7 +16,9 @@ export const sanitizeUrl = (url: string): string => {
 
     url = String(url).trim();
 
-    if (url.match(SAFE_URL_PATTERN) || url.match(DATA_URL_PATTERN)) return url;
+    if (url.match(SAFE_URL_PATTERN) || url.match(DATA_URL_PATTERN)) {
+        return url;
+    }
 
     return `https://`;
 };
