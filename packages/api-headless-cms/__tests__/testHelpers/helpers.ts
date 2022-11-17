@@ -13,7 +13,7 @@ export interface PermissionsArg {
 }
 
 export const identity = {
-    id: "12345678",
+    id: "id-12345678",
     displayName: "John Doe",
     type: "admin"
 };

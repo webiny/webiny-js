@@ -13,10 +13,9 @@ import exportPagesCombinePlugins from "@webiny/api-page-builder-import-export/ex
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
-import elasticSearch from "@webiny/api-elasticsearch";
+import elasticSearch, { createElasticsearchClient } from "@webiny/api-elasticsearch";
 import logsPlugins from "@webiny/handler-logs";
 import securityPlugins from "./security";
-import { createElasticsearchClient } from "@webiny/api-elasticsearch/client";
 
 const documentClient = new DocumentClient({
     convertEmptyValues: true,

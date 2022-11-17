@@ -1,5 +1,6 @@
 import { Plugin, PluginCollection } from "@webiny/plugins/types";
 import {
+    CmsContext as BaseCmsContext,
     CmsEntry,
     CmsModel,
     CmsModelField,
@@ -170,7 +171,7 @@ export interface StorageOperationsFactoryParams {
     plugins?: PluginCollection;
 }
 
-export interface HeadlessCmsStorageOperations extends BaseHeadlessCmsStorageOperations {
+export interface HeadlessCmsStorageOperations extends BaseHeadlessCmsStorageOperations<CmsContext> {
     getTable: () => Table;
     getEsTable: () => Table;
     getEntities: () => Record<
@@ -181,4 +182,8 @@ export interface HeadlessCmsStorageOperations extends BaseHeadlessCmsStorageOper
 
 export interface StorageOperationsFactory {
     (params: StorageOperationsFactoryParams): HeadlessCmsStorageOperations;
+}
+
+export interface CmsContext extends BaseCmsContext {
+    [key: string]: any;
 }

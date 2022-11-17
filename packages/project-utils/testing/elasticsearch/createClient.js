@@ -1,4 +1,4 @@
-const { createElasticsearchClient } = require("../../../api-elasticsearch/dist/client");
+const { createElasticsearchClient } = require("../../../api-elasticsearch/dist");
 
 const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || 9200;
 

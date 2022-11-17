@@ -33,7 +33,6 @@ import lodashOmit from "lodash/omit";
 import { Entity } from "dynamodb-toolbox";
 import { Client } from "@elastic/elasticsearch";
 import { PluginsContainer } from "@webiny/plugins";
-import { compress, decompress } from "@webiny/api-elasticsearch/compression";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
 import { DataLoadersHandler } from "~/operations/entry/dataLoaders";
 import {
@@ -43,8 +42,7 @@ import {
     createRevisionSortKey
 } from "~/operations/entry/keys";
 import { queryAll, queryOne, QueryOneParams } from "@webiny/db-dynamodb/utils/query";
-import { createLimit } from "@webiny/api-elasticsearch/limit";
-import { encodeCursor } from "@webiny/api-elasticsearch/cursors";
+import { createLimit, encodeCursor, compress, decompress } from "@webiny/api-elasticsearch";
 import { get as getRecord } from "@webiny/db-dynamodb/utils/get";
 import { zeroPad } from "@webiny/utils";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";

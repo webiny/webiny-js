@@ -11,6 +11,7 @@ import {
     OnModelAfterUpdateTopicParams,
     OnModelBeforeDeleteTopicParams,
     OnModelAfterDeleteTopicParams,
+    OnModelInitializeParams,
     OnModelBeforeCreateFromTopicParams,
     OnModelAfterCreateFromTopicParams,
     CmsModelCreateInput,
@@ -266,6 +267,8 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
     const onModelBeforeDelete =
         createTopic<OnModelBeforeDeleteTopicParams>("cms.onModelBeforeDelete");
     const onModelAfterDelete = createTopic<OnModelAfterDeleteTopicParams>("cms.onModelAfterDelete");
+
+    const onModelInitialize = createTopic<OnModelInitializeParams>("cms.onModelInitialize");
     /**
      * We need to assign some default behaviors.
      */
@@ -325,6 +328,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         onModelAfterUpdate,
         onModelBeforeDelete,
         onModelAfterDelete,
+        onModelInitialize,
         clearModelsCache,
         getModel,
         listModels,
@@ -596,6 +600,19 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
             });
 
             managers.delete(model.modelId);
+        },
+        async initializeModel(modelId) {
+            /**
+             * We require that users have write permissions to initialize models.
+             * Maybe introduce another permission for it?
+             */
+            await checkModelPermissions("w");
+
+            const model = await getModel(modelId);
+
+            await onModelInitialize.publish({ model });
+
+            return true;
         },
         getModelManager,
         getEntryManager: async model => {
