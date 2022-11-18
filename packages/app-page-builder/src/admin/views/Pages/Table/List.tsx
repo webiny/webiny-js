@@ -100,7 +100,11 @@ export const List = ({ currentFolderId }: Props) => {
                 />
             ) : (
                 <Container>
-                    <Header onCreatePage={openCategoryDialog} onCreateFolder={openFoldersDialog} />
+                    <Header
+                        canCreate={canCreate}
+                        onCreatePage={openCategoryDialog}
+                        onCreateFolder={openFoldersDialog}
+                    />
                     <Table folders={subFolders} pages={pages} />
                 </Container>
             )}
