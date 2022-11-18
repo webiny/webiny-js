@@ -326,7 +326,6 @@ const PagesDataList: React.FC<PagesDataListProps> = ({ onCreatePage, canCreate, 
                 { data }: any // TODO @ts-refactor
             ) => (
                 <>
-                    {console.log(data)}
                     <Scrollbar
                         data-testid="default-data-list"
                         onScrollFrame={scrollFrame =>
