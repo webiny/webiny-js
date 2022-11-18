@@ -29,7 +29,7 @@ export default (args: PbEditorElementPluginArgs = {}) => {
     const elementType = kebabCase(args.elementType || "youtube");
     const defaultToolbar = {
         title: "Youtube",
-        group: "pb-editor-element-group-media",
+        group: "pb-editor-element-group-embeds",
         preview() {
             return (
                 <PreviewBox>

@@ -26,7 +26,7 @@ export default (args: PbEditorElementPluginArgs = {}) => {
     const elementType = kebabCase(args.elementType || "soundcloud");
     const defaultToolbar = {
         title: "Soundcloud",
-        group: "pb-editor-element-group-media",
+        group: "pb-editor-element-group-embeds",
         preview() {
             return (
                 <PreviewBox>

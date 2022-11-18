@@ -27,7 +27,7 @@ export default (args: PbEditorElementPluginArgs = {}) => {
     const elementType = kebabCase(args.elementType || "vimeo");
     const defaultToolbar = {
         title: "Vimeo",
-        group: "pb-editor-element-group-media",
+        group: "pb-editor-element-group-embeds",
         preview() {
             return (
                 <PreviewBox>
