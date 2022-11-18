@@ -11,6 +11,7 @@ import {
 } from "@webiny/handler";
 import { registerDefaultPlugins } from "~/plugins";
 import { Base64EncodeHeader } from "~/types";
+import { APIGatewayProxyEventHeaders } from "aws-lambda/trigger/api-gateway-proxy";
 
 export interface HandlerCallable {
     (event: APIGatewayEvent, ctx: LambdaContext): Promise<LambdaResponse>;
@@ -22,6 +23,37 @@ export interface CreateHandlerParams extends BaseCreateHandlerParams {
     };
     lambdaOptions?: LambdaOptions;
 }
+
+const getHeader = (headers: APIGatewayProxyEventHeaders, header: string): string | undefined => {
+    for (const key in headers) {
+        if (key.toLowerCase() !== header) {
+            continue;
+        }
+        return headers[key];
+    }
+    return undefined;
+};
+
+const defaultContentType = "application/json";
+const defaultCharset = "utf-8";
+/**
+ * We need to attach default headers to the request, so it does not break if there is none sent.
+ */
+const attachRequiredProperties = (event: APIGatewayEvent): void => {
+    if (!event.headers) {
+        event.headers = {};
+    }
+    const contentType = getHeader(event.headers, "content-type");
+    if (!contentType) {
+        event.headers["content-type"] = [defaultContentType, `charset=${defaultCharset}`].join(";");
+    }
+    /**
+     * If the content type is
+     */
+    if (!event.body && event.headers["content-type"]!.startsWith(defaultContentType)) {
+        event.body = "{}";
+    }
+};
 
 export const createHandler = (params: CreateHandlerParams): HandlerCallable => {
     return (event, context) => {
@@ -42,6 +74,8 @@ export const createHandler = (params: CreateHandlerParams): HandlerCallable => {
                 `To run @webiny/handler-aws/gateway, you must have at least one RoutePlugin set.`
             );
         }
+        attachRequiredProperties(event);
+
         const appLambda = awsLambdaFastify(app, {
             decorateRequest: true,
             serializeLambdaArguments: true,
