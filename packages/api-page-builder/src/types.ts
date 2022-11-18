@@ -411,6 +411,10 @@ export interface Settings {
         instagram: string;
         image: File;
     };
+    htmlTags: {
+        header: string;
+        footer: string;
+    };
     pages: {
         home: string;
         notFound: string;

@@ -27,6 +27,10 @@ const fields = /* GraphQL */ `
                     src
                 }
             }
+            htmlTags {
+                header
+                footer
+            }
         }
         error {
             message
@@ -60,6 +64,10 @@ export interface GetSettingsResponseData {
             id: string;
             src: string;
         };
+    };
+    htmlTags: {
+        header: string;
+        footer: string;
     };
 }
 
@@ -124,6 +132,10 @@ export interface UpdateSettingsMutationVariablesData {
             id: string;
             src: string;
         };
+    };
+    htmlTags?: {
+        header: string;
+        footer: string;
     };
     pages?: {
         home: string;

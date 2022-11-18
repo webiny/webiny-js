@@ -21,6 +21,11 @@ export const createSettingsGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                     image: PbFile
                 }
 
+                type PbHtmlTags {
+                    header: String
+                    footer: String
+                }
+
                 type PbSettingsPrerenderingStorage {
                     name: String
                 }
@@ -41,6 +46,7 @@ export const createSettingsGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                     websiteUrl: String
                     websitePreviewUrl: String
                     social: PbSocialMedia
+                    htmlTags: PbHtmlTags
                     pages: PbSettingsPages
                     prerendering: PbSettingsPrerendering
                 }
@@ -95,6 +101,11 @@ export const createSettingsGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                     image: PbFileInput
                 }
 
+                input PbHtmlTagsInput {
+                    header: String
+                    footer: String
+                }
+
                 input PbDefaultPageInput {
                     id: String
                     title: String
@@ -107,6 +118,7 @@ export const createSettingsGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                     favicon: PbFileInput
                     logo: PbFileInput
                     social: PbSocialMediaInput
+                    htmlTags: PbHtmlTagsInput
                     pages: PbSettingsPagesInput
                     prerendering: PbSettingsPrerenderingInput
                 }
