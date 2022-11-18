@@ -1,10 +1,3 @@
-/*
-PROBLEMS:
-- How to show links at root level? no reference between linkId and entryId?
-    - SOLUTION: create a linkId for each entry within the system - the link will be referenced to ROOT
-- Should we run an upgrade script to create a linkId for each entry within the system?
-*/
-
 import React, { useCallback, useEffect, useState } from "react";
 
 import { FolderDialogCreate, useFolders, useLinks } from "@webiny/app-folders";
@@ -19,6 +12,7 @@ import { CircularProgress } from "@webiny/ui/Progress";
 import CategoriesDialog from "~/admin/views/Categories/CategoriesDialog";
 import styled from "@emotion/styled";
 import { useCanCreatePage } from "~/admin/views/Pages/hooks/useCanCreate";
+import { FOLDER_ID_DEFAULT, FOLDER_TYPE } from "~/admin/constants/folders";
 
 interface Props {
     currentFolderId?: string;
@@ -47,8 +41,8 @@ const getCurrentFolderList = (
 };
 
 export const List = ({ currentFolderId }: Props) => {
-    const { folders } = useFolders("page");
-    const { links } = useLinks(currentFolderId);
+    const { folders } = useFolders(FOLDER_TYPE);
+    const { links } = useLinks(currentFolderId || FOLDER_ID_DEFAULT);
     const { pages } = useGetPages(links);
     const [subFolders, setSubFolders] = useState<FolderItem[]>([]);
 
@@ -72,7 +66,8 @@ export const List = ({ currentFolderId }: Props) => {
     const { createPageMutation } = useCreatePage({
         setLoadingLabel: () => setLoadingLabel(LoadingLabel.CREATING_PAGE),
         clearLoadingLabel: () => setLoadingLabel(null),
-        closeDialog: closeCategoryDialog
+        closeDialog: closeCategoryDialog,
+        folderId: currentFolderId
     });
 
     return (

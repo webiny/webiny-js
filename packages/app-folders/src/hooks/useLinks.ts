@@ -2,7 +2,7 @@ import { useContext, useEffect, useMemo } from "react";
 import { LinksContext } from "~/contexts/links";
 import { LinkItem } from "~/types";
 
-export const useLinks = (folderId = "ROOT") => {
+export const useLinks = (folderId: string) => {
     const context = useContext(LinksContext);
 
     if (!context) {
