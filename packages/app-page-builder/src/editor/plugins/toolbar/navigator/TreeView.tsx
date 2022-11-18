@@ -5,7 +5,7 @@ import { Typography } from "@webiny/ui/Typography";
 import { Icon } from "@webiny/ui/Icon";
 import { activeElementAtom, elementByIdSelector, uiAtom } from "~/editor/recoil/modules";
 import { ReactComponent as VisibilityOffIcon } from "~/editor/assets/icons/visibility_off_24px.svg";
-import { useVisibilitySetting } from "~/editor/plugins/elementSettings/visibility/VisibilitySettings";
+import { useVisibilitySetting } from "~/editor/plugins/elementSettings/property/PropertySettings";
 import { ElementTypeContainer } from "./StyledComponents";
 import CollapsableList from "./CollapsableList";
 import DragBlockIndicator from "./DragBlockIndicator";

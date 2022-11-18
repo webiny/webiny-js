@@ -4,10 +4,10 @@ import { PbRenderElementStylePlugin } from "~/types";
 import { applyPerDeviceStyleWithFallback } from "../../../utils";
 
 export default {
-    name: "pb-render-page-element-style-visibility",
+    name: "pb-render-page-element-style-property",
     type: "pb-render-page-element-style",
     renderStyle({ element, style }) {
-        const visibility = get(element, "data.settings.visibility");
+        const visibility = get(element, "data.settings.property.visibility");
 
         // Set per-device property value
         applyPerDeviceStyleWithFallback(({ displayMode, fallbackMode }) => {

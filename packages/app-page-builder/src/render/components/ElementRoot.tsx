@@ -64,13 +64,15 @@ const ElementRootComponent: React.FC<ElementRootProps> = ({
         const attributePlugins = plugins.byType<PbRenderElementAttributesPlugin>(
             "pb-render-page-element-attributes"
         );
+        const customId = element.data.settings?.property?.id;
+
         return attributePlugins.reduce((accumulatedAttributes, plugin) => {
             return plugin.renderAttributes({
                 element: shallowElement,
-                attributes: accumulatedAttributes
+                attributes: { ...accumulatedAttributes, ...(customId && { id: customId }) }
             });
         }, {});
-    }, [shallowElement.id]);
+    }, [shallowElement.id, element.data.settings?.property?.id]);
 
     const {
         responsiveDisplayMode: { displayMode }
@@ -87,7 +89,7 @@ const ElementRootComponent: React.FC<ElementRootProps> = ({
         return null;
     }
 
-    const classNames = element.data.settings?.className || "";
+    const classNames = element.data.settings?.property?.className || "";
 
     const getAllClasses = (...extraClasses: string[]): string => {
         return [className, ...extraClasses, ...classNames.split(" ")]
