@@ -9,7 +9,7 @@ import { ElementRoot } from "~/render/components/ElementRoot";
 import useUpdateHandlers from "../../plugins/elementSettings/useUpdateHandlers";
 import ReactMediumEditor from "../../components/MediumEditor";
 import { applyFallbackDisplayMode } from "../../plugins/elementSettings/elementSettingsUtils";
-//import TextLexicalEditor from "../../components/LexicalEditor";
+import TextLexicalEditor from "../../components/LexicalEditor";
 
 export const textClassName = "webiny-pb-base-page-element-style webiny-pb-page-element-text";
 const DATA_NAMESPACE = "data.text";
@@ -67,7 +67,7 @@ const PbText: React.FC<TextElementProps> = ({ elementId, mediumEditorOptions, ro
             element={element}
             className={classNames(textClassName, rootClassName, typography)}
         >
-            {/* <TextLexicalEditor /> */}
+            <TextLexicalEditor />
             <ReactMediumEditor
                 elementId={elementId}
                 tag={tag}
