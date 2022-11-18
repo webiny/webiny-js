@@ -89,7 +89,8 @@
                     "es:GetCompatibleElasticsearchVersions",
                     "es:ListTags",
                     "es:RemoveTags",
-                    "es:UpdateElasticsearchDomainConfig"
+                    "es:UpdateElasticsearchDomainConfig",
+                    "es:DescribeElasticsearchDomainConfig"
                   ],
                   "Resource": "*"
                 },
