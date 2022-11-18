@@ -40,17 +40,23 @@ const defaultCharset = "utf-8";
  * We need to attach default headers to the request, so it does not break if there is none sent.
  */
 const attachRequiredProperties = (event: APIGatewayEvent): void => {
+    /**
+     * A possibility that headers are not defined?
+     * Maybe during testing?
+     */
     if (!event.headers) {
         event.headers = {};
     }
     const contentType = getHeader(event.headers, "content-type");
+    /**
+     * We check the existing content type and add the default one if it does not exist.
+     *
+     * Also, if the content-type is the application/json, and the body is not sent, we add it.
+     */
     if (!contentType) {
         event.headers["content-type"] = [defaultContentType, `charset=${defaultCharset}`].join(";");
-    }
-    /**
-     * If the content type is
-     */
-    if (!event.body && event.headers["content-type"]!.startsWith(defaultContentType)) {
+        event.body = "{}";
+    } else if (!event.body && contentType.startsWith(defaultContentType)) {
         event.body = "{}";
     }
 };
