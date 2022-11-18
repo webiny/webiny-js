@@ -40,7 +40,7 @@ const PbText: React.FC<TextElementProps> = ({ elementId, mediumEditorOptions, ro
 
     const initialText = useMemo(
         () => variableValue || get(element, `${DATA_NAMESPACE}.data.text`),
-        [variableValue]
+        [variableValue, element]
     );
 
     const value = get(element, `${DATA_NAMESPACE}.${displayMode}`, fallbackValue);
