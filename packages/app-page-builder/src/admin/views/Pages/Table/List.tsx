@@ -18,6 +18,7 @@ import useCreatePage from "~/admin/views/Pages/hooks/useCreatePage";
 import { CircularProgress } from "@webiny/ui/Progress";
 import CategoriesDialog from "~/admin/views/Categories/CategoriesDialog";
 import styled from "@emotion/styled";
+import { useCanCreatePage } from "~/admin/views/Pages/hooks/useCanCreate";
 
 interface Props {
     currentFolderId?: string;
@@ -60,6 +61,8 @@ export const List = ({ currentFolderId }: Props) => {
     const openFoldersDialog = useCallback(() => setFoldersDialog(true), []);
     const closeFoldersDialog = useCallback(() => setFoldersDialog(false), []);
 
+    const canCreate = useCanCreatePage();
+
     // TODO: test with https://github.com/kentcdodds/use-deep-compare-effect
     useEffect(() => {
         const subFolders = getCurrentFolderList(folders, currentFolderId);
@@ -91,7 +94,7 @@ export const List = ({ currentFolderId }: Props) => {
 
             {pages.length === 0 && subFolders.length === 0 ? (
                 <Empty
-                    canCreate={true}
+                    canCreate={canCreate}
                     onCreatePage={openCategoryDialog}
                     onCreateFolder={openFoldersDialog}
                 />
