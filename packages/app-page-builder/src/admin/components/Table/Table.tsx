@@ -1,18 +1,20 @@
 import React, { useCallback, useEffect, useState } from "react";
+
+import { ReactComponent as More } from "@material-design-icons/svg/filled/more_vert.svg";
+import { FolderItem } from "@webiny/app-folders/types";
 import { Columns, DataTable } from "@webiny/ui/DataTable";
+import { Menu, MenuItem } from "@webiny/ui/Menu";
 /**
  * Package timeago-react does not have types.
  */
 // @ts-ignore
 import TimeAgo from "timeago-react";
+import { orderBy } from "lodash";
 
 import { FolderName, PageName } from "~/admin/components/Table/RowName";
 import statusLabels from "~/admin/constants/pageStatusesLabels";
-import { FolderItem } from "@webiny/app-folders/types";
+
 import { PbPageData } from "~/types";
-import { orderBy } from "lodash";
-import { ReactComponent as More } from "@material-design-icons/svg/filled/more_vert.svg";
-import { Menu, MenuItem } from "@webiny/ui/Menu";
 
 interface Props {
     pages: PbPageData[];
@@ -69,7 +71,7 @@ export const Table = ({ folders, pages }: Props) => {
         const foldersData = createFoldersData(folders);
         const pagesData = createPagesData(pages);
 
-        const dataset = orderBy([...foldersData, ...pagesData], "type", "asc");
+        const dataset = orderBy([...foldersData, ...pagesData], ["type", "name"], ["asc", "asc"]);
         setData(dataset);
     }, [folders, pages]);
 
