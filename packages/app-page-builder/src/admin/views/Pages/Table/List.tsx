@@ -57,11 +57,10 @@ export const List = ({ currentFolderId }: Props) => {
 
     const canCreate = useCanCreatePage();
 
-    // TODO: test with https://github.com/kentcdodds/use-deep-compare-effect
     useEffect(() => {
         const subFolders = getCurrentFolderList(folders, currentFolderId);
         setSubFolders(subFolders);
-    }, [folders, currentFolderId]);
+    }, [folders.map(folder => folder.parentId).join("."), currentFolderId]);
 
     const { createPageMutation } = useCreatePage({
         setLoadingLabel: () => setLoadingLabel(LoadingLabel.CREATING_PAGE),
