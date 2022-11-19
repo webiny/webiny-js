@@ -65,7 +65,7 @@ const createInitialOpenList = (
 
     const result = folders.reduce(
         (acc, curr): string[] => {
-            if (curr.parentId && acc.some(el => el === curr?.parentId)) {
+            if (curr.parentId && acc.some(el => el === curr?.id)) {
                 acc.push(curr.parentId);
             }
 
