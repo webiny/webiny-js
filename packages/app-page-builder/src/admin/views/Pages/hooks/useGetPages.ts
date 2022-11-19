@@ -41,8 +41,7 @@ const useGetPages = (links: LinkItem[]) => {
         }
 
         getPagesData();
-    }, [JSON.stringify(links)]);
-    //TODO: test https://github.com/kentcdodds/use-deep-compare-effect
+    }, [links.map(link => link.id).join(".")]);
 
     return {
         pages,
