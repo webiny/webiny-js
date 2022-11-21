@@ -1,9 +1,9 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 import { ReactComponent as More } from "@material-design-icons/svg/filled/more_vert.svg";
-import { FolderItem } from "@webiny/app-folders/types";
+import { FolderItem, LinkItem } from "@webiny/app-folders/types";
 import { Columns, DataTable } from "@webiny/ui/DataTable";
-import { Menu, MenuItem } from "@webiny/ui/Menu";
+import { Menu } from "@webiny/ui/Menu";
 /**
  * Package timeago-react does not have types.
  */
@@ -11,14 +11,22 @@ import { Menu, MenuItem } from "@webiny/ui/Menu";
 import TimeAgo from "timeago-react";
 import { orderBy } from "lodash";
 
-import { FolderName, PageName } from "~/admin/components/Table/RowName";
+import { FolderName, PageName } from "~/admin/components/Table/Row/RowName";
 import statusLabels from "~/admin/constants/pageStatusesLabels";
 
-import { PbPageData } from "~/types";
+import { PbPageDataLink } from "~/types";
+import RowActionDelete from "~/admin/components/Table/Row/RowActionDelete";
+import RowActionEdit from "~/admin/components/Table/Row/RowActionEdit";
+import RowActionPreviewPage from "~/admin/components/Table/Row/RowActionPreview";
+import RowActionPublishPage from "~/admin/components/Table/Row/RowActionPublish";
+import RowActionDeleteFolder from "~/admin/components/Table/Row/RowActionDeleteFolder";
 
 interface Props {
-    pages: PbPageData[];
+    pages: PbPageDataLink[];
     folders: FolderItem[];
+    loading?: boolean;
+    onDeletePage: (link: LinkItem) => void;
+    deleteFolder: (folder: FolderItem) => Promise<boolean>;
 }
 
 interface Entry {
@@ -30,42 +38,38 @@ interface Entry {
     status?: string;
     version?: number;
     category?: string;
-    actions: boolean;
+    original?: PbPageDataLink | FolderItem;
 }
 
-export const Table = ({ folders, pages }: Props) => {
+export const Table = ({ folders, pages, loading, onDeletePage, deleteFolder }: Props) => {
     const [data, setData] = useState<Entry[]>([]);
 
-    const createPagesData = useCallback(
-        (items: PbPageData[]): Entry[] => {
-            return items.map(item => ({
+    const createPagesData = useMemo(() => {
+        return (items: PbPageDataLink[]): Entry[] =>
+            items.map(item => ({
                 id: item.id,
                 type: "PAGE",
                 title: item.title,
                 createdBy: item.createdBy.displayName || "-",
-                savedOn: item?.savedOn,
+                savedOn: item.savedOn,
                 status: item.status,
                 version: item.version,
                 category: item.category.name,
-                actions: true
+                original: item as PbPageDataLink
             }));
-        },
-        [pages]
-    );
+    }, [pages]);
 
-    const createFoldersData = useCallback(
-        (items: FolderItem[]): Entry[] => {
-            return items.map(item => ({
+    const createFoldersData = useMemo(() => {
+        return (items: FolderItem[]): Entry[] =>
+            items.map(item => ({
                 id: item.id,
                 type: "FOLDER",
                 title: item.name,
                 createdBy: item.createdBy.displayName || "-",
                 savedOn: item.createdOn,
-                actions: false
+                original: item as FolderItem
             }));
-        },
-        [folders]
-    );
+    }, [folders]);
 
     useEffect(() => {
         const foldersData = createFoldersData(folders);
@@ -107,28 +111,41 @@ export const Table = ({ folders, pages }: Props) => {
                 }
             }
         },
-        actions: {
+        original: {
             header: "",
             meta: {
                 hasFormControl: true,
                 alignMiddle: true
             },
-            cell: ({ actions }) => {
-                if (actions) {
+            cell: ({ type, original }) => {
+                if (!original) {
+                    return <></>;
+                }
+                if (type === "PAGE") {
                     return (
                         <Menu handle={<More />}>
-                            <MenuItem>Edit</MenuItem>
-                            <MenuItem>Preview</MenuItem>
-                            <MenuItem>Publish</MenuItem>
-                            <MenuItem>Delete</MenuItem>
+                            <RowActionEdit page={original as PbPageDataLink} />
+                            <RowActionPreviewPage page={original as PbPageDataLink} />
+                            <RowActionPublishPage page={original as PbPageDataLink} />
+                            <RowActionDelete
+                                page={original as PbPageDataLink}
+                                onDeletePageSuccess={onDeletePage}
+                            />
                         </Menu>
                     );
                 } else {
-                    return <></>;
+                    return (
+                        <Menu handle={<More />}>
+                            <RowActionDeleteFolder
+                                folder={original as FolderItem}
+                                deleteFolder={deleteFolder}
+                            />
+                        </Menu>
+                    );
                 }
             }
         }
     };
 
-    return <DataTable columns={columns} data={data} />;
+    return <DataTable columns={columns} data={data} loadingInitial={loading} />;
 };

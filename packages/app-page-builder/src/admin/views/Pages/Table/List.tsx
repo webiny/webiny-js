@@ -41,8 +41,8 @@ const getCurrentFolderList = (
 };
 
 export const List = ({ currentFolderId }: Props) => {
-    const { folders } = useFolders(FOLDER_TYPE);
-    const { links } = useLinks(currentFolderId || FOLDER_ID_DEFAULT);
+    const { folders = [], deleteFolder } = useFolders(FOLDER_TYPE);
+    const { links, createLink, deleteLink } = useLinks(currentFolderId || FOLDER_ID_DEFAULT);
     const { pages } = useGetPages(links);
     const [subFolders, setSubFolders] = useState<FolderItem[]>([]);
 
@@ -66,7 +66,9 @@ export const List = ({ currentFolderId }: Props) => {
         setLoadingLabel: () => setLoadingLabel(LoadingLabel.CREATING_PAGE),
         clearLoadingLabel: () => setLoadingLabel(null),
         closeDialog: closeCategoryDialog,
-        folderId: currentFolderId
+        onCreatePageSuccess: id => {
+            createLink({ id, folderId: currentFolderId || FOLDER_ID_DEFAULT });
+        }
     });
 
     return (
@@ -99,7 +101,12 @@ export const List = ({ currentFolderId }: Props) => {
                         onCreatePage={openCategoryDialog}
                         onCreateFolder={openFoldersDialog}
                     />
-                    <Table folders={subFolders} pages={pages} />
+                    <Table
+                        folders={subFolders}
+                        pages={pages}
+                        onDeletePage={deleteLink}
+                        deleteFolder={deleteFolder}
+                    />
                 </Container>
             )}
         </>
