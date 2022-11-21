@@ -5615,6 +5615,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@lexical/html@npm:0.6.2":
+  version: 0.6.2
+  resolution: "@lexical/html@npm:0.6.2"
+  dependencies:
+    "@lexical/selection": 0.6.2
+  peerDependencies:
+    lexical: 0.6.2
+  checksum: 78a76aa443a84096ac68140e6d70c9a57def734edc40a4bfebf5e16d5fff699cc3ceb6b9d0eac38002b7e9bbdeb7b741b029bea90fc3fac77273aba40f98ae7b
+  languageName: node
+  linkType: hard
+
 "@lexical/link@npm:0.6.0, @lexical/link@npm:^0.6.0":
   version: 0.6.0
   resolution: "@lexical/link@npm:0.6.0"
@@ -5742,6 +5753,15 @@ __metadata:
   peerDependencies:
     lexical: 0.6.0
   checksum: 457a36be17128e73f01102a2e034914106fa9ac9035a8f50e666d11f95b7c5d108b946d93e671737444384fa05def5599f5605ae3d5300d925c6ac364e77adbd
+  languageName: node
+  linkType: hard
+
+"@lexical/selection@npm:0.6.2":
+  version: 0.6.2
+  resolution: "@lexical/selection@npm:0.6.2"
+  peerDependencies:
+    lexical: 0.6.2
+  checksum: 31466e20692b9a10d4564268002c59a8fc8b3c1ae8314ef712437b25637bb8db50df1baf7d3b2a7bb6e970c41c118871b3650c2ecdc59fcb731cf4066ceaaac4
   languageName: node
   linkType: hard
 
@@ -12147,6 +12167,7 @@ __metadata:
   resolution: "@webiny/app-lexical-editor@workspace:packages/app-lexical-editor"
   dependencies:
     "@lexical/code": 0.6.0
+    "@lexical/html": 0.6.2
     "@lexical/link": ^0.6.0
     "@lexical/react": ^0.6.0
     "@lexical/selection": 0.6.0
