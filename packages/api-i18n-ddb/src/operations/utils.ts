@@ -3,8 +3,8 @@ import { I18NContext } from "@webiny/api-i18n/types";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 
 export const getDocumentClient = (context: I18NContext): DocumentClient => {
-    const driver = context.db.driver as any;
-    if (!driver || !driver.documentClient) {
+    const driver = context.db?.driver as any;
+    if (!driver?.documentClient) {
         throw new WebinyError(
             `Missing documentDriver on the context db.driver property.`,
             "DOCUMENT_CLIENT_ERROR"

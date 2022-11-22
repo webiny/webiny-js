@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import get from "lodash/get";
+import dotPropImmutable from "dot-prop-immutable";
 import { i18n } from "@webiny/app/i18n";
 import { useConfirmationDialog, useSnackbar } from "@webiny/app-admin";
 import {
@@ -46,8 +46,11 @@ export const ApwOnEntryDelete: React.FC = () => {
                 },
                 fetchPolicy: "network-only"
             });
-            const contentReviewId = get(data, "apw.isReviewRequired.data.contentReviewId");
-            const error = get(data, "apw.isReviewRequired.error", null);
+            const contentReviewId = dotPropImmutable.get(
+                data,
+                "apw.isReviewRequired.data.contentReviewId"
+            );
+            const error = dotPropImmutable.get(data, "apw.isReviewRequired.error", null);
             if (error) {
                 // showSnackbar(error.message);
                 return next({ ...params, error });
@@ -70,7 +73,7 @@ export const ApwOnEntryDelete: React.FC = () => {
                     });
                 });
 
-                const error = get(response, "data.apw.deleteContentReview.error");
+                const error = dotPropImmutable.get(response, "data.apw.deleteContentReview.error");
                 if (error) {
                     showSnackbar(error.message);
                     return next({ ...params, error });

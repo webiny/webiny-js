@@ -1,6 +1,6 @@
 import WebinyError from "@webiny/error";
 import { Client } from "@elastic/elasticsearch";
-import { getLastAddedIndexPlugin } from "@webiny/api-elasticsearch/indices";
+import { getLastAddedIndexPlugin } from "@webiny/api-elasticsearch";
 import { PluginsContainer } from "@webiny/plugins";
 import { PageElasticsearchIndexPlugin } from "~/plugins/definitions/PageElasticsearchIndexPlugin";
 import { configurations } from "~/configurations";

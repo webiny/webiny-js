@@ -1,5 +1,5 @@
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import { createHandler } from "@webiny/handler-aws";
+import { createHandler } from "@webiny/handler-aws/raw";
 import i18nPlugins from "@webiny/api-i18n/graphql";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import {
@@ -16,7 +16,7 @@ import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
 import elasticSearch from "@webiny/api-elasticsearch";
 import logsPlugins from "@webiny/handler-logs";
 import securityPlugins from "./security";
-import { createElasticsearchClient } from "@webiny/api-elasticsearch/client";
+import { createElasticsearchClient } from "@webiny/api-elasticsearch";
 
 const documentClient = new DocumentClient({
     convertEmptyValues: true,

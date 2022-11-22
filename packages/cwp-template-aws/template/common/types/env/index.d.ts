@@ -40,10 +40,19 @@ declare namespace NodeJS {
         EXPORT_PAGES_PROCESS_HANDLER?: string;
         IMPORT_PAGES_CREATE_HANDLER?: string;
         PUBLIC_URL?: string;
-        HEADLESS_CMS_GRAPHQL_INPUT_REQUIRE_ARRAY_ITEM?: "false" | string;
+        WEBINY_HEADLESS_CMS_GRAPHQL_INPUT_REQUIRE_ARRAY_ITEM?: "false" | string;
         WEBINY_ELASTICSEARCH_INDEX_LOCALE?: "true" | string;
         APW_SCHEDULER_SCHEDULE_ACTION_HANDLER?: string;
         ELASTIC_SEARCH_ENDPOINT?: string;
         EVENT_BUS?: string;
+        /**
+         * api-mailer
+         */
+        WEBINY_MAILER_HOST?: string;
+        WEBINY_MAILER_USER?: string;
+        WEBINY_MAILER_PASSWORD?: string;
+        WEBINY_MAILER_REPLY_TO?: string;
+        WEBINY_MAILER_FROM?: string;
+        WEBINY_MAILER_PASSWORD_SECRET?: string;
     }
 }

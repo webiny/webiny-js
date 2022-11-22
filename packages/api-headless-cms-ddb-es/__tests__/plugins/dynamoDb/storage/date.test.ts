@@ -1,13 +1,13 @@
-import dateStoragePlugin from "~/dynamoDb/storage/date";
+import { createDateStorageTransformPlugin } from "~/dynamoDb/storage/date";
 
 interface CreateDefaultArgsParams {
-    fieldId?: string;
+    storageId?: string;
     type: string;
 }
-const createDefaultArgs = ({ fieldId = "fieldId", type }: CreateDefaultArgsParams) => {
+const createDefaultArgs = ({ storageId = "storageId", type }: CreateDefaultArgsParams) => {
     return {
         field: {
-            fieldId,
+            storageId,
             settings: {
                 type
             }
@@ -34,7 +34,7 @@ describe("dateStoragePlugin", () => {
     test.each(correctToStorageDateValues)(
         "toStorage should transform value for storage",
         async (value: string | Date, expected) => {
-            const plugin = dateStoragePlugin();
+            const plugin = createDateStorageTransformPlugin();
 
             const result = await plugin.toStorage({
                 ...defaultDateArgs,
@@ -54,7 +54,7 @@ describe("dateStoragePlugin", () => {
     test.each(correctFromStorageDateValues)(
         "fromStorage should transform value for output",
         async (value: string | Date, expected) => {
-            const plugin = dateStoragePlugin();
+            const plugin = createDateStorageTransformPlugin();
 
             const result = await plugin.fromStorage({
                 ...defaultDateArgs,
@@ -66,7 +66,7 @@ describe("dateStoragePlugin", () => {
     );
 
     it("should not convert time field value", async () => {
-        const plugin = dateStoragePlugin();
+        const plugin = createDateStorageTransformPlugin();
         const value = "11:34:58";
 
         const result = await plugin.toStorage({
@@ -78,7 +78,7 @@ describe("dateStoragePlugin", () => {
     });
 
     it("should not convert dateTime with tz field value", async () => {
-        const plugin = dateStoragePlugin();
+        const plugin = createDateStorageTransformPlugin();
         const value = "2021-04-08T13:34:59+0100";
 
         const result = await plugin.toStorage({

@@ -2,15 +2,16 @@ import WebinyError from "@webiny/error";
 import camelCase from "lodash/camelCase";
 import pluralize from "pluralize";
 import {
-    BeforeModelCreateFromTopicParams,
-    BeforeModelCreateTopicParams,
+    OnModelBeforeCreateFromTopicParams,
+    OnModelBeforeCreateTopicParams,
     CmsModel,
     HeadlessCmsStorageOperations
 } from "~/types";
 import { Topic } from "@webiny/pubsub/types";
 import { PluginsContainer } from "@webiny/plugins";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";
-import { validateModelFields } from "./validateModelFields";
+import { validateModel } from "./validateModel";
+import { validateLayout } from "./validateLayout";
 
 const disallowedModelIdList: string[] = [
     "contentModel",
@@ -118,12 +119,15 @@ const getModelId = (model: CmsModel): string => {
     );
 };
 
-interface CreateOnBeforeCreateCbParams {
+interface CreateOnModelBeforeCreateCbParams {
     plugins: PluginsContainer;
     storageOperations: HeadlessCmsStorageOperations;
 }
-const createOnBeforeCb = ({ plugins, storageOperations }: CreateOnBeforeCreateCbParams) => {
-    return async (params: BeforeModelCreateTopicParams | BeforeModelCreateFromTopicParams) => {
+const createOnModelBeforeCb = ({
+    plugins,
+    storageOperations
+}: CreateOnModelBeforeCreateCbParams) => {
+    return async (params: OnModelBeforeCreateTopicParams | OnModelBeforeCreateFromTopicParams) => {
         const { model } = params;
 
         const modelId = getModelId(model);
@@ -164,8 +168,8 @@ const createOnBeforeCb = ({ plugins, storageOperations }: CreateOnBeforeCreateCb
 };
 
 interface AssignBeforeModelCreateParams {
-    onBeforeModelCreate: Topic<BeforeModelCreateTopicParams>;
-    onBeforeModelCreateFrom: Topic<BeforeModelCreateFromTopicParams>;
+    onModelBeforeCreate: Topic<OnModelBeforeCreateTopicParams>;
+    onModelBeforeCreateFrom: Topic<OnModelBeforeCreateFromTopicParams>;
     storageOperations: HeadlessCmsStorageOperations;
     plugins: PluginsContainer;
 }
@@ -174,14 +178,18 @@ interface AssignBeforeModelCreateParams {
  * We attach both on before create and createFrom events here.
  * Callables are identical.
  */
-export const assignBeforeModelCreate = (params: AssignBeforeModelCreateParams) => {
-    const { onBeforeModelCreate, onBeforeModelCreateFrom, storageOperations, plugins } = params;
+export const assignModelBeforeCreate = (params: AssignBeforeModelCreateParams) => {
+    const { onModelBeforeCreate, onModelBeforeCreateFrom, storageOperations, plugins } = params;
 
-    onBeforeModelCreate.subscribe(async ({ model, input }) => {
+    onModelBeforeCreate.subscribe(async ({ model, input }) => {
         /**
-         * First we need to validate base data of the model.
+         * First the layout...
          */
-        const cb = createOnBeforeCb({
+        validateLayout(model.layout, model.fields);
+        /**
+         * then we run the shared create/createFrom methods.
+         */
+        const cb = createOnModelBeforeCb({
             storageOperations,
             plugins
         });
@@ -189,17 +197,18 @@ export const assignBeforeModelCreate = (params: AssignBeforeModelCreateParams) =
             model,
             input
         });
+
         /**
-         * Then we move onto fields...
+         * and then we move onto model and fields...
          */
-        await validateModelFields({
+        await validateModel({
             model,
             plugins
         });
     });
 
-    onBeforeModelCreateFrom.subscribe(
-        createOnBeforeCb({
+    onModelBeforeCreateFrom.subscribe(
+        createOnModelBeforeCb({
             storageOperations,
             plugins
         })

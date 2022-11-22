@@ -50,7 +50,12 @@ const getDistCopyFilePath = ({ file, cwd }) => {
 const babelCompile = async ({ cwd }) => {
     // We're passing "*.*" just because we want to copy all files that cannot be compiled.
     // We want to have the same behaviour that the Babel CLI's "--copy-files" flag provides.
-    const files = glob.sync(join(cwd, "src/**/*.*").replace(/\\/g, "/"), { nodir: true });
+    const pattern = join(cwd, "src/**/*.*").replace(/\\/g, "/");
+    const files = glob.sync(pattern, {
+        nodir: true,
+        dot: true
+    });
+
     const compilations = [];
     const copies = [];
 

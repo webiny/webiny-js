@@ -17,34 +17,9 @@ import { validation } from "@webiny/validation";
 import { RichTextEditor } from "@webiny/app-admin/components/RichTextEditor";
 import { FileManager } from "@webiny/app-admin/components";
 import { ApwFile } from "./ApwFile";
-import { getNanoid } from "~/utils";
+import { generateAlphaNumericId } from "@webiny/utils";
 
 const t = i18n.ns("app-apw/content-review/editor/change-request");
-
-export const richTextMock = [
-    {
-        tag: "h1",
-        content: "Testing H1 tags"
-    },
-    {
-        tag: "p",
-        content: "Some small piece of text to test P tags"
-    },
-    {
-        tag: "div",
-        content: [
-            {
-                tag: "p",
-                text: "Text inside the div > p"
-            },
-            {
-                tag: "a",
-                href: "https://www.webiny.com",
-                text: "Webiny"
-            }
-        ]
-    }
-];
 
 const ChangeRequestColumns = styled(Columns)`
     width: 700px;
@@ -118,6 +93,7 @@ const DialogActions = styled(UiDialog.DialogActions)`
 
 const DialogContent = styled(UiDialog.DialogContent)`
     padding: 0 !important;
+    overflow: initial !important;
 `;
 
 const dialogContainerStyles = css`
@@ -132,6 +108,10 @@ const dialogContainerStyles = css`
 
     &.mdc-dialog {
         z-index: 17;
+
+        .mdc-dialog__surface {
+            overflow: initial !important;
+        }
     }
 `;
 
@@ -157,7 +137,7 @@ export const ChangeRequestDialog: React.FC = () => {
     const { create, changeRequest, update, loading } = useChangeRequest({ id });
 
     const resetFormAndCloseDialog = () => {
-        setChangeRequestId(getNanoid());
+        setChangeRequestId(generateAlphaNumericId(12));
         closeDialog();
     };
 

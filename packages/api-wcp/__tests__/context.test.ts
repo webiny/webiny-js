@@ -1,0 +1,27 @@
+import { ContextPlugin } from "@webiny/api";
+import { Context } from "@webiny/api";
+import { createWcpContext } from "~/context";
+import { WcpContext } from "~/types";
+
+describe("context", () => {
+    it("should create wcp on the context", async () => {
+        const context = new Context({
+            plugins: [],
+            WEBINY_VERSION: "w.w.w"
+        }) as unknown as Partial<WcpContext> & Context;
+        context.plugins.register(createWcpContext());
+
+        for (const pl of context.plugins.byType<ContextPlugin>(ContextPlugin.type)) {
+            await pl.apply(context);
+        }
+
+        expect(context.wcp).toEqual({
+            getProjectLicense: expect.any(Function),
+            getProjectEnvironment: expect.any(Function),
+            canUseFeature: expect.any(Function),
+            ensureCanUseFeature: expect.any(Function),
+            incrementSeats: expect.any(Function),
+            decrementSeats: expect.any(Function)
+        });
+    });
+});

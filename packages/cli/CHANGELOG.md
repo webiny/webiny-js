@@ -3,6 +3,140 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.33.2](https://github.com/webiny/webiny-js/compare/v5.33.2-beta.2...v5.33.2) (2022-11-17)
+
+**Note:** Version bump only for package @webiny/cli
+
+
+
+
+
+## [5.33.2-beta.2](https://github.com/webiny/webiny-js/compare/v5.33.2-beta.1...v5.33.2-beta.2) (2022-11-16)
+
+**Note:** Version bump only for package @webiny/cli
+
+
+
+
+
+## [5.33.2-beta.1](https://github.com/webiny/webiny-js/compare/v5.33.2-beta.0...v5.33.2-beta.1) (2022-11-16)
+
+**Note:** Version bump only for package @webiny/cli
+
+
+
+
+
+## [5.33.2-beta.0](https://github.com/webiny/webiny-js/compare/v5.33.1...v5.33.2-beta.0) (2022-11-15)
+
+**Note:** Version bump only for package @webiny/cli
+
+
+
+
+
+## [5.33.1](https://github.com/webiny/webiny-js/compare/v5.33.1-beta.0...v5.33.1) (2022-11-07)
+
+**Note:** Version bump only for package @webiny/cli
+
+
+
+
+
+## [5.33.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.33.0...v5.33.1-beta.0) (2022-11-04)
+
+**Note:** Version bump only for package @webiny/cli
+
+
+
+
+
+# [5.33.0](https://github.com/webiny/webiny-js/compare/v5.33.0-beta.1...v5.33.0) (2022-10-12)
+
+**Note:** Version bump only for package @webiny/cli
+
+
+
+
+
+# [5.33.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.33.0-beta.0...v5.33.0-beta.1) (2022-10-12)
+
+
+### Bug Fixes
+
+* deprecate `init` method and introduce `link` ([2fe6bf1](https://github.com/webiny/webiny-js/commit/2fe6bf17fdd0554af6130accb1b88fc0996a0370))
+* replace word `init` with `link` ([8309a57](https://github.com/webiny/webiny-js/commit/8309a57ec98c672382f600c82ca7af2c212caff2))
+* switch the order of commands ([1e37a6a](https://github.com/webiny/webiny-js/commit/1e37a6af290e50366fe625e587c2372f382cb4f5))
+
+
+
+
+
+# [5.33.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.32.0...v5.33.0-beta.0) (2022-10-11)
+
+
+### Bug Fixes
+
+* do not continue if there's no WCP project ID present ([faf54da](https://github.com/webiny/webiny-js/commit/faf54da5d8028c1658ba15429e2c366482727c3a))
+* replace verb "activated" with "linked" ([a4634eb](https://github.com/webiny/webiny-js/commit/a4634eb6b0cf5d05edf9b0ca45e742731af21924))
+* skip PAT auth if the environment is being retrieved via API key ([99214e3](https://github.com/webiny/webiny-js/commit/99214e3b124884eafdc94ba8df03bc9345837b92))
+
+
+
+
+
+# [5.32.0](https://github.com/webiny/webiny-js/compare/v5.32.0-beta.0...v5.32.0) (2022-09-07)
+
+**Note:** Version bump only for package @webiny/cli
+
+
+
+
+
+# [5.32.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.31.0...v5.32.0-beta.0) (2022-09-06)
+
+
+### Bug Fixes
+
+* run WCP-related hooks in watch command ([370a381](https://github.com/webiny/webiny-js/commit/370a381b5dad78184803db63ed529ff725cba9f7))
+
+
+
+
+
+# [5.31.0](https://github.com/webiny/webiny-js/compare/v5.31.0-beta.1...v5.31.0) (2022-08-18)
+
+**Note:** Version bump only for package @webiny/cli
+
+
+
+
+
+# [5.31.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.31.0-beta.0...v5.31.0-beta.1) (2022-08-17)
+
+**Note:** Version bump only for package @webiny/cli
+
+
+
+
+
+# [5.31.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.30.0...v5.31.0-beta.0) (2022-08-16)
+
+
+### Bug Fixes
+
+* improve setup-project script ([#2571](https://github.com/webiny/webiny-js/issues/2571)) ([6c010d9](https://github.com/webiny/webiny-js/commit/6c010d99a58e3974d0d7efaefc5ac9cea2abc113))
+
+
+### Features
+
+* **handler-fastify:** add fastify as handler into the system ([#2546](https://github.com/webiny/webiny-js/issues/2546)) ([8d258aa](https://github.com/webiny/webiny-js/commit/8d258aa2ebd8562b79e395d7aeea6316405f7f4e))
+* add support for custom React apps ([#2569](https://github.com/webiny/webiny-js/issues/2569)) ([f7af516](https://github.com/webiny/webiny-js/commit/f7af516d745b2da74da9497658f3fd9702d5a639))
+
+
+
+
+
 # [5.30.0](https://github.com/webiny/webiny-js/compare/v5.30.0-beta.1...v5.30.0) (2022-07-27)
 
 **Note:** Version bump only for package @webiny/cli

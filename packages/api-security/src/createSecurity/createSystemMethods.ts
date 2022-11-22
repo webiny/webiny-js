@@ -19,10 +19,15 @@ export const createSystemMethods = ({
         }
         return tenant;
     };
+    const onSystemBeforeInstall = createTopic<InstallEvent>("security.onSystemBeforeInstall");
+    const onSystemAfterInstall = createTopic<InstallEvent>("security.onSystemAfterInstall");
+
     return {
-        onBeforeInstall: createTopic<InstallEvent>("security.onBeforeInstall"),
+        onBeforeInstall: onSystemBeforeInstall,
+        onAfterInstall: onSystemAfterInstall,
+        onSystemBeforeInstall,
+        onSystemAfterInstall,
         onInstall: createTopic<InstallEvent>("security.onInstall"),
-        onAfterInstall: createTopic<InstallEvent>("security.onAfterInstall"),
         onCleanup: createTopic<ErrorEvent>("security.onCleanup"),
         async getVersion(): Promise<string | null> {
             const tenantId = initialGetTenant();
@@ -77,9 +82,9 @@ export const createSystemMethods = ({
 
             try {
                 this.disableAuthorization();
-                await this.onBeforeInstall.publish(installEvent);
+                await this.onSystemBeforeInstall.publish(installEvent);
                 await this.onInstall.publish(installEvent);
-                await this.onAfterInstall.publish(installEvent);
+                await this.onSystemAfterInstall.publish(installEvent);
                 this.enableAuthorization();
             } catch (err) {
                 await this.onCleanup.publish({ error: err, tenant: getTenant() });

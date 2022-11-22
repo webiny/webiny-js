@@ -2,8 +2,8 @@ import { GraphQLScalarPlugin } from "@webiny/handler-graphql/types";
 import { CmsContext } from "~/types";
 import {
     RefInput,
-    Number as NumberScalar,
-    Any as AnyScalar,
+    NumberScalar,
+    AnyScalar,
     DateTimeScalar,
     DateScalar,
     TimeScalar,

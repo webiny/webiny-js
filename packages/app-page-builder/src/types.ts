@@ -13,8 +13,6 @@ import { SecurityPermission } from "@webiny/app-security/types";
 export enum PageStatus {
     PUBLISHED = "published",
     UNPUBLISHED = "unpublished",
-    REVIEW_REQUESTED = "reviewRequested",
-    CHANGES_REQUESTED = "changesRequested",
     DRAFT = "draft"
 }
 

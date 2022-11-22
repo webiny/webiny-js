@@ -1,0 +1,56 @@
+{
+  "name": "@webiny/api-admin-settings",
+  "version": "5.33.2",
+  "main": "index.js",
+  "keywords": [
+    "adminSettings:base"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git",
+    "directory": "packages/api-admin-settings"
+  },
+  "description": "Admin settings getter",
+  "contributors": [
+    "Pavel Denisjuk <pavel@webiny.com>",
+    "Sven Al Hamad <sven@webiny.com>",
+    "Adrian Smijulj <adrian@webiny.com>"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@babel/runtime": "^7.19.0",
+    "@webiny/api-tenancy": "^5.33.2",
+    "@webiny/db-dynamodb": "^5.33.2",
+    "@webiny/error": "^5.33.2",
+    "@webiny/handler": "^5.33.2",
+    "dynamodb-toolbox": "^0.3.4"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.19.3",
+    "@babel/core": "^7.19.3",
+    "@babel/preset-env": "^7.19.4",
+    "@babel/preset-flow": "^7.16.0",
+    "@webiny/cli": "^5.33.2",
+    "@webiny/handler-aws": "^5.33.2",
+    "@webiny/handler-db": "^5.33.2",
+    "@webiny/project-utils": "^5.33.2",
+    "apollo-graphql": "^0.9.5",
+    "get-yarn-workspaces": "^1.0.2",
+    "jest": "^28.1.0",
+    "jest-dynalite": "^3.6.1",
+    "prettier": "^2.3.2",
+    "rimraf": "^3.0.2",
+    "sinon": "^9.0.2",
+    "ttypescript": "^1.5.12",
+    "typescript": "4.7.4"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "scripts": {
+    "build": "yarn webiny run build",
+    "watch": "yarn webiny run watch"
+  },
+  "gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae"
+}

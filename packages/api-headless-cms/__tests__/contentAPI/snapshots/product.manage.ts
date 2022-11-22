@@ -9,6 +9,7 @@ export default /* GraphQL */ `
         price: Number
         category: RefField
         categories: [RefField!]
+        longText: [String]
     }
     
     type Product_Variant {
@@ -62,7 +63,8 @@ export default /* GraphQL */ `
         name: String
         price: Number
         category: RefFieldInput!
-        categories: [RefFieldInput!]
+        categories: [RefFieldInput]
+        longText: [String]
     }
     
     input Product_VariantInput {
@@ -90,6 +92,7 @@ export default /* GraphQL */ `
         richText: JSON
         variant: Product_VariantInput
         fieldsObject: Product_FieldsObjectInput
+        
     }
 
     input ProductGetWhereInput {
@@ -102,6 +105,7 @@ export default /* GraphQL */ `
         availableOn: Date
         color: String
         availableSizes: String
+        
     }
     
     input ProductListWhereInput {
@@ -135,6 +139,10 @@ export default /* GraphQL */ `
         ownedBy_not: String
         ownedBy_in: [String!]
         ownedBy_not_in: [String!]
+        status: String
+        status_not: String
+        status_in: [String!]
+        status_not_in: [String!]
 
         title: String
         title_not: String
@@ -259,9 +267,5 @@ export default /* GraphQL */ `
         republishProduct(revision: ID!): ProductResponse
 
         unpublishProduct(revision: ID!): ProductResponse
-        
-        requestProductReview(revision: ID!): ProductResponse
-        
-        requestProductChanges(revision: ID!): ProductResponse
     }
 `;

@@ -8,7 +8,6 @@ const tenant = "root";
 const locale = "en-US";
 
 describe("Render Pages Test", () => {
-    // eslint-disable-next-line
     it("should render all pages with a specific tag", async () => {
         /**
          * With this section, we are intercepting all render handler invocations, and inspecting the passed args.
@@ -288,7 +287,7 @@ describe("Render Pages Test", () => {
             }
         ]);
 
-        const handlerResponse = await handler();
+        const handlerResponse = await handler({}, {} as any);
         expect(handlerResponse).toEqual({
             data: {
                 stats: {

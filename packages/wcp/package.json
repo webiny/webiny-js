@@ -1,6 +1,6 @@
 {
   "name": "@webiny/wcp",
-  "version": "5.30.0",
+  "version": "5.33.2",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -11,18 +11,18 @@
   "author": "Webiny Ltd.",
   "license": "MIT",
   "dependencies": {
-    "@babel/runtime": "^7.16.3",
+    "@babel/runtime": "^7.19.0",
     "node-fetch": "^2.6.1"
   },
   "devDependencies": {
-    "@babel/cli": "^7.16.0",
-    "@babel/core": "^7.16.0",
+    "@babel/cli": "^7.19.3",
+    "@babel/core": "^7.19.3",
     "@babel/plugin-proposal-object-rest-spread": "^7.16.0",
     "@babel/plugin-transform-runtime": "^7.16.4",
-    "@babel/preset-env": "^7.16.4",
-    "@babel/preset-typescript": "^7.16.0",
-    "@webiny/cli": "^5.30.0",
-    "@webiny/project-utils": "^5.30.0",
+    "@babel/preset-env": "^7.19.4",
+    "@babel/preset-typescript": "^7.18.6",
+    "@webiny/cli": "^5.33.2",
+    "@webiny/project-utils": "^5.33.2",
     "rimraf": "^3.0.2",
     "ttypescript": "^1.5.12",
     "typescript": "4.7.4"

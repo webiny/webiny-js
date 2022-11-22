@@ -1,11 +1,11 @@
 import WebinyError from "@webiny/error";
 import { CmsEntry, CmsGroup, CmsModel } from "~/types";
-import { useGraphQLHandler } from "../utils/useGraphQLHandler";
-import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
-import { useCategoryReadHandler } from "../utils/useCategoryReadHandler";
+import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
+import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
+import { useCategoryReadHandler } from "../testHelpers/useCategoryReadHandler";
 import models from "./mocks/contentModels";
 import modelsWithoutValidation from "./mocks/contentModels.noValidation";
-import { useProductManageHandler } from "../utils/useProductManageHandler";
+import { useProductManageHandler } from "../testHelpers/useProductManageHandler";
 
 interface CreateCategoriesResult {
     fruits: CmsEntry;
@@ -141,7 +141,9 @@ describe("MANAGE - Resolvers", () => {
         // Wait until the previous revision is indexed
         await until(
             () => listCategories().then(([data]) => data),
-            ({ data }: any) => data.listCategories.data.length === Object.keys(values).length,
+            ({ data }: any) => {
+                return data.listCategories.data.length === Object.keys(values).length;
+            },
             {
                 name: "list all categories after creation in setupCategories"
             }
@@ -175,7 +177,7 @@ describe("MANAGE - Resolvers", () => {
             entryId,
             createdOn: expect.stringMatching(/^20/),
             createdBy: {
-                id: "12345678",
+                id: "id-12345678",
                 displayName: "John Doe",
                 type: "admin"
             },
@@ -274,7 +276,7 @@ describe("MANAGE - Resolvers", () => {
             entryId,
             createdOn: expect.stringMatching(/^20/),
             createdBy: {
-                id: "12345678",
+                id: "id-12345678",
                 displayName: "John Doe",
                 type: "admin"
             },
@@ -327,7 +329,9 @@ describe("MANAGE - Resolvers", () => {
         // If this `until` resolves successfully, we know entry is accessible via the "read" API
         await until(
             () => listCategories().then(([data]) => data),
-            ({ data }: any) => data.listCategories.data[0].meta.status === "published",
+            ({ data }: any) => {
+                return data.listCategories.data[0].meta.status === "published";
+            },
             {
                 name: "wait for entry to be published"
             }
@@ -346,7 +350,7 @@ describe("MANAGE - Resolvers", () => {
                             slug: category.slug,
                             createdOn: category.createdOn,
                             createdBy: {
-                                id: "12345678",
+                                id: "id-12345678",
                                 displayName: "John Doe",
                                 type: "admin"
                             },
@@ -443,7 +447,7 @@ describe("MANAGE - Resolvers", () => {
             entryId: expect.any(String),
             createdOn: expect.stringMatching(/^20/),
             createdBy: {
-                id: "12345678",
+                id: "id-12345678",
                 displayName: "John Doe",
                 type: "admin"
             },
@@ -496,6 +500,7 @@ describe("MANAGE - Resolvers", () => {
                         data: [
                             {
                                 error: "This field is required",
+                                storageId: expect.stringMatching("text@"),
                                 fieldId: "slug"
                             }
                         ],
@@ -520,7 +525,7 @@ describe("MANAGE - Resolvers", () => {
             entryId: expect.any(String),
             createdOn: expect.stringMatching(/^20/),
             createdBy: {
-                id: "12345678",
+                id: "id-12345678",
                 displayName: "John Doe",
                 type: "admin"
             },
@@ -588,7 +593,7 @@ describe("MANAGE - Resolvers", () => {
                         savedOn: expect.stringMatching(/^20/),
                         createdOn: expect.stringMatching(/^20/),
                         createdBy: {
-                            id: "12345678",
+                            id: "id-12345678",
                             displayName: "John Doe",
                             type: "admin"
                         },
@@ -680,7 +685,7 @@ describe("MANAGE - Resolvers", () => {
                         entryId: expect.any(String),
                         createdOn: expect.stringMatching(/^20/),
                         createdBy: {
-                            id: "12345678",
+                            id: "id-12345678",
                             displayName: "John Doe",
                             type: "admin"
                         },
@@ -1118,7 +1123,14 @@ describe("MANAGE - Resolvers", () => {
                 price: 99.9,
                 availableOn: "2020-12-25",
                 color: "white",
+                inStock: true,
+                itemsInStock: 101,
                 image: "image.png",
+                richText: [
+                    {
+                        type: "p"
+                    }
+                ],
                 availableSizes: ["s", "m"],
                 category: {
                     modelId: "category",
@@ -1144,7 +1156,8 @@ describe("MANAGE - Resolvers", () => {
                                     modelId: "category",
                                     id: vegetables.id
                                 }
-                            ]
+                            ],
+                            longText: [null]
                         },
                         {
                             name: "Option 2",
@@ -1158,22 +1171,38 @@ describe("MANAGE - Resolvers", () => {
                                     modelId: "category",
                                     id: vegetables.id
                                 }
-                            ]
+                            ],
+                            longText: ["long text"]
                         }
                     ]
                 }
             }
         });
 
-        expect(potatoResponse).toMatchObject({
+        expect(potatoResponse.errors).toBeUndefined();
+
+        expect(potatoResponse).toEqual({
             data: {
                 createProduct: {
                     data: {
                         id: expect.any(String),
+                        entryId: expect.any(String),
                         title: "Potato",
                         price: 99.9,
+                        createdBy: expect.any(Object),
+                        meta: expect.any(Object),
+                        createdOn: expect.stringMatching(/^20/),
+                        savedOn: expect.stringMatching(/^20/),
                         availableOn: "2020-12-25",
                         color: "white",
+                        inStock: true,
+                        itemsInStock: 101,
+                        image: "image.png",
+                        richText: [
+                            {
+                                type: "p"
+                            }
+                        ],
                         availableSizes: ["s", "m"],
                         category: {
                             modelId: "category",
@@ -1196,7 +1225,15 @@ describe("MANAGE - Resolvers", () => {
                                         modelId: "category",
                                         id: vegetables.id,
                                         entryId: vegetables.entryId
-                                    }
+                                    },
+                                    categories: [
+                                        {
+                                            modelId: "category",
+                                            id: vegetables.id,
+                                            entryId: vegetables.entryId
+                                        }
+                                    ],
+                                    longText: [null]
                                 },
                                 {
                                     name: "Option 2",
@@ -1205,7 +1242,15 @@ describe("MANAGE - Resolvers", () => {
                                         modelId: "category",
                                         id: vegetables.id,
                                         entryId: vegetables.entryId
-                                    }
+                                    },
+                                    categories: [
+                                        {
+                                            modelId: "category",
+                                            id: vegetables.id,
+                                            entryId: vegetables.entryId
+                                        }
+                                    ],
+                                    longText: ["long text"]
                                 }
                             ]
                         }
@@ -1216,7 +1261,7 @@ describe("MANAGE - Resolvers", () => {
         });
     });
 
-    it("should have all entry revisions published", async () => {
+    test("should have all entry revisions published", async () => {
         const { getCategory, createCategory, publishCategory, createCategoryFrom, listCategories } =
             useCategoryManageHandler(manageOpts);
 
@@ -1253,6 +1298,35 @@ describe("MANAGE - Resolvers", () => {
         const [publishWebinyResponse] = await publishCategory({
             revision: createWebinyResponse.data.createCategory.data.id
         });
+
+        const createdWebinyCategory = createWebinyResponse.data.createCategory.data;
+
+        expect(publishWebinyResponse).toEqual({
+            data: {
+                publishCategory: {
+                    data: {
+                        ...createdWebinyCategory,
+                        meta: {
+                            ...createdWebinyCategory.meta,
+                            locked: true,
+                            status: "published",
+                            publishedOn: expect.any(String),
+                            revisions: createdWebinyCategory.meta.revisions.map((rev: any) => {
+                                return {
+                                    ...rev,
+                                    meta: {
+                                        ...rev.meta,
+                                        status: "published"
+                                    }
+                                };
+                            })
+                        },
+                        savedOn: expect.any(String)
+                    },
+                    error: null
+                }
+            }
+        });
         const webiny = publishWebinyResponse.data.publishCategory.data;
         /**
          * Only publish categories with these versions.
@@ -1265,13 +1339,54 @@ describe("MANAGE - Resolvers", () => {
                 revision: webiny.id
             });
 
+            expect(response).toEqual({
+                data: {
+                    createCategoryFrom: {
+                        data: {
+                            ...webiny,
+                            meta: {
+                                ...webiny.meta,
+                                locked: false,
+                                status: "draft",
+                                publishedOn: null,
+                                version: i + 2,
+                                revisions: expect.any(Array)
+                            },
+                            id: expect.stringMatching(`${webiny.entryId}#000`),
+                            createdOn: expect.any(String),
+                            savedOn: expect.any(String)
+                        },
+                        error: null
+                    }
+                }
+            });
+
             const createdCategory = response.data.createCategoryFrom.data;
             if (publishCategoriesList.includes(createdCategory.meta.version) === false) {
                 continue;
             }
 
-            await publishCategory({
+            const [publishResponse] = await publishCategory({
                 revision: response.data.createCategoryFrom.data.id
+            });
+
+            expect(publishResponse).toEqual({
+                data: {
+                    publishCategory: {
+                        data: {
+                            ...createdCategory,
+                            meta: {
+                                ...createdCategory.meta,
+                                locked: true,
+                                status: "published",
+                                publishedOn: expect.any(String),
+                                revisions: expect.any(Array)
+                            },
+                            savedOn: expect.any(String)
+                        },
+                        error: null
+                    }
+                }
             });
         }
 
@@ -1430,7 +1545,7 @@ describe("MANAGE - Resolvers", () => {
         });
     });
 
-    it("should get latest, published or exact category", async () => {
+    test("should get latest, published or exact category", async () => {
         const { getCategory, createCategory, publishCategory, createCategoryFrom } =
             useCategoryManageHandler(manageOpts);
 

@@ -4,8 +4,8 @@ import { createStorageOperations as tenancyStorageOperations } from "@webiny/api
 import { createSecurityContext, createSecurityGraphQL } from "@webiny/api-security";
 import { createStorageOperations as securityStorageOperations } from "@webiny/api-security-so-ddb";
 import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
-import { BeforeHandlerPlugin } from "@webiny/handler/plugins/BeforeHandlerPlugin";
+import { ContextPlugin } from "@webiny/api";
+import { BeforeHandlerPlugin } from "@webiny/handler";
 import { TestContext } from "../types";
 import { createPermissions } from "./helpers";
 
@@ -41,8 +41,7 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config) => {
             storageOperations: securityStorageOperations({
                 documentClient,
                 table: process.env.DB_TABLE
-            }),
-            verifyIdentityToTenantLink: false
+            })
         }),
         createSecurityGraphQL(),
         new ContextPlugin<TestContext>(context => {
@@ -64,7 +63,8 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config) => {
                 const base = identity || {
                     id: "12345678",
                     type: "admin",
-                    displayName: "John Doe"
+                    displayName: "John Doe",
+                    email: "testing@webiny.com"
                 };
                 return {
                     ...base,
@@ -73,7 +73,7 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config) => {
             });
 
             context.security.addAuthorizer(async () => {
-                const { headers = {} } = context.http.request || {};
+                const { headers = {} } = context.request || {};
                 if (headers["authorization"]) {
                     return null;
                 }
@@ -82,7 +82,7 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config) => {
             });
         }),
         new BeforeHandlerPlugin<TestContext>(context => {
-            const { headers = {} } = context.http.request || {};
+            const { headers = {} } = context.request || {};
             if (headers["authorization"]) {
                 return context.security.authenticate(headers["authorization"]);
             }

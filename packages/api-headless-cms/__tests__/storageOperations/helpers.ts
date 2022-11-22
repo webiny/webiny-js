@@ -1,4 +1,3 @@
-import shortId from "shortid";
 /**
  * Package mdbid does not have types.
  */
@@ -6,14 +5,16 @@ import shortId from "shortid";
 import mdbid from "mdbid";
 import {
     CmsEntry,
-    CmsModel,
     CmsModelField,
     CreatedBy,
-    HeadlessCmsStorageOperations
+    HeadlessCmsStorageOperations,
+    StorageOperationsCmsModel
 } from "~/types";
 import { CmsGroupPlugin } from "~/plugins/CmsGroupPlugin";
-import { createIdentifier } from "@webiny/utils";
+import { createIdentifier, generateAlphaNumericLowerCaseId } from "@webiny/utils";
 import crypto from "crypto";
+import { attachCmsModelFieldConverters } from "~/utils/converters/valueKeyStorageConverter";
+import { PluginsContainer } from "@webiny/plugins";
 
 const cliPackageJson = require("@webiny/cli/package.json");
 const webinyVersion = cliPackageJson.version;
@@ -30,16 +31,23 @@ const baseGroup = new CmsGroupPlugin({
 
 const biography = crypto.randomBytes(65536).toString("hex");
 
+const nameId = generateAlphaNumericLowerCaseId(8);
+const dateOfBirthId = generateAlphaNumericLowerCaseId(8);
+const childrenId = generateAlphaNumericLowerCaseId(8);
+const marriedId = generateAlphaNumericLowerCaseId(8);
+const biographyId = generateAlphaNumericLowerCaseId(8);
 const personModelFields: Record<string, CmsModelField> = {
     name: {
-        id: shortId.generate(),
+        id: nameId,
+        storageId: `text@${nameId}`,
         fieldId: "name",
         label: "Name",
         multipleValues: false,
         type: "text"
     },
     dateOfBirth: {
-        id: shortId.generate(),
+        id: dateOfBirthId,
+        storageId: `datetime@${dateOfBirthId}`,
         fieldId: "dateOfBirth",
         label: "Date Of Birth",
         multipleValues: false,
@@ -49,46 +57,52 @@ const personModelFields: Record<string, CmsModelField> = {
         }
     },
     children: {
-        id: shortId.generate(),
+        id: childrenId,
+        storageId: `number@${childrenId}`,
         fieldId: "children",
         label: "Children",
         multipleValues: false,
         type: "number"
     },
     married: {
-        id: shortId.generate(),
-        fieldId: "married",
+        id: marriedId,
+        storageId: "married",
+        fieldId: `boolean@${marriedId}`,
         label: "Married",
         multipleValues: false,
         type: "boolean"
     },
     biography: {
-        id: shortId.generate(),
-        fieldId: "biography",
+        id: biographyId,
+        storageId: "biography",
+        fieldId: `text@${biographyId}`,
         label: "Biography",
         multipleValues: false,
         type: "text"
     }
 };
 
-export const createPersonModel = (): CmsModel => {
-    return {
-        name: "Person Model",
-        group: {
-            id: baseGroup.contentModelGroup.id,
-            name: baseGroup.contentModelGroup.name
-        },
-        modelId: "personEntriesModel",
-        locale: "en-US",
-        tenant: "root",
-        titleFieldId: personModelFields.name.id,
-        fields: Object.values(personModelFields),
-        layout: Object.values(personModelFields).map(field => {
-            return [field.id];
-        }),
-        description: "",
-        webinyVersion
-    };
+export const createPersonModel = (plugins: PluginsContainer): StorageOperationsCmsModel => {
+    return attachCmsModelFieldConverters({
+        plugins,
+        model: {
+            name: "Person Model",
+            group: {
+                id: baseGroup.contentModelGroup.id,
+                name: baseGroup.contentModelGroup.name
+            },
+            modelId: "personEntriesModel",
+            locale: "en-US",
+            tenant: "root",
+            titleFieldId: personModelFields.name.id,
+            fields: Object.values(personModelFields),
+            layout: Object.values(personModelFields).map(field => {
+                return [field.id];
+            }),
+            description: "",
+            webinyVersion
+        }
+    });
 };
 
 const createdBy: CreatedBy = {
@@ -106,6 +120,7 @@ interface CreatePersonEntriesParams {
     amount: number;
     storageOperations: HeadlessCmsStorageOperations;
     maxRevisions?: number;
+    plugins: PluginsContainer;
 }
 
 export interface PersonEntriesResult {
@@ -118,8 +133,8 @@ export interface PersonEntriesResult {
 export const createPersonEntries = async (
     params: CreatePersonEntriesParams
 ): Promise<PersonEntriesResult> => {
-    const { amount, storageOperations, maxRevisions = 1 } = params;
-    const personModel = createPersonModel();
+    const { amount, storageOperations, maxRevisions = 1, plugins } = params;
+    const personModel = createPersonModel(plugins);
 
     const entries: CmsEntry[] = [];
 
@@ -220,12 +235,13 @@ export const createPersonEntries = async (
 
 interface DeletePersonModelParams {
     storageOperations: HeadlessCmsStorageOperations;
+    plugins: PluginsContainer;
 }
 export const deletePersonModel = async (params: DeletePersonModelParams) => {
-    const { storageOperations } = params;
+    const { storageOperations, plugins } = params;
     try {
         await storageOperations.models.delete({
-            model: createPersonModel()
+            model: createPersonModel(plugins)
         });
     } catch (ex) {
         console.log("Trying to delete person model... failed...");

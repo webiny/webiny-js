@@ -14,6 +14,14 @@ class S3Stream {
         this.bucket = process.env.S3_BUCKET as string;
     }
 
+    getPresignedUrl(key: string) {
+        return this.s3.getSignedUrl("getObject", {
+            Bucket: this.bucket,
+            Key: key,
+            Expires: 604800 // 1 week
+        });
+    }
+
     /**
      * We're checking if the file is accessible on S3 by getting object meta data.
      * It help us to filter files that we need to download as part of export data.
@@ -48,7 +56,7 @@ class S3Stream {
         const streamPassThrough = new Stream.PassThrough();
 
         const params: S3.PutObjectRequest = {
-            ACL: "public-read",
+            ACL: "private",
             Body: streamPassThrough,
             Bucket: this.bucket,
             ContentType: contentType,

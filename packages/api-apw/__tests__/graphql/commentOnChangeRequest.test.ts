@@ -41,13 +41,7 @@ const expectedComment = expect.objectContaining({
 });
 
 describe("Comment on a change request test", () => {
-    const options = {
-        path: "manage/en-US"
-    };
-
-    const gqlHandler = usePageBuilderHandler({
-        ...options
-    });
+    const gqlHandler = usePageBuilderHandler();
 
     const {
         createChangeRequestMutation,

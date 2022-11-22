@@ -1,7 +1,7 @@
 import { useCallback, useState, useEffect, useMemo, Dispatch, SetStateAction } from "react";
 import isEmpty from "lodash/isEmpty";
 import { useNavigate } from "@webiny/react-router";
-import get from "lodash/get";
+import dotPropImmutable from "dot-prop-immutable";
 import pick from "lodash/pick";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import { useCurrentApp } from "./useLocationSearch";
@@ -26,7 +26,7 @@ import {
     ApwWorkflowStep,
     ApwWorkflowStepTypes
 } from "~/types";
-import { getNanoid } from "~/utils";
+import { generateAlphaNumericId } from "@webiny/utils";
 import { useQuery as useRouterQuery } from "~/hooks/useQuery";
 
 const t = i18n.ns("app-apw/admin/publishing-workflows/form");
@@ -39,7 +39,7 @@ const initialStepData: ApwWorkflowStep = {
 
 export const getInitialStepData = () => ({
     ...initialStepData,
-    id: getNanoid()
+    id: generateAlphaNumericId(12)
 });
 
 const createNewFormData = (app: ApwWorkflowApplications): Partial<ApwWorkflow> => {
@@ -116,8 +116,8 @@ export const usePublishingWorkflowForm: UsePublishingWorkflowFormHook = () => {
             variables: { id: currentWorkflowId as string },
             skip: !currentWorkflowId,
             onCompleted: response => {
-                setWorkflow(get(response, "apw.getWorkflow.data", {}));
-                const error = get(response, "apw.getWorkflow.error");
+                setWorkflow(dotPropImmutable.get(response, "apw.getWorkflow.data", {}));
+                const error = dotPropImmutable.get(response, "apw.getWorkflow.error");
                 if (!error) {
                     return;
                 }
@@ -163,11 +163,11 @@ export const usePublishingWorkflowForm: UsePublishingWorkflowFormHook = () => {
                 });
             }
 
-            const error = get(response, "data.apw.workflow.error");
+            const error = dotPropImmutable.get(response, "data.apw.workflow.error");
             if (error) {
                 return showSnackbar(error.message);
             }
-            const workflowData = get(response, "data.apw.workflow.data");
+            const workflowData = dotPropImmutable.get(response, "data.apw.workflow.data");
 
             if (!isUpdate) {
                 navigate(`${BASE_URL}?id=${encodeURIComponent(workflowData.id)}&app=${app}`);

@@ -1,4 +1,4 @@
-import { Context } from "@webiny/handler/types";
+import { Context } from "@webiny/api/types";
 import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
 import { I18NLocale, I18NContext } from "@webiny/api-i18n/types";
 import { Tenant } from "@webiny/api-tenancy/types";

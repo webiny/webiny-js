@@ -49,20 +49,22 @@ export function createLambdaRole(app: PulumiApp, params: LambdaRoleParams) {
                 policyArn: params.executionRole
             }
         });
-    } else {
-        // Fallback to default execution role.
-        const vpc = app.getModule(VpcConfig);
+    }
 
-        app.addResource(aws.iam.RolePolicyAttachment, {
-            name: `${params.name}-execution-role`,
-            config: {
-                role: role.output,
-                policyArn: vpc.enabled
+    // Add default execution role.
+    const vpc = app.getModule(VpcConfig);
+
+    app.addResource(aws.iam.RolePolicyAttachment, {
+        name: `${params.name}-default-execution-role`,
+        config: {
+            role: role.output,
+            policyArn: vpc.enabled.apply(enabled =>
+                enabled
                     ? aws.iam.ManagedPolicy.AWSLambdaVPCAccessExecutionRole
                     : aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole
-            }
-        });
-    }
+            )
+        }
+    });
 
     return role;
 }

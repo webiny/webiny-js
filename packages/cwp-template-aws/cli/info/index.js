@@ -1,16 +1,29 @@
 const getStackOutput = require("@webiny/cli-plugin-deploy-pulumi/utils/getStackOutput");
 const { green } = require("chalk");
 const path = require("path");
+const fs = require("fs");
 
 const line = `-------------------------`;
+
+// This function has been created in order to help preserve backwards compatibility
+// (from 5.29.0, the `api` app has been moved into the `apps/api` directory).
+const getApiFolder = context => {
+    if (fs.existsSync(path.join(context.project.root, "api"))) {
+        return "api";
+    }
+
+    return "apps/api";
+};
 
 const printEnvOutput = async (env, context) => {
     console.log(line);
     console.log(`Environment: ${green(env)}`);
     console.log(line);
 
+    const apiFolder = getApiFolder(context);
+
     let stacksDeployedCount = 0;
-    let output = getStackOutput({ folder: "apps/api", env });
+    let output = getStackOutput({ folder: apiFolder, env });
     if (output) {
         stacksDeployedCount++;
         console.log(
@@ -23,7 +36,7 @@ const printEnvOutput = async (env, context) => {
             ].join("\n")
         );
     } else {
-        context.info(`Stack ${green("apps/api")} not deployed yet.`);
+        context.info(`Stack ${green(apiFolder)} not deployed yet.`);
     }
 
     output = getStackOutput({ folder: "apps/admin", env });
@@ -76,7 +89,6 @@ module.exports = {
             },
             async args => {
                 const { env } = args;
-
                 if (!env) {
                     // Get all existing environments
                     const glob = require("fast-glob");

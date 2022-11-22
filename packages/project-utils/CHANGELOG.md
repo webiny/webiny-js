@@ -3,6 +3,133 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.33.2](https://github.com/webiny/webiny-js/compare/v5.33.2-beta.2...v5.33.2) (2022-11-17)
+
+**Note:** Version bump only for package @webiny/project-utils
+
+
+
+
+
+## [5.33.2-beta.2](https://github.com/webiny/webiny-js/compare/v5.33.2-beta.1...v5.33.2-beta.2) (2022-11-16)
+
+**Note:** Version bump only for package @webiny/project-utils
+
+
+
+
+
+## [5.33.2-beta.1](https://github.com/webiny/webiny-js/compare/v5.33.2-beta.0...v5.33.2-beta.1) (2022-11-16)
+
+**Note:** Version bump only for package @webiny/project-utils
+
+
+
+
+
+## [5.33.2-beta.0](https://github.com/webiny/webiny-js/compare/v5.33.1...v5.33.2-beta.0) (2022-11-15)
+
+
+### Bug Fixes
+
+* **api-headless-cms:** initialize code model ([#2766](https://github.com/webiny/webiny-js/issues/2766)) ([b3dcfe0](https://github.com/webiny/webiny-js/commit/b3dcfe0bf9fd8bbae8a9109f1675cf17e4e9722f))
+
+
+
+
+
+## [5.33.1](https://github.com/webiny/webiny-js/compare/v5.33.1-beta.0...v5.33.1) (2022-11-07)
+
+**Note:** Version bump only for package @webiny/project-utils
+
+
+
+
+
+## [5.33.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.33.0...v5.33.1-beta.0) (2022-11-04)
+
+**Note:** Version bump only for package @webiny/project-utils
+
+
+
+
+
+# [5.33.0](https://github.com/webiny/webiny-js/compare/v5.33.0-beta.1...v5.33.0) (2022-10-12)
+
+**Note:** Version bump only for package @webiny/project-utils
+
+
+
+
+
+# [5.33.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.33.0-beta.0...v5.33.0-beta.1) (2022-10-12)
+
+**Note:** Version bump only for package @webiny/project-utils
+
+
+
+
+
+# [5.33.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.32.0...v5.33.0-beta.0) (2022-10-11)
+
+
+### Bug Fixes
+
+* remove env vars from `DefinePlugin` ([72f55ea](https://github.com/webiny/webiny-js/commit/72f55ea7d76cf1295fd34721e2ae588bacf22987))
+* take project level telemetry config into consideration [skip ci] ([65ab8a3](https://github.com/webiny/webiny-js/commit/65ab8a3ad0bd2c9183b121e83ea404368eeea200))
+
+
+
+
+
+# [5.32.0](https://github.com/webiny/webiny-js/compare/v5.32.0-beta.0...v5.32.0) (2022-09-07)
+
+**Note:** Version bump only for package @webiny/project-utils
+
+
+
+
+
+# [5.32.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.31.0...v5.32.0-beta.0) (2022-09-06)
+
+
+### Bug Fixes
+
+* add `dot: true` to glob call ([#2601](https://github.com/webiny/webiny-js/issues/2601)) ([65dab7c](https://github.com/webiny/webiny-js/commit/65dab7c89223bf262c65e055487226773057dd7c))
+
+
+
+
+
+# [5.31.0](https://github.com/webiny/webiny-js/compare/v5.31.0-beta.1...v5.31.0) (2022-08-18)
+
+**Note:** Version bump only for package @webiny/project-utils
+
+
+
+
+
+# [5.31.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.31.0-beta.0...v5.31.0-beta.1) (2022-08-17)
+
+**Note:** Version bump only for package @webiny/project-utils
+
+
+
+
+
+# [5.31.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.30.0...v5.31.0-beta.0) (2022-08-16)
+
+
+### Features
+
+* **handler-fastify:** add fastify as handler into the system ([#2546](https://github.com/webiny/webiny-js/issues/2546)) ([8d258aa](https://github.com/webiny/webiny-js/commit/8d258aa2ebd8562b79e395d7aeea6316405f7f4e))
+* add support for custom React apps ([#2569](https://github.com/webiny/webiny-js/issues/2569)) ([f7af516](https://github.com/webiny/webiny-js/commit/f7af516d745b2da74da9497658f3fd9702d5a639))
+* make all buckets private ([#2558](https://github.com/webiny/webiny-js/issues/2558)) ([6e84b04](https://github.com/webiny/webiny-js/commit/6e84b043f6f5bd37f5e02babdd51bad43f5914b3))
+
+
+
+
+
 # [5.30.0](https://github.com/webiny/webiny-js/compare/v5.30.0-beta.1...v5.30.0) (2022-07-27)
 
 **Note:** Version bump only for package @webiny/project-utils

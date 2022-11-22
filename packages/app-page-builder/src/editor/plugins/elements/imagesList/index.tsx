@@ -7,7 +7,7 @@ import {
     DisplayMode,
     PbEditorElementPluginArgs,
     OnCreateActions
-} from "../../../../types";
+} from "~/types";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 import ImagesList from "./ImagesList";
 import ImagesListImagesSettings from "./ImagesListImagesSettings";

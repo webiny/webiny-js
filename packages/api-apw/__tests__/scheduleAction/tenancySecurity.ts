@@ -4,7 +4,7 @@ import { createStorageOperations as tenancyStorageOperations } from "@webiny/api
 import { createSecurityContext, createSecurityGraphQL } from "@webiny/api-security";
 import { createStorageOperations as securityStorageOperations } from "@webiny/api-security-so-ddb";
 import { SecurityContext, SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
-import { ContextPlugin } from "@webiny/handler";
+import { ContextPlugin } from "@webiny/api";
 import { BeforeHandlerPlugin } from "@webiny/handler";
 import { TenancyContext } from "@webiny/api-tenancy/types";
 
@@ -26,7 +26,8 @@ interface Config {
 export const defaultIdentity = {
     id: "12345678",
     type: "admin",
-    displayName: "John Doe"
+    displayName: "John Doe",
+    email: "testing@webiny.com"
 };
 
 export const createTenancyAndSecurity = ({ permissions, identity }: Config = {}) => {

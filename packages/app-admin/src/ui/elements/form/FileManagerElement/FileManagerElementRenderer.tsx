@@ -66,14 +66,10 @@ export class FileManagerElementRenderer extends UIRenderer<
 
                         <FileManager
                             onChange={onChange}
-                            onChangePick={element.getOnChangePickAttributes()}
                             accept={accept}
                             images={!accept}
                             maxSize={element.getMaxSize()}
-                            multipleMaxCount={element.getMultipleMaxCount()}
-                            multipleMaxSize={element.getMultipleMaxSize()}
-                        >
-                            {({ showFileManager }) =>
+                            render={({ showFileManager }) =>
                                 element.getEmptyStateElement().render({
                                     ...props,
                                     fileManagerElement: element,
@@ -82,7 +78,7 @@ export class FileManagerElementRenderer extends UIRenderer<
                                     onChange
                                 })
                             }
-                        </FileManager>
+                        />
 
                         {validation.isValid === false && (
                             <FormElementMessage error>{validation.message}</FormElementMessage>

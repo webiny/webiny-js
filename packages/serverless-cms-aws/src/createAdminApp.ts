@@ -1,5 +1,5 @@
 import { createAdminPulumiApp, CreateAdminPulumiAppParams } from "@webiny/pulumi-aws";
-import { uploadAppToS3 } from "./admin/plugins";
+import { uploadAppToS3 } from "./react/plugins";
 import { PluginCollection } from "@webiny/plugins/types";
 
 export interface CreateAdminAppParams extends CreateAdminPulumiAppParams {
@@ -7,7 +7,8 @@ export interface CreateAdminAppParams extends CreateAdminPulumiAppParams {
 }
 
 export function createAdminApp(projectAppParams: CreateAdminAppParams = {}) {
-    const builtInPlugins = [uploadAppToS3];
+    const builtInPlugins = [uploadAppToS3({ folder: "apps/admin" })];
+
     const customPlugins = projectAppParams.plugins ? [...projectAppParams.plugins] : [];
 
     return {

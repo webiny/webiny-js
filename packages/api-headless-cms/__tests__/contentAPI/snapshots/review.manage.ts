@@ -76,6 +76,10 @@ export default /* GraphQL */ `
         ownedBy_not: String
         ownedBy_in: [String!]
         ownedBy_not_in: [String!]
+        status: String
+        status_not: String
+        status_in: [String!]
+        status_not_in: [String!]
 
         text: String
         text_not: String
@@ -156,9 +160,5 @@ export default /* GraphQL */ `
         republishReview(revision: ID!): ReviewResponse
 
         unpublishReview(revision: ID!): ReviewResponse
-        
-        requestReviewReview(revision: ID!): ReviewResponse
-        
-        requestReviewChanges(revision: ID!): ReviewResponse
     }
 `;

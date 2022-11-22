@@ -3,6 +3,127 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.33.2](https://github.com/webiny/webiny-js/compare/v5.33.2-beta.2...v5.33.2) (2022-11-17)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+## [5.33.2-beta.2](https://github.com/webiny/webiny-js/compare/v5.33.2-beta.1...v5.33.2-beta.2) (2022-11-16)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+## [5.33.2-beta.1](https://github.com/webiny/webiny-js/compare/v5.33.2-beta.0...v5.33.2-beta.1) (2022-11-16)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+## [5.33.2-beta.0](https://github.com/webiny/webiny-js/compare/v5.33.1...v5.33.2-beta.0) (2022-11-15)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+## [5.33.1](https://github.com/webiny/webiny-js/compare/v5.33.1-beta.0...v5.33.1) (2022-11-07)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+## [5.33.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.33.0...v5.33.1-beta.0) (2022-11-04)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [5.33.0](https://github.com/webiny/webiny-js/compare/v5.33.0-beta.1...v5.33.0) (2022-10-12)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [5.33.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.33.0-beta.0...v5.33.0-beta.1) (2022-10-12)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [5.33.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.32.0...v5.33.0-beta.0) (2022-10-11)
+
+
+### Features
+
+* make FileManager composable ([#2664](https://github.com/webiny/webiny-js/issues/2664)) ([d279b45](https://github.com/webiny/webiny-js/commit/d279b458a9296611dd3fa87778939421c96fba28))
+
+
+
+
+
+# [5.32.0](https://github.com/webiny/webiny-js/compare/v5.32.0-beta.0...v5.32.0) (2022-09-07)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [5.32.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.31.0...v5.32.0-beta.0) (2022-09-06)
+
+
+### Bug Fixes
+
+* **app-page-builder:** return undefined to use default object id ([4e3d1c0](https://github.com/webiny/webiny-js/commit/4e3d1c04d9fbcf500bd5aa0ee6f6e1edd61910d4))
+
+
+
+
+
+# [5.31.0](https://github.com/webiny/webiny-js/compare/v5.31.0-beta.1...v5.31.0) (2022-08-18)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [5.31.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.31.0-beta.0...v5.31.0-beta.1) (2022-08-17)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [5.31.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.30.0...v5.31.0-beta.0) (2022-08-16)
+
+
+### Features
+
+* make all buckets private ([#2558](https://github.com/webiny/webiny-js/issues/2558)) ([6e84b04](https://github.com/webiny/webiny-js/commit/6e84b043f6f5bd37f5e02babdd51bad43f5914b3))
+
+
+
+
+
 # [5.30.0](https://github.com/webiny/webiny-js/compare/v5.30.0-beta.1...v5.30.0) (2022-07-27)
 
 **Note:** Version bump only for package @webiny/app-page-builder

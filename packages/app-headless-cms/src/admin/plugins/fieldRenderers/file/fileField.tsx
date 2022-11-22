@@ -30,22 +30,11 @@ const plugin: CmsEditorFieldRendererPlugin = {
                                 const { value, onChange } = bind;
 
                                 return (
-                                    <FileManager multiple={false} images={imagesOnly}>
-                                        {({ showFileManager }) => {
+                                    <FileManager
+                                        images={imagesOnly}
+                                        render={({ showFileManager }) => {
                                             const selectFile = () => {
-                                                showFileManager(initialFile => {
-                                                    if (
-                                                        !initialFile ||
-                                                        (Array.isArray(initialFile) === true &&
-                                                            initialFile.length === 0)
-                                                    ) {
-                                                        return;
-                                                    }
-                                                    const file = Array.isArray(initialFile)
-                                                        ? initialFile[0]
-                                                        : initialFile;
-                                                    onChange(file.src);
-                                                });
+                                                showFileManager(file => onChange(file.src));
                                             };
                                             return (
                                                 <File
@@ -59,7 +48,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
                                                 />
                                             );
                                         }}
-                                    </FileManager>
+                                    />
                                 );
                             }}
                         </Bind>

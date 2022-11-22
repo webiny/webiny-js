@@ -1,5 +1,5 @@
 import WebinyError from "@webiny/error";
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
+import { ContextPlugin } from "@webiny/api";
 import { Client } from "@elastic/elasticsearch";
 import { FileManagerContext } from "~/types";
 import { createElasticsearchIndex } from "~/elasticsearch/createElasticsearchIndex";
@@ -9,7 +9,7 @@ export const attachCreateIndexOnI18NCreate = (): ContextPlugin<FileManagerContex
         if (!context.i18n || !context.i18n.locales) {
             return;
         }
-        context.i18n.locales.onBeforeCreate.subscribe(async ({ locale, tenant }) => {
+        context.i18n.locales.onLocaleBeforeCreate.subscribe(async ({ locale, tenant }) => {
             const client = context.elasticsearch as Client;
             if (!client) {
                 throw new WebinyError(

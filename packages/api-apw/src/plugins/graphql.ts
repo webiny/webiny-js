@@ -4,7 +4,7 @@ import contentReviewSchema from "./graphql/contentReview.gql";
 import reviewerSchema from "./graphql/reviewer.gql";
 import commentSchema from "./graphql/comment.gql";
 import changeRequestedSchema from "./graphql/changeRequest.gql";
-import { ContextPlugin } from "@webiny/handler";
+import { ContextPlugin } from "@webiny/api";
 import { ApwContext } from "~/types";
 
 const emptyResolver = () => ({});

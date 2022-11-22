@@ -62,7 +62,7 @@ export const ElasticSearch = createAppModule({
                 name: domainName,
                 config: {
                     elasticsearchVersion: "7.10",
-                    clusterConfig: prod ? getDevClusterConfig() : getProdClusterConfig(),
+                    clusterConfig: prod ? getProdClusterConfig() : getDevClusterConfig(),
                     vpcOptions: vpc
                         ? {
                               subnetIds: vpc.subnets.private.map(s => s.output.id),
@@ -166,13 +166,24 @@ export const ElasticSearch = createAppModule({
             }
         });
 
-        app.addResource(aws.iam.RolePolicyAttachment, {
-            name: `${roleName}-AWSLambdaVPCAccessExecutionRole`,
-            config: {
-                role: role.output,
-                policyArn: aws.iam.ManagedPolicy.AWSLambdaVPCAccessExecutionRole
-            }
-        });
+        // Only use `AWSLambdaVPCAccessExecutionRole` policy if VPC feature is enabled.
+        if (vpc) {
+            app.addResource(aws.iam.RolePolicyAttachment, {
+                name: `${roleName}-AWSLambdaVPCAccessExecutionRole`,
+                config: {
+                    role: role.output,
+                    policyArn: aws.iam.ManagedPolicy.AWSLambdaVPCAccessExecutionRole
+                }
+            });
+        } else {
+            app.addResource(aws.iam.RolePolicyAttachment, {
+                name: `${roleName}-AWSLambdaBasicExecutionRole`,
+                config: {
+                    role: role.output,
+                    policyArn: aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole
+                }
+            });
+        }
 
         app.addResource(aws.iam.RolePolicyAttachment, {
             name: `${roleName}-AWSLambdaDynamoDBExecutionRole`,

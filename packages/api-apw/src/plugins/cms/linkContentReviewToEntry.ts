@@ -10,7 +10,7 @@ interface LinkContentReviewToEntryParams {
 export const linkContentReviewToEntry = (params: LinkContentReviewToEntryParams) => {
     const { apw, cms } = params;
 
-    apw.contentReview.onAfterContentReviewCreate.subscribe(async ({ contentReview }) => {
+    apw.contentReview.onContentReviewAfterCreate.subscribe(async ({ contentReview }) => {
         const { content } = contentReview;
 
         if (content.type !== ApwContentTypes.CMS_ENTRY) {
@@ -31,7 +31,7 @@ export const linkContentReviewToEntry = (params: LinkContentReviewToEntryParams)
         });
     });
 
-    apw.contentReview.onAfterContentReviewDelete.subscribe(async ({ contentReview }) => {
+    apw.contentReview.onContentReviewAfterDelete.subscribe(async ({ contentReview }) => {
         const { content } = contentReview;
         if (content.type !== ApwContentTypes.CMS_ENTRY) {
             return;
@@ -51,7 +51,7 @@ export const linkContentReviewToEntry = (params: LinkContentReviewToEntryParams)
         });
     });
 
-    cms.onBeforeEntryDelete.subscribe(async ({ entry, model }) => {
+    cms.onEntryBeforeDelete.subscribe(async ({ entry, model }) => {
         if (isAwpModel(model)) {
             return;
         }

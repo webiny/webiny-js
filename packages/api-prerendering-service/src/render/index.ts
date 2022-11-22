@@ -2,16 +2,10 @@ import renderUrl, { File } from "./renderUrl";
 import { join } from "path";
 import S3 from "aws-sdk/clients/s3";
 import { getStorageFolder, getRenderUrl, getIsNotFoundPage } from "~/utils";
-import { HandlerArgs, RenderHookPlugin } from "./types";
+import { HandlerPayload, RenderHookPlugin } from "./types";
 import { PrerenderingServiceStorageOperations, Render, TagPathLink } from "~/types";
 import omit from "lodash/omit";
-import { HandlerPlugin } from "@webiny/handler";
-import { Context } from "@webiny/handler/types";
-import { ArgsContext } from "@webiny/handler-args/types";
-
-export interface HandlerContext extends Context, ArgsContext<HandlerArgs> {
-    //
-}
+import { EventPlugin } from "@webiny/handler";
 
 const sleep = () => new Promise(resolve => setTimeout(resolve, 1000));
 
@@ -25,16 +19,19 @@ interface StoreFileParams {
 }
 const storeFile = (params: StoreFileParams) => {
     const { storageName, key, contentType, body } = params;
-    return s3
-        .putObject({
-            Bucket: storageName,
-            Key: key,
-            ACL: "public-read",
-            ContentType: contentType,
-            CacheControl: "max-age=30",
-            Body: body
-        })
-        .promise();
+    const object: S3.Types.PutObjectRequest = {
+        Bucket: storageName,
+        Key: key,
+        ContentType: contentType,
+        CacheControl: "max-age=30",
+        Body: body
+    };
+
+    if (process.env.WEBINY_IS_PRE_529 === "true") {
+        object.ACL = "public-read";
+    }
+
+    return s3.putObject(object).promise();
 };
 
 export interface RenderParams {
@@ -58,9 +55,8 @@ export default (params: RenderParams) => {
     const isMultiTenant = isMultiTenancyEnabled();
     const log = console.log;
 
-    return new HandlerPlugin<HandlerContext>(async context => {
-        const { invocationArgs } = context;
-        const handlerArgs = Array.isArray(invocationArgs) ? invocationArgs : [invocationArgs];
+    return new EventPlugin<HandlerPayload>(async ({ payload, context }) => {
+        const handlerArgs = Array.isArray(payload) ? payload : [payload];
         const handlerHookPlugins = context.plugins.byType<RenderHookPlugin>("ps-render-hook");
 
         try {

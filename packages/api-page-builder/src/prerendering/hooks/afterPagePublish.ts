@@ -1,5 +1,5 @@
 import lodashGet from "lodash/get";
-import { ContextPlugin } from "@webiny/handler";
+import { ContextPlugin } from "@webiny/api";
 import { PbContext } from "~/graphql/types";
 
 export default () => {
@@ -7,7 +7,7 @@ export default () => {
         /**
          * After a page was published, we need to render the page.
          */
-        pageBuilder.onAfterPagePublish.subscribe(async params => {
+        pageBuilder.onPageAfterPublish.subscribe(async params => {
             const { page, publishedPage } = params;
             /**
              * First, let's load settings.

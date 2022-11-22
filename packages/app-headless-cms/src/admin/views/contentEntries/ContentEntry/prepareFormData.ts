@@ -1,18 +1,22 @@
-import { CmsEditorContentModel, CmsEditorField, CmsFieldValueTransformer } from "~/types";
+import { CmsEditorField, CmsFieldValueTransformer } from "~/types";
 import { plugins } from "@webiny/plugins";
 
 interface AvailableFieldTransformers {
     [fieldType: string]: CmsFieldValueTransformer;
 }
 
-interface FieldTransformers {
-    [fieldId: string]: (value: any) => any;
-}
-
+/**
+ * This method builds transformer plugins only once.
+ * Really no need in building more than once because at this point all plugins are registered.
+ */
+let availableTransformerPlugins: AvailableFieldTransformers | undefined = undefined;
 const getAvailableTransformerPlugins = (): AvailableFieldTransformers => {
-    return plugins
+    if (availableTransformerPlugins) {
+        return availableTransformerPlugins;
+    }
+    availableTransformerPlugins = plugins
         .byType<CmsFieldValueTransformer>("cms-field-value-transformer")
-        .reduce((transformers, pl) => {
+        .reduce<AvailableFieldTransformers>((transformers, pl) => {
             const fieldTypes = Array.isArray(pl.fieldType) ? pl.fieldType : [pl.fieldType];
             for (const fieldType of fieldTypes) {
                 if (transformers[fieldType]) {
@@ -24,43 +28,94 @@ const getAvailableTransformerPlugins = (): AvailableFieldTransformers => {
                 transformers[fieldType] = pl;
             }
             return transformers;
-        }, {} as Record<string, CmsFieldValueTransformer>);
+        }, {});
+
+    return availableTransformerPlugins;
 };
 
-interface TransformerCallable {
-    (value: any): any;
+interface TransformationRunnerCallable {
+    (field: CmsEditorField, value: any): any;
 }
-const createTransformers = (fields: CmsEditorField[]): FieldTransformers => {
-    const transformerPlugins = getAvailableTransformerPlugins();
-    const transformers: Record<string, TransformerCallable> = {};
-    for (const field of fields) {
-        if (!transformerPlugins[field.type]) {
-            continue;
-        }
-        // TODO @ts-refactor figure out if possible to put some type instead of any
-        transformers[field.fieldId] = (value: any) => {
-            return transformerPlugins[field.type].transform(value, field);
-        };
+
+let transformationRunner: TransformationRunnerCallable;
+const createTransformationRunner = (): TransformationRunnerCallable => {
+    if (transformationRunner) {
+        return transformationRunner;
     }
-    return transformers;
+    const availablePlugins = getAvailableTransformerPlugins();
+
+    transformationRunner = (field, value) => {
+        const transformer = availablePlugins[field.type];
+        if (!transformer) {
+            return value;
+        }
+        return transformer.transform(value, field);
+    };
+    return transformationRunner;
 };
 
 export const prepareFormData = (
     input: Record<string, any>,
-    model: CmsEditorContentModel
+    fields: CmsEditorField[]
 ): Record<string, any> => {
-    const transformers = createTransformers(model.fields);
+    const runTransformation = createTransformationRunner();
 
-    return Object.keys(transformers).reduce((output, key) => {
-        const value = input[key];
-        const transform = transformers[key];
+    return fields.reduce<Record<string, any>>((output, field) => {
+        const inputValue = input[field.fieldId];
+        const childFields = field.type === "object" ? field.settings?.fields : undefined;
+        /**
+         * There is a possibility that we have an object field - it has child fields.
+         */
+        if (childFields) {
+            /**
+             * Field can be repeatable, and in that case, we must go through all values and transform them.
+             */
+            if (field.multipleValues) {
+                if (!inputValue) {
+                    return output;
+                }
+                const values = Array.isArray(inputValue) ? inputValue : undefined;
+                if (!values) {
+                    return output;
+                }
+                output[field.fieldId] = values.map(value => {
+                    return prepareFormData(value, childFields);
+                });
+                return output;
+            }
+            if (!inputValue) {
+                return output;
+            }
+            /**
+             * Or if is not repeatable, just go through the fields without the need to go through an array.
+             */
+            output[field.fieldId] = prepareFormData(inputValue, childFields);
 
-        const transformedValue = transform(value);
-        if (transformedValue === undefined) {
             return output;
         }
-        output[key] = transformedValue;
+        /**
+         * Regular fields, multiple values enabled.
+         */
+        //
+        else if (field.multipleValues) {
+            const values = Array.isArray(inputValue) ? inputValue : undefined;
+            if (!values) {
+                return output;
+            }
+            output[field.fieldId] = values
+                /**
+                 * Transformations need to run on all the available fields.
+                 */
+                .map(value => {
+                    return runTransformation(field, value);
+                });
+            return output;
+        }
+        /**
+         * Regular values, single values.
+         */
+        output[field.fieldId] = runTransformation(field, inputValue);
 
         return output;
-    }, input);
+    }, {});
 };

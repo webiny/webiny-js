@@ -3,6 +3,124 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.33.2](https://github.com/webiny/webiny-js/compare/v5.33.2-beta.2...v5.33.2) (2022-11-17)
+
+**Note:** Version bump only for package @webiny/api-i18n
+
+
+
+
+
+## [5.33.2-beta.2](https://github.com/webiny/webiny-js/compare/v5.33.2-beta.1...v5.33.2-beta.2) (2022-11-16)
+
+**Note:** Version bump only for package @webiny/api-i18n
+
+
+
+
+
+## [5.33.2-beta.1](https://github.com/webiny/webiny-js/compare/v5.33.2-beta.0...v5.33.2-beta.1) (2022-11-16)
+
+**Note:** Version bump only for package @webiny/api-i18n
+
+
+
+
+
+## [5.33.2-beta.0](https://github.com/webiny/webiny-js/compare/v5.33.1...v5.33.2-beta.0) (2022-11-15)
+
+**Note:** Version bump only for package @webiny/api-i18n
+
+
+
+
+
+## [5.33.1](https://github.com/webiny/webiny-js/compare/v5.33.1-beta.0...v5.33.1) (2022-11-07)
+
+**Note:** Version bump only for package @webiny/api-i18n
+
+
+
+
+
+## [5.33.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.33.0...v5.33.1-beta.0) (2022-11-04)
+
+**Note:** Version bump only for package @webiny/api-i18n
+
+
+
+
+
+# [5.33.0](https://github.com/webiny/webiny-js/compare/v5.33.0-beta.1...v5.33.0) (2022-10-12)
+
+**Note:** Version bump only for package @webiny/api-i18n
+
+
+
+
+
+# [5.33.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.33.0-beta.0...v5.33.0-beta.1) (2022-10-12)
+
+**Note:** Version bump only for package @webiny/api-i18n
+
+
+
+
+
+# [5.33.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.32.0...v5.33.0-beta.0) (2022-10-11)
+
+
+### Features
+
+* **api-headless-cms:** upgrade for all tenants ([#2679](https://github.com/webiny/webiny-js/issues/2679)) ([1473c3d](https://github.com/webiny/webiny-js/commit/1473c3d1d3f24bc6e37fb2fba2e14044a14e13aa))
+
+
+
+
+
+# [5.32.0](https://github.com/webiny/webiny-js/compare/v5.32.0-beta.0...v5.32.0) (2022-09-07)
+
+**Note:** Version bump only for package @webiny/api-i18n
+
+
+
+
+
+# [5.32.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.31.0...v5.32.0-beta.0) (2022-09-06)
+
+**Note:** Version bump only for package @webiny/api-i18n
+
+
+
+
+
+# [5.31.0](https://github.com/webiny/webiny-js/compare/v5.31.0-beta.1...v5.31.0) (2022-08-18)
+
+**Note:** Version bump only for package @webiny/api-i18n
+
+
+
+
+
+# [5.31.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.31.0-beta.0...v5.31.0-beta.1) (2022-08-17)
+
+**Note:** Version bump only for package @webiny/api-i18n
+
+
+
+
+
+# [5.31.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.30.0...v5.31.0-beta.0) (2022-08-16)
+
+
+### Features
+
+* **handler-fastify:** add fastify as handler into the system ([#2546](https://github.com/webiny/webiny-js/issues/2546)) ([8d258aa](https://github.com/webiny/webiny-js/commit/8d258aa2ebd8562b79e395d7aeea6316405f7f4e))
+
+
+
+
+
 # [5.30.0](https://github.com/webiny/webiny-js/compare/v5.30.0-beta.1...v5.30.0) (2022-07-27)
 
 **Note:** Version bump only for package @webiny/api-i18n

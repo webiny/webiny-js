@@ -1,7 +1,7 @@
 import { getIntrospectionQuery } from "graphql";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import i18nContext from "@webiny/api-i18n/graphql/context";
-import { createHandler } from "@webiny/handler-aws";
+import { createHandler } from "@webiny/handler-aws/gateway";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import apiKeyAuthentication from "@webiny/api-security/plugins/apiKeyAuthentication";
@@ -100,7 +100,7 @@ export const createHeadlessCmsGQLHandler = (params: CreateHeadlessCmsGQLHandlerP
         name: "Root",
         parent: null
     };
-    const { permissions, identity, plugins = [] } = params;
+    const { permissions, identity, plugins = [], path } = params;
     /**
      * We're using ddb-only storageOperations here because current jest setup doesn't allow
      * usage of more than one storageOperations at a time with the help of --keyword flag.
@@ -113,7 +113,8 @@ export const createHeadlessCmsGQLHandler = (params: CreateHeadlessCmsGQLHandlerP
 
     const handler = createHandler({
         plugins: [
-            contextCommon(params),
+            // createGraphQLHandler(),
+            contextCommon(),
             ...ops.plugins,
             ...createTenancyAndSecurity({
                 permissions: [...createPermissions(permissions), { name: "pb.*" }],
@@ -133,16 +134,26 @@ export const createHeadlessCmsGQLHandler = (params: CreateHeadlessCmsGQLHandlerP
             createApwGraphQL(),
             plugins
         ],
-        http: { debug: true }
+        http: {
+            debug: false
+        }
     });
 
     const invoke = async ({ httpMethod = "POST", body, headers = {}, ...rest }: InvokeParams) => {
-        const response = await handler({
-            httpMethod,
-            headers,
-            body: JSON.stringify(body),
-            ...rest
-        });
+        const response = await handler(
+            {
+                path: path ? `/cms/${path}` : "/graphql",
+                httpMethod,
+                headers: {
+                    ["x-tenant"]: "root",
+                    ["Content-Type"]: "application/json",
+                    ...headers
+                },
+                body: JSON.stringify(body),
+                ...rest
+            } as any,
+            {} as any
+        );
         if (httpMethod === "OPTIONS" && !response.body) {
             return [null, response];
         }

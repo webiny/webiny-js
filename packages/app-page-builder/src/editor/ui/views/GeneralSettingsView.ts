@@ -76,8 +76,7 @@ export class GeneralSettingsView extends PageSettingsFormView {
         this.addField(
             new FileManagerElement("image", {
                 name: "settings.general.image",
-                label: "Page Image",
-                onChangePickAttributes: ["id", "src"]
+                label: "Page Image"
             })
         );
 

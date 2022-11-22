@@ -1,10 +1,10 @@
 import { UpdateDataModel, UpdateSettingsModel } from "./pages/models";
 import { PbContext } from "~/graphql/types";
-import { ContextPlugin } from "@webiny/handler";
+import { ContextPlugin } from "@webiny/api";
 
 export const createPageValidation = () => {
     return new ContextPlugin<PbContext>(async context => {
-        context.pageBuilder.onBeforePageUpdate.subscribe(async params => {
+        context.pageBuilder.onPageBeforeUpdate.subscribe(async params => {
             const { page, original, input } = params;
             const updateDataModel = new UpdateDataModel().populate(input);
             await updateDataModel.validate();

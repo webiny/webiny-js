@@ -1,15 +1,15 @@
 import { Topic } from "@webiny/pubsub/types";
-import { AfterEntryDeleteTopicParams, CmsContext } from "~/types";
+import { OnEntryAfterDeleteTopicParams, CmsContext } from "~/types";
 import { markUnlockedFields } from "./markLockedFields";
 
 interface AssignAfterEntryDeleteParams {
     context: CmsContext;
-    onAfterEntryDelete: Topic<AfterEntryDeleteTopicParams>;
+    onEntryAfterDelete: Topic<OnEntryAfterDeleteTopicParams>;
 }
 export const assignAfterEntryDelete = (params: AssignAfterEntryDeleteParams) => {
-    const { context, onAfterEntryDelete } = params;
+    const { context, onEntryAfterDelete } = params;
 
-    onAfterEntryDelete.subscribe(async params => {
+    onEntryAfterDelete.subscribe(async params => {
         const { entry, model } = params;
 
         const { items } = await context.cms.storageOperations.entries.list(model, {

@@ -6,7 +6,7 @@ interface FileError extends BaseFileError {
     multipleMaxSize: number;
 }
 
-export default (errors: FileError[]): string | null => {
+export const outputFileSelectionError = (errors: FileError[]): string | null => {
     if (errors.length > 1) {
         let error = errors.find(error => error.type === "multipleMaxCountExceeded");
         if (error) {

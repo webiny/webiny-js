@@ -1,7 +1,7 @@
 import { Client } from "@elastic/elasticsearch";
 import { ApiResponse } from "@elastic/elasticsearch/lib/Transport";
 import { BoolQueryConfig as esBoolQueryConfig, Query as esQuery } from "elastic-ts";
-import { Context } from "@webiny/handler/types";
+import { Context } from "@webiny/api/types";
 /**
  * Re-export some dep lib types.
  */
@@ -97,11 +97,32 @@ export interface ElasticsearchSearchResponse<T = any> {
 
 export interface ElasticsearchIndexRequestBodyMappingsDynamicTemplate {
     [key: string]: {
+        path_match?: string;
+        path_unmatch?: string;
         match_mapping_type?: string;
         match?: string;
         unmatch?: string;
         mapping?: {
-            type?: "text" | "date" | "binary" | "boolean" | "object" | "ip" | "geo" | string;
+            numeric_detection?: boolean;
+            date_detection?: boolean;
+            type?:
+                | "string"
+                | "date"
+                | "binary"
+                | "boolean"
+                | "object"
+                | "ip"
+                | "geo"
+                | "long"
+                | "integer"
+                | "short"
+                | "byte"
+                | "double"
+                | "float"
+                | "half_float"
+                | "scaled_float"
+                | "unsigned_long"
+                | string;
             search_analyzer?: string;
             analyzer?: string;
             fields?: {
@@ -186,6 +207,7 @@ export interface ElasticsearchIndexRequestBody {
         index?: Partial<ElasticsearchIndexRequestBodySettings>;
     };
     mappings: {
+        numeric_detection?: boolean;
         dynamic_templates?: ElasticsearchIndexRequestBodyMappingsDynamicTemplate[];
         properties?: {
             [key: string]: {

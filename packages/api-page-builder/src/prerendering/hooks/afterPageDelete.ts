@@ -1,9 +1,9 @@
 import { PbContext } from "~/graphql/types";
-import { ContextPlugin } from "@webiny/handler";
+import { ContextPlugin } from "@webiny/api";
 
 export default () => {
     return new ContextPlugin<PbContext>(async ({ pageBuilder }) => {
-        pageBuilder.onAfterPageDelete.subscribe(async params => {
+        pageBuilder.onPageAfterDelete.subscribe(async params => {
             const { page, publishedPage } = params;
             /**
              * Published pages have this record.

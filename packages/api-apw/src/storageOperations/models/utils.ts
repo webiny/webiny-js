@@ -3,11 +3,11 @@ import { CmsModelField } from "@webiny/api-headless-cms/types";
 import { CreateModelFieldParams } from "~/plugins/utils";
 
 export const createModelField = (params: CreateModelFieldParams): CmsModelField => {
-    const { label, type, parent } = params;
-    const fieldId = camelCase(label);
-
+    const { label, fieldId: initialFieldId, type, parent } = params;
+    const fieldId = initialFieldId ? camelCase(initialFieldId) : camelCase(label);
     return {
         id: `${camelCase(parent)}_${fieldId}`,
+        storageId: fieldId,
         fieldId,
         label,
         type,

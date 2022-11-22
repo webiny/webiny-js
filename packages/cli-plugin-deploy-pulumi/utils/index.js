@@ -4,6 +4,7 @@ const getStackOutput = require("./getStackOutput");
 const createPulumiCommand = require("./createPulumiCommand");
 const loadEnvVariables = require("./loadEnvVariables");
 const processHooks = require("./processHooks");
+const runHook = require("./runHook");
 const notify = require("./notify");
 const login = require("./login");
 const mapStackOutput = require("./mapStackOutput");
@@ -16,6 +17,7 @@ module.exports = {
     loadEnvVariables,
     mapStackOutput,
     processHooks,
+    runHook,
     notify,
     login,
     getRandomColorForString,

@@ -1,20 +1,29 @@
 import { Topic } from "@webiny/pubsub/types";
-import { BeforeModelUpdateTopicParams, HeadlessCmsStorageOperations } from "~/types";
+import { OnModelBeforeUpdateTopicParams, HeadlessCmsStorageOperations } from "~/types";
 import { PluginsContainer } from "@webiny/plugins";
-import { validateModelFields } from "./validateModelFields";
+import { validateModel } from "./validateModel";
+import { validateLayout } from "./validateLayout";
 
 interface AssignBeforeModelUpdateParams {
-    onBeforeModelUpdate: Topic<BeforeModelUpdateTopicParams>;
+    onModelBeforeUpdate: Topic<OnModelBeforeUpdateTopicParams>;
     storageOperations: HeadlessCmsStorageOperations;
     plugins: PluginsContainer;
 }
 
-export const assignBeforeModelUpdate = (params: AssignBeforeModelUpdateParams) => {
-    const { onBeforeModelUpdate, plugins } = params;
+export const assignModelBeforeUpdate = (params: AssignBeforeModelUpdateParams) => {
+    const { onModelBeforeUpdate, plugins } = params;
 
-    onBeforeModelUpdate.subscribe(async params => {
-        await validateModelFields({
-            model: params.model,
+    onModelBeforeUpdate.subscribe(async ({ model, original }) => {
+        /**
+         * First we go through the layout...
+         */
+        validateLayout(model.layout, model.fields);
+        /**
+         * then the model and fields...
+         */
+        await validateModel({
+            model,
+            original,
             plugins
         });
     });

@@ -1,6 +1,6 @@
 import { Plugin } from "@webiny/plugins/types";
 import { ClientContext } from "@webiny/handler-client/types";
-import { Context } from "@webiny/handler/types";
+import { Context } from "@webiny/api/types";
 import { TenancyContext } from "@webiny/api-tenancy/types";
 import { Topic } from "@webiny/pubsub/types";
 import { SecurityContext } from "@webiny/api-security/types";
@@ -49,6 +49,7 @@ export interface SystemInstallParams {
  * Definition for the system part crud of the i18n.
  */
 export interface SystemCRUD {
+    storageOperations: I18NSystemStorageOperations;
     /**
      * Get the current version of the i18n.
      */
@@ -61,6 +62,22 @@ export interface SystemCRUD {
      * Run the install process for the i18n.
      */
     installSystem(params: SystemInstallParams): Promise<void>;
+    /**
+     * Lifecycle events - deprecated in 5.34.0 - will be removed in 5.36.0
+     */
+    /**
+     * @deprecated
+     */
+    onBeforeInstall: Topic<OnSystemBeforeInstallTopicParams>;
+    /**
+     * @deprecated
+     */
+    onAfterInstall: Topic<OnSystemAfterInstallTopicParams>;
+    /**
+     * Introduced in 5.34.0
+     */
+    onSystemBeforeInstall: Topic<OnSystemBeforeInstallTopicParams>;
+    onSystemAfterInstall: Topic<OnSystemAfterInstallTopicParams>;
 }
 
 export interface I18NContext extends Context, ClientContext, TenancyContext, SecurityContext {
@@ -104,34 +121,41 @@ export interface LocalesCRUDListParams {
     after?: string;
 }
 
-export interface OnBeforeCreateLocaleTopicParams {
+export interface OnSystemBeforeInstallTopicParams {
+    code: string;
+}
+export interface OnSystemAfterInstallTopicParams {
+    code: string;
+}
+
+export interface OnLocaleBeforeCreateTopicParams {
     context: I18NContext;
     locale: I18NLocaleData;
     tenant: string;
 }
-export interface OnAfterCreateLocaleTopicParams {
+export interface OnLocaleAfterCreateTopicParams {
     context: I18NContext;
     locale: I18NLocaleData;
     tenant: string;
 }
-export interface OnBeforeUpdateLocaleTopicParams {
+export interface OnLocaleBeforeUpdateTopicParams {
     context: I18NContext;
     original: I18NLocaleData;
     locale: I18NLocaleData;
     tenant: string;
 }
-export interface OnAfterUpdateLocaleTopicParams {
+export interface OnLocaleAfterUpdateTopicParams {
     context: I18NContext;
     original: I18NLocaleData;
     locale: I18NLocaleData;
     tenant: string;
 }
-export interface OnBeforeDeleteLocaleTopicParams {
+export interface OnLocaleBeforeDeleteTopicParams {
     context: I18NContext;
     locale: I18NLocaleData;
     tenant: string;
 }
-export interface OnAfterDeleteLocaleTopicParams {
+export interface OnLocaleAfterDeleteTopicParams {
     context: I18NContext;
     locale: I18NLocaleData;
     tenant: string;
@@ -140,15 +164,43 @@ export interface OnAfterDeleteLocaleTopicParams {
  * Definition for the locales part crud of the i18n.
  */
 export interface LocalesCRUD {
+    storageOperations: I18NLocalesStorageOperations;
     /**
-     * Lifecycle events.
+     * Lifecycle events - deprecated in 5.34.0 - will be removed in 5.36.0
      */
-    onBeforeCreate: Topic<OnBeforeCreateLocaleTopicParams>;
-    onAfterCreate: Topic<OnAfterCreateLocaleTopicParams>;
-    onBeforeUpdate: Topic<OnBeforeUpdateLocaleTopicParams>;
-    onAfterUpdate: Topic<OnAfterUpdateLocaleTopicParams>;
-    onBeforeDelete: Topic<OnBeforeDeleteLocaleTopicParams>;
-    onAfterDelete: Topic<OnAfterDeleteLocaleTopicParams>;
+    /**
+     * @deprecated
+     */
+    onBeforeCreate: Topic<OnLocaleBeforeCreateTopicParams>;
+    /**
+     * @deprecated
+     */
+    onAfterCreate: Topic<OnLocaleAfterCreateTopicParams>;
+    /**
+     * @deprecated
+     */
+    onBeforeUpdate: Topic<OnLocaleBeforeUpdateTopicParams>;
+    /**
+     * @deprecated
+     */
+    onAfterUpdate: Topic<OnLocaleAfterUpdateTopicParams>;
+    /**
+     * @deprecated
+     */
+    onBeforeDelete: Topic<OnLocaleBeforeDeleteTopicParams>;
+    /**
+     * @deprecated
+     */
+    onAfterDelete: Topic<OnLocaleAfterDeleteTopicParams>;
+    /**
+     * Introduced in 5.34.0
+     */
+    onLocaleBeforeCreate: Topic<OnLocaleBeforeCreateTopicParams>;
+    onLocaleAfterCreate: Topic<OnLocaleAfterCreateTopicParams>;
+    onLocaleBeforeUpdate: Topic<OnLocaleBeforeUpdateTopicParams>;
+    onLocaleAfterUpdate: Topic<OnLocaleAfterUpdateTopicParams>;
+    onLocaleBeforeDelete: Topic<OnLocaleBeforeDeleteTopicParams>;
+    onLocaleAfterDelete: Topic<OnLocaleAfterDeleteTopicParams>;
     /**
      * Get the default locale.
      */
@@ -177,8 +229,18 @@ export interface LocalesCRUD {
     deleteLocale: (code: string) => Promise<I18NLocaleData>;
 }
 
+export interface I18NLocalesStorageOperationsGetDefaultParams {
+    tenant: string;
+}
+
+export interface I18NLocalesStorageOperationsGetParams {
+    code: string;
+    tenant: string;
+}
+
 export interface I18NLocalesStorageOperationsListParams {
-    where?: {
+    where: {
+        tenant: string;
         code?: string;
         default?: boolean;
         createdBy?: string;
@@ -226,8 +288,10 @@ export interface I18NLocalesStorageOperationsDeleteParams {
 }
 
 export interface I18NLocalesStorageOperations {
-    getDefault: () => Promise<I18NLocaleData | null>;
-    get: (code: string) => Promise<I18NLocaleData | null>;
+    getDefault: (
+        params: I18NLocalesStorageOperationsGetDefaultParams
+    ) => Promise<I18NLocaleData | null>;
+    get: (params: I18NLocalesStorageOperationsGetParams) => Promise<I18NLocaleData | null>;
     list: (
         params: I18NLocalesStorageOperationsListParams
     ) => Promise<I18NLocalesStorageOperationsListResponse>;

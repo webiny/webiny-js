@@ -12,32 +12,32 @@ env:
 jobs:
   cache-keys:
     name: Create cache keys
-    runs-on: ubuntu-latest
+    runs-on: webiny-js-4-cores
     outputs:
       day: ${{ steps.create-cache-keys.outputs.day }}
     steps:
       - name: Create cache key (day)
         id: create-cache-keys
-        run: echo "::set-output name=day::$(node --eval "console.log(new Date().getDate())")"
+        run: echo "day=$(node --eval "console.log(new Date().getDate())")" >> $GITHUB_OUTPUT
 
   cache-dependencies-packages-root:
     name: Cache dependencies and packages
-    runs-on: ubuntu-latest
+    runs-on: webiny-js-4-cores
     needs: cache-keys
     steps:
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: 14
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         id: yarn-cache
         with:
           path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         id: cached-packages
         with:
           path: .webiny/cached-packages
@@ -51,24 +51,24 @@ jobs:
 
   cache-dependencies-packages-next:
     name: Cache dependencies and packages ("next" folder)
-    runs-on: ubuntu-latest
+    runs-on: webiny-js-4-cores
     needs: cache-keys
     steps:
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: 14
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           path: next
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         id: yarn-cache
         with:
           path: next/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('next/**/yarn.lock') }}
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         id: cached-packages
         with:
           path: next/.webiny/cached-packages

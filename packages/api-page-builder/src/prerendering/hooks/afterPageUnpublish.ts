@@ -1,9 +1,9 @@
-import { ContextPlugin } from "@webiny/handler";
+import { ContextPlugin } from "@webiny/api";
 import { PbContext } from "~/graphql/types";
 
 export default () => {
     return new ContextPlugin<PbContext>(async ({ pageBuilder }) => {
-        pageBuilder.onAfterPageUnpublish.subscribe(async ({ page }) => {
+        pageBuilder.onPageAfterUnpublish.subscribe(async ({ page }) => {
             const promises = [];
             promises.push(
                 pageBuilder.prerendering.flush({

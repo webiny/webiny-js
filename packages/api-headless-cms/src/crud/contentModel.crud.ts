@@ -5,17 +5,19 @@ import {
     CmsModelManager,
     CmsModelPermission,
     HeadlessCmsStorageOperations,
-    BeforeModelCreateTopicParams,
-    AfterModelCreateTopicParams,
-    BeforeModelUpdateTopicParams,
-    AfterModelUpdateTopicParams,
-    BeforeModelDeleteTopicParams,
-    AfterModelDeleteTopicParams,
-    BeforeModelCreateFromTopicParams,
-    AfterModelCreateFromTopicParams,
+    OnModelBeforeCreateTopicParams,
+    OnModelAfterCreateTopicParams,
+    OnModelBeforeUpdateTopicParams,
+    OnModelAfterUpdateTopicParams,
+    OnModelBeforeDeleteTopicParams,
+    OnModelAfterDeleteTopicParams,
+    OnModelInitializeParams,
+    OnModelBeforeCreateFromTopicParams,
+    OnModelAfterCreateFromTopicParams,
     CmsModelCreateInput,
     CmsModelUpdateInput,
-    CmsModelCreateFromInput
+    CmsModelCreateFromInput,
+    CmsModelField
 } from "~/types";
 import DataLoader from "dataloader";
 import { NotFoundError } from "@webiny/handler-graphql";
@@ -26,24 +28,66 @@ import {
     UpdateContentModelModel
 } from "./contentModel/models";
 import { createFieldModels } from "./contentModel/createFieldModels";
-import { validateLayout } from "./contentModel/validateLayout";
 import WebinyError from "@webiny/error";
 import { Tenant } from "@webiny/api-tenancy/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { createTopic } from "@webiny/pubsub";
-import { assignBeforeModelCreate } from "./contentModel/beforeCreate";
-import { assignBeforeModelUpdate } from "./contentModel/beforeUpdate";
-import { assignBeforeModelDelete } from "./contentModel/beforeDelete";
-import { assignAfterModelCreate } from "./contentModel/afterCreate";
-import { assignAfterModelUpdate } from "./contentModel/afterUpdate";
-import { assignAfterModelDelete } from "./contentModel/afterDelete";
-import { assignAfterModelCreateFrom } from "./contentModel/afterCreateFrom";
+import { assignModelBeforeCreate } from "./contentModel/beforeCreate";
+import { assignModelBeforeUpdate } from "./contentModel/beforeUpdate";
+import { assignModelBeforeDelete } from "./contentModel/beforeDelete";
+import { assignModelAfterCreate } from "./contentModel/afterCreate";
+import { assignModelAfterUpdate } from "./contentModel/afterUpdate";
+import { assignModelAfterDelete } from "./contentModel/afterDelete";
+import { assignModelAfterCreateFrom } from "./contentModel/afterCreateFrom";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";
 import { checkPermissions } from "~/utils/permissions";
 import { filterAsync } from "~/utils/filterAsync";
 import { checkOwnership, validateOwnership } from "~/utils/ownership";
 import { checkModelAccess, validateModelAccess } from "~/utils/access";
+import { validateModelFields } from "~/crud/contentModel/validateModelFields";
+import semver, { SemVer } from "semver";
+
+/**
+ * TODO: remove for 5.34.0
+ * Required because of the 5.33.0 upgrade.
+ * Until the upgrade is done, API will break because there is no storageId assigned.
+ */
+const featureVersion = semver.coerce("5.33.0") as SemVer;
+
+const attachStorageIdToFields = (fields: CmsModelField[]): CmsModelField[] => {
+    return fields.map(field => {
+        if (field.settings?.fields) {
+            field.settings.fields = attachStorageIdToFields(field.settings.fields);
+        }
+        if (!field.storageId) {
+            field.storageId = field.fieldId;
+        }
+        return field;
+    });
+};
+
+const attachStorageIdToModelFields = (model: CmsModel): CmsModelField[] => {
+    if (!model.webinyVersion) {
+        return model.fields;
+    }
+
+    const version = semver.coerce(model.webinyVersion);
+    if (!version) {
+        return model.fields;
+    }
+    /**
+     * Unfortunately we need to check for beta and next.
+     * TODO remove after 5.33.0
+     */
+    if (model.webinyVersion.match(/beta|next/)) {
+        return attachStorageIdToFields(model.fields);
+    }
+    if (semver.compare(version, featureVersion) >= 0) {
+        return model.fields;
+    }
+    return attachStorageIdToFields(model.fields);
+};
 
 export interface CreateModelsCrudParams {
     getTenant: () => Tenant;
@@ -67,6 +111,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 models.map(model => {
                     return {
                         ...model,
+                        fields: attachStorageIdToModelFields(model),
                         tenant: model.tenant || getTenant().id,
                         locale: model.locale || getLocale().code
                     };
@@ -99,31 +144,39 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         const tenant = getTenant().id;
         const locale = getLocale().code;
 
-        return (
-            context.plugins
-                .byType<CmsModelPlugin>(CmsModelPlugin.type)
-                /**
-                 * We need to filter out models that are not for this tenant or locale.
-                 * If it does not have tenant or locale define, it is for every locale and tenant
-                 */
-                .filter(plugin => {
-                    const { tenant: t, locale: l } = plugin.contentModel;
-                    if (t && t !== tenant) {
-                        return false;
-                    } else if (l && l !== locale) {
-                        return false;
-                    }
-                    return true;
-                })
-                .map<CmsModel>(plugin => {
-                    return {
-                        ...plugin.contentModel,
-                        tenant,
-                        locale,
-                        webinyVersion: context.WEBINY_VERSION
-                    };
-                })
-        );
+        const models = context.plugins
+            .byType<CmsModelPlugin>(CmsModelPlugin.type)
+            /**
+             * We need to filter out models that are not for this tenant or locale.
+             * If it does not have tenant or locale define, it is for every locale and tenant
+             */
+            .filter(plugin => {
+                const { tenant: t, locale: l } = plugin.contentModel;
+                if (t && t !== tenant) {
+                    return false;
+                } else if (l && l !== locale) {
+                    return false;
+                }
+                return true;
+            })
+            .map<CmsModel>(plugin => {
+                return {
+                    ...plugin.contentModel,
+                    tenant,
+                    locale,
+                    webinyVersion: context.WEBINY_VERSION
+                };
+            });
+        /**
+         * Only point where we can truly validate the user model is in the runtime.
+         */
+        for (const model of models) {
+            validateModelFields({
+                model,
+                plugins: context.plugins
+            });
+        }
+        return models;
     };
 
     const modelsGet = async (modelId: string): Promise<CmsModel> => {
@@ -195,59 +248,87 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         return await updateManager(context, model);
     };
 
-    const onBeforeModelCreate = createTopic<BeforeModelCreateTopicParams>();
-    const onAfterModelCreate = createTopic<AfterModelCreateTopicParams>();
-    const onBeforeModelCreateFrom = createTopic<BeforeModelCreateFromTopicParams>();
-    const onAfterModelCreateFrom = createTopic<AfterModelCreateFromTopicParams>();
-    const onBeforeModelUpdate = createTopic<BeforeModelUpdateTopicParams>();
-    const onAfterModelUpdate = createTopic<AfterModelUpdateTopicParams>();
-    const onBeforeModelDelete = createTopic<BeforeModelDeleteTopicParams>();
-    const onAfterModelDelete = createTopic<AfterModelDeleteTopicParams>();
+    // create
+    const onModelBeforeCreate =
+        createTopic<OnModelBeforeCreateTopicParams>("cms.onModelBeforeCreate");
+    const onModelAfterCreate = createTopic<OnModelAfterCreateTopicParams>("cms.onModelAfterCreate");
+    // create from
+    const onModelBeforeCreateFrom = createTopic<OnModelBeforeCreateFromTopicParams>(
+        "cms.onModelBeforeCreateFrom"
+    );
+    const onModelAfterCreateFrom = createTopic<OnModelAfterCreateFromTopicParams>(
+        "cms.onModelAfterCreateFrom"
+    );
+    // update
+    const onModelBeforeUpdate =
+        createTopic<OnModelBeforeUpdateTopicParams>("cms.onModelBeforeUpdate");
+    const onModelAfterUpdate = createTopic<OnModelAfterUpdateTopicParams>("cms.onModelAfterUpdate");
+    // delete
+    const onModelBeforeDelete =
+        createTopic<OnModelBeforeDeleteTopicParams>("cms.onModelBeforeDelete");
+    const onModelAfterDelete = createTopic<OnModelAfterDeleteTopicParams>("cms.onModelAfterDelete");
+
+    const onModelInitialize = createTopic<OnModelInitializeParams>("cms.onModelInitialize");
     /**
      * We need to assign some default behaviors.
      */
-    assignBeforeModelCreate({
-        onBeforeModelCreate,
-        onBeforeModelCreateFrom,
+    assignModelBeforeCreate({
+        onModelBeforeCreate,
+        onModelBeforeCreateFrom,
         plugins: context.plugins,
         storageOperations
     });
-    assignAfterModelCreate({
+    assignModelAfterCreate({
         context,
-        onAfterModelCreate
+        onModelAfterCreate
     });
-    assignBeforeModelUpdate({
-        onBeforeModelUpdate,
+    assignModelBeforeUpdate({
+        onModelBeforeUpdate,
         plugins: context.plugins,
         storageOperations
     });
-    assignAfterModelUpdate({
+    assignModelAfterUpdate({
         context,
-        onAfterModelUpdate
+        onModelAfterUpdate
     });
-    assignAfterModelCreateFrom({
+    assignModelAfterCreateFrom({
         context,
-        onAfterModelCreateFrom
+        onModelAfterCreateFrom
     });
-    assignBeforeModelDelete({
-        onBeforeModelDelete,
+    assignModelBeforeDelete({
+        onModelBeforeDelete,
         plugins: context.plugins,
         storageOperations
     });
-    assignAfterModelDelete({
+    assignModelAfterDelete({
         context,
-        onAfterModelDelete
+        onModelAfterDelete
     });
 
     return {
-        onBeforeModelCreate,
-        onAfterModelCreate,
-        onBeforeModelCreateFrom,
-        onAfterModelCreateFrom,
-        onBeforeModelUpdate,
-        onAfterModelUpdate,
-        onBeforeModelDelete,
-        onAfterModelDelete,
+        /**
+         * Deprecated - will be removed in 5.36.0
+         */
+        onBeforeModelCreate: onModelBeforeCreate,
+        onAfterModelCreate: onModelAfterCreate,
+        onBeforeModelCreateFrom: onModelBeforeCreateFrom,
+        onAfterModelCreateFrom: onModelAfterCreateFrom,
+        onBeforeModelUpdate: onModelBeforeUpdate,
+        onAfterModelUpdate: onModelAfterUpdate,
+        onBeforeModelDelete: onModelBeforeDelete,
+        onAfterModelDelete: onModelAfterDelete,
+        /**
+         * Released in 5.34.0
+         */
+        onModelBeforeCreate,
+        onModelAfterCreate,
+        onModelBeforeCreateFrom,
+        onModelAfterCreateFrom,
+        onModelBeforeUpdate,
+        onModelAfterUpdate,
+        onModelBeforeDelete,
+        onModelAfterDelete,
+        onModelInitialize,
         clearModelsCache,
         getModel,
         listModels,
@@ -292,9 +373,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 webinyVersion: context.WEBINY_VERSION
             };
 
-            validateLayout(model, fields);
-
-            await onBeforeModelCreate.publish({
+            await onModelBeforeCreate.publish({
                 input,
                 model
             });
@@ -307,7 +386,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
 
             await updateManager(context, model);
 
-            await onAfterModelCreate.publish({
+            await onModelAfterCreate.publish({
                 input,
                 model: createdModel
             });
@@ -328,7 +407,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 webinyVersion: context.WEBINY_VERSION
             };
 
-            await onBeforeModelUpdate.publish({
+            await onModelBeforeUpdate.publish({
                 input: {} as CmsModelUpdateInput,
                 original,
                 model
@@ -342,7 +421,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
 
             loaders.listModels.clearAll();
 
-            await onAfterModelUpdate.publish({
+            await onModelAfterUpdate.publish({
                 input: {} as CmsModelUpdateInput,
                 original,
                 model: resultModel
@@ -406,7 +485,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 webinyVersion: context.WEBINY_VERSION
             };
 
-            await onBeforeModelCreateFrom.publish({
+            await onModelBeforeCreateFrom.publish({
                 input,
                 model,
                 original
@@ -420,7 +499,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
 
             await updateManager(context, model);
 
-            await onAfterModelCreateFrom.publish({
+            await onModelAfterCreateFrom.publish({
                 input,
                 original,
                 model: createdModel
@@ -471,9 +550,8 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 fields,
                 savedOn: new Date().toISOString()
             };
-            validateLayout(model, fields);
 
-            await onBeforeModelUpdate.publish({
+            await onModelBeforeUpdate.publish({
                 input,
                 original,
                 model
@@ -485,7 +563,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
 
             await updateManager(context, resultModel);
 
-            await onAfterModelUpdate.publish({
+            await onModelAfterUpdate.publish({
                 input,
                 original,
                 model: resultModel
@@ -498,7 +576,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
 
             const model = await getModel(modelId);
 
-            await onBeforeModelDelete.publish({
+            await onModelBeforeDelete.publish({
                 model
             });
 
@@ -517,11 +595,24 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 );
             }
 
-            await onAfterModelDelete.publish({
+            await onModelAfterDelete.publish({
                 model
             });
 
             managers.delete(model.modelId);
+        },
+        async initializeModel(modelId) {
+            /**
+             * We require that users have write permissions to initialize models.
+             * Maybe introduce another permission for it?
+             */
+            await checkModelPermissions("w");
+
+            const model = await getModel(modelId);
+
+            await onModelInitialize.publish({ model });
+
+            return true;
         },
         getModelManager,
         getEntryManager: async model => {

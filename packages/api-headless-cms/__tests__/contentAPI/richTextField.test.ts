@@ -1,9 +1,9 @@
-import { useGraphQLHandler } from "../utils/useGraphQLHandler";
+import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { CmsEntry, CmsGroup } from "~/types";
 import models from "./mocks/contentModels";
-import { useProductManageHandler } from "../utils/useProductManageHandler";
-import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
-import { useProductReadHandler } from "../utils/useProductReadHandler";
+import { useProductManageHandler } from "../testHelpers/useProductManageHandler";
+import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
+import { useProductReadHandler } from "../testHelpers/useProductReadHandler";
 
 const richTextMock = [
     {
@@ -152,13 +152,14 @@ describe("richTextField", () => {
                         entryId: expect.any(String),
                         createdOn: expect.stringMatching(/^20/),
                         createdBy: {
-                            id: "12345678",
+                            id: "id-12345678",
                             displayName: "John Doe",
                             type: "admin"
                         },
                         savedOn: expect.stringMatching(/^20/),
                         title: "Potato",
                         price: 100,
+                        image: "file.jpg",
                         availableOn: expect.stringMatching(/^20/),
                         color: "white",
                         availableSizes: ["s", "m"],
@@ -224,6 +225,7 @@ describe("richTextField", () => {
                         createdOn: expect.stringMatching(/^20/),
                         savedOn: expect.stringMatching(/^20/),
                         title: "Potato",
+                        image: "file.jpg",
                         price: 100,
                         availableOn: expect.stringMatching(/^20/),
                         color: "white",
@@ -277,13 +279,14 @@ describe("richTextField", () => {
             entryId: expect.any(String),
             createdOn: expect.stringMatching(/^20/),
             createdBy: {
-                id: "12345678",
+                id: "id-12345678",
                 displayName: "John Doe",
                 type: "admin"
             },
             savedOn: expect.stringMatching(/^20/),
             title: "Potato",
             price: 100,
+            image: "file.jpg",
             availableOn: expect.stringMatching(/^20/),
             color: "white",
             availableSizes: ["s", "m"],

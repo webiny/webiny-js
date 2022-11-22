@@ -34,8 +34,15 @@ function storeState(state: string) {
 }
 
 const getInitialTenant = (): string | null => {
-    const currentTenant = loadState();
-    plugins.register(new TenantHeaderLinkPlugin(currentTenant || "root"));
+    // Check if `tenantId` query parameter is set. If it is, it takes precedence over any other source.
+    const searchParams = new URLSearchParams(location.search);
+    const tenantId = searchParams.get("tenantId");
+    if (tenantId) {
+        storeState(tenantId);
+    }
+
+    const currentTenant = loadState() || "root";
+    plugins.register(new TenantHeaderLinkPlugin(currentTenant));
     return currentTenant;
 };
 

@@ -30,11 +30,8 @@ const getCreateListFilters = (
     return plugins[fieldType][type].createListFilters;
 };
 
-export const renderListFilterFields: RenderListFilterFields = ({
-    model,
-    type,
-    fieldTypePlugins
-}): string => {
+export const renderListFilterFields: RenderListFilterFields = (params): string => {
+    const { model, type, fieldTypePlugins } = params;
     const fields: string[] = [
         [
             "id: ID",
@@ -69,6 +66,19 @@ export const renderListFilterFields: RenderListFilterFields = ({
             "ownedBy_not_in: [String!]"
         ].join("\n")
     ];
+    /**
+     * We can find different statuses only in the manage API endpoint.
+     */
+    if (type === "manage") {
+        fields.push(
+            ...[
+                "status: String",
+                "status_not: String",
+                "status_in: [String!]",
+                "status_not_in: [String!]"
+            ]
+        );
+    }
 
     for (const field of model.fields) {
         // Every time a client updates content model's fields, we check the type of each field. If a field plugin

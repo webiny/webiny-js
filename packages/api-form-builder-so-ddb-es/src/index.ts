@@ -15,7 +15,7 @@ import { createFormStorageOperations } from "~/operations/form";
 import { createElasticsearchTable } from "~/definitions/tableElasticsearch";
 import { PluginsContainer } from "@webiny/plugins";
 import { createElasticsearchEntity } from "~/definitions/elasticsearch";
-import { getElasticsearchOperators } from "@webiny/api-elasticsearch/operators";
+import { getElasticsearchOperators } from "@webiny/api-elasticsearch";
 import { elasticsearchIndexPlugins } from "~/elasticsearch/indices";
 import { createElasticsearchIndex } from "~/elasticsearch/createElasticsearchIndex";
 
@@ -124,7 +124,7 @@ export const createFormBuilderStorageOperations: FormBuilderStorageOperationsFac
 
     return {
         init: async context => {
-            context.i18n.locales.onBeforeCreate.subscribe(async ({ locale, tenant }) => {
+            context.i18n.locales.onLocaleBeforeCreate.subscribe(async ({ locale, tenant }) => {
                 await createElasticsearchIndex({
                     elasticsearch,
                     plugins,

@@ -1,14 +1,26 @@
 import WebinyError from "@webiny/error";
 import { LifeCycleHookCallbackParams } from "~/types";
+import { parseIdentifier, ParseIdentifierResult } from "@webiny/utils";
 
 export const validateComment = ({ apw }: Pick<LifeCycleHookCallbackParams, "apw">) => {
-    apw.comment.onBeforeCommentCreate.subscribe(async ({ input }) => {
+    apw.comment.onCommentBeforeCreate.subscribe(async ({ input }) => {
         const { changeRequest: changeRequestId } = input;
         /**
          * We need changeRequest to be in a particular format i.e. "contentReviewUniqueId#version"
          */
-        const [entryId, version] = changeRequestId.split("#");
-        if (!entryId || !version) {
+        let result: ParseIdentifierResult;
+        try {
+            result = parseIdentifier(changeRequestId);
+            if (!result) {
+                throw new WebinyError(
+                    "Could not parse changeRequestId.",
+                    "MALFORMED_CHANGE_REQUEST_ID",
+                    {
+                        changeRequestId
+                    }
+                );
+            }
+        } catch (ex) {
             throw new WebinyError(
                 `The"changeRequest" property in input is not properly formatted.`,
                 "MALFORMED_CHANGE_REQUEST_ID",
@@ -22,8 +34,9 @@ export const validateComment = ({ apw }: Pick<LifeCycleHookCallbackParams, "apw"
          * Assign value for "step" field from "changeRequest".
          */
         const changeRequest = await apw.changeRequest.get(changeRequestId);
-        if (changeRequest) {
-            input.step = changeRequest.step;
+        if (!changeRequest) {
+            return;
         }
+        input.step = changeRequest.step;
     });
 };

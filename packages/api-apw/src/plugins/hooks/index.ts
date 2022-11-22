@@ -1,4 +1,4 @@
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
+import { ContextPlugin } from "@webiny/api";
 import { ApwContext } from "~/types";
 import { deleteCommentsAfterChangeRequest } from "./deleteCommentsAfterChangeRequest";
 import { deleteChangeRequestsWithContentReview } from "./deleteChangeRequestsAfterContentReview";
@@ -9,6 +9,8 @@ import { updateTotalCommentsCount, updateLatestCommentId } from "./updateTotalCo
 import { validateChangeRequest } from "./validateChangeRequest";
 import { validateContentReview } from "./validateContentReview";
 import { validateComment } from "./validateComment";
+import { listContentReviews } from "./listContentReviews";
+import { initializeNotifications } from "./initializeNotifications";
 
 export const attachApwHooks = () =>
     /**
@@ -36,4 +38,8 @@ export const attachApwHooks = () =>
         deleteCommentsAfterChangeRequest({ apw });
 
         deleteChangeRequestsWithContentReview({ apw });
+
+        listContentReviews(context);
+
+        initializeNotifications(context);
     });

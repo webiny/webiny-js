@@ -1,7 +1,7 @@
 import { CmsGroup, CmsModel } from "~/types";
-import { useGraphQLHandler } from "../utils/useGraphQLHandler";
-import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
-import { useCategoryReadHandler } from "../utils/useCategoryReadHandler";
+import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
+import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
+import { useCategoryReadHandler } from "../testHelpers/useCategoryReadHandler";
 import models from "./mocks/contentModels";
 
 describe("Endpoint access", () => {

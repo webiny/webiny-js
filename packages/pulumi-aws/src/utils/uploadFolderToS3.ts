@@ -1,9 +1,12 @@
 import fs from "fs";
+import fetch from "node-fetch";
+import FormData from "form-data";
 import S3Client from "aws-sdk/clients/s3";
 import mime from "mime";
 import chunk from "lodash/chunk";
 import { relative } from "path";
 import { crawlDirectory } from "./crawlDirectory";
+import { getPresignedPost } from "./getPresignedPost";
 
 function getFileChecksum(file: string): Promise<string> {
     const crypto = require("crypto");
@@ -21,18 +24,21 @@ function getFileChecksum(file: string): Promise<string> {
     });
 }
 
-import { BucketName, ObjectCannedACL, CacheControl } from "aws-sdk/clients/s3";
+import { BucketName, CacheControl } from "aws-sdk/clients/s3";
 
 export interface Paths {
     full: string;
     relative: string;
 }
 
-type CacheControls = Array<{ pattern: RegExp; value: CacheControl }>;
+export type CacheControls = Array<{ pattern: RegExp; value: CacheControl }>;
 
 export interface UploadFolderToS3Params {
     // Path to the folder that needs to be uploaded.
     path: string;
+
+    // Object ACL.
+    acl: string;
 
     // A callback that gets called every time a file has been uploaded successfully.
     onFileUploadSuccess: (params: { paths: Paths }) => void;
@@ -43,8 +49,10 @@ export interface UploadFolderToS3Params {
     // A callback that gets called every time a file upload has been skipped.
     onFileUploadSkip: (params: { paths: Paths }) => void;
 
+    // Target bucket
     bucket: BucketName;
-    acl?: ObjectCannedACL;
+
+    // Cache control to apply to each uploaded file
     cacheControl?: CacheControl | CacheControls;
 }
 
@@ -54,6 +62,7 @@ export const uploadFolderToS3 = async ({
     onFileUploadSuccess,
     onFileUploadError,
     onFileUploadSkip,
+    // For backwards compatibility, we need to leave ACL on "public-read".
     acl = "public-read",
     cacheControl = "max-age=31536000"
 }: UploadFolderToS3Params) => {
@@ -87,8 +96,7 @@ export const uploadFolderToS3 = async ({
 
             promises.push(
                 new Promise<void>(async resolve => {
-                    // We also replace "\" with "/", which can occur on Windows' CMD or Powershell.
-                    // https://github.com/webiny/webiny-js/issues/1701#issuecomment-860123555
+                    // We also replace "\" with "/", which is a path separator on Windows' CMD or Powershell.
                     const key = relative(root, path).replace(/\\/g, "/");
                     try {
                         // Get file checksum so that we can check if a file needs to be uploaded or not.
@@ -116,20 +124,41 @@ export const uploadFolderToS3 = async ({
                             }
                         } else {
                             const cacheControl = cacheControls.find(item => item.pattern.test(key));
+                            const contentType = mime.getType(path);
 
-                            await s3
-                                .putObject({
-                                    Bucket: bucket,
-                                    Key: key,
-                                    ACL: acl,
-                                    CacheControl: cacheControl?.value,
-                                    ContentType: mime.getType(path) || undefined,
-                                    Body: fs.readFileSync(path),
-                                    Metadata: {
-                                        checksum
-                                    }
-                                })
-                                .promise();
+                            const { url, fields } = await getPresignedPost({
+                                bucket,
+                                key,
+                                acl,
+                                checksum,
+                                contentType,
+                                cacheControl: cacheControl ? cacheControl.value : undefined
+                            });
+
+                            const data: Record<string, string | Buffer> = {
+                                ...fields,
+                                "Content-Type": contentType || "",
+                                "X-Amz-Meta-Checksum": checksum,
+                                file: fs.readFileSync(path)
+                            };
+
+                            if (cacheControl) {
+                                data["Cache-Control"] = cacheControl.value;
+                            }
+
+                            const formData = new FormData();
+                            Object.keys(data).forEach(key => {
+                                formData.append(key, data[key]);
+                            });
+
+                            const res = await fetch(url, {
+                                method: "POST",
+                                body: formData
+                            });
+
+                            if (res.status > 299) {
+                                throw new Error(`${res.statusText}\n${await res.text()}`);
+                            }
 
                             if (typeof onFileUploadSuccess === "function") {
                                 await onFileUploadSuccess({ paths: { full: path, relative: key } });

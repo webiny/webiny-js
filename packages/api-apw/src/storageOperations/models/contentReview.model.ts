@@ -21,6 +21,7 @@ const contentField = (fields: CmsModelField[]) =>
 const contentStatus = () =>
     createModelField({
         label: "Status",
+        fieldId: "reviewStatus",
         parent: "contentReview",
         type: "text",
         predefinedValues: {
@@ -42,7 +43,7 @@ const contentStatus = () =>
         },
         validation: [
             {
-                message: "`status` field value is required in contentReview.",
+                message: "`reviewStatus` field value is required in contentReview.",
                 name: "required"
             }
         ]
@@ -74,11 +75,11 @@ const contentIdField = () =>
         ]
     });
 
-const contentWorkflowIdField = () =>
+const workflowIdField = () =>
     createModelField({
         label: "Workflow Id",
         type: "text",
-        parent: "contentReview Content",
+        parent: "contentReview",
         validation: [
             {
                 message: "`workflowId` field value is required in contentReview Content.",
@@ -186,6 +187,7 @@ const stepStatusField = (): CmsModelField => ({
             name: "required"
         }
     ],
+    storageId: "status",
     fieldId: "status"
 });
 
@@ -258,11 +260,12 @@ const stepsField = (fields: CmsModelField[]): CmsModelField => ({
     type: "object",
     settings: {
         fields,
-        layout: fields.map(field => [field.fieldId])
+        layout: fields.map(field => [field.storageId])
     },
     listValidation: [],
     validation: [],
     fieldId: "steps",
+    storageId: "steps",
     multipleValues: true,
     predefinedValues: {
         values: [],
@@ -283,17 +286,20 @@ export const createContentReviewModelDefinition = ({
     modelId: CONTENT_REVIEW_MODEL_ID,
     titleFieldId: "content",
     layout: [
+        ["contentReview_title"],
         ["contentReview_content"],
+        ["contentReview_reviewStatus"],
         ["contentReview_reviewRequestedBy"],
         ["contentReview_steps"],
-        ["contentReview_changeRequested"]
+        ["contentReview_changeRequested"],
+        ["contentReview_latestCommentId"],
+        ["contentReview_workflowId"]
     ],
     fields: [
         titleField(),
         contentField([
             contentIdField(),
             contentTypeField(),
-            contentWorkflowIdField(),
             contentSettingsField([contentSettingsModelIdField()]),
             contentScheduledOnField(),
             contentScheduledByField(),
@@ -312,7 +318,8 @@ export const createContentReviewModelDefinition = ({
             stepSignOffProvidedOn(),
             stepSignOffProvidedBy([stepSignOffProvidedById(), stepSignOffProvidedByDisplayName()])
         ]),
-        latestCommentId()
+        latestCommentId(),
+        workflowIdField()
     ],
     description: "",
     isPrivate: true

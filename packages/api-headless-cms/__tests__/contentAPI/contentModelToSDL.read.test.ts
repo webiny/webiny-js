@@ -5,7 +5,27 @@ import contentModels from "./mocks/contentModels";
 import categorySDL from "./snapshots/category.read";
 import productSDL from "./snapshots/product.read";
 import reviewSDL from "./snapshots/review.read";
-import { CmsModelFieldToGraphQLPlugin } from "~/types";
+import { CmsModel, CmsModelFieldToGraphQLPlugin } from "~/types";
+import { filterModelsDeletedFields } from "~/utils/filterModelFields";
+
+/**
+ * Method createReadDSL expected model with filtered deleted fields.
+ * This is internal call in our system, but for sake of tests, we call it directly.
+ *
+ * Because of that reason, we will pass the model with filtered fields into it - if we do not: schema generating test will be wrong.
+ */
+
+const getModel = (modelId: string): CmsModel => {
+    const initialModel = contentModels.find(c => c.modelId === modelId);
+    if (!initialModel) {
+        throw new Error(`Could not find model "category".`);
+    }
+    const models = filterModelsDeletedFields({
+        models: [initialModel],
+        type: "read"
+    });
+    return models.shift() as CmsModel;
+};
 
 describe("READ - ContentModel to SDL", () => {
     const fieldTypePlugins = createGraphQLFields().reduce<
@@ -16,10 +36,8 @@ describe("READ - ContentModel to SDL", () => {
     }, {});
 
     test("Category SDL", async () => {
-        const model = contentModels.find(c => c.modelId === "category");
-        if (!model) {
-            throw new Error("Could not find model `category`.");
-        }
+        const model = getModel("category");
+
         const sdl = createReadSDL({ model, fieldTypePlugins });
         const prettyGql = prettier.format(sdl.trim(), { parser: "graphql" });
         const prettySnapshot = prettier.format(categorySDL.trim(), { parser: "graphql" });
@@ -27,10 +45,8 @@ describe("READ - ContentModel to SDL", () => {
     });
 
     test("Product SDL", async () => {
-        const model = contentModels.find(c => c.modelId === "product");
-        if (!model) {
-            throw new Error("Could not find model `category`.");
-        }
+        const model = getModel("product");
+
         const sdl = createReadSDL({ model, fieldTypePlugins });
         const prettyGql = prettier.format(sdl.trim(), { parser: "graphql" });
         const prettySnapshot = prettier.format(productSDL.trim(), { parser: "graphql" });
@@ -38,10 +54,8 @@ describe("READ - ContentModel to SDL", () => {
     });
 
     test("Review SDL", async () => {
-        const model = contentModels.find(c => c.modelId === "review");
-        if (!model) {
-            throw new Error("Could not find model `category`.");
-        }
+        const model = getModel("review");
+
         const sdl = createReadSDL({ model, fieldTypePlugins });
         const prettyGql = prettier.format(sdl.trim(), { parser: "graphql" });
         const prettySnapshot = prettier.format(reviewSDL.trim(), { parser: "graphql" });

@@ -2,7 +2,7 @@ import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
 import richTextFieldPlugin from "./mocks/richTextFieldPlugin";
 import fileManagerPlugins from "@webiny/api-file-manager/plugins";
 import fileManagerDdbEsPlugins from "~/index";
-import dynamoToElastic from "@webiny/api-dynamodb-to-elasticsearch/handler";
+import { createEventHandler as createDynamoDBToElasticsearchHandler } from "@webiny/api-dynamodb-to-elasticsearch";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import dbPlugins from "@webiny/handler-db";
@@ -13,11 +13,12 @@ import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
 // @ts-ignore
 import { simulateStream } from "@webiny/project-utils/testing/dynamodb";
 import elasticsearchClientContextPlugin from "@webiny/api-elasticsearch";
-import { createHandler } from "@webiny/handler-aws";
+import { createHandler } from "@webiny/handler-aws/gateway";
 import graphqlHandlerPlugins from "@webiny/handler-graphql";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
+import { createHandler as createDynamoDBHandler } from "@webiny/handler-aws/dynamodb";
 
 /**
  * Load some test stuff from the api-file-manager
@@ -43,7 +44,7 @@ import { createTenancyAndSecurity } from "./tenancySecurity";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/client";
 import { configurations } from "~/configurations";
-import { base as baseIndexConfiguration } from "@webiny/api-elasticsearch/indexConfiguration/base";
+import { getBaseConfiguration } from "@webiny/api-elasticsearch";
 
 type UseGqlHandlerParams = {
     permissions?: SecurityPermission[];
@@ -90,11 +91,13 @@ export default (params?: UseGqlHandlerParams) => {
         const index = getIndexName(params);
         try {
             return await elasticsearchClient.indices.delete({
-                index
+                index,
+                ignore_unavailable: true
             });
         } catch (ex) {
             console.log(`Could not delete elasticsearch index: ${index}`);
             console.log(ex.message);
+            console.log(JSON.stringify(ex));
         }
         return null;
     };
@@ -102,54 +105,67 @@ export default (params?: UseGqlHandlerParams) => {
     const createElasticsearchIndice = async (params: ElasticsearchIndiceParams) => {
         return elasticsearchClient.indices.create({
             index: getIndexName(params),
-            body: {
-                ...baseIndexConfiguration
-            }
+            body: getBaseConfiguration()
         });
     };
     // Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)
-    simulateStream(documentClient, createHandler(elasticsearchClientContext, dynamoToElastic()));
-
-    const tenant = { id: "root", name: "Root", parent: null };
-    // Creates the actual handler. Feel free to add additional plugins if needed.
-    const handler = createHandler(
-        createWcpContext(),
-        createWcpGraphQL(),
-        dbPlugins({
-            table: process.env.DB_TABLE,
-            driver: new DynamoDbDriver({
-                documentClient
-            })
-        }),
-        dynamoDbPlugins(),
-        ...createTenancyAndSecurity({ permissions, identity }),
-        graphqlHandlerPlugins(),
-        i18nContext(),
-        i18nDynamoDbStorageOperations(),
-        mockLocalesPlugins(),
-        elasticsearchClientContext,
-        richTextFieldPlugin(),
-        fileManagerPlugins(),
-        fileManagerDdbEsPlugins(),
-        /**
-         * Mock physical file storage plugin.
-         */
-        new FilePhysicalStoragePlugin({
-            // eslint-disable-next-line
-            upload: async () => {},
-            // eslint-disable-next-line
-            delete: async () => {}
+    simulateStream(
+        documentClient,
+        createDynamoDBHandler({
+            plugins: [elasticsearchClientContext, createDynamoDBToElasticsearchHandler()]
         })
     );
 
+    const tenant = { id: "root", name: "Root", parent: null };
+    // Creates the actual handler. Feel free to add additional plugins if needed.
+    const handler = createHandler({
+        plugins: [
+            createWcpContext(),
+            createWcpGraphQL(),
+            dbPlugins({
+                table: process.env.DB_TABLE,
+                driver: new DynamoDbDriver({
+                    documentClient
+                })
+            }),
+            dynamoDbPlugins(),
+            ...createTenancyAndSecurity({ permissions, identity }),
+            graphqlHandlerPlugins(),
+            i18nContext(),
+            i18nDynamoDbStorageOperations(),
+            mockLocalesPlugins(),
+            elasticsearchClientContext,
+            richTextFieldPlugin(),
+            fileManagerPlugins(),
+            fileManagerDdbEsPlugins(),
+            /**
+             * Mock physical file storage plugin.
+             */
+            new FilePhysicalStoragePlugin({
+                // eslint-disable-next-line
+                upload: async () => {},
+                // eslint-disable-next-line
+                delete: async () => {}
+            })
+        ]
+    });
+
     // Let's also create the "invoke" function. This will make handler invocations in actual tests easier and nicer.
     const invoke = async ({ httpMethod = "POST", body, headers = {}, ...rest }: InvokeParams) => {
-        const response = await handler({
-            httpMethod,
-            headers,
-            body: JSON.stringify(body),
-            ...rest
-        });
+        const response = await handler(
+            {
+                path: "/graphql",
+                httpMethod,
+                headers: {
+                    ["x-tenant"]: tenant.id,
+                    ["Content-Type"]: "application/json",
+                    ...headers
+                },
+                body: JSON.stringify(body),
+                ...rest
+            } as any,
+            {} as any
+        );
 
         // The first element is the response body, and the second is the raw response.
         return [JSON.parse(response.body), response];

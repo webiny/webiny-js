@@ -1,5 +1,5 @@
-import { useGraphQLHandler } from "../utils/useGraphQLHandler";
-import { until } from "./../utils/helpers";
+import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
+import { until } from "./../testHelpers/helpers";
 import { CmsGroup, CmsModel } from "~/types";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";
 
@@ -15,18 +15,21 @@ const contentModelPlugin = new CmsModelPlugin({
     fields: [
         {
             id: "name",
+            // storageId: "text@name",
             fieldId: "name",
             type: "text",
             label: "Product Name"
         },
         {
             id: "sku",
+            // storageId: "text@sku",
             fieldId: "sku",
             type: "text",
             label: "SKU"
         },
         {
             id: "price",
+            // storageId: "number@price",
             fieldId: "price",
             type: "number",
             label: "Price"
@@ -257,6 +260,7 @@ describe("content model plugins", () => {
                             description: "",
                             fields: [
                                 {
+                                    storageId: "text@name",
                                     fieldId: "name",
                                     helpText: null,
                                     id: "name",
@@ -271,6 +275,7 @@ describe("content model plugins", () => {
                                     validation: null
                                 },
                                 {
+                                    storageId: "text@sku",
                                     fieldId: "sku",
                                     helpText: null,
                                     id: "sku",
@@ -285,6 +290,7 @@ describe("content model plugins", () => {
                                     validation: null
                                 },
                                 {
+                                    storageId: "number@price",
                                     fieldId: "price",
                                     helpText: null,
                                     id: "price",
@@ -327,6 +333,7 @@ describe("content model plugins", () => {
                                 description: "",
                                 fields: [
                                     {
+                                        storageId: "text@name",
                                         fieldId: "name",
                                         helpText: null,
                                         id: "name",
@@ -341,6 +348,7 @@ describe("content model plugins", () => {
                                         validation: null
                                     },
                                     {
+                                        storageId: "text@sku",
                                         fieldId: "sku",
                                         helpText: null,
                                         id: "sku",
@@ -355,6 +363,7 @@ describe("content model plugins", () => {
                                         validation: null
                                     },
                                     {
+                                        storageId: "number@price",
                                         fieldId: "price",
                                         helpText: null,
                                         id: "price",
@@ -620,5 +629,78 @@ describe("content model plugins", () => {
                 }
             })
         );
+    });
+
+    it(`should fail to create model plugin due to invalid "storageId"`, async () => {
+        let error: Error | undefined;
+        try {
+            new CmsModelPlugin({
+                name: "test",
+                layout: [],
+                fields: [
+                    {
+                        type: "text",
+                        fieldId: "something",
+                        id: "something",
+                        label: "Something",
+                        storageId: "text@something",
+                        settings: {}
+                    }
+                ],
+                modelId: "test",
+                group: {
+                    id: "group",
+                    name: "Group"
+                },
+                description: "",
+                titleFieldId: "something"
+            });
+        } catch (ex) {
+            error = ex;
+        }
+        expect(error).toBeInstanceOf(Error);
+        expect(error?.message).toEqual(
+            `Field's "storageId" of the field with "fieldId" something is not camel cased string in the content model "test".`
+        );
+    });
+
+    const testModel = {
+        modelId: "testModel",
+        fields: [
+            {
+                id: "title",
+                fieldId: "title",
+                label: "Title",
+                type: "text"
+            }
+        ],
+        layout: [],
+        titleFieldId: "title",
+        name: "Test Model",
+        description: "",
+        group: {
+            id: "id",
+            name: "name"
+        }
+    };
+
+    it("should validate model fields layout", () => {
+        let error: Error | undefined;
+        try {
+            new CmsModelPlugin(testModel);
+        } catch (ex) {
+            error = ex;
+        }
+
+        expect(error).toBeInstanceOf(Error);
+        expect(error?.message).toEqual(`Missing field "title" in layout.`);
+    });
+
+    it("should not validate model fields layout", () => {
+        const model = new CmsModelPlugin(testModel, {
+            validateLayout: false
+        });
+
+        expect(model).toBeInstanceOf(CmsModelPlugin);
     });
 });

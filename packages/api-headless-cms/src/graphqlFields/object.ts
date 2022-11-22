@@ -65,7 +65,7 @@ const typeFromField = (params: TypeFromFieldParams): TypeFromFieldResponse | nul
         fieldType: `${fieldTypeName}${typeSuffix}`,
         typeDefs: /* GraphQL */ `
             ${nestedTypes.join("\n")}
-                    
+            
             ${typeOfType} ${fieldTypeName}${typeSuffix} {
                 ${typeFields.join("\n")}
             }

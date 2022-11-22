@@ -3,6 +3,132 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.33.2](https://github.com/webiny/webiny-js/compare/v5.33.2-beta.2...v5.33.2) (2022-11-17)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+## [5.33.2-beta.2](https://github.com/webiny/webiny-js/compare/v5.33.2-beta.1...v5.33.2-beta.2) (2022-11-16)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+## [5.33.2-beta.1](https://github.com/webiny/webiny-js/compare/v5.33.2-beta.0...v5.33.2-beta.1) (2022-11-16)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+## [5.33.2-beta.0](https://github.com/webiny/webiny-js/compare/v5.33.1...v5.33.2-beta.0) (2022-11-15)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+## [5.33.1](https://github.com/webiny/webiny-js/compare/v5.33.1-beta.0...v5.33.1) (2022-11-07)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+## [5.33.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.33.0...v5.33.1-beta.0) (2022-11-04)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+# [5.33.0](https://github.com/webiny/webiny-js/compare/v5.33.0-beta.1...v5.33.0) (2022-10-12)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+# [5.33.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.33.0-beta.0...v5.33.0-beta.1) (2022-10-12)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+# [5.33.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.32.0...v5.33.0-beta.0) (2022-10-11)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+# [5.32.0](https://github.com/webiny/webiny-js/compare/v5.32.0-beta.0...v5.32.0) (2022-09-07)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+# [5.32.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.31.0...v5.32.0-beta.0) (2022-09-06)
+
+
+### Bug Fixes
+
+* change `createProjectApplicationWorkspace` to `true` ([7e6753a](https://github.com/webiny/webiny-js/commit/7e6753a7371b9df822c6bf5c67c66f2b02c1c6db))
+* import `processHooks` directly ([16e1118](https://github.com/webiny/webiny-js/commit/16e111834d10ae3b844f6bc713930f38e6e83397))
+* use `runHook` from utils ([88642fa](https://github.com/webiny/webiny-js/commit/88642fa3f7121c748e5ac77a3aabba407a3c7e2c))
+
+
+### Features
+
+* add `hook-before-watch` hook to the watch command ([8ac0273](https://github.com/webiny/webiny-js/commit/8ac0273564f50f358c4df2e11d38bab418398a4f))
+* move `runHook` into utils ([4e5c576](https://github.com/webiny/webiny-js/commit/4e5c576aa0a5db36d1779054069e210b0defebd4))
+
+
+
+
+
+# [5.31.0](https://github.com/webiny/webiny-js/compare/v5.31.0-beta.1...v5.31.0) (2022-08-18)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+# [5.31.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.31.0-beta.0...v5.31.0-beta.1) (2022-08-17)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+# [5.31.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.30.0...v5.31.0-beta.0) (2022-08-16)
+
+
+### Features
+
+* add support for custom React apps ([#2569](https://github.com/webiny/webiny-js/issues/2569)) ([f7af516](https://github.com/webiny/webiny-js/commit/f7af516d745b2da74da9497658f3fd9702d5a639))
+
+
+
+
+
 # [5.30.0](https://github.com/webiny/webiny-js/compare/v5.30.0-beta.1...v5.30.0) (2022-07-27)
 
 **Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi

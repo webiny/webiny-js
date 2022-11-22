@@ -1,4 +1,3 @@
-import { HttpContext } from "@webiny/handler-http/types";
 import { ClientContext } from "@webiny/handler-client/types";
 import { TenancyContext } from "@webiny/api-tenancy/types";
 import { SecurityContext } from "@webiny/api-security/types";
@@ -8,6 +7,7 @@ import { PbContext } from "@webiny/api-page-builder/graphql/types";
 import { PrerenderingServiceClientContext } from "@webiny/api-prerendering-service/client/types";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
 import { FormBuilderContext } from "@webiny/api-form-builder/types";
+import { CmsContext } from "@webiny/api-headless-cms/types";
 
 // When working with the `context` object (for example while defining a new GraphQL resolver function),
 // you can import this interface and assign it to it. This will give you full autocomplete functionality
@@ -16,8 +16,7 @@ import { FormBuilderContext } from "@webiny/api-form-builder/types";
 // Feel free to extend it with additional context interfaces, if needed. Also, please do not change the
 // name of the interface, as existing scaffolding utilities may rely on it during the scaffolding process.
 export interface Context
-    extends HttpContext,
-        ClientContext,
+    extends ClientContext,
         TenancyContext,
         SecurityContext,
         I18NContext,
@@ -25,4 +24,5 @@ export interface Context
         PbContext,
         PrerenderingServiceClientContext,
         FileManagerContext,
-        FormBuilderContext {}
+        FormBuilderContext,
+        CmsContext {}

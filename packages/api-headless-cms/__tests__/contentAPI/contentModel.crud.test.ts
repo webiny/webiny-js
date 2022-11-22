@@ -1,12 +1,10 @@
-// @ts-ignore
-import mdbid from "mdbid";
 import { CmsModelFieldInput, CmsGroup, CmsModelField } from "~/types";
-import { useGraphQLHandler } from "../utils/useGraphQLHandler";
-import * as helpers from "../utils/helpers";
+import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
+import * as helpers from "../testHelpers/helpers";
 import models from "./mocks/contentModels";
-import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
+import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
 import { pubSubTracker, assignModelEvents } from "./mocks/lifecycleHooks";
-import { useBugManageHandler } from "../utils/useBugManageHandler";
+import { useBugManageHandler } from "../testHelpers/useBugManageHandler";
 
 const getTypeFields = (type: any) => {
     return type.fields.filter((f: any) => f.name !== "_empty").map((f: any) => f.name);
@@ -105,6 +103,7 @@ describe("content model test", () => {
             "createContentModelFrom",
             "updateContentModel",
             "deleteContentModel",
+            "initializeModel",
             "createContentModelGroup",
             "updateContentModelGroup",
             "deleteContentModelGroup"
@@ -449,7 +448,7 @@ describe("content model test", () => {
         const contentModel = createResponse.data.createContentModel.data;
 
         const textField: CmsModelFieldInput = {
-            id: mdbid(),
+            id: "someRandomTextFieldId",
             fieldId: "textField",
             label: "Text field",
             helpText: "help text",
@@ -468,7 +467,7 @@ describe("content model test", () => {
             listValidation: []
         };
         const numberField: CmsModelFieldInput = {
-            id: mdbid(),
+            id: "someRandomNumberFieldId",
             fieldId: "numberField",
             label: "Number field",
             helpText: "number help text",
@@ -507,8 +506,17 @@ describe("content model test", () => {
                         createdBy: helpers.identity,
                         createdOn: expect.stringMatching(/^20/),
                         description: null,
-                        titleFieldId: "textField",
-                        fields: [textField, numberField],
+                        titleFieldId: textField.fieldId,
+                        fields: [
+                            {
+                                ...textField,
+                                storageId: `${textField.type}@${textField.id}`
+                            },
+                            {
+                                ...numberField,
+                                storageId: `${numberField.type}@${numberField.id}`
+                            }
+                        ],
                         group: {
                             id: contentModelGroup.id,
                             name: "Group"
@@ -538,7 +546,7 @@ describe("content model test", () => {
         const contentModel = createResponse.data.createContentModel.data;
 
         const field: CmsModelFieldInput = {
-            id: mdbid(),
+            id: "someRandomField1Id",
             fieldId: "field1",
             label: "Field 1",
             helpText: "help text",
@@ -566,13 +574,13 @@ describe("content model test", () => {
             }
         });
 
-        expect(response).toEqual({
+        expect(response).toMatchObject({
             data: {
                 updateContentModel: {
                     data: null,
                     error: {
                         code: "VALIDATION_ERROR",
-                        message: `Field does not exist in the model.`,
+                        message: `Field selected for the title field does not exist in the model.`,
                         data: {
                             fieldId: "nonExistingTitleFieldId",
                             fields: expect.any(Array)

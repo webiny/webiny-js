@@ -21,100 +21,113 @@ const { getUser, getProjectEnvironment, updateUserLastActiveOn } = require("./ut
 
 let projectEnvironment;
 
+const getEnvironmentHookHandler = async (args, context) => {
+    // If the project isn't linked with WCP, do nothing.
+    const wcpProjectId = context.project.config.id || process.env.WCP_PROJECT_ID;
+    if (!wcpProjectId) {
+        return;
+    }
+
+    // For development purposes, we allow setting the WCP_PROJECT_ENVIRONMENT env var directly.
+    if (process.env.WCP_PROJECT_ENVIRONMENT) {
+        // If we have WCP_PROJECT_ENVIRONMENT env var, we set the WCP_PROJECT_ENVIRONMENT_API_KEY too.
+        const decryptedProjectEnvironment = decrypt(process.env.WCP_PROJECT_ENVIRONMENT);
+        process.env.WCP_PROJECT_ENVIRONMENT_API_KEY = decryptedProjectEnvironment.apiKey;
+        return;
+    }
+
+    // The `id` has the orgId/projectId structure, for example `my-org-x/my-project-y`.
+    const [orgId, projectId] = wcpProjectId.split("/");
+
+    const apiKey = process.env.WCP_PROJECT_ENVIRONMENT_API_KEY;
+
+    let projectEnvironment;
+    if (apiKey) {
+        projectEnvironment = await getProjectEnvironment({ apiKey });
+    } else {
+        const isValidId = orgId && projectId;
+        if (!isValidId) {
+            throw new Error(
+                `It seems the project ID, specified in "webiny.project.ts" file, is invalid.`
+            );
+        }
+
+        // If there is no API key, that means we need to retrieve the currently logged-in user.
+        const user = await getUser();
+        const project = user.projects.find(item => item.id === projectId);
+        if (!project) {
+            throw new Error(
+                `It seems you don't belong to the current project or the current project has been deleted.`
+            );
+        }
+
+        projectEnvironment = await getProjectEnvironment({
+            orgId,
+            projectId,
+            userId: user.id,
+            environmentId: args.env
+        });
+    }
+
+    if (projectEnvironment.org.id !== orgId) {
+        throw new Error(
+            `Cannot proceed with the deployment because the "${projectEnvironment.name}" project environment doesn't belong to the "${orgId}" organization. Please check your WCP project ID (currently set to "${wcpProjectId}").`
+        );
+    }
+
+    if (projectEnvironment.project.id !== projectId) {
+        throw new Error(
+            `Cannot proceed with the deployment because the "${projectEnvironment.name}" project environment doesn't belong to the "${wcpProjectId}" project. Please check your WCP project ID (currently set to "${wcpProjectId}").`
+        );
+    }
+
+    if (projectEnvironment && projectEnvironment.status !== "enabled") {
+        throw new Error(
+            `Cannot proceed with the deployment because the "${projectEnvironment.name}" project environment has been disabled.`
+        );
+    }
+
+    // Assign `WCP_PROJECT_ENVIRONMENT` and `WCP_PROJECT_ENVIRONMENT_API_KEY`
+    const wcpProjectEnvironment = {
+        id: projectEnvironment.id,
+        apiKey: projectEnvironment.apiKey,
+        org: { id: projectEnvironment.org.id },
+        project: { id: projectEnvironment.project.id }
+    };
+
+    process.env.WCP_PROJECT_ENVIRONMENT = encrypt(wcpProjectEnvironment);
+    process.env.WCP_PROJECT_ENVIRONMENT_API_KEY = projectEnvironment.apiKey;
+};
+
+const updateLastActiveOnHookHandler = async () => {
+    if (!projectEnvironment) {
+        return;
+    }
+
+    // Is this a user environment? If so, let's update his "last active" field.
+    if (projectEnvironment.user) {
+        await updateUserLastActiveOn();
+    }
+};
+
+// Export hooks plugins for deploy and watch commands.
 module.exports = () => [
+    // Deploy hook handlers.
     {
         type: "hook-before-deploy",
         name: "hook-before-deploy-environment-get-environment",
-        async hook(args, context) {
-            // For development purposes, we allow setting the WCP_PROJECT_ENVIRONMENT env var directly.
-            if (process.env.WCP_PROJECT_ENVIRONMENT) {
-                // If we have WCP_PROJECT_ENVIRONMENT env var, we set the WCP_PROJECT_ENVIRONMENT_API_KEY too.
-                const decryptedProjectEnvironment = decrypt(process.env.WCP_PROJECT_ENVIRONMENT);
-                process.env.WCP_PROJECT_ENVIRONMENT_API_KEY = decryptedProjectEnvironment.apiKey;
-                return;
-            }
-
-            // If the project isn't activated, do nothing.
-            const wcpProjectId = context.project.config.id || process.env.WCP_PROJECT_ID;
-            if (!wcpProjectId) {
-                return;
-            }
-
-            // The `id` has the orgId/projectId structure, for example `my-org-x/my-project-y`.
-            const [orgId, projectId] = wcpProjectId.split("/");
-
-            const apiKey = process.env.WCP_PROJECT_ENVIRONMENT_API_KEY;
-
-            let projectEnvironment;
-            if (apiKey) {
-                projectEnvironment = await getProjectEnvironment({ apiKey });
-            } else {
-                const isValidId = orgId && projectId;
-                if (!isValidId) {
-                    throw new Error(
-                        `It seems the project ID, specified in "webiny.project.ts" file, is invalid.`
-                    );
-                }
-
-                // If there is no API key, that means we need to retrieve the currently logged-in user.
-                const user = await getUser();
-                const project = user.projects.find(item => item.id === projectId);
-                if (!project) {
-                    throw new Error(
-                        `It seems you don't belong to the current project or the current project has been deleted.`
-                    );
-                }
-
-                projectEnvironment = await getProjectEnvironment({
-                    orgId,
-                    projectId,
-                    userId: user.id,
-                    environmentId: args.env
-                });
-            }
-
-            if (projectEnvironment.org.id !== orgId) {
-                throw new Error(
-                    `Cannot proceed with the deployment because the "${projectEnvironment.name}" project environment doesn't belong to the "${orgId}" organization. Please check your WCP project ID (currently set to "${wcpProjectId}").`
-                );
-            }
-
-            if (projectEnvironment.project.id !== projectId) {
-                throw new Error(
-                    `Cannot proceed with the deployment because the "${projectEnvironment.name}" project environment doesn't belong to the "${wcpProjectId}" project. Please check your WCP project ID (currently set to "${wcpProjectId}").`
-                );
-            }
-
-            if (projectEnvironment && projectEnvironment.status !== "enabled") {
-                throw new Error(
-                    `Cannot proceed with the deployment because the "${projectEnvironment.name}" project environment has been disabled.`
-                );
-            }
-
-            // Assign `WCP_PROJECT_ENVIRONMENT` and `WCP_PROJECT_ENVIRONMENT_API_KEY`
-            const wcpProjectEnvironment = {
-                id: projectEnvironment.id,
-                apiKey: projectEnvironment.apiKey,
-                org: { id: projectEnvironment.org.id },
-                project: { id: projectEnvironment.project.id }
-            };
-
-            process.env.WCP_PROJECT_ENVIRONMENT = encrypt(wcpProjectEnvironment);
-            process.env.WCP_PROJECT_ENVIRONMENT_API_KEY = projectEnvironment.apiKey;
-        }
+        hook: getEnvironmentHookHandler
     },
     {
         type: "hook-before-deploy",
         name: "hook-before-deploy-update-last-active-on",
-        async hook() {
-            if (!projectEnvironment) {
-                return;
-            }
+        hook: updateLastActiveOnHookHandler
+    },
 
-            // Is this a user environment? If so, let's update his "last active" field.
-            if (projectEnvironment.user) {
-                await updateUserLastActiveOn();
-            }
-        }
+    // Watch hook handlers.
+    {
+        type: "hook-before-watch",
+        name: "hook-before-watch-environment-get-environment",
+        hook: getEnvironmentHookHandler
     }
 ];

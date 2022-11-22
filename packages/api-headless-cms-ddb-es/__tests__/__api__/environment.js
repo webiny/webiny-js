@@ -2,13 +2,13 @@ const dbPlugins = require("@webiny/handler-db").default;
 const { DynamoDbDriver } = require("@webiny/db-dynamodb");
 const { DocumentClient } = require("aws-sdk/clients/dynamodb");
 const elasticsearchClientContextPlugin = require("@webiny/api-elasticsearch").default;
-const { createHandler } = require("@webiny/handler-aws");
-const dynamoToElastic = require("@webiny/api-dynamodb-to-elasticsearch/handler").default;
+const {
+    createEventHandler: createDynamoDBToElasticsearchEventHandler
+} = require("@webiny/api-dynamodb-to-elasticsearch");
 const { simulateStream } = require("@webiny/project-utils/testing/dynamodb");
 const NodeEnvironment = require("jest-environment-node");
-const elasticsearchDataGzipCompression =
-    require("@webiny/api-elasticsearch/plugins/GzipCompression").default;
-const { ContextPlugin } = require("@webiny/handler");
+const { createGzipCompression } = require("@webiny/api-elasticsearch");
+const { ContextPlugin } = require("@webiny/api");
 const {
     elasticIndexManager
 } = require("@webiny/project-utils/testing/helpers/elasticIndexManager");
@@ -21,6 +21,7 @@ const {
 const { createStorageOperations } = require("../../dist/index");
 const { configurations } = require("../../dist/configurations");
 const { base: baseIndexConfigurationPlugin } = require("../../dist/elasticsearch/indices/base");
+const { createHandler: createDynamoDBHandler } = require("@webiny/handler-aws/dynamodb");
 
 if (typeof createStorageOperations !== "function") {
     throw new Error(`Loaded plugins file must export a function that returns an array of plugins.`);
@@ -45,7 +46,7 @@ class CmsTestEnvironment extends NodeEnvironment {
         const elasticsearchClientContext = elasticsearchClientContextPlugin(elasticsearchClient);
 
         const plugins = [
-            elasticsearchDataGzipCompression(),
+            createGzipCompression(),
             /**
              * TODO remove when all apps are created with their own storage operations factory and drivers.
              */
@@ -61,27 +62,15 @@ class CmsTestEnvironment extends NodeEnvironment {
          * Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)
          */
         const simulationContext = new ContextPlugin(async context => {
-            context.plugins.register([elasticsearchDataGzipCompression()]);
+            context.plugins.register([createGzipCompression()]);
             await elasticsearchClientContext.apply(context);
         });
-        simulateStream(documentClient, createHandler(simulationContext, dynamoToElastic()));
-
-        //const onBeforeEntryList = new ContextPlugin(async context => {
-        //if (!context.cms) {
-        //    return;
-        //}
-        //context.cms.onBeforeEntryList.subscribe(async ({ model }) => {
-        //    console.log("Refreshing index on before listing...");
-        //    const { index } = configurations.es({
-        //        model
-        //    });
-        //    await elasticsearchClient.indices.refresh({
-        //        index,
-        //        ignore_unavailable: true,
-        //        expand_wildcards: "all"
-        //    });
-        //});
-        //});
+        simulateStream(
+            documentClient,
+            createDynamoDBHandler({
+                plugins: [simulationContext, createDynamoDBToElasticsearchEventHandler()]
+            })
+        );
         /**
          * We need to create model index before entry create because of the direct storage operations tests.
          * When running direct storage ops tests, index is created on the fly otherwise and then it is not cleaned up afterwards.
@@ -90,7 +79,7 @@ class CmsTestEnvironment extends NodeEnvironment {
             if (!context.cms) {
                 return;
             }
-            context.cms.onBeforeEntryCreate.subscribe(async ({ model }) => {
+            context.cms.onEntryBeforeCreate.subscribe(async ({ model }) => {
                 const { index } = configurations.es({
                     model
                 });
@@ -130,7 +119,7 @@ class CmsTestEnvironment extends NodeEnvironment {
                         table: table => ({ ...table, name: process.env.DB_TABLE }),
                         esTable: table => ({ ...table, name: process.env.DB_TABLE_ELASTICSEARCH }),
                         plugins: testPlugins.concat([
-                            elasticsearchDataGzipCompression(),
+                            createGzipCompression(),
                             //onBeforeEntryList,
                             onBeforeEntryCreate
                         ])

@@ -1,28 +1,35 @@
 {
   "name": "@webiny/handler",
-  "version": "5.30.0",
+  "version": "5.33.2",
   "main": "index.js",
-  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
   },
-  "description": "A pluginable function for the cloud.",
+  "description": "Our small wrapper around fastify to ease handling of http requests for the system.",
   "contributors": [
-    "Pavel Denisjuk <pavel@webiny.com>",
-    "Sven Al Hamad <sven@webiny.com>",
-    "Adrian Smijulj <adrian@webiny.com>"
+    "Bruno Zorić <bruno@webiny.com>"
   ],
+  "license": "MIT",
   "dependencies": {
-    "@babel/runtime": "^7.16.3",
-    "@webiny/plugins": "^5.30.0"
+    "@babel/runtime": "^7.19.0",
+    "@fastify/cookie": "^8.3.0",
+    "@webiny/api": "^5.33.2",
+    "@webiny/error": "^5.33.2",
+    "@webiny/handler-client": "^5.33.2",
+    "@webiny/plugins": "^5.33.2",
+    "@webiny/utils": "^5.33.2",
+    "fastify": "^4.7.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.16.0",
-    "@babel/core": "^7.16.0",
-    "@babel/preset-env": "^7.16.4",
-    "@webiny/cli": "^5.30.0",
-    "@webiny/project-utils": "^5.30.0",
+    "@babel/cli": "^7.19.3",
+    "@babel/core": "^7.19.3",
+    "@babel/preset-env": "^7.19.4",
+    "@babel/preset-typescript": "^7.18.6",
+    "@webiny/cli": "^5.33.2",
+    "@webiny/project-utils": "^5.33.2",
+    "babel-plugin-lodash": "^3.3.4",
+    "merge": "^1.2.1",
     "rimraf": "^3.0.2",
     "ttypescript": "^1.5.13",
     "typescript": "4.7.4"

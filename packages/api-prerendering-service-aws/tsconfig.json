@@ -4,9 +4,10 @@
   "references": [
     { "path": "../api-prerendering-service" },
     { "path": "../error" },
-    { "path": "../handler" },
-    { "path": "../handler-args" },
-    { "path": "../handler-client" }
+    { "path": "../api" },
+    { "path": "../handler-aws" },
+    { "path": "../handler-client" },
+    { "path": "../utils" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -16,14 +17,16 @@
       "~/*": ["./src/*"],
       "@webiny/api-prerendering-service/*": ["../api-prerendering-service/src/*"],
       "@webiny/api-prerendering-service": ["../api-prerendering-service/src"],
+      "@webiny/api/*": ["../api/src/*"],
+      "@webiny/api": ["../api/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
-      "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"],
-      "@webiny/handler-args/*": ["../handler-args/src/*"],
-      "@webiny/handler-args": ["../handler-args/src"],
+      "@webiny/handler-aws/*": ["../handler-aws/src/*"],
+      "@webiny/handler-aws": ["../handler-aws/src"],
       "@webiny/handler-client/*": ["../handler-client/src/*"],
-      "@webiny/handler-client": ["../handler-client/src"]
+      "@webiny/handler-client": ["../handler-client/src"],
+      "@webiny/utils/*": ["../utils/src/*"],
+      "@webiny/utils": ["../utils/src"]
     },
     "baseUrl": "."
   }

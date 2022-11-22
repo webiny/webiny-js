@@ -44,17 +44,12 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({ getBind, Label, field }) 
 
                 return (
                     <FileUploadWrapper className={imageWrapperStyles}>
-                        <FileManager multiple={true} images={imagesOnly}>
-                            {({ showFileManager }) => {
+                        <FileManager
+                            multiple
+                            images={imagesOnly}
+                            render={({ showFileManager }) => {
                                 const selectFiles = (index = -1) => {
-                                    showFileManager(initialFiles => {
-                                        if (!initialFiles || initialFiles.length === 0) {
-                                            return;
-                                        }
-                                        const files = Array.isArray(initialFiles)
-                                            ? initialFiles
-                                            : [initialFiles];
-
+                                    showFileManager(files => {
                                         const urls = files.map(f => f.src);
                                         if (index === -1) {
                                             onChange([...value, ...urls]);
@@ -104,7 +99,7 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({ getBind, Label, field }) 
                                     </GridInner>
                                 );
                             }}
-                        </FileManager>
+                        />
                     </FileUploadWrapper>
                 );
             }}

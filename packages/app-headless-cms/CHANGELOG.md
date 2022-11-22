@@ -3,6 +3,134 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.33.2](https://github.com/webiny/webiny-js/compare/v5.33.2-beta.2...v5.33.2) (2022-11-17)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+## [5.33.2-beta.2](https://github.com/webiny/webiny-js/compare/v5.33.2-beta.1...v5.33.2-beta.2) (2022-11-16)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+## [5.33.2-beta.1](https://github.com/webiny/webiny-js/compare/v5.33.2-beta.0...v5.33.2-beta.1) (2022-11-16)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+## [5.33.2-beta.0](https://github.com/webiny/webiny-js/compare/v5.33.1...v5.33.2-beta.0) (2022-11-15)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+## [5.33.1](https://github.com/webiny/webiny-js/compare/v5.33.1-beta.0...v5.33.1) (2022-11-07)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+## [5.33.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.33.0...v5.33.1-beta.0) (2022-11-04)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+# [5.33.0](https://github.com/webiny/webiny-js/compare/v5.33.0-beta.1...v5.33.0) (2022-10-12)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+# [5.33.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.33.0-beta.0...v5.33.0-beta.1) (2022-10-12)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+# [5.33.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.32.0...v5.33.0-beta.0) (2022-10-11)
+
+
+### Bug Fixes
+
+* **api-headless-cms:** field storage plugins ([#2641](https://github.com/webiny/webiny-js/issues/2641)) ([286f56a](https://github.com/webiny/webiny-js/commit/286f56aab9b709c9e0175e7e8b085ecab162f90a))
+
+
+### Features
+
+* make FileManager composable ([#2664](https://github.com/webiny/webiny-js/issues/2664)) ([d279b45](https://github.com/webiny/webiny-js/commit/d279b458a9296611dd3fa87778939421c96fba28))
+* **app-headless-cms:** make fieldId changeable ([#2613](https://github.com/webiny/webiny-js/issues/2613)) ([45cc7ac](https://github.com/webiny/webiny-js/commit/45cc7ac6d91e7fae8ecb241e00505a1d12c0e1bd))
+* **app-headless-cms:** model fields upgrade for 5.33.0 ([#2638](https://github.com/webiny/webiny-js/issues/2638)) ([dbe965f](https://github.com/webiny/webiny-js/commit/dbe965f472a30b7f9f4f77a7b9dd77223d24b9c2))
+* **headless-cms:** ability to delete locked field ([#2648](https://github.com/webiny/webiny-js/issues/2648)) ([1e123ac](https://github.com/webiny/webiny-js/commit/1e123acd6049481f056ab0a63d8a6bf8fc8e2f13))
+
+
+
+
+
+# [5.32.0](https://github.com/webiny/webiny-js/compare/v5.32.0-beta.0...v5.32.0) (2022-09-07)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+# [5.32.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.31.0...v5.32.0-beta.0) (2022-09-06)
+
+
+### Bug Fixes
+
+* **app-headless-cms:** do not normalize CmsContentModelField type ([c365569](https://github.com/webiny/webiny-js/commit/c365569686579c82aeb314203d810e50a44cb543))
+* **app-headless-cms:** remove content model from apollo cache when deleted ([35ec34d](https://github.com/webiny/webiny-js/commit/35ec34d76abad5b983f6e4069bb66dc225a36c24))
+* **app-headless-cms:** use proper plugin class ([138d62e](https://github.com/webiny/webiny-js/commit/138d62e19a68d6fcfb1d8569230f450980e1d1ed))
+
+
+
+
+
+# [5.31.0](https://github.com/webiny/webiny-js/compare/v5.31.0-beta.1...v5.31.0) (2022-08-18)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+# [5.31.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.31.0-beta.0...v5.31.0-beta.1) (2022-08-17)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+# [5.31.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.30.0...v5.31.0-beta.0) (2022-08-16)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
 # [5.30.0](https://github.com/webiny/webiny-js/compare/v5.30.0-beta.1...v5.30.0) (2022-07-27)
 
 **Note:** Version bump only for package @webiny/app-headless-cms

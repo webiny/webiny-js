@@ -9,10 +9,11 @@ const ERROR_FIELDS = `
 export const FIELDS_FIELDS = `
     id
     fieldId
+    storageId
     type
     label
     placeholderText
-    helpText  
+    helpText
     predefinedValues {
         enabled
         values {
@@ -21,7 +22,7 @@ export const FIELDS_FIELDS = `
             selected
         }
     }
-    multipleValues 
+    multipleValues
     renderer {
         name
     }

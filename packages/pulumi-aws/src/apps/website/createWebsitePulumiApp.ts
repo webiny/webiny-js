@@ -1,7 +1,8 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
+import fs from "fs";
 import { createPulumiApp, PulumiAppParamCallback, PulumiAppParam } from "@webiny/pulumi";
-import { createPublicAppBucket } from "../createAppBucket";
+import { createPrivateAppBucket } from "../createAppBucket";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
 import { createPrerenderingService } from "./WebsitePrerendering";
 import { CoreOutput, VpcConfig } from "~/apps";
@@ -11,8 +12,15 @@ import { applyTenantRouter } from "~/apps/tenantRouter";
 export type WebsitePulumiApp = ReturnType<typeof createWebsitePulumiApp>;
 
 export interface CreateWebsitePulumiAppParams {
-    /** Custom domain configuration */
+    /**
+     * Custom domain(s) configuration.
+     */
     domains?: PulumiAppParamCallback<CustomDomainParams>;
+
+    /**
+     * Custom preview domain(s) configuration.
+     */
+    previewDomains?: PulumiAppParamCallback<CustomDomainParams>;
 
     /**
      * Enables or disables VPC for the API.
@@ -49,7 +57,7 @@ export const createWebsitePulumiApp = (projectAppParams: CreateWebsitePulumiAppP
                 enabled: app.getParam(projectAppParams.vpc)
             });
 
-            const appBucket = createPublicAppBucket(app, "app");
+            const appBucket = createPrivateAppBucket(app, "app");
 
             const appCloudfront = app.addResource(aws.cloudfront.Distribution, {
                 name: "app",
@@ -88,7 +96,21 @@ export const createWebsitePulumiApp = (projectAppParams: CreateWebsitePulumiAppP
                 }
             });
 
-            const deliveryBucket = createPublicAppBucket(app, "delivery");
+            const deliveryBucket = createPrivateAppBucket(app, "delivery");
+
+            /**
+             * We need to have a Cloudfront Function to perform a simple request rewrite, so the request always includes
+             * an "/index.html". This is necessary because our buckets are not "website" buckets, and we need to
+             * have an exact object key when requesting page paths.
+             */
+            const viewerRequest = app.addResource(aws.cloudfront.Function, {
+                name: "cfViewerRequest",
+                config: {
+                    runtime: "cloudfront-js-1.0",
+                    publish: true,
+                    code: fs.readFileSync(__dirname + `/deliveryViewerRequest.js`, "utf8")
+                }
+            });
 
             const deliveryCloudfront = app.addResource(aws.cloudfront.Distribution, {
                 name: "delivery",
@@ -111,7 +133,10 @@ export const createWebsitePulumiApp = (projectAppParams: CreateWebsitePulumiAppP
                         // MinTTL <= DefaultTTL <= MaxTTL
                         minTtl: 0,
                         defaultTtl: 30,
-                        maxTtl: 30
+                        maxTtl: 30,
+                        functionAssociations: [
+                            { functionArn: viewerRequest.output.arn, eventType: "viewer-request" }
+                        ]
                     },
                     orderedCacheBehaviors: [
                         {
@@ -168,7 +193,15 @@ export const createWebsitePulumiApp = (projectAppParams: CreateWebsitePulumiAppP
                 applyCustomDomain(deliveryCloudfront, domains);
             }
 
-            if (process.env.WCP_PROJECT_ENVIRONMENT) {
+            const previewDomains = app.getParam(projectAppParams.previewDomains);
+            if (previewDomains) {
+                applyCustomDomain(appCloudfront, previewDomains);
+            }
+
+            if (
+                process.env.WCP_PROJECT_ENVIRONMENT ||
+                process.env.WEBINY_MULTI_TENANCY === "true"
+            ) {
                 applyTenantRouter(app, deliveryCloudfront);
             }
 

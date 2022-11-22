@@ -1,8 +1,9 @@
 import { getIntrospectionQuery } from "graphql";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
+import createGraphQLHandler from "@webiny/handler-graphql";
 import i18nContext from "@webiny/api-i18n/graphql/context";
-import { createHandler } from "@webiny/handler-aws";
+import { createHandler } from "@webiny/handler-aws/gateway";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import apiKeyAuthentication from "@webiny/api-security/plugins/apiKeyAuthentication";
@@ -18,7 +19,11 @@ import {
 import { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { createApwPageBuilderContext, createApwGraphQL } from "~/index";
 import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb";
-import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
+import {
+    CmsParametersPlugin,
+    createHeadlessCmsContext,
+    createHeadlessCmsGraphQL
+} from "@webiny/api-headless-cms";
 /**
  * Unfortunately at we need to import the api-i18n-ddb package manually
  */
@@ -61,6 +66,7 @@ import {
     UPDATE_CHANGE_REQUEST_MUTATION
 } from "./graphql/changeRequest";
 import { contextCommon, contextSecurity } from "./context";
+import { createDummyTransport, createTransport } from "@webiny/api-mailer";
 
 export interface GQLHandlerCallableParams {
     setupTenancyAndSecurityGraphQL?: boolean;
@@ -68,7 +74,6 @@ export interface GQLHandlerCallableParams {
     identity?: SecurityIdentity;
     plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     storageOperationPlugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
-    path: string;
 }
 
 export interface InvokeParams {
@@ -101,21 +106,18 @@ export const createPageBuilderGQLHandler = (params: GQLHandlerCallableParams) =>
         parent: null
     };
     const { permissions, identity, plugins = [] } = params;
-    /**
-     * We're using ddb-only storageOperations here because current jest setup doesn't allow
-     * usage of more than one storageOperations at a time with the help of --keyword flag.
-     */
-    const headlessCmsApp = createHeadlessCmsContext({
-        storageOperations: createHeadlessCmsStorageOperations({
-            documentClient
-        })
-    });
 
     const handler = createHandler({
         plugins: [
+            createTransport(async () => {
+                const plugin = await createDummyTransport();
+                plugin.name = "dummy-default.test";
+                return plugin;
+            }),
+            createGraphQLHandler(),
             createWcpContext(),
             createWcpGraphQL(),
-            contextCommon(params),
+            contextCommon(),
             ...ops.plugins,
             ...createTenancyAndSecurity({
                 permissions: [...createPermissions(permissions), { name: "pb.*" }],
@@ -125,6 +127,17 @@ export const createPageBuilderGQLHandler = (params: GQLHandlerCallableParams) =>
             apiKeyAuthentication({ identityType: "api-key" }),
             apiKeyAuthorization({ identityType: "api-key" }),
             i18nContext(),
+            /**
+             * for the page builder we must define the current locale and type
+             * we can do that via the CmsParametersPlugin
+             */
+            new CmsParametersPlugin(async context => {
+                const locale = context.i18n.getContentLocale()?.code || "en-US";
+                return {
+                    type: "read",
+                    locale
+                };
+            }),
             i18nDynamoDbStorageOperations(),
             mockLocalesPlugins(),
             createPageBuilderGraphQL(),
@@ -135,7 +148,15 @@ export const createPageBuilderGQLHandler = (params: GQLHandlerCallableParams) =>
             createPageBuilderContext({
                 storageOperations: createPageBuilderStorageOperations({ documentClient })
             }),
-            ...headlessCmsApp,
+            /**
+             * We're using ddb-only storageOperations here because current jest setup doesn't allow
+             * usage of more than one storageOperations at a time with the help of --keyword flag.
+             */
+            createHeadlessCmsContext({
+                storageOperations: createHeadlessCmsStorageOperations({
+                    documentClient
+                })
+            }),
             createHeadlessCmsGraphQL(),
             createApwPageBuilderContext({
                 storageOperations: ops.storageOperations
@@ -143,16 +164,26 @@ export const createPageBuilderGQLHandler = (params: GQLHandlerCallableParams) =>
             createApwGraphQL(),
             plugins
         ],
-        http: { debug: true }
+        http: {
+            debug: false
+        }
     });
 
     const invoke = async ({ httpMethod = "POST", body, headers = {}, ...rest }: InvokeParams) => {
-        const response = await handler({
-            httpMethod,
-            headers,
-            body: JSON.stringify(body),
-            ...rest
-        });
+        const response = await handler(
+            {
+                path: "/graphql",
+                httpMethod,
+                headers: {
+                    ["x-tenant"]: "root",
+                    ["Content-Type"]: "application/json",
+                    ...headers
+                },
+                body: JSON.stringify(body),
+                ...rest
+            } as any,
+            {} as any
+        );
         if (httpMethod === "OPTIONS" && !response.body) {
             return [null, response];
         }

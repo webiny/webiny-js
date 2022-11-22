@@ -1,4 +1,3 @@
-import { HttpContext } from "@webiny/handler-http/types";
 import { ClientContext } from "@webiny/handler-client/types";
 import { SecurityContext } from "@webiny/api-security/types";
 import { I18NContext } from "@webiny/api-i18n/types";
@@ -13,8 +12,7 @@ import { CmsContext } from "@webiny/api-headless-cms/types";
 // Feel free to extend it with additional context interfaces, if needed. Also, please do not change the
 // name of the interface, as existing scaffolding utilities may rely on it during the scaffolding process.
 export interface Context
-    extends HttpContext,
-        ClientContext,
+    extends ClientContext,
         TenancyContext,
         SecurityContext,
         I18NContext,

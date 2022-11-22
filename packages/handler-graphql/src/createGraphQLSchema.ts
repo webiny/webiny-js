@@ -1,11 +1,11 @@
 import gql from "graphql-tag";
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import { GraphQLScalarPlugin, GraphQLSchemaPlugin } from "./types";
-import { HttpContext } from "@webiny/handler-http/types";
+import { Context } from "@webiny/api/types";
 import {
     RefInput,
-    Number as NumberScalar,
-    Any as AnyScalar,
+    NumberScalar,
+    AnyScalar,
     DateScalar,
     DateTimeScalar,
     JsonScalar,
@@ -14,7 +14,7 @@ import {
 } from "./builtInTypes";
 import { GraphQLScalarType } from "graphql/type/definition";
 
-export const createGraphQLSchema = (context: HttpContext) => {
+export const createGraphQLSchema = (context: Context) => {
     const scalars = context.plugins
         .byType<GraphQLScalarPlugin>("graphql-scalar")
         .map(item => item.scalar);
@@ -57,7 +57,7 @@ export const createGraphQLSchema = (context: HttpContext) => {
         const plugin = gqlPlugins[i];
         /**
          * TODO @ts-refactor
-         * Figure out correct tyeps on typeDefs and resolvers
+         * Figure out correct types on typeDefs and resolvers
          */
         // @ts-ignore
         typeDefs.push(plugin.schema.typeDefs);

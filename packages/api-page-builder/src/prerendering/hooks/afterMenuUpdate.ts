@@ -1,4 +1,4 @@
-import { ContextPlugin } from "@webiny/handler";
+import { ContextPlugin } from "@webiny/api";
 import { PbContext } from "~/graphql/types";
 
 export default () => {
@@ -6,7 +6,7 @@ export default () => {
         /**
          * After a menu has changed, invalidate all pages that contain the updated menu.
          */
-        pageBuilder.onAfterMenuUpdate.subscribe(async ({ menu }) => {
+        pageBuilder.onMenuAfterUpdate.subscribe(async ({ menu }) => {
             await pageBuilder.prerendering.render({
                 tags: [{ tag: { key: "pb-menu", value: menu.slug } }]
             });

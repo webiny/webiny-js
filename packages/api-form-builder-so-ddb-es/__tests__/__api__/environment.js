@@ -2,13 +2,13 @@ const dbPlugins = require("@webiny/handler-db").default;
 const { DynamoDbDriver } = require("@webiny/db-dynamodb");
 const { DocumentClient } = require("aws-sdk/clients/dynamodb");
 const createElasticsearchClientContextPlugin = require("@webiny/api-elasticsearch").default;
-const { createHandler } = require("@webiny/handler-aws");
-const dynamoToElastic = require("@webiny/api-dynamodb-to-elasticsearch/handler").default;
+const {
+    createEventHandler: createDynamoDBToElasticsearchEventHandler
+} = require("@webiny/api-dynamodb-to-elasticsearch");
 const { simulateStream } = require("@webiny/project-utils/testing/dynamodb");
 const NodeEnvironment = require("jest-environment-node");
-const elasticsearchDataGzipCompression =
-    require("@webiny/api-elasticsearch/plugins/GzipCompression").default;
-const { ContextPlugin } = require("@webiny/handler");
+const { createGzipCompression } = require("@webiny/api-elasticsearch");
+const { ContextPlugin } = require("@webiny/api");
 const dynamoDbPlugins = require("@webiny/db-dynamodb/plugins").default;
 const {
     createElasticsearchClient
@@ -24,6 +24,7 @@ const { base: baseConfigurationPlugin } = require("../../dist/elasticsearch/indi
 const {
     elasticIndexManager
 } = require("@webiny/project-utils/testing/helpers/elasticIndexManager");
+const { createHandler: createDynamoDBHandler } = require("@webiny/handler-aws/dynamodb");
 
 if (typeof createFormBuilderStorageOperations !== "function") {
     throw new Error(
@@ -54,10 +55,15 @@ class FormBuilderTestEnvironment extends NodeEnvironment {
          * Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)
          */
         const simulationContext = new ContextPlugin(async context => {
-            context.plugins.register([elasticsearchDataGzipCompression()]);
+            context.plugins.register([createGzipCompression()]);
             await elasticsearchClientContext.apply(context);
         });
-        simulateStream(documentClient, createHandler(simulationContext, dynamoToElastic()));
+        simulateStream(
+            documentClient,
+            createDynamoDBHandler({
+                plugins: [simulationContext, createDynamoDBToElasticsearchEventHandler()]
+            })
+        );
 
         /**
          * This is a global function that will be called inside the tests to get all relevant plugins, methods and objects.
@@ -73,7 +79,7 @@ class FormBuilderTestEnvironment extends NodeEnvironment {
                         elasticsearch: elasticsearchClient,
                         plugins: [
                             ...dynamoDbPlugins(),
-                            elasticsearchDataGzipCompression(),
+                            createGzipCompression(),
                             ...getElasticsearchOperators()
                         ]
                     });
@@ -88,7 +94,7 @@ class FormBuilderTestEnvironment extends NodeEnvironment {
                             })
                         }),
                         ...dynamoDbPlugins(),
-                        elasticsearchDataGzipCompression(),
+                        createGzipCompression(),
                         ...getElasticsearchOperators()
                     ];
                 }

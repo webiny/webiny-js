@@ -76,6 +76,16 @@ export const createModelsSchema = (context: CmsContext): GraphQLSchemaPlugin<Cms
                 } catch (e) {
                     return new ErrorResponse(e);
                 }
+            },
+            initializeModel: async (_, args, context) => {
+                const { modelId } = args;
+
+                try {
+                    const result = await context.cms.initializeModel(modelId);
+                    return new Response(result);
+                } catch (e) {
+                    return new ErrorResponse(e);
+                }
             }
         };
 
@@ -105,6 +115,9 @@ export const createModelsSchema = (context: CmsContext): GraphQLSchemaPlugin<Cms
                 label: String!
                 helpText: String
                 placeholderText: String
+                # we never use user input - this is here to the GraphQL does not break when posting from our UI
+                # used for debugging purposes
+                storageId: String
                 fieldId: String!
                 type: String!
                 multipleValues: Boolean
@@ -142,6 +155,11 @@ export const createModelsSchema = (context: CmsContext): GraphQLSchemaPlugin<Cms
                 titleFieldId: String
             }
 
+            type InitializeModelResponse {
+                data: Boolean
+                error: CmsError
+            }
+
             extend type Mutation {
                 createContentModel(data: CmsContentModelCreateInput!): CmsContentModelResponse
 
@@ -156,6 +174,8 @@ export const createModelsSchema = (context: CmsContext): GraphQLSchemaPlugin<Cms
                 ): CmsContentModelResponse
 
                 deleteContentModel(modelId: ID!): CmsDeleteResponse
+
+                initializeModel(modelId: ID!): InitializeModelResponse!
             }
         `;
     }
@@ -185,6 +205,9 @@ export const createModelsSchema = (context: CmsContext): GraphQLSchemaPlugin<Cms
 
             type CmsContentModelField {
                 id: ID!
+                # auto-generated value
+                # used for debugging purposes
+                storageId: String
                 fieldId: String!
                 label: String!
                 helpText: String

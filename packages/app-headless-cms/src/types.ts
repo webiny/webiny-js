@@ -261,6 +261,7 @@ export type CmsEditorField<T = unknown> = T & {
     id: string;
     type: string;
     fieldId: CmsEditorFieldId;
+    storageId?: string;
     label?: string;
     helpText?: string;
     placeholderText?: string;
@@ -310,12 +311,7 @@ export interface CmsEditorContentModel {
     plugin?: boolean;
 }
 
-export type CmsContentEntryStatusType =
-    | "draft"
-    | "published"
-    | "unpublished"
-    | "changesRequested"
-    | "reviewRequested";
+export type CmsContentEntryStatusType = "draft" | "published" | "unpublished";
 
 export interface CmsEditorContentEntry {
     id: string;
@@ -618,3 +614,12 @@ interface BindComponentProps extends Omit<BaseBindComponentProps, "children" | "
 export type BindComponent = React.FC<BindComponentProps> & {
     parentName?: string;
 };
+
+/**
+ * After RequestReview and RequestChanges was removed, we need an option to add new status filters
+ */
+export interface CmsEntryFilterStatusPlugin extends Plugin {
+    type: "cms.entry.filter.status";
+    label: string;
+    value: string;
+}

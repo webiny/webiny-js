@@ -1,16 +1,26 @@
 import path from "path";
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
+import toKebabCase from "lodash/kebabCase";
 
 import { createAppModule, PulumiApp, PulumiAppModule } from "@webiny/pulumi";
 import { createLambdaRole, getCommonLambdaEnvVariables } from "../lambdaUtils";
-import { CoreOutput, VpcConfig } from "~/apps";
+import { ApiHeadlessCMS, CoreOutput, VpcConfig } from "~/apps";
 import { getAwsAccountId, getAwsRegion } from "../awsUtils";
 
 interface GraphqlParams {
     env: Record<string, any>;
     apwSchedulerEventRule: pulumi.Output<aws.cloudwatch.EventRule>;
     apwSchedulerEventTarget: pulumi.Output<aws.cloudwatch.EventTarget>;
+}
+
+export interface AddRouteParams {
+    /**
+     * Must be in kebab case (a-z and -)
+     */
+    name: string;
+    path: `/${string}`;
+    method: "DELETE" | "GET" | "HEAD" | "PATCH" | "POST" | "PUT" | "OPTIONS" | "ANY";
 }
 
 export type ApiGraphql = PulumiAppModule<typeof ApiGraphql>;
@@ -50,6 +60,9 @@ export const ApiGraphql = createAppModule({
             }
         });
 
+        const headlessCmsModule = app.getModule(ApiHeadlessCMS);
+
+        const headlessCmsGraphQL = headlessCmsModule.functions.graphql;
         /**
          * Store meta information like "mainGraphqlFunctionArn" in APW settings at deploy time.
          *
@@ -66,7 +79,8 @@ export const ApiGraphql = createAppModule({
                     .apply(key => key || "SK"),
                 item: pulumi.interpolate`{
               "PK": {"S": "APW#SETTINGS"},
-              "SK": {"S": "${app.params.run.variant || "A"}"},
+              "SK": {"S": "${app.params.run.variant || "default"}"},
+              "cmsGraphqlFunctionArn": {"S": "${headlessCmsGraphQL.output.arn}"},
               "mainGraphqlFunctionArn": {"S": "${graphql.output.arn}"},
               "eventRuleName": {"S": "${params.apwSchedulerEventRule.name}"},
               "eventTargetId": {"S": "${params.apwSchedulerEventTarget.targetId}"}
@@ -79,6 +93,25 @@ export const ApiGraphql = createAppModule({
             policy,
             functions: {
                 graphql
+            },
+            addRoute: (routeParams: AddRouteParams) => {
+                const apiGateway: any = app.resources.apiGateway;
+                if (!apiGateway) {
+                    console.log(
+                        "Could not add route because there is no apiGateway in the resources."
+                    );
+                    return;
+                }
+                const kebabName = toKebabCase(routeParams.name);
+                if (kebabName !== routeParams.name) {
+                    console.log(`Route name is not allowed: "${routeParams.name}".`);
+                    return;
+                }
+                return apiGateway.addRoute(routeParams.name, {
+                    path: routeParams.path,
+                    method: routeParams.method,
+                    function: graphql.output.arn
+                });
             }
         };
     }

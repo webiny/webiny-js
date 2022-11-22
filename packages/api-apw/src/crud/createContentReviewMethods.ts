@@ -10,13 +10,16 @@ import {
     ApwReviewerCrud,
     ApwScheduleActionData,
     ApwWorkflowStepTypes,
+    CreateApwContentReviewParams,
     CreateApwParams,
-    OnAfterContentReviewCreateTopicParams,
-    OnAfterContentReviewDeleteTopicParams,
-    OnAfterContentReviewUpdateTopicParams,
-    OnBeforeContentReviewCreateTopicParams,
-    OnBeforeContentReviewDeleteTopicParams,
-    OnBeforeContentReviewUpdateTopicParams
+    OnContentReviewAfterCreateTopicParams,
+    OnContentReviewAfterDeleteTopicParams,
+    OnContentReviewAfterUpdateTopicParams,
+    OnContentReviewBeforeCreateTopicParams,
+    OnContentReviewBeforeDeleteTopicParams,
+    OnContentReviewBeforeListTopicParams,
+    OnContentReviewBeforeUpdateTopicParams,
+    UpdateApwContentReviewParams
 } from "~/types";
 import { getNextStepStatus, hasReviewer } from "~/plugins/utils";
 import {
@@ -61,63 +64,95 @@ export function createContentReviewMethods(
         plugins
     } = params;
 
-    const onBeforeContentReviewCreate = createTopic<OnBeforeContentReviewCreateTopicParams>();
-    const onAfterContentReviewCreate = createTopic<OnAfterContentReviewCreateTopicParams>();
-    const onBeforeContentReviewUpdate = createTopic<OnBeforeContentReviewUpdateTopicParams>();
-    const onAfterContentReviewUpdate = createTopic<OnAfterContentReviewUpdateTopicParams>();
-    const onBeforeContentReviewDelete = createTopic<OnBeforeContentReviewDeleteTopicParams>();
-    const onAfterContentReviewDelete = createTopic<OnAfterContentReviewDeleteTopicParams>();
+    // create
+    const onContentReviewBeforeCreate = createTopic<OnContentReviewBeforeCreateTopicParams>(
+        "apw.onContentReviewBeforeCreate"
+    );
+    const onContentReviewAfterCreate = createTopic<OnContentReviewAfterCreateTopicParams>(
+        "apw.onContentReviewAfterCreate"
+    );
+    // update
+    const onContentReviewBeforeUpdate = createTopic<OnContentReviewBeforeUpdateTopicParams>(
+        "apw.onContentReviewBeforeUpdate"
+    );
+    const onContentReviewAfterUpdate = createTopic<OnContentReviewAfterUpdateTopicParams>(
+        "apw.onContentReviewAfterUpdate"
+    );
+    // delete
+    const onContentReviewBeforeDelete = createTopic<OnContentReviewBeforeDeleteTopicParams>(
+        "apw.onContentReviewBeforeDelete"
+    );
+    const onContentReviewAfterDelete = createTopic<OnContentReviewAfterDeleteTopicParams>(
+        "apw.onContentReviewAfterDelete"
+    );
+    // list
+    const onContentReviewBeforeList = createTopic<OnContentReviewBeforeListTopicParams>(
+        "apw.onContentReviewBeforeList"
+    );
     return {
         /**
          * Lifecycle events
          */
-        onBeforeContentReviewCreate,
-        onAfterContentReviewCreate,
-        onBeforeContentReviewUpdate,
-        onAfterContentReviewUpdate,
-        onBeforeContentReviewDelete,
-        onAfterContentReviewDelete,
+        onContentReviewBeforeCreate,
+        onContentReviewAfterCreate,
+        onContentReviewBeforeUpdate,
+        onContentReviewAfterUpdate,
+        onContentReviewBeforeDelete,
+        onContentReviewAfterDelete,
+        onContentReviewBeforeList,
         async get(id) {
             return storageOperations.getContentReview({ id });
         },
         async list(params) {
-            if (params.where && params.where.status === "requiresMyAttention") {
+            const where = params.where || {};
+
+            await onContentReviewBeforeList.publish({
+                where
+            });
+
+            if (where.reviewStatus === "requiresMyAttention") {
                 return filterContentReviewsByRequiresMyAttention({
-                    listParams: params,
+                    listParams: {
+                        ...params,
+                        where
+                    },
                     listContentReviews: storageOperations.listContentReviews,
                     getReviewer,
                     getIdentity
                 });
             }
 
-            return storageOperations.listContentReviews(params);
+            return storageOperations.listContentReviews({
+                ...params,
+                where
+            });
         },
-        async create(data) {
-            const input = {
+        async create(data: Omit<CreateApwContentReviewParams, "reviewStatus">) {
+            const input: CreateApwContentReviewParams = {
                 ...data,
-                status: ApwContentReviewStatus.UNDER_REVIEW
+                reviewStatus: ApwContentReviewStatus.UNDER_REVIEW
             };
-            await onBeforeContentReviewCreate.publish({ input });
+            await onContentReviewBeforeCreate.publish({ input });
 
             const contentReview = await storageOperations.createContentReview({
                 data: input
             });
 
-            await onAfterContentReviewCreate.publish({ contentReview });
+            await onContentReviewAfterCreate.publish({ contentReview });
 
             return contentReview;
         },
-        async update(id, data) {
+        async update(id, data: UpdateApwContentReviewParams) {
             const original = await storageOperations.getContentReview({ id });
 
-            await onBeforeContentReviewUpdate.publish({ original, input: { id, data } });
+            await onContentReviewBeforeUpdate.publish({ original, input: { id, data } });
 
             const contentReview = await storageOperations.updateContentReview({
                 id,
                 data
             });
 
-            await onAfterContentReviewUpdate.publish({
+            await onContentReviewAfterUpdate.publish({
                 original,
                 input: { id, data },
                 contentReview
@@ -128,17 +163,17 @@ export function createContentReviewMethods(
         async delete(id) {
             const contentReview = await storageOperations.getContentReview({ id });
 
-            await onBeforeContentReviewDelete.publish({ contentReview });
+            await onContentReviewBeforeDelete.publish({ contentReview });
 
             await storageOperations.deleteContentReview({ id });
 
-            await onAfterContentReviewDelete.publish({ contentReview });
+            await onContentReviewAfterDelete.publish({ contentReview });
 
             return true;
         },
         async provideSignOff(this: ApwContentReviewCrud, id, stepId) {
             const entry: ApwContentReview = await this.get(id);
-            const { steps, status } = entry;
+            const { steps, reviewStatus } = entry;
             const stepIndex = steps.findIndex(step => step.id === stepId);
             const currentStep = steps[stepIndex];
             const previousStep = steps[stepIndex - 1];
@@ -210,7 +245,7 @@ export function createContentReviewMethods(
             /**
              * Check for pending steps
              */
-            let newStatus = status;
+            let newStatus = reviewStatus;
             const pendingRequiredSteps = getPendingRequiredSteps(
                 updatedSteps,
                 step => typeof step.signOffProvidedOn !== "string"
@@ -228,13 +263,13 @@ export function createContentReviewMethods(
              */
             await this.update(id, {
                 steps: updatedSteps,
-                status: newStatus
+                reviewStatus: newStatus
             });
             return true;
         },
         async retractSignOff(this: ApwContentReviewCrud, id, stepId) {
             const entry: ApwContentReview = await this.get(id);
-            const { steps, status } = entry;
+            const { steps, reviewStatus } = entry;
             const stepIndex = steps.findIndex(step => step.id === stepId);
             const currentStep = steps[stepIndex];
 
@@ -293,7 +328,7 @@ export function createContentReviewMethods(
             /**
              * Check for pending steps
              */
-            let newStatus = status;
+            let newStatus = reviewStatus;
             const pendingRequiredSteps = getPendingRequiredSteps(
                 updatedSteps,
                 step => step.signOffProvidedOn === null
@@ -307,7 +342,7 @@ export function createContentReviewMethods(
 
             await this.update(id, {
                 steps: updatedSteps,
-                status: newStatus
+                reviewStatus: newStatus
             });
             return true;
         },
@@ -337,16 +372,16 @@ export function createContentReviewMethods(
             };
         },
         async publishContent(this: ApwContentReviewCrud, id: string, datetime) {
-            const { content, status } = await this.get(id);
+            const { content, reviewStatus } = await this.get(id);
             const identity = getIdentity();
 
-            if (status !== ApwContentReviewStatus.READY_TO_BE_PUBLISHED) {
+            if (reviewStatus !== ApwContentReviewStatus.READY_TO_BE_PUBLISHED) {
                 throw new Error({
                     message: `Cannot publish content because it is not yet ready to be published.`,
                     code: "NOT_READY_TO_BE_PUBLISHED",
                     data: {
                         id,
-                        status,
+                        status: reviewStatus,
                         content
                     }
                 });
@@ -389,16 +424,16 @@ export function createContentReviewMethods(
             return true;
         },
         async unpublishContent(this: ApwContentReviewCrud, id: string, datetime) {
-            const { content, status } = await this.get(id);
+            const { content, reviewStatus } = await this.get(id);
             const identity = getIdentity();
 
-            if (status !== ApwContentReviewStatus.PUBLISHED) {
+            if (reviewStatus !== ApwContentReviewStatus.PUBLISHED) {
                 throw new Error({
                     message: `Cannot unpublish content because it is not yet published.`,
                     code: "NOT_YET_PUBLISHED",
                     data: {
                         id,
-                        status,
+                        status: reviewStatus,
                         content
                     }
                 });
@@ -451,8 +486,12 @@ export function createContentReviewMethods(
             // Invoke handler
             await handlerClient.invoke({
                 name: String(process.env.APW_SCHEDULER_SCHEDULE_ACTION_HANDLER),
-                payload: { tenant: getTenant().id, locale: getLocale().code },
-                await: false
+                payload: {
+                    tenant: getTenant().id,
+                    locale: getLocale().code
+                },
+                await: false,
+                description: "APW scheduler handler"
             });
             return scheduledAction.id;
         },

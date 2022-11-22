@@ -1,4 +1,4 @@
-import { ContextPlugin } from "@webiny/handler";
+import { ContextPlugin } from "@webiny/api";
 import { PbContext } from "~/graphql/types";
 import { LifecycleEventTracker } from "@webiny/project-utils/testing/helpers/lifecycleTracker";
 
@@ -6,70 +6,56 @@ export const tracker = new LifecycleEventTracker();
 
 export const assignPageLifecycleEvents = () => {
     return new ContextPlugin<PbContext>(async context => {
-        context.pageBuilder.onBeforePageCreate.subscribe(async params => {
+        context.pageBuilder.onPageBeforeCreate.subscribe(async params => {
             tracker.track("page:beforeCreate", params);
         });
-        context.pageBuilder.onAfterPageCreate.subscribe(async params => {
+        context.pageBuilder.onPageAfterCreate.subscribe(async params => {
             tracker.track("page:afterCreate", params);
         });
 
-        context.pageBuilder.onBeforePageCreateFrom.subscribe(async params => {
+        context.pageBuilder.onPageBeforeCreateFrom.subscribe(async params => {
             tracker.track("page:beforeCreateFrom", params);
         });
-        context.pageBuilder.onAfterPageCreateFrom.subscribe(async params => {
+        context.pageBuilder.onPageAfterCreateFrom.subscribe(async params => {
             tracker.track("page:afterCreateFrom", params);
         });
 
-        context.pageBuilder.onBeforePageUpdate.subscribe(async params => {
+        context.pageBuilder.onPageBeforeUpdate.subscribe(async params => {
             tracker.track("page:beforeUpdate", params);
         });
-        context.pageBuilder.onAfterPageUpdate.subscribe(async params => {
+        context.pageBuilder.onPageAfterUpdate.subscribe(async params => {
             tracker.track("page:afterUpdate", params);
         });
 
-        context.pageBuilder.onBeforePageDelete.subscribe(async params => {
+        context.pageBuilder.onPageBeforeDelete.subscribe(async params => {
             tracker.track("page:beforeDelete", params);
         });
-        context.pageBuilder.onAfterPageDelete.subscribe(async params => {
+        context.pageBuilder.onPageAfterDelete.subscribe(async params => {
             tracker.track("page:afterDelete", params);
         });
 
-        context.pageBuilder.onBeforePagePublish.subscribe(async params => {
+        context.pageBuilder.onPageBeforePublish.subscribe(async params => {
             tracker.track("page:beforePublish", params);
         });
-        context.pageBuilder.onAfterPagePublish.subscribe(async params => {
+        context.pageBuilder.onPageAfterPublish.subscribe(async params => {
             tracker.track("page:afterPublish", params);
         });
 
-        context.pageBuilder.onBeforePageUnpublish.subscribe(async params => {
+        context.pageBuilder.onPageBeforeUnpublish.subscribe(async params => {
             tracker.track("page:beforeUnpublish", params);
         });
-        context.pageBuilder.onAfterPageUnpublish.subscribe(async params => {
+        context.pageBuilder.onPageAfterUnpublish.subscribe(async params => {
             tracker.track("page:afterUnpublish", params);
-        });
-
-        context.pageBuilder.onBeforePageRequestReview.subscribe(async params => {
-            tracker.track("page:beforeRequestReview", params);
-        });
-        context.pageBuilder.onAfterPageRequestReview.subscribe(async params => {
-            tracker.track("page:afterRequestReview", params);
-        });
-
-        context.pageBuilder.onBeforePageRequestChanges.subscribe(async params => {
-            tracker.track("page:beforeRequestChanges", params);
-        });
-        context.pageBuilder.onAfterPageRequestChanges.subscribe(async params => {
-            tracker.track("page:afterRequestChanges", params);
         });
     });
 };
 
 export const assignSystemLifecycleEvents = () => {
     return new ContextPlugin<PbContext>(async context => {
-        context.pageBuilder.onBeforeInstall.subscribe(async params => {
+        context.pageBuilder.onSystemBeforeInstall.subscribe(async params => {
             tracker.track("system:beforeInstall", params);
         });
-        context.pageBuilder.onAfterInstall.subscribe(async params => {
+        context.pageBuilder.onSystemAfterInstall.subscribe(async params => {
             tracker.track("system:afterInstall", params);
         });
     });
@@ -77,10 +63,10 @@ export const assignSystemLifecycleEvents = () => {
 
 export const assignSettingsLifecycleEvents = () => {
     return new ContextPlugin<PbContext>(async context => {
-        context.pageBuilder.onBeforeSettingsUpdate.subscribe(async params => {
+        context.pageBuilder.onSettingsBeforeUpdate.subscribe(async params => {
             tracker.track("settings:beforeSettingsUpdate", params);
         });
-        context.pageBuilder.onAfterSettingsUpdate.subscribe(async params => {
+        context.pageBuilder.onSettingsAfterUpdate.subscribe(async params => {
             tracker.track("settings:afterSettingsUpdate", params);
         });
     });
@@ -88,24 +74,24 @@ export const assignSettingsLifecycleEvents = () => {
 
 export const assignCategoryLifecycleEvents = () => {
     return new ContextPlugin<PbContext>(async context => {
-        context.pageBuilder.onBeforeCategoryCreate.subscribe(async params => {
+        context.pageBuilder.onCategoryBeforeCreate.subscribe(async params => {
             tracker.track("category:beforeCreate", params);
         });
-        context.pageBuilder.onAfterCategoryCreate.subscribe(async params => {
+        context.pageBuilder.onCategoryAfterCreate.subscribe(async params => {
             tracker.track("category:afterCreate", params);
         });
 
-        context.pageBuilder.onBeforeCategoryUpdate.subscribe(async params => {
+        context.pageBuilder.onCategoryBeforeUpdate.subscribe(async params => {
             tracker.track("category:beforeUpdate", params);
         });
-        context.pageBuilder.onAfterCategoryUpdate.subscribe(async params => {
+        context.pageBuilder.onCategoryAfterUpdate.subscribe(async params => {
             tracker.track("category:afterUpdate", params);
         });
 
-        context.pageBuilder.onBeforeCategoryDelete.subscribe(async params => {
+        context.pageBuilder.onCategoryBeforeDelete.subscribe(async params => {
             tracker.track("category:beforeDelete", params);
         });
-        context.pageBuilder.onAfterCategoryDelete.subscribe(async params => {
+        context.pageBuilder.onCategoryAfterDelete.subscribe(async params => {
             tracker.track("category:afterDelete", params);
         });
     });
@@ -113,24 +99,24 @@ export const assignCategoryLifecycleEvents = () => {
 
 export const assignMenuLifecycleEvents = () => {
     return new ContextPlugin<PbContext>(async context => {
-        context.pageBuilder.onBeforeMenuCreate.subscribe(async params => {
+        context.pageBuilder.onMenuBeforeCreate.subscribe(async params => {
             tracker.track("menu:beforeCreate", params);
         });
-        context.pageBuilder.onAfterMenuCreate.subscribe(async params => {
+        context.pageBuilder.onMenuAfterCreate.subscribe(async params => {
             tracker.track("menu:afterCreate", params);
         });
 
-        context.pageBuilder.onBeforeMenuUpdate.subscribe(async params => {
+        context.pageBuilder.onMenuBeforeUpdate.subscribe(async params => {
             tracker.track("menu:beforeUpdate", params);
         });
-        context.pageBuilder.onAfterMenuUpdate.subscribe(async params => {
+        context.pageBuilder.onMenuAfterUpdate.subscribe(async params => {
             tracker.track("menu:afterUpdate", params);
         });
 
-        context.pageBuilder.onBeforeMenuDelete.subscribe(async params => {
+        context.pageBuilder.onMenuBeforeDelete.subscribe(async params => {
             tracker.track("menu:beforeDelete", params);
         });
-        context.pageBuilder.onAfterMenuDelete.subscribe(async params => {
+        context.pageBuilder.onMenuAfterDelete.subscribe(async params => {
             tracker.track("menu:afterDelete", params);
         });
     });
@@ -138,24 +124,24 @@ export const assignMenuLifecycleEvents = () => {
 
 export const assignPageElementLifecycleEvents = () => {
     return new ContextPlugin<PbContext>(async context => {
-        context.pageBuilder.onBeforePageElementCreate.subscribe(async params => {
+        context.pageBuilder.onPageElementBeforeCreate.subscribe(async params => {
             tracker.track("pageElement:beforeCreate", params);
         });
-        context.pageBuilder.onAfterPageElementCreate.subscribe(async params => {
+        context.pageBuilder.onPageElementAfterCreate.subscribe(async params => {
             tracker.track("pageElement:afterCreate", params);
         });
 
-        context.pageBuilder.onBeforePageElementUpdate.subscribe(async params => {
+        context.pageBuilder.onPageElementBeforeUpdate.subscribe(async params => {
             tracker.track("pageElement:beforeUpdate", params);
         });
-        context.pageBuilder.onAfterPageElementUpdate.subscribe(async params => {
+        context.pageBuilder.onPageElementAfterUpdate.subscribe(async params => {
             tracker.track("pageElement:afterUpdate", params);
         });
 
-        context.pageBuilder.onBeforePageElementDelete.subscribe(async params => {
+        context.pageBuilder.onPageElementBeforeDelete.subscribe(async params => {
             tracker.track("pageElement:beforeDelete", params);
         });
-        context.pageBuilder.onAfterPageElementDelete.subscribe(async params => {
+        context.pageBuilder.onPageElementAfterDelete.subscribe(async params => {
             tracker.track("pageElement:afterDelete", params);
         });
     });

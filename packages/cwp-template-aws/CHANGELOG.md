@@ -3,6 +3,140 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.33.2](https://github.com/webiny/webiny-js/compare/v5.33.2-beta.2...v5.33.2) (2022-11-17)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+## [5.33.2-beta.2](https://github.com/webiny/webiny-js/compare/v5.33.2-beta.1...v5.33.2-beta.2) (2022-11-16)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+## [5.33.2-beta.1](https://github.com/webiny/webiny-js/compare/v5.33.2-beta.0...v5.33.2-beta.1) (2022-11-16)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+## [5.33.2-beta.0](https://github.com/webiny/webiny-js/compare/v5.33.1...v5.33.2-beta.0) (2022-11-15)
+
+
+### Bug Fixes
+
+* **api-headless-cms:** initialize code model ([#2766](https://github.com/webiny/webiny-js/issues/2766)) ([b3dcfe0](https://github.com/webiny/webiny-js/commit/b3dcfe0bf9fd8bbae8a9109f1675cf17e4e9722f))
+
+
+
+
+
+## [5.33.1](https://github.com/webiny/webiny-js/compare/v5.33.1-beta.0...v5.33.1) (2022-11-07)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+## [5.33.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.33.0...v5.33.1-beta.0) (2022-11-04)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.33.0](https://github.com/webiny/webiny-js/compare/v5.33.0-beta.1...v5.33.0) (2022-10-12)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.33.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.33.0-beta.0...v5.33.0-beta.1) (2022-10-12)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.33.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.32.0...v5.33.0-beta.0) (2022-10-11)
+
+
+### Bug Fixes
+
+* add missing `CmsContext` ([9cf89b2](https://github.com/webiny/webiny-js/commit/9cf89b2732bd61c4f6cd4edafd00d12d05533dfc))
+
+
+### Features
+
+* print the actual error when in debug mode ([b47fdc0](https://github.com/webiny/webiny-js/commit/b47fdc02ce9975ed98f1f8d197f36e1587b93c81))
+
+
+
+
+
+# [5.32.0](https://github.com/webiny/webiny-js/compare/v5.32.0-beta.0...v5.32.0) (2022-09-07)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.32.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.31.0...v5.32.0-beta.0) (2022-09-06)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.31.0](https://github.com/webiny/webiny-js/compare/v5.31.0-beta.1...v5.31.0) (2022-08-18)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.31.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.31.0-beta.0...v5.31.0-beta.1) (2022-08-17)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.31.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.30.0...v5.31.0-beta.0) (2022-08-16)
+
+
+### Bug Fixes
+
+* **cwp-template-aws:** pass context into path checking ([4733439](https://github.com/webiny/webiny-js/commit/4733439e43e9015640cbb4a0534cba36187a1a1d))
+* **cwp-template-aws:** set PUPPETEER_SKIP_CHROMIUM_DOWNLOAD variable ([#2584](https://github.com/webiny/webiny-js/issues/2584)) ([41d3bec](https://github.com/webiny/webiny-js/commit/41d3beca86b643fc69696ab18c396d4ad67526f9))
+* **puppeteer:** use puppeteer-core to skip chromium download ([#2587](https://github.com/webiny/webiny-js/issues/2587)) ([e4eddfd](https://github.com/webiny/webiny-js/commit/e4eddfd2a371f9b7de6bac37ded6584ec9b43879))
+
+
+### Features
+
+* **handler-fastify:** add fastify as handler into the system ([#2546](https://github.com/webiny/webiny-js/issues/2546)) ([8d258aa](https://github.com/webiny/webiny-js/commit/8d258aa2ebd8562b79e395d7aeea6316405f7f4e))
+* add support for custom React apps ([#2569](https://github.com/webiny/webiny-js/issues/2569)) ([f7af516](https://github.com/webiny/webiny-js/commit/f7af516d745b2da74da9497658f3fd9702d5a639))
+
+
+
+
+
 # [5.30.0](https://github.com/webiny/webiny-js/compare/v5.30.0-beta.1...v5.30.0) (2022-07-27)
 
 **Note:** Version bump only for package @webiny/cwp-template-aws

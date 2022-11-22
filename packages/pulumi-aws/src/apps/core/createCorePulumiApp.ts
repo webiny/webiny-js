@@ -59,14 +59,14 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
             }
 
             const prod = app.params.run.env === "prod";
-            const protect = app.getParam(projectAppParams.protect) || prod;
+            const protect = app.getParam(projectAppParams.protect) ?? prod;
             const legacyConfig = app.getParam(projectAppParams.legacy) || {};
 
             // Setup DynamoDB table
             const dynamoDbTable = app.addModule(CoreDynamo, { protect });
 
             // Setup VPC
-            const vpcEnabled = app.getParam(projectAppParams?.vpc) || prod;
+            const vpcEnabled = app.getParam(projectAppParams?.vpc) ?? prod;
             const vpc = vpcEnabled ? app.addModule(CoreVpc) : null;
 
             // Setup Cognito
@@ -79,7 +79,7 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
             const eventBus = app.addModule(CoreEventBus);
 
             // Setup file core bucket
-            const fileManagerBucket = app.addModule(CoreFileManger, { protect });
+            const { bucket: fileManagerBucket } = app.addModule(CoreFileManger, { protect });
 
             const elasticSearch = app.getParam(projectAppParams?.elasticSearch)
                 ? app.addModule(ElasticSearch, { protect })

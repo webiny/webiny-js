@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useMutation } from "@apollo/react-hooks";
-import get from "lodash/get";
+import dotPropImmutable from "dot-prop-immutable";
 import { useContentReviewId, useCurrentStepId } from "~/hooks/useContentReviewId";
 import { useSnackbar } from "@webiny/app-admin";
 import { GET_CHANGE_REQUEST_QUERY } from "~/graphql/changeRequest.gql";
@@ -45,7 +45,7 @@ export const useStepSignOff = (): UseStepSignOffResult => {
             }
         ],
         onCompleted: response => {
-            const error = get(response, "apw.provideSignOff.error");
+            const error = dotPropImmutable.get(response, "apw.provideSignOff.error");
             if (error) {
                 showSnackbar(error.message);
                 return;
@@ -74,7 +74,7 @@ export const useStepSignOff = (): UseStepSignOffResult => {
             }
         ],
         onCompleted: response => {
-            const error = get(response, "apw.retractSignOff.error");
+            const error = dotPropImmutable.get(response, "apw.retractSignOff.error");
             if (error) {
                 showSnackbar(error.message);
                 return;
