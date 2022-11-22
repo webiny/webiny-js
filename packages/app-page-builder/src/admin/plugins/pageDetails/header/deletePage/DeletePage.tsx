@@ -91,7 +91,6 @@ const DeletePage: React.FC<DeletePageProps> = props => {
     );
 
     if (!canDelete(page)) {
-        console.log("Does not have permission to delete page.");
         return null;
     }
 

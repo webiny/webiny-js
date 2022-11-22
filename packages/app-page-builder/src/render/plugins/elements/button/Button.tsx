@@ -6,6 +6,21 @@ import { PbButtonElementClickHandlerPlugin, PbElement, PbElementDataType } from 
 import { Link } from "@webiny/react-router";
 import { PageBuilderContext } from "~/contexts/PageBuilder";
 
+const formatUrl = (url: string): string => {
+    // Check if external domain url (e.g. google.com, https://www.google.com)
+    const isExternalUrl = new RegExp(/[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}.*?/gi).test(
+        url
+    );
+    const isStartingWithHttp = url.startsWith("http://") || url.startsWith("https://");
+
+    // If external domain url, but without protocol we add it manually
+    if (isExternalUrl && !isStartingWithHttp) {
+        url = "https://" + url;
+    }
+
+    return url;
+};
+
 interface ElementData extends Omit<PbElementDataType, "action"> {
     action?: Partial<PbElementDataType["action"]>;
 }
@@ -40,7 +55,7 @@ const Button: React.FC<ButtonProps> = ({ element }) => {
         href = link?.href;
         newTab = !!link?.newTab;
     } else {
-        href = action.href as string;
+        href = action?.href ? formatUrl(action.href) : "";
         newTab = action.newTab || false;
     }
 

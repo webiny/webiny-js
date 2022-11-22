@@ -150,7 +150,7 @@ const AccordionItem: React.FC<AccordionItemProps> = props => {
                     <ListItemTitle>{props.title}</ListItemTitle>
                     {props.description && (
                         <ListItemDescription>
-                            <Typography use={"subtitle2"}>{props.description}</Typography>
+                            <Typography use={"body2"}>{props.description}</Typography>
                         </ListItemDescription>
                     )}
                 </TitleContent>

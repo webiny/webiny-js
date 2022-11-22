@@ -204,6 +204,28 @@ export interface PbElement {
     text?: string;
 }
 
+export interface PbBlockVariable<TValue = any> {
+    id: string;
+    type: string;
+    label: string;
+    value: TValue;
+}
+
+export type PbBlockEditorCreateVariablePlugin = Plugin & {
+    type: "pb-block-editor-create-variable";
+    elementType: string;
+    createVariables: (params: { element: PbEditorElement }) => PbBlockVariable[];
+    getVariableValue: (params: { element: PbEditorElement; variableId?: string }) => any;
+};
+
+export type PbEditorPageElementVariableRendererPlugin = Plugin & {
+    type: "pb-editor-page-element-variable-renderer";
+    elementType: string;
+    getVariableValue: (element: PbEditorElement | null) => any;
+    renderVariableInput: (variableId: string) => ReactNode;
+    setElementValue: (element: PbElement, variables: PbBlockVariable[]) => PbElement;
+};
+
 /**
  * Determine types for elements
  */
@@ -552,7 +574,7 @@ export type PbEditorBlockPlugin = Plugin & {
     id?: string;
     type: "pb-editor-block";
     title: string;
-    category: string;
+    blockCategory: string;
     tags: string[];
     image: {
         src?: string;
@@ -686,11 +708,16 @@ export type PbRenderElementPluginArgs = {
     elementType?: string;
 };
 
+export type GetElementTreeProps = {
+    element?: PbEditorElement;
+    path?: string[];
+} | void;
+
 // ============== EVENT ACTION HANDLER ================= //
 // TODO: at some point, convert this into an interface, and use module augmentation to add new properties.
 export type EventActionHandlerCallableState<TState = PbState> = PbState<TState> & {
     getElementById(id: string): Promise<PbEditorElement>;
-    getElementTree(element?: PbEditorElement): Promise<any>;
+    getElementTree(props: GetElementTreeProps): Promise<PbEditorElement>;
 };
 
 export interface EventActionHandler<TCallableState = unknown> {
@@ -707,7 +734,7 @@ export interface EventActionHandler<TCallableState = unknown> {
     endBatch: () => void;
     enableHistory: () => void;
     disableHistory: () => void;
-    getElementTree: (element?: PbEditorElement) => Promise<PbEditorElement>;
+    getElementTree: (props: GetElementTreeProps) => Promise<PbEditorElement>;
 }
 
 export interface EventActionHandlerTarget {
@@ -772,6 +799,33 @@ export interface PbMenu {
     slug: string;
     description: string;
 }
+
+export interface PbBlockCategory {
+    name: string;
+    slug: string;
+    icon: string;
+    description: string;
+    createdOn: string;
+    createdBy: PbIdentity;
+}
+
+export interface PbPageBlock {
+    id: string;
+    name: string;
+    blockCategory: string;
+    content: any;
+    preview: {
+        src: string;
+        meta: {
+            width: number;
+            height: number;
+            aspectRatio: number;
+        };
+    };
+    createdOn: string;
+    createdBy: PbIdentity;
+}
+
 /**
  * TODO: have types for both API and app in the same package?
  * GraphQL response types

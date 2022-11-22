@@ -7,6 +7,8 @@ import { RenderEvent, FlushEvent, QueueAddJob } from "@webiny/api-prerendering-s
 import { Context as BaseContext } from "@webiny/handler/types";
 
 import {
+    PageBlock,
+    BlockCategory,
     Category,
     DefaultSettings,
     Menu,
@@ -149,10 +151,39 @@ export interface OnPageAfterUnpublishTopicParams<TPage extends Page = Page> {
     latestPage: TPage;
 }
 
+export interface PbPageElement {
+    id: string;
+    type: string;
+    data: any; // TODO: somehow type `data`
+    elements: PbPageElement[];
+}
+
+export interface PbBlockVariable<TValue = any> {
+    id: string;
+    type: string;
+    label: string;
+    value: TValue;
+}
+
+interface PageElementProcessorParams {
+    page: Page;
+    block: PbPageElement;
+    element: PbPageElement;
+}
+
+/**
+ * Element processors modify elements by reference, without creating a new object.
+ */
+export interface PageElementProcessor {
+    (params: PageElementProcessorParams): Promise<void> | void;
+}
+
 /**
  * @category Pages
  */
 export interface PagesCrud {
+    addPageElementProcessor(processor: PageElementProcessor): void;
+    processPageContent(content: Page): Promise<Page>;
     getPage<TPage extends Page = Page>(id: string, options?: GetPagesOptions): Promise<TPage>;
     listLatestPages<TPage extends Page = Page>(
         args: ListPagesParams,
@@ -622,10 +653,150 @@ export interface SystemCrud {
     onSystemAfterInstall: Topic<OnSystemBeforeInstallTopicParams>;
 }
 
+export interface PbBlockCategoryInput {
+    name: string;
+    slug: string;
+    icon: string;
+    description: string;
+}
+
+/**
+ * @category Lifecycle events
+ */
+export interface OnBeforeBlockCategoryCreateTopicParams {
+    blockCategory: BlockCategory;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnAfterBlockCategoryCreateTopicParams {
+    blockCategory: BlockCategory;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnBeforeBlockCategoryUpdateTopicParams {
+    original: BlockCategory;
+    blockCategory: BlockCategory;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnAfterBlockCategoryUpdateTopicParams {
+    original: BlockCategory;
+    blockCategory: BlockCategory;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnBeforeBlockCategoryDeleteTopicParams {
+    blockCategory: BlockCategory;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnAfterBlockCategoryDeleteTopicParams {
+    blockCategory: BlockCategory;
+}
+
+/**
+ * @category BlockCategories
+ */
+export interface BlockCategoriesCrud {
+    getBlockCategory(slug: string, options?: { auth: boolean }): Promise<BlockCategory | null>;
+    listBlockCategories(): Promise<BlockCategory[]>;
+    createBlockCategory(data: PbBlockCategoryInput): Promise<BlockCategory>;
+    updateBlockCategory(slug: string, data: PbBlockCategoryInput): Promise<BlockCategory>;
+    deleteBlockCategory(slug: string): Promise<BlockCategory>;
+    /**
+     * Lifecycle events
+     */
+    onBeforeBlockCategoryCreate: Topic<OnBeforeBlockCategoryCreateTopicParams>;
+    onAfterBlockCategoryCreate: Topic<OnAfterBlockCategoryCreateTopicParams>;
+    onBeforeBlockCategoryUpdate: Topic<OnBeforeBlockCategoryUpdateTopicParams>;
+    onAfterBlockCategoryUpdate: Topic<OnAfterBlockCategoryUpdateTopicParams>;
+    onBeforeBlockCategoryDelete: Topic<OnBeforeBlockCategoryDeleteTopicParams>;
+    onAfterBlockCategoryDelete: Topic<OnAfterBlockCategoryDeleteTopicParams>;
+}
+
+export interface ListPageBlocksParams {
+    sort?: string[];
+    where?: {
+        blockCategory?: string;
+    };
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnBeforePageBlockCreateTopicParams {
+    pageBlock: PageBlock;
+}
+
+/**
+ * @category Lifecycle events
+ */
+export interface OnAfterPageBlockCreateTopicParams {
+    pageBlock: PageBlock;
+}
+
+/**
+ * @category Lifecycle events
+ */
+export interface OnBeforePageBlockUpdateTopicParams {
+    original: PageBlock;
+    pageBlock: PageBlock;
+}
+
+/**
+ * @category Lifecycle events
+ */
+export interface OnAfterPageBlockUpdateTopicParams {
+    original: PageBlock;
+    pageBlock: PageBlock;
+}
+
+/**
+ * @category Lifecycle events
+ */
+export interface OnBeforePageBlockDeleteTopicParams {
+    pageBlock: PageBlock;
+}
+
+/**
+ * @category Lifecycle events
+ */
+export interface OnAfterPageBlockDeleteTopicParams {
+    pageBlock: PageBlock;
+}
+
+/**
+ * @category PageBlocks
+ */
+export interface PageBlocksCrud {
+    getPageBlock(id: string): Promise<PageBlock | null>;
+    listPageBlocks(params?: ListPageBlocksParams): Promise<PageBlock[]>;
+    createPageBlock(data: Record<string, any>): Promise<PageBlock>;
+    updatePageBlock(id: string, data: Record<string, any>): Promise<PageBlock>;
+    deletePageBlock(id: string): Promise<PageBlock>;
+    resolvePageBlocks(page: Page): Promise<any>;
+
+    /**
+     * Lifecycle events
+     */
+    onBeforePageBlockCreate: Topic<OnBeforePageBlockCreateTopicParams>;
+    onAfterPageBlockCreate: Topic<OnAfterPageBlockCreateTopicParams>;
+    onBeforePageBlockUpdate: Topic<OnBeforePageBlockUpdateTopicParams>;
+    onAfterPageBlockUpdate: Topic<OnAfterPageBlockUpdateTopicParams>;
+    onBeforePageBlockDelete: Topic<OnBeforePageBlockDeleteTopicParams>;
+    onAfterPageBlockDelete: Topic<OnAfterPageBlockDeleteTopicParams>;
+}
+
 export interface PageBuilderContextObject
     extends PagesCrud,
         PageElementsCrud,
         CategoriesCrud,
+        BlockCategoriesCrud,
+        PageBlocksCrud,
         MenusCrud,
         SettingsCrud,
         SystemCrud {
@@ -661,14 +832,6 @@ export interface PbSecurityPermission extends SecurityPermission {
     // "w" - write
     // "d" - delete
     rwd?: string;
-}
-
-export interface MenuSecurityPermission extends PbSecurityPermission {
-    name: "pb.menu";
-}
-
-export interface CategorySecurityPermission extends PbSecurityPermission {
-    name: "pb.category";
 }
 
 export interface PageSecurityPermission extends PbSecurityPermission {

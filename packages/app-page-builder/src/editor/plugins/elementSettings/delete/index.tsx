@@ -11,7 +11,7 @@ export default {
         return (
             <DeleteAction>
                 <Action
-                    tooltip={"Delete element"}
+                    tooltip={"Delete selected"}
                     shortcut={["Backspace", "Delete"]}
                     icon={<DeleteIcon />}
                 />

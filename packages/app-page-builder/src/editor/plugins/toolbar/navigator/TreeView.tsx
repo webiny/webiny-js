@@ -145,7 +145,7 @@ const TreeViewItem: React.FC<TreeViewItemProps> = ({ element, level, children, i
                     ref={dragAndDropRef}
                     data-handler-id={handlerId}
                 >
-                    <Typography use={"subtitle2"} className={"title"}>
+                    <Typography use={"body2"} className={"title"}>
                         {element.type}
                     </Typography>
                     {hidden ? <ElementVisibilityAction elementId={elementId} /> : null}

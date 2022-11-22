@@ -1,18 +1,11 @@
 import React, { useCallback } from "react";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { Transition } from "react-transition-group";
 import { plugins } from "@webiny/plugins";
 import { renderPlugins } from "@webiny/app/plugins";
 import { PbEditorPageElementPlugin, PbEditorElement } from "~/types";
 import Draggable from "./Draggable";
 import tryRenderingPlugin from "../../utils/tryRenderingPlugin";
-import {
-    disableDraggingMutation,
-    elementByIdSelector,
-    enableDraggingMutation,
-    uiAtom,
-    activeElementAtom
-} from "../recoil/modules";
+import { disableDraggingMutation, enableDraggingMutation } from "../recoil/modules";
 import {
     defaultStyle,
     ElementContainer,
@@ -20,6 +13,11 @@ import {
     typeStyle
 } from "./Element/ElementStyled";
 import { DragElementWrapper, DragSourceOptions } from "react-dnd";
+import { useActiveElementId } from "~/editor/hooks/useActiveElementId";
+import { useUI } from "~/editor/hooks/useUI";
+import { useElementById } from "~/editor/hooks/useElementById";
+import { SetterOrUpdater } from "recoil";
+import { ElementProvider } from "~/editor/contexts/ElementProvider";
 
 interface RenderDraggableCallableParams {
     drag: DragElementWrapper<DragSourceOptions> | null;
@@ -49,12 +47,13 @@ const ElementComponent: React.FC<ElementPropsType> = ({
     className = "",
     isActive
 }) => {
-    const elementAtomState = useRecoilState(elementByIdSelector(elementId));
-    const element = elementAtomState[0] as PbEditorElement;
-    const setElementAtomValue = elementAtomState[1];
-    const setUiAtomValue = useSetRecoilState(uiAtom);
-    const setActiveElementAtomValue = useSetRecoilState(activeElementAtom);
-
+    // Type casting here because we're (almost) confident that there _is_ an element with this ID.
+    const [element, updateElement] = useElementById(elementId) as [
+        PbEditorElement,
+        SetterOrUpdater<PbEditorElement>
+    ];
+    const [, setUi] = useUI();
+    const [, setActiveElementId] = useActiveElementId();
     const { isHighlighted } = element as PbEditorElement;
 
     const plugin = getElementPlugin(element);
@@ -62,7 +61,7 @@ const ElementComponent: React.FC<ElementPropsType> = ({
     const beginDrag = useCallback(() => {
         const data = { id: element.id, type: element.type };
         setTimeout(() => {
-            setUiAtomValue(enableDraggingMutation);
+            setUi(enableDraggingMutation);
         });
         const target = plugin ? plugin.target : null;
         return {
@@ -72,14 +71,14 @@ const ElementComponent: React.FC<ElementPropsType> = ({
     }, [elementId]);
 
     const endDrag = useCallback(() => {
-        setUiAtomValue(disableDraggingMutation);
+        setUi(disableDraggingMutation);
     }, [elementId]);
 
     const onClick = useCallback((): void => {
         if (!element || element.type === "document" || isActive) {
             return;
         }
-        setActiveElementAtomValue(elementId);
+        setActiveElementId(elementId);
     }, [elementId, isActive]);
 
     const onMouseOver = useCallback(
@@ -91,7 +90,7 @@ const ElementComponent: React.FC<ElementPropsType> = ({
             if (isHighlighted) {
                 return;
             }
-            setElementAtomValue({ isHighlighted: true } as any);
+            updateElement(element => ({ ...element, isHighlighted: true }));
         },
         [elementId]
     );
@@ -99,7 +98,7 @@ const ElementComponent: React.FC<ElementPropsType> = ({
         if (!element || element.type === "document") {
             return;
         }
-        setElementAtomValue({ isHighlighted: false } as any);
+        updateElement(element => ({ ...element, isHighlighted: false }));
     }, [elementId]);
 
     const renderDraggable: RenderDraggableCallable = ({ drag }) => {
@@ -129,40 +128,42 @@ const ElementComponent: React.FC<ElementPropsType> = ({
     const isDraggable = Array.isArray(plugin.target) && plugin.target.length > 0;
 
     return (
-        <Transition in={true} timeout={250} appear={true}>
-            {state => (
-                <ElementContainer
-                    id={element.id}
-                    onMouseOver={onMouseOver}
-                    onMouseOut={onMouseOut}
-                    highlight={isActive ? true : isHighlighted}
-                    active={isActive || false}
-                    style={{ ...defaultStyle, ...transitionStyles[state] }}
-                    className={"webiny-pb-page-element-container"}
-                >
-                    <div className={["innerWrapper", className].filter(c => c).join(" ")}>
-                        <Draggable
-                            enabled={isDraggable}
-                            target={plugin ? plugin.target || [] : []}
-                            beginDrag={beginDrag}
-                            endDrag={endDrag}
-                        >
-                            {renderDraggable}
-                        </Draggable>
+        <ElementProvider element={element}>
+            <Transition in={true} timeout={250} appear={true}>
+                {state => (
+                    <ElementContainer
+                        id={element.id}
+                        onMouseOver={onMouseOver}
+                        onMouseOut={onMouseOut}
+                        highlight={isActive ? true : isHighlighted}
+                        active={isActive || false}
+                        style={{ ...defaultStyle, ...transitionStyles[state] }}
+                        className={"webiny-pb-page-element-container"}
+                    >
+                        <div className={["innerWrapper", className].filter(c => c).join(" ")}>
+                            <Draggable
+                                enabled={isDraggable}
+                                target={plugin ? plugin.target || [] : []}
+                                beginDrag={beginDrag}
+                                endDrag={endDrag}
+                            >
+                                {renderDraggable}
+                            </Draggable>
 
-                        {renderedPlugin}
-                    </div>
-                </ElementContainer>
-            )}
-        </Transition>
+                            {renderedPlugin}
+                        </div>
+                    </ElementContainer>
+                )}
+            </Transition>
+        </ElementProvider>
     );
 };
 
 const withHighlightElement = (Component: React.FC<ElementPropsType>) => {
     return function withHighlightElementComponent(props: ElementPropsType) {
-        const activeElementAtomValue = useRecoilValue(activeElementAtom);
+        const [activeElementId] = useActiveElementId();
 
-        return <Component {...props} isActive={activeElementAtomValue === props.id} />;
+        return <Component {...props} isActive={activeElementId === props.id} />;
     };
 };
 

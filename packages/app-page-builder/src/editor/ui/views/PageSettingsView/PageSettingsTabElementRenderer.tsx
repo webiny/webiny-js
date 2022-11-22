@@ -47,7 +47,7 @@ export class PageSettingsTabElementRenderer extends UIRenderer<PageSettingsTabEl
                 </ListItemGraphic>
                 <TitleContent>
                     <ListItemTitle>{element.config.title}</ListItemTitle>
-                    <Typography use={"subtitle2"}>{element.config.description}</Typography>
+                    <Typography use={"body2"}>{element.config.description}</Typography>
                 </TitleContent>
             </ListItem>
         );

@@ -19,7 +19,7 @@ const PAGE_BUILDER_SETTINGS_ACCESS = `${PAGE_BUILDER}.settings`;
 const FULL_ACCESS = "full";
 const NO_ACCESS = "no";
 const CUSTOM_ACCESS = "custom";
-const ENTITIES = ["category", "menu", "page"];
+const ENTITIES = ["category", "menu", "page", "block"];
 
 interface PwOptions {
     id: string;
@@ -226,7 +226,13 @@ export const PageBuilderPermissions: React.FC<PageBuilderPermissionsProps> = ({
                                     </Bind>
                                 </Cell>
                             </CustomSection>
-
+                            <CustomSection
+                                data={data}
+                                Bind={Bind}
+                                setValue={setValue}
+                                entity={"block"}
+                                title={"Block content"}
+                            />
                             <Elevation z={1} style={{ marginTop: 10 }}>
                                 <Grid>
                                     <Cell span={12}>

@@ -1,10 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import classNames from "classnames";
 import { useMutation } from "@apollo/react-hooks";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { plugins } from "@webiny/plugins";
 import { OverlayLayout } from "@webiny/app-admin/components/OverlayLayout";
 import { LeftPanel, RightPanel, SplitView } from "@webiny/app-admin/components/SplitView";
-import { List, ListItem, ListItemGraphic } from "@webiny/ui/List";
+import { ScrollList, ListItem, ListItemGraphic } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
 import { Typography } from "@webiny/ui/Typography";
 import { ReactComponent as SearchIcon } from "~/editor/assets/icons/search.svg";
@@ -18,9 +19,16 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import { ReactComponent as AllIcon } from "./icons/round-clear_all-24px.svg";
 import createBlockPlugin from "~/admin/utils/createBlockPlugin";
 import BlocksList from "./BlocksList";
-import { DELETE_PAGE_ELEMENT, UPDATE_PAGE_ELEMENT } from "./graphql";
+import { UPDATE_PAGE_BLOCK, DELETE_PAGE_BLOCK } from "~/admin/views/PageBlocks/graphql";
 import EditBlockDialog from "./EditBlockDialog";
-import { listItem, ListItemTitle, listStyle, TitleContent } from "./SearchBlocksStyled";
+import {
+    IconWrapper,
+    listItem,
+    activeListItem,
+    ListItemTitle,
+    listStyle,
+    TitleContent
+} from "./SearchBlocksStyled";
 import * as Styled from "./StyledComponents";
 import { PbEditorBlockCategoryPlugin, PbEditorBlockPlugin, PbEditorElement } from "~/types";
 import { elementWithChildrenByIdSelector, rootElementAtom } from "~/editor/recoil/modules";
@@ -28,7 +36,8 @@ import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import { useKeyHandler } from "~/editor/hooks/useKeyHandler";
 import { UpdateElementActionEvent } from "~/editor/recoil/actions";
 import { createBlockElements } from "~/editor/helpers";
-import { DelayedOnChange } from "~/editor/components/DelayedOnChange";
+import { createBlockReference } from "~/pageEditor/helpers";
+import { DelayedOnChange } from "@webiny/ui/DelayedOnChange";
 import { blocksBrowserStateAtom } from "~/pageEditor/config/blockEditing/state";
 
 const allBlockCategory: PbEditorBlockCategoryPlugin = {
@@ -73,8 +82,8 @@ const SearchBar = () => {
     const [activeCategory, setActiveCategory] = useState<string>("all");
 
     const [updatePageElementMutation, { loading: updateInProgress }] =
-        useMutation(UPDATE_PAGE_ELEMENT);
-    const [deletePageElementMutation] = useMutation(DELETE_PAGE_ELEMENT);
+        useMutation(UPDATE_PAGE_BLOCK);
+    const [deletePageElementMutation] = useMutation(DELETE_PAGE_BLOCK);
 
     const allCategories = useMemo(
         () => [
@@ -103,9 +112,13 @@ const SearchBar = () => {
 
     const addBlockToContent = useCallback(
         plugin => {
+            const blockToAdd =
+                Object.keys(plugin.image).length === 0
+                    ? createBlockElements(plugin.name)
+                    : createBlockReference(plugin.name);
             const element: any = {
                 ...content,
-                elements: [...content.elements, createBlockElements(plugin.name)]
+                elements: [...content.elements, blockToAdd]
             };
             eventActionHandler.trigger(
                 new UpdateElementActionEvent({
@@ -139,7 +152,7 @@ const SearchBar = () => {
                 });
             } else {
                 output = output.filter(item => {
-                    return item.category === activeCategory;
+                    return item.blockCategory === activeCategory;
                 });
             }
         }
@@ -158,7 +171,7 @@ const SearchBar = () => {
         if (category === "all") {
             return allBlocks.length;
         }
-        return allBlocks.filter(pl => pl.category === category).length;
+        return allBlocks.filter(pl => pl.blockCategory === category).length;
     }, []);
 
     const { showSnackbar } = useSnackbar();
@@ -170,7 +183,7 @@ const SearchBar = () => {
             }
         });
 
-        const { error } = response.data.pageBuilder.deletePageElement;
+        const { error } = response.data.pageBuilder.deletePageBlock;
         if (error) {
             showSnackbar(error.message);
             return;
@@ -185,7 +198,7 @@ const SearchBar = () => {
     }, []);
 
     const updateBlock = useCallback(
-        async ({ updateElement, data: { title: name, category } }) => {
+        async ({ updateElement, data: { title: name, blockCategory } }) => {
             if (!editingBlock) {
                 return;
             }
@@ -193,11 +206,11 @@ const SearchBar = () => {
             const response = await updateElement({
                 variables: {
                     id: editingBlock.id,
-                    data: { name, category }
+                    data: { name, blockCategory }
                 }
             });
 
-            const { error, data } = response.data.pageBuilder.updatePageElement;
+            const { error, data } = response.data.pageBuilder.pageBlock;
             if (error) {
                 showSnackbar(error.message);
                 return;
@@ -251,11 +264,14 @@ const SearchBar = () => {
         <OverlayLayout barMiddle={renderSearchInput()} onExited={onExited}>
             <SplitView>
                 <LeftPanel span={3}>
-                    <List twoLine className={listStyle}>
+                    <ScrollList className={listStyle}>
                         {allCategories.map(p => (
                             <ListItem
                                 key={p.name}
-                                className={listItem}
+                                className={classNames(
+                                    listItem,
+                                    activeCategory === p.categoryName && activeListItem
+                                )}
                                 onClick={() => {
                                     setActiveCategory(p.categoryName);
                                 }}
@@ -267,18 +283,18 @@ const SearchBar = () => {
                                     <ListItemTitle>
                                         {p.title} ({getCategoryBlocksCount(p.categoryName)})
                                     </ListItemTitle>
-                                    <Typography use={"subtitle2"}>{p.description}</Typography>
+                                    <Typography use={"body2"}>{p.description}</Typography>
                                 </TitleContent>
                             </ListItem>
                         ))}
-                    </List>
+                    </ScrollList>
                 </LeftPanel>
                 <RightPanel span={9}>
                     {activeCategory && (
                         <SimpleForm>
                             <SimpleFormHeader
                                 title={categoryPlugin.title}
-                                icon={categoryPlugin.icon}
+                                icon={<IconWrapper>{categoryPlugin.icon}</IconWrapper>}
                             />
                             <SimpleFormContent>
                                 <Styled.BlockList>
