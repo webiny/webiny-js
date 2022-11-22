@@ -5,7 +5,7 @@ import { FolderDialogCreate, useFolders, useLinks } from "@webiny/app-folders";
 import { FolderItem } from "@webiny/app-folders/types";
 import useGetPages from "~/admin/views/Pages/hooks/useGetPages";
 import { Table } from "~/admin/components/Table/Table";
-import { Empty } from "~/admin/views/Pages/Table/Empty";
+import { Empty } from "~/admin/components/Table/Empty";
 import { Header } from "~/admin/components/Table/Header";
 import useCreatePage from "~/admin/views/Pages/hooks/useCreatePage";
 import { CircularProgress } from "@webiny/ui/Progress";
@@ -13,6 +13,8 @@ import CategoriesDialog from "~/admin/views/Categories/CategoriesDialog";
 import styled from "@emotion/styled";
 import { useCanCreatePage } from "~/admin/views/Pages/hooks/useCanCreate";
 import { FOLDER_ID_DEFAULT, FOLDER_TYPE } from "~/admin/constants/folders";
+import { Preview } from "~/admin/components/Table/Preview";
+import { useRouter } from "@webiny/react-router";
 
 interface Props {
     folderId?: string;
@@ -41,7 +43,8 @@ const getCurrentFolderList = (
     }
 };
 
-export const List = ({ folderId }: Props) => {
+export const Main = ({ folderId }: Props) => {
+    const { history } = useRouter();
     const { folders = [], loading: foldersLoading, deleteFolder } = useFolders(FOLDER_TYPE);
     const {
         links,
@@ -61,6 +64,10 @@ export const List = ({ folderId }: Props) => {
     const openFoldersDialog = useCallback(() => setFoldersDialog(true), []);
     const closeFoldersDialog = useCallback(() => setFoldersDialog(false), []);
 
+    const [showPreviewDrawer, setPreviewDrawer] = useState(false);
+    const openPreviewDrawer = useCallback(() => setPreviewDrawer(true), []);
+    const closePreviewDrawer = useCallback(() => setPreviewDrawer(false), []);
+
     const canCreate = useCanCreatePage();
 
     useEffect(() => {
@@ -72,8 +79,9 @@ export const List = ({ folderId }: Props) => {
         setLoadingLabel: () => setLoadingLabel(LoadingLabel.CREATING_PAGE),
         clearLoadingLabel: () => setLoadingLabel(null),
         closeDialog: closeCategoryDialog,
-        onCreatePageSuccess: id => {
-            createLink({ id, folderId: folderId || FOLDER_ID_DEFAULT });
+        onCreatePageSuccess: async id => {
+            await createLink({ id, folderId: folderId || FOLDER_ID_DEFAULT });
+            history.push(`/page-builder/editor/${encodeURIComponent(id)}`);
         }
     });
 
@@ -83,7 +91,7 @@ export const List = ({ folderId }: Props) => {
                 type={"page"}
                 open={showFoldersDialog}
                 onClose={closeFoldersDialog}
-                parentId={currentFolderId || null}
+                parentId={folderId || null}
             />
             <CategoriesDialog
                 open={showCategoriesDialog}
@@ -110,15 +118,26 @@ export const List = ({ folderId }: Props) => {
                         onCreateFolder={openFoldersDialog}
                     />
                 ) : (
-                    <Table
-                        folders={subFolders}
-                        pages={pages}
-                        loading={
-                            pagesLoading || linksLoading.LIST_LINKS || foldersLoading.LIST_FOLDERS
-                        }
-                        onDeletePage={deleteLink}
-                        deleteFolder={deleteFolder}
-                    />
+                    <>
+                        <Preview
+                            open={showPreviewDrawer}
+                            onClose={() => closePreviewDrawer()}
+                            canCreate={canCreate}
+                            onCreatePage={openCategoryDialog}
+                        />
+                        <Table
+                            folders={subFolders}
+                            pages={pages}
+                            loading={
+                                pagesLoading ||
+                                linksLoading.LIST_LINKS ||
+                                foldersLoading.LIST_FOLDERS
+                            }
+                            onDeletePage={deleteLink}
+                            deleteFolder={deleteFolder}
+                            openPreviewDrawer={openPreviewDrawer}
+                        />
+                    </>
                 )}
             </Container>
         </>

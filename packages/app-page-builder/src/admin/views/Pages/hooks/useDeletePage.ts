@@ -63,8 +63,8 @@ export const useDeletePage = ({ page, onDeletePageSuccess }: UseDeletePageParams
 
                 await onDeletePageSuccess({
                     id: page.pid,
-                    linkId: page.linkId,
-                    folderId: page.folderId
+                    linkId: page.link.linkId,
+                    folderId: page.link.folderId
                 });
 
                 showSnackbar(

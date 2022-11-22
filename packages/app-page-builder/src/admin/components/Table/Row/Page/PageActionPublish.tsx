@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { ReactElement, useMemo } from "react";
 import { PbPageData } from "~/types";
 import { useSecurity } from "@webiny/app-security";
 import usePermission from "~/hooks/usePermission";
@@ -8,14 +8,13 @@ import { i18n } from "@webiny/app/i18n";
 import { SecurityPermission } from "@webiny/app-security/types";
 import { MenuItem } from "@webiny/ui/Menu";
 
-const t = i18n.ns("app-headless-cms/app-page-builder/page-details/header/publish");
+const t = i18n.ns("app-headless-cms/app-page-builder/pages-table/actions/page/publish");
 
-interface RowActionPublishPageProps {
+interface Props {
     page: PbPageData;
 }
 
-const RowActionPublishPage: React.FC<RowActionPublishPageProps> = props => {
-    const { page } = props;
+export const PageActionPublish = ({ page }: Props): ReactElement => {
     const { identity, getPermission } = useSecurity();
     const { canPublish, canUnpublish } = usePermission();
 
@@ -48,8 +47,9 @@ const RowActionPublishPage: React.FC<RowActionPublishPageProps> = props => {
     const pbPagePermission = useMemo((): SecurityPermission | null => {
         return getPermission("pb.page");
     }, [identity]);
+
     if (!pbPagePermission) {
-        return null;
+        return <></>;
     }
 
     if (page.status === "published" && canUnpublish()) {
@@ -76,7 +76,5 @@ const RowActionPublishPage: React.FC<RowActionPublishPageProps> = props => {
         );
     }
 
-    return null;
+    return <></>;
 };
-
-export default RowActionPublishPage;

@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { ReactElement, useCallback, useState } from "react";
 import { useRouter } from "@webiny/react-router";
 import { CREATE_PAGE } from "~/admin/graphql/pages";
 import * as GQLCache from "~/admin/views/Pages/cache";
@@ -9,13 +9,12 @@ import usePermission from "~/hooks/usePermission";
 import { PbPageData } from "~/types";
 import { MenuItem } from "@webiny/ui/Menu";
 
-const t = i18n.ns("app-headless-cms/app-page-builder/page-details/header/edit");
+const t = i18n.ns("app-headless-cms/app-page-builder/pages-table/actions/page/edit");
 
-interface EditRevisionProps {
+interface Props {
     page: PbPageData;
 }
-const RowActionEditPage: React.FC<EditRevisionProps> = props => {
-    const { page } = props;
+export const PageActionEdit = ({ page }: Props): ReactElement => {
     const { canEdit } = usePermission();
     const { history } = useRouter();
     const [inProgress, setInProgress] = useState<boolean>();
@@ -43,7 +42,7 @@ const RowActionEditPage: React.FC<EditRevisionProps> = props => {
     }, [page]);
 
     if (!canEdit(page)) {
-        return null;
+        return <></>;
     }
 
     if (page.locked) {
@@ -58,5 +57,3 @@ const RowActionEditPage: React.FC<EditRevisionProps> = props => {
         >{t`Edit`}</MenuItem>
     );
 };
-
-export default RowActionEditPage;

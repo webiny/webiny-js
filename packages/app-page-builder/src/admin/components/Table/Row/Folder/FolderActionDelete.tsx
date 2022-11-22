@@ -1,18 +1,17 @@
-import React, { useCallback } from "react";
+import React, { ReactElement, useCallback } from "react";
 
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
+import { FolderItem } from "@webiny/app-folders/types";
 import { i18n } from "@webiny/app/i18n";
 import { MenuItem } from "@webiny/ui/Menu";
-import { FolderItem } from "@webiny/app-folders/types";
 
-const t = i18n.ns("app-headless-cms/app-page-builder/page-details/header/edit");
+const t = i18n.ns("app-headless-cms/app-page-builder/pages-table/actions/folder/delete");
 
-interface DeleteFolderProps {
+interface Props {
     folder: FolderItem;
     deleteFolder: (folder: FolderItem) => Promise<boolean>;
 }
-const RowActionDeleteFolder: React.FC<DeleteFolderProps> = props => {
-    const { folder, deleteFolder } = props;
+export const FolderActionDelete = ({ folder, deleteFolder }: Props): ReactElement => {
     const { showSnackbar } = useSnackbar();
 
     const onDeleteFolder = useCallback(async () => {
@@ -41,7 +40,9 @@ const RowActionDeleteFolder: React.FC<DeleteFolderProps> = props => {
         }
     }, [folder]);
 
+    if (!folder) {
+        return <></>;
+    }
+
     return <MenuItem onClick={onDeleteFolder}>{t`Delete`}</MenuItem>;
 };
-
-export default RowActionDeleteFolder;

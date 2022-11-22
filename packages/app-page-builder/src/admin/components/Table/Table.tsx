@@ -1,25 +1,27 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { ReactElement, useEffect, useMemo, useState } from "react";
 
 import { ReactComponent as More } from "@material-design-icons/svg/filled/more_vert.svg";
 import { FolderItem, LinkItem } from "@webiny/app-folders/types";
 import { Columns, DataTable } from "@webiny/ui/DataTable";
 import { Menu } from "@webiny/ui/Menu";
+
+import { orderBy } from "lodash";
 /**
  * Package timeago-react does not have types.
  */
 // @ts-ignore
 import TimeAgo from "timeago-react";
-import { orderBy } from "lodash";
 
-import { FolderName, PageName } from "~/admin/components/Table/Row/RowName";
+import { FolderName, PageName } from "~/admin/components/Table/Row/Name";
+import { FolderActionDelete } from "~/admin/components/Table/Row/Folder/FolderActionDelete";
+import { PageActionDelete } from "~/admin/components/Table/Row/Page/PageActionDelete";
+import { PageActionEdit } from "~/admin/components/Table/Row/Page/PageActionEdit";
+import { PageActionPreview } from "~/admin/components/Table/Row/Page/PageActionPreview";
+import { PageActionPublish } from "~/admin/components/Table/Row/Page/PageActionPublish";
+
 import statusLabels from "~/admin/constants/pageStatusesLabels";
 
 import { PbPageDataLink } from "~/types";
-import RowActionDelete from "~/admin/components/Table/Row/RowActionDelete";
-import RowActionEdit from "~/admin/components/Table/Row/RowActionEdit";
-import RowActionPreviewPage from "~/admin/components/Table/Row/RowActionPreview";
-import RowActionPublishPage from "~/admin/components/Table/Row/RowActionPublish";
-import RowActionDeleteFolder from "~/admin/components/Table/Row/RowActionDeleteFolder";
 
 interface Props {
     pages: PbPageDataLink[];
@@ -27,6 +29,7 @@ interface Props {
     loading?: boolean;
     onDeletePage: (link: LinkItem) => void;
     deleteFolder: (folder: FolderItem) => Promise<boolean>;
+    openPreviewDrawer: () => void;
 }
 
 interface Entry {
@@ -38,10 +41,17 @@ interface Entry {
     status?: string;
     version?: number;
     category?: string;
-    original?: PbPageDataLink | FolderItem;
+    original: PbPageDataLink | FolderItem;
 }
 
-export const Table = ({ folders, pages, loading, onDeletePage, deleteFolder }: Props) => {
+export const Table = ({
+    folders,
+    pages,
+    loading,
+    onDeletePage,
+    deleteFolder,
+    openPreviewDrawer
+}: Props): ReactElement => {
     const [data, setData] = useState<Entry[]>([]);
 
     const createPagesData = useMemo(() => {
@@ -55,7 +65,7 @@ export const Table = ({ folders, pages, loading, onDeletePage, deleteFolder }: P
                 status: item.status,
                 version: item.version,
                 category: item.category.name,
-                original: item as PbPageDataLink
+                original: item
             }));
     }, [pages]);
 
@@ -67,7 +77,7 @@ export const Table = ({ folders, pages, loading, onDeletePage, deleteFolder }: P
                 title: item.name,
                 createdBy: item.createdBy.displayName || "-",
                 savedOn: item.createdOn,
-                original: item as FolderItem
+                original: item
             }));
     }, [folders]);
 
@@ -83,10 +93,10 @@ export const Table = ({ folders, pages, loading, onDeletePage, deleteFolder }: P
         title: {
             header: "Name",
             cell: ({ id, title, type }) => {
-                if (type === "FOLDER") {
-                    return <FolderName name={title} id={id} />;
+                if (type === "PAGE") {
+                    return <PageName name={title} id={id} onClick={openPreviewDrawer} />;
                 } else {
-                    return <PageName name={title} id={id} />;
+                    return <FolderName name={title} id={id} />;
                 }
             }
         },
@@ -121,13 +131,14 @@ export const Table = ({ folders, pages, loading, onDeletePage, deleteFolder }: P
                 if (!original) {
                     return <></>;
                 }
+
                 if (type === "PAGE") {
                     return (
                         <Menu handle={<More />}>
-                            <RowActionEdit page={original as PbPageDataLink} />
-                            <RowActionPreviewPage page={original as PbPageDataLink} />
-                            <RowActionPublishPage page={original as PbPageDataLink} />
-                            <RowActionDelete
+                            <PageActionEdit page={original as PbPageDataLink} />
+                            <PageActionPreview page={original as PbPageDataLink} />
+                            <PageActionPublish page={original as PbPageDataLink} />
+                            <PageActionDelete
                                 page={original as PbPageDataLink}
                                 onDeletePageSuccess={onDeletePage}
                             />
@@ -135,8 +146,9 @@ export const Table = ({ folders, pages, loading, onDeletePage, deleteFolder }: P
                     );
                 } else {
                     return (
+                        // TODO: bug - Menu with only one child immediatelly render the content
                         <Menu handle={<More />}>
-                            <RowActionDeleteFolder
+                            <FolderActionDelete
                                 folder={original as FolderItem}
                                 deleteFolder={deleteFolder}
                             />

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactElement } from "react";
 
 import styled from "@emotion/styled";
 import { i18n } from "@webiny/app/i18n";
@@ -22,7 +22,7 @@ const Container = styled("div")`
     }
 `;
 
-export const Header = ({ canCreate, onCreatePage, onCreateFolder }: Props) => {
+export const Header = ({ canCreate, onCreatePage, onCreateFolder }: Props): ReactElement => {
     if (canCreate) {
         return (
             <Container>

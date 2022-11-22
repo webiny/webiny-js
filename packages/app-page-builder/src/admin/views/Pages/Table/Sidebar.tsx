@@ -6,7 +6,7 @@ interface Props {
     folderId?: string;
 }
 
-export const Accessories = ({ folderId }: Props): ReactElement => {
+export const Sidebar = ({ folderId }: Props): ReactElement => {
     const [focusedFolderId, setFocusedFolderId] = useState<string>();
     const { history, location } = useRouter();
     const query = new URLSearchParams(location.search);
@@ -28,6 +28,7 @@ export const Accessories = ({ folderId }: Props): ReactElement => {
             type={"page"}
             title={"All pages"}
             focusedFolderId={focusedFolderId}
+            onTitleClick={() => history.push("/page-builder/pages-table")}
             onFolderClick={data => data?.id && onFolderClick(data?.id)}
         />
     );

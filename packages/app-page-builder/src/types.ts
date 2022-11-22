@@ -311,7 +311,9 @@ export interface PbPageRevision {
     savedOn: string;
 }
 
-export interface PbPageDataLink extends PbPageData, LinkItem {}
+export interface PbPageDataLink extends PbPageData {
+    link: LinkItem;
+}
 
 export interface PbRenderElementPluginRenderParams {
     theme: PbTheme;

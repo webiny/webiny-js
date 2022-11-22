@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactElement } from "react";
 
 import styled from "@emotion/styled";
 import { ReactComponent as Add } from "@material-design-icons/svg/filled/add.svg";
@@ -7,12 +7,6 @@ import EmptyView from "@webiny/app-admin/components/EmptyView";
 import { ButtonDefault } from "@webiny/ui/Button";
 
 const t = i18n.ns("app-page-builder/admin/views/pages/table/empty");
-
-interface EmptyPageDetailsProps {
-    onCreatePage: (event?: React.SyntheticEvent) => void;
-    onCreateFolder: (event?: React.SyntheticEvent) => void;
-    canCreate: boolean;
-}
 
 const Buttons = styled("div")`
     > button {
@@ -26,11 +20,13 @@ const Icon = styled(Add)`
     margin-right: 8px;
 `;
 
-export const Empty: React.FC<EmptyPageDetailsProps> = ({
-    onCreatePage,
-    onCreateFolder,
-    canCreate
-}) => {
+interface Props {
+    onCreatePage: (event?: React.SyntheticEvent) => void;
+    onCreateFolder: (event?: React.SyntheticEvent) => void;
+    canCreate: boolean;
+}
+
+export const Empty = ({ onCreatePage, onCreateFolder, canCreate }: Props): ReactElement => {
     return (
         <EmptyView
             title={t`Nothing to show here, {message} `({

@@ -1,14 +1,10 @@
-import React from "react";
+import React, { ReactElement } from "react";
+
 import { ReactComponent as Folder } from "@material-design-icons/svg/outlined/folder.svg";
 import { ReactComponent as File } from "@material-design-icons/svg/outlined/description.svg";
 import styled from "@emotion/styled";
 import { Typography } from "@webiny/ui/Typography";
 import { useRouter } from "@webiny/react-router";
-
-interface Props {
-    name: string;
-    id: string;
-}
 
 const Title = styled("div")`
     display: flex;
@@ -20,8 +16,16 @@ const Icon = styled("div")`
     margin-right: 8px;
     height: 24px;
 `;
+interface Props {
+    name: string;
+    id: string;
+}
 
-export const FolderName = ({ name, id }: Props) => {
+interface PageProps extends Props {
+    onClick: () => void;
+}
+
+export const FolderName = ({ name, id }: Props): ReactElement => {
     const { location, history } = useRouter();
     const query = new URLSearchParams(location.search);
 
@@ -40,13 +44,16 @@ export const FolderName = ({ name, id }: Props) => {
     );
 };
 
-export const PageName = ({ name, id }: Props) => {
+export const PageName = ({ name, id, onClick }: PageProps): ReactElement => {
     const { history } = useRouter();
+    const query = new URLSearchParams(location.search);
 
     return (
         <Title
             onClick={() => {
-                history.push(`/page-builder/editor/${id}`);
+                query.set("id", id);
+                history.push({ search: query.toString() });
+                onClick();
             }}
         >
             <Icon>

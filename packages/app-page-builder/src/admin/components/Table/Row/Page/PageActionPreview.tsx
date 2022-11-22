@@ -1,16 +1,21 @@
-import React, { useCallback } from "react";
-import { PbPageData } from "~/types";
-import { useSiteStatus } from "~/admin/hooks/useSiteStatus";
-import { useConfigureWebsiteUrlDialog } from "~/admin/hooks/useConfigureWebsiteUrl";
-import { usePageBuilderSettings } from "~/admin/hooks/usePageBuilderSettings";
+import React, { ReactElement, useCallback } from "react";
+
+import { i18n } from "@webiny/app/i18n";
 import { MenuItem } from "@webiny/ui/Menu";
 
-interface RowActionPreviewPageProps {
+import { useConfigureWebsiteUrlDialog } from "~/admin/hooks/useConfigureWebsiteUrl";
+import { usePageBuilderSettings } from "~/admin/hooks/usePageBuilderSettings";
+import { useSiteStatus } from "~/admin/hooks/useSiteStatus";
+
+import { PbPageData } from "~/types";
+
+const t = i18n.ns("app-headless-cms/app-page-builder/pages-table/actions/page/preview");
+
+interface Props {
     page: PbPageData;
 }
 
-const RowActionPreviewPage: React.FC<RowActionPreviewPageProps> = props => {
-    const { page } = props;
+export const PageActionPreview = ({ page }: Props): ReactElement => {
     const { getPageUrl, getWebsiteUrl } = usePageBuilderSettings();
 
     const [isSiteRunning, refreshSiteStatus] = useSiteStatus(getWebsiteUrl());
@@ -31,9 +36,7 @@ const RowActionPreviewPage: React.FC<RowActionPreviewPageProps> = props => {
         }
     }, [url, isSiteRunning]);
 
-    const previewButtonLabel = page.locked ? "View" : "Preview";
+    const previewButtonLabel = page.locked ? t`View` : t`Preview`;
 
     return <MenuItem onClick={handlePreviewClick}>{previewButtonLabel}</MenuItem>;
 };
-
-export default RowActionPreviewPage;

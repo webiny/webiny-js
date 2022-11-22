@@ -29,8 +29,7 @@ const useGetPages = (links: LinkItem[]) => {
 
                 return {
                     ...data,
-                    linkId: link.linkId,
-                    folderId: link.folderId
+                    link
                 };
             })
         );

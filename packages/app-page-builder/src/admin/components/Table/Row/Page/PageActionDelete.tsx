@@ -1,29 +1,29 @@
-import React from "react";
-import { i18n } from "@webiny/app/i18n";
-import usePermission from "~/hooks/usePermission";
-import { PbPageDataLink } from "~/types";
-import { MenuItem } from "@webiny/ui/Menu";
-import { useDeletePage } from "~/admin/views/Pages/hooks/useDeletePage";
+import React, { ReactElement } from "react";
+
 import { LinkItem } from "@webiny/app-folders/types";
+import { i18n } from "@webiny/app/i18n";
+import { MenuItem } from "@webiny/ui/Menu";
 
-const t = i18n.ns("app-headless-cms/app-page-builder/page-details/header/delete-page");
+import usePermission from "~/hooks/usePermission";
+import { useDeletePage } from "~/admin/views/Pages/hooks/useDeletePage";
 
-interface DeletePageProps {
+import { PbPageDataLink } from "~/types";
+
+const t = i18n.ns("app-headless-cms/app-page-builder/pages-table/actions/page/delete");
+
+interface Props {
     page: PbPageDataLink;
     onDeletePageSuccess: (linkItem: LinkItem) => void;
 }
-const RowActionDeletePage: React.FC<DeletePageProps> = props => {
-    const { page, onDeletePageSuccess } = props;
+export const PageActionDelete = ({ page, onDeletePageSuccess }: Props): ReactElement => {
     const { canDelete } = usePermission();
 
     const { deletePageMutation } = useDeletePage({ page, onDeletePageSuccess });
 
     if (!canDelete(page)) {
         console.log("Does not have permission to delete page.");
-        return null;
+        return <></>;
     }
 
     return <MenuItem onClick={deletePageMutation}>{t`Delete`}</MenuItem>;
 };
-
-export default RowActionDeletePage;

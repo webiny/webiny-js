@@ -2,8 +2,8 @@ import React from "react";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
 import { useRouter } from "@webiny/react-router";
 
-import { Accessories } from "~/admin/views/Pages/Table/Accessories";
-import { List } from "~/admin/views/Pages/Table/List";
+import { Sidebar } from "~/admin/views/Pages/Table/Sidebar";
+import { Main } from "~/admin/views/Pages/Table/Main";
 
 const Index: React.FC = () => {
     const { location } = useRouter();
@@ -13,10 +13,10 @@ const Index: React.FC = () => {
     return (
         <SplitView>
             <LeftPanel span={3}>
-                <Accessories folderId={currentFolderId} />
+                <Sidebar folderId={currentFolderId} />
             </LeftPanel>
             <RightPanel span={9}>
-                <List folderId={currentFolderId} />
+                <Main folderId={currentFolderId} />
             </RightPanel>
         </SplitView>
     );
