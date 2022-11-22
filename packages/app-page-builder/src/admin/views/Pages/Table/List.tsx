@@ -15,7 +15,7 @@ import { useCanCreatePage } from "~/admin/views/Pages/hooks/useCanCreate";
 import { FOLDER_ID_DEFAULT, FOLDER_TYPE } from "~/admin/constants/folders";
 
 interface Props {
-    currentFolderId?: string;
+    folderId?: string;
 }
 
 enum LoadingLabel {
@@ -41,14 +41,14 @@ const getCurrentFolderList = (
     }
 };
 
-export const List = ({ currentFolderId }: Props) => {
+export const List = ({ folderId }: Props) => {
     const { folders = [], loading: foldersLoading, deleteFolder } = useFolders(FOLDER_TYPE);
     const {
         links,
         loading: linksLoading,
         createLink,
         deleteLink
-    } = useLinks(currentFolderId || FOLDER_ID_DEFAULT);
+    } = useLinks(folderId || FOLDER_ID_DEFAULT);
     const { pages, loading: pagesLoading } = useGetPages(links);
     const [subFolders, setSubFolders] = useState<FolderItem[]>([]);
 
@@ -64,16 +64,16 @@ export const List = ({ currentFolderId }: Props) => {
     const canCreate = useCanCreatePage();
 
     useEffect(() => {
-        const subFolders = getCurrentFolderList(folders, currentFolderId);
+        const subFolders = getCurrentFolderList(folders, folderId);
         setSubFolders(subFolders);
-    }, [folders.map(folder => folder.parentId).join("."), currentFolderId]);
+    }, [folders.map(folder => folder.parentId).join("."), folderId]);
 
     const { createPageMutation } = useCreatePage({
         setLoadingLabel: () => setLoadingLabel(LoadingLabel.CREATING_PAGE),
         clearLoadingLabel: () => setLoadingLabel(null),
         closeDialog: closeCategoryDialog,
         onCreatePageSuccess: id => {
-            createLink({ id, folderId: currentFolderId || FOLDER_ID_DEFAULT });
+            createLink({ id, folderId: folderId || FOLDER_ID_DEFAULT });
         }
     });
 

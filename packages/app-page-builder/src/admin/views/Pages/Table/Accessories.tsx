@@ -3,19 +3,19 @@ import { FolderTree } from "@webiny/app-folders";
 import { useRouter } from "@webiny/react-router";
 
 interface Props {
-    currentFolderId?: string;
+    folderId?: string;
 }
 
-export const Accessories = ({ currentFolderId }: Props): ReactElement => {
+export const Accessories = ({ folderId }: Props): ReactElement => {
     const [focusedFolderId, setFocusedFolderId] = useState<string>();
     const { history, location } = useRouter();
     const query = new URLSearchParams(location.search);
 
     useEffect(() => {
-        if (currentFolderId) {
-            setFocusedFolderId(currentFolderId);
+        if (folderId) {
+            setFocusedFolderId(folderId);
         }
-    }, [currentFolderId]);
+    }, [folderId]);
 
     const onFolderClick = (folderId: string): void => {
         setFocusedFolderId(folderId);
