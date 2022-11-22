@@ -26,6 +26,10 @@ const DisableInteractionsPlugin = createComponentPlugin(ElementRoot, Original =>
             return <Original {...props}>{children}</Original>;
         }
 
+        const inert = {
+            inert: ""
+        };
+
         /**
          * Block element uses the `render prop` version of `ElementRoot` children, so we only need to handle
          * that scenario: packages/app-page-builder/src/editor/plugins/elements/block/Block.tsx:25
@@ -33,8 +37,7 @@ const DisableInteractionsPlugin = createComponentPlugin(ElementRoot, Original =>
         return (
             <Original {...props}>
                 {params => (
-                    // @ts-ignore
-                    <div inert="" onClick={onClick}>
+                    <div {...inert} onClick={onClick}>
                         {(children as ElementRootChildrenFunction)(params)}
                     </div>
                 )}
