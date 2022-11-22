@@ -43,9 +43,8 @@ const useGetPages = (links: LinkItem[]) => {
             setPages(linkedPages);
             setLoading(false);
         }
-        if (links.length > 0) {
-            getPagesData();
-        }
+
+        getPagesData();
     }, [links.map(link => link.id).join(".")]);
 
     return {

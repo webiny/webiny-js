@@ -33,7 +33,7 @@ export const Empty: React.FC<EmptyPageDetailsProps> = ({
 }) => {
     return (
         <EmptyView
-            title={t`No pages found here, {message} `({
+            title={t`Nothing to show here, {message} `({
                 message: canCreate
                     ? "navigate to a different folder or create a..."
                     : "click on the left side to navigate to a different folder."

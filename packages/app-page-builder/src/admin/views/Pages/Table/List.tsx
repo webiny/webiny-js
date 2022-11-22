@@ -23,6 +23,7 @@ enum LoadingLabel {
 }
 
 const Container = styled("div")`
+    height: 100%;
     padding: 24px;
 `;
 
@@ -41,9 +42,14 @@ const getCurrentFolderList = (
 };
 
 export const List = ({ currentFolderId }: Props) => {
-    const { folders = [], deleteFolder } = useFolders(FOLDER_TYPE);
-    const { links, createLink, deleteLink } = useLinks(currentFolderId || FOLDER_ID_DEFAULT);
-    const { pages } = useGetPages(links);
+    const { folders = [], loading: foldersLoading, deleteFolder } = useFolders(FOLDER_TYPE);
+    const {
+        links,
+        loading: linksLoading,
+        createLink,
+        deleteLink
+    } = useLinks(currentFolderId || FOLDER_ID_DEFAULT);
+    const { pages, loading: pagesLoading } = useGetPages(links);
     const [subFolders, setSubFolders] = useState<FolderItem[]>([]);
 
     const [loadingLabel, setLoadingLabel] = useState<string | null>(null);
@@ -79,7 +85,6 @@ export const List = ({ currentFolderId }: Props) => {
                 onClose={closeFoldersDialog}
                 parentId={currentFolderId || null}
             />
-
             <CategoriesDialog
                 open={showCategoriesDialog}
                 onClose={closeCategoryDialog}
@@ -88,27 +93,34 @@ export const List = ({ currentFolderId }: Props) => {
                 {loadingLabel && <CircularProgress label={loadingLabel} />}
             </CategoriesDialog>
 
-            {pages.length === 0 && subFolders.length === 0 ? (
-                <Empty
+            <Container>
+                <Header
                     canCreate={canCreate}
                     onCreatePage={openCategoryDialog}
                     onCreateFolder={openFoldersDialog}
                 />
-            ) : (
-                <Container>
-                    <Header
+                {pages.length === 0 &&
+                subFolders.length === 0 &&
+                !pagesLoading &&
+                !linksLoading.LIST_LINKS &&
+                !foldersLoading.LIST_FOLDERS ? (
+                    <Empty
                         canCreate={canCreate}
                         onCreatePage={openCategoryDialog}
                         onCreateFolder={openFoldersDialog}
                     />
+                ) : (
                     <Table
                         folders={subFolders}
                         pages={pages}
+                        loading={
+                            pagesLoading || linksLoading.LIST_LINKS || foldersLoading.LIST_FOLDERS
+                        }
                         onDeletePage={deleteLink}
                         deleteFolder={deleteFolder}
                     />
-                </Container>
-            )}
+                )}
+            </Container>
         </>
     );
 };
