@@ -14,6 +14,7 @@ const linkStyle = css({
     height: "100%",
     outline: "none",
     paddingLeft: 72,
+    fontWeight: 400,
     "&:hover": {
         textDecoration: "none"
     }

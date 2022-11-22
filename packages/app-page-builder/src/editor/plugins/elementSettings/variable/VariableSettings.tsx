@@ -31,7 +31,7 @@ const VariableSettings: React.FC = () => {
             {element?.data?.variables?.map((variable: PbBlockVariable, index: number) => (
                 <div key={index}>
                     <div className={labelStyle}>
-                        <Typography use={"subtitle2"}>{variable.label}</Typography>
+                        <Typography use={"body2"}>{variable.label}</Typography>
                     </div>
                     {elementVariableRendererPlugins
                         .find(plugin => plugin.elementType === variable?.type)

@@ -283,7 +283,7 @@ const SearchBar = () => {
                                     <ListItemTitle>
                                         {p.title} ({getCategoryBlocksCount(p.categoryName)})
                                     </ListItemTitle>
-                                    <Typography use={"subtitle2"}>{p.description}</Typography>
+                                    <Typography use={"body2"}>{p.description}</Typography>
                                 </TitleContent>
                             </ListItem>
                         ))}

@@ -21,6 +21,7 @@ import { MenuElementRenderer } from "./renderers/MenuElementRenderer";
 import { List, ListItem } from "@webiny/ui/List";
 import { MenuFooter, subFooter, MenuHeader, navHeader, navContent } from "./Styled";
 import { config as appConfig } from "@webiny/app/config";
+import { Typography } from "@webiny/ui/Typography";
 
 interface NavigationContext {
     visible: boolean;
@@ -99,7 +100,7 @@ export const NavigationImpl = (): React.FC => {
                     <List nonInteractive>
                         <MenuItems menuItems={footerMenu} />
                         <ListItem ripple={false} className={subFooter}>
-                            Webiny v{wbyVersion}
+                            <Typography use={"body2"}>Webiny v{wbyVersion}</Typography>
                         </ListItem>
                     </List>
                 </MenuFooter>
