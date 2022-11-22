@@ -38,6 +38,13 @@ export default withFields({
             image: object({})
         })()
     }),
+    htmlTags: fields({
+        value: {},
+        instanceOf: withFields({
+            header: string(),
+            footer: string()
+        })()
+    }),
     pages: fields({
         value: {},
         instanceOf: withFields({

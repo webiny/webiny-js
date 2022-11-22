@@ -13,6 +13,26 @@ import DefaultNotFoundPage from "theme/pageBuilder/components/defaultPages/Defau
 import DefaultErrorPage from "theme/pageBuilder/components/defaultPages/DefaultErrorPage";
 import { SettingsQueryResponseData } from "./graphql";
 
+const htmlStringToReactHelmet = (str: string) => {
+    if (!str) {
+        return null;
+    }
+
+    const dom = new DOMParser().parseFromString(str, "text/html");
+    const elements = dom.documentElement.querySelectorAll(":not(html):not(head):not(body)");
+    const parsedElementsArray: JSX.Element[] = [];
+
+    elements.forEach((el, index) => {
+        const NodeName = el.nodeName.toLowerCase();
+        const attributes = Object.fromEntries(
+            [...el.attributes].map(({ name, value }) => [name, value])
+        );
+        parsedElementsArray.push(<NodeName key={index} {...attributes} />);
+    });
+
+    return <Helmet>{parsedElementsArray.map(element => element)}</Helmet>;
+};
+
 interface Head {
     favicon?: {
         src: string;
@@ -20,6 +40,7 @@ interface Head {
     title: string;
     seo: PbPageDataSettingsSeo;
     social: PbPageDataSettingsSocial;
+    htmlTags: JSX.Element | null;
 }
 
 /**
@@ -59,7 +80,8 @@ const Render: React.FC<RenderProps> = ({ page, error, settings }) => {
             image: null,
             meta: [],
             ...(page.settings?.social || {})
-        }
+        },
+        htmlTags: htmlStringToReactHelmet(settings?.htmlTags?.header)
     };
 
     return (
@@ -103,11 +125,15 @@ const Render: React.FC<RenderProps> = ({ page, error, settings }) => {
                     return <meta key={index} property={preparedProperty} content={content} />;
                 })}
             </Helmet>
+            {head.htmlTags}
             <div className={responsiveClassName} ref={pageElementRef}>
                 <Layout page={page} settings={settings}>
                     <Element element={page.content} />
                 </Layout>
             </div>
+            {settings.htmlTags?.footer && (
+                <div dangerouslySetInnerHTML={{ __html: settings.htmlTags.footer }} />
+            )}
         </div>
     );
 };

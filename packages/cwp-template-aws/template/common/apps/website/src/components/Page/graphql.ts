@@ -99,6 +99,10 @@ export const GET_SETTINGS = gql`
                             src
                         }
                     }
+                    htmlTags {
+                        header
+                        footer
+                    }
                     logo {
                         src
                     }
