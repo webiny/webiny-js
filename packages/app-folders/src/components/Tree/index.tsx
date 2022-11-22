@@ -81,10 +81,17 @@ type Props = {
     type: string;
     title: string;
     onFolderClick: (data: NodeModel<DndItemData>["data"]) => void;
+    onTitleClick?: (event: React.MouseEvent<HTMLElement>) => void;
     focusedFolderId?: string;
 };
 
-export const FolderTree: React.FC<Props> = ({ type, title, focusedFolderId, onFolderClick }) => {
+export const FolderTree: React.FC<Props> = ({
+    type,
+    title,
+    focusedFolderId,
+    onFolderClick,
+    onTitleClick
+}) => {
     const { folders, updateFolder } = useFolders(type);
     const [treeData, setTreeData] = useState<NodeModel<DndItemData>[]>([]);
     const [createDialogOpen, setCreateDialogOpen] = useState<boolean>(false);
@@ -121,7 +128,7 @@ export const FolderTree: React.FC<Props> = ({ type, title, focusedFolderId, onFo
 
     return (
         <Container>
-            <Title title={title} />
+            <Title title={title} onClick={onTitleClick} />
 
             {folders && folders.length > 0 && (
                 <DndProvider backend={MultiBackend} options={getBackendOptions()}>
