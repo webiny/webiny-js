@@ -131,10 +131,10 @@ export type ButtonFloatingProps = ButtonProps &
 export const ButtonFloating: React.FC<ButtonFloatingProps> = props => {
     const {
         disabled,
+        label,
         icon,
         onClick,
         small = false,
-        label = null,
         ripple = true,
         className = null,
         ...rest

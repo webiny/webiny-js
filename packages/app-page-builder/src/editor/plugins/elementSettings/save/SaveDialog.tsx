@@ -106,7 +106,7 @@ const SaveDialog = (props: Props) => {
                                     <Grid>
                                         <Cell span={12}>
                                             <Bind
-                                                name="category"
+                                                name="blockCategory"
                                                 validators={validation.create("required")}
                                             >
                                                 <Select

@@ -129,7 +129,7 @@ const BlocksList: React.FC<BlocksListProps> = props => {
                             }}
                             scrollTop={scrollTop}
                             width={listWidth}
-                            overscanRowCount={2}
+                            overscanRowCount={10}
                         />
                     </div>
                 </div>

@@ -1469,6 +1469,10 @@ export interface OnModelAfterDeleteTopicParams {
     model: CmsModel;
 }
 
+export interface OnModelInitializeParams {
+    model: CmsModel;
+}
+
 export interface CmsModelUpdateDirectParams {
     model: CmsModel;
     original: CmsModel;
@@ -1510,6 +1514,13 @@ export interface CmsModelContext {
      * Delete content model. Should not allow deletion if there are entries connected to it.
      */
     deleteModel: (modelId: string) => Promise<void>;
+    /**
+     * Possibility for users to trigger the model initialization.
+     * They can hook into it and do what ever they want to.
+     *
+     * Primary idea behind this is creating the index, for the code models, in the ES.
+     */
+    initializeModel: (modelId: string) => Promise<boolean>;
     /**
      * Get a instance of CmsModelManager for given content modelId.
      *
@@ -1576,6 +1587,7 @@ export interface CmsModelContext {
     onModelAfterUpdate: Topic<OnModelAfterUpdateTopicParams>;
     onModelBeforeDelete: Topic<OnModelBeforeDeleteTopicParams>;
     onModelAfterDelete: Topic<OnModelAfterDeleteTopicParams>;
+    onModelInitialize: Topic<OnModelInitializeParams>;
 }
 
 /**
@@ -2644,7 +2656,7 @@ export interface CmsSystemStorageOperations {
     update: (params: CmsSystemStorageOperationsUpdateParams) => Promise<CmsSystem>;
 }
 
-export interface HeadlessCmsStorageOperations {
+export interface HeadlessCmsStorageOperations<C = CmsContext> {
     system: CmsSystemStorageOperations;
     settings: CmsSettingsStorageOperations;
     groups: CmsGroupStorageOperations;
@@ -2653,8 +2665,8 @@ export interface HeadlessCmsStorageOperations {
     /**
      * Either attach something from the storage operations or run something in it.
      */
-    beforeInit?: (context: CmsContext) => Promise<void>;
-    init?: (context: CmsContext) => Promise<void>;
+    beforeInit?: (context: C) => Promise<void>;
+    init?: (context: C) => Promise<void>;
     /**
      * An upgrade to run if necessary.
      */

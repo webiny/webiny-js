@@ -1,6 +1,6 @@
 import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/client";
 import { people } from "./base.entries";
-import { base } from "~/indexConfiguration/base";
+import { getBaseConfiguration } from "~/indexConfiguration";
 import { ElasticsearchBoolQueryConfig } from "~/types";
 import { ElasticsearchQueryBuilderOperatorContainsPlugin } from "~/plugins/operator/contains";
 
@@ -39,9 +39,7 @@ describe("Elasticsearch Base Search", () => {
     const createIndex = async () => {
         return client.indices.create({
             index: indexTestName,
-            body: {
-                ...base
-            }
+            body: getBaseConfiguration()
         });
     };
 

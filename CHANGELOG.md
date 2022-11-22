@@ -3,6 +3,49 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.33.2](https://github.com/webiny/webiny-js/compare/v5.33.2-beta.2...v5.33.2) (2022-11-17)
+
+**Note:** Version bump only for package webiny-js
+
+
+
+
+
+## [5.33.2-beta.2](https://github.com/webiny/webiny-js/compare/v5.33.2-beta.1...v5.33.2-beta.2) (2022-11-16)
+
+
+### Bug Fixes
+
+* **api-headless-cms-ddb:** export plugins from root ([#2780](https://github.com/webiny/webiny-js/issues/2780)) ([39dc973](https://github.com/webiny/webiny-js/commit/39dc973e38e529bd3d9e37f5c5f47580abd516fd))
+
+
+
+
+
+## [5.33.2-beta.1](https://github.com/webiny/webiny-js/compare/v5.33.2-beta.0...v5.33.2-beta.1) (2022-11-16)
+
+
+### Bug Fixes
+
+* **api-headless-cms-ddb-es:** body modifier ([#2779](https://github.com/webiny/webiny-js/issues/2779)) ([56c04ac](https://github.com/webiny/webiny-js/commit/56c04aca7710e2120ca80331b2cdb88bbb112400))
+
+
+
+
+
+## [5.33.2-beta.0](https://github.com/webiny/webiny-js/compare/v5.33.1...v5.33.2-beta.0) (2022-11-15)
+
+
+### Bug Fixes
+
+* **api-headless-cms:** initialize code model ([#2766](https://github.com/webiny/webiny-js/issues/2766)) ([b3dcfe0](https://github.com/webiny/webiny-js/commit/b3dcfe0bf9fd8bbae8a9109f1675cf17e4e9722f))
+* update "Deploy Webiny Project" CloudFormation template [no ci] ([0655660](https://github.com/webiny/webiny-js/commit/06556601bfe269a362b91cd553a149a60bbf4cda))
+* **handler-graphql:** number scalar ([#2765](https://github.com/webiny/webiny-js/issues/2765)) ([6a98f9a](https://github.com/webiny/webiny-js/commit/6a98f9ac80a8067810a0f71434670a483443481a))
+
+
+
+
+
 ## [5.33.1](https://github.com/webiny/webiny-js/compare/v5.33.1-beta.0...v5.33.1) (2022-11-07)
 
 **Note:** Version bump only for package webiny-js

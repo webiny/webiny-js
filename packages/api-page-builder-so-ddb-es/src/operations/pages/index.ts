@@ -24,8 +24,7 @@ import {
     ElasticsearchSearchResponse
 } from "@webiny/api-elasticsearch/types";
 import { configurations } from "~/configurations";
-import { encodeCursor } from "@webiny/api-elasticsearch/cursors";
-import { createLimit } from "@webiny/api-elasticsearch/limit";
+import { encodeCursor, createLimit } from "@webiny/api-elasticsearch";
 import { createElasticsearchQueryBody } from "./elasticsearchQueryBody";
 import { SearchLatestPagesPlugin } from "~/plugins/definitions/SearchLatestPagesPlugin";
 import { SearchPublishedPagesPlugin } from "~/plugins/definitions/SearchPublishedPagesPlugin";

@@ -51,6 +51,23 @@ import {
 } from "./graphql/categories";
 
 import { GET_SETTINGS, GET_DEFAULT_SETTINGS, UPDATE_SETTINGS } from "./graphql/settings";
+
+import {
+    CREATE_BLOCK_CATEGORY,
+    DELETE_BLOCK_CATEGORY,
+    LIST_BLOCK_CATEGORIES,
+    UPDATE_BLOCK_CATEGORY,
+    GET_BLOCK_CATEGORY
+} from "./graphql/blockCategories";
+
+import {
+    CREATE_PAGE_BLOCK,
+    UPDATE_PAGE_BLOCK,
+    DELETE_PAGE_BLOCK,
+    LIST_PAGE_BLOCKS,
+    GET_PAGE_BLOCK
+} from "./graphql/pageBlocks";
+
 import path from "path";
 import fs from "fs";
 import { until } from "@webiny/project-utils/testing/helpers/until";
@@ -261,6 +278,40 @@ export default ({ permissions, identity, plugins, storageOperationPlugins }: Par
         },
         async getDefaultSettings(variables = {}) {
             return invoke({ body: { query: GET_DEFAULT_SETTINGS, variables } });
+        },
+
+        // Block Categories.
+        async createBlockCategory(variables: Record<string, any>) {
+            return invoke({ body: { query: CREATE_BLOCK_CATEGORY, variables } });
+        },
+        async updateBlockCategory(variables: Record<string, any>) {
+            return invoke({ body: { query: UPDATE_BLOCK_CATEGORY, variables } });
+        },
+        async deleteBlockCategory(variables: Record<string, any>) {
+            return invoke({ body: { query: DELETE_BLOCK_CATEGORY, variables } });
+        },
+        async listBlockCategories(variables = {}) {
+            return invoke({ body: { query: LIST_BLOCK_CATEGORIES, variables } });
+        },
+        async getBlockCategory(variables: Record<string, any>) {
+            return invoke({ body: { query: GET_BLOCK_CATEGORY, variables } });
+        },
+
+        // Page Blocks.
+        async createPageBlock(variables: Record<string, any>) {
+            return invoke({ body: { query: CREATE_PAGE_BLOCK, variables } });
+        },
+        async updatePageBlock(variables: Record<string, any>) {
+            return invoke({ body: { query: UPDATE_PAGE_BLOCK, variables } });
+        },
+        async deletePageBlock(variables: Record<string, any>) {
+            return invoke({ body: { query: DELETE_PAGE_BLOCK, variables } });
+        },
+        async listPageBlocks(variables: any = {}) {
+            return invoke({ body: { query: LIST_PAGE_BLOCKS, variables } });
+        },
+        async getPageBlock(variables: Record<string, any>) {
+            return invoke({ body: { query: GET_PAGE_BLOCK, variables } });
         }
     };
 };

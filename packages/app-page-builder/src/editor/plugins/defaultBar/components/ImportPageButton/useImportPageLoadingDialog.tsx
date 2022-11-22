@@ -119,7 +119,7 @@ const ImportPageLoadingDialogContent: React.FC<ImportPageLoadingDialogContentPro
                 <LoadingDialog.StatsContainer>
                     {error && (
                         <LoadingDialog.StatusContainer>
-                            <LoadingDialog.StatusTitle use={"subtitle2"}>
+                            <LoadingDialog.StatusTitle use={"body2"}>
                                 {t`Error`}
                             </LoadingDialog.StatusTitle>
                             <LoadingDialog.StatusBody use={"body2"}>
@@ -129,7 +129,7 @@ const ImportPageLoadingDialogContent: React.FC<ImportPageLoadingDialogContentPro
                     )}
                     {stats && (
                         <LoadingDialog.ProgressContainer>
-                            <LoadingDialog.StatusTitle use={"subtitle2"}>
+                            <LoadingDialog.StatusTitle use={"body2"}>
                                 {t`{completed} of {total} completed`({
                                     completed: stats.completed,
                                     total: stats.total

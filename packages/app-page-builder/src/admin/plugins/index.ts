@@ -7,6 +7,7 @@ import globalSearch from "./globalSearch";
 import routes from "./routes";
 import installation from "./installation";
 import permissionRenderer from "./permissionRenderer";
+import icons from "./icons";
 
 export default () => [
     header,
@@ -17,5 +18,6 @@ export default () => [
     globalSearch,
     routes,
     installation,
-    permissionRenderer
+    permissionRenderer,
+    icons
 ];

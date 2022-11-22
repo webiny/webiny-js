@@ -107,7 +107,7 @@ const PageBuilderCategoriesDataList = ({ canCreate }: PageBuilderCategoriesDataL
                     variables: item
                 });
 
-                const error = response?.data?.pageBuilder?.deletePageBuilderCategory?.error;
+                const error = response?.data?.pageBuilder?.deleteCategory?.error;
                 if (error) {
                     return showSnackbar(error.message);
                 }

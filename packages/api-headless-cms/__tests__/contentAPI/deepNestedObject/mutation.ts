@@ -4,7 +4,7 @@ export const createCarsMutation = () => {
             createCars(data: {
                 carsVehicle: "Acura-ILX-2019--",
                 vehicleNmb: 709839120181004,
-                carsUid: 7098391,
+                carsUid: 9007199254740991,
                 carsDiscontinued: 0,
                 carsMake: "Acura",
                 carsModelName: "ILX",
@@ -131,7 +131,7 @@ export const createCarsMutation = () => {
                     warrantyCategory:{
                         nameAndAvailability: ["Whole vehicle warranty months / (miles) : 48 / 50000","Powertrain warranty months / (miles) : 72 / 70000","Anti-corrosion warranty months / (mi) : 60 / Unlimited","Paint warranty months / (mi) : 48 / 50000","Roadside assistance months / (mi) : 48 / 50000"]
                     }
-                },
+                }
             })
             {
                 data {
@@ -188,9 +188,102 @@ export const createCarsMutation = () => {
                     slugMakeModel
                     retainedValue
                     standardTires
+                    specifications {
+                        trimName
+                        bodyStyle
+                        driveTrain
+                        seatingCapacity
+                        specWidth
+                        specLength
+                        specHeight
+                        specWheelbase
+                        frontHeadroom
+                        rearHeadroom
+                        frontShoulderRoom
+                        rearShoulderRoom
+                        frontLegroom
+                        rearLegroom
+                        groundClearance
+                        curbWeight
+                        cargoCapacity
+                        specGvwr
+                        engineName
+                        specHorsepower
+                        specTonnage
+                        specTorque
+                        fuelType
+                        stdEpaMpg
+                        transmissionName
+                        transmissionType
+                        towingCapacity
+                        drivingRange
+                        cylinderConfiguration
+                        numberOfCylinders
+                        stdMpgWithUnits
+                        heroLabel1
+                        heroValue1
+                        payloadCapacity
+                        vehicleClass
+                    },
+                    features {
+                        exteriorCategory {
+                            nameAndAvailability
+                        }
+                        interiorCategory {
+                            nameAndAvailability
+                        }
+                        comfortAndConvenienceCategory {
+                            nameAndAvailability
+                        }
+                        dimensionsCategory {
+                            nameAndAvailability
+                        }
+                        engineCategory {
+                            nameAndAvailability
+                        }
+                        fuelEconomyCategory {
+                            nameAndAvailability
+                        }
+                        hybridAndElectricCategory {
+                            nameAndAvailability
+                        }
+                        infotainmentCategory {
+                            nameAndAvailability
+                        }
+                        pricingCategory {
+                            nameAndAvailability
+                        }
+                        safetyAndDriverAssistCategory {
+                            nameAndAvailability
+                        }
+                        suspensionCategory {
+                            nameAndAvailability
+                        }
+                        transmissionCategory {
+                            nameAndAvailability
+                        }
+                        warrantyCategory {
+                            nameAndAvailability
+                        }
+                    }
                 }
                 error {
                     stack
+                    message
+                    code
+                    data
+                }
+            }
+        }
+    `;
+};
+
+export const createInitializeModelMutation = () => {
+    return `
+        mutation InitializeModelMutation($modelId: ID!) {
+            initializeModel(modelId: $modelId) {
+                data
+                error {
                     message
                     code
                     data

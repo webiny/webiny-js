@@ -1,18 +1,15 @@
 import * as React from "react";
 import { usePageBuilder } from "~/hooks/usePageBuilder";
 import { plugins } from "@webiny/plugins";
-import { PbPageElementImagesListComponentPlugin } from "~/types";
-import { Image } from "react-images";
+import { PbEditorElement, PbPageElementImagesListComponentPlugin } from "~/types";
+import { makeComposable } from "@webiny/react-composition";
 
 interface ImagesListProps {
-    data: {
-        component: string;
-        images: Image[];
-    };
+    element: PbEditorElement;
 }
-const ImagesList: React.FC<ImagesListProps> = ({ data }) => {
+const ImagesList: React.FC<ImagesListProps> = ({ element }) => {
     const { theme } = usePageBuilder();
-    const { component, images } = data;
+    const { component, images } = element.data;
     const components = plugins.byType<PbPageElementImagesListComponentPlugin>(
         "pb-page-element-images-list-component"
     );
@@ -30,4 +27,9 @@ const ImagesList: React.FC<ImagesListProps> = ({ data }) => {
     return <ListComponent data={images} theme={theme} />;
 };
 
-export default React.memo(ImagesList);
+export default makeComposable(
+    "ImagesList",
+    React.memo(({ element }: { element: PbEditorElement }) => {
+        return <ImagesList element={element} />;
+    })
+);

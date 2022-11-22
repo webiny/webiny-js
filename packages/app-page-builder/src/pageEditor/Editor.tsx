@@ -1,10 +1,11 @@
 import React, { useMemo, useState } from "react";
 import { useApolloClient, useMutation } from "@apollo/react-hooks";
+import { plugins } from "@webiny/plugins";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import get from "lodash/get";
 import { Editor as PbEditor } from "~/admin/components/Editor";
-import { createElement } from "~/editor/helpers";
+import { createElement, addElementId } from "~/editor/helpers";
 import {
     GET_PAGE,
     CREATE_PAGE_FROM,
@@ -19,13 +20,17 @@ import {
     ListPageElementsQueryResponse,
     ListPageElementsQueryResponseData
 } from "~/admin/graphql/pages";
+import { LIST_PAGE_BLOCKS, ListPageBlocksQueryResponse } from "~/admin/views/PageBlocks/graphql";
+import { LIST_BLOCK_CATEGORIES } from "~/admin/views/BlockCategories/graphql";
 import createElementPlugin from "~/admin/utils/createElementPlugin";
 import createBlockPlugin from "~/admin/utils/createBlockPlugin";
 import dotProp from "dot-prop-immutable";
-import { PbErrorResponse } from "~/types";
+import { PbErrorResponse, PbPageBlock, PbBlockCategory, PbEditorElement } from "~/types";
+import createBlockCategoryPlugin from "~/admin/utils/createBlockCategoryPlugin";
 import { PageWithContent, RevisionsAtomType } from "~/pageEditor/state";
 import { createStateInitializer } from "./createStateInitializer";
 import { PageEditorConfig } from "./config/PageEditorConfig";
+import elementVariableRendererPlugins from "~/editor/plugins/elementVariables";
 
 interface PageDataAndRevisionsState {
     page: PageWithContent | null;
@@ -46,7 +51,18 @@ const extractPageErrorData = (data: any): any => {
     return getPageData.error || {};
 };
 
+const getBlocksWithUniqueElementIds = (blocks: PbEditorElement[]): PbEditorElement[] => {
+    return blocks?.map((block: PbEditorElement) => {
+        if (block.data?.blockId) {
+            return addElementId(block);
+        } else {
+            return block;
+        }
+    });
+};
+
 export const PageEditor: React.FC = () => {
+    plugins.register(elementVariableRendererPlugins());
     const client = useApolloClient();
     const { history, params } = useRouter();
     const { showSnackbar } = useSnackbar();
@@ -76,11 +92,28 @@ export const PageEditor: React.FC = () => {
                             data: {},
                             elements: []
                         });
-                    } else {
-                        createBlockPlugin({
-                            ...element
-                        });
                     }
+                });
+            });
+        const savedBLocks = client
+            .query<ListPageBlocksQueryResponse>({ query: LIST_PAGE_BLOCKS })
+            .then(({ data }) => {
+                const blocks: PbPageBlock[] = get(data, "pageBuilder.listPageBlocks.data") || [];
+                blocks.forEach(element => {
+                    createBlockPlugin({
+                        ...element
+                    });
+                });
+            });
+        const blockCategories = client
+            .query<ListPageBlocksQueryResponse>({ query: LIST_BLOCK_CATEGORIES })
+            .then(({ data }) => {
+                const blockCategoriesData: PbBlockCategory[] =
+                    get(data, "pageBuilder.listBlockCategories.data") || [];
+                blockCategoriesData.forEach(element => {
+                    createBlockCategoryPlugin({
+                        ...element
+                    });
                 });
             });
 
@@ -102,9 +135,14 @@ export const PageEditor: React.FC = () => {
                 }
 
                 const { revisions = [], content, ...restOfPageData } = extractPageData(data);
+
+                const existingContent = content
+                    ? { ...content, elements: getBlocksWithUniqueElementIds(content.elements) }
+                    : null;
+
                 const page: PageWithContent = {
                     ...restOfPageData,
-                    content: content || createElement("document")
+                    content: existingContent || createElement("document")
                 };
 
                 if (page.status === "draft") {
@@ -137,7 +175,7 @@ export const PageEditor: React.FC = () => {
             });
 
         return React.lazy(() =>
-            Promise.all([savedElements, pageData]).then(() => {
+            Promise.all([savedElements, savedBLocks, blockCategories, pageData]).then(() => {
                 return { default: ({ children }: { children: React.ReactElement }) => children };
             })
         );

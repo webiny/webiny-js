@@ -32,7 +32,7 @@ const TextElement: React.FC<TextPropsType> = ({ element, rootClassName }) => {
 
     return (
         <ElementRoot element={element} className={classNames(className, rootClassName, typography)}>
-            {React.createElement(tag, {
+            {React.createElement(tag === "p" ? "div" : tag, {
                 dangerouslySetInnerHTML: { __html: textContent }
             })}
         </ElementRoot>
