@@ -15,7 +15,8 @@ import { NavigatorContext } from "./Navigator";
 import { PbEditorElement } from "~/types";
 
 const elementIdStyle = css({
-    textTransform: "none"
+    textTransform: "none",
+    fontSize: "80%"
 });
 
 const ElementVisibilityAction = ({ elementId }: { elementId: string }) => {
@@ -155,7 +156,7 @@ const TreeViewItem: React.FC<TreeViewItemProps> = ({ element, level, children, i
                     <Typography use={"body2"} className={"title"}>
                         {element.type}
                         {elementIdAttribute && (
-                            <span className={elementIdStyle}>{` (${elementIdAttribute})`}</span>
+                            <p className={elementIdStyle}>{` (${elementIdAttribute})`}</p>
                         )}
                     </Typography>
                     {hidden ? <ElementVisibilityAction elementId={elementId} /> : null}
