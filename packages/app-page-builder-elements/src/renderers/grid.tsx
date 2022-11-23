@@ -13,13 +13,18 @@ declare global {
     }
 }
 
-const defaultStyles = { display: "block" };
+const defaultStyles = {
+    display: "flex !important",
+    flexDirection: "row !important",
+    alignItems: "flex-start !important",
+    "> pb-grid-column": { display: "inline-block" }
+};
 
 const Grid: ElementRenderer = ({ element }) => {
     const { getClassNames, getElementClassNames, combineClassNames } = usePageElements();
     const classNames = combineClassNames(
-        getClassNames(defaultStyles),
-        getElementClassNames(element)
+        getElementClassNames(element),
+        getClassNames(defaultStyles)
     );
 
     const cellsWidths: number[] = useMemo(() => {

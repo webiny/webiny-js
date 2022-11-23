@@ -61,6 +61,7 @@ const PeText: React.FC<TextElementProps> = ({ elementId, mediumEditorOptions, ta
         <ReactMediumEditor
             elementId={elementId}
             tag={tag}
+            cl
             value={textContent}
             onChange={onChange}
             options={mediumEditorOptions}

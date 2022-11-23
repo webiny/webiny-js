@@ -6,33 +6,27 @@ declare global {
     //eslint-disable-next-line
     namespace JSX {
         interface IntrinsicElements {
-            "pb-image": any;
+            "pb-quote": any;
         }
     }
 }
 
 const defaultStyles = { display: "block" };
 
-const Image: ElementRenderer = ({ element }) => {
+const Quote: ElementRenderer = ({ element }) => {
     const { getClassNames, getElementClassNames, combineClassNames } = usePageElements();
     const classNames = combineClassNames(
         getClassNames(defaultStyles),
         getElementClassNames(element)
     );
 
-    const { src, name } = element.data.image.file;
-
-    // Image has its width / height set from its own settings.
-    const [imgClassNames] = getClassNames({
-        width: element.data.image.width,
-        height: element.data.image.height,
-    })
-
+    // It's how editor works, inserts blockquote / q tags.
     return (
-        <pb-image class={classNames}>
-            <img alt={name} src={src} className={imgClassNames} />
-        </pb-image>
+        <pb-quote
+            class={classNames}
+            dangerouslySetInnerHTML={{ __html: element.data.text.data.text }}
+        ></pb-quote>
     );
 };
 
-export const createImage = () => Image;
+export const createQuote = () => Quote;

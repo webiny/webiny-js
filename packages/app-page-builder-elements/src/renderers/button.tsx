@@ -7,6 +7,7 @@ declare global {
     namespace JSX {
         interface IntrinsicElements {
             "pb-button": any;
+            "pb-button-body": any;
             "pb-button-icon": any;
             "pb-button-text": any;
         }
@@ -21,6 +22,7 @@ interface DefaultLinkComponentProps {
     href: string;
     newTab?: boolean;
 }
+
 const DefaultLinkComponent: React.FC<DefaultLinkComponentProps> = ({ href, newTab, children }) => {
     return (
         <a href={href} target={newTab ? "_blank" : "_self"} rel={"noreferrer"}>
@@ -34,7 +36,7 @@ export const createButton = (params: CreateButtonParams = {}): ElementRenderer =
 
     // TODO @ts-refactor fix "Component definition is missing display name"
     // eslint-disable-next-line
-    const AA = ({ element }) => {
+    return ({ element }) => {
         const { buttonText, link, type, icon } = element.data;
 
         const { getElementClassNames, getThemeClassNames, combineClassNames } = usePageElements();
@@ -55,12 +57,12 @@ export const createButton = (params: CreateButtonParams = {}): ElementRenderer =
         return (
             <pb-button class={classNames}>
                 <LinkComponent {...link}>
-                    {icon && <pb-button-icon dangerouslySetInnerHTML={{ __html: icon.svg }} />}
-                    <pb-button-text>{buttonText}</pb-button-text>
+                    <pb-button-body style={{ color: "white", backgroundColor: "#fa5723" }}>
+                        {icon && <pb-button-icon dangerouslySetInnerHTML={{ __html: icon.svg }} />}
+                        <pb-button-text>{buttonText}</pb-button-text>
+                    </pb-button-body>
                 </LinkComponent>
             </pb-button>
         );
     };
-
-    return <AA/>
 };

@@ -14,10 +14,13 @@ declare global {
 const defaultStyles = { display: "block" };
 
 const Paragraph: ElementRenderer = ({ element }) => {
-    const { getClassNames, getElementClassNames, combineClassNames } = usePageElements();
+    const { getClassNames, getElementClassNames, getThemeClassNames, combineClassNames } = usePageElements();
     const classNames = combineClassNames(
         getClassNames(defaultStyles),
-        getElementClassNames(element)
+        getElementClassNames(element),
+        getThemeClassNames(theme => {
+            return theme.styles?.typography.paragraph;
+        }),
     );
 
     return (

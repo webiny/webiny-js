@@ -1,4 +1,4 @@
-import React from "react";
+ import React from "react";
 import kebabCase from "lodash/kebabCase";
 import {
     DisplayMode,
@@ -94,6 +94,7 @@ export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementP
             return typeof args.create === "function" ? args.create(defaultValue) : defaultValue;
         },
         render(props) {
+            console.log('heading index render', props)
             return <Heading {...props} mediumEditorOptions={args.mediumEditorOptions} />;
         }
     };

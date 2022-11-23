@@ -13,7 +13,12 @@ const horizontalAlign: ElementStylesModifier = ({ element, theme }) => {
 
         return {
             ...returnStyles,
-            [breakpointName]: { display: "flex", justifyContent: horizontalAlign[breakpointName] }
+            [breakpointName]: {
+                display: "flex",
+                flexDirection: "column",
+                alignItems: 'center',
+                justifyContent: horizontalAlign[breakpointName]
+            }
         };
     }, {});
 };

@@ -1,6 +1,8 @@
 import React from "react";
 import kebabCase from "lodash/kebabCase";
-import Quote, { className } from "./Quote";
+import Quote from "./Quote";
+import { className } from "./PbQuote";
+
 import {
     DisplayMode,
     PbEditorElement,
@@ -84,8 +86,8 @@ export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementP
 
             return typeof args.create === "function" ? args.create(defaultValue) : defaultValue;
         },
-        render({ element }) {
-            return <Quote elementId={element.id} mediumEditorOptions={args.mediumEditorOptions} />;
+        render(props) {
+            return <Quote {...props} mediumEditorOptions={args.mediumEditorOptions} />;
         }
     };
 };

@@ -127,7 +127,7 @@ export type Content = Element;
  * Should be a `CSSObject` object or an object with breakpoint names as keys and `CSSObject` objects as values.
  */
 export interface StylesObjects {
-    [key: string]: CSSObject | string | number;
+    [key: string]: CSSObject | string | number | undefined;
 }
 
 export interface PageElementsProviderProps {
@@ -210,6 +210,7 @@ export type ThemeBreakpoints = Record<string, Breakpoint>;
 
 export interface ThemeStyles {
     colors?: Record<string, any>;
+    borderRadius?: number;
     typography?: Record<string, StylesObjects>;
     buttons?: Record<string, StylesObjects>;
     [key: string]: any;

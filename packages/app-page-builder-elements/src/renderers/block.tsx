@@ -28,11 +28,4 @@ const Block: ElementRenderer = ({ element }) => {
     );
 };
 
-export const createBlock = (props) => {
-    if (props.x) {
-        return null;
-    }
-
-    // vracamo element
-    return <Block {...props}/>
-};
+export const createBlock = () => Block;

@@ -85,9 +85,9 @@ export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementP
 
             return typeof args.create === "function" ? args.create(defaultValue) : defaultValue;
         },
-        render({ element }) {
+        render(props) {
             return (
-                <Paragraph elementId={element.id} mediumEditorOptions={args.mediumEditorOptions} />
+                <Paragraph {...props} mediumEditorOptions={args.mediumEditorOptions} />
             );
         }
     };

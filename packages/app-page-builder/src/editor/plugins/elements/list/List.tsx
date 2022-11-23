@@ -1,33 +1,20 @@
 import React from "react";
-import classNames from "classnames";
-import Text from "~/editor/components/Text";
-import { PbEditorTextElementProps } from "~/types";
-import { getMediumEditorOptions } from "../utils/textUtils";
+import {MediumEditorOptions, PbEditorElement} from "~/types";
+import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
+import PeList from "./PeList";
+import PbList from "./PbList";
 
-export const className = classNames(
-    "webiny-pb-base-page-element-style webiny-pb-page-element-text webiny-pb-typography-list"
-);
+interface ListProps {
+    element: PbEditorElement;
+    mediumEditorOptions?: MediumEditorOptions;
+}
 
-const DEFAULT_EDITOR_OPTIONS = {
-    toolbar: {
-        buttons: ["bold", "italic", "underline", "anchor", "unorderedlist", "orderedlist"]
-    },
-    anchor: {
-        targetCheckbox: true,
-        targetCheckboxText: "Open in a new tab"
+const List: React.FC<ListProps> = props => {
+    const pageElements = usePageElements();
+    if (pageElements) {
+        return <PeList {...props} />;
     }
+    return <PbList {...props} elementId={props.element.id} />;
 };
 
-const List: React.FC<PbEditorTextElementProps> = ({ elementId, mediumEditorOptions }) => {
-    return (
-        <Text
-            elementId={elementId}
-            mediumEditorOptions={getMediumEditorOptions(
-                DEFAULT_EDITOR_OPTIONS,
-                mediumEditorOptions
-            )}
-            rootClassName={className}
-        />
-    );
-};
 export default React.memo(List);

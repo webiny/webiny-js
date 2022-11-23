@@ -75,8 +75,8 @@ const buttonElementPluginsFactory = (args: PbEditorElementPluginArgs = {}) => {
 
                 return typeof args.create === "function" ? args.create(defaultValue) : defaultValue;
             },
-            render({ element }) {
-                return <Button element={element} />;
+            render(props) {
+                return <Button {...props} />;
             }
         } as PbEditorPageElementPlugin,
         {

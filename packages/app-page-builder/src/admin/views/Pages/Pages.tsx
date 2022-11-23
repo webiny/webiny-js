@@ -72,14 +72,14 @@ const Pages: React.FC = () => {
                 {loadingLabel && <CircularProgress label={loadingLabel} />}
             </CategoriesDialog>
             <SplitView>
-                <LeftPanel>
-                    <PagesDataList
-                        canCreate={canCreate}
-                        onCreatePage={handleOnCreatePage}
-                        onImportPage={handleOnImportPage}
-                    />
-                </LeftPanel>
-                <RightPanel>
+                {/*<LeftPanel>*/}
+                {/*    <PagesDataList*/}
+                {/*        canCreate={canCreate}*/}
+                {/*        onCreatePage={handleOnCreatePage}*/}
+                {/*        onImportPage={handleOnImportPage}*/}
+                {/*    />*/}
+                {/*</LeftPanel>*/}
+                <RightPanel span={12}>
                     <PageDetails canCreate={canCreate} onCreatePage={handleOnCreatePage} />
                 </RightPanel>
             </SplitView>
