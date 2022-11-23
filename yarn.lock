@@ -12405,6 +12405,7 @@ __metadata:
     "@types/store": ^2.0.2
     "@webiny/app": ^5.33.2
     "@webiny/app-admin": ^5.33.2
+    "@webiny/app-folders": ^5.33.2
     "@webiny/app-i18n": ^5.33.2
     "@webiny/app-page-builder-elements": ^5.33.2
     "@webiny/app-plugin-admin-welcome-screen": ^5.33.2
