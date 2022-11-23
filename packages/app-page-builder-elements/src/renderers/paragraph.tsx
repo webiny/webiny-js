@@ -14,13 +14,23 @@ declare global {
 const defaultStyles = { display: "block" };
 
 const Paragraph: ElementRenderer = ({ element }) => {
-    const { getClassNames, getElementClassNames, getThemeClassNames, combineClassNames } = usePageElements();
+    const { getClassNames, getElementClassNames, getThemeClassNames, combineClassNames } =
+        usePageElements();
     const classNames = combineClassNames(
         getClassNames(defaultStyles),
         getElementClassNames(element),
         getThemeClassNames(theme => {
-            return theme.styles?.typography.paragraph;
-        }),
+            const textStyles = element.data.text;
+            return Object.keys(theme.breakpoints || {}).reduce((returnStyles, breakpointName) => {
+                if (!textStyles[breakpointName]) {
+                    return returnStyles;
+                }
+
+                const { typography } = textStyles[breakpointName];
+
+                return theme.styles?.typography?.[typography];
+            }, {});
+        })
     );
 
     return (

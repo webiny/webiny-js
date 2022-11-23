@@ -45,9 +45,17 @@ export const theme: Theme = {
         },
 
         typography: {
-            paragraph: {
+            bodyV2: {
                 fontFamily: fonts.default,
-                fontSize: 16.9,
+                fontSize: 17, // 16.9
+                color: colors.textPrimary,
+                fontWeight: 400,
+                letterSpacing: "0.45px",
+                lineHeight: "1.5rem"
+            },
+            descriptionV2: {
+                fontFamily: fonts.default,
+                fontSize: 12.5,
                 color: colors.textPrimary,
                 fontWeight: 400,
                 letterSpacing: "0.45px",
