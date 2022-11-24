@@ -12,6 +12,7 @@
     "@babel/runtime": "^7.5.5",
     "@emotion/styled": "^10.0.27",
     "@rmwc/base": "7.0.3",
+    "@rmwc/provider": "7.0.3",
     "@types/react": "17.0.39",
     "@webiny/app": "^5.33.2",
     "@webiny/app-admin": "^5.33.2",
