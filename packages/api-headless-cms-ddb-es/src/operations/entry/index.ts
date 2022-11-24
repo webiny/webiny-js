@@ -21,10 +21,7 @@ import {
     CONTENT_ENTRY_STATUS,
     StorageOperationsCmsModel
 } from "@webiny/api-headless-cms/types";
-import {
-    extractEntriesFromIndex,
-    prepareEntryToIndex
-} from "~/helpers";
+import { extractEntriesFromIndex, prepareEntryToIndex } from "~/helpers";
 import { configurations } from "~/configurations";
 import WebinyError from "@webiny/error";
 import lodashCloneDeep from "lodash/cloneDeep";
