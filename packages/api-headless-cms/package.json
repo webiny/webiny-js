@@ -37,6 +37,7 @@
     "@webiny/pubsub": "^5.33.2",
     "@webiny/utils": "^5.33.2",
     "@webiny/validation": "^5.33.2",
+    "code-frame": "^5.0.0",
     "commodo-fields-object": "^1.0.6",
     "dataloader": "^2.0.0",
     "dot-prop": "^6.0.1",
