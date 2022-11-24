@@ -9,7 +9,10 @@ export interface AccordionProps {
     /**
      * Element displayed when accordion is expanded.
      */
-    children: React.ReactElement<typeof ListItem>[] | React.ReactElement<typeof AccordionItem>[];
+    children:
+        | React.ReactElement<typeof ListItem>[]
+        | React.ReactElement<typeof AccordionItem>
+        | React.ReactElement<typeof AccordionItem>[];
 
     /**
      * Elevation number, default set to 2
