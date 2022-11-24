@@ -19,9 +19,10 @@ const Content = styled("div")({
 });
 
 const listItem = css({
-    padding: "15px 20px",
+    padding: "0 16px",
     cursor: "pointer",
     borderBottom: "1px solid var(--mdc-theme-background)",
+    height: 48,
     "&:last-child": {
         borderBottom: "none"
     },
@@ -64,20 +65,20 @@ const transitionStyles = {
     entering: {
         opacity: 0,
         height: 0,
-        padding: "20px 20px 20px 65px",
+        padding: "20px",
         pointerEvents: "auto" as any,
         overflow: "initial"
     },
     entered: {
         opacity: 1,
         height: "auto",
-        padding: "20px 20px 20px 65px",
+        padding: "20px",
         pointerEvents: "auto" as any,
         overflow: "initial"
     },
     exiting: {
         height: "auto",
-        padding: "20px 20px 20px 65px",
+        padding: "20px",
         pointerEvents: "auto" as any,
         overflow: "initial"
     }
