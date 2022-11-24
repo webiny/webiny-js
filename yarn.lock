@@ -7277,7 +7277,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rmwc/provider@npm:^7.0.3":
+"@rmwc/provider@npm:7.0.3, @rmwc/provider@npm:^7.0.3":
   version: 7.0.3
   resolution: "@rmwc/provider@npm:7.0.3"
   dependencies:
@@ -11389,6 +11389,7 @@ __metadata:
     "@babel/runtime": ^7.5.5
     "@emotion/styled": ^10.0.27
     "@rmwc/base": 7.0.3
+    "@rmwc/provider": 7.0.3
     "@types/react": 17.0.39
     "@types/react-helmet": ^6.1.5
     "@webiny/app": ^5.33.2
