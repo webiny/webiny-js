@@ -1674,7 +1674,21 @@ export interface CmsEntryListWhere {
     /**
      * This is to allow querying by any content model field defined by the user.
      */
-    [key: string]: any | CmsEntryListWhereRef;
+    [key: string]:
+        | string
+        | number
+        | boolean
+        | undefined
+        | string[]
+        | number[]
+        | null
+        | CmsEntryListWhere[]
+        | CmsEntryListWhereRef;
+    /**
+     * To allow querying via nested queries, we added the AND / OR properties.
+     */
+    AND?: CmsEntryListWhere[];
+    OR?: CmsEntryListWhere[];
 }
 
 /**

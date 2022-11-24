@@ -100,6 +100,9 @@ export default /* GraphQL */ `
         rating_gte: Number
         
         author: RefFieldWhereInput
+
+        AND: [ReviewListWhereInput!]
+        OR: [ReviewListWhereInput!]
     }
 
     type ReviewResponse {

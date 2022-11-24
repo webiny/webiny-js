@@ -197,6 +197,9 @@ export default /* GraphQL */ `
         availableSizes_not_in: [String]
         availableSizes_contains: String
         availableSizes_not_contains: String
+
+        AND: [ProductListWhereInput!]
+        OR: [ProductListWhereInput!]
     }
 
     type ProductResponse {
