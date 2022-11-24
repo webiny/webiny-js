@@ -4,6 +4,7 @@ import useDeepCompareEffect from "use-deep-compare-effect";
 import {
     CmsEditorField,
     CmsEditorFieldId,
+    CmsEditorFieldRendererPlugin,
     CmsEditorFieldsLayout,
     CmsEditorFieldTypePlugin,
     FieldLayoutPosition
@@ -58,6 +59,9 @@ interface GetFieldPluginCallable {
 interface GetFieldCallable {
     (query: GetFieldParams): CmsEditorField | undefined;
 }
+interface GetFieldRendererCallable {
+    (rendererName: string): CmsEditorFieldRendererPlugin | undefined;
+}
 interface OnFieldDropCallable {
     (source: Partial<DragSource>, target: DropTarget): void;
 }
@@ -93,6 +97,7 @@ export interface FieldEditorContextValue {
     getFieldsInLayout: GetFieldsInLayoutCallable;
     getFieldPlugin: GetFieldPluginCallable;
     getField: GetFieldCallable;
+    getFieldRendererPlugin: GetFieldRendererCallable;
     editField: (field: CmsEditorField | null) => void;
     field: CmsEditorField | null;
     parent?: CmsEditorField;
@@ -283,6 +288,12 @@ export const FieldEditorProvider: React.FC<FieldEditorProviderProps> = ({
             .find(plugin => plugin.field.type === type);
     };
 
+    const getFieldRendererPlugin: GetFieldRendererCallable = name => {
+        return plugins
+            .byType<CmsEditorFieldRendererPlugin>("cms-editor-field-renderer")
+            .find(plugin => plugin.renderer.rendererName === name);
+    };
+
     /**
      * Checks if field of given type already exists in the list of fields.
      */
@@ -403,11 +414,12 @@ export const FieldEditorProvider: React.FC<FieldEditorProviderProps> = ({
         [fields.map(f => f.fieldId).join(".")]
     );
 
-    const value = {
+    const value: FieldEditorContextValue = {
         parent,
         depth,
         getFieldsInLayout,
         getFieldPlugin,
+        getFieldRendererPlugin,
         getField,
         editField,
         field: state.field,
