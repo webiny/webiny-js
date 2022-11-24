@@ -22,14 +22,30 @@ export class ElasticsearchQueryBuilderOperatorEqualPlugin extends ElasticsearchQ
             });
             return;
         }
+        const typeOf = typeof value;
+        /**
+         * If value is a number or boolean, use filtering instead of must/term
+         */
+        if (typeOf === "number" || typeOf === "boolean") {
+            query.filter.push({
+                term: {
+                    [basePath]: value
+                }
+            });
+            return;
+        }
         /**
          * In case we are searching for a string, use regular path.
-         * Otherwise use base path
+         * Otherwise use base path.
          */
-        const useBasePath = typeof value !== "string";
-        query.must.push({
+        const useBasePath = typeOf !== "string";
+        const valuePath = useBasePath ? basePath : path;
+        /**
+         * String or something else.
+         */
+        query.filter.push({
             term: {
-                [useBasePath ? basePath : path]: value
+                [valuePath]: value
             }
         });
     }

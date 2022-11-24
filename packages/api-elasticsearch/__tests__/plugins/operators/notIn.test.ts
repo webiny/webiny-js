@@ -9,6 +9,7 @@ describe("ElasticsearchQueryBuilderOperatorNotInPlugin", () => {
         const query = createBlankQuery();
 
         plugin.apply(query, {
+            name: "name",
             basePath: "name",
             path: "name.keyword",
             value: ["John", "Doe", "P."],
@@ -34,13 +35,14 @@ describe("ElasticsearchQueryBuilderOperatorNotInPlugin", () => {
 
         expect(() => {
             plugin.apply(query, {
+                name: "name",
                 basePath: "name",
                 path: "name.keyword",
                 value: "somethingString",
                 keyword: true
             });
         }).toThrow(
-            `You cannot filter field path "name" with not_in and not send an array of values.`
+            `You cannot filter field "name" with "not_in" operator and not send an array of values.`
         );
     });
 
@@ -49,6 +51,7 @@ describe("ElasticsearchQueryBuilderOperatorNotInPlugin", () => {
 
         expect(() => {
             plugin.apply(query, {
+                name: "name",
                 basePath: "name",
                 path: "name.keyword",
                 value: {
@@ -57,7 +60,7 @@ describe("ElasticsearchQueryBuilderOperatorNotInPlugin", () => {
                 keyword: true
             });
         }).toThrow(
-            `You cannot filter field path "name" with not_in and not send an array of values.`
+            `You cannot filter field "name" with "not_in" operator and not send an array of values.`
         );
     });
 });

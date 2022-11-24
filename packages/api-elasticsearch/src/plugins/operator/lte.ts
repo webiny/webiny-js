@@ -13,7 +13,7 @@ export class ElasticsearchQueryBuilderOperatorLesserThanOrEqualToPlugin extends 
         params: ElasticsearchQueryBuilderArgsPlugin
     ): void {
         const { value, basePath } = params;
-        query.must.push({
+        query.filter.push({
             range: {
                 [basePath]: {
                     lte: value

@@ -30,7 +30,7 @@ export class ElasticsearchQueryBuilderOperatorAndInPlugin extends ElasticsearchQ
         }
 
         for (const value of values) {
-            query.must.push({
+            query.filter.push({
                 term: {
                     [useBasePath ? basePath : path]: value
                 }
