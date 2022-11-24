@@ -22,7 +22,6 @@ import {
     StorageOperationsCmsModel
 } from "@webiny/api-headless-cms/types";
 import {
-    createElasticsearchQueryBody,
     extractEntriesFromIndex,
     prepareEntryToIndex
 } from "~/helpers";
@@ -42,12 +41,19 @@ import {
     createRevisionSortKey
 } from "~/operations/entry/keys";
 import { queryAll, queryOne, QueryOneParams } from "@webiny/db-dynamodb/utils/query";
-import { createLimit, encodeCursor, compress, decompress } from "@webiny/api-elasticsearch";
+import {
+    createLimit,
+    encodeCursor,
+    compress,
+    decompress,
+    decodeCursor
+} from "@webiny/api-elasticsearch";
 import { get as getRecord } from "@webiny/db-dynamodb/utils/get";
 import { zeroPad } from "@webiny/utils";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import { ElasticsearchSearchResponse } from "@webiny/api-elasticsearch/types";
 import { CmsIndexEntry } from "~/types";
+import { createElasticsearchBody } from "~/operations/entry/elasticsearch/body";
 
 const createType = (): string => {
     return "cms.entry";
@@ -803,7 +809,7 @@ export const createEntriesStorageOperations = (
             const result = await elasticsearch.indices.exists({
                 index
             });
-            if (!result || !result.body) {
+            if (!result?.body) {
                 return {
                     hasMoreItems: false,
                     totalCount: 0,
@@ -822,17 +828,17 @@ export const createEntriesStorageOperations = (
             );
         }
 
-        const body = createElasticsearchQueryBody({
+        const body = createElasticsearchBody({
             model,
-            args: {
+            params: {
                 ...params,
-                limit
+                limit,
+                after: decodeCursor(params.after)
             },
-            plugins,
-            parentPath: "values"
+            plugins
         });
 
-        let response: ElasticsearchSearchResponse;
+        let response: ElasticsearchSearchResponse<CmsIndexEntry>;
         try {
             response = await elasticsearch.search({
                 index,
@@ -847,7 +853,7 @@ export const createEntriesStorageOperations = (
             });
         }
 
-        const { hits, total } = response.body.hits;
+        const { hits, total } = response?.body?.hits || {};
 
         const items = extractEntriesFromIndex({
             plugins,
