@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { TextField, TextFieldProps } from "@rmwc/textfield";
 import { FormElementMessage } from "~/FormElementMessage";
 import pick from "lodash/pick";
@@ -50,8 +50,7 @@ export type InputProps = FormComponentProps &
  */
 const webinyInputStyles = css`
     .mdc-text-field__input:-webkit-autofill + .mdc-floating-label {
-            transform: translateY(-106%) scale(0.75);
-        }
+        transform: translateY(-106%) scale(0.75);
     }
 `;
 
@@ -60,109 +59,113 @@ const webinyInputStyles = css`
  * Additionally, with rows prop, it can also be turned into a text area, to store longer strings.
  */
 
-export class Input extends React.Component<InputProps> {
-    static defaultProps: InputProps = {
-        rawOnChange: false
-    };
+// IconProps directly passed to RMWC
+const rmwcProps = [
+    "label",
+    "type",
+    "step",
+    "disabled",
+    "readOnly",
+    "placeholder",
+    "outlined",
+    "onKeyDown",
+    "onKeyPress",
+    "onKeyUp",
+    "onFocus",
+    "rootProps",
+    "fullwidth",
+    "inputRef",
+    "className",
+    "maxLength",
+    "characterCount"
+];
 
-    // IconProps directly passed to RMWC
-    static rmwcProps = [
-        "label",
-        "type",
-        "step",
-        "disabled",
-        "readOnly",
-        "placeholder",
-        "outlined",
-        "onKeyDown",
-        "onKeyPress",
-        "onKeyUp",
-        "onFocus",
-        "rootProps",
-        "fullwidth",
-        "inputRef",
-        "className",
-        "maxLength",
-        "characterCount"
-    ];
+export const Input: React.FC<InputProps> = props => {
+    const onChange = useCallback(
+        (e: React.SyntheticEvent<HTMLInputElement>) => {
+            const { onChange, rawOnChange } = props;
+            if (!onChange) {
+                return;
+            }
 
-    onChange = (e: React.SyntheticEvent<HTMLInputElement>) => {
-        const { onChange, rawOnChange } = this.props;
-        if (!onChange) {
-            return;
-        }
+            // @ts-ignore
+            onChange(rawOnChange ? e : e.target.value);
+        },
+        [props.onChange, props.rawOnChange]
+    );
 
-        // @ts-ignore
-        onChange(rawOnChange ? e : e.target.value);
-    };
+    const onBlur = useCallback(
+        async (e: React.SyntheticEvent<HTMLInputElement>) => {
+            const { validate, onBlur } = props;
+            if (validate) {
+                // Since we are accessing event in an async operation, we need to persist it.
+                // See https://reactjs.org/docs/events.html#event-pooling.
+                e.persist();
+                await validate();
+            }
+            onBlur && onBlur(e);
+        },
+        [props.validate, props.onBlur]
+    );
 
-    onBlur = async (e: React.SyntheticEvent<HTMLInputElement>) => {
-        const { validate, onBlur } = this.props;
-        if (validate) {
-            // Since we are accessing event in an async operation, we need to persist it.
-            // See https://reactjs.org/docs/events.html#event-pooling.
-            e.persist();
-            await validate();
-        }
-        onBlur && onBlur(e);
-    };
+    const {
+        autoFocus,
+        value,
+        label,
+        description,
+        placeholder,
+        rows,
+        validation,
+        icon,
+        trailingIcon,
+        onEnter,
+        ...rest
+    } = props;
 
-    public override render() {
-        const {
-            autoFocus,
-            value,
-            label,
-            description,
-            placeholder,
-            rows,
-            validation,
-            icon,
-            trailingIcon,
-            onEnter,
-            ...props
-        } = this.props;
-
-        let inputValue = value;
-        if (value === null || typeof value === "undefined") {
-            inputValue = "";
-        }
-
-        const { isValid: validationIsValid, message: validationMessage } = validation || {};
-
-        return (
-            <React.Fragment>
-                <TextField
-                    {...pick(props, Input.rmwcProps)}
-                    onKeyDown={(e, ...rest) => {
-                        if (typeof onEnter === "function" && e.key === "Enter") {
-                            onEnter();
-                        }
-
-                        if (typeof props.onKeyDown === "function") {
-                            return props.onKeyDown(e, ...rest);
-                        }
-                    }}
-                    autoFocus={autoFocus}
-                    textarea={Boolean(rows)}
-                    value={inputValue}
-                    onChange={this.onChange}
-                    onBlur={this.onBlur}
-                    label={label}
-                    icon={icon}
-                    placeholder={(!label && placeholder) || undefined}
-                    trailingIcon={trailingIcon}
-                    rows={this.props.rows}
-                    className={classNames("webiny-ui-input", webinyInputStyles)}
-                    data-testid={props["data-testid"]}
-                />
-
-                {validationIsValid === false && (
-                    <FormElementMessage error>{validationMessage}</FormElementMessage>
-                )}
-                {validationIsValid !== false && description && (
-                    <FormElementMessage>{description}</FormElementMessage>
-                )}
-            </React.Fragment>
-        );
+    let inputValue = value;
+    if (value === null || typeof value === "undefined") {
+        inputValue = "";
     }
-}
+
+    const { isValid: validationIsValid, message: validationMessage } = validation || {};
+
+    const inputOnKeyDown = useCallback(e => {
+        if (typeof onEnter === "function" && e.key === "Enter") {
+            onEnter();
+        }
+
+        if (typeof rest.onKeyDown === "function") {
+            return rest.onKeyDown(e);
+        }
+    }, []);
+
+    return (
+        <React.Fragment>
+            <TextField
+                {...pick(rest, rmwcProps)}
+                onKeyDown={inputOnKeyDown}
+                autoFocus={autoFocus}
+                textarea={Boolean(rows)}
+                value={inputValue}
+                onChange={onChange}
+                onBlur={onBlur}
+                label={label}
+                icon={icon}
+                placeholder={(!label && placeholder) || undefined}
+                trailingIcon={trailingIcon}
+                rows={rows}
+                className={classNames("webiny-ui-input", webinyInputStyles)}
+                data-testid={props["data-testid"]}
+            />
+
+            {validationIsValid === false && (
+                <FormElementMessage error>{validationMessage}</FormElementMessage>
+            )}
+            {validationIsValid !== false && description && (
+                <FormElementMessage>{description}</FormElementMessage>
+            )}
+        </React.Fragment>
+    );
+};
+
+Input.defaultProps = { rawOnChange: false };
