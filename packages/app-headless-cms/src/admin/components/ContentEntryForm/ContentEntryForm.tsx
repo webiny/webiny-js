@@ -74,7 +74,7 @@ export const ContentEntryForm: React.FC<ContentEntryFormProps> = ({ onForm, ...p
         }
 
         formElementRef.current.scrollTo(0, 0);
-    }, [initialData.id]);
+    }, [initialData.id, formElementRef.current]);
 
     const formRenderer = plugins
         .byType<CmsContentFormRendererPlugin>("cms-content-form-renderer")
@@ -114,32 +114,34 @@ export const ContentEntryForm: React.FC<ContentEntryFormProps> = ({ onForm, ...p
         [formRenderer]
     );
 
-    const formOnSubmit = useCallback((data, form) => {
+    const onFormSubmit = useCallback((data, form) => {
         setIsDirty(false);
-        onSubmit(data, form);
-    }, []);
+        return onSubmit(data, form);
+    }, [onSubmit])
 
-    const formOnChange = useCallback((data, form) => {
+    const onFormInvalid = useCallback(() => {
+        setIsDirty(true);
+        showSnackbar(
+            "You have fields that did not pass the validation. Please check the form."
+        );
+    }, [])
+
+    const onFormChange = useCallback((data, form) => {
         const different = isDifferent(data, initialData);
         if (isDirty !== different) {
             setIsDirty(different);
         }
-        onChange(data, form);
-    }, []);
-
-    const formOnInvalid = useCallback(() => {
-        setIsDirty(true);
-        showSnackbar("You have fields that did not pass the validation. Please check the form.");
-    }, []);
+        return onChange(data, form);
+    }, [onChange, initialData]);
 
     return (
         <Form
-            onChange={formOnChange}
-            onSubmit={formOnSubmit}
+            onChange={onFormChange}
+            onSubmit={onFormSubmit}
             data={initialData}
             ref={ref}
             invalidFields={invalidFields}
-            onInvalid={formOnInvalid}
+            onInvalid={onFormInvalid}
         >
             {formProps => {
                 return (
