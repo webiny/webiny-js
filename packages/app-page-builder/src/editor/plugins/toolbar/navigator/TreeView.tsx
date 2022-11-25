@@ -156,7 +156,7 @@ const TreeViewItem: React.FC<TreeViewItemProps> = ({ element, level, children, i
                     <Typography use={"body2"} className={"title"}>
                         {element.type}
                         {elementIdAttribute && (
-                            <p className={elementIdStyle}>{` (${elementIdAttribute})`}</p>
+                            <p className={elementIdStyle}>{`#${elementIdAttribute}`}</p>
                         )}
                     </Typography>
                     {hidden ? <ElementVisibilityAction elementId={elementId} /> : null}
