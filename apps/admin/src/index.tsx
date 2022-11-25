@@ -3,8 +3,8 @@ import "core-js/stable";
 import "regenerator-runtime/runtime";
 import React from "react";
 import ReactDOM from "react-dom";
-import { AppFolders } from "./App.folders";
+import { App } from "./App";
 import "./plugins";
 
 const render = module.hot ? ReactDOM.render : ReactDOM.hydrate;
-render(<AppFolders />, document.getElementById("root"));
+render(<App />, document.getElementById("root"));
