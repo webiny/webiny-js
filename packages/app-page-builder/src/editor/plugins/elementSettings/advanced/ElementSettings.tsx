@@ -1,6 +1,7 @@
 import React from "react";
 import { merge } from "dot-prop-immutable";
 import { renderPlugins } from "@webiny/app/plugins";
+import { plugins } from "@webiny/plugins";
 import { Form, FormRenderPropParams } from "@webiny/form";
 import { PbEditorPageElementAdvancedSettingsPlugin } from "~/types";
 import { useUpdateElement } from "~/editor/hooks/useUpdateElement";
@@ -12,8 +13,19 @@ export const ElementSettings: React.FC = () => {
     const [element] = useActiveElement();
     const updateElement = useUpdateElement();
 
-    const onSubmit = (formData: FormData) => {
-        updateElement(merge(element, "data", formData));
+    const onSubmit = async (formData: FormData) => {
+        const plugin = plugins
+            .byType<PbEditorPageElementAdvancedSettingsPlugin>(
+                "pb-editor-page-element-advanced-settings"
+            )
+            .find(pl => pl.elementType === element?.type && typeof pl?.onSave === "function");
+
+        let modifiedFormData = null;
+        if (typeof plugin?.onSave === "function") {
+            modifiedFormData = await plugin.onSave(formData);
+        }
+
+        updateElement(merge(element, "data", modifiedFormData || formData));
     };
 
     if (!element) {
