@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 
 import { FolderDialogCreate, useFolders, useLinks } from "@webiny/app-folders";
 
@@ -15,6 +15,7 @@ import { useCanCreatePage } from "~/admin/views/Pages/hooks/useCanCreate";
 import { FOLDER_ID_DEFAULT, FOLDER_TYPE } from "~/admin/constants/folders";
 import { Preview } from "~/admin/components/Table/Preview";
 import { useRouter } from "@webiny/react-router";
+import useDeepCompareEffect from "use-deep-compare-effect";
 
 interface Props {
     folderId?: string;
@@ -70,10 +71,11 @@ export const Main = ({ folderId }: Props) => {
 
     const canCreate = useCanCreatePage();
 
-    useEffect(() => {
+    useDeepCompareEffect(() => {
+        console.log("useDeepCompareEffect", folders);
         const subFolders = getCurrentFolderList(folders, folderId);
         setSubFolders(subFolders);
-    }, [folders.map(folder => folder.parentId).join("."), folderId]);
+    }, [Object.assign({}, folders), folderId]);
 
     const { createPageMutation } = useCreatePage({
         setLoadingLabel: () => setLoadingLabel(LoadingLabel.CREATING_PAGE),

@@ -76,6 +76,7 @@
     "store": "^2.0.12",
     "timeago-react": "^2.0.0",
     "uniqid": "^5.0.3",
+    "use-deep-compare-effect": "^1.6.1",
     "warning": "^4.0.2"
   },
   "devDependencies": {
