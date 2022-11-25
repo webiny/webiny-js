@@ -26,13 +26,17 @@ export function usePbWebsiteSettings() {
     const { history } = useRouter();
 
     const { data, loading: queryInProgress } = useQuery<GetSettingsQueryResponse>(GET_SETTINGS);
-    const settings: GetSettingsResponseData = get(data, "pageBuilder.getSettings.data", {});
+    const settings = get(
+        data,
+        "pageBuilder.getSettings.data",
+        {}
+    ) as unknown as GetSettingsResponseData;
 
-    const defaultSettings: GetSettingsResponseData = get(
+    const defaultSettings = get(
         data,
         "pageBuilder.getDefaultSettings.data",
         {}
-    );
+    ) as unknown as GetSettingsResponseData;
 
     const [update, { loading: mutationInProgress }] = useMutation<
         UpdateSettingsMutationResponse,

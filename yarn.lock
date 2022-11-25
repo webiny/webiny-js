@@ -9035,7 +9035,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/lodash@npm:*, @types/lodash@npm:^4.14.178":
+"@types/lodash@npm:*, @types/lodash@npm:^4.14.178, @types/lodash@npm:^4.14.190":
   version: 4.14.190
   resolution: "@types/lodash@npm:4.14.190"
   checksum: 353a55a1222a57224ead8bd3379fabb2e3e3f6685f599c48b1b66f099d8e9e015e6c6352c6e2275954004c3bb510377804c63117233c6f187700b6ab78adfa02
@@ -13139,7 +13139,7 @@ __metadata:
     "@testing-library/react": ^12.1.5
     "@testing-library/user-event": ^12.8.3
     "@types/invariant": ^2.2.35
-    "@types/lodash": ^4.14.178
+    "@types/lodash": ^4.14.190
     "@webiny/cli": ^5.33.2
     "@webiny/project-utils": ^5.33.2
     "@webiny/validation": ^5.33.2
@@ -13331,7 +13331,7 @@ __metadata:
     "@babel/register": ^7.16.0
     "@babel/runtime": ^7.19.0
     "@types/accounting": ^0.4.2
-    "@types/lodash": ^4.14.178
+    "@types/lodash": ^4.14.190
     "@webiny/cli": ^5.33.2
     "@webiny/project-utils": ^5.33.2
     accounting: ^0.4.1
@@ -13501,7 +13501,7 @@ __metadata:
     "@babel/core": ^7.19.3
     "@pulumi/aws": ^5.8.0
     "@pulumi/pulumi": ^3.34.0
-    "@types/lodash": ^4.14.178
+    "@types/lodash": ^4.14.190
     "@types/node": "*"
     "@webiny/cli": ^5.33.2
     "@webiny/project-utils": ^5.33.2
@@ -13524,7 +13524,7 @@ __metadata:
     "@babel/cli": ^7.19.3
     "@babel/core": ^7.19.3
     "@pulumi/pulumi": ^3.34.0
-    "@types/lodash": ^4.14.178
+    "@types/lodash": ^4.14.190
     "@types/node": ^10.0.0
     "@webiny/cli": ^5.33.2
     "@webiny/project-utils": ^5.33.2
@@ -13857,7 +13857,7 @@ __metadata:
     "@babel/preset-env": ^7.19.4
     "@babel/preset-typescript": ^7.18.6
     "@babel/runtime": ^7.19.0
-    "@types/lodash": ^4.14.178
+    "@types/lodash": ^4.14.190
     "@webiny/cli": ^5.33.2
     "@webiny/project-utils": ^5.33.2
     babel-plugin-lodash: ^3.3.4
