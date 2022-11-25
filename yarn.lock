@@ -28011,13 +28011,13 @@ __metadata:
   linkType: hard
 
 "light-my-request@npm:^5.6.1":
-  version: 5.6.1
-  resolution: "light-my-request@npm:5.6.1"
+  version: 5.7.0
+  resolution: "light-my-request@npm:5.7.0"
   dependencies:
     cookie: ^0.5.0
     process-warning: ^2.0.0
     set-cookie-parser: ^2.4.1
-  checksum: c527702045c23150a2805b2f3a421e398bfa660733aaefb5e110e568bb4d323ff6a46212623cba43c000421c36ac6da5f5a37029603a60d6db68fbd25551bc8b
+  checksum: 3da727736c03b89d1eac4b3cebc9de3d8b725a1485fb86f63b450715fa1cb7f049d7df391b831eb9ec352287fd58f1948835c1e1e78444f193eb0a9c90216aed
   languageName: node
   linkType: hard
 
