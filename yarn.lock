@@ -12734,7 +12734,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/cli-plugin-deploy-pulumi@^5.33.1, @webiny/cli-plugin-deploy-pulumi@^5.33.2, @webiny/cli-plugin-deploy-pulumi@workspace:packages/cli-plugin-deploy-pulumi":
+"@webiny/cli-plugin-deploy-pulumi@^5.33.2, @webiny/cli-plugin-deploy-pulumi@workspace:packages/cli-plugin-deploy-pulumi":
   version: 0.0.0-use.local
   resolution: "@webiny/cli-plugin-deploy-pulumi@workspace:packages/cli-plugin-deploy-pulumi"
   dependencies:
@@ -14771,7 +14771,7 @@ __metadata:
     "@webiny/api-tenant-manager": ^5.33.2
     "@webiny/api-wcp": ^5.33.2
     "@webiny/cli": ^5.33.2
-    "@webiny/cli-plugin-deploy-pulumi": ^5.33.1
+    "@webiny/cli-plugin-deploy-pulumi": ^5.33.2
     "@webiny/db-dynamodb": ^5.33.2
     "@webiny/handler-aws": ^5.33.2
     "@webiny/handler-db": ^5.33.2

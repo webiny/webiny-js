@@ -44,7 +44,7 @@
     "@webiny/project-utils": "^5.33.2"
   },
   "devDependencies": {
-    "@webiny/cli-plugin-deploy-pulumi": "^5.33.1",
+    "@webiny/cli-plugin-deploy-pulumi": "^5.33.2",
     "graphql-request": "^3.4.0"
   },
   "adio": {
