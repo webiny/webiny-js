@@ -9,13 +9,13 @@ import { CircularProgress } from "@webiny/ui/Progress";
 import { Form } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import { i18n } from "@webiny/app/i18n";
+import { useSnackbar } from "@webiny/app-admin";
 
 import { useFolders } from "~/hooks/useFolders";
 
 import { CreateDialogContainer, CreateDialogActions } from "./styled";
 
 import { FolderItem } from "~/types";
-import { useSnackbar } from "@webiny/app-admin";
 
 type Props = {
     type: string;
@@ -41,7 +41,7 @@ export const FolderDialogCreate: React.FC<Props> = ({ type, onClose, open, paren
                 ...(typeof parentId !== "undefined" && { parentId })
             });
             setDialogOpen(false);
-            showSnackbar(t("Folder created successfully!"));
+            showSnackbar(t`Folder created successfully!`);
         } catch (error) {
             showSnackbar(error.message);
         }
@@ -74,7 +74,7 @@ export const FolderDialogCreate: React.FC<Props> = ({ type, onClose, open, paren
                     {({ Bind, submit }) => (
                         <>
                             {loading.CREATE_FOLDER && (
-                                <CircularProgress label={"Creating folder..."} />
+                                <CircularProgress label={t`Creating folder...`} />
                             )}
                             <DialogTitle>{t`Create a new folder`}</DialogTitle>
                             <DialogContent>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 import {
     DropOptions,
@@ -10,6 +10,7 @@ import {
 } from "@minoru/react-dnd-treeview";
 import { useSnackbar } from "@webiny/app-admin";
 import { DndProvider } from "react-dnd";
+import useDeepCompareEffect from "use-deep-compare-effect";
 
 import { useFolders } from "~/hooks/useFolders";
 
@@ -98,12 +99,12 @@ export const FolderTree: React.FC<Props> = ({
     const [initialOpenList, setInitialOpenList] = useState<undefined | InitialOpen>(undefined);
     const { showSnackbar } = useSnackbar();
 
-    useEffect(() => {
+    useDeepCompareEffect(() => {
         if (folders) {
             setTreeData(createTreeData(folders, focusedFolderId));
             setInitialOpenList(createInitialOpenList(folders, focusedFolderId));
         }
-    }, [folders, focusedFolderId]);
+    }, [Object.assign({}, folders), focusedFolderId]);
 
     const handleDrop = async (
         newTree: NodeModel<DndItemData>[],

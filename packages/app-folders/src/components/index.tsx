@@ -1,2 +1,2 @@
-export * from "./DialogCreate";
+export * from "./Dialogs";
 export * from "./Tree";
