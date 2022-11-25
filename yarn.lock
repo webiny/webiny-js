@@ -13397,6 +13397,7 @@ __metadata:
     "@webiny/global-config": ^5.33.2
     "@webiny/telemetry": ^5.33.2
     babel-loader: 8.2.3
+    babel-plugin-dynamic-import-node: ^2.3.3
     babel-plugin-lodash: 3.3.4
     buffer: ^6.0.3
     camelcase: 5.3.1
@@ -15865,7 +15866,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"babel-plugin-dynamic-import-node@npm:^2.0.0":
+"babel-plugin-dynamic-import-node@npm:^2.3.3":
   version: 2.3.3
   resolution: "babel-plugin-dynamic-import-node@npm:2.3.3"
   dependencies:
@@ -35693,7 +35694,6 @@ __metadata:
     babel-core: ^7.0.0-bridge.0
     babel-eslint: ^10.1.0
     babel-jest: ^28.1.2
-    babel-plugin-dynamic-import-node: ^2.0.0
     babel-plugin-macros: ^3.0.1
     babel-plugin-module-resolver: ^4.1.0
     bufferutil: ^4.0.1
