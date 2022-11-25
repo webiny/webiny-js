@@ -37,31 +37,6 @@ export const createFoldersContext = async ({
     getIdentity,
     storageOperations
 }: FoldersConfig): Promise<IFolders> => {
-    const checkFolderExists = async ({
-        tenant,
-        locale,
-        type,
-        slug,
-        parentId
-    }: Pick<Folder, "tenant" | "locale" | "type" | "slug" | "parentId">): Promise<void> => {
-        const existing = await storageOperations.getFolder({
-            tenant,
-            locale,
-            type,
-            slug,
-            parentId
-        });
-
-        if (existing) {
-            throw new WebinyError(
-                `Folder with slug "${slug}" already exists at this level.`,
-                "FOLDER_EXISTS"
-            );
-        }
-
-        return;
-    };
-
     return {
         async getFolder({ id }: GetFolderParams): Promise<Folder> {
             const tenant = getTenantId();
@@ -109,7 +84,20 @@ export const createFoldersContext = async ({
             const locale = getLocaleCode();
             const { type, slug, parentId } = input;
 
-            await checkFolderExists({ tenant, locale, type, slug, parentId });
+            const existing = await storageOperations.getFolder({
+                tenant,
+                locale,
+                type,
+                slug,
+                parentId
+            });
+
+            if (existing) {
+                throw new WebinyError(
+                    `Folder with slug "${slug}" already exists at this level.`,
+                    "FOLDER_EXISTS"
+                );
+            }
 
             const identity = getIdentity();
 
@@ -151,13 +139,21 @@ export const createFoldersContext = async ({
                 throw new NotFoundError(`Folder "${id}" was not found!`);
             }
 
-            await checkFolderExists({
+            const existing = await storageOperations.getFolder({
                 tenant,
                 locale,
                 type: original.type,
                 slug: slug || original.slug,
                 parentId: parentId !== undefined ? parentId : original.parentId // parentId can be `null`
             });
+
+            // Check if another folder exists already inside the target
+            if (existing && existing?.id !== id) {
+                throw new WebinyError(
+                    `Folder with slug "${slug}" already exists at this level.`,
+                    "FOLDER_EXISTS"
+                );
+            }
 
             const folder: Folder = {
                 ...original,
