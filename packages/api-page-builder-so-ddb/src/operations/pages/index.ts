@@ -836,7 +836,7 @@ export const createPageStorageOperations = (
         }
 
         const tags = pages.reduce((collection, page) => {
-            let list: string[] = lodashGet(page, "settings.general.tags");
+            let list: string[] = lodashGet(page, "settings.general.tags") as unknown as string[];
             if (!list || list.length === 0) {
                 return collection;
             } else if (where.search) {
