@@ -95,6 +95,7 @@ export const Table = ({
 
         const dataset = orderBy([...foldersData, ...pagesData], ["type", "name"], ["asc", "asc"]);
         setData(dataset);
+        // TODO: remove Object.assign in favour of straight arrays
     }, [Object.assign({}, folders), Object.assign({}, pages)]);
 
     const columns: Columns<Entry> = {

@@ -75,6 +75,7 @@ export const Main = ({ folderId }: Props) => {
         console.log("useDeepCompareEffect", folders);
         const subFolders = getCurrentFolderList(folders, folderId);
         setSubFolders(subFolders);
+        // TODO: remove Object.assign in favour of folders array
     }, [Object.assign({}, folders), folderId]);
 
     const { createPageMutation } = useCreatePage({
