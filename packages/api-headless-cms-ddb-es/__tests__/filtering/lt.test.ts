@@ -20,6 +20,7 @@ describe("lesser than filter", () => {
         };
 
         applyFiltering({
+            plugins: plugins.container,
             fields,
             query,
             where,

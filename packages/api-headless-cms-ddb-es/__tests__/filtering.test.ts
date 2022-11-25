@@ -1,39 +1,16 @@
 import { CmsEntryListWhere } from "@webiny/api-headless-cms/types";
-import { createBaseQuery } from "~/operations/entry/elasticsearch/initialQuery";
 import { applyFiltering } from "~/operations/entry/elasticsearch/filtering";
 import { ElasticsearchBoolQueryConfig } from "@webiny/api-elasticsearch/types";
-import { getElasticsearchOperators } from "@webiny/api-elasticsearch";
-import {
-    ElasticsearchQueryBuilderOperatorPlugins,
-    ElasticsearchQuerySearchValuePlugins
-} from "~/operations/entry/elasticsearch/types";
-import { createOperatorPluginList } from "~/operations/entry/elasticsearch/plugins/operator";
-import { PluginsContainer } from "@webiny/plugins";
-import { createSearchPluginList } from "~/operations/entry/elasticsearch/plugins/search";
-import { createFields } from "./filtering/mocks";
+import { createFields, createPlugins, createQuery, Plugins } from "./filtering/mocks";
 
 describe("convert where to elasticsearch query", () => {
-    const buildElasticsearchOperatorPlugins = () => {
-        return createOperatorPluginList({
-            plugins: new PluginsContainer(getElasticsearchOperators()),
-            locale: "en-US"
-        });
-    };
+    let plugins: Plugins;
 
-    const buildElasticsearchSearchPlugins = (): ElasticsearchQuerySearchValuePlugins => {
-        return createSearchPluginList({
-            plugins: new PluginsContainer()
-        });
-    };
-
-    let searchPlugins: ElasticsearchQuerySearchValuePlugins;
-    let operatorPlugins: ElasticsearchQueryBuilderOperatorPlugins;
     let query: ElasticsearchBoolQueryConfig;
 
     beforeEach(() => {
-        searchPlugins = buildElasticsearchSearchPlugins();
-        operatorPlugins = buildElasticsearchOperatorPlugins();
-        query = createBaseQuery();
+        plugins = createPlugins();
+        query = createQuery();
     });
 
     it("should add root level query conditions", async () => {
@@ -61,8 +38,9 @@ describe("convert where to elasticsearch query", () => {
             fields: createFields(),
             query,
             where,
-            operatorPlugins,
-            searchPlugins
+            searchPlugins: plugins.search,
+            operatorPlugins: plugins.operators,
+            plugins: plugins.container
         });
 
         const expected: ElasticsearchBoolQueryConfig = {
@@ -85,14 +63,14 @@ describe("convert where to elasticsearch query", () => {
                 },
                 {
                     range: {
-                        "values.dateStorage": {
+                        "values.dateStorageId": {
                             gte: "2022-01-01"
                         }
                     }
                 },
                 {
                     terms: {
-                        "values.dateStorage": [
+                        "values.dateStorageId": [
                             "2022-02-01",
                             "2022-03-01",
                             "2022-04-01",
@@ -105,7 +83,7 @@ describe("convert where to elasticsearch query", () => {
                 },
                 {
                     range: {
-                        "values.dateStorage": {
+                        "values.dateStorageId": {
                             gte: "2022-07-07",
                             lte: "2022-12-07"
                         }
@@ -128,7 +106,7 @@ describe("convert where to elasticsearch query", () => {
                 },
                 {
                     range: {
-                        "values.dateStorage": {
+                        "values.dateStorageId": {
                             gte: "2022-08-07",
                             lte: "2022-08-08"
                         }
@@ -136,7 +114,7 @@ describe("convert where to elasticsearch query", () => {
                 },
                 {
                     term: {
-                        "values.dateStorage": "2022-05-05"
+                        "values.dateStorageId": "2022-05-05"
                     }
                 }
             ]
@@ -162,8 +140,9 @@ describe("convert where to elasticsearch query", () => {
             fields: createFields(),
             query,
             where,
-            operatorPlugins,
-            searchPlugins
+            searchPlugins: plugins.search,
+            operatorPlugins: plugins.operators,
+            plugins: plugins.container
         });
 
         const expected: ElasticsearchBoolQueryConfig = {
@@ -172,7 +151,7 @@ describe("convert where to elasticsearch query", () => {
             filter: [
                 {
                     range: {
-                        id: {
+                        idStorageId: {
                             gte: 2
                         }
                     }

@@ -22,6 +22,7 @@ describe("not_contains filter", () => {
         };
 
         applyFiltering({
+            plugins: plugins.container,
             fields,
             query,
             where,

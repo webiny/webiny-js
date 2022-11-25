@@ -20,6 +20,7 @@ describe("not_between filter", () => {
         };
 
         applyFiltering({
+            plugins: plugins.container,
             fields,
             query,
             where,
@@ -52,6 +53,7 @@ describe("not_between filter", () => {
         };
 
         applyFiltering({
+            plugins: plugins.container,
             fields,
             query,
             where,
@@ -85,6 +87,7 @@ describe("not_between filter", () => {
 
         expect(() => {
             applyFiltering({
+                plugins: plugins.container,
                 fields,
                 query,
                 where,
@@ -104,6 +107,7 @@ describe("not_between filter", () => {
 
         expect(() => {
             applyFiltering({
+                plugins: plugins.container,
                 fields,
                 query,
                 where,

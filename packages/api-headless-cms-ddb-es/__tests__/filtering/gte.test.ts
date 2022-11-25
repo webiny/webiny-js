@@ -20,6 +20,7 @@ describe("greater than or equal filter", () => {
         };
 
         applyFiltering({
+            plugins: plugins.container,
             fields,
             query,
             where,

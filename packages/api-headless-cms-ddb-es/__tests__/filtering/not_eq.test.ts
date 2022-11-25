@@ -20,6 +20,7 @@ describe("not equals filter", () => {
         };
 
         applyFiltering({
+            plugins: plugins.container,
             fields,
             query,
             where,
@@ -50,6 +51,7 @@ describe("not equals filter", () => {
         };
 
         applyFiltering({
+            plugins: plugins.container,
             fields,
             query,
             where,
@@ -79,6 +81,7 @@ describe("not equals filter", () => {
         };
 
         applyFiltering({
+            plugins: plugins.container,
             fields,
             query,
             where,
@@ -108,6 +111,7 @@ describe("not equals filter", () => {
         };
 
         applyFiltering({
+            plugins: plugins.container,
             fields,
             query,
             where,

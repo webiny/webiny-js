@@ -30,10 +30,12 @@ export const buildElasticsearchSearchPlugins = (
 export interface Plugins {
     operators: ElasticsearchQueryBuilderOperatorPlugins;
     search: ElasticsearchQuerySearchValuePlugins;
+    container: PluginsContainer;
 }
 export const createPlugins = (): Plugins => {
     const container = createPluginsContainer();
     return {
+        container,
         operators: buildElasticsearchOperatorPlugins(container),
         search: buildElasticsearchSearchPlugins(container)
     };

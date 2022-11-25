@@ -21,6 +21,7 @@ describe("not_in filter", () => {
         };
 
         applyFiltering({
+            plugins: plugins.container,
             fields,
             query,
             where,
@@ -51,6 +52,7 @@ describe("not_in filter", () => {
         };
 
         applyFiltering({
+            plugins: plugins.container,
             fields,
             query,
             where,
@@ -81,6 +83,7 @@ describe("not_in filter", () => {
 
         expect(() => {
             applyFiltering({
+                plugins: plugins.container,
                 fields,
                 query,
                 where,
@@ -99,6 +102,7 @@ describe("not_in filter", () => {
 
         expect(() => {
             applyFiltering({
+                plugins: plugins.container,
                 fields,
                 query,
                 where,

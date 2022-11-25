@@ -21,6 +21,7 @@ describe("startsWith filter", () => {
         };
 
         applyFiltering({
+            plugins: plugins.container,
             fields,
             query,
             where,
