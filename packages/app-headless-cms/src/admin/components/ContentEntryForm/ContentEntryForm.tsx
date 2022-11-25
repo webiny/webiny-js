@@ -114,25 +114,29 @@ export const ContentEntryForm: React.FC<ContentEntryFormProps> = ({ onForm, ...p
         [formRenderer]
     );
 
-    const onFormSubmit = useCallback((data, form) => {
-        setIsDirty(false);
-        return onSubmit(data, form);
-    }, [onSubmit])
+    const onFormSubmit = useCallback(
+        (data, form) => {
+            setIsDirty(false);
+            return onSubmit(data, form);
+        },
+        [onSubmit]
+    );
 
     const onFormInvalid = useCallback(() => {
         setIsDirty(true);
-        showSnackbar(
-            "You have fields that did not pass the validation. Please check the form."
-        );
-    }, [])
+        showSnackbar("You have fields that did not pass the validation. Please check the form.");
+    }, []);
 
-    const onFormChange = useCallback((data, form) => {
-        const different = isDifferent(data, initialData);
-        if (isDirty !== different) {
-            setIsDirty(different);
-        }
-        return onChange(data, form);
-    }, [onChange, initialData]);
+    const onFormChange = useCallback(
+        (data, form) => {
+            const different = isDifferent(data, initialData);
+            if (isDirty !== different) {
+                setIsDirty(different);
+            }
+            return onChange(data, form);
+        },
+        [onChange, initialData]
+    );
 
     return (
         <Form
