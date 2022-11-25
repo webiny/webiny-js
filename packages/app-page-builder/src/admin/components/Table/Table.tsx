@@ -1,6 +1,7 @@
-import React, { ReactElement, useEffect, useMemo, useState } from "react";
+import React, { ReactElement, useCallback, useMemo, useState } from "react";
 
 import { ReactComponent as More } from "@material-design-icons/svg/filled/more_vert.svg";
+import { FolderDialogUpdate } from "@webiny/app-folders";
 import { FolderItem, LinkItem } from "@webiny/app-folders/types";
 import { Columns, DataTable } from "@webiny/ui/DataTable";
 import { Menu } from "@webiny/ui/Menu";
@@ -11,9 +12,11 @@ import { orderBy } from "lodash";
  */
 // @ts-ignore
 import TimeAgo from "timeago-react";
+import useDeepCompareEffect from "use-deep-compare-effect";
 
 import { FolderName, PageName } from "~/admin/components/Table/Row/Name";
 import { FolderActionDelete } from "~/admin/components/Table/Row/Folder/FolderActionDelete";
+import { FolderActionEdit } from "~/admin/components/Table/Row/Folder/FolderActionEdit";
 import { PageActionDelete } from "~/admin/components/Table/Row/Page/PageActionDelete";
 import { PageActionEdit } from "~/admin/components/Table/Row/Page/PageActionEdit";
 import { PageActionPreview } from "~/admin/components/Table/Row/Page/PageActionPreview";
@@ -53,6 +56,11 @@ export const Table = ({
     openPreviewDrawer
 }: Props): ReactElement => {
     const [data, setData] = useState<Entry[]>([]);
+    const [selectedFolder, setSelectedFolder] = useState<FolderItem>();
+
+    const [showUpdateDialog, setUpdateDialog] = useState(false);
+    const openUpdateDialog = useCallback(() => setUpdateDialog(true), []);
+    const closeUpdateDialog = useCallback(() => setUpdateDialog(false), []);
 
     const createPagesData = useMemo(() => {
         return (items: PbPageDataLink[]): Entry[] =>
@@ -81,13 +89,13 @@ export const Table = ({
             }));
     }, [folders]);
 
-    useEffect(() => {
+    useDeepCompareEffect(() => {
         const foldersData = createFoldersData(folders);
         const pagesData = createPagesData(pages);
 
         const dataset = orderBy([...foldersData, ...pagesData], ["type", "name"], ["asc", "asc"]);
         setData(dataset);
-    }, [folders, pages]);
+    }, [Object.assign({}, folders), Object.assign({}, pages)]);
 
     const columns: Columns<Entry> = {
         title: {
@@ -146,8 +154,13 @@ export const Table = ({
                     );
                 } else {
                     return (
-                        // TODO: bug - Menu with only one child immediatelly render the content
                         <Menu handle={<More />}>
+                            <FolderActionEdit
+                                onClick={() => {
+                                    openUpdateDialog();
+                                    setSelectedFolder(original as FolderItem);
+                                }}
+                            />
                             <FolderActionDelete
                                 folder={original as FolderItem}
                                 deleteFolder={deleteFolder}
@@ -159,5 +172,16 @@ export const Table = ({
         }
     };
 
-    return <DataTable columns={columns} data={data} loadingInitial={loading} />;
+    return (
+        <>
+            {selectedFolder && (
+                <FolderDialogUpdate
+                    folder={selectedFolder}
+                    open={showUpdateDialog}
+                    onClose={closeUpdateDialog}
+                />
+            )}
+            <DataTable columns={columns} data={data} loadingInitial={loading} />
+        </>
+    );
 };
