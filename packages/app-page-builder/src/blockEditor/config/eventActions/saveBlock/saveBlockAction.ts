@@ -73,7 +73,7 @@ export const saveBlockAction: BlockEventActionCallable<SaveBlockActionArgsType> 
     // See `pageEditor` for an example and feel free to copy that same logic over here.
     const element = (await state.getElementTree()) as PbElement;
     // We need to grab the first block from the "document" element.
-    const createdImage = await getPreviewImage(element.elements[0], meta);
+    const createdImage = await getPreviewImage(element.elements[0], meta, state.block?.preview?.id);
 
     const data: BlockType = {
         name: state.block.name,

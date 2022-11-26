@@ -1,4 +1,5 @@
 import { atom } from "recoil";
+import { FileInput } from "@webiny/app-admin/components/FileManager/graphql";
 import { PbEditorElement } from "~/types";
 
 export interface BlockWithContent extends BlockAtomType {
@@ -13,6 +14,7 @@ export interface BlockAtomType {
     createdBy: {
         id: string | null;
     };
+    preview?: { id: string; data: Partial<FileInput> };
     // TODO: add more props here
 }
 

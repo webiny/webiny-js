@@ -6,8 +6,13 @@ import dataURLtoBlob from "dataurl-to-blob";
 import get from "lodash/get";
 import { plugins } from "@webiny/plugins";
 import { FileUploaderPlugin } from "@webiny/app/types";
+import {
+    FileInput,
+    CREATE_FILE,
+    DELETE_FILE
+} from "@webiny/app-admin/components/FileManager/graphql";
 import domToImage from "~/editor/plugins/elementSettings/save/SaveDialog/domToImage";
-import { CREATE_FILE } from "~/editor/plugins/elementSettings/save/SaveDialog/graphql";
+import { PbElement, EventActionHandlerMeta } from "~/types";
 
 interface ImageDimensionsType {
     width: number;
@@ -23,10 +28,14 @@ function getDataURLImageDimensions(dataURL: string): Promise<ImageDimensionsType
     });
 }
 
-interface createdImageType {
-    data: any;
+interface CreatedImageType {
+    data: FileInput | {};
 }
-export default async function getPreviewImage(element: any, meta: any): Promise<createdImageType> {
+export default async function getPreviewImage(
+    element: PbElement,
+    meta: EventActionHandlerMeta,
+    prevFileId?: string
+): Promise<CreatedImageType> {
     const node = document.getElementById(element.id);
 
     if (!node) {
@@ -68,6 +77,16 @@ export default async function getPreviewImage(element: any, meta: any): Promise<
             data: previewImage
         }
     });
+
+    // Delete previous preview image file
+    if (prevFileId) {
+        await meta.client.mutate({
+            mutation: DELETE_FILE,
+            variables: {
+                id: prevFileId
+            }
+        });
+    }
 
     return get(createdImageResponse, "data.fileManager.createFile", {});
 }
