@@ -1,6 +1,6 @@
 import { CmsEntryElasticsearchQueryBuilderValueSearchPlugin } from "~/plugins";
-import { CmsModelField } from "@webiny/api-headless-cms/types";
 import { ElasticsearchQueryBuilderOperatorPlugin } from "@webiny/api-elasticsearch";
+import { CmsModelField } from "@webiny/api-headless-cms/types";
 
 /**
  * ./fields
@@ -12,7 +12,7 @@ export interface ModelField {
     keyword?: boolean;
     isSearchable: boolean;
     isSortable: boolean;
-    type: string;
+    type: "text" | "date" | "datetime" | "time" | "number" | "boolean" | string;
     isSystemField?: boolean;
     field: CmsModelField;
     path?: ModelFieldPath;

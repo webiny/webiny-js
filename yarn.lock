@@ -10817,7 +10817,6 @@ __metadata:
     jest-dynalite: ^3.2.0
     jest-environment-node: ^27.2.4
     jsonpack: ^1.1.5
-    lodash: ^4.17.21
     mdbid: ^1.0.0
     prettier: ^2.3.2
     rimraf: ^3.0.2

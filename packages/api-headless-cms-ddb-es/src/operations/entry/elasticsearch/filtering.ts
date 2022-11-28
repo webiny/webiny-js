@@ -1,21 +1,19 @@
-import { ElasticsearchBoolQueryConfig } from "@webiny/api-elasticsearch/types";
-import { ModelField } from "~/helpers/fields";
-import { ElasticsearchQueryBuilderOperatorPlugin, parseWhereKey } from "@webiny/api-elasticsearch";
-import { CmsEntryElasticsearchQueryBuilderValueSearchPlugin } from "~/plugins";
 import WebinyError from "@webiny/error";
-import { transformValueForSearch } from "~/helpers/transformValueForSearch";
+import { ElasticsearchBoolQueryConfig } from "@webiny/api-elasticsearch/types";
+import { parseWhereKey } from "@webiny/api-elasticsearch";
+import { CmsEntryElasticsearchQueryBuilderValueSearchPlugin } from "~/plugins";
 import { hasKeyword } from "./keyword";
 import { CmsEntryListWhere } from "@webiny/api-headless-cms/types";
-import { createBaseQuery } from "~/operations/entry/elasticsearch/initialQuery";
-import { ModelFields } from "~/operations/entry/elasticsearch/types";
-/*
-interface CbParams {
-    modelField: ModelField;
-    operator: string;
-    key: string;
-    value: any;
-}
-*/
+import { createBaseQuery } from "./initialQuery";
+import {
+    ElasticsearchQueryBuilderOperatorPlugins,
+    ElasticsearchQuerySearchValuePlugins,
+    ModelField,
+    ModelFields
+} from "./types";
+import { isRefFieldFiltering } from "./isRefFieldFiltering";
+import { PluginsContainer } from "@webiny/plugins";
+import { transformValueForSearch } from "./transformValueForSearch";
 
 interface FieldPathFactoryParams {
     plugins: Record<string, CmsEntryElasticsearchQueryBuilderValueSearchPlugin>;
@@ -158,11 +156,12 @@ interface ApplyFilteringParams {
     fields: ModelFields;
     where: CmsEntryListWhere;
     query: ElasticsearchBoolQueryConfig;
-    operatorPlugins: Record<string, ElasticsearchQueryBuilderOperatorPlugin>;
-    searchPlugins: Record<string, CmsEntryElasticsearchQueryBuilderValueSearchPlugin>;
+    operatorPlugins: ElasticsearchQueryBuilderOperatorPlugins;
+    searchPlugins: ElasticsearchQuerySearchValuePlugins;
+    plugins: PluginsContainer;
 }
 export const applyFiltering = (params: ApplyFilteringParams): void => {
-    const { where, query, operatorPlugins, searchPlugins, fields } = params;
+    const { where, query, operatorPlugins, searchPlugins, fields, plugins } = params;
 
     const createFieldPath = createFieldPathFactory({
         plugins: searchPlugins
@@ -191,7 +190,8 @@ export const applyFiltering = (params: ApplyFilteringParams): void => {
                     where: childWhere,
                     operatorPlugins,
                     searchPlugins,
-                    fields
+                    fields,
+                    plugins
                 });
             }
             query.must.push({
@@ -216,7 +216,8 @@ export const applyFiltering = (params: ApplyFilteringParams): void => {
                     where: childWhere,
                     operatorPlugins,
                     searchPlugins,
-                    fields
+                    fields,
+                    plugins
                 });
             }
             query.should.push({
@@ -241,12 +242,31 @@ export const applyFiltering = (params: ApplyFilteringParams): void => {
             throw new WebinyError(`Field "${fieldId}" is not searchable.`);
         }
 
+        /**
+         * There is a possibility that value is an object.
+         * In that case, check if field is ref field and continue a bit differently.
+         */
+        if (isRefFieldFiltering({ key, value, field })) {
+            applyFiltering({
+                query,
+                where: {
+                    ...(value as any)
+                },
+                searchPlugins,
+                operatorPlugins,
+                fields,
+                plugins
+            });
+            continue;
+        }
+
         const plugin = operatorPlugins[operator];
         if (!plugin) {
             throw new WebinyError("Operator plugin missing.", "PLUGIN_MISSING", {
                 operator
             });
         }
+
         const transformedValue = transformValueForSearch({
             plugins: searchPlugins,
             field: field.field,

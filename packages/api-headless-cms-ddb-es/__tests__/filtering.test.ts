@@ -146,18 +146,7 @@ describe("convert where to elasticsearch query", () => {
         });
 
         const expected: ElasticsearchBoolQueryConfig = {
-            must: [],
-            must_not: [],
-            filter: [
-                {
-                    range: {
-                        idStorageId: {
-                            gte: 2
-                        }
-                    }
-                }
-            ],
-            should: [
+            must: [
                 {
                     bool: {
                         must: [
@@ -180,7 +169,18 @@ describe("convert where to elasticsearch query", () => {
                         ]
                     }
                 }
-            ]
+            ],
+            must_not: [],
+            filter: [
+                {
+                    range: {
+                        idStorageId: {
+                            gte: 2
+                        }
+                    }
+                }
+            ],
+            should: []
         };
 
         expect(query).toEqual(expected);

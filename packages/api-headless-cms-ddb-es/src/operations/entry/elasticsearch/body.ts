@@ -10,9 +10,8 @@ import { applyFiltering } from "./filtering";
 import { createQueryModifierPluginList } from "./plugins/queryModifier";
 import { createSortModifierPluginList } from "./plugins/sortModifier";
 import { createBodyModifierPluginList } from "./plugins/bodyModifier";
-import { SearchBody } from "elastic-ts";
 import { createElasticsearchSort } from "./sort";
-import { PrimitiveValue } from "@webiny/api-elasticsearch/types";
+import { PrimitiveValue, SearchBody } from "@webiny/api-elasticsearch/types";
 
 interface Params {
     plugins: PluginsContainer;
@@ -29,7 +28,7 @@ export const createElasticsearchBody = ({ plugins, model, params }: Params): Sea
      */
     const modelFields = createModelFields({
         plugins,
-        model
+        fields: model.fields
     });
     /**
      * We need the search plugins as key -> plugin value, so it is easy to find plugin we need, without iterating through array.
@@ -95,7 +94,8 @@ export const createElasticsearchBody = ({ plugins, model, params }: Params): Sea
         searchPlugins,
         operatorPlugins,
         where,
-        query
+        query,
+        plugins
     });
 
     for (const pl of queryModifierPlugins) {

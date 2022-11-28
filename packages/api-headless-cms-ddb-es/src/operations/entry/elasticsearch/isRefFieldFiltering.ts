@@ -1,10 +1,10 @@
 import WebinyError from "@webiny/error";
-import { CmsModelField } from "@webiny/api-headless-cms/types";
+import { ModelField } from "~/operations/entry/elasticsearch/types";
 
 interface Params {
     key: string;
     value: any;
-    field: CmsModelField;
+    field: ModelField;
 }
 
 /**
@@ -32,7 +32,7 @@ export const isRefFieldFiltering = (params: Params): boolean => {
         !!value.toISOString
     ) {
         return false;
-    } else if (typeOf === "object" && field.type === "ref") {
+    } else if (typeOf === "object" && field.field.type === "ref") {
         return true;
     }
     throw new WebinyError(

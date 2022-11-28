@@ -1,7 +1,7 @@
+import WebinyError from "@webiny/error";
 import { ElasticsearchBoolQueryConfig } from "@webiny/api-elasticsearch/types";
 import { CmsEntryListWhere, CmsModel } from "@webiny/api-headless-cms/types";
-import { createLatestType, createPublishedType } from "~/operations/entry";
-import WebinyError from "@webiny/error";
+import { createLatestRecordType, createPublishedRecordType } from "../recordType";
 
 export const createBaseQuery = (): ElasticsearchBoolQueryConfig => {
     return {
@@ -71,13 +71,13 @@ export const createInitialQuery = (params: Params): ElasticsearchBoolQueryConfig
     if (where.published === true) {
         query.filter.push({
             term: {
-                "__type.keyword": createPublishedType()
+                "__type.keyword": createPublishedRecordType()
             }
         });
     } else if (where.latest === true) {
         query.filter.push({
             term: {
-                "__type.keyword": createLatestType()
+                "__type.keyword": createLatestRecordType()
             }
         });
     }

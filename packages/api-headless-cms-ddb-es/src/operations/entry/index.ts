@@ -1,3 +1,4 @@
+import WebinyError from "@webiny/error";
 import {
     CmsEntry,
     CmsEntryStorageOperations,
@@ -23,9 +24,6 @@ import {
 } from "@webiny/api-headless-cms/types";
 import { extractEntriesFromIndex, prepareEntryToIndex } from "~/helpers";
 import { configurations } from "~/configurations";
-import WebinyError from "@webiny/error";
-import lodashCloneDeep from "lodash/cloneDeep";
-import lodashOmit from "lodash/omit";
 import { Entity } from "dynamodb-toolbox";
 import { Client } from "@elastic/elasticsearch";
 import { PluginsContainer } from "@webiny/plugins";
@@ -51,31 +49,26 @@ import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import { ElasticsearchSearchResponse } from "@webiny/api-elasticsearch/types";
 import { CmsIndexEntry } from "~/types";
 import { createElasticsearchBody } from "~/operations/entry/elasticsearch/body";
+import { createLatestRecordType, createPublishedRecordType, createRecordType } from "./recordType";
 
-const createType = (): string => {
-    return "cms.entry";
-};
-export const createLatestType = (): string => {
-    return `${createType()}.l`;
-};
-export const createPublishedType = (): string => {
-    return `${createType()}.p`;
-};
-
-const getEntryData = (entry: CmsEntry) => {
-    return {
-        ...lodashOmit(entry, ["PK", "SK", "published", "latest"]),
-        TYPE: createType(),
-        __type: createType()
+const getEntryData = (input: CmsEntry): CmsEntry => {
+    const output: any = {
+        ...input
     };
+    delete output["PK"];
+    delete output["SK"];
+    delete output["published"];
+    delete output["latest"];
+
+    return output;
 };
 
 const getESLatestEntryData = async (plugins: PluginsContainer, entry: CmsEntry) => {
     return compress(plugins, {
         ...getEntryData(entry),
         latest: true,
-        TYPE: createLatestType(),
-        __type: createLatestType()
+        TYPE: createLatestRecordType(),
+        __type: createLatestRecordType()
     });
 };
 
@@ -83,8 +76,8 @@ const getESPublishedEntryData = async (plugins: PluginsContainer, entry: CmsEntr
     return compress(plugins, {
         ...getEntryData(entry),
         published: true,
-        TYPE: createPublishedType(),
-        __type: createPublishedType()
+        TYPE: createPublishedRecordType(),
+        __type: createPublishedRecordType()
     });
 };
 
@@ -158,8 +151,8 @@ export const createEntriesStorageOperations = (
         const esEntry = prepareEntryToIndex({
             plugins,
             model,
-            entry: lodashCloneDeep({ ...entry, locked }),
-            storageEntry: lodashCloneDeep({ ...storageEntry, locked })
+            entry: structuredClone({ ...entry, locked }),
+            storageEntry: structuredClone({ ...storageEntry, locked })
         });
 
         const { index: esIndex } = configurations.es({
@@ -201,13 +194,13 @@ export const createEntriesStorageOperations = (
                 ...storageEntry,
                 locked,
                 ...revisionKeys,
-                TYPE: createType()
+                TYPE: createRecordType()
             }),
             entity.putBatch({
                 ...storageEntry,
                 locked,
                 ...latestKeys,
-                TYPE: createLatestType()
+                TYPE: createLatestRecordType()
             })
         ];
 
@@ -217,7 +210,7 @@ export const createEntriesStorageOperations = (
                     ...storageEntry,
                     locked,
                     ...publishedKeys,
-                    TYPE: createPublishedType()
+                    TYPE: createPublishedRecordType()
                 })
             );
         }
@@ -314,8 +307,8 @@ export const createEntriesStorageOperations = (
         const esEntry = prepareEntryToIndex({
             plugins,
             model,
-            entry: lodashCloneDeep(entry),
-            storageEntry: lodashCloneDeep(storageEntry)
+            entry: structuredClone(entry),
+            storageEntry: structuredClone(storageEntry)
         });
 
         const esLatestData = await getESLatestEntryData(plugins, esEntry);
@@ -323,12 +316,12 @@ export const createEntriesStorageOperations = (
         const items = [
             entity.putBatch({
                 ...storageEntry,
-                TYPE: createType(),
+                TYPE: createRecordType(),
                 ...revisionKeys
             }),
             entity.putBatch({
                 ...storageEntry,
-                TYPE: createLatestType(),
+                TYPE: createLatestRecordType(),
                 ...latestKeys
             })
         ];
@@ -442,7 +435,7 @@ export const createEntriesStorageOperations = (
                 ...storageEntry,
                 locked,
                 ...revisionKeys,
-                TYPE: createType()
+                TYPE: createRecordType()
             })
         ];
         if (isPublished) {
@@ -451,7 +444,7 @@ export const createEntriesStorageOperations = (
                     ...storageEntry,
                     locked,
                     ...publishedKeys,
-                    TYPE: createPublishedType()
+                    TYPE: createPublishedRecordType()
                 })
             );
         }
@@ -486,11 +479,11 @@ export const createEntriesStorageOperations = (
             esEntry = prepareEntryToIndex({
                 plugins,
                 model,
-                entry: lodashCloneDeep({
+                entry: structuredClone({
                     ...entry,
                     locked
                 }),
-                storageEntry: lodashCloneDeep({
+                storageEntry: structuredClone({
                     ...storageEntry,
                     locked
                 })
@@ -516,11 +509,11 @@ export const createEntriesStorageOperations = (
                     esEntry = prepareEntryToIndex({
                         plugins,
                         model,
-                        entry: lodashCloneDeep({
+                        entry: structuredClone({
                             ...entry,
                             locked
                         }),
-                        storageEntry: lodashCloneDeep({
+                        storageEntry: structuredClone({
                             ...storageEntry,
                             locked
                         })
@@ -531,8 +524,8 @@ export const createEntriesStorageOperations = (
                 elasticsearchPublishedData = {
                     ...elasticsearchLatestData,
                     published: true,
-                    TYPE: createPublishedType(),
-                    __type: createPublishedType()
+                    TYPE: createPublishedRecordType(),
+                    __type: createPublishedRecordType()
                 };
                 delete elasticsearchPublishedData.latest;
             }
@@ -721,8 +714,8 @@ export const createEntriesStorageOperations = (
             const esEntry = prepareEntryToIndex({
                 plugins,
                 model,
-                entry: lodashCloneDeep(latestEntry),
-                storageEntry: lodashCloneDeep(latestStorageEntry)
+                entry: structuredClone(latestEntry),
+                storageEntry: structuredClone(latestStorageEntry)
             });
 
             const esLatestData = await getESLatestEntryData(plugins, esEntry);
@@ -734,7 +727,7 @@ export const createEntriesStorageOperations = (
                     ...latestStorageEntry,
                     PK: partitionKey,
                     SK: createLatestSortKey(),
-                    TYPE: createLatestType()
+                    TYPE: createLatestRecordType()
                 })
             );
             esItems.push(
@@ -823,6 +816,11 @@ export const createEntriesStorageOperations = (
                     index
                 }
             );
+        }
+
+        // @ts-ignore
+        if (params.where.category?.id_not) {
+            console.log(params.where.category);
         }
 
         const body = createElasticsearchBody({
@@ -964,7 +962,7 @@ export const createEntriesStorageOperations = (
             entity.putBatch({
                 ...storageEntry,
                 ...revisionKeys,
-                TYPE: createType()
+                TYPE: createRecordType()
             })
         ];
         const esItems = [];
@@ -999,7 +997,7 @@ export const createEntriesStorageOperations = (
                     ...previouslyPublishedEntry,
                     status: CONTENT_ENTRY_STATUS.UNPUBLISHED,
                     savedOn: entry.savedOn,
-                    TYPE: createType(),
+                    TYPE: createRecordType(),
                     PK: createPartitionKey(publishedStorageEntry),
                     SK: createRevisionSortKey(publishedStorageEntry)
                 })
@@ -1012,7 +1010,7 @@ export const createEntriesStorageOperations = (
             entity.putBatch({
                 ...storageEntry,
                 ...publishedKeys,
-                TYPE: createPublishedType()
+                TYPE: createPublishedRecordType()
             })
         );
 
@@ -1065,8 +1063,8 @@ export const createEntriesStorageOperations = (
         const preparedEntryData = prepareEntryToIndex({
             plugins,
             model,
-            entry: lodashCloneDeep(entry),
-            storageEntry: lodashCloneDeep(storageEntry)
+            entry: structuredClone(entry),
+            storageEntry: structuredClone(storageEntry)
         });
         /**
          * Update the published revision entry in ES.
@@ -1166,7 +1164,7 @@ export const createEntriesStorageOperations = (
                 ...storageEntry,
                 PK: partitionKey,
                 SK: createRevisionSortKey(entry),
-                TYPE: createType()
+                TYPE: createRecordType()
             })
         ];
 
@@ -1187,8 +1185,8 @@ export const createEntriesStorageOperations = (
             const preparedEntryData = prepareEntryToIndex({
                 plugins,
                 model,
-                entry: lodashCloneDeep(entry),
-                storageEntry: lodashCloneDeep(storageEntry)
+                entry: structuredClone(entry),
+                storageEntry: structuredClone(storageEntry)
             });
 
             const esLatestData = await getESLatestEntryData(plugins, preparedEntryData);
@@ -1382,7 +1380,7 @@ export const createEntriesStorageOperations = (
                 filters: [
                     {
                         attr: "TYPE",
-                        eq: createType()
+                        eq: createRecordType()
                     },
                     {
                         attr: "version",

@@ -1,11 +1,7 @@
-import { PluginsContainer } from "@webiny/plugins";
-import {
-    CmsModel,
-    CmsModelField,
-    CmsModelFieldToGraphQLPlugin
-} from "@webiny/api-headless-cms/types";
-import { CmsModelFieldToElasticsearchPlugin } from "~/types";
 import WebinyError from "@webiny/error";
+import { PluginsContainer } from "@webiny/plugins";
+import { CmsModelField, CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
+import { CmsModelFieldToElasticsearchPlugin } from "~/types";
 import { ModelFields } from "./types";
 
 type PartialCmsModelField = Partial<CmsModelField> &
@@ -144,9 +140,12 @@ interface FieldTypePlugins {
 
 interface Params {
     plugins: PluginsContainer;
-    model: CmsModel;
+    fields?: CmsModelField[];
 }
-export const createModelFields = ({ plugins, model }: Params) => {
+export const createModelFields = ({ plugins, fields }: Params) => {
+    if (!fields || fields.length === 0) {
+        return createSystemFields();
+    }
     /**
      * Collect all unmappedType from elastic plugins.
      */
@@ -174,13 +173,13 @@ export const createModelFields = ({ plugins, model }: Params) => {
             return types;
         }, {});
 
-    return model.fields.reduce((fields, field) => {
+    return fields.reduce((collection, field) => {
         const { fieldId, type } = field;
         if (!fieldTypePlugins[type]) {
             throw new WebinyError(`There is no plugin for field type "${type}".`);
         }
         const { isSearchable, isSortable, unmappedType } = fieldTypePlugins[type];
-        fields[fieldId] = {
+        collection[fieldId] = {
             type,
             isSearchable,
             isSortable,
@@ -189,6 +188,6 @@ export const createModelFields = ({ plugins, model }: Params) => {
             field
         };
 
-        return fields;
+        return collection;
     }, createSystemFields());
 };

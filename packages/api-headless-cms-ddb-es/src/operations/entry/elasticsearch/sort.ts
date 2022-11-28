@@ -1,4 +1,4 @@
-import { Sort as esSort } from "elastic-ts";
+import { Sort as esSort } from "@webiny/api-elasticsearch/types";
 import { CmsEntryElasticsearchFieldPlugin } from "~/plugins";
 import { createSort } from "@webiny/api-elasticsearch";
 import { PluginsContainer } from "@webiny/plugins";

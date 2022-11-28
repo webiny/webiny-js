@@ -1,6 +1,6 @@
-import { ModelField } from "~/helpers/fields";
+import { ModelField } from "./types";
 
-const noKeywordFields = ["date", "datetime", "number", "boolean"];
+const noKeywordFields: string[] = ["date", "datetime", "number", "boolean"];
 export const hasKeyword = (field: ModelField): boolean => {
     /**
      * We defined some field types that MUST have no keyword added to the field path
@@ -8,7 +8,6 @@ export const hasKeyword = (field: ModelField): boolean => {
     if (noKeywordFields.includes(field.type)) {
         return false;
     }
-
     /**
      * If field has unmapped type defined, do not add keyword.
      */
