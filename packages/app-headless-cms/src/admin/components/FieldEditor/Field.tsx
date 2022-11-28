@@ -27,6 +27,10 @@ const FieldContainer = styled("div")({
     alignItems: "center"
 });
 
+const LowerCase = styled.span`
+    text-transform: lowercase;
+`;
+
 const Info = styled("div")({
     display: "flex",
     flexDirection: "column",
@@ -76,7 +80,7 @@ const Field: React.FC<FieldProps> = props => {
     const { field, onEdit, parent } = props;
     const { showSnackbar } = useSnackbar();
     const { setData, data } = useContentModelEditor();
-    const { getFieldPlugin } = useFieldEditor();
+    const { getFieldPlugin, getFieldRendererPlugin } = useFieldEditor();
 
     const { showConfirmation } = useConfirmationDialog({
         title: t`Warning - You are trying to delete a locked field!`,
@@ -122,7 +126,16 @@ const Field: React.FC<FieldProps> = props => {
         return null;
     }
 
+    const rendererPlugin = getFieldRendererPlugin(field.renderer.name);
     const isTitleField = data && field.fieldId === data.titleFieldId && !parent;
+
+    const info = [
+        rendererPlugin?.renderer.name,
+        field.multipleValues ? "multiple values" : null,
+        isTitleField ? "entry title" : null
+    ]
+        .filter(Boolean)
+        .join(", ");
 
     return (
         <Fragment>
@@ -130,9 +143,8 @@ const Field: React.FC<FieldProps> = props => {
                 <Info>
                     <Typography use={"subtitle1"}>{field.label}</Typography>
                     <Typography use={"caption"}>
-                        {fieldPlugin.field.label}{" "}
-                        {field.multipleValues && <>({t`multiple values`})</>}
-                        {isTitleField && <>({t`entry title`})</>}
+                        {fieldPlugin.field.label} {field.multipleValues && <></>}
+                        <LowerCase>({info})</LowerCase>
                     </Typography>
                 </Info>
                 <Actions>

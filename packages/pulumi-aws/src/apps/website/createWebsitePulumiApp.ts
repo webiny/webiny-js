@@ -49,13 +49,14 @@ export const createWebsitePulumiApp = (projectAppParams: CreateWebsitePulumiAppP
                 });
             }
 
+            const prod = app.params.run.env === "prod";
+
             // Register core output as a module available for all other modules
             const core = app.addModule(CoreOutput);
 
-            // Register VPC config module to be available to other modules
-            app.addModule(VpcConfig, {
-                enabled: app.getParam(projectAppParams.vpc)
-            });
+            // Register VPC config module to be available to other modules.
+            const vpcEnabled = app.getParam(projectAppParams?.vpc) ?? prod;
+            app.addModule(VpcConfig, { enabled: vpcEnabled });
 
             const appBucket = createPrivateAppBucket(app, "app");
 

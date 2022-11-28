@@ -36,6 +36,7 @@ const isDifferent = (value: any, compare: any): boolean => {
 };
 
 export const ContentEntryForm: React.FC<ContentEntryFormProps> = ({ onForm, ...props }) => {
+    const formElementRef = useRef<HTMLDivElement>(null);
     const { contentModel } = props;
     const {
         loading,
@@ -66,6 +67,14 @@ export const ContentEntryForm: React.FC<ContentEntryFormProps> = ({ onForm, ...p
         }
         onForm(ref.current);
     }, []);
+
+    useEffect(() => {
+        if (!formElementRef.current) {
+            return;
+        }
+
+        formElementRef.current.scrollTo(0, 0);
+    }, [initialData.id, formElementRef.current]);
 
     const formRenderer = plugins
         .byType<CmsContentFormRendererPlugin>("cms-content-form-renderer")
@@ -105,28 +114,38 @@ export const ContentEntryForm: React.FC<ContentEntryFormProps> = ({ onForm, ...p
         [formRenderer]
     );
 
+    const onFormSubmit = useCallback(
+        (data, form) => {
+            setIsDirty(false);
+            return onSubmit(data, form);
+        },
+        [onSubmit]
+    );
+
+    const onFormInvalid = useCallback(() => {
+        setIsDirty(true);
+        showSnackbar("You have fields that did not pass the validation. Please check the form.");
+    }, []);
+
+    const onFormChange = useCallback(
+        (data, form) => {
+            const different = isDifferent(data, initialData);
+            if (isDirty !== different) {
+                setIsDirty(different);
+            }
+            return onChange(data, form);
+        },
+        [onChange, initialData]
+    );
+
     return (
         <Form
-            onChange={(data, form) => {
-                const different = isDifferent(data, initialData);
-                if (isDirty !== different) {
-                    setIsDirty(different);
-                }
-                return onChange(data, form);
-            }}
-            onSubmit={(data, form) => {
-                setIsDirty(false);
-                return onSubmit(data, form);
-            }}
+            onChange={onFormChange}
+            onSubmit={onFormSubmit}
             data={initialData}
             ref={ref}
             invalidFields={invalidFields}
-            onInvalid={() => {
-                setIsDirty(true);
-                showSnackbar(
-                    "You have fields that did not pass the validation. Please check the form."
-                );
-            }}
+            onInvalid={onFormInvalid}
         >
             {formProps => {
                 return (
@@ -137,7 +156,7 @@ export const ContentEntryForm: React.FC<ContentEntryFormProps> = ({ onForm, ...p
                                 "There are some unsaved changes! Are you sure you want to navigate away and discard all changes?"
                             }
                         />
-                        <FormWrapper data-testid={"cms-content-form"}>
+                        <FormWrapper data-testid={"cms-content-form"} ref={formElementRef}>
                             {loading && <CircularProgress />}
                             {formRenderer ? (
                                 renderCustomLayout(formProps)
