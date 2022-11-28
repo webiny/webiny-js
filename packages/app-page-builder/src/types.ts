@@ -22,6 +22,33 @@ export enum PageImportExportTaskStatus {
     COMPLETED = "completed",
     FAILED = "failed"
 }
+// Copied from packages/api-file-manager
+export interface File {
+    id: string;
+    key: string;
+    size: number;
+    type: string;
+    name: string;
+    meta: Record<string, any>;
+    tags: string[];
+    createdOn: string;
+    createdBy: {
+        id: string;
+        displayName: string | null;
+        type: string;
+    };
+    /**
+     * Added with new storage operations refactoring.
+     */
+    tenant: string;
+    locale: string;
+    webinyVersion: string;
+    /**
+     * User can add new fields to the File object so we must allow it in the types.
+     */
+    [key: string]: any;
+}
+
 export type PbElementDataSettingsSpacingValueType = {
     all?: string;
     top?: string;
@@ -814,14 +841,7 @@ export interface PbPageBlock {
     name: string;
     blockCategory: string;
     content: any;
-    preview: {
-        src: string;
-        meta: {
-            width: number;
-            height: number;
-            aspectRatio: number;
-        };
-    };
+    preview: File;
     createdOn: string;
     createdBy: PbIdentity;
 }

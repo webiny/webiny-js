@@ -6,13 +6,9 @@ import dataURLtoBlob from "dataurl-to-blob";
 import get from "lodash/get";
 import { plugins } from "@webiny/plugins";
 import { FileUploaderPlugin } from "@webiny/app/types";
-import {
-    FileInput,
-    CREATE_FILE,
-    DELETE_FILE
-} from "@webiny/app-admin/components/FileManager/graphql";
+import { CREATE_FILE, DELETE_FILE } from "@webiny/app-admin/components/FileManager/graphql";
 import domToImage from "~/editor/plugins/elementSettings/save/SaveDialog/domToImage";
-import { PbElement, EventActionHandlerMeta } from "~/types";
+import { File, PbElement, EventActionHandlerMeta } from "~/types";
 
 interface ImageDimensionsType {
     width: number;
@@ -29,7 +25,7 @@ function getDataURLImageDimensions(dataURL: string): Promise<ImageDimensionsType
 }
 
 interface CreatedImageType {
-    data: FileInput | {};
+    data: File | {};
 }
 export default async function getPreviewImage(
     element: PbElement,
