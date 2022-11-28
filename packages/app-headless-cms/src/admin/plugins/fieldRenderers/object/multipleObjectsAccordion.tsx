@@ -2,8 +2,7 @@ import React, { Dispatch, SetStateAction, useState, useCallback } from "react";
 import { i18n } from "@webiny/app/i18n";
 import { IconButton } from "@webiny/ui/Button";
 import { Cell } from "@webiny/ui/Grid";
-import { FormElementMessage } from "@webiny/ui/FormElementMessage";
-import { Typography } from "@webiny/ui/Typography";
+import { Accordion as RootAccordion, AccordionItem } from "@webiny/ui/Accordion";
 import {
     BindComponentRenderProp,
     CmsEditorFieldRendererPlugin,
@@ -17,7 +16,6 @@ import { ReactComponent as ArrowDown } from "./arrow_drop_down.svg";
 import Accordion from "~/admin/plugins/fieldRenderers/Accordion";
 import {
     fieldsWrapperStyle,
-    dynamicSectionTitleStyle,
     dynamicSectionGridStyle,
     fieldsGridStyle,
     ItemHighLight,
@@ -77,59 +75,57 @@ const ObjectsRenderer: React.FC<CmsEditorFieldRendererProps> = props => {
     const { field, contentModel } = props;
 
     return (
-        <DynamicSection
-            {...props}
-            emptyValue={{}}
-            showLabel={false}
-            renderTitle={value => (
-                <Cell span={12} className={dynamicSectionTitleStyle}>
-                    <Typography use={"headline5"}>
-                        {`${field.label} ${value.length ? `(${value.length})` : ""}`}
-                    </Typography>
-                    {field.helpText && <FormElementMessage>{field.helpText}</FormElementMessage>}
-                </Cell>
-            )}
-            gridClassName={dynamicSectionGridStyle}
-        >
-            {({ Bind, bind, index }) => (
-                <ObjectItem>
-                    {highlightMap[index] ? <ItemHighLight key={highlightMap[index]} /> : null}
-                    <Accordion
-                        title={`${props.field.label} #${index + 1}`}
-                        action={
-                            <Actions
-                                setHighlightIndex={setHighlightIndex}
-                                index={index}
-                                bind={bind}
-                            />
-                        }
-                        // Open first Accordion by default
-                        defaultValue={index === 0}
-                    >
-                        <Cell span={12} className={fieldsWrapperStyle}>
-                            <Fields
-                                Bind={Bind}
-                                {...bind.index}
-                                contentModel={contentModel}
-                                fields={(field.settings || {}).fields || []}
-                                layout={(field.settings || {}).layout || []}
-                                gridClassName={fieldsGridStyle}
-                            />
-                        </Cell>
-                    </Accordion>
-                </ObjectItem>
-            )}
-        </DynamicSection>
+        <RootAccordion>
+            <AccordionItem title={field.label} description={field.helpText}>
+                <DynamicSection
+                    {...props}
+                    emptyValue={{}}
+                    showLabel={false}
+                    gridClassName={dynamicSectionGridStyle}
+                >
+                    {({ Bind, bind, index }) => (
+                        <ObjectItem>
+                            {highlightMap[index] ? (
+                                <ItemHighLight key={highlightMap[index]} />
+                            ) : null}
+                            <Accordion
+                                title={`${props.field.label} #${index + 1}`}
+                                action={
+                                    <Actions
+                                        setHighlightIndex={setHighlightIndex}
+                                        index={index}
+                                        bind={bind}
+                                    />
+                                }
+                                // Open first Accordion by default
+                                defaultValue={index === 0}
+                            >
+                                <Cell span={12} className={fieldsWrapperStyle}>
+                                    <Fields
+                                        Bind={Bind}
+                                        {...bind.index}
+                                        contentModel={contentModel}
+                                        fields={(field.settings || {}).fields || []}
+                                        layout={(field.settings || {}).layout || []}
+                                        gridClassName={fieldsGridStyle}
+                                    />
+                                </Cell>
+                            </Accordion>
+                        </ObjectItem>
+                    )}
+                </DynamicSection>
+            </AccordionItem>
+        </RootAccordion>
     );
 };
 
 const plugin: CmsEditorFieldRendererPlugin = {
     type: "cms-editor-field-renderer",
-    name: "cms-editor-field-renderer-objects",
+    name: "cms-editor-field-renderer-objects-accordion",
     renderer: {
-        rendererName: "objects",
-        name: t`Inline Form`,
-        description: t`Renders a set of fields.`,
+        rendererName: "objects-accordion",
+        name: t`Accordion`,
+        description: t`Renders fields within an accordion.`,
         canUse({ field }) {
             return field.type === "object" && Boolean(field.multipleValues);
         },
