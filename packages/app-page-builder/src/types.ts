@@ -603,14 +603,7 @@ export type PbEditorBlockPlugin = Plugin & {
     title: string;
     blockCategory: string;
     tags: string[];
-    image: {
-        src?: string;
-        meta: {
-            width: number;
-            height: number;
-            aspectRatio: number;
-        };
-    };
+    image: Partial<File>;
     create(): PbEditorElement;
     preview(): ReactElement;
 };

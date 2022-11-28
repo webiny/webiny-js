@@ -6,8 +6,8 @@ import dataURLtoBlob from "dataurl-to-blob";
 import get from "lodash/get";
 import { plugins } from "@webiny/plugins";
 import { FileUploaderPlugin } from "@webiny/app/types";
-import { CREATE_FILE, DELETE_FILE } from "@webiny/app-admin/components/FileManager/graphql";
 import domToImage from "~/editor/plugins/elementSettings/save/SaveDialog/domToImage";
+import { CREATE_FILE, DELETE_FILE } from "~/editor/plugins/elementSettings/save/SaveDialog/graphql";
 import { File, PbElement, EventActionHandlerMeta } from "~/types";
 
 interface ImageDimensionsType {

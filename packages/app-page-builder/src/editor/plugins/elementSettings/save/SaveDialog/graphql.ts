@@ -33,3 +33,14 @@ export const CREATE_FILE = gql`
         }
     }
 `;
+
+export const DELETE_FILE = gql`
+    mutation deleteFile($id: ID!) {
+        fileManager {
+            deleteFile(id: $id) {
+                data
+                error ${ERROR_FIELDS}
+            }
+        }
+    }
+`;
