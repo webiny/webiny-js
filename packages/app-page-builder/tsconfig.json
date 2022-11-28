@@ -4,6 +4,7 @@
   "references": [
     { "path": "../app" },
     { "path": "../app-admin" },
+    { "path": "../app-folders" },
     { "path": "../app-i18n" },
     { "path": "../app-page-builder-elements" },
     { "path": "../app-plugin-admin-welcome-screen" },
@@ -27,6 +28,8 @@
       "@webiny/app": ["../app/src"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
       "@webiny/app-admin": ["../app-admin/src"],
+      "@webiny/app-folders/*": ["../app-folders/src/*"],
+      "@webiny/app-folders": ["../app-folders/src"],
       "@webiny/app-i18n/*": ["../app-i18n/src/*"],
       "@webiny/app-i18n": ["../app-i18n/src"],
       "@webiny/app-page-builder-elements/*": ["../app-page-builder-elements/src/*"],

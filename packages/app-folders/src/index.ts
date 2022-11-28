@@ -1,3 +1,3 @@
-export { FolderTree } from "./components/Tree";
+export { FolderTree, FolderDialogCreate, FolderDialogUpdate } from "./components";
 export { FoldersProvider } from "./contexts";
 export { useFolders, useLinks } from "./hooks";

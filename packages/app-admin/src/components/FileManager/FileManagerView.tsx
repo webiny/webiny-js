@@ -403,7 +403,12 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
                         }
                     });
                     // Save create file data for later
-                    uploadedFiles.push(get(createFileResponse, "data.fileManager.createFile.data"));
+                    uploadedFiles.push(
+                        get(
+                            createFileResponse,
+                            "data.fileManager.createFile.data"
+                        ) as unknown as FileItem
+                    );
                 } catch (e) {
                     errors.push({ file, e });
                 }

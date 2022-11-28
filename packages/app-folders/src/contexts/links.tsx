@@ -42,21 +42,6 @@ export const LinksProvider = ({ children }: Props) => {
     const [links, setLinks] = useState<LinkItem[]>([]);
     const [loading, setLoading] = useState<Loading<LinksActions>>({});
 
-    // const loadingHandler = useCallback((context: string, action: LinksActions): void => {
-    //     setLoading(loading => {
-    //         const currentContext = loading[context] || {};
-    //         const currentAction = currentContext[action] || false;
-    //
-    //         return {
-    //             ...loading,
-    //             [context]: {
-    //                 ...currentContext,
-    //                 [action]: !currentAction
-    //             }
-    //         };
-    //     });
-    // }, []);
-
     const context: LinksContext = {
         links,
         loading,

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 import {
     DropOptions,
@@ -10,14 +10,15 @@ import {
 } from "@minoru/react-dnd-treeview";
 import { useSnackbar } from "@webiny/app-admin";
 import { DndProvider } from "react-dnd";
+import useDeepCompareEffect from "use-deep-compare-effect";
 
 import { useFolders } from "~/hooks/useFolders";
 
 import { CreateButton } from "./ButtonCreate";
-import { CreateDialog } from "./DialogCreate";
 import { Node } from "./Node";
 import { NodePreview } from "./NodePreview";
 import { Title } from "./Title";
+import { FolderDialogCreate } from "~/components";
 
 import { Container } from "./styled";
 
@@ -30,7 +31,7 @@ const createTreeData = (
     focusedNodeId?: string
 ): NodeModel<DndItemData>[] => {
     return folders.map(item => {
-        const { id, parentId, name, slug, type } = item;
+        const { id, parentId, name, slug, type, createdOn, createdBy } = item;
 
         return {
             id,
@@ -43,6 +44,8 @@ const createTreeData = (
                 slug,
                 parentId,
                 type,
+                createdOn,
+                createdBy,
                 isFocused: focusedNodeId === id
             }
         };
@@ -63,7 +66,7 @@ const createInitialOpenList = (
 
     const result = folders.reduce(
         (acc, curr): string[] => {
-            if (curr.parentId && acc.some(el => el === curr?.parentId)) {
+            if (curr.parentId && acc.some(el => el === curr?.id)) {
                 acc.push(curr.parentId);
             }
 
@@ -79,22 +82,29 @@ type Props = {
     type: string;
     title: string;
     onFolderClick: (data: NodeModel<DndItemData>["data"]) => void;
+    onTitleClick?: (event: React.MouseEvent<HTMLElement>) => void;
     focusedFolderId?: string;
 };
 
-export const FolderTree: React.FC<Props> = ({ type, title, focusedFolderId, onFolderClick }) => {
+export const FolderTree: React.FC<Props> = ({
+    type,
+    title,
+    focusedFolderId,
+    onFolderClick,
+    onTitleClick
+}) => {
     const { folders, updateFolder } = useFolders(type);
     const [treeData, setTreeData] = useState<NodeModel<DndItemData>[]>([]);
     const [createDialogOpen, setCreateDialogOpen] = useState<boolean>(false);
     const [initialOpenList, setInitialOpenList] = useState<undefined | InitialOpen>(undefined);
     const { showSnackbar } = useSnackbar();
 
-    useEffect(() => {
+    useDeepCompareEffect(() => {
         if (folders) {
             setTreeData(createTreeData(folders, focusedFolderId));
             setInitialOpenList(createInitialOpenList(folders, focusedFolderId));
         }
-    }, [folders]);
+    }, [Object.assign({}, folders), focusedFolderId]);
 
     const handleDrop = async (
         newTree: NodeModel<DndItemData>[],
@@ -119,7 +129,8 @@ export const FolderTree: React.FC<Props> = ({ type, title, focusedFolderId, onFo
 
     return (
         <Container>
-            <Title title={title} />
+            <Title title={title} onClick={onTitleClick} />
+
             {folders && folders.length > 0 && (
                 <DndProvider backend={MultiBackend} options={getBackendOptions()}>
                     <Tree
@@ -149,10 +160,11 @@ export const FolderTree: React.FC<Props> = ({ type, title, focusedFolderId, onFo
             )}
 
             <CreateButton onClick={() => setCreateDialogOpen(true)} />
-            <CreateDialog
+            <FolderDialogCreate
                 type={type}
                 open={createDialogOpen}
                 onClose={() => setCreateDialogOpen(false)}
+                parentId={undefined}
             />
         </Container>
     );

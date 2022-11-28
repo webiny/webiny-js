@@ -97,7 +97,7 @@ interface NewRefEntryProps {
 }
 
 const NewRefEntryFormDialog: React.FC<NewRefEntryProps> = ({ modelId, children, onChange }) => {
-    const [contentModel, setContentModel] = useState<CmsModel | null>(null);
+    const [contentModel, setContentModel] = useState<CmsModel | undefined>(undefined);
 
     const { showSnackbar } = useSnackbar();
 
@@ -105,7 +105,7 @@ const NewRefEntryFormDialog: React.FC<NewRefEntryProps> = ({ modelId, children, 
         skip: !modelId,
         variables: { modelId },
         onCompleted: data => {
-            const contentModelData: CmsModel | null = get(data, "getContentModel.data");
+            const contentModelData = get(data, "getContentModel.data") as unknown as CmsModel;
             if (contentModelData) {
                 setContentModel(contentModelData);
                 return;

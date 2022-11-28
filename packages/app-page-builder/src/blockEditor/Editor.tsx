@@ -50,7 +50,10 @@ export const BlockEditor: React.FC = () => {
                 variables: { id: blockId }
             })
             .then(({ data }) => {
-                const pageBlockData: PbPageBlock = get(data, "pageBuilder.getPageBlock.data");
+                const pageBlockData = get(
+                    data,
+                    "pageBuilder.getPageBlock.data"
+                ) as unknown as PbPageBlock;
 
                 // We need to wrap all elements into a "document" element, it's a requirement for the editor to work.
                 const content: PbEditorElement = {

@@ -3,21 +3,21 @@ import { useMutation } from "@apollo/react-hooks";
 import { CREATE_PAGE } from "~/admin/graphql/pages";
 import * as GQLCache from "~/admin/views/Pages/cache";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { useRouter } from "@webiny/react-router";
 
 interface UseCreatePageParams {
     setLoadingLabel: () => void;
     clearLoadingLabel: () => void;
     closeDialog: () => void;
+    onCreatePageSuccess: (id: string) => Promise<void>;
 }
 const useCreatePage = ({
     setLoadingLabel,
     clearLoadingLabel,
-    closeDialog
+    closeDialog,
+    onCreatePageSuccess
 }: UseCreatePageParams) => {
     const [create] = useMutation(CREATE_PAGE);
     const { showSnackbar } = useSnackbar();
-    const { history } = useRouter();
 
     const createPageMutation = useCallback(async ({ slug: category }) => {
         try {
@@ -40,7 +40,7 @@ const useCreatePage = ({
             if (error) {
                 showSnackbar(error.message);
             } else {
-                history.push(`/page-builder/editor/${encodeURIComponent(data.id)}`);
+                await onCreatePageSuccess(data.pid);
             }
         } catch (e) {
             showSnackbar(e.message);

@@ -9,6 +9,7 @@ import { FormData, FormOnSubmit, FormSetValue, FormAPI } from "@webiny/form/type
 import { CoreOptions } from "medium-editor";
 import { MenuTreeItem } from "~/admin/views/Menus/types";
 import { SecurityPermission } from "@webiny/app-security/types";
+import { LinkItem } from "@webiny/app-folders/types";
 
 export enum PageStatus {
     PUBLISHED = "published",
@@ -330,6 +331,10 @@ export interface PbPageRevision {
     status: string;
     locked: boolean;
     savedOn: string;
+}
+
+export interface PbPageDataLink extends PbPageData {
+    link: LinkItem;
 }
 
 export interface PbRenderElementPluginRenderParams {

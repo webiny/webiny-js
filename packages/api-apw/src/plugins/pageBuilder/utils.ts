@@ -105,8 +105,8 @@ export const shouldUpdatePages = (
     if (prevScope.type !== WorkflowScopeTypes.CUSTOM) {
         return true;
     }
-    const prevScopePages: string[] = get(prevScope, "data.pages");
-    const currentScopePages: string[] = get(scope, "data.pages");
+    const prevScopePages: string[] = get(prevScope, "data.pages") as unknown as string[];
+    const currentScopePages: string[] = get(scope, "data.pages") as unknown as string[];
     /**
      * Bail out early if there were no pages assigned previously.
      */

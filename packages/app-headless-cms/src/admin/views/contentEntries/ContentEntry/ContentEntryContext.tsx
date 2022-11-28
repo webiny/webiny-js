@@ -172,7 +172,7 @@ export const Provider: React.FC<ContentEntryContextProviderProps> = ({
     });
 
     const loading = isLoading || getEntry.loading || getRevisions.loading;
-    const entry: CmsEditorContentEntry = get(getEntry, "data.content.data") || {};
+    const entry = (get(getEntry, "data.content.data") as unknown as CmsEditorContentEntry) || {};
 
     const value: ContentEntryContext = {
         canCreate,
