@@ -5,10 +5,11 @@ import { ElasticsearchQueryBuilderOperatorInPlugin } from "~/plugins/operator";
 describe("ElasticsearchQueryBuilderOperatorInPlugin", () => {
     const plugin = new ElasticsearchQueryBuilderOperatorInPlugin();
 
-    it("should apply must in correctly", () => {
+    it(`should apply in operator`, () => {
         const query = createBlankQuery();
 
         plugin.apply(query, {
+            name: "id",
             path: "name.keyword",
             basePath: "name",
             value: ["John", "Johnny"],
@@ -17,14 +18,14 @@ describe("ElasticsearchQueryBuilderOperatorInPlugin", () => {
 
         const expected: ElasticsearchBoolQueryConfig = {
             must_not: [],
-            must: [
+            must: [],
+            filter: [
                 {
                     terms: {
                         ["name.keyword"]: ["John", "Johnny"]
                     }
                 }
             ],
-            filter: [],
             should: []
         };
         expect(query).toEqual(expected);

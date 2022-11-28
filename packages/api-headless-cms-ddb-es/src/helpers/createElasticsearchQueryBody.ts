@@ -356,6 +356,7 @@ const applyFiltering = (params: ApplyFilteringParams) => {
 
     const keyword = hasKeyword(modelField);
     plugin.apply(query, {
+        name: modelField.field.fieldId,
         basePath: fieldPathFactory({
             plugin: fieldSearchPlugin,
             modelField,
