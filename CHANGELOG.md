@@ -3,6 +3,31 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.33.3-beta.0](https://github.com/webiny/webiny-js/compare/v5.33.2...v5.33.3-beta.0) (2022-11-28)
+
+
+### Bug Fixes
+
+* **api-headless-cms:** use code-frame to report the invalid part of schema ([20b1441](https://github.com/webiny/webiny-js/commit/20b144173aacc6e574c49c68aef473431b0f6b1f))
+* **app-admin-rmwc:** globally disable ripple effect ([79cba1e](https://github.com/webiny/webiny-js/commit/79cba1eb1e9cb1dfd9fd3871c521b2adc1867d02))
+* **app-form-builder:** update default Input value ([6fa36b2](https://github.com/webiny/webiny-js/commit/6fa36b2ce25b18f12f8ddb00d788d42b83107c26))
+* **app-headless-cms:** add accordion object field renderer ([#2807](https://github.com/webiny/webiny-js/issues/2807)) ([c809057](https://github.com/webiny/webiny-js/commit/c809057d2993165d9d9bbbd830bbf678f41eb563))
+* **app-headless-cms:** add missing return statement ([54db9fa](https://github.com/webiny/webiny-js/commit/54db9fa04bf8d60e830fd6e6f3ca8bb8137fe086))
+* **app-headless-cms:** remove autoFocus prop ([04e3f76](https://github.com/webiny/webiny-js/commit/04e3f76efccc523c2074d8c240f1cff021e54671))
+* **app-headless-cms:** scroll content entry form to top on entry change ([b967b99](https://github.com/webiny/webiny-js/commit/b967b992288924b02c2b854e602fe5aa17cc0e74))
+* **app-headless-cms:** show field renderer name in model form ([4e5868d](https://github.com/webiny/webiny-js/commit/4e5868dcaafef9d71ae5ba142fd44be9cb3f07e0))
+* **app-headless-cms:** skip TimeAgo component rendering on programmatic models ([d484405](https://github.com/webiny/webiny-js/commit/d4844055e5cc3ca289c48c2cbd506a6192095f25))
+* **ui:** allow Accordion to have a single AccordionItem ([31a6ec2](https://github.com/webiny/webiny-js/commit/31a6ec2be95fa4e59abd1a3aee2f38b1a07fabde))
+* **ui:** enforce accordion item height ([5b91b08](https://github.com/webiny/webiny-js/commit/5b91b086f019b4718f19537b33caa829ae57a1f0))
+* **ui:** refactor Input to functional component ([3c5aee3](https://github.com/webiny/webiny-js/commit/3c5aee345e08048227bcbbd83c7d3bd8056f98dc))
+* **ui:** remove Button ripple prop default value ([6c8a412](https://github.com/webiny/webiny-js/commit/6c8a412487d02daffdb91be2027ca39990a27a84))
+* add missing `es:DescribeElasticsearchDomainConfig` permission ([03d2f91](https://github.com/webiny/webiny-js/commit/03d2f915b4eacb78de3c39542c653d4f6365e0b3))
+* ensure VPC is used for production environments ([140b185](https://github.com/webiny/webiny-js/commit/140b185d4c29e0aac9469b91c20e2ee432d8d3f8))
+
+
+
+
+
 ## [5.33.2](https://github.com/webiny/webiny-js/compare/v5.33.2-beta.2...v5.33.2) (2022-11-17)
 
 **Note:** Version bump only for package webiny-js
