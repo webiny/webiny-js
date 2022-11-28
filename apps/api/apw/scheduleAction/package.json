@@ -7,10 +7,10 @@
   },
   "dependencies": {
     "@aws-sdk/client-cloudwatch-events": "latest",
-    "@webiny/api-apw": "^5.33.2",
-    "@webiny/api-apw-scheduler-so-ddb": "^5.33.2",
-    "@webiny/cli": "^5.33.2",
-    "@webiny/handler-aws": "^5.33.2",
-    "@webiny/project-utils": "^5.33.2"
+    "@webiny/api-apw": "^5.33.3-beta.0",
+    "@webiny/api-apw-scheduler-so-ddb": "^5.33.3-beta.0",
+    "@webiny/cli": "^5.33.3-beta.0",
+    "@webiny/handler-aws": "^5.33.3-beta.0",
+    "@webiny/project-utils": "^5.33.3-beta.0"
   }
 }
