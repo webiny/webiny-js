@@ -1,3 +1,4 @@
+import lodashCloneDeep from "lodash/cloneDeep";
 import WebinyError from "@webiny/error";
 import {
     CmsEntry,
@@ -151,8 +152,8 @@ export const createEntriesStorageOperations = (
         const esEntry = prepareEntryToIndex({
             plugins,
             model,
-            entry: structuredClone({ ...entry, locked }),
-            storageEntry: structuredClone({ ...storageEntry, locked })
+            entry: lodashCloneDeep({ ...entry, locked }),
+            storageEntry: lodashCloneDeep({ ...storageEntry, locked })
         });
 
         const { index: esIndex } = configurations.es({
@@ -307,8 +308,8 @@ export const createEntriesStorageOperations = (
         const esEntry = prepareEntryToIndex({
             plugins,
             model,
-            entry: structuredClone(entry),
-            storageEntry: structuredClone(storageEntry)
+            entry: lodashCloneDeep(entry),
+            storageEntry: lodashCloneDeep(storageEntry)
         });
 
         const esLatestData = await getESLatestEntryData(plugins, esEntry);
@@ -479,11 +480,11 @@ export const createEntriesStorageOperations = (
             esEntry = prepareEntryToIndex({
                 plugins,
                 model,
-                entry: structuredClone({
+                entry: lodashCloneDeep({
                     ...entry,
                     locked
                 }),
-                storageEntry: structuredClone({
+                storageEntry: lodashCloneDeep({
                     ...storageEntry,
                     locked
                 })
@@ -509,11 +510,11 @@ export const createEntriesStorageOperations = (
                     esEntry = prepareEntryToIndex({
                         plugins,
                         model,
-                        entry: structuredClone({
+                        entry: lodashCloneDeep({
                             ...entry,
                             locked
                         }),
-                        storageEntry: structuredClone({
+                        storageEntry: lodashCloneDeep({
                             ...storageEntry,
                             locked
                         })
@@ -714,8 +715,8 @@ export const createEntriesStorageOperations = (
             const esEntry = prepareEntryToIndex({
                 plugins,
                 model,
-                entry: structuredClone(latestEntry),
-                storageEntry: structuredClone(latestStorageEntry)
+                entry: lodashCloneDeep(latestEntry),
+                storageEntry: lodashCloneDeep(latestStorageEntry)
             });
 
             const esLatestData = await getESLatestEntryData(plugins, esEntry);
@@ -1063,8 +1064,8 @@ export const createEntriesStorageOperations = (
         const preparedEntryData = prepareEntryToIndex({
             plugins,
             model,
-            entry: structuredClone(entry),
-            storageEntry: structuredClone(storageEntry)
+            entry: lodashCloneDeep(entry),
+            storageEntry: lodashCloneDeep(storageEntry)
         });
         /**
          * Update the published revision entry in ES.
@@ -1185,8 +1186,8 @@ export const createEntriesStorageOperations = (
             const preparedEntryData = prepareEntryToIndex({
                 plugins,
                 model,
-                entry: structuredClone(entry),
-                storageEntry: structuredClone(storageEntry)
+                entry: lodashCloneDeep(entry),
+                storageEntry: lodashCloneDeep(storageEntry)
             });
 
             const esLatestData = await getESLatestEntryData(plugins, preparedEntryData);
