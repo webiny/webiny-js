@@ -22,31 +22,18 @@ export enum PageImportExportTaskStatus {
     COMPLETED = "completed",
     FAILED = "failed"
 }
-// Copied from packages/api-file-manager
+
+// TODO: for Webiny core team: create this type in the app-file-manager
 export interface File {
     id: string;
+    name: string;
     key: string;
+    src: string;
     size: number;
     type: string;
-    name: string;
-    meta: Record<string, any>;
     tags: string[];
+    meta: Record<string, any>;
     createdOn: string;
-    createdBy: {
-        id: string;
-        displayName: string | null;
-        type: string;
-    };
-    /**
-     * Added with new storage operations refactoring.
-     */
-    tenant: string;
-    locale: string;
-    webinyVersion: string;
-    /**
-     * User can add new fields to the File object so we must allow it in the types.
-     */
-    [key: string]: any;
 }
 
 export type PbElementDataSettingsSpacingValueType = {
