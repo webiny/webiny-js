@@ -9,7 +9,7 @@ import {
     StylesObjects,
     ThemeStylesCallback
 } from "~/types";
-import { CSSObject } from "@emotion/css";
+import React from "react";
 
 let usingPageElementsFlag = false;
 
@@ -40,7 +40,7 @@ export const isPerBreakpointStylesObject = ({
 export const assignStyles: AssignStylesCallback = (args: {
     breakpoints: Record<string, Breakpoint>;
     styles: StylesObjects;
-    assignTo?: CSSObject;
+    assignTo?: React.CSSProperties;
 }) => {
     const { breakpoints, styles = {}, assignTo = {} } = args;
     if (isPerBreakpointStylesObject({ breakpoints, styles })) {
@@ -54,7 +54,7 @@ export const assignStyles: AssignStylesCallback = (args: {
                  * We must cast because it breaks on TS 4.7.4.
                  * Object is not undefined, so it is safe.
                  */
-                Object.assign(assignTo[breakpoint.mediaQuery] as CSSObject, styles[breakpointName]);
+                Object.assign(assignTo[breakpoint.mediaQuery] as React.CSSProperties, styles[breakpointName]);
             }
         }
     } else {

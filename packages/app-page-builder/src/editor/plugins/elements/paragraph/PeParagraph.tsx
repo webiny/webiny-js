@@ -4,6 +4,7 @@ import { CoreOptions } from "medium-editor";
 import { MediumEditorOptions, PbEditorElement } from "~/types";
 import { getMediumEditorOptions } from "../utils/textUtils";
 import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
+import styled from "@emotion/styled";
 
 const DEFAULT_EDITOR_OPTIONS: CoreOptions = {
     toolbar: {
@@ -34,16 +35,12 @@ declare global {
 
 const PeParagraph: React.FC<PeParagraphProps> = props => {
     const { element, isActive, mediumEditorOptions } = props;
-    const { getClassNames, getElementClassNames, combineClassNames } = usePageElements();
-    const classNames = combineClassNames(
-        getClassNames(defaultStyles),
-        getElementClassNames(element as any)
-    );
+    const { getStyles, getElementStyles } = usePageElements();
 
     if (isActive) {
         return (
             <Text
-                tag={["pb-paragraph", { class: classNames }]}
+                tag={["pb-paragraph", { class: 'classNames' }]}
                 elementId={element.id}
                 mediumEditorOptions={getMediumEditorOptions(
                     DEFAULT_EDITOR_OPTIONS,
@@ -53,14 +50,16 @@ const PeParagraph: React.FC<PeParagraphProps> = props => {
         );
     }
 
-    const elementDataText = element.data.text || {};
-
-    return (
+    const styles = [...getStyles(defaultStyles), ...getElementStyles(element)];
+    const PbParagraph = styled(({ className }) => (
         <pb-paragraph
-            class={classNames}
-            dangerouslySetInnerHTML={{ __html: elementDataText.data?.text }}
+            class={className}
+            dangerouslySetInnerHTML={{ __html: element.data.text?.data?.text }}
         />
-    );
+    ))(styles);
+
+    return <PbParagraph />;
+    
 };
 
 export default React.memo(PeParagraph);

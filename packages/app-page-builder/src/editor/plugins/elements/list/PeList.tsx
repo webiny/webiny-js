@@ -3,6 +3,7 @@ import Text from "~/editor/components/Text";
 import { MediumEditorOptions, PbEditorElement } from "~/types";
 import { getMediumEditorOptions } from "../utils/textUtils";
 import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
+import styled from "@emotion/styled";
 
 const DEFAULT_EDITOR_OPTIONS = {
     toolbar: {
@@ -33,16 +34,12 @@ declare global {
 
 const PeList: React.FC<PeListProps> = props => {
     const { element, isActive, mediumEditorOptions } = props;
-    const { getClassNames, getElementClassNames, combineClassNames } = usePageElements();
-    const classNames = combineClassNames(
-        getClassNames(defaultStyles),
-        getElementClassNames(element as any)
-    );
+    const { getStyles, getElementStyles, getThemeStyles } = usePageElements();
 
     if (isActive) {
         return (
             <Text
-                tag={["pb-list", { class: classNames }]}
+                tag={["pb-list", { class: 'classNames' }]}
                 elementId={element.id}
                 mediumEditorOptions={getMediumEditorOptions(
                     DEFAULT_EDITOR_OPTIONS,
@@ -52,9 +49,21 @@ const PeList: React.FC<PeListProps> = props => {
         );
     }
 
-    const elementDataText = element.data.text?.data?.text || {};
+    const styles = [
+        ...getStyles(defaultStyles),
+        ...getElementStyles(element),
+        ...getThemeStyles(theme => theme?.styles?.list)
+    ];
 
-    return <pb-list class={classNames} dangerouslySetInnerHTML={{ __html: elementDataText }} />;
+    const PbList = styled(({ className }) => (
+        <pb-list
+            class={className}
+            dangerouslySetInnerHTML={{ __html: element.data.text.data.text }}
+        />
+    ))(styles);
+
+    return <PbList />;
+
 };
 export default React.memo(PeList);
 

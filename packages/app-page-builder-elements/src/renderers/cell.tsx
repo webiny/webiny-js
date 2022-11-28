@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Elements } from "~/components/Elements";
 import { usePageElements } from "~/hooks/usePageElements";
 import { ElementRenderer } from "~/types";
+import styled from "@emotion/styled";
 
 declare global {
     //eslint-disable-next-line
@@ -12,20 +13,29 @@ declare global {
     }
 }
 
-const defaultStyles = { display: "block" };
-
 const Cell: ElementRenderer = ({ element }) => {
-    // const element = usePageElement();
-    const { getClassNames, getElementClassNames, combineClassNames } = usePageElements();
-    const classNames = combineClassNames(
-        getClassNames(defaultStyles),
-        getElementClassNames(element)
-    );
+    const { getStyles, getElementStyles, getThemeStyles } = usePageElements();
+
+    const width = useMemo<string>(() => {
+        return `${(element.data?.settings?.grid?.size / 12) * 100}%`;
+    }, [element.id]);
+
+    const styles = [
+        ...getStyles({ display: "block", width }),
+        ...getThemeStyles(() => {
+            return { tablet: { width: "100%" } };
+        }),
+        ...getElementStyles(element)
+    ];
+
+    const PbCell = styled(({ className, children }) => (
+        <pb-cell class={className}>{children}</pb-cell>
+    ))(styles);
 
     return (
-        <pb-cell class={classNames}>
+        <PbCell>
             <Elements element={element} />
-        </pb-cell>
+        </PbCell>
     );
 };
 

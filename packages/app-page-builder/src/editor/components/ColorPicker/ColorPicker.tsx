@@ -218,21 +218,29 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
     );
 
     const { theme } = usePageBuilder();
-    let peTheme: Theme = {};
     const pageElements = usePageElements();
+
+    let themeColors: Record<string, any> = {};
+
     if (pageElements) {
-        peTheme = pageElements.theme;
+        const colors = pageElements.theme?.styles?.colors;
+        if (colors) {
+            for (const key in colors) {
+                if (colors[key].base) {
+                    themeColors[`theme:${key}`] = colors[key].base;
+                }
+            }
+        }
+    } else {
+        themeColors = theme?.colors || {};
     }
-
-    const colors = theme ? theme.colors : {};
-
-    const themeColors = { ...colors, ...peTheme.styles?.colors };
 
     let themeColor = false;
 
     const colorPicker = (
         <ColorPickerStyle onClick={hidePicker}>
-            {Object.values(themeColors).map((color, index) => {
+            {Object.keys(themeColors).map((key, index) => {
+                const color = themeColors[key];
                 if (color === value || value === "transparent") {
                     themeColor = true;
                 }
@@ -244,7 +252,15 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
                             style={{ backgroundColor: color }}
                             onClick={() => {
                                 hidePicker();
-                                onChangeComplete(color);
+
+                                // With page elements implementation, we want to store the color key and
+                                // then the actual color will be retrieved from the theme object.
+                                let value = color;
+                                if (pageElements) {
+                                    value = key;
+                                }
+
+                                onChangeComplete(value);
                             }}
                         />
                     </ColorBox>

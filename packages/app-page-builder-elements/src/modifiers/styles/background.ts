@@ -39,7 +39,7 @@ const DEFAULT_SCALING = {
     backgroundRepeat: "no-repeat"
 };
 
-const DEFAULT_POSITION = "top left";
+const DEFAULT_POSITION = "center center";
 
 interface Values {
     color: string;

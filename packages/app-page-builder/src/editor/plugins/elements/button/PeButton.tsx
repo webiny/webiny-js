@@ -41,16 +41,17 @@ const DefaultLinkComponent: React.FC<DefaultLinkComponentProps> = ({ href, newTa
 const DATA_NAMESPACE = "data.buttonText";
 
 const Button: React.FC<ButtonProps> = props => {
+    return null;
     const eventActionHandler = useEventActionHandler();
     const LinkComponent = DefaultLinkComponent;
 
-    const { getElementClassNames, getThemeClassNames, getClassNames, combineClassNames } =
+    const { getElementStyles, getThemeStyles, getStyles, combineClassNames } =
         usePageElements();
 
     const { element } = props;
     const { buttonText, link, type, icon } = element.data;
 
-    const themeClassNames = getThemeClassNames(theme => {
+    const themeClassNames = getThemeStyles(theme => {
         if (!theme.styles) {
             return {};
         }
@@ -63,17 +64,17 @@ const Button: React.FC<ButtonProps> = props => {
         return { ...styles, ...theme.styles.buttons[type!] };
     });
 
-    const elementClassNames = getElementClassNames(element as any);
+    const elementClassNames = getElementStyles(element as any);
 
     const classNames = combineClassNames(
         themeClassNames,
         elementClassNames,
-        getClassNames({
+        getStyles({
             padding: "14px 20px"
         })
     );
 
-    const containerStyles = getClassNames({
+    const containerStyles = getStyles({
         display: 'flex'
     })
 
@@ -106,7 +107,7 @@ const Button: React.FC<ButtonProps> = props => {
         );
     }, [element.id, element.data]);
 
-    const containerClassNames = getElementClassNames(element as any);
+    const containerClassNames = getElementStyles(element as any);
     const bodyClassNames = themeClassNames;
     return (
         <pb-button>

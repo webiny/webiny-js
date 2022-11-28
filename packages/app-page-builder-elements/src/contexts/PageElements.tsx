@@ -5,19 +5,15 @@ import {
     ElementStylesCallback,
     StylesCallback,
     ThemeStylesCallback,
-    GetElementClassNames,
     GetElementStyles,
     GetThemeStyles,
-    GetThemeClassNames,
     GetStyles,
-    GetClassNames,
     AssignStylesCallback,
     SetElementStylesCallback,
     SetThemeStylesCallback,
     SetStylesCallback,
     SetAssignStylesCallback
 } from "~/types";
-import { css, cx } from "@emotion/css";
 import {
     setUsingPageElements,
     defaultElementStylesCallback,
@@ -74,13 +70,6 @@ export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
         [customElementStylesCallback, customAssignStylesCallback]
     );
 
-    const getElementClassNames = useCallback<GetElementClassNames>(
-        element => {
-            return getElementStyles(element).map(item => css(item));
-        },
-        [getElementStyles]
-    );
-
     const getThemeStyles = useCallback<GetThemeStyles>(
         getStyles => {
             const callback = customThemeStylesCallback || defaultThemeStylesCallback;
@@ -95,17 +84,10 @@ export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
         [customThemeStylesCallback, customAssignStylesCallback]
     );
 
-    const getThemeClassNames = useCallback<GetThemeClassNames>(
-        getStyles => {
-            const styles = getThemeStyles(getStyles);
-            return styles.map(item => css(item));
-        },
-        [getThemeStyles]
-    );
-
     const getStyles = useCallback<GetStyles>(
         styles => {
             const callback = customStylesCallback || defaultStylesCallback;
+
             return callback({
                 styles,
                 theme,
@@ -115,14 +97,6 @@ export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
             });
         },
         [customStylesCallback, customAssignStylesCallback]
-    );
-
-    const getClassNames = useCallback<GetClassNames>(
-        customStyles => {
-            const styles = getStyles(customStyles);
-            return styles.map(item => css(item));
-        },
-        [getStyles]
     );
 
     // Provides a way to check whether the `PageElementsProvider` React component was mounted or not,
@@ -135,12 +109,8 @@ export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
         renderers,
         modifiers,
         getElementStyles,
-        getElementClassNames,
         getThemeStyles,
-        getThemeClassNames,
         getStyles,
-        getClassNames,
-        combineClassNames: cx,
         setAssignStylesCallback,
         setElementStylesCallback,
         setThemeStylesCallback,
@@ -149,9 +119,7 @@ export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
 
     return <PageElementsContext.Provider value={value}>{children}</PageElementsContext.Provider>;
 };
-/**
- * TODO @ts-refactor the props: any
- */
+
 export const PageElementsConsumer: React.FC = ({ children }) => (
     <PageElementsContext.Consumer>
         {(props: any) => React.cloneElement(children as unknown as React.ReactElement, props)}

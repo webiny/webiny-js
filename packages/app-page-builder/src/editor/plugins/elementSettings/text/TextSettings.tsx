@@ -63,9 +63,11 @@ interface TextSettingsPropsOptions {
     useCustomTag?: boolean;
     tags: string[];
 }
+
 interface TextSettingsProps extends PbEditorPageElementSettingsRenderComponentProps {
     options: TextSettingsPropsOptions;
 }
+
 const TextSettings: React.FC<TextSettingsProps> = ({ defaultAccordionValue, options }) => {
     const { displayMode } = useRecoilValue(uiAtom);
     const activeElementId = useRecoilValue(activeElementAtom);
@@ -95,25 +97,23 @@ const TextSettings: React.FC<TextSettingsProps> = ({ defaultAccordionValue, opti
     };
 
     const themeTypographyOptions = useMemo(() => {
+        if (peTheme) {
+            const peThemeTypography = Object.keys(peTheme.styles?.typography || {});
+            return peThemeTypography.map(el => (
+                <option value={el} key={el}>
+                    {el}
+                </option>
+            ));
+        }
+
         const { types = [] } = theme.elements[element.type];
-        const peThemeTypography = Object.keys(peTheme.styles?.typography || {});
 
         return [
-            /**
-             * remove ts-ignore when determined types for the PbTheme.elements
-             * TODO @ts-refactor
-             */
-            // @ts-ignore
             ...types.map(el => (
                 <option value={el.className} key={el.label}>
                     {el.label}
                 </option>
             )),
-            ...peThemeTypography.map(el => (
-                <option value={el} key={el}>
-                    {el}
-                </option>
-            ))
         ];
     }, [theme, element]);
 

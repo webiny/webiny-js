@@ -33,10 +33,10 @@ declare global {
 
 const PeQuote: React.FC<PeQuoteProps> = props => {
     const { element, isActive, mediumEditorOptions } = props;
-    const { getClassNames, getElementClassNames, combineClassNames } = usePageElements();
+    const { getStyles, getElementStyles, combineClassNames } = usePageElements();
     const classNames = combineClassNames(
-        getClassNames(defaultStyles),
-        getElementClassNames(element as any)
+        getStyles(defaultStyles),
+        getElementStyles(element as any)
     );
 
     if (isActive) {

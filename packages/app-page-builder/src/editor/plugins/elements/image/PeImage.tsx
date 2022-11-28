@@ -5,6 +5,7 @@ import { SingleImageUpload, SingleImageUploadProps } from "@webiny/app-admin";
 import { UpdateElementActionEvent } from "~/editor/recoil/actions";
 import pick from "lodash/pick";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
+import styled from "@emotion/styled";
 
 type ImagePropsType = {
     element: PbEditorElement;
@@ -20,15 +21,16 @@ declare global {
 }
 
 const Image: React.FC<ImagePropsType> = ({ element }) => {
-    const { getClassNames, getElementClassNames, combineClassNames } = usePageElements();
+    return null;
+    const { getStyles, getElementStyles } = usePageElements();
     const classNames = combineClassNames(
         // The Image page element has its width/height stored in a non-standard way.
-        getClassNames({
+        getStyles({
             display: "block",
             width: element.data.image?.width,
             height: element.data.image?.height
         }),
-        getElementClassNames(element as any)
+        getElementStyles(element as any)
     );
 
     const handler = useEventActionHandler();

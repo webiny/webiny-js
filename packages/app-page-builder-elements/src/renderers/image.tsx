@@ -1,6 +1,7 @@
 import React from "react";
 import { usePageElements } from "~/hooks/usePageElements";
 import { ElementRenderer } from "~/types";
+import styled from "@emotion/styled";
 
 declare global {
     //eslint-disable-next-line
@@ -11,27 +12,28 @@ declare global {
     }
 }
 
-const defaultStyles = { display: "block" };
+const defaultStyles = { display: "flex" };
 
 const Image: ElementRenderer = ({ element }) => {
-    const { getClassNames, getElementClassNames, combineClassNames } = usePageElements();
-    const classNames = combineClassNames(
-        getClassNames(defaultStyles),
-        getElementClassNames(element)
-    );
+    const { getStyles, getElementStyles } = usePageElements();
 
     const { src, name } = element.data.image.file;
 
+    const styles = [...getStyles(defaultStyles), ...getElementStyles(element)];
+    const PbImage = styled(({ className, children }) => (
+        <pb-image class={className}>{children}</pb-image>
+    ))(styles);
+
     // Image has its width / height set from its own settings.
-    const [imgClassNames] = getClassNames({
+    const PbImg = styled.img({
         width: element.data.image.width,
         height: element.data.image.height,
     })
 
     return (
-        <pb-image class={classNames}>
-            <img alt={name} src={src} className={imgClassNames} />
-        </pb-image>
+        <PbImage>
+            <PbImg alt={name} src={src} />
+        </PbImage>
     );
 };
 

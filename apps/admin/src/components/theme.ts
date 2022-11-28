@@ -1,24 +1,31 @@
 import { Theme } from "@webiny/app-page-builder-elements/types";
 
 const colors = {
-    primary: "#fa5723",
-    secondary: "#00ccb0",
-    background: "#eaecec",
-    surface: 'purple',
-    textPrimary: "#0a0a0a",
+    color1: { base: "#fa5723" }, // primary
+    color2: { base: "#00ccb0" }, // secondary
+    color3: { base: "#0a0a0a" }, // text primary
+    color4: { base: "#eaecec" }, // background
+    color5: { base: "#ffffff" } // white background
 };
 
 const fonts = {
-    // default: "'IBM Plex Sans', sans-serif;"
-     default: "'Lato', sans-serif;"
+    primary: "'IBM Plex Sans', sans-serif;",
+    secondary: "'Lato', sans-serif;"
 };
 
-const heading = {
-    fontFamily: fonts.default,
-    color: colors.textPrimary,
-    fontWeight: "bold",
-    margin: 0,
-    padding: 0
+const defaults = {
+    headings: {
+        fontFamily: fonts.secondary,
+        color: colors.color1.base,
+        WebkitFontSmoothing: "antialiased"
+    },
+    paragraphs: {
+        fontFamily: fonts.primary,
+        color: colors.color1.base,
+        fontWeight: 400,
+        lineHeight: "1.5rem",
+        WebkitFontSmoothing: "antialiased"
+    }
 };
 
 // Theme
@@ -32,10 +39,10 @@ export const theme: Theme = {
     styles: {
         colors,
         borderRadius: 4,
-        buttons: {
+        button: {
             default: {
-                background: colors.background,
-                color: colors.textPrimary
+                background: colors.color3.base,
+                color: colors.color1.base
             },
             primary: {},
             secondary: {},
@@ -43,78 +50,54 @@ export const theme: Theme = {
             outlineSecondary: {},
             simple: {}
         },
-
-        typography: {
-            bodyV2: {
-                fontFamily: fonts.default,
-                fontSize: 17, // 16.9
-                color: colors.textPrimary,
-                fontWeight: 400,
-                letterSpacing: "0.45px",
-                lineHeight: "1.5rem"
-            },
-            descriptionV2: {
-                fontFamily: fonts.default,
-                fontSize: 12.5,
-                color: colors.textPrimary,
-                fontWeight: 400,
-                letterSpacing: "0.45px",
-                lineHeight: "1.5rem"
-            },
-            heading1: {
-                ...heading,
-                fontSize: 32
-            },
-            heading2: {
-                ...heading,
-                fontSize: 24
-            },
-            heading3: {
-                ...heading,
-                fontSize: 16
+        list: {
+            li: {
+                marginBottom: "12px",
+                marginLeft: "1.875rem",
+                position: "relative",
+                "&:before": {
+                    backgroundColor: "#90c418",
+                    borderRadius: "50%",
+                    content: '""',
+                    height: "1.25rem",
+                    width: "1.25rem",
+                    left: "-1.875rem",
+                    position: "absolute",
+                    top: "0.125rem"
+                },
+                "&:after": {
+                    backgroundColor: "#fff",
+                    borderRadius: "50%",
+                    content: '""',
+                    height: "0.5rem",
+                    left: "-1.5rem",
+                    position: "absolute",
+                    top: "0.5rem",
+                    width: "0.5rem"
+                }
             }
+        },
+        grid: {
+            "mobile-landscape": { flexWrap: "wrap" }
+        },
+        typography: {
+            paragraph1: {
+                ...defaults.paragraphs,
+                fontSize: 17
+            },
+            paragraph2: {
+                ...defaults.paragraphs,
+                fontSize: 12.5,
+                letterSpacing: "0.45px",
+                lineHeight: "19px"
+            },
+
+            heading1: { ...defaults.headings, fontWeight: "bold", fontSize: 48 },
+            heading2: { ...defaults.headings, fontSize: 36 },
+            heading3: { ...defaults.headings, fontSize: 30 },
+            heading4: { ...defaults.headings, fontSize: 24 },
+            heading5: { ...defaults.headings, fontSize: 20 },
+            heading6: { ...defaults.headings, fontSize: 18, lineHeight: "1.75rem" }
         }
     }
 };
-
-// OLD
-// {
-//     colors: {
-//         primary: "var(--webiny-theme-color-primary)",
-//             secondary: "var(--webiny-theme-color-secondary)",
-//             background: "var(--webiny-theme-color-background)",
-//             surface: "var(--webiny-theme-color-surface)",
-//             textPrimary: "var(--webiny-theme-color-text-primary)"
-//     },
-//     elements: {
-//         button: {
-//             types: [
-//                 { className: "", label: "Default" },
-//                 { className: "primary", label: "Primary" },
-//                 { className: "secondary", label: "Secondary" },
-//                 { className: "outline-primary", label: "Outline Primary" },
-//                 { className: "outline-secondary", label: "Outline Secondary" },
-//                 { className: "simple", label: "Simple" }
-//             ]
-//         },
-//         heading: {
-//             types: [{ className: "webiny-pb-typography-heading", label: "Default" }]
-//         },
-//         paragraph: {
-//             types: [
-//                 { className: "webiny-pb-typography-body", label: "Body" },
-//                 { className: "webiny-pb-typography-description", label: "Description" }
-//             ]
-//         },
-//         list: {
-//             types: [
-//                 { className: "", label: "Default" },
-//                 { className: "webiny-pb-typography-list--primary", label: "Primary" },
-//                 { className: "webiny-pb-typography-list--secondary", label: "Secondary" }
-//             ]
-//         },
-//         quote: {
-//             types: [{ className: "webiny-pb-typography-quote", label: "Default" }]
-//         }
-//     }
-// }

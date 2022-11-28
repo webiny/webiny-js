@@ -2,6 +2,7 @@ import React from "react";
 import { Elements } from "~/components/Elements";
 import { usePageElements } from "~/hooks/usePageElements";
 import { ElementRenderer } from "~/types";
+import styled from "@emotion/styled";
 
 declare global {
     //eslint-disable-next-line
@@ -13,17 +14,27 @@ declare global {
     }
 }
 
-const defaultStyles = { display: "block", boxSizing: "border-box" };
+const defaultStyles = {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
+    boxSizing: "border-box"
+};
 
 const Block: ElementRenderer = ({ element }) => {
-    const { getClassNames, getElementClassNames } = usePageElements();
-    const classNames = getClassNames(defaultStyles);
+    const { getStyles, getElementStyles } = usePageElements();
+
+    const styles = [...getStyles(defaultStyles), ...getElementStyles(element)];
+    const PbBlockInner = styled(({ className, children }) => (
+        <pb-block-inner class={className}>{children}</pb-block-inner>
+    ))(styles);
 
     return (
-        <pb-block class={classNames}>
-            <pb-block-inner class={getElementClassNames(element)}>
+        <pb-block data-pe-id={element.id}>
+            <PbBlockInner>
                 <Elements element={element} />
-            </pb-block-inner>
+            </PbBlockInner>
         </pb-block>
     );
 };

@@ -1,6 +1,7 @@
 import React from "react";
 import { usePageElements } from "~/hooks/usePageElements";
 import { ElementRenderer } from "~/types";
+import styled from "@emotion/styled";
 
 declare global {
     //eslint-disable-next-line
@@ -14,19 +15,18 @@ declare global {
 const defaultStyles = { display: "block" };
 
 const Quote: ElementRenderer = ({ element }) => {
-    const { getClassNames, getElementClassNames, combineClassNames } = usePageElements();
-    const classNames = combineClassNames(
-        getClassNames(defaultStyles),
-        getElementClassNames(element)
-    );
+    const { getStyles, getElementStyles } = usePageElements();
+
+    const styles = [...getStyles(defaultStyles), ...getElementStyles(element)];
+    const PbQuote = styled(({ className }) => (
+        <pb-quote
+            class={className}
+            dangerouslySetInnerHTML={{ __html: element.data.text.data.text }}
+        />
+    ))(styles);
 
     // It's how editor works, inserts blockquote / q tags.
-    return (
-        <pb-quote
-            class={classNames}
-            dangerouslySetInnerHTML={{ __html: element.data.text.data.text }}
-        ></pb-quote>
-    );
+    return <PbQuote />;
 };
 
 export const createQuote = () => Quote;

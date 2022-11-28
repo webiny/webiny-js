@@ -1,7 +1,8 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { usePageElements } from "~/hooks/usePageElements";
 import { Element } from "~/components/Element";
 import { ElementRenderer } from "~/types";
+import styled from "@emotion/styled";
 
 declare global {
     // eslint-disable-next-line
@@ -14,34 +15,31 @@ declare global {
 }
 
 const defaultStyles = {
-    display: "flex !important",
-    flexDirection: "row !important",
-    alignItems: "flex-start !important",
-    "> pb-grid-column": { display: "inline-block" }
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
+    maxWidth: "100%"
 };
 
 const Grid: ElementRenderer = ({ element }) => {
-    const { getClassNames, getElementClassNames, combineClassNames } = usePageElements();
-    const classNames = combineClassNames(
-        getElementClassNames(element),
-        getClassNames(defaultStyles)
-    );
+    const { getStyles, getElementStyles, getThemeStyles } = usePageElements();
 
-    const cellsWidths: number[] = useMemo(() => {
-        if (!element.data.settings || !element.data.settings.grid) {
-            return [];
-        }
-        return element.data.settings.grid.cellsType.split("-").map(Number);
-    }, []);
+    const styles = [
+        ...getStyles(defaultStyles),
+        getThemeStyles((theme) => theme.styles.grid,
+        ...getElementStyles(element)
+    ];
+    const PbGrid = styled(({ className, children }) => (
+        <pb-grid class={className}>{children}</pb-grid>
+    ))(styles);
 
     return (
-        <pb-grid class={classNames}>
-            {cellsWidths.map((width, index) => (
-                <pb-grid-column key={width + index} style={{ width: `${(width / 12) * 100}%` }}>
-                    <Element element={element.elements[index]} />
-                </pb-grid-column>
+        <PbGrid data-pe-id={element.id}>
+            {element.elements.map((width, index) => (
+                <Element element={element.elements[index]} />
             ))}
-        </pb-grid>
+        </PbGrid>
     );
 };
 

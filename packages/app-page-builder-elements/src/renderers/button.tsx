@@ -1,6 +1,7 @@
 import React from "react";
 import { usePageElements } from "~/hooks/usePageElements";
 import { ElementRenderer } from "~/types";
+import styled from "@emotion/styled";
 
 declare global {
     // eslint-disable-next-line
@@ -34,35 +35,35 @@ const DefaultLinkComponent: React.FC<DefaultLinkComponentProps> = ({ href, newTa
 export const createButton = (params: CreateButtonParams = {}): ElementRenderer => {
     const LinkComponent = params?.LinkComponent || DefaultLinkComponent;
 
-    // TODO @ts-refactor fix "Component definition is missing display name"
-    // eslint-disable-next-line
     return ({ element }) => {
         const { buttonText, link, type, icon } = element.data;
 
-        const { getElementClassNames, getThemeClassNames, combineClassNames } = usePageElements();
+        const { getElementStyles, getThemeStyles } = usePageElements();
 
-        const themeClassNames = getThemeClassNames(theme => {
+        const themeStyles = getThemeStyles(theme => {
             if (!theme.styles || !theme.styles.buttons) {
                 return {};
             }
 
-            const value = theme.styles.buttons[type];
-
-            return value;
+            return theme.styles.buttons[type];
         });
-        const elementClassNames = getElementClassNames(element);
 
-        const classNames = combineClassNames(themeClassNames, elementClassNames);
+        const elementStyles = getElementStyles(element);
+
+        const styles = [...themeStyles, ...elementStyles];
+        const PbButton = styled(({ className, children }) => (
+            <pb-button class={className}>{children}</pb-button>
+        ))(styles);
 
         return (
-            <pb-button class={classNames}>
+            <PbButton>
                 <LinkComponent {...link}>
                     <pb-button-body style={{ color: "white", backgroundColor: "#fa5723" }}>
                         {icon && <pb-button-icon dangerouslySetInnerHTML={{ __html: icon.svg }} />}
                         <pb-button-text>{buttonText}</pb-button-text>
                     </pb-button-body>
                 </LinkComponent>
-            </pb-button>
+            </PbButton>
         );
     };
 };

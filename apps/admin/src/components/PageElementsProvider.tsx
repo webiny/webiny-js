@@ -49,9 +49,9 @@ export const PageElementsProvider: React.FC = ({ children }) => (
                 height: createHeight(),
                 horizontalAlign: createHorizontalAlign(),
                 margin: createMargin(),
+                text: createText(),
                 padding: createPadding(),
                 shadow: createShadow(),
-                text: createText(),
                 verticalAlign: createVerticalAlign(),
                 width: createWidth()
             }
