@@ -72,7 +72,6 @@ export const Main = ({ folderId }: Props) => {
     const canCreate = useCanCreatePage();
 
     useDeepCompareEffect(() => {
-        console.log("useDeepCompareEffect", folders);
         const subFolders = getCurrentFolderList(folders, folderId);
         setSubFolders(subFolders);
         // TODO: remove Object.assign in favour of folders array
