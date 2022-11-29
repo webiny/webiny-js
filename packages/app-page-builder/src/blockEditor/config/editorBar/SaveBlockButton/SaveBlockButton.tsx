@@ -3,21 +3,16 @@ import styled from "@emotion/styled";
 import { createComponentPlugin, makeComposable } from "@webiny/app-admin";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useRouter } from "@webiny/react-router";
-import { ButtonPrimary } from "@webiny/ui/Button";
+import { ButtonIcon, ButtonPrimary } from "@webiny/ui/Button";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { EditorBar } from "~/editor";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import { useBlock } from "~/blockEditor/hooks/useBlock";
 import { SaveBlockActionEvent } from "~/blockEditor/config/eventActions/saveBlock/event";
 
-const LoadingWrapper = styled("div")({
-    position: "absolute",
-    width: "100vw",
-    height: "100vh",
-    top: 0,
-    right: 0,
-    color: "var(--mdc-theme-text-primary-on-background)"
-});
+const SpinnerWrapper = styled.div`
+    position: relative;
+`;
 
 const DefaultSaveBlockButton: React.FC = () => {
     const [block] = useBlock();
@@ -41,14 +36,22 @@ const DefaultSaveBlockButton: React.FC = () => {
     }, [block.name]);
 
     return (
-        <>
+        <ButtonPrimary onClick={saveChanges} disabled={loading}>
             {loading && (
-                <LoadingWrapper>
-                    <CircularProgress label={"Saving block..."} />
-                </LoadingWrapper>
+                <ButtonIcon
+                    icon={
+                        <SpinnerWrapper>
+                            <CircularProgress
+                                size={20}
+                                spinnerWidth={2}
+                                style={{ background: "transparent" }}
+                            />
+                        </SpinnerWrapper>
+                    }
+                />
             )}
-            <ButtonPrimary onClick={saveChanges}>Save Changes</ButtonPrimary>
-        </>
+            Save Changes
+        </ButtonPrimary>
     );
 };
 

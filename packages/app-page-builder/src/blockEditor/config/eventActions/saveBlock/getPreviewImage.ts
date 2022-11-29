@@ -24,20 +24,15 @@ function getDataURLImageDimensions(dataURL: string): Promise<ImageDimensionsType
     });
 }
 
-interface CreatedImageType {
-    data: File | {};
-}
-export default async function getPreviewImage(
+export async function getPreviewImage(
     element: PbElement,
     meta: EventActionHandlerMeta,
     prevFileId?: string
-): Promise<CreatedImageType> {
+): Promise<File | null> {
     const node = document.getElementById(element.id);
 
     if (!node) {
-        return {
-            data: {}
-        };
+        return null;
     }
 
     const editor = document.querySelector(".pb-editor");
@@ -59,9 +54,7 @@ export default async function getPreviewImage(
      * We break the method because it would break if there is no fileUploaderPlugin.
      */
     if (!fileUploaderPlugin) {
-        return {
-            data: {}
-        };
+        return null;
     }
     const previewImage = await fileUploaderPlugin.upload(blob, { apolloClient: meta.client });
     previewImage.meta = imageMeta;
@@ -84,5 +77,5 @@ export default async function getPreviewImage(
         });
     }
 
-    return get(createdImageResponse, "data.fileManager.createFile", {});
+    return get(createdImageResponse, "data.fileManager.createFile.data", null);
 }

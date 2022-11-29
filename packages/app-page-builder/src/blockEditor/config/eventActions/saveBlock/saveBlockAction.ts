@@ -6,7 +6,7 @@ import { ToggleSaveBlockStateActionEvent } from "./event";
 import { BlockEventActionCallable } from "~/blockEditor/types";
 import { BlockWithContent } from "~/blockEditor/state";
 import { UPDATE_PAGE_BLOCK } from "~/admin/views/PageBlocks/graphql";
-import getPreviewImage from "./getPreviewImage";
+import { getPreviewImage } from "./getPreviewImage";
 import { removeElementId } from "~/editor/helpers";
 import { PbElement, PbBlockVariable, PbBlockEditorCreateVariablePlugin } from "~/types";
 
@@ -96,7 +96,7 @@ export const saveBlockAction: BlockEventActionCallable<SaveBlockActionArgsType> 
                 id: state.block.id,
                 data: {
                     ...data,
-                    preview: createdImage.data
+                    preview: createdImage
                 }
             }
         });
