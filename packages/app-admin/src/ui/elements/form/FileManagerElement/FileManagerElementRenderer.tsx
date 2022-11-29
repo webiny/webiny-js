@@ -66,7 +66,7 @@ export class FileManagerElementRenderer extends UIRenderer<
 
                         <FileManager
                             onChange={(value: FileManagerFileItem | null) =>
-                                onChange({ id: value?.id, src: value?.src })
+                                onChange(value ? { id: value.id, src: value.src } : null)
                             }
                             accept={accept}
                             images={!accept}
@@ -78,7 +78,7 @@ export class FileManagerElementRenderer extends UIRenderer<
                                     showFileManager,
                                     value,
                                     onChange: (value: FileManagerFileItem | null) =>
-                                        onChange({ id: value?.id, src: value?.src })
+                                        onChange(value ? { id: value.id, src: value.src } : null)
                                 })
                             }
                         />
