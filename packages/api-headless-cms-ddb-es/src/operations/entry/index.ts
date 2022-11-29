@@ -819,11 +819,6 @@ export const createEntriesStorageOperations = (
             );
         }
 
-        // @ts-ignore
-        if (params.where.category?.id_not) {
-            console.log(params.where.category);
-        }
-
         const body = createElasticsearchBody({
             model,
             params: {
@@ -984,12 +979,6 @@ export const createEntriesStorageOperations = (
                 model,
                 ids: [publishedStorageEntry.id]
             });
-            //
-            // const previouslyPublishedEntry = convertToStorageEntry({
-            //     model,
-            //     entry: initialPreviouslyPublishedEntry
-            // });
-
             items.push(
                 /**
                  * Update currently published entry (unpublish it)

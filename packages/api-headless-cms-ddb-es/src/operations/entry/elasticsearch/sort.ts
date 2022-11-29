@@ -3,34 +3,47 @@ import { CmsEntryElasticsearchFieldPlugin } from "~/plugins";
 import { createSort } from "@webiny/api-elasticsearch";
 import { PluginsContainer } from "@webiny/plugins";
 import { CmsEntryListSort, CmsModel } from "@webiny/api-headless-cms/types";
-import { ElasticsearchQuerySearchValuePlugins, ModelFields } from "./types";
+import { ModelFields } from "./types";
 import { hasKeyword } from "~/operations/entry/elasticsearch/keyword";
-import { createFieldPath } from "./fieldPath";
+import { createSearchPluginList } from "~/operations/entry/elasticsearch/plugins/search";
+import { createFieldPathFactory } from "~/operations/entry/elasticsearch/filtering/path";
 
 interface Params {
     plugins: PluginsContainer;
     sort?: CmsEntryListSort;
     modelFields: ModelFields;
     model: CmsModel;
-    searchPlugins: ElasticsearchQuerySearchValuePlugins;
 }
 export const createElasticsearchSort = (params: Params): esSort => {
-    const { sort, modelFields, searchPlugins } = params;
+    const { sort, modelFields, plugins } = params;
 
     if (!sort || sort.length === 0) {
         return [];
     }
+
+    const searchPlugins = createSearchPluginList({
+        plugins
+    });
+
+    const createFieldPath = createFieldPathFactory({
+        plugins: searchPlugins
+    });
 
     const fieldIdToStorageIdIdMap: Record<string, string> = {};
 
     const sortPlugins = Object.values(modelFields).reduce<
         Record<string, CmsEntryElasticsearchFieldPlugin>
     >((plugins, field) => {
-        const searchPlugin = searchPlugins[field.type];
-
         const { fieldId, storageId } = field.field;
 
         fieldIdToStorageIdIdMap[fieldId] = fieldId;
+
+        const { path } = createFieldPath({
+            key: storageId,
+            field,
+            value: "",
+            keyword: false
+        });
         /**
          * Plugins must be stored with fieldId as key because it is later used to find the sorting plugin.
          */
@@ -40,11 +53,7 @@ export const createElasticsearchSort = (params: Params): esSort => {
             sortable: field.isSortable,
             searchable: field.isSearchable,
             field: fieldId,
-            path: createFieldPath({
-                key: storageId,
-                field,
-                searchPlugin
-            })
+            path
         });
         return plugins;
     }, {});

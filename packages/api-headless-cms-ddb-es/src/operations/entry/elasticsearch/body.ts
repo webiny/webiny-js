@@ -1,17 +1,15 @@
 import { PluginsContainer } from "@webiny/plugins";
 import { CmsEntryListParams, CmsEntryListWhere, CmsModel } from "@webiny/api-headless-cms/types";
 import { createModelFields } from "./fields";
-import { createSearchPluginList } from "./plugins/search";
 import { createFullTextSearchFields } from "./fullTextSearchFields";
 import { createInitialQuery } from "./initialQuery";
 import { applyFullTextSearch } from "./fullTextSearch";
-import { createOperatorPluginList } from "./plugins/operator";
-import { applyFiltering } from "./filtering";
 import { createQueryModifierPluginList } from "./plugins/queryModifier";
 import { createSortModifierPluginList } from "./plugins/sortModifier";
 import { createBodyModifierPluginList } from "./plugins/bodyModifier";
 import { createElasticsearchSort } from "./sort";
 import { PrimitiveValue, SearchBody } from "@webiny/api-elasticsearch/types";
+import { createExecFiltering } from "./filtering";
 
 interface Params {
     plugins: PluginsContainer;
@@ -30,19 +28,7 @@ export const createElasticsearchBody = ({ plugins, model, params }: Params): Sea
         plugins,
         fields: model.fields
     });
-    /**
-     * We need the search plugins as key -> plugin value, so it is easy to find plugin we need, without iterating through array.
-     */
-    const searchPlugins = createSearchPluginList({
-        plugins
-    });
-    /**
-     * We need the operator plugins, which we execute on our where conditions.
-     */
-    const operatorPlugins = createOperatorPluginList({
-        plugins,
-        locale: model.locale
-    });
+
     /**
      * We need the query modifier plugins.
      */
@@ -89,13 +75,15 @@ export const createElasticsearchBody = ({ plugins, model, params }: Params): Sea
         fields: fullTextSearchFields
     });
 
-    applyFiltering({
+    const execFiltering = createExecFiltering({
+        model,
         fields: modelFields,
-        searchPlugins,
-        operatorPlugins,
-        where,
-        query,
         plugins
+    });
+
+    execFiltering({
+        where,
+        query
     });
 
     for (const pl of queryModifierPlugins) {
@@ -106,8 +94,7 @@ export const createElasticsearchBody = ({ plugins, model, params }: Params): Sea
         plugins,
         sort: initialSort,
         modelFields,
-        model,
-        searchPlugins
+        model
     });
 
     for (const pl of sortModifierPlugins) {
