@@ -1,17 +1,17 @@
 import { CmsEntryListWhere } from "@webiny/api-headless-cms/types";
-import { applyFiltering } from "~/operations/entry/elasticsearch/filtering";
 import { ElasticsearchBoolQueryConfig } from "@webiny/api-elasticsearch/types";
-import { createQuery, Query, createPlugins, Plugins, Fields, createFields } from "./mocks";
+import { createQuery, Query, createPluginsContainer } from "./mocks";
+import { createExecFiltering, CreateExecFilteringResponse } from "./mocks/filtering";
 
 describe("not_in filter", () => {
-    let fields: Fields;
     let query: Query;
-    let plugins: Plugins;
+    let execFiltering: CreateExecFilteringResponse;
 
     beforeEach(() => {
-        fields = createFields();
         query = createQuery();
-        plugins = createPlugins();
+        execFiltering = createExecFiltering({
+            plugins: createPluginsContainer()
+        });
     });
 
     it("should add not_in filter - string only", async () => {
@@ -20,13 +20,9 @@ describe("not_in filter", () => {
             id_not_in: list
         };
 
-        applyFiltering({
-            plugins: plugins.container,
-            fields,
+        execFiltering({
             query,
-            where,
-            operatorPlugins: plugins.operators,
-            searchPlugins: plugins.search
+            where
         });
 
         const expected: ElasticsearchBoolQueryConfig = {
@@ -51,13 +47,9 @@ describe("not_in filter", () => {
             id_not_in: list
         };
 
-        applyFiltering({
-            plugins: plugins.container,
-            fields,
+        execFiltering({
             query,
-            where,
-            operatorPlugins: plugins.operators,
-            searchPlugins: plugins.search
+            where
         });
 
         const expected: ElasticsearchBoolQueryConfig = {
@@ -82,13 +74,9 @@ describe("not_in filter", () => {
         };
 
         expect(() => {
-            applyFiltering({
-                plugins: plugins.container,
-                fields,
+            execFiltering({
                 query,
-                where,
-                operatorPlugins: plugins.operators,
-                searchPlugins: plugins.search
+                where
             });
         }).toThrow(
             `You cannot filter field "id" with "not_in" operator and not send an array of values.`
@@ -101,13 +89,9 @@ describe("not_in filter", () => {
         };
 
         expect(() => {
-            applyFiltering({
-                plugins: plugins.container,
-                fields,
+            execFiltering({
                 query,
-                where,
-                operatorPlugins: plugins.operators,
-                searchPlugins: plugins.search
+                where
             });
         }).toThrow(
             `You cannot filter field "id" with "not_in" operator and not send an array of values.`

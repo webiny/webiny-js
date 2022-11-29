@@ -1,18 +1,19 @@
 import { CmsEntryListWhere } from "@webiny/api-headless-cms/types";
-import { applyFiltering } from "~/operations/entry/elasticsearch/filtering";
+import { CreateExecFilteringResponse } from "~/operations/entry/elasticsearch/filtering";
 import { ElasticsearchBoolQueryConfig } from "@webiny/api-elasticsearch/types";
-import { createQuery, Query, createPlugins, Plugins, Fields, createFields } from "./mocks";
+import { createQuery, Query, createPluginsContainer } from "./mocks";
 import { normalizeValue } from "@webiny/api-elasticsearch";
+import { createExecFiltering } from "./mocks/filtering";
 
 describe("not_contains filter", () => {
-    let fields: Fields;
     let query: Query;
-    let plugins: Plugins;
+    let execFiltering: CreateExecFilteringResponse;
 
     beforeEach(() => {
-        fields = createFields();
         query = createQuery();
-        plugins = createPlugins();
+        execFiltering = createExecFiltering({
+            plugins: createPluginsContainer()
+        });
     });
 
     it("should add not_contains filter", async () => {
@@ -21,13 +22,9 @@ describe("not_contains filter", () => {
             title_not_contains: title
         };
 
-        applyFiltering({
-            plugins: plugins.container,
-            fields,
+        execFiltering({
             query,
-            where,
-            operatorPlugins: plugins.operators,
-            searchPlugins: plugins.search
+            where
         });
 
         const expected: ElasticsearchBoolQueryConfig = {

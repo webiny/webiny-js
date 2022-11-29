@@ -1,4 +1,5 @@
 import { ModelField, ModelFields } from "~/operations/entry/elasticsearch/types";
+import { CmsModel } from "@webiny/api-headless-cms/types";
 
 export interface Fields extends ModelFields {
     id: ModelField;
@@ -7,6 +8,53 @@ export interface Fields extends ModelFields {
     date: ModelField;
     isMarried: ModelField;
 }
+
+export const createModel = (): CmsModel => {
+    return {
+        modelId: "testModel",
+        name: "Test Model",
+        fields: [
+            {
+                id: "age",
+                type: "number",
+                fieldId: "age",
+                storageId: "ageStorageId",
+                label: "Age"
+            },
+            {
+                id: "title",
+                type: "text",
+                fieldId: "titleId",
+                storageId: "titleStorageId",
+                label: "Title"
+            },
+            {
+                id: "date",
+                type: "datetime",
+                fieldId: "dateId",
+                storageId: "dateStorageId",
+                label: "Date"
+            },
+            {
+                id: "isMarried",
+                type: "boolean",
+                fieldId: "isMarriedId",
+                storageId: "isMarriedStorageId",
+                label: "Is Married"
+            }
+        ],
+        layout: [],
+        locale: "en-US",
+        tenant: "root",
+        description: "",
+        group: {
+            id: "group",
+            name: "Group"
+        },
+        titleFieldId: "title",
+        webinyVersion: "x.x.x"
+    };
+};
 
 export const createFields = (): Fields => {
     return {

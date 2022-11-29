@@ -1,17 +1,17 @@
 import { CmsEntryListWhere } from "@webiny/api-headless-cms/types";
-import { applyFiltering } from "~/operations/entry/elasticsearch/filtering";
 import { ElasticsearchBoolQueryConfig } from "@webiny/api-elasticsearch/types";
-import { createQuery, Query, createPlugins, Plugins, Fields, createFields } from "./mocks";
+import { createQuery, Query, createPluginsContainer } from "./mocks";
+import { createExecFiltering, CreateExecFilteringResponse } from "./mocks/filtering";
 
 describe("not_between filter", () => {
-    let fields: Fields;
     let query: Query;
-    let plugins: Plugins;
+    let execFiltering: CreateExecFilteringResponse;
 
     beforeEach(() => {
-        fields = createFields();
         query = createQuery();
-        plugins = createPlugins();
+        execFiltering = createExecFiltering({
+            plugins: createPluginsContainer()
+        });
     });
 
     it("should add not_between filter", async () => {
@@ -19,13 +19,9 @@ describe("not_between filter", () => {
             age_not_between: [18, 55]
         };
 
-        applyFiltering({
-            plugins: plugins.container,
-            fields,
+        execFiltering({
             query,
-            where,
-            operatorPlugins: plugins.operators,
-            searchPlugins: plugins.search
+            where
         });
 
         const expected: ElasticsearchBoolQueryConfig = {
@@ -52,13 +48,9 @@ describe("not_between filter", () => {
             date_not_between: ["2022-01-01T00:00:00.000Z", "2022-12-31T23:59:59.999Z"]
         };
 
-        applyFiltering({
-            plugins: plugins.container,
-            fields,
+        execFiltering({
             query,
-            where,
-            operatorPlugins: plugins.operators,
-            searchPlugins: plugins.search
+            where
         });
 
         const expected: ElasticsearchBoolQueryConfig = {
@@ -86,13 +78,9 @@ describe("not_between filter", () => {
         };
 
         expect(() => {
-            applyFiltering({
-                plugins: plugins.container,
-                fields,
+            execFiltering({
                 query,
-                where,
-                operatorPlugins: plugins.operators,
-                searchPlugins: plugins.search
+                where
             });
         }).toThrow(
             `You cannot filter field path "age" with "not_between" query and not send an array of values.`
@@ -106,13 +94,9 @@ describe("not_between filter", () => {
         };
 
         expect(() => {
-            applyFiltering({
-                plugins: plugins.container,
-                fields,
+            execFiltering({
                 query,
-                where,
-                operatorPlugins: plugins.operators,
-                searchPlugins: plugins.search
+                where
             });
         }).toThrow(`You must pass 2 values in the array for field path "age" filtering.`);
     });

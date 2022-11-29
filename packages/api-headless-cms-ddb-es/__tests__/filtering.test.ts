@@ -1,16 +1,17 @@
 import { CmsEntryListWhere } from "@webiny/api-headless-cms/types";
-import { applyFiltering } from "~/operations/entry/elasticsearch/filtering";
 import { ElasticsearchBoolQueryConfig } from "@webiny/api-elasticsearch/types";
-import { createFields, createPlugins, createQuery, Plugins } from "./filtering/mocks";
+import { createPluginsContainer, createQuery } from "./filtering/mocks";
+import { createExecFiltering, CreateExecFilteringResponse } from "./filtering/mocks/filtering";
 
 describe("convert where to elasticsearch query", () => {
-    let plugins: Plugins;
-
     let query: ElasticsearchBoolQueryConfig;
+    let execFiltering: CreateExecFilteringResponse;
 
     beforeEach(() => {
-        plugins = createPlugins();
         query = createQuery();
+        execFiltering = createExecFiltering({
+            plugins: createPluginsContainer()
+        });
     });
 
     it("should add root level query conditions", async () => {
@@ -34,13 +35,9 @@ describe("convert where to elasticsearch query", () => {
             date_not: "2022-05-05"
         };
 
-        applyFiltering({
-            fields: createFields(),
+        execFiltering({
             query,
-            where,
-            searchPlugins: plugins.search,
-            operatorPlugins: plugins.operators,
-            plugins: plugins.container
+            where
         });
 
         const expected: ElasticsearchBoolQueryConfig = {
@@ -136,13 +133,9 @@ describe("convert where to elasticsearch query", () => {
             ]
         };
 
-        applyFiltering({
-            fields: createFields(),
+        execFiltering({
             query,
-            where,
-            searchPlugins: plugins.search,
-            operatorPlugins: plugins.operators,
-            plugins: plugins.container
+            where
         });
 
         const expected: ElasticsearchBoolQueryConfig = {

@@ -12,16 +12,19 @@ import { getPopulated } from "./populated";
 import { createApplyFiltering } from "./applyFiltering";
 import { isRefFieldFiltering } from "~/operations/entry/elasticsearch/filtering/isRefFieldFiltering";
 
-interface CreateExecParams {
+export interface CreateExecParams {
     model: CmsModel;
     fields: ModelFields;
     plugins: PluginsContainer;
 }
-interface ExecParams {
+export interface ExecParams {
     where: CmsEntryListWhere;
     query: ElasticsearchBoolQueryConfig;
 }
-export const createExecFiltering = (params: CreateExecParams) => {
+export interface CreateExecFilteringResponse {
+    (params: ExecParams): void;
+}
+export const createExecFiltering = (params: CreateExecParams): CreateExecFilteringResponse => {
     const { fields, plugins, model } = params;
 
     /**

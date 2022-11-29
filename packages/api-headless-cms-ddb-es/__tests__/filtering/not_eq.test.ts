@@ -1,17 +1,18 @@
 import { CmsEntryListWhere } from "@webiny/api-headless-cms/types";
-import { applyFiltering } from "~/operations/entry/elasticsearch/filtering";
 import { ElasticsearchBoolQueryConfig } from "@webiny/api-elasticsearch/types";
-import { createQuery, Query, createPlugins, Plugins, Fields, createFields } from "./mocks";
+import { createQuery, Query, createPluginsContainer } from "./mocks";
+import { CreateExecFilteringResponse } from "~/operations/entry/elasticsearch/filtering";
+import { createExecFiltering } from "./mocks/filtering";
 
 describe("not equals filter", () => {
-    let fields: Fields;
     let query: Query;
-    let plugins: Plugins;
+    let execFiltering: CreateExecFilteringResponse;
 
     beforeEach(() => {
-        fields = createFields();
         query = createQuery();
-        plugins = createPlugins();
+        execFiltering = createExecFiltering({
+            plugins: createPluginsContainer()
+        });
     });
 
     it("should add not equal filter - null", async () => {
@@ -19,13 +20,9 @@ describe("not equals filter", () => {
             title_not: null
         };
 
-        applyFiltering({
-            plugins: plugins.container,
-            fields,
+        execFiltering({
             query,
-            where,
-            operatorPlugins: plugins.operators,
-            searchPlugins: plugins.search
+            where
         });
 
         const expected: ElasticsearchBoolQueryConfig = {
@@ -50,13 +47,9 @@ describe("not equals filter", () => {
             title_not: title
         };
 
-        applyFiltering({
-            plugins: plugins.container,
-            fields,
+        execFiltering({
             query,
-            where,
-            operatorPlugins: plugins.operators,
-            searchPlugins: plugins.search
+            where
         });
 
         const expected: ElasticsearchBoolQueryConfig = {
@@ -80,13 +73,9 @@ describe("not equals filter", () => {
             isMarried_not: true
         };
 
-        applyFiltering({
-            plugins: plugins.container,
-            fields,
+        execFiltering({
             query,
-            where,
-            operatorPlugins: plugins.operators,
-            searchPlugins: plugins.search
+            where
         });
 
         const expected: ElasticsearchBoolQueryConfig = {
@@ -110,13 +99,9 @@ describe("not equals filter", () => {
             age_not: 2
         };
 
-        applyFiltering({
-            plugins: plugins.container,
-            fields,
+        execFiltering({
             query,
-            where,
-            operatorPlugins: plugins.operators,
-            searchPlugins: plugins.search
+            where
         });
 
         const expected: ElasticsearchBoolQueryConfig = {

@@ -8,7 +8,7 @@ import {
 } from "~/operations/entry/elasticsearch/types";
 import { createSearchPluginList } from "~/operations/entry/elasticsearch/plugins/search";
 
-const createPluginsContainer = (plugins: Plugin[] = []) => {
+export const createPluginsContainer = (plugins: Plugin[] = []) => {
     return new PluginsContainer([getElasticsearchOperators(), ...plugins]);
 };
 
