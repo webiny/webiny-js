@@ -13,7 +13,7 @@ import { i18n } from "@webiny/app/i18n";
 
 import { useFolders } from "~/hooks/useFolders";
 
-import { CreateDialogContainer, CreateDialogActions } from "./styled";
+import { DialogContainer, DialogActions } from "./styled";
 
 import { FolderItem } from "~/types";
 
@@ -42,7 +42,7 @@ export const FolderDialogUpdate: React.FC<Props> = ({ folder, onClose, open }) =
             await updateFolder({
                 ...folder,
                 ...data,
-                parentId: data.parent.id
+                parentId: data.parent?.id || null
             });
             setDialogOpen(false);
             showSnackbar(t`Folder updated successfully!`);
@@ -70,7 +70,7 @@ export const FolderDialogUpdate: React.FC<Props> = ({ folder, onClose, open }) =
     const parentFolder = useMemo(() => folders.find(el => el.id == folder.parentId), [folder]);
 
     return (
-        <CreateDialogContainer open={dialogOpen} onClose={onClose}>
+        <DialogContainer open={dialogOpen} onClose={onClose}>
             {dialogOpen && (
                 <>
                     <Form
@@ -141,7 +141,7 @@ export const FolderDialogUpdate: React.FC<Props> = ({ folder, onClose, open }) =
                                         </Cell>
                                     </Grid>
                                 </DialogContent>
-                                <CreateDialogActions>
+                                <DialogActions>
                                     <ButtonDefault
                                         onClick={() => {
                                             setDialogOpen(false);
@@ -156,12 +156,12 @@ export const FolderDialogUpdate: React.FC<Props> = ({ folder, onClose, open }) =
                                     >
                                         {t`Update Folder`}
                                     </ButtonPrimary>
-                                </CreateDialogActions>
+                                </DialogActions>
                             </>
                         )}
                     </Form>
                 </>
             )}
-        </CreateDialogContainer>
+        </DialogContainer>
     );
 };

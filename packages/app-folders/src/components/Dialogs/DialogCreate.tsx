@@ -13,7 +13,7 @@ import { useSnackbar } from "@webiny/app-admin";
 
 import { useFolders } from "~/hooks/useFolders";
 
-import { CreateDialogContainer, CreateDialogActions } from "./styled";
+import { DialogContainer, DialogActions } from "./styled";
 
 import { FolderItem } from "~/types";
 
@@ -64,7 +64,7 @@ export const FolderDialogCreate: React.FC<Props> = ({ type, onClose, open, paren
     }, [open]);
 
     return (
-        <CreateDialogContainer open={dialogOpen} onClose={onClose}>
+        <DialogContainer open={dialogOpen} onClose={onClose}>
             {dialogOpen && (
                 <Form
                     onSubmit={data => {
@@ -107,7 +107,7 @@ export const FolderDialogCreate: React.FC<Props> = ({ type, onClose, open, paren
                                     )}
                                 </Grid>
                             </DialogContent>
-                            <CreateDialogActions>
+                            <DialogActions>
                                 <ButtonDefault
                                     onClick={() => {
                                         setDialogOpen(false);
@@ -122,11 +122,11 @@ export const FolderDialogCreate: React.FC<Props> = ({ type, onClose, open, paren
                                 >
                                     {t`Create Folder`}
                                 </ButtonPrimary>
-                            </CreateDialogActions>
+                            </DialogActions>
                         </>
                     )}
                 </Form>
             )}
-        </CreateDialogContainer>
+        </DialogContainer>
     );
 };
