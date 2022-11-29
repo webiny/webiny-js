@@ -14,10 +14,10 @@ import { BLOCK, useMoveBlock, useSortableList } from "./navigatorHooks";
 import { NavigatorContext } from "./Navigator";
 import { PbEditorElement } from "~/types";
 
-const elementIdStyle = css({
-    textTransform: "none",
-    fontSize: "80%"
-});
+const elementIdStyle = css`
+    text-transform: none;
+    font-size: 80%;
+`;
 
 const ElementVisibilityAction = ({ elementId }: { elementId: string }) => {
     const { updateVisibility } = useVisibilitySetting(elementId);
