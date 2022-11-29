@@ -129,6 +129,10 @@ export const createStorageOperations: StorageOperationsFactory = params => {
                 context.elasticsearch = elasticsearch;
             }
             /**
+             * Pass the plugins to the parent context.
+             */
+            context.plugins.register([dynamoDbPlugins()]);
+            /**
              * Collect all required plugins from parent context.
              */
             const fieldPlugins = context.plugins.byType<CmsModelFieldToGraphQLPlugin>(
@@ -167,11 +171,6 @@ export const createStorageOperations: StorageOperationsFactory = params => {
                     CmsEntryElasticsearchBodyModifierPlugin.type
                 );
             plugins.register(bodyModifierPlugins);
-
-            /**
-             * Pass the plugins to the parent context.
-             */
-            context.plugins.register([dynamoDbPlugins()]);
         },
         init: async context => {
             /**

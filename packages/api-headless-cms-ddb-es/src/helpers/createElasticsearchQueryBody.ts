@@ -1,5 +1,4 @@
 import WebinyError from "@webiny/error";
-import { transformValueForSearch } from "./transformValueForSearch";
 import { searchPluginsList } from "./searchPluginsList";
 import {
     CmsEntryListParams,
@@ -24,7 +23,6 @@ import {
 import { createModelFields, ModelField, ModelFields } from "./fields";
 import { CmsEntryElasticsearchFieldPlugin } from "~/plugins/CmsEntryElasticsearchFieldPlugin";
 import { PluginsContainer } from "@webiny/plugins";
-import { createLatestType, createPublishedType } from "~/operations/entry";
 import { CmsEntryElasticsearchQueryModifierPlugin } from "~/plugins/CmsEntryElasticsearchQueryModifierPlugin";
 import { CmsEntryElasticsearchSortModifierPlugin } from "~/plugins/CmsEntryElasticsearchSortModifierPlugin";
 import { CmsEntryElasticsearchBodyModifierPlugin } from "~/plugins/CmsEntryElasticsearchBodyModifierPlugin";
@@ -32,6 +30,8 @@ import {
     CmsEntryElasticsearchQueryBuilderValueSearchPlugin,
     CreatePathCallableParams
 } from "~/plugins/CmsEntryElasticsearchQueryBuilderValueSearchPlugin";
+import { transformValueForSearch } from "~/operations/entry/elasticsearch/transformValueForSearch";
+import { createLatestRecordType, createPublishedRecordType } from "~/operations/entry/recordType";
 
 interface CreateElasticsearchParams {
     plugins: PluginsContainer;
@@ -165,13 +165,13 @@ const createInitialQueryValue = (
     if (where.published === true) {
         query.must.push({
             term: {
-                "__type.keyword": createPublishedType()
+                "__type.keyword": createPublishedRecordType()
             }
         });
     } else if (where.latest === true) {
         query.must.push({
             term: {
-                "__type.keyword": createLatestType()
+                "__type.keyword": createLatestRecordType()
             }
         });
     }
