@@ -14,18 +14,20 @@ export const ElementSettings: React.FC = () => {
     const updateElement = useUpdateElement();
 
     const onSubmit = async (formData: FormData) => {
-        const plugin = plugins
+        const settingsPlugins = plugins
             .byType<PbEditorPageElementAdvancedSettingsPlugin>(
                 "pb-editor-page-element-advanced-settings"
             )
-            .find(pl => pl.elementType === element?.type && typeof pl?.onSave === "function");
+            .filter(pl => pl.elementType === element?.type);
 
-        let modifiedFormData = null;
-        if (typeof plugin?.onSave === "function") {
-            modifiedFormData = await plugin.onSave(formData);
+        let modifiedFormData = formData;
+        for (const plugin of settingsPlugins) {
+            if (typeof plugin?.onSave === "function") {
+                modifiedFormData = await plugin.onSave(modifiedFormData);
+            }
         }
 
-        updateElement(merge(element, "data", modifiedFormData || formData));
+        updateElement(merge(element, "data", modifiedFormData));
     };
 
     if (!element) {
