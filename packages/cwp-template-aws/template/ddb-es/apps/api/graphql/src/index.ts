@@ -28,6 +28,8 @@ import { createFormBuilder } from "@webiny/api-form-builder";
 import { createFormBuilderStorageOperations } from "@webiny/api-form-builder-so-ddb-es";
 import { createHeadlessCmsGraphQL, createHeadlessCmsContext } from "@webiny/api-headless-cms";
 import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb-es";
+import { createFoldersContext, createFoldersGraphQL } from "@webiny/api-folders";
+import { createStorageOperations as createFoldersStorageOperations } from "@webiny/api-folders-so-ddb";
 import securityPlugins from "./security";
 import tenantManager from "@webiny/api-tenant-manager";
 /**
@@ -99,6 +101,12 @@ export const handler = createHandler({
         }),
         createHeadlessCmsGraphQL(),
         createGzipCompression(),
+        createFoldersContext({
+            storageOperations: createFoldersStorageOperations({
+                documentClient
+            })
+        }),
+        createFoldersGraphQL(),
         createApwGraphQL(),
         createApwPageBuilderContext({
             storageOperations: createApwSaStorageOperations({ documentClient })
