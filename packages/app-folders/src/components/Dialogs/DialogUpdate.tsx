@@ -51,18 +51,6 @@ export const FolderDialogUpdate: React.FC<Props> = ({ folder, onClose, open }) =
         }
     };
 
-    // TODO open issue to add new slug validator
-    const slugValidator = (slug: string): void => {
-        const test = new RegExp("^[a-z0-9_-]*$");
-        const matched = slug.match(test);
-
-        if (matched) {
-            return;
-        }
-
-        throw new Error(t`Slug can contain only letters, numbers, dashes and underscores`);
-    };
-
     useEffect(() => {
         setDialogOpen(open);
     }, [open]);
@@ -108,8 +96,7 @@ export const FolderDialogUpdate: React.FC<Props> = ({ folder, onClose, open }) =
                                             <Bind
                                                 name={"slug"}
                                                 validators={[
-                                                    validation.create("required,minLength:3"),
-                                                    slugValidator
+                                                    validation.create("required,minLength:3,slug")
                                                 ]}
                                             >
                                                 <Input label={t`Slug`} value={folder.slug} />
