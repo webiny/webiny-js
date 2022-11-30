@@ -7,7 +7,12 @@ export default {
     name: "pb-render-page-element-style-property",
     type: "pb-render-page-element-style",
     renderStyle({ element, style }) {
-        const visibility = get(element, "data.settings.property.visibility");
+        // Backwards compatibility
+        let visibility = get(element, "data.settings.visibility", undefined);
+
+        if (typeof visibility === "undefined") {
+            visibility = get(element, "data.settings.property.visibility");
+        }
 
         // Set per-device property value
         applyPerDeviceStyleWithFallback(({ displayMode, fallbackMode }) => {
