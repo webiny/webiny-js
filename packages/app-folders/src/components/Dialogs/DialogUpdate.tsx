@@ -13,7 +13,7 @@ import { i18n } from "@webiny/app/i18n";
 
 import { useFolders } from "~/hooks/useFolders";
 
-import { CreateDialogContainer, CreateDialogActions } from "./styled";
+import { DialogContainer, DialogActions } from "./styled";
 
 import { FolderItem } from "~/types";
 
@@ -42,25 +42,13 @@ export const FolderDialogUpdate: React.FC<Props> = ({ folder, onClose, open }) =
             await updateFolder({
                 ...folder,
                 ...data,
-                parentId: data.parent.id
+                parentId: data.parent?.id || null
             });
             setDialogOpen(false);
             showSnackbar(t`Folder updated successfully!`);
         } catch (error) {
             showSnackbar(error.message);
         }
-    };
-
-    // TODO open issue to add new slug validator
-    const slugValidator = (slug: string): void => {
-        const test = new RegExp("^[a-z0-9_-]*$");
-        const matched = slug.match(test);
-
-        if (matched) {
-            return;
-        }
-
-        throw new Error(t`Slug can contain only letters, numbers, dashes and underscores`);
     };
 
     useEffect(() => {
@@ -70,7 +58,7 @@ export const FolderDialogUpdate: React.FC<Props> = ({ folder, onClose, open }) =
     const parentFolder = useMemo(() => folders.find(el => el.id == folder.parentId), [folder]);
 
     return (
-        <CreateDialogContainer open={dialogOpen} onClose={onClose}>
+        <DialogContainer open={dialogOpen} onClose={onClose}>
             {dialogOpen && (
                 <>
                     <Form
@@ -108,8 +96,7 @@ export const FolderDialogUpdate: React.FC<Props> = ({ folder, onClose, open }) =
                                             <Bind
                                                 name={"slug"}
                                                 validators={[
-                                                    validation.create("required,minLength:3"),
-                                                    slugValidator
+                                                    validation.create("required,minLength:3,slug")
                                                 ]}
                                             >
                                                 <Input label={t`Slug`} value={folder.slug} />
@@ -141,7 +128,7 @@ export const FolderDialogUpdate: React.FC<Props> = ({ folder, onClose, open }) =
                                         </Cell>
                                     </Grid>
                                 </DialogContent>
-                                <CreateDialogActions>
+                                <DialogActions>
                                     <ButtonDefault
                                         onClick={() => {
                                             setDialogOpen(false);
@@ -156,12 +143,12 @@ export const FolderDialogUpdate: React.FC<Props> = ({ folder, onClose, open }) =
                                     >
                                         {t`Update Folder`}
                                     </ButtonPrimary>
-                                </CreateDialogActions>
+                                </DialogActions>
                             </>
                         )}
                     </Form>
                 </>
             )}
-        </CreateDialogContainer>
+        </DialogContainer>
     );
 };

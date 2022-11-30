@@ -18,7 +18,7 @@ import { CreateButton } from "./ButtonCreate";
 import { Node } from "./Node";
 import { NodePreview } from "./NodePreview";
 import { Title } from "./Title";
-import { FolderDialogCreate } from "~/components";
+import { FolderDialogCreate, FolderDialogDelete, FolderDialogUpdate } from "~/components";
 
 import { Container } from "./styled";
 
@@ -96,7 +96,10 @@ export const FolderTree: React.FC<Props> = ({
     const { folders, updateFolder } = useFolders(type);
     const [treeData, setTreeData] = useState<NodeModel<DndItemData>[]>([]);
     const [createDialogOpen, setCreateDialogOpen] = useState<boolean>(false);
+    const [updateDialogOpen, setUpdateDialogOpen] = useState<boolean>(false);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
     const [initialOpenList, setInitialOpenList] = useState<undefined | InitialOpen>(undefined);
+    const [selectedFolder, setSelectedFolder] = useState<FolderItem>();
     const { showSnackbar } = useSnackbar();
 
     useDeepCompareEffect(() => {
@@ -145,6 +148,14 @@ export const FolderTree: React.FC<Props> = ({
                                 isOpen={isOpen}
                                 onToggle={onToggle}
                                 onClick={data => onFolderClick(data)}
+                                onUpdateFolder={data => {
+                                    setSelectedFolder(data);
+                                    setUpdateDialogOpen(true);
+                                }}
+                                onDeleteFolder={data => {
+                                    setSelectedFolder(data);
+                                    setDeleteDialogOpen(true);
+                                }}
                             />
                         )}
                         dragPreviewRender={monitorProps => (
@@ -166,6 +177,26 @@ export const FolderTree: React.FC<Props> = ({
                 onClose={() => setCreateDialogOpen(false)}
                 parentId={undefined}
             />
+            {selectedFolder && (
+                <>
+                    <FolderDialogUpdate
+                        folder={selectedFolder}
+                        open={updateDialogOpen}
+                        onClose={() => {
+                            setUpdateDialogOpen(false);
+                            setSelectedFolder(undefined);
+                        }}
+                    />
+                    <FolderDialogDelete
+                        folder={selectedFolder}
+                        open={deleteDialogOpen}
+                        onClose={() => {
+                            setDeleteDialogOpen(false);
+                            setSelectedFolder(undefined);
+                        }}
+                    />
+                </>
+            )}
         </Container>
     );
 };

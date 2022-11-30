@@ -13,7 +13,7 @@ import { useSnackbar } from "@webiny/app-admin";
 
 import { useFolders } from "~/hooks/useFolders";
 
-import { CreateDialogContainer, CreateDialogActions } from "./styled";
+import { DialogContainer, DialogActions } from "./styled";
 
 import { FolderItem } from "~/types";
 
@@ -47,24 +47,12 @@ export const FolderDialogCreate: React.FC<Props> = ({ type, onClose, open, paren
         }
     };
 
-    // TODO open issue to add new slug validator
-    const slugValidator = (slug: string): void => {
-        const test = new RegExp("^[a-z0-9_-]*$");
-        const matched = slug.match(test);
-
-        if (matched) {
-            return;
-        }
-
-        throw new Error(t`Slug can contain only letters, numbers, dashes and underscores`);
-    };
-
     useEffect(() => {
         setDialogOpen(open);
     }, [open]);
 
     return (
-        <CreateDialogContainer open={dialogOpen} onClose={onClose}>
+        <DialogContainer open={dialogOpen} onClose={onClose}>
             {dialogOpen && (
                 <Form
                     onSubmit={data => {
@@ -91,8 +79,7 @@ export const FolderDialogCreate: React.FC<Props> = ({ type, onClose, open, paren
                                         <Bind
                                             name={"slug"}
                                             validators={[
-                                                validation.create("required,minLength:3"),
-                                                slugValidator
+                                                validation.create("required,minLength:3,slug")
                                             ]}
                                         >
                                             <Input label={t`Slug`} />
@@ -107,7 +94,7 @@ export const FolderDialogCreate: React.FC<Props> = ({ type, onClose, open, paren
                                     )}
                                 </Grid>
                             </DialogContent>
-                            <CreateDialogActions>
+                            <DialogActions>
                                 <ButtonDefault
                                     onClick={() => {
                                         setDialogOpen(false);
@@ -122,11 +109,11 @@ export const FolderDialogCreate: React.FC<Props> = ({ type, onClose, open, paren
                                 >
                                     {t`Create Folder`}
                                 </ButtonPrimary>
-                            </CreateDialogActions>
+                            </DialogActions>
                         </>
                     )}
                 </Form>
             )}
-        </CreateDialogContainer>
+        </DialogContainer>
     );
 };

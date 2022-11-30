@@ -1,4 +1,4 @@
-import React, { ReactElement, useCallback, useMemo, useState } from "react";
+import React, { ReactElement, useMemo, useState } from "react";
 
 import { ReactComponent as More } from "@material-design-icons/svg/filled/more_vert.svg";
 import { FolderDialogUpdate } from "@webiny/app-folders";
@@ -25,13 +25,13 @@ import { PageActionPublish } from "~/admin/components/Table/Row/Page/PageActionP
 import statusLabels from "~/admin/constants/pageStatusesLabels";
 
 import { PbPageDataLink } from "~/types";
+import { FolderDialogDelete } from "@webiny/app-folders/components";
 
 interface Props {
     pages: PbPageDataLink[];
     folders: FolderItem[];
     loading?: boolean;
     onDeletePage: (link: LinkItem) => void;
-    deleteFolder: (folder: FolderItem) => Promise<boolean>;
     openPreviewDrawer: () => void;
 }
 
@@ -52,15 +52,12 @@ export const Table = ({
     pages,
     loading,
     onDeletePage,
-    deleteFolder,
     openPreviewDrawer
 }: Props): ReactElement => {
     const [data, setData] = useState<Entry[]>([]);
     const [selectedFolder, setSelectedFolder] = useState<FolderItem>();
-
-    const [showUpdateDialog, setUpdateDialog] = useState(false);
-    const openUpdateDialog = useCallback(() => setUpdateDialog(true), []);
-    const closeUpdateDialog = useCallback(() => setUpdateDialog(false), []);
+    const [updateDialogOpen, setUpdateDialogOpen] = useState<boolean>(false);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
 
     const createPagesData = useMemo(() => {
         return (items: PbPageDataLink[]): Entry[] =>
@@ -158,13 +155,15 @@ export const Table = ({
                         <Menu handle={<More />}>
                             <FolderActionEdit
                                 onClick={() => {
-                                    openUpdateDialog();
+                                    setUpdateDialogOpen(true);
                                     setSelectedFolder(original as FolderItem);
                                 }}
                             />
                             <FolderActionDelete
-                                folder={original as FolderItem}
-                                deleteFolder={deleteFolder}
+                                onClick={() => {
+                                    setDeleteDialogOpen(true);
+                                    setSelectedFolder(original as FolderItem);
+                                }}
                             />
                         </Menu>
                     );
@@ -175,14 +174,21 @@ export const Table = ({
 
     return (
         <>
-            {selectedFolder && (
-                <FolderDialogUpdate
-                    folder={selectedFolder}
-                    open={showUpdateDialog}
-                    onClose={closeUpdateDialog}
-                />
-            )}
             <DataTable columns={columns} data={data} loadingInitial={loading} />
+            {selectedFolder && (
+                <>
+                    <FolderDialogUpdate
+                        folder={selectedFolder}
+                        open={updateDialogOpen}
+                        onClose={() => setUpdateDialogOpen(false)}
+                    />
+                    <FolderDialogDelete
+                        folder={selectedFolder}
+                        open={deleteDialogOpen}
+                        onClose={() => setDeleteDialogOpen(false)}
+                    />
+                </>
+            )}
         </>
     );
 };
