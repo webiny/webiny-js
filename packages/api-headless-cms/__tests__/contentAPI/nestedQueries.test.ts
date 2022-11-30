@@ -10,7 +10,7 @@ const categories = [
     "Localization"
 ];
 
-describe.skip("nested queries", () => {
+describe("nested queries", () => {
     const manager = useCategoryManageHandler({
         path: "manage/en-US"
     });
@@ -21,7 +21,7 @@ describe.skip("nested queries", () => {
             manager,
             models: ["category"]
         });
-        for (const title in categories) {
+        for (const title of categories) {
             await createCategory({
                 data: {
                     title,
@@ -60,10 +60,14 @@ describe.skip("nested queries", () => {
             }
         });
 
-        expect(categoriesResponse).toEqual({
+        expect(categoriesResponse).toMatchObject({
             data: {
                 listCategories: {
-                    data: [],
+                    data: [
+                        {
+                            title: "Webiny Headless CMS"
+                        }
+                    ],
                     meta: {
                         totalCount: 1,
                         cursor: null,
