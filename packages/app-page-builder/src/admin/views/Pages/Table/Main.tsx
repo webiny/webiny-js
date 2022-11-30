@@ -46,7 +46,7 @@ const getCurrentFolderList = (
 
 export const Main = ({ folderId }: Props) => {
     const { history } = useRouter();
-    const { folders = [], loading: foldersLoading, deleteFolder } = useFolders(FOLDER_TYPE);
+    const { folders = [], loading: foldersLoading } = useFolders(FOLDER_TYPE);
     const {
         links,
         loading: linksLoading,
@@ -136,7 +136,6 @@ export const Main = ({ folderId }: Props) => {
                                 foldersLoading.LIST_FOLDERS
                             }
                             onDeletePage={deleteLink}
-                            deleteFolder={deleteFolder}
                             openPreviewDrawer={openPreviewDrawer}
                         />
                     </>
