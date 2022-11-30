@@ -9,22 +9,21 @@ export interface BlockAtomType {
     id: string;
     name?: string;
     blockCategory?: string;
+    preview?: File;
+    isDirty: boolean;
     savedOn?: Date;
     createdBy: {
         id: string | null;
     };
-    preview?: File;
-    isDirty: boolean;
-    // TODO: add more props here
 }
 
 export const blockAtom = atom<BlockAtomType>({
     key: "blockAtom",
     default: {
         id: "",
+        isDirty: false,
         createdBy: {
             id: null
-        },
-        isDirty: false
+        }
     }
 });
