@@ -216,7 +216,7 @@ describe("Block Categories CRUD Test", () => {
                         code: "VALIDATION_FAILED_INVALID_FIELD",
                         data: null,
                         message:
-                            "Slug must consist of only 'a-z' and '-' and be max 100 characters long (for example: 'some-entry-slug')"
+                            "Slug must consist of only 'a-z', '0-9' and '-' and be max 100 characters long (for example: 'some-slug' or 'some-slug-2')"
                     }
                 }
             }
