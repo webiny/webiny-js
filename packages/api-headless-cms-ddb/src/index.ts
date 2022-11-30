@@ -69,6 +69,7 @@ export const createStorageOperations: StorageOperationsFactory = params => {
     ]);
 
     return {
+        name: "dynamodb",
         beforeInit: async context => {
             /**
              * Collect all required plugins from parent context.

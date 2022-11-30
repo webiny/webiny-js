@@ -2671,6 +2671,7 @@ export interface CmsSystemStorageOperations {
 }
 
 export interface HeadlessCmsStorageOperations<C = CmsContext> {
+    name: string;
     system: CmsSystemStorageOperations;
     settings: CmsSettingsStorageOperations;
     groups: CmsGroupStorageOperations;
