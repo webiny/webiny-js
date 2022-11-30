@@ -108,15 +108,17 @@ export const createExecFiltering = (params: CreateExecParams): CreateExecFilteri
                     continue;
                 }
                 /**
+                 * We always need to have AT least one match in the child query.
+                 */
+                if (childQueryBool.should?.length) {
+                    childQueryBool.minimum_should_match = 1;
+                }
+                /**
                  * Assign child queries.
                  */
                 query.should.push({
                     bool: {
-                        ...childQueryBool,
-                        /**
-                         * We always need to have AT least one match in the child query.
-                         */
-                        minimum_should_match: 1
+                        ...childQueryBool
                     }
                 });
                 continue;

@@ -8,7 +8,7 @@ import { createQueryModifierPluginList } from "./plugins/queryModifier";
 import { createSortModifierPluginList } from "./plugins/sortModifier";
 import { createBodyModifierPluginList } from "./plugins/bodyModifier";
 import { createElasticsearchSort } from "./sort";
-import { PrimitiveValue, SearchBody } from "@webiny/api-elasticsearch/types";
+import { PrimitiveValue, SearchBody, BoolQueryConfig } from "@webiny/api-elasticsearch/types";
 import { createExecFiltering } from "./filtering";
 
 interface Params {
@@ -104,14 +104,19 @@ export const createElasticsearchBody = ({ plugins, model, params }: Params): Sea
         });
     }
 
+    const boolQuery: BoolQueryConfig = {
+        must: query.must.length > 0 ? query.must : undefined,
+        must_not: query.must_not.length > 0 ? query.must_not : undefined,
+        should: query.should.length > 0 ? query.should : undefined,
+        filter: query.filter.length > 0 ? query.filter : undefined
+    };
+    if (Array.isArray(boolQuery.should) && boolQuery.should.length > 0) {
+        boolQuery.minimum_should_match = 1;
+    }
+
     const body: SearchBody = {
         query: {
-            bool: {
-                must: query.must.length > 0 ? query.must : undefined,
-                must_not: query.must_not.length > 0 ? query.must_not : undefined,
-                should: query.should.length > 0 ? query.should : undefined,
-                filter: query.filter.length > 0 ? query.filter : undefined
-            }
+            bool: boolQuery
         },
         sort,
         size: (limit || 0) + 1,
