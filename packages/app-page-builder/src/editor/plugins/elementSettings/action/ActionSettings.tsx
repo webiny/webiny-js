@@ -7,7 +7,7 @@ import { Typography } from "@webiny/ui/Typography";
 import { Form } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import { withActiveElement } from "../../../components";
-import { DelayedOnChange } from "../../../components/DelayedOnChange";
+import { DelayedOnChange } from "@webiny/ui/DelayedOnChange";
 import {
     PbButtonElementClickHandlerPlugin,
     PbEditorElement,

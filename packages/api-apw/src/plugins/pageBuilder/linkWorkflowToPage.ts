@@ -91,7 +91,7 @@ export const linkWorkflowToPage = (params: LinkWorkflowToPageParams) => {
         if (hasPages(workflow) === false) {
             return;
         }
-        const pages = get(scope, "data.pages");
+        const pages = get(scope, "data.pages") as unknown as string[];
 
         for (const pid of pages) {
             await updatePageSettings({

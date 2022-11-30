@@ -45,10 +45,10 @@ const Name: React.FC<NameProps> = ({ file, canEdit }) => {
                             data: { name }
                         },
                         update: (cache, updated) => {
-                            const newFileData: FileItem = get(
+                            const newFileData = get(
                                 updated,
                                 "data.fileManager.updateFile.data"
-                            );
+                            ) as unknown as FileItem;
                             const data = cloneDeep(
                                 cache.readQuery<ListFilesQueryResponse>({
                                     query: LIST_FILES,

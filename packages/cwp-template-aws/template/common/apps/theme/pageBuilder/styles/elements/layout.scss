@@ -1,3 +1,5 @@
+@use "sass:math";
+
 .webiny-pb-layout-block-container {
 }
 .webiny-pb-media-query--mobile-landscape .webiny-pb-layout-block-container {
@@ -25,72 +27,49 @@
 .webiny-pb-layout-grid {
   width: 100%;
   display: flex;
-  flex-direction: row;
-
-  &-cell {
-
-    @for $current from 1 to 13 {
-      &-#{$current} {
-        width: percentage((1 / 12) * $current);
-      }
-    }
-
-    & img {
-      width: auto;
-      height: auto;
-    }
-  }
 }
 
 .webiny-pb-media-query--desktop .webiny-pb-layout-grid {
-  flex-direction: row;
-  // flex: 100% 1; // removed because Content #2
-}
-.webiny-pb-media-query--tablet .webiny-pb-layout-grid {
-  flex-direction: row;
-  // flex: 100% 1; // removed because Content #2
-}
-.webiny-pb-media-query--mobile-landscape .webiny-pb-layout-grid {
-  flex-direction: column;
-  max-width: 100% !important;
-  //width: 100% !important; // added for Content #6
-  //width: auto !important; // set to auto for CTA #9
-  flex: 0 auto !important;
+  flex-direction: var(--desktop-flex-direction, "row");
 
   &-cell {
-    flex-grow: 1;
-
     @for $current from 1 to 13 {
       &-#{$current} {
-        width: 100%;
+        width: var(--desktop-cell-width, math.percentage(math.div(1, 12) * $current));
       }
     }
+  }
+}
+.webiny-pb-media-query--tablet .webiny-pb-layout-grid {
+  flex-direction: var(--tablet-flex-direction, "row");
 
-    & img {
-      width: auto;
-      height: auto;
+  &-cell {
+    @for $current from 1 to 13 {
+      &-#{$current} {
+        width: var(--tablet-cell-width, math.percentage(math.div(1, 12) * $current));
+      }
+    }
+  }
+}
+.webiny-pb-media-query--mobile-landscape .webiny-pb-layout-grid {
+  flex-direction: var(--mobile-landscape-flex-direction, "column");
+
+  &-cell {
+    @for $current from 1 to 13 {
+      &-#{$current} {
+        width: var(--mobile-landscape-cell-width, math.percentage(math.div(1, 12) * $current));
+      }
     }
   }
 }
 .webiny-pb-media-query--mobile-portrait .webiny-pb-layout-grid {
-  flex-direction: column;
-  max-width: 100% !important;
-  //width: 100% !important; // added for Content #6
-  //width: auto !important; // set to auto for CTA #9
-  flex: 0 auto !important;
+  flex-direction: var(--mobile-portrait-flex-direction, "column");
 
   &-cell {
-    flex-grow: 1;
-
     @for $current from 1 to 13 {
       &-#{$current} {
-        width: 100%;
+        width: var(--mobile-portrait-cell-width, math.percentage(math.div(1, 12) * $current));
       }
-    }
-
-    & img {
-      width: auto;
-      height: auto;
     }
   }
 }

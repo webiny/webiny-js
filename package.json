@@ -44,6 +44,7 @@
     "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "^10.1.0",
     "babel-jest": "^28.1.2",
+    "babel-plugin-dynamic-import-node": "^2.0.0",
     "babel-plugin-macros": "^3.0.1",
     "babel-plugin-module-resolver": "^4.1.0",
     "bufferutil": "^4.0.1",

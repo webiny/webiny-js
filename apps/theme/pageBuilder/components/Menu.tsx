@@ -19,7 +19,7 @@ declare global {
 export const hasMenuItems = (data: GetPublishMenuQueryResponse): boolean => {
     return Boolean(
         data &&
-            Array.isArray(data.pageBuilder.getPublicMenu.data.items) &&
+            Array.isArray(data.pageBuilder.getPublicMenu.data?.items) &&
             data.pageBuilder.getPublicMenu.data.items.length
     );
 };

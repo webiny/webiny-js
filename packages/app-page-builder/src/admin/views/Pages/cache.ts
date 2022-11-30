@@ -60,7 +60,7 @@ const modifyCacheForAllListPagesQuery = (
  * We need to preserve the order of entries with new entry addition
  * because we're not re-fetching the list but updating it directly inside cache.
  * */
-const sortEntries = (list: string[], sort?: string) => {
+const sortEntries = (list: PbPageData[], sort?: string) => {
     if (!sort) {
         return list;
     }
@@ -73,7 +73,7 @@ export const addPageToListCache = (cache: DataProxy, page: PbPageData): void => 
     modifyCacheForAllListPagesQuery(cache, variables => {
         const gqlParams = { query: GQL.LIST_PAGES, variables };
         const data = cache.readQuery(gqlParams);
-        const listPagesData = get(data, "pageBuilder.listPages.data");
+        const listPagesData = get(data, "pageBuilder.listPages.data") as unknown as PbPageData[];
         if (!listPagesData) {
             return;
         }
@@ -97,7 +97,7 @@ export const updateLatestRevisionInListCache = (
         const gqlParams = { query: GQL.LIST_PAGES, variables };
         const data = cache.readQuery(gqlParams);
 
-        const listPagesData: PbPageData[] = get(data, "pageBuilder.listPages.data");
+        const listPagesData = get(data, "pageBuilder.listPages.data") as unknown as PbPageData[];
         if (!listPagesData) {
             return;
         }
@@ -121,7 +121,7 @@ export const removePageFromListCache = (cache: DataProxy, page: PbPageData): voi
         const gqlParams = { query: GQL.LIST_PAGES, variables };
         const data = cache.readQuery(gqlParams);
 
-        const listPagesData: PbPageData[] = get(data, "pageBuilder.listPages.data");
+        const listPagesData = get(data, "pageBuilder.listPages.data") as unknown as PbPageData[];
         if (!listPagesData) {
             return;
         }
@@ -149,7 +149,10 @@ export const removeRevisionFromEntryCache = (
     };
 
     const data = cache.readQuery(gqlParams);
-    const revisions: PbPageRevision[] = get(data, "pageBuilder.getPage.data.revisions");
+    const revisions = get(
+        data,
+        "pageBuilder.getPage.data.revisions"
+    ) as unknown as PbPageRevision[];
     if (!revisions) {
         return [];
     }

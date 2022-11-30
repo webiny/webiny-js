@@ -78,8 +78,8 @@ const SpacingPicker: React.FC<SpacingPickerProps> = ({
     useDefaultStyle = true
 }) => {
     const formData = useMemo(() => {
-        const parsedValue = parseInt(value);
-        const regx = new RegExp(`${parsedValue}`, "g");
+        const parsedValue = parseFloat(value);
+        const regx = new RegExp(`[0-9.+-]+`, "g");
         const unit = value.replace(regx, "");
 
         if (Number.isNaN(parsedValue) && unit === "auto") {
@@ -96,16 +96,16 @@ const SpacingPicker: React.FC<SpacingPickerProps> = ({
 
     const defaultUnitValue: string | undefined = options[0] ? options[0].value : undefined;
 
-    const onFormChange = useCallback((formData: SpacingPickerFormData) => {
-        if (formData.unit === "auto") {
-            onChange(formData.unit);
-            return;
-        } else if (formData.value !== undefined && formData.value !== "") {
+    const onFormChange = useCallback(
+        (formData: SpacingPickerFormData) => {
+            if (formData.unit === "auto") {
+                onChange(formData.unit);
+                return;
+            }
             onChange(formData.value + (formData.unit || defaultUnitValue));
-            return;
-        }
-        onChange("");
-    }, []);
+        },
+        [defaultUnitValue, onChange]
+    );
 
     return (
         <Form
@@ -133,6 +133,14 @@ const SpacingPicker: React.FC<SpacingPickerProps> = ({
                                     })}
                                     disabled={data.unit === "auto" || disabled}
                                     type={"number"}
+                                    onFocus={(event: React.FocusEvent<HTMLInputElement>) =>
+                                        event.target.select()
+                                    }
+                                    onBlur={(event: React.FocusEvent<HTMLInputElement>) => {
+                                        if (event.target.value === "") {
+                                            onChange("0" + (formData.unit || defaultUnitValue));
+                                        }
+                                    }}
                                 />
                             </Bind>
                             <Bind name={"unit"}>

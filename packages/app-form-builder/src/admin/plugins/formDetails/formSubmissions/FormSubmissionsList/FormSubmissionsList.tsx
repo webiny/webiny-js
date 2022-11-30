@@ -125,7 +125,7 @@ export const FormSubmissionsList: React.FC<FormSubmissionsListProps> = ({ form }
                                             </ListTextOverline>
                                         </ListItemText>
                                         <ListItemMeta className={rightAlign}>
-                                            <Typography use={"subtitle2"}>
+                                            <Typography use={"body2"}>
                                                 {t`Submitted: {time}.`({
                                                     time: <TimeAgo datetime={submittedOn} />
                                                 })}

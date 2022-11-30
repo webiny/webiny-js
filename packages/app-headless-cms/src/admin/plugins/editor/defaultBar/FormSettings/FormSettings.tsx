@@ -45,7 +45,7 @@ const FormSettings: React.FC<FormSettingsProps> = ({ onExited }) => {
                                 </ListItemGraphic>
                                 <TitleContent>
                                     <ListItemTitle>{pl.title}</ListItemTitle>
-                                    <Typography use={"subtitle2"}>{pl.description}</Typography>
+                                    <Typography use={"body2"}>{pl.description}</Typography>
                                 </TitleContent>
                             </ListItem>
                         ))}

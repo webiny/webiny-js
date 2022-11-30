@@ -360,7 +360,7 @@ const PagesDataList: React.FC<PagesDataListProps> = ({ onCreatePage, canCreate, 
                                         )}
                                     </ListItemText>
                                     <ListItemMeta className={rightAlign}>
-                                        <Typography use={"subtitle2"}>
+                                        <Typography use={"body2"}>
                                             {`${statusesLabels[page.status]} (v${page.version})`}
                                         </Typography>
                                     </ListItemMeta>

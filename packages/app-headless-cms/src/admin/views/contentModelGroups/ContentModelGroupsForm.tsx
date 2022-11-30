@@ -164,7 +164,7 @@ const ContentModelGroupsForm: React.FC<ContentModelGroupsFormProps> = ({ canCrea
         [id]
     );
 
-    const data: CmsGroup = getQuery.loading
+    const data: CmsGroup | null = getQuery.loading
         ? null
         : get(getQuery, "data.contentModelGroup.data", null);
 

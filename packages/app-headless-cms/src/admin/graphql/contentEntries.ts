@@ -37,15 +37,18 @@ export interface CmsEntryGetQueryResponse {
 }
 
 export interface CmsEntryGetQueryVariables {
-    revision: string;
+    revision?: string;
+    entryId?: string;
 }
 
 export const createReadQuery = (model: CmsEditorContentModel) => {
     const ucFirstModelId = upperFirst(model.modelId);
-
+    /**
+     * This query now accepts both revision or entryId as we can load exact revision or latest (if entryId was sent).
+     */
     return gql`
-        query CmsEntriesGet${ucFirstModelId}($revision: ID!) {
-            content: get${ucFirstModelId}(revision: $revision) {
+        query CmsEntriesGet${ucFirstModelId}($revision: ID, $entryId: ID) {
+            content: get${ucFirstModelId}(revision: $revision, entryId: $entryId) {
                 data {
                     id
                     createdBy {

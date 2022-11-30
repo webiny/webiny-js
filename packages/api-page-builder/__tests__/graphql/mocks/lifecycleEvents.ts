@@ -146,3 +146,53 @@ export const assignPageElementLifecycleEvents = () => {
         });
     });
 };
+
+export const assignBlockCategoryLifecycleEvents = () => {
+    return new ContextPlugin<PbContext>(async context => {
+        context.pageBuilder.onBeforeBlockCategoryCreate.subscribe(async params => {
+            tracker.track("block-category:beforeCreate", params);
+        });
+        context.pageBuilder.onAfterBlockCategoryCreate.subscribe(async params => {
+            tracker.track("block-category:afterCreate", params);
+        });
+
+        context.pageBuilder.onBeforeBlockCategoryUpdate.subscribe(async params => {
+            tracker.track("block-category:beforeUpdate", params);
+        });
+        context.pageBuilder.onAfterBlockCategoryUpdate.subscribe(async params => {
+            tracker.track("block-category:afterUpdate", params);
+        });
+
+        context.pageBuilder.onBeforeBlockCategoryDelete.subscribe(async params => {
+            tracker.track("block-category:beforeDelete", params);
+        });
+        context.pageBuilder.onAfterBlockCategoryDelete.subscribe(async params => {
+            tracker.track("block-category:afterDelete", params);
+        });
+    });
+};
+
+export const assignPageBlockLifecycleEvents = () => {
+    return new ContextPlugin<PbContext>(async context => {
+        context.pageBuilder.onBeforePageBlockCreate.subscribe(async params => {
+            tracker.track("pageBlock:beforeCreate", params);
+        });
+        context.pageBuilder.onAfterPageBlockCreate.subscribe(async params => {
+            tracker.track("pageBlock:afterCreate", params);
+        });
+
+        context.pageBuilder.onBeforePageBlockUpdate.subscribe(async params => {
+            tracker.track("pageBlock:beforeUpdate", params);
+        });
+        context.pageBuilder.onAfterPageBlockUpdate.subscribe(async params => {
+            tracker.track("pageBlock:afterUpdate", params);
+        });
+
+        context.pageBuilder.onBeforePageBlockDelete.subscribe(async params => {
+            tracker.track("pageBlock:beforeDelete", params);
+        });
+        context.pageBuilder.onAfterPageBlockDelete.subscribe(async params => {
+            tracker.track("pageBlock:afterDelete", params);
+        });
+    });
+};

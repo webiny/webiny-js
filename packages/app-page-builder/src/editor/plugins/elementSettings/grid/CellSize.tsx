@@ -78,7 +78,7 @@ const CellSize: React.FC<CellSizePropsType> = ({ value, label, onChange, maxAllo
     return (
         <Grid className={classes.grid}>
             <Cell align={"middle"} span={5}>
-                <Typography use={"subtitle2"}>{label}</Typography>
+                <Typography use={"body2"}>{label}</Typography>
             </Cell>
             <Cell align={"middle"} span={3}>
                 <IconButton
@@ -88,7 +88,7 @@ const CellSize: React.FC<CellSizePropsType> = ({ value, label, onChange, maxAllo
                 />
             </Cell>
             <Cell align={"middle"} span={1}>
-                <Typography use={"subtitle2"}>{value}</Typography>
+                <Typography use={"body2"}>{value}</Typography>
             </Cell>
             <Cell align={"middle"} span={3}>
                 <IconButton className={classes.button} icon={<AddIcon />} onClick={onAddHandler} />

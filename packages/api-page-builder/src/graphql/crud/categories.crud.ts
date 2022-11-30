@@ -205,15 +205,15 @@ export const createCategoriesCrud = (params: CreateCategoriesCrudParams): Catego
         async createCategory(this: PageBuilderContextObject, input) {
             await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
 
+            const createDataModel = new CreateDataModel().populate(input);
+            await createDataModel.validate();
+
             const existingCategory = await this.getCategory(input.slug, {
                 auth: false
             });
             if (existingCategory) {
                 throw new NotFoundError(`Category with slug "${input.slug}" already exists.`);
             }
-
-            const createDataModel = new CreateDataModel().populate(input);
-            await createDataModel.validate();
 
             const identity = context.security.getIdentity();
 

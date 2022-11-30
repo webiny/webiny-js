@@ -1,7 +1,7 @@
 import React from "react";
 import { EventActionPlugins, EventActionHandlerPlugin } from "./eventActions";
 import { EditorBarPlugins } from "./editorBar";
-import { BlockElementSidebarPlugin } from "./BlockElementSidebar";
+import { ElementSettingsTabContentPlugin } from "./ElementSettingsTabContentPlugin";
 
 export const BlockEditorConfig = React.memo(() => {
     return (
@@ -9,7 +9,7 @@ export const BlockEditorConfig = React.memo(() => {
             <EventActionHandlerPlugin />
             <EditorBarPlugins />
             <EventActionPlugins />
-            <BlockElementSidebarPlugin />
+            <ElementSettingsTabContentPlugin />
         </>
     );
 });

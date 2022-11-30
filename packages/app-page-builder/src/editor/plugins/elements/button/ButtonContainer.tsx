@@ -10,6 +10,7 @@ import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import { UpdateElementActionEvent } from "~/editor/recoil/actions";
 import { elementByIdSelector, uiAtom } from "~/editor/recoil/modules";
 import SimpleEditableText from "./SimpleEditableText";
+import { useElementVariableValue } from "~/editor/hooks/useElementVariableValue";
 
 const buttonEditStyle = css({
     "&.button__content--empty": {
@@ -37,6 +38,7 @@ const ButtonContainer: React.FC<ButtonContainerPropsType> = ({
     const uiAtomValue = useRecoilValue(uiAtom);
     const element = useRecoilValue(elementByIdSelector(elementId)) as PbEditorElement;
     const { type = "default", icon = {}, buttonText } = element.data || {};
+    const variableValue = useElementVariableValue(element);
     const defaultValue = typeof buttonText === "string" ? buttonText : "Click me";
     const value = useRef<string>(defaultValue);
 
@@ -101,6 +103,7 @@ const ButtonContainer: React.FC<ButtonContainerPropsType> = ({
                         "button__content--empty": !value.current
                     })}
                     value={value.current}
+                    variableValue={variableValue?.label}
                     onChange={onChange}
                     onBlur={onBlur}
                 />

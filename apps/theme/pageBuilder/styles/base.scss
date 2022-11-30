@@ -74,6 +74,8 @@
 
   justify-content: var(--desktop-justify-content);
   align-items: var(--desktop-align-items);
+
+  box-shadow: var(--box-shadow);
 }
 // Some styles need more specificity
 .webiny-pb-media-query--desktop .webiny-pb-base-page-element-style {

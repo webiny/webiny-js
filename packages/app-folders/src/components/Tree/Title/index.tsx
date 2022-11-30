@@ -6,11 +6,12 @@ import { Container, IconContainer, Label } from "./styled";
 
 type Props = {
     title: string;
+    onClick?: (event: React.MouseEvent<HTMLElement>) => void;
 };
 
-export const Title: React.FC<Props> = ({ title }) => {
+export const Title: React.FC<Props> = ({ title, onClick }) => {
     return (
-        <Container>
+        <Container onClick={onClick} hasClickAction={Boolean(onClick)}>
             <>
                 <IconContainer>
                     <Dashboard />

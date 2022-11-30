@@ -11,7 +11,7 @@ export interface PageElement {
     name: string;
     type: "element" | "block";
     category: string;
-    content: File;
+    content: any;
     preview: File;
     createdOn: string;
     createdBy: CreatedBy;
@@ -683,6 +683,8 @@ export interface PageBuilderStorageOperations {
     menus: MenuStorageOperations;
     pageElements: PageElementStorageOperations;
     pages: PageStorageOperations;
+    blockCategories: BlockCategoryStorageOperations;
+    pageBlocks: PageBlockStorageOperations;
 
     beforeInit?: (context: PbContext) => Promise<void>;
     init?: (context: PbContext) => Promise<void>;
@@ -690,4 +692,194 @@ export interface PageBuilderStorageOperations {
      * An upgrade to run if necessary.
      */
     upgrade?: UpgradePlugin | null;
+}
+
+/**
+ * @category RecordModel
+ */
+export interface BlockCategory {
+    name: string;
+    slug: string;
+    icon: string;
+    description: string;
+    createdOn: string;
+    createdBy: CreatedBy;
+    tenant: string;
+    locale: string;
+}
+
+/**
+ * @category StorageOperations
+ * @category BlockCategoryStorageOperations
+ */
+export interface BlockCategoryStorageOperationsGetParams {
+    where: {
+        slug: string;
+        tenant: string;
+        locale: string;
+    };
+}
+
+/**
+ * @category StorageOperations
+ * @category BlockCategoryStorageOperations
+ */
+export interface BlockCategoryStorageOperationsListParams {
+    where: {
+        tenant: string;
+        locale: string;
+        createdBy?: string;
+    };
+    sort?: string[];
+    limit?: number;
+    after?: string | null;
+}
+
+/**
+ * @category StorageOperations
+ * @category BlockCategoryStorageOperations
+ */
+export type BlockCategoryStorageOperationsListResponse = [BlockCategory[], MetaResponse];
+
+/**
+ * @category StorageOperations
+ * @category BlockCategoryStorageOperations
+ */
+export interface BlockCategoryStorageOperationsCreateParams {
+    input: Record<string, any>;
+    blockCategory: BlockCategory;
+}
+
+/**
+ * @category StorageOperations
+ * @category BlockCategoryStorageOperations
+ */
+export interface BlockCategoryStorageOperationsUpdateParams {
+    input: Record<string, any>;
+    original: BlockCategory;
+    blockCategory: BlockCategory;
+}
+
+/**
+ * @category StorageOperations
+ * @category BlockCategoryStorageOperations
+ */
+export interface BlockCategoryStorageOperationsDeleteParams {
+    blockCategory: BlockCategory;
+}
+
+/**
+ * @category StorageOperations
+ * @category BlockCategoryStorageOperations
+ */
+export interface BlockCategoryStorageOperations {
+    /**
+     * Get a single block category item by given params.
+     */
+    get(params: BlockCategoryStorageOperationsGetParams): Promise<BlockCategory>;
+    /**
+     * Get all block categories items by given params.
+     */
+    list(
+        params: BlockCategoryStorageOperationsListParams
+    ): Promise<BlockCategoryStorageOperationsListResponse>;
+    create(params: BlockCategoryStorageOperationsCreateParams): Promise<BlockCategory>;
+    update(params: BlockCategoryStorageOperationsUpdateParams): Promise<BlockCategory>;
+    delete(params: BlockCategoryStorageOperationsDeleteParams): Promise<BlockCategory>;
+}
+
+/**
+ * @category RecordModel
+ */
+export interface PageBlock {
+    id: string;
+    name: string;
+    blockCategory: string;
+    content: any;
+    preview: File;
+    createdOn: string;
+    createdBy: CreatedBy;
+    tenant: string;
+    locale: string;
+}
+
+/**
+ * @category StorageOperations
+ * @category PageBlockStorageOperations
+ */
+export interface PageBlockStorageOperationsGetParams {
+    where: {
+        id: string;
+        tenant: string;
+        locale: string;
+    };
+}
+
+/**
+ * @category StorageOperations
+ * @category PageBlockStorageOperations
+ */
+export interface PageBlockStorageOperationsListParams {
+    where: {
+        tenant: string;
+        locale: string;
+        createdBy?: string;
+    };
+    sort?: string[];
+    limit?: number;
+    after?: string | null;
+}
+
+/**
+ * @category StorageOperations
+ * @category PageBlockStorageOperations
+ */
+export type PageBlockStorageOperationsListResponse = [PageBlock[], MetaResponse];
+
+/**
+ * @category StorageOperations
+ * @category PageBlockStorageOperations
+ */
+export interface PageBlockStorageOperationsCreateParams {
+    input: Record<string, any>;
+    pageBlock: PageBlock;
+}
+
+/**
+ * @category StorageOperations
+ * @category PageBlockStorageOperations
+ */
+export interface PageBlockStorageOperationsUpdateParams {
+    input: Record<string, any>;
+    original: PageBlock;
+    pageBlock: PageBlock;
+}
+
+/**
+ * @category StorageOperations
+ * @category PageBlockStorageOperations
+ */
+export interface PageBlockStorageOperationsDeleteParams {
+    pageBlock: PageBlock;
+}
+
+/**
+ * @category StorageOperations
+ * @category PageBlockStorageOperations
+ */
+export interface PageBlockStorageOperations {
+    /**
+     * Get a single page block item by given params.
+     */
+    get(params: PageBlockStorageOperationsGetParams): Promise<PageBlock | null>;
+    /**
+     * Get all page block items by given params.
+     */
+    list(
+        params: PageBlockStorageOperationsListParams
+    ): Promise<PageBlockStorageOperationsListResponse>;
+
+    create(params: PageBlockStorageOperationsCreateParams): Promise<PageBlock>;
+    update(params: PageBlockStorageOperationsUpdateParams): Promise<PageBlock>;
+    delete(params: PageBlockStorageOperationsDeleteParams): Promise<PageBlock>;
 }

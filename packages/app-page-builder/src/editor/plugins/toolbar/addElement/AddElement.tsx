@@ -65,7 +65,21 @@ const AddElement: React.FC = () => {
         handler.trigger(new DropElementActionEvent(args));
     }, []);
     const getGroups = useCallback((): PbEditorPageElementGroupPlugin[] => {
-        return plugins.byType<PbEditorPageElementGroupPlugin>("pb-editor-page-element-group");
+        const allGroups = plugins.byType<PbEditorPageElementGroupPlugin>(
+            "pb-editor-page-element-group"
+        );
+
+        // For backward compatibility with custom media plugins (if such were created by user)
+        const isMediaGroupEmpty =
+            plugins
+                .byType<PbEditorPageElementPlugin>("pb-editor-page-element")
+                .filter(el => el.toolbar && el.toolbar.group === "pb-editor-element-group-media")
+                .length === 0;
+        if (isMediaGroupEmpty) {
+            return allGroups.filter(group => group.name !== "pb-editor-element-group-media");
+        }
+
+        return allGroups;
     }, []);
 
     const pageElementGroupPlugins = getGroups();
