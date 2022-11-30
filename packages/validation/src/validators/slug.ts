@@ -11,6 +11,6 @@ export default (value: any) => {
     }
 
     throw new ValidationError(
-        "Slug must consist of only 'a-z', '0-9' and '-' and be max 100 characters long (for example: 'some-slug' or 'some_slug-2')"
+        "Slug must consist of only 'a-z', '0-9' and '-' and be max 100 characters long (for example: 'some-slug' or 'some-slug-2')"
     );
 };
