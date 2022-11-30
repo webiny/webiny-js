@@ -10,7 +10,6 @@ export interface BlockAtomType {
     name?: string;
     blockCategory?: string;
     preview?: File;
-    isDirty: boolean;
     savedOn?: Date;
     createdBy: {
         id: string | null;
@@ -21,7 +20,6 @@ export const blockAtom = atom<BlockAtomType>({
     key: "blockAtom",
     default: {
         id: "",
-        isDirty: false,
         createdBy: {
             id: null
         }

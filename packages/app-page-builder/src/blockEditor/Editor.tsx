@@ -60,8 +60,7 @@ export const BlockEditor: React.FC = () => {
 
                 setBlock({
                     ...pageBlockData,
-                    content,
-                    isDirty: false
+                    content
                 });
             });
 

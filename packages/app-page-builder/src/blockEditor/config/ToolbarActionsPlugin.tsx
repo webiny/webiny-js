@@ -14,8 +14,8 @@ export const ToolbarActionsPlugin = createComponentPlugin(ToolbarActions, Toolba
 
         return (
             <ToolbarActionsWrapper>
-                <div>{actionsTop?.map(renderPlugin)}</div>
-                <div>{actionsBottom?.map(renderPlugin)}</div>
+                <div>{actionsTop.map(renderPlugin)}</div>
+                <div>{actionsBottom.map(renderPlugin)}</div>
             </ToolbarActionsWrapper>
         );
     };

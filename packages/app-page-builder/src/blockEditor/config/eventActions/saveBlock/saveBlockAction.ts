@@ -2,7 +2,6 @@
 import lodashDebounce from "lodash/debounce";
 import { plugins } from "@webiny/plugins";
 import { SaveBlockActionArgsType } from "./types";
-import { ToggleBlockDirtyStateActionEvent } from "./event";
 import { BlockEventActionCallable } from "~/blockEditor/types";
 import { BlockWithContent } from "~/blockEditor/state";
 import { UPDATE_PAGE_BLOCK } from "~/admin/views/PageBlocks/graphql";
@@ -88,8 +87,6 @@ export const saveBlockAction: BlockEventActionCallable<SaveBlockActionArgsType> 
     }
 
     const runSave = async () => {
-        meta.eventActionHandler.trigger(new ToggleBlockDirtyStateActionEvent({ dirty: false }));
-
         await meta.client.mutate({
             mutation: UPDATE_PAGE_BLOCK,
             variables: {
