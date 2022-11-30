@@ -10,7 +10,7 @@ export const createStateInitializer = (block: BlockWithContent): EditorStateInit
              * We always unset the content because we are not using it via the block atom.
              */
             const blockData: BlockAtomType = omit(block, ["content"]);
-            set(blockAtom, blockData);
+            set(blockAtom, { ...blockData, isDirty: false });
         }
     });
 };

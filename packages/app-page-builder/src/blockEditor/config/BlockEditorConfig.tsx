@@ -2,6 +2,7 @@ import React from "react";
 import { EventActionPlugins, EventActionHandlerPlugin } from "./eventActions";
 import { EditorBarPlugins } from "./editorBar";
 import { ElementSettingsTabContentPlugin } from "./ElementSettingsTabContentPlugin";
+import { ToolbarActionsPlugin } from "./ToolbarActionsPlugin";
 
 export const BlockEditorConfig = React.memo(() => {
     return (
@@ -10,6 +11,7 @@ export const BlockEditorConfig = React.memo(() => {
             <EditorBarPlugins />
             <EventActionPlugins />
             <ElementSettingsTabContentPlugin />
+            <ToolbarActionsPlugin />
         </>
     );
 });

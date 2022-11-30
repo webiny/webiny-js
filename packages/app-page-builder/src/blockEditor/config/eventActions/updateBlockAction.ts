@@ -1,6 +1,7 @@
 import { UpdateDocumentActionArgsType } from "~/editor/recoil/actions";
 import { BlockAtomType } from "~/blockEditor/state";
 import { BlockEventActionCallable } from "~/blockEditor/types";
+import { ToggleBlockDirtyStateActionEvent } from "~/blockEditor/config/eventActions/saveBlock";
 
 export const updateBlockAction: BlockEventActionCallable<
     UpdateDocumentActionArgsType<BlockAtomType>
@@ -12,6 +13,6 @@ export const updateBlockAction: BlockEventActionCallable<
                 ...(args?.document || {})
             }
         },
-        actions: []
+        actions: [new ToggleBlockDirtyStateActionEvent({ dirty: true })]
     };
 };

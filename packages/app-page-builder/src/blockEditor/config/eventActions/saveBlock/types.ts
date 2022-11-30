@@ -3,6 +3,6 @@ export interface SaveBlockActionArgsType {
     onFinish?: () => void;
 }
 
-export interface ToggleSaveBlockStateActionArgsType {
-    saving: boolean;
+export interface ToggleBlockDirtyStateActionArgsType {
+    dirty: boolean;
 }

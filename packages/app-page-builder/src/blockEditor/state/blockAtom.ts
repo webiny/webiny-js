@@ -14,6 +14,7 @@ export interface BlockAtomType {
         id: string | null;
     };
     preview?: File;
+    isDirty: boolean;
     // TODO: add more props here
 }
 
@@ -23,6 +24,7 @@ export const blockAtom = atom<BlockAtomType>({
         id: "",
         createdBy: {
             id: null
-        }
+        },
+        isDirty: false
     }
 });

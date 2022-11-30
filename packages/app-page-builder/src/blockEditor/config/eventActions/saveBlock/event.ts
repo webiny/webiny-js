@@ -1,5 +1,5 @@
 import { BaseEventAction } from "~/editor/recoil/eventActions";
-import { SaveBlockActionArgsType, ToggleSaveBlockStateActionArgsType } from "./types";
+import { SaveBlockActionArgsType, ToggleBlockDirtyStateActionArgsType } from "./types";
 
 export class SaveBlockActionEvent extends BaseEventAction<SaveBlockActionArgsType> {
     public getName(): string {
@@ -7,8 +7,8 @@ export class SaveBlockActionEvent extends BaseEventAction<SaveBlockActionArgsTyp
     }
 }
 
-export class ToggleSaveBlockStateActionEvent extends BaseEventAction<ToggleSaveBlockStateActionArgsType> {
+export class ToggleBlockDirtyStateActionEvent extends BaseEventAction<ToggleBlockDirtyStateActionArgsType> {
     public getName(): string {
-        return "ToggleSaveBlockStateActionEvent";
+        return "ToggleBlockDirtyStateActionEvent";
     }
 }

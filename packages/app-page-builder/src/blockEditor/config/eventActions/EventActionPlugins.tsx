@@ -4,8 +4,8 @@ import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import {
     saveBlockAction,
     SaveBlockActionEvent,
-    toggleSaveBlockStateAction,
-    ToggleSaveBlockStateActionEvent
+    toggleBlockDirtyStateAction,
+    ToggleBlockDirtyStateActionEvent
 } from "./saveBlock";
 import { updateBlockAction } from "./updateBlockAction";
 import { UpdateDocumentActionEvent } from "~/editor/recoil/actions";
@@ -17,9 +17,9 @@ const EventActionHandlers = () => {
     useEffect(() => {
         const offSaveBlockAction = eventActionHandler.on(SaveBlockActionEvent, saveBlockAction);
 
-        const offToggleSaveBlockStateAction = eventActionHandler.on(
-            ToggleSaveBlockStateActionEvent,
-            toggleSaveBlockStateAction
+        const offToggleBlockDirtyStateAction = eventActionHandler.on(
+            ToggleBlockDirtyStateActionEvent,
+            toggleBlockDirtyStateAction
         );
 
         const offUpdateBlockAction = eventActionHandler.on(
@@ -29,7 +29,7 @@ const EventActionHandlers = () => {
 
         return () => {
             offSaveBlockAction();
-            offToggleSaveBlockStateAction();
+            offToggleBlockDirtyStateAction();
             offUpdateBlockAction();
         };
     }, []);

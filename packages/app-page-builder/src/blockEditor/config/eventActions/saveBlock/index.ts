@@ -1,3 +1,3 @@
 export * from "./saveBlockAction";
-export * from "./toggleSaveBlockStateAction";
+export * from "./toggleBlockDirtyStateAction";
 export * from "./event";
