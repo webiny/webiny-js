@@ -70,6 +70,10 @@ export interface SettingsQueryResponseData {
             src: string;
         };
     };
+    htmlTags: {
+        header: string;
+        footer: string;
+    };
     logo: {
         src: string;
     };
