@@ -10,6 +10,10 @@ const categories = [
     "Localization"
 ];
 
+const getIt = (name = "") => {
+    return name.match("elasticsearch") !== null ? it : it.skip;
+};
+
 describe(`graphql "and" queries`, () => {
     const manager = useCategoryManageHandler({
         path: "manage/en-US"
@@ -31,7 +35,7 @@ describe(`graphql "and" queries`, () => {
         }
     };
 
-    const execTest = manager.storageOperations.name.match("elasticsearch") !== null ? it : it.skip;
+    const it = getIt(manager.storageOperations.name);
 
     beforeEach(async () => {
         await createCategories();
@@ -50,24 +54,19 @@ describe(`graphql "and" queries`, () => {
         );
     });
 
-    execTest(`should find a single item containing "cms" and "headless" words`, async () => {
-        const [categoriesResponse] = await listCategories({
+    it(`should filter via root level "AND" condition and return records`, async () => {
+        const [singleRootCategoryResponse] = await listCategories({
             where: {
+                title_contains: "cms",
                 AND: [
-                    {
-                        title_contains: "cms"
-                    },
                     {
                         title_contains: "headless"
                     }
                 ]
             }
         });
-        /**
-         * As we are using possibility to skip the test, we need to disable eslint in next line as it will produce error
-         */
-        // eslint-disable-next-line
-        expect(categoriesResponse).toMatchObject({
+
+        expect(singleRootCategoryResponse).toMatchObject({
             data: {
                 listCategories: {
                     data: [
@@ -84,10 +83,71 @@ describe(`graphql "and" queries`, () => {
                 }
             }
         });
-    });
 
-    execTest(`should find all items containing "webiny" and "builder" words`, async () => {
-        const [categoriesResponse] = await listCategories({
+        const [singleCategoryResponse] = await listCategories({
+            where: {
+                AND: [
+                    {
+                        title_contains: "cms"
+                    },
+                    {
+                        title_contains: "headless"
+                    }
+                ]
+            }
+        });
+
+        expect(singleCategoryResponse).toMatchObject({
+            data: {
+                listCategories: {
+                    data: [
+                        {
+                            title: "Webiny Headless CMS"
+                        }
+                    ],
+                    meta: {
+                        totalCount: 1,
+                        cursor: null,
+                        hasMoreItems: false
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [multipleRootCategoriesResponse] = await listCategories({
+            where: {
+                title_contains: "webiny",
+                AND: [
+                    {
+                        title_contains: "builder"
+                    }
+                ]
+            }
+        });
+
+        expect(multipleRootCategoriesResponse).toMatchObject({
+            data: {
+                listCategories: {
+                    data: [
+                        {
+                            title: "Webiny Form Builder"
+                        },
+                        {
+                            title: "Webiny Page Builder"
+                        }
+                    ],
+                    meta: {
+                        totalCount: 2,
+                        cursor: null,
+                        hasMoreItems: false
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [multipleCategoriesResponse] = await listCategories({
             where: {
                 AND: [
                     {
@@ -100,11 +160,7 @@ describe(`graphql "and" queries`, () => {
             }
         });
 
-        /**
-         * As we are using possibility to skip the test, we need to disable eslint in next line as it will produce error
-         */
-        // eslint-disable-next-line
-        expect(categoriesResponse).toMatchObject({
+        expect(multipleCategoriesResponse).toMatchObject({
             data: {
                 listCategories: {
                     data: [
@@ -126,40 +182,57 @@ describe(`graphql "and" queries`, () => {
         });
     });
 
-    execTest(
-        `should not find any items containing "cms", "headless" and "localization" words`,
-        async () => {
-            const [categoriesResponse] = await listCategories({
-                where: {
-                    title_contains: "cms",
-                    AND: [
-                        {
-                            title_contains: "headless"
-                        },
-                        {
-                            title_contains: "localization"
-                        }
-                    ]
-                }
-            });
-
-            /**
-             * As we are using possibility to skip the test, we need to disable eslint in next line as it will produce error
-             */
-            // eslint-disable-next-line
-            expect(categoriesResponse).toMatchObject({
-                data: {
-                    listCategories: {
-                        data: [],
-                        meta: {
-                            totalCount: 0,
-                            cursor: null,
-                            hasMoreItems: false
-                        },
-                        error: null
+    it(`should not return any records`, async () => {
+        const [firstResponse] = await listCategories({
+            where: {
+                AND: [
+                    {
+                        title_contains: "headless"
+                    },
+                    {
+                        title_contains: "localization"
                     }
+                ]
+            }
+        });
+
+        expect(firstResponse).toMatchObject({
+            data: {
+                listCategories: {
+                    data: [],
+                    meta: {
+                        totalCount: 0,
+                        cursor: null,
+                        hasMoreItems: false
+                    },
+                    error: null
                 }
-            });
-        }
-    );
+            }
+        });
+
+        const [secondResponse] = await listCategories({
+            where: {
+                title_contains: "headless",
+                AND: [
+                    {
+                        title_contains: "localization"
+                    }
+                ]
+            }
+        });
+
+        expect(secondResponse).toMatchObject({
+            data: {
+                listCategories: {
+                    data: [],
+                    meta: {
+                        totalCount: 0,
+                        cursor: null,
+                        hasMoreItems: false
+                    },
+                    error: null
+                }
+            }
+        });
+    });
 });
