@@ -1,12 +1,12 @@
 import React from "react";
 import { PbEditorPageElementStyleSettingsPlugin } from "~/types";
-import VisibilitySettings from "./VisibilitySettings";
+import PropertySettings from "./PropertySettings";
 
 export default {
-    name: "pb-editor-page-element-style-settings-visibility",
+    name: "pb-editor-page-element-style-settings-property",
     type: "pb-editor-page-element-style-settings",
     elements: true,
     render({ options }) {
-        return <VisibilitySettings options={options} />;
+        return <PropertySettings options={options} />;
     }
 } as PbEditorPageElementStyleSettingsPlugin;

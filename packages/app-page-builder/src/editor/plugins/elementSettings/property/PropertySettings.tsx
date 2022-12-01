@@ -5,6 +5,7 @@ import get from "lodash/get";
 import { plugins } from "@webiny/plugins";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { Switch } from "@webiny/ui/Switch";
+import { DelayedOnChange } from "@webiny/ui/DelayedOnChange";
 import {
     PbEditorElement,
     PbEditorPageElementSettingsRenderComponentProps,
@@ -20,12 +21,14 @@ import { applyFallbackDisplayMode } from "../elementSettingsUtils";
 import Accordion from "../../elementSettings/components/Accordion";
 import Wrapper from "../../elementSettings/components/Wrapper";
 import useUpdateHandlers from "../../elementSettings/useUpdateHandlers";
+import InputField from "../components/InputField";
+import { ContentWrapper } from "../components/StyledComponents";
 
 const classes = {
     grid: css({
         "&.mdc-layout-grid": {
             padding: 0,
-            marginBottom: 24
+            margin: "0px 0px 16px"
         }
     }),
     rightCellStyle: css({
@@ -37,7 +40,7 @@ const classes = {
     })
 };
 
-const DATA_NAMESPACE = "data.settings.visibility";
+const DATA_NAMESPACE = "data.settings.property";
 
 interface UseVisibilitySettingResult {
     element: PbEditorElement;
@@ -48,7 +51,7 @@ export const useVisibilitySetting = (elementId: string): UseVisibilitySettingRes
     const element = useRecoilValue(elementWithChildrenByIdSelector(elementId)) as PbEditorElement;
     const { getUpdateValue } = useUpdateHandlers({
         element,
-        dataNamespace: DATA_NAMESPACE
+        dataNamespace: `${DATA_NAMESPACE}.visibility`
     });
 
     const updateVisibility = useCallback(
@@ -62,7 +65,7 @@ export const useVisibilitySetting = (elementId: string): UseVisibilitySettingRes
     };
 };
 
-const VisibilitySettings: React.FC<
+const PropertySettings: React.FC<
     PbEditorPageElementSettingsRenderComponentProps & {
         options: any;
     }
@@ -70,6 +73,10 @@ const VisibilitySettings: React.FC<
     const { displayMode } = useRecoilValue(uiAtom);
     const activeElementId = useRecoilValue(activeElementAtom);
     const { element, updateVisibility } = useVisibilitySetting(activeElementId as string);
+    const { getUpdateValue } = useUpdateHandlers({
+        element,
+        dataNamespace: DATA_NAMESPACE
+    });
 
     const memoizedResponsiveModePlugin = useMemo(() => {
         return plugins
@@ -87,20 +94,20 @@ const VisibilitySettings: React.FC<
     const fallbackValue = useMemo(
         () =>
             applyFallbackDisplayMode(displayMode, mode =>
-                get(element, `${DATA_NAMESPACE}.${mode}`)
+                get(element, `${DATA_NAMESPACE}.visibility.${mode}`)
             ),
         [displayMode]
     );
 
     const visibility = get(
         element,
-        `${DATA_NAMESPACE}.${displayMode}`,
+        `${DATA_NAMESPACE}.visibility.${displayMode}`,
         fallbackValue || { hidden: false }
     );
 
     return (
         <Accordion
-            title={"Visibility"}
+            title={"Property"}
             defaultValue={defaultAccordionValue}
             icon={
                 <Tooltip content={`Changes will apply for ${activeDisplayModeConfig.displayMode}`}>
@@ -108,18 +115,36 @@ const VisibilitySettings: React.FC<
                 </Tooltip>
             }
         >
-            <Wrapper
-                containerClassName={classes.grid}
-                label={"Hide element"}
-                leftCellSpan={8}
-                rightCellSpan={4}
-                leftCellClassName={classes.leftCellStyle}
-                rightCellClassName={classes.rightCellStyle}
-            >
-                <Switch value={visibility.hidden} onChange={updateVisibility} />
-            </Wrapper>
+            <ContentWrapper direction={"column"}>
+                <Wrapper
+                    containerClassName={classes.grid}
+                    label={"Hide element"}
+                    leftCellSpan={8}
+                    rightCellSpan={4}
+                    leftCellClassName={classes.leftCellStyle}
+                    rightCellClassName={classes.rightCellStyle}
+                >
+                    <Switch value={visibility.hidden} onChange={updateVisibility} />
+                </Wrapper>
+                <Wrapper label={"Element ID"} containerClassName={classes.grid}>
+                    <DelayedOnChange
+                        value={get(element, DATA_NAMESPACE + ".id", 0)}
+                        onChange={getUpdateValue("id")}
+                    >
+                        {({ value, onChange }) => <InputField value={value} onChange={onChange} />}
+                    </DelayedOnChange>
+                </Wrapper>
+                <Wrapper label={"CSS class"} containerClassName={classes.grid}>
+                    <DelayedOnChange
+                        value={get(element, DATA_NAMESPACE + ".className", 0)}
+                        onChange={getUpdateValue("className")}
+                    >
+                        {({ value, onChange }) => <InputField value={value} onChange={onChange} />}
+                    </DelayedOnChange>
+                </Wrapper>
+            </ContentWrapper>
         </Accordion>
     );
 };
 
-export default React.memo(VisibilitySettings);
+export default React.memo(PropertySettings);
