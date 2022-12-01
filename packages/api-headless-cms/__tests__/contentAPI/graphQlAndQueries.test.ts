@@ -3,7 +3,7 @@ import lodashCamelCase from "lodash/camelCase";
 import { setupGroupAndModels } from "../testHelpers/setup";
 
 const categories = [
-    "Webiny Headless CMS",
+    "Webiny Headless CMS Project",
     "Webiny Page Builder",
     "Webiny Form Builder",
     "File Manager Webiny",
@@ -71,7 +71,7 @@ describe(`graphql "and" queries`, () => {
                 listCategories: {
                     data: [
                         {
-                            title: "Webiny Headless CMS"
+                            title: "Webiny Headless CMS Project"
                         }
                     ],
                     meta: {
@@ -102,7 +102,7 @@ describe(`graphql "and" queries`, () => {
                 listCategories: {
                     data: [
                         {
-                            title: "Webiny Headless CMS"
+                            title: "Webiny Headless CMS Project"
                         }
                     ],
                     meta: {
@@ -173,6 +173,211 @@ describe(`graphql "and" queries`, () => {
                     ],
                     meta: {
                         totalCount: 2,
+                        cursor: null,
+                        hasMoreItems: false
+                    },
+                    error: null
+                }
+            }
+        });
+    });
+
+    it(`should filter via nested "AND" conditions and return records`, async () => {
+        const [categoryResponse] = await listCategories({
+            where: {
+                title_contains: "cms",
+                AND: [
+                    {
+                        title_contains: "headless",
+                        AND: [
+                            {
+                                title_contains: "project"
+                            }
+                        ]
+                    },
+                    {
+                        AND: [
+                            {
+                                title_contains: "webiny"
+                            }
+                        ]
+                    }
+                ]
+            }
+        });
+
+        expect(categoryResponse).toMatchObject({
+            data: {
+                listCategories: {
+                    data: [
+                        {
+                            title: "Webiny Headless CMS Project"
+                        }
+                    ],
+                    meta: {
+                        totalCount: 1,
+                        cursor: null,
+                        hasMoreItems: false
+                    },
+                    error: null
+                }
+            }
+        });
+    });
+
+    it(`should filter via nested "AND" conditions and not return any record`, async () => {
+        /**
+         * We will add a single non-existing character to "cms"
+         */
+        const [cmsCategoryResponse] = await listCategories({
+            where: {
+                title_contains: "cmsa",
+                AND: [
+                    {
+                        title_contains: "headless",
+                        AND: [
+                            {
+                                title_contains: "project"
+                            }
+                        ]
+                    },
+                    {
+                        AND: [
+                            {
+                                title_contains: "webiny"
+                            }
+                        ]
+                    }
+                ]
+            }
+        });
+
+        expect(cmsCategoryResponse).toMatchObject({
+            data: {
+                listCategories: {
+                    data: [],
+                    meta: {
+                        totalCount: 0,
+                        cursor: null,
+                        hasMoreItems: false
+                    },
+                    error: null
+                }
+            }
+        });
+
+        /**
+         * We will add a single non-existing character to "headless"
+         */
+        const [headlessCategoryResponse] = await listCategories({
+            where: {
+                title_contains: "cms",
+                AND: [
+                    {
+                        title_contains: "headlessk",
+                        AND: [
+                            {
+                                title_contains: "project"
+                            }
+                        ]
+                    },
+                    {
+                        AND: [
+                            {
+                                title_contains: "webiny"
+                            }
+                        ]
+                    }
+                ]
+            }
+        });
+
+        expect(headlessCategoryResponse).toMatchObject({
+            data: {
+                listCategories: {
+                    data: [],
+                    meta: {
+                        totalCount: 0,
+                        cursor: null,
+                        hasMoreItems: false
+                    },
+                    error: null
+                }
+            }
+        });
+
+        /**
+         * We will add a single non-existing character to "project"
+         */
+        const [projectCategoryResponse] = await listCategories({
+            where: {
+                title_contains: "cms",
+                AND: [
+                    {
+                        title_contains: "headless",
+                        AND: [
+                            {
+                                title_contains: "cproject"
+                            }
+                        ]
+                    },
+                    {
+                        AND: [
+                            {
+                                title_contains: "webiny"
+                            }
+                        ]
+                    }
+                ]
+            }
+        });
+
+        expect(projectCategoryResponse).toMatchObject({
+            data: {
+                listCategories: {
+                    data: [],
+                    meta: {
+                        totalCount: 0,
+                        cursor: null,
+                        hasMoreItems: false
+                    },
+                    error: null
+                }
+            }
+        });
+
+        /**
+         * We will remove a single character from "webiny"
+         */
+        const [webinyCategoryResponse] = await listCategories({
+            where: {
+                title_contains: "cms",
+                AND: [
+                    {
+                        title_contains: "headless",
+                        AND: [
+                            {
+                                title_contains: "project"
+                            }
+                        ]
+                    },
+                    {
+                        AND: [
+                            {
+                                title_contains: "webny"
+                            }
+                        ]
+                    }
+                ]
+            }
+        });
+
+        expect(webinyCategoryResponse).toMatchObject({
+            data: {
+                listCategories: {
+                    data: [],
+                    meta: {
+                        totalCount: 0,
                         cursor: null,
                         hasMoreItems: false
                     },
