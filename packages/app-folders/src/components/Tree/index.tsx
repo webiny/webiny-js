@@ -55,28 +55,39 @@ const createTreeData = (
 
 const createInitialOpenList = (
     folders: FolderItem[] = [],
-    focusedNodeId?: string
+    focusedId?: string,
+    openIds: NodeModel<DndItemData>["id"][] = []
 ): InitialOpen | undefined => {
     const focusedFolder = folders.find(folder => {
-        return folder.id === focusedNodeId;
+        return folder.id === focusedId;
     });
 
-    if (!focusedNodeId || !focusedFolder?.parentId) {
+    if (!focusedId || !focusedFolder?.parentId) {
         return;
     }
 
-    const result = folders.reduce(
-        (acc, curr): string[] => {
-            if (curr.parentId && acc.some(el => el === curr?.id)) {
-                acc.push(curr.parentId);
-            }
+    const findParents = (
+        acc: string[],
+        folder: FolderItem,
+        index: number,
+        folders: FolderItem[]
+    ): string[] => {
+        if (folder.parentId && acc.some(el => el === folder.id)) {
+            acc.push(folder.parentId);
 
-            return acc;
-        },
-        [focusedFolder.parentId]
-    );
+            const newArr = folders.filter((_, i) => {
+                return i !== index;
+            });
 
-    return [...new Set(result)];
+            return newArr.reduce(findParents, acc);
+        }
+
+        return acc;
+    };
+
+    const result = folders.reduce(findParents, [focusedId]);
+
+    return [...new Set([...result, ...openIds])];
 };
 
 type Props = {
@@ -101,14 +112,15 @@ export const FolderTree: React.FC<Props> = ({
     const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
     const [initialOpenList, setInitialOpenList] = useState<undefined | InitialOpen>(undefined);
     const [selectedFolder, setSelectedFolder] = useState<FolderItem>();
+    const [openFolderIds, setOpenFolderIds] = useState<NodeModel<DndItemData>["id"][]>([]);
     const { showSnackbar } = useSnackbar();
 
     useDeepCompareEffect(() => {
         if (folders) {
             setTreeData(createTreeData(folders, focusedFolderId));
-            setInitialOpenList(createInitialOpenList(folders, focusedFolderId));
+            setInitialOpenList(createInitialOpenList(folders, focusedFolderId, openFolderIds));
         }
-    }, [Object.assign({}, folders), focusedFolderId]);
+    }, [Object.assign({}, folders), focusedFolderId, openFolderIds]);
 
     const handleDrop = async (
         newTree: NodeModel<DndItemData>[],
@@ -143,16 +155,20 @@ export const FolderTree: React.FC<Props> = ({
         return 0;
     };
 
+    const handleChangeOpen = (folderIds: NodeModel["id"][]) => {
+        setOpenFolderIds(folderIds);
+    };
+
     return (
         <Container>
             <Title title={title} onClick={onTitleClick} />
-
             {folders && folders.length > 0 && (
                 <DndProvider backend={MultiBackend} options={getBackendOptions()}>
                     <Tree
                         tree={treeData}
                         rootId={ROOT_ID}
                         onDrop={handleDrop}
+                        onChangeOpen={handleChangeOpen}
                         sort={sort}
                         render={(node, { depth, isOpen, onToggle }) => (
                             <Node
@@ -187,7 +203,6 @@ export const FolderTree: React.FC<Props> = ({
                     />
                 </DndProvider>
             )}
-
             <CreateButton onClick={() => setCreateDialogOpen(true)} />
             <FolderDialogCreate
                 type={type}
