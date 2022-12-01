@@ -130,6 +130,18 @@ export const FolderTree: React.FC<Props> = ({
         }
     };
 
+    const sort = (a: NodeModel<DndItemData>, b: NodeModel<DndItemData>) => {
+        if (a.data!.name > b.data!.name) {
+            return 1;
+        }
+
+        if (a.data!.name < b.data!.name) {
+            return -1;
+        }
+
+        return 0;
+    };
+
     return (
         <Container>
             <Title title={title} onClick={onTitleClick} />
@@ -140,7 +152,7 @@ export const FolderTree: React.FC<Props> = ({
                         tree={treeData}
                         rootId={ROOT_ID}
                         onDrop={handleDrop}
-                        sort={false}
+                        sort={sort}
                         render={(node, { depth, isOpen, onToggle }) => (
                             <Node
                                 node={node}
