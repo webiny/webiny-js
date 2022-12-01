@@ -120,7 +120,7 @@ describe("convert where to elasticsearch query", () => {
         expect(query).toEqual(expected);
     });
 
-    it("should add root and nested query conditions", async () => {
+    it(`should add root and "AND" nested query conditions`, async () => {
         const where: CmsEntryListWhere = {
             id_gte: 2,
             AND: [
@@ -174,6 +174,67 @@ describe("convert where to elasticsearch query", () => {
                 }
             ],
             should: []
+        };
+
+        expect(query).toEqual(expected);
+    });
+
+    it.skip(`should add root and "OR" nested query conditions`, async () => {
+        const where: CmsEntryListWhere = {
+            id_gte: 2,
+            OR: [
+                {
+                    title_contains: "webiny"
+                },
+                {
+                    title_contains: "serverless"
+                }
+            ]
+        };
+
+        execFiltering({
+            query,
+            where
+        });
+
+        const expected: ElasticsearchBoolQueryConfig = {
+            must: [],
+            must_not: [],
+            filter: [
+                {
+                    range: {
+                        idStorageId: {
+                            gte: 2
+                        }
+                    }
+                }
+            ],
+            should: [
+                {
+                    bool: {
+                        should: [
+                            {
+                                query_string: {
+                                    allow_leading_wildcard: true,
+                                    default_operator: "and",
+                                    fields: ["values.titleStorageId"],
+                                    query: "*webiny*"
+                                }
+                            },
+                            {
+                                query_string: {
+                                    allow_leading_wildcard: true,
+                                    default_operator: "and",
+                                    fields: ["values.titleStorageId"],
+                                    query: "*serverless*"
+                                }
+                            }
+                        ],
+                        minimum_should_match: 1
+                    }
+                }
+            ],
+            minimum_should_match: 1
         };
 
         expect(query).toEqual(expected);

@@ -121,6 +121,7 @@ export const createStorageOperations: StorageOperationsFactory = params => {
     ]);
 
     return {
+        name: "dynamodb:elasticsearch",
         beforeInit: async context => {
             /**
              * Attach the elasticsearch into context if it is not already attached.
