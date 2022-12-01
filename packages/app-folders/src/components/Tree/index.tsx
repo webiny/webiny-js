@@ -17,6 +17,7 @@ import { useFolders } from "~/hooks/useFolders";
 import { CreateButton } from "./ButtonCreate";
 import { Node } from "./Node";
 import { NodePreview } from "./NodePreview";
+import { Placeholder } from "./Placeholder";
 import { Title } from "./Title";
 import { FolderDialogCreate, FolderDialogDelete, FolderDialogUpdate } from "~/components";
 
@@ -175,9 +176,14 @@ export const FolderTree: React.FC<Props> = ({
                         )}
                         classes={{
                             root: "treeRoot",
-                            dropTarget: "dropTarget"
+                            dropTarget: "dropTarget",
+                            draggingSource: "draggingSource",
+                            placeholder: "placeholderContainer"
                         }}
                         initialOpen={initialOpenList}
+                        placeholderRender={(node, { depth }) => (
+                            <Placeholder node={node} depth={depth} />
+                        )}
                     />
                 </DndProvider>
             )}

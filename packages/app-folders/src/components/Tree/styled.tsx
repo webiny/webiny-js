@@ -10,4 +10,12 @@ export const Container = styled("div")`
     & .dropTarget {
         background: var(--webiny-theme-color-background);
     }
+
+    & .draggingSource {
+        opacity: 0.5;
+    }
+
+    & .placeholderContainer {
+        position: relative;
+    }
 `;
