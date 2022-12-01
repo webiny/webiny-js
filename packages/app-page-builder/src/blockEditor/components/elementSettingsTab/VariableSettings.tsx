@@ -112,8 +112,8 @@ const VariableSettings = ({ element }: { element: PbEditorElement }) => {
             </FormWrapper>
             <ElementLinkStatusWrapper>
                 <strong>Element is linked</strong>
-                To prevent users to change the value of this element inside a page, you need to
-                unlink it from variables.
+                To prevent users from changing the value of this element, you need to unlink it from
+                a variable.
                 <ButtonPrimary onClick={onRemove}>Unlink Element</ButtonPrimary>
                 <div className="info-wrapper">
                     <InfoIcon /> Click here to learn more about how block variables work
