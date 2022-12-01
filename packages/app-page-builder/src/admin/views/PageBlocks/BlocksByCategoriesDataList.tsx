@@ -6,6 +6,7 @@ import { useQuery, useApolloClient } from "@apollo/react-hooks";
 import orderBy from "lodash/orderBy";
 import isEmpty from "lodash/isEmpty";
 import get from "lodash/get";
+import { Icon } from "~/admin/utils/createBlockCategoryPlugin";
 
 import {
     DataList,
@@ -14,6 +15,7 @@ import {
     ScrollList,
     List,
     ListItem,
+    ListItemGraphic,
     ListItemText,
     ListItemTextPrimary,
     ListItemTextSecondary
@@ -193,6 +195,14 @@ const BlocksByCategoriesDataList = ({ canCreate }: PageBuilderBlocksByCategories
         }
     };
 
+    const handleNewBlockClick = useCallback(() => {
+        if (selectedBlocksCategory) {
+            onCreatePageBlock(selectedBlocksCategory);
+        } else {
+            setIsNewPageBlockDialogOpen(true);
+        }
+    }, [selectedBlocksCategory]);
+
     return (
         <>
             <DataList
@@ -201,7 +211,7 @@ const BlocksByCategoriesDataList = ({ canCreate }: PageBuilderBlocksByCategories
                 data={categoryList}
                 actions={
                     canCreate ? (
-                        <ButtonSecondary onClick={() => setIsNewPageBlockDialogOpen(true)}>
+                        <ButtonSecondary onClick={handleNewBlockClick}>
                             <ButtonIcon icon={<AddIcon />} /> {t`New Block`}
                         </ButtonSecondary>
                     ) : null
@@ -237,14 +247,16 @@ const BlocksByCategoriesDataList = ({ canCreate }: PageBuilderBlocksByCategories
                                 <ListItem
                                     key={item.slug}
                                     selected={item.slug === selectedBlocksCategory}
+                                    onClick={() =>
+                                        history.push(
+                                            `/page-builder/page-blocks?category=${item.slug}`
+                                        )
+                                    }
                                 >
-                                    <ListItemText
-                                        onClick={() =>
-                                            history.push(
-                                                `/page-builder/page-blocks?category=${item.slug}`
-                                            )
-                                        }
-                                    >
+                                    <ListItemGraphic>
+                                        <Icon category={item} />
+                                    </ListItemGraphic>
+                                    <ListItemText>
                                         {item.name}
                                         <ListItemTextSecondary>{`${numberOfBlocks} ${
                                             numberOfBlocks === 1 ? "block" : "blocks"
