@@ -1,9 +1,9 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { Helmet } from "react-helmet";
 
 const parseHeaderTags = (str?: string) => {
     if (!str) {
-        return null;
+        return [];
     }
 
     const dom = new DOMParser().parseFromString(str, "text/html");
@@ -29,23 +29,34 @@ const parseHeaderTags = (str?: string) => {
 
 const parseFooterTags = (str?: string) => {
     if (!str) {
-        return null;
+        return [];
     }
 
     const dom = new DOMParser().parseFromString(str, "text/html");
-    return dom.documentElement.querySelectorAll("script");
+    const elements = dom.documentElement.querySelectorAll("script");
+    const parsedElementsArray: Element[] = [];
+
+    elements.forEach(el => {
+        const newElement = document.createElement("script");
+        [...el.attributes].forEach(({ name, value }) => newElement.setAttribute(name, value));
+        newElement.innerHTML = el.innerHTML;
+
+        parsedElementsArray.push(newElement);
+    });
+
+    return parsedElementsArray;
 };
 
-const appendToBody = (elements: NodeListOf<Element> | null) => {
-    elements?.forEach(element => {
-        document.body.appendChild(element);
-    });
+const appendToBody = (elements: Element[]) => {
+    for (const element of elements) {
+        document.body.append(element);
+    }
 };
 
-const removeFromBody = (elements: NodeListOf<Element> | null) => {
-    elements?.forEach(element => {
-        document.body.removeChild(element);
-    });
+const removeFromBody = (elements: Element[]) => {
+    for (const element of elements) {
+        element.remove();
+    }
 };
 
 type WebsiteScriptsProps = {
@@ -54,7 +65,9 @@ type WebsiteScriptsProps = {
 };
 
 const WebsiteScripts: React.FC<WebsiteScriptsProps> = ({ headerTags, footerTags }) => {
-    const htmlHeadTags = parseHeaderTags(headerTags);
+    const htmlHeadTags = useMemo(() => {
+        return parseHeaderTags(headerTags);
+    }, [headerTags]);
 
     useEffect(() => {
         const htmlFooterTags = parseFooterTags(footerTags);
