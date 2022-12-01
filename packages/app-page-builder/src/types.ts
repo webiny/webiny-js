@@ -171,6 +171,7 @@ export type PbElementDataType = {
         clickHandler: string;
         actionType: string;
         variables: PbButtonElementClickHandlerVariable[];
+        scrollToElement: string;
     };
     settings?: PbElementDataSettingsType;
     // this needs to be any since editor can be changed

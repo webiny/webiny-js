@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Radio, RadioGroup } from "@webiny/ui/Radio";
 import { css } from "emotion";
 import { merge } from "dot-prop-immutable";
@@ -9,11 +9,13 @@ import { validation } from "@webiny/validation";
 import { withActiveElement } from "../../../components";
 import { DelayedOnChange } from "@webiny/ui/DelayedOnChange";
 import {
+    PbElement,
     PbButtonElementClickHandlerPlugin,
     PbEditorElement,
     PbEditorPageElementSettingsRenderComponentProps
 } from "~/types";
 import { plugins } from "@webiny/plugins";
+import { getElementsPropertiesValues } from "~/render/utils";
 
 // Components
 import Accordion from "../components/Accordion";
@@ -21,6 +23,7 @@ import Wrapper from "../components/Wrapper";
 import InputField from "../components/InputField";
 import SelectField from "../components/SelectField";
 import { useUpdateElement } from "~/editor/hooks/useUpdateElement";
+import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 
 const classes = {
     gridClass: css({
@@ -45,6 +48,8 @@ const ActionSettingsComponent: React.FC<ActionSettingsPropsType> = ({
     defaultAccordionValue
 }) => {
     const updateElement = useUpdateElement();
+    const { getElementTree } = useEventActionHandler();
+    const [elementIds, setElementIds] = useState<Array<string>>([""]);
 
     // Let's preserve backwards compatibility by extracting href and newTab properties from deprecated
     //  "link" element object if it exists, otherwise we'll use the newer "action" element object
@@ -59,7 +64,7 @@ const ActionSettingsComponent: React.FC<ActionSettingsPropsType> = ({
         newTab = element.data?.action?.newTab || false;
     }
 
-    const { clickHandler, actionType, variables } = element.data?.action || {};
+    const { clickHandler, actionType, variables, scrollToElement } = element.data?.action || {};
 
     const updateSettings = (data: Record<string, string>): void => {
         const attrKey = `data.action`;
@@ -78,15 +83,27 @@ const ActionSettingsComponent: React.FC<ActionSettingsPropsType> = ({
         return clickHandlers.find(handler => clickHandler === handler.name);
     }, [clickHandler]);
 
+    useEffect(() => {
+        const getElementIds = async () => {
+            const tree = (await getElementTree()) as PbElement;
+            setElementIds(getElementsPropertiesValues(tree, "data.settings.property.id"));
+        };
+
+        if (actionType === "scrollToElement") {
+            getElementIds();
+        }
+    }, [actionType]);
+
     return (
         <Accordion title={"Action"} defaultValue={defaultAccordionValue}>
             <Form
-                data={{ href, newTab, clickHandler, actionType, variables }}
+                data={{ href, newTab, clickHandler, actionType, variables, scrollToElement }}
                 onChange={updateSettings}
             >
                 {({ Bind }) => {
                     const actionTypeOptions = [
                         { id: "link", name: "Link" },
+                        { id: "scrollToElement", name: "Scroll to element" },
                         { id: "onClickHandler", name: "Click Handler" }
                     ];
 
@@ -110,7 +127,7 @@ const ActionSettingsComponent: React.FC<ActionSettingsPropsType> = ({
                                     </RadioGroup>
                                 </Bind>
                             </Wrapper>
-                            {actionType === "onClickHandler" ? (
+                            {actionType === "onClickHandler" && (
                                 <>
                                     <Bind name={"clickHandler"}>
                                         {({ value, onChange }) => (
@@ -176,7 +193,32 @@ const ActionSettingsComponent: React.FC<ActionSettingsPropsType> = ({
                                         </Bind>
                                     </Wrapper>
                                 </>
-                            ) : (
+                            )}
+                            {actionType === "scrollToElement" && (
+                                <>
+                                    <Bind name={"scrollToElement"}>
+                                        {({ value, onChange }) => (
+                                            <Wrapper
+                                                label={"Element ID"}
+                                                containerClassName={classes.gridClass}
+                                            >
+                                                <SelectField
+                                                    value={value}
+                                                    onChange={onChange}
+                                                    placeholder={"Select id"}
+                                                >
+                                                    {elementIds.map((item, index) => (
+                                                        <option key={index} value={item}>
+                                                            {item}
+                                                        </option>
+                                                    ))}
+                                                </SelectField>
+                                            </Wrapper>
+                                        )}
+                                    </Bind>
+                                </>
+                            )}
+                            {actionType !== "onClickHandler" && actionType !== "scrollToElement" && (
                                 <>
                                     <Wrapper label={"URL"} containerClassName={classes.gridClass}>
                                         <Bind
