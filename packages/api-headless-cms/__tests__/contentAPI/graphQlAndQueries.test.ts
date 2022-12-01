@@ -7,7 +7,8 @@ const categories = [
     "Webiny Page Builder",
     "Webiny Form Builder",
     "File Manager Webiny",
-    "Localization"
+    "Localization",
+    "Webiny Page and Form Builder and CMS"
 ];
 
 const getIt = (name = "") => {
@@ -123,7 +124,8 @@ describe(`graphql "and" queries`, () => {
                         title_contains: "builder"
                     }
                 ]
-            }
+            },
+            sort: ["createdOn_ASC"]
         });
 
         expect(multipleRootCategoriesResponse).toMatchObject({
@@ -131,14 +133,17 @@ describe(`graphql "and" queries`, () => {
                 listCategories: {
                     data: [
                         {
+                            title: "Webiny Page Builder"
+                        },
+                        {
                             title: "Webiny Form Builder"
                         },
                         {
-                            title: "Webiny Page Builder"
+                            title: "Webiny Page and Form Builder and CMS"
                         }
                     ],
                     meta: {
-                        totalCount: 2,
+                        totalCount: 3,
                         cursor: null,
                         hasMoreItems: false
                     },
@@ -157,7 +162,8 @@ describe(`graphql "and" queries`, () => {
                         title_contains: "builder"
                     }
                 ]
-            }
+            },
+            sort: ["createdOn_ASC"]
         });
 
         expect(multipleCategoriesResponse).toMatchObject({
@@ -165,14 +171,17 @@ describe(`graphql "and" queries`, () => {
                 listCategories: {
                     data: [
                         {
+                            title: "Webiny Page Builder"
+                        },
+                        {
                             title: "Webiny Form Builder"
                         },
                         {
-                            title: "Webiny Page Builder"
+                            title: "Webiny Page and Form Builder and CMS"
                         }
                     ],
                     meta: {
-                        totalCount: 2,
+                        totalCount: 3,
                         cursor: null,
                         hasMoreItems: false
                     },
@@ -183,7 +192,7 @@ describe(`graphql "and" queries`, () => {
     });
 
     it(`should filter via nested "AND" conditions and return records`, async () => {
-        const [categoryResponse] = await listCategories({
+        const [singleCategoryResponse] = await listCategories({
             where: {
                 title_contains: "cms",
                 AND: [
@@ -206,12 +215,53 @@ describe(`graphql "and" queries`, () => {
             }
         });
 
-        expect(categoryResponse).toMatchObject({
+        expect(singleCategoryResponse).toMatchObject({
             data: {
                 listCategories: {
                     data: [
                         {
                             title: "Webiny Headless CMS Project"
+                        }
+                    ],
+                    meta: {
+                        totalCount: 1,
+                        cursor: null,
+                        hasMoreItems: false
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [multipleCategoriesResponse] = await listCategories({
+            where: {
+                title_contains: "builder",
+                AND: [
+                    {
+                        title_contains: "form",
+                        AND: [
+                            {
+                                title_contains: "cms"
+                            }
+                        ]
+                    },
+                    {
+                        AND: [
+                            {
+                                title_contains: "webiny"
+                            }
+                        ]
+                    }
+                ]
+            }
+        });
+
+        expect(multipleCategoriesResponse).toMatchObject({
+            data: {
+                listCategories: {
+                    data: [
+                        {
+                            title: "Webiny Page and Form Builder and CMS"
                         }
                     ],
                     meta: {
