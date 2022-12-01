@@ -7,7 +7,8 @@ import get from "lodash/get";
 import { plugins } from "@webiny/plugins";
 import { FileUploaderPlugin } from "@webiny/app/types";
 import domToImage from "~/editor/plugins/elementSettings/save/SaveDialog/domToImage";
-import { CREATE_FILE } from "~/editor/plugins/elementSettings/save/SaveDialog/graphql";
+import { CREATE_FILE, DELETE_FILE } from "~/editor/plugins/elementSettings/save/SaveDialog/graphql";
+import { File, PbElement, EventActionHandlerMeta } from "~/types";
 
 interface ImageDimensionsType {
     width: number;
@@ -23,16 +24,15 @@ function getDataURLImageDimensions(dataURL: string): Promise<ImageDimensionsType
     });
 }
 
-interface createdImageType {
-    data: any;
-}
-export default async function getPreviewImage(element: any, meta: any): Promise<createdImageType> {
+export async function getPreviewImage(
+    element: PbElement,
+    meta: EventActionHandlerMeta,
+    prevFileId?: string
+): Promise<File | null> {
     const node = document.getElementById(element.id);
 
     if (!node) {
-        return {
-            data: {}
-        };
+        return null;
     }
 
     const editor = document.querySelector(".pb-editor");
@@ -54,9 +54,7 @@ export default async function getPreviewImage(element: any, meta: any): Promise<
      * We break the method because it would break if there is no fileUploaderPlugin.
      */
     if (!fileUploaderPlugin) {
-        return {
-            data: {}
-        };
+        return null;
     }
     const previewImage = await fileUploaderPlugin.upload(blob, { apolloClient: meta.client });
     previewImage.meta = imageMeta;
@@ -69,5 +67,15 @@ export default async function getPreviewImage(element: any, meta: any): Promise<
         }
     });
 
-    return get(createdImageResponse, "data.fileManager.createFile", {});
+    // Delete previous preview image file
+    if (prevFileId) {
+        await meta.client.mutate({
+            mutation: DELETE_FILE,
+            variables: {
+                id: prevFileId
+            }
+        });
+    }
+
+    return get(createdImageResponse, "data.fileManager.createFile.data", null);
 }
