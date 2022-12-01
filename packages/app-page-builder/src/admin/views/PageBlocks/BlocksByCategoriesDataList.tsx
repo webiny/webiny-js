@@ -6,7 +6,6 @@ import { useQuery, useApolloClient } from "@apollo/react-hooks";
 import orderBy from "lodash/orderBy";
 import isEmpty from "lodash/isEmpty";
 import get from "lodash/get";
-import { Icon } from "~/admin/utils/createBlockCategoryPlugin";
 
 import {
     DataList,
@@ -29,6 +28,7 @@ import { ButtonDefault, ButtonIcon, ButtonSecondary } from "@webiny/ui/Button";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
+import { Icon } from "~/admin/utils/createBlockCategoryPlugin";
 
 import { PbBlockCategory, PbPageBlock } from "~/types";
 import { LIST_PAGE_BLOCKS_AND_CATEGORIES, LIST_PAGE_BLOCKS, CREATE_PAGE_BLOCK } from "./graphql";
@@ -291,6 +291,9 @@ const BlocksByCategoriesDataList = ({ canCreate }: PageBuilderBlocksByCategories
                                         key={item.slug}
                                         onClick={() => onCreatePageBlock(item.slug)}
                                     >
+                                        <ListItemGraphic>
+                                            <Icon category={item} />
+                                        </ListItemGraphic>
                                         <ListItemText>
                                             <ListItemTextPrimary>{item.name}</ListItemTextPrimary>
                                             <ListItemTextSecondary>
