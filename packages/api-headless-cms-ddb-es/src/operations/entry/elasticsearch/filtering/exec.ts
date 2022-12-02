@@ -11,6 +11,7 @@ import { getValues } from "./values";
 import { getPopulated } from "./populated";
 import { createApplyFiltering } from "./applyFiltering";
 import { isRefFieldFiltering } from "~/operations/entry/elasticsearch/filtering/isRefFieldFiltering";
+import { Query } from "elastic-ts";
 
 export interface CreateExecParams {
     model: CmsModel;
@@ -47,13 +48,32 @@ export const createExecFiltering = (params: CreateExecParams): CreateExecFilteri
     });
 
     const execFiltering = (params: ExecParams) => {
-        const { where, query } = params;
+        const { where: initialWhere, query } = params;
         /**
          * No point in continuing if no "where" conditions exist.
          */
-        if (Object.keys(where).length === 0) {
+        if (Object.keys(initialWhere).length === 0) {
             return;
         }
+        const where = {
+            ...initialWhere
+        };
+        /**
+         * If there is an OR condition in where, move all filters which are not OR into that given condition.
+         */
+        // if (where.OR) {
+        //     const andWhere: CmsEntryListWhere = {};
+        //     for (const key in where) {
+        //         if (key === "OR") {
+        //             continue;
+        //         }
+        //         where.OR.push({
+        //             [key]: where[key]
+        //         });
+        //         delete where[key];
+        //     }
+        // }
+
         for (const key in where) {
             const value = where[key] as unknown as any;
             /**
@@ -107,20 +127,19 @@ export const createExecFiltering = (params: CreateExecParams): CreateExecFilteri
                 if (Object.keys(childQueryBool).length === 0) {
                     continue;
                 }
-                /**
-                 * We always need to have AT least one match in the child query.
-                 */
-                if (childQueryBool.should?.length) {
-                    childQueryBool.minimum_should_match = 1;
-                }
+
                 /**
                  * Assign child queries.
                  */
-                query.should.push({
-                    bool: {
-                        ...childQueryBool
-                    }
-                });
+                const should: Query[] = [];
+
+                for (const key in childQueryBool) {
+                    should.push(...(childQueryBool as any)[key]);
+                }
+                query.should.push(...should);
+                if (query.should.length > 1) {
+                    query.minimum_should_match = 1;
+                }
                 continue;
             }
             const { field: whereFieldId, operator } = parseWhereKey(key);
