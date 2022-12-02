@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Radio, RadioGroup } from "@webiny/ui/Radio";
 import { css } from "emotion";
 import { merge } from "dot-prop-immutable";
 import { Switch } from "@webiny/ui/Switch";
@@ -104,29 +103,27 @@ const ActionSettingsComponent: React.FC<ActionSettingsPropsType> = ({
                     const actionTypeOptions = [
                         { id: "link", name: "Link" },
                         { id: "scrollToElement", name: "Scroll to element" },
-                        { id: "onClickHandler", name: "Click Handler" }
+                        { id: "onClickHandler", name: "Click handler" }
                     ];
 
                     return (
                         <>
-                            <Wrapper label={"Action Type"} containerClassName={classes.gridClass}>
-                                <Bind name="actionType" defaultValue={actionTypeOptions[0].id}>
-                                    <RadioGroup label="Select the button's action type">
-                                        {({ onChange, getValue }) => (
-                                            <React.Fragment>
-                                                {actionTypeOptions.map(({ id, name }) => (
-                                                    <Radio
-                                                        key={id}
-                                                        label={name}
-                                                        value={getValue(id)}
-                                                        onChange={onChange(id)}
-                                                    />
-                                                ))}
-                                            </React.Fragment>
-                                        )}
-                                    </RadioGroup>
-                                </Bind>
-                            </Wrapper>
+                            <Bind name="actionType" defaultValue={actionTypeOptions[0].id}>
+                                {({ value, onChange }) => (
+                                    <Wrapper
+                                        label={"Action Type"}
+                                        containerClassName={classes.gridClass}
+                                    >
+                                        <SelectField value={value} onChange={onChange}>
+                                            {actionTypeOptions.map(item => (
+                                                <option key={item.id} value={item.id}>
+                                                    {item.name}
+                                                </option>
+                                            ))}
+                                        </SelectField>
+                                    </Wrapper>
+                                )}
+                            </Bind>
                             {actionType === "onClickHandler" && (
                                 <>
                                     <Bind name={"clickHandler"}>
@@ -205,7 +202,7 @@ const ActionSettingsComponent: React.FC<ActionSettingsPropsType> = ({
                                                 <SelectField
                                                     value={value}
                                                     onChange={onChange}
-                                                    placeholder={"Select id"}
+                                                    placeholder={"None"}
                                                 >
                                                     {elementIds.map((item, index) => (
                                                         <option key={index} value={item}>
