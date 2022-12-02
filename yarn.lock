@@ -5455,6 +5455,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@material-symbols/svg-400@npm:^0.4.1":
+  version: 0.4.1
+  resolution: "@material-symbols/svg-400@npm:0.4.1"
+  checksum: 5f1dee6652b5621c768f2ca3d2feb0f9f17faef334ff98b581436cf0476cf5df616d5f6d980cb6e1d759ebc56fea9fe7eba9ae870c4c83ce90e0b035184a9624
+  languageName: node
+  linkType: hard
+
 "@material/animation@npm:^5.1.0":
   version: 5.1.0
   resolution: "@material/animation@npm:5.1.0"
@@ -11904,6 +11911,7 @@ __metadata:
     "@emotion/core": ^10.0.27
     "@emotion/styled": ^10.0.27
     "@material-design-icons/svg": ^0.12.1
+    "@material-symbols/svg-400": ^0.4.1
     "@minoru/react-dnd-treeview": 3.2.1
     "@types/react": 17.0.39
     "@webiny/app": ^5.33.2

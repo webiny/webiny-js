@@ -55,8 +55,8 @@ const createTreeData = (
 
 const createInitialOpenList = (
     folders: FolderItem[] = [],
-    focusedId?: string,
-    openIds: NodeModel<DndItemData>["id"][] = []
+    openIds: NodeModel<DndItemData>["id"][] = [],
+    focusedId?: string
 ): InitialOpen | undefined => {
     const focusedFolder = folders.find(folder => {
         return folder.id === focusedId;
@@ -118,9 +118,9 @@ export const FolderTree: React.FC<Props> = ({
     useDeepCompareEffect(() => {
         if (folders) {
             setTreeData(createTreeData(folders, focusedFolderId));
-            setInitialOpenList(createInitialOpenList(folders, focusedFolderId, openFolderIds));
+            setInitialOpenList(createInitialOpenList(folders, openFolderIds, focusedFolderId));
         }
-    }, [Object.assign({}, folders), focusedFolderId, openFolderIds]);
+    }, [Object.assign({}, folders), focusedFolderId]);
 
     const handleDrop = async (
         newTree: NodeModel<DndItemData>[],
