@@ -1,4 +1,4 @@
-import React, { CSSProperties, useMemo } from "react";
+import React, { CSSProperties, useCallback, useMemo } from "react";
 import kebabCase from "lodash/kebabCase";
 import { plugins } from "@webiny/plugins";
 import { ElementRoot } from "../../../components/ElementRoot";
@@ -80,6 +80,19 @@ const Button: React.FC<ButtonProps> = ({ element }) => {
         </>
     );
 
+    const scrollIntoView = useCallback(() => {
+        if (action.scrollToElement && typeof window !== "undefined") {
+            // Get element coordinates to calculate scrollTo position
+            const elementBounding =
+                window.document.getElementById(action.scrollToElement)?.getBoundingClientRect()
+                    ?.top || 0;
+            // Scroll to element with fixed offset
+            window.scrollTo({
+                top: elementBounding - window.document.body.getBoundingClientRect().top - 100
+            });
+        }
+    }, [action.scrollToElement]);
+
     return (
         <ElementRoot className={"webiny-pb-base-page-element-style"} element={element}>
             {({ getAllClasses, elementStyle, elementAttributes }) => {
@@ -93,7 +106,7 @@ const Button: React.FC<ButtonProps> = ({ element }) => {
                     ];
                 return (
                     <>
-                        {action.actionType === "onClickHandler" ? (
+                        {action.actionType === "onClickHandler" && (
                             <div
                                 style={{ display: "flex", justifyContent } as any}
                                 onClick={clickHandler}
@@ -106,23 +119,39 @@ const Button: React.FC<ButtonProps> = ({ element }) => {
                                     {content}
                                 </div>
                             </div>
-                        ) : (
-                            <div style={{ display: "flex", justifyContent } as any}>
-                                <Link
-                                    to={href || "/"}
-                                    target={newTab ? "_blank" : "_self"}
-                                    style={
-                                        !href
-                                            ? { ...elementStyle, pointerEvents: "none" }
-                                            : elementStyle
-                                    }
+                        )}
+                        {action.actionType === "scrollToElement" && (
+                            <div
+                                style={{ display: "flex", justifyContent } as any}
+                                onClick={scrollIntoView}
+                            >
+                                <div
+                                    style={elementStyle}
                                     {...elementAttributes}
                                     className={getAllClasses(...classes)}
                                 >
                                     {content}
-                                </Link>
+                                </div>
                             </div>
                         )}
+                        {action.actionType !== "onClickHandler" &&
+                            action.actionType !== "scrollToElement" && (
+                                <div style={{ display: "flex", justifyContent } as any}>
+                                    <Link
+                                        to={href || "/"}
+                                        target={newTab ? "_blank" : "_self"}
+                                        style={
+                                            !href
+                                                ? { ...elementStyle, pointerEvents: "none" }
+                                                : elementStyle
+                                        }
+                                        {...elementAttributes}
+                                        className={getAllClasses(...classes)}
+                                    >
+                                        {content}
+                                    </Link>
+                                </div>
+                            )}
                     </>
                 );
             }}
