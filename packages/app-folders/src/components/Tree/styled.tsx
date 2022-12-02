@@ -8,7 +8,7 @@ export const Container = styled("div")`
     }
 
     & .dropTarget {
-        background: var(--webiny-theme-color-background);
+        background: var(--mdc-theme-background);
     }
 
     & .draggingSource {

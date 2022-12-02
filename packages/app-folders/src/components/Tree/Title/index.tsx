@@ -1,8 +1,9 @@
 import React from "react";
 
-import { ReactComponent as Dashboard } from "@material-design-icons/svg/filled/auto_awesome_motion.svg";
+import { ReactComponent as Dashboard } from "@material-design-icons/svg/filled/home.svg";
 
-import { Container, IconContainer, Label } from "./styled";
+import { Container, IconContainer } from "./styled";
+import { Typography } from "@webiny/ui/Typography";
 
 type Props = {
     title: string;
@@ -12,12 +13,10 @@ type Props = {
 export const Title: React.FC<Props> = ({ title, onClick }) => {
     return (
         <Container onClick={onClick} hasClickAction={Boolean(onClick)}>
-            <>
-                <IconContainer>
-                    <Dashboard />
-                </IconContainer>
-                <Label>{title}</Label>
-            </>
+            <IconContainer>
+                <Dashboard />
+            </IconContainer>
+            <Typography use={"subtitle2"}>{title}</Typography>
         </Container>
     );
 };

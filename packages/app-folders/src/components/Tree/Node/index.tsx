@@ -1,6 +1,7 @@
 import React from "react";
-import { ReactComponent as ArrowRight } from "@material-design-icons/svg/filled/arrow_right.svg";
-import { ReactComponent as Folder } from "@material-design-icons/svg/filled/folder.svg";
+import { ReactComponent as ArrowRight } from "@material-symbols/svg-400/outlined/arrow_right.svg";
+import { ReactComponent as Folder } from "@material-symbols/svg-400/outlined/folder-fill.svg";
+import { ReactComponent as FolderOpen } from "@material-symbols/svg-400/outlined/folder_open-fill.svg";
 import { NodeModel, useDragOver } from "@minoru/react-dnd-treeview";
 
 import { MenuActions } from "~/components/Tree/MenuActions";
@@ -19,8 +20,29 @@ type Props = {
     onDeleteFolder: (data: NodeModel<DndItemData>["data"]) => void;
 };
 
-export const Node: React.FC<Props> = props => {
-    const { node, depth, isOpen, onToggle, onClick, onUpdateFolder, onDeleteFolder } = props;
+type FolderProps = {
+    text: string;
+    isOpen: boolean;
+};
+
+export const FolderNode = ({ isOpen, text }: FolderProps) => {
+    return (
+        <>
+            <FolderIcon>{isOpen ? <FolderOpen /> : <Folder />}</FolderIcon>
+            <Text use={"subtitle2"}>{text}</Text>
+        </>
+    );
+};
+
+export const Node = ({
+    node,
+    depth,
+    isOpen,
+    onToggle,
+    onClick,
+    onUpdateFolder,
+    onDeleteFolder
+}: Props) => {
     const indent = depth * 24 + 8;
 
     const dragOverProps = useDragOver(node.id, isOpen, onToggle);
@@ -45,10 +67,7 @@ export const Node: React.FC<Props> = props => {
                 <ArrowRight />
             </ArrowIcon>
             <Content onClick={handleClick}>
-                <FolderIcon>
-                    <Folder />
-                </FolderIcon>
-                <Text>{node.text}</Text>
+                <FolderNode text={node.text} isOpen={isOpen} />
             </Content>
             {node.data && (
                 <MenuActions

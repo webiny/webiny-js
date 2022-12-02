@@ -7,19 +7,14 @@ type ContainerProps = {
 export const Container = styled("div")<ContainerProps>`
     display: flex;
     align-items: center;
-    color: var(--webiny-theme-color-text-primary);
+    color: var(--webiny-theme-color-text-secondary);
     fill: currentColor;
     padding: 8px;
     cursor: ${({ hasClickAction }) => hasClickAction && "pointer"};
 `;
 
 export const IconContainer = styled.div`
-    margin-right: 8px;
+    margin-right: 4px;
     height: 24px;
     width: 24px;
-`;
-
-export const Label = styled.strong`
-    text-transform: uppercase;
-    font-size: 0.75rem;
 `;
