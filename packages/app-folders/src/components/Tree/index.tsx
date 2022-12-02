@@ -63,7 +63,7 @@ const createInitialOpenList = (
     });
 
     if (!focusedId || !focusedFolder?.parentId) {
-        return;
+        return openIds;
     }
 
     const findParents = (
