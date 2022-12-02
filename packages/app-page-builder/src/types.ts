@@ -23,6 +23,20 @@ export enum PageImportExportTaskStatus {
     COMPLETED = "completed",
     FAILED = "failed"
 }
+
+// TODO: for Webiny core team: create this type in the app-file-manager
+export interface File {
+    id: string;
+    name: string;
+    key: string;
+    src: string;
+    size: number;
+    type: string;
+    tags: string[];
+    meta: Record<string, any>;
+    createdOn: string;
+}
+
 export type PbElementDataSettingsSpacingValueType = {
     all?: string;
     top?: string;
@@ -158,6 +172,7 @@ export type PbElementDataType = {
         clickHandler: string;
         actionType: string;
         variables: PbButtonElementClickHandlerVariable[];
+        scrollToElement: string;
     };
     settings?: PbElementDataSettingsType;
     // this needs to be any since editor can be changed
@@ -581,14 +596,7 @@ export type PbEditorBlockPlugin = Plugin & {
     title: string;
     blockCategory: string;
     tags: string[];
-    image: {
-        src?: string;
-        meta: {
-            width: number;
-            height: number;
-            aspectRatio: number;
-        };
-    };
+    image: Partial<File>;
     create(): PbEditorElement;
     preview(): ReactElement;
 };
@@ -617,7 +625,7 @@ export type PbEditorPageElementAdvancedSettingsPlugin = Plugin & {
     type: "pb-editor-page-element-advanced-settings";
     elementType: string;
     render(params: { Bind: BindComponent; data: any; submit: () => void }): ReactElement;
-    onSave?: (data: FormData) => FormData;
+    onSave?: (data: FormData) => Promise<FormData>;
 };
 
 export type PbEditorEventActionPlugin = Plugin & {
@@ -819,14 +827,7 @@ export interface PbPageBlock {
     name: string;
     blockCategory: string;
     content: any;
-    preview: {
-        src: string;
-        meta: {
-            width: number;
-            height: number;
-            aspectRatio: number;
-        };
-    };
+    preview: File;
     createdOn: string;
     createdBy: PbIdentity;
 }

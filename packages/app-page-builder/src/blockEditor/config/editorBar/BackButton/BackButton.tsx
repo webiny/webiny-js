@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { css } from "emotion";
 import { createComponentPlugin } from "@webiny/app-admin";
-import { useRouter } from "@webiny/react-router";
+import { useNavigate } from "@webiny/react-router";
 import { IconButton } from "@webiny/ui/Button";
 import { EditorBar } from "~/editor";
 import { ReactComponent as BackIcon } from "./round-arrow_back-24px.svg";
@@ -12,20 +12,17 @@ const backStyles = css({
 
 export const BackButtonPlugin = createComponentPlugin(EditorBar.BackButton, () => {
     return function BackButton() {
-        const { params, history } = useRouter();
+        const navigate = useNavigate();
 
-        const id = params ? params["id"] : null;
+        const onClick = useCallback(() => {
+            navigate(-1);
+        }, [navigate]);
+
         return (
             <IconButton
                 data-testid="pb-editor-back-button"
                 className={backStyles}
-                onClick={() => {
-                    if (!id) {
-                        console.error("Could not determine block ID from params.");
-                        return;
-                    }
-                    history.push(`/page-builder/page-blocks`);
-                }}
+                onClick={onClick}
                 icon={<BackIcon />}
             />
         );

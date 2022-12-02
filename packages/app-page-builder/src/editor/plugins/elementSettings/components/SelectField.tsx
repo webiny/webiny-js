@@ -49,7 +49,7 @@ interface SelectProps {
 }
 
 const SelectField: React.FC<SelectProps> = ({
-    value,
+    value = "",
     onChange,
     children,
     className,
@@ -73,7 +73,7 @@ const SelectField: React.FC<SelectProps> = ({
                 {...omit(props, "validate")}
             >
                 {placeholder ? (
-                    <option value="" disabled selected hidden>
+                    <option value="" disabled hidden>
                         {placeholder}
                     </option>
                 ) : null}

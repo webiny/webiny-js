@@ -2,11 +2,10 @@
 import lodashDebounce from "lodash/debounce";
 import { plugins } from "@webiny/plugins";
 import { SaveBlockActionArgsType } from "./types";
-import { ToggleSaveBlockStateActionEvent } from "./event";
 import { BlockEventActionCallable } from "~/blockEditor/types";
 import { BlockWithContent } from "~/blockEditor/state";
 import { UPDATE_PAGE_BLOCK } from "~/admin/views/PageBlocks/graphql";
-import getPreviewImage from "./getPreviewImage";
+import { getPreviewImage } from "./getPreviewImage";
 import { removeElementId } from "~/editor/helpers";
 import { PbElement, PbBlockVariable, PbBlockEditorCreateVariablePlugin } from "~/types";
 
@@ -73,7 +72,7 @@ export const saveBlockAction: BlockEventActionCallable<SaveBlockActionArgsType> 
     // See `pageEditor` for an example and feel free to copy that same logic over here.
     const element = (await state.getElementTree()) as PbElement;
     // We need to grab the first block from the "document" element.
-    const createdImage = await getPreviewImage(element.elements[0], meta);
+    const createdImage = await getPreviewImage(element.elements[0], meta, state.block?.preview?.id);
 
     const data: BlockType = {
         name: state.block.name,
@@ -88,15 +87,13 @@ export const saveBlockAction: BlockEventActionCallable<SaveBlockActionArgsType> 
     }
 
     const runSave = async () => {
-        meta.eventActionHandler.trigger(new ToggleSaveBlockStateActionEvent({ saving: true }));
-
         await meta.client.mutate({
             mutation: UPDATE_PAGE_BLOCK,
             variables: {
                 id: state.block.id,
                 data: {
                     ...data,
-                    preview: createdImage.data
+                    preview: createdImage
                 }
             }
         });
@@ -105,9 +102,6 @@ export const saveBlockAction: BlockEventActionCallable<SaveBlockActionArgsType> 
             setTimeout(resolve, 500);
         });
 
-        await meta.eventActionHandler.trigger(
-            new ToggleSaveBlockStateActionEvent({ saving: false })
-        );
         triggerOnFinish(args);
     };
 

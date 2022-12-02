@@ -14,6 +14,7 @@ import {
     ScrollList,
     List,
     ListItem,
+    ListItemGraphic,
     ListItemText,
     ListItemTextPrimary,
     ListItemTextSecondary
@@ -27,6 +28,7 @@ import { ButtonDefault, ButtonIcon, ButtonSecondary } from "@webiny/ui/Button";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
+import { Icon } from "~/admin/utils/createBlockCategoryPlugin";
 
 import { PbBlockCategory, PbPageBlock } from "~/types";
 import { LIST_PAGE_BLOCKS_AND_CATEGORIES, LIST_PAGE_BLOCKS, CREATE_PAGE_BLOCK } from "./graphql";
@@ -193,6 +195,14 @@ const BlocksByCategoriesDataList = ({ canCreate }: PageBuilderBlocksByCategories
         }
     };
 
+    const handleNewBlockClick = useCallback(() => {
+        if (selectedBlocksCategory) {
+            onCreatePageBlock(selectedBlocksCategory);
+        } else {
+            setIsNewPageBlockDialogOpen(true);
+        }
+    }, [selectedBlocksCategory]);
+
     return (
         <>
             <DataList
@@ -201,7 +211,7 @@ const BlocksByCategoriesDataList = ({ canCreate }: PageBuilderBlocksByCategories
                 data={categoryList}
                 actions={
                     canCreate ? (
-                        <ButtonSecondary onClick={() => setIsNewPageBlockDialogOpen(true)}>
+                        <ButtonSecondary onClick={handleNewBlockClick}>
                             <ButtonIcon icon={<AddIcon />} /> {t`New Block`}
                         </ButtonSecondary>
                     ) : null
@@ -237,14 +247,16 @@ const BlocksByCategoriesDataList = ({ canCreate }: PageBuilderBlocksByCategories
                                 <ListItem
                                     key={item.slug}
                                     selected={item.slug === selectedBlocksCategory}
+                                    onClick={() =>
+                                        history.push(
+                                            `/page-builder/page-blocks?category=${item.slug}`
+                                        )
+                                    }
                                 >
-                                    <ListItemText
-                                        onClick={() =>
-                                            history.push(
-                                                `/page-builder/page-blocks?category=${item.slug}`
-                                            )
-                                        }
-                                    >
+                                    <ListItemGraphic>
+                                        <Icon category={item} />
+                                    </ListItemGraphic>
+                                    <ListItemText>
                                         {item.name}
                                         <ListItemTextSecondary>{`${numberOfBlocks} ${
                                             numberOfBlocks === 1 ? "block" : "blocks"
@@ -279,6 +291,9 @@ const BlocksByCategoriesDataList = ({ canCreate }: PageBuilderBlocksByCategories
                                         key={item.slug}
                                         onClick={() => onCreatePageBlock(item.slug)}
                                     >
+                                        <ListItemGraphic>
+                                            <Icon category={item} />
+                                        </ListItemGraphic>
                                         <ListItemText>
                                             <ListItemTextPrimary>{item.name}</ListItemTextPrimary>
                                             <ListItemTextSecondary>

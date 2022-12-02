@@ -13,6 +13,7 @@ import {
     DataListModalOverlayAction,
     ScrollList,
     ListItem,
+    ListItemGraphic,
     ListItemText,
     ListItemMeta,
     ListActions,
@@ -28,6 +29,7 @@ import SearchUI from "@webiny/app-admin/components/SearchUI";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
 import { PageBuilderSecurityPermission, PbBlockCategory } from "~/types";
+import { Icon } from "~/admin/utils/createBlockCategoryPlugin";
 
 const t = i18n.ns("app-page-builder/admin/block-categories/data-list");
 
@@ -205,12 +207,17 @@ const PageBuilderBlockCategoriesDataList = ({
             {({ data }: { data: PbBlockCategory[] }) => (
                 <ScrollList data-testid="default-data-list">
                     {data.map(item => (
-                        <ListItem key={item.slug} selected={item.slug === slug}>
-                            <ListItemText
-                                onClick={() =>
-                                    history.push(`/page-builder/block-categories?slug=${item.slug}`)
-                                }
-                            >
+                        <ListItem
+                            key={item.slug}
+                            selected={item.slug === slug}
+                            onClick={() =>
+                                history.push(`/page-builder/block-categories?slug=${item.slug}`)
+                            }
+                        >
+                            <ListItemGraphic>
+                                <Icon category={item} />
+                            </ListItemGraphic>
+                            <ListItemText>
                                 {item.name}
                                 <ListItemTextSecondary>
                                     {item.description || t`No description provided.`}
