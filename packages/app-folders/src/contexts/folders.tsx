@@ -130,14 +130,21 @@ export const FoldersProvider = ({ children }: Props) => {
         },
 
         async updateFolder(folder) {
-            const { id, type, ...rest } = folder;
+            const { id, type, name, slug, parentId } = folder;
 
             const { data: response } = await apolloFetchingHandler(
                 () => loadingHandler(type, "UPDATE_FOLDER", setLoading),
                 () =>
                     client.mutate<UpdateFolderResponse, UpdateFolderVariables>({
                         mutation: UPDATE_FOLDER,
-                        variables: { id, data: rest }
+                        variables: {
+                            id,
+                            data: {
+                                name,
+                                slug,
+                                parentId
+                            }
+                        }
                     })
             );
 

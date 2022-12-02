@@ -10,7 +10,7 @@ interface IconProps {
     element: PbElement;
 }
 const Icon: React.FC<IconProps> = ({ element }) => {
-    const { svg = null } = get(element, "data.icon", {});
+    const { svg = null } = get(element, "data.icon", {}) as unknown as { svg?: string };
 
     if (!svg) {
         return null;

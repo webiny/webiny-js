@@ -4,6 +4,7 @@ import { LinkItem } from "~/types";
 
 export const useLinks = (folderId: string) => {
     const context = useContext(LinksContext);
+
     if (!context) {
         throw new Error("useFoldersLinks must be used within a FoldersProvider");
     }
@@ -16,7 +17,7 @@ export const useLinks = (folderId: string) => {
          * We don't need to store the result of it to any local state; that is managed by the context provider.
          */
         listLinks(folderId);
-    }, []);
+    }, [folderId]);
 
     return useMemo(
         () => ({
@@ -26,7 +27,7 @@ export const useLinks = (folderId: string) => {
              * fetching of `links`, which is managed by the LinksContext.
              */
             loading: loading[folderId] || {},
-            links,
+            links: links.filter(link => link.folderId === folderId),
             getLink(id: string) {
                 return getLink(id, folderId);
             },

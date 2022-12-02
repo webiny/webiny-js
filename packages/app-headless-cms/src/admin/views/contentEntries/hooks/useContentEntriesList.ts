@@ -94,7 +94,7 @@ export function useContentEntriesList() {
 
     // Load more entries on scroll
     const loadMore = useCallback((): void => {
-        const meta: CmsMetaResponse = get(data, "content.meta", {});
+        const meta = get(data, "content.meta", {}) as unknown as CmsMetaResponse;
         if (meta.hasMoreItems) {
             setLoadMoreLoading(true);
             fetchMore({

@@ -21,11 +21,13 @@
     "@fortawesome/free-regular-svg-icons": "^6.0.0",
     "@fortawesome/free-solid-svg-icons": "^6.0.0",
     "@fortawesome/react-fontawesome": "^0.1.17",
+    "@material-design-icons/svg": "^0.12.1",
     "@svgr/webpack": "^6.1.1",
     "@types/medium-editor": "^5.0.3",
     "@types/react": "17.0.39",
     "@webiny/app": "^5.33.2",
     "@webiny/app-admin": "^5.33.2",
+    "@webiny/app-folders": "^5.33.2",
     "@webiny/app-i18n": "^5.33.2",
     "@webiny/app-page-builder-elements": "^5.33.2",
     "@webiny/app-plugin-admin-welcome-screen": "^5.33.2",
@@ -74,6 +76,7 @@
     "store": "^2.0.12",
     "timeago-react": "^2.0.0",
     "uniqid": "^5.0.3",
+    "use-deep-compare-effect": "^1.6.1",
     "warning": "^4.0.2"
   },
   "devDependencies": {

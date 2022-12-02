@@ -28,7 +28,7 @@ export const CREATE_LINK = gql`
 `;
 
 export const LIST_LINKS = gql`
-    query ListFolders ($folderId: ID!) {
+    query ListLinks ($folderId: ID!) {
         folders {
             listLinks(where: { folderId: $folderId }) {
                 data ${DATA_FIELD}

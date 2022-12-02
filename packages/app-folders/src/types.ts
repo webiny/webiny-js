@@ -4,6 +4,11 @@ export interface FolderItem {
     slug: string;
     type: string;
     parentId: string | null;
+    createdOn: string;
+    createdBy: {
+        id: string;
+        displayName: string;
+    };
 }
 
 export interface LinkItem {

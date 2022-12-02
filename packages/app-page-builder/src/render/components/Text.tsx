@@ -19,15 +19,16 @@ const TextElement: React.FC<TextPropsType> = ({ element, rootClassName }) => {
 
     const fallbackValue = useMemo(
         () =>
-            applyFallbackDisplayMode(displayMode as DisplayMode, mode =>
-                get(element, `${DATA_NAMESPACE}.${mode}`)
+            applyFallbackDisplayMode(
+                displayMode as DisplayMode,
+                mode => get(element, `${DATA_NAMESPACE}.${mode}`) as unknown as string
             ),
         [displayMode]
     );
 
     const value = get(element, `${DATA_NAMESPACE}.${displayMode}`, fallbackValue);
     const textContent = get(element, `${DATA_NAMESPACE}.data.text`);
-    const tag = get(value, "tag");
+    const tag = get(value, "tag") as unknown as string;
     const typography = get(value, "typography");
 
     return (

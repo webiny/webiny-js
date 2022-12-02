@@ -9,49 +9,42 @@ import { CircularProgress } from "@webiny/ui/Progress";
 import { Form } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import { i18n } from "@webiny/app/i18n";
+import { useSnackbar } from "@webiny/app-admin";
 
 import { useFolders } from "~/hooks/useFolders";
 
-import { CreateDialogContainer, CreateDialogActions } from "./styled";
+import { DialogContainer, DialogActions } from "./styled";
 
 import { FolderItem } from "~/types";
-import { useSnackbar } from "@webiny/app-admin";
 
 type Props = {
     type: string;
     open: boolean;
     onClose: DialogOnClose;
+    parentId?: string | null;
 };
 
 const t = i18n.ns("app-folders/components/tree/dialog-create");
 
 type SubmitData = Omit<FolderItem, "id">;
 
-export const CreateDialog: React.FC<Props> = ({ type, onClose, open }) => {
+export const FolderDialogCreate: React.FC<Props> = ({ type, onClose, open, parentId }) => {
     const { folders, loading, createFolder } = useFolders(type);
     const [dialogOpen, setDialogOpen] = useState(false);
     const { showSnackbar } = useSnackbar();
 
     const onSubmit = async (data: SubmitData) => {
         try {
-            await createFolder({ ...data, type });
+            await createFolder({
+                ...data,
+                type,
+                ...(typeof parentId !== "undefined" && { parentId })
+            });
             setDialogOpen(false);
-            showSnackbar(t("Folder created successfully!"));
+            showSnackbar(t`Folder created successfully!`);
         } catch (error) {
             showSnackbar(error.message);
         }
-    };
-
-    // TODO open issue to add new slug validator
-    const slugValidator = (slug: string): void => {
-        const test = new RegExp("^[a-z0-9_-]*$");
-        const matched = slug.match(test);
-
-        if (matched) {
-            return;
-        }
-
-        throw new Error(t`Slug can contain only letters, numbers, dashes and underscores`);
     };
 
     useEffect(() => {
@@ -59,7 +52,7 @@ export const CreateDialog: React.FC<Props> = ({ type, onClose, open }) => {
     }, [open]);
 
     return (
-        <CreateDialogContainer open={dialogOpen} onClose={onClose}>
+        <DialogContainer open={dialogOpen} onClose={onClose}>
             {dialogOpen && (
                 <Form
                     onSubmit={data => {
@@ -69,7 +62,7 @@ export const CreateDialog: React.FC<Props> = ({ type, onClose, open }) => {
                     {({ Bind, submit }) => (
                         <>
                             {loading.CREATE_FOLDER && (
-                                <CircularProgress label={"Creating folder..."} />
+                                <CircularProgress label={t`Creating folder...`} />
                             )}
                             <DialogTitle>{t`Create a new folder`}</DialogTitle>
                             <DialogContent>
@@ -86,21 +79,22 @@ export const CreateDialog: React.FC<Props> = ({ type, onClose, open }) => {
                                         <Bind
                                             name={"slug"}
                                             validators={[
-                                                validation.create("required,minLength:3"),
-                                                slugValidator
+                                                validation.create("required,minLength:3,slug")
                                             ]}
                                         >
                                             <Input label={t`Slug`} />
                                         </Bind>
                                     </Cell>
-                                    <Cell span={12}>
-                                        <Bind name="parentId">
-                                            <AutoComplete options={folders} label={t`Parent`} />
-                                        </Bind>
-                                    </Cell>
+                                    {typeof parentId === "undefined" && (
+                                        <Cell span={12}>
+                                            <Bind name="parentId">
+                                                <AutoComplete options={folders} label={t`Parent`} />
+                                            </Bind>
+                                        </Cell>
+                                    )}
                                 </Grid>
                             </DialogContent>
-                            <CreateDialogActions>
+                            <DialogActions>
                                 <ButtonDefault
                                     onClick={() => {
                                         setDialogOpen(false);
@@ -115,11 +109,11 @@ export const CreateDialog: React.FC<Props> = ({ type, onClose, open }) => {
                                 >
                                     {t`Create Folder`}
                                 </ButtonPrimary>
-                            </CreateDialogActions>
+                            </DialogActions>
                         </>
                     )}
                 </Form>
             )}
-        </CreateDialogContainer>
+        </DialogContainer>
     );
 };

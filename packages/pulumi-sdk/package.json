@@ -27,7 +27,7 @@
   "devDependencies": {
     "@babel/cli": "^7.19.3",
     "@babel/core": "^7.19.3",
-    "@types/lodash": "^4.14.178",
+    "@types/lodash": "^4.14.190",
     "@types/node": "*",
     "@webiny/cli": "^5.33.2",
     "@webiny/project-utils": "^5.33.2",
