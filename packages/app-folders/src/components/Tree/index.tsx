@@ -144,15 +144,7 @@ export const FolderTree: React.FC<Props> = ({
     };
 
     const sort = (a: NodeModel<DndItemData>, b: NodeModel<DndItemData>) => {
-        if (a.data!.name > b.data!.name) {
-            return 1;
-        }
-
-        if (a.data!.name < b.data!.name) {
-            return -1;
-        }
-
-        return 0;
+        return a.data!.name.localeCompare(b.data!.name, undefined, { numeric: true });
     };
 
     const handleChangeOpen = (folderIds: NodeModel["id"][]) => {
