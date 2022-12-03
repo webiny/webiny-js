@@ -17,7 +17,7 @@ export const useFolders = (type: string) => {
          * We don't need to store the result of it to any local state; that is managed by the context provider.
          */
         listFolders(type);
-    }, []);
+    }, [type]);
 
     return useMemo(
         () => ({
