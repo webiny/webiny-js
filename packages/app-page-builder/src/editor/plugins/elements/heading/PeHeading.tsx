@@ -1,19 +1,13 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
 import Text from "~/editor/components/Text";
 import { getMediumEditorOptions } from "../utils/textUtils";
 import { CoreOptions } from "medium-editor";
 import { MediumEditorOptions, PbEditorElement } from "~/types";
-import styled from "@emotion/styled";
-
-declare global {
-    //eslint-disable-next-line
-    namespace JSX {
-        interface IntrinsicElements {
-            "pb-heading": any;
-        }
-    }
-}
+import {
+    HeadingComponent,
+    HeadingComponentProps
+} from "@webiny/app-page-builder-elements/renderers/heading";
 
 const DEFAULT_EDITOR_OPTIONS: CoreOptions = {
     toolbar: {
@@ -25,8 +19,6 @@ const DEFAULT_EDITOR_OPTIONS: CoreOptions = {
     }
 };
 
-const defaultStyles = { display: "block" };
-
 interface PeHeadingProps {
     isActive?: boolean;
     element: PbEditorElement;
@@ -34,59 +26,32 @@ interface PeHeadingProps {
 }
 
 const PeHeading: React.FC<PeHeadingProps> = props => {
-    const { element } = props;
-    const { getStyles, getElementStyles } = usePageElements();
-    const tag = element.data.text.desktop.tag || "h1";
+    const { element, isActive, mediumEditorOptions } = props;
+    const { renderers } = usePageElements();
 
-    const styles = [...getStyles(defaultStyles), ...getElementStyles(element)];
-    const Content = styled(({ className }) =>
-        React.createElement(tag, {
-            dangerouslySetInnerHTML: {
-                __html: element.data.text.data.text
-            },
-            className
-        })
-    )(styles);
+    const Heading = renderers.heading as HeadingComponent;
 
-    return (
-        <pb-heading data-pe-id={element.id}>
-            <Content />
-        </pb-heading>
-    );
+    const EditorComponent = useMemo<HeadingComponentProps["as"]>(() => {
+        return function EditorComponent({ className }) {
+            const tag = element.data.text.desktop.tag || "h1";
+            return (
+                <Text
+                    tag={[tag, { className }]}
+                    elementId={element.id}
+                    mediumEditorOptions={getMediumEditorOptions(
+                        DEFAULT_EDITOR_OPTIONS,
+                        mediumEditorOptions
+                    )}
+                />
+            );
+        };
+    }, []);
 
-    // ----------
+    if (isActive) {
+        return <Heading element={element} as={EditorComponent} />;
+    }
 
-    //
-    // const { element, mediumEditorOptions } = props;
-    // const elementDataText = element.data.text || {};
-    // const tag = elementDataText.desktop?.tag || "h1";
-    //
-    // const { getStyles, getElementStyles } = usePageElements();
-    // // const classNames = combineClassNames(
-    // //     getStyles(defaultStyles),
-    // //     // TODO @ts-refactor figure out correct type
-    // //     getElementStyles(element as any)
-    // // );
-    //
-    // return (
-    //     <pb-heading>
-    //         {props.isActive ? (
-    //             <Text
-    //                 tag={[tag, { className: classNames }]}
-    //                 elementId={element.id}
-    //                 mediumEditorOptions={getMediumEditorOptions(
-    //                     DEFAULT_EDITOR_OPTIONS,
-    //                     mediumEditorOptions
-    //                 )}
-    //             />
-    //         ) : (
-    //             React.createElement(tag, {
-    //                 dangerouslySetInnerHTML: { __html: elementDataText.data?.text },
-    //                 className: classNames
-    //             })
-    //         )}
-    //     </pb-heading>
-    // );
+    return <Heading element={element} />;
 };
 
 export default PeHeading;

@@ -9,7 +9,13 @@ import { createDocument } from "@webiny/app-page-builder-elements/renderers/docu
 import { createGrid } from "@webiny/app-page-builder-elements/renderers/grid";
 import { createHeading } from "@webiny/app-page-builder-elements/renderers/heading";
 import { createList } from "@webiny/app-page-builder-elements/renderers/list";
+import { createIcon } from "@webiny/app-page-builder-elements/renderers/icon";
 import { createImage } from "@webiny/app-page-builder-elements/renderers/image";
+
+import { createPagesList } from "@webiny/app-page-builder-elements/renderers/pagesList";
+import { createDefaultDataLoader } from "@webiny/app-page-builder-elements/renderers/pagesList/dataLoaders";
+import { createDefaultPagesListComponent } from "@webiny/app-page-builder-elements/renderers/pagesList/pagesListComponents";
+
 import { createParagraph } from "@webiny/app-page-builder-elements/renderers/paragraph";
 import { createQuote } from "@webiny/app-page-builder-elements/renderers/quote";
 
@@ -22,6 +28,7 @@ import { createMargin } from "@webiny/app-page-builder-elements/modifiers/styles
 import { createPadding } from "@webiny/app-page-builder-elements/modifiers/styles/padding";
 import { createShadow } from "@webiny/app-page-builder-elements/modifiers/styles/shadow";
 import { createText } from "@webiny/app-page-builder-elements/modifiers/styles/text";
+import { createTextAlign } from "@webiny/app-page-builder-elements/modifiers/styles/textAlign";
 import { createVerticalAlign } from "@webiny/app-page-builder-elements/modifiers/styles/verticalAlign";
 import { createWidth } from "@webiny/app-page-builder-elements/modifiers/styles/width";
 
@@ -38,9 +45,23 @@ export const PageElementsProvider: React.FC = ({ children }) => (
             grid: createGrid(),
             heading: createHeading(),
             list: createList(),
+            icon: createIcon(),
             image: createImage(),
             paragraph: createParagraph(),
-            quote: createQuote()
+            quote: createQuote(),
+            "pages-list": createPagesList({
+                dataLoader: createDefaultDataLoader({
+                    apiUrl: process.env.REACT_APP_API_URL + "/graphql",
+                    includeHeaders: {
+                        "x-tenant": "root"
+                    }
+                }),
+                pagesListComponents: {
+                    default: createDefaultPagesListComponent(),
+                    default2: createDefaultPagesListComponent(),
+                    default3: createDefaultPagesListComponent(),
+                }
+            })
         }}
         modifiers={{
             styles: {
@@ -50,6 +71,7 @@ export const PageElementsProvider: React.FC = ({ children }) => (
                 horizontalAlign: createHorizontalAlign(),
                 margin: createMargin(),
                 text: createText(),
+                textAlign: createTextAlign(),
                 padding: createPadding(),
                 shadow: createShadow(),
                 verticalAlign: createVerticalAlign(),

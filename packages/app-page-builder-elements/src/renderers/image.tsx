@@ -1,7 +1,8 @@
 import React from "react";
 import { usePageElements } from "~/hooks/usePageElements";
-import { ElementRenderer } from "~/types";
+import { ElementRenderer, ElementRendererProps } from "~/types";
 import styled from "@emotion/styled";
+import { elementDataPropsAreEqual } from "~/utils";
 
 declare global {
     //eslint-disable-next-line
@@ -14,27 +15,41 @@ declare global {
 
 const defaultStyles = { display: "flex" };
 
-const Image: ElementRenderer = ({ element }) => {
+interface PbImageProps {
+    className?: string;
+}
+
+const PbImage: React.FC<PbImageProps> = ({ className, children }) => (
+    <pb-image class={className}>{children}</pb-image>
+);
+
+export interface ImageComponentProps extends ElementRendererProps {
+    onClick?: (e: React.MouseEvent<HTMLImageElement>) => void;
+}
+
+export type ImageComponent = ElementRenderer<ImageComponentProps>;
+
+const Image: ImageComponent = ({ element, onClick }) => {
     const { getStyles, getElementStyles } = usePageElements();
 
     const { src, name } = element.data.image.file;
 
     const styles = [...getStyles(defaultStyles), ...getElementStyles(element)];
-    const PbImage = styled(({ className, children }) => (
-        <pb-image class={className}>{children}</pb-image>
-    ))(styles);
 
     // Image has its width / height set from its own settings.
     const PbImg = styled.img({
         width: element.data.image.width,
         height: element.data.image.height,
-    })
+        maxWidth: "100%"
+    });
+
+    const StyledComponent = styled(PbImage)(styles);
 
     return (
-        <PbImage>
-            <PbImg alt={name} src={src} />
-        </PbImage>
+        <StyledComponent>
+            <PbImg alt={name} src={src} onClick={onClick} />
+        </StyledComponent>
     );
 };
 
-export const createImage = () => Image;
+export const createImage = () => React.memo(Image, elementDataPropsAreEqual);

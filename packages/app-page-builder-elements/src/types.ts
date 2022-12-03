@@ -1,4 +1,5 @@
-import React, { type CSSProperties } from "react";
+import React from "react";
+import { type CSSObject } from "@emotion/react";
 
 /**
  * TODO @ts-refactor
@@ -12,6 +13,7 @@ export interface Element {
         settings?: {
             grid?: {
                 cellsType: string;
+                size: string;
             };
             horizontalAlignFlex?: {
                 [key: string]: string;
@@ -88,21 +90,21 @@ export interface Element {
                 text?: string;
                 typography: string;
                 color?: string;
-                alignment?: CSSProperties["textAlign"];
+                alignment?: CSSObject["textAlign"];
                 tag?: string;
             };
             desktop: {
                 text?: string;
                 typography: string;
                 color?: string;
-                alignment?: CSSProperties["textAlign"];
+                alignment?: CSSObject["textAlign"];
                 tag?: string;
             };
             [key: string]: {
                 text?: string;
                 typography: string;
                 color?: string;
-                alignment?: CSSProperties["textAlign"];
+                alignment?: CSSObject["textAlign"];
                 tag?: string;
             };
         };
@@ -111,6 +113,8 @@ export interface Element {
                 name: string;
                 src: string;
             };
+            width: number;
+            height: number;
         };
         [key: string]: any;
     };
@@ -123,30 +127,28 @@ export interface Element {
 export type Content = Element;
 
 /**
- * Should be a `React.CSSProperties` object or an object with breakpoint names as keys and `React.CSSProperties` objects as values.
+ * Should be a `CSSObject` object or an object with breakpoint names as keys and `CSSObject` objects as values.
  */
 export interface StylesObjects {
-    [key: string]: React.CSSProperties | string | number | undefined;
+    [key: string]: CSSObject | string | number | undefined;
 }
 
 export interface PageElementsProviderProps {
     theme: Theme;
-    renderers?: Record<string, ElementRenderer>;
+    renderers: Record<string, ElementRenderer>;
     modifiers: {
         styles: Record<string, ElementStylesModifier>;
     };
 }
 
-export type GetElementStyles = (element: Element) => Array<React.CSSProperties>;
-export type GetThemeStyles = (
-    getStyles: (theme: Theme) => StylesObjects
-) => Array<React.CSSProperties>;
-export type GetStyles = (styles: StylesObjects) => Array<React.CSSProperties>;
+export type GetElementStyles = (element: Element) => Array<CSSObject>;
+export type GetThemeStyles = (getStyles: (theme: Theme) => StylesObjects) => Array<CSSObject>;
+export type GetStyles = (styles: StylesObjects) => Array<CSSObject>;
 
 interface SetAssignStylesCallbackParams {
     breakpoints: Record<string, Breakpoint>;
     styles: StylesObjects;
-    assignTo?: React.CSSProperties;
+    assignTo?: CSSObject;
 }
 
 interface SetElementStylesCallbackParams extends PageElementsProviderProps {
@@ -164,14 +166,10 @@ interface SetStylesCallbackParams extends PageElementsProviderProps {
     assignStyles?: AssignStylesCallback;
 }
 
-export type AssignStylesCallback = (params: SetAssignStylesCallbackParams) => React.CSSProperties;
-export type ElementStylesCallback = (
-    params: SetElementStylesCallbackParams
-) => Array<React.CSSProperties>;
-export type ThemeStylesCallback = (
-    params: SetThemeStylesCallbackParams
-) => Array<React.CSSProperties>;
-export type StylesCallback = (params: SetStylesCallbackParams) => Array<React.CSSProperties>;
+export type AssignStylesCallback = (params: SetAssignStylesCallbackParams) => CSSObject;
+export type ElementStylesCallback = (params: SetElementStylesCallbackParams) => Array<CSSObject>;
+export type ThemeStylesCallback = (params: SetThemeStylesCallbackParams) => Array<CSSObject>;
+export type StylesCallback = (params: SetStylesCallbackParams) => Array<CSSObject>;
 
 export type SetAssignStylesCallback = (callback: AssignStylesCallback) => void;
 export type SetElementStylesCallback = (callback: ElementStylesCallback) => void;
@@ -209,9 +207,9 @@ export interface Breakpoint {
 export type ThemeBreakpoints = Record<string, Breakpoint>;
 
 export interface ThemeStyles {
-    colors?: Record<string, any>;
+    colors: Record<string, any>;
     borderRadius?: number;
-    typography?: Record<string, StylesObjects>;
+    typography: Record<string, StylesObjects>;
     buttons?: Record<string, StylesObjects>;
 
     [key: string]: any;
@@ -221,3 +219,5 @@ export interface Theme {
     breakpoints: ThemeBreakpoints;
     styles: ThemeStyles;
 }
+
+export type LinkComponent = React.ComponentType<React.HTMLProps<HTMLAnchorElement>>;

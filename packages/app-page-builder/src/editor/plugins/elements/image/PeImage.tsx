@@ -1,42 +1,24 @@
 import React, { useCallback } from "react";
 import { PbEditorElement } from "~/types";
 import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
-import { SingleImageUpload, SingleImageUploadProps } from "@webiny/app-admin";
+import { FileManager, SingleImageUploadProps } from "@webiny/app-admin";
 import { UpdateElementActionEvent } from "~/editor/recoil/actions";
 import pick from "lodash/pick";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
-import styled from "@emotion/styled";
+import { ImageComponent } from "@webiny/app-page-builder-elements/renderers/image";
 
 type ImagePropsType = {
     element: PbEditorElement;
+    isActive?: boolean;
 };
 
-declare global {
-    //eslint-disable-next-line
-    namespace JSX {
-        interface IntrinsicElements {
-            "pb-image": any;
-        }
-    }
-}
-
-const Image: React.FC<ImagePropsType> = ({ element }) => {
-    return null;
-    const { getStyles, getElementStyles } = usePageElements();
-    const classNames = combineClassNames(
-        // The Image page element has its width/height stored in a non-standard way.
-        getStyles({
-            display: "block",
-            width: element.data.image?.width,
-            height: element.data.image?.height
-        }),
-        getElementStyles(element as any)
-    );
+const Image: React.FC<ImagePropsType> = ({ element, isActive }) => {
+    const { renderers } = usePageElements();
+    const Image = renderers.image as ImageComponent;
 
     const handler = useEventActionHandler();
 
     const id = element?.id;
-    const image = element?.data?.image || {};
 
     const onChange = useCallback<NonNullable<SingleImageUploadProps["onChange"]>>(
         file => {
@@ -59,15 +41,17 @@ const Image: React.FC<ImagePropsType> = ({ element }) => {
         [id]
     );
 
-    return (
-        <pb-image>
-            <SingleImageUpload
-                imagePreviewProps={{ srcSet: "auto", className: classNames, style: {} }}
+    if (isActive) {
+        return (
+            <FileManager
                 onChange={onChange}
-                value={image.file}
+                render={({ showFileManager }) => (
+                    <Image element={element} onClick={() => showFileManager()} />
+                )}
             />
-        </pb-image>
-    );
+        );
+    }
+    return <Image element={element} />;
 };
 
 export default Image;

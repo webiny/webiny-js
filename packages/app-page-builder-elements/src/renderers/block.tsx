@@ -22,19 +22,22 @@ const defaultStyles = {
     boxSizing: "border-box"
 };
 
+const PbBlockInner: React.FC<{ className?: string }> = ({ className, children }) => (
+    <pb-block-inner class={className}>{children}</pb-block-inner>
+);
+
 const Block: ElementRenderer = ({ element }) => {
     const { getStyles, getElementStyles } = usePageElements();
 
     const styles = [...getStyles(defaultStyles), ...getElementStyles(element)];
-    const PbBlockInner = styled(({ className, children }) => (
-        <pb-block-inner class={className}>{children}</pb-block-inner>
-    ))(styles);
+
+    const StyledBlockInner = styled(PbBlockInner)(styles);
 
     return (
         <pb-block data-pe-id={element.id}>
-            <PbBlockInner>
+            <StyledBlockInner>
                 <Elements element={element} />
-            </PbBlockInner>
+            </StyledBlockInner>
         </pb-block>
     );
 };

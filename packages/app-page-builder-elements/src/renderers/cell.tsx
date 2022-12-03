@@ -13,29 +13,33 @@ declare global {
     }
 }
 
+const PbCell: React.FC<{ className?: string }> = ({ className, children }) => (
+    <pb-cell class={className}>{children}</pb-cell>
+);
+
 const Cell: ElementRenderer = ({ element }) => {
     const { getStyles, getElementStyles, getThemeStyles } = usePageElements();
 
     const width = useMemo<string>(() => {
-        return `${(element.data?.settings?.grid?.size / 12) * 100}%`;
+        const size = element.data?.settings?.grid?.size;
+        if (typeof size !== "number") {
+            return "100%";
+        }
+        return `${(size / 12) * 100}%`;
     }, [element.id]);
 
     const styles = [
         ...getStyles({ display: "block", width }),
-        ...getThemeStyles(() => {
-            return { tablet: { width: "100%" } };
-        }),
+        ...getThemeStyles(theme => theme.styles.cell),
         ...getElementStyles(element)
     ];
 
-    const PbCell = styled(({ className, children }) => (
-        <pb-cell class={className}>{children}</pb-cell>
-    ))(styles);
+    const StyledPbCell = styled(PbCell)(styles);
 
     return (
-        <PbCell>
+        <StyledPbCell>
             <Elements element={element} />
-        </PbCell>
+        </StyledPbCell>
     );
 };
 

@@ -1,7 +1,7 @@
 import React from "react";
 import { usePageElements } from "~/hooks/usePageElements";
 import { Element } from "~/components/Element";
-import { ElementRenderer } from "~/types";
+import { ElementRenderer, Element as PageElement } from "~/types";
 import styled from "@emotion/styled";
 
 declare global {
@@ -22,24 +22,33 @@ const defaultStyles = {
     maxWidth: "100%"
 };
 
+const PbGrid: React.FC<{ className?: string; element: PageElement }> = ({
+    className,
+    element,
+    children
+}) => (
+    <pb-grid class={className} data-pe-id={element.id}>
+        {children}
+    </pb-grid>
+);
+
 const Grid: ElementRenderer = ({ element }) => {
     const { getStyles, getElementStyles, getThemeStyles } = usePageElements();
 
     const styles = [
         ...getStyles(defaultStyles),
-        getThemeStyles((theme) => theme.styles.grid,
+        ...getThemeStyles(theme => theme.styles.grid),
         ...getElementStyles(element)
     ];
-    const PbGrid = styled(({ className, children }) => (
-        <pb-grid class={className}>{children}</pb-grid>
-    ))(styles);
+
+    const StyledPbGrid = styled(PbGrid)(styles);
 
     return (
-        <PbGrid data-pe-id={element.id}>
-            {element.elements.map((width, index) => (
-                <Element element={element.elements[index]} />
+        <StyledPbGrid element={element}>
+            {element.elements.map(element => (
+                <Element key={element.id} element={element} />
             ))}
-        </PbGrid>
+        </StyledPbGrid>
     );
 };
 

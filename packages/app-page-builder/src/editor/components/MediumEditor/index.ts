@@ -5,7 +5,7 @@ import merge from "lodash/merge";
 import dotProp from "dot-prop-immutable";
 
 const editorClass = css({
-    width: "100%",
+    width: "auto",
     "&:focus": {
         outline: "none"
     }

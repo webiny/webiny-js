@@ -30,6 +30,7 @@ import TextAlignment from "./TextAlignment";
 import { applyFallbackDisplayMode } from "../elementSettingsUtils";
 import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
 import { Theme } from "@webiny/app-page-builder-elements/types";
+import startCase from "lodash/startCase";
 
 const classes = {
     grid: css({
@@ -99,9 +100,9 @@ const TextSettings: React.FC<TextSettingsProps> = ({ defaultAccordionValue, opti
     const themeTypographyOptions = useMemo(() => {
         if (peTheme) {
             const peThemeTypography = Object.keys(peTheme.styles?.typography || {});
-            return peThemeTypography.map(el => (
-                <option value={el} key={el}>
-                    {el}
+            return peThemeTypography.map(key => (
+                <option value={key} key={key}>
+                    {startCase(key)}
                 </option>
             ));
         }

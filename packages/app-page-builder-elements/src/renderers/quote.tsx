@@ -1,7 +1,8 @@
 import React from "react";
 import { usePageElements } from "~/hooks/usePageElements";
-import { ElementRenderer } from "~/types";
+import { Element, ElementRenderer, ElementRendererProps } from "~/types";
 import styled from "@emotion/styled";
+import { elementDataPropsAreEqual } from "~/utils";
 
 declare global {
     //eslint-disable-next-line
@@ -12,21 +13,42 @@ declare global {
     }
 }
 
-const defaultStyles = { display: "block" };
+interface PbQuoteProps {
+    className?: string;
+    element: Element;
+}
 
-const Quote: ElementRenderer = ({ element }) => {
-    const { getStyles, getElementStyles } = usePageElements();
+const PbQuote: React.FC<PbQuoteProps> = ({ className , element }) => (
+    <pb-quote class={className} dangerouslySetInnerHTML={{ __html: element.data.text.data.text }} />
+);
 
-    const styles = [...getStyles(defaultStyles), ...getElementStyles(element)];
-    const PbQuote = styled(({ className }) => (
-        <pb-quote
-            class={className}
-            dangerouslySetInnerHTML={{ __html: element.data.text.data.text }}
-        />
-    ))(styles);
+export interface QuoteComponentProps extends ElementRendererProps {
+    as?: React.FC<PbQuoteProps>;
+}
 
-    // It's how editor works, inserts blockquote / q tags.
-    return <PbQuote />;
+export type QuoteComponent = ElementRenderer<QuoteComponentProps>;
+
+const Quote: QuoteComponent = ({ element, as }) => {
+    const {  getElementStyles, getThemeStyles } = usePageElements();
+
+    const styles = [
+        { display: "block" },
+        ...getThemeStyles(theme => theme.styles.quote),
+        ...getElementStyles(element)
+    ];
+
+    const Component = as || PbQuote;
+    const StyledComponent = styled(Component)(styles);
+
+    return <StyledComponent element={element} />;
 };
 
-export const createQuote = () => Quote;
+export const createQuote = () => {
+    return React.memo(Quote, (prevProps, nextProps) => {
+        if (prevProps.as !== nextProps.as) {
+            return false;
+        }
+
+        return elementDataPropsAreEqual(prevProps, nextProps);
+    });
+};

@@ -76,9 +76,8 @@ export default (args: PbEditorElementPluginArgs = {}): PluginCollection => {
 
                 return typeof args.create === "function" ? args.create(defaultValue) : defaultValue;
             },
-            render({ element }) {
-                // TODO @ts-refactor figure out correct type
-                return <PagesList data={element.data as any} />;
+            render(props) {
+                return <PagesList {...props} />;
             }
         } as PbEditorPageElementPlugin,
         {

@@ -1,5 +1,5 @@
 import { ElementStylesModifier } from "~/types";
-import React from "react";
+import { type CSSObject } from "@emotion/react";
 
 const text: ElementStylesModifier = ({ element, theme }) => {
     const { text } = element.data || {};
@@ -15,7 +15,7 @@ const text: ElementStylesModifier = ({ element, theme }) => {
 
         const values = text[breakpointName];
 
-        let breakpointStyles: React.CSSProperties = {};
+        let breakpointStyles: CSSObject = {};
 
         const typographyStyles = theme?.styles?.typography?.[values.typography];
         if (typographyStyles) {
@@ -31,6 +31,7 @@ const text: ElementStylesModifier = ({ element, theme }) => {
             }
             breakpointStyles.color = color;
         }
+
         if (values.alignment) {
             breakpointStyles.textAlign = values.alignment;
         }

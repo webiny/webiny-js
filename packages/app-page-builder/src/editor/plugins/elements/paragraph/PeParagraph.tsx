@@ -1,10 +1,13 @@
-import React from "react";
+import React, { useMemo } from "react";
 import Text from "~/editor/components/Text";
 import { CoreOptions } from "medium-editor";
 import { MediumEditorOptions, PbEditorElement } from "~/types";
 import { getMediumEditorOptions } from "../utils/textUtils";
 import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
-import styled from "@emotion/styled";
+import {
+    ParagraphComponent,
+    ParagraphComponentProps
+} from "@webiny/app-page-builder-elements/renderers/paragraph";
 
 const DEFAULT_EDITOR_OPTIONS: CoreOptions = {
     toolbar: {
@@ -16,50 +19,37 @@ const DEFAULT_EDITOR_OPTIONS: CoreOptions = {
     }
 };
 
-const defaultStyles = { display: "block" };
-
 interface PeParagraphProps {
     isActive?: boolean;
     element: PbEditorElement;
     mediumEditorOptions?: MediumEditorOptions;
 }
 
-declare global {
-    //eslint-disable-next-line
-    namespace JSX {
-        interface IntrinsicElements {
-            "pb-paragraph": any;
-        }
-    }
-}
-
 const PeParagraph: React.FC<PeParagraphProps> = props => {
     const { element, isActive, mediumEditorOptions } = props;
-    const { getStyles, getElementStyles } = usePageElements();
+    const { renderers } = usePageElements();
+
+    const Paragraph = renderers.paragraph as ParagraphComponent;
+
+    const EditorComponent = useMemo<ParagraphComponentProps["as"]>(() => {
+        return function EditorComponent({ className }) {
+            return (
+                <Text
+                    tag={["pb-paragraph", { class: className }]}
+                    elementId={element.id}
+                    mediumEditorOptions={getMediumEditorOptions(
+                        DEFAULT_EDITOR_OPTIONS,
+                        mediumEditorOptions
+                    )}
+                />
+            );
+        };
+    }, []);
 
     if (isActive) {
-        return (
-            <Text
-                tag={["pb-paragraph", { class: 'classNames' }]}
-                elementId={element.id}
-                mediumEditorOptions={getMediumEditorOptions(
-                    DEFAULT_EDITOR_OPTIONS,
-                    mediumEditorOptions
-                )}
-            />
-        );
+        return <Paragraph element={element} as={EditorComponent} />;
     }
 
-    const styles = [...getStyles(defaultStyles), ...getElementStyles(element)];
-    const PbParagraph = styled(({ className }) => (
-        <pb-paragraph
-            class={className}
-            dangerouslySetInnerHTML={{ __html: element.data.text?.data?.text }}
-        />
-    ))(styles);
-
-    return <PbParagraph />;
-    
+    return <Paragraph element={element} />;
 };
-
-export default React.memo(PeParagraph);
+export default PeParagraph;

@@ -1,38 +1,19 @@
 import React from "react";
-import get from "lodash/get";
-import { css } from "emotion";
-import { ElementRoot } from "~/render/components/ElementRoot";
 import { PbEditorElement } from "~/types";
-
-const center = css({ textAlign: "center" });
+import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
+import PeIcon from "./PeIcon";
+import PbIcon from "./PbIcon";
 
 interface IconProps {
     element: PbEditorElement;
 }
-const Icon: React.FC<IconProps> = ({ element }) => {
-    return (
-        <ElementRoot element={element}>
-            {({ getAllClasses, elementStyle }) => {
-                const svg = get(element, "data.icon.svg", null);
-                const className = getAllClasses(
-                    "webiny-pb-base-page-element-style webiny-pb-page-element-icon",
-                    center
-                );
 
-                if (!svg) {
-                    return <></>;
-                }
-
-                return (
-                    <div
-                        style={elementStyle}
-                        className={className}
-                        dangerouslySetInnerHTML={{ __html: svg }}
-                    />
-                );
-            }}
-        </ElementRoot>
-    );
+const Icon: React.FC<IconProps> = props => {
+    const pageElements = usePageElements();
+    if (pageElements) {
+        return <PeIcon {...props} />;
+    }
+    return <PbIcon {...props} />;
 };
 
-export default Icon;
+export default React.memo(Icon);

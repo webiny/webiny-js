@@ -6,6 +6,7 @@ import merge from "lodash/merge";
 import set from "lodash/set";
 import { UpdateElementActionEvent } from "~/editor/recoil/actions";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
+import styled from "@emotion/styled";
 
 interface ButtonProps {
     element: PbEditorElement;
@@ -41,95 +42,123 @@ const DefaultLinkComponent: React.FC<DefaultLinkComponentProps> = ({ href, newTa
 const DATA_NAMESPACE = "data.buttonText";
 
 const Button: React.FC<ButtonProps> = props => {
-    return null;
     const eventActionHandler = useEventActionHandler();
     const LinkComponent = DefaultLinkComponent;
 
-    const { getElementStyles, getThemeStyles, getStyles, combineClassNames } =
-        usePageElements();
+    const { getElementStyles, getThemeStyles } = usePageElements();
 
     const { element } = props;
     const { buttonText, link, type, icon } = element.data;
 
-    const themeClassNames = getThemeStyles(theme => {
-        if (!theme.styles) {
+    const themeStyles = getThemeStyles(theme => {
+        if (!theme.styles || !theme.styles.buttons) {
             return {};
         }
 
-        const styles = { borderRadius: theme.styles.borderRadius };
-        if (!theme.styles.buttons) {
-            return styles;
-        }
-
-        return { ...styles, ...theme.styles.buttons[type!] };
+        return theme.styles.buttons[type];
     });
 
-    const elementClassNames = getElementStyles(element as any);
+    const elementStyles = getElementStyles(element);
 
-    const classNames = combineClassNames(
-        themeClassNames,
-        elementClassNames,
-        getStyles({
-            padding: "14px 20px"
-        })
-    );
+    const styles = [...themeStyles, ...elementStyles];
+    const PbButton = styled(({ className, children }) => (
+        <pb-button class={className}>{children}</pb-button>
+    ))(styles);
 
-    const containerStyles = getStyles({
-        display: 'flex'
-    })
-
-    const defaultValue = typeof buttonText === "string" ? buttonText : "Click me";
-    const value = useRef<string>(defaultValue);
-    const onChange = useCallback(
-        (received: string) => {
-            value.current = received;
-        },
-        [element.id]
-    );
-
-    const onBlur = useCallback(() => {
-        if (value.current === defaultValue) {
-            return;
-        }
-
-        const newElement: PbEditorElement = merge(
-            {},
-            element,
-            set({ elements: [] }, DATA_NAMESPACE, value.current)
-        );
-
-        eventActionHandler.trigger(
-            new UpdateElementActionEvent({
-                element: newElement,
-                history: true,
-                debounce: false
-            })
-        );
-    }, [element.id, element.data]);
-
-    const containerClassNames = getElementStyles(element as any);
-    const bodyClassNames = themeClassNames;
     return (
-        <pb-button>
+        <PbButton>
             <LinkComponent {...link}>
-                <pb-button-container class={containerClassNames}>
-                    <pb-button-body class={bodyClassNames}>
-                        {icon && <pb-button-icon dangerouslySetInnerHTML={{ __html: icon.svg }} />}
-                        {props.isActive ? (
-                            <SimpleEditableText
-                                element={"pb-button-text"}
-                                value={value.current}
-                                onChange={onChange}
-                                onBlur={onBlur}
-                            />
-                        ) : (
-                            <pb-button-text>{buttonText}</pb-button-text>
-                        )}
-                    </pb-button-body>
-                </pb-button-container>
+                <pb-button-body>
+                    {icon && <pb-button-icon dangerouslySetInnerHTML={{ __html: icon.svg }} />}
+                    <pb-button-text>{buttonText}</pb-button-text>
+                </pb-button-body>
             </LinkComponent>
-        </pb-button>
+        </PbButton>
     );
+
+    // ---------------------------------------------------
+    // const { element } = props;
+    // const { buttonText, link, type, icon } = element.data;
+    //
+    // const themeClassNames = getThemeStyles(theme => {
+    //     if (!theme.styles) {
+    //         return {};
+    //     }
+    //
+    //     const styles = { borderRadius: theme.styles.borderRadius };
+    //     if (!theme.styles.buttons) {
+    //         return styles;
+    //     }
+    //
+    //     return { ...styles, ...theme.styles.buttons[type!] };
+    // });
+    //
+    // const elementClassNames = getElementStyles(element as any);
+    //
+    // const classNames = combineClassNames(
+    //     themeClassNames,
+    //     elementClassNames,
+    //     getStyles({
+    //         padding: "14px 20px"
+    //     })
+    // );
+    //
+    // const containerStyles = getStyles({
+    //     display: "flex"
+    // });
+    //
+    // const defaultValue = typeof buttonText === "string" ? buttonText : "Click me";
+    // const value = useRef<string>(defaultValue);
+    // const onChange = useCallback(
+    //     (received: string) => {
+    //         value.current = received;
+    //     },
+    //     [element.id]
+    // );
+    //
+    // const onBlur = useCallback(() => {
+    //     if (value.current === defaultValue) {
+    //         return;
+    //     }
+    //
+    //     const newElement: PbEditorElement = merge(
+    //         {},
+    //         element,
+    //         set({ elements: [] }, DATA_NAMESPACE, value.current)
+    //     );
+    //
+    //     eventActionHandler.trigger(
+    //         new UpdateElementActionEvent({
+    //             element: newElement,
+    //             history: true,
+    //             debounce: false
+    //         })
+    //     );
+    // }, [element.id, element.data]);
+    //
+    // const containerClassNames = getElementStyles(element as any);
+    // const bodyClassNames = themeClassNames;
+    // return (
+    //     <pb-button>
+    //         <LinkComponent {...link}>
+    //             <pb-button-container class={containerClassNames}>
+    //                 <pb-button-body class={bodyClassNames}>
+    //                     {icon && <pb-button-icon dangerouslySetInnerHTML={{ __html: icon.svg }} />}
+    //                     {props.isActive ? (
+    //                         <SimpleEditableText
+    //                             element={"pb-button-text"}
+    //                             value={value.current}
+    //                             onChange={onChange}
+    //                             onBlur={onBlur}
+    //                         />
+    //                     ) : (
+    //                         <pb-button-text>{buttonText}</pb-button-text>
+    //                     )}
+    //                 </pb-button-body>
+    //             </pb-button-container>
+    //         </LinkComponent>
+    //     </pb-button>
+    // );
 
     // return (
     //     <pb-heading>

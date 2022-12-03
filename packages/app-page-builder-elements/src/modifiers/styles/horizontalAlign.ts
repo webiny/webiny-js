@@ -16,6 +16,7 @@ const horizontalAlign: ElementStylesModifier = ({ element, theme }) => {
             return {
                 ...returnStyles,
                 [breakpointName]: {
+                    display: "flex", // Added flex just so page element renders don't have to add it themselves.
                     alignItems: horizontalAlign[breakpointName]
                 }
             };
@@ -25,6 +26,7 @@ const horizontalAlign: ElementStylesModifier = ({ element, theme }) => {
         return {
             ...returnStyles,
             [breakpointName]: {
+                display: "flex", // Added flex just so page element renders don't have to add it themselves.
                 justifyContent: horizontalAlign[breakpointName]
             }
         };

@@ -13,15 +13,40 @@ import {
 } from "../../elementSettings/components/StyledComponents";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { BindComponent } from "@webiny/form";
+import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
+import startCase from "lodash/startCase";
+import {PagesListComponent} from "@webiny/app-page-builder-elements/renderers/pagesList";
 
 interface PagesListDesignSettingsProps {
     Bind: BindComponent;
     submit: (event: React.MouseEvent) => void;
 }
+
 const PagesListDesignSettings: React.FC<PagesListDesignSettingsProps> = ({ Bind, submit }) => {
-    const components = plugins.byType<PbPageElementPagesListComponentPlugin>(
-        "pb-page-element-pages-list-component"
-    );
+    let components: Array<{
+        name?: string;
+        title: string;
+        componentName: string;
+    }> = [];
+
+    const pageElements = usePageElements();
+    if (pageElements) {
+        const PagesList = pageElements.renderers?.["pages-list"] as PagesListComponent
+        const pagesListRendererParams = PagesList?.params;
+        if (pagesListRendererParams?.pagesListComponents) {
+            components = Object.keys(pagesListRendererParams?.pagesListComponents).map(key => {
+                return {
+                    title: startCase(key),
+                    name: key,
+                    componentName: key
+                };
+            });
+        }
+    } else {
+        components = plugins.byType<PbPageElementPagesListComponentPlugin>(
+            "pb-page-element-pages-list-component"
+        );
+    }
 
     return (
         <Accordion title={"Design"} defaultValue={true}>
@@ -72,5 +97,4 @@ const PagesListDesignSettings: React.FC<PagesListDesignSettingsProps> = ({ Bind,
         </Accordion>
     );
 };
-
 export default PagesListDesignSettings;

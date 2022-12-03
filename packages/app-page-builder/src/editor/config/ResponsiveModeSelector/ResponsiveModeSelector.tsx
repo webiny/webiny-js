@@ -113,16 +113,16 @@ export const ResponsiveModeSelector: React.FC = () => {
         // By default, we want to only assign styles for the first breakpoint in line, which is "desktop".
         // We only care about tablet, mobile-landscape, and mobile-portrait if user selects one of those.
         useEffect(() => {
-            pageElements.setAssignStylesCallback(params => {
-                const whitelistedBreakpoints = [];
-                for (let i = 0; i < editorModes.length; i++) {
-                    const current = editorModes[i];
-                    whitelistedBreakpoints.push(current.config.displayMode);
-                    if (current.config.displayMode === displayMode) {
-                        break;
-                    }
+            const whitelistedBreakpoints: string[] = [];
+            for (let i = 0; i < editorModes.length; i++) {
+                const current = editorModes[i];
+                whitelistedBreakpoints.push(current.config.displayMode);
+                if (current.config.displayMode === displayMode) {
+                    break;
                 }
+            }
 
+            pageElements.setAssignStylesCallback(params => {
                 const { breakpoints, styles = {}, assignTo = {} } = params;
                 if (isPerBreakpointStylesObject({ breakpoints, styles })) {
                     for (const breakpointName in breakpoints) {
@@ -136,6 +136,7 @@ export const ResponsiveModeSelector: React.FC = () => {
                 } else {
                     Object.assign(assignTo, styles);
                 }
+
 
                 return assignTo;
             });

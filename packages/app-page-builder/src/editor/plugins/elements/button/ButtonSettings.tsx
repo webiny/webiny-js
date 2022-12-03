@@ -63,7 +63,7 @@ const ButtonSettings: React.FC<PbEditorPageElementSettingsRenderComponentProps> 
     const pageElements = usePageElements();
     if (pageElements) {
         const { theme } = pageElements;
-        const types = Object.keys(theme.styles?.buttons || {});
+        const types = Object.keys(theme.styles?.button || {});
         typesOptions = types.map(item => ({
             value: item,
             label: startCase(item)

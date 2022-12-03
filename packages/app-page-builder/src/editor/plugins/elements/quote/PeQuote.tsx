@@ -1,8 +1,12 @@
-import React from "react";
+import React, { useMemo } from "react";
 import Text from "../../../components/Text";
 import { MediumEditorOptions, PbEditorElement } from "~/types";
 import { getMediumEditorOptions } from "../utils/textUtils";
 import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
+import {
+    QuoteComponent,
+    QuoteComponentProps
+} from "@webiny/app-page-builder-elements/renderers/quote";
 
 const DEFAULT_EDITOR_OPTIONS = {
     toolbar: {
@@ -14,52 +18,38 @@ const DEFAULT_EDITOR_OPTIONS = {
     }
 };
 
-const defaultStyles = { display: "block" };
-
 interface PeQuoteProps {
     isActive?: boolean;
     element: PbEditorElement;
     mediumEditorOptions?: MediumEditorOptions;
 }
 
-declare global {
-    //eslint-disable-next-line
-    namespace JSX {
-        interface IntrinsicElements {
-            "pb-quote": any;
-        }
-    }
-}
-
 const PeQuote: React.FC<PeQuoteProps> = props => {
     const { element, isActive, mediumEditorOptions } = props;
-    const { getStyles, getElementStyles, combineClassNames } = usePageElements();
-    const classNames = combineClassNames(
-        getStyles(defaultStyles),
-        getElementStyles(element as any)
-    );
+    const { renderers } = usePageElements();
+
+    const Quote = renderers.quote as QuoteComponent;
+
+    const EditorComponent = useMemo<QuoteComponentProps["as"]>(() => {
+        return function EditorComponent({ className }) {
+            return (
+                <Text
+                    tag={["pb-quote", { class: className }]}
+                    elementId={element.id}
+                    mediumEditorOptions={getMediumEditorOptions(
+                        DEFAULT_EDITOR_OPTIONS,
+                        mediumEditorOptions
+                    )}
+                />
+            );
+        };
+    }, []);
 
     if (isActive) {
-        return (
-            <Text
-                tag={["pb-quote", { class: classNames }]}
-                elementId={element.id}
-                mediumEditorOptions={getMediumEditorOptions(
-                    DEFAULT_EDITOR_OPTIONS,
-                    mediumEditorOptions
-                )}
-            />
-        );
+        return <Quote element={element} as={EditorComponent} />;
     }
 
-    const elementDataText = element.data.text || {};
-
-    return (
-        <pb-quote
-            class={classNames}
-            dangerouslySetInnerHTML={{ __html: elementDataText.data?.text }}
-        ></pb-quote>
-    );
+    return <Quote element={element} />;
 };
 
-export default React.memo(PeQuote);
+export default PeQuote;

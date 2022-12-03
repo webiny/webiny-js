@@ -1,34 +1,12 @@
 import { ElementStylesModifier } from "~/types";
 
-const horizontalAlign: ElementStylesModifier = ({ element, theme }) => {
-    const { horizontalAlignFlex: horizontalAlign } = element.data.settings || {};
-    if (!horizontalAlign) {
+const textAlign: ElementStylesModifier = ({ element }) => {
+    const { horizontalAlign: textAlign } = element.data.settings || {};
+    if (!textAlign) {
         return null;
     }
 
-    return Object.keys(theme.breakpoints || {}).reduce((returnStyles, breakpointName) => {
-        if (!horizontalAlign || !horizontalAlign[breakpointName]) {
-            return returnStyles;
-        }
-
-        // Blocks are flex-displayed, with the flex-direction set to "column".
-        if (element.type === "block") {
-            return {
-                ...returnStyles,
-                [breakpointName]: {
-                    alignItems: horizontalAlign[breakpointName]
-                }
-            };
-        }
-
-        // For all other elements, we assume flex-direction is using the default setting, which is "row".
-        return {
-            ...returnStyles,
-            [breakpointName]: {
-                justifyContent: horizontalAlign[breakpointName]
-            }
-        };
-    }, {});
+    return { textAlign };
 };
 
-export const createHorizontalAlign = () => horizontalAlign;
+export const createTextAlign = () => textAlign;

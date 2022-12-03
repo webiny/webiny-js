@@ -9,10 +9,10 @@ interface ImageProps {
 }
 
 const Image: React.FC<ImageProps> = props => {
-    // const pageElements = usePageElements();
-    // if (pageElements) {
-    //     return <PeImage {...props} />;
-    // }
+    const pageElements = usePageElements();
+    if (pageElements) {
+        return <PeImage {...props} />;
+    }
     return <PbImage {...props} />;
 };
 
