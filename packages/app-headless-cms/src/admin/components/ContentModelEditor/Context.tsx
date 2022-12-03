@@ -202,7 +202,7 @@ export const ContentModelEditorProvider: React.FC<ContentModelEditorProviderProp
 
         const { data, error } = get(response, "data.getContentModel");
         if (error) {
-            throw new Error(error);
+            throw new Error(error.message);
         }
 
         await setData(() => data, false);

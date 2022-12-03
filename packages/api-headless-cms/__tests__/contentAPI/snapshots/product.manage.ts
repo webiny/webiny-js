@@ -139,6 +139,10 @@ export default /* GraphQL */ `
         ownedBy_not: String
         ownedBy_in: [String!]
         ownedBy_not_in: [String!]
+        status: String
+        status_not: String
+        status_in: [String!]
+        status_not_in: [String!]
 
         title: String
         title_not: String
@@ -263,9 +267,5 @@ export default /* GraphQL */ `
         republishProduct(revision: ID!): ProductResponse
 
         unpublishProduct(revision: ID!): ProductResponse
-        
-        requestProductReview(revision: ID!): ProductResponse
-        
-        requestProductChanges(revision: ID!): ProductResponse
     }
 `;

@@ -29,13 +29,7 @@ const richTextMock = [
 ];
 
 describe(`Add change requests on a step in a "Content Review"`, () => {
-    const options = {
-        path: "manage/en-US"
-    };
-
-    const gqlHandler = usePageBuilderHandler({
-        ...options
-    });
+    const gqlHandler = usePageBuilderHandler();
     const {
         createChangeRequestMutation,
         listChangeRequestsQuery,
@@ -321,7 +315,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
                                 displayName: expect.any(String),
                                 type: "admin"
                             },
-                            status: "underReview",
+                            reviewStatus: "underReview",
                             title: expect.any(String),
                             content: expect.objectContaining(expectedContent),
                             steps: [

@@ -178,12 +178,12 @@ export const ResponsiveModeSelector: React.FC = () => {
             {responsiveBarContent}
             <div className={classes.dimensionIndicator}>
                 <span className="width">
-                    <Typography use={"subtitle2"}>{pagePreviewDimension.width}</Typography>
-                    <Typography use={"subtitle2"}>PX</Typography>
+                    <Typography use={"body2"}>{pagePreviewDimension.width}</Typography>
+                    <Typography use={"body2"}>PX</Typography>
                 </span>
                 <span className="height">
-                    <Typography use={"subtitle2"}>{"100"}</Typography>
-                    <Typography use={"subtitle2"}>%</Typography>
+                    <Typography use={"body2"}>{"100"}</Typography>
+                    <Typography use={"body2"}>%</Typography>
                 </span>
             </div>
         </div>

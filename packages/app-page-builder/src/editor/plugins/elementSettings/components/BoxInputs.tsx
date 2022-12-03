@@ -119,7 +119,7 @@ const BoxInputs: React.FC<PMSettingsPropsType> = ({
     return (
         <Grid className={classes.gridWrapper}>
             <Cell span={12}>
-                <Typography use={"subtitle2"}>{label}</Typography>
+                <Typography use={"body2"}>{label}</Typography>
             </Cell>
             <Cell span={12} className={classes.wrapper}>
                 <div className={classes.inputWrapper}>

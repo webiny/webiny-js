@@ -682,6 +682,7 @@ jobs:
     needs: [init, code-analysis, jest-tests, e2e-wby-cms-ddb-cypress-tests, e2e-wby-cms-ddb-es-cypress-tests]
     name: NPM release ("unstable" tag)
     runs-on: webiny-js-4-cores
+    environment: release
     env:
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

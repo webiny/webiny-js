@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-file-manager-s3",
-  "version": "5.33.1",
+  "version": "5.33.2",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -10,21 +10,21 @@
   "author": "Webiny Ltd",
   "license": "MIT",
   "dependencies": {
-    "@webiny/api-file-manager": "^5.33.1",
-    "@webiny/error": "^5.33.1",
-    "@webiny/handler-graphql": "^5.33.1",
-    "@webiny/validation": "^5.33.1",
+    "@webiny/api-file-manager": "^5.33.2",
+    "@webiny/error": "^5.33.2",
+    "@webiny/handler-graphql": "^5.33.2",
+    "@webiny/validation": "^5.33.2",
     "form-data": "^4.0.0",
     "node-fetch": "^2.6.1",
     "sanitize-filename": "^1.6.3",
     "uniqid": "^5.2.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.16.0",
-    "@babel/core": "^7.16.0",
+    "@babel/cli": "^7.19.3",
+    "@babel/core": "^7.19.3",
     "@types/node-fetch": "^2.6.1",
-    "@webiny/cli": "^5.33.1",
-    "@webiny/project-utils": "^5.33.1",
+    "@webiny/cli": "^5.33.2",
+    "@webiny/project-utils": "^5.33.2",
     "rimraf": "^3.0.2",
     "typescript": "4.7.4"
   },

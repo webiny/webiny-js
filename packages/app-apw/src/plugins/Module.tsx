@@ -7,6 +7,7 @@ import Helmet from "react-helmet";
 import { PublishingWorkflowsView } from "~/views/publishingWorkflows";
 import { ContentReviewDashboard } from "~/views/contentReviewDashboard";
 import { CircularProgress } from "@webiny/ui/Progress";
+import { usePermission } from "~/hooks/usePermission";
 
 const ContentReviewEditor = lazy(
     () => import("~/views/contentReviewDashboard/ContentReviewEditor")
@@ -20,6 +21,10 @@ const Loader: React.FC<LoaderProps> = ({ children, ...props }) => (
 );
 
 export const Module: React.FC = () => {
+    const { canManageWorkflows } = usePermission();
+
+    const manageWorkflows = canManageWorkflows();
+
     return (
         <>
             <Menu label={"Publishing Workflows"} name={"apw"} icon={<ApwIcon />}>
@@ -28,45 +33,49 @@ export const Module: React.FC = () => {
                     label={"Content Reviews"}
                     path={"/apw/content-reviews"}
                 />
-                <Menu
-                    name={"apw.publishingWorkflows"}
-                    label={"Workflows"}
-                    path={"/apw/publishing-workflows"}
-                />
-            </Menu>
-            <AddRoute
-                exact
-                path={"/apw/publishing-workflows"}
-                render={() => (
-                    <SecureRoute permission={"apw"}>
-                        <AdminLayout>
-                            <Helmet title={"APW - Publishing workflows"} />
-                            <PublishingWorkflowsView />
-                        </AdminLayout>
-                    </SecureRoute>
+                {manageWorkflows && (
+                    <Menu
+                        name={"apw.publishingWorkflows"}
+                        label={"Workflows"}
+                        path={"/apw/publishing-workflows"}
+                    />
                 )}
-            />
+            </Menu>
+            {manageWorkflows && (
+                <AddRoute
+                    exact
+                    path={"/apw/publishing-workflows"}
+                    render={() => (
+                        <SecureRoute permission={"apw.publishingWorkflows"}>
+                            <AdminLayout>
+                                <Helmet title={"APW - Publishing workflows"} />
+                                <PublishingWorkflowsView />
+                            </AdminLayout>
+                        </SecureRoute>
+                    )}
+                />
+            )}
             <AddRoute
                 exact
                 path={"/apw/content-reviews"}
                 render={() => (
-                    <SecureRoute permission={"apw"}>
+                    <>
                         <AdminLayout>
                             <Helmet title={"APW - Content Reviews"} />
                             <ContentReviewDashboard />
                         </AdminLayout>
-                    </SecureRoute>
+                    </>
                 )}
             />
             <AddRoute
                 path={"/apw/content-reviews/:contentReviewId"}
                 render={() => (
-                    <SecureRoute permission={"apw"}>
+                    <>
                         <Helmet title={"APW - Content review editor"} />
                         <Loader>
                             <ContentReviewEditor />
                         </Loader>
-                    </SecureRoute>
+                    </>
                 )}
             />
         </>

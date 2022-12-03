@@ -5,14 +5,15 @@ import {
     CmsModelManager,
     CmsModelPermission,
     HeadlessCmsStorageOperations,
-    BeforeModelCreateTopicParams,
-    AfterModelCreateTopicParams,
-    BeforeModelUpdateTopicParams,
-    AfterModelUpdateTopicParams,
-    BeforeModelDeleteTopicParams,
-    AfterModelDeleteTopicParams,
-    BeforeModelCreateFromTopicParams,
-    AfterModelCreateFromTopicParams,
+    OnModelBeforeCreateTopicParams,
+    OnModelAfterCreateTopicParams,
+    OnModelBeforeUpdateTopicParams,
+    OnModelAfterUpdateTopicParams,
+    OnModelBeforeDeleteTopicParams,
+    OnModelAfterDeleteTopicParams,
+    OnModelInitializeParams,
+    OnModelBeforeCreateFromTopicParams,
+    OnModelAfterCreateFromTopicParams,
     CmsModelCreateInput,
     CmsModelUpdateInput,
     CmsModelCreateFromInput,
@@ -32,13 +33,13 @@ import { Tenant } from "@webiny/api-tenancy/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { createTopic } from "@webiny/pubsub";
-import { assignBeforeModelCreate } from "./contentModel/beforeCreate";
-import { assignBeforeModelUpdate } from "./contentModel/beforeUpdate";
-import { assignBeforeModelDelete } from "./contentModel/beforeDelete";
-import { assignAfterModelCreate } from "./contentModel/afterCreate";
-import { assignAfterModelUpdate } from "./contentModel/afterUpdate";
-import { assignAfterModelDelete } from "./contentModel/afterDelete";
-import { assignAfterModelCreateFrom } from "./contentModel/afterCreateFrom";
+import { assignModelBeforeCreate } from "./contentModel/beforeCreate";
+import { assignModelBeforeUpdate } from "./contentModel/beforeUpdate";
+import { assignModelBeforeDelete } from "./contentModel/beforeDelete";
+import { assignModelAfterCreate } from "./contentModel/afterCreate";
+import { assignModelAfterUpdate } from "./contentModel/afterUpdate";
+import { assignModelAfterDelete } from "./contentModel/afterDelete";
+import { assignModelAfterCreateFrom } from "./contentModel/afterCreateFrom";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";
 import { checkPermissions } from "~/utils/permissions";
 import { filterAsync } from "~/utils/filterAsync";
@@ -247,59 +248,87 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         return await updateManager(context, model);
     };
 
-    const onBeforeModelCreate = createTopic<BeforeModelCreateTopicParams>();
-    const onAfterModelCreate = createTopic<AfterModelCreateTopicParams>();
-    const onBeforeModelCreateFrom = createTopic<BeforeModelCreateFromTopicParams>();
-    const onAfterModelCreateFrom = createTopic<AfterModelCreateFromTopicParams>();
-    const onBeforeModelUpdate = createTopic<BeforeModelUpdateTopicParams>();
-    const onAfterModelUpdate = createTopic<AfterModelUpdateTopicParams>();
-    const onBeforeModelDelete = createTopic<BeforeModelDeleteTopicParams>();
-    const onAfterModelDelete = createTopic<AfterModelDeleteTopicParams>();
+    // create
+    const onModelBeforeCreate =
+        createTopic<OnModelBeforeCreateTopicParams>("cms.onModelBeforeCreate");
+    const onModelAfterCreate = createTopic<OnModelAfterCreateTopicParams>("cms.onModelAfterCreate");
+    // create from
+    const onModelBeforeCreateFrom = createTopic<OnModelBeforeCreateFromTopicParams>(
+        "cms.onModelBeforeCreateFrom"
+    );
+    const onModelAfterCreateFrom = createTopic<OnModelAfterCreateFromTopicParams>(
+        "cms.onModelAfterCreateFrom"
+    );
+    // update
+    const onModelBeforeUpdate =
+        createTopic<OnModelBeforeUpdateTopicParams>("cms.onModelBeforeUpdate");
+    const onModelAfterUpdate = createTopic<OnModelAfterUpdateTopicParams>("cms.onModelAfterUpdate");
+    // delete
+    const onModelBeforeDelete =
+        createTopic<OnModelBeforeDeleteTopicParams>("cms.onModelBeforeDelete");
+    const onModelAfterDelete = createTopic<OnModelAfterDeleteTopicParams>("cms.onModelAfterDelete");
+
+    const onModelInitialize = createTopic<OnModelInitializeParams>("cms.onModelInitialize");
     /**
      * We need to assign some default behaviors.
      */
-    assignBeforeModelCreate({
-        onBeforeModelCreate,
-        onBeforeModelCreateFrom,
+    assignModelBeforeCreate({
+        onModelBeforeCreate,
+        onModelBeforeCreateFrom,
         plugins: context.plugins,
         storageOperations
     });
-    assignAfterModelCreate({
+    assignModelAfterCreate({
         context,
-        onAfterModelCreate
+        onModelAfterCreate
     });
-    assignBeforeModelUpdate({
-        onBeforeModelUpdate,
+    assignModelBeforeUpdate({
+        onModelBeforeUpdate,
         plugins: context.plugins,
         storageOperations
     });
-    assignAfterModelUpdate({
+    assignModelAfterUpdate({
         context,
-        onAfterModelUpdate
+        onModelAfterUpdate
     });
-    assignAfterModelCreateFrom({
+    assignModelAfterCreateFrom({
         context,
-        onAfterModelCreateFrom
+        onModelAfterCreateFrom
     });
-    assignBeforeModelDelete({
-        onBeforeModelDelete,
+    assignModelBeforeDelete({
+        onModelBeforeDelete,
         plugins: context.plugins,
         storageOperations
     });
-    assignAfterModelDelete({
+    assignModelAfterDelete({
         context,
-        onAfterModelDelete
+        onModelAfterDelete
     });
 
     return {
-        onBeforeModelCreate,
-        onAfterModelCreate,
-        onBeforeModelCreateFrom,
-        onAfterModelCreateFrom,
-        onBeforeModelUpdate,
-        onAfterModelUpdate,
-        onBeforeModelDelete,
-        onAfterModelDelete,
+        /**
+         * Deprecated - will be removed in 5.36.0
+         */
+        onBeforeModelCreate: onModelBeforeCreate,
+        onAfterModelCreate: onModelAfterCreate,
+        onBeforeModelCreateFrom: onModelBeforeCreateFrom,
+        onAfterModelCreateFrom: onModelAfterCreateFrom,
+        onBeforeModelUpdate: onModelBeforeUpdate,
+        onAfterModelUpdate: onModelAfterUpdate,
+        onBeforeModelDelete: onModelBeforeDelete,
+        onAfterModelDelete: onModelAfterDelete,
+        /**
+         * Released in 5.34.0
+         */
+        onModelBeforeCreate,
+        onModelAfterCreate,
+        onModelBeforeCreateFrom,
+        onModelAfterCreateFrom,
+        onModelBeforeUpdate,
+        onModelAfterUpdate,
+        onModelBeforeDelete,
+        onModelAfterDelete,
+        onModelInitialize,
         clearModelsCache,
         getModel,
         listModels,
@@ -344,7 +373,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 webinyVersion: context.WEBINY_VERSION
             };
 
-            await onBeforeModelCreate.publish({
+            await onModelBeforeCreate.publish({
                 input,
                 model
             });
@@ -357,7 +386,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
 
             await updateManager(context, model);
 
-            await onAfterModelCreate.publish({
+            await onModelAfterCreate.publish({
                 input,
                 model: createdModel
             });
@@ -378,7 +407,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 webinyVersion: context.WEBINY_VERSION
             };
 
-            await onBeforeModelUpdate.publish({
+            await onModelBeforeUpdate.publish({
                 input: {} as CmsModelUpdateInput,
                 original,
                 model
@@ -392,7 +421,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
 
             loaders.listModels.clearAll();
 
-            await onAfterModelUpdate.publish({
+            await onModelAfterUpdate.publish({
                 input: {} as CmsModelUpdateInput,
                 original,
                 model: resultModel
@@ -456,7 +485,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 webinyVersion: context.WEBINY_VERSION
             };
 
-            await onBeforeModelCreateFrom.publish({
+            await onModelBeforeCreateFrom.publish({
                 input,
                 model,
                 original
@@ -470,7 +499,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
 
             await updateManager(context, model);
 
-            await onAfterModelCreateFrom.publish({
+            await onModelAfterCreateFrom.publish({
                 input,
                 original,
                 model: createdModel
@@ -522,7 +551,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 savedOn: new Date().toISOString()
             };
 
-            await onBeforeModelUpdate.publish({
+            await onModelBeforeUpdate.publish({
                 input,
                 original,
                 model
@@ -534,7 +563,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
 
             await updateManager(context, resultModel);
 
-            await onAfterModelUpdate.publish({
+            await onModelAfterUpdate.publish({
                 input,
                 original,
                 model: resultModel
@@ -547,7 +576,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
 
             const model = await getModel(modelId);
 
-            await onBeforeModelDelete.publish({
+            await onModelBeforeDelete.publish({
                 model
             });
 
@@ -566,11 +595,24 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 );
             }
 
-            await onAfterModelDelete.publish({
+            await onModelAfterDelete.publish({
                 model
             });
 
             managers.delete(model.modelId);
+        },
+        async initializeModel(modelId) {
+            /**
+             * We require that users have write permissions to initialize models.
+             * Maybe introduce another permission for it?
+             */
+            await checkModelPermissions("w");
+
+            const model = await getModel(modelId);
+
+            await onModelInitialize.publish({ model });
+
+            return true;
         },
         getModelManager,
         getEntryManager: async model => {

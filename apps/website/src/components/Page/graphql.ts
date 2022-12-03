@@ -70,6 +70,10 @@ export interface SettingsQueryResponseData {
             src: string;
         };
     };
+    htmlTags: {
+        header: string;
+        footer: string;
+    };
     logo: {
         src: string;
     };
@@ -98,6 +102,10 @@ export const GET_SETTINGS = gql`
                         image {
                             src
                         }
+                    }
+                    htmlTags {
+                        header
+                        footer
                     }
                     logo {
                         src

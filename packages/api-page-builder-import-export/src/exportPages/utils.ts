@@ -41,8 +41,8 @@ export async function exportPage(
     const filesAvailableForDownload = await getFilteredFiles(files);
     // Extract images from page settings
     const pageSettingsImages = [
-        get(page, "settings.general.image"),
-        get(page, "settings.social.image")
+        get(page, "settings.general.image") as unknown as File,
+        get(page, "settings.social.image") as unknown as File
     ].filter(image => image && image.src);
     const pageSettingsImagesData = [];
     // Get file data for all images inside "page.settings"

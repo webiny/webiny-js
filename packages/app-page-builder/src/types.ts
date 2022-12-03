@@ -9,12 +9,11 @@ import { FormData, FormOnSubmit, FormSetValue, FormAPI } from "@webiny/form/type
 import { CoreOptions } from "medium-editor";
 import { MenuTreeItem } from "~/admin/views/Menus/types";
 import { SecurityPermission } from "@webiny/app-security/types";
+import { LinkItem } from "@webiny/app-folders/types";
 
 export enum PageStatus {
     PUBLISHED = "published",
     UNPUBLISHED = "unpublished",
-    REVIEW_REQUESTED = "reviewRequested",
-    CHANGES_REQUESTED = "changesRequested",
     DRAFT = "draft"
 }
 
@@ -24,6 +23,20 @@ export enum PageImportExportTaskStatus {
     COMPLETED = "completed",
     FAILED = "failed"
 }
+
+// TODO: for Webiny core team: create this type in the app-file-manager
+export interface File {
+    id: string;
+    name: string;
+    key: string;
+    src: string;
+    size: number;
+    type: string;
+    tags: string[];
+    meta: Record<string, any>;
+    createdOn: string;
+}
+
 export type PbElementDataSettingsSpacingValueType = {
     all?: string;
     top?: string;
@@ -159,6 +172,7 @@ export type PbElementDataType = {
         clickHandler: string;
         actionType: string;
         variables: PbButtonElementClickHandlerVariable[];
+        scrollToElement: string;
     };
     settings?: PbElementDataSettingsType;
     // this needs to be any since editor can be changed
@@ -205,6 +219,28 @@ export interface PbElement {
     content?: PbElement;
     text?: string;
 }
+
+export interface PbBlockVariable<TValue = any> {
+    id: string;
+    type: string;
+    label: string;
+    value: TValue;
+}
+
+export type PbBlockEditorCreateVariablePlugin = Plugin & {
+    type: "pb-block-editor-create-variable";
+    elementType: string;
+    createVariables: (params: { element: PbEditorElement }) => PbBlockVariable[];
+    getVariableValue: (params: { element: PbEditorElement; variableId?: string }) => any;
+};
+
+export type PbEditorPageElementVariableRendererPlugin = Plugin & {
+    type: "pb-editor-page-element-variable-renderer";
+    elementType: string;
+    getVariableValue: (element: PbEditorElement | null) => any;
+    renderVariableInput: (variableId: string) => ReactNode;
+    setElementValue: (element: PbElement, variables: PbBlockVariable[]) => PbElement;
+};
 
 /**
  * Determine types for elements
@@ -310,6 +346,10 @@ export interface PbPageRevision {
     status: string;
     locked: boolean;
     savedOn: string;
+}
+
+export interface PbPageDataLink extends PbPageData {
+    link: LinkItem;
 }
 
 export interface PbRenderElementPluginRenderParams {
@@ -554,16 +594,9 @@ export type PbEditorBlockPlugin = Plugin & {
     id?: string;
     type: "pb-editor-block";
     title: string;
-    category: string;
+    blockCategory: string;
     tags: string[];
-    image: {
-        src?: string;
-        meta: {
-            width: number;
-            height: number;
-            aspectRatio: number;
-        };
-    };
+    image: Partial<File>;
     create(): PbEditorElement;
     preview(): ReactElement;
 };
@@ -592,7 +625,7 @@ export type PbEditorPageElementAdvancedSettingsPlugin = Plugin & {
     type: "pb-editor-page-element-advanced-settings";
     elementType: string;
     render(params: { Bind: BindComponent; data: any; submit: () => void }): ReactElement;
-    onSave?: (data: FormData) => FormData;
+    onSave?: (data: FormData) => Promise<FormData>;
 };
 
 export type PbEditorEventActionPlugin = Plugin & {
@@ -688,11 +721,16 @@ export type PbRenderElementPluginArgs = {
     elementType?: string;
 };
 
+export type GetElementTreeProps = {
+    element?: PbEditorElement;
+    path?: string[];
+} | void;
+
 // ============== EVENT ACTION HANDLER ================= //
 // TODO: at some point, convert this into an interface, and use module augmentation to add new properties.
 export type EventActionHandlerCallableState<TState = PbState> = PbState<TState> & {
     getElementById(id: string): Promise<PbEditorElement>;
-    getElementTree(element?: PbEditorElement): Promise<any>;
+    getElementTree(props: GetElementTreeProps): Promise<PbEditorElement>;
 };
 
 export interface EventActionHandler<TCallableState = unknown> {
@@ -709,7 +747,7 @@ export interface EventActionHandler<TCallableState = unknown> {
     endBatch: () => void;
     enableHistory: () => void;
     disableHistory: () => void;
-    getElementTree: (element?: PbEditorElement) => Promise<PbEditorElement>;
+    getElementTree: (props: GetElementTreeProps) => Promise<PbEditorElement>;
 }
 
 export interface EventActionHandlerTarget {
@@ -774,6 +812,26 @@ export interface PbMenu {
     slug: string;
     description: string;
 }
+
+export interface PbBlockCategory {
+    name: string;
+    slug: string;
+    icon: string;
+    description: string;
+    createdOn: string;
+    createdBy: PbIdentity;
+}
+
+export interface PbPageBlock {
+    id: string;
+    name: string;
+    blockCategory: string;
+    content: any;
+    preview: File;
+    createdOn: string;
+    createdBy: PbIdentity;
+}
+
 /**
  * TODO: have types for both API and app in the same package?
  * GraphQL response types

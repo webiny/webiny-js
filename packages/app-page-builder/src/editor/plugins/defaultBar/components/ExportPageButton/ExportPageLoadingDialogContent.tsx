@@ -107,7 +107,7 @@ const ExportPageLoadingDialogContent: React.FC<ExportPageLoadingDialogContent> =
                 <LoadingDialog.StatsContainer>
                     {error && (
                         <LoadingDialog.StatusContainer>
-                            <LoadingDialog.StatusTitle use={"subtitle2"}>
+                            <LoadingDialog.StatusTitle use={"body2"}>
                                 {t`Error`}
                             </LoadingDialog.StatusTitle>
                             <LoadingDialog.StatusBody use={"body2"}>
@@ -117,10 +117,10 @@ const ExportPageLoadingDialogContent: React.FC<ExportPageLoadingDialogContent> =
                     )}
                     {stats && (
                         <LoadingDialog.ProgressContainer>
-                            <LoadingDialog.StatusTitle use={"subtitle2"}>
+                            <LoadingDialog.StatusTitle use={"body2"}>
                                 {t`{completed} of {total} completed`({
-                                    completed: stats.completed,
-                                    total: stats.total
+                                    completed: `${stats.completed}`,
+                                    total: `${stats.total}`
                                 })}
                             </LoadingDialog.StatusTitle>
                             <ProgressBar

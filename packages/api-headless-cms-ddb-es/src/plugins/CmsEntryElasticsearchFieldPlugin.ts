@@ -1,7 +1,7 @@
 import {
     ElasticsearchFieldPlugin,
     ElasticsearchFieldPluginParams as ElasticsearchFieldPluginParamsBaseParams
-} from "@webiny/api-elasticsearch/plugins/definition/ElasticsearchFieldPlugin";
+} from "@webiny/api-elasticsearch";
 
 export interface CmsEntryElasticsearchFieldPluginParams
     extends ElasticsearchFieldPluginParamsBaseParams {

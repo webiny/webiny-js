@@ -1,6 +1,6 @@
 {
   "name": "@webiny/db-dynamodb",
-  "version": "5.33.1",
+  "version": "5.33.2",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -10,11 +10,11 @@
   "author": "Webiny Ltd",
   "license": "MIT",
   "dependencies": {
-    "@webiny/api": "^5.33.1",
-    "@webiny/db": "^5.33.1",
-    "@webiny/error": "^5.33.1",
-    "@webiny/handler-db": "^5.33.1",
-    "@webiny/plugins": "^5.33.1",
+    "@webiny/api": "^5.33.2",
+    "@webiny/db": "^5.33.2",
+    "@webiny/error": "^5.33.2",
+    "@webiny/handler-db": "^5.33.2",
+    "@webiny/plugins": "^5.33.2",
     "date-fns": "^2.22.1",
     "dot-prop": "^6.0.1",
     "fuse.js": "^6.4.6",
@@ -22,12 +22,12 @@
     "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "@babel/cli": "^7.16.0",
-    "@babel/core": "^7.16.0",
+    "@babel/cli": "^7.19.3",
+    "@babel/core": "^7.19.3",
     "@types/is-number": "^7.0.2",
-    "@webiny/cli": "^5.33.1",
-    "@webiny/project-utils": "^5.33.1",
-    "dynamodb-toolbox": "^0.3.4",
+    "@webiny/cli": "^5.33.2",
+    "@webiny/project-utils": "^5.33.2",
+    "dynamodb-toolbox": "^0.3.5",
     "jest": "^28.1.0",
     "jest-dynalite": "^3.2.0",
     "rimraf": "^3.0.2",

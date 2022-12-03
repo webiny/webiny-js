@@ -3,6 +3,7 @@
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
     { "path": "../api-headless-cms" },
+    { "path": "../api-admin-settings" },
     { "path": "../api-i18n" },
     { "path": "../api-i18n-ddb" },
     { "path": "../api-page-builder" },
@@ -25,7 +26,9 @@
     { "path": "../api-headless-cms-ddb" },
     { "path": "../api-page-builder-so-ddb" },
     { "path": "../api-security-so-ddb" },
-    { "path": "../api-tenancy-so-ddb" }
+    { "path": "../api-tenancy-so-ddb" },
+    { "path": "../api-mailer" },
+    { "path": "../utils" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -35,6 +38,8 @@
       "~/*": ["./src/*"],
       "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
       "@webiny/api-headless-cms": ["../api-headless-cms/src"],
+      "@webiny/api-admin-settings/*": ["../api-admin-settings/src/*"],
+      "@webiny/api-admin-settings": ["../api-admin-settings/src"],
       "@webiny/api-i18n/*": ["../api-i18n/src/*"],
       "@webiny/api-i18n": ["../api-i18n/src"],
       "@webiny/api-i18n-ddb/*": ["../api-i18n-ddb/src/*"],
@@ -71,6 +76,8 @@
       "@webiny/pubsub": ["../pubsub/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"],
+      "@webiny/utils/*": ["../utils/src/*"],
+      "@webiny/utils": ["../utils/src"],
       "@webiny/validation/*": ["../validation/src/*"],
       "@webiny/validation": ["../validation/src"],
       "@webiny/api-headless-cms-ddb/*": ["../api-headless-cms-ddb/src/*"],
@@ -80,7 +87,9 @@
       "@webiny/api-security-so-ddb/*": ["../api-security-so-ddb/src/*"],
       "@webiny/api-security-so-ddb": ["../api-security-so-ddb/src"],
       "@webiny/api-tenancy-so-ddb/*": ["../api-tenancy-so-ddb/src/*"],
-      "@webiny/api-tenancy-so-ddb": ["../api-tenancy-so-ddb/src"]
+      "@webiny/api-tenancy-so-ddb": ["../api-tenancy-so-ddb/src"],
+      "@webiny/api-mailer/*": ["../api-mailer/src/*"],
+      "@webiny/api-mailer": ["../api-mailer/src"]
     },
     "baseUrl": "."
   }

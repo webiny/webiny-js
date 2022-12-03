@@ -26,7 +26,7 @@ import {
     ApwWorkflowStep,
     ApwWorkflowStepTypes
 } from "~/types";
-import { getNanoid } from "~/utils";
+import { generateAlphaNumericId } from "@webiny/utils";
 import { useQuery as useRouterQuery } from "~/hooks/useQuery";
 
 const t = i18n.ns("app-apw/admin/publishing-workflows/form");
@@ -39,7 +39,7 @@ const initialStepData: ApwWorkflowStep = {
 
 export const getInitialStepData = () => ({
     ...initialStepData,
-    id: getNanoid()
+    id: generateAlphaNumericId(12)
 });
 
 const createNewFormData = (app: ApwWorkflowApplications): Partial<ApwWorkflow> => {

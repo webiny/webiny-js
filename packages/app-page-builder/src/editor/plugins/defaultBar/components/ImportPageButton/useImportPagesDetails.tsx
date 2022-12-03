@@ -32,7 +32,7 @@ const ImportPagesDetails: React.FC<ImportPagesDetailsProps> = ({ loading, result
                         height: 160
                     }}
                 >
-                    <ShowDetails.Label use={"subtitle2"}>{t`Pages imported:`}</ShowDetails.Label>
+                    <ShowDetails.Label use={"body2"}>{t`Pages imported:`}</ShowDetails.Label>
                     <ShowDetails.List data-testid={"import-pages-dialog.show-detail-list"}>
                         {subtasks.map(subtask => {
                             const { page } = subtask.data;

@@ -66,6 +66,19 @@ export const renderListFilterFields: RenderListFilterFields = (params): string =
             "ownedBy_not_in: [String!]"
         ].join("\n")
     ];
+    /**
+     * We can find different statuses only in the manage API endpoint.
+     */
+    if (type === "manage") {
+        fields.push(
+            ...[
+                "status: String",
+                "status_not: String",
+                "status_in: [String!]",
+                "status_not_in: [String!]"
+            ]
+        );
+    }
 
     for (const field of model.fields) {
         // Every time a client updates content model's fields, we check the type of each field. If a field plugin

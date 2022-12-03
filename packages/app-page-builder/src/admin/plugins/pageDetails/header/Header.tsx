@@ -1,32 +1,32 @@
 import React from "react";
-import { css } from "emotion";
+import styled from "@emotion/styled";
 import { renderPlugins } from "@webiny/app/plugins";
 import { Typography } from "@webiny/ui/Typography";
-import { Grid, Cell } from "@webiny/ui/Grid";
 import { PbPageData } from "~/types";
 
-const headerTitle = css({
-    "&.mdc-layout-grid": {
-        borderBottom: "1px solid var(--mdc-theme-on-background)",
-        color: "var(--mdc-theme-text-primary-on-background)",
-        background: "var(--mdc-theme-surface)",
-        paddingTop: 10,
-        paddingBottom: 9,
-        ".mdc-layout-grid__inner": {
-            alignItems: "center"
-        }
-    }
+const HeaderTitle = styled("div")({
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    borderBottom: "1px solid var(--mdc-theme-on-background)",
+    color: "var(--mdc-theme-text-primary-on-background)",
+    background: "var(--mdc-theme-surface)",
+    paddingTop: 10,
+    paddingBottom: 9,
+    paddingLeft: 24,
+    paddingRight: 24
 });
 
-const pageTitle = css({
+const PageTitle = styled("div")({
     whiteSpace: "nowrap",
     overflow: "hidden",
     textOverflow: "ellipsis"
 });
 
-const headerActions = css({
+const HeaderActions = styled("div")({
     justifyContent: "flex-end",
     marginRight: "-15px",
+    marginLeft: "10px",
     display: "flex",
     alignItems: "center"
 });
@@ -38,15 +38,15 @@ const Header: React.FC<HeaderProps> = props => {
     const { page } = props;
     return (
         <React.Fragment>
-            <Grid className={headerTitle}>
-                <Cell span={8} className={pageTitle}>
+            <HeaderTitle>
+                <PageTitle>
                     <Typography use="headline5">{page.title}</Typography>
-                </Cell>
-                <Cell span={4} className={headerActions}>
+                </PageTitle>
+                <HeaderActions>
                     {renderPlugins("pb-page-details-header-left", props)}
                     {renderPlugins("pb-page-details-header-right", props)}
-                </Cell>
-            </Grid>
+                </HeaderActions>
+            </HeaderTitle>
         </React.Fragment>
     );
 };

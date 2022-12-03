@@ -32,6 +32,10 @@ const DATA_FIELDS = /* GraphQL */ `
                     src
                 }
             }
+            htmlTags {
+                header
+                footer
+            }
         }
         error {
             message

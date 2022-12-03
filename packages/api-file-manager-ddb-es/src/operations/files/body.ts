@@ -1,19 +1,21 @@
 import { FileManagerFilesStorageOperationsListParamsWhere } from "@webiny/api-file-manager/types";
-import { decodeCursor } from "@webiny/api-elasticsearch/cursors";
+import { decodeCursor } from "@webiny/api-elasticsearch";
 import {
     ElasticsearchBoolQueryConfig,
     SearchBody as ElasticTsSearchBody
 } from "@webiny/api-elasticsearch/types";
-import { createLimit } from "@webiny/api-elasticsearch/limit";
-import { createSort } from "@webiny/api-elasticsearch/sort";
-import { normalizeValue } from "@webiny/api-elasticsearch/normalize";
+import {
+    createLimit,
+    createSort,
+    applyWhere,
+    normalizeValue,
+    getElasticsearchOperatorPluginsByLocale
+} from "@webiny/api-elasticsearch";
 import { FileElasticsearchFieldPlugin } from "~/plugins/FileElasticsearchFieldPlugin";
 import { FileElasticsearchSortModifierPlugin } from "~/plugins/FileElasticsearchSortModifierPlugin";
 import { FileElasticsearchBodyModifierPlugin } from "~/plugins/FileElasticsearchBodyModifierPlugin";
 import { FileElasticsearchQueryModifierPlugin } from "~/plugins/FileElasticsearchQueryModifierPlugin";
-import { applyWhere } from "@webiny/api-elasticsearch/where";
 import { FileManagerContext } from "~/types";
-import { getElasticsearchOperatorPluginsByLocale } from "@webiny/api-elasticsearch/operators";
 
 interface CreateElasticsearchBodyParams {
     context: FileManagerContext;

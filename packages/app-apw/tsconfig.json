@@ -12,7 +12,9 @@
     { "path": "../plugins" },
     { "path": "../react-router" },
     { "path": "../ui" },
-    { "path": "../validation" }
+    { "path": "../utils" },
+    { "path": "../validation" },
+    { "path": "../app-mailer" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -40,8 +42,12 @@
       "@webiny/react-router": ["../react-router/src"],
       "@webiny/ui/*": ["../ui/src/*"],
       "@webiny/ui": ["../ui/src"],
+      "@webiny/utils/*": ["../utils/src/*"],
+      "@webiny/utils": ["../utils/src"],
       "@webiny/validation/*": ["../validation/src/*"],
-      "@webiny/validation": ["../validation/src"]
+      "@webiny/validation": ["../validation/src"],
+      "@webiny/app-mailer/*": ["../app-mailer/src/*"],
+      "@webiny/app-mailer": ["../app-mailer/src"]
     },
     "baseUrl": "."
   }

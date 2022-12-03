@@ -15,6 +15,7 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
             identityId: ID
             displayName: String
             type: String
+            email: String
         }
 
         type ApwListReviewersResponse {
@@ -33,6 +34,7 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
             identityId: ID
             displayName: String
             type: String
+            email: String
         }
 
         type ApwReviewerResponse {

@@ -1,6 +1,7 @@
 import { mocks as changeRequestMock } from "./mocks/changeRequest";
 import { createPageContentReviewSetup } from "../utils/helpers";
 import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
+import { createTransport } from "@webiny/api-mailer";
 
 const richTextMock = [
     {
@@ -52,14 +53,18 @@ const updatedRichText = [
     }
 ];
 
-describe("Comment crud test", () => {
-    const options = {
-        path: "manage/en-US"
+jest.mock("~/plugins/hooks/notifications/appUrl", () => {
+    return {
+        getAppUrl: async () => {
+            return {
+                appUrl: "https://webiny.local"
+            };
+        }
     };
+});
 
-    const gqlHandler = usePageBuilderHandler({
-        ...options
-    });
+describe("Comment crud test", () => {
+    const gqlHandler = usePageBuilderHandler();
 
     const {
         getCommentQuery,
@@ -71,8 +76,8 @@ describe("Comment crud test", () => {
         until
     } = gqlHandler;
 
-    const setupChangeRequest = async () => {
-        const { contentReview } = await createPageContentReviewSetup(gqlHandler);
+    const setupChangeRequest = async (handler?: typeof gqlHandler) => {
+        const { contentReview } = await createPageContentReviewSetup(handler || gqlHandler);
         const changeRequestStep = `${contentReview.id}#${contentReview.steps[0].id}`;
         /*
          * Create a new entry.
@@ -298,5 +303,69 @@ describe("Comment crud test", () => {
                 }
             }
         });
+    });
+
+    it("should send an e-mail to all reviewers after the comment was created", async () => {
+        const fn = jest.fn(() => {
+            return null;
+        });
+
+        const handler = usePageBuilderHandler({
+            identity: {
+                id: "mockIdentityId",
+                type: "admin",
+                displayName: "Mock Identity",
+                email: "mock@webiny.local"
+            },
+            plugins: [
+                createTransport(async () => {
+                    return {
+                        name: "test-dummy-transport",
+                        send: async () => {
+                            fn.apply(null);
+                            return {
+                                result: null,
+                                error: null
+                            };
+                        }
+                    };
+                })
+            ]
+        });
+
+        await handler.securityIdentity.login();
+        await gqlHandler.securityIdentity.login();
+
+        const changeRequest = await setupChangeRequest(handler);
+        /*
+         * Create a new entry.
+         */
+        const [createCommentResponse] = await handler.createCommentMutation({
+            data: {
+                body: richTextMock,
+                changeRequest: changeRequest.id,
+                media: {
+                    src: "cloudfront.net/my-file"
+                }
+            }
+        });
+
+        expect(createCommentResponse).toMatchObject({
+            data: {
+                apw: {
+                    createComment: {
+                        data: {
+                            id: expect.any(String)
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+        /**
+         * Test expects the mock function to be called as it represents creating notification text and body.
+         * We expect 2 calls, because change request creation produces an e-mail.
+         */
+        expect(fn).toBeCalledTimes(2);
     });
 });

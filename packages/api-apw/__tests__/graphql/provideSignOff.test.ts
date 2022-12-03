@@ -4,13 +4,7 @@ import { createSetupForPageContentReview } from "../utils/helpers";
 import { mocks as changeRequestMock } from "./mocks/changeRequest";
 
 describe("Provide sign off for a step in content review process", function () {
-    const options = {
-        path: "manage/en-US"
-    };
-
-    const gqlHandler = usePageBuilderHandler({
-        ...options
-    });
+    const gqlHandler = usePageBuilderHandler();
     const {
         getContentReviewQuery,
         createContentReviewMutation,
@@ -137,7 +131,7 @@ describe("Provide sign off for a step in content review process", function () {
                                 displayName: "John Doe",
                                 type: "admin"
                             },
-                            status: "underReview",
+                            reviewStatus: "underReview",
                             title: expect.any(String),
                             content: expect.objectContaining(expectedContent),
                             steps: [
@@ -176,7 +170,6 @@ describe("Provide sign off for a step in content review process", function () {
 
     test(`should throw error when trying to provide sign off by a non-reviewer`, async () => {
         const gqlHandlerForIdentityA = usePageBuilderHandler({
-            ...options,
             identity: {
                 id: "123456789",
                 type: "admin",

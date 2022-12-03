@@ -58,7 +58,7 @@ export const createTenancyAndSecurity = ({
             context.security.addAuthenticator(async () => {
                 return (
                     identity || {
-                        id: "12345678",
+                        id: "id-12345678",
                         type: "admin",
                         displayName: "John Doe"
                     }

@@ -103,6 +103,7 @@ describe("content model test", () => {
             "createContentModelFrom",
             "updateContentModel",
             "deleteContentModel",
+            "initializeModel",
             "createContentModelGroup",
             "updateContentModelGroup",
             "deleteContentModelGroup"

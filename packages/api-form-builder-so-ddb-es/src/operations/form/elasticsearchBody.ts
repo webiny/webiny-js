@@ -1,16 +1,18 @@
 import { SearchBody as esSearchBody } from "elastic-ts";
-import { decodeCursor } from "@webiny/api-elasticsearch/cursors";
+import {
+    decodeCursor,
+    getElasticsearchOperatorPluginsByLocale,
+    applyWhere,
+    createLimit,
+    createSort
+} from "@webiny/api-elasticsearch";
 import { ElasticsearchBoolQueryConfig } from "@webiny/api-elasticsearch/types";
-import { createSort } from "@webiny/api-elasticsearch/sort";
-import { createLimit } from "@webiny/api-elasticsearch/limit";
 import { FormElasticsearchFieldPlugin } from "~/plugins/FormElasticsearchFieldPlugin";
 import { FormElasticsearchSortModifierPlugin } from "~/plugins/FormElasticsearchSortModifierPlugin";
 import { FormElasticsearchBodyModifierPlugin } from "~/plugins/FormElasticsearchBodyModifierPlugin";
 import { FormBuilderStorageOperationsListFormsParams } from "@webiny/api-form-builder/types";
 import { FormElasticsearchQueryModifierPlugin } from "~/plugins/FormElasticsearchQueryModifierPlugin";
 import { PluginsContainer } from "@webiny/plugins";
-import { applyWhere } from "@webiny/api-elasticsearch/where";
-import { getElasticsearchOperatorPluginsByLocale } from "@webiny/api-elasticsearch/operators";
 
 export const createFormElasticType = (): string => {
     return "fb.form";

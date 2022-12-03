@@ -8,7 +8,6 @@ import { ElementRoot } from "~/render/components/ElementRoot";
 const BlockStyle = styled("div")({
     position: "relative",
     color: "#666",
-    padding: 5,
     boxSizing: "border-box"
 });
 interface BlockType {

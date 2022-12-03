@@ -4,8 +4,8 @@ import { GraphQLScalarPlugin, GraphQLSchemaPlugin } from "./types";
 import { Context } from "@webiny/api/types";
 import {
     RefInput,
-    Number as NumberScalar,
-    Any as AnyScalar,
+    NumberScalar,
+    AnyScalar,
     DateScalar,
     DateTimeScalar,
     JsonScalar,

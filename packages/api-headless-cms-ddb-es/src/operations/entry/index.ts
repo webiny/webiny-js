@@ -15,8 +15,6 @@ import {
     CmsEntryStorageOperationsGetRevisionsParams,
     CmsEntryStorageOperationsListParams,
     CmsEntryStorageOperationsPublishParams,
-    CmsEntryStorageOperationsRequestChangesParams,
-    CmsEntryStorageOperationsRequestReviewParams,
     CmsEntryStorageOperationsUnpublishParams,
     CmsEntryStorageOperationsUpdateParams,
     CmsStorageEntry,
@@ -35,7 +33,6 @@ import lodashOmit from "lodash/omit";
 import { Entity } from "dynamodb-toolbox";
 import { Client } from "@elastic/elasticsearch";
 import { PluginsContainer } from "@webiny/plugins";
-import { compress, decompress } from "@webiny/api-elasticsearch/compression";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
 import { DataLoadersHandler } from "~/operations/entry/dataLoaders";
 import {
@@ -45,8 +42,7 @@ import {
     createRevisionSortKey
 } from "~/operations/entry/keys";
 import { queryAll, queryOne, QueryOneParams } from "@webiny/db-dynamodb/utils/query";
-import { createLimit } from "@webiny/api-elasticsearch/limit";
-import { encodeCursor } from "@webiny/api-elasticsearch/cursors";
+import { createLimit, encodeCursor, compress, decompress } from "@webiny/api-elasticsearch";
 import { get as getRecord } from "@webiny/db-dynamodb/utils/get";
 import { zeroPad } from "@webiny/utils";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
@@ -1246,213 +1242,6 @@ export const createEntriesStorageOperations = (
         return initialStorageEntry;
     };
 
-    const requestReview = async (
-        model: StorageOperationsCmsModel,
-        params: CmsEntryStorageOperationsRequestReviewParams
-    ) => {
-        const { entry: initialEntry, storageEntry: initialStorageEntry } = params;
-
-        const entry = convertToStorageEntry({
-            model,
-            entry: initialEntry
-        });
-        const storageEntry = convertToStorageEntry({
-            model,
-            entry: initialStorageEntry
-        });
-
-        /**
-         * We need the latest entry to check if it needs to be updated.
-         */
-        const [latestStorageEntry] = await dataLoaders.getLatestRevisionByEntryId({
-            model,
-            ids: [entry.id]
-        });
-
-        const partitionKey = createPartitionKey({
-            id: entry.id,
-            locale: model.locale,
-            tenant: model.tenant
-        });
-
-        /**
-         * If we updated the latest version, then make sure the changes are propagated to ES too.
-         */
-        let esLatestData = null;
-        const { index } = configurations.es({
-            model
-        });
-        if (latestStorageEntry?.id === entry.id) {
-            const preparedEntryData = prepareEntryToIndex({
-                plugins,
-                model,
-                entry: lodashCloneDeep(entry),
-                storageEntry: lodashCloneDeep(storageEntry)
-            });
-
-            esLatestData = await getESLatestEntryData(plugins, preparedEntryData);
-        }
-
-        try {
-            await entity.put({
-                ...storageEntry,
-                PK: partitionKey,
-                SK: createRevisionSortKey(entry),
-                TYPE: createType()
-            });
-            dataLoaders.clearAll({
-                model
-            });
-        } catch (ex) {
-            throw new WebinyError(
-                ex.message || "Could not store request review entry record into DynamoDB table.",
-                ex.code || "REQUEST_REVIEW_ERROR",
-                {
-                    entry,
-                    storageEntry,
-                    latestStorageEntry
-                }
-            );
-        }
-        /**
-         * No need to proceed further if nothing to put into Elasticsearch.
-         */
-        if (!esLatestData) {
-            return initialStorageEntry;
-        }
-
-        try {
-            await esEntity.put({
-                PK: partitionKey,
-                SK: createLatestSortKey(),
-                index,
-                data: esLatestData
-            });
-        } catch (ex) {
-            throw new WebinyError(
-                ex.message ||
-                    "Could not store request review entry record into DynamoDB Elasticsearch table.",
-                ex.code || "REQUEST_REVIEW_ERROR",
-                {
-                    entry,
-                    storageEntry,
-                    latestStorageEntry
-                }
-            );
-        }
-        return initialStorageEntry;
-    };
-
-    const requestChanges = async (
-        model: StorageOperationsCmsModel,
-        params: CmsEntryStorageOperationsRequestChangesParams
-    ) => {
-        const { entry: initialEntry, storageEntry: initialStorageEntry } = params;
-
-        const entry = convertToStorageEntry({
-            model,
-            entry: initialEntry
-        });
-        const storageEntry = convertToStorageEntry({
-            model,
-            entry: initialStorageEntry
-        });
-
-        /**
-         * We need the latest entry to check if it needs to be updated.
-         */
-        const [latestStorageEntry] = await dataLoaders.getLatestRevisionByEntryId({
-            model,
-            ids: [entry.id]
-        });
-
-        const partitionKey = createPartitionKey({
-            id: entry.id,
-            locale: model.locale,
-            tenant: model.tenant
-        });
-
-        const items = [
-            entity.putBatch({
-                ...storageEntry,
-                PK: partitionKey,
-                SK: createRevisionSortKey(entry),
-                TYPE: createType()
-            })
-        ];
-        /**
-         * If we updated the latest version, then make sure the changes are propagated to ES too.
-         */
-        const { index } = configurations.es({
-            model
-        });
-        let esLatestData = null;
-        if (latestStorageEntry?.id === entry.id) {
-            items.push(
-                entity.putBatch({
-                    ...storageEntry,
-                    PK: partitionKey,
-                    SK: createLatestSortKey(),
-                    TYPE: createLatestType()
-                })
-            );
-
-            const preparedEntryData = prepareEntryToIndex({
-                plugins,
-                model,
-                entry: lodashCloneDeep(entry),
-                storageEntry: lodashCloneDeep(storageEntry)
-            });
-
-            esLatestData = await getESLatestEntryData(plugins, preparedEntryData);
-        }
-
-        try {
-            await batchWriteAll({
-                table: entity.table,
-                items
-            });
-            dataLoaders.clearAll({
-                model
-            });
-        } catch (ex) {
-            throw new WebinyError(
-                ex.message || "Could not store request changes entry record into DynamoDB table.",
-                ex.code || "REQUEST_CHANGES_ERROR",
-                {
-                    entry,
-                    latestStorageEntry
-                }
-            );
-        }
-        /**
-         * No need to proceed further if nothing to put into Elasticsearch.
-         */
-        if (!esLatestData) {
-            return initialStorageEntry;
-        }
-
-        try {
-            await esEntity.put({
-                PK: partitionKey,
-                SK: createLatestSortKey(),
-                index,
-                data: esLatestData
-            });
-        } catch (ex) {
-            throw new WebinyError(
-                ex.message ||
-                    "Could not store request changes entry record into DynamoDB Elasticsearch table.",
-                ex.code || "REQUEST_CHANGES_ERROR",
-                {
-                    entry,
-                    latestStorageEntry
-                }
-            );
-        }
-        return initialStorageEntry;
-    };
-
     const getLatestRevisionByEntryId = async (
         model: StorageOperationsCmsModel,
         params: CmsEntryStorageOperationsGetLatestRevisionParams
@@ -1637,8 +1426,6 @@ export const createEntriesStorageOperations = (
         get,
         publish,
         unpublish,
-        requestReview,
-        requestChanges,
         list,
         getLatestRevisionByEntryId,
         getPublishedRevisionByEntryId,

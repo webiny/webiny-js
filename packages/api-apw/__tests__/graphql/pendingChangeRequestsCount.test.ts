@@ -4,13 +4,7 @@ import { createSetupForPageContentReview } from "../utils/helpers";
 import { ApwContentReview, PageWithWorkflow } from "~/types";
 
 describe(`Pending change requests count test`, () => {
-    const options = {
-        path: "manage/en-US"
-    };
-
-    const gqlHandler = usePageBuilderHandler({
-        ...options
-    });
+    const gqlHandler = usePageBuilderHandler();
     const {
         createChangeRequestMutation,
         createContentReviewMutation,
@@ -113,7 +107,7 @@ describe(`Pending change requests count test`, () => {
                                 displayName: expect.any(String),
                                 type: "admin"
                             },
-                            status: "underReview",
+                            reviewStatus: "underReview",
                             title: expect.any(String),
                             content: expect.objectContaining(expectedContent),
                             steps: [
@@ -194,7 +188,7 @@ describe(`Pending change requests count test`, () => {
                                 displayName: expect.any(String),
                                 type: "admin"
                             },
-                            status: "underReview",
+                            reviewStatus: "underReview",
                             title: expect.any(String),
                             content: expect.objectContaining(expectedContent),
                             steps: [
@@ -254,7 +248,7 @@ describe(`Pending change requests count test`, () => {
                                 displayName: expect.any(String),
                                 type: "admin"
                             },
-                            status: "underReview",
+                            reviewStatus: "underReview",
                             title: expect.any(String),
                             content: expect.objectContaining(expectedContent),
                             steps: [
@@ -314,7 +308,7 @@ describe(`Pending change requests count test`, () => {
                                 displayName: expect.any(String),
                                 type: "admin"
                             },
-                            status: "underReview",
+                            reviewStatus: "underReview",
                             title: expect.any(String),
                             content: expect.objectContaining(expectedContent),
                             steps: [
@@ -374,7 +368,7 @@ describe(`Pending change requests count test`, () => {
                                 displayName: expect.any(String),
                                 type: "admin"
                             },
-                            status: "underReview",
+                            reviewStatus: "underReview",
                             title: expect.any(String),
                             content: expect.objectContaining(expectedContent),
                             steps: [
@@ -441,7 +435,7 @@ describe(`Pending change requests count test`, () => {
                                 displayName: expect.any(String),
                                 type: "admin"
                             },
-                            status: "underReview",
+                            reviewStatus: "underReview",
                             title: expect.any(String),
                             content: expect.objectContaining(expectedContent),
                             steps: [
@@ -538,7 +532,7 @@ describe(`Pending change requests count test`, () => {
                                 displayName: expect.any(String),
                                 type: "admin"
                             },
-                            status: "underReview",
+                            reviewStatus: "underReview",
                             title: expect.any(String),
                             content: expect.objectContaining(expectedContent),
                             steps: [
