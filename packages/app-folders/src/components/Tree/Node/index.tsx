@@ -29,7 +29,7 @@ export const FolderNode = ({ isOpen, text }: FolderProps) => {
     return (
         <>
             <FolderIcon>{isOpen ? <FolderOpen /> : <Folder />}</FolderIcon>
-            <Text use={"subtitle2"}>{text}</Text>
+            <Text use={"body2"}>{text}</Text>
         </>
     );
 };
