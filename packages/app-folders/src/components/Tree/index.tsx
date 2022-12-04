@@ -5,6 +5,7 @@ import { NodeModel } from "@minoru/react-dnd-treeview";
 import { useFolders } from "~/hooks/useFolders";
 
 import { CreateButton } from "./ButtonCreate";
+import { Empty } from "~/components/Tree/Empty";
 import { Loader } from "./Loader";
 import { List } from "./List";
 import { Title } from "./Title";
@@ -48,7 +49,10 @@ export const FolderTree: React.FC<Props> = ({
                     <CreateButton onClick={() => setCreateDialogOpen(true)} />
                 </>
             ) : (
-                <div>{"Empty"}</div>
+                <>
+                    <Empty />
+                    <CreateButton onClick={() => setCreateDialogOpen(true)} />
+                </>
             )}
             <FolderDialogCreate
                 type={type}
