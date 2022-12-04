@@ -113,11 +113,13 @@ class Release {
             const changelog = await this.__getChangelog(lernaJSON.version);
             this.logger.info("Generated release notes");
 
+            // Create the tag
             await execa("git", ["tag", versionTag, "-m", versionTag]);
+            await execa("git", ["push", "origin", versionTag]);
             this.logger.info("Created Git tag %s", versionTag);
 
-            const { html_url } = await this.__createGithubRelease(versionTag, changelog);
-            this.logger.info("Created Github release: %s", html_url);
+            const { data: release } = await this.__createGithubRelease(versionTag, changelog);
+            this.logger.info("Created Github release: %s", release.html_url);
         }
 
         this.logger.success("Release process has finished successfully!");
