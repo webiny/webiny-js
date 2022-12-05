@@ -1,7 +1,7 @@
 const { Release } = require("./Release");
 
 class VerdaccioRelease extends Release {
-    defaultTag = "verdaccio";
+    defaultTag = "local-npm";
 
     constructor(logger) {
         super(logger);
