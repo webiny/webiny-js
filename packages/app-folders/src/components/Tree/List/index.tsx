@@ -12,15 +12,14 @@ import { useSnackbar } from "@webiny/app-admin";
 import { DndProvider } from "react-dnd";
 import useDeepCompareEffect from "use-deep-compare-effect";
 
+import { FolderDialogDelete, FolderDialogUpdate } from "~/components";
 import { Node } from "~/components/Tree/Node";
 import { NodePreview } from "~/components/Tree/NodePreview";
 import { Placeholder } from "~/components/Tree/Placeholder";
 
-import { DndItemData, FolderItem } from "~/types";
-
 import { useFolders } from "~/hooks";
 
-import { FolderDialogDelete, FolderDialogUpdate } from "~/components";
+import { DndItemData, FolderItem } from "~/types";
 
 const ROOT_ID = "root";
 

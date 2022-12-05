@@ -21,22 +21,10 @@ yarn add @webiny/app-folders
 ## Usage
 Make sure `FoldersProvider` has been included within the admin app.
 
-### FolderTree component
-`FolderTree` component shows the tree list of folders for a particular `type`.
+## Hooks
+This package exposes the following hooks, useful to interact with folders entities.
 
-
-```jsx
-import { FolderTree } from "@webiny/app-folders";
-
-<FolderTree
-    type={"page"}
-    title={"All pages"}
-    onFolderClick={item => console.log(item)}
-    focusedFolderId={"anyExistingId"}
-/>
-```
-
-### useFolder hook
+### useFolder
 `useFolder()` hook allows you to interact with folders state and related APIs while building your custom component.
 
 ```jsx
@@ -49,8 +37,8 @@ As you might notice, there is not `listFolders` method available from `useFolder
 
 You don't need to store the result of it to any local state; that is managed by the context provider.
 
-### useFolderLinks hook
-`useFolderLinks()` hook allows you to interact with folders links state and related APIs while building your custom component.
+### useLinks
+`useLinks()` hook allows you to interact with folders links state and related APIs while building your custom component.
 
 ```jsx
 import { useLinks } from "@webiny/app-folders";
@@ -61,3 +49,62 @@ const { links, loading, getLink, createLink, updateLink, deleteLink } = useLinks
 As you might notice, there is not `listLinks` method available from `useLinks()` hook: this is because on first mount, `listLinks` is called internally, which will either issue a network request, or load links from cache.
 
 You don't need to store the result of it to any local state; that is managed by the context provider.
+
+## Components
+This package exposes the following components:
+
+### FolderTree
+`FolderTree` component shows the tree list of folders for a particular `type`.
+
+```jsx
+import { FolderTree } from "@webiny/app-folders";
+
+<FolderTree
+    type={"page"}
+    title={"All pages"}
+    onFolderClick={item => console.log(item)}
+    onTitleClick={() => console.log("Do whatever you like on title click")}
+    focusedFolderId={"anyExistingId"}
+/>
+```
+
+### FolderDialogCreate
+`FolderDialogCreate` component shows a dialog to allow users to create a new folder.
+
+```jsx
+import { FolderDialogCreate } from "@webiny/app-folders";
+
+<FolderDialogCreate
+    type={"page"}
+    open={dialogOpen}
+    onClose={() => setDialogOpen(false)}
+    parentId={"anyParentId"}
+/>
+```
+
+
+### FolderDialogUpdate
+`FolderDialogUpdate` component shows a dialog to allow users to update an existing folder.
+
+```jsx
+import { FolderDialogUpdate } from "@webiny/app-folders";
+
+<FolderDialogUpdate
+    folder={folder}
+    open={dialogOpen}
+    onClose={() => setDialogOpen(false)}
+/>
+```
+
+### FolderDialogDelete
+`FolderDialogUpdate` component shows a dialog to allow users to delete an existing folder.
+
+```jsx
+import { FolderDialogDelete } from "@webiny/app-folders";
+
+<FolderDialogDelete
+    folder={folder}
+    open={dialogOpen}
+    onClose={() => setDialogOpen(false)}
+/>
+```
