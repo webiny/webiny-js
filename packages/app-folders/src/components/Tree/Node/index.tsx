@@ -43,6 +43,8 @@ export const Node = ({
     onUpdateFolder,
     onDeleteFolder
 }: Props) => {
+    // Move the placeholder line to the left based on the element depth within the tree.
+    // Let's add some pixels so that the element is detached from the container but takes up the whole length while it's highlighted during dnd.
     const indent = depth * 24 + 8;
 
     const dragOverProps = useDragOver(node.id, isOpen, onToggle);
