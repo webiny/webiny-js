@@ -2,7 +2,7 @@ import WebinyError from "@webiny/error";
 import { CmsEntryListWhere, CmsModel } from "@webiny/api-headless-cms/types";
 import { ModelFields } from "~/operations/entry/elasticsearch/types";
 import { PluginsContainer } from "@webiny/plugins";
-import { ElasticsearchBoolQueryConfig } from "@webiny/api-elasticsearch/types";
+import { ElasticsearchBoolQueryConfig, Query } from "@webiny/api-elasticsearch/types";
 import { createSearchPluginList } from "~/operations/entry/elasticsearch/plugins/search";
 import { createOperatorPluginList } from "~/operations/entry/elasticsearch/plugins/operator";
 import { createBaseQuery } from "~/operations/entry/elasticsearch/initialQuery";
@@ -11,7 +11,6 @@ import { getValues } from "./values";
 import { getPopulated } from "./populated";
 import { createApplyFiltering } from "./applyFiltering";
 import { isRefFieldFiltering } from "~/operations/entry/elasticsearch/filtering/isRefFieldFiltering";
-import { Query } from "elastic-ts";
 
 export interface CreateExecParams {
     model: CmsModel;
@@ -89,24 +88,16 @@ export const createExecFiltering = (params: CreateExecParams): CreateExecFilteri
              */
             else if (key === "AND") {
                 const childWhereList = getValues(value, "AND");
-                // const childQuery = createBaseQuery();
-
+                /**
+                 * We can assign AND condition queries to the parent query.
+                 * When doing the AND queries, level of bool does not have any effect.
+                 */
                 for (const childWhere of childWhereList) {
                     execFiltering({
                         query,
                         where: childWhere
                     });
                 }
-                // const childQueryBool = getPopulated(childQuery);
-                // if (Object.keys(childQueryBool).length === 0) {
-                //     continue;
-                // }
-                /**
-                 * Assign child queries.
-                 */
-                // query.must.push({
-                //     bool: childQueryBool
-                // });
                 continue;
             }
             //
@@ -133,13 +124,25 @@ export const createExecFiltering = (params: CreateExecParams): CreateExecFilteri
                  */
                 const should: Query[] = [];
 
-                for (const key in childQueryBool) {
-                    should.push(...(childQueryBool as any)[key]);
+                let key: keyof ElasticsearchBoolQueryConfig;
+                for (key in childQueryBool) {
+                    const childQueryBoolValue = childQueryBool[key]; // as Query[];
+                    if (!Array.isArray(childQueryBoolValue)) {
+                        if (query[key] === undefined) {
+                            /**
+                             * Unfortunately we need to cast as any because it actually can be anything.
+                             */
+                            query[key] = childQueryBoolValue as any;
+                        }
+                        continue;
+                    }
+                    should.push(...childQueryBoolValue);
                 }
                 query.should.push(...should);
-                if (query.should.length > 1) {
+                if (query.should.length > 1 && !query.minimum_should_match) {
                     query.minimum_should_match = 1;
                 }
+
                 continue;
             }
             const { field: whereFieldId, operator } = parseWhereKey(key);
