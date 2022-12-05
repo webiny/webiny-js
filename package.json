@@ -208,6 +208,13 @@
       ]
     }
   },
+  "lerna": {
+    "version": "0.0.0",
+    "packages": [
+      "packages/*",
+      "packages-v6/*"
+    ]
+  },
   "resolutions": {
     "@types/react": "17.0.39",
     "@types/jsdom": "link:./typings/void",
