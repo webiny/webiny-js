@@ -7,12 +7,13 @@ import { Typography } from "@webiny/ui/Typography";
 
 type Props = {
     title: string;
+    isDragging: boolean;
     onClick?: (event: React.MouseEvent<HTMLElement>) => void;
 };
 
-export const Title: React.FC<Props> = ({ title, onClick }) => {
+export const Title: React.FC<Props> = ({ title, onClick, isDragging }) => {
     return (
-        <Container onClick={onClick} hasClickAction={Boolean(onClick)}>
+        <Container onClick={onClick} hasClickAction={Boolean(onClick)} isDragging={isDragging}>
             <IconContainer>
                 <Dashboard />
             </IconContainer>

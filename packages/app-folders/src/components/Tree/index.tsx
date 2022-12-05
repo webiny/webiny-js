@@ -33,9 +33,13 @@ export const FolderTree: React.FC<Props> = ({
     const { folders } = useFolders(type);
     const [createDialogOpen, setCreateDialogOpen] = useState<boolean>(false);
 
+    // Little CSS trick here: since the folder title has absolute position, user can drag a folder over it and move it to root folder.
+    // While we are moving folders around we disable any title pointer event.
+    const [isDragging, setIsDragging] = useState<boolean>(false);
+
     return (
         <Container>
-            <Title title={title} onClick={onTitleClick} />
+            <Title title={title} onClick={onTitleClick} isDragging={isDragging} />
             {!folders ? (
                 <Loader />
             ) : folders.length > 0 ? (
@@ -45,6 +49,8 @@ export const FolderTree: React.FC<Props> = ({
                         folders={folders}
                         onFolderClick={onFolderClick}
                         focusedFolderId={focusedFolderId}
+                        onDragStart={() => setIsDragging(true)}
+                        onDragEnd={() => setIsDragging(false)}
                     />
                     <CreateButton onClick={() => setCreateDialogOpen(true)} />
                 </>

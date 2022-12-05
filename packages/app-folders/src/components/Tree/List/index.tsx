@@ -90,11 +90,20 @@ const createInitialOpenList = (
 type Props = {
     type: string;
     folders: FolderItem[];
-    onFolderClick: (data: NodeModel<DndItemData>["data"]) => void;
     focusedFolderId?: string;
+    onFolderClick: (data: NodeModel<DndItemData>["data"]) => void;
+    onDragStart: () => void;
+    onDragEnd: () => void;
 };
 
-export const List = ({ type, folders, onFolderClick, focusedFolderId }: Props) => {
+export const List = ({
+    type,
+    folders,
+    onFolderClick,
+    focusedFolderId,
+    onDragStart,
+    onDragEnd
+}: Props) => {
     const { updateFolder } = useFolders(type);
     const { showSnackbar } = useSnackbar();
     const [treeData, setTreeData] = useState<NodeModel<DndItemData>[]>([]);
@@ -148,6 +157,8 @@ export const List = ({ type, folders, onFolderClick, focusedFolderId }: Props) =
                     rootId={ROOT_ID}
                     onDrop={handleDrop}
                     onChangeOpen={handleChangeOpen}
+                    onDragStart={onDragStart}
+                    onDragEnd={onDragEnd}
                     sort={sort}
                     render={(node, { depth, isOpen, onToggle }) => (
                         <Node
