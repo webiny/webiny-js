@@ -69,24 +69,24 @@ export const createExecFiltering = (params: CreateExecParams): CreateExecFilteri
              */
             else if (key === "AND") {
                 const childWhereList = getValues(value, "AND");
-                const childQuery = createBaseQuery();
+                // const childQuery = createBaseQuery();
 
                 for (const childWhere of childWhereList) {
                     execFiltering({
-                        query: childQuery,
+                        query,
                         where: childWhere
                     });
                 }
-                const childQueryBool = getPopulated(childQuery);
-                if (Object.keys(childQueryBool).length === 0) {
-                    continue;
-                }
+                // const childQueryBool = getPopulated(childQuery);
+                // if (Object.keys(childQueryBool).length === 0) {
+                //     continue;
+                // }
                 /**
                  * Assign child queries.
                  */
-                query.must.push({
-                    bool: childQueryBool
-                });
+                // query.must.push({
+                //     bool: childQueryBool
+                // });
                 continue;
             }
             //
