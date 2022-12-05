@@ -14,6 +14,10 @@ const createListFilters = ({ field }: CreateListFiltersParams) => {
         ${field.fieldId}_lte: Number
         ${field.fieldId}_gt: Number
         ${field.fieldId}_gte: Number
+        # there must be two numbers sent in the array
+        ${field.fieldId}_between: [Number!]
+        # there must be two numbers sent in the array
+        ${field.fieldId}_not_between: [Number!]
     `;
 };
 
