@@ -221,7 +221,8 @@
     "codex-tooltip": "1.0.2",
     "@types/eslint": "8.2.1",
     "yargs": "^17.3.1",
-    "@lerna/version@3.22.1": "patch:@lerna/version@npm:3.22.1#.yarn/patches/@lerna-version-npm-3.22.1-97f4c3a7dd"
+    "@lerna/version@3.22.1": "patch:@lerna/version@npm:3.22.1#.yarn/patches/@lerna-version-npm-3.22.1-97f4c3a7dd",
+    "@lerna/publish@3.22.1": "patch:@lerna/publish@npm:3.22.1#.yarn/patches/@lerna-publish-npm-3.22.1-469707df67"
   },
   "packageManager": "yarn@3.2.1"
 }
