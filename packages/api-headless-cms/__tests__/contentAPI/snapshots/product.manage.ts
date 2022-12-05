@@ -161,6 +161,10 @@ export default /* GraphQL */ `
         price_lte: Number
         price_gt: Number
         price_gte: Number
+        # there must be two numbers sent in the array
+        price_between: [Number!]
+        # there must be two numbers sent in the array
+        price_not_between: [Number!]
 
         inStock: Boolean
         inStock_not: Boolean
@@ -173,6 +177,10 @@ export default /* GraphQL */ `
         itemsInStock_lte: Number
         itemsInStock_gt: Number
         itemsInStock_gte: Number
+        # there must be two numbers sent in the array
+        itemsInStock_between: [Number!]
+        # there must be two numbers sent in the array
+        itemsInStock_not_between: [Number!]
 
         availableOn: Date
         availableOn_not: Date
