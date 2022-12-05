@@ -60,11 +60,14 @@ describe("Block Categories Security Test", () => {
         const insufficientPermissions = [
             [[], null],
             [[], identityA],
-            [[{ name: "pb.block", rwd: "wd" }], identityA],
-            [[{ name: "pb.block", rwd: "d" }], identityA],
-            [[{ name: "pb.block", rwd: "w" }], identityA],
+            [[{ name: "pb.blockCategory", rwd: "wd" }], identityA],
+            [[{ name: "pb.blockCategory", rwd: "d" }], identityA],
+            [[{ name: "pb.blockCategory", rwd: "w" }], identityA],
             [
-                [{ name: "content.i18n", locales: ["de-DE", "it-IT"] }, { name: "pb.block" }],
+                [
+                    { name: "content.i18n", locales: ["de-DE", "it-IT"] },
+                    { name: "pb.blockCategory" }
+                ],
                 identityA
             ]
         ];
@@ -80,12 +83,18 @@ describe("Block Categories Security Test", () => {
         }
 
         const sufficientPermissionsAll = [
-            [[{ name: "content.i18n" }, { name: "content.i18n" }, { name: "pb.block" }], identityA],
-            [[{ name: "content.i18n" }, { name: "pb.block", rwd: "r" }], identityA],
-            [[{ name: "content.i18n" }, { name: "pb.block", rwd: "rw" }], identityA],
-            [[{ name: "content.i18n" }, { name: "pb.block", rwd: "rwd" }], identityA],
+            [
+                [{ name: "content.i18n" }, { name: "content.i18n" }, { name: "pb.blockCategory" }],
+                identityA
+            ],
+            [[{ name: "content.i18n" }, { name: "pb.blockCategory", rwd: "r" }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.blockCategory", rwd: "rw" }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.blockCategory", rwd: "rwd" }], identityA],
             [[{ name: "content.i18n" }, { name: "pb.*" }], identityA],
-            [[{ name: "content.i18n", locales: ["en-US"] }, { name: "pb.block" }], identityA]
+            [
+                [{ name: "content.i18n", locales: ["en-US"] }, { name: "pb.blockCategory" }],
+                identityA
+            ]
         ];
 
         for (let i = 0; i < sufficientPermissionsAll.length; i++) {
@@ -141,7 +150,7 @@ describe("Block Categories Security Test", () => {
         }
 
         let identityAHandler = useGqlHandler({
-            permissions: [{ name: "content.i18n" }, { name: "pb.block", own: true }],
+            permissions: [{ name: "content.i18n" }, { name: "pb.blockCategory", own: true }],
             identity: identityA
         });
 
@@ -175,7 +184,7 @@ describe("Block Categories Security Test", () => {
         });
 
         identityAHandler = useGqlHandler({
-            permissions: [{ name: "content.i18n" }, { name: "pb.block", own: true }],
+            permissions: [{ name: "content.i18n" }, { name: "pb.blockCategory", own: true }],
             identity: identityB
         });
 
@@ -213,10 +222,13 @@ describe("Block Categories Security Test", () => {
         const insufficientPermissions = [
             [[], null],
             [[], identityA],
-            [[{ name: "pb.block", own: false, rwd: "r" }], identityA],
-            [[{ name: "pb.block", own: false, rwd: "rd" }], identityA],
+            [[{ name: "pb.blockCategory", own: false, rwd: "r" }], identityA],
+            [[{ name: "pb.blockCategory", own: false, rwd: "rd" }], identityA],
             [
-                [{ name: "content.i18n", locales: ["de-DE", "it-IT"] }, { name: "pb.block" }],
+                [
+                    { name: "content.i18n", locales: ["de-DE", "it-IT"] },
+                    { name: "pb.blockCategory" }
+                ],
                 identityA
             ]
         ];
@@ -233,12 +245,15 @@ describe("Block Categories Security Test", () => {
         }
 
         const sufficientPermissions = [
-            [[{ name: "content.i18n" }, { name: "pb.block" }], identityA],
-            [[{ name: "content.i18n" }, { name: "pb.block", own: true }], identityA],
-            [[{ name: "content.i18n" }, { name: "pb.block", rwd: "w" }], identityA],
-            [[{ name: "content.i18n" }, { name: "pb.block", rwd: "rw" }], identityA],
-            [[{ name: "content.i18n" }, { name: "pb.block", rwd: "rwd" }], identityA],
-            [[{ name: "content.i18n", locales: ["en-US"] }, { name: "pb.block" }], identityA]
+            [[{ name: "content.i18n" }, { name: "pb.blockCategory" }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.blockCategory", own: true }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.blockCategory", rwd: "w" }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.blockCategory", rwd: "rw" }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.blockCategory", rwd: "rwd" }], identityA],
+            [
+                [{ name: "content.i18n", locales: ["en-US"] }, { name: "pb.blockCategory" }],
+                identityA
+            ]
         ];
 
         for (let i = 0; i < sufficientPermissions.length; i++) {
@@ -271,14 +286,17 @@ describe("Block Categories Security Test", () => {
         const insufficientPermissions = [
             [[], null],
             [[], identityA],
-            [[{ name: "pb.block", rwd: "r" }], identityA],
-            [[{ name: "pb.block", rwd: "rd" }], identityA],
-            [[{ name: "pb.block", own: true }], identityB],
+            [[{ name: "pb.blockCategory", rwd: "r" }], identityA],
+            [[{ name: "pb.blockCategory", rwd: "rd" }], identityA],
+            [[{ name: "pb.blockCategory", own: true }], identityB],
             [
-                [{ name: "content.i18n", locales: ["de-DE", "it-IT"] }, { name: "pb.block" }],
+                [
+                    { name: "content.i18n", locales: ["de-DE", "it-IT"] },
+                    { name: "pb.blockCategory" }
+                ],
                 identityA
             ],
-            [[{ name: "content.i18n" }, { name: "pb.block", rwd: "w" }], identityA] // will fail - missing "r"
+            [[{ name: "content.i18n" }, { name: "pb.blockCategory", rwd: "w" }], identityA] // will fail - missing "r"
         ];
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
@@ -292,12 +310,15 @@ describe("Block Categories Security Test", () => {
         }
 
         const sufficientPermissions = [
-            [[{ name: "content.i18n" }, { name: "pb.block" }], identityA],
-            [[{ name: "content.i18n" }, { name: "pb.block", own: true }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.blockCategory" }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.blockCategory", own: true }], identityA],
 
-            [[{ name: "content.i18n" }, { name: "pb.block", rwd: "rw" }], identityA],
-            [[{ name: "content.i18n" }, { name: "pb.block", rwd: "rwd" }], identityA],
-            [[{ name: "content.i18n", locales: ["en-US"] }, { name: "pb.block" }], identityA]
+            [[{ name: "content.i18n" }, { name: "pb.blockCategory", rwd: "rw" }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.blockCategory", rwd: "rwd" }], identityA],
+            [
+                [{ name: "content.i18n", locales: ["en-US"] }, { name: "pb.blockCategory" }],
+                identityA
+            ]
         ];
 
         for (let i = 0; i < sufficientPermissions.length; i++) {
@@ -323,11 +344,14 @@ describe("Block Categories Security Test", () => {
     const deleteBlockCategoryInsufficientPermissions = [
         // [[], null],
         // [[], identityA],
-        [[{ name: "content.i18n" }, { name: "pb.block", rwd: "r" }], identityA],
-        [[{ name: "content.i18n" }, { name: "pb.block", rwd: "rw" }], identityA],
-        [[{ name: "content.i18n" }, { name: "pb.block", own: true }], identityB],
-        [[{ name: "content.i18n", locales: ["de-DE", "it-IT"] }, { name: "pb.block" }], identityA],
-        [[{ name: "content.i18n" }, { name: "pb.block", rwd: "wd" }], identityA] // will fail - missing "r"
+        [[{ name: "content.i18n" }, { name: "pb.blockCategory", rwd: "r" }], identityA],
+        [[{ name: "content.i18n" }, { name: "pb.blockCategory", rwd: "rw" }], identityA],
+        [[{ name: "content.i18n" }, { name: "pb.blockCategory", own: true }], identityB],
+        [
+            [{ name: "content.i18n", locales: ["de-DE", "it-IT"] }, { name: "pb.blockCategory" }],
+            identityA
+        ],
+        [[{ name: "content.i18n" }, { name: "pb.blockCategory", rwd: "wd" }], identityA] // will fail - missing "r"
     ];
 
     test.each(deleteBlockCategoryInsufficientPermissions)(
@@ -344,14 +368,36 @@ describe("Block Categories Security Test", () => {
     );
 
     const deleteBlockCategorySufficientPermissions = [
-        [[{ name: "content.i18n" }, { name: "pb.block" }], identityA],
-        [[{ name: "content.i18n" }, { name: "pb.block", own: true }], identityA],
-        [[{ name: "content.i18n" }, { name: "pb.block", rwd: "rwd" }], identityA],
+        [
+            [
+                { name: "content.i18n" },
+                { name: "pb.blockCategory" },
+                { name: "pb.block", rwd: "r" }
+            ],
+            identityA
+        ],
+        [
+            [
+                { name: "content.i18n" },
+                { name: "pb.blockCategory", own: true },
+                { name: "pb.block", rwd: "r" }
+            ],
+            identityA
+        ],
+        [
+            [
+                { name: "content.i18n" },
+                { name: "pb.blockCategory", rwd: "rwd" },
+                { name: "pb.block", rwd: "r" }
+            ],
+            identityA
+        ],
         [
             [
                 { name: "content.i18n" },
                 { name: "content.i18n", locales: ["en-US"] },
-                { name: "pb.block" }
+                { name: "pb.blockCategory" },
+                { name: "pb.block", rwd: "r" }
             ],
             identityA
         ]
@@ -385,10 +431,13 @@ describe("Block Categories Security Test", () => {
     const getBlockCategoryInsufficientPermissions = [
         [[], null],
         [[], identityA],
-        [[{ name: "content.i18n" }, { name: "pb.block", rwd: "w" }], identityA],
-        [[{ name: "content.i18n" }, { name: "pb.block", rwd: "wd" }], identityA],
-        [[{ name: "content.i18n" }, { name: "pb.block", own: true }], identityB],
-        [[{ name: "content.i18n", locales: ["de-DE", "it-IT"] }, { name: "pb.block" }], identityA]
+        [[{ name: "content.i18n" }, { name: "pb.blockCategory", rwd: "w" }], identityA],
+        [[{ name: "content.i18n" }, { name: "pb.blockCategory", rwd: "wd" }], identityA],
+        [[{ name: "content.i18n" }, { name: "pb.blockCategory", own: true }], identityB],
+        [
+            [{ name: "content.i18n", locales: ["de-DE", "it-IT"] }, { name: "pb.blockCategory" }],
+            identityA
+        ]
     ];
 
     test.each(getBlockCategoryInsufficientPermissions)(
@@ -403,16 +452,16 @@ describe("Block Categories Security Test", () => {
     );
 
     const getBlockCategorySufficientPermissions = [
-        [[{ name: "content.i18n" }, { name: "pb.block" }], identityA],
-        [[{ name: "content.i18n" }, { name: "pb.block", own: true }], identityA],
-        [[{ name: "content.i18n" }, { name: "pb.block", rwd: "r" }], identityA],
-        [[{ name: "content.i18n" }, { name: "pb.block", rwd: "rw" }], identityA],
-        [[{ name: "content.i18n" }, { name: "pb.block", rwd: "rwd" }], identityA],
+        [[{ name: "content.i18n" }, { name: "pb.blockCategory" }], identityA],
+        [[{ name: "content.i18n" }, { name: "pb.blockCategory", own: true }], identityA],
+        [[{ name: "content.i18n" }, { name: "pb.blockCategory", rwd: "r" }], identityA],
+        [[{ name: "content.i18n" }, { name: "pb.blockCategory", rwd: "rw" }], identityA],
+        [[{ name: "content.i18n" }, { name: "pb.blockCategory", rwd: "rwd" }], identityA],
         [
             [
                 { name: "content.i18n" },
                 { name: "content.i18n", locales: ["en-US"] },
-                { name: "pb.block" }
+                { name: "pb.blockCategory" }
             ],
             identityA
         ]
