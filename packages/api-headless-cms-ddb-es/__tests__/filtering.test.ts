@@ -141,25 +141,19 @@ describe("convert where to elasticsearch query", () => {
         const expected: ElasticsearchBoolQueryConfig = {
             must: [
                 {
-                    bool: {
-                        must: [
-                            {
-                                query_string: {
-                                    allow_leading_wildcard: true,
-                                    default_operator: "and",
-                                    fields: ["values.titleStorageId"],
-                                    query: "*webiny*"
-                                }
-                            },
-                            {
-                                query_string: {
-                                    allow_leading_wildcard: true,
-                                    default_operator: "and",
-                                    fields: ["values.titleStorageId"],
-                                    query: "*serverless*"
-                                }
-                            }
-                        ]
+                    query_string: {
+                        allow_leading_wildcard: true,
+                        default_operator: "and",
+                        fields: ["values.titleStorageId"],
+                        query: "*webiny*"
+                    }
+                },
+                {
+                    query_string: {
+                        allow_leading_wildcard: true,
+                        default_operator: "and",
+                        fields: ["values.titleStorageId"],
+                        query: "*serverless*"
                     }
                 }
             ],
@@ -179,7 +173,7 @@ describe("convert where to elasticsearch query", () => {
         expect(query).toEqual(expected);
     });
 
-    it.skip(`should add root and "OR" nested query conditions`, async () => {
+    it(`should add root and "OR" nested query conditions`, async () => {
         const where: CmsEntryListWhere = {
             id_gte: 2,
             OR: [
@@ -211,26 +205,19 @@ describe("convert where to elasticsearch query", () => {
             ],
             should: [
                 {
-                    bool: {
-                        should: [
-                            {
-                                query_string: {
-                                    allow_leading_wildcard: true,
-                                    default_operator: "and",
-                                    fields: ["values.titleStorageId"],
-                                    query: "*webiny*"
-                                }
-                            },
-                            {
-                                query_string: {
-                                    allow_leading_wildcard: true,
-                                    default_operator: "and",
-                                    fields: ["values.titleStorageId"],
-                                    query: "*serverless*"
-                                }
-                            }
-                        ],
-                        minimum_should_match: 1
+                    query_string: {
+                        allow_leading_wildcard: true,
+                        default_operator: "and",
+                        fields: ["values.titleStorageId"],
+                        query: "*webiny*"
+                    }
+                },
+                {
+                    query_string: {
+                        allow_leading_wildcard: true,
+                        default_operator: "and",
+                        fields: ["values.titleStorageId"],
+                        query: "*serverless*"
                     }
                 }
             ],
