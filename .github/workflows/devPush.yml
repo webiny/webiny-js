@@ -271,13 +271,9 @@ jobs:
       - name: Set git username
         run: git config --global user.name "webiny-bot"
 
-      - name: Version packages (no push, no changelog)
+      - name: Version and publish to Verdaccio
         working-directory: dev
-        run: yarn lerna:version:verdaccio
-
-      - name: Release to Verdaccio
-        working-directory: dev
-        run: yarn lerna:publish:verdaccio
+        run: yarn release --type=verdaccio
 
       - name: Create verdaccio-files artifact
         uses: actions/upload-artifact@v3
@@ -300,8 +296,8 @@ jobs:
       - name: Create a new Webiny project
         working-directory: xyz
         run: >
-          npx create-webiny-project@next test-project
-          --tag next --no-interactive
+          npx create-webiny-project@verdaccio test-project
+          --tag verdaccio --no-interactive
           --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"region":"${{ env.AWS_REGION }}","storageOperations":"ddb"}'
 
@@ -525,13 +521,9 @@ jobs:
       - name: Set git username
         run: git config --global user.name "webiny-bot"
 
-      - name: Version packages (no push, no changelog)
+      - name: Version and publish to Verdaccio
         working-directory: dev
-        run: yarn lerna:version:verdaccio
-
-      - name: Release to Verdaccio
-        working-directory: dev
-        run: yarn lerna:publish:verdaccio
+        run: yarn release --type=verdaccio
 
       - name: Create verdaccio-files artifact
         uses: actions/upload-artifact@v3
@@ -554,8 +546,8 @@ jobs:
       - name: Create a new Webiny project
         working-directory: xyz
         run: >
-          npx create-webiny-project@next test-project
-          --tag next --no-interactive
+          npx create-webiny-project@verdaccio test-project
+          --tag verdaccio --no-interactive
           --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"region":"${{ env.AWS_REGION }}","storageOperations":"ddb-es"}'
 

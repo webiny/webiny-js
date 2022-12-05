@@ -9,7 +9,6 @@ const { Octokit } = require("@octokit/rest");
 
 class Release {
     tag = undefined;
-    preId = undefined;
     version = undefined;
     createGithubRelease = false;
 
@@ -122,6 +121,9 @@ class Release {
             this.logger.info("Created Github release: %s", release.html_url);
         }
 
+        // Reset all changes made during versioing.
+        await execa("git", ["reset", "--hard", "HEAD"]);
+
         this.logger.success("Release process has finished successfully!");
     }
 
@@ -165,7 +167,7 @@ class Release {
             rootPath: process.cwd(),
             tagPrefix: "v",
             version
-        }).then(({ logPath, newEntry }) => {
+        }).then(({ newEntry }) => {
             return newEntry;
         });
     }

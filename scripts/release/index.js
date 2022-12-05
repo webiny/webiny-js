@@ -2,12 +2,14 @@ const yargs = require("yargs");
 const { LatestRelease } = require("./LatestRelease");
 const { BetaRelease } = require("./BetaRelease");
 const { UnstableRelease } = require("./UnstableRelease");
-const { ConsoleLogger } = require("./ConsoleLogger");
+const { VerdaccioRelease } = require("./VerdaccioRelease");
+const { ConsoleLogger } = require("../ConsoleLogger");
 
 const releaseTypes = {
     latest: LatestRelease,
     beta: BetaRelease,
-    unstable: UnstableRelease
+    unstable: UnstableRelease,
+    verdaccio: VerdaccioRelease
 };
 
 (async () => {
