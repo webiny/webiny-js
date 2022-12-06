@@ -23,7 +23,7 @@ export const useFolders = (type: string) => {
         if (!folders[type]) {
             listFolders(type);
         }
-    }, [folders[type]]);
+    }, [type]);
 
     return useMemo(
         () => ({
