@@ -17,74 +17,13 @@ import { Node } from "~/components/Tree/Node";
 import { NodePreview } from "~/components/Tree/NodePreview";
 import { Placeholder } from "~/components/Tree/Placeholder";
 
+import { createTreeData, createInitialOpenList } from "./utils";
+
 import { useFolders } from "~/hooks";
 
+import { ROOT_ID } from "./constants";
+
 import { DndItemData, FolderItem } from "~/types";
-
-const ROOT_ID = "root";
-
-const createTreeData = (
-    folders: FolderItem[] = [],
-    focusedNodeId?: string
-): NodeModel<DndItemData>[] => {
-    return folders.map(item => {
-        const { id, parentId, name, slug, type, createdOn, createdBy } = item;
-
-        return {
-            id,
-            parent: parentId || ROOT_ID,
-            text: name,
-            droppable: true,
-            data: {
-                id,
-                name,
-                slug,
-                parentId,
-                type,
-                createdOn,
-                createdBy,
-                isFocused: focusedNodeId === id
-            }
-        };
-    });
-};
-
-const createInitialOpenList = (
-    folders: FolderItem[] = [],
-    openIds: NodeModel<DndItemData>["id"][] = [],
-    focusedId?: string
-): InitialOpen | undefined => {
-    const focusedFolder = folders.find(folder => {
-        return folder.id === focusedId;
-    });
-
-    if (!focusedId || !focusedFolder?.parentId) {
-        return openIds;
-    }
-
-    const findParents = (
-        acc: string[],
-        folder: FolderItem,
-        index: number,
-        folders: FolderItem[]
-    ): string[] => {
-        if (folder.parentId && acc.some(el => el === folder.id)) {
-            acc.push(folder.parentId);
-
-            const newArr = folders.filter((_, i) => {
-                return i !== index;
-            });
-
-            return newArr.reduce(findParents, acc);
-        }
-
-        return acc;
-    };
-
-    const result = folders.reduce(findParents, [focusedId]);
-
-    return [...new Set([...result, ...openIds])];
-};
 
 type Props = {
     type: string;
