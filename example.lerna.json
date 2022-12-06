@@ -1,9 +1,6 @@
 {
-  "packages": [
-    "packages/*",
-    "packages-v6/*"
-  ],
-  "version": "5.33.2",
+  "packages": ["packages/*", "packages-v6/*"],
+  "version": "0.0.0",
   "npmClient": "yarn",
   "command": {
     "version": {
