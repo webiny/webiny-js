@@ -37,12 +37,11 @@ export const FolderTree: React.FC<Props> = ({
     // While we are moving folders around we disable any title pointer event.
     const [isDragging, setIsDragging] = useState<boolean>(false);
 
-    return (
-        <Container>
-            <Title title={title} onClick={onTitleClick} isDragging={isDragging} />
-            {!folders ? (
-                <Loader />
-            ) : folders.length > 0 ? (
+    const renderList = () => {
+        if (!folders) {
+            return <Loader />;
+        } else if (folders.length > 0) {
+            return (
                 <>
                     <List
                         type={type}
@@ -54,12 +53,21 @@ export const FolderTree: React.FC<Props> = ({
                     />
                     <CreateButton onClick={() => setCreateDialogOpen(true)} />
                 </>
-            ) : (
+            );
+        } else {
+            return (
                 <>
                     <Empty />
                     <CreateButton onClick={() => setCreateDialogOpen(true)} />
                 </>
-            )}
+            );
+        }
+    };
+
+    return (
+        <Container>
+            <Title title={title} onClick={onTitleClick} isDragging={isDragging} />
+            {renderList()}
             <FolderDialogCreate
                 type={type}
                 open={createDialogOpen}
