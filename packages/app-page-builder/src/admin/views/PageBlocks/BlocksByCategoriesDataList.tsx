@@ -74,10 +74,15 @@ const SORTERS: Sorter[] = [
 ];
 
 type PageBuilderBlocksByCategoriesDataListProps = {
+    filter: string;
+    setFilter: React.Dispatch<React.SetStateAction<string>>;
     canCreate: boolean;
 };
-const BlocksByCategoriesDataList = ({ canCreate }: PageBuilderBlocksByCategoriesDataListProps) => {
-    const [filter, setFilter] = useState<string>("");
+const BlocksByCategoriesDataList = ({
+    filter,
+    setFilter,
+    canCreate
+}: PageBuilderBlocksByCategoriesDataListProps) => {
     const [sort, setSort] = useState<string>(SORTERS[0].sort);
     const [isNewPageBlockDialogOpen, setIsNewPageBlockDialogOpen] = useState<boolean>(false);
     const { history } = useRouter();
@@ -89,12 +94,27 @@ const BlocksByCategoriesDataList = ({ canCreate }: PageBuilderBlocksByCategories
         listQuery?.data?.pageBuilder?.listBlockCategories?.data || [];
     const pageBlocksData: PbPageBlock[] = listQuery?.data?.pageBuilder?.listPageBlocks?.data || [];
 
-    const filterData = useCallback(
-        ({ slug, name }) => {
-            return slug.toLowerCase().includes(filter) || name.toLowerCase().includes(filter);
+    const filterBlocksData = useCallback(
+        ({ name }) => {
+            return name.toLowerCase().includes(filter);
         },
         [filter]
     );
+
+    const filteredBlocksData: PbPageBlock[] =
+        filter === "" ? pageBlocksData : pageBlocksData.filter(filterBlocksData);
+
+    const filterBlockCategoriesData = useCallback(
+        ({ slug }) => {
+            return (
+                filteredBlocksData.filter(pageBlock => pageBlock.blockCategory === slug).length > 0
+            );
+        },
+        [filteredBlocksData]
+    );
+
+    const filteredBlockCategoriesData: PbBlockCategory[] =
+        filter === "" ? blockCategoriesData : blockCategoriesData.filter(filterBlockCategoriesData);
 
     const sortData = useCallback(
         categories => {
@@ -106,6 +126,8 @@ const BlocksByCategoriesDataList = ({ canCreate }: PageBuilderBlocksByCategories
         },
         [sort]
     );
+
+    const categoryList: PbBlockCategory[] = sortData(filteredBlockCategoriesData);
 
     const selectedBlocksCategory = new URLSearchParams(location.search).get("category");
     const loading = [listQuery].find(item => item.loading);
@@ -135,10 +157,6 @@ const BlocksByCategoriesDataList = ({ canCreate }: PageBuilderBlocksByCategories
         ),
         [sort]
     );
-
-    const filteredBlockCategoriesData: PbBlockCategory[] =
-        filter === "" ? blockCategoriesData : blockCategoriesData.filter(filterData);
-    const categoryList: PbBlockCategory[] = sortData(filteredBlockCategoriesData);
 
     const onCreatePageBlock = async (categorySlug: string) => {
         const { data: res } = await client.mutate({
@@ -220,7 +238,7 @@ const BlocksByCategoriesDataList = ({ canCreate }: PageBuilderBlocksByCategories
                     <SearchUI
                         value={filter}
                         onChange={setFilter}
-                        inputPlaceholder={t`Search categories`}
+                        inputPlaceholder={t`Search blocks`}
                     />
                 }
                 modalOverlay={blockCategoriesDataListModalOverlay}
@@ -240,7 +258,7 @@ const BlocksByCategoriesDataList = ({ canCreate }: PageBuilderBlocksByCategories
                 {({ data }: { data: PbBlockCategory[] }) => (
                     <ScrollList data-testid="default-data-list">
                         {data.map(item => {
-                            const numberOfBlocks = pageBlocksData.filter(
+                            const numberOfBlocks = filteredBlocksData.filter(
                                 pageBlock => pageBlock.blockCategory === item.slug
                             ).length;
                             return (
