@@ -1,4 +1,4 @@
-import { ErrorResponse, Response } from "@webiny/handler-graphql/responses";
+import { ErrorResponse, ListResponse, Response } from "@webiny/handler-graphql/responses";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
 import { FoldersContext } from "~/types";
 
@@ -32,12 +32,13 @@ export const linksSchema = new GraphQLSchemaPlugin<FoldersContext>({
 
         type LinksListResponse {
             data: [Link]
+            meta: ListMeta
             error: FolderError
         }
 
         extend type FoldersQuery {
             getLink(id: ID!): LinkResponse
-            listLinks(where: LinksListWhereInput!): LinksListResponse
+            listLinks(where: LinksListWhereInput!, limit: Int, after: String): LinksListResponse
         }
 
         extend type FoldersMutation {
@@ -56,10 +57,10 @@ export const linksSchema = new GraphQLSchemaPlugin<FoldersContext>({
                     return new ErrorResponse(error);
                 }
             },
-            listLinks: async (_, { where }, context) => {
+            listLinks: async (_, { where, limit, after }, context) => {
                 try {
-                    const links = await context.folders.listLinks({ where });
-                    return new Response(links);
+                    const [data, meta] = await context.folders.listLinks({ where, limit, after });
+                    return new ListResponse(data, meta);
                 } catch (error) {
                     return new ErrorResponse(error);
                 }

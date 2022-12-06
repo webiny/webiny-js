@@ -7,7 +7,14 @@ import WebinyError from "@webiny/error";
 import { NotFoundError } from "@webiny/handler-graphql";
 import joi from "joi";
 
-import { FoldersConfig, ILinks, Link, LinkInput, ListLinksParams } from "~/types";
+import {
+    FoldersConfig,
+    ILinks,
+    Link,
+    LinkInput,
+    ListLinksParams,
+    ListLinksResponse
+} from "~/types";
 
 const requiredString = joi.string().required();
 
@@ -49,20 +56,22 @@ export const createLinksContext = async ({
             return link;
         },
 
-        async listLinks({ where }: ListLinksParams): Promise<Link[]> {
+        async listLinks({ where, limit, after }: ListLinksParams): Promise<ListLinksResponse> {
             const tenant = getTenantId();
             const locale = getLocaleCode();
 
             try {
                 return await storageOperations.listLinks({
                     where: { tenant, locale, ...where },
-                    sort: ["createdOn_ASC"]
+                    sort: ["createdOn_ASC"],
+                    limit,
+                    after
                 });
             } catch (error) {
                 throw WebinyError.from(error, {
                     message: "Could not list links.",
                     code: "LIST_LINKS_ERROR",
-                    data: { ...where }
+                    data: { ...where, limit, after }
                 });
             }
         },
