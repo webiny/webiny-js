@@ -268,13 +268,9 @@ jobs:
       - name: Set git username
         run: git config --global user.name "webiny-bot"
 
-      - name: Version packages (no push, no changelog)
+      - name: Version and publish to Verdaccio
         working-directory: v5
-        run: yarn lerna:version:verdaccio
-
-      - name: Release to Verdaccio
-        working-directory: v5
-        run: yarn lerna:publish:verdaccio
+        run: yarn release --type=verdaccio
 
       - name: Create verdaccio-files artifact
         uses: actions/upload-artifact@v3
@@ -297,8 +293,8 @@ jobs:
       - name: Create a new Webiny project
         working-directory: xyz
         run: >
-          npx create-webiny-project@next test-project
-          --tag next --no-interactive
+          npx create-webiny-project@local-npm test-project
+          --tag local-npm --no-interactive
           --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"region":"${{ env.AWS_REGION }}","storageOperations":"ddb"}'
 
@@ -515,13 +511,9 @@ jobs:
       - name: Set git username
         run: git config --global user.name "webiny-bot"
 
-      - name: Version packages (no push, no changelog)
+      - name: Version and publish to Verdaccio
         working-directory: v5
-        run: yarn lerna:version:verdaccio
-
-      - name: Release to Verdaccio
-        working-directory: v5
-        run: yarn lerna:publish:verdaccio
+        run: yarn release --type=verdaccio
 
       - name: Create verdaccio-files artifact
         uses: actions/upload-artifact@v3
@@ -544,8 +536,8 @@ jobs:
       - name: Create a new Webiny project
         working-directory: xyz
         run: >
-          npx create-webiny-project@next test-project
-          --tag next --no-interactive
+          npx create-webiny-project@local-npm test-project
+          --tag local-npm --no-interactive
           --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"region":"${{ env.AWS_REGION }}","storageOperations":"ddb-es"}'
 
@@ -717,14 +709,5 @@ jobs:
       - name: Set git username
         run: git config --global user.name "webiny-bot"
 
-      - name: Create a release on GitHub
-        run: yarn lerna:version:beta
-
-      - name: Release packages to NPM
-        run: yarn lerna:publish:beta
-
-      - name: Update package versions in the sample project applications' packages
-        run: 'yarn webiny-versions && yarn prettier:fix && git add . && git commit --m "chore: update package versions (webiny-versions)" --no-verify && git push'
-
-      - name: Update and commit "yarn.lock" file
-        run: 'yarn && git add yarn.lock && git commit --m "chore: update yarn.lock" --no-verify && git push'
+      - name: Version and publish to NPM
+        run: yarn release --type=beta
