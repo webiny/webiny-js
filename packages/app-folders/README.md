@@ -61,15 +61,13 @@ The [`FoldersProvider`](#FoldersProvider) is a provider component, which retriev
 import React from "react";
 import { FoldersProvider } from "@webiny/app-folders";
 
-const App = () => {
+export const App = () => {
   return (
     <FoldersProvider>
       <MyApp />
     </FoldersProvider>
   );
 };
-
-export const App;
 ```
 
 #### `FolderTree`
