@@ -1,17 +1,23 @@
 import React, { useCallback, useContext, useEffect } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import get from "lodash/get";
+import { css } from "emotion";
 import { Typography } from "@webiny/ui/Typography";
 import { Icon } from "@webiny/ui/Icon";
 import { activeElementAtom, elementByIdSelector, uiAtom } from "~/editor/recoil/modules";
 import { ReactComponent as VisibilityOffIcon } from "~/editor/assets/icons/visibility_off_24px.svg";
-import { useVisibilitySetting } from "~/editor/plugins/elementSettings/visibility/VisibilitySettings";
+import { useVisibilitySetting } from "~/editor/plugins/elementSettings/property/PropertySettings";
 import { ElementTypeContainer } from "./StyledComponents";
 import CollapsableList from "./CollapsableList";
 import DragBlockIndicator from "./DragBlockIndicator";
 import { BLOCK, useMoveBlock, useSortableList } from "./navigatorHooks";
 import { NavigatorContext } from "./Navigator";
 import { PbEditorElement } from "~/types";
+
+const elementIdStyle = css`
+    text-transform: none;
+    font-size: 80%;
+`;
 
 const ElementVisibilityAction = ({ elementId }: { elementId: string }) => {
     const { updateVisibility } = useVisibilitySetting(elementId);
@@ -133,6 +139,8 @@ const TreeViewItem: React.FC<TreeViewItemProps> = ({ element, level, children, i
         elementType: element.type
     });
 
+    const elementIdAttribute = element.data?.settings?.property?.id;
+
     return (
         <CollapsableList
             level={level}
@@ -147,6 +155,9 @@ const TreeViewItem: React.FC<TreeViewItemProps> = ({ element, level, children, i
                 >
                     <Typography use={"body2"} className={"title"}>
                         {element.type}
+                        {elementIdAttribute && (
+                            <p className={elementIdStyle}>{`#${elementIdAttribute}`}</p>
+                        )}
                     </Typography>
                     {hidden ? <ElementVisibilityAction elementId={elementId} /> : null}
                     <DragBlockIndicator type={element.type} />

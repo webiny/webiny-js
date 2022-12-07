@@ -3,8 +3,12 @@ import { FormComponentProps } from "~/types";
 import { css } from "emotion";
 
 import AceEditor from "react-ace";
+// Modes
+import "brace/mode/html";
+// Themes
 import "brace/theme/github";
 import "brace/theme/twilight";
+import "brace/theme/chrome";
 import { FormElementMessage } from "~/FormElementMessage";
 
 /**

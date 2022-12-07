@@ -10,7 +10,7 @@ export const ElementLinkStatusWrapper = styled("div")({
     rowGap: "16px",
     justifyContent: "center",
     alignItems: "center",
-    margin: "16px",
+    margin: "auto 16px 16px 16px",
     textAlign: "center",
     backgroundColor: "var(--mdc-theme-background)",
     border: "3px dashed var(--webiny-theme-color-border)",
@@ -18,6 +18,7 @@ export const ElementLinkStatusWrapper = styled("div")({
     "& .info-wrapper": {
         display: "flex",
         alignItems: "center",
+        textAlign: "start",
         fontSize: "10px",
         "& svg": {
             width: "18px",
@@ -34,7 +35,7 @@ const ElementNotLinked = () => {
             a variable.
             <div>
                 <CreateVariableAction>
-                    <ButtonPrimary>Create variable</ButtonPrimary>
+                    <ButtonPrimary>Link element</ButtonPrimary>
                 </CreateVariableAction>
             </div>
             <div className="info-wrapper">

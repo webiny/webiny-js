@@ -3,7 +3,7 @@ import styled from "@emotion/styled";
 import { UIRenderer, UIRenderParams } from "~/ui/UIRenderer";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 import { FileManagerElement } from "~/ui/elements/form/FileManagerElement";
-import { FileManager } from "~/components";
+import { FileManager, FileManagerFileItem } from "~/components/FileManager";
 import { FormFieldElementRenderProps } from "~/ui/elements/form/FormFieldElement";
 
 const ImageUploadWrapper = styled("div")({
@@ -65,7 +65,9 @@ export class FileManagerElementRenderer extends UIRenderer<
                         )}
 
                         <FileManager
-                            onChange={onChange}
+                            onChange={(value: FileManagerFileItem | null) =>
+                                onChange(value ? { id: value.id, src: value.src } : null)
+                            }
                             accept={accept}
                             images={!accept}
                             maxSize={element.getMaxSize()}
@@ -75,7 +77,8 @@ export class FileManagerElementRenderer extends UIRenderer<
                                     fileManagerElement: element,
                                     showFileManager,
                                     value,
-                                    onChange
+                                    onChange: (value: FileManagerFileItem | null) =>
+                                        onChange(value ? { id: value.id, src: value.src } : null)
                                 })
                             }
                         />

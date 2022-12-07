@@ -64,7 +64,7 @@ const PageBlocks: React.FC = () => {
                 <BlocksByCategoriesDataList canCreate={canCreate} />
             </LeftPanel>
             <RightPanel>
-                <PageBlocksDataList canEdit={canEdit} canDelete={canDelete} />
+                <PageBlocksDataList canCreate={canCreate} canEdit={canEdit} canDelete={canDelete} />
             </RightPanel>
         </SplitView>
     );

@@ -11,10 +11,15 @@ type ArrowIconContainerProps = {
 export const Container = styled("div")<ContainerProps>`
     display: flex;
     align-items: center;
-    padding: 4px 0;
+    padding: 4px 32px 4px 0;
     background: ${props => props.isFocused && "var(--webiny-theme-color-background)"};
     color: var(--webiny-theme-color-text-primary);
     fill: currentColor;
+    position: relative;
+
+    &:hover .folder-tree-menu-action {
+        visibility: visible;
+    }
 `;
 
 export const Icon = styled("div")`
