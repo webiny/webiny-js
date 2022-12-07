@@ -56,7 +56,7 @@ export const List = ({
             setTreeData(createTreeData(folders, focusedFolderId));
             setInitialOpenList(createInitialOpenList(folders, openFolderIds, focusedFolderId));
         }
-    }, [{ ...folders }, focusedFolderId]);
+    }, [folders, focusedFolderId]);
 
     const handleDrop = async (
         newTree: NodeModel<DndItemData>[],
