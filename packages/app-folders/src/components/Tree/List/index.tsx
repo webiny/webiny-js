@@ -56,7 +56,13 @@ export const List = ({
             setTreeData(createTreeData(folders, focusedFolderId));
             setInitialOpenList(createInitialOpenList(folders, openFolderIds, focusedFolderId));
         }
-    }, [folders, focusedFolderId]);
+
+        /**
+         *  We are spreading the `folders`:
+         *  in case of folder value update (e.g. name) from any component within the UI does not trigger the tree data update.
+         *  TODO: need investigation.
+         */
+    }, [{ ...folders }, focusedFolderId]);
 
     const handleDrop = async (
         newTree: NodeModel<DndItemData>[],
