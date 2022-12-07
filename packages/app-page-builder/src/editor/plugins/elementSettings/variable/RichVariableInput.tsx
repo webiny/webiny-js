@@ -1,27 +1,58 @@
 import React, { useCallback, useState } from "react";
 import styled from "@emotion/styled";
 import { CoreOptions } from "medium-editor";
-import { Dialog, DialogCancel, DialogActions, DialogContent } from "@webiny/ui/Dialog";
-import { ButtonPrimary } from "@webiny/ui/Button";
-import { SimpleButton } from "~/editor/plugins/elementSettings/components/StyledComponents";
+import { ReactComponent as ExpandIcon } from "~/admin/assets/expand.svg";
+import { Dialog, DialogActions, DialogContent } from "@webiny/ui/Dialog";
+import { ButtonPrimary, IconButton } from "@webiny/ui/Button";
 import ReactMediumEditor from "~/editor/components/MediumEditor";
 import { useVariable } from "~/hooks/useVariable";
 
 const InputWrapper = styled("div")`
+    display: grid;
+    align-items: flex-end;
+    margin-top: -32px;
+
+    & > button {
+        margin-left: auto;
+        width: 32px;
+        height: 32px;
+        padding: 4px;
+    }
+`;
+
+const EditorWrapper = styled("div")`
+    padding: 20px 16px;
+    margin-top: 8px;
+    background-color: rgba(212, 212, 212, 0.5);
+    border-bottom: 1px solid;
+    max-height: 250px;
+    overflow-y: auto;
+    line-height: normal;
+
+    &:has(p[data-medium-focused]) {
+        background-color: rgba(212, 212, 212, 0.7);
+    }
+
+    & .medium-editor-placeholder:after {
+        color: ${"var(--mdc-theme-text-secondary-on-background)"};
+    }
+`;
+
+const ModalEditorWrapper = styled("div")`
     padding: 20px 16px;
     background-color: rgba(212, 212, 212, 0.5);
     border-bottom: 1px solid;
     width: 700px;
     height: 400px;
     overflow-y: auto;
+    line-height: normal;
 
     &:has(p[data-medium-focused]) {
         background-color: rgba(212, 212, 212, 0.7);
     }
 
-    & > p {
-        min-height: auto;
-        line-height: normal;
+    & .medium-editor-placeholder:after {
+        color: ${"var(--mdc-theme-text-secondary-on-background)"};
     }
 `;
 
@@ -44,48 +75,53 @@ interface RichVariableInputProps {
 }
 
 const RichVariableInput: React.FC<RichVariableInputProps> = ({ variableId }) => {
-    const { value, onChange } = useVariable(variableId);
-    const [localValue, setLocalValue] = useState(value);
+    const { value, onChange, onBlur } = useVariable(variableId);
+    const [initialValue, setInitialValue] = useState(value);
     const [isOpen, setIsOpen] = useState(false);
 
     const onOpen = useCallback(() => {
         setIsOpen(true);
     }, []);
 
+    const onUpdate = useCallback(() => {
+        onBlur();
+        setInitialValue(value);
+    }, [value, onBlur]);
+
     const onClose = useCallback(() => {
+        onUpdate();
         setIsOpen(false);
-    }, []);
-
-    const onValueChange = useCallback((value: string) => {
-        setLocalValue(value);
-    }, []);
-
-    const onSave = useCallback(() => {
-        onChange(localValue, true);
-        onClose();
-    }, [localValue, onChange, onClose]);
+    }, [onUpdate]);
 
     return (
-        <>
-            <SimpleButton onClick={onOpen}>Edit</SimpleButton>
+        <InputWrapper>
+            <IconButton icon={<ExpandIcon />} onClick={onOpen} />
+            <EditorWrapper className="webiny-pb-page-element-text">
+                <ReactMediumEditor
+                    tag="p"
+                    value={initialValue}
+                    onChange={onUpdate}
+                    onSelect={onChange}
+                    options={DEFAULT_EDITOR_OPTIONS}
+                />
+            </EditorWrapper>
             <Dialog open={isOpen} onClose={onClose}>
                 <DialogContent>
-                    <InputWrapper className="webiny-pb-page-element-text">
+                    <ModalEditorWrapper className="webiny-pb-page-element-text">
                         <ReactMediumEditor
                             tag="p"
-                            value={value}
-                            onChange={onValueChange}
-                            onSelect={onValueChange}
+                            value={initialValue}
+                            onChange={onChange}
+                            onSelect={onChange}
                             options={DEFAULT_EDITOR_OPTIONS}
                         />
-                    </InputWrapper>
+                    </ModalEditorWrapper>
                 </DialogContent>
                 <DialogActions>
-                    <DialogCancel>Cancel</DialogCancel>
-                    <ButtonPrimaryStyled onClick={onSave}>Save</ButtonPrimaryStyled>
+                    <ButtonPrimaryStyled onClick={onClose}>Save</ButtonPrimaryStyled>
                 </DialogActions>
             </Dialog>
-        </>
+        </InputWrapper>
     );
 };
 
