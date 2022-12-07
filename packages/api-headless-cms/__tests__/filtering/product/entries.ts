@@ -48,16 +48,16 @@ const createProducts = ({ id }: ProductCategory): Product[] => {
         category
     });
     /**
-     * Computer
+     * Gaming Console
      */
     products.push({
-        title: "Computer",
+        title: "Gaming Console",
         price: 889,
         availableOn: "2023-01-01",
-        color: "white",
+        color: "red",
         inStock: false,
         itemsInStock: 0,
-        image: "computer.png",
+        image: "gaming-console.png",
         availableSizes: ["s", "m", "l"],
         category
     });
