@@ -55,150 +55,150 @@ describe(`graphql "or" queries`, () => {
         );
     });
 
-    it(`should filter via root level "OR" condition and return records`, async () => {
-        const [singleRootCategoryResponse] = await listCategories({
-            where: {
-                title_contains: "cms",
-                OR: [
-                    {
-                        title_contains: "headless"
-                    }
-                ]
-            }
-        });
-
-        expect(singleRootCategoryResponse).toMatchObject({
-            data: {
-                listCategories: {
-                    data: [
-                        {
-                            title: "Page and Form Builder and CMS"
-                        },
-                        {
-                            title: "Webiny Headless CMS Project"
-                        }
-                    ],
-                    meta: {
-                        totalCount: 2,
-                        cursor: null,
-                        hasMoreItems: false
-                    },
-                    error: null
-                }
-            }
-        });
-
-        const [singleCategoryResponse] = await listCategories({
-            where: {
-                OR: [
-                    {
-                        title_contains: "cms"
-                    },
-                    {
-                        title_contains: "headless"
-                    }
-                ]
-            }
-        });
-
-        expect(singleCategoryResponse).toMatchObject({
-            data: {
-                listCategories: {
-                    data: [
-                        {
-                            title: "Page and Form Builder and CMS"
-                        },
-                        {
-                            title: "Webiny Headless CMS Project"
-                        }
-                    ],
-                    meta: {
-                        totalCount: 2,
-                        cursor: null,
-                        hasMoreItems: false
-                    },
-                    error: null
-                }
-            }
-        });
-
-        const [multipleRootCategoriesResponse] = await listCategories({
-            where: {
-                title_contains: "webiny",
-                OR: [
-                    {
-                        title_contains: "builder"
-                    }
-                ]
-            },
-            sort: ["createdOn_ASC"]
-        });
-
-        expect(multipleRootCategoriesResponse).toMatchObject({
-            data: {
-                listCategories: {
-                    data: [
-                        {
-                            title: "Webiny Headless CMS Project"
-                        },
-                        {
-                            title: "Webiny Page Builder"
-                        },
-                        {
-                            title: "Webiny Form Builder"
-                        },
-                        {
-                            title: "File Manager Webiny"
-                        }
-                    ],
-                    meta: {
-                        totalCount: 4,
-                        cursor: null,
-                        hasMoreItems: false
-                    },
-                    error: null
-                }
-            }
-        });
-
-        const [multipleCategoriesResponse] = await listCategories({
-            where: {
-                OR: [
-                    {
-                        title_contains: "page builder"
-                    },
-                    {
-                        title_contains: "form"
-                    }
-                ]
-            },
-            sort: ["createdOn_ASC"]
-        });
-
-        expect(multipleCategoriesResponse).toMatchObject({
-            data: {
-                listCategories: {
-                    data: [
-                        {
-                            title: "Webiny Page Builder"
-                        },
-                        {
-                            title: "Webiny Form Builder"
-                        },
-                        {
-                            title: "Page and Form Builder and CMS"
-                        }
-                    ],
-                    meta: {
-                        totalCount: 3,
-                        cursor: null,
-                        hasMoreItems: false
-                    },
-                    error: null
-                }
-            }
-        });
-    });
+    // it(`should filter via root level "OR" condition and return records`, async () => {
+    //     const [singleRootCategoryResponse] = await listCategories({
+    //         where: {
+    //             title_contains: "cms",
+    //             OR: [
+    //                 {
+    //                     title_contains: "headless"
+    //                 }
+    //             ]
+    //         }
+    //     });
+    //
+    //     expect(singleRootCategoryResponse).toMatchObject({
+    //         data: {
+    //             listCategories: {
+    //                 data: [
+    //                     {
+    //                         title: "Page and Form Builder and CMS"
+    //                     },
+    //                     {
+    //                         title: "Webiny Headless CMS Project"
+    //                     }
+    //                 ],
+    //                 meta: {
+    //                     totalCount: 2,
+    //                     cursor: null,
+    //                     hasMoreItems: false
+    //                 },
+    //                 error: null
+    //             }
+    //         }
+    //     });
+    //
+    //     const [singleCategoryResponse] = await listCategories({
+    //         where: {
+    //             OR: [
+    //                 {
+    //                     title_contains: "cms"
+    //                 },
+    //                 {
+    //                     title_contains: "headless"
+    //                 }
+    //             ]
+    //         }
+    //     });
+    //
+    //     expect(singleCategoryResponse).toMatchObject({
+    //         data: {
+    //             listCategories: {
+    //                 data: [
+    //                     {
+    //                         title: "Page and Form Builder and CMS"
+    //                     },
+    //                     {
+    //                         title: "Webiny Headless CMS Project"
+    //                     }
+    //                 ],
+    //                 meta: {
+    //                     totalCount: 2,
+    //                     cursor: null,
+    //                     hasMoreItems: false
+    //                 },
+    //                 error: null
+    //             }
+    //         }
+    //     });
+    //
+    //     const [multipleRootCategoriesResponse] = await listCategories({
+    //         where: {
+    //             title_contains: "webiny",
+    //             OR: [
+    //                 {
+    //                     title_contains: "builder"
+    //                 }
+    //             ]
+    //         },
+    //         sort: ["createdOn_ASC"]
+    //     });
+    //
+    //     expect(multipleRootCategoriesResponse).toMatchObject({
+    //         data: {
+    //             listCategories: {
+    //                 data: [
+    //                     {
+    //                         title: "Webiny Headless CMS Project"
+    //                     },
+    //                     {
+    //                         title: "Webiny Page Builder"
+    //                     },
+    //                     {
+    //                         title: "Webiny Form Builder"
+    //                     },
+    //                     {
+    //                         title: "File Manager Webiny"
+    //                     }
+    //                 ],
+    //                 meta: {
+    //                     totalCount: 4,
+    //                     cursor: null,
+    //                     hasMoreItems: false
+    //                 },
+    //                 error: null
+    //             }
+    //         }
+    //     });
+    //
+    //     const [multipleCategoriesResponse] = await listCategories({
+    //         where: {
+    //             OR: [
+    //                 {
+    //                     title_contains: "page builder"
+    //                 },
+    //                 {
+    //                     title_contains: "form"
+    //                 }
+    //             ]
+    //         },
+    //         sort: ["createdOn_ASC"]
+    //     });
+    //
+    //     expect(multipleCategoriesResponse).toMatchObject({
+    //         data: {
+    //             listCategories: {
+    //                 data: [
+    //                     {
+    //                         title: "Webiny Page Builder"
+    //                     },
+    //                     {
+    //                         title: "Webiny Form Builder"
+    //                     },
+    //                     {
+    //                         title: "Page and Form Builder and CMS"
+    //                     }
+    //                 ],
+    //                 meta: {
+    //                     totalCount: 3,
+    //                     cursor: null,
+    //                     hasMoreItems: false
+    //                 },
+    //                 error: null
+    //             }
+    //         }
+    //     });
+    // });
 
     it(`should filter via nested "OR" conditions and return records`, async () => {
         const [singleCategoryResponse] = await listCategories({
