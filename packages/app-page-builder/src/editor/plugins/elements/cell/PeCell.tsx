@@ -1,20 +1,20 @@
 import React from "react";
 import { PbEditorElement } from "~/types";
 import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
+import { CellComponent } from "@webiny/app-page-builder-elements/renderers/cell";
 import { Element } from "@webiny/app-page-builder-elements/types";
-import { ButtonElementRenderer } from "@webiny/app-page-builder-elements/renderers/button";
 
-interface PeButtonProps {
+interface PeCellProps {
     element: PbEditorElement;
 }
 
-const PeButton: React.FC<PeButtonProps> = props => {
+const PeCell: React.FC<PeCellProps> = props => {
     const { element } = props;
     const { renderers } = usePageElements();
 
-    const Button = renderers.button as ButtonElementRenderer;
+    const Cell = renderers.cell as CellComponent;
 
-    return <Button element={element as Element} />;
+    return <Cell element={element as Element} />;
 };
 
-export default PeButton;
+export default PeCell;

@@ -1,7 +1,7 @@
 import { Theme } from "@webiny/app-page-builder-elements/types";
+import { CSSObject } from "@emotion/react";
 
 // Defaults first (colors, fonts, border radius, ...).
-
 const colors = {
     color1: { base: "#fa5723" }, // primary
     color2: { base: "#00ccb0" }, // secondary
@@ -31,24 +31,28 @@ const paragraphs = {
     WebkitFontSmoothing: "antialiased"
 };
 
-const buttons = {
-    borderRadius,
-    padding: "14px 20px",
-    fontFamily: fonts.primary,
-    textTransform: "uppercase",
-    display: "flex",
-    alignItems: "center",
-    fontSize: "14px",
-    fontWeight: 600,
-    justifyContent: "center",
-    textAlign: "center",
-    textDecoration: "none",
-    transition: "all .2s",
-    "&:hover": {
-        boxShadow: "0 7px 14px rgb(50 50 93 / 10%), 0 3px 6px rgb(0 0 0 / 8%)",
-        transform: "translateY(-1px)"
+const buttons = (overrides: CSSObject) => ({
+    a: { textDecoration: "none" },
+    "pb-button-body": {
+        borderRadius,
+        padding: "14px 20px",
+        fontFamily: fonts.primary,
+        textTransform: "uppercase",
+        display: "flex",
+        alignItems: "center",
+        fontSize: "14px",
+        fontWeight: 600,
+        justifyContent: "center",
+        textAlign: "center",
+        cursor: "pointer",
+        transition: "all .2s",
+        "&:hover": {
+            boxShadow: "0 7px 14px rgb(50 50 93 / 10%), 0 3px 6px rgb(0 0 0 / 8%)",
+            transform: "translateY(-1px)"
+        },
+        ...overrides
     }
-};
+});
 
 // Theme object.
 export const theme: Theme = {
@@ -92,30 +96,12 @@ export const theme: Theme = {
             }
         },
         button: {
-            default: {
-                a: {
-                    ...buttons,
-                    background: colors.color3.base,
-                    color: colors.color1.base
-                }
-            },
-            primary: {
-                a: {
-                    ...buttons,
-                    background: colors.color1.base,
-                    color: colors.color5.base
-                }
-            },
-            secondary: {
-                a: {
-                    ...buttons,
-                    background: colors.color2.base,
-                    color: colors.color5.base
-                }
-            },
-            outlinePrimary: { ...buttons },
-            outlineSecondary: { ...buttons },
-            simple: { ...buttons }
+            default: buttons({ background: colors.color4.base, color: colors.color3.base }),
+            primary: buttons({ background: colors.color1.base, color: colors.color5.base }),
+            secondary: buttons({ background: colors.color2.base, color: colors.color5.base }),
+            outlinePrimary: buttons({ border: `2px solid ${colors.color1.base}` }),
+            outlineSecondary: buttons({ border: `2px solid ${colors.color2.base}` }),
+            simple: buttons({ "&:hover": { transform: "translateY(-1px)" } })
         },
         list: {
             li: {

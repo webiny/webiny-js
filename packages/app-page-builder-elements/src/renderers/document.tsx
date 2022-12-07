@@ -1,9 +1,8 @@
 import React from "react";
 import { Elements } from "~/components/Elements";
-import { ElementRenderer } from "~/types";
-
+import { Element, ElementRenderer, ElementRendererProps } from "~/types";
+import page from "./page"
 declare global {
-    //eslint-disable-next-line
     namespace JSX {
         interface IntrinsicElements {
             "pb-document": any;
@@ -11,10 +10,17 @@ declare global {
     }
 }
 
-const Document: ElementRenderer = ({ element }) => {
+export interface DocumentComponentProps extends ElementRendererProps {
+    elements: Array<Element>;
+}
+
+export type DocumentComponent = ElementRenderer<DocumentComponentProps>;
+
+const Document: DocumentComponent = ({ element, elements }) => {
+
     return (
-        <pb-document>
-            <Elements element={element} />
+        <pb-document   class={"webiny-pb-page-document"}>
+            <Elements element={page} />
         </pb-document>
     );
 };

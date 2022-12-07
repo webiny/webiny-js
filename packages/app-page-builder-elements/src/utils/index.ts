@@ -90,7 +90,7 @@ export const defaultElementStylesCallback: ElementStylesCallback = ({
 
         const assign = customAssignStylesCallback || assignStyles;
 
-        const bb =assign({
+        assign({
             breakpoints: theme.breakpoints || {},
             assignTo: styles,
             styles: styleValues || {}

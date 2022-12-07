@@ -8,7 +8,6 @@ import { ChromePicker } from "react-color";
 import { Menu } from "@webiny/ui/Menu";
 import { usePageBuilder } from "~/hooks/usePageBuilder";
 import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
-import { Theme } from "@webiny/app-page-builder-elements/types";
 
 // Icons
 import { ReactComponent as IconPalette } from "../../assets/icons/round-color_lens-24px.svg";
@@ -227,7 +226,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
         if (colors) {
             for (const key in colors) {
                 if (colors[key].base) {
-                    themeColors[`theme:${key}`] = colors[key].base;
+                    themeColors[key] = colors[key].base;
                 }
             }
         }
@@ -235,8 +234,10 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
         themeColors = theme?.colors || {};
     }
 
-    let themeColor = false;
+    // Either a custom color or a color coming from the theme object.
+    const actualSelectedColor = themeColors[value] || value || "#fff";
 
+    let themeColor = false;
     const colorPicker = (
         <ColorPickerStyle onClick={hidePicker}>
             {Object.keys(themeColors).map((key, index) => {
@@ -248,7 +249,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
                 return (
                     <ColorBox key={index}>
                         <Color
-                            className={color === value ? styles.selectedColor : ""}
+                            className={key === value ? styles.selectedColor : ""}
                             style={{ backgroundColor: color }}
                             onClick={() => {
                                 hidePicker();
@@ -291,7 +292,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
             {showPicker && (
                 <span onClick={e => e.stopPropagation()} className={chromePickerStyles}>
                     <ChromePicker
-                        color={value || "#fff"}
+                        color={actualSelectedColor}
                         onChange={onColorChange}
                         onChangeComplete={onColorChangeComplete}
                     />
@@ -319,7 +320,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
                     {value ? (
                         <button
                             className={classNames(styles.button, "color")}
-                            style={{ backgroundColor: value }}
+                            style={{ backgroundColor: actualSelectedColor }}
                             onClick={() => onChange("")}
                         />
                     ) : (

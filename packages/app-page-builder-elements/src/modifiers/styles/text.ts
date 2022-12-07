@@ -24,6 +24,10 @@ const text: ElementStylesModifier = ({ element, theme }) => {
 
         if (values.color) {
             let color = values.color;
+            if (theme.styles.colors?.[color]?.base) {
+                color = theme.styles.colors?.[color]?.base;
+            }
+
             if (values.color.startsWith("theme:")) {
                 // TODO: gradients handling.
                 const [, themeColor] = values.color.split("theme:");

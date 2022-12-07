@@ -8,6 +8,7 @@ import {
     ParagraphComponent,
     ParagraphComponentProps
 } from "@webiny/app-page-builder-elements/renderers/paragraph";
+import { Element } from "@webiny/app-page-builder-elements/types";
 
 const DEFAULT_EDITOR_OPTIONS: CoreOptions = {
     toolbar: {
@@ -47,9 +48,9 @@ const PeParagraph: React.FC<PeParagraphProps> = props => {
     }, []);
 
     if (isActive) {
-        return <Paragraph element={element} as={EditorComponent} />;
+        return <Paragraph element={element as Element} as={EditorComponent} />;
     }
 
-    return <Paragraph element={element} />;
+    return <Paragraph element={element as Element} />;
 };
 export default PeParagraph;

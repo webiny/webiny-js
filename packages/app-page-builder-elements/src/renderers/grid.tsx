@@ -32,6 +32,8 @@ const PbGrid: React.FC<{ className?: string; element: PageElement }> = ({
     </pb-grid>
 );
 
+export type GridComponent = ElementRenderer;
+
 const Grid: ElementRenderer = ({ element }) => {
     const { getStyles, getElementStyles, getThemeStyles } = usePageElements();
 

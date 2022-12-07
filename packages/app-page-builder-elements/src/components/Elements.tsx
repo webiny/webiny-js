@@ -4,12 +4,14 @@ import { Element } from "./Element";
 
 export interface ElementsProps {
     element: ElementType;
+    elements?: Array<ElementType>;
 }
 
 export const Elements: React.FC<ElementsProps> = props => {
+    const elements = props.elements || props.element.elements;
     return (
         <>
-            {props.element.elements.map(element => (
+            {elements.map(element => (
                 <Element key={element.id} element={element} />
             ))}
         </>

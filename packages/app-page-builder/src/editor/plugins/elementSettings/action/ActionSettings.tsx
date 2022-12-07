@@ -11,7 +11,8 @@ import {
     PbElement,
     PbButtonElementClickHandlerPlugin,
     PbEditorElement,
-    PbEditorPageElementSettingsRenderComponentProps
+    PbEditorPageElementSettingsRenderComponentProps,
+    PbButtonElementClickHandlerVariable
 } from "~/types";
 import { plugins } from "@webiny/plugins";
 import { getElementsPropertiesValues } from "~/render/utils";
@@ -23,6 +24,8 @@ import InputField from "../components/InputField";
 import SelectField from "../components/SelectField";
 import { useUpdateElement } from "~/editor/hooks/useUpdateElement";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
+import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
+import { ButtonElementRenderer } from "@webiny/app-page-builder-elements/renderers/button";
 
 const classes = {
     gridClass: css({
@@ -42,6 +45,7 @@ const classes = {
 interface ActionSettingsPropsType extends PbEditorPageElementSettingsRenderComponentProps {
     element: PbEditorElement;
 }
+
 const ActionSettingsComponent: React.FC<ActionSettingsPropsType> = ({
     element,
     defaultAccordionValue
@@ -71,13 +75,33 @@ const ActionSettingsComponent: React.FC<ActionSettingsPropsType> = ({
         updateElement(newElement);
     };
 
-    const clickHandlers = useMemo(
-        () =>
-            plugins.byType<PbButtonElementClickHandlerPlugin>(
-                "pb-page-element-button-click-handler"
-            ),
-        []
-    );
+    const pageElements = usePageElements();
+    let clickHandlers: Array<{
+        title: string;
+        name?: string;
+        variables?: PbButtonElementClickHandlerVariable[];
+    }> = [];
+
+    console.log('wasdad')
+    if (pageElements) {
+        const Button = pageElements.renderers.button as ButtonElementRenderer;
+        if (Button.params.clickHandlers) {
+            clickHandlers = Button.params.clickHandlers.map(item => ({
+                name: item.id,
+                title: item.name,
+                variables: item.variables
+            }));
+        }
+    } else {
+        clickHandlers = useMemo(
+            () =>
+                plugins.byType<PbButtonElementClickHandlerPlugin>(
+                    "pb-page-element-button-click-handler"
+                ),
+            []
+        );
+    }
+
     const selectedHandler = useMemo(() => {
         return clickHandlers.find(handler => clickHandler === handler.name);
     }, [clickHandler]);
@@ -93,6 +117,7 @@ const ActionSettingsComponent: React.FC<ActionSettingsPropsType> = ({
         }
     }, [actionType]);
 
+    console.log('wasad', clickHandlers)
     return (
         <Accordion title={"Action"} defaultValue={defaultAccordionValue}>
             <Form
@@ -135,7 +160,7 @@ const ActionSettingsComponent: React.FC<ActionSettingsPropsType> = ({
                                                 <SelectField
                                                     value={value}
                                                     onChange={onChange}
-                                                    placeholder={"No handlers found."}
+                                                    placeholder={"Select handler..."}
                                                 >
                                                     {clickHandlers.map(item => (
                                                         <option key={item.name} value={item.name}>

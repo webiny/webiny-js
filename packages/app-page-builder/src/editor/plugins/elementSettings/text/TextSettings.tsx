@@ -29,7 +29,6 @@ import useUpdateHandlers from "../../elementSettings/useUpdateHandlers";
 import TextAlignment from "./TextAlignment";
 import { applyFallbackDisplayMode } from "../elementSettingsUtils";
 import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
-import { Theme } from "@webiny/app-page-builder-elements/types";
 import startCase from "lodash/startCase";
 
 const classes = {
@@ -73,12 +72,6 @@ const TextSettings: React.FC<TextSettingsProps> = ({ defaultAccordionValue, opti
     const { displayMode } = useRecoilValue(uiAtom);
     const activeElementId = useRecoilValue(activeElementAtom);
 
-    let peTheme: Theme = {};
-    const pageElements = usePageElements();
-    if (pageElements) {
-        peTheme = pageElements.theme;
-    }
-
     const element = useRecoilValue(
         elementWithChildrenByIdSelector(activeElementId)
     ) as PbEditorElement;
@@ -97,9 +90,11 @@ const TextSettings: React.FC<TextSettingsProps> = ({ defaultAccordionValue, opti
         }
     };
 
+    const pageElements = usePageElements();
+
     const themeTypographyOptions = useMemo(() => {
-        if (peTheme) {
-            const peThemeTypography = Object.keys(peTheme.styles?.typography || {});
+        if (pageElements) {
+            const peThemeTypography = Object.keys(pageElements.theme.styles?.typography || {});
             return peThemeTypography.map(key => (
                 <option value={key} key={key}>
                     {startCase(key)}
@@ -110,11 +105,16 @@ const TextSettings: React.FC<TextSettingsProps> = ({ defaultAccordionValue, opti
         const { types = [] } = theme.elements[element.type];
 
         return [
+            /**
+             * remove ts-ignore when determined types for the PbTheme.elements
+             * TODO @ts-refactor
+             */
+            // @ts-ignore
             ...types.map(el => (
                 <option value={el.className} key={el.label}>
                     {el.label}
                 </option>
-            )),
+            ))
         ];
     }, [theme, element]);
 

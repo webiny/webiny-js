@@ -5,7 +5,6 @@ import styled from "@emotion/styled";
 import { elementDataPropsAreEqual } from "~/utils";
 
 declare global {
-    //eslint-disable-next-line
     namespace JSX {
         interface IntrinsicElements {
             "pb-list": any;
@@ -32,7 +31,7 @@ const List: ListComponent = ({ element, as }) => {
     const { getElementStyles, getThemeStyles } = usePageElements();
 
     const styles = [
-        { display: "block" },
+        { display: "block", width: "100%" },
         ...getElementStyles(element),
         ...getThemeStyles(theme => theme?.styles?.list)
     ];

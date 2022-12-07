@@ -16,4 +16,4 @@ const Icon: React.FC<IconProps> = props => {
     return <PbIcon {...props} />;
 };
 
-export default React.memo(Icon);
+export default Icon;

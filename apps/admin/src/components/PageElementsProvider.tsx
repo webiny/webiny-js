@@ -39,7 +39,26 @@ export const PageElementsProvider: React.FC = ({ children }) => (
         theme={theme}
         renderers={{
             block: createBlock(),
-            button: createButton(),
+            button: createButton({
+                clickHandlers: [
+                    {
+                        // @ts-ignore
+                        id: "alert1",
+                        name: "Alert 1",
+                        handler: () => {
+                            alert("jedan");
+                        }
+                    },
+                    {
+                        // @ts-ignore
+                        id: "alert2",
+                        name: "Alert 2",
+                        handler: () => {
+                            alert("dvaaaaa");
+                        }
+                    }
+                ]
+            }),
             cell: createCell(),
             document: createDocument(),
             grid: createGrid(),
@@ -59,7 +78,7 @@ export const PageElementsProvider: React.FC = ({ children }) => (
                 pagesListComponents: {
                     default: createDefaultPagesListComponent(),
                     default2: createDefaultPagesListComponent(),
-                    default3: createDefaultPagesListComponent(),
+                    default3: createDefaultPagesListComponent()
                 }
             })
         }}

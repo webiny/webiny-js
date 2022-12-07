@@ -7,6 +7,7 @@ import {
     ListComponent,
     ListComponentProps
 } from "@webiny/app-page-builder-elements/renderers/list";
+import { Element } from "@webiny/app-page-builder-elements/types";
 
 const DEFAULT_EDITOR_OPTIONS = {
     toolbar: {
@@ -46,10 +47,9 @@ const PeList: React.FC<PeListProps> = props => {
     }, []);
 
     if (isActive) {
-        return <List element={element} as={EditorComponent} />;
+        return <List element={element as Element} as={EditorComponent} />;
     }
 
-    return <List element={element} />;
+    return <List element={element as Element} />;
 };
 export default PeList;
-

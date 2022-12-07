@@ -4,6 +4,7 @@ import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePage
 import {
     IconComponent,
 } from "@webiny/app-page-builder-elements/renderers/icon";
+import {Element} from "@webiny/app-page-builder-elements/types";
 
 interface PeIconProps {
     isActive?: boolean;
@@ -16,7 +17,7 @@ const PeIcon: React.FC<PeIconProps> = props => {
 
     const Icon = renderers.icon as IconComponent;
 
-    return <Icon element={element} />;
+    return <Icon element={element as Element} />;
 };
 
 export default PeIcon;

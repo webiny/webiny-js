@@ -1,130 +1,127 @@
 import React from "react";
 import { type CSSObject } from "@emotion/react";
 
+export type Content = Element;
+
 /**
  * TODO @ts-refactor
  * We should have a single type for all page builder apps elements.
  * Currently we have Element, PbElement and PbEditorElement.
  */
-export interface Element {
+export interface Element<TData = any> {
     id: string;
     type: string;
-    data: {
-        settings?: {
-            grid?: {
-                cellsType: string;
-                size: string;
-            };
-            horizontalAlignFlex?: {
-                [key: string]: string;
-            };
-            verticalAlign?: {
-                [key: string]: string;
-            };
-            background?: {
-                [key: string]: string;
-            };
-            border?: {
-                [key: string]: {
-                    style?: string;
-                    color?: string;
-                    radius?: {
-                        advanced?: boolean;
-                        top?: string;
-                        bottom?: string;
-                        left?: string;
-                        right?: string;
-                        all?: string;
-                    };
-                    width?: {
-                        advanced?: boolean;
-                        top?: string;
-                        bottom?: string;
-                        left?: string;
-                        right?: string;
-                        all?: string;
-                    };
-                };
-            };
-            shadow?: {
-                horizontal?: string;
-                vertical?: string;
-                blur?: string;
-                spread?: string;
-                color?: string;
-            };
-            height?: {
-                [key: string]: {
-                    value: string;
-                };
-            };
-            width?: {
-                [key: string]: {
-                    value: string;
-                };
-            };
-            margin?: {
-                [key: string]: {
-                    advanced?: boolean;
-                    top?: string;
-                    bottom?: string;
-                    left?: string;
-                    right?: string;
-                    all?: string;
-                };
-            };
-            padding?: {
-                [key: string]: {
-                    advanced?: boolean;
-                    top?: string;
-                    bottom?: string;
-                    left?: string;
-                    right?: string;
-                    all?: string;
-                };
-            };
-            [key: string]: any;
-        };
-        text: {
-            data: {
-                text?: string;
-                typography: string;
-                color?: string;
-                alignment?: CSSObject["textAlign"];
-                tag?: string;
-            };
-            desktop: {
-                text?: string;
-                typography: string;
-                color?: string;
-                alignment?: CSSObject["textAlign"];
-                tag?: string;
-            };
-            [key: string]: {
-                text?: string;
-                typography: string;
-                color?: string;
-                alignment?: CSSObject["textAlign"];
-                tag?: string;
-            };
-        };
-        image: {
-            file: {
-                name: string;
-                src: string;
-            };
-            width: number;
-            height: number;
-        };
-        [key: string]: any;
-    };
+    data: TData;
+    // settings?: {
+    //     grid?: {
+    //         cellsType: string;
+    //         size: string;
+    //     };
+    //     horizontalAlignFlex?: {
+    //         [key: string]: string;
+    //     };
+    //     verticalAlign?: {
+    //         [key: string]: string;
+    //     };
+    //     background?: {
+    //         [key: string]: string;
+    //     };
+    //     border?: {
+    //         [key: string]: {
+    //             style?: string;
+    //             color?: string;
+    //             radius?: {
+    //                 advanced?: boolean;
+    //                 top?: string;
+    //                 bottom?: string;
+    //                 left?: string;
+    //                 right?: string;
+    //                 all?: string;
+    //             };
+    //             width?: {
+    //                 advanced?: boolean;
+    //                 top?: string;
+    //                 bottom?: string;
+    //                 left?: string;
+    //                 right?: string;
+    //                 all?: string;
+    //             };
+    //         };
+    //     };
+    //     shadow?: {
+    //         horizontal?: string;
+    //         vertical?: string;
+    //         blur?: string;
+    //         spread?: string;
+    //         color?: string;
+    //     };
+    //     height?: {
+    //         [key: string]: {
+    //             value: string;
+    //         };
+    //     };
+    //     width?: {
+    //         [key: string]: {
+    //             value: string;
+    //         };
+    //     };
+    //     margin?: {
+    //         [key: string]: {
+    //             advanced?: boolean;
+    //             top?: string;
+    //             bottom?: string;
+    //             left?: string;
+    //             right?: string;
+    //             all?: string;
+    //         };
+    //     };
+    //     padding?: {
+    //         [key: string]: {
+    //             advanced?: boolean;
+    //             top?: string;
+    //             bottom?: string;
+    //             left?: string;
+    //             right?: string;
+    //             all?: string;
+    //         };
+    //     };
+    //     [key: string]: any;
+    // };
+    // text: {
+    //     data: {
+    //         text?: string;
+    //         typography: string;
+    //         color?: string;
+    //         alignment?: CSSObject["textAlign"];
+    //         tag?: string;
+    //     };
+    //     desktop: {
+    //         text?: string;
+    //         typography: string;
+    //         color?: string;
+    //         alignment?: CSSObject["textAlign"];
+    //         tag?: string;
+    //     };
+    //     [key: string]: {
+    //         text?: string;
+    //         typography: string;
+    //         color?: string;
+    //         alignment?: CSSObject["textAlign"];
+    //         tag?: string;
+    //     };
+    // };
+    // image: {
+    //     file: {
+    //         name: string;
+    //         src: string;
+    //     };
+    //     width: number;
+    //     height: number;
+    // };
+    // [key: string]: any;
     elements: Element[];
     path?: string[];
-
-    [key: string]: any;
 }
-
-export type Content = Element;
 
 /**
  * Should be a `CSSObject` object or an object with breakpoint names as keys and `CSSObject` objects as values.

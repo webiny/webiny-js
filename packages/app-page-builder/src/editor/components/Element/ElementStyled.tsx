@@ -50,8 +50,20 @@ interface ElementContainerProps {
     className: string;
 }
 
+declare global {
+    namespace JSX {
+        interface IntrinsicElements {
+            "pb-editor-element-container": any;
+        }
+    }
+}
+
+export const PbEditorElementContainer: React.FC<ElementContainerProps> = ({className, children, ...rest}) => {
+    return <pb-editor-element-container class={className} {...rest}>{children}</pb-editor-element-container>
+}
+
 export const ElementContainer = React.memo<ElementContainerProps>(
-    styled<"div", ElementContainerProps>("div")(({ highlight, active }) => {
+    styled(PbEditorElementContainer)(({ highlight, active }) => {
         const color = active ? "var(--mdc-theme-primary)" : "var(--mdc-theme-secondary)";
 
         return {

@@ -6,6 +6,7 @@ import { UpdateElementActionEvent } from "~/editor/recoil/actions";
 import pick from "lodash/pick";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import { ImageComponent } from "@webiny/app-page-builder-elements/renderers/image";
+import { Element } from "@webiny/app-page-builder-elements/types";
 
 type ImagePropsType = {
     element: PbEditorElement;
@@ -46,12 +47,12 @@ const Image: React.FC<ImagePropsType> = ({ element, isActive }) => {
             <FileManager
                 onChange={onChange}
                 render={({ showFileManager }) => (
-                    <Image element={element} onClick={() => showFileManager()} />
+                    <Image element={element as Element} onClick={() => showFileManager()} />
                 )}
             />
         );
     }
-    return <Image element={element} />;
+    return <Image element={element as Element} />;
 };
 
 export default Image;

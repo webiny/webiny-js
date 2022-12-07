@@ -7,6 +7,7 @@ import {
     QuoteComponent,
     QuoteComponentProps
 } from "@webiny/app-page-builder-elements/renderers/quote";
+import { Element } from "@webiny/app-page-builder-elements/types";
 
 const DEFAULT_EDITOR_OPTIONS = {
     toolbar: {
@@ -46,10 +47,10 @@ const PeQuote: React.FC<PeQuoteProps> = props => {
     }, []);
 
     if (isActive) {
-        return <Quote element={element} as={EditorComponent} />;
+        return <Quote element={element as Element} as={EditorComponent} />;
     }
 
-    return <Quote element={element} />;
+    return <Quote element={element as Element} />;
 };
 
 export default PeQuote;

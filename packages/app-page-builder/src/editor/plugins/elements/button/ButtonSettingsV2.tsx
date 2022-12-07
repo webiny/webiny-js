@@ -14,6 +14,8 @@ import InputField from "../../elementSettings/components/InputField";
 import SelectField from "../../elementSettings/components/SelectField";
 import { updateButtonElementIcon } from "../utils/iconUtils";
 import useUpdateHandlers from "../../elementSettings/useUpdateHandlers";
+import {usePageElements} from "@webiny/app-page-builder-elements/hooks/usePageElements";
+import startCase from "lodash/startCase";
 
 const classes = {
     gridClass: css({
@@ -55,11 +57,27 @@ const ButtonSettings: React.FC<PbEditorPageElementSettingsRenderComponentProps> 
     const element = useRecoilValue(
         elementWithChildrenByIdSelector(activeElementId)
     ) as PbEditorElement;
-    const { theme } = usePageBuilder();
-    const { types = [] } = theme?.elements?.button || {
-        types: []
-    };
-    const defaultType = types?.[0]?.name || "";
+
+    let typesOptions: Array<{ value: string; label: string }> = [];
+
+    const pageElements = usePageElements();
+    if (pageElements) {
+        const { theme } = pageElements;
+        const types = Object.keys(theme.styles?.button || {});
+        typesOptions = types.map(item => ({
+            value: item,
+            label: startCase(item)
+        }));
+    } else {
+        const { theme } = usePageBuilder();
+        const types = theme?.elements?.button?.types || [];
+        typesOptions = types.map(item => ({
+            value: item.className,
+            label: item.label
+        }));
+    }
+
+    const defaultType = typesOptions[0].value;
     const { type = defaultType, icon = { width: 36 } } = element.data || {};
 
     const { getUpdateValue, getUpdatePreview } = useUpdateHandlers({
@@ -102,8 +120,8 @@ const ButtonSettings: React.FC<PbEditorPageElementSettingsRenderComponentProps> 
             <ContentWrapper direction={"column"}>
                 <Wrapper label={"Type"} containerClassName={classes.gridClass}>
                     <SelectField value={type} onChange={updateType}>
-                        {types.map(t => (
-                            <option key={t.className} value={t.className}>
+                        {typesOptions.map(t => (
+                            <option key={t.value} value={t.value}>
                                 {t.label}
                             </option>
                         ))}

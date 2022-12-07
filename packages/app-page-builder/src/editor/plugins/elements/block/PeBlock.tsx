@@ -1,109 +1,46 @@
 import React from "react";
-import { Elements } from "~/components/Elements";
-import { usePageElements } from "~/hooks/usePageElements";
-import { Element, ElementRenderer } from "~/types";
+import { PbEditorElement } from "~/types";
+import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
+import { BlockComponent } from "@webiny/app-page-builder-elements/renderers/block";
+import { Element } from "@webiny/app-page-builder-elements/types";
+import { useElementById } from "~/editor/hooks/useElementById";
 import styled from "@emotion/styled";
 
-declare global {
-    namespace JSX {
-        interface IntrinsicElements {
-            "pb-block": any;
-            "pb-block-inner": any;
+interface PeBlockProps {
+    element: PbEditorElement;
+}
+
+const PeBlock: React.FC<PeBlockProps> = props => {
+    const { element } = props;
+    const { renderers } = usePageElements();
+    const Block = renderers.block as BlockComponent;
+
+    const elements: Array<Element> = [];
+    element.elements.forEach(id => {
+        const [element] = useElementById(id as string);
+        if (element) {
+            elements.push(element as Element);
         }
-    }
-}
+    });
 
-const defaultStyles = {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    alignItems: "flex-start",
-    boxSizing: "border-box"
+    const EditorBlock = editorr(Block);
+
+    console.log(EditorBlock);
+    return <EditorBlock element={element as Element} elements={elements} />;
 };
 
-const PbBlockInner: React.FC<{ className?: string }> = ({ className, children }) => (
-    <pb-block-inner class={className}>{children}</pb-block-inner>
-);
-
-export interface BlockComponentProps {
-    element: Element;
-    elements?: Array<Element>;
-    className?: string;
-}
-
-export type BlockComponent = ElementRenderer<BlockComponentProps>;
-
-const Block: BlockComponent = ({ element, elements, className }) => {
-    const { getStyles, getElementStyles } = usePageElements();
-
-    const styles = [...getStyles(defaultStyles), ...getElementStyles(element)];
-
-    const StyledBlockInner = styled(PbBlockInner)(styles);
-
-    return (
-        <pb-block data-pe-id={element.id} class={className}>
-            <StyledBlockInner>
-                <Elements element={element} elements={elements} />
-            </StyledBlockInner>
-        </pb-block>
-    );
-};
-
-export const createBlock = () => editorr(Block);
+export default PeBlock;
 
 const editorr = (Component: any) => {
-    return styled(Component)(({ active = false }: any) => {
-        const activeColor = "var(--mdc-theme-primary)";
-        const hoverColor = "var(--mdc-theme-secondary)";
+    const color = true ? "var(--mdc-theme-primary)" : "var(--mdc-theme-secondary)";
 
-        const styles = {
-            display: "block",
-            position: "relative"
-        };
-
-        if (active) {
-            Object.assign(styles, {
-                borderRadius: 2,
-                boxSizing: "border-box",
-                // boxShadow: highlight ? "inset 0px 0px 0px 2px " + color : "none",
-                boxShadow: "inset 0px 0px 0px 2px " + activeColor,
-                // border: "2px solid " + color,
-                "&::after": {
-                    backgroundColor: activeColor,
-                    color: "#fff",
-                    content: '"block"',
-                    position: "absolute",
-                    top: 0,
-                    right: 0,
-                    padding: 2,
-                    fontSize: 11
-                }
-            });
-        } else {
-            Object.assign(styles, {
-                transition: "all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1)",
-                "&:hover": {
-                    borderRadius: 2,
-                    boxSizing: "border-box",
-                    // boxShadow: highlight ? "inset 0px 0px 0px 2px " + color : "none",
-                    boxShadow: "inset 0px 0px 0px 2px " + hoverColor
-                    // border: "2px solid " + color,
-                },
-                "&:hover::after": {
-                    backgroundColor: hoverColor,
-                    color: "#fff",
-                    content: '"block"',
-                    position: "absolute",
-                    top: 0,
-                    right: 0,
-                    padding: 2,
-                    fontSize: 11
-                }
-            });
-        }
-
-        return styles;
-    });
+    return styled(Component)(({highlight, color}) => ({
+        display: 'block',
+        borderRadius: 2,
+        boxSizing: "border-box",
+        // boxShadow: highlight ? "inset 0px 0px 0px 2px " + color : "none",
+        boxShadow: "inset 0px 0px 0px 2px " + color
+    }));
 
     // const StyledComponent = styled(Component)(({ highlight = true, active = true}) => {
     //     const color = active ? "var(--mdc-theme-primary)" : "var(--mdc-theme-secondary)";

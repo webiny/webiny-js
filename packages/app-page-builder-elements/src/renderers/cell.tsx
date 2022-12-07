@@ -5,7 +5,6 @@ import { ElementRenderer } from "~/types";
 import styled from "@emotion/styled";
 
 declare global {
-    //eslint-disable-next-line
     namespace JSX {
         interface IntrinsicElements {
             "pb-cell": any;
@@ -16,6 +15,9 @@ declare global {
 const PbCell: React.FC<{ className?: string }> = ({ className, children }) => (
     <pb-cell class={className}>{children}</pb-cell>
 );
+
+export type CellComponent = ElementRenderer;
+
 
 const Cell: ElementRenderer = ({ element }) => {
     const { getStyles, getElementStyles, getThemeStyles } = usePageElements();

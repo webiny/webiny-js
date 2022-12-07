@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { usePageElements } from "~/hooks/usePageElements";
 import { ElementRenderer, Element } from "~/types";
 import styled from "@emotion/styled";
-import { DataLoader, DataLoaderResult } from "~/renderers/pagesList/types";
+import { DataLoader, DataLoaderResult, PagesListComponent as RenderPagesListComponent } from "~/renderers/pagesList/types";
 import { elementDataPropsAreEqual } from "~/utils";
 
 declare global {
@@ -19,7 +19,7 @@ declare global {
 
 export interface CreatePagesListParams {
     dataLoader: DataLoader;
-    pagesListComponents: Record<string, PagesListComponent>;
+    pagesListComponents: Record<string, RenderPagesListComponent>;
 }
 
 const PbPagesList: React.FC<{ className?: string; element: Element }> = ({

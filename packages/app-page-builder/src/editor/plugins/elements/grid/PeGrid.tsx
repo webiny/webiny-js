@@ -1,20 +1,20 @@
 import React from "react";
 import { PbEditorElement } from "~/types";
 import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
+import { GridComponent } from "@webiny/app-page-builder-elements/renderers/grid";
 import { Element } from "@webiny/app-page-builder-elements/types";
-import { ButtonElementRenderer } from "@webiny/app-page-builder-elements/renderers/button";
 
-interface PeButtonProps {
+interface PeGridProps {
     element: PbEditorElement;
 }
 
-const PeButton: React.FC<PeButtonProps> = props => {
+const PeGrid: React.FC<PeGridProps> = props => {
     const { element } = props;
     const { renderers } = usePageElements();
 
-    const Button = renderers.button as ButtonElementRenderer;
+    const Grid = renderers.grid as GridComponent;
 
-    return <Button element={element as Element} />;
+    return <Grid element={element as Element} />;
 };
 
-export default PeButton;
+export default PeGrid;

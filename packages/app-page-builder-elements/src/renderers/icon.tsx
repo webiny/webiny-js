@@ -32,9 +32,8 @@ const Icon: IconComponent = ({ element }) => {
     const { getElementStyles, theme } = usePageElements();
 
     let color = element.data.icon.color;
-    const [, themeColor] = color.split("theme:");
-    if (themeColor) {
-        color = theme.styles.colors[themeColor].base;
+    if (theme.styles.colors?.[color]?.base) {
+        color = theme.styles.colors?.[color]?.base;
     }
 
     const styles = [{ display: "block", color }, ...getElementStyles(element)];
