@@ -40,7 +40,9 @@ export const FolderTree: React.FC<Props> = ({
     const renderList = () => {
         if (!folders) {
             return <Loader />;
-        } else if (folders.length > 0) {
+        }
+
+        if (folders.length > 0) {
             return (
                 <>
                     <List
@@ -54,14 +56,14 @@ export const FolderTree: React.FC<Props> = ({
                     <CreateButton onClick={() => setCreateDialogOpen(true)} />
                 </>
             );
-        } else {
-            return (
-                <>
-                    <Empty />
-                    <CreateButton onClick={() => setCreateDialogOpen(true)} />
-                </>
-            );
         }
+
+        return (
+            <>
+                <Empty />
+                <CreateButton onClick={() => setCreateDialogOpen(true)} />
+            </>
+        );
     };
 
     return (
