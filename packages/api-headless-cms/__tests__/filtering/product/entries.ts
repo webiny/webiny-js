@@ -61,6 +61,20 @@ const createProducts = ({ id }: ProductCategory): Product[] => {
         availableSizes: ["s", "m", "l"],
         category
     });
+    /**
+     * T-Shirt
+     */
+    products.push({
+        title: "T-Shirt",
+        price: 7,
+        availableOn: "2022-06-06",
+        color: "white",
+        inStock: true,
+        itemsInStock: 102392192135,
+        image: "t-shirt.png",
+        availableSizes: ["s", "m", "l"],
+        category
+    });
 
     return products;
 };

@@ -4,6 +4,7 @@ import { createEntriesFactory } from "./product/entries";
 import { createCategoryFactory } from "./product/category";
 import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
 import { Product, ProductCategory } from "../types";
+import { getIt } from "./it";
 
 describe("complex filtering", () => {
     const options = {
@@ -22,13 +23,15 @@ describe("complex filtering", () => {
     let category: ProductCategory;
     let products: Product[];
 
-    const findProduct = (name: string): Product => {
+    const getProduct = (name: string): Product => {
         const product = products.find(p => p.title.toLowerCase() === name.toLowerCase());
         if (!product) {
             throw new Error(`There is no product "${name}".`);
         }
         return product;
     };
+
+    const it = getIt(categoryManager.storageOperations.name);
 
     beforeEach(async () => {
         await init();
@@ -40,48 +43,48 @@ describe("complex filtering", () => {
         /**
          * Query which must find the product - AND.
          */
-        // const [andResponse] = await listProducts({
-        //     where: {
-        //         title_contains: "ser",
-        //         AND: [
-        //             {
-        //                 title_contains: "ser"
-        //             },
-        //             {
-        //                 price_between: [35000, 100000],
-        //                 AND: [
-        //                     {
-        //                         color: "red"
-        //                     },
-        //                     {
-        //                         AND: [
-        //                             {
-        //                                 inStock: false
-        //                             }
-        //                         ]
-        //                     }
-        //                 ]
-        //             },
-        //             {
-        //                 availableOn_gte: "2021-01-01"
-        //             }
-        //         ]
-        //     }
-        // });
-        //
-        // expect(andResponse).toEqual({
-        //     data: {
-        //         listProducts: {
-        //             data: [findProduct("server")],
-        //             meta: {
-        //                 hasMoreItems: false,
-        //                 totalCount: 1,
-        //                 cursor: null
-        //             },
-        //             error: null
-        //         }
-        //     }
-        // });
+        const [andResponse] = await listProducts({
+            where: {
+                title_contains: "ser",
+                AND: [
+                    {
+                        title_contains: "ser"
+                    },
+                    {
+                        price_between: [35000, 100000],
+                        AND: [
+                            {
+                                color: "red"
+                            },
+                            {
+                                AND: [
+                                    {
+                                        inStock: false
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        availableOn_gte: "2021-01-01"
+                    }
+                ]
+            }
+        });
+
+        expect(andResponse).toEqual({
+            data: {
+                listProducts: {
+                    data: [getProduct("server")],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 1,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
         /**
          * Query which must find the product - OR.
          */
@@ -117,7 +120,7 @@ describe("complex filtering", () => {
         expect(orResponse).toEqual({
             data: {
                 listProducts: {
-                    data: [findProduct("server")],
+                    data: [getProduct("server")],
                     meta: {
                         hasMoreItems: false,
                         totalCount: 1,
