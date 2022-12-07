@@ -81,7 +81,7 @@ const objectField: CmsModelField = {
                                     },
                                     {
                                         fieldId: "price",
-                                        storageId: "priceStorageId",
+                                        storageId: "price",
                                         type: "number",
                                         id: "432",
                                         label: "Options Price"
@@ -120,11 +120,11 @@ const input = {
         optionsStorageId: [
             {
                 titleStorageId: "Option 1",
-                priceStorageId: 100
+                price: 100
             },
             {
                 titleStorageId: "Option 2",
-                priceStorageId: 200
+                price: 200
             }
         ]
     }
@@ -138,11 +138,11 @@ const expectedValue = {
         optionsStorageId: [
             {
                 titleStorageId: "Option 1",
-                priceStorageId: 100
+                price: 100
             },
             {
                 titleStorageId: "Option 2",
-                priceStorageId: 200
+                price: 200
             }
         ]
     }

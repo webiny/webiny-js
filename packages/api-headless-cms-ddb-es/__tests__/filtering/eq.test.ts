@@ -32,7 +32,7 @@ describe("equals filter", () => {
             must_not: [
                 {
                     exists: {
-                        field: "values.titleStorageId.keyword"
+                        field: "values.title.keyword"
                     }
                 }
             ]
@@ -58,7 +58,7 @@ describe("equals filter", () => {
             filter: [
                 {
                     term: {
-                        "values.titleStorageId.keyword": title
+                        "values.title.keyword": title
                     }
                 }
             ],
@@ -84,7 +84,7 @@ describe("equals filter", () => {
             filter: [
                 {
                     term: {
-                        "values.isMarriedStorageId": true
+                        "values.isMarried": true
                     }
                 }
             ],
@@ -110,7 +110,7 @@ describe("equals filter", () => {
             filter: [
                 {
                     term: {
-                        "values.ageStorageId": 2
+                        "values.age": 2
                     }
                 }
             ],

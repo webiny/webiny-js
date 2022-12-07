@@ -32,7 +32,7 @@ describe("in filter", () => {
             filter: [
                 {
                     terms: {
-                        "idStorageId.keyword": list
+                        "id.keyword": list
                     }
                 }
             ],
@@ -59,7 +59,7 @@ describe("in filter", () => {
             filter: [
                 {
                     terms: {
-                        idStorageId: list
+                        id: list
                     }
                 }
             ],

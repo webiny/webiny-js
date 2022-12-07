@@ -31,7 +31,7 @@ describe("not_between filter", () => {
             must_not: [
                 {
                     range: {
-                        "values.ageStorageId": {
+                        "values.age": {
                             gte: 18,
                             lte: 55
                         }
@@ -60,7 +60,7 @@ describe("not_between filter", () => {
             must_not: [
                 {
                     range: {
-                        "values.dateStorageId": {
+                        "values.date": {
                             gte: "2022-01-01T00:00:00.000Z",
                             lte: "2022-12-31T23:59:59.999Z"
                         }

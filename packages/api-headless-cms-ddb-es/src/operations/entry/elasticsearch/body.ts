@@ -110,7 +110,11 @@ export const createElasticsearchBody = ({ plugins, model, params }: Params): Sea
         should: query.should.length > 0 ? query.should : undefined,
         filter: query.filter.length > 0 ? query.filter : undefined
     };
-    if (Array.isArray(boolQuery.should) && boolQuery.should.length > 0) {
+    if (
+        Array.isArray(boolQuery.should) &&
+        boolQuery.should.length > 1 &&
+        !boolQuery.minimum_should_match
+    ) {
         boolQuery.minimum_should_match = 1;
     }
 

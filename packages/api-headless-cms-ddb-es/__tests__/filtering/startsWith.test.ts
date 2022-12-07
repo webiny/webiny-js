@@ -31,7 +31,7 @@ describe("startsWith filter", () => {
             filter: [
                 {
                     match_phrase_prefix: {
-                        ["values.titleStorageId"]: title
+                        ["values.title"]: title
                     }
                 }
             ],

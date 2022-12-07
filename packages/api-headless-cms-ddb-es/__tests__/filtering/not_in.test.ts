@@ -32,7 +32,7 @@ describe("not_in filter", () => {
             must_not: [
                 {
                     terms: {
-                        "idStorageId.keyword": list
+                        "id.keyword": list
                     }
                 }
             ]
@@ -59,7 +59,7 @@ describe("not_in filter", () => {
             must_not: [
                 {
                     terms: {
-                        idStorageId: list
+                        id: list
                     }
                 }
             ]
