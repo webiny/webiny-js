@@ -277,7 +277,7 @@ describe("Page blocks Security Test", () => {
                 [
                     { name: "content.i18n" },
                     { name: "pb.block" },
-                    { name: "pb.blockCategory", rwd: "w" }
+                    { name: "pb.blockCategory", rwd: "rw" }
                 ],
                 identityA
             ],
@@ -285,7 +285,7 @@ describe("Page blocks Security Test", () => {
                 [
                     { name: "content.i18n" },
                     { name: "pb.block", own: true },
-                    { name: "pb.blockCategory", rwd: "w" }
+                    { name: "pb.blockCategory", rwd: "rw" }
                 ],
                 identityA
             ],
@@ -293,7 +293,7 @@ describe("Page blocks Security Test", () => {
                 [
                     { name: "content.i18n" },
                     { name: "pb.block", rwd: "rw" },
-                    { name: "pb.blockCategory", rwd: "w" }
+                    { name: "pb.blockCategory", rwd: "rw" }
                 ],
                 identityA
             ],
@@ -301,7 +301,7 @@ describe("Page blocks Security Test", () => {
                 [
                     { name: "content.i18n" },
                     { name: "pb.block", rwd: "rwd" },
-                    { name: "pb.blockCategory", rwd: "w" }
+                    { name: "pb.blockCategory", rwd: "rw" }
                 ],
                 identityA
             ],
@@ -309,7 +309,7 @@ describe("Page blocks Security Test", () => {
                 [
                     { name: "content.i18n", locales: ["en-US"] },
                     { name: "pb.block" },
-                    { name: "pb.blockCategory", rwd: "w" }
+                    { name: "pb.blockCategory", rwd: "rw" }
                 ],
                 identityA
             ]
@@ -393,7 +393,7 @@ describe("Page blocks Security Test", () => {
                 [
                     { name: "content.i18n" },
                     { name: "pb.block" },
-                    { name: "pb.blockCategory", rwd: "w" }
+                    { name: "pb.blockCategory", rwd: "rw" }
                 ],
                 identityA
             ],
@@ -401,7 +401,7 @@ describe("Page blocks Security Test", () => {
                 [
                     { name: "content.i18n" },
                     { name: "pb.block", own: true },
-                    { name: "pb.blockCategory", rwd: "w" }
+                    { name: "pb.blockCategory", rwd: "rw" }
                 ],
                 identityA
             ],
@@ -409,7 +409,7 @@ describe("Page blocks Security Test", () => {
                 [
                     { name: "content.i18n" },
                     { name: "pb.block", rwd: "rw" },
-                    { name: "pb.blockCategory", rwd: "w" }
+                    { name: "pb.blockCategory", rwd: "rw" }
                 ],
                 identityA
             ],
@@ -417,7 +417,7 @@ describe("Page blocks Security Test", () => {
                 [
                     { name: "content.i18n" },
                     { name: "pb.block", rwd: "rwd" },
-                    { name: "pb.blockCategory", rwd: "w" }
+                    { name: "pb.blockCategory", rwd: "rw" }
                 ],
                 identityA
             ],
@@ -425,7 +425,7 @@ describe("Page blocks Security Test", () => {
                 [
                     { name: "content.i18n", locales: ["en-US"] },
                     { name: "pb.block" },
-                    { name: "pb.blockCategory", rwd: "w" }
+                    { name: "pb.blockCategory", rwd: "rw" }
                 ],
                 identityA
             ]
@@ -489,7 +489,7 @@ describe("Page blocks Security Test", () => {
             [
                 { name: "content.i18n" },
                 { name: "pb.block" },
-                { name: "pb.blockCategory", rwd: "w" }
+                { name: "pb.blockCategory", rwd: "rw" }
             ],
             identityA
         ],
@@ -497,7 +497,7 @@ describe("Page blocks Security Test", () => {
             [
                 { name: "content.i18n" },
                 { name: "pb.block", own: true },
-                { name: "pb.blockCategory", rwd: "w" }
+                { name: "pb.blockCategory", rwd: "rw" }
             ],
             identityA
         ],
@@ -505,7 +505,7 @@ describe("Page blocks Security Test", () => {
             [
                 { name: "content.i18n" },
                 { name: "pb.block", rwd: "rwd" },
-                { name: "pb.blockCategory", rwd: "w" }
+                { name: "pb.blockCategory", rwd: "rw" }
             ],
             identityA
         ],
@@ -514,7 +514,7 @@ describe("Page blocks Security Test", () => {
                 { name: "content.i18n" },
                 { name: "content.i18n", locales: ["en-US"] },
                 { name: "pb.block" },
-                { name: "pb.blockCategory", rwd: "w" }
+                { name: "pb.blockCategory", rwd: "rw" }
             ],
             identityA
         ]
