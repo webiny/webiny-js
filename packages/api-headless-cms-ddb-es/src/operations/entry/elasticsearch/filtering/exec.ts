@@ -2,7 +2,7 @@ import WebinyError from "@webiny/error";
 import { CmsEntryListWhere, CmsModel } from "@webiny/api-headless-cms/types";
 import { ModelFields } from "~/operations/entry/elasticsearch/types";
 import { PluginsContainer } from "@webiny/plugins";
-import { ElasticsearchBoolQueryConfig } from "@webiny/api-elasticsearch/types";
+import { ElasticsearchBoolQueryConfig, Query } from "@webiny/api-elasticsearch/types";
 import { createSearchPluginList } from "~/operations/entry/elasticsearch/plugins/search";
 import { createOperatorPluginList } from "~/operations/entry/elasticsearch/plugins/operator";
 import { createBaseQuery } from "~/operations/entry/elasticsearch/initialQuery";
@@ -51,10 +51,11 @@ export const createExecFiltering = (params: CreateExecParams): CreateExecFilteri
         /**
          * No point in continuing if no "where" conditions exist.
          */
-        if (Object.keys(initialWhere).length === 0) {
+        const keys = Object.keys(initialWhere);
+        if (keys.length === 0) {
             return;
         }
-        const where = {
+        const where: CmsEntryListWhere = {
             ...initialWhere
         };
 
@@ -74,23 +75,21 @@ export const createExecFiltering = (params: CreateExecParams): CreateExecFilteri
             else if (key === "AND") {
                 const childWhereList = getValues(value, "AND");
 
-                // const childQuery = createBaseQuery();
-                /**
-                 * Each of the conditions MUST produce it's own filter section.
-                 */
+                const childQuery = createBaseQuery();
+
                 for (const childWhere of childWhereList) {
                     execFiltering({
-                        query: query,
+                        query: childQuery,
                         where: childWhere
                     });
                 }
-                // const childQueryBool = getPopulated(childQuery);
-                // if (Object.keys(childQueryBool).length === 0) {
-                //     continue;
-                // }
-                // query.filter.push({
-                //     bool: childQueryBool
-                // });
+                const childQueryBool = getPopulated(childQuery);
+                if (Object.keys(childQueryBool).length === 0) {
+                    continue;
+                }
+                query.filter.push({
+                    bool: childQueryBool
+                });
 
                 continue;
             }
@@ -103,7 +102,7 @@ export const createExecFiltering = (params: CreateExecParams): CreateExecFilteri
                 /**
                  * Each of the conditions MUST produce it's own should section.
                  */
-                const should: any[] = [];
+                const should: Query[] = [];
                 for (const childWhere of childWhereList) {
                     const childQuery = createBaseQuery();
                     execFiltering({
@@ -123,12 +122,7 @@ export const createExecFiltering = (params: CreateExecParams): CreateExecFilteri
                 if (should.length === 0) {
                     continue;
                 }
-                query.filter.push({
-                    bool: {
-                        should,
-                        minimum_should_match: 1
-                    }
-                });
+                query.should.push(...should);
                 /**
                  * If there are any should, minimum to have is 1.
                  * Of course, do not override if it's already set.

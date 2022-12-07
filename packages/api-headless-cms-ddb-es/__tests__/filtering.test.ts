@@ -134,39 +134,45 @@ describe("convert where to elasticsearch query", () => {
             ]
         };
 
-        const expected = createQuery({
-            must: [
-                {
-                    query_string: {
-                        allow_leading_wildcard: true,
-                        default_operator: "and",
-                        fields: ["values.title"],
-                        query: "*webiny*"
-                    }
-                },
-                {
-                    query_string: {
-                        allow_leading_wildcard: true,
-                        default_operator: "and",
-                        fields: ["values.title"],
-                        query: "*serverless*"
-                    }
-                }
-            ],
-            filter: [
-                {
-                    range: {
-                        id: {
-                            gt: 50
-                        }
-                    }
-                }
-            ]
-        });
-
         execFiltering({
             query,
             where
+        });
+
+        const expected = createQuery({
+            filter: [
+                {
+                    bool: {
+                        must: [
+                            {
+                                query_string: {
+                                    allow_leading_wildcard: true,
+                                    default_operator: "and",
+                                    fields: ["values.title"],
+                                    query: "*webiny*"
+                                }
+                            },
+                            {
+                                query_string: {
+                                    allow_leading_wildcard: true,
+                                    default_operator: "and",
+                                    fields: ["values.title"],
+                                    query: "*serverless*"
+                                }
+                            }
+                        ],
+                        filter: [
+                            {
+                                range: {
+                                    id: {
+                                        gt: 50
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
         });
 
         expect(query).toEqual(expected);
@@ -193,43 +199,39 @@ describe("convert where to elasticsearch query", () => {
                             gt: 50
                         }
                     }
+                }
+            ],
+            should: [
+                {
+                    bool: {
+                        must: [
+                            {
+                                query_string: {
+                                    allow_leading_wildcard: true,
+                                    default_operator: "and",
+                                    fields: ["values.title"],
+                                    query: "*webiny*"
+                                }
+                            }
+                        ]
+                    }
                 },
                 {
                     bool: {
-                        should: [
+                        must: [
                             {
-                                bool: {
-                                    must: [
-                                        {
-                                            query_string: {
-                                                allow_leading_wildcard: true,
-                                                default_operator: "and",
-                                                fields: ["values.title"],
-                                                query: "*webiny*"
-                                            }
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                bool: {
-                                    must: [
-                                        {
-                                            query_string: {
-                                                allow_leading_wildcard: true,
-                                                default_operator: "and",
-                                                fields: ["values.title"],
-                                                query: "*serverless*"
-                                            }
-                                        }
-                                    ]
+                                query_string: {
+                                    allow_leading_wildcard: true,
+                                    default_operator: "and",
+                                    fields: ["values.title"],
+                                    query: "*serverless*"
                                 }
                             }
-                        ],
-                        minimum_should_match: 1
+                        ]
                     }
                 }
-            ]
+            ],
+            minimum_should_match: 1
         });
 
         execFiltering({
@@ -256,37 +258,111 @@ describe("convert where to elasticsearch query", () => {
         };
 
         const expected = createQuery({
+            should: [
+                {
+                    bool: {
+                        filter: [
+                            {
+                                range: {
+                                    id: {
+                                        gt: 50
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    bool: {
+                        must: [
+                            {
+                                query_string: {
+                                    allow_leading_wildcard: true,
+                                    default_operator: "and",
+                                    fields: ["values.title"],
+                                    query: "*webiny*"
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    bool: {
+                        must: [
+                            {
+                                query_string: {
+                                    allow_leading_wildcard: true,
+                                    default_operator: "and",
+                                    fields: ["values.title"],
+                                    query: "*serverless*"
+                                }
+                            }
+                        ]
+                    }
+                }
+            ],
+            minimum_should_match: 1
+        });
+
+        execFiltering({
+            query,
+            where
+        });
+
+        expect(query).toEqual(expected);
+    });
+
+    it("should create query #4", async () => {
+        const where: CmsEntryListWhere = {
+            AND: [
+                {
+                    id_gt: 50
+                },
+                {
+                    title_contains: "webiny"
+                },
+                {
+                    OR: [
+                        {
+                            title_contains: "serverless"
+                        },
+                        {
+                            title_contains: "cms"
+                        }
+                    ]
+                }
+            ]
+        };
+
+        execFiltering({
+            query,
+            where
+        });
+
+        const expected = createQuery({
             filter: [
                 {
                     bool: {
+                        must: [
+                            {
+                                query_string: {
+                                    allow_leading_wildcard: true,
+                                    default_operator: "and",
+                                    fields: ["values.title"],
+                                    query: "*webiny*"
+                                }
+                            }
+                        ],
+                        filter: [
+                            {
+                                range: {
+                                    id: {
+                                        gt: 50
+                                    }
+                                }
+                            }
+                        ],
                         should: [
-                            {
-                                bool: {
-                                    filter: [
-                                        {
-                                            range: {
-                                                id: {
-                                                    gt: 50
-                                                }
-                                            }
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                bool: {
-                                    must: [
-                                        {
-                                            query_string: {
-                                                allow_leading_wildcard: true,
-                                                default_operator: "and",
-                                                fields: ["values.title"],
-                                                query: "*webiny*"
-                                            }
-                                        }
-                                    ]
-                                }
-                            },
                             {
                                 bool: {
                                     must: [
@@ -300,17 +376,26 @@ describe("convert where to elasticsearch query", () => {
                                         }
                                     ]
                                 }
+                            },
+                            {
+                                bool: {
+                                    must: [
+                                        {
+                                            query_string: {
+                                                allow_leading_wildcard: true,
+                                                default_operator: "and",
+                                                fields: ["values.title"],
+                                                query: "*cms*"
+                                            }
+                                        }
+                                    ]
+                                }
                             }
                         ],
                         minimum_should_match: 1
                     }
                 }
             ]
-        });
-
-        execFiltering({
-            query,
-            where
         });
 
         expect(query).toEqual(expected);
@@ -335,30 +420,34 @@ describe("convert where to elasticsearch query", () => {
         });
 
         const expected = createQuery({
-            must: [
-                {
-                    query_string: {
-                        allow_leading_wildcard: true,
-                        default_operator: "and",
-                        fields: ["values.title"],
-                        query: "*webiny*"
-                    }
-                },
-                {
-                    query_string: {
-                        allow_leading_wildcard: true,
-                        default_operator: "and",
-                        fields: ["values.title"],
-                        query: "*serverless*"
-                    }
-                }
-            ],
             filter: [
                 {
                     range: {
                         id: {
                             gte: 2
                         }
+                    }
+                },
+                {
+                    bool: {
+                        must: [
+                            {
+                                query_string: {
+                                    allow_leading_wildcard: true,
+                                    default_operator: "and",
+                                    fields: ["values.title"],
+                                    query: "*webiny*"
+                                }
+                            },
+                            {
+                                query_string: {
+                                    allow_leading_wildcard: true,
+                                    default_operator: "and",
+                                    fields: ["values.title"],
+                                    query: "*serverless*"
+                                }
+                            }
+                        ]
                     }
                 }
             ]
@@ -397,19 +486,31 @@ describe("convert where to elasticsearch query", () => {
             ],
             should: [
                 {
-                    query_string: {
-                        allow_leading_wildcard: true,
-                        default_operator: "and",
-                        fields: ["values.title"],
-                        query: "*webiny*"
+                    bool: {
+                        must: [
+                            {
+                                query_string: {
+                                    allow_leading_wildcard: true,
+                                    default_operator: "and",
+                                    fields: ["values.title"],
+                                    query: "*webiny*"
+                                }
+                            }
+                        ]
                     }
                 },
                 {
-                    query_string: {
-                        allow_leading_wildcard: true,
-                        default_operator: "and",
-                        fields: ["values.title"],
-                        query: "*serverless*"
+                    bool: {
+                        must: [
+                            {
+                                query_string: {
+                                    allow_leading_wildcard: true,
+                                    default_operator: "and",
+                                    fields: ["values.title"],
+                                    query: "*serverless*"
+                                }
+                            }
+                        ]
                     }
                 }
             ],
@@ -448,116 +549,7 @@ describe("convert where to elasticsearch query", () => {
             query,
             where
         });
-        // const x = {
-        //     must: [
-        //         {
-        //             query_string: {
-        //                 allow_leading_wildcard: true,
-        //                 fields: ["values.title"],
-        //                 query: "*cms*",
-        //                 default_operator: "and"
-        //             }
-        //         }
-        //     ],
-        //     filter: [
-        //         {
-        //             range: {
-        //                 id: {
-        //                     gt: 50
-        //                 }
-        //             }
-        //         },
-        //         {
-        //             bool: {
-        //                 should: [
-        //                     {
-        //                         bool: {
-        //                             must: [
-        //                                 {
-        //                                     query_string: {
-        //                                         allow_leading_wildcard: true,
-        //                                         fields: ["values.title"],
-        //                                         query: "*headless*",
-        //                                         default_operator: "and"
-        //                                     }
-        //                                 }
-        //                             ],
-        //                             filter: [
-        //                                 {
-        //                                     bool: {
-        //                                         must: [
-        //                                             {
-        //                                                 query_string: {
-        //                                                     allow_leading_wildcard: true,
-        //                                                     fields: ["values.title"],
-        //                                                     query: "*form*",
-        //                                                     default_operator: "and"
-        //                                                 }
-        //                                             },
-        //                                             {
-        //                                                 query_string: {
-        //                                                     allow_leading_wildcard: true,
-        //                                                     fields: ["values.title"],
-        //                                                     query: "*page*",
-        //                                                     default_operator: "and"
-        //                                                 }
-        //                                             }
-        //                                         ]
-        //                                     }
-        //                                 },
-        //                                 {
-        //                                     bool: {
-        //                                         must: [
-        //                                             {
-        //                                                 query_string: {
-        //                                                     allow_leading_wildcard: true,
-        //                                                     fields: ["values.title"],
-        //                                                     query: "*form*",
-        //                                                     default_operator: "and"
-        //                                                 }
-        //                                             },
-        //                                             {
-        //                                                 query_string: {
-        //                                                     allow_leading_wildcard: true,
-        //                                                     fields: ["values.title"],
-        //                                                     query: "*page*",
-        //                                                     default_operator: "and"
-        //                                                 }
-        //                                             }
-        //                                         ]
-        //                                     }
-        //                                 },
-        //                                 {
-        //                                     bool: {
-        //                                         should: [
-        //                                             {
-        //                                                 bool: {
-        //                                                     must: [
-        //                                                         {
-        //                                                             query_string: {
-        //                                                                 allow_leading_wildcard:
-        //                                                                     true,
-        //                                                                 fields: [
-        //                                                                     "values.title"
-        //                                                                 ],
-        //                                                                 query: "*webiny*",
-        //                                                                 default_operator: "and"
-        //                                                             }
-        //                                                         }
-        //                                                     ]
-        //                                                 }
-        //                                             }
-        //                                         ]
-        //                                     }
-        //                                 }
-        //                             ]
-        //                         }
-        //                     }
-        //                 ]
-        //             }
-        //         }
-        //     ]
-        // };
+
         const expected = createQuery({
             must: [
                 {
@@ -576,50 +568,53 @@ describe("convert where to elasticsearch query", () => {
                             gt: 50
                         }
                     }
+                }
+            ],
+            should: [
+                {
+                    bool: {
+                        must: [
+                            {
+                                query_string: {
+                                    allow_leading_wildcard: true,
+                                    default_operator: "and",
+                                    fields: ["values.title"],
+                                    query: "*headless*"
+                                }
+                            }
+                        ],
+                        filter: [
+                            {
+                                bool: {
+                                    must: [
+                                        {
+                                            query_string: {
+                                                allow_leading_wildcard: true,
+                                                default_operator: "and",
+                                                fields: ["values.title"],
+                                                query: "*form*"
+                                            }
+                                        },
+                                        {
+                                            query_string: {
+                                                allow_leading_wildcard: true,
+                                                default_operator: "and",
+                                                fields: ["values.title"],
+                                                query: "*page*"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
                 },
                 {
                     bool: {
                         should: [
                             {
                                 bool: {
-                                    should: [
-                                        {
-                                            query_string: {
-                                                allow_leading_wildcard: true,
-                                                default_operator: "and",
-                                                fields: ["values.title"],
-                                                query: "*headless*"
-                                            }
-                                        },
-                                        {
-                                            bool: {
-                                                must: [
-                                                    {
-                                                        query_string: {
-                                                            allow_leading_wildcard: true,
-                                                            default_operator: "and",
-                                                            fields: ["values.title"],
-                                                            query: "*form*"
-                                                        }
-                                                    },
-                                                    {
-                                                        query_string: {
-                                                            allow_leading_wildcard: true,
-                                                            default_operator: "and",
-                                                            fields: ["values.title"],
-                                                            query: "*page*"
-                                                        }
-                                                    }
-                                                ]
-                                            }
-                                        }
-                                    ],
-                                    minimum_should_match: 1
-                                }
-                            },
-                            {
-                                bool: {
-                                    should: [
+                                    must: [
                                         {
                                             query_string: {
                                                 allow_leading_wildcard: true,
@@ -628,14 +623,15 @@ describe("convert where to elasticsearch query", () => {
                                                 query: "*webiny*"
                                             }
                                         }
-                                    ],
-                                    minimum_should_match: 1
+                                    ]
                                 }
                             }
-                        ]
+                        ],
+                        minimum_should_match: 1
                     }
                 }
-            ]
+            ],
+            minimum_should_match: 1
         });
         expect(query).toEqual(expected);
     });
@@ -690,16 +686,6 @@ describe("convert where to elasticsearch query", () => {
             should: [
                 {
                     bool: {
-                        filter: [
-                            {
-                                range: {
-                                    ["values.price"]: {
-                                        gte: 35000,
-                                        lte: 100000
-                                    }
-                                }
-                            }
-                        ],
                         should: [
                             {
                                 bool: {
@@ -718,9 +704,9 @@ describe("convert where to elasticsearch query", () => {
                                         {
                                             query_string: {
                                                 allow_leading_wildcard: true,
-                                                default_operator: "and",
                                                 fields: ["values.title"],
-                                                query: "*es*"
+                                                query: "*es*",
+                                                default_operator: "and"
                                             }
                                         }
                                     ]
@@ -739,9 +725,9 @@ describe("convert where to elasticsearch query", () => {
                                                                     query_string: {
                                                                         allow_leading_wildcard:
                                                                             true,
-                                                                        default_operator: "and",
                                                                         fields: ["values.title"],
-                                                                        query: "*st*"
+                                                                        query: "*st*",
+                                                                        default_operator: "and"
                                                                     }
                                                                 }
                                                             ]
@@ -752,7 +738,7 @@ describe("convert where to elasticsearch query", () => {
                                                             filter: [
                                                                 {
                                                                     range: {
-                                                                        ["values.age"]: {
+                                                                        "values.age": {
                                                                             gt: 5
                                                                         }
                                                                     }
@@ -761,18 +747,30 @@ describe("convert where to elasticsearch query", () => {
                                                         }
                                                     }
                                                 ],
+                                                filter: [
+                                                    {
+                                                        range: {
+                                                            "values.age": {
+                                                                lte: 18,
+                                                                gte: 2
+                                                            }
+                                                        }
+                                                    }
+                                                ],
                                                 minimum_should_match: 1
-                                            }
-                                        },
-                                        {
-                                            range: {
-                                                ["values.age"]: {
-                                                    gte: 2,
-                                                    lte: 18
-                                                }
                                             }
                                         }
                                     ]
+                                }
+                            }
+                        ],
+                        filter: [
+                            {
+                                range: {
+                                    "values.price": {
+                                        lte: 100000,
+                                        gte: 35000
+                                    }
                                 }
                             }
                         ],
@@ -783,17 +781,23 @@ describe("convert where to elasticsearch query", () => {
                     bool: {
                         filter: [
                             {
-                                range: {
-                                    ["values.availableOn"]: {
-                                        gte: "2021-01-01"
-                                    }
-                                }
-                            },
-                            {
-                                range: {
-                                    ["values.availableOn"]: {
-                                        lte: "2021-01-02"
-                                    }
+                                bool: {
+                                    filter: [
+                                        {
+                                            range: {
+                                                "values.availableOn": {
+                                                    gte: "2021-01-01"
+                                                }
+                                            }
+                                        },
+                                        {
+                                            range: {
+                                                "values.availableOn": {
+                                                    lte: "2021-01-02"
+                                                }
+                                            }
+                                        }
+                                    ]
                                 }
                             }
                         ]
