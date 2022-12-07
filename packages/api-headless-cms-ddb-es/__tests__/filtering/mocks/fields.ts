@@ -18,29 +18,43 @@ export const createModel = (): CmsModel => {
                 id: "age",
                 type: "number",
                 fieldId: "age",
-                storageId: "ageStorageId",
+                storageId: "age",
                 label: "Age"
             },
             {
                 id: "title",
                 type: "text",
-                fieldId: "titleId",
-                storageId: "titleStorageId",
+                fieldId: "title",
+                storageId: "title",
                 label: "Title"
             },
             {
                 id: "date",
                 type: "datetime",
-                fieldId: "dateId",
-                storageId: "dateStorageId",
+                fieldId: "date",
+                storageId: "date",
                 label: "Date"
             },
             {
                 id: "isMarried",
                 type: "boolean",
-                fieldId: "isMarriedId",
-                storageId: "isMarriedStorageId",
+                fieldId: "isMarried",
+                storageId: "isMarried",
                 label: "Is Married"
+            },
+            {
+                id: "price",
+                type: "number",
+                fieldId: "price",
+                storageId: "price",
+                label: "Price"
+            },
+            {
+                id: "availableOn",
+                type: "datetime",
+                fieldId: "availableOn",
+                storageId: "availableOn",
+                label: "Available On"
             }
         ],
         layout: [],
@@ -63,7 +77,7 @@ export const createFields = (): Fields => {
                 id: "id",
                 type: "string",
                 fieldId: "id",
-                storageId: "idStorageId",
+                storageId: "id",
                 label: "Id"
             },
             isSearchable: true,
@@ -76,7 +90,7 @@ export const createFields = (): Fields => {
                 id: "age",
                 type: "number",
                 fieldId: "age",
-                storageId: "ageStorageId",
+                storageId: "age",
                 label: "Age"
             },
             isSearchable: true,
@@ -88,8 +102,8 @@ export const createFields = (): Fields => {
             field: {
                 id: "title",
                 type: "text",
-                fieldId: "titleId",
-                storageId: "titleStorageId",
+                fieldId: "title",
+                storageId: "title",
                 label: "Title"
             },
             isSearchable: true,
@@ -101,8 +115,8 @@ export const createFields = (): Fields => {
             field: {
                 id: "date",
                 type: "datetime",
-                fieldId: "dateId",
-                storageId: "dateStorageId",
+                fieldId: "date",
+                storageId: "date",
                 label: "Date"
             },
             isSearchable: true,
@@ -114,9 +128,35 @@ export const createFields = (): Fields => {
             field: {
                 id: "isMarried",
                 type: "boolean",
-                fieldId: "isMarriedId",
-                storageId: "isMarriedStorageId",
+                fieldId: "isMarried",
+                storageId: "isMarried",
                 label: "Is Married"
+            },
+            isSearchable: true,
+            isSortable: true,
+            isSystemField: false,
+            type: "date"
+        },
+        price: {
+            field: {
+                id: "price",
+                type: "number",
+                fieldId: "price",
+                storageId: "price",
+                label: "Price"
+            },
+            isSearchable: true,
+            isSortable: true,
+            isSystemField: false,
+            type: "number"
+        },
+        availableOn: {
+            field: {
+                id: "availableOn",
+                type: "datetime",
+                fieldId: "availableOn",
+                storageId: "availableOn",
+                label: "Available On"
             },
             isSearchable: true,
             isSortable: true,

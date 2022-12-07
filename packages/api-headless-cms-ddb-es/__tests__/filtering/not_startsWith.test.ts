@@ -32,7 +32,7 @@ describe("not startsWith filter", () => {
             must_not: [
                 {
                     match_phrase_prefix: {
-                        ["values.titleStorageId"]: title
+                        ["values.title"]: title
                     }
                 }
             ]

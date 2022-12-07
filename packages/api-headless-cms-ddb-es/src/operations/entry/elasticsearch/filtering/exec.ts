@@ -2,7 +2,7 @@ import WebinyError from "@webiny/error";
 import { CmsEntryListWhere, CmsModel } from "@webiny/api-headless-cms/types";
 import { ModelFields } from "~/operations/entry/elasticsearch/types";
 import { PluginsContainer } from "@webiny/plugins";
-import { ElasticsearchBoolQueryConfig, Query } from "@webiny/api-elasticsearch/types";
+import { ElasticsearchBoolQueryConfig } from "@webiny/api-elasticsearch/types";
 import { createSearchPluginList } from "~/operations/entry/elasticsearch/plugins/search";
 import { createOperatorPluginList } from "~/operations/entry/elasticsearch/plugins/operator";
 import { createBaseQuery } from "~/operations/entry/elasticsearch/initialQuery";
@@ -57,21 +57,6 @@ export const createExecFiltering = (params: CreateExecParams): CreateExecFilteri
         const where = {
             ...initialWhere
         };
-        /**
-         * If there is an OR condition in where, move all filters which are not OR into that given condition.
-         */
-        // if (where.OR) {
-        //     const andWhere: CmsEntryListWhere = {};
-        //     for (const key in where) {
-        //         if (key === "OR") {
-        //             continue;
-        //         }
-        //         where.OR.push({
-        //             [key]: where[key]
-        //         });
-        //         delete where[key];
-        //     }
-        // }
 
         for (const key in where) {
             const value = where[key] as unknown as any;
@@ -88,16 +73,25 @@ export const createExecFiltering = (params: CreateExecParams): CreateExecFilteri
              */
             else if (key === "AND") {
                 const childWhereList = getValues(value, "AND");
+
+                // const childQuery = createBaseQuery();
                 /**
-                 * We can assign AND condition queries to the parent query.
-                 * When doing the AND queries, level of bool does not have any effect.
+                 * Each of the conditions MUST produce it's own filter section.
                  */
                 for (const childWhere of childWhereList) {
                     execFiltering({
-                        query,
+                        query: query,
                         where: childWhere
                     });
                 }
+                // const childQueryBool = getPopulated(childQuery);
+                // if (Object.keys(childQueryBool).length === 0) {
+                //     continue;
+                // }
+                // query.filter.push({
+                //     bool: childQueryBool
+                // });
+
                 continue;
             }
             //
@@ -106,40 +100,40 @@ export const createExecFiltering = (params: CreateExecParams): CreateExecFilteri
              */
             else if (key === "OR") {
                 const childWhereList = getValues(value, "OR");
-                const childQuery = createBaseQuery();
-
+                /**
+                 * Each of the conditions MUST produce it's own should section.
+                 */
+                const should: any[] = [];
                 for (const childWhere of childWhereList) {
+                    const childQuery = createBaseQuery();
                     execFiltering({
                         query: childQuery,
                         where: childWhere
                     });
-                }
-                const childQueryBool = getPopulated(childQuery);
-                if (Object.keys(childQueryBool).length === 0) {
-                    continue;
-                }
-
-                /**
-                 * Assign child queries.
-                 */
-                const should: Query[] = [];
-
-                let key: keyof ElasticsearchBoolQueryConfig;
-                for (key in childQueryBool) {
-                    const childQueryBoolValue = childQueryBool[key]; // as Query[];
-                    if (!Array.isArray(childQueryBoolValue)) {
-                        if (query[key] === undefined) {
-                            /**
-                             * Unfortunately we need to cast as any because it actually can be anything.
-                             */
-                            query[key] = childQueryBoolValue as any;
-                        }
+                    const childQueryBool = getPopulated(childQuery);
+                    if (Object.keys(childQueryBool).length === 0) {
                         continue;
                     }
-                    should.push(...childQueryBoolValue);
+                    should.push({
+                        bool: {
+                            ...childQueryBool
+                        }
+                    });
                 }
-                query.should.push(...should);
-                if (query.should.length > 1 && !query.minimum_should_match) {
+                if (should.length === 0) {
+                    continue;
+                }
+                query.filter.push({
+                    bool: {
+                        should,
+                        minimum_should_match: 1
+                    }
+                });
+                /**
+                 * If there are any should, minimum to have is 1.
+                 * Of course, do not override if it's already set.
+                 */
+                if (query.should.length > 0 && !query.minimum_should_match) {
                     query.minimum_should_match = 1;
                 }
 

@@ -31,7 +31,7 @@ describe("greater than or equal filter", () => {
             filter: [
                 {
                     range: {
-                        "values.ageStorageId": {
+                        "values.age": {
                             gte: 10
                         }
                     }
