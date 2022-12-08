@@ -39,7 +39,9 @@ describe("complex product filtering", () => {
         category = await createCategory();
         products = await createEntries(category);
     });
-
+    /**
+     * This tests proves that nested filtering results in a single required record.
+     */
     it("should filter a single product with a nested filter - server", async () => {
         /**
          * Query which must find the product - AND.
@@ -132,7 +134,189 @@ describe("complex product filtering", () => {
             }
         });
     });
+    /**
+     * Nested AND queries.
+     *
+     * This test proves that nested filtering, with a single wrong parameter, will not produce a record.
+     */
+    it("should filter out all products - server proof - and", async () => {
+        /**
+         * Expectation is the same for all responses in this test.
+         */
+        const expected = {
+            data: {
+                listProducts: {
+                    data: [],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 0,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        };
+        /**
+         * where.and[1].price_between
+         */
+        const [response1] = await listProducts({
+            where: {
+                title_contains: "ser",
+                AND: [
+                    {
+                        title_contains: "ser"
+                    },
+                    {
+                        price_between: [100, 200],
+                        AND: [
+                            {
+                                color: "red"
+                            },
+                            {
+                                AND: [
+                                    {
+                                        inStock: false
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        availableOn_gte: "2021-01-01"
+                    }
+                ]
+            }
+        });
 
+        expect(response1).toEqual(expected);
+        /**
+         * where.and[2].availableOn_gte
+         */
+        const [response2] = await listProducts({
+            where: {
+                title_contains: "ser",
+                AND: [
+                    {
+                        title_contains: "ser"
+                    },
+                    {
+                        price_between: [35000, 100000],
+                        AND: [
+                            {
+                                color: "red"
+                            },
+                            {
+                                AND: [
+                                    {
+                                        inStock: false
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        availableOn_gte: "2024-01-01"
+                    }
+                ]
+            }
+        });
+
+        expect(response2).toEqual(expected);
+
+        /**
+         * where.and[1].and[1].and[0].inStock
+         */
+        const [response3] = await listProducts({
+            where: {
+                title_contains: "ser",
+                AND: [
+                    {
+                        title_contains: "ser"
+                    },
+                    {
+                        price_between: [35000, 100000],
+                        AND: [
+                            {
+                                color: "red"
+                            },
+                            {
+                                AND: [
+                                    {
+                                        inStock: true
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        availableOn_gte: "2021-01-01"
+                    }
+                ]
+            }
+        });
+
+        expect(response3).toEqual(expected);
+    });
+
+    /**
+     * Nested OR queries.
+     *
+     * This test proves that nested filtering, with all wrong parameters, will not produce a record.
+     */
+    it("should filter out all products - server proof - or", async () => {
+        /**
+         * Expectation is the same for all responses in this test.
+         */
+        const expected = {
+            data: {
+                listProducts: {
+                    data: [],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 0,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        };
+        /**
+         *
+         */
+        const [orResponse] = await listProducts({
+            where: {
+                OR: [
+                    {
+                        price_between: [200, 300],
+                        OR: [
+                            {
+                                color: "black"
+                            },
+                            {
+                                OR: [
+                                    {
+                                        title_contains: "version"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        OR: [
+                            {
+                                availableOn_gte: "2024-02-01",
+                                availableOn_lte: "2024-02-02"
+                            }
+                        ]
+                    }
+                ]
+            }
+        });
+        expect(orResponse).toEqual(expected);
+    });
+    /**
+     *
+     */
     it("should filter a single product with a nested filter - server and gaming console", async () => {
         /**
          * Query which must find the products - AND.
