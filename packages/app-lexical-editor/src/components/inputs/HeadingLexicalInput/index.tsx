@@ -28,8 +28,6 @@ import { $getRoot, $createTextNode, LexicalEditor } from "lexical";
 import WebinyNodes from "../../../nodes/webinyNodes";
 import { $createParagraphNode } from "lexical";
 import { HeadingToolbar } from "~/components/inputs/HeadingLexicalInput/Toolbar";
-import { AddToolbarAction } from "~/components/Toolbar/Composable/AddToolbarAction/AddToolbarAction";
-import { BoldAction } from "~/components/Toolbar/ToolbarActions/BoldAction";
 
 interface HeadingLexicalInputProps {
     tag?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
@@ -114,7 +112,6 @@ const HeadingLexicalInput: React.FC<HeadingLexicalInputProps> = ({ onChange }) =
                         <>
                             {/* <FloatingLinkEditorPlugin anchorElem={floatingAnchorElem} /> */}
                             <HeadingToolbar anchorElem={floatingAnchorElem} />
-                            <AddToolbarAction element={<BoldAction />} type={"heading"} />
                         </>
                     )}
                 </div>
