@@ -15,7 +15,6 @@ import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import ClickableLinkPlugin from "../../../plugins/ClickableLinkPlugin";
 import { $generateHtmlFromNodes } from "@lexical/html";
 import React from "react";
-import { Admin as BaseAdmin, Provider } from "@webiny/app-admin-core";
 
 // import ComponentPickerPlugin from '../../../plugins/ComponentPickerPlugin';
 import FloatingLinkEditorPlugin from "../../../plugins/FloatingLinkEditorPlugin";
@@ -26,12 +25,11 @@ import theme from "../../../themes/webinyLexicalTheme";
 import Placeholder from "../../../ui/Placeholder";
 import { EditorState } from "lexical/LexicalEditorState";
 import { LexicalEditor } from "lexical";
-import FloatingFormatToolbar from "~/plugins/FloatingFormatToolbarPlugin";
-import { ToolbarProvider } from '../../../context/ToolbarContext';
+import FloatingTextFormatToolbarPlugin from "~/plugins/FloatingTextFormatToolbarPlugin";
 
 interface TextEditorLexicalInput {
-    onChange?: (htmlString: HtmlString) => void;
-    value?: HtmlString;
+    onChange?: (htmlString: string) => void;
+    value?: string;
 }
 
 const TextEditorLexicalInput: React.FC<TextEditorLexicalInput> = ({ onChange }) => {
@@ -78,31 +76,30 @@ const TextEditorLexicalInput: React.FC<TextEditorLexicalInput> = ({ onChange }) 
 
     return (
         <LexicalComposer initialConfig={initialConfig}>
-                <div className="editor-container" ref={scrollRef}>
-                    <MaxLengthPlugin maxLength={300} />
-                    <OnChangePlugin onChange={handleOnChange} />
-                    <AutoFocusPlugin />
-                    <ClearEditorPlugin />
-                    <RichTextPlugin
-                        contentEditable={
-                            <div className="editor-scroller">
-                                <div className="editor" ref={onRef}>
-                                    <ContentEditable />
-                                </div>
+            <div className="editor-container" ref={scrollRef}>
+                <MaxLengthPlugin maxLength={300} />
+                <OnChangePlugin onChange={handleOnChange} />
+                <AutoFocusPlugin />
+                <ClearEditorPlugin />
+                <RichTextPlugin
+                    contentEditable={
+                        <div className="editor-scroller">
+                            <div className="editor" ref={onRef}>
+                                <ContentEditable />
                             </div>
-                        }
-                        placeholder={placeholder}
-                        ErrorBoundary={LexicalErrorBoundary}
-                    />
-                    <ClickableLinkPlugin />
-                    <Provider hoc={ToolbarProvider} />
-                    {floatingAnchorElem && (
-                        <>
-                            <FloatingLinkEditorPlugin anchorElem={floatingAnchorElem} />
-                            <FloatingFormatToolbar anchorElem={floatingAnchorElem} />
-                        </>
-                    )}
-                </div>
+                        </div>
+                    }
+                    placeholder={placeholder}
+                    ErrorBoundary={LexicalErrorBoundary}
+                />
+                <ClickableLinkPlugin />
+                {floatingAnchorElem && (
+                    <>
+                        <FloatingLinkEditorPlugin anchorElem={floatingAnchorElem} />
+                        <FloatingTextFormatToolbarPlugin anchorElem={floatingAnchorElem} />
+                    </>
+                )}
+            </div>
         </LexicalComposer>
     );
 };

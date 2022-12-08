@@ -9,17 +9,17 @@ interface AddToolbarActionProps {
 
 export const AddToolbarAction: FC<AddToolbarActionProps> = ({ element, type: targetType }) => {
     const ToolbarPlugin = createComponentPlugin(Toolbar, Original => {
-        return function Toolbar({ type, children }) {
+        return function Toolbar({ type, children, anchorElem }) {
             if (!targetType || targetType === type) {
                 return (
-                    <Original type={type}>
+                    <Original type={type} anchorElem={anchorElem}>
                         {element}
                         {children}
                     </Original>
                 );
             }
 
-            return <Original type={type}>{children}</Original>;
+            return <Original anchorElem={anchorElem} type={type}>{children}</Original>;
         };
     });
 

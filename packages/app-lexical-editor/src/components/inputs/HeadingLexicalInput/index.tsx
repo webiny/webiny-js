@@ -16,8 +16,6 @@ import ClickableLinkPlugin from "../../../plugins/ClickableLinkPlugin";
 import { $generateHtmlFromNodes } from "@lexical/html";
 import React from "react";
 
-// import ComponentPickerPlugin from '../../../plugins/ComponentPickerPlugin';
-import FloatingLinkEditorPlugin from "../../../plugins/FloatingLinkEditorPlugin";
 // import FloatingTextFormatToolbarPlugin from "../../../plugins/FloatingTextFormatToolbarPlugin";
 import { MaxLengthPlugin } from "../../../plugins/MaxLengthPlugin";
 
@@ -31,12 +29,12 @@ import WebinyNodes from "../../../nodes/webinyNodes";
 import { $createParagraphNode } from "lexical";
 import { HeadingToolbar } from "~/components/inputs/HeadingLexicalInput/Toolbar";
 import { AddToolbarAction } from "~/components/Toolbar/Composable/AddToolbarAction/AddToolbarAction";
-// import FloatingFormatToolbar from "~/plugins/FloatingFormatToolbarPlugin";
+import { BoldAction } from "~/components/Toolbar/ToolbarActions/BoldAction";
 
 interface HeadingLexicalInputProps {
     tag?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
-    onChange?: (htmlString: HtmlString) => void;
-    value?: HtmlString;
+    onChange?: (htmlString: string) => void;
+    value?: string;
 }
 
 function setText() {
@@ -94,7 +92,6 @@ const HeadingLexicalInput: React.FC<HeadingLexicalInputProps> = ({ onChange }) =
 
     return (
         <h1 data-marker="styles" style={{ fontSize: 24, color: "red" }}>
-            <AddToolbarAction element={<span>My Action</span>} />
             <LexicalComposer initialConfig={initialConfig}>
                 <div ref={scrollRef}>
                     <MaxLengthPlugin maxLength={300} />
@@ -115,9 +112,9 @@ const HeadingLexicalInput: React.FC<HeadingLexicalInputProps> = ({ onChange }) =
                     <ClickableLinkPlugin />
                     {floatingAnchorElem && (
                         <>
-                            <FloatingLinkEditorPlugin anchorElem={floatingAnchorElem} />
-                            {/*<FloatingFormatToolbar anchorElem={floatingAnchorElem} />*/}
-                            <HeadingToolbar />
+                            {/* <FloatingLinkEditorPlugin anchorElem={floatingAnchorElem} /> */}
+                            <HeadingToolbar anchorElem={floatingAnchorElem} />
+                            <AddToolbarAction element={<BoldAction />} type={"heading"} />
                         </>
                     )}
                 </div>

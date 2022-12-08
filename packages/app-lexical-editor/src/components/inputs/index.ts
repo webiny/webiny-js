@@ -1,3 +1,3 @@
 export * from "./RichTextLexicalInput";
 export * from "./TextEditorLexicalInput";
-export * from './HeadingLexicalInput';
+export * from "./HeadingLexicalInput";

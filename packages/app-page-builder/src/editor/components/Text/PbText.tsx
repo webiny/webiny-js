@@ -9,9 +9,7 @@ import { ElementRoot } from "~/render/components/ElementRoot";
 import useUpdateHandlers from "../../plugins/elementSettings/useUpdateHandlers";
 import ReactMediumEditor from "../../components/MediumEditor";
 import { applyFallbackDisplayMode } from "../../plugins/elementSettings/elementSettingsUtils";
-import TextLexicalEditor from "../../components/LexicalEditor";
 import { HeadingLexicalInput } from "@webiny/app-lexical-editor";
-import ColorPicker from "../../../../../app-lexical-editor/src/ui/ColorPicker";
 
 export const textClassName = "webiny-pb-base-page-element-style webiny-pb-page-element-text";
 const DATA_NAMESPACE = "data.text";
@@ -68,14 +66,14 @@ const PbText: React.FC<TextElementProps> = ({ elementId, mediumEditorOptions, ro
             element={element}
             className={classNames(textClassName, rootClassName, typography)}
         >
-          
-{/*              <HeadingLexicalInput>
+            <HeadingLexicalInput />
+             {/*    
                 <FloatingToolbar>
-                    <BoldAction />
-                    <ColorPickerAction />
+                <BoldAction />
+                <ColorPickerAction />
                 </FloatingToolbar>
                 <AddUiElement component={LexicalColorPicker} />
-             </HeadingLexicalInput> */}
+                </HeadingLexicalInput> */}
             <ReactMediumEditor
                 elementId={elementId}
                 tag={tag}

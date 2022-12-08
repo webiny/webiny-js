@@ -9,7 +9,6 @@ import { SearchProvider } from "./ui/Search";
 import { UserMenuProvider } from "./ui/UserMenu";
 import { NavigationProvider } from "./ui/Navigation";
 import { CircularProgress } from "@webiny/ui/Progress";
-import { LexicalToolbarProvider } from '../../../app-lexical-editor/src/context/ToolbarContext';
 
 export interface AdminProps {
     createApolloClient: ApolloClientFactory;
@@ -30,7 +29,6 @@ export const Admin: React.FC<AdminProps> = ({ children, createApolloClient }) =>
                     <Provider hoc={SearchProvider} />
                     <Provider hoc={UserMenuProvider} />
                     <Provider hoc={NavigationProvider} />
-                    <Provider hoc={LexicalToolbarProvider} />
                     <Base />
                     {children}
                 </BaseAdmin>

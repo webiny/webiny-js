@@ -1,7 +1,5 @@
-import React from 'react'
+import React from "react";
 
 export const LinkAction = () => {
-  return (
-    <div>LinkAction</div>
-  )
-}
+    return <div>LinkAction</div>;
+};

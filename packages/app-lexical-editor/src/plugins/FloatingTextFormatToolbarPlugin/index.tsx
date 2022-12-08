@@ -28,9 +28,7 @@ import { createPortal } from "react-dom";
 import { getDOMRangeRect } from "../../utils/getDOMRangeRect";
 import { getSelectedNode } from "../../utils/getSelectedNode";
 import { setFloatingElemPosition } from "../../utils/setFloatingElemPosition";
-import ColorPicker from "../../ui/ColorPicker";
-import { BoldAction } from "~/components/Toolbar/ToolbarActions/BoldAction";
-import { ToolbarProvider } from "~/context/ToolbarContext";
+
 
 function TextFormatFloatingToolbar({
     editor,
@@ -42,9 +40,7 @@ function TextFormatFloatingToolbar({
     isCode,
     isStrikethrough,
     isSubscript,
-    isSuperscript,
-    fontColor,
-    onFontColorSelect
+    isSuperscript
 }: {
     editor: LexicalEditor;
     anchorElem: HTMLElement;
@@ -56,8 +52,6 @@ function TextFormatFloatingToolbar({
     isSubscript: boolean;
     isSuperscript: boolean;
     isUnderline: boolean;
-    fontColor: string;
-    onFontColorSelect: (colorHex: string) => void;
 }): JSX.Element {
     const popupCharStylesEditorRef = useRef<HTMLDivElement | null>(null);
 
@@ -141,7 +135,6 @@ function TextFormatFloatingToolbar({
         <div ref={popupCharStylesEditorRef} className="floating-text-format-popup">
             {editor.isEditable() && (
                 <>
-                   <BoldAction editor={editor} />
                     <button
                         onClick={() => {
                             editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold");
@@ -151,7 +144,7 @@ function TextFormatFloatingToolbar({
                     >
                         <i className="format bold" />
                     </button>
-                 {/*    <button
+                    <button
                         onClick={() => {
                             editor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic");
                         }}
@@ -214,15 +207,6 @@ function TextFormatFloatingToolbar({
                     >
                         <i className="format link" />
                     </button>
-                    <ColorPicker
-                        disabled={false}
-                        buttonClassName="toolbar-item color-picker"
-                        buttonAriaLabel="Formatting text color"
-                        buttonIconClassName="icon font-color"
-                        color={fontColor}
-                        onChange={value => onFontColorSelect(value)}
-                        title="text color"
-                    /> */}
                 </>
             )}
         </div>
@@ -242,7 +226,6 @@ function useFloatingTextFormatToolbar(
     const [isSubscript, setIsSubscript] = useState(false);
     const [isSuperscript, setIsSuperscript] = useState(false);
     const [isCode, setIsCode] = useState(false);
-    const [fontColor, setFontColor] = useState<string>("#000");
 
     const updatePopup = useCallback(() => {
         editor.getEditorState().read(() => {
@@ -334,8 +317,6 @@ function useFloatingTextFormatToolbar(
             isSuperscript={isSuperscript}
             isUnderline={isUnderline}
             isCode={isCode}
-            fontColor={fontColor}
-            onFontColorSelect={colorHex => setFontColor(colorHex)}
         />,
         anchorElem
     );
@@ -349,5 +330,3 @@ export default function FloatingTextFormatToolbarPlugin({
     const [editor] = useLexicalComposerContext();
     return useFloatingTextFormatToolbar(editor, anchorElem);
 }
-
-
