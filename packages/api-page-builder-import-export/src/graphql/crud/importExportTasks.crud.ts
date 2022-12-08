@@ -24,7 +24,7 @@ import {
     PageImportExportTaskStatus,
     PageImportExportTaskStorageOperationsListSubTaskParams
 } from "~/types";
-import { PbPageImportExportContext } from "~/graphql/types";
+import { PbImportExportContext } from "~/graphql/types";
 import WebinyError from "@webiny/error";
 import { PageElementStorageOperationsListParams } from "@webiny/api-page-builder/types";
 
@@ -53,7 +53,7 @@ const UpdateDataModel = withFields({
 const PERMISSION_NAME = "pb.page";
 
 export default ({ storageOperations }: PageImportExportPluginsParams) =>
-    new ContextPlugin<PbPageImportExportContext>(async context => {
+    new ContextPlugin<PbImportExportContext>(async context => {
         /**
          * If pageBuilder is not defined on the context, do not continue, but log it.
          */
@@ -74,7 +74,7 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
         };
 
         // Modify context
-        context.pageBuilder.pageImportExportTask = {
+        context.pageBuilder.importExportTask = {
             storageOperations,
             async getTask(id) {
                 const permission = await checkBasePermissions(context, PERMISSION_NAME, {
@@ -200,7 +200,7 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
                 const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                     rwd: "w"
                 });
-                const original = await context.pageBuilder.pageImportExportTask.getTask(id);
+                const original = await context.pageBuilder.importExportTask.getTask(id);
                 if (!original) {
                     throw new NotFoundError(`PageImportExportTask "${id}" not found.`);
                 }
@@ -242,9 +242,7 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
                     rwd: "d"
                 });
 
-                const pageImportExportTask = await context.pageBuilder.pageImportExportTask.getTask(
-                    id
-                );
+                const pageImportExportTask = await context.pageBuilder.importExportTask.getTask(id);
                 if (!pageImportExportTask) {
                     throw new NotFoundError(`PageImportExportTask "${id}" not found.`);
                 }
@@ -272,7 +270,7 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
                 const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                     rwd: "w"
                 });
-                const original = await context.pageBuilder.pageImportExportTask.getTask(id);
+                const original = await context.pageBuilder.importExportTask.getTask(id);
                 if (!original) {
                     throw new NotFoundError(`PageImportExportTask "${id}" not found.`);
                 }
@@ -342,7 +340,7 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
                 const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                     rwd: "w"
                 });
-                const original = await context.pageBuilder.pageImportExportTask.getSubTask(
+                const original = await context.pageBuilder.importExportTask.getSubTask(
                     parent,
                     subTaskId
                 );

@@ -1,4 +1,4 @@
-import { PageImportExportTaskStatus, PbPageImportExportContext } from "~/types";
+import { PageImportExportTaskStatus, PbImportExportContext } from "~/types";
 import { importPage } from "~/importPages/utils";
 import { invokeHandlerClient } from "~/client";
 import { SecurityIdentity } from "@webiny/api-security/types";
@@ -24,7 +24,7 @@ export interface Response {
 }
 
 export default (configuration: Configuration) => {
-    return createRawEventHandler<Payload, PbPageImportExportContext, Response>(
+    return createRawEventHandler<Payload, PbImportExportContext, Response>(
         async ({ payload, context }) => {
             const log = console.log;
             let subTask;
@@ -44,7 +44,7 @@ export default (configuration: Configuration) => {
                  * because the data might be out of sync due to GSI eventual consistency.
                  */
 
-                subTask = await pageBuilder.pageImportExportTask.getSubTask(
+                subTask = await pageBuilder.importExportTask.getSubTask(
                     taskId,
                     zeroPad(subTaskIndex, 5)
                 );
@@ -72,11 +72,11 @@ export default (configuration: Configuration) => {
                 log(`Processing page key "${pageKey}"`);
 
                 // Mark task status as PROCESSING
-                subTask = await pageBuilder.pageImportExportTask.updateSubTask(taskId, subTask.id, {
+                subTask = await pageBuilder.importExportTask.updateSubTask(taskId, subTask.id, {
                     status: PageImportExportTaskStatus.PROCESSING
                 });
                 // Update stats in main task
-                await pageBuilder.pageImportExportTask.updateStats(taskId, {
+                await pageBuilder.importExportTask.updateStats(taskId, {
                     prevStatus: prevStatusOfSubTask,
                     nextStatus: PageImportExportTaskStatus.PROCESSING
                 });
@@ -104,7 +104,7 @@ export default (configuration: Configuration) => {
                 // TODO: Publish page
 
                 // Update task record in DB
-                subTask = await pageBuilder.pageImportExportTask.updateSubTask(taskId, subTask.id, {
+                subTask = await pageBuilder.importExportTask.updateSubTask(taskId, subTask.id, {
                     status: PageImportExportTaskStatus.COMPLETED,
                     data: {
                         message: "Done",
@@ -117,7 +117,7 @@ export default (configuration: Configuration) => {
                     }
                 });
                 // Update stats in main task
-                await pageBuilder.pageImportExportTask.updateStats(taskId, {
+                await pageBuilder.importExportTask.updateStats(taskId, {
                     prevStatus: prevStatusOfSubTask,
                     nextStatus: PageImportExportTaskStatus.COMPLETED
                 });
@@ -130,22 +130,18 @@ export default (configuration: Configuration) => {
                      * In case of error, we'll update the task status to "failed",
                      * so that, client can show notify the user appropriately.
                      */
-                    subTask = await pageBuilder.pageImportExportTask.updateSubTask(
-                        taskId,
-                        subTask.id,
-                        {
-                            status: PageImportExportTaskStatus.FAILED,
-                            error: {
-                                name: e.name,
-                                message: e.message,
-                                stack: e.stack,
-                                code: "IMPORT_FAILED"
-                            }
+                    subTask = await pageBuilder.importExportTask.updateSubTask(taskId, subTask.id, {
+                        status: PageImportExportTaskStatus.FAILED,
+                        error: {
+                            name: e.name,
+                            message: e.message,
+                            stack: e.stack,
+                            code: "IMPORT_FAILED"
                         }
-                    );
+                    });
 
                     // Update stats in main task
-                    await pageBuilder.pageImportExportTask.updateStats(taskId, {
+                    await pageBuilder.importExportTask.updateStats(taskId, {
                         prevStatus: prevStatusOfSubTask,
                         nextStatus: PageImportExportTaskStatus.FAILED
                     });
@@ -163,7 +159,7 @@ export default (configuration: Configuration) => {
                 if (noPendingTask) {
                     log(`No pending sub-task for task ${taskId}`);
 
-                    await pageBuilder.pageImportExportTask.updateTask(taskId, {
+                    await pageBuilder.importExportTask.updateTask(taskId, {
                         status: PageImportExportTaskStatus.COMPLETED,
                         data: {
                             message: `Finish importing pages.`

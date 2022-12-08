@@ -46,7 +46,7 @@ const ExportPageLoadingDialogContent: React.FC<ExportPageLoadingDialogContent> =
     });
 
     const pollExportPageTaskStatus = useCallback(response => {
-        const { error, data } = get(response, "pageBuilder.getPageImportExportTask", {});
+        const { error, data } = get(response, "pageBuilder.getImportExportTask", {});
         if (error) {
             showSnackbar(error.message);
             return;
@@ -74,7 +74,7 @@ const ExportPageLoadingDialogContent: React.FC<ExportPageLoadingDialogContent> =
         pollExportPageTaskStatus(data);
     }, [data]);
 
-    const { status, stats } = get(data, "pageBuilder.getPageImportExportTask.data", {
+    const { status, stats } = get(data, "pageBuilder.getImportExportTask.data", {
         status: PageImportExportTaskStatus.PENDING,
         stats: null
     });

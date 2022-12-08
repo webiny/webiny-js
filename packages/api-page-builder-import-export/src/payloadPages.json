@@ -1,0 +1,59 @@
+{
+  "name": "arn:aws:lambda:us-east-1:888461742859:function:pb-export-pages-process-a8d1d1d",
+  "payload": {
+    "taskId": "639202d4395a1c00085971ac",
+    "subTaskIndex": 1,
+    "identity": {
+      "id": "4f3f13be-318e-4cfd-8df4-2115445a8cd2",
+      "type": "admin",
+      "displayName": "Viktor Pikulyk",
+      "email": "viktor.pikulyk@neatbyte.solutions",
+      "firstName": "Viktor",
+      "lastName": "Pikulyk"
+    },
+    "httpMethod": "POST",
+    "body": [
+      {
+        "operationName": "PbExportPages",
+        "variables": {
+          "revisionType": "published",
+          "ids": [],
+          "where": {},
+          "sort": "createdOn_DESC",
+          "search": { "query": "" }
+        },
+        "query": "mutation PbExportPages($ids: [ID!], $revisionType: PbExportPageRevisionType!, $where: PbListPagesWhereInput, $sort: [PbListPagesSort!], $search: PbListPagesSearchInput) {\n  pageBuilder {\n    exportPages(\n      ids: $ids\n      revisionType: $revisionType\n      where: $where\n      sort: $sort\n      search: $search\n    ) {\n      data {\n        task {\n          id\n          status\n          data\n          stats {\n            total\n            processing\n            pending\n            completed\n            failed\n            __typename\n          }\n          __typename\n        }\n        __typename\n      }\n      error {\n        code\n        message\n        data\n        __typename\n      }\n      __typename\n    }\n    __typename\n  }\n}\n"
+      }
+    ],
+    "headers": {
+      "content-type": "application/json",
+      "host": "mtxourlw2d.execute-api.us-east-1.amazonaws.com",
+      "user-agent": "Amazon CloudFront",
+      "x-amz-cf-id": "9GoWWM3d-mLcF9RDQX0FujnBDgNCMv11rel3xblW3gj6_Vb6SRDOnQ==",
+      "x-amzn-trace-id": "Root=1-639202d4-239023bf22ddfe95770413fb",
+      "x-forwarded-for": "178.137.160.31, 130.176.161.233",
+      "x-forwarded-port": "443",
+      "x-forwarded-proto": "https",
+      "accept": "*/*",
+      "accept-encoding": "gzip, deflate, br",
+      "accept-language": "en-US,en;q=0.9",
+      "authorization": "Bearer eyJraWQiOiJkajl2XC9zdkhUY0tDWEhvNDlyMFNRU0hJUGFUUjhlOUNDZ1k4K21TaU9yWT0iLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiI0ZjNmMTNiZS0zMThlLTRjZmQtOGRmNC0yMTE1NDQ1YThjZDIiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiaXNzIjoiaHR0cHM6XC9cL2NvZ25pdG8taWRwLnVzLWVhc3QtMS5hbWF6b25hd3MuY29tXC91cy1lYXN0LTFfWGl6TnF3OTNNIiwiY29nbml0bzp1c2VybmFtZSI6InZpa3Rvci5waWt1bHlrQG5lYXRieXRlLnNvbHV0aW9ucyIsInByZWZlcnJlZF91c2VybmFtZSI6InZpa3Rvci5waWt1bHlrQG5lYXRieXRlLnNvbHV0aW9ucyIsImdpdmVuX25hbWUiOiJWaWt0b3IiLCJvcmlnaW5fanRpIjoiMDNjNTViOGYtMTI4Zi00ODU3LTljNGEtNjk1NDFjMDk0ODk4IiwiYXVkIjoiM3E4dGJ2bmxsZGNiN3ZqbzRpaHNjaDgxM2IiLCJldmVudF9pZCI6ImI1Y2Q2NTM4LTJhNDgtNDM0Mi1iZjYwLWE4NjhiNDg5MmQ5YyIsInRva2VuX3VzZSI6ImlkIiwiYXV0aF90aW1lIjoxNjcwMjMzMjc4LCJleHAiOjE2NzA1MTUzNjUsImlhdCI6MTY3MDUxMTc2NSwiZmFtaWx5X25hbWUiOiJQaWt1bHlrIiwianRpIjoiMTljYWRkZGEtZTYwNy00NjA4LTllYjYtNDhiNWNiNGQ4NmNjIiwiZW1haWwiOiJ2aWt0b3IucGlrdWx5a0BuZWF0Ynl0ZS5zb2x1dGlvbnMifQ.OdBa2y0SkHpPxHMMB6xeQb9NnnUOVFuDArwiC8dSzIZdhzsrb4SB3lJXh-kp5xqG4G_dgzdE9-lwkum3dBlSPgJdOIWr1HO1ekP6tDFBA3LE4OA8WFlekt0P01cHwxqiASTkys4MTs-IPbs-CSPlBtAcPmqX0wiiAM3k8QH-RzJcnqdXmbUU6ghfekz1FBj609gkItcYEnLUkhfJlcCHhtoBSZiU4WNfm5XQDGNBnTPN4YuYWvWcK3BRZcOWwiFU3l1iOa9ghUzhGvLcKJP-OcNFw8PqdQjqPTqrfUftNMysRisy8-FSG_UG8UCHtasqLpmIUrKo-XDHiBhXiDSLAg",
+      "cache-control": "no-cache",
+      "origin": "http://localhost:3001",
+      "pragma": "no-cache",
+      "sec-ch-ua": "\"Google Chrome\";v=\"107\", \"Chromium\";v=\"107\", \"Not=A?Brand\";v=\"24\"",
+      "sec-ch-ua-mobile": "?0",
+      "sec-ch-ua-platform": "\"Linux\"",
+      "sec-fetch-dest": "empty",
+      "sec-fetch-mode": "cors",
+      "sec-fetch-site": "cross-site",
+      "via": "2.0 59439a13f6db75e801a63663b4f79372.cloudfront.net (CloudFront)",
+      "x-i18n-locale": "default:en-US;content:en-US;",
+      "x-tenant": "root",
+      "x-apigateway-event": "%7B%22version%22%3A%221.0%22%2C%22resource%22%3A%22%2Fgraphql%22%2C%22path%22%3A%22%2Fdefault-db12347%2Fgraphql%22%2C%22httpMethod%22%3A%22POST%22%2C%22headers%22%3A%7B%22Content-Length%22%3A%22925%22%2C%22Content-Type%22%3A%22application%2Fjson%22%2C%22Host%22%3A%22mtxourlw2d.execute-api.us-east-1.amazonaws.com%22%2C%22User-Agent%22%3A%22Amazon%20CloudFront%22%2C%22X-Amz-Cf-Id%22%3A%229GoWWM3d-mLcF9RDQX0FujnBDgNCMv11rel3xblW3gj6_Vb6SRDOnQ%3D%3D%22%2C%22X-Amzn-Trace-Id%22%3A%22Root%3D1-639202d4-239023bf22ddfe95770413fb%22%2C%22X-Forwarded-For%22%3A%22178.137.160.31%2C%20130.176.161.233%22%2C%22X-Forwarded-Port%22%3A%22443%22%2C%22X-Forwarded-Proto%22%3A%22https%22%2C%22accept%22%3A%22*%2F*%22%2C%22accept-encoding%22%3A%22gzip%2C%20deflate%2C%20br%22%2C%22accept-language%22%3A%22en-US%2Cen%3Bq%3D0.9%22%2C%22authorization%22%3A%22Bearer%20eyJraWQiOiJkajl2XC9zdkhUY0tDWEhvNDlyMFNRU0hJUGFUUjhlOUNDZ1k4K21TaU9yWT0iLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiI0ZjNmMTNiZS0zMThlLTRjZmQtOGRmNC0yMTE1NDQ1YThjZDIiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiaXNzIjoiaHR0cHM6XC9cL2NvZ25pdG8taWRwLnVzLWVhc3QtMS5hbWF6b25hd3MuY29tXC91cy1lYXN0LTFfWGl6TnF3OTNNIiwiY29nbml0bzp1c2VybmFtZSI6InZpa3Rvci5waWt1bHlrQG5lYXRieXRlLnNvbHV0aW9ucyIsInByZWZlcnJlZF91c2VybmFtZSI6InZpa3Rvci5waWt1bHlrQG5lYXRieXRlLnNvbHV0aW9ucyIsImdpdmVuX25hbWUiOiJWaWt0b3IiLCJvcmlnaW5fanRpIjoiMDNjNTViOGYtMTI4Zi00ODU3LTljNGEtNjk1NDFjMDk0ODk4IiwiYXVkIjoiM3E4dGJ2bmxsZGNiN3ZqbzRpaHNjaDgxM2IiLCJldmVudF9pZCI6ImI1Y2Q2NTM4LTJhNDgtNDM0Mi1iZjYwLWE4NjhiNDg5MmQ5YyIsInRva2VuX3VzZSI6ImlkIiwiYXV0aF90aW1lIjoxNjcwMjMzMjc4LCJleHAiOjE2NzA1MTUzNjUsImlhdCI6MTY3MDUxMTc2NSwiZmFtaWx5X25hbWUiOiJQaWt1bHlrIiwianRpIjoiMTljYWRkZGEtZTYwNy00NjA4LTllYjYtNDhiNWNiNGQ4NmNjIiwiZW1haWwiOiJ2aWt0b3IucGlrdWx5a0BuZWF0Ynl0ZS5zb2x1dGlvbnMifQ.OdBa2y0SkHpPxHMMB6xeQb9NnnUOVFuDArwiC8dSzIZdhzsrb4SB3lJXh-kp5xqG4G_dgzdE9-lwkum3dBlSPgJdOIWr1HO1ekP6tDFBA3LE4OA8WFlekt0P01cHwxqiASTkys4MTs-IPbs-CSPlBtAcPmqX0wiiAM3k8QH-RzJcnqdXmbUU6ghfekz1FBj609gkItcYEnLUkhfJlcCHhtoBSZiU4WNfm5XQDGNBnTPN4YuYWvWcK3BRZcOWwiFU3l1iOa9ghUzhGvLcKJP-OcNFw8PqdQjqPTqrfUftNMysRisy8-FSG_UG8UCHtasqLpmIUrKo-XDHiBhXiDSLAg%22%2C%22cache-control%22%3A%22no-cache%22%2C%22origin%22%3A%22http%3A%2F%2Flocalhost%3A3001%22%2C%22pragma%22%3A%22no-cache%22%2C%22sec-ch-ua%22%3A%22%5C%22Google%20Chrome%5C%22%3Bv%3D%5C%22107%5C%22%2C%20%5C%22Chromium%5C%22%3Bv%3D%5C%22107%5C%22%2C%20%5C%22Not%3DA%3FBrand%5C%22%3Bv%3D%5C%2224%5C%22%22%2C%22sec-ch-ua-mobile%22%3A%22%3F0%22%2C%22sec-ch-ua-platform%22%3A%22%5C%22Linux%5C%22%22%2C%22sec-fetch-dest%22%3A%22empty%22%2C%22sec-fetch-mode%22%3A%22cors%22%2C%22sec-fetch-site%22%3A%22cross-site%22%2C%22via%22%3A%222.0%2059439a13f6db75e801a63663b4f79372.cloudfront.net%20(CloudFront)%22%2C%22x-i18n-locale%22%3A%22default%3Aen-US%3Bcontent%3Aen-US%3B%22%2C%22x-tenant%22%3A%22root%22%7D%2C%22multiValueHeaders%22%3A%7B%22Content-Length%22%3A%5B%22925%22%5D%2C%22Content-Type%22%3A%5B%22application%2Fjson%22%5D%2C%22Host%22%3A%5B%22mtxourlw2d.execute-api.us-east-1.amazonaws.com%22%5D%2C%22User-Agent%22%3A%5B%22Amazon%20CloudFront%22%5D%2C%22X-Amz-Cf-Id%22%3A%5B%229GoWWM3d-mLcF9RDQX0FujnBDgNCMv11rel3xblW3gj6_Vb6SRDOnQ%3D%3D%22%5D%2C%22X-Amzn-Trace-Id%22%3A%5B%22Root%3D1-639202d4-239023bf22ddfe95770413fb%22%5D%2C%22X-Forwarded-For%22%3A%5B%22178.137.160.31%2C%20130.176.161.233%22%5D%2C%22X-Forwarded-Port%22%3A%5B%22443%22%5D%2C%22X-Forwarded-Proto%22%3A%5B%22https%22%5D%2C%22accept%22%3A%5B%22*%2F*%22%5D%2C%22accept-encoding%22%3A%5B%22gzip%2C%20deflate%2C%20br%22%5D%2C%22accept-language%22%3A%5B%22en-US%2Cen%3Bq%3D0.9%22%5D%2C%22authorization%22%3A%5B%22Bearer%20eyJraWQiOiJkajl2XC9zdkhUY0tDWEhvNDlyMFNRU0hJUGFUUjhlOUNDZ1k4K21TaU9yWT0iLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiI0ZjNmMTNiZS0zMThlLTRjZmQtOGRmNC0yMTE1NDQ1YThjZDIiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiaXNzIjoiaHR0cHM6XC9cL2NvZ25pdG8taWRwLnVzLWVhc3QtMS5hbWF6b25hd3MuY29tXC91cy1lYXN0LTFfWGl6TnF3OTNNIiwiY29nbml0bzp1c2VybmFtZSI6InZpa3Rvci5waWt1bHlrQG5lYXRieXRlLnNvbHV0aW9ucyIsInByZWZlcnJlZF91c2VybmFtZSI6InZpa3Rvci5waWt1bHlrQG5lYXRieXRlLnNvbHV0aW9ucyIsImdpdmVuX25hbWUiOiJWaWt0b3IiLCJvcmlnaW5fanRpIjoiMDNjNTViOGYtMTI4Zi00ODU3LTljNGEtNjk1NDFjMDk0ODk4IiwiYXVkIjoiM3E4dGJ2bmxsZGNiN3ZqbzRpaHNjaDgxM2IiLCJldmVudF9pZCI6ImI1Y2Q2NTM4LTJhNDgtNDM0Mi1iZjYwLWE4NjhiNDg5MmQ5YyIsInRva2VuX3VzZSI6ImlkIiwiYXV0aF90aW1lIjoxNjcwMjMzMjc4LCJleHAiOjE2NzA1MTUzNjUsImlhdCI6MTY3MDUxMTc2NSwiZmFtaWx5X25hbWUiOiJQaWt1bHlrIiwianRpIjoiMTljYWRkZGEtZTYwNy00NjA4LTllYjYtNDhiNWNiNGQ4NmNjIiwiZW1haWwiOiJ2aWt0b3IucGlrdWx5a0BuZWF0Ynl0ZS5zb2x1dGlvbnMifQ.OdBa2y0SkHpPxHMMB6xeQb9NnnUOVFuDArwiC8dSzIZdhzsrb4SB3lJXh-kp5xqG4G_dgzdE9-lwkum3dBlSPgJdOIWr1HO1ekP6tDFBA3LE4OA8WFlekt0P01cHwxqiASTkys4MTs-IPbs-CSPlBtAcPmqX0wiiAM3k8QH-RzJcnqdXmbUU6ghfekz1FBj609gkItcYEnLUkhfJlcCHhtoBSZiU4WNfm5XQDGNBnTPN4YuYWvWcK3BRZcOWwiFU3l1iOa9ghUzhGvLcKJP-OcNFw8PqdQjqPTqrfUftNMysRisy8-FSG_UG8UCHtasqLpmIUrKo-XDHiBhXiDSLAg%22%5D%2C%22cache-control%22%3A%5B%22no-cache%22%5D%2C%22origin%22%3A%5B%22http%3A%2F%2Flocalhost%3A3001%22%5D%2C%22pragma%22%3A%5B%22no-cache%22%5D%2C%22sec-ch-ua%22%3A%5B%22%5C%22Google%20Chrome%5C%22%3Bv%3D%5C%22107%5C%22%2C%20%5C%22Chromium%5C%22%3Bv%3D%5C%22107%5C%22%2C%20%5C%22Not%3DA%3FBrand%5C%22%3Bv%3D%5C%2224%5C%22%22%5D%2C%22sec-ch-ua-mobile%22%3A%5B%22%3F0%22%5D%2C%22sec-ch-ua-platform%22%3A%5B%22%5C%22Linux%5C%22%22%5D%2C%22sec-fetch-dest%22%3A%5B%22empty%22%5D%2C%22sec-fetch-mode%22%3A%5B%22cors%22%5D%2C%22sec-fetch-site%22%3A%5B%22cross-site%22%5D%2C%22via%22%3A%5B%222.0%2059439a13f6db75e801a63663b4f79372.cloudfront.net%20(CloudFront)%22%5D%2C%22x-i18n-locale%22%3A%5B%22default%3Aen-US%3Bcontent%3Aen-US%3B%22%5D%2C%22x-tenant%22%3A%5B%22root%22%5D%7D%2C%22queryStringParameters%22%3Anull%2C%22multiValueQueryStringParameters%22%3Anull%2C%22requestContext%22%3A%7B%22accountId%22%3A%22888461742859%22%2C%22apiId%22%3A%22mtxourlw2d%22%2C%22domainName%22%3A%22mtxourlw2d.execute-api.us-east-1.amazonaws.com%22%2C%22domainPrefix%22%3A%22mtxourlw2d%22%2C%22extendedRequestId%22%3A%22c1VhPjNUIAMEJ7A%3D%22%2C%22httpMethod%22%3A%22POST%22%2C%22identity%22%3A%7B%22accessKey%22%3Anull%2C%22accountId%22%3Anull%2C%22caller%22%3Anull%2C%22cognitoAmr%22%3Anull%2C%22cognitoAuthenticationProvider%22%3Anull%2C%22cognitoAuthenticationType%22%3Anull%2C%22cognitoIdentityId%22%3Anull%2C%22cognitoIdentityPoolId%22%3Anull%2C%22principalOrgId%22%3Anull%2C%22sourceIp%22%3A%22178.137.160.31%22%2C%22user%22%3Anull%2C%22userAgent%22%3A%22Amazon%20CloudFront%22%2C%22userArn%22%3Anull%7D%2C%22path%22%3A%22%2Fdefault-db12347%2Fgraphql%22%2C%22protocol%22%3A%22HTTP%2F1.1%22%2C%22requestId%22%3A%22c1VhPjNUIAMEJ7A%3D%22%2C%22requestTime%22%3A%2208%2FDec%2F2022%3A15%3A29%3A24%20%2B0000%22%2C%22requestTimeEpoch%22%3A1670513364552%2C%22resourceId%22%3A%22POST%20%2Fgraphql%22%2C%22resourcePath%22%3A%22%2Fgraphql%22%2C%22stage%22%3A%22default-db12347%22%7D%2C%22pathParameters%22%3Anull%2C%22stageVariables%22%3Anull%2C%22isBase64Encoded%22%3Afalse%7D",
+      "x-apigateway-context": "%7B%22callbackWaitsForEmptyEventLoop%22%3Atrue%2C%22functionVersion%22%3A%22%24LATEST%22%2C%22functionName%22%3A%22graphql-0e2cbee%22%2C%22memoryLimitInMB%22%3A%22512%22%2C%22logGroupName%22%3A%22%2Faws%2Flambda%2Fgraphql-0e2cbee%22%2C%22logStreamName%22%3A%222022%2F12%2F08%2F%5B%24LATEST%5D23b86508bbca49be8d2d2ac4cafb7ca3%22%2C%22invokedFunctionArn%22%3A%22arn%3Aaws%3Alambda%3Aus-east-1%3A888461742859%3Afunction%3Agraphql-0e2cbee%22%2C%22awsRequestId%22%3A%22aba1aeec-9fa6-4ff0-9d6c-009b83193a3c%22%7D",
+      "x-request-id": "c1VhPjNUIAMEJ7A="
+    },
+    "cookies": {}
+  }
+}

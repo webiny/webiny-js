@@ -1,19 +1,19 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import resolve from "./utils/resolve";
-import { PbPageImportExportContext } from "../types";
+import { PbImportExportContext } from "../types";
 
-const plugin: GraphQLSchemaPlugin<PbPageImportExportContext> = {
+const plugin: GraphQLSchemaPlugin<PbImportExportContext> = {
     type: "graphql-schema",
     schema: {
         typeDefs: /* GraphQL */ `
-            enum PbPageImportExportTaskStatus {
+            enum PbImportExportTaskStatus {
                 pending
                 processing
                 completed
                 failed
             }
 
-            type PbPageImportExportTaskStats {
+            type PbImportExportTaskStats {
                 pending: Int
                 processing: Int
                 completed: Int
@@ -21,46 +21,46 @@ const plugin: GraphQLSchemaPlugin<PbPageImportExportContext> = {
                 total: Int
             }
 
-            type PbPageImportExportTask {
+            type PbImportExportTask {
                 id: ID
                 createdOn: DateTime
                 createdBy: PbCreatedBy
-                status: PbPageImportExportTaskStatus
+                status: PbImportExportTaskStatus
                 data: JSON
-                stats: PbPageImportExportTaskStats
+                stats: PbImportExportTaskStats
                 error: JSON
             }
 
             # Response types
-            type PbPageImportExportTaskResponse {
-                data: PbPageImportExportTask
+            type PbImportExportTaskResponse {
+                data: PbImportExportTask
                 error: PbError
             }
 
-            type PbPageImportExportTaskListResponse {
-                data: [PbPageImportExportTask]
+            type PbImportExportTaskListResponse {
+                data: [PbImportExportTask]
                 error: PbError
             }
 
             extend type PbQuery {
-                getPageImportExportTask(id: ID!): PbPageImportExportTaskResponse
-                listPageImportExportSubTask(
+                getImportExportTask(id: ID!): PbImportExportTaskResponse
+                listImportExportSubTask(
                     id: ID!
-                    status: PbPageImportExportTaskStatus
+                    status: PbImportExportTaskStatus
                     limit: Int
-                ): PbPageImportExportTaskListResponse
+                ): PbImportExportTaskListResponse
             }
         `,
         resolvers: {
             PbQuery: {
-                getPageImportExportTask: async (_, args: any, context) => {
+                getImportExportTask: async (_, args: any, context) => {
                     return resolve(() => {
-                        return context.pageBuilder.pageImportExportTask.getTask(args.id);
+                        return context.pageBuilder.importExportTask.getTask(args.id);
                     });
                 },
-                listPageImportExportSubTask: async (_, args: any, context) => {
+                listImportExportSubTask: async (_, args: any, context) => {
                     return resolve(() => {
-                        return context.pageBuilder.pageImportExportTask.listSubTasks(
+                        return context.pageBuilder.importExportTask.listSubTasks(
                             args.id,
                             args.status,
                             args.limit

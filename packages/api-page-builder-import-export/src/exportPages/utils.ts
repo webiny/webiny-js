@@ -6,6 +6,7 @@ import { s3Stream } from "./s3Stream";
 import Zipper from "./zipper";
 
 export const EXPORT_PAGES_FOLDER_KEY = "WEBINY_PB_EXPORT_PAGES";
+export const EXPORT_BLOCKS_FOLDER_KEY = "WEBINY_PB_EXPORT_BLOCK";
 
 async function getFilteredFiles(files: ImageFile[]) {
     const uniqueFileKeys = new Map<string, boolean>();

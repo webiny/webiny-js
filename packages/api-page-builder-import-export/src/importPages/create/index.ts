@@ -1,8 +1,4 @@
-import {
-    PageImportExportTask,
-    PageImportExportTaskStatus,
-    PbPageImportExportContext
-} from "~/types";
+import { PageImportExportTask, PageImportExportTaskStatus, PbImportExportContext } from "~/types";
 import { initialStats, readExtractAndUploadZipFileContents } from "~/importPages/utils";
 import { invokeHandlerClient } from "~/client";
 import { Payload as ProcessPayload } from "../process";
@@ -32,7 +28,7 @@ export interface Response {
  * Handles the import page workflow.
  */
 export default (configuration: Configuration) => {
-    return createRawEventHandler<Payload, PbPageImportExportContext, Response>(
+    return createRawEventHandler<Payload, PbImportExportContext, Response>(
         async ({ payload, context }) => {
             const log = console.log;
 
@@ -56,7 +52,7 @@ export default (configuration: Configuration) => {
                 for (let i = 0; i < pageImportDataList.length; i++) {
                     const pagesDirMap = pageImportDataList[i];
                     // Create sub task
-                    const subtask = await pageBuilder.pageImportExportTask.createSubTask(
+                    const subtask = await pageBuilder.importExportTask.createSubTask(
                         task.id,
                         zeroPad(i + 1, 5),
                         {
@@ -74,7 +70,7 @@ export default (configuration: Configuration) => {
                     log(`Added SUB_TASK "${subtask.id}" to queue.`);
                 }
                 // Update main task status
-                await pageBuilder.pageImportExportTask.updateTask(task.id, {
+                await pageBuilder.importExportTask.updateTask(task.id, {
                     status: PageImportExportTaskStatus.PROCESSING,
                     stats: initialStats(pageImportDataList.length)
                 });
@@ -98,7 +94,7 @@ export default (configuration: Configuration) => {
                  * so that, client can show notify the user appropriately.
                  */
 
-                await pageBuilder.pageImportExportTask.updateTask(task.id, {
+                await pageBuilder.importExportTask.updateTask(task.id, {
                     status: PageImportExportTaskStatus.FAILED,
                     error: {
                         name: e.name,

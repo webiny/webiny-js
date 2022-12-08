@@ -30,6 +30,24 @@ export type PagesImportExportCrud = {
     importPages(params: ImportPagesParams): Promise<{ task: PageImportExportTask }>;
 };
 
+export interface ExportBlocksParams {
+    ids?: string[];
+    sort?: string[];
+    where?: {
+        blockCategory?: string;
+    };
+}
+
+export interface ImportBlocksParams {
+    category: string;
+    zipFileUrl: string;
+}
+
+export type BlocksImportExportCrud = {
+    exportBlocks(params: ExportBlocksParams): Promise<{ task: PageImportExportTask }>;
+    importBlocks(params: ImportBlocksParams): Promise<{ task: PageImportExportTask }>;
+};
+
 type PageImportExportTaskCreateData = Omit<PageImportExportTask, "id" | "createdOn" | "createdBy">;
 
 export type PageImportExportTaskCrud = {
@@ -74,10 +92,11 @@ export type PageImportExportTaskCrud = {
     ): Promise<PageImportExportTask>;
 };
 
-export interface PbPageImportExportContext extends PbContext {
+export interface PbImportExportContext extends PbContext {
     pageBuilder: PbContext["pageBuilder"] & {
         pages: PagesImportExportCrud;
-        pageImportExportTask: PageImportExportTaskCrud;
+        blocks: BlocksImportExportCrud;
+        importExportTask: PageImportExportTaskCrud;
     };
 }
 

@@ -14,7 +14,7 @@ import { FileInput } from "@webiny/api-file-manager/types";
 import WebinyError from "@webiny/error";
 import { deleteFile } from "@webiny/api-page-builder/graphql/crud/install/utils/downloadInstallFiles";
 import { File, PageImportExportTaskStatus } from "~/types";
-import { PbPageImportExportContext } from "~/graphql/types";
+import { PbImportExportContext } from "~/graphql/types";
 import { s3Stream } from "~/exportPages/s3Stream";
 import { ExportedPageData } from "~/exportPages/utils";
 import { PageSettings } from "@webiny/api-page-builder/types";
@@ -109,7 +109,7 @@ function updateFilesInPageData({ data, fileIdToKeyMap, srcPrefix }: UpdateFilesI
 }
 
 interface UploadPageAssetsParams {
-    context: PbPageImportExportContext;
+    context: PbImportExportContext;
     filesData: FileItem[];
     fileUploadsData: FileUploadsData;
 }
@@ -204,7 +204,7 @@ interface FileUploadsData {
 interface ImportPageParams {
     key: string;
     pageKey: string;
-    context: PbPageImportExportContext;
+    context: PbImportExportContext;
     fileUploadsData: FileUploadsData;
 }
 

@@ -1,4 +1,4 @@
-import { PageImportExportTaskStatus, PbPageImportExportContext } from "~/types";
+import { PageImportExportTaskStatus, PbImportExportContext } from "~/types";
 import { s3Stream } from "../s3Stream";
 import { ZipOfZip } from "../zipper";
 import { mockSecurity } from "~/mockSecurity";
@@ -19,7 +19,7 @@ export interface Response {
  * Handles the export pages combine workflow.
  */
 export default () => {
-    return createRawEventHandler<Payload, PbPageImportExportContext, Response>(
+    return createRawEventHandler<Payload, PbImportExportContext, Response>(
         async ({ payload, context }) => {
             const log = console.log;
 
@@ -30,7 +30,7 @@ export default () => {
             mockSecurity(identity, context);
 
             try {
-                const task = await pageBuilder.pageImportExportTask.getTask(taskId);
+                const task = await pageBuilder.importExportTask.getTask(taskId);
                 if (!task) {
                     return {
                         data: null,
@@ -68,7 +68,7 @@ export default () => {
                 log(`Done uploading... File is located at ${pageExportUpload.Location} `);
 
                 // Update task status and save export page data key
-                await pageBuilder.pageImportExportTask.updateTask(taskId, {
+                await pageBuilder.importExportTask.updateTask(taskId, {
                     status: PageImportExportTaskStatus.COMPLETED,
                     data: {
                         message: `Finish uploading page export.`,
@@ -88,7 +88,7 @@ export default () => {
                  * In case of error, we'll update the task status to "failed",
                  * so that, client can show notify the user appropriately.
                  */
-                await pageBuilder.pageImportExportTask.updateTask(taskId, {
+                await pageBuilder.importExportTask.updateTask(taskId, {
                     status: PageImportExportTaskStatus.FAILED,
                     error: {
                         name: e.name,

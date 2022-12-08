@@ -1,14 +1,14 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { ExportPagesParams, ImportPagesParams } from "~/types";
-import { PbPageImportExportContext } from "../types";
+import { PbImportExportContext } from "../types";
 import resolve from "./utils/resolve";
 
-const plugin: GraphQLSchemaPlugin<PbPageImportExportContext> = {
+const plugin: GraphQLSchemaPlugin<PbImportExportContext> = {
     type: "graphql-schema",
     schema: {
         typeDefs: /* GraphQL */ `
             type PbExportPageData {
-                task: PbPageImportExportTask
+                task: PbImportExportTask
             }
 
             type PbExportPageResponse {
@@ -17,7 +17,7 @@ const plugin: GraphQLSchemaPlugin<PbPageImportExportContext> = {
             }
 
             type PbImportPageData {
-                task: PbPageImportExportTask
+                task: PbImportExportTask
             }
 
             type PbImportPageResponse {
