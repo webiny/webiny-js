@@ -5,10 +5,11 @@ import { useApolloClient } from "@apollo/react-hooks";
 import { PbPageDataLink } from "~/types";
 import { useEffect, useState } from "react";
 
-const useGetPages = (links: LinkItem[]) => {
+const useGetPages = (links: LinkItem[], more = 0) => {
     const client = useApolloClient();
     const [pages, setPages] = useState<PbPageDataLink[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [moreLoading, setMoreLoading] = useState<boolean>(false);
 
     const getPagesByLinks = (links: LinkItem[]): Promise<PbPageDataLink[]> => {
         return Promise.all(
@@ -37,10 +38,19 @@ const useGetPages = (links: LinkItem[]) => {
 
     useEffect(() => {
         async function getPagesData() {
-            setLoading(true);
+            if (more > 0) {
+                setMoreLoading(true);
+            } else {
+                setLoading(true);
+            }
+
             const linkedPages = await getPagesByLinks(links);
             setPages(linkedPages);
-            setLoading(false);
+            if (more > 0) {
+                setMoreLoading(false);
+            } else {
+                setLoading(false);
+            }
         }
 
         getPagesData();
@@ -48,7 +58,8 @@ const useGetPages = (links: LinkItem[]) => {
 
     return {
         pages,
-        loading
+        loading,
+        moreLoading
     };
 };
 
