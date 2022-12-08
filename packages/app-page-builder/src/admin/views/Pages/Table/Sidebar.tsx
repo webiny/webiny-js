@@ -12,9 +12,7 @@ export const Sidebar = ({ folderId }: Props): ReactElement => {
     const query = new URLSearchParams(location.search);
 
     useEffect(() => {
-        if (folderId) {
-            setFocusedFolderId(folderId);
-        }
+        setFocusedFolderId(folderId);
     }, [folderId]);
 
     const onFolderClick = (folderId: string): void => {
