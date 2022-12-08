@@ -9,6 +9,9 @@ import { EditorBar } from "~/editor";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import { useBlock } from "~/blockEditor/hooks/useBlock";
 import { SaveBlockActionEvent } from "~/blockEditor/config/eventActions/saveBlock/event";
+import { useUI } from "~/editor/hooks/useUI";
+import { setDisplayModeMutation } from "~/editor/recoil/modules";
+import { DisplayMode } from "~/types";
 
 const SpinnerWrapper = styled.div`
     position: relative;
@@ -20,19 +23,23 @@ const DefaultSaveBlockButton: React.FC = () => {
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
     const [loading, setLoading] = useState(false);
+    const [, setUiValue] = useUI();
 
     const saveChanges = useCallback(() => {
         setLoading(true);
-        eventActionHandler.trigger(
-            new SaveBlockActionEvent({
-                debounce: false,
-                onFinish: () => {
-                    setLoading(false);
-                    history.push(`/page-builder/page-blocks`);
-                    showSnackbar(`Block "${block.name}" saved successfully!`);
-                }
-            })
-        );
+        setUiValue(prev => setDisplayModeMutation(prev, "desktop" as DisplayMode));
+        setTimeout(() => {
+            eventActionHandler.trigger(
+                new SaveBlockActionEvent({
+                    debounce: false,
+                    onFinish: () => {
+                        setLoading(false);
+                        history.push(`/page-builder/page-blocks`);
+                        showSnackbar(`Block "${block.name}" saved successfully!`);
+                    }
+                })
+            );
+        });
     }, [block.name]);
 
     return (
