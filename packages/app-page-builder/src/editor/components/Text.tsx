@@ -4,6 +4,7 @@ import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePage
 
 import PeText from "./Text/PeText";
 import PbText from "./Text/PbText";
+import { TextEditorLexicalInput } from "@webiny/app-lexical-editor";
 
 interface TextElementProps {
     elementId: string;
@@ -17,6 +18,7 @@ const Text: React.FC<TextElementProps> = props => {
     if (pageElements) {
         return <PeText {...props} />;
     }
+    //return <TextEditorLexicalInput />
     return <PbText {...props} />;
 };
 

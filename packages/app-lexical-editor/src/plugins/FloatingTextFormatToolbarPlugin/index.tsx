@@ -29,6 +29,8 @@ import { getDOMRangeRect } from "../../utils/getDOMRangeRect";
 import { getSelectedNode } from "../../utils/getSelectedNode";
 import { setFloatingElemPosition } from "../../utils/setFloatingElemPosition";
 import ColorPicker from "../../ui/ColorPicker";
+import { BoldAction } from "~/components/Toolbar/ToolbarActions/BoldAction";
+import { ToolbarProvider } from "~/context/ToolbarContext";
 
 function TextFormatFloatingToolbar({
     editor,
@@ -139,6 +141,7 @@ function TextFormatFloatingToolbar({
         <div ref={popupCharStylesEditorRef} className="floating-text-format-popup">
             {editor.isEditable() && (
                 <>
+                   <BoldAction editor={editor} />
                     <button
                         onClick={() => {
                             editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold");
@@ -148,7 +151,7 @@ function TextFormatFloatingToolbar({
                     >
                         <i className="format bold" />
                     </button>
-                    <button
+                 {/*    <button
                         onClick={() => {
                             editor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic");
                         }}
@@ -219,7 +222,7 @@ function TextFormatFloatingToolbar({
                         color={fontColor}
                         onChange={value => onFontColorSelect(value)}
                         title="text color"
-                    />
+                    /> */}
                 </>
             )}
         </div>
@@ -346,3 +349,5 @@ export default function FloatingTextFormatToolbarPlugin({
     const [editor] = useLexicalComposerContext();
     return useFloatingTextFormatToolbar(editor, anchorElem);
 }
+
+

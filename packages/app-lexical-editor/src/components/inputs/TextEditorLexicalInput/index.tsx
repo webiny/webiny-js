@@ -15,10 +15,10 @@ import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import ClickableLinkPlugin from "../../../plugins/ClickableLinkPlugin";
 import { $generateHtmlFromNodes } from "@lexical/html";
 import React from "react";
+import { Admin as BaseAdmin, Provider } from "@webiny/app-admin-core";
 
 // import ComponentPickerPlugin from '../../../plugins/ComponentPickerPlugin';
 import FloatingLinkEditorPlugin from "../../../plugins/FloatingLinkEditorPlugin";
-import FloatingTextFormatToolbarPlugin from "../../../plugins/FloatingTextFormatToolbarPlugin";
 import { MaxLengthPlugin } from "../../../plugins/MaxLengthPlugin";
 
 import ContentEditable from "../../../ui/ContentEditable";
@@ -26,6 +26,8 @@ import theme from "../../../themes/webinyLexicalTheme";
 import Placeholder from "../../../ui/Placeholder";
 import { EditorState } from "lexical/LexicalEditorState";
 import { LexicalEditor } from "lexical";
+import FloatingFormatToolbar from "~/plugins/FloatingFormatToolbarPlugin";
+import { ToolbarProvider } from '../../../context/ToolbarContext';
 
 interface TextEditorLexicalInput {
     onChange?: (htmlString: HtmlString) => void;
@@ -76,7 +78,6 @@ const TextEditorLexicalInput: React.FC<TextEditorLexicalInput> = ({ onChange }) 
 
     return (
         <LexicalComposer initialConfig={initialConfig}>
-            <div style={{ minHeight: 100, backgroundColor: "#e1e1e1" }}>
                 <div className="editor-container" ref={scrollRef}>
                     <MaxLengthPlugin maxLength={300} />
                     <OnChangePlugin onChange={handleOnChange} />
@@ -94,14 +95,14 @@ const TextEditorLexicalInput: React.FC<TextEditorLexicalInput> = ({ onChange }) 
                         ErrorBoundary={LexicalErrorBoundary}
                     />
                     <ClickableLinkPlugin />
+                    <Provider hoc={ToolbarProvider} />
                     {floatingAnchorElem && (
                         <>
                             <FloatingLinkEditorPlugin anchorElem={floatingAnchorElem} />
-                            <FloatingTextFormatToolbarPlugin anchorElem={floatingAnchorElem} />
+                            <FloatingFormatToolbar anchorElem={floatingAnchorElem} />
                         </>
                     )}
                 </div>
-            </div>
         </LexicalComposer>
     );
 };
