@@ -9,7 +9,8 @@ export const useLinks = (folderId: string) => {
         throw new Error("useFoldersLinks must be used within a FoldersProvider");
     }
 
-    const { links, loading, listLinks, getLink, createLink, updateLink, deleteLink } = context;
+    const { links, loading, meta, listLinks, getLink, createLink, updateLink, deleteLink } =
+        context;
 
     useEffect(() => {
         /**
@@ -22,12 +23,16 @@ export const useLinks = (folderId: string) => {
     return useMemo(
         () => ({
             /**
-             * NOTE: do NOT expose listLinks from this hook, because you already have folders in the `links` property.
-             * You'll never need to call `listLinks` from any component. As soon as you call `useLinks()`, you'll initiate
-             * fetching of `links`, which is managed by the LinksContext.
+             * NOTE: you do NOT need to call `listLinks` from this hook on component mount, because you already have folders in the `links` property.
+             * As soon as you call `useLinks()`, you'll initiate fetching of `links`, which is managed by the `LinksContext`.
+             * Sinceince this method lists links with pagination, you might need to call it multiple times passing the `after` param.
              */
             loading: loading[folderId] || {},
+            meta: meta[folderId] || {},
             links: links.filter(link => link.folderId === folderId),
+            listLinks(after: string, limit?: number) {
+                return listLinks(folderId, limit, after);
+            },
             getLink(id: string) {
                 return getLink(id, folderId);
             },
@@ -41,6 +46,6 @@ export const useLinks = (folderId: string) => {
                 return deleteLink(link);
             }
         }),
-        [links, loading]
+        [links, loading, meta]
     );
 };
