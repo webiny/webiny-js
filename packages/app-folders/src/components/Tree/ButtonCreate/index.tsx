@@ -1,6 +1,7 @@
 import React from "react";
 
 import { i18n } from "@webiny/app/i18n";
+import { Typography } from "@webiny/ui/Typography";
 
 import { Button, Icon, IconContainer } from "./styled";
 
@@ -16,7 +17,7 @@ export const CreateButton: React.FC<Props> = ({ onClick }) => {
             <IconContainer>
                 <Icon />
             </IconContainer>
-            {t`Create new folder`}
+            <Typography use={"subtitle2"}>{t`Create new folder`}</Typography>
         </Button>
     );
 };
