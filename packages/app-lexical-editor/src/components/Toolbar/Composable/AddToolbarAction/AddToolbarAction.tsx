@@ -19,7 +19,11 @@ export const AddToolbarAction: FC<AddToolbarActionProps> = ({ element, type: tar
                 );
             }
 
-            return <Original anchorElem={anchorElem} type={type}>{children}</Original>;
+            return (
+                <Original anchorElem={anchorElem} type={type}>
+                    {children}
+                </Original>
+            );
         };
     });
 

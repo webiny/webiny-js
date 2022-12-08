@@ -67,7 +67,7 @@ const PbText: React.FC<TextElementProps> = ({ elementId, mediumEditorOptions, ro
             className={classNames(textClassName, rootClassName, typography)}
         >
             <HeadingLexicalInput />
-             {/*    
+            {/*    
                 <FloatingToolbar>
                 <BoldAction />
                 <ColorPickerAction />

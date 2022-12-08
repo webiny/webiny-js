@@ -1,7 +1,7 @@
 import { makeComposable } from "@webiny/react-composition";
 import React, { useCallback, useEffect, useRef } from "react";
 import { ToolbarType } from "~/types";
-import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $getSelection, COMMAND_PRIORITY_LOW, SELECTION_CHANGE_COMMAND } from "lexical";
 import { getDOMRangeRect } from "~/utils/getDOMRangeRect";
 import { setFloatingElemPosition } from "~/utils/setFloatingElemPosition";
@@ -84,8 +84,9 @@ export const Toolbar = makeComposable<ToolbarProps>("Toolbar", ({ children, anch
         );
     }, [editor, updateTextFormatFloatingToolbar]);
 
-
-    return (<div ref={popupCharStylesEditorRef} className="floating-text-format-popup">
+    return (
+        <div ref={popupCharStylesEditorRef} className="floating-text-format-popup">
             {editor.isEditable() && children}
-    </div>)
+        </div>
+    );
 });

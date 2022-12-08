@@ -50,7 +50,7 @@ export const BoldAction = () => {
         return mergeRegister(
             editor.registerUpdateListener(() => {
                 updatePopup();
-            }),
+            })
         );
     }, [editor, updatePopup]);
 
