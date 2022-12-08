@@ -1,45 +1,30 @@
-import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import { FORMAT_TEXT_COMMAND, LexicalEditor } from 'lexical'
-import React, { FC, useEffect } from 'react'
-import useToolbar from '~/hooks/useToolbar';
-import { ToolbarAction } from '../../../context/ToolbarContext';
-
-interface BoldActionProps {
-    editor: LexicalEditor,
-}
-
-type BoldAction = {
- name: string;
- value: boolean;
-};
-
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { FORMAT_TEXT_COMMAND } from "lexical";
+import React, { useEffect, useState } from "react";
 export const BOLD_TEXT_ACTION_VALUE = "isBold";
 
 /**
  * Toolbar action. On toolbar you can see as button that is bold.
  */
-export const BoldAction: FC<BoldActionProps> = () => {
-  const { addAction, updateAction, actions } = useToolbar();
-  const [editor] = useLexicalComposerContext();
+export const BoldAction = () => {
+    const [editor] = useLexicalComposerContext();
+    const [isBold, setIsBold] = useState(false);
 
-  useEffect(() => {
-    addAction({ name: BOLD_TEXT_ACTION_VALUE, value: false });
-  }, [])
-  
- useEffect(() => {
-   updateAction({ name: BOLD_TEXT_ACTION_VALUE,  })
- }, [editor])
- 
+    useEffect(() => {
+        editor.getEditorState().read(() => {
+            // TODO
+        });
+    }, [editor]);
 
-  return (
-    <button
-        onClick={() => {
-            editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold");
-        }}
-        className={"popup-item spaced " + (actions[BOLD_TEXT_ACTION_VALUE] ? "active" : "")}
-        aria-label="Format text as bold"
-    >
-        <i className="format bold" />
-    </button>
-  )
-}
+    return (
+        <button
+            onClick={() => {
+                editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold");
+            }}
+            className={"popup-item spaced " + (actions[BOLD_TEXT_ACTION_VALUE] ? "active" : "")}
+            aria-label="Format text as bold"
+        >
+            <i className="format bold" />
+        </button>
+    );
+};

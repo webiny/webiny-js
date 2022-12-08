@@ -1,43 +1,29 @@
-import { FORMAT_TEXT_COMMAND, TextFormatType } from 'lexical';
-import React, { FC, useEffect } from 'react'
-import { Component } from 'react';
-import useToolbar from '~/hooks/useToolbar';
-import action from '@webiny/app-page-builder/editor/plugins/elementSettings/action';
+import React, { FC } from "react";
+import { Toolbar } from "~/components/Toolbar/Toolbar";
+import { createComponentPlugin } from "@webiny/react-composition";
 
 interface AddToolbarActionProps {
-   ariaLabel: string;
-   commandName: TextFormatType;
-   connectComponent?: Component;
+    type?: "heading" | "paragraph";
+    element: JSX.Element;
 }
 
-export const AddToolbarAction: FC<AddToolbarActionProps> = ({ commandName, ariaLabel }) => {
+export const AddToolbarAction: FC<AddToolbarActionProps> = ({ element, type: targetType }) => {
+    const ToolbarPlugin = createComponentPlugin(Toolbar, Original => {
+        return function Toolbar({ type, children }) {
+            if (!targetType || targetType === type) {
+                return (
+                    <Original type={type}>
+                        {element}
+                        {children}
+                    </Original>
+                );
+            }
 
-    const { editor, addToolbarAction, actions, updateToolbarAction } = useToolbar();
+            return <Original type={type}>{children}</Original>;
+        };
+    });
 
-    useEffect(() => {
-        addToolbarAction({ name: commandName, value: false });
-    }, []);
+    return <ToolbarPlugin />;
+};
 
-    useEffect(() => {
-        const value = !action[commandName];
-        updateToolbarAction({ name: commandName, value })
-    }, [actions[commandName]])
-
-    return(
-        <>
-        {
-         actions?.[commandName] ? 
-            (
-                <button
-                onClick={() => {
-                    editor.dispatchCommand(FORMAT_TEXT_COMMAND, commandName);
-                }}
-                className={"popup-item spaced " + (actions ? "active" : "")}
-                aria-label={ariaLabel}
-            >
-                <i className="format bold" />
-            </button>
-            ) : null
-        }
-    </>)
-}
+// <AddToolbarAction type={"heading"} element={<BoldAction/>}/>
