@@ -14,7 +14,6 @@ import styled from "@emotion/styled";
 import { useCanCreatePage } from "~/admin/views/Pages/hooks/useCanCreate";
 import { FOLDER_ID_DEFAULT, FOLDER_TYPE } from "~/admin/constants/folders";
 import { Preview } from "~/admin/components/Table/Preview";
-import { useRouter } from "@webiny/react-router";
 import useDeepCompareEffect from "use-deep-compare-effect";
 
 interface Props {
@@ -45,14 +44,8 @@ const getCurrentFolderList = (
 };
 
 export const Main = ({ folderId }: Props) => {
-    const { history } = useRouter();
     const { folders = [], loading: foldersLoading } = useFolders(FOLDER_TYPE);
-    const {
-        links,
-        loading: linksLoading,
-        createLink,
-        deleteLink
-    } = useLinks(folderId || FOLDER_ID_DEFAULT);
+    const { links, loading: linksLoading, deleteLink } = useLinks(folderId || FOLDER_ID_DEFAULT);
     const { pages, loading: pagesLoading } = useGetPages(links);
     const [subFolders, setSubFolders] = useState<FolderItem[]>([]);
 
@@ -81,10 +74,7 @@ export const Main = ({ folderId }: Props) => {
         setLoadingLabel: () => setLoadingLabel(LoadingLabel.CREATING_PAGE),
         clearLoadingLabel: () => setLoadingLabel(null),
         closeDialog: closeCategoryDialog,
-        onCreatePageSuccess: async id => {
-            await createLink({ id, folderId: folderId || FOLDER_ID_DEFAULT });
-            history.push(`/page-builder/editor/${encodeURIComponent(id)}`);
-        }
+        folderId
     });
 
     return (
