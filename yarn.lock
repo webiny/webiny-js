@@ -9267,9 +9267,9 @@ __metadata:
   linkType: hard
 
 "@types/lodash@npm:^4.14.190":
-  version: 4.14.191
-  resolution: "@types/lodash@npm:4.14.191"
-  checksum: ba0d5434e10690869f32d5ea49095250157cae502f10d57de0a723fd72229ce6c6a4979576f0f13e0aa9fbe3ce2457bfb9fa7d4ec3d6daba56730a51906d1491
+  version: 4.14.190
+  resolution: "@types/lodash@npm:4.14.190"
+  checksum: 353a55a1222a57224ead8bd3379fabb2e3e3f6685f599c48b1b66f099d8e9e015e6c6352c6e2275954004c3bb510377804c63117233c6f187700b6ab78adfa02
   languageName: node
   linkType: hard
 
@@ -9355,17 +9355,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/node@npm:^14.0.0":
+  version: 14.18.33
+  resolution: "@types/node@npm:14.18.33"
+  checksum: 4e23f95186d8ae1d38c999bc6b46fe94e790da88744b0a3bfeedcbd0d9ffe2cb0ff39e85f43014f6739e5270292c1a1f6f97a1fc606fd573a0c17fda9a1d42de
+  languageName: node
+  linkType: hard
+
 "@types/node@npm:^14.14.31":
   version: 14.18.31
   resolution: "@types/node@npm:14.18.31"
   checksum: df33021d673a5e3c943cf96c9f3fbccf364d20f487b2ab7eb49db144974c2049f0a91e9358df09235f543c1f0b11388c5b0b636ae1f2ed55a27c75f63bc3d2c5
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:^16.0.0":
-  version: 16.11.64
-  resolution: "@types/node@npm:16.11.64"
-  checksum: 3634477efbeb586f8cdc1baf7670d8ea89c1eba1beac0354fa9123ca193d794da84ec40d4f8a54f694587ba5469e4124ebbba37542ed88eca95a3980ec45551a
   languageName: node
   linkType: hard
 
@@ -35889,7 +35889,7 @@ __metadata:
     "@types/fs-extra": ^8.0.1
     "@types/jest": ^24.0.24
     "@types/jquery": ^3.3.31
-    "@types/node": ^16.0.0
+    "@types/node": ^14.0.0
     "@types/react": 17.0.39
     "@types/react-dom": 17.0.11
     "@typescript-eslint/eslint-plugin": ^5.5.0

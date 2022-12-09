@@ -1,19 +1,19 @@
 import WebinyError from "@webiny/error";
+import { CmsEntryElasticsearchQueryBuilderValueSearchPlugin } from "~/plugins";
 import { PluginsContainer } from "@webiny/plugins";
-import { CmsEntryElasticsearchQueryBuilderValueSearchPlugin } from "~/plugins/CmsEntryElasticsearchQueryBuilderValueSearchPlugin";
+import { ElasticsearchQuerySearchValuePlugins } from "../types";
 
-export interface ElasticsearchQuerySearchValuePlugins {
-    [fieldType: string]: CmsEntryElasticsearchQueryBuilderValueSearchPlugin;
+interface Params {
+    plugins: PluginsContainer;
 }
-
-export const searchPluginsList = (
-    plugins: PluginsContainer
-): ElasticsearchQuerySearchValuePlugins => {
+export const createSearchPluginList = ({
+    plugins
+}: Params): ElasticsearchQuerySearchValuePlugins => {
     return plugins
         .byType<CmsEntryElasticsearchQueryBuilderValueSearchPlugin>(
-            "cms-elastic-search-query-builder-value-search"
+            CmsEntryElasticsearchQueryBuilderValueSearchPlugin.type
         )
-        .reduce((plugins, plugin) => {
+        .reduce<ElasticsearchQuerySearchValuePlugins>((plugins, plugin) => {
             if (plugins[plugin.fieldType]) {
                 throw new WebinyError(
                     "There is a ElasticsearchQueryBuilderValueSearchPlugin defined for the field type.",
@@ -27,5 +27,5 @@ export const searchPluginsList = (
             plugins[plugin.fieldType] = plugin;
 
             return plugins;
-        }, {} as ElasticsearchQuerySearchValuePlugins);
+        }, {});
 };

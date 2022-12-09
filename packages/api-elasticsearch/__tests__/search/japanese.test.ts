@@ -236,6 +236,7 @@ describe("Japanese search", () => {
             };
 
             searchPlugin.apply(query, {
+                name: "title",
                 basePath: "title",
                 path: "title",
                 value: search,

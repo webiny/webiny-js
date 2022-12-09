@@ -1268,7 +1268,9 @@ describe("READ - Resolvers", () => {
         // wait until we have all products available
         await until(
             () => listProducts({}).then(([data]) => data),
-            ({ data }: any) => data.listProducts.data.length === 3,
+            ({ data }: any) => {
+                return data.listProducts.data.length === 3;
+            },
             {
                 name: "list all products in vegetables categories - sort title"
             }

@@ -1,6 +1,6 @@
 import { CmsGroup } from "~/types";
 import WebinyError from "@webiny/error";
-import { CmsModel } from "./types";
+import { CmsModel } from "../types";
 
 const createGroup = async (handler: any): Promise<CmsGroup> => {
     const [response] = await handler.createContentModelGroupMutation({

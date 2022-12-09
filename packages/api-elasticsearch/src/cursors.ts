@@ -1,3 +1,5 @@
+import { PrimitiveValue } from "~/types";
+
 /**
  * Encode a received cursor value into something that can be passed on to the user.
  */
@@ -19,14 +21,17 @@ export const encodeCursor = (cursor?: string | string[] | null): string | undefi
  * Decode a received value into a Elasticsearch cursor.
  * If no value is received or is not decodable, return undefined.
  */
-export const decodeCursor = (cursor?: string | null): string[] | string | undefined => {
+export const decodeCursor = (cursor?: string | null): PrimitiveValue[] | undefined => {
     if (!cursor) {
         return undefined;
     }
     try {
         const value = JSON.parse(Buffer.from(cursor, "base64").toString("ascii"));
-
-        return Array.isArray(value) ? value.map(decodeURIComponent) : decodeURIComponent(value);
+        if (Array.isArray(value)) {
+            return value.map(decodeURIComponent);
+        }
+        const decoded = decodeURIComponent(value);
+        return decoded ? [decoded] : undefined;
     } catch (ex) {
         console.error(ex.message);
     }

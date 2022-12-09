@@ -138,6 +138,39 @@ describe("Entries storage operations", () => {
         }
     });
 
+    it("should list all entries", async () => {
+        const personModel = createPersonModel(plugins);
+        const amount = 10;
+        const results = await createPersonEntries({
+            amount,
+            storageOperations,
+            maxRevisions: 1,
+            plugins
+        });
+        await waitPersonRecords({
+            records: results,
+            storageOperations,
+            name: "list all person entries after create",
+            until,
+            model: personModel
+        });
+
+        const result = await storageOperations.entries.list(personModel, {
+            where: {
+                name_contains: "person ",
+                latest: true
+            },
+            limit: 1000
+        });
+
+        expect(result.items).toHaveLength(amount);
+        expect(result).toMatchObject({
+            cursor: null,
+            hasMoreItems: false,
+            totalCount: amount
+        });
+    });
+
     it("getByIds - should get all entries by id list", async () => {
         const personModel = createPersonModel(plugins);
         const amount = 202;

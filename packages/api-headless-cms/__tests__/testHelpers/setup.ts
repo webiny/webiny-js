@@ -1,35 +1,20 @@
 import { CmsGroup } from "~/types";
 import models from "../contentAPI/mocks/contentModels";
+import { useGraphQLHandler } from "./useGraphQLHandler";
+import { CmsModel } from "../types";
 
-export const setupContentModelGroup = async (manager: any): Promise<CmsGroup> => {
-    const [response] = await manager.createContentModelGroupMutation({
-        data: {
-            name: "Group",
-            slug: "group",
-            icon: "ico/ico",
-            description: "description"
-        }
-    });
-    const error = response?.data?.createContentModelGroup?.error || response?.errors?.shift();
-    if (error) {
-        console.log("[setupContentModelGroup] could not create group");
-        console.log(error.message);
-        process.exit(1);
-    }
-    return response.data.createContentModelGroup.data;
-};
-
-const setupContentModel = async (manager: any, contentModelGroup: CmsGroup, name: string) => {
-    const model = models.find(m => m.modelId === name);
-    if (!model) {
-        console.log(`[setupContentModel] There is no model "${name}" defined.`);
-        process.exit(1);
-    }
+interface SetupContentModelParams {
+    manager: ReturnType<typeof useGraphQLHandler>;
+    model: CmsModel;
+    group: CmsGroup;
+}
+const setupContentModel = async (params: SetupContentModelParams) => {
+    const { manager, model, group } = params;
     const [createResponse] = await manager.createContentModelMutation({
         data: {
             name: model.name,
             modelId: model.modelId,
-            group: contentModelGroup.id
+            group: group.id
         }
     });
 
@@ -59,9 +44,66 @@ const setupContentModel = async (manager: any, contentModelGroup: CmsGroup, name
     }
     return updateResponse.data.updateContentModel.data;
 };
+
+const getModel = (item: CmsModel | string): CmsModel => {
+    if (typeof item === "string") {
+        const model = models.find(m => m.modelId === item);
+        if (!model) {
+            console.log(`[setupContentModel] There is no model "${name}" defined.`);
+            process.exit(1);
+        }
+        return model;
+    }
+    return item;
+};
+
+interface SetupGroupAndModelsParams {
+    manager: ReturnType<typeof useGraphQLHandler>;
+    models: CmsModel[] | string[];
+}
+export const setupGroupAndModels = async (params: SetupGroupAndModelsParams) => {
+    const { manager, models } = params;
+    const group = await setupContentModelGroup(manager);
+
+    const results: CmsModel[] = [];
+    for (const item of models) {
+        const model = getModel(item);
+        const result = await setupContentModel({
+            manager,
+            group,
+            model
+        });
+        results.push(result);
+    }
+    return {
+        models: results,
+        group
+    };
+};
+
+export const setupContentModelGroup = async (
+    manager: ReturnType<typeof useGraphQLHandler>
+): Promise<CmsGroup> => {
+    const [response] = await manager.createContentModelGroupMutation({
+        data: {
+            name: "Group",
+            slug: "group",
+            icon: "ico/ico",
+            description: "description"
+        }
+    });
+    const error = response?.data?.createContentModelGroup?.error || response?.errors?.shift();
+    if (error) {
+        console.log("[setupContentModelGroup] could not create group");
+        console.log(error.message);
+        process.exit(1);
+    }
+    return response.data.createContentModelGroup.data;
+};
+
 export const setupContentModels = async (
-    manager: any,
-    contentModelGroup: CmsGroup,
+    manager: ReturnType<typeof useGraphQLHandler>,
+    group: CmsGroup,
     modelsList: string[]
 ): Promise<Record<string, any>> => {
     const items = modelsList.reduce<Record<string, any>>((acc, m) => ({ ...acc, [m]: null }), {});
@@ -69,7 +111,16 @@ export const setupContentModels = async (
         if (items.hasOwnProperty(name) === false) {
             continue;
         }
-        items[name] = await setupContentModel(manager, contentModelGroup, name);
+        const model = models.find(m => m.modelId === name);
+        if (!model) {
+            console.log(`[setupContentModel] There is no model "${name}" defined.`);
+            process.exit(1);
+        }
+        items[name] = await setupContentModel({
+            manager,
+            group,
+            model
+        });
     }
     return items;
 };
