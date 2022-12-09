@@ -14,7 +14,6 @@ export const loadingHandler = <T extends string>(
     setState(state => {
         const currentContext = state[context] || {};
         const currentAction = currentContext[action] || false;
-        console.log("loadingHandler", action);
         return {
             ...state,
             [context]: {
