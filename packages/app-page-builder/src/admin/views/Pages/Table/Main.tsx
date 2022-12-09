@@ -57,13 +57,8 @@ export const Main = ({ folderId }: Props) => {
         createLink,
         deleteLink
     } = useLinks(folderId || FOLDER_ID_DEFAULT);
-    const [loadingTimes, setLoadingTimes] = useState<number>(0);
 
-    const {
-        pages,
-        loading: pagesLoading,
-        moreLoading: pagesMoreLoading
-    } = useGetPages(links, loadingTimes);
+    const { pages, loading: pagesLoading } = useGetPages(links, folderId);
 
     const [subFolders, setSubFolders] = useState<FolderItem[]>([]);
 
@@ -102,7 +97,6 @@ export const Main = ({ folderId }: Props) => {
         debounce(async ({ scrollFrame }) => {
             if (scrollFrame.top > 0.8) {
                 if (meta.hasMoreItems && meta.cursor) {
-                    setLoadingTimes(prev => prev++);
                     await listLinks(meta.cursor);
                 }
             }
@@ -121,7 +115,7 @@ export const Main = ({ folderId }: Props) => {
                 <Wrapper>
                     {pages.length === 0 &&
                     subFolders.length === 0 &&
-                    !pagesLoading &&
+                    !pagesLoading.LIST_PAGES_BY_LINKS &&
                     !linksLoading.LIST_LINKS &&
                     !foldersLoading.LIST_FOLDERS ? (
                         <Empty
@@ -145,7 +139,7 @@ export const Main = ({ folderId }: Props) => {
                                     folders={subFolders}
                                     pages={pages}
                                     loading={
-                                        pagesLoading ||
+                                        pagesLoading.LIST_PAGES_BY_LINKS ||
                                         linksLoading.LIST_LINKS ||
                                         foldersLoading.LIST_FOLDERS
                                     }
@@ -153,12 +147,12 @@ export const Main = ({ folderId }: Props) => {
                                     openPreviewDrawer={openPreviewDrawer}
                                 />
                             </Scrollbar>
-                            {(linksLoading.LIST_MORE_LINKS || pagesMoreLoading) && <LoadingMore />}
+                            {(linksLoading.LIST_MORE_LINKS ||
+                                pagesLoading.LIST_MORE_PAGES_BY_LINKS) && <LoadingMore />}
                         </>
                     )}
                 </Wrapper>
             </Container>
-
             <FolderDialogCreate
                 type={"page"}
                 open={showFoldersDialog}

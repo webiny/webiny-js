@@ -2,14 +2,34 @@ import { LinkItem } from "@webiny/app-folders/types";
 import { GetPageQueryResponse, GetPageQueryVariables } from "~/pageEditor/graphql";
 import { GET_PAGE } from "~/admin/graphql/pages";
 import { useApolloClient } from "@apollo/react-hooks";
-import { PbPageDataLink } from "~/types";
-import { useEffect, useState } from "react";
+import { PagesLinksActions, PbPageDataLink, Loading } from "~/types";
+import { useEffect, useState, SetStateAction, Dispatch } from "react";
+import { FOLDER_ID_DEFAULT } from "~/admin/constants/folders";
 
-const useGetPages = (links: LinkItem[], more = 0) => {
+export const loadingHandler = <T extends string>(
+    context: string,
+    action: T,
+    setState: Dispatch<SetStateAction<Loading<T>>>
+): void => {
+    setState(state => {
+        const currentContext = state[context] || {};
+        const currentAction = currentContext[action] || false;
+        console.log("loadingHandler", action);
+        return {
+            ...state,
+            [context]: {
+                ...currentContext,
+                [action]: !currentAction
+            }
+        };
+    });
+};
+
+const useGetPages = (links: LinkItem[], folderId = FOLDER_ID_DEFAULT) => {
     const client = useApolloClient();
     const [pages, setPages] = useState<PbPageDataLink[]>([]);
-    const [loading, setLoading] = useState<boolean>(false);
-    const [moreLoading, setMoreLoading] = useState<boolean>(false);
+    const [loading, setLoading] = useState<Loading<PagesLinksActions>>({});
+    const [times, setTimes] = useState<number>(0);
 
     const getPagesByLinks = (links: LinkItem[]): Promise<PbPageDataLink[]> => {
         return Promise.all(
@@ -37,19 +57,21 @@ const useGetPages = (links: LinkItem[], more = 0) => {
     };
 
     useEffect(() => {
-        async function getPagesData() {
-            if (more > 0) {
-                setMoreLoading(true);
-            } else {
-                setLoading(true);
-            }
+        setTimes(0);
+    }, [folderId]);
 
-            const linkedPages = await getPagesByLinks(links);
-            setPages(linkedPages);
-            if (more > 0) {
-                setMoreLoading(false);
-            } else {
-                setLoading(false);
+    useEffect(() => {
+        async function getPagesData() {
+            if (links.length > 0) {
+                const action = times > 0 ? "LIST_MORE_PAGES_BY_LINKS" : "LIST_PAGES_BY_LINKS";
+
+                loadingHandler(folderId, action, setLoading);
+
+                const linkedPages = await getPagesByLinks(links);
+                setPages(linkedPages);
+
+                setTimes(prev => prev + 1);
+                loadingHandler(folderId, action, setLoading);
             }
         }
 
@@ -58,8 +80,7 @@ const useGetPages = (links: LinkItem[], more = 0) => {
 
     return {
         pages,
-        loading,
-        moreLoading
+        loading: loading[folderId] || {}
     };
 };
 
