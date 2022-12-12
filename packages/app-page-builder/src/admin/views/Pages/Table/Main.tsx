@@ -5,7 +5,6 @@ import useDeepCompareEffect from "use-deep-compare-effect";
 import { FolderDialogCreate, useFolders, useLinks } from "@webiny/app-folders";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
-import { useRouter } from "@webiny/react-router";
 
 import CategoriesDialog from "~/admin/views/Categories/CategoriesDialog";
 import useCreatePage from "~/admin/views/Pages/hooks/useCreatePage";
@@ -47,14 +46,12 @@ const getCurrentFolderList = (
 };
 
 export const Main = ({ folderId }: Props) => {
-    const { history } = useRouter();
     const { folders = [], loading: foldersLoading } = useFolders(FOLDER_TYPE);
     const {
         links,
         loading: linksLoading,
         meta,
         listLinks,
-        createLink,
         deleteLink
     } = useLinks(folderId || FOLDER_ID_DEFAULT);
 
@@ -87,10 +84,7 @@ export const Main = ({ folderId }: Props) => {
         setLoadingLabel: () => setLoadingLabel(LoadingLabel.CREATING_PAGE),
         clearLoadingLabel: () => setLoadingLabel(null),
         closeDialog: closeCategoryDialog,
-        onCreatePageSuccess: async id => {
-            await createLink({ id, folderId: folderId || FOLDER_ID_DEFAULT });
-            history.push(`/page-builder/editor/${encodeURIComponent(id)}`);
-        }
+        folderId
     });
 
     const loadMoreOnScroll = useCallback(

@@ -8,9 +8,6 @@ import { CircularProgress } from "@webiny/ui/Progress";
 import useImportPage from "./hooks/useImportPage";
 import useCreatePage from "./hooks/useCreatePage";
 import { PageBuilderSecurityPermission } from "~/types";
-import { useRouter } from "@webiny/react-router";
-import { useLinks } from "@webiny/app-folders";
-import { FOLDER_ID_DEFAULT } from "~/admin/constants/folders";
 
 enum LoadingLabel {
     CREATING_PAGE = "Creating page...",
@@ -23,8 +20,6 @@ enum Operation {
 }
 
 const Pages: React.FC = () => {
-    const { history } = useRouter();
-    const { createLink } = useLinks(FOLDER_ID_DEFAULT);
     const [operation, setOperation] = useState<string>(Operation.CREATE);
     const [loadingLabel, setLoadingLabel] = useState<string | null>(null);
     const [showCategoriesDialog, setCategoriesDialog] = useState(false);
@@ -35,11 +30,7 @@ const Pages: React.FC = () => {
     const { createPageMutation } = useCreatePage({
         setLoadingLabel: () => setLoadingLabel(LoadingLabel.CREATING_PAGE),
         clearLoadingLabel: () => setLoadingLabel(null),
-        closeDialog,
-        onCreatePageSuccess: async id => {
-            await createLink({ id, folderId: FOLDER_ID_DEFAULT });
-            history.push(`/page-builder/editor/${encodeURIComponent(id)}`);
-        }
+        closeDialog
     });
 
     const { showDialog } = useImportPage({

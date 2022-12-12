@@ -121,6 +121,7 @@ export const createStorageOperations: StorageOperationsFactory = params => {
     ]);
 
     return {
+        name: "dynamodb:elasticsearch",
         beforeInit: async context => {
             /**
              * Attach the elasticsearch into context if it is not already attached.
@@ -128,6 +129,10 @@ export const createStorageOperations: StorageOperationsFactory = params => {
             if (!context.elasticsearch) {
                 context.elasticsearch = elasticsearch;
             }
+            /**
+             * Pass the plugins to the parent context.
+             */
+            context.plugins.register([dynamoDbPlugins()]);
             /**
              * Collect all required plugins from parent context.
              */
@@ -167,11 +172,6 @@ export const createStorageOperations: StorageOperationsFactory = params => {
                     CmsEntryElasticsearchBodyModifierPlugin.type
                 );
             plugins.register(bodyModifierPlugins);
-
-            /**
-             * Pass the plugins to the parent context.
-             */
-            context.plugins.register([dynamoDbPlugins()]);
         },
         init: async context => {
             /**

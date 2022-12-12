@@ -1,4 +1,5 @@
 import styled from "@emotion/styled";
+import { Typography } from "@webiny/ui/Typography";
 
 type ContainerProps = {
     isFocused: boolean;
@@ -12,8 +13,8 @@ export const Container = styled("div")<ContainerProps>`
     display: flex;
     align-items: center;
     padding: 4px 32px 4px 0;
-    background: ${props => props.isFocused && "var(--webiny-theme-color-background)"};
-    color: var(--webiny-theme-color-text-primary);
+    background: ${props => props.isFocused && "var(--mdc-theme-background)"};
+    color: var(--webiny-theme-color-text-secondary);
     fill: currentColor;
     position: relative;
 
@@ -37,7 +38,7 @@ export const ArrowIcon = styled(Icon)<ArrowIconContainerProps>`
 `;
 
 export const FolderIcon = styled(Icon)`
-    margin-right: 8px;
+    margin-right: 4px;
 `;
 
 export const Content = styled("div")`
@@ -48,7 +49,7 @@ export const Content = styled("div")`
     overflow: hidden;
 `;
 
-export const Text = styled("div")`
+export const Text = styled(Typography)`
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

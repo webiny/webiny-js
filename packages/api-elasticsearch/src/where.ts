@@ -91,6 +91,7 @@ export const applyWhere = (params: ApplyWhereParams): void => {
         });
 
         operatorPlugin.apply(query, {
+            name: field,
             value,
             path,
             basePath,

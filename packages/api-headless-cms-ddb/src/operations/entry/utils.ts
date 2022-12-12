@@ -176,6 +176,20 @@ const createFilters = (params: CreateFiltersParams): ItemFilter[] => {
         if (where.hasOwnProperty(key) === false) {
             continue;
         }
+        /**
+         * At the moment we do not allow OR and AND conditional filtering, so throw an error on it.
+         */
+        if (key === "AND") {
+            throw new WebinyError(
+                `Conditional "AND" is currently disabled in the DynamoDB only deployment.`,
+                "DISABLED_AND_CONDITIONAL"
+            );
+        } else if (key === "OR") {
+            throw new WebinyError(
+                `Conditional "OR" is currently disabled in the DynamoDB only deployment.`,
+                "DISABLED_OR_CONDITIONAL"
+            );
+        }
 
         const value = (where as any)[key];
         if (value === undefined) {
