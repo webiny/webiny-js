@@ -25,7 +25,7 @@ export const useLinks = (folderId: string) => {
             /**
              * NOTE: you do NOT need to call `listLinks` from this hook on component mount, because you already have folders in the `links` property.
              * As soon as you call `useLinks()`, you'll initiate fetching of `links`, which is managed by the `LinksContext`.
-             * Sinceince this method lists links with pagination, you might need to call it multiple times passing the `after` param.
+             * Since this method lists links with pagination, you might need to call it multiple times passing the `after` param.
              */
             loading: loading[folderId] || {},
             meta: meta[folderId] || {},
