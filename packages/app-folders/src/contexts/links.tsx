@@ -44,7 +44,7 @@ export const LinksProvider = ({ children }: Props) => {
     const client = useApolloClient();
     const [links, setLinks] = useState<LinkItem[]>([]);
     const [loading, setLoading] = useState<Loading<LinksActions>>({});
-    const [meta, setMeta] = useState<Meta<ListMeta>>({});
+    const [meta, setMeta] = useState<Meta<ListMeta>>(Object.create(null));
 
     const context: LinksContext = {
         links,
