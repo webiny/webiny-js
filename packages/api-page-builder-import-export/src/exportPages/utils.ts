@@ -1,5 +1,5 @@
 import S3 from "aws-sdk/clients/s3";
-import { Page, File } from "@webiny/api-page-builder/types";
+import { Page, PageBlock, File } from "@webiny/api-page-builder/types";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
 import get from "lodash/get";
 import { s3Stream } from "./s3Stream";
@@ -37,7 +37,7 @@ export async function exportPage(
     fileManager: FileManagerContext["fileManager"]
 ): Promise<S3.ManagedUpload.SendData> {
     // Extract all files
-    const files = extractFilesFromPageData(page.content || {});
+    const files = extractFilesFromData(page.content || {});
     // Filter files
     const filesAvailableForDownload = await getFilteredFiles(files);
     // Extract images from page settings
@@ -70,10 +70,47 @@ export async function exportPage(
     const zipper = new Zipper({
         exportInfo: {
             files: [...filesAvailableForDownload, ...pageSettingsImagesData],
-            pageTitle: page.title,
-            pageDataBuffer
+            name: page.title,
+            dataBuffer: pageDataBuffer
         },
         archiveFileKey: exportPagesDataKey
+    });
+
+    return zipper.process();
+}
+
+export interface ExportedBlockData {
+    block: Pick<PageBlock, "name" | "content" | "preview">;
+    files: ImageFile[];
+}
+
+export async function exportBlock(
+    block: PageBlock,
+    exportBlocksDataKey: string
+): Promise<S3.ManagedUpload.SendData> {
+    // Extract all files
+    const files = extractFilesFromData(block.content || {});
+    // Filter files
+    const filesAvailableForDownload = await getFilteredFiles(files);
+
+    // Extract the block data in a json file and upload it to S3
+    const blockData = {
+        block: {
+            name: block.name,
+            content: block.content,
+            preview: block.preview
+        },
+        files: filesAvailableForDownload
+    };
+    const blockDataBuffer = Buffer.from(JSON.stringify(blockData));
+
+    const zipper = new Zipper({
+        exportInfo: {
+            files: filesAvailableForDownload,
+            name: block.name,
+            dataBuffer: blockDataBuffer
+        },
+        archiveFileKey: exportBlocksDataKey
     });
 
     return zipper.process();
@@ -83,10 +120,7 @@ export interface ImageFile extends Omit<File, "src"> {
     key: string;
 }
 
-export function extractFilesFromPageData(
-    data: Record<string, any>,
-    files: any[] = []
-): ImageFile[] {
+export function extractFilesFromData(data: Record<string, any>, files: any[] = []): ImageFile[] {
     // Base case: termination
     if (!data || typeof data !== "object") {
         return files;
@@ -95,7 +129,7 @@ export function extractFilesFromPageData(
     if (Array.isArray(data)) {
         for (let i = 0; i < data.length; i++) {
             const element = data[i];
-            extractFilesFromPageData(element, files);
+            extractFilesFromData(element, files);
         }
         return files;
     }
@@ -111,7 +145,7 @@ export function extractFilesFromPageData(
             // Handle case for "images-list" component
             files.push(...value);
         } else {
-            extractFilesFromPageData(value, files);
+            extractFilesFromData(value, files);
         }
     }
     return files;

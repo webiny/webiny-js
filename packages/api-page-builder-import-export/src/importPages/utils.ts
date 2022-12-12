@@ -13,7 +13,7 @@ import loadJson from "load-json-file";
 import { FileInput } from "@webiny/api-file-manager/types";
 import WebinyError from "@webiny/error";
 import { deleteFile } from "@webiny/api-page-builder/graphql/crud/install/utils/downloadInstallFiles";
-import { File, PageImportExportTaskStatus } from "~/types";
+import { File, ImportExportTaskStatus } from "~/types";
 import { PbImportExportContext } from "~/graphql/types";
 import { s3Stream } from "~/exportPages/s3Stream";
 import { ExportedPageData } from "~/exportPages/utils";
@@ -432,10 +432,10 @@ async function deleteS3Folder(key: string): Promise<void> {
 
 export function initialStats(total: number) {
     return {
-        [PageImportExportTaskStatus.PENDING]: total,
-        [PageImportExportTaskStatus.PROCESSING]: 0,
-        [PageImportExportTaskStatus.COMPLETED]: 0,
-        [PageImportExportTaskStatus.FAILED]: 0,
+        [ImportExportTaskStatus.PENDING]: total,
+        [ImportExportTaskStatus.PROCESSING]: 0,
+        [ImportExportTaskStatus.COMPLETED]: 0,
+        [ImportExportTaskStatus.FAILED]: 0,
         total
     };
 }

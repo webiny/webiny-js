@@ -1,5 +1,4 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
-import { ExportBlocksParams, ImportBlocksParams } from "~/types";
 import { PbImportExportContext } from "../types";
 import resolve from "./utils/resolve";
 
@@ -36,25 +35,11 @@ const plugin: GraphQLSchemaPlugin<PbImportExportContext> = {
         resolvers: {
             PbMutation: {
                 exportBlocks: async (_, args: any, context) => {
-                    /**
-                     * We know that args is ExportBlocksParams.
-                     */
-                    return resolve(() =>
-                        context.pageBuilder.blocks.exportBlocks(
-                            args as unknown as ExportBlocksParams
-                        )
-                    );
+                    return resolve(() => context.pageBuilder.blocks.exportBlocks(args));
                 },
 
                 importBlocks: async (_, args: any, context) => {
-                    /**
-                     * We know that args is ExportBlocksParams.
-                     */
-                    return resolve(() =>
-                        context.pageBuilder.blocks.importBlocks(
-                            args as unknown as ImportBlocksParams
-                        )
-                    );
+                    return resolve(() => context.pageBuilder.blocks.importBlocks(args));
                 }
             }
         }

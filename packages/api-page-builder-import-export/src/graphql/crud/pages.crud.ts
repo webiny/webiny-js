@@ -2,7 +2,7 @@ import WebinyError from "@webiny/error";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { ContextPlugin } from "@webiny/api";
 import checkBasePermissions from "@webiny/api-page-builder/graphql/crud/utils/checkBasePermissions";
-import { PageImportExportTaskStatus, PagesImportExportCrud, PbImportExportContext } from "~/types";
+import { ImportExportTaskStatus, PagesImportExportCrud, PbImportExportContext } from "~/types";
 import { invokeHandlerClient } from "~/client";
 import { Payload as CreateHandlerPayload } from "~/importPages/create";
 import { initialStats } from "~/importPages/utils";
@@ -30,7 +30,7 @@ export default new ContextPlugin<PbImportExportContext>(context => {
 
             // Create a task for import page
             const task = await context.pageBuilder.importExportTask.createTask({
-                status: PageImportExportTaskStatus.PENDING,
+                status: ImportExportTaskStatus.PENDING,
                 input: {
                     category: categorySlug,
                     zipFileUrl
@@ -94,7 +94,7 @@ export default new ContextPlugin<PbImportExportContext>(context => {
 
             // Create the main task for page export.
             const task = await context.pageBuilder.importExportTask.createTask({
-                status: PageImportExportTaskStatus.PENDING
+                status: ImportExportTaskStatus.PENDING
             });
             const exportPagesDataKey = `${EXPORT_PAGES_FOLDER_KEY}/${task.id}`;
             // For each page create a sub task and invoke the process handler.
@@ -105,7 +105,7 @@ export default new ContextPlugin<PbImportExportContext>(context => {
                     task.id,
                     zeroPad(i + 1, 5),
                     {
-                        status: PageImportExportTaskStatus.PENDING,
+                        status: ImportExportTaskStatus.PENDING,
                         input: {
                             pageId,
                             exportPagesDataKey,
@@ -116,7 +116,7 @@ export default new ContextPlugin<PbImportExportContext>(context => {
             }
             // Update main task status.
             await context.pageBuilder.importExportTask.updateTask(task.id, {
-                status: PageImportExportTaskStatus.PROCESSING,
+                status: ImportExportTaskStatus.PROCESSING,
                 stats: initialStats(pageIds.length),
                 input: {
                     exportPagesDataKey,
@@ -136,6 +136,7 @@ export default new ContextPlugin<PbImportExportContext>(context => {
                 payload: {
                     taskId: task.id,
                     subTaskIndex: 1,
+                    type: "page",
                     identity: context.security.getIdentity()
                 },
                 description: "Export pages - process"

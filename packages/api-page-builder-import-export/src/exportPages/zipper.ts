@@ -15,8 +15,8 @@ interface FileStreamDetails {
 
 interface ExportInfo {
     files: ImageFile[];
-    pageTitle: string;
-    pageDataBuffer: Buffer;
+    name: string;
+    dataBuffer: Buffer;
 }
 
 export interface ZipperConfig {
@@ -34,13 +34,13 @@ export default class Zipper {
         this.config = config;
         this.archiveFileName = uniqueId(
             `${this.config.archiveFileKey}/`,
-            `-${kebabCase(this.config.exportInfo.pageTitle)}.zip`
+            `-${kebabCase(this.config.exportInfo.name)}.zip`
         );
     }
 
     s3DownloadStreams(): FileStreamDetails[] {
         const exportInfo = this.config.exportInfo;
-        const prefix = uniqueId("", `-${kebabCase(exportInfo.pageTitle)}`);
+        const prefix = uniqueId("", `-${kebabCase(exportInfo.name)}`);
         const files = exportInfo.files.map(({ key }) => {
             return {
                 stream: s3Stream.readStream(key),
@@ -51,8 +51,8 @@ export default class Zipper {
         return [
             ...files,
             {
-                stream: Readable.from(exportInfo.pageDataBuffer),
-                filename: `${prefix}\\${exportInfo.pageTitle}.json`
+                stream: Readable.from(exportInfo.dataBuffer),
+                filename: `${prefix}\\${exportInfo.name}.json`
             }
         ];
     }
@@ -90,16 +90,16 @@ export default class Zipper {
     }
 }
 
-const PAGE_EXPORT_BASENAME = `WEBINY_PAGE_EXPORT.zip`;
-
 export class ZipOfZip {
     private readonly archiveFormat = "zip";
     private readonly archiveFileName: string;
     keys: string[];
+    filename: string;
 
-    constructor(keys: string[]) {
+    constructor(keys: string[], filename: string) {
         this.keys = keys;
-        this.archiveFileName = uniqueId("", `-${PAGE_EXPORT_BASENAME}`);
+        this.filename = filename;
+        this.archiveFileName = uniqueId("", `-${filename}`);
     }
 
     getFileStreams(): FileStreamDetails[] {

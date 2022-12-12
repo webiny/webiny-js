@@ -19,16 +19,16 @@ import checkBasePermissions from "@webiny/api-page-builder/graphql/crud/utils/ch
 import checkOwnPermissions from "@webiny/api-page-builder/graphql/crud/utils/checkOwnPermissions";
 import { NotFoundError } from "@webiny/handler-graphql";
 import {
-    PageImportExportPluginsParams,
-    PageImportExportTask,
-    PageImportExportTaskStatus,
-    PageImportExportTaskStorageOperationsListSubTaskParams
+    ImportExportPluginsParams,
+    ImportExportTask,
+    ImportExportTaskStatus,
+    ImportExportTaskStorageOperationsListSubTaskParams
 } from "~/types";
 import { PbImportExportContext } from "~/graphql/types";
 import WebinyError from "@webiny/error";
 import { PageElementStorageOperationsListParams } from "@webiny/api-page-builder/types";
 
-const validStatus = `${PageImportExportTaskStatus.PENDING}:${PageImportExportTaskStatus.PROCESSING}:${PageImportExportTaskStatus.COMPLETED}:${PageImportExportTaskStatus.FAILED}`;
+const validStatus = `${ImportExportTaskStatus.PENDING}:${ImportExportTaskStatus.PROCESSING}:${ImportExportTaskStatus.COMPLETED}:${ImportExportTaskStatus.FAILED}`;
 
 const CreateDataModel = withFields({
     status: string({
@@ -52,13 +52,13 @@ const UpdateDataModel = withFields({
 
 const PERMISSION_NAME = "pb.page";
 
-export default ({ storageOperations }: PageImportExportPluginsParams) =>
+export default ({ storageOperations }: ImportExportPluginsParams) =>
     new ContextPlugin<PbImportExportContext>(async context => {
         /**
          * If pageBuilder is not defined on the context, do not continue, but log it.
          */
         if (!context.pageBuilder) {
-            console.log("Missing pageBuilder on context. Skipping Page ImportExportTasks crud.");
+            console.log("Missing pageBuilder on context. Skipping  ImportExportTasks crud.");
             return;
         }
 
@@ -66,7 +66,7 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
             const locale = context.i18n.getContentLocale();
             if (!locale) {
                 throw new WebinyError(
-                    "Missing content locale in pageImportExportTasks.crud.ts",
+                    "Missing content locale in importExportTasks.crud.ts",
                     "LOCALE_ERROR"
                 );
             }
@@ -92,18 +92,18 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
                     }
                 };
 
-                let pageImportExportTask: PageImportExportTask | null = null;
+                let importExportTask: ImportExportTask | null = null;
 
                 try {
-                    pageImportExportTask = await storageOperations.getTask(params);
+                    importExportTask = await storageOperations.getTask(params);
 
-                    if (!pageImportExportTask) {
+                    if (!importExportTask) {
                         return null;
                     }
                 } catch (ex) {
                     throw new WebinyError(
-                        ex.message || "Could not get pageImportExportTask by id.",
-                        ex.code || "GET_PAGE_IMPORT_EXPORT_TASK_ERROR",
+                        ex.message || "Could not get importExportTask by id.",
+                        ex.code || "GET_IMPORT_EXPORT_TASK_ERROR",
                         {
                             ...(ex.data || {}),
                             params
@@ -111,9 +111,9 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
                     );
                 }
                 const identity = context.security.getIdentity();
-                checkOwnPermissions(identity, permission, pageImportExportTask);
+                checkOwnPermissions(identity, permission, importExportTask);
 
-                return pageImportExportTask;
+                return importExportTask;
             },
 
             async listTasks(params) {
@@ -146,8 +146,8 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
                     return items;
                 } catch (ex) {
                     throw new WebinyError(
-                        ex.message || "Could not list all page elements.",
-                        ex.code || "LIST_PAGE_ELEMENTS_ERROR",
+                        ex.message || "Could not list all importExportTask.",
+                        ex.code || "LIST_ELEMENTS_ERROR",
                         {
                             params
                         }
@@ -164,9 +164,9 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
                 const id: string = mdbid();
                 const identity = context.security.getIdentity();
 
-                const data: PageImportExportTask = await createDataModel.toJSON();
+                const data: ImportExportTask = await createDataModel.toJSON();
 
-                const pageImportExportTask: PageImportExportTask = {
+                const importExportTask: ImportExportTask = {
                     ...data,
                     tenant: context.tenancy.getCurrentTenant().id,
                     locale: getLocale().code,
@@ -182,15 +182,15 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
                 try {
                     return await storageOperations.createTask({
                         input: data,
-                        task: pageImportExportTask
+                        task: importExportTask
                     });
                 } catch (ex) {
                     throw new WebinyError(
-                        ex.message || "Could not create pageImportExportTask.",
-                        ex.code || "CREATE_PAGE_IMPORT_EXPORT_TASK_ERROR",
+                        ex.message || "Could not create importExportTask.",
+                        ex.code || "CREATE_IMPORT_EXPORT_TASK_ERROR",
                         {
                             ...(ex.data || {}),
-                            pageImportExportTask
+                            importExportTask
                         }
                     );
                 }
@@ -202,7 +202,7 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
                 });
                 const original = await context.pageBuilder.importExportTask.getTask(id);
                 if (!original) {
-                    throw new NotFoundError(`PageImportExportTask "${id}" not found.`);
+                    throw new NotFoundError(`ImportExportTask "${id}" not found.`);
                 }
 
                 const identity = context.security.getIdentity();
@@ -213,7 +213,7 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
 
                 const data = await updateDataModel.toJSON({ onlyDirty: true });
 
-                const pageImportExportTask: PageImportExportTask = {
+                const importExportTask: ImportExportTask = {
                     ...original,
                     ...data
                 };
@@ -222,16 +222,16 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
                     return await storageOperations.updateTask({
                         input: data,
                         original,
-                        task: pageImportExportTask
+                        task: importExportTask
                     });
                 } catch (ex) {
                     throw new WebinyError(
-                        ex.message || "Could not update pageImportExportTask.",
-                        ex.code || "UPDATE_PAGE_IMPORT_EXPORT_TASK_ERROR",
+                        ex.message || "Could not update importExportTask.",
+                        ex.code || "UPDATE_IMPORT_EXPORT_TASK_ERROR",
                         {
                             ...(ex.data || {}),
                             original,
-                            pageImportExportTask
+                            importExportTask
                         }
                     );
                 }
@@ -242,25 +242,25 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
                     rwd: "d"
                 });
 
-                const pageImportExportTask = await context.pageBuilder.importExportTask.getTask(id);
-                if (!pageImportExportTask) {
-                    throw new NotFoundError(`PageImportExportTask "${id}" not found.`);
+                const importExportTask = await context.pageBuilder.importExportTask.getTask(id);
+                if (!importExportTask) {
+                    throw new NotFoundError(`ImportExportTask "${id}" not found.`);
                 }
 
                 const identity = context.security.getIdentity();
-                checkOwnPermissions(identity, permission, pageImportExportTask);
+                checkOwnPermissions(identity, permission, importExportTask);
 
                 try {
                     return await storageOperations.deleteTask({
-                        task: pageImportExportTask
+                        task: importExportTask
                     });
                 } catch (ex) {
                     throw new WebinyError(
-                        ex.message || "Could not delete pageImportExportTask.",
-                        ex.code || "DELETE_PAGE_IMPORT_EXPORT_TASK_ERROR",
+                        ex.message || "Could not delete importExportTask.",
+                        ex.code || "DELETE_IMPORT_EXPORT_TASK_ERROR",
                         {
                             ...(ex.data || {}),
-                            pageImportExportTask
+                            importExportTask
                         }
                     );
                 }
@@ -272,7 +272,7 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
                 });
                 const original = await context.pageBuilder.importExportTask.getTask(id);
                 if (!original) {
-                    throw new NotFoundError(`PageImportExportTask "${id}" not found.`);
+                    throw new NotFoundError(`ImportExportTask "${id}" not found.`);
                 }
 
                 const identity = context.security.getIdentity();
@@ -285,8 +285,8 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
                     });
                 } catch (ex) {
                     throw new WebinyError(
-                        ex.message || "Could not update pageImportExportTask.",
-                        ex.code || "UPDATE_PAGE_IMPORT_EXPORT_TASK_ERROR",
+                        ex.message || "Could not update importExportTask.",
+                        ex.code || "UPDATE_IMPORT_EXPORT_TASK_ERROR",
                         {
                             ...(ex.data || {}),
                             original
@@ -305,7 +305,7 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
 
                 const data = await createDataModel.toJSON();
 
-                const pageImportExportSubTask: PageImportExportTask = {
+                const importExportSubTask: ImportExportTask = {
                     ...data,
                     tenant: context.tenancy.getCurrentTenant().id,
                     locale: getLocale().code,
@@ -322,15 +322,15 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
                 try {
                     return await storageOperations.createSubTask({
                         input: data,
-                        subTask: pageImportExportSubTask
+                        subTask: importExportSubTask
                     });
                 } catch (ex) {
                     throw new WebinyError(
-                        ex.message || "Could not create pageImportExportSubTask.",
-                        ex.code || "CREATE_PAGE_IMPORT_EXPORT_TASK_ERROR",
+                        ex.message || "Could not create importExportSubTask.",
+                        ex.code || "CREATE_IMPORT_EXPORT_TASK_ERROR",
                         {
                             ...(ex.data || {}),
-                            pageImportExportSubTask
+                            importExportSubTask
                         }
                     );
                 }
@@ -346,7 +346,7 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
                 );
                 if (!original) {
                     throw new NotFoundError(
-                        `PageImportExportTask parent: "${parent}" and id: "${subTaskId}" not found.`
+                        `ImportExportTask parent: "${parent}" and id: "${subTaskId}" not found.`
                     );
                 }
 
@@ -358,7 +358,7 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
 
                 const data = await updateDataModel.toJSON({ onlyDirty: true });
                 // TODO: Merge recursively
-                const pageImportExportSubTask: PageImportExportTask = {
+                const importExportSubTask: ImportExportTask = {
                     ...original,
                     ...data
                 };
@@ -367,15 +367,15 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
                     return await storageOperations.updateSubTask({
                         input: data,
                         original,
-                        subTask: pageImportExportSubTask
+                        subTask: importExportSubTask
                     });
                 } catch (ex) {
                     throw new WebinyError(
-                        ex.message || "Could not update pageImportExportSubTask.",
-                        ex.code || "UPDATE_PAGE_IMPORT_EXPORT_TASK_ERROR",
+                        ex.message || "Could not update importExportSubTask.",
+                        ex.code || "UPDATE_IMPORT_EXPORT_TASK_ERROR",
                         {
                             ...(ex.data || {}),
-                            pageImportExportSubTask,
+                            importExportSubTask,
                             original
                         }
                     );
@@ -398,17 +398,17 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
                     }
                 };
 
-                let pageImportExportSubTask: PageImportExportTask | null = null;
+                let importExportSubTask: ImportExportTask | null = null;
 
                 try {
-                    pageImportExportSubTask = await storageOperations.getSubTask(params);
-                    if (!pageImportExportSubTask) {
+                    importExportSubTask = await storageOperations.getSubTask(params);
+                    if (!importExportSubTask) {
                         return null;
                     }
                 } catch (ex) {
                     throw new WebinyError(
-                        ex.message || "Could not get pageImportExportSubTask by id.",
-                        ex.code || "GET_PAGE_IMPORT_EXPORT_TASK_ERROR",
+                        ex.message || "Could not get importExportSubTask by id.",
+                        ex.code || "GET_IMPORT_EXPORT_TASK_ERROR",
                         {
                             ...(ex.data || {}),
                             params
@@ -417,9 +417,9 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
                 }
 
                 const identity = context.security.getIdentity();
-                checkOwnPermissions(identity, permission, pageImportExportSubTask);
+                checkOwnPermissions(identity, permission, importExportSubTask);
 
-                return pageImportExportSubTask;
+                return importExportSubTask;
             },
 
             async listSubTasks(parent, status, limit) {
@@ -430,7 +430,7 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
                 const tenant = context.tenancy.getCurrentTenant();
                 const locale = getLocale();
 
-                const listParams: PageImportExportTaskStorageOperationsListSubTaskParams = {
+                const listParams: ImportExportTaskStorageOperationsListSubTaskParams = {
                     where: {
                         tenant: tenant.id,
                         locale: locale.code,
@@ -451,8 +451,8 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
                     return items;
                 } catch (ex) {
                     throw new WebinyError(
-                        ex.message || "Could not list all pageImportExportSubTask.",
-                        ex.code || "LIST_PAGE_IMPORT_EXPORT_TASK_ERROR",
+                        ex.message || "Could not list all importExportSubTask.",
+                        ex.code || "LIST_IMPORT_EXPORT_TASK_ERROR",
                         {
                             params: {
                                 parent,

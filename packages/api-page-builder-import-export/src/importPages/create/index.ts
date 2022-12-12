@@ -1,4 +1,4 @@
-import { PageImportExportTask, PageImportExportTaskStatus, PbImportExportContext } from "~/types";
+import { ImportExportTask, ImportExportTaskStatus, PbImportExportContext } from "~/types";
 import { initialStats, readExtractAndUploadZipFileContents } from "~/importPages/utils";
 import { invokeHandlerClient } from "~/client";
 import { Payload as ProcessPayload } from "../process";
@@ -16,7 +16,7 @@ interface Configuration {
 export interface Payload {
     category: string;
     zipFileUrl: string;
-    task: PageImportExportTask;
+    task: ImportExportTask;
     identity: SecurityIdentity;
 }
 export interface Response {
@@ -56,7 +56,7 @@ export default (configuration: Configuration) => {
                         task.id,
                         zeroPad(i + 1, 5),
                         {
-                            status: PageImportExportTaskStatus.PENDING,
+                            status: ImportExportTaskStatus.PENDING,
                             data: {
                                 pageKey: pagesDirMap.key,
                                 category,
@@ -71,7 +71,7 @@ export default (configuration: Configuration) => {
                 }
                 // Update main task status
                 await pageBuilder.importExportTask.updateTask(task.id, {
-                    status: PageImportExportTaskStatus.PROCESSING,
+                    status: ImportExportTaskStatus.PROCESSING,
                     stats: initialStats(pageImportDataList.length)
                 });
 
@@ -95,7 +95,7 @@ export default (configuration: Configuration) => {
                  */
 
                 await pageBuilder.importExportTask.updateTask(task.id, {
-                    status: PageImportExportTaskStatus.FAILED,
+                    status: ImportExportTaskStatus.FAILED,
                     error: {
                         name: e.name,
                         message: e.message,
