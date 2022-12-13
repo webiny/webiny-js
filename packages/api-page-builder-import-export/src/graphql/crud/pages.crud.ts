@@ -48,6 +48,7 @@ export default new ContextPlugin<PbImportExportContext>(context => {
                     category: categorySlug,
                     zipFileUrl,
                     task,
+                    type: "page",
                     identity: context.security.getIdentity()
                 },
                 description: "Import Pages - create"

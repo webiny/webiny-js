@@ -1,13 +1,10 @@
-import { ImportExportTask, ImportExportTaskStatus, PbImportExportContext } from "~/types";
-import { initialStats, readExtractAndUploadZipFileContents } from "~/importPages/utils";
-import { invokeHandlerClient } from "~/client";
-import { Payload as ProcessPayload } from "../process";
+import { ImportExportTask, PbImportExportContext } from "~/types";
 import { SecurityIdentity } from "@webiny/api-security/types";
-import { mockSecurity } from "~/mockSecurity";
-import { zeroPad } from "@webiny/utils";
 import { createRawEventHandler } from "@webiny/handler-aws";
+import { blocksHandler } from "~/importPages/create/blocksHandler";
+import { pagesHandler } from "~/importPages/create/pagesHandler";
 
-interface Configuration {
+export interface Configuration {
     handlers: {
         process: string;
     };
@@ -17,6 +14,7 @@ export interface Payload {
     category: string;
     zipFileUrl: string;
     task: ImportExportTask;
+    type: string;
     identity: SecurityIdentity;
 }
 export interface Response {
@@ -30,91 +28,11 @@ export interface Response {
 export default (configuration: Configuration) => {
     return createRawEventHandler<Payload, PbImportExportContext, Response>(
         async ({ payload, context }) => {
-            const log = console.log;
-
-            const { pageBuilder } = context;
-            const { task, category, zipFileUrl, identity } = payload;
-            try {
-                log("RUNNING Import Pages Create");
-                if (!zipFileUrl) {
-                    return {
-                        data: null,
-                        error: {
-                            message: `Missing "zipFileUrl"!`
-                        }
-                    };
-                }
-                mockSecurity(identity, context);
-                // Step 1: Read the zip file
-                const pageImportDataList = await readExtractAndUploadZipFileContents(zipFileUrl);
-
-                // For each page create a subtask and invoke the process handler
-                for (let i = 0; i < pageImportDataList.length; i++) {
-                    const pagesDirMap = pageImportDataList[i];
-                    // Create sub task
-                    const subtask = await pageBuilder.importExportTask.createSubTask(
-                        task.id,
-                        zeroPad(i + 1, 5),
-                        {
-                            status: ImportExportTaskStatus.PENDING,
-                            data: {
-                                pageKey: pagesDirMap.key,
-                                category,
-                                zipFileUrl,
-                                input: {
-                                    fileUploadsData: pagesDirMap
-                                }
-                            }
-                        }
-                    );
-                    log(`Added SUB_TASK "${subtask.id}" to queue.`);
-                }
-                // Update main task status
-                await pageBuilder.importExportTask.updateTask(task.id, {
-                    status: ImportExportTaskStatus.PROCESSING,
-                    stats: initialStats(pageImportDataList.length)
-                });
-
-                await invokeHandlerClient<ProcessPayload>({
-                    context,
-                    name: configuration.handlers.process,
-                    payload: {
-                        taskId: task.id,
-                        // Execute "Process" for the first sub task.
-                        subTaskIndex: 1,
-                        identity: context.security.getIdentity()
-                    },
-                    description: "Import pages - process - first"
-                });
-            } catch (e) {
-                log("[IMPORT_PAGES_CREATE] Error => ", e);
-
-                /**
-                 * In case of error, we'll update the task status to "failed",
-                 * so that, client can show notify the user appropriately.
-                 */
-
-                await pageBuilder.importExportTask.updateTask(task.id, {
-                    status: ImportExportTaskStatus.FAILED,
-                    error: {
-                        name: e.name,
-                        message: e.message,
-                        code: e.code || "EXPORT_FAILED"
-                    }
-                });
-
-                return {
-                    data: null,
-                    error: {
-                        message: e.message
-                    }
-                };
+            if (payload.type === "block") {
+                return await blocksHandler(configuration, payload, context);
+            } else {
+                return await pagesHandler(configuration, payload, context);
             }
-
-            return {
-                data: "",
-                error: null
-            };
         }
     );
 };

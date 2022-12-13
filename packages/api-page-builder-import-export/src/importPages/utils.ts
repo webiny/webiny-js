@@ -16,7 +16,7 @@ import { deleteFile } from "@webiny/api-page-builder/graphql/crud/install/utils/
 import { File, ImportExportTaskStatus } from "~/types";
 import { PbImportExportContext } from "~/graphql/types";
 import { s3Stream } from "~/exportPages/s3Stream";
-import { ExportedPageData } from "~/exportPages/utils";
+import { ExportedPageData, ExportedBlockData } from "~/exportPages/utils";
 import { PageSettings } from "@webiny/api-page-builder/types";
 
 interface FileItem extends File {
@@ -31,10 +31,10 @@ interface FileItem extends File {
 const streamPipeline = promisify(pipeline);
 
 const INSTALL_DIR = "/tmp";
-const INSTALL_EXTRACT_DIR = path.join(INSTALL_DIR, "apiPageBuilderImportPage");
+const INSTALL_EXTRACT_DIR = path.join(INSTALL_DIR, "apiPageBuilderImport");
 const FILES_COUNT_IN_EACH_BATCH = 15;
 
-interface UpdateFilesInPageDataParams {
+interface UpdateFilesInDataParams {
     data: Record<string, any>;
     fileIdToKeyMap: Map<string, string>;
     srcPrefix: string;
@@ -78,7 +78,26 @@ function updateImageInPageSettings(
     return newSettings;
 }
 
-function updateFilesInPageData({ data, fileIdToKeyMap, srcPrefix }: UpdateFilesInPageDataParams) {
+interface UpdateBlockPreviewImage {
+    fileIdToKeyMap: Map<string, string>;
+    srcPrefix: string;
+    file: File;
+}
+
+function updateBlockPreviewImage(params: UpdateBlockPreviewImage): File {
+    const { file, fileIdToKeyMap, srcPrefix } = params;
+    const newFile = file;
+
+    const srcPrefixWithoutTrailingSlash = srcPrefix.endsWith("/")
+        ? srcPrefix.slice(0, -1)
+        : srcPrefix;
+
+    newFile.src = `${srcPrefixWithoutTrailingSlash}/${fileIdToKeyMap.get(file.id || "")}`;
+
+    return newFile;
+}
+
+function updateFilesInData({ data, fileIdToKeyMap, srcPrefix }: UpdateFilesInDataParams) {
     // BASE CASE: Termination point
     if (!data || typeof data !== "object") {
         return;
@@ -87,7 +106,7 @@ function updateFilesInPageData({ data, fileIdToKeyMap, srcPrefix }: UpdateFilesI
     if (Array.isArray(data)) {
         for (let i = 0; i < data.length; i++) {
             const element = data[i];
-            updateFilesInPageData({ data: element, fileIdToKeyMap, srcPrefix });
+            updateFilesInData({ data: element, fileIdToKeyMap, srcPrefix });
         }
         return;
     }
@@ -103,24 +122,22 @@ function updateFilesInPageData({ data, fileIdToKeyMap, srcPrefix }: UpdateFilesI
                 value.id
             )}`;
         } else {
-            updateFilesInPageData({ data: value, srcPrefix, fileIdToKeyMap });
+            updateFilesInData({ data: value, srcPrefix, fileIdToKeyMap });
         }
     }
 }
 
-interface UploadPageAssetsParams {
+interface UploadAssetsParams {
     context: PbImportExportContext;
     filesData: FileItem[];
     fileUploadsData: FileUploadsData;
 }
 
-interface UploadPageAssetsReturnType {
+interface UploadAssetsReturnType {
     fileIdToKeyMap: Map<string, string>;
 }
 
-export const uploadPageAssets = async (
-    params: UploadPageAssetsParams
-): Promise<UploadPageAssetsReturnType> => {
+export const uploadAssets = async (params: UploadAssetsParams): Promise<UploadAssetsReturnType> => {
     const { context, filesData, fileUploadsData } = params;
     // Save uploaded file key against static id for later use.
     const fileIdToKeyMap = new Map<string, string>();
@@ -134,7 +151,6 @@ export const uploadPageAssets = async (
             fileIdToKeyMap
         };
     }
-    console.log("INSIDE uploadPageAssets");
 
     // Save files meta data against old key for later use.
     const fileKeyToFileMap = new Map<string, FileItem>();
@@ -240,7 +256,7 @@ export async function importPage({
     // Only update page data if there are files.
     if (files && Array.isArray(files) && files.length > 0) {
         // Upload page assets.
-        const { fileIdToKeyMap } = await uploadPageAssets({
+        const { fileIdToKeyMap } = await uploadAssets({
             context,
             /**
              * TODO @ts-refactor @ashutosh figure out correct types.
@@ -253,7 +269,7 @@ export async function importPage({
         const settings = await context.fileManager.settings.getSettings();
 
         const { srcPrefix = "" } = settings || {};
-        updateFilesInPageData({
+        updateFilesInData({
             data: page.content || {},
             fileIdToKeyMap,
             srcPrefix
@@ -273,6 +289,76 @@ export async function importPage({
     await deleteS3Folder(path.dirname(fileUploadsData.data));
 
     return page;
+}
+
+interface ImportBlockParams {
+    key: string;
+    blockKey: string;
+    context: PbImportExportContext;
+    fileUploadsData: FileUploadsData;
+}
+
+export async function importBlock({
+    blockKey,
+    context,
+    fileUploadsData
+}: ImportBlockParams): Promise<ExportedBlockData["block"]> {
+    const log = console.log;
+
+    // Making Directory for block in which we're going to extract the block data file.
+    const BLOCK_EXTRACT_DIR = path.join(INSTALL_EXTRACT_DIR, blockKey);
+    ensureDirSync(BLOCK_EXTRACT_DIR);
+
+    const blockDataFileKey = dotProp.get(fileUploadsData, `data`);
+    const BLOCK_DATA_FILE_PATH = path.join(BLOCK_EXTRACT_DIR, path.basename(blockDataFileKey));
+
+    log(`Downloading Block data file: ${blockDataFileKey} at "${BLOCK_DATA_FILE_PATH}"`);
+    // Download and save block data file in disk.
+    await new Promise((resolve, reject) => {
+        s3Stream
+            .readStream(blockDataFileKey)
+            .on("error", reject)
+            .pipe(createWriteStream(BLOCK_DATA_FILE_PATH))
+            .on("error", reject)
+            .on("finish", resolve);
+    });
+
+    // Load the block data file from disk.
+    log(`Load file ${blockDataFileKey}`);
+    const { block, files } = await loadJson<ExportedBlockData>(BLOCK_DATA_FILE_PATH);
+
+    // Only update block data if there are files.
+    if (files && Array.isArray(files) && files.length > 0) {
+        // Upload block assets.
+        const { fileIdToKeyMap } = await uploadAssets({
+            context,
+            filesData: files as FileItem[],
+            fileUploadsData
+        });
+
+        const settings = await context.fileManager.settings.getSettings();
+
+        const { srcPrefix = "" } = settings || {};
+        updateFilesInData({
+            data: block.content || {},
+            fileIdToKeyMap,
+            srcPrefix
+        });
+
+        block.preview = updateBlockPreviewImage({
+            file: block.preview || {},
+            fileIdToKeyMap,
+            srcPrefix
+        });
+    }
+
+    log("Removing Directory for block...");
+    await deleteFile(blockKey);
+
+    log(`Remove block contents from S3...`);
+    await deleteS3Folder(path.dirname(fileUploadsData.data));
+
+    return block;
 }
 
 interface UploadFilesFromZipParams {
@@ -329,7 +415,7 @@ function getFileNameWithoutExt(fileName: string): string {
     return path.basename(fileName).replace(path.extname(fileName), "");
 }
 
-interface PageImportData {
+interface ImportData {
     assets: Record<string, string>;
     data: string;
     key: string;
@@ -338,13 +424,13 @@ interface PageImportData {
 /**
  * Function will read the given zip file from S3 via stream, extract its content and upload it to S3 bucket.
  * @param zipFileUrl
- * @return PageImportData S3 file keys for all uploaded assets group by page.
+ * @return ImportData S3 file keys for all uploaded assets group by page/block.
  */
 export async function readExtractAndUploadZipFileContents(
     zipFileUrl: string
-): Promise<PageImportData[]> {
+): Promise<ImportData[]> {
     const log = console.log;
-    const pageImportDataList = [];
+    const importDataList = [];
 
     const zipFileName = path.basename(zipFileUrl).split("?")[0];
 
@@ -355,7 +441,7 @@ export async function readExtractAndUploadZipFileContents(
 
     const readStream = response.body;
 
-    const uniquePath = uniqueId("IMPORT_PAGES/");
+    const uniquePath = uniqueId("IMPORTS/");
     // Read export file and download it in the disk
     const ZIP_FILE_PATH = path.join(INSTALL_DIR, zipFileName);
 
@@ -369,29 +455,29 @@ export async function readExtractAndUploadZipFileContents(
     log(`Removing ZIP file "${zipFileUrl}" from ${ZIP_FILE_PATH}`);
     await deleteFile(ZIP_FILE_PATH);
 
-    // Extract each page zip and upload their content's to S3
+    // Extract each page/block zip and upload their content's to S3
     for (let i = 0; i < zipFilePaths.length; i++) {
         const currentPath = zipFilePaths[i];
         const dataMap = await extractZipAndUploadToS3(currentPath, uniquePath);
-        pageImportDataList.push(dataMap);
+        importDataList.push(dataMap);
     }
     log("Removing all ZIP files located at ", path.dirname(zipFilePaths[0]));
     await deleteFile(path.dirname(zipFilePaths[0]));
 
-    return pageImportDataList;
+    return importDataList;
 }
 
 const ASSETS_DIR_NAME = "/assets";
 
-function preparePageDataDirMap({
+function prepareDataDirMap({
     map,
     filePath,
     newKey
 }: {
-    map: PageImportData;
+    map: ImportData;
     filePath: string;
     newKey: string;
-}): PageImportData {
+}): ImportData {
     const dirname = path.dirname(filePath);
     const fileName = path.basename(filePath);
     /*
@@ -442,7 +528,7 @@ export function initialStats(total: number) {
 
 function extractZipToDisk(exportFileZipPath: string): Promise<string[]> {
     return new Promise((resolve, reject) => {
-        const pageZipFilePaths: string[] = [];
+        const zipFilePaths: string[] = [];
         const uniqueFolderNameForExport = getFileNameWithoutExt(exportFileZipPath);
         const EXPORT_FILE_EXTRACTION_PATH = path.join(INSTALL_DIR, uniqueFolderNameForExport);
         // Make sure DIR exists
@@ -467,7 +553,7 @@ function extractZipToDisk(exportFileZipPath: string): Promise<string[]> {
                     console.warn("ERROR: Failed on END event for file: ", exportFileZipPath, err);
                     reject(err);
                 }
-                resolve(pageZipFilePaths);
+                resolve(zipFilePaths);
             });
 
             zipFile.readEntry();
@@ -502,7 +588,7 @@ function extractZipToDisk(exportFileZipPath: string): Promise<string[]> {
                         const filePath = path.join(EXPORT_FILE_EXTRACTION_PATH, entry.fileName);
 
                         readStream.on("end", function () {
-                            pageZipFilePaths.push(filePath);
+                            zipFilePaths.push(filePath);
                             zipFile.readEntry();
                         });
 
@@ -516,34 +602,31 @@ function extractZipToDisk(exportFileZipPath: string): Promise<string[]> {
     });
 }
 
-function extractZipAndUploadToS3(
-    pageDataZipFilePath: string,
-    uniquePath: string
-): Promise<PageImportData> {
+function extractZipAndUploadToS3(dataZipFilePath: string, uniquePath: string): Promise<ImportData> {
     return new Promise((resolve, reject) => {
         const filePaths = [];
         const fileUploadPromises: Promise<S3.ManagedUpload.SendData>[] = [];
-        const uniquePageKey = getFileNameWithoutExt(pageDataZipFilePath);
-        let dataMap: PageImportData = {
-            key: uniquePageKey,
+        const uniqueKey = getFileNameWithoutExt(dataZipFilePath);
+        let dataMap: ImportData = {
+            key: uniqueKey,
             assets: {},
             data: ""
         };
-        yauzl.open(pageDataZipFilePath, { lazyEntries: true }, function (err, zipFile) {
+        yauzl.open(dataZipFilePath, { lazyEntries: true }, function (err, zipFile) {
             if (err) {
-                console.warn("ERROR: Failed to extract zip: ", pageDataZipFilePath, err);
+                console.warn("ERROR: Failed to extract zip: ", dataZipFilePath, err);
                 reject(err);
                 return;
             }
             if (!zipFile) {
-                console.log("ERROR: Probably failed to extract zip: " + pageDataZipFilePath);
+                console.log("ERROR: Probably failed to extract zip: " + dataZipFilePath);
                 reject("Missing Zip File Resource.");
                 return;
             }
             console.info(`The ZIP file contains ${zipFile.entryCount} entries.`);
             zipFile.on("end", function (err) {
                 if (err) {
-                    console.warn('ERROR: Failed on "END" for file: ', pageDataZipFilePath, err);
+                    console.warn('ERROR: Failed on "END" for file: ', dataZipFilePath, err);
                     reject(err);
                 }
 
@@ -577,7 +660,7 @@ function extractZipAndUploadToS3(
                             return;
                         }
                         if (!readStream) {
-                            console.log("ERROR: Missing Read Stream while importing pages.");
+                            console.log("ERROR: Missing Read Stream while importing.");
                             reject("Missing Read Strea Resource.");
                             return;
                         }
@@ -586,9 +669,9 @@ function extractZipAndUploadToS3(
                             zipFile.readEntry();
                         });
 
-                        const newKey = `${uniquePath}/${uniquePageKey}/${entry.fileName}`;
+                        const newKey = `${uniquePath}/${uniqueKey}/${entry.fileName}`;
                         // Modify in place
-                        dataMap = preparePageDataDirMap({
+                        dataMap = prepareDataDirMap({
                             map: dataMap,
                             filePath: entry.fileName,
                             newKey

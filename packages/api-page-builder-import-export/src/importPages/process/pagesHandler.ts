@@ -1,17 +1,11 @@
 import { ImportExportTaskStatus, PbImportExportContext } from "~/types";
+import { importPage } from "~/importPages/utils";
 import { invokeHandlerClient } from "~/client";
-import { NotFoundError } from "@webiny/handler-graphql";
-import { exportBlock } from "~/exportPages/utils";
-import { Payload as ExtractPayload } from "../combine";
 import { mockSecurity } from "~/mockSecurity";
-import { SecurityIdentity } from "@webiny/api-security/types";
 import { zeroPad } from "@webiny/utils";
-import { Configuration, Payload, Response } from "~/exportPages/process";
+import { Configuration, Payload, Response } from "~/importPages/process";
 
-/**
- * Handles the export blocks process workflow.
- */
-export const blocksHandler = async (
+export const pagesHandler = async (
     configuration: Configuration,
     payload: Payload,
     context: PbImportExportContext
@@ -21,18 +15,21 @@ export const blocksHandler = async (
     let noPendingTask = true;
     let prevStatusOfSubTask = ImportExportTaskStatus.PENDING;
 
-    log("RUNNING Export Blocks Process Handler");
-    const { pageBuilder, fileManager } = context;
+    log("RUNNING Import Page Queue Process");
+    const { pageBuilder } = context;
     const { taskId, subTaskIndex, type, identity } = payload;
     // Disable authorization; this is necessary because we call Page Builder CRUD methods which include authorization checks
     // and this Lambda is invoked internally, without credentials.
-    mockSecurity(identity as SecurityIdentity, context);
+    mockSecurity(identity, context);
+
     try {
         /*
-         * Note: We're not going to DB for finding the next sub-task to process,
+         * Note: We're not going to DB for getting next sub-task to process,
          * because the data might be out of sync due to GSI eventual consistency.
          */
+
         subTask = await pageBuilder.importExportTask.getSubTask(taskId, zeroPad(subTaskIndex, 5));
+
         /**
          * Base condition!!
          * Bail out early, if task not found or task's status is not "pending".
@@ -46,20 +43,14 @@ export const blocksHandler = async (
         } else {
             noPendingTask = false;
         }
+        prevStatusOfSubTask = subTask.status;
 
         log(`Fetched sub task => ${subTask.id}`);
 
-        const { input } = subTask;
-        const { blockId, exportBlocksDataKey } = input;
+        const { pageKey, category, zipFileKey, input } = subTask.data;
+        const { fileUploadsData } = input;
 
-        const block = await pageBuilder.getPageBlock(blockId);
-
-        if (!block) {
-            log(`Unable to load block "${blockId}"`);
-            throw new NotFoundError(`Unable to load block "${blockId}"`);
-        }
-
-        log(`Processing block key "${blockId}"`);
+        log(`Processing page key "${pageKey}"`);
 
         // Mark task status as PROCESSING
         subTask = await pageBuilder.importExportTask.updateSubTask(taskId, subTask.id, {
@@ -72,16 +63,38 @@ export const blocksHandler = async (
         });
         prevStatusOfSubTask = subTask.status;
 
-        log(`Extracting block data and uploading to storage...`);
-        // Extract Block
-        const blockDataZip = await exportBlock(block, exportBlocksDataKey, fileManager);
-        log(`Finish uploading zip...`);
+        // Real job
+        const page = await importPage({
+            context,
+            pageKey,
+            key: zipFileKey,
+            fileUploadsData
+        });
+
+        // Create a page
+        let pbPage = await context.pageBuilder.createPage(category);
+
+        // Update page with data
+        pbPage = await context.pageBuilder.updatePage(pbPage.id, {
+            content: page.content,
+            title: page.title,
+            path: page.path,
+            settings: page.settings
+        });
+
+        // TODO: Publish page
+
         // Update task record in DB
         subTask = await pageBuilder.importExportTask.updateSubTask(taskId, subTask.id, {
             status: ImportExportTaskStatus.COMPLETED,
             data: {
-                message: `Finish uploading data for block "${block.id}"`,
-                key: blockDataZip.Key
+                message: "Done",
+                page: {
+                    id: pbPage.id,
+                    title: pbPage.title,
+                    version: pbPage.version,
+                    status: pbPage.status
+                }
             }
         });
         // Update stats in main task
@@ -91,7 +104,7 @@ export const blocksHandler = async (
         });
         prevStatusOfSubTask = subTask.status;
     } catch (e) {
-        log("[EXPORT_BLOCKS_PROCESS] Error => ", e.message);
+        log("[IMPORT_PAGES_PROCESS] Error => ", e);
 
         if (subTask && subTask.id) {
             /**
@@ -103,7 +116,8 @@ export const blocksHandler = async (
                 error: {
                     name: e.name,
                     message: e.message,
-                    code: "EXPORT_FAILED"
+                    stack: e.stack,
+                    code: "IMPORT_FAILED"
                 }
             });
 
@@ -125,20 +139,16 @@ export const blocksHandler = async (
         // Base condition!
         if (noPendingTask) {
             log(`No pending sub-task for task ${taskId}`);
-            // Combine individual block zip files.
-            await invokeHandlerClient<ExtractPayload>({
-                context,
-                name: configuration.handlers.combine,
-                payload: {
-                    taskId,
-                    type,
-                    identity: context.security.getIdentity()
-                },
-                description: "Export blocks - combine"
+
+            await pageBuilder.importExportTask.updateTask(taskId, {
+                status: ImportExportTaskStatus.COMPLETED,
+                data: {
+                    message: `Finish importing pages.`
+                }
             });
         } else {
-            console.log(`Invoking PROCESS for task "${subTaskIndex + 1}"`);
-            // We want to continue with Self invocation no matter if current block error out.
+            log(`Invoking PROCESS for task "${subTaskIndex + 1}"`);
+            // We want to continue with Self invocation no matter if current page error out.
             await invokeHandlerClient<Payload>({
                 context,
                 name: configuration.handlers.process,
@@ -148,7 +158,7 @@ export const blocksHandler = async (
                     type,
                     identity: context.security.getIdentity()
                 },
-                description: "Export blocks - process - subtask"
+                description: "Import pages - process - subtask"
             });
         }
     }

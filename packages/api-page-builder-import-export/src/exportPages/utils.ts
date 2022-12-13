@@ -86,12 +86,17 @@ export interface ExportedBlockData {
 
 export async function exportBlock(
     block: PageBlock,
-    exportBlocksDataKey: string
+    exportBlocksDataKey: string,
+    fileManager: FileManagerContext["fileManager"]
 ): Promise<S3.ManagedUpload.SendData> {
     // Extract all files
     const files = extractFilesFromData(block.content || {});
     // Filter files
     const filesAvailableForDownload = await getFilteredFiles(files);
+    // Get file data for preview image
+    if (block.preview.id) {
+        filesAvailableForDownload.push(await fileManager.files.getFile(block.preview.id));
+    }
 
     // Extract the block data in a json file and upload it to S3
     const blockData = {

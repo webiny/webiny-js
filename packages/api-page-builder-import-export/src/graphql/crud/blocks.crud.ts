@@ -47,6 +47,7 @@ export default new ContextPlugin<PbImportExportContext>(context => {
                     category: categorySlug,
                     zipFileUrl,
                     task,
+                    type: "block",
                     identity: context.security.getIdentity()
                 },
                 description: "Import Blocks - create"
