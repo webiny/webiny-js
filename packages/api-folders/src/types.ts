@@ -150,6 +150,32 @@ export type StorageOperationsCreateLinkParams = CreateLinkParams;
 export type StorageOperationsUpdateLinkParams = UpdateLinkParams;
 export type StorageOperationsDeleteLinkParams = DeleteLinkParams;
 
+export interface OnLinkBeforeCreateTopicParams {
+    link: Link;
+}
+
+export interface OnLinkAfterCreateTopicParams {
+    link: Link;
+}
+
+export interface OnLinkBeforeUpdateTopicParams {
+    link: Link;
+    original: Link;
+}
+
+export interface OnLinkAfterUpdateTopicParams {
+    link: Link;
+    original: Link;
+}
+
+export interface OnLinkBeforeDeleteTopicParams {
+    link: Link;
+}
+
+export interface OnLinkAfterDeleteTopicParams {
+    link: Link;
+}
+
 export interface FoldersContext extends BaseContext, I18NContext, TenancyContext, SecurityContext {
     folders: Folders;
 }
@@ -176,6 +202,12 @@ export interface ILinks {
     createLink(input: LinkInput): Promise<Link>;
     updateLink(id: string, input: Partial<Link>): Promise<Link>;
     deleteLink(id: string): Promise<void>;
+    onLinkBeforeCreate: Topic<OnLinkBeforeCreateTopicParams>;
+    onLinkAfterCreate: Topic<OnLinkAfterCreateTopicParams>;
+    onLinkBeforeUpdate: Topic<OnLinkBeforeUpdateTopicParams>;
+    onLinkAfterUpdate: Topic<OnLinkAfterUpdateTopicParams>;
+    onLinkBeforeDelete: Topic<OnLinkBeforeDeleteTopicParams>;
+    onLinkAfterDelete: Topic<OnLinkAfterDeleteTopicParams>;
 }
 
 export interface FoldersConfig {
