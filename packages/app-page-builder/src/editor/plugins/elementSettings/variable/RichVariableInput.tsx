@@ -114,6 +114,7 @@ const RichVariableInput: React.FC<RichVariableInputProps> = ({ variableId }) => 
                             onChange={onChange}
                             onSelect={onChange}
                             options={DEFAULT_EDITOR_OPTIONS}
+                            forceFocus={isOpen}
                         />
                     </ModalEditorWrapper>
                 </DialogContent>
