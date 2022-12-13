@@ -7,5 +7,5 @@ interface HeadingToolbarProps {
 }
 
 export const HeadingToolbar: FC<HeadingToolbarProps> = ({ anchorElem = document.body }) => {
-    return <Toolbar type={"heading"} anchorElem={anchorElem} />
+    return <Toolbar type={"heading"} anchorElem={anchorElem} />;
 };

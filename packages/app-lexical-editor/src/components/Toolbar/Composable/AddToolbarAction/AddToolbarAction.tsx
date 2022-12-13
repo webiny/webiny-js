@@ -8,25 +8,26 @@ interface AddToolbarActionProps {
 }
 
 export const AddToolbarAction: FC<AddToolbarActionProps> = ({ element, type: targetType }) => {
-    const ToolbarPlugin = React.memo(createComponentPlugin(Toolbar, Original => {
-        return function Toolbar({ type, children, anchorElem }): JSX.Element {
-            if (!targetType || targetType === type) {
+    const ToolbarPlugin = React.memo(
+        createComponentPlugin(Toolbar, Original => {
+            return function Toolbar({ type, children, anchorElem }): JSX.Element {
+                if (!targetType || targetType === type) {
+                    return (
+                        <Original type={type} anchorElem={anchorElem}>
+                            {element}
+                            {children}
+                        </Original>
+                    );
+                }
+
                 return (
-                    <Original type={type} anchorElem={anchorElem}>
-                        {element}
+                    <Original anchorElem={anchorElem} type={type}>
                         {children}
                     </Original>
                 );
-            }
-
-            return (
-                <Original anchorElem={anchorElem} type={type}>
-                    {children}
-                </Original>
-            );
-        };
-    }));
+            };
+        })
+    );
 
     return <ToolbarPlugin />;
 };
-

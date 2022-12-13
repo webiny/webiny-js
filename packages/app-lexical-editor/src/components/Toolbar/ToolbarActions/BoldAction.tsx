@@ -11,7 +11,7 @@ export const BoldAction = () => {
     const handleClick = () => {
         editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold");
         setIsBold(!isBold);
-    }
+    };
 
     return (
         <button

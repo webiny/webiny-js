@@ -1,7 +1,7 @@
 // @ts-ignore
 
 import { makeComposable } from "@webiny/react-composition";
-import React, {FC, useCallback, useEffect, useRef, useState} from "react";
+import React, { FC, useCallback, useEffect, useRef, useState } from "react";
 import { ToolbarType } from "~/types";
 import {
     $getSelection,
@@ -14,11 +14,10 @@ import {
 import { getDOMRangeRect } from "~/utils/getDOMRangeRect";
 import { setFloatingElemPosition } from "~/utils/setFloatingElemPosition";
 import { mergeRegister } from "@lexical/utils";
-import {useLexicalComposerContext} from "@lexical/react/LexicalComposerContext";
-import {getSelectedNode} from "~/utils/getSelectedNode";
-import {$isCodeHighlightNode} from "@lexical/code";
-import {createPortal} from "react-dom";
-
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { getSelectedNode } from "~/utils/getSelectedNode";
+import { $isCodeHighlightNode } from "@lexical/code";
+import { createPortal } from "react-dom";
 
 interface FloatingToolbarProps {
     type: ToolbarType;
@@ -28,76 +27,75 @@ interface FloatingToolbarProps {
 }
 
 const FloatingToolbar: FC<FloatingToolbarProps> = ({ children, anchorElem, editor }) => {
-
     const popupCharStylesEditorRef = useRef<HTMLDivElement | null>(null);
 
     const updateTextFormatFloatingToolbar = useCallback(() => {
         const selection = $getSelection();
-    
+
         const popupCharStylesEditorElem = popupCharStylesEditorRef.current;
         const nativeSelection = window.getSelection();
-    
+
         if (popupCharStylesEditorElem === null) {
-          return;
+            return;
         }
-    
+
         const rootElement = editor.getRootElement();
         if (
-          selection !== null &&
-          nativeSelection !== null &&
-          !nativeSelection.isCollapsed &&
-          rootElement !== null &&
-          rootElement.contains(nativeSelection.anchorNode)
+            selection !== null &&
+            nativeSelection !== null &&
+            !nativeSelection.isCollapsed &&
+            rootElement !== null &&
+            rootElement.contains(nativeSelection.anchorNode)
         ) {
-          const rangeRect = getDOMRangeRect(nativeSelection, rootElement);
-    
-          setFloatingElemPosition(rangeRect, popupCharStylesEditorElem, anchorElem);
+            const rangeRect = getDOMRangeRect(nativeSelection, rootElement);
+
+            setFloatingElemPosition(rangeRect, popupCharStylesEditorElem, anchorElem);
         }
-      }, [editor, anchorElem]);
-    
-      useEffect(() => {
+    }, [editor, anchorElem]);
+
+    useEffect(() => {
         const scrollerElem = anchorElem.parentElement;
-    
+
         const update = () => {
-          editor.getEditorState().read(() => {
-            updateTextFormatFloatingToolbar();
-          });
+            editor.getEditorState().read(() => {
+                updateTextFormatFloatingToolbar();
+            });
         };
-    
-        window.addEventListener('resize', update);
+
+        window.addEventListener("resize", update);
         if (scrollerElem) {
-          scrollerElem.addEventListener('scroll', update);
+            scrollerElem.addEventListener("scroll", update);
         }
-    
+
         return () => {
-          window.removeEventListener('resize', update);
-          if (scrollerElem) {
-            scrollerElem.removeEventListener('scroll', update);
-          }
+            window.removeEventListener("resize", update);
+            if (scrollerElem) {
+                scrollerElem.removeEventListener("scroll", update);
+            }
         };
-      }, [editor, updateTextFormatFloatingToolbar, anchorElem]);
-    
-      useEffect(() => {
+    }, [editor, updateTextFormatFloatingToolbar, anchorElem]);
+
+    useEffect(() => {
         editor.getEditorState().read(() => {
-          updateTextFormatFloatingToolbar();
+            updateTextFormatFloatingToolbar();
         });
         return mergeRegister(
-          editor.registerUpdateListener(({editorState}) => {
-            editorState.read(() => {
-              updateTextFormatFloatingToolbar();
-            });
-          }),
-    
-          editor.registerCommand(
-            SELECTION_CHANGE_COMMAND,
-            () => {
-              updateTextFormatFloatingToolbar();
-              return false;
-            },
-            COMMAND_PRIORITY_LOW,
-          ),
+            editor.registerUpdateListener(({ editorState }) => {
+                editorState.read(() => {
+                    updateTextFormatFloatingToolbar();
+                });
+            }),
+
+            editor.registerCommand(
+                SELECTION_CHANGE_COMMAND,
+                () => {
+                    updateTextFormatFloatingToolbar();
+                    return false;
+                },
+                COMMAND_PRIORITY_LOW
+            )
         );
-      }, [editor, updateTextFormatFloatingToolbar]);
+    }, [editor, updateTextFormatFloatingToolbar]);
 
     return (
         <div ref={popupCharStylesEditorRef} className="floating-text-format-popup">
@@ -114,10 +112,11 @@ interface useToolbarProps {
 }
 
 const useToolbar: FC<useToolbarProps> = ({
-                                             editor,
-                                             anchorElem = document.body,
-                                             type,
-                                             children }): JSX.Element | null => {
+    editor,
+    anchorElem = document.body,
+    type,
+    children
+}): JSX.Element | null => {
     const [isText, setIsText] = useState(false);
 
     const updatePopup = useCallback(() => {
@@ -147,7 +146,7 @@ const useToolbar: FC<useToolbarProps> = ({
             const node = getSelectedNode(selection);
             if (
                 !$isCodeHighlightNode(selection.anchor.getNode()) &&
-                selection.getTextContent() !== ''
+                selection.getTextContent() !== ""
             ) {
                 setIsText($isTextNode(node));
             } else {
@@ -157,9 +156,9 @@ const useToolbar: FC<useToolbarProps> = ({
     }, [editor]);
 
     useEffect(() => {
-        document.addEventListener('selectionchange', updatePopup);
+        document.addEventListener("selectionchange", updatePopup);
         return () => {
-            document.removeEventListener('selectionchange', updatePopup);
+            document.removeEventListener("selectionchange", updatePopup);
         };
     }, [updatePopup]);
 
@@ -172,7 +171,7 @@ const useToolbar: FC<useToolbarProps> = ({
                 if (editor.getRootElement() === null) {
                     setIsText(false);
                 }
-            }),
+            })
         );
     }, [editor, updatePopup]);
 
@@ -181,12 +180,11 @@ const useToolbar: FC<useToolbarProps> = ({
     }
 
     return createPortal(
-        <FloatingToolbar type={type}
-                         anchorElem={anchorElem}
-                         editor={editor}>
+        <FloatingToolbar type={type} anchorElem={anchorElem} editor={editor}>
             {children}
         </FloatingToolbar>,
-        anchorElem);
+        anchorElem
+    );
 };
 
 interface ToolbarProps {
@@ -194,11 +192,10 @@ interface ToolbarProps {
     anchorElem: HTMLElement;
     children?: React.ReactNode;
 }
-export const Toolbar = makeComposable<ToolbarProps>("Toolbar", ({
-    anchorElem,
-    type,
-    children
-}): JSX.Element | null => {
-    const [editor] = useLexicalComposerContext();
-    return useToolbar({editor, anchorElem, type, children });
-});
+export const Toolbar = makeComposable<ToolbarProps>(
+    "Toolbar",
+    ({ anchorElem, type, children }): JSX.Element | null => {
+        const [editor] = useLexicalComposerContext();
+        return useToolbar({ editor, anchorElem, type, children });
+    }
+);

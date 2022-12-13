@@ -67,14 +67,18 @@ const PbText: React.FC<TextElementProps> = ({ elementId, mediumEditorOptions, ro
             className={classNames(textClassName, rootClassName, typography)}
         >
             <HeadingLexicalInput />
-           {"do not show medium editor" === elementId ? <ReactMediumEditor
-               elementId={elementId}
-               tag={tag}
-               value={textContent}
-               onChange={onChange}
-               options={mediumEditorOptions}
-               onSelect={onSelect}
-           /> : <></>}
+            {"do not show medium editor" === elementId ? (
+                <ReactMediumEditor
+                    elementId={elementId}
+                    tag={tag}
+                    value={textContent}
+                    onChange={onChange}
+                    options={mediumEditorOptions}
+                    onSelect={onSelect}
+                />
+            ) : (
+                <></>
+            )}
         </ElementRoot>
     );
 };
