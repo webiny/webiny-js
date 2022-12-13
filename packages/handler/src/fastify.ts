@@ -9,7 +9,8 @@ import { Context } from "~/Context";
 import WebinyError from "@webiny/error";
 import { RoutePlugin } from "./plugins/RoutePlugin";
 import { createHandlerClient } from "@webiny/handler-client";
-import fastifyCookies from "@fastify/cookie";
+import fastifyCookie from "@fastify/cookie";
+import fastifyCompress from "@fastify/compress";
 import { middleware } from "~/middleware";
 import { ContextPlugin } from "@webiny/api";
 import { BeforeHandlerPlugin } from "./plugins/BeforeHandlerPlugin";
@@ -147,10 +148,30 @@ export const createHandler = (params: CreateHandlerParams) => {
         addDefinedRoute(method, route.path);
     });
     /**
-     *
+     * ############################
+     * Register the Fastify plugins.
      */
-    app.register(fastifyCookies, {
+    /**
+     * Package @fastify/cookie
+     *
+     * https://github.com/fastify/fastify-cookie
+     */
+    app.register(fastifyCookie, {
         parseOptions: {} // options for parsing cookies
+    });
+    /**
+     * Package @fastify/compress
+     *
+     * https://github.com/fastify/fastify-compress
+     */
+    app.register(fastifyCompress, {
+        global: true,
+        threshold: 1024,
+        onUnsupportedEncoding: (encoding, _, reply) => {
+            reply.code(406);
+            return `We do not support the ${encoding} encoding.`;
+        },
+        inflateIfDeflated: true
     });
     /**
      * Route helpers - mostly for users.
