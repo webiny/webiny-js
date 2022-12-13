@@ -8,8 +8,8 @@ interface AddToolbarActionProps {
 }
 
 export const AddToolbarAction: FC<AddToolbarActionProps> = ({ element, type: targetType }) => {
-    const ToolbarPlugin = createComponentPlugin(Toolbar, Original => {
-        return function Toolbar({ type, children, anchorElem }) {
+    const ToolbarPlugin = React.memo(createComponentPlugin(Toolbar, Original => {
+        return function Toolbar({ type, children, anchorElem }): JSX.Element {
             if (!targetType || targetType === type) {
                 return (
                     <Original type={type} anchorElem={anchorElem}>
@@ -25,9 +25,8 @@ export const AddToolbarAction: FC<AddToolbarActionProps> = ({ element, type: tar
                 </Original>
             );
         };
-    });
+    }));
 
     return <ToolbarPlugin />;
 };
 
-// <AddToolbarAction type={"heading"} element={<BoldAction/>}/>

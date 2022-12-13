@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { createPortal } from "react-dom";
+
 import { Toolbar } from "~/components/Toolbar/Toolbar";
 
 interface HeadingToolbarProps {
@@ -7,5 +7,5 @@ interface HeadingToolbarProps {
 }
 
 export const HeadingToolbar: FC<HeadingToolbarProps> = ({ anchorElem = document.body }) => {
-    return createPortal(<Toolbar type={"heading"} anchorElem={anchorElem} />, anchorElem);
+    return <Toolbar type={"heading"} anchorElem={anchorElem} />
 };
