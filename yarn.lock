@@ -4084,6 +4084,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@fastify/accept-negotiator@npm:^1.0.0":
+  version: 1.1.0
+  resolution: "@fastify/accept-negotiator@npm:1.1.0"
+  checksum: 5c8f263680af0aece8c1fdea4d4c094a7f82cc5ed90b709357eb52a01e3388d1ac74a17e5a1d5d53f2d3ca93ae50d283ee451a6435b2cbe1b9847fff4d7d0732
+  languageName: node
+  linkType: hard
+
 "@fastify/ajv-compiler@npm:^3.3.1":
   version: 3.3.1
   resolution: "@fastify/ajv-compiler@npm:3.3.1"
@@ -4099,6 +4106,22 @@ __metadata:
   version: 3.1.3
   resolution: "@fastify/aws-lambda@npm:3.1.3"
   checksum: cd41d7ec0e4e28d6771219b29a7541489dfcda7a39edb4299b89f041ddb7e5cb2a731bc5e88516abf46ff54be2e6ee2bfc8524865c6b206200a5ff8076520fd9
+  languageName: node
+  linkType: hard
+
+"@fastify/compress@npm:^6.2.0":
+  version: 6.2.0
+  resolution: "@fastify/compress@npm:6.2.0"
+  dependencies:
+    "@fastify/accept-negotiator": ^1.0.0
+    fastify-plugin: ^4.0.0
+    into-stream: ^6.0.0
+    mime-db: ^1.51.0
+    minipass: ^3.1.6
+    peek-stream: ^1.1.3
+    pump: ^3.0.0
+    pumpify: ^2.0.1
+  checksum: adc142ffc30df6bbe18106bda64bdff7d2b0668f398ced087e3b21c00c342efa192e87a06c6413ba9518eb1eeb5c24c6b21a994a44eea356622b83d1fa4c1fd9
   languageName: node
   linkType: hard
 
@@ -13510,6 +13533,7 @@ __metadata:
     "@babel/preset-env": ^7.19.4
     "@babel/preset-typescript": ^7.18.6
     "@babel/runtime": ^7.19.0
+    "@fastify/compress": ^6.2.0
     "@fastify/cookie": ^8.3.0
     "@webiny/api": ^5.33.2
     "@webiny/cli": ^5.33.2
@@ -13519,7 +13543,7 @@ __metadata:
     "@webiny/project-utils": ^5.33.2
     "@webiny/utils": ^5.33.2
     babel-plugin-lodash: ^3.3.4
-    fastify: ^4.7.0
+    fastify: 4.9.2
     merge: ^1.2.1
     rimraf: ^3.0.2
     ttypescript: ^1.5.13
@@ -14116,25 +14140,6 @@ __metadata:
     node-fetch: ^2.6.1
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
-    typescript: 4.7.4
-  languageName: unknown
-  linkType: soft
-
-"@webiny/where-parser@workspace:packages/where-parser":
-  version: 0.0.0-use.local
-  resolution: "@webiny/where-parser@workspace:packages/where-parser"
-  dependencies:
-    "@babel/cli": ^7.19.3
-    "@babel/core": ^7.19.3
-    "@babel/preset-env": ^7.19.4
-    "@babel/runtime": ^7.19.0
-    "@webiny/cli": ^5.33.2
-    "@webiny/error": ^5.33.2
-    "@webiny/project-utils": ^5.33.2
-    jest: ^28.1.0
-    prettier: ^2.3.2
-    rimraf: ^3.0.2
-    sinon: ^9.0.2
     typescript: 4.7.4
   languageName: unknown
   linkType: soft
@@ -20956,7 +20961,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"duplexify@npm:^3.4.2, duplexify@npm:^3.6.0":
+"duplexify@npm:^3.4.2, duplexify@npm:^3.5.0, duplexify@npm:^3.6.0":
   version: 3.7.1
   resolution: "duplexify@npm:3.7.1"
   dependencies:
@@ -20965,6 +20970,18 @@ __metadata:
     readable-stream: ^2.0.0
     stream-shift: ^1.0.0
   checksum: 3c2ed2223d956a5da713dae12ba8295acb61d9acd966ccbba938090d04f4574ca4dca75cca089b5077c2d7e66101f32e6ea9b36a78ca213eff574e7a8b8accf2
+  languageName: node
+  linkType: hard
+
+"duplexify@npm:^4.1.1":
+  version: 4.1.2
+  resolution: "duplexify@npm:4.1.2"
+  dependencies:
+    end-of-stream: ^1.4.1
+    inherits: ^2.0.3
+    readable-stream: ^3.1.1
+    stream-shift: ^1.0.0
+  checksum: 964376c61c0e92f6ed0694b3ba97c84f199413dc40ab8dfdaef80b7a7f4982fcabf796214e28ed614a5bc1ec45488a29b81e7d46fa3f5ddf65bcb118c20145ad
   languageName: node
   linkType: hard
 
@@ -22651,7 +22668,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fastify@npm:^4.7.0":
+"fastify@npm:4.9.2, fastify@npm:^4.7.0":
   version: 4.9.2
   resolution: "fastify@npm:4.9.2"
   dependencies:
@@ -25703,6 +25720,16 @@ __metadata:
     from2: ^2.3.0
     p-is-promise: ^3.0.0
   checksum: 0083447be98b44a19e1456b485ab45fb45759f6bbf6511f9650cb058891da2d7dcd4c624e7b3a5559c6d069fb6bbf8038ef9f3cd9974e8f30f29734ea44a2b2d
+  languageName: node
+  linkType: hard
+
+"into-stream@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "into-stream@npm:6.0.0"
+  dependencies:
+    from2: ^2.3.0
+    p-is-promise: ^3.0.0
+  checksum: 8df24c9eadd7cdd1cbc160bc20914b961dfd0ca29767785b69e698f799e85466b6f7c637d237dca1472d09d333399f70cc05a2fb8d08cb449dc9a80d92193980
   languageName: node
   linkType: hard
 
@@ -29565,7 +29592,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mime-db@npm:1.52.0, mime-db@npm:>= 1.43.0 < 2":
+"mime-db@npm:1.52.0, mime-db@npm:>= 1.43.0 < 2, mime-db@npm:^1.51.0":
   version: 1.52.0
   resolution: "mime-db@npm:1.52.0"
   checksum: 0d99a03585f8b39d68182803b12ac601d9c01abfa28ec56204fa330bc9f3d1c5e14beb049bafadb3dbdf646dfb94b87e24d4ec7b31b7279ef906a8ea9b6a513f
@@ -31891,6 +31918,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"peek-stream@npm:^1.1.3":
+  version: 1.1.3
+  resolution: "peek-stream@npm:1.1.3"
+  dependencies:
+    buffer-from: ^1.0.0
+    duplexify: ^3.5.0
+    through2: ^2.0.3
+  checksum: a0e09d6d1a8a01158a3334f20d6b1cdd91747eba24eb06a1d742eefb620385593121a76d4378cc81f77cdce6a66df0575a41041b1189c510254aec91878afc99
+  languageName: node
+  linkType: hard
+
 "pend@npm:~1.2.0":
   version: 1.2.0
   resolution: "pend@npm:1.2.0"
@@ -33630,6 +33668,17 @@ __metadata:
     inherits: ^2.0.3
     pump: ^2.0.0
   checksum: 26ca412ec8d665bd0d5e185c1b8f627728eff603440d75d22a58e421e3c66eaf86ec6fc6a6efc54808ecef65979279fa8e99b109a23ec1fa8d79f37e6978c9bd
+  languageName: node
+  linkType: hard
+
+"pumpify@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "pumpify@npm:2.0.1"
+  dependencies:
+    duplexify: ^4.1.1
+    inherits: ^2.0.3
+    pump: ^3.0.0
+  checksum: cfc96f5307ee828ef8e6eca9fe9e1ae1de0a23ca55688bfe71ea376bc126418073dab870f02b433617f421c4545726b39e31295fce9a99b78bda5f0e527a7c11
   languageName: node
   linkType: hard
 
@@ -38384,7 +38433,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"through2@npm:^2.0.0, through2@npm:^2.0.2":
+"through2@npm:^2.0.0, through2@npm:^2.0.2, through2@npm:^2.0.3":
   version: 2.0.5
   resolution: "through2@npm:2.0.5"
   dependencies:
