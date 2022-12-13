@@ -582,7 +582,11 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
          * }
          * ```
          */
-        createListFilters?(params: { model: CmsModel; field: CmsModelField }): string;
+        createListFilters?(params: {
+            model: CmsModel;
+            field: CmsModelField;
+            plugins: CmsFieldTypePlugins;
+        }): string;
         /**
          * Definition of the field type for GraphQL - be aware if multiple values is selected.
          *
@@ -656,7 +660,11 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
          * }
          * ```
          */
-        createListFilters?: (params: { model: CmsModel; field: CmsModelField }) => string;
+        createListFilters?: (params: {
+            model: CmsModel;
+            field: CmsModelField;
+            plugins: CmsFieldTypePlugins;
+        }) => string;
         /**
          * Manage API schema definitions for the field and resolvers for them. Probably similar to `read.createSchema`.
          *
