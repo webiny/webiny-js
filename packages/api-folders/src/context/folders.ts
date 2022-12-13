@@ -5,6 +5,7 @@
 import mdbid from "mdbid";
 import WebinyError from "@webiny/error";
 import { NotFoundError } from "@webiny/handler-graphql";
+import { createTopic } from "@webiny/pubsub";
 import joi from "joi";
 
 import {
@@ -13,7 +14,13 @@ import {
     FoldersConfig,
     GetFolderParams,
     IFolders,
-    ListFoldersParams
+    ListFoldersParams,
+    OnFolderAfterCreateTopicParams,
+    OnFolderAfterDeleteTopicParams,
+    OnFolderAfterUpdateTopicParams,
+    OnFolderBeforeCreateTopicParams,
+    OnFolderBeforeDeleteTopicParams,
+    OnFolderBeforeUpdateTopicParams
 } from "~/types";
 
 const requiredString = joi.string().required();
@@ -37,7 +44,35 @@ export const createFoldersContext = async ({
     getIdentity,
     storageOperations
 }: FoldersConfig): Promise<IFolders> => {
+    // create
+    const onFolderBeforeCreate = createTopic<OnFolderBeforeCreateTopicParams>(
+        "folders.onFolderBeforeCreate"
+    );
+    const onFolderAfterCreate = createTopic<OnFolderAfterCreateTopicParams>(
+        "folders.onFolderAfterCreate"
+    );
+    // update
+    const onFolderBeforeUpdate = createTopic<OnFolderBeforeUpdateTopicParams>(
+        "folders.onFolderBeforeUpdate"
+    );
+    const onFolderAfterUpdate = createTopic<OnFolderAfterUpdateTopicParams>(
+        "folders.onFolderAfterUpdate"
+    );
+    // delete
+    const onFolderBeforeDelete = createTopic<OnFolderBeforeDeleteTopicParams>(
+        "folders.onFolderBeforeDelete"
+    );
+    const onFolderAfterDelete = createTopic<OnFolderAfterDeleteTopicParams>(
+        "folders.onFolderAfterDelete"
+    );
+
     return {
+        onFolderBeforeCreate,
+        onFolderAfterCreate,
+        onFolderBeforeUpdate,
+        onFolderAfterUpdate,
+        onFolderBeforeDelete,
+        onFolderAfterDelete,
         async getFolder({ id }: GetFolderParams): Promise<Folder> {
             const tenant = getTenantId();
             const locale = getLocaleCode();
@@ -116,7 +151,14 @@ export const createFoldersContext = async ({
             };
 
             try {
-                return await storageOperations.createFolder({ folder });
+                await onFolderBeforeCreate.publish({
+                    folder
+                });
+                const result = await storageOperations.createFolder({ folder });
+                await onFolderAfterCreate.publish({
+                    folder: result
+                });
+                return result;
             } catch (error) {
                 throw WebinyError.from(error, {
                     message: "Could not create folder.",
@@ -160,7 +202,16 @@ export const createFoldersContext = async ({
                 ...input
             };
             try {
-                return await storageOperations.updateFolder({ original, folder });
+                await onFolderBeforeUpdate.publish({
+                    folder,
+                    original
+                });
+                const result = await storageOperations.updateFolder({ original, folder });
+                await onFolderAfterUpdate.publish({
+                    folder: result,
+                    original
+                });
+                return result;
             } catch (error) {
                 throw new WebinyError(
                     error.message || "Could not update folder.",
@@ -183,7 +234,14 @@ export const createFoldersContext = async ({
             }
 
             try {
-                await storageOperations.deleteFolder({ folder });
+                await onFolderBeforeDelete.publish({
+                    folder
+                });
+                const result = storageOperations.deleteFolder({ folder });
+                await onFolderAfterDelete.publish({
+                    folder
+                });
+                return result;
             } catch (error) {
                 throw new WebinyError(
                     error.message || "Could not delete folder.",

@@ -2,6 +2,7 @@ import { TenancyContext } from "@webiny/api-tenancy/types";
 import { Context as BaseContext } from "@webiny/handler/types";
 import { I18NContext } from "@webiny/api-i18n/types";
 import { SecurityContext, SecurityIdentity } from "@webiny/api-security/types";
+import { Topic } from "@webiny/pubsub/types";
 
 export interface CreatedBy {
     id: string;
@@ -70,6 +71,32 @@ export type StorageOperationsCreateFolderParams = CreateFolderParams;
 export type StorageOperationsUpdateFolderParams = UpdateFolderParams;
 export type StorageOperationsDeleteFolderParams = DeleteFolderParams;
 
+export interface OnFolderBeforeCreateTopicParams {
+    folder: Folder;
+}
+
+export interface OnFolderAfterCreateTopicParams {
+    folder: Folder;
+}
+
+export interface OnFolderBeforeUpdateTopicParams {
+    folder: Folder;
+    original: Folder;
+}
+
+export interface OnFolderAfterUpdateTopicParams {
+    folder: Folder;
+    original: Folder;
+}
+
+export interface OnFolderBeforeDeleteTopicParams {
+    folder: Folder;
+}
+
+export interface OnFolderAfterDeleteTopicParams {
+    folder: Folder;
+}
+
 export interface Link {
     id: string;
     linkId: string;
@@ -135,6 +162,12 @@ export interface IFolders {
     createFolder(input: FolderInput): Promise<Folder>;
     updateFolder(id: string, input: Partial<Folder>): Promise<Folder>;
     deleteFolder(id: string): Promise<void>;
+    onFolderBeforeCreate: Topic<OnFolderBeforeCreateTopicParams>;
+    onFolderAfterCreate: Topic<OnFolderAfterCreateTopicParams>;
+    onFolderBeforeUpdate: Topic<OnFolderBeforeUpdateTopicParams>;
+    onFolderAfterUpdate: Topic<OnFolderAfterUpdateTopicParams>;
+    onFolderBeforeDelete: Topic<OnFolderBeforeDeleteTopicParams>;
+    onFolderAfterDelete: Topic<OnFolderAfterDeleteTopicParams>;
 }
 
 export interface ILinks {
