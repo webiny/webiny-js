@@ -1,4 +1,4 @@
-import {PulumiAppParam, PulumiAppParamCallback} from "@webiny/pulumi";
+import { PulumiAppParam, PulumiAppParamCallback } from "@webiny/pulumi";
 import { createReactPulumiApp, CustomDomainParams } from "~/apps";
 
 export type AdminPulumiApp = ReturnType<typeof createReactPulumiApp>;
