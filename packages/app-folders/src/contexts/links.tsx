@@ -16,7 +16,9 @@ import {
     LinksActions,
     ListLinksQueryVariables,
     ListLinksResponse,
+    ListMeta,
     Loading,
+    Meta,
     UpdateLinkResponse,
     UpdateLinkVariables
 } from "~/types";
@@ -24,7 +26,8 @@ import {
 interface LinksContext {
     links: LinkItem[];
     loading: Loading<LinksActions>;
-    listLinks: (type: string) => Promise<LinkItem[]>;
+    meta: Meta<ListMeta>;
+    listLinks: (type: string, limit?: number, after?: string) => Promise<LinkItem[]>;
     getLink: (id: string, folderId: string) => Promise<LinkItem>;
     createLink: (link: Omit<LinkItem, "linkId">) => Promise<LinkItem>;
     updateLink: (link: LinkItem, contextFolderId: string) => Promise<LinkItem>;
@@ -41,31 +44,40 @@ export const LinksProvider = ({ children }: Props) => {
     const client = useApolloClient();
     const [links, setLinks] = useState<LinkItem[]>([]);
     const [loading, setLoading] = useState<Loading<LinksActions>>({});
+    const [meta, setMeta] = useState<Meta<ListMeta>>(Object.create(null));
 
     const context: LinksContext = {
         links,
         loading,
-        async listLinks(folderId: string) {
+        meta,
+        async listLinks(folderId: string, limit = 10, after?: string) {
             if (!folderId) {
                 throw new Error("Link `folderId` is mandatory");
             }
 
+            const action = after ? "LIST_MORE_LINKS" : "LIST_LINKS";
+
             const { data: response } = await apolloFetchingHandler(
-                () => loadingHandler(folderId, "LIST_LINKS", setLoading),
+                () => loadingHandler(folderId, action, setLoading),
                 () =>
                     client.query<ListLinksResponse, ListLinksQueryVariables>({
                         query: LIST_LINKS,
-                        variables: { folderId }
+                        variables: { folderId, limit, after }
                     })
             );
 
-            const { data, error } = response.folders.listLinks;
+            const { data, meta: responseMeta, error } = response.folders.listLinks;
 
             if (!data) {
                 throw new Error(error?.message || "Could not fetch links");
             }
 
             setLinks(links => [...new Set([...links, ...data])]);
+
+            setMeta(meta => ({
+                ...meta,
+                [folderId]: responseMeta
+            }));
 
             return data;
         },
@@ -116,6 +128,14 @@ export const LinksProvider = ({ children }: Props) => {
             }
 
             setLinks(links => [...links, data]);
+
+            setMeta(meta => ({
+                ...meta,
+                [folderId]: {
+                    ...meta[folderId],
+                    totalCount: ++meta[folderId].totalCount
+                }
+            }));
 
             return data;
         },
@@ -174,6 +194,14 @@ export const LinksProvider = ({ children }: Props) => {
             }
 
             setLinks(links => links.filter(link => link.id !== id));
+
+            setMeta(meta => ({
+                ...meta,
+                [folderId]: {
+                    ...meta[folderId],
+                    totalCount: --meta[folderId].totalCount
+                }
+            }));
 
             return true;
         }
