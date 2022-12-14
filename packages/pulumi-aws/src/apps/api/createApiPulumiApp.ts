@@ -35,7 +35,7 @@ export interface CreateApiPulumiAppParams {
     /**
      * Prefixes names of all Pulumi cloud infrastructure resource with given prefix.
      */
-    prefixPulumiResources?: PulumiAppParam<string>;
+    pulumiResourceNamePrefix?: PulumiAppParam<string>;
 }
 
 export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = {}) => {
@@ -44,11 +44,13 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
         path: "apps/api",
         config: projectAppParams,
         program: async app => {
-            const prefixPulumiResources = app.getParam(projectAppParams.prefixPulumiResources);
-            if (prefixPulumiResources) {
+            const pulumiResourceNamePrefix = app.getParam(
+                projectAppParams.pulumiResourceNamePrefix
+            );
+            if (pulumiResourceNamePrefix) {
                 app.onResource(resource => {
-                    if (!resource.name.startsWith(prefixPulumiResources)) {
-                        resource.name = `${prefixPulumiResources}${resource.name}`;
+                    if (!resource.name.startsWith(pulumiResourceNamePrefix)) {
+                        resource.name = `${pulumiResourceNamePrefix}${resource.name}`;
                     }
                 });
             }

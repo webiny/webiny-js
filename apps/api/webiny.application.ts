@@ -1,5 +1,5 @@
 import { createApiApp } from "@webiny/serverless-cms-aws";
 
 export default createApiApp({
-    prefixPulumiResources: "wby-"
+    pulumiResourceNamePrefix: "wby-"
 });

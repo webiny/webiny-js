@@ -16,7 +16,7 @@ export interface CreateAdminPulumiAppParams {
     /**
      * Prefixes names of all Pulumi cloud infrastructure resource with given prefix.
      */
-    prefixPulumiResources?: PulumiAppParam<string>;
+    pulumiResourceNamePrefix?: PulumiAppParam<string>;
 }
 
 export const createAdminPulumiApp = (projectAppParams: CreateAdminPulumiAppParams) => {
