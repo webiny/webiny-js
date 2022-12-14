@@ -28,6 +28,7 @@ export type FoldersActions =
 
 export type LinksActions =
     | "LIST_LINKS"
+    | "LIST_MORE_LINKS"
     | "GET_LINK"
     | "CREATE_LINK"
     | "UPDATE_LINK"
@@ -37,6 +38,14 @@ export interface Error {
     code: string;
     message: string;
     data: any;
+}
+
+export type Meta<T> = Record<string, { [P in keyof T]: T[P] }>;
+
+export interface ListMeta {
+    cursor: string | null;
+    totalCount: number;
+    hasMoreItems: boolean;
 }
 
 export interface ListFoldersResponse {
@@ -109,6 +118,7 @@ export interface ListLinksResponse {
     folders: {
         listLinks: {
             data: LinkItem[] | null;
+            meta: ListMeta | null;
             error: Error | null;
         };
     };
@@ -116,6 +126,8 @@ export interface ListLinksResponse {
 
 export interface ListLinksQueryVariables {
     folderId: string;
+    limit?: number;
+    after?: string | null;
 }
 
 export interface GetLinkResponse {

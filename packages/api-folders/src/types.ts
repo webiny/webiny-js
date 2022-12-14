@@ -9,6 +9,12 @@ export interface CreatedBy {
     displayName: string | null;
 }
 
+export interface ListMeta {
+    cursor: string | null;
+    totalCount: number;
+    hasMoreItems: boolean;
+}
+
 export interface Folder {
     id: string;
     name: string;
@@ -89,7 +95,11 @@ export interface ListLinksWhere {
 
 export interface ListLinksParams {
     where: ListLinksWhere;
+    limit?: number;
+    after?: string | null;
 }
+
+export type ListLinksResponse = [Link[], ListMeta];
 
 export interface CreateLinkParams {
     link: Link;
@@ -119,6 +129,8 @@ export interface StorageOperationsListLinksParams extends ListLinksParams {
     sort: string[];
 }
 
+export type StorageOperationListLinksResponse = ListLinksResponse;
+
 export type StorageOperationsCreateLinkParams = CreateLinkParams;
 export type StorageOperationsUpdateLinkParams = UpdateLinkParams;
 export type StorageOperationsDeleteLinkParams = DeleteLinkParams;
@@ -139,7 +151,7 @@ export interface IFolders {
 
 export interface ILinks {
     getLink(id: string): Promise<Link>;
-    listLinks(params: ListLinksParams): Promise<Link[]>;
+    listLinks(params: ListLinksParams): Promise<ListLinksResponse>;
     createLink(input: LinkInput): Promise<Link>;
     updateLink(id: string, input: Partial<Link>): Promise<Link>;
     deleteLink(id: string): Promise<void>;
@@ -164,7 +176,7 @@ export interface FoldersStorageOperations {
 
 export interface LinksStorageOperations {
     getLink(params: StorageOperationsGetLinkParams): Promise<Link | undefined>;
-    listLinks(params: StorageOperationsListLinksParams): Promise<Link[]>;
+    listLinks(params: StorageOperationsListLinksParams): Promise<StorageOperationListLinksResponse>;
     createLink(params: StorageOperationsCreateLinkParams): Promise<Link>;
     updateLink(params: StorageOperationsUpdateLinkParams): Promise<Link>;
     deleteLink(params: StorageOperationsDeleteLinkParams): Promise<void>;
