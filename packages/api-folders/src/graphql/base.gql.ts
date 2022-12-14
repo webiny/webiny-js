@@ -36,6 +36,12 @@ export const baseSchema = new GraphQLSchemaPlugin<FoldersContext>({
             data: Boolean
             error: FolderError
         }
+
+        type ListMeta {
+            cursor: String
+            totalCount: Int
+            hasMoreItems: Boolean
+        }
     `,
     resolvers: {
         Query: {

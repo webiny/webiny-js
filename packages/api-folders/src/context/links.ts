@@ -5,6 +5,7 @@
 import mdbid from "mdbid";
 import WebinyError from "@webiny/error";
 import { NotFoundError } from "@webiny/handler-graphql";
+import { createTopic } from "@webiny/pubsub";
 import joi from "joi";
 
 import {
@@ -13,6 +14,7 @@ import {
     Link,
     LinkInput,
     ListLinksParams,
+    ListLinksResponse,
     OnLinkAfterCreateTopicParams,
     OnLinkAfterDeleteTopicParams,
     OnLinkAfterUpdateTopicParams,
@@ -20,7 +22,6 @@ import {
     OnLinkBeforeDeleteTopicParams,
     OnLinkBeforeUpdateTopicParams
 } from "~/types";
-import { createTopic } from "@webiny/pubsub";
 
 const requiredString = joi.string().required();
 
@@ -90,20 +91,22 @@ export const createLinksContext = async ({
             return link;
         },
 
-        async listLinks({ where }: ListLinksParams): Promise<Link[]> {
+        async listLinks({ where, limit, after }: ListLinksParams): Promise<ListLinksResponse> {
             const tenant = getTenantId();
             const locale = getLocaleCode();
 
             try {
                 return await storageOperations.listLinks({
                     where: { tenant, locale, ...where },
-                    sort: ["createdOn_ASC"]
+                    sort: ["createdOn_ASC"],
+                    limit,
+                    after
                 });
             } catch (error) {
                 throw WebinyError.from(error, {
                     message: "Could not list links.",
                     code: "LIST_LINKS_ERROR",
-                    data: { ...where }
+                    data: { ...where, limit, after }
                 });
             }
         },

@@ -15,6 +15,14 @@ const ERROR_FIELD = /* GraphQL */ `
     }
 `;
 
+const LIST_META_FIELD = /* GraphQL */ `
+    {
+        cursor
+        totalCount
+        hasMoreItems
+    }
+`;
+
 export const CREATE_LINK = /* GraphQL */ `
     mutation CreateLink($data: LinkCreateInput!) {
         folders {
@@ -49,10 +57,11 @@ export const DELETE_LINK = /* GraphQL */ `
 `;
 
 export const LIST_LINKS = /* GraphQL */ `
-    query ListLinks($where: LinksListWhereInput!) {
+    query ListLinks($where: LinksListWhereInput!, $limit: Int, $after: String) {
         folders {
-            listLinks(where: $where) {
+            listLinks(where: $where, limit: $limit, after: $after) {
                 data ${DATA_FIELD()}
+                meta ${LIST_META_FIELD}
                 error ${ERROR_FIELD}
             }
         }

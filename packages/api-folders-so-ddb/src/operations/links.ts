@@ -1,12 +1,14 @@
 import { get } from "@webiny/db-dynamodb/utils/get";
 import { DbItem, queryAll, queryOne } from "@webiny/db-dynamodb/utils/query";
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
+import { decodeCursor, encodeCursor } from "@webiny/db-dynamodb/utils/cursor";
+import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
 import WebinyError from "@webiny/error";
 
-import { Link, LinksStorageOperations } from "@webiny/api-folders/types";
+import { Link, LinksStorageOperations, StorageOperationListLinksResponse } from "@webiny/api-folders/types";
 import { Entity, Table } from "dynamodb-toolbox";
+
 import { DataContainer } from "~/types";
-import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
 
 const createLinkGsiPartitionKey = ({
     tenant,
@@ -91,7 +93,12 @@ export const createLinksStorageOperations = (
             }
         },
 
-        async listLinks({ where: { tenant, locale, folderId }, sort }): Promise<Link[]> {
+        async listLinks({
+            where: { tenant, locale, folderId },
+            limit = 40,
+            after,
+            sort
+        }): Promise<StorageOperationListLinksResponse> {
             try {
                 const items = await queryAll<DataContainer<Link>>({
                     entity,
@@ -102,13 +109,34 @@ export const createLinksStorageOperations = (
                     }
                 });
 
-                return sortItems({
+                /**
+                 * Sorting the result via code and removing falsy values
+                 */
+                const sortedLinks = sortItems({
                     items,
                     sort,
                     fields: []
                 })
                     .map(item => item?.data)
                     .filter(Boolean);
+
+                /**
+                 * Calculating all metadata for cursor-based pagination.
+                 */
+                const totalCount = sortedLinks.length;
+                const start = parseInt(decodeCursor(after) || "0") || 0;
+                const hasMoreItems = totalCount > start + limit;
+                const end = limit > totalCount + start + limit ? undefined : start + limit;
+                const cursor = sortedLinks.length > 0 ? encodeCursor(start + limit) : null;
+
+                const links = sortedLinks.slice(start, end);
+                const meta = {
+                    hasMoreItems,
+                    totalCount,
+                    cursor
+                };
+
+                return [links, meta];
             } catch (error) {
                 throw WebinyError.from(error, {
                     message: "Could not list links.",
