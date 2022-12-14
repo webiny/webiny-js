@@ -38,6 +38,11 @@ export interface CreateCorePulumiAppParams {
      * or add additional ones into the mix.
      */
     pulumi?: (app: CorePulumiApp) => void | Promise<void>;
+
+    /**
+     * Prefixes names of all Pulumi cloud infrastructure resource with given prefix.
+     */
+    prefixPulumiResources?: PulumiAppParam<string>;
 }
 
 export interface CoreAppLegacyConfig {
@@ -50,6 +55,15 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
         path: "apps/core",
         config: projectAppParams,
         program: async app => {
+            const prefixPulumiResources = app.getParam(projectAppParams.prefixPulumiResources);
+            if (prefixPulumiResources) {
+                app.onResource(resource => {
+                    if (!resource.name.startsWith(prefixPulumiResources)) {
+                        resource.name = `${prefixPulumiResources}${resource.name}`;
+                    }
+                });
+            }
+
             // Overrides must be applied via a handler, registered at the very start of the program.
             // By doing this, we're ensuring user's adjustments are not applied to late.
             if (projectAppParams.pulumi) {

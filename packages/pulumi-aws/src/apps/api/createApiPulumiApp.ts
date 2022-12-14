@@ -31,6 +31,11 @@ export interface CreateApiPulumiAppParams {
      * or add additional ones into the mix.
      */
     pulumi?: (app: ApiPulumiApp) => void | Promise<void>;
+
+    /**
+     * Prefixes names of all Pulumi cloud infrastructure resource with given prefix.
+     */
+    prefixPulumiResources?: PulumiAppParam<string>;
 }
 
 export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = {}) => {
@@ -39,6 +44,15 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
         path: "apps/api",
         config: projectAppParams,
         program: async app => {
+            const prefixPulumiResources = app.getParam(projectAppParams.prefixPulumiResources);
+            if (prefixPulumiResources) {
+                app.onResource(resource => {
+                    if (!resource.name.startsWith(prefixPulumiResources)) {
+                        resource.name = `${prefixPulumiResources}${resource.name}`;
+                    }
+                });
+            }
+
             // Overrides must be applied via a handler, registered at the very start of the program.
             // By doing this, we're ensuring user's adjustments are not applied too late.
             if (projectAppParams.pulumi) {

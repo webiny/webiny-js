@@ -1,3 +1,5 @@
 import { createAdminApp } from "@webiny/serverless-cms-aws";
 
-export default createAdminApp();
+export default createAdminApp({
+    prefixPulumiResources: "wby-"
+});

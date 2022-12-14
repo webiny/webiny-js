@@ -1,3 +1,5 @@
 import { createWebsiteApp } from "@webiny/serverless-cms-aws";
 
-export default createWebsiteApp();
+export default createWebsiteApp({
+    prefixPulumiResources: "wby-"
+});
