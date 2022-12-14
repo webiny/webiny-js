@@ -226,6 +226,23 @@ export const createLinksContext = async ({
                     }
                 );
             }
+        },
+
+        async deleteLinks(folderIds: string[]): Promise<void> {
+            const tenant = getTenantId();
+            const locale = getLocaleCode();
+
+            try {
+                return await storageOperations.deleteLinks({ tenant, locale, folderIds });
+            } catch (error) {
+                throw new WebinyError(
+                    error.message || "Could not batch delete links.",
+                    error.code || "DELETE_LINKS_ERROR",
+                    {
+                        folderIds
+                    }
+                );
+            }
         }
     };
 };

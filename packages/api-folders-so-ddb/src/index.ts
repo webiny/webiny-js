@@ -39,7 +39,7 @@ export const createStorageOperations = (params: StorageParams): StorageOperation
     };
 
     return {
-        ...createLinksStorageOperations(entities.links),
+        ...createLinksStorageOperations(entities.links, table),
         ...createFoldersStorageOperations(entities.folders, table)
     };
 };

@@ -31,6 +31,7 @@ export interface GetFolderParams {
 
 export interface ListFoldersWhere {
     type: string;
+    parentId?: string;
 }
 
 export interface ListFoldersParams {
@@ -131,6 +132,12 @@ export interface DeleteLinkParams {
     link: Link;
 }
 
+export interface DeleteLinksParams {
+    tenant: string;
+    locale: string;
+    folderIds: string[];
+}
+
 export interface StorageOperationsGetLinkParams {
     id?: string;
     folderId?: string;
@@ -149,6 +156,7 @@ export interface StorageOperationsListLinksParams extends ListLinksParams {
 export type StorageOperationsCreateLinkParams = CreateLinkParams;
 export type StorageOperationsUpdateLinkParams = UpdateLinkParams;
 export type StorageOperationsDeleteLinkParams = DeleteLinkParams;
+export type StorageOperationsDeleteLinksParams = DeleteLinksParams;
 
 export interface OnLinkBeforeCreateTopicParams {
     link: Link;
@@ -202,6 +210,7 @@ export interface ILinks {
     createLink(input: LinkInput): Promise<Link>;
     updateLink(id: string, input: Partial<Link>): Promise<Link>;
     deleteLink(id: string): Promise<void>;
+    deleteLinks(folderIds: string[]): Promise<void>;
     onLinkBeforeCreate: Topic<OnLinkBeforeCreateTopicParams>;
     onLinkAfterCreate: Topic<OnLinkAfterCreateTopicParams>;
     onLinkBeforeUpdate: Topic<OnLinkBeforeUpdateTopicParams>;
@@ -233,4 +242,5 @@ export interface LinksStorageOperations {
     createLink(params: StorageOperationsCreateLinkParams): Promise<Link>;
     updateLink(params: StorageOperationsUpdateLinkParams): Promise<Link>;
     deleteLink(params: StorageOperationsDeleteLinkParams): Promise<void>;
+    deleteLinks(params: StorageOperationsDeleteLinksParams): Promise<void>;
 }
