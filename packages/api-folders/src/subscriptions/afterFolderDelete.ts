@@ -1,22 +1,40 @@
 import { ContextPlugin } from "@webiny/api";
-import { FoldersContext } from "~/types";
+import { Folder, FoldersContext } from "~/types";
+
+const filterFolderTreeIds = (folders: Folder[], folderId: string): string[] => {
+    function findChildrenIds(acc: string[], curr: Folder, index: number, arr: Folder[]): string[] {
+        if (curr.parentId && acc.some(el => el === curr?.parentId)) {
+            acc.push(curr.id);
+            arr.splice(index, 1);
+            return arr.reduce(findChildrenIds, acc);
+        }
+
+        return acc;
+    }
+
+    const result = folders.reduce(findChildrenIds, [folderId]);
+
+    return [...new Set([...result])];
+};
 
 export const afterFolderDelete = () => {
-    return new ContextPlugin<FoldersContext>(async ({ folders }) => {
+    return new ContextPlugin<FoldersContext>(async ({ folders: foldersContext }) => {
         /**
          * After a folder has been deleted, delete all related links.
          */
-        folders.onFolderAfterDelete.subscribe(async ({ folder }) => {
+        foldersContext.onFolderAfterDelete.subscribe(async ({ folder }) => {
             const { id, type } = folder;
 
-            // Fetching all child folders by `type` and `id`
-            const children = await folders.listFolders({
-                where: { type, parentId: id }
+            // Fetching all folders by `type`
+            const folders = await foldersContext.listFolders({
+                where: { type }
             });
 
-            const ids = [id, ...children.map(child => child.id)];
+            // Filter folders tree under the given folder `id`
+            const folderTreeIds = filterFolderTreeIds(folders, id);
 
-            await folders.deleteLinks(ids);
+            // Delete all links related to a list of folders ids
+            await foldersContext.deleteLinks(folderTreeIds);
         });
     });
 };
