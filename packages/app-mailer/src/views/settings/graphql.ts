@@ -53,7 +53,7 @@ export interface SaveSettingsMutationResponse {
     };
 }
 export const SAVE_SETTINGS_MUTATION = gql`
-    mutation SaveTransportSettings($data: TransportSettingsInput!) {
+    mutation SaveTransportSettings($data: MailerTransportSettingsInput!) {
         mailer {
             settings: saveSettings(data: $data) {
                 data ${SETTINGS_FIELDS}

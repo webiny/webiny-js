@@ -20,16 +20,16 @@ export const createSettingsGraphQL = () => {
                 replyTo: String
             }
             
-            type MailerSettingsResponse {
+            type MailerTransportSettingsResponse {
                 data: MailerTransportSettings
                 error: MailerTransportSettingsError
             }
         
             type MailerQuery {
-                getSettings: MailerSettingsResponse!
+                getSettings: MailerTransportSettingsResponse!
             }
             
-            input TransportSettingsInput {
+            input MailerTransportSettingsInput {
                 host: String!
                 port: Number
                 user: String!
@@ -39,7 +39,7 @@ export const createSettingsGraphQL = () => {
             }
             
             type MailerMutation {
-                saveSettings(data: TransportSettingsInput!): MailerSettingsResponse!
+                saveSettings(data: MailerTransportSettingsInput!): MailerTransportSettingsResponse!
             }
             
             extend type Query {
@@ -58,9 +58,9 @@ export const createSettingsGraphQL = () => {
                     try {
                         const settings = await context.mailer.getSettings();
                         /**
-                         * We want to remove the password from the response
+                         * We want to remove the password from the response, if it exists.
                          */
-                        if (settings) {
+                        if (settings?.password) {
                             // @ts-ignore
                             delete settings.password;
                         }
@@ -80,9 +80,9 @@ export const createSettingsGraphQL = () => {
                             input: args.data
                         });
                         /**
-                         * We want to remove the password from the response
+                         * We want to remove the password from the response, if it exists.
                          */
-                        if (settings) {
+                        if (settings?.password) {
                             // @ts-ignore
                             delete settings.password;
                         }
