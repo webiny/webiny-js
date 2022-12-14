@@ -320,12 +320,6 @@ Resources:
                 # https://docs.aws.amazon.com/service-authorization/latest/reference/list_awssecuritytokenservice.html
                 Resource: "*"
 
-              #              - Effect: Allow
-              #                Action:
-              #                  - tag:TagResources
-              #                  - tag:UntagResources
-              #                Resource: "*"
-
               # Amazon SQS
               - Effect: Allow
                 Action:
@@ -351,132 +345,80 @@ Resources:
               # Amazon EC2 (we need these for custom VPC deployment that's used in production mode).
               # https://www.webiny.com/docs/architecture/deployment-modes/introduction
               - Effect: Allow
+                Resource: arn:aws:ec2:*
                 Condition:
                   "Null":
                     aws:RequestTag/WbyProjectName: "false"
                 Action:
+                  # arn:*:ec2:*:*:vpc/*
                   - ec2:CreateVpc
                   - ec2:CreateTags
-                Resource: arn:*:ec2:*:*:vpc/*
+
+                  # arn:aws:ec2:*:*:subnet/*
+                  - ec2:CreateSubnet
+                  - ec2:CreateTags
+
+                  # arn:aws:ec2:*:*:elastic-ip/*
+                  - ec2:AllocateAddress
+                  - ec2:CreateTags
+
+                  # arn:aws:ec2:*:*:internet-gateway/*
+                  - ec2:CreateInternetGateway
+                  - ec2:CreateTags
+
+                  # arn:aws:ec2:*:*:natgateway/*
+                  - ec2:CreateNatGateway
+                  - ec2:CreateTags
+
+                  # arn:aws:ec2:*:*:route-table/*
+                  - ec2:CreateRouteTable
+                  - ec2:CreateTags
 
               - Effect: Allow
+                Resource: arn:aws:ec2:*
                 Condition:
                   "Null":
                     aws:ResourceTag/WbyProjectName: "false"
                 Action:
+                  # arn:aws:ec2:*:*:vpc/*
                   - ec2:CreateSubnet
                   - ec2:CreateRouteTable
                   - ec2:DetachInternetGateway
                   - ec2:DeleteVpc
-                Resource: arn:aws:ec2:*:*:vpc/*
+                  - ec2:DescribeVpcAttribute
+                  - ec2:AttachInternetGateway
 
-              - Effect: Allow
-                Condition:
-                  "Null":
-                    aws:RequestTag/WbyProjectName: "false"
-                Action:
-                  - ec2:CreateSubnet
-                  - ec2:CreateTags
-                Resource: arn:aws:ec2:*:*:subnet/*
-
-              - Effect: Allow
-                Condition:
-                  "Null":
-                    aws:ResourceTag/WbyProjectName: "false"
-                Action:
+                  # arn:aws:ec2:*:*:subnet/*
                   - ec2:CreateNatGateway
                   - ec2:AssociateRouteTable
                   - ec2:DisassociateRouteTable
                   - ec2:DeleteSubnet
-                Resource: arn:aws:ec2:*:*:subnet/*
 
-              - Effect: Allow
-                Condition:
-                  "Null":
-                    aws:ResourceTag/WbyProjectName: "false"
-                Action:
-                  - ec2:DescribeVpcAttribute
-                  - ec2:AttachInternetGateway
-                Resource: arn:*:ec2:*:*:vpc/*
-
-              - Effect: Allow
-                Condition:
-                  "Null":
-                    aws:RequestTag/WbyProjectName: "false"
-                Action:
-                  - ec2:AllocateAddress
-                  - ec2:CreateTags
-                Resource: arn:aws:ec2:*:*:elastic-ip/*
-
-              - Effect: Allow
-                Condition:
-                  "Null":
-                    aws:ResourceTag/WbyProjectName: "false"
-                Action:
+                  # arn:aws:ec2:*:*:elastic-ip/*
                   - ec2:CreateNatGateway
                   - ec2:ReleaseAddress
-                Resource: arn:aws:ec2:*:*:elastic-ip/*
 
-              - Effect: Allow
-                Condition:
-                  "Null":
-                    aws:RequestTag/WbyProjectName: "false"
-                Action:
-                  - ec2:CreateInternetGateway
-                  - ec2:CreateTags
-                Resource: arn:aws:ec2:*:*:internet-gateway/*
-
-              - Effect: Allow
-                Condition:
-                  "Null":
-                    aws:ResourceTag/WbyProjectName: "false"
-                Action:
+                  # arn:aws:ec2:*:*:internet-gateway/*
                   - ec2:AttachInternetGateway
                   - ec2:DetachInternetGateway
                   - ec2:DeleteInternetGateway
-                Resource: arn:aws:ec2:*:*:internet-gateway/*
 
-              - Effect: Allow
-                Condition:
-                  "Null":
-                    aws:RequestTag/WbyProjectName: "false"
-                Action:
-                  - ec2:CreateNatGateway
-                  - ec2:CreateTags
-                Resource: arn:aws:ec2:*:*:natgateway/*
-
-              - Effect: Allow
-                Condition:
-                  "Null":
-                    aws:ResourceTag/WbyProjectName: "false"
-                Action:
+                  # arn:aws:ec2:*:*:natgateway/*
                   - ec2:DeleteNatGateway
-                Resource: arn:aws:ec2:*:*:natgateway/*
 
-              - Effect: Allow
-                Condition:
-                  "Null":
-                    aws:RequestTag/WbyProjectName: "false"
-                Action:
-                  - ec2:CreateRouteTable
-                  - ec2:CreateTags
-                Resource: arn:aws:ec2:*:*:route-table/*
-
-              - Effect: Allow
-                Condition:
-                  "Null":
-                    aws:ResourceTag/WbyProjectName: "false"
-                Action:
+                  # arn:aws:ec2:*:*:route-table/*
                   - ec2:DeleteRouteTable
-                Resource: arn:aws:ec2:*:*:route-table/*
 
-              # Could not use tags.
               - Effect: Allow
+                # Could not use tags.
+                Resource: arn:aws:ec2:*:*:network-interface/*
                 Action:
                   - ec2:DeleteNetworkInterface
-                Resource: arn:aws:ec2:*:*:network-interface/*
 
               - Effect: Allow
+                # As stated in AWS docs, we must use "*" here:
+                # https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazonec2.html
+                Resource: "*"
                 Action:
                   - ec2:DescribeVpcs
                   - ec2:DescribeSubnets
@@ -488,9 +430,6 @@ Resources:
                   - ec2:DescribeRouteTables
                   - ec2:DescribeSecurityGroups
                   - ec2:DescribeSecurityGroupReferences
-                # As stated in AWS docs, we must use "*" here:
-                # https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazonec2.html
-                Resource: "*"
 
   UserToDeployWebinyProjectGroup1:
     Type: AWS::IAM::UserToGroupAddition
