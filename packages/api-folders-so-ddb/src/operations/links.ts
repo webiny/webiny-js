@@ -5,7 +5,11 @@ import { decodeCursor, encodeCursor } from "@webiny/db-dynamodb/utils/cursor";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
 import WebinyError from "@webiny/error";
 
-import { Link, LinksStorageOperations, StorageOperationListLinksResponse } from "@webiny/api-folders/types";
+import {
+    Link,
+    LinksStorageOperations,
+    StorageOperationListLinksResponse
+} from "@webiny/api-folders/types";
 import { Entity, Table } from "dynamodb-toolbox";
 
 import { DataContainer } from "~/types";
