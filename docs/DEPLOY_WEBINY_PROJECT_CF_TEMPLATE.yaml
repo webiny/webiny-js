@@ -345,37 +345,36 @@ Resources:
               # Amazon EC2 (we need these for custom VPC deployment that's used in production mode).
               # https://www.webiny.com/docs/architecture/deployment-modes/introduction
               - Effect: Allow
-                Resource: arn:aws:ec2:*
+
+                # Resource ARNs must include at least 6 fields and include the following structure: arn:partition:service:region:account:resource.
+                Resource: arn:aws:ec2:*:*:*
                 Condition:
                   "Null":
                     aws:RequestTag/WbyProjectName: "false"
                 Action:
+                  - ec2:CreateTags
+
                   # arn:*:ec2:*:*:vpc/*
                   - ec2:CreateVpc
-                  - ec2:CreateTags
 
                   # arn:aws:ec2:*:*:subnet/*
                   - ec2:CreateSubnet
-                  - ec2:CreateTags
 
                   # arn:aws:ec2:*:*:elastic-ip/*
                   - ec2:AllocateAddress
-                  - ec2:CreateTags
 
                   # arn:aws:ec2:*:*:internet-gateway/*
                   - ec2:CreateInternetGateway
-                  - ec2:CreateTags
 
                   # arn:aws:ec2:*:*:natgateway/*
                   - ec2:CreateNatGateway
-                  - ec2:CreateTags
 
                   # arn:aws:ec2:*:*:route-table/*
                   - ec2:CreateRouteTable
-                  - ec2:CreateTags
 
               - Effect: Allow
-                Resource: arn:aws:ec2:*
+                # Resource ARNs must include at least 6 fields and include the following structure: arn:partition:service:region:account:resource.
+                Resource: arn:aws:ec2:*:*:*
                 Condition:
                   "Null":
                     aws:ResourceTag/WbyProjectName: "false"
@@ -407,6 +406,7 @@ Resources:
                   - ec2:DeleteNatGateway
 
                   # arn:aws:ec2:*:*:route-table/*
+                  - ec2:CreateRoute
                   - ec2:DeleteRouteTable
 
               - Effect: Allow
