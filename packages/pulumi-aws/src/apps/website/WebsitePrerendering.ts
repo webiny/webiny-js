@@ -171,7 +171,7 @@ function createRenderer(
     const role = createLambdaRole(app, {
         name: "ps-render-lambda-role",
         policy: policy,
-        executionRole: aws.iam.ManagedPolicy.AWSLambdaSQSQueueExecutionRole
+        // executionRole: aws.iam.ManagedPolicy.AWSLambdaSQSQueueExecutionRole
     });
 
     const lambda = app.addResource(aws.lambda.Function, {
@@ -352,9 +352,27 @@ function createLambdaPolicy(
                     {
                         Sid: "PermissionForSQS",
                         Effect: "Allow",
-                        Action: ["sqs:SendMessage", "sqs:SendMessageBatch"],
+                        Action: [
+                            "sqs:SendMessage",
+                            "sqs:SendMessageBatch",
+                            "sqs:ReceiveMessage",
+                            "sqs:DeleteMessage",
+                            "sqs:GetQueueAttributes"
+                        ],
                         Resource: queue.arn
-                    }
+                    },
+                    // {
+                    //     Effect: "Allow",
+                    //     Action: [
+                    //         "sqs:ReceiveMessage",
+                    //         "sqs:DeleteMessage",
+                    //         "sqs:GetQueueAttributes"
+                    //         // "logs:CreateLogGroup",
+                    //         // "logs:CreateLogStream",
+                    //         // "logs:PutLogEvents"
+                    //     ],
+                    //     Resource: "*"
+                    // }
                 ]
             }
         }
