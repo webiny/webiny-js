@@ -1,6 +1,6 @@
 import * as aws from "@pulumi/aws";
 
-import { createPulumiApp, PulumiAppParamCallback } from "@webiny/pulumi";
+import { createPulumiApp, PulumiAppParam, PulumiAppParamCallback } from "@webiny/pulumi";
 import { tagResources } from "~/utils";
 import { createPrivateAppBucket } from "../createAppBucket";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
@@ -26,6 +26,11 @@ export interface CreateReactPulumiAppParams {
      * or add additional ones into the mix.
      */
     pulumi?: (app: ReactPulumiApp) => void | Promise<void>;
+
+    /**
+     * Prefixes names of all Pulumi cloud infrastructure resource with given prefix.
+     */
+    pulumiResourceNamePrefix?: PulumiAppParam<string>;
 }
 
 export const createReactPulumiApp = (projectAppParams: CreateReactPulumiAppParams) => {
@@ -34,6 +39,17 @@ export const createReactPulumiApp = (projectAppParams: CreateReactPulumiAppParam
         path: projectAppParams.folder,
         config: projectAppParams,
         program: async app => {
+            const pulumiResourceNamePrefix = app.getParam(
+                projectAppParams.pulumiResourceNamePrefix
+            );
+            if (pulumiResourceNamePrefix) {
+                app.onResource(resource => {
+                    if (!resource.name.startsWith(pulumiResourceNamePrefix)) {
+                        resource.name = `${pulumiResourceNamePrefix}${resource.name}`;
+                    }
+                });
+            }
+
             const { name } = projectAppParams;
 
             // Overrides must be applied via a handler, registered at the very start of the program.
