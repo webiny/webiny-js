@@ -16,9 +16,11 @@ import {
     ListLinksParams,
     ListLinksResponse,
     OnLinkAfterCreateTopicParams,
+    OnLinkAfterDeleteBatchTopicParams,
     OnLinkAfterDeleteTopicParams,
     OnLinkAfterUpdateTopicParams,
     OnLinkBeforeCreateTopicParams,
+    OnLinkBeforeDeleteBatchTopicParams,
     OnLinkBeforeDeleteTopicParams,
     OnLinkBeforeUpdateTopicParams
 } from "~/types";
@@ -63,6 +65,13 @@ export const createLinksContext = async ({
     const onLinkAfterDelete = createTopic<OnLinkAfterDeleteTopicParams>(
         "folders.onLinkAfterDelete"
     );
+    // delete batch
+    const onLinkBeforeDeleteBatch = createTopic<OnLinkBeforeDeleteBatchTopicParams>(
+        "folders.onLinkBeforeDeleteBatch"
+    );
+    const onLinkAfterDeleteBatch = createTopic<OnLinkAfterDeleteBatchTopicParams>(
+        "folders.onLinkAfterDeleteBatch"
+    );
 
     return {
         onLinkBeforeCreate,
@@ -71,6 +80,8 @@ export const createLinksContext = async ({
         onLinkAfterUpdate,
         onLinkBeforeDelete,
         onLinkAfterDelete,
+        onLinkBeforeDeleteBatch,
+        onLinkAfterDeleteBatch,
         async getLink(id: string): Promise<Link> {
             const tenant = getTenantId();
             const locale = getLocaleCode();
@@ -236,7 +247,14 @@ export const createLinksContext = async ({
             const locale = getLocaleCode();
 
             try {
-                return await storageOperations.deleteLinks({ tenant, locale, folderIds });
+                await onLinkBeforeDeleteBatch.publish({
+                    folderIds
+                });
+                const result = await storageOperations.deleteLinks({ tenant, locale, folderIds });
+                await onLinkAfterDeleteBatch.publish({
+                    folderIds
+                });
+                return result;
             } catch (error) {
                 throw new WebinyError(
                     error.message || "Could not batch delete links.",

@@ -195,6 +195,14 @@ export interface OnLinkAfterDeleteTopicParams {
     link: Link;
 }
 
+export interface OnLinkBeforeDeleteBatchTopicParams {
+    folderIds: string[];
+}
+
+export interface OnLinkAfterDeleteBatchTopicParams {
+    folderIds: string[];
+}
+
 export interface FoldersContext extends BaseContext, I18NContext, TenancyContext, SecurityContext {
     folders: Folders;
 }
@@ -228,6 +236,8 @@ export interface ILinks {
     onLinkAfterUpdate: Topic<OnLinkAfterUpdateTopicParams>;
     onLinkBeforeDelete: Topic<OnLinkBeforeDeleteTopicParams>;
     onLinkAfterDelete: Topic<OnLinkAfterDeleteTopicParams>;
+    onLinkBeforeDeleteBatch: Topic<OnLinkBeforeDeleteBatchTopicParams>;
+    onLinkAfterDeleteBatch: Topic<OnLinkAfterDeleteBatchTopicParams>;
 }
 
 export interface FoldersConfig {
