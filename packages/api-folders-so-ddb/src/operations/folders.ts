@@ -96,22 +96,9 @@ export const createFoldersStorageOperations = (
             }
         },
 
-        async listFolders({ where: { tenant, locale, type, parentId }, sort }): Promise<Folder[]> {
+        async listFolders({ where: { tenant, locale, type }, sort }): Promise<Folder[]> {
             try {
-                let items;
-
-                if (parentId) {
-                    items = await queryAll<DataContainer<Folder>>({
-                        entity,
-                        partitionKey: createFolderGsiPartitionKey({ tenant, locale, type }),
-                        options: {
-                            index: "GSI1",
-                            beginsWith: `${parentId}#`
-                        }
-                    });
-                }
-
-                items = await queryAll<DataContainer<Folder>>({
+                const items = await queryAll<DataContainer<Folder>>({
                     entity,
                     partitionKey: createFolderGsiPartitionKey({ tenant, locale, type }),
                     options: {

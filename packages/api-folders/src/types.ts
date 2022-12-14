@@ -37,7 +37,6 @@ export interface GetFolderParams {
 
 export interface ListFoldersWhere {
     type: string;
-    parentId?: string;
 }
 
 export interface ListFoldersParams {
