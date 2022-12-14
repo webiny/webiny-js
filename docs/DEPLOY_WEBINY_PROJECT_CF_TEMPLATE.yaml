@@ -46,7 +46,7 @@ Resources:
                   - cloudfront:CreateFunction
 
               - Effect: Allow
-                Resource: arn:*:cloudfront::*:function/webiny-*
+                Resource: arn:*:cloudfront::*:function/wby-*
                 Action:
                   - cloudfront:GetFunction
                   - cloudfront:DescribeFunction
@@ -148,7 +148,7 @@ Resources:
                   - dynamodb:PutItem
                   - dynamodb:GetItem
                   - dynamodb:DeleteItem
-                Resource: arn:aws:dynamodb:*:*:table/webiny-*
+                Resource: arn:aws:dynamodb:*:*:table/wby-*
 
                 # Amazon Elasticsearch
               - Effect: Allow
@@ -162,7 +162,7 @@ Resources:
                   - es:RemoveTags
                   - es:UpdateElasticsearchDomainConfig
                   - es:DescribeElasticsearchDomainConfig
-                Resource: arn:aws:es:*:*:domain/webiny-*
+                Resource: arn:aws:es:*:*:domain/wby-*
 
               # Amazon EventBridge
               - Effect: Allow
@@ -181,8 +181,8 @@ Resources:
                   - events:DescribeEventBus
                   - events:DeleteEventBus
                 Resource:
-                  - arn:aws:events:*:*:event-bus/webiny-*
-                  - arn:aws:events:*:*:rule/webiny-*
+                  - arn:aws:events:*:*:event-bus/wby-*
+                  - arn:aws:events:*:*:rule/wby-*
 
   DeployWebinyProjectGroup2:
     Type: AWS::IAM::Group
@@ -220,8 +220,8 @@ Resources:
                   - iam:TagRole
                   - iam:UntagRole
                 Resource:
-                  - arn:aws:iam::*:role/webiny-*
-                  - arn:aws:iam::*:policy/webiny-*
+                  - arn:aws:iam::*:role/wby-*
+                  - arn:aws:iam::*:policy/wby-*
 
               # AWS Lambda
               - Effect: Allow
@@ -250,7 +250,7 @@ Resources:
                   # For deploying Lambda@Edge.
                   - lambda:EnableReplication
                 Resource:
-                  - arn:aws:lambda:*:*:function:webiny-*
+                  - arn:aws:lambda:*:*:function:wby-*
 
               - Effect: Allow
                 Action:
@@ -310,7 +310,7 @@ Resources:
                   - s3:PutObject*
                   - s3:GetObject*
                   - s3:DeleteObject*
-                Resource: arn:aws:s3:::webiny-*
+                Resource: arn:aws:s3:::wby-*
 
               # AWS Security Token Service (STS)
               - Effect: Allow
@@ -331,7 +331,7 @@ Resources:
                   - sqs:SetQueueAttributes
                   - sqs:CreateQueue
                   - sqs:DeleteQueue
-                Resource: arn:aws:sqs:*:*:webiny-*
+                Resource: arn:aws:sqs:*:*:wby-*
 
   DeployWebinyProjectGroup3:
     Type: AWS::IAM::Group
