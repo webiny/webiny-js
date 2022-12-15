@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
 import styled from "@emotion/styled";
 import { CoreOptions } from "medium-editor";
-import { ReactComponent as ExpandIcon } from "~/admin/assets/expand.svg";
+import { ReactComponent as ExpandIcon } from "@material-design-icons/svg/filled/fullscreen.svg";
 import { Dialog, DialogActions, DialogContent } from "@webiny/ui/Dialog";
 import { ButtonPrimary, IconButton } from "@webiny/ui/Button";
 import ReactMediumEditor from "~/editor/components/MediumEditor";
@@ -34,7 +34,7 @@ const EditorWrapper = styled("div")`
     }
 
     & .medium-editor-placeholder:after {
-        color: ${"var(--mdc-theme-text-secondary-on-background)"};
+        color: var(--mdc-theme-text-secondary-on-background);
     }
 `;
 
@@ -52,7 +52,7 @@ const ModalEditorWrapper = styled("div")`
     }
 
     & .medium-editor-placeholder:after {
-        color: ${"var(--mdc-theme-text-secondary-on-background)"};
+        color: var(--mdc-theme-text-secondary-on-background);
     }
 `;
 
@@ -114,7 +114,7 @@ const RichVariableInput: React.FC<RichVariableInputProps> = ({ variableId }) => 
                             onChange={onChange}
                             onSelect={onChange}
                             options={DEFAULT_EDITOR_OPTIONS}
-                            forceFocus={isOpen}
+                            autoFocus={isOpen}
                         />
                     </ModalEditorWrapper>
                 </DialogContent>

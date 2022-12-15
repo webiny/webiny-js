@@ -17,7 +17,7 @@ interface ReactMediumEditorProps {
     onSelect: (value: string) => void;
     tag: string | [string, Record<string, any>];
     options?: CoreOptions;
-    forceFocus?: boolean;
+    autoFocus?: boolean;
     [key: string]: any;
 }
 
@@ -27,7 +27,7 @@ const ReactMediumEditor: React.FC<ReactMediumEditorProps> = ({
     onChange,
     options = {},
     onSelect,
-    forceFocus
+    autoFocus
 }) => {
     const elementRef = React.useRef<HTMLElement>(null);
     const editorRef = React.useRef<MediumEditor.MediumEditor>();
@@ -109,7 +109,7 @@ const ReactMediumEditor: React.FC<ReactMediumEditorProps> = ({
     }, [handleChange, handleSelect, tagName]);
 
     useEffect(() => {
-        if (forceFocus && editorRef.current && elementRef.current) {
+        if (autoFocus && editorRef.current && elementRef.current) {
             // We need time to finish initialization of Medium Editor
             setTimeout(() => {
                 // Approach was taken from: https://github.com/yabwe/medium-editor/issues/850
@@ -119,7 +119,7 @@ const ReactMediumEditor: React.FC<ReactMediumEditorProps> = ({
                 MediumEditor.selection.moveCursor(document, elementRef.current);
             }, 200);
         }
-    }, [forceFocus, editorRef.current, elementRef.current]);
+    }, [autoFocus, editorRef.current, elementRef.current]);
 
     return createElement(tagName, {
         dangerouslySetInnerHTML: { __html: value },
