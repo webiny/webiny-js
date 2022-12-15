@@ -17,7 +17,21 @@ const createProducts = ({ id }: ProductCategory): Product[] => {
         color: "red",
         availableSizes: ["l", "m", "s"],
         image: "server.jpg",
-        category
+        category,
+        variant: {
+            name: "v1",
+            category,
+            price: 36591,
+            options: [
+                {
+                    name: "v1.sub server",
+                    category,
+                    categories: [category],
+                    price: 35591,
+                    longText: ["V1 server text"]
+                }
+            ]
+        }
     });
     /**
      * TV
@@ -31,7 +45,21 @@ const createProducts = ({ id }: ProductCategory): Product[] => {
         itemsInStock: 101,
         image: "tv.png",
         availableSizes: ["s", "m", "l"],
-        category
+        category,
+        variant: {
+            name: "v1",
+            category,
+            price: 681,
+            options: [
+                {
+                    name: "v1.sub tv",
+                    category,
+                    categories: [category],
+                    price: 581,
+                    longText: ["V1 tv text"]
+                }
+            ]
+        }
     });
     /**
      * Oven
