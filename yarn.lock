@@ -5617,10 +5617,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@material-design-icons/svg@npm:^0.12.1":
+  version: 0.12.1
+  resolution: "@material-design-icons/svg@npm:0.12.1"
+  checksum: c0e482fd0be54d3cc5aa84ab12bc4286443acb22bb6e0be3c5ec8e4405977031b4559a4ffbc892e59cd25f5694f65e61af647666926c0768766bfa6acd218f33
+  languageName: node
+  linkType: hard
+
 "@material-symbols/svg-400@npm:^0.4.1":
   version: 0.4.1
   resolution: "@material-symbols/svg-400@npm:0.4.1"
   checksum: 5f1dee6652b5621c768f2ca3d2feb0f9f17faef334ff98b581436cf0476cf5df616d5f6d980cb6e1d759ebc56fea9fe7eba9ae870c4c83ce90e0b035184a9624
+  languageName: node
+  linkType: hard
+
+"@material-symbols/svg-400@npm:^0.4.1":
+  version: 0.4.2
+  resolution: "@material-symbols/svg-400@npm:0.4.2"
+  checksum: c776ec99235f6ecad6ab49cf6139da963c9d215ae732e934a453cc4f67c792a451d1085e612aa9245ee84936cd1d4bcc3ce8af4d22f96b3e757ed72f66712e1c
   languageName: node
   linkType: hard
 
@@ -20986,6 +21000,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"duplexify@npm:^4.1.1":
+  version: 4.1.2
+  resolution: "duplexify@npm:4.1.2"
+  dependencies:
+    end-of-stream: ^1.4.1
+    inherits: ^2.0.3
+    readable-stream: ^3.1.1
+    stream-shift: ^1.0.0
+  checksum: 964376c61c0e92f6ed0694b3ba97c84f199413dc40ab8dfdaef80b7a7f4982fcabf796214e28ed614a5bc1ec45488a29b81e7d46fa3f5ddf65bcb118c20145ad
+  languageName: node
+  linkType: hard
+
 "dynalite@npm:^3.2.1":
   version: 3.2.2
   resolution: "dynalite@npm:3.2.2"
@@ -31930,6 +31956,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"peek-stream@npm:^1.1.3":
+  version: 1.1.3
+  resolution: "peek-stream@npm:1.1.3"
+  dependencies:
+    buffer-from: ^1.0.0
+    duplexify: ^3.5.0
+    through2: ^2.0.3
+  checksum: a0e09d6d1a8a01158a3334f20d6b1cdd91747eba24eb06a1d742eefb620385593121a76d4378cc81f77cdce6a66df0575a41041b1189c510254aec91878afc99
+  languageName: node
+  linkType: hard
+
 "pend@npm:~1.2.0":
   version: 1.2.0
   resolution: "pend@npm:1.2.0"
@@ -33669,6 +33706,17 @@ __metadata:
     inherits: ^2.0.3
     pump: ^2.0.0
   checksum: 26ca412ec8d665bd0d5e185c1b8f627728eff603440d75d22a58e421e3c66eaf86ec6fc6a6efc54808ecef65979279fa8e99b109a23ec1fa8d79f37e6978c9bd
+  languageName: node
+  linkType: hard
+
+"pumpify@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "pumpify@npm:2.0.1"
+  dependencies:
+    duplexify: ^4.1.1
+    inherits: ^2.0.3
+    pump: ^3.0.0
+  checksum: cfc96f5307ee828ef8e6eca9fe9e1ae1de0a23ca55688bfe71ea376bc126418073dab870f02b433617f421c4545726b39e31295fce9a99b78bda5f0e527a7c11
   languageName: node
   linkType: hard
 
