@@ -68,6 +68,10 @@ Resources:
               - Effect: Allow
                 Action:
                   - apigateway:POST
+
+                  # Note that AWS IAM Management Console will report the following error here:
+                  # "Invalid Action: The action apigateway:TagResource does not exist."
+                  # Still, without it, we receive an error upon deploying Amazon API Gateway.
                   - apigateway:TagResource
                 Resource:
                   - arn:aws:apigateway:*::/apis
@@ -256,6 +260,7 @@ Resources:
                 Action:
                   # Only wildcard can be used here.
                   # https://docs.aws.amazon.com/service-authorization/latest/reference/list_awslambda.html
+                  # https://docs.aws.amazon.com/lambda/latest/dg/lambda-api-permissions-ref.html#permissions-resources-eventsource
                   - lambda:CreateEventSourceMapping
                   - lambda:ListEventSourceMappings
 
@@ -263,7 +268,6 @@ Resources:
                   # caused several `xyz is not authorized to perform: lambda:GetEventSourceMapping on resource: *`
                   # errors. But still, note that, even if we managed to use the initial resource string, we'd still
                   # be relying on wildcards, which, if we think about it, is essentially the same as `Resource: *`.
-                  # TODO https://docs.aws.amazon.com/lambda/latest/dg/lambda-api-permissions-ref.html#permissions-resources-eventsource
                   - lambda:GetEventSourceMapping
                   - lambda:UpdateEventSourceMapping
                   - lambda:DeleteEventSourceMapping
