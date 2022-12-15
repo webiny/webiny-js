@@ -59,8 +59,6 @@ interface FilterItemsParams {
     };
 }
 
-const VALUES_ATTRIBUTE = "values";
-
 const extractWhereParams = (key: string) => {
     const result = key.split("_");
     const fieldId = result.shift();
@@ -122,15 +120,18 @@ const createValuePath = (params: CreateValuePathParams): string => {
     const { field, plugins, index } = params;
     const { fieldId } = field;
     const valuePathPlugin = plugins[field.type];
-    const basePath = systemFields[fieldId] ? "" : `${VALUES_ATTRIBUTE}.`;
+
+    const result: string[] = [systemFields[fieldId] ? "" : `values`];
     if (!valuePathPlugin || valuePathPlugin.canUse(field) === false) {
-        return `${basePath}${fieldId}`;
+        result.push(fieldId);
+        return result.filter(Boolean).join(".");
     }
     const path = valuePathPlugin.createPath({
         field,
         index
     });
-    return `${basePath}${path}`;
+    result.push(path);
+    return result.filter(Boolean).join(".");
 };
 
 interface ObjectFilteringParams {
@@ -382,6 +383,10 @@ const createFullTextSearch = ({
 export const filterItems = async (params: FilterItemsParams): Promise<CmsEntry[]> => {
     const { items: records, where, plugins, fields, fromStorage, fullTextSearch } = params;
 
+    const keys = Object.keys(where);
+    if (keys.length === 0) {
+        return records;
+    }
     const filters = createFilters({
         plugins,
         where,
@@ -694,7 +699,7 @@ export const buildModelFields = ({
         const valuePathPlugin = valuePathPlugins[field.type];
 
         let createPath: CmsEntryFieldFilterPathPluginParams["path"] = params => {
-            return `${VALUES_ATTRIBUTE}.${params.field.fieldId}`;
+            return `values.${params.field.fieldId}`;
         };
         if (valuePathPlugin) {
             createPath = params => {

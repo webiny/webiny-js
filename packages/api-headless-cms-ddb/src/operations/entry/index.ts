@@ -717,13 +717,14 @@ export const createEntriesStorageOperations = (
         delete where["published"];
         delete where["latest"];
         /**
-         * We need a object containing field, transformers and paths.
+         * We need an object containing field, transformers and paths.
          * Just build it here and pass on into other methods that require it to avoid mapping multiple times.
          */
         const modelFields = buildModelFields({
             plugins,
             model
         });
+
         /**
          * Filter the read items via the code.
          * It will build the filters out of the where input and transform the values it is using.
