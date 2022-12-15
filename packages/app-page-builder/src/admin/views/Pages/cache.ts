@@ -94,21 +94,29 @@ export const addPageToListCache = (cache: DataProxy, page: PbPageData): void => 
  * to the exising entry cache. Otherwise, the page list continues to show the previous revision data.
  */
 const addRevisionIdToEntryCache = (cache: DataProxy, revision: PbPageRevision): void => {
-    const gqlParams = {
-        query: GQL.GET_PAGE,
-        variables: { id: revision.pid }
-    };
+    try {
+        const gqlParams = {
+            query: GQL.GET_PAGE,
+            variables: { id: revision.pid }
+        };
 
-    const data = cache.readQuery(gqlParams);
+        const data = cache.readQuery(gqlParams);
 
-    if (!data) {
+        if (!data) {
+            return;
+        }
+
+        cache.writeQuery({
+            ...gqlParams,
+            data: dotProp.set(data, "pageBuilder.getPage.data.id", revision.id)
+        });
+    } catch {
+        /*
+         * In case the update is performed by the previous DataList view,
+         * this will throw an error because it won't find the `GET_PAGE` entry in cache to update.
+         */
         return;
     }
-
-    cache.writeQuery({
-        ...gqlParams,
-        data: dotProp.set(data, "pageBuilder.getPage.data.id", revision.id)
-    });
 };
 
 export const updateLatestRevisionInListCache = (
