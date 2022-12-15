@@ -90,7 +90,7 @@ export const GET_PAGE_IMPORT_EXPORT_TASK = gql`
 
 export interface ListPageImportExportSubTasksResponse {
     pageBuilder: {
-        listPageImportExportSubTask: {
+        listImportExportSubTask: {
             data: PageBuilderImportExportSubTask[];
             error?: {
                 message: string;
@@ -102,9 +102,9 @@ export interface ListPageImportExportSubTasksResponse {
 }
 
 export const LIST_PAGE_IMPORT_EXPORT_SUB_TASKS = gql`
-    query PbPageListPageImportExportSubTask($id: ID!, $status: PbPageImportExportTaskStatus, $limit: Int) {
+    query PbPageListPageImportExportSubTask($id: ID!, $status: PbImportExportTaskStatus, $limit: Int) {
         pageBuilder {
-            listPageImportExportSubTask(id: $id, status: $status, limit: $limit) {
+            listImportExportSubTask(id: $id, status: $status, limit: $limit) {
                 data {
                     id
                     status

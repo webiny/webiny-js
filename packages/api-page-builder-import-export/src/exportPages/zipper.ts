@@ -6,7 +6,7 @@ import * as path from "path";
 import kebabCase from "lodash/kebabCase";
 import uniqueId from "uniqid";
 import { s3Stream } from "./s3Stream";
-import { ImageFile } from "./utils";
+import { File } from "@webiny/api-file-manager/types";
 
 interface FileStreamDetails {
     stream: Readable;
@@ -14,7 +14,7 @@ interface FileStreamDetails {
 }
 
 interface ExportInfo {
-    files: ImageFile[];
+    files: File[];
     name: string;
     dataBuffer: Buffer;
 }

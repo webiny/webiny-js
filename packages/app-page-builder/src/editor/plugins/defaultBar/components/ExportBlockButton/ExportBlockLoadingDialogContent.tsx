@@ -1,21 +1,21 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { useQuery } from "@apollo/react-hooks";
-import { GET_PAGE_IMPORT_EXPORT_TASK } from "~/admin/graphql/pageImportExport.gql";
 import get from "lodash/get";
+import { useQuery } from "@apollo/react-hooks";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { Typography } from "@webiny/ui/Typography";
 import { i18n } from "@webiny/app/i18n";
-import { LoadingDialog } from "../ImportButton/styledComponents";
-import ProgressBar from "../ImportButton/ProgressBar";
-import useExportPageDialog from "./useExportPageDialog";
+import { GET_PAGE_IMPORT_EXPORT_TASK } from "~/admin/graphql/pageImportExport.gql";
+import { LoadingDialog } from "~/editor/plugins/defaultBar/components/ImportButton/styledComponents";
+import ProgressBar from "~/editor/plugins/defaultBar/components/ImportButton/ProgressBar";
+import useExportBlockDialog from "./useExportBlockDialog";
 import { ImportExportTaskStatus } from "~/types";
 
-const t = i18n.ns("app-page-builder/editor/plugins/defaultBar/importPage");
+const t = i18n.ns("app-page-builder/editor/plugins/defaultBar/importBlock");
 
-const completionMessage = t`All pages have been exported`;
-const errorMessage = t`Failed to import pages`;
+const completionMessage = t`All blocks have been exported`;
+const errorMessage = t`Failed to import blocks`;
 const pendingMessage = t`Waiting for operation status`;
-const processingMessage = t`Exporting pages`;
+const processingMessage = t`Exporting blocks`;
 
 const INTERVAL = 0.5 * 1000;
 
@@ -25,15 +25,15 @@ const MESSAGES: Record<string, string> = {
     [ImportExportTaskStatus.PENDING]: pendingMessage
 };
 
-interface ExportPageLoadingDialogContent {
+interface ExportBlockLoadingDialogContent {
     taskId: string;
 }
 
-const ExportPageLoadingDialogContent: React.FC<ExportPageLoadingDialogContent> = ({ taskId }) => {
+const ExportBlockLoadingDialogContent: React.FC<ExportBlockLoadingDialogContent> = ({ taskId }) => {
     const [completed, setCompleted] = useState<boolean>(false);
     const [error, setError] = useState<Error | null>(null);
     const { showSnackbar } = useSnackbar();
-    const { showExportPageContentDialog } = useExportPageDialog();
+    const { showExportBlockContentDialog } = useExportBlockDialog();
 
     const { data } = useQuery(GET_PAGE_IMPORT_EXPORT_TASK, {
         variables: {
@@ -45,7 +45,7 @@ const ExportPageLoadingDialogContent: React.FC<ExportPageLoadingDialogContent> =
         notifyOnNetworkStatusChange: true
     });
 
-    const pollExportPageTaskStatus = useCallback(response => {
+    const pollExportBlockTaskStatus = useCallback(response => {
         const { error, data } = get(response, "pageBuilder.getImportExportTask", {});
         if (error) {
             showSnackbar(error.message);
@@ -55,23 +55,21 @@ const ExportPageLoadingDialogContent: React.FC<ExportPageLoadingDialogContent> =
         // Handler failed task
         if (data && data.status === "failed") {
             setCompleted(true);
-            showSnackbar("Error: Failed to export pages!");
+            showSnackbar("Error: Failed to export blocks!");
             setError(data.error);
         }
 
         if (data && data.status === "completed") {
             setCompleted(true);
-            // getSubTasks();
-            showExportPageContentDialog({ exportUrl: data.data.url });
+            showExportBlockContentDialog({ exportUrl: data.data.url });
         }
     }, []);
 
-    // This component will remain as long as we stick to `/page-builder/pages` route.
     useEffect(() => {
         if (!data) {
             return;
         }
-        pollExportPageTaskStatus(data);
+        pollExportBlockTaskStatus(data);
     }, [data]);
 
     const { status, stats } = get(data, "pageBuilder.getImportExportTask.data", {
@@ -137,4 +135,4 @@ const ExportPageLoadingDialogContent: React.FC<ExportPageLoadingDialogContent> =
     );
 };
 
-export default ExportPageLoadingDialogContent;
+export default ExportBlockLoadingDialogContent;

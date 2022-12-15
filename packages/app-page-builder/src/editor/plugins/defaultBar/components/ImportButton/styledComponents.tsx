@@ -2,10 +2,10 @@ import styled from "@emotion/styled";
 import { Typography } from "@webiny/ui/Typography";
 import Accordion from "~/editor/plugins/elementSettings/components/Accordion";
 // assets
-import { ReactComponent as UploadInProgressIcon } from "./assets/undraw-uploading.svg";
-import { ReactComponent as ExportInProgressIcon } from "./assets/undraw_export_files.svg";
-import { ReactComponent as CircleIcon } from "./assets/check-circle-24dp.svg";
-import { ReactComponent as CancelIcon } from "./assets/cancel-24dp.svg";
+import { ReactComponent as UploadInProgressIcon } from "../assets/undraw-uploading.svg";
+import { ReactComponent as ExportInProgressIcon } from "../assets/undraw_export_files.svg";
+import { ReactComponent as CircleIcon } from "../assets/check-circle-24dp.svg";
+import { ReactComponent as CancelIcon } from "../assets/cancel-24dp.svg";
 
 export const ShowDetails = {
     Container: styled.div`

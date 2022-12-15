@@ -6,13 +6,13 @@ import { useDialog } from "@webiny/app-admin/hooks/useDialog";
 import { Typography } from "@webiny/ui/Typography";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import ImportPagesDetails from "./useImportPagesDetails";
-import ProgressBar from "./ProgressBar";
-import { LoadingDialog } from "./styledComponents";
+import ProgressBar from "../ProgressBar";
+import { LoadingDialog } from "../styledComponents";
 import {
     GET_PAGE_IMPORT_EXPORT_TASK,
     LIST_PAGE_IMPORT_EXPORT_SUB_TASKS
 } from "~/admin/graphql/pageImportExport.gql";
-import { PageImportExportTaskStatus } from "~/types";
+import { ImportExportTaskStatus } from "~/types";
 
 const t = i18n.ns("app-page-builder/editor/plugins/defaultBar/importPage");
 
@@ -26,9 +26,9 @@ const processingMessage = t`Importing pages`;
 const INTERVAL = 0.5 * 1000;
 
 const MESSAGES: Record<string, string> = {
-    [PageImportExportTaskStatus.COMPLETED]: completionMessage,
-    [PageImportExportTaskStatus.PROCESSING]: processingMessage,
-    [PageImportExportTaskStatus.PENDING]: pendingMessage
+    [ImportExportTaskStatus.COMPLETED]: completionMessage,
+    [ImportExportTaskStatus.PROCESSING]: processingMessage,
+    [ImportExportTaskStatus.PENDING]: pendingMessage
 };
 
 interface ImportPageLoadingDialogContentProps {
@@ -59,7 +59,7 @@ const ImportPageLoadingDialogContent: React.FC<ImportPageLoadingDialogContentPro
     });
 
     const pollExportPageTaskStatus = useCallback(response => {
-        const { error, data } = get(response, "pageBuilder.getPageImportExportTask", {});
+        const { error, data } = get(response, "pageBuilder.getImportExportTask", {});
         if (error) {
             return showSnackbar(error.message);
         }
@@ -86,7 +86,7 @@ const ImportPageLoadingDialogContent: React.FC<ImportPageLoadingDialogContentPro
         pollExportPageTaskStatus(data);
     }, [data]);
 
-    const { status, stats } = get(data, "pageBuilder.getPageImportExportTask.data", {
+    const { status, stats } = get(data, "pageBuilder.getImportExportTask.data", {
         status: "pending",
         stats: null
     });
@@ -131,8 +131,8 @@ const ImportPageLoadingDialogContent: React.FC<ImportPageLoadingDialogContentPro
                         <LoadingDialog.ProgressContainer>
                             <LoadingDialog.StatusTitle use={"body2"}>
                                 {t`{completed} of {total} completed`({
-                                    completed: stats.completed,
-                                    total: stats.total
+                                    completed: `${stats.completed}`,
+                                    total: `${stats.total}`
                                 })}
                             </LoadingDialog.StatusTitle>
                             <ProgressBar

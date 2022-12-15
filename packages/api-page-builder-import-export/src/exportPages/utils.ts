@@ -1,34 +1,15 @@
 import S3 from "aws-sdk/clients/s3";
-import { Page, PageBlock, File } from "@webiny/api-page-builder/types";
-import { FileManagerContext } from "@webiny/api-file-manager/types";
+import { Page, PageBlock } from "@webiny/api-page-builder/types";
+import { FileManagerContext, File } from "@webiny/api-file-manager/types";
 import get from "lodash/get";
-import { s3Stream } from "./s3Stream";
 import Zipper from "./zipper";
 
 export const EXPORT_PAGES_FOLDER_KEY = "WEBINY_PB_EXPORT_PAGES";
 export const EXPORT_BLOCKS_FOLDER_KEY = "WEBINY_PB_EXPORT_BLOCK";
 
-async function getFilteredFiles(files: ImageFile[]) {
-    const uniqueFileKeys = new Map<string, boolean>();
-    const promises = files.map(file => s3Stream.isFileAccessible(file.key));
-    const isFileAvailableResults = await Promise.all(promises);
-
-    const filesAvailableForDownload = [];
-    // Filter files
-    for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        // Check file accessibility
-        if (isFileAvailableResults[i] && !uniqueFileKeys.has(file.key)) {
-            filesAvailableForDownload.push(file);
-            uniqueFileKeys.set(file.key, true);
-        }
-    }
-    return filesAvailableForDownload;
-}
-
 export interface ExportedPageData {
     page: Pick<Page, "content" | "title" | "version" | "status" | "settings" | "path">;
-    files: ImageFile[];
+    files: File[];
 }
 
 export async function exportPage(
@@ -38,19 +19,18 @@ export async function exportPage(
 ): Promise<S3.ManagedUpload.SendData> {
     // Extract all files
     const files = extractFilesFromData(page.content || {});
-    // Filter files
-    const filesAvailableForDownload = await getFilteredFiles(files);
     // Extract images from page settings
     const pageSettingsImages = [
         get(page, "settings.general.image") as unknown as File,
         get(page, "settings.social.image") as unknown as File
     ].filter(image => image && image.src);
-    const pageSettingsImagesData = [];
-    // Get file data for all images inside "page.settings"
-    for (let i = 0; i < pageSettingsImages.length; i++) {
-        const { id } = pageSettingsImages[i];
-        const file = await fileManager.files.getFile(id);
-        pageSettingsImagesData.push(file);
+
+    const fileIds = [...files, ...pageSettingsImages].map(imageFile => imageFile.id);
+    // Get file data for all images
+    const imageFilesData = [];
+    if (fileIds.length > 0) {
+        const [filesData] = await fileManager.files.listFiles({ ids: fileIds });
+        imageFilesData.push(...filesData);
     }
 
     // Extract the page data in a json file and upload it to S3
@@ -63,13 +43,13 @@ export async function exportPage(
             status: page.status,
             settings: page.settings
         },
-        files: [...filesAvailableForDownload, ...pageSettingsImagesData]
+        files: imageFilesData
     };
     const pageDataBuffer = Buffer.from(JSON.stringify(pageData));
 
     const zipper = new Zipper({
         exportInfo: {
-            files: [...filesAvailableForDownload, ...pageSettingsImagesData],
+            files: imageFilesData,
             name: page.title,
             dataBuffer: pageDataBuffer
         },
@@ -81,7 +61,7 @@ export async function exportPage(
 
 export interface ExportedBlockData {
     block: Pick<PageBlock, "name" | "content" | "preview">;
-    files: ImageFile[];
+    files: File[];
 }
 
 export async function exportBlock(
@@ -91,11 +71,16 @@ export async function exportBlock(
 ): Promise<S3.ManagedUpload.SendData> {
     // Extract all files
     const files = extractFilesFromData(block.content || {});
-    // Filter files
-    const filesAvailableForDownload = await getFilteredFiles(files);
-    // Get file data for preview image
+    const fileIds = files.map(imageFile => imageFile.id);
+    // Get file data for all images
+    const imageFilesData = [];
+    if (fileIds.length > 0) {
+        const [filesData] = await fileManager.files.listFiles({ ids: fileIds });
+        imageFilesData.push(...filesData);
+    }
+    // Add block preview image file data
     if (block.preview.id) {
-        filesAvailableForDownload.push(await fileManager.files.getFile(block.preview.id));
+        imageFilesData.push(await fileManager.files.getFile(block.preview.id));
     }
 
     // Extract the block data in a json file and upload it to S3
@@ -105,13 +90,13 @@ export async function exportBlock(
             content: block.content,
             preview: block.preview
         },
-        files: filesAvailableForDownload
+        files: imageFilesData
     };
     const blockDataBuffer = Buffer.from(JSON.stringify(blockData));
 
     const zipper = new Zipper({
         exportInfo: {
-            files: filesAvailableForDownload,
+            files: imageFilesData,
             name: block.name,
             dataBuffer: blockDataBuffer
         },
@@ -121,11 +106,7 @@ export async function exportBlock(
     return zipper.process();
 }
 
-export interface ImageFile extends Omit<File, "src"> {
-    key: string;
-}
-
-export function extractFilesFromData(data: Record<string, any>, files: any[] = []): ImageFile[] {
+export function extractFilesFromData(data: Record<string, any>, files: any[] = []): File[] {
     // Base case: termination
     if (!data || typeof data !== "object") {
         return files;

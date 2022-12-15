@@ -22,7 +22,7 @@ export default new ContextPlugin<PbImportExportContext>(context => {
             });
 
             // Bail out early if category not found
-            const category = await context.pageBuilder.getCategory(categorySlug);
+            const category = await context.pageBuilder.getBlockCategory(categorySlug);
             if (!category) {
                 throw new NotFoundError(`Category with slug "${categorySlug}" not found.`);
             }

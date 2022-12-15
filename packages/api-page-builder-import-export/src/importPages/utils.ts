@@ -10,10 +10,10 @@ import path from "path";
 import yauzl from "yauzl";
 import chunk from "lodash/chunk";
 import loadJson from "load-json-file";
-import { FileInput } from "@webiny/api-file-manager/types";
+import { FileInput, File } from "@webiny/api-file-manager/types";
 import WebinyError from "@webiny/error";
 import { deleteFile } from "@webiny/api-page-builder/graphql/crud/install/utils/downloadInstallFiles";
-import { File, ImportExportTaskStatus } from "~/types";
+import { File as ImageFile, ImportExportTaskStatus } from "~/types";
 import { PbImportExportContext } from "~/graphql/types";
 import { s3Stream } from "~/exportPages/s3Stream";
 import { ExportedPageData, ExportedBlockData } from "~/exportPages/utils";
@@ -81,10 +81,10 @@ function updateImageInPageSettings(
 interface UpdateBlockPreviewImage {
     fileIdToKeyMap: Map<string, string>;
     srcPrefix: string;
-    file: File;
+    file: ImageFile;
 }
 
-function updateBlockPreviewImage(params: UpdateBlockPreviewImage): File {
+function updateBlockPreviewImage(params: UpdateBlockPreviewImage): ImageFile {
     const { file, fileIdToKeyMap, srcPrefix } = params;
     const newFile = file;
 
@@ -129,7 +129,7 @@ function updateFilesInData({ data, fileIdToKeyMap, srcPrefix }: UpdateFilesInDat
 
 interface UploadAssetsParams {
     context: PbImportExportContext;
-    filesData: FileItem[];
+    filesData: File[];
     fileUploadsData: FileUploadsData;
 }
 
@@ -332,7 +332,7 @@ export async function importBlock({
         // Upload block assets.
         const { fileIdToKeyMap } = await uploadAssets({
             context,
-            filesData: files as FileItem[],
+            filesData: files,
             fileUploadsData
         });
 

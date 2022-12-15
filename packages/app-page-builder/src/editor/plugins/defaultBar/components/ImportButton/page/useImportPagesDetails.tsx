@@ -4,7 +4,7 @@ import { Typography } from "@webiny/ui/Typography";
 import { i18n } from "@webiny/app/i18n";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
 import { Link } from "@webiny/react-router";
-import { ShowDetails } from "./styledComponents";
+import { ShowDetails } from "../styledComponents";
 import { ListPageImportExportSubTasksResponse } from "~/admin/graphql/pageImportExport.gql";
 import { PageBuilderImportExportSubTask } from "~/types";
 
@@ -21,7 +21,7 @@ const ImportPagesDetails: React.FC<ImportPagesDetailsProps> = ({ loading, result
     }
     const subtasks: PageBuilderImportExportSubTask[] = get(
         result,
-        "pageBuilder.listPageImportExportSubTask.data",
+        "pageBuilder.listImportExportSubTask.data",
         []
     );
     return (

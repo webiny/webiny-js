@@ -10,12 +10,12 @@ import { Cell, Grid } from "@webiny/ui/Grid";
 import { Form } from "@webiny/form";
 import { useUi } from "@webiny/app/hooks/useUi";
 import { validation } from "@webiny/validation";
-import { WrapperWithFileUpload } from "./index";
+import { WrapperWithFileUpload } from "../index";
 // assets
-import { ReactComponent as UploadFileIcon } from "../icons/file_upload.svg";
+import { ReactComponent as UploadFileIcon } from "~/editor/plugins/defaultBar/components/icons/file_upload.svg";
 import { ReactComponent as LinkIcon } from "~/editor/assets/icons/link.svg";
 
-const t = i18n.ns("app-page-builder/editor/plugins/defaultBar/importPage");
+const t = i18n.ns("app-page-builder/editor/plugins/defaultBar/importBlock");
 
 const contentContainer = css`
     padding: 36px 0;
@@ -32,13 +32,15 @@ const separator = css`
     margin: 0 24px;
 `;
 
-export const importPageDialogTitle = t`Import page`;
+export const importBlockDialogTitle = t`Import block`;
 
-interface ImportPageDialogContentProps {
+interface ImportBlockDialogContentProps {
     onFileLink: (url: string) => void;
 }
 
-export const ImportPageDialogContent: React.FC<ImportPageDialogContentProps> = ({ onFileLink }) => {
+export const ImportBlockDialogContent: React.FC<ImportBlockDialogContentProps> = ({
+    onFileLink
+}) => {
     const ui = useUi();
     const [showLink, setShowLink] = useState<boolean>(false);
 
@@ -56,7 +58,7 @@ export const ImportPageDialogContent: React.FC<ImportPageDialogContentProps> = (
     return (
         <div>
             <Typography use={"subtitle1"}>
-                {t`You can import page(s) by either uploading a Webiny Page Export ZIP or by pasting export file URL.`}
+                {t`You can import block(s) by either uploading a Webiny Block Export ZIP or by pasting export file URL.`}
             </Typography>
 
             {showLink ? (
@@ -72,9 +74,9 @@ export const ImportPageDialogContent: React.FC<ImportPageDialogContentProps> = (
                             <Cell span={12}>
                                 <Bind name={"url"} validators={validation.create("required,url")}>
                                     <Input
-                                        description={t`The URL has to be public. We'll use it to download the export page data file.`}
+                                        description={t`The URL has to be public. We'll use it to download the export block data file.`}
                                         label={"File URL"}
-                                        data-testid={"import-pages.input-dialog.input-url"}
+                                        data-testid={"import-blocks.input-dialog.input-url"}
                                     />
                                 </Bind>
                             </Cell>
@@ -119,13 +121,13 @@ export const ImportPageDialogContent: React.FC<ImportPageDialogContentProps> = (
     );
 };
 
-const useImportPageDialog = () => {
+const useImportBlockDialog = () => {
     const { showDialog } = useDialog();
 
     return {
-        showImportPageDialog: (onFileLink?: (url: string) => void) => {
+        showImportBlockDialog: (onFileLink?: (url: string) => void) => {
             showDialog(
-                <ImportPageDialogContent
+                <ImportBlockDialogContent
                     onFileLink={url => {
                         if (!onFileLink) {
                             return;
@@ -134,15 +136,15 @@ const useImportPageDialog = () => {
                     }}
                 />,
                 {
-                    title: importPageDialogTitle,
+                    title: importBlockDialogTitle,
                     actions: {
                         cancel: { label: t`Cancel` }
                     },
-                    dataTestId: "import-pages.input-dialog"
+                    dataTestId: "import-blocks.input-dialog"
                 }
             );
         }
     };
 };
 
-export default useImportPageDialog;
+export default useImportBlockDialog;

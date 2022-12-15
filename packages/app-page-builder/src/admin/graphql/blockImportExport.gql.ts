@@ -96,9 +96,9 @@ export interface ListBlockImportExportSubTasksResponse {
 }
 
 export const LIST_BLOCK_IMPORT_EXPORT_SUB_TASKS = gql`
-    query PbBlockListBlockImportExportSubTask($id: ID!, $status: PbBlockImportExportTaskStatus, $limit: Int) {
+    query PbBlockListBlockImportExportSubTask($id: ID!, $status: PbImportExportTaskStatus, $limit: Int) {
         pageBuilder {
-            listBlockImportExportSubTask(id: $id, status: $status, limit: $limit) {
+            listImportExportSubTask(id: $id, status: $status, limit: $limit) {
                 data {
                     id
                     status
