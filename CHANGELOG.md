@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.33.4](https://github.com/webiny/webiny-js/compare/v5.33.4-beta.0...v5.33.4) (2022-12-15)
+
+
+### Bug Fixes
+
+* add two comments [no ci] ([c3f8117](https://github.com/webiny/webiny-js/commit/c3f8117a607a9bf95bd6969a61e3836ad2127ffc))
+
+
+
+
+
 ## [5.33.4-beta.0](https://github.com/webiny/webiny-js/compare/v5.33.3...v5.33.4-beta.0) (2022-12-15)
 
 

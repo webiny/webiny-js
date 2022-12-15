@@ -1,6 +1,6 @@
 {
   "name": "@webiny/handler-http",
-  "version": "5.33.4-beta.0",
+  "version": "5.33.4",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -19,8 +19,8 @@
   "devDependencies": {
     "@babel/cli": "^7.16.0",
     "@babel/core": "^7.16.0",
-    "@webiny/cli": "^5.33.4-beta.0",
-    "@webiny/project-utils": "^5.33.4-beta.0",
+    "@webiny/cli": "^5.33.4",
+    "@webiny/project-utils": "^5.33.4",
     "merge": "^1.2.1",
     "rimraf": "^3.0.2",
     "typescript": "4.7.4"
