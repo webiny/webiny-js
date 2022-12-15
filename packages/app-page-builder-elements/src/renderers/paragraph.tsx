@@ -43,11 +43,54 @@ const Paragraph: ParagraphComponent = ({ element, as }) => {
 };
 
 export const createParagraph = () => {
-    return React.memo(Paragraph, (prevProps, nextProps) => {
-        if (prevProps.as !== nextProps.as) {
-            return false;
-        }
-
-        return elementDataPropsAreEqual(prevProps, nextProps);
+    return createElementRenderer("pb-paragraph", ({ element }) => {
+        return <p dangerouslySetInnerHTML={{ __html: element.data.text.data.text }} />;
     });
 };
+
+const createElementRenderer = (tag: string, children: any) => {
+    return function ElementRenderer({ element, before, after }) {
+        const { getElementStyles, getElementAttributes } = usePageElements();
+
+        const elementStyles = getElementStyles(element);
+        const elementAttributes = getElementAttributes(element);
+
+        return styled(
+            ({ className }) => {
+                return React.createElement(tag, {
+                    // dangerouslySetInnerHTML: { __html: value },
+                    ...elementAttributes,
+                    className,
+                    children: (
+                        <>
+                            {before ? before() : null}
+                            {children({ element })}
+                            {after ? after() : null}
+                        </>
+                    )
+                });
+            },
+            [elementStyles]
+        );
+    };
+
+    // return React.memo(
+    //     function ElementRenderer(props) {
+    //
+    //         return <Component />;
+    //     },
+    //     (prevProps, nextProps) => {
+    //         if (typeof propsAreEqual === "function") {
+    //             if (propsAreEqual(prevProps, nextProps) === false) {
+    //                 return false;
+    //             }
+    //         }
+    //
+    //         return elementDataPropsAreEqual(prevProps, nextProps);
+    //     }
+    // );
+};
+
+// {
+//     propsAreEqual: (prevProps, nextProps) => prevProps.as === nextProps.as
+// }
