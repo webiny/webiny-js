@@ -15065,6 +15065,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "api-page-builder-export-pages-process@workspace:apps/api/pageBuilder/exportPages/process"
   dependencies:
+    "@webiny/api-file-manager": ^5.33.2
+    "@webiny/api-file-manager-ddb": ^5.33.2
+    "@webiny/api-file-manager-s3": ^5.33.2
     "@webiny/api-i18n": ^5.33.2
     "@webiny/api-i18n-content": ^5.33.2
     "@webiny/api-i18n-ddb": ^5.33.2
