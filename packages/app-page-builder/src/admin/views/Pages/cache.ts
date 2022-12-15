@@ -89,10 +89,33 @@ export const addPageToListCache = (cache: DataProxy, page: PbPageData): void => 
     });
 };
 
+/*
+ * Since ACO is using GET_PAGE instead of LIST_PAGES to fetch pages information, we need to bind the newly created revision id
+ * to the exising entry cache. Otherwise, the page list continues to show the previous revision data.
+ */
+const addRevisionIdToEntryCache = (cache: DataProxy, revision: PbPageRevision): void => {
+    const gqlParams = {
+        query: GQL.GET_PAGE,
+        variables: { id: revision.pid }
+    };
+
+    const data = cache.readQuery(gqlParams);
+
+    if (!data) {
+        return;
+    }
+
+    cache.writeQuery({
+        ...gqlParams,
+        data: dotProp.set(data, "pageBuilder.getPage.data.id", revision.id)
+    });
+};
+
 export const updateLatestRevisionInListCache = (
     cache: DataProxy,
     revision: PbPageRevision
 ): void => {
+    addRevisionIdToEntryCache(cache, revision);
     modifyCacheForAllListPagesQuery(cache, variables => {
         const gqlParams = { query: GQL.LIST_PAGES, variables };
         const data = cache.readQuery(gqlParams);

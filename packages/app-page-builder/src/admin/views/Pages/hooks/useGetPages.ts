@@ -2,7 +2,7 @@ import { LinkItem } from "@webiny/app-folders/types";
 import { GetPageQueryResponse, GetPageQueryVariables } from "~/pageEditor/graphql";
 import { GET_PAGE } from "~/admin/graphql/pages";
 import { useApolloClient } from "@apollo/react-hooks";
-import { PagesLinksActions, PbPageDataLink, Loading } from "~/types";
+import { PagesLinksActions, PbPageDataLink, Loading, PbPageData } from "~/types";
 import { useEffect, useState, SetStateAction, Dispatch } from "react";
 import { FOLDER_ID_DEFAULT } from "~/admin/constants/folders";
 
@@ -55,6 +55,25 @@ const useGetPages = (links: LinkItem[], folderId = FOLDER_ID_DEFAULT) => {
         );
     };
 
+    const updatePage = (page: PbPageData) => {
+        setPages(prevPages => {
+            const pageIndex = prevPages.findIndex(f => f.pid === page.pid);
+
+            if (pageIndex === -1) {
+                return prevPages;
+            }
+
+            return [
+                ...prevPages.slice(0, pageIndex),
+                {
+                    ...prevPages[pageIndex],
+                    ...page
+                },
+                ...prevPages.slice(pageIndex + 1)
+            ];
+        });
+    };
+
     useEffect(() => {
         setTimes(0);
     }, [folderId]);
@@ -76,6 +95,28 @@ const useGetPages = (links: LinkItem[], folderId = FOLDER_ID_DEFAULT) => {
 
         getPagesData();
     }, [links.map(link => link.id).join(".")]);
+
+    useEffect(() => {
+        links.map(link => {
+            return client
+                .watchQuery<GetPageQueryResponse, GetPageQueryVariables>({
+                    query: GET_PAGE,
+                    variables: { id: link.id }
+                })
+                .subscribe({
+                    next(response) {
+                        const { data, error } = response.data.pageBuilder.getPage;
+
+                        // No need to continue in case of error or missing data
+                        if (!data || error) {
+                            return;
+                        }
+
+                        updatePage(data);
+                    }
+                });
+        });
+    }, []);
 
     return {
         pages,
