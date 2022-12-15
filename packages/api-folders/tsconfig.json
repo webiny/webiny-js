@@ -40,6 +40,9 @@
     },
     {
       "path": "../plugins"
+    },
+    {
+      "path": "../pubsub"
     }
   ],
   "compilerOptions": {
@@ -73,7 +76,9 @@
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
       "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"]
+      "@webiny/plugins": ["../plugins/src"],
+      "@webiny/pubsub/*": ["../pubsub/src/*"],
+      "@webiny/pubsub": ["../pubsub/src"]
     },
     "baseUrl": "."
   }

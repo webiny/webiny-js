@@ -10822,6 +10822,7 @@ __metadata:
     "@webiny/handler-graphql": ^5.33.2
     "@webiny/plugins": ^5.33.2
     "@webiny/project-utils": ^5.33.2
+    "@webiny/pubsub": ^5.33.2
     joi: ^17.6.0
     mdbid: ^1.0.0
     rimraf: ^3.0.2

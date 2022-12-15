@@ -2,6 +2,7 @@ import { TenancyContext } from "@webiny/api-tenancy/types";
 import { Context as BaseContext } from "@webiny/handler/types";
 import { I18NContext } from "@webiny/api-i18n/types";
 import { SecurityContext, SecurityIdentity } from "@webiny/api-security/types";
+import { Topic } from "@webiny/pubsub/types";
 
 export interface CreatedBy {
     id: string;
@@ -76,6 +77,32 @@ export type StorageOperationsCreateFolderParams = CreateFolderParams;
 export type StorageOperationsUpdateFolderParams = UpdateFolderParams;
 export type StorageOperationsDeleteFolderParams = DeleteFolderParams;
 
+export interface OnFolderBeforeCreateTopicParams {
+    folder: Folder;
+}
+
+export interface OnFolderAfterCreateTopicParams {
+    folder: Folder;
+}
+
+export interface OnFolderBeforeUpdateTopicParams {
+    folder: Folder;
+    original: Folder;
+}
+
+export interface OnFolderAfterUpdateTopicParams {
+    folder: Folder;
+    original: Folder;
+}
+
+export interface OnFolderBeforeDeleteTopicParams {
+    folder: Folder;
+}
+
+export interface OnFolderAfterDeleteTopicParams {
+    folder: Folder;
+}
+
 export interface Link {
     id: string;
     linkId: string;
@@ -114,6 +141,12 @@ export interface DeleteLinkParams {
     link: Link;
 }
 
+export interface DeleteLinksParams {
+    tenant: string;
+    locale: string;
+    folderIds: string[];
+}
+
 export interface StorageOperationsGetLinkParams {
     id?: string;
     folderId?: string;
@@ -134,6 +167,41 @@ export type StorageOperationListLinksResponse = ListLinksResponse;
 export type StorageOperationsCreateLinkParams = CreateLinkParams;
 export type StorageOperationsUpdateLinkParams = UpdateLinkParams;
 export type StorageOperationsDeleteLinkParams = DeleteLinkParams;
+export type StorageOperationsDeleteLinksParams = DeleteLinksParams;
+
+export interface OnLinkBeforeCreateTopicParams {
+    link: Link;
+}
+
+export interface OnLinkAfterCreateTopicParams {
+    link: Link;
+}
+
+export interface OnLinkBeforeUpdateTopicParams {
+    link: Link;
+    original: Link;
+}
+
+export interface OnLinkAfterUpdateTopicParams {
+    link: Link;
+    original: Link;
+}
+
+export interface OnLinkBeforeDeleteTopicParams {
+    link: Link;
+}
+
+export interface OnLinkAfterDeleteTopicParams {
+    link: Link;
+}
+
+export interface OnLinkBeforeDeleteBatchTopicParams {
+    folderIds: string[];
+}
+
+export interface OnLinkAfterDeleteBatchTopicParams {
+    folderIds: string[];
+}
 
 export interface FoldersContext extends BaseContext, I18NContext, TenancyContext, SecurityContext {
     folders: Folders;
@@ -147,6 +215,12 @@ export interface IFolders {
     createFolder(input: FolderInput): Promise<Folder>;
     updateFolder(id: string, input: Partial<Folder>): Promise<Folder>;
     deleteFolder(id: string): Promise<void>;
+    onFolderBeforeCreate: Topic<OnFolderBeforeCreateTopicParams>;
+    onFolderAfterCreate: Topic<OnFolderAfterCreateTopicParams>;
+    onFolderBeforeUpdate: Topic<OnFolderBeforeUpdateTopicParams>;
+    onFolderAfterUpdate: Topic<OnFolderAfterUpdateTopicParams>;
+    onFolderBeforeDelete: Topic<OnFolderBeforeDeleteTopicParams>;
+    onFolderAfterDelete: Topic<OnFolderAfterDeleteTopicParams>;
 }
 
 export interface ILinks {
@@ -155,6 +229,15 @@ export interface ILinks {
     createLink(input: LinkInput): Promise<Link>;
     updateLink(id: string, input: Partial<Link>): Promise<Link>;
     deleteLink(id: string): Promise<void>;
+    deleteLinks(folderIds: string[]): Promise<void>;
+    onLinkBeforeCreate: Topic<OnLinkBeforeCreateTopicParams>;
+    onLinkAfterCreate: Topic<OnLinkAfterCreateTopicParams>;
+    onLinkBeforeUpdate: Topic<OnLinkBeforeUpdateTopicParams>;
+    onLinkAfterUpdate: Topic<OnLinkAfterUpdateTopicParams>;
+    onLinkBeforeDelete: Topic<OnLinkBeforeDeleteTopicParams>;
+    onLinkAfterDelete: Topic<OnLinkAfterDeleteTopicParams>;
+    onLinkBeforeDeleteBatch: Topic<OnLinkBeforeDeleteBatchTopicParams>;
+    onLinkAfterDeleteBatch: Topic<OnLinkAfterDeleteBatchTopicParams>;
 }
 
 export interface FoldersConfig {
@@ -180,4 +263,5 @@ export interface LinksStorageOperations {
     createLink(params: StorageOperationsCreateLinkParams): Promise<Link>;
     updateLink(params: StorageOperationsUpdateLinkParams): Promise<Link>;
     deleteLink(params: StorageOperationsDeleteLinkParams): Promise<void>;
+    deleteLinks(params: StorageOperationsDeleteLinksParams): Promise<void>;
 }

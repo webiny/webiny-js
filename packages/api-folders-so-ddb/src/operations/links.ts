@@ -2,6 +2,7 @@ import { get } from "@webiny/db-dynamodb/utils/get";
 import { DbItem, queryAll, queryOne } from "@webiny/db-dynamodb/utils/query";
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
 import { decodeCursor, encodeCursor } from "@webiny/db-dynamodb/utils/cursor";
+import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
 import WebinyError from "@webiny/error";
 
 import {
@@ -9,7 +10,8 @@ import {
     LinksStorageOperations,
     StorageOperationListLinksResponse
 } from "@webiny/api-folders/types";
-import { Entity } from "dynamodb-toolbox";
+import { Entity, Table } from "dynamodb-toolbox";
+
 import { DataContainer } from "~/types";
 
 const createLinkGsiPartitionKey = ({
@@ -39,7 +41,10 @@ const createLinkGsiKeys = ({
     };
 };
 
-export const createLinksStorageOperations = (entity: Entity<any>): LinksStorageOperations => {
+export const createLinksStorageOperations = (
+    entity: Entity<any>,
+    table: Table
+): LinksStorageOperations => {
     return {
         async createLink({ link }): Promise<Link> {
             const keys = {
@@ -171,6 +176,41 @@ export const createLinksStorageOperations = (entity: Entity<any>): LinksStorageO
                     message: "Could not delete link.",
                     code: "DELETE_LINK_ERROR",
                     data: { link }
+                });
+            }
+        },
+
+        async deleteLinks({ tenant, locale, folderIds }) {
+            try {
+                await Promise.all(
+                    folderIds.map(async folderId => {
+                        const items = await queryAll<DataContainer<Link>>({
+                            entity,
+                            partitionKey: createLinkGsiPartitionKey({ tenant, locale, folderId }),
+                            options: {
+                                index: "GSI1",
+                                beginsWith: ""
+                            }
+                        });
+
+                        const deleteItems = items.map(item => {
+                            return entity.deleteBatch({
+                                PK: item.PK,
+                                SK: item.SK
+                            });
+                        });
+
+                        await batchWriteAll({
+                            table,
+                            items: deleteItems
+                        });
+                    })
+                );
+            } catch (error) {
+                throw WebinyError.from(error, {
+                    message: "Could not batch delete links.",
+                    code: "DELETE_LINKS_ERROR",
+                    data: { tenant, locale, folderIds }
                 });
             }
         }

@@ -21,6 +21,12 @@
       "path": "../../../packages/api-file-manager-s3/tsconfig.build.json"
     },
     {
+      "path": "../../../packages/api-folders/tsconfig.build.json"
+    },
+    {
+      "path": "../../../packages/api-folders-so-ddb/tsconfig.build.json"
+    },
+    {
       "path": "../../../packages/api-form-builder/tsconfig.build.json"
     },
     {
@@ -118,6 +124,10 @@
       "@webiny/api-file-manager-ddb": ["../../../packages/api-file-manager-ddb/src"],
       "@webiny/api-file-manager-s3/*": ["../../../packages/api-file-manager-s3/src/*"],
       "@webiny/api-file-manager-s3": ["../../../packages/api-file-manager-s3/src"],
+      "@webiny/api-folders/*": ["../../../packages/api-folders/src/*"],
+      "@webiny/api-folders": ["../../../packages/api-folders/src"],
+      "@webiny/api-folders-so-ddb/*": ["../../../packages/api-folders-so-ddb/src/*"],
+      "@webiny/api-folders-so-ddb": ["../../../packages/api-folders-so-ddb/src"],
       "@webiny/api-form-builder/*": ["../../../packages/api-form-builder/src/*"],
       "@webiny/api-form-builder": ["../../../packages/api-form-builder/src"],
       "@webiny/api-form-builder-so-ddb/*": ["../../../packages/api-form-builder-so-ddb/src/*"],
