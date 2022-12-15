@@ -2,6 +2,9 @@
   "extends": "../../../../../tsconfig.json",
   "include": ["src"],
   "references": [
+    { "path": "../../../../../packages/api-file-manager/tsconfig.build.json" },
+    { "path": "../../../../../packages/api-file-manager-ddb/tsconfig.build.json" },
+    { "path": "../../../../../packages/api-file-manager-s3/tsconfig.build.json" },
     { "path": "../../../../../packages/api-i18n/tsconfig.build.json" },
     { "path": "../../../../../packages/api-i18n-content/tsconfig.build.json" },
     { "path": "../../../../../packages/api-i18n-ddb/tsconfig.build.json" },
@@ -21,6 +24,12 @@
   "compilerOptions": {
     "paths": {
       "~/*": ["./src/*"],
+      "@webiny/api-file-manager/*": ["../../../../../packages/api-file-manager/src/*"],
+      "@webiny/api-file-manager": ["../../../../../packages/api-file-manager/src"],
+      "@webiny/api-file-manager-ddb/*": ["../../../../../packages/api-file-manager-ddb/src/*"],
+      "@webiny/api-file-manager-ddb": ["../../../../../packages/api-file-manager-ddb/src"],
+      "@webiny/api-file-manager-s3/*": ["../../../../../packages/api-file-manager-s3/src/*"],
+      "@webiny/api-file-manager-s3": ["../../../../../packages/api-file-manager-s3/src"],
       "@webiny/api-i18n/*": ["../../../../../packages/api-i18n/src/*"],
       "@webiny/api-i18n": ["../../../../../packages/api-i18n/src"],
       "@webiny/api-i18n-content/*": ["../../../../../packages/api-i18n-content/src/*"],
