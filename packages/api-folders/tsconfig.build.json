@@ -40,6 +40,9 @@
     },
     {
       "path": "../plugins/tsconfig.build.json"
+    },
+    {
+      "path": "../pubsub/tsconfig.build.json"
     }
   ],
   "compilerOptions": {

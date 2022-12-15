@@ -5,6 +5,7 @@
 import mdbid from "mdbid";
 import WebinyError from "@webiny/error";
 import { NotFoundError } from "@webiny/handler-graphql";
+import { createTopic } from "@webiny/pubsub";
 import joi from "joi";
 
 import {
@@ -13,7 +14,15 @@ import {
     Link,
     LinkInput,
     ListLinksParams,
-    ListLinksResponse
+    ListLinksResponse,
+    OnLinkAfterCreateTopicParams,
+    OnLinkAfterDeleteBatchTopicParams,
+    OnLinkAfterDeleteTopicParams,
+    OnLinkAfterUpdateTopicParams,
+    OnLinkBeforeCreateTopicParams,
+    OnLinkBeforeDeleteBatchTopicParams,
+    OnLinkBeforeDeleteTopicParams,
+    OnLinkBeforeUpdateTopicParams
 } from "~/types";
 
 const requiredString = joi.string().required();
@@ -35,7 +44,44 @@ export const createLinksContext = async ({
     getIdentity,
     storageOperations
 }: FoldersConfig): Promise<ILinks> => {
+    // create
+    const onLinkBeforeCreate = createTopic<OnLinkBeforeCreateTopicParams>(
+        "folders.onLinkBeforeCreate"
+    );
+    const onLinkAfterCreate = createTopic<OnLinkAfterCreateTopicParams>(
+        "folders.onLinkAfterCreate"
+    );
+    // update
+    const onLinkBeforeUpdate = createTopic<OnLinkBeforeUpdateTopicParams>(
+        "folders.onLinkBeforeUpdate"
+    );
+    const onLinkAfterUpdate = createTopic<OnLinkAfterUpdateTopicParams>(
+        "folders.onLinkAfterUpdate"
+    );
+    // delete
+    const onLinkBeforeDelete = createTopic<OnLinkBeforeDeleteTopicParams>(
+        "folders.onLinkBeforeDelete"
+    );
+    const onLinkAfterDelete = createTopic<OnLinkAfterDeleteTopicParams>(
+        "folders.onLinkAfterDelete"
+    );
+    // delete batch
+    const onLinkBeforeDeleteBatch = createTopic<OnLinkBeforeDeleteBatchTopicParams>(
+        "folders.onLinkBeforeDeleteBatch"
+    );
+    const onLinkAfterDeleteBatch = createTopic<OnLinkAfterDeleteBatchTopicParams>(
+        "folders.onLinkAfterDeleteBatch"
+    );
+
     return {
+        onLinkBeforeCreate,
+        onLinkAfterCreate,
+        onLinkBeforeUpdate,
+        onLinkAfterUpdate,
+        onLinkBeforeDelete,
+        onLinkAfterDelete,
+        onLinkBeforeDeleteBatch,
+        onLinkAfterDeleteBatch,
         async getLink(id: string): Promise<Link> {
             const tenant = getTenantId();
             const locale = getLocaleCode();
@@ -110,7 +156,14 @@ export const createLinksContext = async ({
             };
 
             try {
-                return await storageOperations.createLink({ link });
+                await onLinkBeforeCreate.publish({
+                    link
+                });
+                const result = await storageOperations.createLink({ link });
+                await onLinkAfterCreate.publish({
+                    link: result
+                });
+                return result;
             } catch (error) {
                 throw WebinyError.from(error, {
                     message: "Could not create link.",
@@ -138,7 +191,16 @@ export const createLinksContext = async ({
             };
 
             try {
-                return await storageOperations.updateLink({ original, link });
+                await onLinkBeforeUpdate.publish({
+                    link,
+                    original
+                });
+                const result = await storageOperations.updateLink({ original, link });
+                await onLinkAfterUpdate.publish({
+                    link: result,
+                    original
+                });
+                return result;
             } catch (error) {
                 throw new WebinyError(
                     error.message || "Could not update link.",
@@ -161,13 +223,44 @@ export const createLinksContext = async ({
             }
 
             try {
-                await storageOperations.deleteLink({ link });
+                await onLinkBeforeDelete.publish({
+                    link
+                });
+                const result = await storageOperations.deleteLink({ link });
+                await onLinkAfterDelete.publish({
+                    link
+                });
+                return result;
             } catch (error) {
                 throw new WebinyError(
                     error.message || "Could not delete link.",
                     error.code || "DELETE_LINK_ERROR",
                     {
                         link
+                    }
+                );
+            }
+        },
+
+        async deleteLinks(folderIds: string[]): Promise<void> {
+            const tenant = getTenantId();
+            const locale = getLocaleCode();
+
+            try {
+                await onLinkBeforeDeleteBatch.publish({
+                    folderIds
+                });
+                const result = await storageOperations.deleteLinks({ tenant, locale, folderIds });
+                await onLinkAfterDeleteBatch.publish({
+                    folderIds
+                });
+                return result;
+            } catch (error) {
+                throw new WebinyError(
+                    error.message || "Could not batch delete links.",
+                    error.code || "DELETE_LINKS_ERROR",
+                    {
+                        folderIds
                     }
                 );
             }
