@@ -10,12 +10,19 @@ import set from "lodash/fp/set";
 import { Bind } from "./Bind";
 import ValidationError from "./ValidationError";
 import { useContext, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react";
-import { BindComponentProps, FormAPI, FormProps, FormData, Validation } from "~/types";
+import {
+    BindComponentProps,
+    FormAPI,
+    FormProps,
+    GenericFormData,
+    UseBindHook,
+    Validation
+} from "~/types";
 import { Validator } from "@webiny/validation/types";
 
-interface State {
-    data: FormData;
-    originalData: FormData;
+interface State<T extends GenericFormData = GenericFormData> {
+    data: T;
+    originalData: T;
     wasSubmitted: boolean;
     validation: Validation;
 }
@@ -35,11 +42,11 @@ interface OnValidateCallable {
 
 export const FormContext = React.createContext<FormAPI>(undefined as unknown as FormAPI);
 
-export const useForm = () => {
-    return useContext(FormContext);
+export const useForm = <T extends GenericFormData = GenericFormData>() => {
+    return useContext(FormContext) as FormAPI<T>;
 };
 
-export const useBind = (props: BindComponentProps) => {
+export function useBind<T = any>(props: BindComponentProps<T>): UseBindHook<T> {
     const form = useForm();
 
     useEffect(() => {
@@ -50,7 +57,7 @@ export const useBind = (props: BindComponentProps) => {
 
     // @ts-ignore
     return form.createField(props);
-};
+}
 
 interface InputRecord {
     defaultValue: unknown;
@@ -62,15 +69,18 @@ interface InputRecord {
 //     data: FormData;
 // }
 
-export const Form = React.forwardRef<unknown, FormProps>(function Form(props, ref) {
-    const [state, setState] = useState<State>({
-        data: props.data || {},
-        originalData: props.data || {},
+function FormInner<T extends GenericFormData = GenericFormData>(
+    props: FormProps<T>,
+    ref: React.ForwardedRef<any>
+) {
+    const [state, setState] = useState<State<T>>({
+        data: props.data as T,
+        originalData: (props.data || {}) as T,
         wasSubmitted: false,
         validation: {}
     });
 
-    const [prevData, setPrevData] = useState<FormData | null>(null);
+    const [prevData, setPrevData] = useState<Partial<T> | null>(null);
 
     // This simulates "getDerivedStateFromProps"
     if (props.data !== prevData) {
@@ -82,8 +92,8 @@ export const Form = React.forwardRef<unknown, FormProps>(function Form(props, re
         if (!lodashIsEqual(state.originalData, props.data)) {
             setState(state => ({
                 ...state,
-                data: props.data || {},
-                originalData: props.data || {},
+                data: (props.data || {}) as T,
+                originalData: (props.data || {}) as T,
                 validation: {}
             }));
         }
@@ -162,10 +172,10 @@ export const Form = React.forwardRef<unknown, FormProps>(function Form(props, re
     /**
      * We need to cast to avoid a lot of casting later on.
      */
-    const formRef = useRef<FormAPI>(undefined as unknown as FormAPI);
-    const stateRef = useRef<State>({
-        data: {},
-        originalData: {},
+    const formRef = useRef<FormAPI<T>>(undefined as unknown as FormAPI<T>);
+    const stateRef = useRef<State<T>>({
+        data: {} as T,
+        originalData: {} as T,
         validation: [],
         wasSubmitted: false
     });
@@ -176,7 +186,7 @@ export const Form = React.forwardRef<unknown, FormProps>(function Form(props, re
                 return;
             }
             delete inputs.current[name];
-            setState((state: State) => {
+            setState((state: State<T>) => {
                 const validation = { ...state.validation };
                 delete validation[name];
                 return { ...state, validation };
@@ -193,7 +203,7 @@ export const Form = React.forwardRef<unknown, FormProps>(function Form(props, re
 
             // call the Form onChange with updated data
             if (typeof props.onChange === "function") {
-                props.onChange({ ...formRef.current.data }, formRef.current);
+                props.onChange({ ...formRef.current.data } as T, formRef.current);
             }
 
             // Execute onAfterChange
@@ -206,7 +216,9 @@ export const Form = React.forwardRef<unknown, FormProps>(function Form(props, re
     });
 
     useImperativeHandle(ref, () => ({
-        submit: (ev: React.SyntheticEvent) => formRef.current.submit(ev)
+        submit: (ev: React.SyntheticEvent) => {
+            formRef.current.submit(ev);
+        }
     }));
 
     const executeValidators = async (
@@ -266,7 +278,7 @@ export const Form = React.forwardRef<unknown, FormProps>(function Form(props, re
                 });
 
                 if (props.onSubmit) {
-                    return props.onSubmit(data, formRef.current);
+                    return props.onSubmit(data as T, formRef.current);
                 }
                 return;
             }
@@ -275,13 +287,13 @@ export const Form = React.forwardRef<unknown, FormProps>(function Form(props, re
     };
 
     const validate = async () => {
-        const { data = {}, validation = {} } = state;
+        const { data, validation = {} } = state;
         const promises = Object.keys(inputs.current).map(async (name): Promise<boolean> => {
             const { validators } = inputs.current[name];
             if (!validators || validators.length === 0) {
                 return true;
             }
-            const hasValue = !!data[name];
+            const hasValue = Boolean(data[name]);
             const isInputValid = validation[name] ? validation[name].isValid : undefined;
             const shouldValidate = !hasValue || (hasValue && isInputValid !== true);
             if (!shouldValidate) {
@@ -296,7 +308,7 @@ export const Form = React.forwardRef<unknown, FormProps>(function Form(props, re
 
         const results = await Promise.all(promises);
         // all values must be true to pass the validation
-        return results.every(value => value === true);
+        return results.every(value => value);
     };
 
     const validateInput = async (name: string) => {
@@ -451,7 +463,7 @@ export const Form = React.forwardRef<unknown, FormProps>(function Form(props, re
         };
     };
 
-    const getFormRef = (): FormAPI => ({
+    const getFormRef = (): FormAPI<T> => ({
         data: state.data,
         setValue,
         validate,
@@ -488,7 +500,11 @@ export const Form = React.forwardRef<unknown, FormProps>(function Form(props, re
             )}
         </FormContext.Provider>
     );
-});
+}
+
+export const Form = React.forwardRef(FormInner) as (<T extends GenericFormData = GenericFormData>(
+    props: FormProps<T> & { ref?: React.ForwardedRef<any> }
+) => ReturnType<typeof FormInner<T>>) & { defaultProps?: Partial<FormProps> | undefined };
 
 Form.defaultProps = {
     data: {},
