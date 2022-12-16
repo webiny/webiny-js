@@ -6,7 +6,7 @@ import { DialogTitle, DialogContent, DialogOnClose } from "@webiny/ui/Dialog";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { CircularProgress } from "@webiny/ui/Progress";
-import { Form } from "@webiny/form";
+import { Form, FormOnSubmit } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import { i18n } from "@webiny/app/i18n";
 import { useSnackbar } from "@webiny/app-admin";
@@ -33,7 +33,7 @@ export const FolderDialogCreate: React.FC<Props> = ({ type, onClose, open, paren
     const [dialogOpen, setDialogOpen] = useState(false);
     const { showSnackbar } = useSnackbar();
 
-    const onSubmit = async (data: SubmitData) => {
+    const onSubmit: FormOnSubmit<SubmitData> = async data => {
         try {
             await createFolder({
                 ...data,
@@ -54,11 +54,7 @@ export const FolderDialogCreate: React.FC<Props> = ({ type, onClose, open, paren
     return (
         <DialogContainer open={dialogOpen} onClose={onClose}>
             {dialogOpen && (
-                <Form
-                    onSubmit={data => {
-                        onSubmit(data as unknown as SubmitData);
-                    }}
-                >
+                <Form onSubmit={onSubmit}>
                     {({ Bind, submit }) => (
                         <>
                             {loading.CREATE_FOLDER && (
@@ -102,13 +98,7 @@ export const FolderDialogCreate: React.FC<Props> = ({ type, onClose, open, paren
                                 >
                                     {t`Cancel`}
                                 </ButtonDefault>
-                                <ButtonPrimary
-                                    onClick={e => {
-                                        submit(e);
-                                    }}
-                                >
-                                    {t`Create Folder`}
-                                </ButtonPrimary>
+                                <ButtonPrimary onClick={submit}>{t`Create Folder`}</ButtonPrimary>
                             </DialogActions>
                         </>
                     )}
