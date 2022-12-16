@@ -281,6 +281,14 @@ jobs:
           --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"region":"eu-central-1"}'
 
-      - name: Build "api" project application
+      - name: Build "api" app
         working-directory: test-project
         run: yarn webiny ws run build --folder api --env dev
+
+      - name: Build "admin" app
+        working-directory: test-project
+        run: yarn webiny ws run build --scope admin --env=dev
+
+      - name: Build "website" app
+        working-directory: test-project
+        run: yarn webiny ws run build --scope website --env=dev
