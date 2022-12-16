@@ -55,7 +55,7 @@ export const Main = ({ folderId }: Props) => {
         deleteLink
     } = useLinks(folderId || FOLDER_ID_DEFAULT);
 
-    const { pages = undefined, loading: pagesLoading } = useGetPages(
+    const { pages, loading: pagesLoading } = useGetPages(
         links,
         linksLoading as Loading<LinksActions>,
         folderId
