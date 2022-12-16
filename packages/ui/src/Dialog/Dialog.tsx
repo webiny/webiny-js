@@ -13,6 +13,7 @@ import {
     DialogButton as RmwcDialogButton,
     DialogButtonProps as RmwcDialogButtonProps
 } from "@rmwc/dialog";
+import { css } from "emotion";
 import { getClasses } from "~/Helpers";
 
 export type DialogOnClose = (event: DialogOnCloseEventT) => void;
@@ -101,11 +102,17 @@ export interface DialogActionsProps extends RmwcDialogActionsProps {
     style?: React.CSSProperties;
 }
 
+const addMargin = css`
+    button:last-of-type {
+        margin-left: 8px;
+    }
+`;
+
 /**
  * Can be used to show accept and cancel buttons.
  */
 export const DialogActions: React.FC<DialogActionsProps> = props => (
-    <RmwcDialogActions {...getClasses(props, "webiny-ui-dialog__actions")} />
+    <RmwcDialogActions {...getClasses(props, [addMargin, "webiny-ui-dialog__actions"])} />
 );
 
 interface DialogButtonProps extends RmwcDialogButtonProps {
