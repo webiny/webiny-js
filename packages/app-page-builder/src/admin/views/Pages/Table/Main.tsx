@@ -3,6 +3,7 @@ import React, { useCallback, useState } from "react";
 import debounce from "lodash/debounce";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import { FolderDialogCreate, useFolders, useLinks } from "@webiny/app-folders";
+import { useRouter } from "@webiny/react-router";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
 
@@ -46,13 +47,14 @@ const getCurrentFolderList = (
 };
 
 export const Main = ({ folderId }: Props) => {
+    const { history, location } = useRouter();
+
     const { folders = [], loading: foldersLoading } = useFolders(FOLDER_TYPE);
     const {
         links,
         loading: linksLoading,
         meta,
-        listLinks,
-        deleteLink
+        listLinks
     } = useLinks(folderId || FOLDER_ID_DEFAULT);
 
     const { pages, loading: pagesLoading } = useGetPages(links, folderId);
@@ -70,7 +72,10 @@ export const Main = ({ folderId }: Props) => {
 
     const [showPreviewDrawer, setPreviewDrawer] = useState(false);
     const openPreviewDrawer = useCallback(() => setPreviewDrawer(true), []);
-    const closePreviewDrawer = useCallback(() => setPreviewDrawer(false), []);
+    const closePreviewDrawer = useCallback(() => {
+        removeUrlParam("id");
+        setPreviewDrawer(false);
+    }, []);
 
     const canCreate = useCanCreatePage();
 
@@ -97,6 +102,12 @@ export const Main = ({ folderId }: Props) => {
         }, 200),
         [meta]
     );
+
+    const removeUrlParam = (param: string) => {
+        const params = new URLSearchParams(location.search);
+        params.delete(param);
+        history.push(`${location.pathname}?${params.toString()}`);
+    };
 
     return (
         <>
@@ -137,7 +148,6 @@ export const Main = ({ folderId }: Props) => {
                                         linksLoading.LIST_LINKS ||
                                         foldersLoading.LIST_FOLDERS
                                     }
-                                    onDeletePage={deleteLink}
                                     openPreviewDrawer={openPreviewDrawer}
                                 />
                             </Scrollbar>
