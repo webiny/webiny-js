@@ -7,7 +7,6 @@ import { PluginsContainer } from "@webiny/plugins";
 import { Field } from "./types";
 import { getMappedPlugins } from "./mapPlugins";
 import { extractWhereParams } from "./where";
-import { systemFields } from "~/operations/entry/systemFields";
 import { transformValue } from "./transform";
 
 interface GetFilterPluginParams {
@@ -30,18 +29,21 @@ const getFilterPlugin = (params: GetFilterPluginParams) => {
 };
 
 interface CreateValuePathParams {
-    field: Pick<CmsModelField, "id" | "storageId" | "fieldId" | "type">;
+    field: Field;
     plugins: Record<string, CmsEntryFieldFilterPathPlugin>;
     index?: number;
 }
 const createValuePath = (params: CreateValuePathParams): string => {
     const { field, plugins, index } = params;
-    const { fieldId } = field;
     const valuePathPlugin = plugins[field.type];
 
-    const result: string[] = [systemFields[fieldId] ? "" : `values`];
+    const result: string[] = [];
     if (!valuePathPlugin || valuePathPlugin.canUse(field) === false) {
-        result.push(fieldId);
+        result.push(
+            field.createPath({
+                field
+            })
+        );
         return result.filter(Boolean).join(".");
     }
     const path = valuePathPlugin.createPath({
@@ -207,16 +209,11 @@ export const createFilters = (params: CreateFiltersParams): ItemFilter[] => {
                     operation: propertyOperation
                 });
 
-                const basePath = createValuePath({
-                    field,
-                    plugins: valuePathPlugins
-                });
-
-                const multiValuesPath = field.multipleValues ? "%s." : "";
+                const multiValue = field.multipleValues ? ".*." : ".";
 
                 filters.push({
                     fieldId,
-                    path: `${basePath}.${multiValuesPath}${propertyId}`,
+                    path: `${field.createPath({ field })}${multiValue}${propertyId}`,
                     filterPlugin,
                     negate: propertyNegate,
                     compareValue: transformValue({

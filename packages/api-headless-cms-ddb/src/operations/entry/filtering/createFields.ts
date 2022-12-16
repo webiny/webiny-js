@@ -42,7 +42,7 @@ export const createFields = (params: Params) => {
             ...field,
             parents: [],
             system: true,
-            createPath: () => {
+            createPath: ({ field }) => {
                 return field.settings?.path || field.fieldId;
             },
             transform: value => {
@@ -90,12 +90,16 @@ export const createFields = (params: Params) => {
                     if (valuePathPlugin) {
                         return valuePathPlugin.createPath(params);
                     }
+                    console.log(params.field.fieldId);
                     const parentFieldId = parents
                         .map(parent => {
                             return `${parent.fieldId}${parent.multipleValues ? ".*" : ""}`;
                         })
                         .join(".");
-                    return `values.${parentFieldId}${params.field.fieldId}`;
+                    // const multiValue = params.field.multipleValues ? "*." : "";
+                    const p = `values.${parentFieldId}${params.field.fieldId}`;
+                    console.log(p);
+                    return p;
                 },
                 transform: value => {
                     if (!transformPlugin) {

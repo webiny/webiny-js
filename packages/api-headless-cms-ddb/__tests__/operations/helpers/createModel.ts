@@ -26,15 +26,39 @@ export const createModel = (): CmsModel => {
                 multipleValues: false,
                 label: "Title",
                 type: "text",
-                storageId: "titleStorageId",
+                storageId: "text@titleStorageId",
                 fieldId: "title"
+            },
+            {
+                id: "priority",
+                multipleValues: false,
+                label: "Priority",
+                type: "number",
+                storageId: "number@priorityStorageId",
+                fieldId: "priority"
+            },
+            {
+                id: "parent",
+                multipleValues: false,
+                label: "Parent",
+                type: "ref",
+                storageId: "ref@parentStorageId",
+                fieldId: "parent"
+            },
+            {
+                id: "authors",
+                multipleValues: true,
+                label: "Authors",
+                type: "ref",
+                storageId: "ref@authorsStorageId",
+                fieldId: "authors"
             },
             {
                 id: "options",
                 multipleValues: true,
                 label: "Options",
                 type: "object",
-                storageId: "optionsStorageId",
+                storageId: "object@optionsStorageId",
                 fieldId: "options",
                 settings: {
                     fields: [
@@ -43,7 +67,7 @@ export const createModel = (): CmsModel => {
                             multipleValues: false,
                             label: "Variant",
                             type: "object",
-                            storageId: "variantStorageId",
+                            storageId: "object@variantStorageId",
                             fieldId: "variant",
                             settings: {
                                 fields: [
@@ -52,7 +76,7 @@ export const createModel = (): CmsModel => {
                                         multipleValues: false,
                                         label: "Variant Number",
                                         type: "number",
-                                        storageId: "variantNumberStorageId",
+                                        storageId: "number@variantNumberStorageId",
                                         fieldId: "number"
                                     },
                                     {
@@ -60,7 +84,7 @@ export const createModel = (): CmsModel => {
                                         multipleValues: true,
                                         label: "Variant Colors",
                                         type: "text",
-                                        storageId: "variantColorsStorageId",
+                                        storageId: "text@variantColorsStorageId",
                                         fieldId: "colors"
                                     }
                                 ]
@@ -74,7 +98,7 @@ export const createModel = (): CmsModel => {
                 multipleValues: false,
                 label: "Info",
                 type: "object",
-                storageId: "infoStorageId",
+                storageId: "object@infoStorageId",
                 fieldId: "info",
                 settings: {
                     fields: [
@@ -83,7 +107,7 @@ export const createModel = (): CmsModel => {
                             multipleValues: true,
                             label: "Keywords",
                             type: "text",
-                            storageId: "infoKeywordsStorageId",
+                            storageId: "text@infoKeywordsStorageId",
                             fieldId: "keywords"
                         },
                         {
@@ -91,7 +115,7 @@ export const createModel = (): CmsModel => {
                             multipleValues: true,
                             label: "Images",
                             type: "object",
-                            storageId: "infoImagesStorageId",
+                            storageId: "object@infoImagesStorageId",
                             fieldId: "images",
                             settings: {
                                 fields: [
@@ -100,7 +124,7 @@ export const createModel = (): CmsModel => {
                                         multipleValues: false,
                                         label: "File",
                                         type: "file",
-                                        storageId: "infoImagesFileStorageId",
+                                        storageId: "file@infoImagesFileStorageId",
                                         fieldId: "file"
                                     },
                                     {
@@ -108,7 +132,7 @@ export const createModel = (): CmsModel => {
                                         multipleValues: false,
                                         label: "Title",
                                         type: "text",
-                                        storageId: "infoImagesTitleStorageId",
+                                        storageId: "text@infoImagesTitleStorageId",
                                         fieldId: "title"
                                     },
                                     {
@@ -116,7 +140,7 @@ export const createModel = (): CmsModel => {
                                         multipleValues: true,
                                         label: "Tags",
                                         type: "object",
-                                        storageId: "infoImagesTagsStorageId",
+                                        storageId: "object@infoImagesTagsStorageId",
                                         fieldId: "tags",
                                         settings: {
                                             fields: [
@@ -125,7 +149,7 @@ export const createModel = (): CmsModel => {
                                                     multipleValues: false,
                                                     label: "Title",
                                                     type: "text",
-                                                    storageId: "infoImagesTagsTitleStorageId",
+                                                    storageId: "text@infoImagesTagsTitleStorageId",
                                                     fieldId: "title"
                                                 },
                                                 {
@@ -133,7 +157,7 @@ export const createModel = (): CmsModel => {
                                                     multipleValues: false,
                                                     label: "Slug",
                                                     type: "text",
-                                                    storageId: "infoImagesTagsSlugStorageId",
+                                                    storageId: "text@infoImagesTagsSlugStorageId",
                                                     fieldId: "slug"
                                                 }
                                             ]

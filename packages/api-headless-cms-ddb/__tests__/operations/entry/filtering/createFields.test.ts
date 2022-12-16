@@ -1,8 +1,9 @@
 import { createFields } from "~/operations/entry/filtering/createFields";
 import { PluginsContainer } from "@webiny/plugins";
 import { CmsModel } from "@webiny/api-headless-cms/types";
-import { createModel } from "../../../helpers/createModel";
+import { createModel } from "../../helpers/createModel";
 import { Field } from "~/operations/entry/filtering/types";
+import { createPluginsContainer } from "../../helpers/pluginsContainer";
 
 const expectedSystemFields: Record<string, Field> = {
     id: {
@@ -121,7 +122,7 @@ describe("create system and model fields", () => {
     let model: CmsModel;
 
     beforeEach(() => {
-        plugins = new PluginsContainer();
+        plugins = createPluginsContainer();
         model = createModel();
     });
 
@@ -151,7 +152,7 @@ describe("create system and model fields", () => {
                 id: "title",
                 parents: [],
                 type: "text",
-                storageId: "titleStorageId",
+                storageId: "text@titleStorageId",
                 fieldId: "title",
                 createPath: expect.any(Function),
                 system: false,
@@ -159,11 +160,47 @@ describe("create system and model fields", () => {
                 transform: expect.any(Function),
                 label: "Title"
             },
+            priority: {
+                createPath: expect.any(Function),
+                fieldId: "priority",
+                id: "priority",
+                label: "Priority",
+                multipleValues: false,
+                parents: [],
+                storageId: "number@priorityStorageId",
+                system: false,
+                transform: expect.any(Function),
+                type: "number"
+            },
+            parent: {
+                createPath: expect.any(Function),
+                fieldId: "parent",
+                id: "parent",
+                label: "Parent",
+                multipleValues: false,
+                parents: [],
+                storageId: "ref@parentStorageId",
+                system: false,
+                transform: expect.any(Function),
+                type: "ref"
+            },
+            authors: {
+                createPath: expect.any(Function),
+                fieldId: "authors",
+                id: "authors",
+                label: "Authors",
+                multipleValues: true,
+                parents: [],
+                storageId: "ref@authorsStorageId",
+                system: false,
+                transform: expect.any(Function),
+                type: "ref"
+            },
             options: {
                 id: "options",
                 parents: [],
                 type: "object",
-                storageId: "optionsStorageId",
+                storageId: "object@optionsStorageId",
                 fieldId: "options",
                 createPath: expect.any(Function),
                 system: false,
@@ -181,7 +218,7 @@ describe("create system and model fields", () => {
                 ],
                 id: "variant",
                 type: "object",
-                storageId: "variantStorageId",
+                storageId: "object@variantStorageId",
                 fieldId: "variant",
                 createPath: expect.any(Function),
                 system: false,
@@ -203,7 +240,7 @@ describe("create system and model fields", () => {
                 ],
                 id: "colors",
                 type: "text",
-                storageId: "variantColorsStorageId",
+                storageId: "text@variantColorsStorageId",
                 fieldId: "colors",
                 createPath: expect.any(Function),
                 system: false,
@@ -224,7 +261,7 @@ describe("create system and model fields", () => {
                 ],
                 id: "number",
                 type: "number",
-                storageId: "variantNumberStorageId",
+                storageId: "number@variantNumberStorageId",
                 fieldId: "number",
                 createPath: expect.any(Function),
                 system: false,
@@ -236,7 +273,7 @@ describe("create system and model fields", () => {
                 parents: [],
                 id: "info",
                 type: "object",
-                storageId: "infoStorageId",
+                storageId: "object@infoStorageId",
                 fieldId: "info",
                 createPath: expect.any(Function),
                 system: false,
@@ -254,7 +291,7 @@ describe("create system and model fields", () => {
                 ],
                 id: "images",
                 type: "object",
-                storageId: "infoImagesStorageId",
+                storageId: "object@infoImagesStorageId",
                 fieldId: "images",
                 createPath: expect.any(Function),
                 system: false,
@@ -276,7 +313,7 @@ describe("create system and model fields", () => {
                 ],
                 id: "file",
                 type: "file",
-                storageId: "infoImagesFileStorageId",
+                storageId: "file@infoImagesFileStorageId",
                 fieldId: "file",
                 createPath: expect.any(Function),
                 system: false,
@@ -297,7 +334,7 @@ describe("create system and model fields", () => {
                 ],
                 id: "tags",
                 type: "object",
-                storageId: "infoImagesTagsStorageId",
+                storageId: "object@infoImagesTagsStorageId",
                 fieldId: "tags",
                 createPath: expect.any(Function),
                 system: false,
@@ -326,7 +363,7 @@ describe("create system and model fields", () => {
                         multipleValues: true
                     }
                 ],
-                storageId: "infoImagesTagsSlugStorageId",
+                storageId: "text@infoImagesTagsSlugStorageId",
                 system: false,
                 transform: expect.any(Function),
                 type: "text"
@@ -351,7 +388,7 @@ describe("create system and model fields", () => {
                         multipleValues: true
                     }
                 ],
-                storageId: "infoImagesTagsTitleStorageId",
+                storageId: "text@infoImagesTagsTitleStorageId",
                 system: false,
                 transform: expect.any(Function),
                 type: "text"
@@ -372,7 +409,7 @@ describe("create system and model fields", () => {
                         multipleValues: true
                     }
                 ],
-                storageId: "infoImagesTitleStorageId",
+                storageId: "text@infoImagesTitleStorageId",
                 system: false,
                 transform: expect.any(Function),
                 type: "text"
@@ -389,7 +426,7 @@ describe("create system and model fields", () => {
                         multipleValues: false
                     }
                 ],
-                storageId: "infoKeywordsStorageId",
+                storageId: "text@infoKeywordsStorageId",
                 system: false,
                 transform: expect.any(Function),
                 type: "text"
