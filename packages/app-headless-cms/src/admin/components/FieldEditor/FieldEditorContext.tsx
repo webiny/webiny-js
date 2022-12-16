@@ -74,18 +74,18 @@ interface MoveRowCallable {
     (source: number, destination: number): void;
 }
 interface UpdateFieldCallable {
-    (field: Pick<CmsEditorField, "id">): void;
+    (field: CmsEditorField): void;
 }
 interface DeleteFieldCallable {
     (field: Pick<CmsEditorField, "id">): void;
 }
-interface IsVisibleCallable {
+export interface IsVisibleCallable {
     (item: DragSource): boolean;
 }
 interface NoConflictCallable {
     (cb?: IsVisibleCallable): (item: DragSource) => boolean;
 }
-export interface FieldEditorContextValue {
+export interface FieldEditorContext {
     fields: CmsEditorField[][];
     noConflict: NoConflictCallable;
     layout: CmsEditorFieldsLayout;
@@ -111,14 +111,7 @@ interface FieldEditorProviderProps extends FieldEditorProps {
     children: React.ReactElement;
 }
 
-export const FieldEditorContext = React.createContext<FieldEditorContextValue>(
-    /**
-     * Safe to cast.
-     */
-    {
-        field: null
-    } as unknown as FieldEditorContextValue
-);
+export const FieldEditorContext = React.createContext<FieldEditorContext | undefined>(undefined);
 /**
  * We try to generate the random id string but with the check that it does not exist already.
  * Chances that the same string exists are quite small, but let's check it anyway.
@@ -231,14 +224,18 @@ export const FieldEditorProvider: React.FC<FieldEditorProviderProps> = ({
         if (!plugin) {
             return null;
         }
-        /**
-         * TODO @ts-refactor figure out better type for this.
-         */
-        editField(plugin.field.createField() as CmsEditorField);
-        setState(state => ({
-            ...state,
-            dropTarget
-        }));
+
+        const fieldData = plugin.field.createField() as CmsEditorField;
+
+        if (plugin.field.canEditSettings !== false) {
+            editField(fieldData);
+            setState(state => ({
+                ...state,
+                dropTarget
+            }));
+        } else {
+            insertField({ field: fieldData, position: dropTarget });
+        }
         return null;
     }, []);
 
@@ -317,7 +314,7 @@ export const FieldEditorProvider: React.FC<FieldEditorProviderProps> = ({
 
         const fieldPlugin = getFieldPlugin(field.type);
         if (!fieldPlugin) {
-            throw new Error(`Invalid field "type".`);
+            throw new Error(`No plugin found for field type "${field.type}".`);
         }
 
         setState(prev => {

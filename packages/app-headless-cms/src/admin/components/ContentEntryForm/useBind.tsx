@@ -34,14 +34,15 @@ export function useBind({ Bind: ParentBind, field }: UseBindProps) {
                 return memoizedBindComponents.current[name];
             }
 
-            const validators = createValidators(field.validation || []);
-            const listValidators = createValidators(field.listValidation || []);
+            const validators = createValidators(field, field.validation || []);
+            const listValidators = createValidators(field, field.listValidation || []);
             const defaultValue: string[] | undefined = field.multipleValues ? [] : undefined;
             const isMultipleValues = index === -1 && field.multipleValues;
             const inputValidators = isMultipleValues ? listValidators : validators;
 
             memoizedBindComponents.current[name] = function UseBind(params: UseBindParams) {
                 const { name: childName, validators: childValidators, children } = params;
+
                 return (
                     <ParentBind
                         name={childName || name}
@@ -52,14 +53,21 @@ export function useBind({ Bind: ParentBind, field }: UseBindProps) {
                             // Multiple-values functions below.
                             const props = { ...bind };
                             if (field.multipleValues && index === -1) {
-                                props.appendValue = (newValue: string) => {
-                                    bind.onChange([...bind.value, newValue]);
+                                props.appendValue = (newValue: any, index?: number) => {
+                                    const newIndex = index ?? bind.value.length;
+                                    const currentValue = bind.value || [];
+
+                                    bind.onChange([
+                                        ...currentValue.slice(0, newIndex),
+                                        newValue,
+                                        ...currentValue.slice(newIndex)
+                                    ]);
                                 };
-                                props.prependValue = (newValue: string) => {
-                                    bind.onChange([newValue, ...bind.value]);
+                                props.prependValue = (newValue: any) => {
+                                    bind.onChange([newValue, ...(bind.value || [])]);
                                 };
-                                props.appendValues = (newValues: string[]) => {
-                                    bind.onChange([...bind.value, ...newValues]);
+                                props.appendValues = (newValues: any[]) => {
+                                    bind.onChange([...(bind.value || []), ...newValues]);
                                 };
 
                                 props.removeValue = (index: number) => {
@@ -112,11 +120,10 @@ export function useBind({ Bind: ParentBind, field }: UseBindProps) {
 
             // We need to keep track of current field name, to support nested fields.
             memoizedBindComponents.current[name].parentName = name;
+            memoizedBindComponents.current[name].displayName = `ParentBind<${name}>`;
 
             return memoizedBindComponents.current[name];
         },
         [field.fieldId]
     );
 }
-
-// [0,1,2,3,4,5]

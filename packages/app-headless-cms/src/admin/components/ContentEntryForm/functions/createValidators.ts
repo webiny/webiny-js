@@ -1,8 +1,11 @@
 import { plugins } from "@webiny/plugins";
-import { CmsEditorFieldValidator, CmsModelFieldValidatorPlugin } from "~/types";
+import { CmsEditorField, CmsEditorFieldValidator, CmsModelFieldValidatorPlugin } from "~/types";
 import { Validator } from "@webiny/validation/types";
 
-export const createValidators = (validation: CmsEditorFieldValidator[]): Validator[] => {
+export const createValidators = (
+    field: CmsEditorField,
+    validation: CmsEditorFieldValidator[]
+): Validator[] => {
     const validatorPlugins = plugins.byType<CmsModelFieldValidatorPlugin>(
         "cms-model-field-validator"
     );
@@ -16,17 +19,21 @@ export const createValidators = (validation: CmsEditorFieldValidator[]): Validat
             return collection;
         }
 
-        const validator = async (value: string | string[]) => {
+        const validator = async (value: any | any[]) => {
             let isInvalid;
+            let message = item.message;
             try {
-                const result = await validatorPlugin.validator.validate(value, item);
+                const result = await validatorPlugin.validator.validate(value, item, field);
                 isInvalid = result === false;
             } catch (e) {
                 isInvalid = true;
+                if (e.message && !item.message) {
+                    message = e.message;
+                }
             }
 
             if (isInvalid) {
-                throw new Error(item.message || "Invalid value.");
+                throw new Error(message || "Invalid value.");
             }
         };
         collection.push(validator);

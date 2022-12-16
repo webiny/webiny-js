@@ -8,13 +8,23 @@ import {
     BindComponentRenderProp as BaseBindComponentRenderProp,
     BindComponentProps as BaseBindComponentProps
 } from "@webiny/form";
-import { ApolloClient } from "apollo-client";
 import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
 import Label from "./admin/components/ContentEntryForm/Label";
 import { SecurityPermission } from "@webiny/app-security/types";
+import { DragSource } from "~/admin/components/FieldEditor/FieldEditorContext";
 
 interface QueryFieldParams {
     field: CmsEditorField;
+}
+
+export interface CmsEditorFieldValidatorsDefinition {
+    validators: string[];
+    title?: string;
+    description?: string;
+}
+
+export interface CmsEditorFieldValidatorsFactory {
+    (field: CmsEditorField): string[] | CmsEditorFieldValidatorsDefinition;
 }
 
 export interface CmsEditorFieldTypePlugin extends Plugin {
@@ -50,7 +60,10 @@ export interface CmsEditorFieldTypePlugin extends Plugin {
          * ]
          * ```
          */
-        validators?: string[];
+        validators?:
+            | string[]
+            | CmsEditorFieldValidatorsDefinition
+            | CmsEditorFieldValidatorsFactory;
         /**
          * A list of available validators when a model field accepts a list (array) of values.
          *
@@ -61,7 +74,7 @@ export interface CmsEditorFieldTypePlugin extends Plugin {
          * ]
          * ```
          */
-        listValidators?: string[];
+        listValidators?: string[] | CmsEditorFieldValidatorsDefinition;
         /**
          * An explanation of the field displayed beneath the label.
          *
@@ -113,6 +126,22 @@ export interface CmsEditorFieldTypePlugin extends Plugin {
          */
         createField: () => Pick<CmsEditorField, "type" | "validation" | "renderer" | "settings">;
         /**
+         * If `true` (default), this field will be configurable via a settings dialog.
+         * If `false`, a user will not be able to open the settings dialog, not will the dialog be opened on field drop.
+         */
+        canEditSettings?: boolean;
+        /**
+         * Determine if a `draggable` can be dropped into this field.
+         * NOTE: This is only applicable to nested field types.
+         */
+        canAccept?(field: CmsEditorField, draggable: DragSource): boolean;
+        /**
+         * If `true` (default), will allow fields to be laid out into columns (next to each other).
+         * If `false`, horizontal layout will not be allowed.
+         * NOTE: This is only applicable to nested field types.
+         */
+        allowLayout?: boolean;
+        /**
          * A ReactNode that you can add in the section below the help text when creating/editing field.
          *
          * ```tsx
@@ -122,6 +151,9 @@ export interface CmsEditorFieldTypePlugin extends Plugin {
          * ```
          */
         renderSettings?: (params: {
+            /**
+             * @deprecated This parameter is deprecated. Use the `useForm` hook instead.
+             */
             form: FormRenderPropParams;
             afterChangeLabel: (value: string) => void;
             uniqueFieldIdValidator: (fieldId: string) => void;
@@ -142,8 +174,6 @@ export interface CmsEditorFieldTypePlugin extends Plugin {
          * ```
          */
         renderPredefinedValues?: (params: {
-            form: FormRenderPropParams;
-            field: CmsEditorField;
             getBind: (index?: number) => any;
         }) => React.ReactElement;
         /**
@@ -168,6 +198,7 @@ export interface CmsEditorFieldTypePlugin extends Plugin {
             queryField?: string | ((params: QueryFieldParams) => string);
         };
         render?(params: any): React.ReactElement;
+        tags?: string[];
     };
 }
 
@@ -193,7 +224,7 @@ export interface CmsEditorFieldRendererPlugin extends Plugin {
          */
         rendererName: string;
         /**
-         * A display name for the field in the UI. It is a `ReactNode` type so you can return a component if you want to.
+         * A display name for the field in the UI. It is a `ReactNode` type, so you can use a JSX element.
          *
          * ```tsx
          * name: <MyFieldNameComponent />
@@ -219,7 +250,7 @@ export interface CmsEditorFieldRendererPlugin extends Plugin {
          * }
          * ```
          */
-        canUse(props: { field: CmsEditorField }): boolean;
+        canUse(props: { field: CmsEditorField; fieldPlugin: CmsEditorFieldTypePlugin }): boolean;
         /**
          * Renders a field in the UI.
          *
@@ -257,6 +288,16 @@ export interface CmsEditorFieldPredefinedValues {
     values: CmsEditorFieldPredefinedValuesEntry[];
 }
 
+export interface CmsDynamicZoneTemplate {
+    id: string;
+    name: string;
+    description: string;
+    icon: string;
+    fields: CmsEditorField[];
+    layout: string[][];
+    validation: CmsEditorFieldValidator[];
+}
+
 export type CmsEditorField<T = unknown> = T & {
     id: string;
     type: string;
@@ -276,12 +317,14 @@ export type CmsEditorField<T = unknown> = T & {
         fields?: CmsEditorField<any>[];
         layout?: string[][];
         models?: Pick<CmsModel, "modelId" | "name">[];
+        templates?: CmsDynamicZoneTemplate[];
         imagesOnly?: boolean;
         [key: string]: any;
     };
     renderer: {
         name: string;
     };
+    tags?: string[];
 };
 
 export type CmsEditorFieldId = string;
@@ -305,6 +348,7 @@ export interface CmsEditorContentModel {
     savedOn: string;
     meta: any;
     createdBy: CmsCreatedBy;
+    tags: string[];
     /**
      * If model is a plugin one (it cannot be changed/deleted)
      */
@@ -344,8 +388,8 @@ export interface CmsContentEntryRevision {
 
 export interface CmsEditorFieldValidator {
     name: string;
-    message: string;
-    settings: any;
+    message?: string;
+    settings?: any;
 }
 
 export interface CmsEditorFieldValidatorPluginValidator {
@@ -354,13 +398,8 @@ export interface CmsEditorFieldValidatorPluginValidator {
     description: string;
     defaultMessage: string;
     defaultSettings?: Record<string, any>;
-    renderSettings?: (props: {
-        field: CmsEditorField;
-        Bind: BindComponent;
-        setValue: (name: string, value: any) => void;
-        setMessage: (message: string) => void;
-        data: CmsEditorFieldValidator;
-    }) => React.ReactElement;
+    renderSettings?: () => React.ReactElement;
+    renderCustomUi?: () => React.ReactElement;
 }
 export interface CmsEditorFieldValidatorPlugin extends Plugin {
     type: "cms-editor-field-validator";
@@ -379,11 +418,6 @@ export interface CmsContentDetailsPlugin extends Plugin {
     render: (params: any) => ReactNode;
 }
 
-export interface CmsContentDetailsRevisionContentPlugin extends Plugin {
-    type: "cms-content-details-revision-content";
-    render(params: any): ReactElement;
-}
-
 export interface CmsEditorFieldValidatorPatternPlugin extends Plugin {
     type: "cms-editor-field-validator-pattern";
     pattern: {
@@ -395,15 +429,15 @@ export interface CmsEditorFieldValidatorPatternPlugin extends Plugin {
 
 export interface CmsFieldValidator {
     name: string;
-    message: any;
-    settings: any;
+    message?: string;
+    settings?: any;
 }
 
 export interface CmsModelFieldValidatorPlugin<T = any> extends Plugin {
     type: "cms-model-field-validator";
     validator: {
         name: string;
-        validate: (value: T, validator: CmsFieldValidator) => Promise<any>;
+        validate: (value: T, validator: CmsFieldValidator, field: CmsEditorField) => Promise<any>;
     };
 }
 
@@ -472,11 +506,6 @@ export interface CmsIcon {
 export interface CmsIconsPlugin extends Plugin {
     type: "cms-icons";
     getIcons(): CmsIcon[];
-}
-
-export interface UseContentModelEditorReducerState {
-    apolloClient: ApolloClient<any>;
-    id: string;
 }
 
 /**
@@ -598,7 +627,7 @@ export interface CmsMetaResponse {
  */
 export interface BindComponentRenderProp extends BaseBindComponentRenderProp {
     parentName: string;
-    appendValue: (value: any) => void;
+    appendValue: (value: any, index?: number) => void;
     prependValue: (value: any) => void;
     appendValues: (values: any[]) => void;
     removeValue: (index: number) => void;
