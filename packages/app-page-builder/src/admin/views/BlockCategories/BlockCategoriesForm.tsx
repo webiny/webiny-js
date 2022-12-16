@@ -148,7 +148,10 @@ const CategoriesForm: React.FC<CategoriesFormProps> = ({ canCreate }) => {
     );
 
     const data = useMemo((): PbBlockCategory => {
-        return getQuery.data?.pageBuilder?.getBlockCategory.data || ({} as PbBlockCategory);
+        return (
+            getQuery.data?.pageBuilder?.getBlockCategory.data ||
+            ({ icon: "fas/star" } as PbBlockCategory)
+        );
     }, [loadedBlockCategory.slug]);
 
     const { identity, getPermission } = useSecurity();
