@@ -19,7 +19,7 @@ const PAGE_BUILDER_SETTINGS_ACCESS = `${PAGE_BUILDER}.settings`;
 const FULL_ACCESS = "full";
 const NO_ACCESS = "no";
 const CUSTOM_ACCESS = "custom";
-const ENTITIES = ["category", "menu", "page", "block"];
+const ENTITIES = ["category", "menu", "page", "blockCategory", "block"];
 
 interface PwOptions {
     id: string;
@@ -86,6 +86,11 @@ export const PageBuilderPermissions: React.FC<PageBuilderPermissionsProps> = ({
                         }
                     }
 
+                    // For blocks, we can also manage unlink block functionality
+                    if (entity === "block") {
+                        permission.unlink = formData.blockUnlink;
+                    }
+
                     newValue.push(permission);
                 }
             });
@@ -142,6 +147,11 @@ export const PageBuilderPermissions: React.FC<PageBuilderPermissionsProps> = ({
                 // For pages, we can also manage publishing workflow.
                 if (entity === "page") {
                     data[`${entity}PW`] = entityPermission.pw ? [...entityPermission.pw] : [];
+                }
+
+                // For blocks, we can also manage unlink block functionality
+                if (entity === "block") {
+                    data.blockUnlink = entityPermission.unlink || false;
                 }
             }
 
@@ -230,9 +240,27 @@ export const PageBuilderPermissions: React.FC<PageBuilderPermissionsProps> = ({
                                 data={data}
                                 Bind={Bind}
                                 setValue={setValue}
+                                entity={"blockCategory"}
+                                title={"Block categories"}
+                            />
+                            <CustomSection
+                                data={data}
+                                Bind={Bind}
+                                setValue={setValue}
                                 entity={"block"}
                                 title={"Block content"}
-                            />
+                            >
+                                <Cell span={12}>
+                                    <Bind name={"blockUnlink"}>
+                                        <Checkbox
+                                            disabled={
+                                                !["full", "own"].includes(data.blockAccessScope)
+                                            }
+                                            label="User is allowed to unlink a block"
+                                        />
+                                    </Bind>
+                                </Cell>
+                            </CustomSection>
                             <Elevation z={1} style={{ marginTop: 10 }}>
                                 <Grid>
                                     <Cell span={12}>
