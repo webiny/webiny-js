@@ -2,7 +2,7 @@ import React, { useMemo, useCallback } from "react";
 import { css } from "emotion";
 import classNames from "classnames";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
-import { BindComponentRenderPropValidation, Form } from "@webiny/form";
+import { BindComponentRenderPropValidation, Form, FormOnSubmit } from "@webiny/form";
 import InputField from "./InputField";
 import SelectField from "./SelectField";
 
@@ -62,8 +62,8 @@ interface SpacingPickerProps {
 }
 
 interface SpacingPickerFormData {
-    unit: "auto" | string;
-    value: string;
+    unit: string;
+    value: string | number;
 }
 
 const SpacingPicker: React.FC<SpacingPickerProps> = ({
@@ -94,10 +94,10 @@ const SpacingPicker: React.FC<SpacingPickerProps> = ({
         };
     }, [value]);
 
-    const defaultUnitValue: string | undefined = options[0] ? options[0].value : undefined;
+    const defaultUnitValue = options[0] ? options[0].value : "";
 
-    const onFormChange = useCallback(
-        (formData: SpacingPickerFormData) => {
+    const onFormChange: FormOnSubmit<SpacingPickerFormData> = useCallback(
+        formData => {
             if (formData.unit === "auto") {
                 onChange(formData.unit);
                 return;
@@ -108,15 +108,7 @@ const SpacingPicker: React.FC<SpacingPickerProps> = ({
     );
 
     return (
-        <Form
-            data={formData}
-            onChange={data => {
-                /**
-                 * We are positive that data is SpacingPickerFormData.
-                 */
-                return onFormChange(data as unknown as SpacingPickerFormData);
-            }}
-        >
+        <Form<SpacingPickerFormData> data={formData} onChange={onFormChange}>
             {({ data, Bind }) => {
                 const unitValue = data.unit || defaultUnitValue;
                 return (

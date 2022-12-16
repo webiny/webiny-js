@@ -3,7 +3,7 @@ import { css } from "emotion";
 import { merge } from "dot-prop-immutable";
 import { Switch } from "@webiny/ui/Switch";
 import { Typography } from "@webiny/ui/Typography";
-import { Form } from "@webiny/form";
+import { Form, FormOnSubmit } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import { withActiveElement } from "../../../components";
 import { DelayedOnChange } from "@webiny/ui/DelayedOnChange";
@@ -65,7 +65,7 @@ const ActionSettingsComponent: React.FC<ActionSettingsPropsType> = ({
 
     const { clickHandler, actionType, variables, scrollToElement } = element.data?.action || {};
 
-    const updateSettings = (data: Record<string, string>): void => {
+    const updateSettings: FormOnSubmit = data => {
         const attrKey = `data.action`;
         const newElement: PbEditorElement = merge(element, attrKey, data);
         updateElement(newElement);
@@ -93,12 +93,11 @@ const ActionSettingsComponent: React.FC<ActionSettingsPropsType> = ({
         }
     }, [actionType]);
 
+    const initialData = { href, newTab, clickHandler, actionType, variables, scrollToElement };
+
     return (
         <Accordion title={"Action"} defaultValue={defaultAccordionValue}>
-            <Form
-                data={{ href, newTab, clickHandler, actionType, variables, scrollToElement }}
-                onChange={updateSettings}
-            >
+            <Form data={initialData} onChange={updateSettings}>
                 {({ Bind }) => {
                     const actionTypeOptions = [
                         { id: "link", name: "Link" },

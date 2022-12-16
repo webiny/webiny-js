@@ -7,7 +7,7 @@ import { DialogTitle, DialogContent, DialogOnClose } from "@webiny/ui/Dialog";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { CircularProgress } from "@webiny/ui/Progress";
-import { Form } from "@webiny/form";
+import { Form, FormOnSubmit } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import { i18n } from "@webiny/app/i18n";
 
@@ -37,7 +37,7 @@ export const FolderDialogUpdate: React.FC<Props> = ({ folder, onClose, open }) =
     const [dialogOpen, setDialogOpen] = useState(false);
     const { showSnackbar } = useSnackbar();
 
-    const onSubmit = async (data: SubmitData) => {
+    const onSubmit: FormOnSubmit<SubmitData> = async data => {
         try {
             await updateFolder({
                 ...folder,
@@ -61,10 +61,8 @@ export const FolderDialogUpdate: React.FC<Props> = ({ folder, onClose, open }) =
         <DialogContainer open={dialogOpen} onClose={onClose}>
             {dialogOpen && (
                 <>
-                    <Form
-                        onSubmit={data => {
-                            onSubmit(data as unknown as SubmitData);
-                        }}
+                    <Form<SubmitData>
+                        onSubmit={onSubmit}
                         data={{
                             name: folder.name,
                             slug: folder.slug,
@@ -136,11 +134,7 @@ export const FolderDialogUpdate: React.FC<Props> = ({ folder, onClose, open }) =
                                     >
                                         {t`Cancel`}
                                     </ButtonDefault>
-                                    <ButtonPrimary
-                                        onClick={e => {
-                                            submit(e);
-                                        }}
-                                    >
+                                    <ButtonPrimary onClick={submit}>
                                         {t`Update Folder`}
                                     </ButtonPrimary>
                                 </DialogActions>
