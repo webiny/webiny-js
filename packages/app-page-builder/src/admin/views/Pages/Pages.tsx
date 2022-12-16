@@ -8,6 +8,7 @@ import { CircularProgress } from "@webiny/ui/Progress";
 import useImportPage from "./hooks/useImportPage";
 import useCreatePage from "./hooks/useCreatePage";
 import { PageBuilderSecurityPermission } from "~/types";
+import { useRouter } from "@webiny/react-router";
 
 enum LoadingLabel {
     CREATING_PAGE = "Creating page...",
@@ -20,6 +21,7 @@ enum Operation {
 }
 
 const Pages: React.FC = () => {
+    const { history } = useRouter();
     const [operation, setOperation] = useState<string>(Operation.CREATE);
     const [loadingLabel, setLoadingLabel] = useState<string | null>(null);
     const [showCategoriesDialog, setCategoriesDialog] = useState(false);
@@ -80,7 +82,11 @@ const Pages: React.FC = () => {
                     />
                 </LeftPanel>
                 <RightPanel>
-                    <PageDetails canCreate={canCreate} onCreatePage={handleOnCreatePage} />
+                    <PageDetails
+                        canCreate={canCreate}
+                        onCreatePage={handleOnCreatePage}
+                        onDelete={() => history.push("/page-builder/pages")}
+                    />
                 </RightPanel>
             </SplitView>
         </>
