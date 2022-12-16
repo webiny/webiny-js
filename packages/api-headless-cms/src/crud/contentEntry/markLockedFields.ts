@@ -1,6 +1,7 @@
 import WebinyError from "@webiny/error";
 import { CmsEntry, CmsModel, CmsContext, CmsModelLockedFieldPlugin, LockedField } from "~/types";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";
+import { getBaseFieldType } from "~/utils/getBaseFieldType";
 
 interface MarkLockedFieldsParams {
     model: CmsModel;
@@ -23,6 +24,7 @@ export const markLockedFields = async (params: MarkLockedFieldsParams): Promise<
     const existingLockedFields = model.lockedFields || [];
     const lockedFields: LockedField[] = [];
     for (const field of model.fields) {
+        const baseType = getBaseFieldType(field);
         const alreadyLocked = existingLockedFields.some(
             lockedField => lockedField.fieldId === field.storageId
         );
@@ -32,7 +34,7 @@ export const markLockedFields = async (params: MarkLockedFieldsParams): Promise<
 
         let lockedFieldData = {};
 
-        const lockedFieldPlugins = cmsLockedFieldPlugins.filter(pl => pl.fieldType === field.type);
+        const lockedFieldPlugins = cmsLockedFieldPlugins.filter(pl => pl.fieldType === baseType);
         for (const plugin of lockedFieldPlugins) {
             if (typeof plugin.getLockedFieldData !== "function") {
                 continue;
@@ -46,7 +48,7 @@ export const markLockedFields = async (params: MarkLockedFieldsParams): Promise<
         lockedFields.push({
             fieldId: field.storageId,
             multipleValues: !!field.multipleValues,
-            type: field.type,
+            type: baseType,
             ...lockedFieldData
         });
     }

@@ -1,5 +1,5 @@
 import { ErrorResponse, NotFoundError, Response } from "@webiny/handler-graphql";
-import { CmsContext } from "~/types";
+import { CmsContext, CmsModel } from "~/types";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
 import { Resolvers } from "@webiny/handler-graphql/types";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";
@@ -31,7 +31,19 @@ export const createModelsSchema = (context: CmsContext): GraphQLSchemaPlugin<Cms
                 }
             }
         },
+        CmsContentModelField: {
+            tags(field) {
+                // Make sure `tags` are always returned as an array.
+                return Array.isArray(field.tags) ? field.tags : [];
+            }
+        },
         CmsContentModel: {
+            tags(model: CmsModel) {
+                // Make sure `tags` always contain a `type` tag, to differentiate between models.
+                const hasType = (model.tags || []).find(tag => tag.startsWith("type:"));
+
+                return hasType ? model.tags : ["type:model", ...(model.tags || [])];
+            },
             plugin: async (model, _, context): Promise<boolean> => {
                 return context.plugins
                     .byType<CmsModelPlugin>(CmsModelPlugin.type)
@@ -120,6 +132,7 @@ export const createModelsSchema = (context: CmsContext): GraphQLSchemaPlugin<Cms
                 storageId: String
                 fieldId: String!
                 type: String!
+                tags: [String!]
                 multipleValues: Boolean
                 predefinedValues: CmsPredefinedValuesInput
                 renderer: CmsFieldRendererInput
@@ -136,6 +149,7 @@ export const createModelsSchema = (context: CmsContext): GraphQLSchemaPlugin<Cms
                 layout: [[ID!]!]
                 fields: [CmsContentModelFieldInput!]
                 titleFieldId: String
+                tags: [String!]
             }
 
             input CmsContentModelCreateFromInput {
@@ -153,6 +167,7 @@ export const createModelsSchema = (context: CmsContext): GraphQLSchemaPlugin<Cms
                 layout: [[ID!]!]!
                 fields: [CmsContentModelFieldInput!]!
                 titleFieldId: String
+                tags: [String!]
             }
 
             type InitializeModelResponse {
@@ -213,6 +228,7 @@ export const createModelsSchema = (context: CmsContext): GraphQLSchemaPlugin<Cms
                 helpText: String
                 placeholderText: String
                 type: String!
+                tags: [String!]!
                 multipleValues: Boolean
                 predefinedValues: CmsPredefinedValues
                 renderer: CmsFieldRenderer
@@ -233,7 +249,7 @@ export const createModelsSchema = (context: CmsContext): GraphQLSchemaPlugin<Cms
                 lockedFields: [JSON]
                 layout: [[String!]!]!
                 titleFieldId: String
-
+                tags: [String!]!
                 # Returns true if the content model is registered via a plugin.
                 plugin: Boolean!
             }
