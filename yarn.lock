@@ -11990,7 +11990,7 @@ __metadata:
     invariant: ^2.2.4
     lodash: ^4.17.11
     mime: ^2.4.2
-    minimatch: ^3.0.4
+    minimatch: ^5.1.0
     nanoid: ^3.1.23
     prop-types: ^15.7.2
     react: 17.0.2
@@ -14077,6 +14077,7 @@ __metadata:
     typescript: 4.7.4
     webpack: ^4.46.0
   peerDependencies:
+    minimatch: ^5.1.0
     react: ^17.0.2
     react-dom: ^17.0.2
   languageName: unknown
