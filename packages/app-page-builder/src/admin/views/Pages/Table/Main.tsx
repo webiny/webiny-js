@@ -21,7 +21,7 @@ import { FOLDER_ID_DEFAULT, FOLDER_TYPE } from "~/admin/constants/folders";
 
 import { Container, Wrapper } from "./styled";
 
-import { FolderItem } from "@webiny/app-folders/types";
+import { FolderItem, LinksActions, Loading } from "@webiny/app-folders/types";
 
 interface Props {
     folderId?: string;
@@ -55,7 +55,11 @@ export const Main = ({ folderId }: Props) => {
         deleteLink
     } = useLinks(folderId || FOLDER_ID_DEFAULT);
 
-    const { pages, loading: pagesLoading } = useGetPages(links, folderId);
+    const { pages = undefined, loading: pagesLoading } = useGetPages(
+        links,
+        linksLoading as Loading<LinksActions>,
+        folderId
+    );
 
     const [subFolders, setSubFolders] = useState<FolderItem[]>([]);
 

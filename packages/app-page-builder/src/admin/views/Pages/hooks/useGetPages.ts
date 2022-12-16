@@ -1,10 +1,11 @@
-import { LinkItem } from "@webiny/app-folders/types";
+import { LinkItem, LinksActions, Loading as LinksLoading } from "@webiny/app-folders/types";
 import { GetPageQueryResponse, GetPageQueryVariables } from "~/pageEditor/graphql";
 import { GET_PAGE } from "~/admin/graphql/pages";
 import { useApolloClient } from "@apollo/react-hooks";
 import { PagesLinksActions, PbPageDataLink, Loading, PbPageData } from "~/types";
 import { useEffect, useState, SetStateAction, Dispatch } from "react";
 import { FOLDER_ID_DEFAULT } from "~/admin/constants/folders";
+import useDeepCompareEffect from "use-deep-compare-effect";
 
 export const loadingHandler = <T extends string>(
     context: string,
@@ -24,14 +25,27 @@ export const loadingHandler = <T extends string>(
     });
 };
 
-const useGetPages = (links: LinkItem[], folderId = FOLDER_ID_DEFAULT) => {
+const useGetPages = (
+    links: LinkItem[],
+    linksLoading: LinksLoading<LinksActions>,
+    folderId = FOLDER_ID_DEFAULT
+) => {
     const client = useApolloClient();
     const [pages, setPages] = useState<PbPageDataLink[]>([]);
     const [loading, setLoading] = useState<Loading<PagesLinksActions>>({});
     const [times, setTimes] = useState<number>(0);
 
-    const getPagesByLinks = (links: LinkItem[]): Promise<PbPageDataLink[]> => {
-        return Promise.all(
+    const getPagesByLinks = (links: LinkItem[]): void => {
+        const action = times > 0 ? "LIST_MORE_PAGES_BY_LINKS" : "LIST_PAGES_BY_LINKS";
+        loadingHandler(folderId, action, setLoading);
+
+        if (links.length === 0) {
+            loadingHandler(folderId, action, setLoading);
+            setPages([]);
+            return;
+        }
+
+        Promise.all(
             links.map(async link => {
                 const { data: response } = await client.query<
                     GetPageQueryResponse,
@@ -52,7 +66,11 @@ const useGetPages = (links: LinkItem[], folderId = FOLDER_ID_DEFAULT) => {
                     link
                 };
             })
-        );
+        ).then((data: PbPageDataLink[]) => {
+            setPages(data);
+            loadingHandler(folderId, action, setLoading);
+            setTimes(prev => prev + 1);
+        });
     };
 
     const updatePage = (page: PbPageData) => {
@@ -78,23 +96,9 @@ const useGetPages = (links: LinkItem[], folderId = FOLDER_ID_DEFAULT) => {
         setTimes(0);
     }, [folderId]);
 
-    useEffect(() => {
-        async function getPagesData() {
-            if (links.length > 0) {
-                const action = times > 0 ? "LIST_MORE_PAGES_BY_LINKS" : "LIST_PAGES_BY_LINKS";
-
-                loadingHandler(folderId, action, setLoading);
-
-                const linkedPages = await getPagesByLinks(links);
-                setPages(linkedPages);
-
-                setTimes(prev => prev + 1);
-                loadingHandler(folderId, action, setLoading);
-            }
-        }
-
-        getPagesData();
-    }, [links.map(link => link.id).join(".")]);
+    useDeepCompareEffect(() => {
+        getPagesByLinks(links);
+    }, [links.map(link => link.id).join("."), linksLoading]);
 
     useEffect(() => {
         links.map(link => {
@@ -119,7 +123,7 @@ const useGetPages = (links: LinkItem[], folderId = FOLDER_ID_DEFAULT) => {
     }, []);
 
     return {
-        pages,
+        pages: pages,
         loading: loading[folderId] || {}
     };
 };
