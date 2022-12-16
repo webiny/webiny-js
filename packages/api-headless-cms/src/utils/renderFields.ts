@@ -6,6 +6,7 @@ import {
     CmsModelFieldDefinition,
     CmsModelFieldToGraphQLPlugin
 } from "~/types";
+import { getBaseFieldType } from "~/utils/getBaseFieldType";
 
 interface RenderFieldsParams {
     model: CmsModel;
@@ -36,7 +37,7 @@ export const renderField = ({
     field,
     fieldTypePlugins
 }: RenderFieldParams): CmsModelFieldDefinition | null => {
-    const plugin: CmsModelFieldToGraphQLPlugin = fieldTypePlugins[field.type];
+    const plugin: CmsModelFieldToGraphQLPlugin = fieldTypePlugins[getBaseFieldType(field)];
     if (!plugin) {
         // Let's not render the field if it does not exist in the field plugins.
         return null;
