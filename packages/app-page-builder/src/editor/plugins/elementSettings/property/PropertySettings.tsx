@@ -6,6 +6,7 @@ import { plugins } from "@webiny/plugins";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { Switch } from "@webiny/ui/Switch";
 import { DelayedOnChange } from "@webiny/ui/DelayedOnChange";
+import { Validation } from "@webiny/form";
 import {
     PbEditorElement,
     PbEditorPageElementSettingsRenderComponentProps,
@@ -41,6 +42,37 @@ const classes = {
 };
 
 const DATA_NAMESPACE = "data.settings.property";
+
+const validateId = (value: string | undefined): Validation => {
+    if (!value) {
+        return { isValid: true };
+    }
+
+    if (/^[a-zA-Z0-9_-]*$/.test(value)) {
+        return { isValid: true };
+    }
+
+    return {
+        isValid: false,
+        message:
+            'Element ID can only contain letters, numbers and chars ("-", "_") without any spaces.'
+    };
+};
+
+const validateClassName = (value: string | undefined): Validation => {
+    if (!value) {
+        return { isValid: true };
+    }
+
+    if (/^[a-zA-Z0-9_ -]*$/.test(value)) {
+        return { isValid: true };
+    }
+
+    return {
+        isValid: false,
+        message: 'Class name can only contain letters, numbers and chars ("-", "_", " ").'
+    };
+};
 
 interface UseVisibilitySettingResult {
     element: PbEditorElement;
@@ -105,6 +137,18 @@ const PropertySettings: React.FC<
         fallbackValue || { hidden: false }
     );
 
+    const onIdChange = useCallback(value => {
+        if (validateId(value).isValid === true) {
+            getUpdateValue("id")(value);
+        }
+    }, []);
+
+    const onClassNameChange = useCallback(value => {
+        if (validateClassName(value).isValid === true) {
+            getUpdateValue("className")(value);
+        }
+    }, []);
+
     return (
         <Accordion
             title={"Property"}
@@ -129,17 +173,29 @@ const PropertySettings: React.FC<
                 <Wrapper label={"Element ID"} containerClassName={classes.grid}>
                     <DelayedOnChange
                         value={get(element, DATA_NAMESPACE + ".id", 0)}
-                        onChange={getUpdateValue("id")}
+                        onChange={onIdChange}
                     >
-                        {({ value, onChange }) => <InputField value={value} onChange={onChange} />}
+                        {({ value, onChange }) => (
+                            <InputField
+                                value={value}
+                                onChange={onChange}
+                                validation={validateId(value)}
+                            />
+                        )}
                     </DelayedOnChange>
                 </Wrapper>
                 <Wrapper label={"CSS class"} containerClassName={classes.grid}>
                     <DelayedOnChange
                         value={get(element, DATA_NAMESPACE + ".className", 0)}
-                        onChange={getUpdateValue("className")}
+                        onChange={onClassNameChange}
                     >
-                        {({ value, onChange }) => <InputField value={value} onChange={onChange} />}
+                        {({ value, onChange }) => (
+                            <InputField
+                                value={value}
+                                onChange={onChange}
+                                validation={validateClassName(value)}
+                            />
+                        )}
                     </DelayedOnChange>
                 </Wrapper>
             </ContentWrapper>
