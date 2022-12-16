@@ -1,6 +1,19 @@
 import React, { useEffect, useMemo } from "react";
 import { Helmet } from "react-helmet";
 
+const wrapWithRenderCondition = (innerHTML: string) => {
+    if (!innerHTML) {
+        return "";
+    }
+
+    return (
+        `// This condition prevents script execution on prerendering.\n` +
+        `if (!("__PS_RENDER__" in window)) { // This line added automatically by Webiny\n` +
+        `    ${innerHTML}\n` +
+        `} // This line added automatically by Webiny\n`
+    );
+};
+
 const parseHeaderTags = (str?: string) => {
     if (!str) {
         return [];
@@ -18,7 +31,7 @@ const parseHeaderTags = (str?: string) => {
         const newElement = React.createElement(
             nodeName,
             { ...attributes, key: index },
-            el.innerHTML
+            wrapWithRenderCondition(el.innerHTML)
         );
 
         parsedElementsArray.push(newElement);
@@ -39,7 +52,7 @@ const parseFooterTags = (str?: string) => {
     elements.forEach(el => {
         const newElement = document.createElement("script");
         [...el.attributes].forEach(({ name, value }) => newElement.setAttribute(name, value));
-        newElement.innerHTML = el.innerHTML;
+        newElement.innerHTML = wrapWithRenderCondition(el.innerHTML);
 
         parsedElementsArray.push(newElement);
     });
