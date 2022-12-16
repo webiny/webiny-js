@@ -5,6 +5,11 @@ interface FieldValueTransform {
     (value: any): any;
 }
 
+export interface FieldParent {
+    fieldId: string;
+    multipleValues?: boolean;
+}
+
 export interface Field
     extends Partial<Omit<CmsModelField, "id" | "type" | "storageId" | "fieldId">>,
         Pick<CmsModelField, "id" | "type" | "storageId" | "fieldId"> {
@@ -13,7 +18,7 @@ export interface Field
      *
      * This is used to check if we need to iterate through an array of parent values.
      */
-    parents: string[];
+    parents: FieldParent[];
     /**
      * The method which creates a path for the filtering.
      *
@@ -33,4 +38,12 @@ export interface Field
      * System fields are built into the code and cannot be changed.
      */
     system: boolean;
+}
+
+export interface FilterItemFromStorage {
+    <T = any>(
+        field: Partial<CmsModelField> &
+            Pick<CmsModelField, "fieldId" | "storageId" | "id" | "settings" | "type">,
+        value: any
+    ): Promise<T>;
 }

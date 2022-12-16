@@ -1,6 +1,6 @@
 import { CmsModel, CmsModelField } from "@webiny/api-headless-cms/types";
 import { createSystemFields } from "./systemFields";
-import { Field } from "./types";
+import { Field, FieldParent } from "./types";
 import { PluginsContainer } from "@webiny/plugins";
 import { CmsFieldFilterValueTransformPlugin } from "~/types";
 import { CmsEntryFieldFilterPathPlugin } from "~/plugins";
@@ -59,7 +59,7 @@ export const createFields = (params: Params) => {
         return fields;
     }, {});
 
-    const addFieldsToCollection = (fields: CmsModelField[], parents: string[] = []): void => {
+    const addFieldsToCollection = (fields: CmsModelField[], parents: FieldParent[] = []): void => {
         /**
          * Exit early if no fields are sent.
          */
@@ -72,7 +72,13 @@ export const createFields = (params: Params) => {
             /**
              * The required fieldId is a product of all of its parents and its own fieldId.
              */
-            const fieldId = parents.concat([field.fieldId]).join(".");
+            const fieldId = [
+                ...parents,
+                {
+                    fieldId: field.fieldId,
+                    multipleValues: field.multipleValues
+                }
+            ].join(".");
 
             collection[fieldId] = {
                 ...field,
@@ -82,7 +88,12 @@ export const createFields = (params: Params) => {
                     if (valuePathPlugin) {
                         return valuePathPlugin.createPath(params);
                     }
-                    return `values.${params.field.storageId}`;
+                    const parentFieldId = parents
+                        .map(parent => {
+                            return `${parent.fieldId}${parent.multipleValues ? ".*" : ""}`;
+                        })
+                        .join(".");
+                    return `values.${parentFieldId}${params.field.fieldId}`;
                 },
                 transform: value => {
                     if (!transformPlugin) {
@@ -98,7 +109,13 @@ export const createFields = (params: Params) => {
             if (!childFields || childFields.length === 0) {
                 continue;
             }
-            addFieldsToCollection(childFields, parents.concat([field.fieldId]));
+            addFieldsToCollection(childFields, [
+                ...parents,
+                {
+                    fieldId: field.fieldId,
+                    multipleValues: field.multipleValues
+                }
+            ]);
         }
     };
 

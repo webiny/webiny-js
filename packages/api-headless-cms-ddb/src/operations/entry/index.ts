@@ -25,7 +25,6 @@ import {
     CmsStorageEntry
 } from "@webiny/api-headless-cms/types";
 import { Entity } from "dynamodb-toolbox";
-import { filterItems, buildModelFields, sortEntryItems, FilterItemFromStorage } from "./utils";
 import {
     createGSIPartitionKey,
     createGSISortKey,
@@ -46,6 +45,9 @@ import { PluginsContainer } from "@webiny/plugins";
 import { decodeCursor, encodeCursor } from "@webiny/utils/cursor";
 import { zeroPad } from "@webiny/utils/zeroPad";
 import { StorageTransformPlugin } from "@webiny/api-headless-cms";
+import { FilterItemFromStorage } from "./filtering/types";
+import { createFields } from "~/operations/entry/filtering/createFields";
+import { filter, sort } from "~/operations/entry/filtering";
 
 const createType = (): string => {
     return "cms.entry";
@@ -677,7 +679,7 @@ export const createEntriesStorageOperations = (
             limit: initialLimit = 10,
             where: initialWhere,
             after,
-            sort,
+            sort: sortBy,
             fields,
             search
         } = params;
@@ -720,7 +722,7 @@ export const createEntriesStorageOperations = (
          * We need an object containing field, transformers and paths.
          * Just build it here and pass on into other methods that require it to avoid mapping multiple times.
          */
-        const modelFields = buildModelFields({
+        const modelFields = createFields({
             plugins,
             model
         });
@@ -729,7 +731,7 @@ export const createEntriesStorageOperations = (
          * Filter the read items via the code.
          * It will build the filters out of the where input and transform the values it is using.
          */
-        const filteredItems = await filterItems({
+        const filteredItems = await filter({
             items: records.map(record => {
                 return convertFromStorageEntry({
                     storageEntry: record,
@@ -752,9 +754,9 @@ export const createEntriesStorageOperations = (
          * Sorting is also done via the code.
          * It takes the sort input and sorts by it via the lodash sortBy method.
          */
-        const sortedItems = sortEntryItems({
+        const sortedItems = sort({
             items: filteredItems,
-            sort,
+            sort: sortBy,
             fields: modelFields
         });
 
