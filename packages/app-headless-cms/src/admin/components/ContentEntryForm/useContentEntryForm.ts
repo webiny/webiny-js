@@ -103,7 +103,7 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
     >(CREATE_CONTENT_FROM);
 
     /**
-     * Note that when passing error.data variable we cast as InvalidFieldError[] because we know it is so.
+     * Note that when passing `error.data` variable we cast as InvalidFieldError[] because we know it is so.
      */
     const setInvalidFieldValues = (errors?: InvalidFieldError[]): void => {
         if (Array.isArray(errors) === false || !errors) {
@@ -120,8 +120,8 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
         setInvalidFields(() => ({}));
     };
 
-    const createContent = useCallback(
-        async data => {
+    const createContent: FormOnSubmit = useCallback(
+        async (data, form) => {
             setLoading(true);
             const response = await createMutation({
                 variables: { data },
@@ -167,7 +167,7 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
             resetInvalidFieldValues();
             showSnackbar(`${contentModel.name} entry created successfully!`);
             if (typeof params.onSubmit === "function") {
-                params.onSubmit(entry);
+                params.onSubmit(entry, form);
             } else {
                 goToRevision(entry.id);
             }
@@ -264,13 +264,13 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
         return params.onChange(data, form);
     };
 
-    const onSubmit = async (data: Record<string, any>) => {
+    const onSubmit: FormOnSubmit = async (data, form) => {
         const fieldsIds = contentModel.fields.map(item => item.fieldId);
         const formData = pick(data, [...fieldsIds]);
 
         const gqlData = prepareFormData(formData, contentModel.fields);
         if (!entry.id) {
-            return createContent(gqlData);
+            return createContent(gqlData, form);
         }
 
         const { meta } = entry;
@@ -339,7 +339,7 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
 
     return {
         /**
-         * If entry is not set or entry.id does not exist, it means that form is for the new entry, so fetch default values.
+         * If entry is not set or `entry.id` does not exist, it means it's a new entry, so fetch default values.
          */
         data: entry && entry.id ? entry : defaultValues,
         loading,
