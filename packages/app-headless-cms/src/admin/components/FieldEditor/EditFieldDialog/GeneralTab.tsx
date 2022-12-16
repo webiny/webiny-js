@@ -4,20 +4,15 @@ import { Input } from "@webiny/ui/Input";
 import { Switch } from "@webiny/ui/Switch";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { validation } from "@webiny/validation";
-import { CmsEditorField, CmsEditorFieldTypePlugin } from "~/types";
-import { FormRenderPropParams } from "@webiny/form/types";
-
+import { Tags } from "@webiny/ui/Tags";
+import { useForm, Bind } from "@webiny/form";
 import { useFieldEditor } from "~/admin/components/FieldEditor";
 import { useContentModelEditor } from "~/admin/components/ContentModelEditor/useContentModelEditor";
+import { useEditorField } from "~/admin/hooks";
 
-interface GeneralTabProps {
-    field: CmsEditorField;
-    form: FormRenderPropParams;
-    fieldPlugin: CmsEditorFieldTypePlugin;
-}
-
-const GeneralTab: React.FC<GeneralTabProps> = ({ field, form, fieldPlugin }) => {
-    const { Bind, setValue } = form;
+const GeneralTab = () => {
+    const form = useForm();
+    const { field, fieldPlugin } = useEditorField();
     const inputRef = useRef<HTMLInputElement | null>(null);
     const { data: contentModel } = useContentModelEditor();
     const { getField } = useFieldEditor();
@@ -34,18 +29,16 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ field, form, fieldPlugin }) => 
                 return;
             }
             inputRef.current.focus();
-        }, 200);
+        }, /* The value of 400 was determined by manual testing. */ 400);
     }, []);
 
     const afterChangeLabel = useCallback((value: string) => {
-        setValue("fieldId", camelCase(value));
+        form.setValue("fieldId", camelCase(value));
     }, []);
 
     const beforeChangeFieldId = useCallback(
         (value: string, baseOnChange: (value: string) => void) => {
-            const newValue = value.trim();
-
-            baseOnChange(newValue);
+            baseOnChange(value.trim());
         },
         []
     );
@@ -73,7 +66,12 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ field, form, fieldPlugin }) => 
     let additionalSettings: React.ReactNode | null = null;
     if (typeof fieldPlugin.field.renderSettings === "function") {
         additionalSettings = fieldPlugin.field.renderSettings({
-            form,
+            // BC: the `form` param is passed only for backwards compatibility.
+            form: {
+                ...form,
+                form,
+                Bind
+            },
             afterChangeLabel,
             uniqueFieldIdValidator,
             contentModel
@@ -150,6 +148,16 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ field, form, fieldPlugin }) => 
                             label={"Help text"}
                             description={"Help text (optional)"}
                             data-testid={`cms.editor.field.settings.general.helptext`}
+                        />
+                    </Bind>
+                </Cell>
+                <Cell span={12}>
+                    <Bind name={"tags"}>
+                        <Tags
+                            label={"Tags"}
+                            protectedTags={fieldPlugin.field.tags}
+                            description={"Field tags (optional)"}
+                            data-testid={`cms.editor.field.settings.general.tags`}
                         />
                     </Bind>
                 </Cell>

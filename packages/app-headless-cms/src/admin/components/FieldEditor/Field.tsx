@@ -3,7 +3,7 @@ import { css } from "emotion";
 import styled from "@emotion/styled";
 import { IconButton } from "@webiny/ui/Button";
 import { Typography } from "@webiny/ui/Typography";
-import { ReactComponent as EditIcon } from "~/admin/icons/edit.svg";
+import { ReactComponent as EditIcon } from "@material-design-icons/svg/outlined/edit.svg";
 import { ReactComponent as DeleteIcon } from "~/admin/icons/delete.svg";
 import { ReactComponent as TitleIcon } from "~/admin/icons/title-24px.svg";
 import { ReactComponent as MoreVerticalIcon } from "~/admin/icons/more_vert.svg";
@@ -54,6 +54,13 @@ const menuStyles = css({
         pointerEvents: "none"
     }
 });
+
+const FieldExtra = styled.div`
+    padding: 10px 0 10px;
+    :empty {
+        display: none;
+    }
+`;
 
 const allowedTitleFieldTypes: string[] = ["text", "number"];
 
@@ -122,6 +129,7 @@ const Field: React.FC<FieldProps> = props => {
         return null;
     }
 
+    const canEdit = fieldPlugin.field.canEditSettings !== false;
     const isTitleField = data && field.fieldId === data.titleFieldId && !parent;
 
     return (
@@ -136,11 +144,13 @@ const Field: React.FC<FieldProps> = props => {
                     </Typography>
                 </Info>
                 <Actions>
-                    <IconButton
-                        data-testid={"cms.editor.edit-field"}
-                        icon={<EditIcon />}
-                        onClick={() => onEdit(field)}
-                    />
+                    {canEdit ? (
+                        <IconButton
+                            data-testid={"cms.editor.edit-field"}
+                            icon={<EditIcon />}
+                            onClick={() => onEdit(field)}
+                        />
+                    ) : null}
                     <Menu
                         className={menuStyles}
                         handle={<IconButton icon={<MoreVerticalIcon />} />}
@@ -167,9 +177,9 @@ const Field: React.FC<FieldProps> = props => {
                     </Menu>
                 </Actions>
             </FieldContainer>
-            <div className={"field-extra"}>
+            <FieldExtra>
                 {fieldPlugin.field.render && fieldPlugin.field.render({ field, data, setData })}
-            </div>
+            </FieldExtra>
         </Fragment>
     );
 };

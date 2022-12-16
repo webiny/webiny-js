@@ -4,6 +4,7 @@ import { DragSource } from "~/admin/components/FieldEditor/FieldEditorContext";
 
 export interface DroppableChildrenFunctionParams {
     isDragging: boolean;
+    isDroppable: boolean;
     isOver: boolean;
     item: any;
     drop: ConnectDropTarget;
@@ -41,7 +42,11 @@ const DroppableComponent: React.FC<DroppableProps> = props => {
             isOver: monitor.isOver() && monitor.isOver({ shallow: true }),
             item: monitor.getItem()
         }),
-        drop(_, monitor) {
+        drop(item, monitor) {
+            if (typeof props.isDroppable === "function" && !props.isDroppable(item)) {
+                return;
+            }
+
             if (typeof onDrop === "function") {
                 return onDrop(monitor.getItem());
             }
@@ -52,7 +57,12 @@ const DroppableComponent: React.FC<DroppableProps> = props => {
         return null;
     }
 
-    return children({ isDragging: Boolean(item), isOver, item, drop });
+    let isDroppable = true;
+    if (item) {
+        isDroppable = props.isDroppable ? props.isDroppable(item) : isOver;
+    }
+
+    return children({ isDragging: Boolean(item), isOver, isDroppable, item, drop });
 };
 
 export const Droppable: React.FC<DroppableProps> = React.memo(DroppableComponent);

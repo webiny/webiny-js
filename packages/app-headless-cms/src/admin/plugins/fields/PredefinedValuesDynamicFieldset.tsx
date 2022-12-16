@@ -10,6 +10,7 @@ import { Input } from "@webiny/ui/Input";
 import { Switch } from "@webiny/ui/Switch";
 import { BindComponent, CmsEditorField } from "~/types";
 import { BindComponentRenderProp } from "@webiny/form";
+import { useEditorField } from "~/admin/hooks";
 
 const t = i18n.ns("app-headless-cms/admin/fields/dynamic-fieldset-predefined-values");
 
@@ -71,14 +72,10 @@ const onSelectedChange = (params: OnSelectedParams) => {
 export interface Props {
     getBind: (value?: any) => BindComponent;
     renderValueInput?: (Bind: BindComponent) => React.ReactNode;
-    field: CmsEditorField;
 }
-const PredefinedValuesDynamicFieldset: React.FC<Props> = ({
-    getBind,
-    renderValueInput = null,
-    field
-}) => {
+const PredefinedValuesDynamicFieldset: React.FC<Props> = ({ getBind, renderValueInput = null }) => {
     const Bind = getBind();
+    const { field } = useEditorField();
 
     return (
         <Grid>
@@ -99,12 +96,7 @@ const PredefinedValuesDynamicFieldset: React.FC<Props> = ({
                                                             <Cell span={4}>
                                                                 <Fieldset>
                                                                     <Bind name={"label"}>
-                                                                        {bind => (
-                                                                            <Input
-                                                                                label={t`Label`}
-                                                                                {...bind}
-                                                                            />
-                                                                        )}
+                                                                        <Input label={t`Label`} />
                                                                     </Bind>
                                                                 </Fieldset>
                                                             </Cell>
@@ -114,12 +106,9 @@ const PredefinedValuesDynamicFieldset: React.FC<Props> = ({
                                                                         renderValueInput(Bind)
                                                                     ) : (
                                                                         <Bind name={"value"}>
-                                                                            {bind => (
-                                                                                <Input
-                                                                                    label={t`Value`}
-                                                                                    {...bind}
-                                                                                />
-                                                                            )}
+                                                                            <Input
+                                                                                label={t`Value`}
+                                                                            />
                                                                         </Bind>
                                                                     )}
                                                                 </Fieldset>
@@ -127,31 +116,20 @@ const PredefinedValuesDynamicFieldset: React.FC<Props> = ({
                                                             <Cell span={2}>
                                                                 <Fieldset>
                                                                     <Bind name={"selected"}>
-                                                                        {selectedBind => {
-                                                                            return (
-                                                                                <Switch
-                                                                                    {...selectedBind}
-                                                                                    label={
-                                                                                        "Selected"
-                                                                                    }
-                                                                                    description={
-                                                                                        "Mark as selected value"
-                                                                                    }
-                                                                                    onChange={(
-                                                                                        value: boolean
-                                                                                    ) => {
-                                                                                        onSelectedChange(
-                                                                                            {
-                                                                                                bind,
-                                                                                                field,
-                                                                                                index,
-                                                                                                value
-                                                                                            }
-                                                                                        );
-                                                                                    }}
-                                                                                />
-                                                                            );
-                                                                        }}
+                                                                        <Switch
+                                                                            label={"Selected"}
+                                                                            description={
+                                                                                "Mark as selected value"
+                                                                            }
+                                                                            onChange={value => {
+                                                                                onSelectedChange({
+                                                                                    bind,
+                                                                                    field,
+                                                                                    index,
+                                                                                    value
+                                                                                });
+                                                                            }}
+                                                                        />
                                                                     </Bind>
                                                                 </Fieldset>
                                                             </Cell>
@@ -201,15 +179,13 @@ const PredefinedValuesDynamicFieldset: React.FC<Props> = ({
                                                     </React.Fragment>
                                                 );
                                             })}
-                                            {header(() => {
-                                                return (
-                                                    <Header>
-                                                        <Typography
-                                                            use={"overline"}
-                                                        >{t`Predefined values`}</Typography>
-                                                    </Header>
-                                                );
-                                            })}
+                                            {header(() => (
+                                                <Header>
+                                                    <Typography
+                                                        use={"overline"}
+                                                    >{t`Predefined values`}</Typography>
+                                                </Header>
+                                            ))}
                                         </React.Fragment>
                                     );
                                 }}

@@ -7,11 +7,10 @@ import { Radio, RadioGroup } from "@webiny/ui/Radio";
 import { Typography } from "@webiny/ui/Typography";
 import { css } from "emotion";
 import { validation } from "@webiny/validation";
-import { FormRenderPropParams } from "@webiny/form";
+import { useEditorField } from "~/admin/hooks";
+import { useForm, Bind } from "@webiny/form";
 
-const t = i18n.ns(
-    "app-headless-cms/admin/views/components/editor/tabs/edit-field-dialog/appearance-tab"
-);
+const t = i18n.ns("app-headless-cms/admin/content-model-editor/tabs/appearance-tab");
 
 const style = {
     topLabel: css({
@@ -26,30 +25,31 @@ const style = {
     })
 };
 
-interface AppearanceTabProps {
-    field: CmsEditorField;
-    form: FormRenderPropParams;
-}
-const AppearanceTab: React.FC<AppearanceTabProps> = props => {
-    const { field, form } = props;
+const AppearanceTab = () => {
+    const form = useForm<CmsEditorField>();
+    const { field, fieldPlugin } = useEditorField();
 
     const renderPlugins = plugins
         .byType<CmsEditorFieldRendererPlugin>("cms-editor-field-renderer")
-        .filter(item => item.renderer.canUse({ field }));
+        .filter(item => item.renderer.canUse({ field, fieldPlugin }));
 
     useEffect((): void => {
         // If the currently selected render plugin is no longer available, select the first available one.
         const currentlySelectedRenderAvailable = renderPlugins.find(
             item => item.renderer.rendererName === field.renderer.name
         );
+
         if (currentlySelectedRenderAvailable) {
             return;
-        } else if (renderPlugins[0]) {
+        }
+
+        if (renderPlugins[0]) {
             form.setValue("renderer.name", renderPlugins[0].renderer.rendererName);
             return;
         }
+
         console.info(`No renderers for field ${field.fieldId} found.`, field);
-    });
+    }, [field.id, field.multipleValues, field.predefinedValues?.enabled]);
 
     if (renderPlugins.length === 0) {
         return (
@@ -61,8 +61,6 @@ const AppearanceTab: React.FC<AppearanceTabProps> = props => {
             </Grid>
         );
     }
-
-    const { Bind } = form;
 
     return (
         <Grid>
