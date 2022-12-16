@@ -62,6 +62,7 @@ import { checkModelAccess } from "~/utils/access";
 import { checkOwnership, validateOwnership } from "~/utils/ownership";
 import { entryFromStorageTransform, entryToStorageTransform } from "~/utils/entryStorage";
 import { attachCmsModelFieldConverters } from "~/utils/converters/valueKeyStorageConverter";
+import { getBaseFieldType } from "~/utils/getBaseFieldType";
 
 export const STATUS_DRAFT = "draft";
 export const STATUS_PUBLISHED = "published";
@@ -252,7 +253,8 @@ const getSearchableFields = (params: GetSearchableFieldsParams): string[] => {
             if (!field.fieldId) {
                 return false;
             }
-            const plugin = fieldPluginMap[field.type];
+            const baseType = getBaseFieldType(field);
+            const plugin = fieldPluginMap[baseType];
             if (!plugin) {
                 return false;
             } else if (!plugin.fullTextSearch) {

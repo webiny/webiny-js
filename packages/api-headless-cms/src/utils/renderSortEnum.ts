@@ -1,4 +1,5 @@
 import { CmsFieldTypePlugins, CmsModel } from "~/types";
+import { getBaseFieldType } from "~/utils/getBaseFieldType";
 
 interface RenderSortEnum {
     (params: { model: CmsModel; fieldTypePlugins: CmsFieldTypePlugins }): string;
@@ -15,7 +16,7 @@ export const renderSortEnum: RenderSortEnum = ({ model, fieldTypePlugins }): str
     ];
 
     for (const field of model.fields) {
-        const plugin = fieldTypePlugins[field.type];
+        const plugin = fieldTypePlugins[getBaseFieldType(field)];
         if (!plugin) {
             continue;
         }
