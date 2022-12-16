@@ -6,6 +6,8 @@ const t = i18n.ns("app-admin/hooks/use-confirmation-dialog");
 interface Params {
     title?: React.ReactNode;
     message?: React.ReactNode;
+    acceptLabel?: React.ReactNode;
+    cancelLabel?: React.ReactNode;
     [key: string]: any;
 }
 
@@ -16,6 +18,8 @@ interface UseConfirmationDialogResponse {
 const useConfirmationDialog = ({
     title,
     message,
+    acceptLabel = t`Confirm`,
+    cancelLabel = t`Cancel`,
     ...options
 }: Params = {}): UseConfirmationDialogResponse => {
     const ui = useUi();
@@ -32,11 +36,11 @@ const useConfirmationDialog = ({
                             title: title || t`Confirmation`,
                             actions: {
                                 accept: {
-                                    label: t`Confirm`,
+                                    label: acceptLabel,
                                     onClick: onAccept
                                 },
                                 cancel: {
-                                    label: t`Cancel`,
+                                    label: cancelLabel,
                                     onClick: onCancel
                                 }
                             }
