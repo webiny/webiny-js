@@ -13,6 +13,7 @@ const BASE_CONTENT_MODEL_FIELDS = `
     name
     savedOn
     plugin
+    tags
     fields {
         id
     }

@@ -3,6 +3,7 @@ import pMap from "p-map";
 import { CmsModel, CmsModelField } from "~/types";
 import { PluginsContainer } from "@webiny/plugins";
 import { StorageTransformPlugin } from "~/plugins/StorageTransformPlugin";
+import { getBaseFieldType } from "~/utils/getBaseFieldType";
 
 interface ProcessValueParams {
     fields: CmsModelField[];
@@ -21,9 +22,10 @@ const processValue: ProcessValue = async params => {
     return await pReduce(
         fields,
         async (values, field) => {
-            const plugin = getStoragePlugin(field.type);
+            const baseType = getBaseFieldType(field);
+            const plugin = getStoragePlugin(baseType);
             if (!plugin) {
-                throw new Error(`Missing storage plugin for field type "${field.type}".`);
+                throw new Error(`Missing storage plugin for field type "${baseType}".`);
             }
             const value = await plugin[operation]({
                 plugins,
