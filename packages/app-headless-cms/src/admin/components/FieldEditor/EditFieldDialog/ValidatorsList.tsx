@@ -1,23 +1,30 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { css } from "emotion";
 import { cloneDeep, debounce } from "lodash";
 import { Switch } from "@webiny/ui/Switch";
-import {
-    SimpleForm,
-    SimpleFormContent,
-    SimpleFormHeader
-} from "@webiny/app-admin/components/SimpleForm";
-import { Form, FormRenderPropParams } from "@webiny/form";
+import { Form, Bind } from "@webiny/form";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { validation } from "@webiny/validation";
 import { Input } from "@webiny/ui/Input";
 import {
-    CmsEditorField,
     CmsEditorFieldValidator,
     CmsEditorFieldValidatorPlugin,
     CmsEditorFieldValidatorPluginValidator
 } from "~/types";
 import { Validator } from "@webiny/validation/types";
+import { Accordion, AccordionItem } from "@webiny/ui/Accordion";
+
+const noPadding = css`
+    .webiny-ui-accordion-item__content {
+        padding: 0 !important;
+    }
+`;
+
+const gridBottomPadding = css`
+    :not(:last-child) {
+        padding-bottom: 0;
+    }
+`;
 
 interface OnChangeValidationCallable {
     (validators: CmsEditorFieldValidator[]): void;
@@ -57,10 +64,6 @@ const onFormChange = debounce(({ data, validationValue, onChangeValidation, vali
     onChangeValidation(newValidationValue);
 }, 200);
 
-const noMargin = css({
-    margin: "0 !important"
-});
-
 interface ValidatorsTabPropsValidator {
     optional: boolean;
     validator: CmsEditorFieldValidatorPlugin["validator"];
@@ -68,53 +71,59 @@ interface ValidatorsTabPropsValidator {
 interface ValidatorsTabProps {
     name: string;
     validators: ValidatorsTabPropsValidator[];
-    form: FormRenderPropParams;
-    field: CmsEditorField;
 }
 
-const ValidatorsTab: React.FC<ValidatorsTabProps> = props => {
-    const {
-        field,
-        name,
-        validators,
-        form: { Bind }
-    } = props;
+export const ValidatorsList: React.FC<ValidatorsTabProps> = props => {
+    const { name, validators } = props;
 
     return (
         <Bind name={name} defaultValue={[]}>
             {bind => {
                 const { value: validationValue, onChange: onChangeValidation } = bind;
                 return (
-                    <>
+                    <Accordion>
                         {validators.map(({ optional, validator }) => {
                             const validatorIndex = (
                                 (validationValue || []) as Validator[]
                             ).findIndex(item => item.name === validator.name);
                             const data = (validationValue || [])[validatorIndex];
 
+                            if (typeof validator.renderCustomUi === "function") {
+                                return (
+                                    <Fragment key={validator.name}>
+                                        {validator.renderCustomUi()}
+                                    </Fragment>
+                                );
+                            }
+
+                            const actions = optional ? (
+                                <AccordionItem.Actions>
+                                    <Switch
+                                        label="Enabled"
+                                        value={validatorIndex >= 0}
+                                        onChange={() =>
+                                            onEnabledChange({
+                                                data,
+                                                validationValue,
+                                                onChangeValidation,
+                                                validator
+                                            })
+                                        }
+                                    />
+                                </AccordionItem.Actions>
+                            ) : null;
+
                             return (
-                                <SimpleForm
+                                <AccordionItem
                                     key={validator.name}
-                                    noElevation
-                                    className={noMargin}
                                     data-testid={`cms.editor.field-validator.${validator.name}`}
+                                    interactive={false}
+                                    open={!!data}
+                                    title={validator.label}
+                                    description={validator.description}
+                                    actions={actions}
+                                    className={noPadding}
                                 >
-                                    <SimpleFormHeader title={validator.label}>
-                                        {optional && (
-                                            <Switch
-                                                label="Enabled"
-                                                value={validatorIndex >= 0}
-                                                onChange={() =>
-                                                    onEnabledChange({
-                                                        data,
-                                                        validationValue,
-                                                        onChangeValidation,
-                                                        validator
-                                                    })
-                                                }
-                                            />
-                                        )}
-                                    </SimpleFormHeader>
                                     {data && (
                                         <Form
                                             data={data}
@@ -127,9 +136,9 @@ const ValidatorsTab: React.FC<ValidatorsTabProps> = props => {
                                                 })
                                             }
                                         >
-                                            {({ Bind, setValue }) => (
-                                                <SimpleFormContent>
-                                                    <Grid>
+                                            {({ Bind }) => (
+                                                <>
+                                                    <Grid className={gridBottomPadding}>
                                                         <Cell span={12}>
                                                             <Bind
                                                                 name={"message"}
@@ -154,32 +163,17 @@ const ValidatorsTab: React.FC<ValidatorsTabProps> = props => {
                                                     </Grid>
 
                                                     {typeof validator.renderSettings ===
-                                                        "function" &&
-                                                        validator.renderSettings({
-                                                            field,
-                                                            setValue,
-                                                            setMessage: (message: string) => {
-                                                                setValue("message", message);
-                                                            },
-                                                            data,
-                                                            /**
-                                                             * TODO @ts-refactor
-                                                             * Figure out type for Bind.
-                                                             */
-                                                            Bind: Bind as any
-                                                        })}
-                                                </SimpleFormContent>
+                                                        "function" && validator.renderSettings()}
+                                                </>
                                             )}
                                         </Form>
                                     )}
-                                </SimpleForm>
+                                </AccordionItem>
                             );
                         })}
-                    </>
+                    </Accordion>
                 );
             }}
         </Bind>
     );
 };
-
-export default ValidatorsTab;
