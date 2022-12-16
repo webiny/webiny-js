@@ -173,7 +173,12 @@ describe("create system and model fields", () => {
                 settings: expect.any(Object)
             },
             "options.variant": {
-                parents: ["options"],
+                parents: [
+                    {
+                        fieldId: "options",
+                        multipleValues: true
+                    }
+                ],
                 id: "variant",
                 type: "object",
                 storageId: "variantStorageId",
@@ -186,7 +191,16 @@ describe("create system and model fields", () => {
                 settings: expect.any(Object)
             },
             "options.variant.colors": {
-                parents: ["options", "variant"],
+                parents: [
+                    {
+                        fieldId: "options",
+                        multipleValues: true
+                    },
+                    {
+                        fieldId: "variant",
+                        multipleValues: false
+                    }
+                ],
                 id: "colors",
                 type: "text",
                 storageId: "variantColorsStorageId",
@@ -198,7 +212,16 @@ describe("create system and model fields", () => {
                 label: "Variant Colors"
             },
             "options.variant.number": {
-                parents: ["options", "variant"],
+                parents: [
+                    {
+                        fieldId: "options",
+                        multipleValues: true
+                    },
+                    {
+                        fieldId: "variant",
+                        multipleValues: false
+                    }
+                ],
                 id: "number",
                 type: "number",
                 storageId: "variantNumberStorageId",
@@ -223,7 +246,12 @@ describe("create system and model fields", () => {
                 settings: expect.any(Object)
             },
             "info.images": {
-                parents: ["info"],
+                parents: [
+                    {
+                        fieldId: "info",
+                        multipleValues: false
+                    }
+                ],
                 id: "images",
                 type: "object",
                 storageId: "infoImagesStorageId",
@@ -236,7 +264,16 @@ describe("create system and model fields", () => {
                 settings: expect.any(Object)
             },
             "info.images.file": {
-                parents: ["info", "images"],
+                parents: [
+                    {
+                        fieldId: "info",
+                        multipleValues: false
+                    },
+                    {
+                        fieldId: "images",
+                        multipleValues: true
+                    }
+                ],
                 id: "file",
                 type: "file",
                 storageId: "infoImagesFileStorageId",
@@ -248,7 +285,16 @@ describe("create system and model fields", () => {
                 label: "File"
             },
             "info.images.tags": {
-                parents: ["info", "images"],
+                parents: [
+                    {
+                        fieldId: "info",
+                        multipleValues: false
+                    },
+                    {
+                        fieldId: "images",
+                        multipleValues: true
+                    }
+                ],
                 id: "tags",
                 type: "object",
                 storageId: "infoImagesTagsStorageId",
@@ -266,7 +312,20 @@ describe("create system and model fields", () => {
                 id: "slug",
                 label: "Slug",
                 multipleValues: false,
-                parents: ["info", "images", "tags"],
+                parents: [
+                    {
+                        fieldId: "info",
+                        multipleValues: false
+                    },
+                    {
+                        fieldId: "images",
+                        multipleValues: true
+                    },
+                    {
+                        fieldId: "tags",
+                        multipleValues: true
+                    }
+                ],
                 storageId: "infoImagesTagsSlugStorageId",
                 system: false,
                 transform: expect.any(Function),
@@ -278,7 +337,20 @@ describe("create system and model fields", () => {
                 id: "title",
                 label: "Title",
                 multipleValues: false,
-                parents: ["info", "images", "tags"],
+                parents: [
+                    {
+                        fieldId: "info",
+                        multipleValues: false
+                    },
+                    {
+                        fieldId: "images",
+                        multipleValues: true
+                    },
+                    {
+                        fieldId: "tags",
+                        multipleValues: true
+                    }
+                ],
                 storageId: "infoImagesTagsTitleStorageId",
                 system: false,
                 transform: expect.any(Function),
@@ -290,7 +362,16 @@ describe("create system and model fields", () => {
                 id: "title",
                 label: "Title",
                 multipleValues: false,
-                parents: ["info", "images"],
+                parents: [
+                    {
+                        fieldId: "info",
+                        multipleValues: false
+                    },
+                    {
+                        fieldId: "images",
+                        multipleValues: true
+                    }
+                ],
                 storageId: "infoImagesTitleStorageId",
                 system: false,
                 transform: expect.any(Function),
@@ -302,7 +383,12 @@ describe("create system and model fields", () => {
                 id: "keywords",
                 label: "Keywords",
                 multipleValues: true,
-                parents: ["info"],
+                parents: [
+                    {
+                        fieldId: "info",
+                        multipleValues: false
+                    }
+                ],
                 storageId: "infoKeywordsStorageId",
                 system: false,
                 transform: expect.any(Function),

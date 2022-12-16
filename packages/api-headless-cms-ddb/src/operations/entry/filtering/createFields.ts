@@ -78,7 +78,9 @@ export const createFields = (params: Params) => {
                     fieldId: field.fieldId,
                     multipleValues: field.multipleValues
                 }
-            ].join(".");
+            ]
+                .map(f => f.fieldId)
+                .join(".");
 
             collection[fieldId] = {
                 ...field,
