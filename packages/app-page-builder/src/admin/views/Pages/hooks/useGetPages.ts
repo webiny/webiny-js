@@ -3,53 +3,39 @@ import { GetPageQueryResponse, GetPageQueryVariables } from "~/pageEditor/graphq
 import { GET_PAGE } from "~/admin/graphql/pages";
 import { useApolloClient } from "@apollo/react-hooks";
 import { PbPageDataLink, Loading, PbPageData, LoadingActions } from "~/types";
-import { useEffect, useState, SetStateAction, Dispatch } from "react";
+import { useEffect, useState } from "react";
 import { FOLDER_ID_DEFAULT } from "~/admin/constants/folders";
+import { useSnackbar } from "@webiny/app-admin";
+import { i18n } from "@webiny/app/i18n";
 
-export const loadingHandler = <T extends string>(
-    action: T,
-    setState: Dispatch<SetStateAction<Loading<T>>>
-): void => {
-    return setState(state => {
-        return {
-            ...state,
-            [action]: !state[action]
-        };
-    });
-};
+const t = i18n.ns("app-headless-cms/app-page-builder/pages-table/get-pages");
 
 const defaultLoading = {
-    IDLE: true,
+    INIT: true,
     LIST: false,
     LIST_MORE: false
 };
 
 const useGetPages = (links: LinkItem[], folderId = FOLDER_ID_DEFAULT) => {
     const client = useApolloClient();
+    const { showSnackbar } = useSnackbar();
     const [pages, setPages] = useState<PbPageDataLink[]>([]);
     const [loading, setLoading] = useState<Loading<LoadingActions>>(defaultLoading);
     const [times, setTimes] = useState<number>(0);
 
     const getPagesByLinks = (links: LinkItem[]): void => {
-        const action = times > 0 ? "LIST_MORE" : "LIST";
-
-        setLoading(state => {
-            return {
-                ...state,
-                [action]: !state[action]
-            };
-        });
-
         if (links.length === 0) {
+            // No need to fetch pages, just returning an empty array
             setPages([]);
-            setLoading(state => {
+        } else {
+            const action = times > 0 ? "LIST_MORE" : "LIST";
+            setLoading(prev => {
                 return {
-                    ...state,
-                    IDLE: false,
-                    [action]: !state[action]
+                    ...prev,
+                    [action]: true
                 };
             });
-        } else {
+
             Promise.all(
                 links.map(async link => {
                     const { data: response } = await client.query<
@@ -71,17 +57,28 @@ const useGetPages = (links: LinkItem[], folderId = FOLDER_ID_DEFAULT) => {
                         link
                     };
                 })
-            ).then((data: PbPageDataLink[]) => {
-                setPages(data);
-                setTimes(prev => prev + 1);
-                setLoading(state => {
-                    return {
-                        ...state,
-                        IDLE: false,
-                        [action]: !state[action]
-                    };
+            )
+                .then((data: PbPageDataLink[]) => {
+                    setPages(data);
+                    setTimes(prev => prev + 1);
+                })
+                .catch(error => {
+                    // TODO: In case of errors, let's show a message to users. This could be refactored using Promise.allSettled()
+                    showSnackbar(
+                        t`Error while fetching pages ({error})" `({
+                            error: error.message
+                        })
+                    );
+                })
+                .finally(() => {
+                    setLoading(state => {
+                        return {
+                            ...state,
+                            INIT: false,
+                            [action]: false
+                        };
+                    });
                 });
-            });
         }
     };
 

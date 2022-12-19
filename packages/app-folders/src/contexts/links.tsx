@@ -41,7 +41,7 @@ interface Props {
 }
 
 const defaultLoading = {
-    IDLE: true,
+    INIT: true,
     LIST: false,
     LIST_MORE: false,
     CREATE: false,
@@ -66,20 +66,14 @@ export const LinksProvider = ({ children }: Props) => {
 
             const action = after ? "LIST_MORE" : "LIST";
 
-            setLoading(prev => {
-                return {
-                    ...prev,
-                    [action]: true
-                };
-            });
-
-            const { data: response } = await client.query<
-                ListLinksResponse,
-                ListLinksQueryVariables
-            >({
-                query: LIST_LINKS,
-                variables: { folderId, limit, after }
-            });
+            const { data: response } = await apolloFetchingHandler(
+                loadingHandler(action, setLoading),
+                () =>
+                    client.query<ListLinksResponse, ListLinksQueryVariables>({
+                        query: LIST_LINKS,
+                        variables: { folderId, limit, after }
+                    })
+            );
 
             const { data, meta: responseMeta, error } = response.folders.listLinks;
 
@@ -97,8 +91,7 @@ export const LinksProvider = ({ children }: Props) => {
             setLoading(prev => {
                 return {
                     ...prev,
-                    [action]: false,
-                    IDLE: false
+                    INIT: false
                 };
             });
 
@@ -111,7 +104,7 @@ export const LinksProvider = ({ children }: Props) => {
             }
 
             const { data: response } = await apolloFetchingHandler(
-                () => loadingHandler("GET", setLoading),
+                loadingHandler("GET", setLoading),
                 () =>
                     client.query<GetLinkResponse, GetLinkQueryVariables>({
                         query: GET_LINK,
@@ -132,7 +125,7 @@ export const LinksProvider = ({ children }: Props) => {
             const { folderId } = link;
 
             const { data: response } = await apolloFetchingHandler(
-                () => loadingHandler("CREATE", setLoading),
+                loadingHandler("CREATE", setLoading),
                 () =>
                     client.mutate<CreateLinkResponse, CreateLinkVariables>({
                         mutation: CREATE_LINK,
@@ -167,7 +160,7 @@ export const LinksProvider = ({ children }: Props) => {
             const { id, folderId } = link;
 
             const { data: response } = await apolloFetchingHandler(
-                () => loadingHandler("UPDATE", setLoading),
+                loadingHandler("UPDATE", setLoading),
                 () =>
                     client.mutate<UpdateLinkResponse, UpdateLinkVariables>({
                         mutation: UPDATE_LINK,
@@ -198,7 +191,7 @@ export const LinksProvider = ({ children }: Props) => {
             const { id, folderId } = link;
 
             const { data: response } = await apolloFetchingHandler(
-                () => loadingHandler("DELETE", setLoading),
+                loadingHandler("DELETE", setLoading),
                 () =>
                     client.mutate<DeleteLinkResponse, DeleteLinkVariables>({
                         mutation: DELETE_LINK,

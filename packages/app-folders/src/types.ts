@@ -19,7 +19,7 @@ export interface LinkItem {
 
 export type Loading<T extends string> = { [P in T]?: boolean };
 
-export type LoadingActions = "IDLE" | "LIST" | "LIST_MORE" | "GET" | "CREATE" | "UPDATE" | "DELETE";
+export type LoadingActions = "INIT" | "LIST" | "LIST_MORE" | "GET" | "CREATE" | "UPDATE" | "DELETE";
 
 export interface Error {
     code: string;

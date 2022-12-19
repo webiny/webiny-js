@@ -931,4 +931,4 @@ export interface PageBuilderSecurityPermission extends SecurityPermission {
 
 export type Loading<T extends string> = { [P in T]?: boolean };
 
-export type LoadingActions = "IDLE" | "LIST" | "LIST_MORE";
+export type LoadingActions = "INIT" | "LIST" | "LIST_MORE";

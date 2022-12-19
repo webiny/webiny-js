@@ -10,13 +10,13 @@ import { Loading } from "~/types";
  * @param apolloQuery: Apollo Query or Mutation
  */
 export const apolloFetchingHandler = async (
-    loadingHandler: () => void,
+    loadingHandler: (flag: boolean) => void,
     apolloQuery: () => Promise<ApolloQueryResult<any> | FetchResult<any>>
 ) => {
-    loadingHandler();
+    loadingHandler(true);
 
     const response = await apolloQuery();
-    loadingHandler();
+    loadingHandler(false);
 
     return response;
 };
@@ -30,11 +30,13 @@ export const apolloFetchingHandler = async (
 export const loadingHandler = <T extends string>(
     action: T,
     setState: Dispatch<SetStateAction<Loading<T>>>
-): void => {
-    setState(state => {
-        return {
-            ...state,
-            [action]: !state[action]
-        };
-    });
+) => {
+    return (flag: boolean) => {
+        setState(state => {
+            return {
+                ...state,
+                [action]: flag
+            };
+        });
+    };
 };

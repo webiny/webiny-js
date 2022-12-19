@@ -100,9 +100,9 @@ export const Main = ({ folderId }: Props) => {
 
     const isLoading = useMemo(() => {
         return (
-            pagesLoading.IDLE ||
-            linksLoading.IDLE ||
-            foldersLoading.IDLE ||
+            pagesLoading.INIT ||
+            linksLoading.INIT ||
+            foldersLoading.INIT ||
             pagesLoading.LIST ||
             linksLoading.LIST ||
             foldersLoading.LIST
@@ -115,6 +115,7 @@ export const Main = ({ folderId }: Props) => {
 
     return (
         <>
+            {JSON.stringify(pagesLoading)}
             <Container>
                 <Header
                     canCreate={canCreate}
