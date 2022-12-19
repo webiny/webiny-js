@@ -23,15 +23,15 @@ import {
     ListFoldersResponse,
     UpdateFolderResponse,
     UpdateFolderVariables,
-    FoldersActions,
-    Loading
+    Loading,
+    LoadingActions
 } from "~/types";
 
 interface FoldersContext {
     folders: Record<string, FolderItem[]>;
-    loading: Loading<FoldersActions>;
+    loading: Loading<LoadingActions>;
     listFolders: (type: string) => Promise<FolderItem[]>;
-    getFolder: (id: string, type: string) => Promise<FolderItem>;
+    getFolder: (id: string) => Promise<FolderItem>;
     createFolder: (folder: Omit<FolderItem, "id">) => Promise<FolderItem>;
     updateFolder: (folder: FolderItem) => Promise<FolderItem>;
     deleteFolder(folder: FolderItem): Promise<true>;
@@ -43,10 +43,18 @@ interface Props {
     children: ReactNode;
 }
 
+const defaultLoading = {
+    IDLE: true,
+    LIST: false,
+    CREATE: false,
+    UPDATE: false,
+    DELETE: false
+};
+
 export const FoldersProvider = ({ children }: Props) => {
     const client = useApolloClient();
     const [folders, setFolders] = useState<Record<string, FolderItem[]>>(Object.create(null));
-    const [loading, setLoading] = useState<Loading<FoldersActions>>({});
+    const [loading, setLoading] = useState<Loading<LoadingActions>>(defaultLoading);
 
     const context: FoldersContext = {
         folders,
@@ -56,14 +64,20 @@ export const FoldersProvider = ({ children }: Props) => {
                 throw new Error("Folder `type` is mandatory");
             }
 
-            const { data: response } = await apolloFetchingHandler(
-                () => loadingHandler(type, "LIST_FOLDERS", setLoading),
-                () =>
-                    client.query<ListFoldersResponse, ListFoldersQueryVariables>({
-                        query: LIST_FOLDERS,
-                        variables: { type }
-                    })
-            );
+            setLoading(prev => {
+                return {
+                    ...prev,
+                    LIST: true
+                };
+            });
+
+            const { data: response } = await client.query<
+                ListFoldersResponse,
+                ListFoldersQueryVariables
+            >({
+                query: LIST_FOLDERS,
+                variables: { type }
+            });
 
             const { data, error } = response.folders.listFolders;
 
@@ -76,16 +90,22 @@ export const FoldersProvider = ({ children }: Props) => {
                 [type]: data || []
             }));
 
+            setLoading(prev => ({
+                ...prev,
+                LIST: false,
+                IDLE: false
+            }));
+
             return data;
         },
 
-        async getFolder(id, type) {
+        async getFolder(id) {
             if (!id) {
                 throw new Error("Folder `id` is mandatory");
             }
 
             const { data: response } = await apolloFetchingHandler(
-                () => loadingHandler(type, "GET_FOLDER", setLoading),
+                () => loadingHandler("GET", setLoading),
                 () =>
                     client.query<GetFolderResponse, GetFolderQueryVariables>({
                         query: GET_FOLDER,
@@ -106,7 +126,7 @@ export const FoldersProvider = ({ children }: Props) => {
             const { type } = folder;
 
             const { data: response } = await apolloFetchingHandler(
-                () => loadingHandler(type, "CREATE_FOLDER", setLoading),
+                () => loadingHandler("CREATE", setLoading),
                 () =>
                     client.mutate<CreateFolderResponse, CreateFolderVariables>({
                         mutation: CREATE_FOLDER,
@@ -133,7 +153,7 @@ export const FoldersProvider = ({ children }: Props) => {
             const { id, type, name, slug, parentId } = folder;
 
             const { data: response } = await apolloFetchingHandler(
-                () => loadingHandler(type, "UPDATE_FOLDER", setLoading),
+                () => loadingHandler("UPDATE", setLoading),
                 () =>
                     client.mutate<UpdateFolderResponse, UpdateFolderVariables>({
                         mutation: UPDATE_FOLDER,
@@ -177,7 +197,7 @@ export const FoldersProvider = ({ children }: Props) => {
             const { id, type } = folder;
 
             const { data: response } = await apolloFetchingHandler(
-                () => loadingHandler(type, "DELETE_FOLDER", setLoading),
+                () => loadingHandler("DELETE", setLoading),
                 () =>
                     client.mutate<DeleteFolderResponse, DeleteFolderVariables>({
                         mutation: DELETE_FOLDER,

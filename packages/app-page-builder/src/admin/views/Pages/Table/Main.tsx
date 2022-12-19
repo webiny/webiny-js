@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 
 import debounce from "lodash/debounce";
 import useDeepCompareEffect from "use-deep-compare-effect";
@@ -21,7 +21,7 @@ import { FOLDER_ID_DEFAULT, FOLDER_TYPE } from "~/admin/constants/folders";
 
 import { Container, Wrapper } from "./styled";
 
-import { FolderItem, LinksActions, Loading } from "@webiny/app-folders/types";
+import { FolderItem } from "@webiny/app-folders/types";
 
 interface Props {
     folderId?: string;
@@ -55,11 +55,7 @@ export const Main = ({ folderId }: Props) => {
         deleteLink
     } = useLinks(folderId || FOLDER_ID_DEFAULT);
 
-    const { pages, loading: pagesLoading } = useGetPages(
-        links,
-        linksLoading as Loading<LinksActions>,
-        folderId
-    );
+    const { pages, loading: pagesLoading } = useGetPages(links, folderId);
 
     const [subFolders, setSubFolders] = useState<FolderItem[]>([]);
 
@@ -102,6 +98,21 @@ export const Main = ({ folderId }: Props) => {
         [meta]
     );
 
+    const isLoading = useMemo(() => {
+        return (
+            pagesLoading.IDLE ||
+            linksLoading.IDLE ||
+            foldersLoading.IDLE ||
+            pagesLoading.LIST ||
+            linksLoading.LIST ||
+            foldersLoading.LIST
+        );
+    }, [foldersLoading, linksLoading, pagesLoading]);
+
+    const isLoadingMore = useMemo(() => {
+        return pagesLoading.LIST_MORE || linksLoading.LIST_MORE;
+    }, [linksLoading, pagesLoading]);
+
     return (
         <>
             <Container>
@@ -111,11 +122,7 @@ export const Main = ({ folderId }: Props) => {
                     onCreateFolder={openFoldersDialog}
                 />
                 <Wrapper>
-                    {pages.length === 0 &&
-                    subFolders.length === 0 &&
-                    !pagesLoading.LIST_PAGES_BY_LINKS &&
-                    !linksLoading.LIST_LINKS &&
-                    !foldersLoading.LIST_FOLDERS ? (
+                    {pages.length === 0 && subFolders.length === 0 && !isLoading ? (
                         <Empty
                             canCreate={canCreate}
                             onCreatePage={openCategoryDialog}
@@ -136,17 +143,12 @@ export const Main = ({ folderId }: Props) => {
                                 <Table
                                     folders={subFolders}
                                     pages={pages}
-                                    loading={
-                                        pagesLoading.LIST_PAGES_BY_LINKS ||
-                                        linksLoading.LIST_LINKS ||
-                                        foldersLoading.LIST_FOLDERS
-                                    }
+                                    loading={isLoading}
                                     onDeletePage={deleteLink}
                                     openPreviewDrawer={openPreviewDrawer}
                                 />
                             </Scrollbar>
-                            {(linksLoading.LIST_MORE_LINKS ||
-                                pagesLoading.LIST_MORE_PAGES_BY_LINKS) && <LoadingMore />}
+                            {isLoadingMore && <LoadingMore />}
                         </>
                     )}
                 </Wrapper>

@@ -16,7 +16,6 @@ export const apolloFetchingHandler = async (
     loadingHandler();
 
     const response = await apolloQuery();
-
     loadingHandler();
 
     return response;
@@ -25,25 +24,17 @@ export const apolloFetchingHandler = async (
 /**
  * A simple function to handle `loading` state.
  *
- * @param context: string that define where the context the operation works.
  * @param action: the `action` that has been performed.
  * @param setState: the logic to update the loading state.
  */
 export const loadingHandler = <T extends string>(
-    context: string,
     action: T,
     setState: Dispatch<SetStateAction<Loading<T>>>
 ): void => {
     setState(state => {
-        const currentContext = state[context] || {};
-        const currentAction = currentContext[action] || false;
-
         return {
             ...state,
-            [context]: {
-                ...currentContext,
-                [action]: !currentAction
-            }
+            [action]: !state[action]
         };
     });
 };
