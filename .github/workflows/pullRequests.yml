@@ -284,11 +284,3 @@ jobs:
       - name: Build "api" app
         working-directory: test-project
         run: yarn webiny ws run build --folder api --env dev
-
-      - name: Build "admin" app
-        working-directory: test-project
-        run: yarn webiny ws run build --scope admin --env=dev
-
-      - name: Build "website" app
-        working-directory: test-project
-        run: yarn webiny ws run build --scope website --env=dev

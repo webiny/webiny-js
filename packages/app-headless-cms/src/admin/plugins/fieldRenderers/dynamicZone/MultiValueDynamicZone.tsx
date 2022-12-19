@@ -9,7 +9,7 @@ import { ReactComponent as ArrowUpIcon } from "@material-design-icons/svg/round/
 import { ReactComponent as ArrowDownIcon } from "@material-design-icons/svg/round/expand_more.svg";
 import { AddTemplateButton, AddTemplateIcon } from "./AddTemplate";
 import { TemplateIcon } from "./TemplateIcon";
-import { useModelField } from "~/admin/components/ContentEntryForm/useModelField";
+import { useModelField } from "~/admin/hooks";
 import { Fields } from "~/admin/components/ContentEntryForm/Fields";
 import {
     BindComponent,
