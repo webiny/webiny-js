@@ -14,15 +14,10 @@ import {
     CmsEntryCreateFromMutationResponse,
     CmsEntryCreateFromMutationVariables
 } from "~/admin/graphql/contentEntries";
-import { useMutation } from "~/admin/hooks";
+import { useModel, useMutation } from "~/admin/hooks";
 import * as GQLCache from "~/admin/views/contentEntries/ContentEntry/cache";
 import { prepareFormData } from "~/admin/views/contentEntries/ContentEntry/prepareFormData";
-import {
-    CmsEditorContentEntry,
-    CmsModelField,
-    CmsEditorFieldRendererPlugin,
-    CmsModel
-} from "~/types";
+import { CmsEditorContentEntry, CmsModelField, CmsEditorFieldRendererPlugin } from "~/types";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
 import { plugins } from "@webiny/plugins";
 
@@ -56,7 +51,6 @@ interface UseContentEntryForm {
 }
 
 export interface UseContentEntryFormParams {
-    contentModel: CmsModel;
     entry: Partial<CmsEditorContentEntry>;
     onChange?: FormOnSubmit;
     onSubmit?: FormOnSubmit;
@@ -65,7 +59,8 @@ export interface UseContentEntryFormParams {
 
 export function useContentEntryForm(params: UseContentEntryFormParams): UseContentEntryForm {
     const { listQueryVariables } = useContentEntry();
-    const { contentModel, entry } = params;
+    const { model } = useModel();
+    const { entry } = params;
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
     const [invalidFields, setInvalidFields] = useState<Record<string, string>>({});
@@ -77,17 +72,17 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
     );
 
     const goToRevision = useCallback(id => {
-        history.push(`/cms/content-entries/${contentModel.modelId}?id=${encodeURIComponent(id)}`);
+        history.push(`/cms/content-entries/${model.modelId}?id=${encodeURIComponent(id)}`);
     }, []);
 
     const { CREATE_CONTENT, UPDATE_CONTENT, CREATE_CONTENT_FROM } = useMemo(() => {
         return {
-            // LIST_CONTENT: createListQuery(contentModel),
-            CREATE_CONTENT: createCreateMutation(contentModel),
-            UPDATE_CONTENT: createUpdateMutation(contentModel),
-            CREATE_CONTENT_FROM: createCreateFromMutation(contentModel)
+            // LIST_CONTENT: createListQuery(model),
+            CREATE_CONTENT: createCreateMutation(model),
+            UPDATE_CONTENT: createUpdateMutation(model),
+            CREATE_CONTENT_FROM: createCreateFromMutation(model)
         };
-    }, [contentModel.modelId]);
+    }, [model.modelId]);
 
     const [createMutation] = useMutation<
         CmsEntryCreateMutationResponse,
@@ -144,12 +139,7 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
                     }
                     resetInvalidFieldValues();
                     if (params.addEntryToListCache) {
-                        GQLCache.addEntryToListCache(
-                            contentModel,
-                            cache,
-                            entry,
-                            listQueryVariables
-                        );
+                        GQLCache.addEntryToListCache(model, cache, entry, listQueryVariables);
                     }
                 }
             });
@@ -165,7 +155,7 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
                 return null;
             }
             resetInvalidFieldValues();
-            showSnackbar(`${contentModel.name} entry created successfully!`);
+            showSnackbar(`${model.name} entry created successfully!`);
             if (typeof params.onSubmit === "function") {
                 params.onSubmit(entry, form);
             } else {
@@ -173,7 +163,7 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
             }
             return entry;
         },
-        [contentModel.modelId, listQueryVariables, params.onSubmit, params.addEntryToListCache]
+        [model.modelId, listQueryVariables, params.onSubmit, params.addEntryToListCache]
     );
 
     const updateContent = useCallback(
@@ -200,7 +190,7 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
             const { data: entry } = response.data.content;
             return entry;
         },
-        [contentModel.modelId]
+        [model.modelId]
     );
 
     const createContentFrom = useCallback(
@@ -226,12 +216,12 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
                     }
                     resetInvalidFieldValues();
                     GQLCache.updateLatestRevisionInListCache(
-                        contentModel,
+                        model,
                         cache,
                         newRevision,
                         listQueryVariables
                     );
-                    GQLCache.addRevisionToRevisionsCache(contentModel, cache, newRevision);
+                    GQLCache.addRevisionToRevisionsCache(model, cache, newRevision);
 
                     showSnackbar("A new revision was created!");
                     goToRevision(newRevision.id);
@@ -254,7 +244,7 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
 
             return data;
         },
-        [contentModel.modelId, listQueryVariables]
+        [model.modelId, listQueryVariables]
     );
 
     const onChange: FormOnSubmit = (data, form) => {
@@ -265,10 +255,10 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
     };
 
     const onSubmit: FormOnSubmit = async (data, form) => {
-        const fieldsIds = contentModel.fields.map(item => item.fieldId);
+        const fieldsIds = model.fields.map(item => item.fieldId);
         const formData = pick(data, [...fieldsIds]);
 
-        const gqlData = prepareFormData(formData, contentModel.fields);
+        const gqlData = prepareFormData(formData, model.fields);
         if (!entry.id) {
             return createContent(gqlData, form);
         }
@@ -289,7 +279,7 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
          * * check the settings.defaultValue
          * * check the predefinedValues for selected value
          */
-        for (const field of contentModel.fields) {
+        for (const field of model.fields) {
             /**
              * When checking if defaultValue is set in settings, we do the undefined check because it can be null, 0, empty string, false, etc...
              */
@@ -335,7 +325,7 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
                 });
         }
         return values;
-    }, [contentModel.modelId]);
+    }, [model.modelId]);
 
     return {
         /**
