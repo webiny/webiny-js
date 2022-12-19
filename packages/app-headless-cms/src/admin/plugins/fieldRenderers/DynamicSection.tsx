@@ -3,7 +3,7 @@ import { css } from "emotion";
 import { i18n } from "@webiny/app/i18n";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { ButtonDefault, ButtonIcon } from "@webiny/ui/Button";
-import { BindComponent, BindComponentRenderProp, CmsEditorField } from "~/types";
+import { BindComponent, BindComponentRenderProp, CmsModelField } from "~/types";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import { GetBindCallable } from "~/admin/components/ContentEntryForm/useBind";
@@ -20,7 +20,7 @@ const style = {
 
 export interface DynamicSectionPropsChildrenParams {
     Bind: BindComponent;
-    field: CmsEditorField;
+    field: CmsModelField;
     bind: {
         index: BindComponentRenderProp;
         field: BindComponentRenderProp;
@@ -29,7 +29,7 @@ export interface DynamicSectionPropsChildrenParams {
 }
 
 export interface DynamicSectionProps {
-    field: CmsEditorField;
+    field: CmsModelField;
     getBind: GetBindCallable;
     showLabel?: boolean;
     Label: React.ComponentType<any>;

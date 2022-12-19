@@ -8,7 +8,7 @@ import {
     CmsEntrySearchQueryResponse,
     CmsEntrySearchQueryVariables
 } from "./graphql";
-import { CmsEditorField, CmsModel } from "~/types";
+import { CmsModelField, CmsModel } from "~/types";
 import { BindComponentRenderProp } from "@webiny/form";
 import { OptionItem, OptionItemCollection } from "./types";
 import {
@@ -19,7 +19,7 @@ import { parseIdentifier } from "@webiny/utils";
 
 interface UseReferenceHookArgs {
     bind: BindComponentRenderProp;
-    field: CmsEditorField;
+    field: CmsModelField;
 }
 
 interface UseReferenceHookValue {

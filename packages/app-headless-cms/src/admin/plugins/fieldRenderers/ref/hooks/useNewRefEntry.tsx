@@ -1,12 +1,12 @@
 import React, { useContext } from "react";
 import { Context as ContentEntriesContext } from "~/admin/views/contentEntries/ContentEntriesContext";
-import { CmsEditorField } from "~/types";
+import { CmsModelField } from "~/types";
 import MissingEntryHelpText, {
     ReferenceMultipleModelsHelpText
 } from "../components/MissingEntryHelpText";
 
 interface UseNewRefEntryParams {
-    field: CmsEditorField;
+    field: CmsModelField;
 }
 
 interface UseNewRefEntry {

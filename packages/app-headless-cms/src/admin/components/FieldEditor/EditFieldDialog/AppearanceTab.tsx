@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { plugins } from "@webiny/plugins";
 import { Grid, Cell } from "@webiny/ui/Grid";
-import { CmsEditorField, CmsEditorFieldRendererPlugin } from "~/types";
+import { CmsModelField, CmsEditorFieldRendererPlugin } from "~/types";
 import { i18n } from "@webiny/app/i18n";
 import { Radio, RadioGroup } from "@webiny/ui/Radio";
 import { Typography } from "@webiny/ui/Typography";
@@ -26,7 +26,7 @@ const style = {
 };
 
 const AppearanceTab = () => {
-    const form = useForm<CmsEditorField>();
+    const form = useForm<CmsModelField>();
     const { field, fieldPlugin } = useModelField();
 
     const renderPlugins = plugins
