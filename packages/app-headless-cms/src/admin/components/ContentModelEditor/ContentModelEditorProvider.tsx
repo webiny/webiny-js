@@ -20,7 +20,7 @@ import {
     UpdateCmsModelMutationVariables
 } from "~/admin/graphql/contentModels";
 import { LIST_MENU_CONTENT_GROUPS_MODELS } from "~/admin/viewsGraphql";
-import { CmsEditorField, CmsModel } from "~/types";
+import { CmsModelField, CmsModel } from "~/types";
 import { FetchResult } from "apollo-link";
 import { TabsImperativeApi } from "@webiny/ui/Tabs";
 import { ModelProvider } from "~/admin/components/ModelProvider";
@@ -77,7 +77,7 @@ export const contentModelEditorReducer: Reducer = (prev: State, action: Action):
 /**
  * Cleanup is required because backend always expects string value in predefined values entries
  */
-const cleanupModelDataFields = (fields: CmsEditorField[]): CmsEditorField[] => {
+const cleanupModelDataFields = (fields: CmsModelField[]): CmsModelField[] => {
     return fields.map(field => {
         const { predefinedValues } = field;
         const { enabled = false, values = [] } = predefinedValues || {};

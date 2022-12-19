@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import get from "lodash/get";
 import { i18n } from "@webiny/app/i18n";
-import { CmsEditorField, CmsEditorFieldRendererPlugin } from "~/types";
+import { CmsModelField, CmsEditorFieldRendererPlugin } from "~/types";
 import { ReactComponent as DeleteIcon } from "~/admin/icons/close.svg";
 import DynamicSection, { DynamicSectionPropsChildrenParams } from "../DynamicSection";
 import { RichTextEditor, createPropsFromConfig } from "@webiny/app-admin/components/RichTextEditor";
@@ -12,7 +12,7 @@ import styled from "@emotion/styled";
 const t = i18n.ns("app-headless-cms/admin/fields/rich-text");
 
 const getKey = (
-    field: CmsEditorField,
+    field: CmsModelField,
     bind: DynamicSectionPropsChildrenParams["bind"],
     index: number
 ): string => {

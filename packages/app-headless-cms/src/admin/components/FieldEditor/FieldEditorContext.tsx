@@ -2,7 +2,7 @@ import React, { useCallback, useState } from "react";
 import dot from "dot-prop-immutable";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import {
-    CmsEditorField,
+    CmsModelField,
     CmsEditorFieldId,
     CmsEditorFieldsLayout,
     CmsEditorFieldTypePlugin,
@@ -30,8 +30,8 @@ export interface DragSource extends DragObjectWithType {
     pos?: Partial<Position>;
     type: "row" | "field" | "newField";
     fieldType?: string;
-    field?: CmsEditorField | null;
-    fields?: CmsEditorField[];
+    field?: CmsModelField | null;
+    fields?: CmsModelField[];
 }
 
 /**
@@ -42,21 +42,21 @@ interface GetFieldParams {
     fieldId?: string;
 }
 interface InsertFieldParams {
-    field: CmsEditorField;
+    field: CmsModelField;
     position: FieldLayoutPosition;
 }
 interface MoveFieldParams {
-    field: CmsEditorFieldId | CmsEditorField;
+    field: CmsEditorFieldId | CmsModelField;
     position: FieldLayoutPosition;
 }
 interface GetFieldsInLayoutCallable {
-    (): CmsEditorField[][];
+    (): CmsModelField[][];
 }
 interface GetFieldPluginCallable {
     (type: string): CmsEditorFieldTypePlugin | undefined;
 }
 interface GetFieldCallable {
-    (query: GetFieldParams): CmsEditorField | undefined;
+    (query: GetFieldParams): CmsModelField | undefined;
 }
 interface OnFieldDropCallable {
     (source: Partial<DragSource>, target: DropTarget): void;
@@ -74,10 +74,10 @@ interface MoveRowCallable {
     (source: number, destination: number): void;
 }
 interface UpdateFieldCallable {
-    (field: CmsEditorField): void;
+    (field: CmsModelField): void;
 }
 interface DeleteFieldCallable {
-    (field: Pick<CmsEditorField, "id">): void;
+    (field: Pick<CmsModelField, "id">): void;
 }
 export interface IsVisibleCallable {
     (item: DragSource): boolean;
@@ -86,16 +86,16 @@ interface NoConflictCallable {
     (cb?: IsVisibleCallable): (item: DragSource) => boolean;
 }
 export interface FieldEditorContext {
-    fields: CmsEditorField[][];
+    fields: CmsModelField[][];
     noConflict: NoConflictCallable;
     layout: CmsEditorFieldsLayout;
     onChange?: (data: any) => void;
     getFieldsInLayout: GetFieldsInLayoutCallable;
     getFieldPlugin: GetFieldPluginCallable;
     getField: GetFieldCallable;
-    editField: (field: CmsEditorField | null) => void;
-    field: CmsEditorField | null;
-    parent?: CmsEditorField;
+    editField: (field: CmsModelField | null) => void;
+    field: CmsModelField | null;
+    parent?: CmsModelField;
     depth: number;
     dropTarget: DropTarget;
     onFieldDrop: OnFieldDropCallable;
@@ -135,8 +135,8 @@ const generateFieldId = (layout: string[]): string => {
 
 interface State {
     layout: CmsEditorFieldsLayout;
-    fields: CmsEditorField[];
-    field: CmsEditorField | null;
+    fields: CmsModelField[];
+    field: CmsModelField | null;
     dropTarget: DropTarget;
 }
 export const FieldEditorProvider: React.FC<FieldEditorProviderProps> = ({
@@ -169,7 +169,7 @@ export const FieldEditorProvider: React.FC<FieldEditorProviderProps> = ({
         onChange({ fields: state.fields, layout: state.layout });
     }, [state.fields, state.layout]);
 
-    const editField = useCallback((field: CmsEditorField | null) => {
+    const editField = useCallback((field: CmsModelField | null) => {
         setState(state => ({ ...state, field }));
     }, []);
 
@@ -225,7 +225,7 @@ export const FieldEditorProvider: React.FC<FieldEditorProviderProps> = ({
             return null;
         }
 
-        const fieldData = plugin.field.createField() as CmsEditorField;
+        const fieldData = plugin.field.createField() as CmsModelField;
 
         if (plugin.field.canEditSettings !== false) {
             editField(fieldData);
@@ -268,7 +268,7 @@ export const FieldEditorProvider: React.FC<FieldEditorProviderProps> = ({
             })
             .filter(row => {
                 return row.length > 0;
-            }) as CmsEditorField[][];
+            }) as CmsModelField[][];
     };
 
     /**

@@ -9,7 +9,7 @@ import { ReactComponent as TitleIcon } from "~/admin/icons/title-24px.svg";
 import { ReactComponent as MoreVerticalIcon } from "~/admin/icons/more_vert.svg";
 import { Menu, MenuItem } from "@webiny/ui/Menu";
 import { plugins } from "@webiny/plugins";
-import { CmsEditorField, CmsEditorFieldOptionPlugin } from "~/types";
+import { CmsModelField, CmsEditorFieldOptionPlugin } from "~/types";
 import { ListItemGraphic } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
 import { i18n } from "@webiny/app/i18n";
@@ -64,7 +64,7 @@ const FieldExtra = styled.div`
 
 const allowedTitleFieldTypes: string[] = ["text", "number"];
 
-const isFieldAllowedToBeTitle = (field: CmsEditorField, parent?: CmsEditorField) => {
+const isFieldAllowedToBeTitle = (field: CmsModelField, parent?: CmsModelField) => {
     if (field.multipleValues || parent) {
         return false;
     } else if (allowedTitleFieldTypes.includes(field.type) === false) {
@@ -74,10 +74,10 @@ const isFieldAllowedToBeTitle = (field: CmsEditorField, parent?: CmsEditorField)
 };
 
 export interface FieldProps {
-    field: CmsEditorField;
-    onDelete: (field: CmsEditorField) => void;
-    onEdit: (field: CmsEditorField) => void;
-    parent?: CmsEditorField;
+    field: CmsModelField;
+    onDelete: (field: CmsModelField) => void;
+    onEdit: (field: CmsModelField) => void;
+    parent?: CmsModelField;
 }
 const Field: React.FC<FieldProps> = props => {
     const { field, onEdit, parent } = props;
