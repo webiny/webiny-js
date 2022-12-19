@@ -1,10 +1,10 @@
 import React, { useRef, useCallback, cloneElement } from "react";
 import { createValidators } from "./functions/createValidators";
-import { BindComponent, CmsEditorField } from "~/types";
+import { BindComponent, CmsModelField } from "~/types";
 import { Validator } from "@webiny/validation/types";
 
 interface UseBindProps {
-    field: CmsEditorField;
+    field: CmsModelField;
     Bind: BindComponent;
 }
 

@@ -9,15 +9,15 @@ import { ReactComponent as ArrowDownIcon } from "@material-design-icons/svg/roun
 import { AccordionItem } from "@webiny/ui/Accordion";
 import { useConfirmationDialog } from "@webiny/app-admin";
 import { pullValueAtIndex, pushValueAtIndex, removeValueAtIndex } from "~/admin/plugins/arrayUtils";
-import { CmsDynamicZoneTemplate, CmsEditorFieldsLayout, CmsEditorField } from "~/types";
+import { CmsDynamicZoneTemplate, CmsEditorFieldsLayout, CmsModelField } from "~/types";
 import { TemplateDialog } from "./TemplateDialog";
 import { FieldEditor } from "~/admin/components/FieldEditor";
 
 interface DynamicZoneTemplateProps {
     index: number;
-    field: CmsEditorField;
+    field: CmsModelField;
     template: CmsDynamicZoneTemplate;
-    onChange: (field: CmsEditorField) => void;
+    onChange: (field: CmsModelField) => void;
     open: boolean;
 }
 
@@ -26,7 +26,7 @@ interface UpdateTemplate {
 }
 
 interface UpdateFieldsAndLayout {
-    (params: { fields: CmsEditorField[]; layout: CmsEditorFieldsLayout }): void;
+    (params: { fields: CmsModelField[]; layout: CmsEditorFieldsLayout }): void;
 }
 
 const TEMPLATES_PATH = "settings.templates";

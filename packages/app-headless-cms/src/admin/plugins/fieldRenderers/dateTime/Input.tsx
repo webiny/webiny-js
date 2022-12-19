@@ -1,5 +1,5 @@
 import * as React from "react";
-import { CmsEditorField } from "~/types";
+import { CmsModelField } from "~/types";
 import { BindComponentRenderProp } from "@webiny/form";
 import { Input as UiInput } from "@webiny/ui/Input";
 
@@ -12,7 +12,7 @@ export interface InputProps {
     step?: number;
     type?: string;
     bind: BindComponentRenderProp;
-    field: CmsEditorField;
+    field: CmsModelField;
     trailingIcon?: TrailingIcon;
 }
 

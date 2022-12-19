@@ -13,7 +13,7 @@ import { SecurityPermission } from "@webiny/app-security/types";
 import { DragSource } from "~/admin/components/FieldEditor/FieldEditorContext";
 
 interface QueryFieldParams {
-    field: CmsEditorField;
+    field: CmsModelField;
 }
 
 export interface CmsEditorFieldValidatorsDefinition {
@@ -23,7 +23,7 @@ export interface CmsEditorFieldValidatorsDefinition {
 }
 
 export interface CmsEditorFieldValidatorsFactory {
-    (field: CmsEditorField): string[] | CmsEditorFieldValidatorsDefinition;
+    (field: CmsModelField): string[] | CmsEditorFieldValidatorsDefinition;
 }
 
 export interface CmsEditorFieldTypePlugin extends Plugin {
@@ -123,7 +123,7 @@ export interface CmsEditorFieldTypePlugin extends Plugin {
          * })
          * ```
          */
-        createField: () => Pick<CmsEditorField, "type" | "validation" | "renderer" | "settings">;
+        createField: () => Pick<CmsModelField, "type" | "validation" | "renderer" | "settings">;
         /**
          * If `true` (default), this field will be configurable via a settings dialog.
          * If `false`, a user will not be able to open the settings dialog, not will the dialog be opened on field drop.
@@ -133,7 +133,7 @@ export interface CmsEditorFieldTypePlugin extends Plugin {
          * Determine if a `draggable` can be dropped into this field.
          * NOTE: This is only applicable to nested field types.
          */
-        canAccept?(field: CmsEditorField, draggable: DragSource): boolean;
+        canAccept?(field: CmsModelField, draggable: DragSource): boolean;
         /**
          * If `true` (default), will allow fields to be laid out into columns (next to each other).
          * If `false`, horizontal layout will not be allowed.
@@ -198,7 +198,7 @@ export interface CmsEditorFieldTypePlugin extends Plugin {
 }
 
 export interface CmsEditorFieldRendererProps {
-    field: CmsEditorField;
+    field: CmsModelField;
     Label: typeof Label;
     getBind: (index?: number, key?: string) => BindComponent;
     contentModel: CmsModel;
@@ -245,7 +245,7 @@ export interface CmsEditorFieldRendererPlugin extends Plugin {
          * }
          * ```
          */
-        canUse(props: { field: CmsEditorField; fieldPlugin: CmsEditorFieldTypePlugin }): boolean;
+        canUse(props: { field: CmsModelField; fieldPlugin: CmsEditorFieldTypePlugin }): boolean;
         /**
          * Renders a field in the UI.
          *
@@ -288,12 +288,17 @@ export interface CmsDynamicZoneTemplate {
     name: string;
     description: string;
     icon: string;
-    fields: CmsEditorField[];
+    fields: CmsModelField[];
     layout: string[][];
     validation: CmsEditorFieldValidator[];
 }
 
-export type CmsEditorField<T = unknown> = T & {
+/**
+ * @deprecated Use `CmsModelField` instead.
+ */
+export type CmsEditorField<T = unknown> = CmsModelField<T>;
+
+export type CmsModelField<T = unknown> = T & {
     id: string;
     type: string;
     fieldId: CmsEditorFieldId;
@@ -309,7 +314,7 @@ export type CmsEditorField<T = unknown> = T & {
         defaultValue?: string | null | undefined;
         defaultSetValue?: string;
         type?: string;
-        fields?: CmsEditorField<any>[];
+        fields?: CmsModelField<any>[];
         layout?: string[][];
         models?: Pick<CmsModel, "modelId" | "name">[];
         templates?: CmsDynamicZoneTemplate[];
@@ -331,8 +336,8 @@ export interface CmsModel {
     description?: string;
     version: number;
     layout?: CmsEditorFieldsLayout;
-    fields: CmsEditorField[];
-    lockedFields: CmsEditorField[];
+    fields: CmsModelField[];
+    lockedFields: CmsModelField[];
     name: string;
     modelId: string;
     titleFieldId: string;
@@ -432,7 +437,7 @@ export interface CmsModelFieldValidatorPlugin<T = any> extends Plugin {
     type: "cms-model-field-validator";
     validator: {
         name: string;
-        validate: (value: T, validator: CmsFieldValidator, field: CmsEditorField) => Promise<any>;
+        validate: (value: T, validator: CmsFieldValidator, field: CmsModelField) => Promise<any>;
     };
 }
 
@@ -518,7 +523,7 @@ export interface CmsFieldValueTransformer extends Plugin {
     /**
      * A transformer function that takes a value and returns a new one.
      */
-    transform: (value: any, field: CmsEditorField) => any;
+    transform: (value: any, field: CmsModelField) => any;
 }
 
 /**

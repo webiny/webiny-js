@@ -1,10 +1,10 @@
 import React, { useCallback } from "react";
 import { set } from "dot-prop-immutable";
 import { FieldEditor, useModelFieldEditor } from "~/admin/components/FieldEditor";
-import { CmsEditorField, CmsModel } from "~/types";
+import { CmsModelField, CmsModel } from "~/types";
 
 interface ObjectFieldsProps {
-    field: CmsEditorField;
+    field: CmsModelField;
 }
 export const ObjectFields: React.FC<ObjectFieldsProps> = ({ field }) => {
     const { getField, updateField } = useModelFieldEditor();

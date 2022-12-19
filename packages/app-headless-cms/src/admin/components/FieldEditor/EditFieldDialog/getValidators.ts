@@ -1,6 +1,6 @@
 import { plugins } from "@webiny/plugins";
 import {
-    CmsEditorField,
+    CmsModelField,
     CmsEditorFieldTypePlugin,
     CmsEditorFieldValidatorPlugin,
     CmsEditorFieldValidatorsDefinition
@@ -16,7 +16,7 @@ const isValidatorDefinition = (obj: unknown): obj is CmsEditorFieldValidatorsDef
 };
 
 interface GetValidatorsParams {
-    field: CmsEditorField;
+    field: CmsModelField;
     fieldPlugin: CmsEditorFieldTypePlugin;
     key: "validators" | "listValidators";
     defaultValidators: string[];
@@ -91,7 +91,7 @@ const getValidators = ({
     };
 };
 
-export const getListValidators = (field: CmsEditorField, fieldPlugin: CmsEditorFieldTypePlugin) => {
+export const getListValidators = (field: CmsModelField, fieldPlugin: CmsEditorFieldTypePlugin) => {
     return getValidators({
         field,
         fieldPlugin,
@@ -100,10 +100,7 @@ export const getListValidators = (field: CmsEditorField, fieldPlugin: CmsEditorF
     });
 };
 
-export const getFieldValidators = (
-    field: CmsEditorField,
-    fieldPlugin: CmsEditorFieldTypePlugin
-) => {
+export const getFieldValidators = (field: CmsModelField, fieldPlugin: CmsEditorFieldTypePlugin) => {
     return getValidators({
         field,
         fieldPlugin,

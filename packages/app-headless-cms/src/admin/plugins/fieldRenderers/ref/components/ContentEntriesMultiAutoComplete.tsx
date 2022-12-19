@@ -7,7 +7,7 @@ import { useReferences } from "./useReferences";
 import { renderItem, renderListItemOptions } from "./renderItem";
 import NewRefEntryFormDialog, { NewEntryButton } from "./NewRefEntryFormDialog";
 import { useNewRefEntry } from "../hooks/useNewRefEntry";
-import { CmsEditorField } from "~/types";
+import { CmsModelField } from "~/types";
 import { BindComponentRenderProp } from "@webiny/form";
 import { OptionItem } from "./types";
 
@@ -17,7 +17,7 @@ const warn = t`Before publishing the main content entry, make sure you publish t
 
 interface ContentEntriesMultiAutocompleteProps {
     bind: BindComponentRenderProp;
-    field: CmsEditorField;
+    field: CmsModelField;
 }
 const ContentEntriesMultiAutocomplete: React.FC<ContentEntriesMultiAutocompleteProps> = ({
     bind,

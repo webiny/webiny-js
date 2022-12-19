@@ -1,9 +1,9 @@
 import { plugins } from "@webiny/plugins";
-import { CmsEditorField, CmsEditorFieldValidator, CmsModelFieldValidatorPlugin } from "~/types";
+import { CmsModelField, CmsEditorFieldValidator, CmsModelFieldValidatorPlugin } from "~/types";
 import { Validator } from "@webiny/validation/types";
 
 export const createValidators = (
-    field: CmsEditorField,
+    field: CmsModelField,
     validation: CmsEditorFieldValidator[]
 ): Validator[] => {
     const validatorPlugins = plugins.byType<CmsModelFieldValidatorPlugin>(

@@ -15,7 +15,7 @@ import { PreviewTab } from "./PreviewTab";
 import Header from "./Header";
 import DragPreview from "../DragPreview";
 import { useModelEditor } from "./useModelEditor";
-import { CmsEditorField, CmsEditorFieldsLayout } from "~/types";
+import { CmsModelField, CmsEditorFieldsLayout } from "~/types";
 
 const t = i18n.ns("app-headless-cms/admin/editor");
 
@@ -59,7 +59,7 @@ const formTabs = css({
 });
 
 interface OnChangeParams {
-    fields: CmsEditorField[];
+    fields: CmsModelField[];
     layout: CmsEditorFieldsLayout;
 }
 
