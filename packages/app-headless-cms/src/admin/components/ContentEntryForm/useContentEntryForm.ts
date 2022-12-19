@@ -19,9 +19,9 @@ import * as GQLCache from "~/admin/views/contentEntries/ContentEntry/cache";
 import { prepareFormData } from "~/admin/views/contentEntries/ContentEntry/prepareFormData";
 import {
     CmsEditorContentEntry,
-    CmsEditorContentModel,
     CmsEditorField,
-    CmsEditorFieldRendererPlugin
+    CmsEditorFieldRendererPlugin,
+    CmsModel
 } from "~/types";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
 import { plugins } from "@webiny/plugins";
@@ -56,7 +56,7 @@ interface UseContentEntryForm {
 }
 
 export interface UseContentEntryFormParams {
-    contentModel: CmsEditorContentModel;
+    contentModel: CmsModel;
     entry: Partial<CmsEditorContentEntry>;
     onChange?: FormOnSubmit;
     onSubmit?: FormOnSubmit;
