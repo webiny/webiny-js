@@ -5,7 +5,7 @@ import { i18n } from "@webiny/app/i18n";
 import Label from "./Label";
 import { useBind } from "./useBind";
 import { useRenderPlugins } from "./useRenderPlugins";
-import { FieldProvider } from "./FieldContext";
+import { ModelFieldProvider } from "../ModelFieldProvider";
 
 const t = i18n.ns("app-headless-cms/admin/components/content-form");
 
@@ -31,9 +31,9 @@ const RenderFieldElement: React.FC<RenderFieldElementProps> = props => {
     }
 
     return (
-        <FieldProvider field={field}>
+        <ModelFieldProvider field={field}>
             {renderPlugin.renderer.render({ field, getBind, Label, contentModel })}
-        </FieldProvider>
+        </ModelFieldProvider>
     );
 };
 

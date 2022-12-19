@@ -8,10 +8,10 @@ import Draggable from "../Draggable";
 import EditFieldDialog from "./EditFieldDialog";
 import Field from "./Field";
 import { rowHandle, fieldHandle, fieldContainer, Row, RowContainer } from "./Styled";
-import { useFieldEditor } from "./useFieldEditor";
+import { useModelFieldEditor } from "./useModelFieldEditor";
 import { DragSource, FieldEditorProvider, IsVisibleCallable } from "./FieldEditorContext";
 import { CmsEditorField, CmsEditorFieldsLayout, CmsEditorFieldTypePlugin } from "~/types";
-import { EditorFieldProvider } from "~/admin/components/FieldEditor/EditorFieldContext";
+import { ModelFieldProvider } from "~/admin/components/ModelFieldProvider";
 
 const t = i18n.namespace("app-headless-cms/admin/components/editor");
 
@@ -32,7 +32,7 @@ const Editor: React.FC = () => {
         field,
         dropTarget,
         getFieldPlugin
-    } = useFieldEditor();
+    } = useModelFieldEditor();
 
     const canDropIntoField = (field: CmsEditorField, draggable: DragSource) => {
         const fieldPlugin = getFieldPlugin(field.type) as CmsEditorFieldTypePlugin;
@@ -123,7 +123,7 @@ const Editor: React.FC = () => {
                             {/* Row start - includes field drop zones and fields */}
                             <Row data-testid={"cms.editor.field-row"}>
                                 {row.map((field, fieldIndex) => (
-                                    <EditorFieldProvider field={field} key={field.fieldId}>
+                                    <ModelFieldProvider field={field} key={field.fieldId}>
                                         <Draggable
                                             beginDrag={{
                                                 parent: parent ? parent.fieldId : null,
@@ -196,7 +196,7 @@ const Editor: React.FC = () => {
                                                 </div>
                                             )}
                                         </Draggable>
-                                    </EditorFieldProvider>
+                                    </ModelFieldProvider>
                                 ))}
                             </Row>
                             {/* Row end */}
@@ -219,7 +219,7 @@ const Editor: React.FC = () => {
             ))}
 
             {field ? (
-                <EditorFieldProvider field={field}>
+                <ModelFieldProvider field={field}>
                     <EditFieldDialog
                         onClose={() => editField(null)}
                         onSubmit={field => {
@@ -233,7 +233,7 @@ const Editor: React.FC = () => {
                             editField(null);
                         }}
                     />
-                </EditorFieldProvider>
+                </ModelFieldProvider>
             ) : null}
         </Fragment>
     );

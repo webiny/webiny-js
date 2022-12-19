@@ -12,7 +12,7 @@ import { plugins } from "@webiny/plugins";
 import * as utils from "./utils";
 import { FieldEditorProps } from "./FieldEditor";
 import { DragObjectWithType, DragSourceMonitor } from "react-dnd";
-import { useFieldEditor } from "~/admin/components/FieldEditor/useFieldEditor";
+import { useModelFieldEditor } from "~/admin/components/FieldEditor/useModelFieldEditor";
 import { generateAlphaNumericLowerCaseId } from "@webiny/utils";
 
 interface DropTarget {
@@ -149,7 +149,7 @@ export const FieldEditorProvider: React.FC<FieldEditorProviderProps> = ({
     // We need to determine depth of this provider so we can render drop zones with correct z-indexes.
     let depth = 0;
     try {
-        const editor = useFieldEditor();
+        const editor = useModelFieldEditor();
         depth = editor.depth + 1;
     } catch {
         // There's no parent provider, so this is the top-level one.

@@ -2,7 +2,6 @@ import * as React from "react";
 import { Plugin } from "@webiny/plugins/types";
 import { ReactElement, ReactNode } from "react";
 import {
-    FormRenderPropParams,
     FormAPI,
     BindComponent as BaseBindComponent,
     BindComponentRenderProp as BaseBindComponentRenderProp,
@@ -151,13 +150,9 @@ export interface CmsEditorFieldTypePlugin extends Plugin {
          * ```
          */
         renderSettings?: (params: {
-            /**
-             * @deprecated This parameter is deprecated. Use the `useForm` hook instead.
-             */
-            form: FormRenderPropParams;
             afterChangeLabel: (value: string) => void;
             uniqueFieldIdValidator: (fieldId: string) => void;
-            contentModel: CmsEditorContentModel;
+            contentModel: CmsModel;
         }) => React.ReactNode;
         /**
          * A ReactNode that renders in the Predefined values tab.
@@ -206,7 +201,7 @@ export interface CmsEditorFieldRendererProps {
     field: CmsEditorField;
     Label: typeof Label;
     getBind: (index?: number, key?: string) => BindComponent;
-    contentModel: CmsEditorContentModel;
+    contentModel: CmsModel;
 }
 
 export interface CmsEditorFieldRendererPlugin extends Plugin {
@@ -330,7 +325,7 @@ export type CmsEditorField<T = unknown> = T & {
 export type CmsEditorFieldId = string;
 export type CmsEditorFieldsLayout = CmsEditorFieldId[][];
 
-export interface CmsEditorContentModel {
+export interface CmsModel {
     id: string;
     group: Pick<CmsGroup, "id" | "name">;
     description?: string;
@@ -546,7 +541,7 @@ export interface CmsContentFormRendererPlugin extends Plugin {
         /**
          * Content model that is being rendered.
          */
-        contentModel: CmsEditorContentModel;
+        contentModel: CmsModel;
         /**
          * Content entry data handled by the Form element.
          */
@@ -585,7 +580,7 @@ export interface CmsCreatedBy {
  * @category GraphQL
  * @category Model
  */
-export type CmsModel = CmsEditorContentModel;
+export type CmsEditorContentModel = CmsModel;
 /**
  * @category GraphQL
  * @category Group

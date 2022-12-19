@@ -6,16 +6,16 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { validation } from "@webiny/validation";
 import { Tags } from "@webiny/ui/Tags";
 import { useForm, Bind } from "@webiny/form";
-import { useFieldEditor } from "~/admin/components/FieldEditor";
-import { useContentModelEditor } from "~/admin/components/ContentModelEditor/useContentModelEditor";
-import { useEditorField } from "~/admin/hooks";
+import { useModelFieldEditor } from "~/admin/components/FieldEditor";
+import { useModelEditor } from "~/admin/hooks";
+import { useModelField } from "~/admin/hooks";
 
 const GeneralTab = () => {
     const form = useForm();
-    const { field, fieldPlugin } = useEditorField();
+    const { field, fieldPlugin } = useModelField();
     const inputRef = useRef<HTMLInputElement | null>(null);
-    const { data: contentModel } = useContentModelEditor();
-    const { getField } = useFieldEditor();
+    const { data: contentModel } = useModelEditor();
+    const { getField } = useModelFieldEditor();
 
     // Had problems with auto-focusing the "label" field. A couple of comments on this.
     // 1. It's probably caused by the Tabs component which wraps this component.
@@ -66,12 +66,6 @@ const GeneralTab = () => {
     let additionalSettings: React.ReactNode | null = null;
     if (typeof fieldPlugin.field.renderSettings === "function") {
         additionalSettings = fieldPlugin.field.renderSettings({
-            // BC: the `form` param is passed only for backwards compatibility.
-            form: {
-                ...form,
-                form,
-                Bind
-            },
             afterChangeLabel,
             uniqueFieldIdValidator,
             contentModel

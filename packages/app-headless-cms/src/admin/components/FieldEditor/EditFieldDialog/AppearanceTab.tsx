@@ -7,7 +7,7 @@ import { Radio, RadioGroup } from "@webiny/ui/Radio";
 import { Typography } from "@webiny/ui/Typography";
 import { css } from "emotion";
 import { validation } from "@webiny/validation";
-import { useEditorField } from "~/admin/hooks";
+import { useModelField } from "~/admin/hooks";
 import { useForm, Bind } from "@webiny/form";
 
 const t = i18n.ns("app-headless-cms/admin/content-model-editor/tabs/appearance-tab");
@@ -27,7 +27,7 @@ const style = {
 
 const AppearanceTab = () => {
     const form = useForm<CmsEditorField>();
-    const { field, fieldPlugin } = useEditorField();
+    const { field, fieldPlugin } = useModelField();
 
     const renderPlugins = plugins
         .byType<CmsEditorFieldRendererPlugin>("cms-editor-field-renderer")
