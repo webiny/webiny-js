@@ -5,6 +5,7 @@ import {
     ElementStylesCallback,
     StylesCallback,
     ThemeStylesCallback,
+    GetElementAttributes,
     GetElementStyles,
     GetThemeStyles,
     GetStyles,
@@ -16,6 +17,7 @@ import {
 } from "~/types";
 import {
     setUsingPageElements,
+    defaultElementAttributesCallback,
     defaultElementStylesCallback,
     defaultThemeStylesCallback,
     defaultStylesCallback
@@ -29,7 +31,17 @@ export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
     renderers = {},
     modifiers
 }) => {
-    // Styles-related callback customization.
+    // Attributes-related callbacks.
+    const getElementAttributes = useCallback<GetElementAttributes>(element => {
+        return defaultElementAttributesCallback({
+            element,
+            theme,
+            renderers,
+            modifiers,
+        });
+    }, []);
+
+    // Styles-related callbacks.
     const [customAssignStylesCallback, setCustomAssignStylesCallback] =
         useState<AssignStylesCallback>();
     const [customElementStylesCallback, setCustomElementStylesCallback] =
@@ -108,6 +120,7 @@ export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
         theme,
         renderers,
         modifiers,
+        getElementAttributes,
         getElementStyles,
         getThemeStyles,
         getStyles,

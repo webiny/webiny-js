@@ -33,7 +33,7 @@ const paragraphs = {
 
 const buttons = (overrides: CSSObject) => ({
     a: { textDecoration: "none" },
-    "pb-button-body": {
+    ".button-body": {
         borderRadius,
         padding: "14px 20px",
         fontFamily: fonts.primary,
@@ -84,53 +84,64 @@ export const theme: Theme = {
             heading6: { ...headings, fontSize: 18, lineHeight: "1.75rem" },
             quote: { ...paragraphs }
         },
-        quote: {
-            color: colors.color3.base,
-            fontFamily: fonts.primary,
-            fontWeight: "bold",
-            fontSize: 22,
-            "blockquote > q": {
-                quotes: "auto",
-                "&:before": { content: "open-quote" },
-                "&:after": { content: "close-quote" }
-            }
-        },
-        button: {
-            default: buttons({ background: colors.color4.base, color: colors.color3.base }),
-            primary: buttons({ background: colors.color1.base, color: colors.color5.base }),
-            secondary: buttons({ background: colors.color2.base, color: colors.color5.base }),
-            outlinePrimary: buttons({ border: `2px solid ${colors.color1.base}` }),
-            outlineSecondary: buttons({ border: `2px solid ${colors.color2.base}` }),
-            simple: buttons({ "&:hover": { transform: "translateY(-1px)" } })
-        },
-        list: {
-            li: {
-                marginBottom: "12px",
-                marginLeft: "1.875rem",
-                position: "relative",
-                "&:before": {
-                    backgroundColor: "#90c418",
-                    borderRadius: "50%",
-                    content: '""',
-                    height: "1.25rem",
-                    width: "1.25rem",
-                    left: "-1.875rem",
-                    position: "absolute",
-                    top: "0.125rem"
-                },
-                "&:after": {
-                    backgroundColor: "#fff",
-                    borderRadius: "50%",
-                    content: '""',
-                    height: "0.5rem",
-                    left: "-1.5rem",
-                    position: "absolute",
-                    top: "0.5rem",
-                    width: "0.5rem"
+        elements: {
+            quote: {
+                color: colors.color3.base,
+                fontFamily: fonts.primary,
+                fontWeight: "bold",
+                fontSize: 22,
+                "blockquote > q": {
+                    quotes: "auto",
+                    "&:before": { content: "open-quote" },
+                    "&:after": { content: "close-quote" }
                 }
-            }
-        },
-        grid: { "mobile-landscape": { flexWrap: "wrap" } },
-        cell: { tablet: { width: "100%" } }
+            },
+            button: {
+                default: buttons({ background: colors.color4.base, color: colors.color3.base }),
+                primary: buttons({ background: colors.color1.base, color: colors.color5.base }),
+                secondary: buttons({ background: colors.color2.base, color: colors.color5.base }),
+                outlinePrimary: buttons({
+                    border: `2px solid ${colors.color1.base}`,
+                    color: colors.color1.base
+                }),
+                outlineSecondary: buttons({
+                    border: `2px solid ${colors.color2.base}`,
+                    color: colors.color2.base
+                }),
+                simple: buttons({
+                    color: colors.color1.base,
+                    "&:hover": { transform: "translateY(-1px)" }
+                })
+            },
+            list: {
+                li: {
+                    marginBottom: "12px",
+                    marginLeft: "1.875rem",
+                    position: "relative",
+                    "&:before": {
+                        backgroundColor: "#90c418",
+                        borderRadius: "50%",
+                        content: '""',
+                        height: "1.25rem",
+                        width: "1.25rem",
+                        left: "-1.875rem",
+                        position: "absolute",
+                        top: "0.125rem"
+                    },
+                    "&:after": {
+                        backgroundColor: "#fff",
+                        borderRadius: "50%",
+                        content: '""',
+                        height: "0.5rem",
+                        left: "-1.5rem",
+                        position: "absolute",
+                        top: "0.5rem",
+                        width: "0.5rem"
+                    }
+                }
+            },
+            grid: { "mobile-landscape": { flexWrap: "wrap" } },
+            cell: { tablet: { width: "100%" } }
+        }
     }
 };

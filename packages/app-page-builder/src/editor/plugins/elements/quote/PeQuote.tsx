@@ -3,11 +3,9 @@ import Text from "../../../components/Text";
 import { MediumEditorOptions, PbEditorElement } from "~/types";
 import { getMediumEditorOptions } from "../utils/textUtils";
 import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
-import {
-    QuoteComponent,
-    QuoteComponentProps
-} from "@webiny/app-page-builder-elements/renderers/quote";
+import { QuoteRenderer } from "@webiny/app-page-builder-elements/renderers/quote";
 import { Element } from "@webiny/app-page-builder-elements/types";
+import { useRenderer } from "@webiny/app-page-builder-elements";
 
 const DEFAULT_EDITOR_OPTIONS = {
     toolbar: {
@@ -29,13 +27,17 @@ const PeQuote: React.FC<PeQuoteProps> = props => {
     const { element, isActive, mediumEditorOptions } = props;
     const { renderers } = usePageElements();
 
-    const Quote = renderers.quote as QuoteComponent;
+    const Quote = renderers.quote as QuoteRenderer;
 
-    const EditorComponent = useMemo<QuoteComponentProps["as"]>(() => {
-        return function EditorComponent({ className }) {
+    const EditorComponent = useMemo<React.VFC>(() => {
+        return function EditorComponent() {
+            const { getElement, getAttributes } = useRenderer();
+            const attributes = getAttributes();
+            const element = getElement();
+
             return (
                 <Text
-                    tag={["pb-quote", { class: className }]}
+                    tag={["div", attributes]}
                     elementId={element.id}
                     mediumEditorOptions={getMediumEditorOptions(
                         DEFAULT_EDITOR_OPTIONS,

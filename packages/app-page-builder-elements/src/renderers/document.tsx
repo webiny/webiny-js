@@ -1,28 +1,16 @@
 import React from "react";
 import { Elements } from "~/components/Elements";
-import { Element, ElementRenderer, ElementRendererProps } from "~/types";
-import page from "./page"
-declare global {
-    namespace JSX {
-        interface IntrinsicElements {
-            "pb-document": any;
-        }
-    }
-}
+import { createRenderer } from "~/createRenderer";
+import { useRenderer } from "~/hooks/useRenderer";
 
-export interface DocumentComponentProps extends ElementRendererProps {
-    elements: Array<Element>;
-}
+export const createDocument = () => {
+    return createRenderer(() => {
+        const { getElement, getAttributes } = useRenderer();
 
-export type DocumentComponent = ElementRenderer<DocumentComponentProps>;
-
-const Document: DocumentComponent = ({ element, elements }) => {
-
-    return (
-        <pb-document   class={"webiny-pb-page-document"}>
-            <Elements element={page} />
-        </pb-document>
-    );
+        return (
+            <div className={"webiny-pb-page-document"} {...getAttributes()}>
+                <Elements element={getElement()} />
+            </div>
+        );
+    });
 };
-
-export const createDocument = () => Document;

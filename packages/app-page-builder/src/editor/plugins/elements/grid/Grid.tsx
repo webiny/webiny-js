@@ -1,7 +1,7 @@
 import React from "react";
 import { PbEditorElement } from "~/types";
-import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
-import PeGrid from "./PeGrid";
+// import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
+// import PeGrid from "./PeGrid";
 import GridContainer from "./GridContainer";
 
 interface GridProps {
@@ -9,10 +9,10 @@ interface GridProps {
 }
 
 const Grid: React.FC<GridProps> = props => {
-    const pageElements = usePageElements();
-    if (pageElements) {
-        return <PeGrid {...props} />;
-    }
+    // const pageElements = usePageElements();
+    // if (pageElements) {
+    //     return <PeGrid {...props} />;
+    // }
     return <GridContainer {...props} />;
 };
 

@@ -137,8 +137,8 @@ export default (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin
 
             return typeof args.create === "function" ? args.create(defaultValue) : defaultValue;
         },
-        render({ element }) {
-            return <Grid element={element} />;
+        render(props) {
+            return <Grid {...props} />;
         }
     };
 };

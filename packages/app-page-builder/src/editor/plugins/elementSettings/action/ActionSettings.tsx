@@ -25,7 +25,7 @@ import SelectField from "../components/SelectField";
 import { useUpdateElement } from "~/editor/hooks/useUpdateElement";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
-import { ButtonElementRenderer } from "@webiny/app-page-builder-elements/renderers/button";
+import { ButtonRenderer } from "@webiny/app-page-builder-elements/renderers/button";
 
 const classes = {
     gridClass: css({
@@ -82,10 +82,11 @@ const ActionSettingsComponent: React.FC<ActionSettingsPropsType> = ({
         variables?: PbButtonElementClickHandlerVariable[];
     }> = [];
 
-    console.log('wasdad')
     if (pageElements) {
-        const Button = pageElements.renderers.button as ButtonElementRenderer;
+        const Button = pageElements.renderers.button as ButtonRenderer;
+        // @ts-ignore
         if (Button.params.clickHandlers) {
+            // @ts-ignore
             clickHandlers = Button.params.clickHandlers.map(item => ({
                 name: item.id,
                 title: item.name,
@@ -117,7 +118,6 @@ const ActionSettingsComponent: React.FC<ActionSettingsPropsType> = ({
         }
     }, [actionType]);
 
-    console.log('wasad', clickHandlers)
     return (
         <Accordion title={"Action"} defaultValue={defaultAccordionValue}>
             <Form

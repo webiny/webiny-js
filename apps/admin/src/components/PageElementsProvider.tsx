@@ -19,6 +19,18 @@ import { createDefaultPagesListComponent } from "@webiny/app-page-builder-elemen
 import { createParagraph } from "@webiny/app-page-builder-elements/renderers/paragraph";
 import { createQuote } from "@webiny/app-page-builder-elements/renderers/quote";
 
+import { createTwitter } from "@webiny/app-page-builder-elements/renderers/embeds/twitter";
+import { createPinterest } from "@webiny/app-page-builder-elements/renderers/embeds/pinterest";
+import { createCodesandbox } from "@webiny/app-page-builder-elements/renderers/embeds/codesandbox";
+import { createSoundcloud } from "@webiny/app-page-builder-elements/renderers/embeds/soundcloud";
+import { createYoutube } from "@webiny/app-page-builder-elements/renderers/embeds/youtube";
+import { createVimeo } from "@webiny/app-page-builder-elements/renderers/embeds/vimeo";
+
+// Attributes modifiers.
+import { createId } from "@webiny/app-page-builder-elements/modifiers/attributes/id";
+import { createClassName } from "@webiny/app-page-builder-elements/modifiers/attributes/className";
+import { createDataElementType } from "@webiny/app-page-builder-elements/modifiers/attributes/dataElementType";
+
 // Styles modifiers.
 import { createBackground } from "@webiny/app-page-builder-elements/modifiers/styles/background";
 import { createBorder } from "@webiny/app-page-builder-elements/modifiers/styles/border";
@@ -42,15 +54,22 @@ export const PageElementsProvider: React.FC = ({ children }) => (
             button: createButton({
                 clickHandlers: [
                     {
-                        // @ts-ignore
                         id: "alert1",
                         name: "Alert 1",
-                        handler: () => {
-                            alert("jedan");
+                        variables: [
+                            { name: "namer", label: "Namer", defaultValue: "Billy" },
+                            {
+                                name: "namer2",
+                                label: "Namer2",
+                                defaultValue: "Billy2"
+                            }
+                        ],
+                        handler: (params: any) => {
+                            console.log("variable namer", params["namer"]);
+                            console.log("variable namer2", params["namer2"]);
                         }
                     },
                     {
-                        // @ts-ignore
                         id: "alert2",
                         name: "Alert 2",
                         handler: () => {
@@ -68,6 +87,12 @@ export const PageElementsProvider: React.FC = ({ children }) => (
             image: createImage(),
             paragraph: createParagraph(),
             quote: createQuote(),
+            twitter: createTwitter(),
+            pinterest: createPinterest(),
+            codesandbox: createCodesandbox(),
+            soundcloud: createSoundcloud(),
+            youtube: createYoutube(),
+            vimeo: createVimeo(),
             "pages-list": createPagesList({
                 dataLoader: createDefaultDataLoader({
                     apiUrl: process.env.REACT_APP_API_URL + "/graphql",
@@ -83,6 +108,11 @@ export const PageElementsProvider: React.FC = ({ children }) => (
             })
         }}
         modifiers={{
+            attributes: {
+                dataElementType: createDataElementType(),
+                id: createId(),
+                className: createClassName()
+            },
             styles: {
                 background: createBackground(),
                 border: createBorder(),

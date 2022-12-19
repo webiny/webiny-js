@@ -6,8 +6,11 @@ import emotionStyled from "@emotion/styled";
 import React from "react";
 
 import {
+    AssignAttributesCallback,
     AssignStylesCallback,
+    AttributesObject,
     Breakpoint,
+    ElementAttributesCallback,
     ElementRendererProps,
     ElementStylesCallback,
     StylesCallback,
@@ -23,6 +26,14 @@ export const usingPageElements = () => {
 
 export const setUsingPageElements = (value: boolean) => {
     usingPageElementsFlag = value;
+};
+
+export const assignAttributes: AssignAttributesCallback = (params: {
+    attributes: AttributesObject;
+    assignTo?: AttributesObject;
+}) => {
+    const { attributes = {}, assignTo = {} } = params;
+    Object.assign(assignTo, attributes);
 };
 
 // Detect if we're working with a per-breakpoint object, or just a set of regular CSS properties.
@@ -41,12 +52,12 @@ export const isPerBreakpointStylesObject = ({
     return false;
 };
 
-export const assignStyles: AssignStylesCallback = (args: {
+export const assignStyles: AssignStylesCallback = (params: {
     breakpoints: Record<string, Breakpoint>;
     styles: StylesObjects;
     assignTo?: CSSObject;
 }) => {
-    const { breakpoints, styles = {}, assignTo = {} } = args;
+    const { breakpoints, styles = {}, assignTo = {} } = params;
     if (isPerBreakpointStylesObject({ breakpoints, styles })) {
         for (const breakpointName in breakpoints) {
             const breakpoint = breakpoints[breakpointName];
@@ -68,6 +79,32 @@ export const assignStyles: AssignStylesCallback = (args: {
     return assignTo;
 };
 
+export const defaultElementAttributesCallback: ElementAttributesCallback = ({
+    element,
+    modifiers,
+    renderers,
+    theme
+}) => {
+    const attributes: Record<string, any> = {};
+
+    for (const modifierName in modifiers.attributes) {
+        const modifier = modifiers.attributes[modifierName];
+
+        const attributesValues = modifier({
+            element,
+            theme,
+            renderers,
+            modifiers
+        });
+
+        assignAttributes({
+            assignTo: attributes,
+            attributes: attributesValues || {}
+        });
+    }
+
+    return attributes;
+};
 export const defaultElementStylesCallback: ElementStylesCallback = ({
     element,
     modifiers,
@@ -87,7 +124,6 @@ export const defaultElementStylesCallback: ElementStylesCallback = ({
             modifiers
         });
 
-
         const assign = customAssignStylesCallback || assignStyles;
 
         assign({
@@ -95,12 +131,7 @@ export const defaultElementStylesCallback: ElementStylesCallback = ({
             assignTo: styles,
             styles: styleValues || {}
         });
-
-        if (modifierName === 'text' && element.id === "1eUZzAvoB") {
-            console.log("--1-->", element);
-        }
     }
-
 
     return [styles];
 };
@@ -148,10 +179,7 @@ export const styled = (
     return emotionStyled(...parameters);
 };
 
-export const elementDataPropsAreEqual = (
-    prevProps: ElementRendererProps,
-    nextProps: ElementRendererProps
-) => {
+export const elementDataPropsAreEqual = (prevProps: ElementRendererProps, nextProps: ElementRendererProps) => {
     const prevElementDataHash = JSON.stringify(prevProps.element.data);
     const nextElementDataHash = JSON.stringify(nextProps.element.data);
     return prevElementDataHash === nextElementDataHash;

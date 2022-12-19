@@ -1,4 +1,4 @@
-import React from "react";
+import React, { HTMLAttributes } from "react";
 import { type CSSObject } from "@emotion/react";
 
 export type Content = Element;
@@ -6,7 +6,7 @@ export type Content = Element;
 /**
  * TODO @ts-refactor
  * We should have a single type for all page builder apps elements.
- * Currently we have Element, PbElement and PbEditorElement.
+ * Currently, we have Element, PbElement and PbEditorElement.
  */
 export interface Element<TData = any> {
     id: string;
@@ -132,20 +132,33 @@ export interface StylesObjects {
 
 export interface PageElementsProviderProps {
     theme: Theme;
-    renderers: Record<string, ElementRenderer>;
+    renderers: Record<string, Renderer>;
     modifiers: {
         styles: Record<string, ElementStylesModifier>;
+        attributes: Record<string, ElementAttributesModifier>;
     };
 }
 
+export type AttributesObject = React.ComponentProps<any>;
+
+export type GetElementAttributes = (element: Element) => AttributesObject;
 export type GetElementStyles = (element: Element) => Array<CSSObject>;
 export type GetThemeStyles = (getStyles: (theme: Theme) => StylesObjects) => Array<CSSObject>;
 export type GetStyles = (styles: StylesObjects) => Array<CSSObject>;
+
+interface SetAssignAttributesCallbackParams {
+    attributes: AttributesObject;
+    assignTo?: AttributesObject;
+}
 
 interface SetAssignStylesCallbackParams {
     breakpoints: Record<string, Breakpoint>;
     styles: StylesObjects;
     assignTo?: CSSObject;
+}
+
+interface SetElementAttributesCallbackParams extends PageElementsProviderProps {
+    element: Element;
 }
 
 interface SetElementStylesCallbackParams extends PageElementsProviderProps {
@@ -163,7 +176,13 @@ interface SetStylesCallbackParams extends PageElementsProviderProps {
     assignStyles?: AssignStylesCallback;
 }
 
+export type AssignAttributesCallback = (
+    params: SetAssignAttributesCallbackParams
+) => AttributesObject;
 export type AssignStylesCallback = (params: SetAssignStylesCallbackParams) => CSSObject;
+export type ElementAttributesCallback = (
+    params: SetElementAttributesCallbackParams
+) => AttributesObject;
 export type ElementStylesCallback = (params: SetElementStylesCallbackParams) => Array<CSSObject>;
 export type ThemeStylesCallback = (params: SetThemeStylesCallbackParams) => Array<CSSObject>;
 export type StylesCallback = (params: SetStylesCallbackParams) => Array<CSSObject>;
@@ -174,6 +193,7 @@ export type SetThemeStylesCallback = (callback: ThemeStylesCallback) => void;
 export type SetStylesCallback = (callback: StylesCallback) => void;
 
 export interface PageElementsContextValue extends PageElementsProviderProps {
+    getElementAttributes: GetElementAttributes;
     getElementStyles: GetElementStyles;
     getThemeStyles: GetThemeStyles;
     getStyles: GetStyles;
@@ -183,12 +203,28 @@ export interface PageElementsContextValue extends PageElementsProviderProps {
     setStylesCallback: SetStylesCallback;
 }
 
-export interface ElementRendererProps {
-    element: Element;
+export interface RendererContextValue extends PageElementsContextValue {
+    getElement: () => Element;
+    getAttributes: () => HTMLAttributes<HTMLElement>;
 }
 
-export type ElementRenderer<T extends ElementRendererProps = ElementRendererProps> =
-    React.ComponentType<T>;
+export interface RendererProviderProps {
+    element: Element;
+    attributes: HTMLAttributes<HTMLElement>;
+}
+
+export type ElementRendererProps = {
+    element: Element;
+};
+
+export type Renderer<T = {}> = React.ComponentType<ElementRendererProps & T>;
+
+export type ElementAttributesModifier = (args: {
+    element: Element;
+    theme: Theme;
+    renderers?: PageElementsProviderProps["renderers"];
+    modifiers?: PageElementsProviderProps["modifiers"];
+}) => AttributesObject | null;
 
 export type ElementStylesModifier = (args: {
     element: Element;
@@ -207,7 +243,7 @@ export interface ThemeStyles {
     colors: Record<string, any>;
     borderRadius?: number;
     typography: Record<string, StylesObjects>;
-    buttons?: Record<string, StylesObjects>;
+    elements: Record<string, Record<string,any> | StylesObjects>;
 
     [key: string]: any;
 }

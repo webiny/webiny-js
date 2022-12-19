@@ -4,11 +4,9 @@ import { CoreOptions } from "medium-editor";
 import { MediumEditorOptions, PbEditorElement } from "~/types";
 import { getMediumEditorOptions } from "../utils/textUtils";
 import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
-import {
-    ParagraphComponent,
-    ParagraphComponentProps
-} from "@webiny/app-page-builder-elements/renderers/paragraph";
+import { ParagraphRenderer } from "@webiny/app-page-builder-elements/renderers/paragraph";
 import { Element } from "@webiny/app-page-builder-elements/types";
+import { useRenderer } from "@webiny/app-page-builder-elements/hooks/useRenderer";
 
 const DEFAULT_EDITOR_OPTIONS: CoreOptions = {
     toolbar: {
@@ -30,13 +28,18 @@ const PeParagraph: React.FC<PeParagraphProps> = props => {
     const { element, isActive, mediumEditorOptions } = props;
     const { renderers } = usePageElements();
 
-    const Paragraph = renderers.paragraph as ParagraphComponent;
+    const Paragraph = renderers.paragraph as ParagraphRenderer;
 
-    const EditorComponent = useMemo<ParagraphComponentProps["as"]>(() => {
-        return function EditorComponent({ className }) {
+    const EditorComponent = useMemo<React.ComponentType>(
+        () => () => {
+            const { getAttributes, getElement } = useRenderer();
+
+            const attributes = getAttributes();
+            const element = getElement();
+
             return (
                 <Text
-                    tag={["pb-paragraph", { class: className }]}
+                    tag={["p", attributes]}
                     elementId={element.id}
                     mediumEditorOptions={getMediumEditorOptions(
                         DEFAULT_EDITOR_OPTIONS,
@@ -44,8 +47,9 @@ const PeParagraph: React.FC<PeParagraphProps> = props => {
                     )}
                 />
             );
-        };
-    }, []);
+        },
+        []
+    );
 
     if (isActive) {
         return <Paragraph element={element as Element} as={EditorComponent} />;

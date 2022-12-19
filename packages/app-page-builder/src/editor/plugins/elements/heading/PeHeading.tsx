@@ -4,11 +4,9 @@ import Text from "~/editor/components/Text";
 import { getMediumEditorOptions } from "../utils/textUtils";
 import { CoreOptions } from "medium-editor";
 import { MediumEditorOptions, PbEditorElement } from "~/types";
-import {
-    HeadingComponent,
-    HeadingComponentProps
-} from "@webiny/app-page-builder-elements/renderers/heading";
+import { HeadingRenderer } from "@webiny/app-page-builder-elements/renderers/heading";
 import { Element } from "@webiny/app-page-builder-elements/types";
+import { useRenderer } from "@webiny/app-page-builder-elements";
 
 const DEFAULT_EDITOR_OPTIONS: CoreOptions = {
     toolbar: {
@@ -30,14 +28,19 @@ const PeHeading: React.FC<PeHeadingProps> = props => {
     const { element, isActive, mediumEditorOptions } = props;
     const { renderers } = usePageElements();
 
-    const Heading = renderers.heading as HeadingComponent;
+    const Heading = renderers.heading as HeadingRenderer;
 
-    const EditorComponent = useMemo<HeadingComponentProps["as"]>(() => {
-        return function EditorComponent({ className }) {
+    const EditorComponent = useMemo<React.VFC>(
+        () => () => {
+            const { getAttributes, getElement } = useRenderer();
+
+            const attributes = getAttributes();
+            const element = getElement();
+
             const tag = element.data?.text?.desktop?.tag || "h1";
             return (
                 <Text
-                    tag={[tag, { className }]}
+                    tag={[tag, attributes]}
                     elementId={element.id}
                     mediumEditorOptions={getMediumEditorOptions(
                         DEFAULT_EDITOR_OPTIONS,
@@ -45,8 +48,9 @@ const PeHeading: React.FC<PeHeadingProps> = props => {
                     )}
                 />
             );
-        };
-    }, []);
+        },
+        []
+    );
 
     if (isActive) {
         return <Heading element={element as Element} as={EditorComponent} />;

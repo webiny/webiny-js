@@ -4,9 +4,11 @@ interface Scaling {
     backgroundSize: string;
     backgroundRepeat: string;
 }
+
 interface ScalingMap {
     [key: string]: Scaling;
 }
+
 const SCALING_MAP: ScalingMap = {
     cover: {
         backgroundSize: "cover",
@@ -64,8 +66,13 @@ const background: ElementStylesModifier = ({ element, theme }) => {
             return returnStyles;
         }
 
+        let backgroundColor = values.color;
+        if (theme.styles.colors?.[backgroundColor]?.base) {
+            backgroundColor = theme.styles.colors?.[backgroundColor]?.base;
+        }
+
         const styles = {
-            backgroundColor: values.color
+            backgroundColor
         };
 
         const { image } = values;

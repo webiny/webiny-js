@@ -1,55 +1,37 @@
 import React from "react";
-import { usePageElements } from "~/hooks/usePageElements";
-import { ElementRenderer, ElementRendererProps } from "~/types";
 import styled from "@emotion/styled";
-import { elementDataPropsAreEqual } from "~/utils";
+import { createRenderer } from "~/createRenderer";
+import { useRenderer } from "~/hooks/useRenderer";
 
-declare global {
-    //eslint-disable-next-line
-    namespace JSX {
-        interface IntrinsicElements {
-            "pb-image": any;
+export type ImageRenderer = ReturnType<typeof createImage>;
+
+interface Props {
+    onClick?: React.MouseEventHandler<HTMLImageElement>;
+    renderEmpty?: React.ReactNode;
+}
+
+export const createImage = () => {
+    return createRenderer<Props>(({ onClick, renderEmpty }) => {
+        const { getElement, getAttributes } = useRenderer();
+
+        const element = getElement();
+
+        let content;
+        if (element.data?.image?.file?.src) {
+            // Image has its width / height set from its own settings.
+            const PbImg = styled.img({
+                width: element.data.image.width,
+                height: element.data.image.height,
+                maxWidth: "100%"
+            });
+
+            const { title } = element.data.image;
+            const { src } = element.data.image.file;
+            content = <PbImg alt={title} title={title} src={src} onClick={onClick} />;
+        } else {
+            content = renderEmpty || null;
         }
-    }
-}
 
-const defaultStyles = { display: "flex" };
-
-interface PbImageProps {
-    className?: string;
-}
-
-const PbImage: React.FC<PbImageProps> = ({ className, children }) => (
-    <pb-image class={className}>{children}</pb-image>
-);
-
-export interface ImageComponentProps extends ElementRendererProps {
-    onClick?: (e: React.MouseEvent<HTMLImageElement>) => void;
-}
-
-export type ImageComponent = ElementRenderer<ImageComponentProps>;
-
-const Image: ImageComponent = ({ element, onClick }) => {
-    const { getStyles, getElementStyles } = usePageElements();
-
-    const { src, name } = element.data.image.file;
-
-    const styles = [...getStyles(defaultStyles), ...getElementStyles(element)];
-
-    // Image has its width / height set from its own settings.
-    const PbImg = styled.img({
-        width: element.data.image.width,
-        height: element.data.image.height,
-        maxWidth: "100%"
+        return <div {...getAttributes()}>{content}</div>;
     });
-
-    const StyledComponent = styled(PbImage)(styles);
-
-    return (
-        <StyledComponent>
-            <PbImg alt={name} src={src} onClick={onClick} />
-        </StyledComponent>
-    );
 };
-
-export const createImage = () => React.memo(Image, elementDataPropsAreEqual);

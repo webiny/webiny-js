@@ -1,48 +1,26 @@
 import React, { useMemo } from "react";
 import { Elements } from "~/components/Elements";
-import { usePageElements } from "~/hooks/usePageElements";
-import { ElementRenderer } from "~/types";
-import styled from "@emotion/styled";
+import { createRenderer } from "~/createRenderer";
+import { useRenderer } from "~/hooks/useRenderer";
 
-declare global {
-    namespace JSX {
-        interface IntrinsicElements {
-            "pb-cell": any;
-        }
-    }
-}
+export const createCell = () => {
+    return createRenderer(() => {
+        const { getElement, getAttributes } = useRenderer();
 
-const PbCell: React.FC<{ className?: string }> = ({ className, children }) => (
-    <pb-cell class={className}>{children}</pb-cell>
-);
+        const element = getElement();
 
-export type CellComponent = ElementRenderer;
+        const width = useMemo<string>(() => {
+            const size = element.data?.settings?.grid?.size;
+            if (typeof size !== "number") {
+                return "100%";
+            }
+            return `${(size / 12) * 100}%`;
+        }, [element.id]);
 
-
-const Cell: ElementRenderer = ({ element }) => {
-    const { getStyles, getElementStyles, getThemeStyles } = usePageElements();
-
-    const width = useMemo<string>(() => {
-        const size = element.data?.settings?.grid?.size;
-        if (typeof size !== "number") {
-            return "100%";
-        }
-        return `${(size / 12) * 100}%`;
-    }, [element.id]);
-
-    const styles = [
-        ...getStyles({ display: "block", width }),
-        ...getThemeStyles(theme => theme.styles.cell),
-        ...getElementStyles(element)
-    ];
-
-    const StyledPbCell = styled(PbCell)(styles);
-
-    return (
-        <StyledPbCell>
-            <Elements element={element} />
-        </StyledPbCell>
-    );
+        return (
+            <div {...getAttributes()} style={{ width }}>
+                <Elements element={element} />
+            </div>
+        );
+    });
 };
-
-export const createCell = () => Cell;

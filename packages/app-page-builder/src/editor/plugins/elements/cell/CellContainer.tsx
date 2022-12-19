@@ -1,5 +1,5 @@
 import React from "react";
-import Cell from "./Cell";
+import Cell from "./PbCell";
 import DropZone from "~/editor/components/DropZone";
 import styled from "@emotion/styled";
 import { IconButton } from "@webiny/ui/Button";

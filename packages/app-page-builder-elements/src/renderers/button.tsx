@@ -1,21 +1,25 @@
 import React from "react";
 import { usePageElements } from "~/hooks/usePageElements";
-import { ElementRenderer, Element, LinkComponent, ElementRendererProps } from "~/types";
+import { LinkComponent } from "~/types";
 import styled, { CSSObject } from "@emotion/styled";
+import { ClassNames } from "@emotion/react";
 import { DefaultLinkComponent } from "~/renderers/components";
-import { elementDataPropsAreEqual } from "~/utils";
+import { createRenderer } from "~/createRenderer";
+import { useRenderer } from "~/hooks/useRenderer";
 
-declare global {
-    // eslint-disable-next-line
-    namespace JSX {
-        interface IntrinsicElements {
-            "pb-button": any;
-            "pb-button-body": any;
-            "pb-button-icon": any;
-            "pb-button-text": any;
-        }
-    }
-}
+const ICON_POSITION_FLEX_DIRECTION: Record<string, CSSObject> = {
+    right: { flexDirection: "row-reverse" },
+    bottom: { flexDirection: "column-reverse" },
+    top: { flexDirection: "column" },
+    left: { flexDirection: "row" }
+};
+
+const ICON_POSITION_MARGIN: Record<string, CSSObject> = {
+    right: { marginLeft: 5 },
+    bottom: { marginTop: 5 },
+    top: { marginBottom: 5 },
+    left: { marginRight: 5 }
+};
 
 export interface ButtonClickHandler {
     id: string;
@@ -33,42 +37,33 @@ export interface CreateButtonParams {
     clickHandlers?: Array<ButtonClickHandler>;
 }
 
-const PbButton: React.FC<{ className?: string; element: Element }> = ({
-    className,
-    children,
-    element
-}) => (
-    <pb-button data-pe-id={element.id} class={className}>
-        {children}
-    </pb-button>
-);
-
-const PbButtonBody: React.FC<{ className?: string; onClick?: ButtonClickHandler["handler"] }> = ({
+const ButtonBody: React.FC<{ className?: string; onClick?: () => void }> = ({
     className,
     children,
     onClick
 }) => (
-    <pb-button-body class={className} onClick={onClick}>
-        {children}
-    </pb-button-body>
+    <ClassNames>
+        {({ cx }) => (
+            <div className={cx("button-body", className)} onClick={onClick}>
+                {children}
+            </div>
+        )}
+    </ClassNames>
 );
 
-const PbButtonIcon: React.FC<{ className?: string; svg: string }> = ({ className, svg }) => (
-    <pb-button-icon class={className} dangerouslySetInnerHTML={{ __html: svg }} />
+const ButtonIcon: React.FC<{ className?: string; svg: string }> = ({ className, svg }) => (
+    <ClassNames>
+        {({ cx }) => (
+            <div
+                className={cx("button-icon", className)}
+                dangerouslySetInnerHTML={{ __html: svg }}
+            />
+        )}
+    </ClassNames>
 );
 
-const ICON_POSITION_FLEX_DIRECTION: Record<string, CSSObject> = {
-    right: { flexDirection: "row-reverse" },
-    bottom: { flexDirection: "column-reverse" },
-    top: { flexDirection: "column" },
-    left: { flexDirection: "row" }
-};
-
-const ICON_POSITION_MARGIN: Record<string, CSSObject> = {
-    right: { marginLeft: 5 },
-    bottom: { marginTop: 5 },
-    top: { marginBottom: 5 },
-    left: { marginRight: 5 }
+const ButtonText: React.FC<{ text: string }> = ({ text }) => {
+    return <div className={"button-text"}>{text}</div>;
 };
 
 export interface ButtonElementData {
@@ -95,88 +90,91 @@ export interface ButtonElementData {
     };
 }
 
-export interface ButtonElementRendererProps extends ElementRendererProps {
-    element: Element<ButtonElementData>;
-}
-
-export type ButtonElementRenderer = ReturnType<typeof createButton>;
+export type ButtonRenderer = ReturnType<typeof createButton>;
 
 export const createButton = (params: CreateButtonParams = {}) => {
     const LinkComponent = params?.linkComponent || DefaultLinkComponent;
     const clickHandlers = params?.clickHandlers || [];
 
-    const Button: ElementRenderer<ButtonElementRendererProps> = ({ element }) => {
-        const { buttonText, link, type, icon, action } = element.data;
-        const { getElementStyles, getThemeStyles } = usePageElements();
+    const RendererComponent = createRenderer(
+        () => {
+            const { getThemeStyles } = usePageElements();
+            const { getElement, getAttributes } = useRenderer();
+            const element = getElement();
+            const { buttonText, link, icon, action } = element.data;
 
-        const StyledPbButton = styled(PbButton)([
-            getThemeStyles(theme => theme.styles?.button[type]),
-            getElementStyles(element)
-        ]);
+            let buttonInnerContent = <ButtonText text={buttonText} />;
 
-        let buttonInnerContent = <pb-button-text>{buttonText}</pb-button-text>;
+            let StyledButtonBody = ButtonBody,
+                StyledButtonIcon;
 
-        let StyledPbButtonInner = PbButtonBody,
-            StyledPbButtonIcon;
+            if (icon && icon.svg) {
+                const { position = "left", color } = icon;
 
-        if (icon && icon.svg) {
-            const { position = "left", color } = icon;
+                StyledButtonBody = styled(StyledButtonBody)({
+                    display: "flex",
+                    ...ICON_POSITION_FLEX_DIRECTION[position]
+                });
 
-            StyledPbButtonInner = styled(StyledPbButtonInner)({
-                display: "flex",
-                ...ICON_POSITION_FLEX_DIRECTION[position]
-            });
+                StyledButtonIcon = styled(ButtonIcon)(
+                    {
+                        width: icon.width,
+                        ...ICON_POSITION_MARGIN[position]
+                    },
+                    getThemeStyles(theme => {
+                        const themeColor = theme.styles.colors?.[color]?.base;
+                        return {
+                            color: themeColor || color
+                        };
+                    })
+                );
 
-            StyledPbButtonIcon = styled(PbButtonIcon)(
-                {
-                    width: icon.width,
-                    ...ICON_POSITION_MARGIN[position]
-                },
-                getThemeStyles(theme => {
-                    const themeColor = theme.styles.colors?.[color]?.base;
-                    return {
-                        color: themeColor || color
-                    };
-                })
-            );
+                buttonInnerContent = (
+                    <>
+                        <StyledButtonIcon svg={icon.svg} />
+                        {buttonInnerContent}
+                    </>
+                );
+            }
 
-            buttonInnerContent = (
-                <>
-                    <StyledPbButtonIcon svg={icon.svg} />
-                    {buttonInnerContent}
-                </>
-            );
-        }
+            const linkActions = ["link", "scrollToElement"];
+            if (linkActions.includes(action?.actionType)) {
+                const href = link?.href || action?.href;
+                const newTab = link?.newTab || action?.newTab;
 
-        const linkActions = ["link", "scrollToElement"];
-        if (linkActions.includes(action?.actionType)) {
-            const href = link?.href || action?.href;
-            const newTab = link?.newTab || action?.newTab;
+                return (
+                    <div {...getAttributes()}>
+                        <LinkComponent href={href} target={newTab ? "_blank" : "_self"}>
+                            <StyledButtonBody>{buttonInnerContent}</StyledButtonBody>
+                        </LinkComponent>
+                    </div>
+                );
+            }
+
+            let clickHandler: ButtonClickHandler["handler"] | undefined;
+            if (action?.clickHandler) {
+                clickHandler = clickHandlers?.find(
+                    item => item.id === action?.clickHandler
+                )?.handler;
+            }
 
             return (
-                <StyledPbButton element={element}>
-                    <LinkComponent href={href} target={newTab ? "_blank" : "_self"}>
-                        <StyledPbButtonInner>{buttonInnerContent}</StyledPbButtonInner>
-                    </LinkComponent>
-                </StyledPbButton>
+                <div {...getAttributes()}>
+                    <StyledButtonBody onClick={() => clickHandler?.(element.data.action.variables)}>
+                        {buttonInnerContent}
+                    </StyledButtonBody>
+                </div>
             );
+        },
+        {
+            getThemeStyles({ theme, element }) {
+                const { type } = element.data;
+                return theme.styles.elements?.button[type];
+            }
         }
+    );
 
-        let clickHandler: ButtonClickHandler["handler"] | undefined;
-        if (action?.clickHandler) {
-            clickHandler = clickHandlers?.find(item => item.id === action?.clickHandler)?.handler;
-        }
+    Object.assign(RendererComponent, { params });
 
-        return (
-            <StyledPbButton element={element}>
-                <StyledPbButtonInner onClick={clickHandler}>
-                    {buttonInnerContent}
-                </StyledPbButtonInner>
-            </StyledPbButton>
-        );
-    };
-
-    return Object.assign(React.memo(Button, elementDataPropsAreEqual), {
-        params
-    });
+    return RendererComponent;
 };

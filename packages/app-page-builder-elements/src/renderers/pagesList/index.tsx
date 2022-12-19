@@ -1,36 +1,16 @@
 import React, { useState, useEffect, useRef } from "react";
-import { usePageElements } from "~/hooks/usePageElements";
-import { ElementRenderer, Element } from "~/types";
-import styled from "@emotion/styled";
-import { DataLoader, DataLoaderResult, PagesListComponent as RenderPagesListComponent } from "~/renderers/pagesList/types";
-import { elementDataPropsAreEqual } from "~/utils";
-
-declare global {
-    // eslint-disable-next-line
-    namespace JSX {
-        interface IntrinsicElements {
-            "pb-pages-list": any;
-            "pb-pages-list-body": any;
-            "pb-pages-list-icon": any;
-            "pb-pages-list-text": any;
-        }
-    }
-}
+import {
+    DataLoader,
+    DataLoaderResult,
+    PagesListComponent as RenderPagesListComponent
+} from "~/renderers/pagesList/types";
+import { createRenderer } from "~/createRenderer";
+import { useRenderer } from "~/hooks/useRenderer";
 
 export interface CreatePagesListParams {
     dataLoader: DataLoader;
     pagesListComponents: Record<string, RenderPagesListComponent>;
 }
-
-const PbPagesList: React.FC<{ className?: string; element: Element }> = ({
-    className,
-    children,
-    element
-}) => (
-    <pb-pages-list data-pe-id={element.id} class={className}>
-        {children}
-    </pb-pages-list>
-);
 
 interface Cursors {
     previous: string | null;
@@ -43,8 +23,10 @@ export type PagesListComponent = ReturnType<typeof createPagesList>;
 export const createPagesList = (params: CreatePagesListParams) => {
     const { dataLoader, pagesListComponents } = params;
 
-    const PagesList: ElementRenderer = ({ element }) => {
-        const { getElementStyles, getThemeStyles } = usePageElements();
+    const RendererComponent = createRenderer(() => {
+        const { getElement, getAttributes } = useRenderer();
+
+        const element = getElement();
 
         const { component, ...vars } = element.data;
 
@@ -133,19 +115,9 @@ export const createPagesList = (params: CreatePagesListParams) => {
             return <div>Selected page list component not found!</div>;
         }
 
-        const themeStyles = getThemeStyles(theme => {
-            return theme.styles.pagesList;
-        });
-
-        const elementStyles = getElementStyles(element);
-
-        const styles = [...themeStyles, ...elementStyles];
-        const StyledPbPagesList = styled(PbPagesList)(styles);
-
         return (
-            <StyledPbPagesList element={element}>
+            <div {...getAttributes()}>
                 <PagesListComponent
-                    // @ts-ignore
                     variables={variables}
                     loading={loading}
                     initialLoading={initialLoading}
@@ -155,11 +127,11 @@ export const createPagesList = (params: CreatePagesListParams) => {
                     hasNextPage={hasNextPage}
                     nextPage={nextPage}
                 />
-            </StyledPbPagesList>
+            </div>
         );
-    };
-
-    return Object.assign(React.memo(PagesList, elementDataPropsAreEqual), {
-        params
     });
+
+    Object.assign(RendererComponent, { params });
+
+    return RendererComponent;
 };

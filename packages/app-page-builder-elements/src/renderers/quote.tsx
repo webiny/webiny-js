@@ -1,54 +1,30 @@
 import React from "react";
-import { usePageElements } from "~/hooks/usePageElements";
-import { Element, ElementRenderer, ElementRendererProps } from "~/types";
-import styled from "@emotion/styled";
-import { elementDataPropsAreEqual } from "~/utils";
+import { createRenderer } from "~/createRenderer";
+import { useRenderer } from "~/hooks/useRenderer";
 
-declare global {
-    //eslint-disable-next-line
-    namespace JSX {
-        interface IntrinsicElements {
-            "pb-quote": any;
-        }
-    }
+interface Props {
+    as?: React.ComponentType;
 }
 
-interface PbQuoteProps {
-    className?: string;
-    element: Element;
-}
-
-const PbQuote: React.FC<PbQuoteProps> = ({ className , element }) => (
-    <pb-quote class={className} dangerouslySetInnerHTML={{ __html: element.data.text.data.text }} />
-);
-
-export interface QuoteComponentProps extends ElementRendererProps {
-    as?: React.FC<PbQuoteProps>;
-}
-
-export type QuoteComponent = ElementRenderer<QuoteComponentProps>;
-
-const Quote: QuoteComponent = ({ element, as }) => {
-    const {  getElementStyles, getThemeStyles } = usePageElements();
-
-    const styles = [
-        { display: "block" },
-        ...getThemeStyles(theme => theme.styles.quote),
-        ...getElementStyles(element)
-    ];
-
-    const Component = as || PbQuote;
-    const StyledComponent = styled(Component)(styles);
-
-    return <StyledComponent element={element} />;
-};
+export type QuoteRenderer = ReturnType<typeof createQuote>;
 
 export const createQuote = () => {
-    return React.memo(Quote, (prevProps, nextProps) => {
-        if (prevProps.as !== nextProps.as) {
-            return false;
-        }
+    return createRenderer<Props>(
+        props => {
+            const { getElement, getAttributes } = useRenderer();
 
-        return elementDataPropsAreEqual(prevProps, nextProps);
-    });
+            if (props.as) {
+                const As = props.as;
+                return <As />;
+            }
+
+            const __html = getElement().data.text.data.text;
+            return <div {...getAttributes()} dangerouslySetInnerHTML={{ __html }} />;
+        },
+        {
+            propsAreEqual: (prevProps: Props, nextProps: Props) => {
+                return prevProps.as === nextProps.as;
+            }
+        }
+    );
 };
