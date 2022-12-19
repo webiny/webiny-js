@@ -2,14 +2,14 @@ import React, { useCallback, useRef, cloneElement } from "react";
 import getValue from "./functions/getValue";
 import setValue from "./functions/setValue";
 import { BindComponent, Bind as BaseFormBind } from "@webiny/form";
-import { useEditorField } from "~/admin/hooks";
+import { useModelField } from "~/admin/hooks";
 
 interface MemoizedBindComponents {
     [key: string]: BindComponent;
 }
 
 const PredefinedValues = () => {
-    const { field, fieldPlugin } = useEditorField();
+    const { field, fieldPlugin } = useModelField();
     const memoizedBindComponents = useRef<MemoizedBindComponents>({});
 
     const getBind = useCallback((index = -1) => {

@@ -10,7 +10,7 @@ import { Input } from "@webiny/ui/Input";
 import { Switch } from "@webiny/ui/Switch";
 import { BindComponent, CmsEditorField } from "~/types";
 import { BindComponentRenderProp } from "@webiny/form";
-import { useEditorField } from "~/admin/hooks";
+import { useModelField } from "~/admin/hooks";
 
 const t = i18n.ns("app-headless-cms/admin/fields/dynamic-fieldset-predefined-values");
 
@@ -75,7 +75,7 @@ export interface Props {
 }
 const PredefinedValuesDynamicFieldset: React.FC<Props> = ({ getBind, renderValueInput = null }) => {
     const Bind = getBind();
-    const { field } = useEditorField();
+    const { field } = useModelField();
 
     return (
         <Grid>

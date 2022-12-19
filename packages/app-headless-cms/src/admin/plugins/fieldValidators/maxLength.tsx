@@ -3,6 +3,7 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { validation } from "@webiny/validation";
 import { CmsEditorFieldValidatorPlugin } from "~/types";
+import { Bind } from "@webiny/form";
 
 const plugin: CmsEditorFieldValidatorPlugin = {
     type: "cms-editor-field-validator",
@@ -12,7 +13,7 @@ const plugin: CmsEditorFieldValidatorPlugin = {
         label: "Max length",
         description: "Entered value must not be longer than the provided max length.",
         defaultMessage: "Value is too long.",
-        renderSettings({ Bind }) {
+        renderSettings() {
             return (
                 <Grid>
                     <Cell span={12}>
