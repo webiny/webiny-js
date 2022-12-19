@@ -10,6 +10,7 @@ import { useContentEntryForm, UseContentEntryFormParams } from "./useContentEntr
 import { Fields } from "./Fields";
 import { Prompt } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin";
+import { ModelProvider } from "~/admin/components/ModelProvider";
 
 const FormWrapper = styled("div")({
     height: "calc(100vh - 260px)",
@@ -130,7 +131,7 @@ export const ContentEntryForm: React.FC<ContentEntryFormProps> = ({ onForm, ...p
         >
             {formProps => {
                 return (
-                    <>
+                    <ModelProvider model={contentModel}>
                         <Prompt
                             when={isDirty}
                             message={
@@ -151,7 +152,7 @@ export const ContentEntryForm: React.FC<ContentEntryFormProps> = ({ onForm, ...p
                                 />
                             )}
                         </FormWrapper>
-                    </>
+                    </ModelProvider>
                 );
             }}
         </Form>
