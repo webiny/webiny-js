@@ -7,7 +7,7 @@ import { Tabs, Tab } from "@webiny/ui/Tabs";
 import { i18n } from "@webiny/app/i18n";
 import {
     CmsEditorContentModel,
-    CmsEditorField,
+    CmsModelField,
     CmsEditorFieldRendererPlugin,
     CmsEditorFieldTypePlugin
 } from "~/types";
@@ -42,7 +42,7 @@ const FullScreenDialog = styled(Dialog)`
 `;
 
 function setupState(
-    field: CmsEditorField,
+    field: CmsModelField,
     fieldPlugin: CmsEditorFieldTypePlugin,
     contentModel: CmsEditorContentModel
 ): EditFieldState {
@@ -65,13 +65,13 @@ function setupState(
 }
 
 interface EditFieldState {
-    shadowField: CmsEditorField;
+    shadowField: CmsModelField;
     isTitleField: boolean;
 }
 
 interface EditFieldDialogProps {
     onClose: () => void;
-    onSubmit: FormOnSubmit<CmsEditorField>;
+    onSubmit: FormOnSubmit<CmsModelField>;
 }
 
 const EditFieldDialog: React.FC<EditFieldDialogProps> = props => {
@@ -85,7 +85,7 @@ const EditFieldDialog: React.FC<EditFieldDialogProps> = props => {
         fieldTypeLabel: fieldPlugin.field.label
     });
 
-    const onSubmit: FormOnSubmit<CmsEditorField> = (data, form) => {
+    const onSubmit: FormOnSubmit<CmsModelField> = (data, form) => {
         /**
          * In case title field `fieldId` changed, we need to update the title field on the model itself.
          */
@@ -109,7 +109,7 @@ const EditFieldDialog: React.FC<EditFieldDialogProps> = props => {
             data-testid={"cms-editor-edit-fields-dialog"}
         >
             <DialogTitle>{headerTitle}</DialogTitle>
-            <Form<CmsEditorField> data={shadowField} onSubmit={onSubmit}>
+            <Form<CmsModelField> data={shadowField} onSubmit={onSubmit}>
                 {({ data: shadowField, submit }) => {
                     const individualValidation = getFieldValidators(shadowField, fieldPlugin);
 

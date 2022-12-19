@@ -10,7 +10,7 @@ import Field from "./Field";
 import { rowHandle, fieldHandle, fieldContainer, Row, RowContainer } from "./Styled";
 import { useModelFieldEditor } from "./useModelFieldEditor";
 import { DragSource, FieldEditorProvider, IsVisibleCallable } from "./FieldEditorContext";
-import { CmsEditorField, CmsEditorFieldsLayout, CmsEditorFieldTypePlugin } from "~/types";
+import { CmsModelField, CmsEditorFieldsLayout, CmsEditorFieldTypePlugin } from "~/types";
 import { ModelFieldProvider } from "~/admin/components/ModelFieldProvider";
 
 const t = i18n.namespace("app-headless-cms/admin/components/editor");
@@ -34,7 +34,7 @@ const Editor: React.FC = () => {
         getFieldPlugin
     } = useModelFieldEditor();
 
-    const canDropIntoField = (field: CmsEditorField, draggable: DragSource) => {
+    const canDropIntoField = (field: CmsModelField, draggable: DragSource) => {
         const fieldPlugin = getFieldPlugin(field.type) as CmsEditorFieldTypePlugin;
         const canAccept = fieldPlugin.field.canAccept;
         if (typeof canAccept === "function" && !canAccept(field, draggable)) {
@@ -240,10 +240,10 @@ const Editor: React.FC = () => {
 };
 
 export interface FieldEditorProps {
-    parent?: CmsEditorField;
+    parent?: CmsModelField;
     layout: CmsEditorFieldsLayout;
-    fields: CmsEditorField[];
-    onChange: (params: { fields: CmsEditorField[]; layout: CmsEditorFieldsLayout }) => void;
+    fields: CmsModelField[];
+    onChange: (params: { fields: CmsModelField[]; layout: CmsEditorFieldsLayout }) => void;
 }
 
 export const FieldEditor: React.FC<FieldEditorProps> = props => {
