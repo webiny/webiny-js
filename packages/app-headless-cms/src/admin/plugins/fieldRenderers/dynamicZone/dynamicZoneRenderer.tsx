@@ -1,5 +1,5 @@
 import React from "react";
-import { css } from "@emotion/css";
+import { css } from "emotion";
 import { Accordion, AccordionItem } from "@webiny/ui/Accordion";
 import { CmsEditorFieldRendererPlugin, CmsEditorFieldRendererProps } from "~/types";
 import { SingleValueDynamicZone } from "./SingleValueDynamicZone";
