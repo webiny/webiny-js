@@ -5,6 +5,7 @@ import { CmsEditorFieldTypePlugin } from "~/types";
 import { i18n } from "@webiny/app/i18n";
 import { Input } from "@webiny/ui/Input";
 import PredefinedValuesDynamicFieldset from "./PredefinedValuesDynamicFieldset";
+import { Bind } from "@webiny/form";
 const t = i18n.ns("app-headless-cms/admin/fields");
 
 const plugin: CmsEditorFieldTypePlugin = {
@@ -28,7 +29,7 @@ const plugin: CmsEditorFieldTypePlugin = {
                 }
             };
         },
-        renderSettings({ form: { Bind } }) {
+        renderSettings() {
             return (
                 <Grid>
                     <Cell span={12}>

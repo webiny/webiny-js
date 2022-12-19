@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { FieldEditorContext } from "./FieldEditorContext";
 
-export function useFieldEditor() {
+export function useModelFieldEditor() {
     const context = useContext(FieldEditorContext);
     if (!context) {
         throw Error(

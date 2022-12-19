@@ -1,5 +1,11 @@
-// TODO @ts-refactor verify that types are correct
-import React, { useEffect, useMemo, useReducer } from "react";
+import React, {
+    MutableRefObject,
+    useCallback,
+    useEffect,
+    useMemo,
+    useReducer,
+    useRef
+} from "react";
 import get from "lodash/get";
 import pick from "lodash/pick";
 import { ApolloClient } from "apollo-client";
@@ -14,48 +20,39 @@ import {
     UpdateCmsModelMutationVariables
 } from "~/admin/graphql/contentModels";
 import { LIST_MENU_CONTENT_GROUPS_MODELS } from "~/admin/viewsGraphql";
-import { CmsEditorContentModel, CmsEditorField, CmsModel } from "~/types";
+import { CmsEditorField, CmsModel } from "~/types";
 import { FetchResult } from "apollo-link";
+import { TabsImperativeApi } from "@webiny/ui/Tabs";
+import { ModelProvider } from "~/admin/components/ModelProvider";
 
 export interface ContentModelEditorProviderContext {
     apolloClient: ApolloClient<any>;
-    data: CmsEditorContentModel;
+    data: CmsModel;
+    contentModel: CmsModel;
     isPristine: boolean;
     getContentModel: (modelId: string) => Promise<FetchResult<GetCmsModelQueryResponse>>;
     saveContentModel: (
         data?: CmsModel
     ) => Promise<UpdateCmsModelMutationResponse["updateContentModel"]>;
     setData: (setter: (model: CmsModel) => void, saveContentModel?: boolean) => Promise<any>;
+    tabsRef: MutableRefObject<TabsImperativeApi | undefined>;
+    activeTabIndex: number;
+    setActiveTabIndex: (index: number) => void;
 }
 
-export const contentModelEditorContext = React.createContext<ContentModelEditorProviderContext>({
-    apolloClient: null as unknown as ApolloClient<any>,
-    data: null as unknown as CmsEditorContentModel,
-    isPristine: false,
-    getContentModel: async () => {
-        return {
-            data: null
-        };
-    },
-    saveContentModel: async () => {
-        return {
-            data: null,
-            error: null
-        };
-    },
-    setData: async () => {
-        return void 0;
-    }
-});
+export const contentModelEditorContext = React.createContext<
+    ContentModelEditorProviderContext | undefined
+>(undefined);
 
-type PickedCmsEditorContentModel = Pick<
-    CmsEditorContentModel,
+type PickedCmsModel = Pick<
+    CmsModel,
     "layout" | "fields" | "name" | "settings" | "description" | "titleFieldId" | "group"
 >;
 interface State {
     modelId: string | null;
     isPristine: boolean;
     data: CmsModel;
+    activeTabIndex: number;
 }
 interface Action {
     data: Partial<State> | Partial<CmsModel>;
@@ -100,7 +97,7 @@ const cleanupModelDataFields = (fields: CmsEditorField[]): CmsEditorField[] => {
     });
 };
 
-const cleanupModelData = (data: PickedCmsEditorContentModel): PickedCmsEditorContentModel => {
+const cleanupModelData = (data: PickedCmsModel): PickedCmsModel => {
     return {
         ...data,
         fields: cleanupModelDataFields(data.fields)
@@ -121,8 +118,12 @@ export const ContentModelEditorProvider: React.FC<ContentModelEditorProviderProp
     const [state, dispatch] = useReducer<Reducer>(contentModelEditorReducer, {
         modelId: modelId || null,
         isPristine: true,
-        data: null as unknown as CmsModel
+        data: null as unknown as CmsModel,
+        activeTabIndex: 0
     });
+
+    const tabsRef = useRef<TabsImperativeApi>();
+
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
 
@@ -136,10 +137,11 @@ export const ContentModelEditorProvider: React.FC<ContentModelEditorProviderProp
         if (!data) {
             data = state.data;
         }
-        const modelData: PickedCmsEditorContentModel = pick(data, [
+        const modelData: PickedCmsModel = pick(data, [
             "group",
             "layout",
             "fields",
+            "tags",
             "name",
             "settings",
             "description",
@@ -172,6 +174,10 @@ export const ContentModelEditorProvider: React.FC<ContentModelEditorProviderProp
 
         return response.data.updateContentModel;
     };
+
+    const setActiveTabIndex = useCallback((activeTabIndex: number) => {
+        dispatch({ type: "state", data: { activeTabIndex } });
+    }, []);
 
     /**
      * Set form data by providing a callback, which receives a fresh copy of data on which you can work on.
@@ -220,21 +226,30 @@ export const ContentModelEditorProvider: React.FC<ContentModelEditorProviderProp
         });
     }, [modelId]);
 
-    const value = useMemo(
+    const value = useMemo<ContentModelEditorProviderContext>(
         () => ({
+            // Keeping `data` for compatibility
             data: state.data,
+            contentModel: state.data,
             modelId,
             apolloClient,
             dispatch,
             isPristine: state.isPristine,
             getContentModel,
             saveContentModel,
-            setData
+            setData,
+            tabsRef,
+            activeTabIndex: state.activeTabIndex,
+            setActiveTabIndex
         }),
         [state, apolloClient]
     );
 
     const { Provider } = contentModelEditorContext;
 
-    return <Provider value={value}>{children}</Provider>;
+    return (
+        <Provider value={value}>
+            <ModelProvider model={value.contentModel}>{children}</ModelProvider>
+        </Provider>
+    );
 };

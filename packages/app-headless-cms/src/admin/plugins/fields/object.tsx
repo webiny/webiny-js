@@ -1,5 +1,5 @@
 import React from "react";
-import { ReactComponent as ObjectIcon } from "./icons/ballot_black_24dp.svg";
+import { ReactComponent as ObjectIcon } from "@material-design-icons/svg/outlined/ballot.svg";
 import { CmsEditorFieldTypePlugin } from "~/types";
 import { i18n } from "@webiny/app/i18n";
 import { ObjectFields } from "./object/ObjectFields";

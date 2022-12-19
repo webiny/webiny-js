@@ -73,6 +73,8 @@ interface ValidatorsTabProps {
     validators: ValidatorsTabPropsValidator[];
 }
 
+const renderEmpty = () => null;
+
 export const ValidatorsList: React.FC<ValidatorsTabProps> = props => {
     const { name, validators } = props;
 
@@ -95,6 +97,8 @@ export const ValidatorsList: React.FC<ValidatorsTabProps> = props => {
                                     </Fragment>
                                 );
                             }
+
+                            const renderSettings = validator.renderSettings || renderEmpty;
 
                             const actions = optional ? (
                                 <AccordionItem.Actions>
@@ -162,8 +166,7 @@ export const ValidatorsList: React.FC<ValidatorsTabProps> = props => {
                                                         </Cell>
                                                     </Grid>
 
-                                                    {typeof validator.renderSettings ===
-                                                        "function" && validator.renderSettings()}
+                                                    {renderSettings()}
                                                 </>
                                             )}
                                         </Form>

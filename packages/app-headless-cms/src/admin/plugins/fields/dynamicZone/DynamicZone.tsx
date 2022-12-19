@@ -1,10 +1,9 @@
 import React, { useRef, useEffect } from "react";
 import { Accordion } from "@webiny/ui/Accordion";
-import { useFieldEditor } from "~/admin/components/FieldEditor";
 import { CmsDynamicZoneTemplate } from "~/types";
 import { AddTemplateIcon, AddTemplateButton } from "./AddTemplate";
-import { useEditorField } from "~/admin/hooks";
 import { DynamicZoneTemplate } from "./DynamicZoneTemplate";
+import { useModelField, useModelFieldEditor } from "~/admin/hooks";
 
 function updateOrCreateTemplate(
     templates: CmsDynamicZoneTemplate[],
@@ -24,8 +23,8 @@ function updateOrCreateTemplate(
 }
 
 export const DynamicZone = () => {
-    const { field } = useEditorField();
-    const { updateField } = useFieldEditor();
+    const { field } = useModelField();
+    const { updateField } = useModelFieldEditor();
     const newTemplateId = useRef<string | undefined>(undefined);
 
     const templates: CmsDynamicZoneTemplate[] = field.settings?.templates || [];

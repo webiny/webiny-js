@@ -17,9 +17,8 @@ import AppearanceTab from "./EditFieldDialog/AppearanceTab";
 import PredefinedValues from "./EditFieldDialog/PredefinedValues";
 import { ValidatorsList } from "./EditFieldDialog/ValidatorsList";
 import { ButtonDefault, ButtonPrimary } from "@webiny/ui/Button";
-import { useContentModelEditor } from "~/admin/components/ContentModelEditor/useContentModelEditor";
-import { useEditorField } from "~/admin/hooks";
-import { EditorFieldProvider } from "~/admin/components/FieldEditor/EditorFieldContext";
+import { useModelField, useModelEditor } from "~/admin/hooks";
+import { ModelFieldProvider } from "~/admin/components/ModelFieldProvider";
 import { ValidationsSection } from "~/admin/components/FieldEditor/EditFieldDialog/ValidationsSection";
 import { getFieldValidators, getListValidators } from "./EditFieldDialog/getValidators";
 
@@ -76,8 +75,8 @@ interface EditFieldDialogProps {
 }
 
 const EditFieldDialog: React.FC<EditFieldDialogProps> = props => {
-    const { field, fieldPlugin } = useEditorField();
-    const { data: contentModel, setData: setContentModelData } = useContentModelEditor();
+    const { field, fieldPlugin } = useModelField();
+    const { data: contentModel, setData: setContentModelData } = useModelEditor();
     const [{ shadowField, isTitleField }] = useState<EditFieldState>(
         setupState(field, fieldPlugin, contentModel)
     );
@@ -131,7 +130,7 @@ const EditFieldDialog: React.FC<EditFieldDialogProps> = props => {
                          * We're using the `shadowField` as the new context, because we want all changes by form inputs
                          * to immediately be propagated to all dialog components.
                          */
-                        <EditorFieldProvider field={shadowField}>
+                        <ModelFieldProvider field={shadowField}>
                             <DialogContent>
                                 <Tabs>
                                     <Tab label={t`General`}>
@@ -195,7 +194,7 @@ const EditFieldDialog: React.FC<EditFieldDialogProps> = props => {
                                     onClick={submit}
                                 >{t`Save Field`}</ButtonPrimary>
                             </DialogActions>
-                        </EditorFieldProvider>
+                        </ModelFieldProvider>
                     );
                 }}
             </Form>
