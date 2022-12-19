@@ -17,7 +17,7 @@ import {
     CmsDynamicZoneTemplate,
     CmsEditorFieldRendererProps,
     CmsModel,
-    CmsEditorField
+    CmsModelField
 } from "~/types";
 
 const BottomMargin = styled.div`
@@ -99,7 +99,7 @@ const TemplateValueForm = ({
 };
 
 interface MultiValueDynamicZoneProps {
-    field: CmsEditorField;
+    field: CmsModelField;
     bind: BindComponentRenderProp;
     contentModel: CmsModel;
     getBind: GetBind;

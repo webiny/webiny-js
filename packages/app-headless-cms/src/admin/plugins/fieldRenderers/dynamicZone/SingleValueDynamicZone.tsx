@@ -10,13 +10,13 @@ import {
     CmsDynamicZoneTemplate,
     CmsEditorFieldRendererProps,
     CmsModel,
-    CmsEditorField
+    CmsModelField
 } from "~/types";
 
 type GetBind = CmsEditorFieldRendererProps["getBind"];
 
 interface SingleValueDynamicZoneProps {
-    field: CmsEditorField;
+    field: CmsModelField;
     bind: BindComponentRenderProp;
     contentModel: CmsModel;
     getBind: GetBind;

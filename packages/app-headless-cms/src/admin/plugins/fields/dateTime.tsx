@@ -3,7 +3,7 @@ import { get } from "lodash";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 import { Input } from "@webiny/ui/Input";
-import { CmsEditorField, CmsEditorFieldTypePlugin } from "~/types";
+import { CmsModelField, CmsEditorFieldTypePlugin } from "~/types";
 import { i18n } from "@webiny/app/i18n";
 import { ReactComponent as DateTimeIcon } from "./icons/schedule-black-24px.svg";
 import { useModel, useModelField } from "~/admin/hooks";
@@ -18,7 +18,7 @@ const DateTimeSettings = () => {
     const fieldId = get(field, "fieldId", null);
     const lockedField = lockedFields.find(
         lockedField => lockedField.fieldId === fieldId
-    ) as CmsEditorField<{
+    ) as CmsModelField<{
         formatType: string;
     }>;
 

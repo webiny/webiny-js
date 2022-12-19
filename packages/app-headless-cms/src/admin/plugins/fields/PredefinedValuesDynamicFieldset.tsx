@@ -8,7 +8,7 @@ import { Typography } from "@webiny/ui/Typography";
 import { ButtonPrimary, ButtonSecondary } from "@webiny/ui/Button";
 import { Input } from "@webiny/ui/Input";
 import { Switch } from "@webiny/ui/Switch";
-import { BindComponent, CmsEditorField } from "~/types";
+import { BindComponent, CmsModelField } from "~/types";
 import { BindComponentRenderProp } from "@webiny/form";
 import { useModelField } from "~/admin/hooks";
 
@@ -51,7 +51,7 @@ interface PredefinedValue {
 
 interface OnSelectedParams {
     bind: BindComponentRenderProp;
-    field: CmsEditorField;
+    field: CmsModelField;
     index: number;
     value: boolean;
 }

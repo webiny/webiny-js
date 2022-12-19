@@ -1,12 +1,12 @@
 import React from "react";
-import { CmsEditorField } from "~/types";
+import { CmsModelField } from "~/types";
 
-export type ModelFieldContext = CmsEditorField;
+export type ModelFieldContext = CmsModelField;
 
 export const ModelFieldContext = React.createContext<ModelFieldContext | undefined>(undefined);
 
 export interface ModelFieldProviderProps {
-    field: CmsEditorField;
+    field: CmsModelField;
     children: React.ReactNode;
 }
 

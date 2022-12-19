@@ -19,7 +19,7 @@ import * as GQLCache from "~/admin/views/contentEntries/ContentEntry/cache";
 import { prepareFormData } from "~/admin/views/contentEntries/ContentEntry/prepareFormData";
 import {
     CmsEditorContentEntry,
-    CmsEditorField,
+    CmsModelField,
     CmsEditorFieldRendererPlugin,
     CmsModel
 } from "~/types";
@@ -29,7 +29,7 @@ import { plugins } from "@webiny/plugins";
 /**
  * Used for some fields to convert their values.
  */
-const convertDefaultValue = (field: CmsEditorField, value: any): string | number | boolean => {
+const convertDefaultValue = (field: CmsModelField, value: any): string | number | boolean => {
     switch (field.type) {
         case "boolean":
             return Boolean(value);
