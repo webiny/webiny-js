@@ -10,13 +10,13 @@ import {
     GetCmsModelQueryResponse,
     GetCmsModelQueryVariables
 } from "~/admin/graphql/contentModels";
-import { useContentModelEditor } from "~/admin/components/ContentModelEditor/useContentModelEditor";
+import { useModelEditor } from "~/admin/hooks";
 
 const t = i18n.namespace("app-headless-cms/admin/editor/top-bar/save-button");
 
 const CreateContentButton: React.FC = () => {
     const router = useRouter();
-    const { data, apolloClient } = useContentModelEditor();
+    const { data, apolloClient } = useModelEditor();
 
     const getQuery = apolloClient.readQuery<GetCmsModelQueryResponse, GetCmsModelQueryVariables>({
         query: GET_CONTENT_MODEL,

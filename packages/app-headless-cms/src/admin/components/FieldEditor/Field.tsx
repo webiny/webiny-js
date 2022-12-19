@@ -14,8 +14,8 @@ import { ListItemGraphic } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
 import { i18n } from "@webiny/app/i18n";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { useContentModelEditor } from "~/admin/components/ContentModelEditor/useContentModelEditor";
-import { useFieldEditor } from "~/admin/components/FieldEditor/useFieldEditor";
+import { useModelEditor } from "~/admin/hooks";
+import { useModelFieldEditor } from "~/admin/components/FieldEditor/useModelFieldEditor";
 import { useConfirmationDialog } from "@webiny/app-admin";
 
 const t = i18n.ns("app-headless-cms/admin/components/editor/field");
@@ -82,8 +82,8 @@ export interface FieldProps {
 const Field: React.FC<FieldProps> = props => {
     const { field, onEdit, parent } = props;
     const { showSnackbar } = useSnackbar();
-    const { setData, data } = useContentModelEditor();
-    const { getFieldPlugin } = useFieldEditor();
+    const { setData, data } = useModelEditor();
+    const { getFieldPlugin } = useModelFieldEditor();
 
     const { showConfirmation } = useConfirmationDialog({
         title: t`Warning - You are trying to delete a locked field!`,
