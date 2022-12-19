@@ -1039,13 +1039,13 @@ export const createEntriesStorageOperations = (
                     index,
                     PK: createPartitionKey(latestEsEntryDataDecompressed),
                     SK: createLatestSortKey(),
-                    data: {
+                    data: await getESLatestEntryData(plugins, {
                         ...latestEsEntryDataDecompressed,
                         status: CONTENT_ENTRY_STATUS.PUBLISHED,
                         locked: true,
                         savedOn: entry.savedOn,
                         publishedOn: entry.publishedOn
-                    }
+                    })
                 })
             );
         }
@@ -1059,13 +1059,13 @@ export const createEntriesStorageOperations = (
         /**
          * Update the published revision entry in ES.
          */
-        const esLatestData = await getESPublishedEntryData(plugins, preparedEntryData);
+        const esPublishedData = await getESPublishedEntryData(plugins, preparedEntryData);
 
         esItems.push(
             esEntity.putBatch({
                 ...publishedKeys,
                 index,
-                data: esLatestData
+                data: esPublishedData
             })
         );
 
