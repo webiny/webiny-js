@@ -10,6 +10,9 @@ import { buildSchemaPlugins } from "./buildSchemaPlugins";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
 import { GraphQLRequestBody } from "@webiny/handler-graphql/types";
 import { RoutePlugin } from "@webiny/handler";
+import WebinyError from "@webiny/error";
+// @ts-ignore `code-frame` has no types
+import codeFrame from "code-frame";
 
 interface SchemaCache {
     key: string;
@@ -64,13 +67,26 @@ const getSchema = async (params: GetSchemaParams): Promise<GraphQLSchema> => {
 
     const cacheKey = await generateCacheKey(params);
     if (!schemaList.has(id)) {
-        const schema = await generateSchema(params);
+        try {
+            const schema = await generateSchema(params);
+            schemaList.set(id, {
+                key: cacheKey,
+                schema
+            });
+            return schema;
+        } catch (err) {
+            const [location] = err.locations;
 
-        schemaList.set(id, {
-            key: cacheKey,
-            schema
-        });
-        return schema;
+            throw new WebinyError({
+                code: "INVALID_GRAPHQL_SCHEMA",
+                message: err.message,
+                data: {
+                    invalidSegment: codeFrame(err.source.body, location.line, location.column, {
+                        frameSize: 15
+                    })
+                }
+            });
+        }
     }
     /**
      * Safe to cast because check was done few lines up.
@@ -118,14 +134,29 @@ const cmsRoutes = new RoutePlugin<CmsContext>(({ onPost, onOptions, context }) =
             });
         }
 
-        const schema = await getSchema({
-            context,
-            locale: context.cms.getLocale(),
-            type: context.cms.type as ApiEndpoint
-        });
-        const body: GraphQLRequestBody | GraphQLRequestBody[] = request.body as any;
-        const result = await processRequestBody(body, schema, context);
-        return reply.code(200).send(result);
+        try {
+            const schema = await getSchema({
+                context,
+                locale: context.cms.getLocale(),
+                type: context.cms.type as ApiEndpoint
+            });
+            const body: GraphQLRequestBody | GraphQLRequestBody[] = request.body as any;
+            const result = await processRequestBody(body, schema, context);
+            return reply.code(200).send(result);
+        } catch (ex) {
+            if (ex instanceof WebinyError) {
+                return reply.code(500).send({
+                    data: null,
+                    error: {
+                        message: ex.message,
+                        code: ex.code,
+                        data: ex.data
+                    }
+                });
+            }
+
+            return reply.code(500).send();
+        }
     });
 
     onOptions("/cms/:type(^manage|preview|read$)/:locale", async (_, reply) => {
