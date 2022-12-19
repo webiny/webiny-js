@@ -115,7 +115,6 @@ export const Main = ({ folderId }: Props) => {
 
     return (
         <>
-            {JSON.stringify(pagesLoading)}
             <Container>
                 <Header
                     canCreate={canCreate}
