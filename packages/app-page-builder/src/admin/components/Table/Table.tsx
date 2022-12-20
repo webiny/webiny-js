@@ -2,7 +2,7 @@ import React, { ReactElement, useMemo, useState } from "react";
 
 import { ReactComponent as More } from "@material-design-icons/svg/filled/more_vert.svg";
 import { FolderDialogUpdate } from "@webiny/app-folders";
-import { FolderItem, LinkItem } from "@webiny/app-folders/types";
+import { FolderItem } from "@webiny/app-folders/types";
 import { Columns, DataTable } from "@webiny/ui/DataTable";
 import { Menu } from "@webiny/ui/Menu";
 
@@ -31,7 +31,6 @@ interface Props {
     pages: PbPageDataLink[];
     folders: FolderItem[];
     loading?: boolean;
-    onDeletePage: (link: LinkItem) => void;
     openPreviewDrawer: () => void;
 }
 
@@ -47,13 +46,7 @@ interface Entry {
     original: PbPageDataLink | FolderItem;
 }
 
-export const Table = ({
-    folders,
-    pages,
-    loading,
-    onDeletePage,
-    openPreviewDrawer
-}: Props): ReactElement => {
+export const Table = ({ folders, pages, loading, openPreviewDrawer }: Props): ReactElement => {
     const [data, setData] = useState<Entry[]>([]);
     const [selectedFolder, setSelectedFolder] = useState<FolderItem>();
     const [updateDialogOpen, setUpdateDialogOpen] = useState<boolean>(false);
@@ -144,10 +137,7 @@ export const Table = ({
                             <PageActionEdit page={original as PbPageDataLink} />
                             <PageActionPreview page={original as PbPageDataLink} />
                             <PageActionPublish page={original as PbPageDataLink} />
-                            <PageActionDelete
-                                page={original as PbPageDataLink}
-                                onDeletePageSuccess={onDeletePage}
-                            />
+                            <PageActionDelete page={original as PbPageDataLink} />
                         </Menu>
                     );
                 } else {

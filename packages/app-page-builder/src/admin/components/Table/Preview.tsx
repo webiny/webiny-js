@@ -18,7 +18,7 @@ export const Preview = ({ open, onClose, canCreate, onCreatePage }: PreviewProps
     return (
         <Content modal={true} open={open} dir="rtl" onClose={onClose}>
             <DrawerContent dir="ltr">
-                <PageDetails canCreate={canCreate} onCreatePage={onCreatePage} />
+                <PageDetails canCreate={canCreate} onCreatePage={onCreatePage} onDelete={onClose} />
             </DrawerContent>
         </Content>
     );

@@ -5,6 +5,8 @@ import { useApolloClient } from "@apollo/react-hooks";
 import { PagesLinksActions, PbPageDataLink, Loading, PbPageData } from "~/types";
 import { useEffect, useState, SetStateAction, Dispatch } from "react";
 import { FOLDER_ID_DEFAULT } from "~/admin/constants/folders";
+import { useAdminPageBuilder } from "~/admin/hooks/useAdminPageBuilder";
+import { useLinks } from "@webiny/app-folders";
 
 export const loadingHandler = <T extends string>(
     context: string,
@@ -26,6 +28,8 @@ export const loadingHandler = <T extends string>(
 
 const useGetPages = (links: LinkItem[], folderId = FOLDER_ID_DEFAULT) => {
     const client = useApolloClient();
+    const pageBuilder = useAdminPageBuilder();
+    const { deleteLink } = useLinks(folderId);
     const [pages, setPages] = useState<PbPageDataLink[]>([]);
     const [loading, setLoading] = useState<Loading<PagesLinksActions>>({});
     const [times, setTimes] = useState<number>(0);
@@ -74,6 +78,22 @@ const useGetPages = (links: LinkItem[], folderId = FOLDER_ID_DEFAULT) => {
         });
     };
 
+    const deletePage = (id: string): void => {
+        return setPages(pages => {
+            // Since the `pid` is not available, we create this
+            const [pid] = id.split("#");
+            const index = pages.findIndex(page => page.pid === pid);
+
+            if (index > -1) {
+                // Delete the link bound to the deleted page
+                deleteLink(pages[index].link);
+                // Remove the page from tha state
+                pages.splice(index, 1);
+            }
+            return pages;
+        });
+    };
+
     useEffect(() => {
         setTimes(0);
     }, [folderId]);
@@ -117,6 +137,13 @@ const useGetPages = (links: LinkItem[], folderId = FOLDER_ID_DEFAULT) => {
                 });
         });
     }, []);
+
+    useEffect(() => {
+        return pageBuilder.onPageDelete(next => async params => {
+            deletePage(params.page.id);
+            return await next(params);
+        });
+    }, [pages]);
 
     return {
         pages,

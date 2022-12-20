@@ -1,34 +1,37 @@
-import { useConfirmationDialog, useDialog, useSnackbar } from "@webiny/app-admin";
-import { useCallback } from "react";
+import React, { useCallback } from "react";
 import { i18n } from "@webiny/app/i18n";
-import * as GQLCache from "~/admin/views/Pages/cache";
+import { PbPageData } from "~/types";
+import { useConfirmationDialog, useDialog, useSnackbar } from "@webiny/app-admin";
 import { useAdminPageBuilder } from "~/admin/hooks/useAdminPageBuilder";
-import { PbPageDataLink } from "~/types";
-import { LinkItem } from "@webiny/app-folders/types";
+import * as GQLCache from "~/admin/views/Pages/cache";
 
-const t = i18n.ns("app-headless-cms/app-page-builder/page-details/header/delete-page");
+const t = i18n.ns("app-headless-cms/app-page-builder/dialogs/dialog-delete-page");
 
 interface UseDeletePageParams {
-    page: PbPageDataLink;
-    onDeletePageSuccess: (linkItem: LinkItem) => void;
+    page: PbPageData;
+    onDelete?: () => void;
 }
 
-export const useDeletePage = ({ page, onDeletePageSuccess }: UseDeletePageParams) => {
+export const useDeletePage = ({ page, onDelete }: UseDeletePageParams) => {
     const { showSnackbar } = useSnackbar();
     const { showDialog } = useDialog();
     const { deletePage, client } = useAdminPageBuilder();
 
     const { showConfirmation } = useConfirmationDialog({
         title: t`Delete page`,
-        message:
-            t`You are about to delete the entire page "{title}" and all of its revisions! Are you sure you want to continue?`(
-                {
-                    title: page.title
-                }
-            )
+        message: (
+            <p>
+                {t`You are about to delete the entire page and all of its revisions!`}
+                <br />
+                {t`Are you sure you want to permanently delete the page {title}?`({
+                    title: <strong>{page.title}</strong>
+                })}
+            </p>
+        ),
+        dataTestId: "pb-page-details-header-delete-dialog"
     });
 
-    const deletePageMutation = useCallback(
+    const openDialogDeletePage = useCallback(
         () =>
             showConfirmation(async () => {
                 const [uniquePageId] = page.id.split("#");
@@ -61,12 +64,6 @@ export const useDeletePage = ({ page, onDeletePageSuccess }: UseDeletePageParams
                     return;
                 }
 
-                await onDeletePageSuccess({
-                    id: page.pid,
-                    linkId: page.link.linkId,
-                    folderId: page.link.folderId
-                });
-
                 showSnackbar(
                     t`The page "{title}" was deleted successfully.`({
                         title: `${
@@ -76,11 +73,15 @@ export const useDeletePage = ({ page, onDeletePageSuccess }: UseDeletePageParams
                         }`
                     })
                 );
+
+                if (typeof onDelete === "function") {
+                    onDelete();
+                }
             }),
         [page]
     );
 
     return {
-        deletePageMutation
+        openDialogDeletePage
     };
 };
