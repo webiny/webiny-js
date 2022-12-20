@@ -11,9 +11,6 @@ export const handler = createHandler({
         createEventHandler()
     ],
     options: {
-        /**
-         * 1GB - really hope this is going to be enough.
-         */
         bodyLimit: 1048576000
     }
 });
