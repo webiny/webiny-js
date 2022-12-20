@@ -1,6 +1,6 @@
 {
   "name": "@webiny/cli-plugin-workspaces",
-  "version": "5.33.3",
+  "version": "5.33.4",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -10,7 +10,7 @@
   "author": "Webiny Ltd.",
   "description": "A CLI plugin for working with workspaces.",
   "dependencies": {
-    "@webiny/project-utils": "^5.33.3",
+    "@webiny/project-utils": "^5.33.4",
     "archy": "1.0.0",
     "chalk": "4.1.2",
     "execa": "5.0.0",

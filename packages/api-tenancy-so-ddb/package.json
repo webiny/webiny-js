@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-tenancy-so-ddb",
-  "version": "5.33.3",
+  "version": "5.33.4",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -16,16 +16,16 @@
   "author": "Webiny Ltd.",
   "license": "MIT",
   "dependencies": {
-    "@webiny/api-tenancy": "^5.33.3",
-    "@webiny/db-dynamodb": "^5.33.3",
-    "@webiny/error": "^5.33.3",
+    "@webiny/api-tenancy": "^5.33.4",
+    "@webiny/db-dynamodb": "^5.33.4",
+    "@webiny/error": "^5.33.4",
     "dynamodb-toolbox": "^0.3.4"
   },
   "devDependencies": {
     "@babel/cli": "^7.16.0",
     "@babel/core": "^7.16.0",
-    "@webiny/cli": "^5.33.3",
-    "@webiny/project-utils": "^5.33.3",
+    "@webiny/cli": "^5.33.4",
+    "@webiny/project-utils": "^5.33.4",
     "jest": "^28.1.0",
     "jest-dynalite": "^3.2.0",
     "jest-environment-node": "^27.0.6",

@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-page-builder-import-export-so-ddb",
-  "version": "5.33.3",
+  "version": "5.33.4",
   "main": "index.js",
   "keywords": [
     "@webiny/api-page-builder-import-export",
@@ -18,9 +18,9 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.16.3",
-    "@webiny/api-page-builder-import-export": "^5.33.3",
-    "@webiny/db-dynamodb": "^5.33.3",
-    "@webiny/error": "^5.33.3",
+    "@webiny/api-page-builder-import-export": "^5.33.4",
+    "@webiny/db-dynamodb": "^5.33.4",
+    "@webiny/error": "^5.33.4",
     "dynamodb-toolbox": "^0.3.4"
   },
   "devDependencies": {
@@ -28,12 +28,12 @@
     "@babel/core": "^7.16.0",
     "@babel/preset-env": "^7.16.4",
     "@babel/preset-typescript": "^7.16.0",
-    "@webiny/api-security": "^5.33.3",
-    "@webiny/api-tenancy": "^5.33.3",
-    "@webiny/cli": "^5.33.3",
-    "@webiny/handler-aws": "^5.33.3",
-    "@webiny/handler-graphql": "^5.33.3",
-    "@webiny/project-utils": "^5.33.3",
+    "@webiny/api-security": "^5.33.4",
+    "@webiny/api-tenancy": "^5.33.4",
+    "@webiny/cli": "^5.33.4",
+    "@webiny/handler-aws": "^5.33.4",
+    "@webiny/handler-graphql": "^5.33.4",
+    "@webiny/project-utils": "^5.33.4",
     "jest": "^28.1.0",
     "jest-dynalite": "^3.2.0",
     "jest-environment-node": "^27.0.6",

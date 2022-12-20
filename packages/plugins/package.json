@@ -1,6 +1,6 @@
 {
   "name": "@webiny/plugins",
-  "version": "5.33.3",
+  "version": "5.33.4",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -20,8 +20,8 @@
     "@babel/cli": "^7.16.0",
     "@babel/core": "^7.16.0",
     "@types/uniqid": "^5.3.2",
-    "@webiny/cli": "^5.33.3",
-    "@webiny/project-utils": "^5.33.3",
+    "@webiny/cli": "^5.33.4",
+    "@webiny/project-utils": "^5.33.4",
     "rimraf": "^3.0.2",
     "typescript": "4.7.4"
   },

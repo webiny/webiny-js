@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.33.4](https://github.com/webiny/webiny-js/compare/v5.33.4-beta.0...v5.33.4) (2022-12-15)
+
+**Note:** Version bump only for package @webiny/pulumi-aws
+
+
+
+
+
+## [5.33.4-beta.0](https://github.com/webiny/webiny-js/compare/v5.33.3...v5.33.4-beta.0) (2022-12-15)
+
+
+### Bug Fixes
+
+* improve "Deploy Webiny Project" CloudFormation template ([380bb68](https://github.com/webiny/webiny-js/commit/380bb680690439ca0a6d9d6a95aa02215c791318))
+* introduce `pulumiResourceNamePrefix ` parameter ([9bd346b](https://github.com/webiny/webiny-js/commit/9bd346bc9c73dac3e715c7471fb27ca0170569aa))
+
+
+
+
+
 ## [5.33.3](https://github.com/webiny/webiny-js/compare/v5.33.3-beta.0...v5.33.3) (2022-11-28)
 
 **Note:** Version bump only for package @webiny/pulumi-aws

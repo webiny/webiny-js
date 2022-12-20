@@ -1,9 +1,9 @@
 {
   "name": "@webiny/telemetry",
-  "version": "5.33.3",
+  "version": "5.33.4",
   "license": "MIT",
   "dependencies": {
-    "@webiny/global-config": "^5.33.3",
+    "@webiny/global-config": "^5.33.4",
     "form-data": "3.0.0",
     "node-fetch": "2.6.1"
   },
