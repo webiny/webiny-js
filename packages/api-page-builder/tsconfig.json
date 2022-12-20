@@ -3,6 +3,7 @@
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
     { "path": "../api-file-manager" },
+    { "path": "../api-folders" },
     { "path": "../api-i18n" },
     { "path": "../api-prerendering-service" },
     { "path": "../api-security" },
@@ -33,6 +34,8 @@
       "~/*": ["./src/*"],
       "@webiny/api-file-manager/*": ["../api-file-manager/src/*"],
       "@webiny/api-file-manager": ["../api-file-manager/src"],
+      "@webiny/api-folders/*": ["../api-folders/src/*"],
+      "@webiny/api-folders": ["../api-folders/src"],
       "@webiny/api-i18n/*": ["../api-i18n/src/*"],
       "@webiny/api-i18n": ["../api-i18n/src"],
       "@webiny/api-prerendering-service/*": ["../api-prerendering-service/src/*"],
