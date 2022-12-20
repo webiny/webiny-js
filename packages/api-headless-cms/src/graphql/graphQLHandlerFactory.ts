@@ -114,6 +114,25 @@ const checkEndpointAccess = async (context: CmsContext): Promise<void> => {
     }
 };
 
+const formatErrorPayload = (error: Error) => {
+    if (error instanceof WebinyError) {
+        return {
+            data: null,
+            error: {
+                message: error.message,
+                code: error.code,
+                data: error.data
+            }
+        };
+    }
+
+    return {
+        name: error.name,
+        message: error.message,
+        stack: error.stack
+    };
+};
+
 export interface GraphQLHandlerFactoryParams {
     debug?: boolean;
 }
@@ -144,18 +163,7 @@ const cmsRoutes = new RoutePlugin<CmsContext>(({ onPost, onOptions, context }) =
             const result = await processRequestBody(body, schema, context);
             return reply.code(200).send(result);
         } catch (ex) {
-            if (ex instanceof WebinyError) {
-                return reply.code(500).send({
-                    data: null,
-                    error: {
-                        message: ex.message,
-                        code: ex.code,
-                        data: ex.data
-                    }
-                });
-            }
-
-            return reply.code(500).send();
+            return reply.code(500).send(formatErrorPayload(ex));
         }
     });
 
