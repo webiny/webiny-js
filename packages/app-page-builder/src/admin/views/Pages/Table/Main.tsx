@@ -1,8 +1,9 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import debounce from "lodash/debounce";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import { FolderDialogCreate, useFolders, useLinks } from "@webiny/app-folders";
+import { useHistory, useLocation } from "@webiny/react-router";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
 
@@ -46,13 +47,15 @@ const getCurrentFolderList = (
 };
 
 export const Main = ({ folderId }: Props) => {
+    const location = useLocation();
+    const history = useHistory();
+
     const { folders = [], loading: foldersLoading } = useFolders(FOLDER_TYPE);
     const {
         links,
         loading: linksLoading,
         meta,
-        listLinks,
-        deleteLink
+        listLinks
     } = useLinks(folderId || FOLDER_ID_DEFAULT);
 
     const { pages, loading: pagesLoading } = useGetPages(links, folderId);
@@ -113,6 +116,16 @@ export const Main = ({ folderId }: Props) => {
         return pagesLoading.LIST_MORE || linksLoading.LIST_MORE;
     }, [linksLoading, pagesLoading]);
 
+    useEffect(() => {
+        if (!showPreviewDrawer) {
+            const queryParams = new URLSearchParams(location.search);
+            queryParams.delete("id");
+            history.push({
+                search: queryParams.toString()
+            });
+        }
+    }, [showPreviewDrawer]);
+
     return (
         <>
             <Container>
@@ -144,7 +157,6 @@ export const Main = ({ folderId }: Props) => {
                                     folders={subFolders}
                                     pages={pages}
                                     loading={isLoading}
-                                    onDeletePage={deleteLink}
                                     openPreviewDrawer={openPreviewDrawer}
                                 />
                             </Scrollbar>

@@ -8,7 +8,7 @@ import { PageBuilderSecurityPermission } from "~/types";
 const BlockCategories: React.FC = () => {
     const { identity, getPermission } = useSecurity();
     const pbMenuPermissionRwd = useMemo((): string | null => {
-        const permission = getPermission<PageBuilderSecurityPermission>("pb.block");
+        const permission = getPermission<PageBuilderSecurityPermission>("pb.blockCategory");
         if (!permission) {
             return null;
         }
