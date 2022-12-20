@@ -9,5 +9,11 @@ export const handler = createHandler({
         }),
         createGzipCompression(),
         createEventHandler()
-    ]
+    ],
+    options: {
+        /**
+         * 1GB - really hope this is going to be enough.
+         */
+        bodyLimit: 1048576000
+    }
 });
