@@ -117,12 +117,9 @@ const checkEndpointAccess = async (context: CmsContext): Promise<void> => {
 const formatErrorPayload = (error: Error) => {
     if (error instanceof WebinyError) {
         return {
-            data: null,
-            error: {
-                message: error.message,
-                code: error.code,
-                data: error.data
-            }
+            message: error.message,
+            code: error.code,
+            data: error.data
         };
     }
 

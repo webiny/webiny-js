@@ -20,12 +20,9 @@ const createRequestBody = (body: any): any => {
 const formatErrorPayload = (error: Error) => {
     if (error instanceof WebinyError) {
         return {
-            data: null,
-            error: {
-                message: error.message,
-                code: error.code,
-                data: error.data
-            }
+            message: error.message,
+            code: error.code,
+            data: error.data
         };
     }
 
