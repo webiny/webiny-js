@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction } from "react";
 import { ApolloQueryResult } from "apollo-client/core/types";
 import { FetchResult } from "apollo-link";
-import { Loading } from "~/types";
+import { Loading, LoadingActions } from "~/types";
 
 /**
  * A simple wrapper for Apollo fetching operations that handles the `loading` state as side effect.
@@ -27,9 +27,9 @@ export const apolloFetchingHandler = async (
  * @param action: the `action` that has been performed.
  * @param setState: the logic to update the loading state.
  */
-export const loadingHandler = <T extends string>(
-    action: T,
-    setState: Dispatch<SetStateAction<Loading<T>>>
+export const loadingHandler = (
+    action: LoadingActions,
+    setState: Dispatch<SetStateAction<Loading<LoadingActions>>>
 ) => {
     return (flag: boolean) => {
         setState(state => {
