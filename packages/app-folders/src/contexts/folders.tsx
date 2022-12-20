@@ -43,9 +43,11 @@ interface Props {
     children: ReactNode;
 }
 
-const defaultLoading = {
+const defaultLoading: Record<LoadingActions, boolean> = {
     INIT: true,
     LIST: false,
+    LIST_MORE: false,
+    GET: false,
     CREATE: false,
     UPDATE: false,
     DELETE: false

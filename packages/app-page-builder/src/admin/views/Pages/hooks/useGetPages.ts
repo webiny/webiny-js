@@ -10,7 +10,7 @@ import { i18n } from "@webiny/app/i18n";
 
 const t = i18n.ns("app-headless-cms/app-page-builder/pages-table/get-pages");
 
-const defaultLoading = {
+const defaultLoading: Record<LoadingActions, boolean> = {
     INIT: true,
     LIST: false,
     LIST_MORE: false
