@@ -16,7 +16,8 @@
     "@webiny/error": "^5.33.4",
     "@webiny/handler-aws": "^5.33.4",
     "aws-lambda": "^1.0.7",
-    "aws-sdk": "^2.971.0"
+    "aws-sdk": "^2.971.0",
+    "p-retry": "^4.6.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.16.0",

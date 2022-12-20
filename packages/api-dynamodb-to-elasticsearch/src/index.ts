@@ -4,6 +4,7 @@ import { decompress } from "@webiny/api-elasticsearch";
 import { ApiResponse, ElasticsearchContext } from "@webiny/api-elasticsearch/types";
 import { createDynamoDBEventHandler } from "@webiny/handler-aws";
 import { StreamRecord } from "aws-lambda/trigger/dynamodb-stream";
+import pRetry from "p-retry";
 
 enum Operations {
     INSERT = "INSERT",
@@ -242,7 +243,16 @@ export const createEventHandler = () => {
             }
         };
 
-        await execute();
+        await pRetry(execute, {
+            maxRetryTime: 10000000,
+            retries: 10,
+            minTimeout: 1500,
+            maxTimeout: 30000,
+            onFailedAttempt: error => {
+                console.log(`Attempt #${error.attemptNumber} failed.`);
+                console.log(error.message);
+            }
+        });
 
         return null;
     });
