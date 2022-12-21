@@ -235,6 +235,28 @@ export interface CmsModelField {
     settings?: CmsModelFieldSettings;
 }
 
+export interface CmsDynamicZoneTemplate {
+    id: string;
+    name: string;
+    description: string;
+    icon: string;
+    fields: CmsModelField[];
+    layout: string[][];
+    validation: CmsModelFieldValidation[];
+}
+
+/**
+ * A definition for dynamic-zone field to show possible type of the field in settings.
+ */
+export interface CmsModelDynamicZoneField extends CmsModelField {
+    /**
+     * Settings object for the field. Contains `templates` property.
+     */
+    settings: {
+        templates: CmsDynamicZoneTemplate[];
+    };
+}
+
 /**
  * Used for our internal functionality.
  */
@@ -247,7 +269,7 @@ export interface CmsModelFieldWithParent extends CmsModelField {
  */
 export interface CmsModelDateTimeField extends CmsModelField {
     /**
-     * Settings object for the field. Contains type property.
+     * Settings object for the field. Contains `type` property.
      */
     settings: {
         type: "time" | "date" | "dateTimeWithoutTimezone" | "dateTimeWithTimezone";
@@ -502,7 +524,7 @@ export interface CmsModelFieldToGraphQLCreateResolver {
  * @category ModelField
  * @category GraphQL
  */
-export interface CmsModelFieldToGraphQLPlugin extends Plugin {
+export interface CmsModelFieldToGraphQLPlugin<TField = CmsModelField> extends Plugin {
     /**
      * A plugin type
      */
@@ -554,10 +576,7 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
      * }
      * ```
      */
-    createStorageId?: (params: {
-        model: CmsModel;
-        field: CmsModelField;
-    }) => string | null | undefined;
+    createStorageId?: (params: { model: CmsModel; field: TField }) => string | null | undefined;
     /**
      * Read API methods.
      */
@@ -573,7 +592,7 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
          * }
          * ```
          */
-        createGetFilters?(params: { model: CmsModel; field: CmsModelField }): string;
+        createGetFilters?(params: { model: CmsModel; field: TField }): string;
         /**
          * Definition for list filtering for GraphQL.
          *
@@ -590,7 +609,7 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
          * }
          * ```
          */
-        createListFilters?(params: { model: CmsModel; field: CmsModelField }): string;
+        createListFilters?(params: { model: CmsModel; field: TField }): string;
         /**
          * Definition of the field type for GraphQL - be aware if multiple values is selected.
          *
@@ -608,7 +627,7 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
          */
         createTypeField(params: {
             model: CmsModel;
-            field: CmsModelField;
+            field: TField;
             fieldTypePlugins: CmsFieldTypePlugins;
         }): CmsModelFieldDefinition | string | null;
         /**
@@ -664,7 +683,7 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
          * }
          * ```
          */
-        createListFilters?: (params: { model: CmsModel; field: CmsModelField }) => string;
+        createListFilters?: (params: { model: CmsModel; field: TField }) => string;
         /**
          * Manage API schema definitions for the field and resolvers for them. Probably similar to `read.createSchema`.
          *
@@ -700,7 +719,7 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
          */
         createTypeField: (params: {
             model: CmsModel;
-            field: CmsModelField;
+            field: TField;
             fieldTypePlugins: CmsFieldTypePlugins;
         }) => CmsModelFieldDefinition | string | null;
         /**
@@ -720,7 +739,7 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
          */
         createInputField: (params: {
             model: CmsModel;
-            field: CmsModelField;
+            field: TField;
             fieldTypePlugins: CmsFieldTypePlugins;
         }) => CmsModelFieldDefinition | string | null;
         /**

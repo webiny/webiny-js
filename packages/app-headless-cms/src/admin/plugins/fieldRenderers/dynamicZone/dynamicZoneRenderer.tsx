@@ -43,11 +43,11 @@ export const dynamicZoneFieldRenderer: CmsEditorFieldRendererPlugin = {
     type: "cms-editor-field-renderer",
     name: "cms-editor-field-renderer-dynamic-zone",
     renderer: {
-        rendererName: "dynamic-zone",
+        rendererName: "dynamicZone",
         name: "Dynamic Zone",
         description: "Renders a dynamic zone.",
         canUse({ field }) {
-            return field.type === "dynamic-zone";
+            return field.type === "dynamicZone";
         },
         render(props) {
             return <DynamicZoneContent {...props} />;
