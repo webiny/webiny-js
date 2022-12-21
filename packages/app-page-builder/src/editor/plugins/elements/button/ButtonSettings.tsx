@@ -16,6 +16,7 @@ import { updateButtonElementIcon } from "../utils/iconUtils";
 import useUpdateHandlers from "../../elementSettings/useUpdateHandlers";
 import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
 import startCase from "lodash/startCase";
+import { isLegacyRenderingEngine } from "~/utils";
 
 const classes = {
     gridClass: css({
@@ -60,20 +61,19 @@ const ButtonSettings: React.FC<PbEditorPageElementSettingsRenderComponentProps> 
 
     let typesOptions: Array<{ value: string; label: string }> = [];
 
-    const pageElements = usePageElements();
-    if (pageElements) {
-        const { theme } = pageElements;
-        const types = Object.keys(theme.styles?.button || {});
-        typesOptions = types.map(item => ({
-            value: item,
-            label: startCase(item)
-        }));
-    } else {
+    if (isLegacyRenderingEngine) {
         const { theme } = usePageBuilder();
         const types = theme?.elements?.button?.types || [];
         typesOptions = types.map(item => ({
             value: item.className,
             label: item.label
+        }));
+    } else {
+        const { theme } = usePageElements();
+        const types = Object.keys(theme.styles?.button || {});
+        typesOptions = types.map(item => ({
+            value: item,
+            label: startCase(item)
         }));
     }
 

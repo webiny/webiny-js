@@ -1,19 +1,18 @@
 import React from "react";
 import { PbEditorElement } from "~/types";
-import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
 import PeButton from "./PeButton";
 import PbButton from "./PbButton";
+import { isLegacyRenderingEngine } from "~/utils";
 
 interface ButtonProps {
     element: PbEditorElement;
 }
 
 const Button: React.FC<ButtonProps> = props => {
-    const pageElements = usePageElements();
-    if (pageElements) {
-        return <PeButton {...props} />;
+    if (isLegacyRenderingEngine) {
+        return <PbButton {...props} />;
     }
-    return <PbButton {...props} />;
+    return <PeButton {...props} />;
 };
 
 export default Button;

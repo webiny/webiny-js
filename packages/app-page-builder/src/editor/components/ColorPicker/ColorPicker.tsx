@@ -14,6 +14,7 @@ import { ReactComponent as IconPalette } from "../../assets/icons/round-color_le
 import { ReactComponent as ColorizeIcon } from "./colorize.svg";
 import { ReactComponent as NoColorSelectedIcon } from "./unselected.svg";
 import { COLORS } from "../../plugins/elementSettings/components/StyledComponents";
+import { isLegacyRenderingEngine } from "~/utils";
 
 const ColorPickerStyle = styled("div")({
     display: "flex",
@@ -217,11 +218,14 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
     );
 
     const { theme } = usePageBuilder();
+
     const pageElements = usePageElements();
 
     let themeColors: Record<string, any> = {};
 
-    if (pageElements) {
+    if (isLegacyRenderingEngine) {
+        themeColors = theme?.colors || {};
+    } else {
         const colors = pageElements.theme?.styles?.colors;
         if (colors) {
             for (const key in colors) {
@@ -230,8 +234,6 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
                 }
             }
         }
-    } else {
-        themeColors = theme?.colors || {};
     }
 
     // Either a custom color or a color coming from the theme object.
@@ -257,7 +259,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
                                 // With page elements implementation, we want to store the color key and
                                 // then the actual color will be retrieved from the theme object.
                                 let value = color;
-                                if (pageElements) {
+                                if (!isLegacyRenderingEngine) {
                                     value = key;
                                 }
 

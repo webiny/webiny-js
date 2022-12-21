@@ -30,6 +30,7 @@ import TextAlignment from "./TextAlignment";
 import { applyFallbackDisplayMode } from "../elementSettingsUtils";
 import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
 import startCase from "lodash/startCase";
+import { isLegacyRenderingEngine } from "~/utils";
 
 const classes = {
     grid: css({
@@ -75,7 +76,6 @@ const TextSettings: React.FC<TextSettingsProps> = ({ defaultAccordionValue, opti
     const element = useRecoilValue(
         elementWithChildrenByIdSelector(activeElementId)
     ) as PbEditorElement;
-    const [{ theme }] = plugins.byType<PbThemePlugin>("pb-theme");
 
     const memoizedResponsiveModePlugin = useMemo(() => {
         return plugins
@@ -92,8 +92,10 @@ const TextSettings: React.FC<TextSettingsProps> = ({ defaultAccordionValue, opti
 
     const pageElements = usePageElements();
 
+    const themePlugins = plugins.byType<PbThemePlugin>("pb-theme");
+
     const themeTypographyOptions = useMemo(() => {
-        if (pageElements) {
+        if (!isLegacyRenderingEngine) {
             const peThemeTypography = Object.keys(pageElements.theme.styles?.typography || {});
             return peThemeTypography.map(key => (
                 <option value={key} key={key}>
@@ -102,6 +104,7 @@ const TextSettings: React.FC<TextSettingsProps> = ({ defaultAccordionValue, opti
             ));
         }
 
+        const [{ theme }] = themePlugins;
         const { types = [] } = theme.elements[element.type];
 
         return [
@@ -116,7 +119,7 @@ const TextSettings: React.FC<TextSettingsProps> = ({ defaultAccordionValue, opti
                 </option>
             ))
         ];
-    }, [theme, element]);
+    }, [themePlugins, element]);
 
     const { getUpdateValue, getUpdatePreview } = useUpdateHandlers({
         element,

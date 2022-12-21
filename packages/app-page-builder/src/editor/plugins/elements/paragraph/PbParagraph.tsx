@@ -4,8 +4,6 @@ import { CoreOptions } from "medium-editor";
 import { PbEditorTextElementProps } from "~/types";
 import { getMediumEditorOptions } from "../utils/textUtils";
 
-export const textClassName = "webiny-pb-base-page-element-style webiny-pb-page-element-text";
-
 const DEFAULT_EDITOR_OPTIONS: CoreOptions = {
     toolbar: {
         buttons: ["bold", "italic", "underline", "anchor"]

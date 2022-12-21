@@ -1,16 +1,24 @@
 import React, { useMemo } from "react";
 import { plugins } from "@webiny/plugins";
 import { PbElement, PbRenderElementPlugin, PbTheme, PbThemePlugin } from "~/types";
-import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
 import { Element as PeElement } from "@webiny/app-page-builder-elements/components/Element";
+import { Element as ElementType } from "@webiny/app-page-builder-elements/types";
 import tryRenderingPlugin from "~/utils/tryRenderingPlugin";
+import { isLegacyRenderingEngine } from "~/utils";
 
 export interface ElementProps {
     element: PbElement | null;
 }
 
+// This is the component that is used in the Website app in order to render the current page.
 const Element: React.FC<ElementProps> = props => {
     const { element } = props;
+
+    // With the new engine, we can simply use the `PeElement` component
+    // and the rest of the rendering will happen recursively.
+    if (!isLegacyRenderingEngine) {
+        return <PeElement element={element as ElementType} />;
+    }
 
     const theme: PbTheme = useMemo(
         () => Object.assign({}, ...plugins.byType<PbThemePlugin>("pb-theme").map(pl => pl.theme)),
@@ -19,16 +27,6 @@ const Element: React.FC<ElementProps> = props => {
 
     if (!element) {
         return null;
-    }
-
-    const pageElements = usePageElements();
-    if (pageElements) {
-        /**
-         * TODO @ts-refactor
-         * Write better types for PbElement and PeElement
-         */
-        // @ts-ignore
-        return <PeElement element={element} />;
     }
 
     const plugin = plugins

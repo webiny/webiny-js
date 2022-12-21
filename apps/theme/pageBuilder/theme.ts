@@ -1,5 +1,5 @@
-import { Theme } from "@webiny/app-page-builder-elements/types";
-import { CSSObject } from "@emotion/react";
+import { createTheme } from "@webiny/app-page-builder-theme";
+import { CSSObject } from "@emotion/core";
 
 // Defaults first (colors, fonts, border radius, ...).
 const colors = {
@@ -55,7 +55,7 @@ const buttons = (overrides: CSSObject) => ({
 });
 
 // Theme object.
-export const theme: Theme = {
+const theme = createTheme({
     breakpoints: {
         desktop: { mediaQuery: "@media (max-width: 4000px)" },
         tablet: { mediaQuery: "@media (max-width: 991px)" },
@@ -118,23 +118,22 @@ export const theme: Theme = {
                     marginBottom: "12px",
                     marginLeft: "1.875rem",
                     position: "relative",
+                    "&:before,&:after": {
+                        position: "absolute",
+                        content: '""',
+                        borderRadius: "50%"
+                    },
                     "&:before": {
                         backgroundColor: "#90c418",
-                        borderRadius: "50%",
-                        content: '""',
                         height: "1.25rem",
                         width: "1.25rem",
                         left: "-1.875rem",
-                        position: "absolute",
                         top: "0.125rem"
                     },
                     "&:after": {
-                        backgroundColor: "#fff",
-                        borderRadius: "50%",
-                        content: '""',
+                        backgroundColor: "#ffffff",
                         height: "0.5rem",
                         left: "-1.5rem",
-                        position: "absolute",
                         top: "0.5rem",
                         width: "0.5rem"
                     }
@@ -144,4 +143,6 @@ export const theme: Theme = {
             cell: { tablet: { width: "100%" } }
         }
     }
-};
+});
+
+export default theme;

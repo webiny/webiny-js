@@ -1,5 +1,5 @@
 import { ElementStylesModifier } from "~/types";
-import { type CSSObject } from "@emotion/react";
+import { type CSSObject } from "@emotion/core";
 
 const text: ElementStylesModifier = ({ element, theme }) => {
     const { text } = element.data || {};

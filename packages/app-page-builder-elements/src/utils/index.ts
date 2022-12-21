@@ -1,9 +1,7 @@
 // Provides a way to check whether the `PageElementsProvider` React component was mounted or not,
 // in a non-React context. In React contexts, it's strongly recommended the value of `usePageElements`
 // React hook is checked instead (a `null` value means the provider React component wasn't mounted).
-import { type CSSObject } from "@emotion/react";
-import emotionStyled from "@emotion/styled";
-import React from "react";
+import { type CSSObject } from "@emotion/core";
 
 import {
     AssignAttributesCallback,
@@ -94,7 +92,8 @@ export const defaultElementAttributesCallback: ElementAttributesCallback = ({
             element,
             theme,
             renderers,
-            modifiers
+            modifiers,
+            attributes
         });
 
         assignAttributes({
@@ -161,25 +160,10 @@ export const defaultThemeStylesCallback: ThemeStylesCallback = ({
 
 export const defaultStylesCallback: StylesCallback = ({ styles }) => [styles];
 
-// Out of the box, Emotion doesn't work on custom elements (part of the Web components spec).
-// That's why we've introduced this enhanced `styled`, which works with custom components too.
-export const styled = (
-    ...parameters: Parameters<typeof emotionStyled>
-): ReturnType<typeof emotionStyled> => {
-    const isCustomWebComponent = typeof parameters[0] === "string" && parameters[0].includes("-");
-    if (isCustomWebComponent) {
-        // Used `any` because I could not figure a proper type for the `props` param.
-        return emotionStyled((props: any) => {
-            const { children, className, ...rest } = props;
-            const elementProps = { ...rest, class: className };
-            return React.createElement(parameters[0], elementProps, children);
-        });
-    }
-
-    return emotionStyled(...parameters);
-};
-
-export const elementDataPropsAreEqual = (prevProps: ElementRendererProps, nextProps: ElementRendererProps) => {
+export const elementDataPropsAreEqual = (
+    prevProps: ElementRendererProps,
+    nextProps: ElementRendererProps
+) => {
     const prevElementDataHash = JSON.stringify(prevProps.element.data);
     const nextElementDataHash = JSON.stringify(nextProps.element.data);
     return prevElementDataHash === nextElementDataHash;

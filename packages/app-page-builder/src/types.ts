@@ -103,6 +103,7 @@ export type PbElementDataTextType = {
         tag?: string;
     };
 };
+
 export interface PbElementDataImageType {
     width?: string | number;
     height?: string | number;
@@ -112,6 +113,7 @@ export interface PbElementDataImageType {
     };
     title?: string;
 }
+
 export type PbElementDataIconType = {
     id?: [string, string];
     width?: number;
@@ -123,6 +125,7 @@ export type PbElementDataSettingsFormType = {
     parent?: string;
     revision?: string;
 };
+
 export enum AlignmentTypesEnum {
     HORIZONTAL_LEFT = "horizontalLeft",
     HORIZONTAL_CENTER = "horizontalCenter",
@@ -131,6 +134,7 @@ export enum AlignmentTypesEnum {
     VERTICAL_CENTER = "verticalCenter",
     VERTICAL_BOTTOM = "verticalBottom"
 }
+
 export interface PbElementDataSettingsType {
     alignment?: AlignmentTypesEnum;
     horizontalAlign?: "left" | "center" | "right" | "justify";
@@ -158,6 +162,7 @@ export interface PbElementDataSettingsType {
     className?: string;
     cellsType?: string;
     form?: PbElementDataSettingsFormType;
+
     [key: string]: any;
 }
 
@@ -165,6 +170,7 @@ export interface PbElementDataTypeSource {
     url?: string;
     size?: string;
 }
+
 export type PbElementDataType = {
     action?: {
         href: string;
@@ -208,6 +214,7 @@ export interface PbEditorElement {
     content?: PbEditorElement;
     path?: string[];
     source?: string;
+
     [key: string]: any;
 }
 
@@ -265,6 +272,7 @@ export interface PbTheme {
         paragraph?: string;
         description?: string;
     };
+
     [key: string]: any;
 }
 
@@ -296,6 +304,7 @@ export interface PbErrorResponse {
 export interface PbPageDataSettingsGeneral {
     layout?: string;
 }
+
 export interface PbPageDataSettingsSeo {
     title: string;
     description: string;
@@ -304,6 +313,7 @@ export interface PbPageDataSettingsSeo {
         content: string;
     }[];
 }
+
 export interface PbPageDataSettingsSocial {
     title: string;
     description: string;
@@ -313,11 +323,13 @@ export interface PbPageDataSettingsSocial {
     }[];
     image?: { src: string } | null;
 }
+
 export interface PbPageDataSettings {
     general?: PbPageDataSettingsGeneral;
     seo?: PbPageDataSettingsSeo;
     social?: PbPageDataSettingsSocial;
 }
+
 export interface PbPageData {
     id: string;
     pid: string;
@@ -356,6 +368,7 @@ export interface PbRenderElementPluginRenderParams {
     theme: PbTheme;
     element: PbElement;
 }
+
 export type PbRenderElementPlugin = Plugin & {
     type: "pb-render-page-element";
     // Name of the pb-element plugin this render plugin is handling.
@@ -412,6 +425,7 @@ export type PbPageElementPagesListComponentPlugin = Plugin & {
 export interface PbDocumentElementPluginRenderProps {
     [key: string]: any;
 }
+
 // TODO @ts-refactor verify and delete if not used
 export type PbDocumentElementPlugin = Plugin & {
     elementType: "document";
@@ -476,6 +490,7 @@ export interface PbEditorPageElementPluginToolbar {
     // A function to render an element preview in the toolbar.
     preview?: (params?: { theme: PbTheme }) => ReactNode;
 }
+
 export type PbEditorPageElementPluginSettings = string[] | Record<string, any>;
 export type PbEditorPageElementPlugin = Plugin & {
     type: "pb-editor-page-element";
@@ -738,9 +753,11 @@ export interface EventActionHandler<TCallableState = unknown> {
         target: EventActionHandlerTarget,
         callable: EventActionCallable<any, TCallableState>
     ): EventActionHandlerUnregister;
+
     trigger<T extends EventActionHandlerCallableArgs>(
         ev: EventAction<T>
     ): Promise<Partial<PbState>>;
+
     undo: () => void;
     redo: () => void;
     startBatch: () => void;
@@ -753,6 +770,7 @@ export interface EventActionHandler<TCallableState = unknown> {
 export interface EventActionHandlerTarget {
     new (...args: any[]): EventAction<any>;
 }
+
 export interface EventActionHandlerUnregister {
     (): boolean;
 }
@@ -796,6 +814,7 @@ export interface PbIdentity {
     type: string;
     displayName: string;
 }
+
 export interface PbCategory {
     name: string;
     slug: string;
@@ -804,6 +823,7 @@ export interface PbCategory {
     createdOn: string;
     createdBy: PbIdentity;
 }
+
 export interface PbMenu {
     id: string;
     name: string;
@@ -844,6 +864,7 @@ export interface PageBuilderListCategoriesResponse {
         };
     };
 }
+
 export interface PageBuilderImportExportSubTask {
     id: string;
     createdOn: Date;
@@ -871,6 +892,7 @@ export interface PageBuilderGetPageDataResponse {
     data?: PbPageData;
     error?: PbErrorResponse;
 }
+
 export interface PageBuilderGetPageResponse {
     pageBuilder: {
         getPage: PageBuilderGetPageDataResponse;
@@ -881,11 +903,13 @@ export interface PageBuilderListDataResponse {
     data?: PbPageData[];
     error?: PbErrorResponse;
 }
+
 export interface PageBuilderListResponse {
     pageBuilder: {
         listPages: PageBuilderListDataResponse;
     };
 }
+
 /**
  * Form data
  */
@@ -898,6 +922,7 @@ export interface PageBuilderFormDataSettingsSocialMeta {
     property: string;
     content: string | number;
 }
+
 export interface PageBuilderFormDataSettings {
     settings: {
         general: {

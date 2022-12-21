@@ -37,6 +37,8 @@ import property from "@webiny/app-page-builder/render/plugins/elementSettings/pr
 // Responsive mode
 import responsiveMode from "@webiny/app-page-builder/render/plugins/responsiveMode";
 
+import iframe2 from "@extensions/pb-element-iframe/render";
+
 export default [
     // Elements
     document(),
@@ -54,6 +56,7 @@ export default [
     soundcloud(),
     youtube(),
     iframe(),
+    iframe2(),
     vimeo(),
     twitter(),
     pinterest(),

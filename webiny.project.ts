@@ -41,5 +41,11 @@ export default {
                 return [];
             }
         }
+    },
+    env: {
+        // Enforces usage of legacy PB page elements rendering engine.
+        // To migrate to the latest one, please read:
+        // https://www.webiny.com/docs/...
+        REACT_APP_PB_ELEMENTS_LEGACY_RENDERING_ENGINE: false
     }
 };

@@ -3,7 +3,7 @@ import { PagesListComponent, PagesListPage } from "./../types";
 import { LinkComponent } from "~/types";
 import { DefaultLinkComponent } from "~/renderers/components";
 import styled from "@emotion/styled";
-import { CSSObject } from "@emotion/react";
+import { CSSObject } from "@emotion/core";
 import { usePageElements } from "~/hooks/usePageElements";
 
 declare global {
@@ -147,8 +147,8 @@ export const createDefaultPagesListComponent = (
 
         const styles: CSSObject = {
             a: {
-                textDecoration: 'none',
-                color: theme.styles.colors.color1.base,
+                textDecoration: "none",
+                color: theme.styles.colors.color1.base
             },
             "pb-pages-list-default-list": {
                 display: "flex",

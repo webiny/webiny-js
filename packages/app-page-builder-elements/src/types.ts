@@ -1,5 +1,6 @@
 import React, { HTMLAttributes } from "react";
-import { type CSSObject } from "@emotion/react";
+import { type CSSObject } from "@emotion/core";
+import { Theme, Breakpoint } from "@webiny/app-page-builder-theme/types";
 
 export type Content = Element;
 
@@ -232,25 +233,5 @@ export type ElementStylesModifier = (args: {
     renderers?: PageElementsProviderProps["renderers"];
     modifiers?: PageElementsProviderProps["modifiers"];
 }) => StylesObjects | null;
-
-export interface Breakpoint {
-    mediaQuery: string;
-}
-
-export type ThemeBreakpoints = Record<string, Breakpoint>;
-
-export interface ThemeStyles {
-    colors: Record<string, any>;
-    borderRadius?: number;
-    typography: Record<string, StylesObjects>;
-    elements: Record<string, Record<string,any> | StylesObjects>;
-
-    [key: string]: any;
-}
-
-export interface Theme {
-    breakpoints: ThemeBreakpoints;
-    styles: ThemeStyles;
-}
 
 export type LinkComponent = React.ComponentType<React.HTMLProps<HTMLAnchorElement>>;

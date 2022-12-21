@@ -3,6 +3,7 @@
   "workspaces": {
     "packages": [
       "packages/*",
+      "apps/extensions/*",
       "apps/admin",
       "apps/custom",
       "apps/website",

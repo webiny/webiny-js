@@ -1,19 +1,19 @@
 import React from "react";
 import { MediumEditorOptions, PbEditorElement } from "~/types";
-import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
 import PeHeading from "./PeHeading";
 import PbHeading from "./PbHeading";
+import { isLegacyRenderingEngine } from "~/utils";
 
 interface HeadingProps {
     element: PbEditorElement;
     mediumEditorOptions?: MediumEditorOptions;
 }
+
 const Heading: React.FC<HeadingProps> = props => {
-    const pageElements = usePageElements();
-    if (pageElements) {
-        return <PeHeading {...props} />;
+    if (isLegacyRenderingEngine) {
+        return <PbHeading {...props} elementId={props.element.id} />;
     }
-    return <PbHeading {...props} elementId={props.element.id} />;
+    return <PeHeading {...props} />;
 };
 
 export default React.memo(Heading);

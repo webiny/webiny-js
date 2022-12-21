@@ -9,7 +9,6 @@ import {
 import Layout from "./Layout";
 import Element from "@webiny/app-page-builder/render/components/Element";
 import WebsiteScripts from "@webiny/app-page-builder/render/components/WebsiteScripts";
-import useResponsiveClassName from "@webiny/app-page-builder/hooks/useResponsiveClassName";
 import DefaultNotFoundPage from "theme/pageBuilder/components/defaultPages/DefaultNotFoundPage";
 import DefaultErrorPage from "theme/pageBuilder/components/defaultPages/DefaultErrorPage";
 import { SettingsQueryResponseData } from "./graphql";
@@ -31,9 +30,8 @@ interface RenderProps {
     error: PbErrorResponse | null;
     settings: SettingsQueryResponseData;
 }
-const Render: React.FC<RenderProps> = ({ page, error, settings }) => {
-    const { pageElementRef, responsiveClassName } = useResponsiveClassName();
 
+const Render: React.FC<RenderProps> = ({ page, error, settings }) => {
     if (error) {
         if (error.code === "NOT_FOUND") {
             return <DefaultNotFoundPage />;
@@ -64,7 +62,6 @@ const Render: React.FC<RenderProps> = ({ page, error, settings }) => {
     };
 
     return (
-        // Page Provider ovdje.
         <div className="webiny-pb-page">
             <ps-tag data-key={"pb-page"} data-value={page.id} />
             <Helmet>
@@ -109,12 +106,9 @@ const Render: React.FC<RenderProps> = ({ page, error, settings }) => {
                 headerTags={settings?.htmlTags?.header}
                 footerTags={settings?.htmlTags?.footer}
             />
-            {/*Ovjde bi trebao provider. */}
-            <div className={responsiveClassName} ref={pageElementRef}>
-                <Layout page={page} settings={settings}>
-                    <Element element={page.content} />
-                </Layout>
-            </div>
+            <Layout page={page} settings={settings}>
+                <Element element={page.content} />
+            </Layout>
         </div>
     );
 };

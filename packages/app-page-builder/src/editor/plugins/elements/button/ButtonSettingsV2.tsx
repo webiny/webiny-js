@@ -14,8 +14,9 @@ import InputField from "../../elementSettings/components/InputField";
 import SelectField from "../../elementSettings/components/SelectField";
 import { updateButtonElementIcon } from "../utils/iconUtils";
 import useUpdateHandlers from "../../elementSettings/useUpdateHandlers";
-import {usePageElements} from "@webiny/app-page-builder-elements/hooks/usePageElements";
+import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
 import startCase from "lodash/startCase";
+import { isLegacyRenderingEngine } from "~/utils";
 
 const classes = {
     gridClass: css({
@@ -60,9 +61,8 @@ const ButtonSettings: React.FC<PbEditorPageElementSettingsRenderComponentProps> 
 
     let typesOptions: Array<{ value: string; label: string }> = [];
 
-    const pageElements = usePageElements();
-    if (pageElements) {
-        const { theme } = pageElements;
+    if (!isLegacyRenderingEngine) {
+        const { theme } = usePageElements();
         const types = Object.keys(theme.styles.elements.button || {});
         typesOptions = types.map(item => ({
             value: item,

@@ -24,8 +24,8 @@ import InputField from "../components/InputField";
 import SelectField from "../components/SelectField";
 import { useUpdateElement } from "~/editor/hooks/useUpdateElement";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
-import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
 import { ButtonRenderer } from "@webiny/app-page-builder-elements/renderers/button";
+import { isLegacyRenderingEngine } from "~/utils";
 
 const classes = {
     gridClass: css({
@@ -75,14 +75,21 @@ const ActionSettingsComponent: React.FC<ActionSettingsPropsType> = ({
         updateElement(newElement);
     };
 
-    const pageElements = usePageElements();
     let clickHandlers: Array<{
         title: string;
         name?: string;
         variables?: PbButtonElementClickHandlerVariable[];
     }> = [];
 
-    if (pageElements) {
+    if (isLegacyRenderingEngine) {
+        clickHandlers = useMemo(
+            () =>
+                plugins.byType<PbButtonElementClickHandlerPlugin>(
+                    "pb-page-element-button-click-handler"
+                ),
+            []
+        );
+    } else {
         const Button = pageElements.renderers.button as ButtonRenderer;
         // @ts-ignore
         if (Button.params.clickHandlers) {
@@ -93,14 +100,6 @@ const ActionSettingsComponent: React.FC<ActionSettingsPropsType> = ({
                 variables: item.variables
             }));
         }
-    } else {
-        clickHandlers = useMemo(
-            () =>
-                plugins.byType<PbButtonElementClickHandlerPlugin>(
-                    "pb-page-element-button-click-handler"
-                ),
-            []
-        );
     }
 
     const selectedHandler = useMemo(() => {

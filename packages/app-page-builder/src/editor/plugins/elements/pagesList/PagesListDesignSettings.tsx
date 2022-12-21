@@ -15,7 +15,8 @@ import { Cell, Grid } from "@webiny/ui/Grid";
 import { BindComponent } from "@webiny/form";
 import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
 import startCase from "lodash/startCase";
-import {PagesListComponent} from "@webiny/app-page-builder-elements/renderers/pagesList";
+import { PagesListComponent } from "@webiny/app-page-builder-elements/renderers/pagesList";
+import { isLegacyRenderingEngine } from "~/utils";
 
 interface PagesListDesignSettingsProps {
     Bind: BindComponent;
@@ -29,9 +30,10 @@ const PagesListDesignSettings: React.FC<PagesListDesignSettingsProps> = ({ Bind,
         componentName: string;
     }> = [];
 
-    const pageElements = usePageElements();
-    if (pageElements) {
-        const PagesList = pageElements.renderers?.["pages-list"] as PagesListComponent
+    if (!isLegacyRenderingEngine) {
+        const { renderers } = usePageElements();
+        const PagesList = renderers?.["pages-list"] as PagesListComponent;
+        // @ts-ignore
         const pagesListRendererParams = PagesList?.params;
         if (pagesListRendererParams?.pagesListComponents) {
             components = Object.keys(pagesListRendererParams?.pagesListComponents).map(key => {

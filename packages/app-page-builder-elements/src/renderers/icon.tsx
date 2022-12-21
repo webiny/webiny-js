@@ -2,6 +2,8 @@ import React from "react";
 import { createRenderer } from "~/createRenderer";
 import { useRenderer } from "~/hooks/useRenderer";
 
+export type IconRenderer = ReturnType<typeof createIcon>;
+
 export const createIcon = () => {
     return createRenderer(() => {
         const { getElement, getAttributes, theme } = useRenderer();

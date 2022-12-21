@@ -1,8 +1,8 @@
 import React from "react";
-import {MediumEditorOptions, PbEditorElement} from "~/types";
-import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
+import { MediumEditorOptions, PbEditorElement } from "~/types";
 import PeQuote from "./PeQuote";
 import PbQuote from "./PbQuote";
+import { isLegacyRenderingEngine } from "~/utils";
 
 interface QuoteProps {
     element: PbEditorElement;
@@ -10,11 +10,10 @@ interface QuoteProps {
 }
 
 const Quote: React.FC<QuoteProps> = props => {
-    const pageElements = usePageElements();
-    if (pageElements) {
-        return <PeQuote {...props} />;
+    if (isLegacyRenderingEngine) {
+        return <PbQuote {...props} elementId={props.element.id} />;
     }
-    return <PbQuote {...props} elementId={props.element.id} />;
+    return <PeQuote {...props} />;
 };
 
 export default React.memo(Quote);

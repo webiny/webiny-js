@@ -43,29 +43,31 @@ export default {
                         desktop: "center"
                     },
                     verticalAlign: {
-                        desktop: "flex-end"
+                        desktop: "flex-start"
                     },
                     background: {
                         desktop: {
                             image: {
                                 file: {
                                     id: "6022814b7a77e60008f70d62",
-                                    name: "welcome-to-webiny-page-9l9mjlg2i-hero-block-bg.svg",
-                                    key: "welcome-to-webiny-page-9l9mjlg2i-hero-block-bg.svg",
-                                    src: "https://d2n80qe7mhvfm4.cloudfront.net/files/welcome-to-webiny-page-9l9mjlg2i-hero-block-bg.svg",
+                                    name: "welcome-to-webiny-page-8lbpa1yre-hero-block-bg.svg",
+                                    key: "welcome-to-webiny-page-8lbpa1yre-hero-block-bg.svg",
+                                    src: "https://d1oz4sdkoxkl16.cloudfront.net/files/welcome-to-webiny-page-8lbpa1yre-hero-block-bg.svg",
                                     size: 1854,
                                     type: "image/svg+xml"
-                                },
-                                position: "center",
-                                scaling: "cover"
+                                }
                             }
                         }
+                    },
+                    property: {
+                        id: "",
+                        className: ""
                     }
                 }
             },
             elements: [
                 {
-                    id: "5XEKrI32mr",
+                    id: "gdE7Q7rcA",
                     type: "grid",
                     data: {
                         settings: {
@@ -96,7 +98,7 @@ export default {
                                 cellsType: "12"
                             },
                             horizontalAlignFlex: {
-                                desktop: "center"
+                                desktop: "flex-start"
                             },
                             verticalAlign: {
                                 desktop: "flex-start"
@@ -105,7 +107,7 @@ export default {
                     },
                     elements: [
                         {
-                            id: "QHDREAO3jW",
+                            id: "_fbQO4Nlpp",
                             type: "cell",
                             data: {
                                 settings: {
@@ -130,7 +132,7 @@ export default {
                             },
                             elements: [
                                 {
-                                    id: "lBbhPDnDNP",
+                                    id: "cdk_pclqE",
                                     type: "image",
                                     data: {
                                         settings: {
@@ -151,23 +153,20 @@ export default {
                                         image: {
                                             file: {
                                                 id: "6022814b0df4b000088735bc",
-                                                name: "welcome-to-webiny-page-9l9mjlg3h-webiny-logo.svg",
-                                                key: "welcome-to-webiny-page-9l9mjlg3h-webiny-logo.svg",
-                                                src: "https://d2n80qe7mhvfm4.cloudfront.net/files/welcome-to-webiny-page-9l9mjlg3h-webiny-logo.svg",
+                                                name: "welcome-to-webiny-page-8lbpa1yrv-webiny-logo.svg",
+                                                key: "welcome-to-webiny-page-8lbpa1yrv-webiny-logo.svg",
+                                                src: "https://d1oz4sdkoxkl16.cloudfront.net/files/welcome-to-webiny-page-8lbpa1yrv-webiny-logo.svg",
                                                 size: 5053,
                                                 type: "image/svg+xml"
                                             },
                                             height: "44px"
-                                        },
-                                        link: {
-                                            href: ""
                                         }
                                     },
                                     elements: [],
-                                    path: ["Fv1PpPWu-", "xqt7BI4iN9", "5XEKrI32mr", "QHDREAO3jW"]
+                                    path: ["Fv1PpPWu-", "xqt7BI4iN9", "gdE7Q7rcA", "_fbQO4Nlpp"]
                                 }
                             ],
-                            path: ["Fv1PpPWu-", "xqt7BI4iN9", "5XEKrI32mr"]
+                            path: ["Fv1PpPWu-", "xqt7BI4iN9", "gdE7Q7rcA"]
                         }
                     ],
                     path: ["Fv1PpPWu-", "xqt7BI4iN9"]
@@ -204,7 +203,7 @@ export default {
                                 cellsType: "12"
                             },
                             horizontalAlignFlex: {
-                                desktop: "center"
+                                desktop: "flex-start"
                             },
                             verticalAlign: {
                                 desktop: "flex-start"
@@ -247,7 +246,7 @@ export default {
                                                 typography: "heading1",
                                                 alignment: "center",
                                                 tag: "h1",
-                                                color: "theme:color5"
+                                                color: "color5"
                                             },
                                             data: {
                                                 text: "<b>Welcome to Webiny</b>"
@@ -266,6 +265,10 @@ export default {
                                             },
                                             horizontalAlign: {
                                                 desktop: "center"
+                                            },
+                                            property: {
+                                                id: "",
+                                                className: ""
                                             }
                                         }
                                     },
@@ -310,10 +313,14 @@ export default {
                                 cellsType: "12"
                             },
                             horizontalAlignFlex: {
-                                desktop: "center"
+                                desktop: "flex-start"
                             },
                             verticalAlign: {
                                 desktop: "flex-start"
+                            },
+                            property: {
+                                id: "",
+                                className: ""
                             }
                         }
                     },
@@ -353,10 +360,10 @@ export default {
                                                 typography: "paragraph1",
                                                 alignment: "center",
                                                 tag: "div",
-                                                color: "theme:color5"
+                                                color: "var(--webiny-theme-color-surface)"
                                             },
                                             data: {
-                                                text: "<p>Webiny makes it easy to build applications and websites on top of the serverless infrastructure by providing you with a ready-made CMS and a development framework.<br></p>"
+                                                text: "<p>Webiny makes it asdas to build 12312 and asd on sadasd of the 1231 infrastructure by providing you with a ready-made CMS and a development framework.<br></p>"
                                             }
                                         },
                                         settings: {
@@ -377,6 +384,10 @@ export default {
                                                     right: "0px",
                                                     advanced: true
                                                 }
+                                            },
+                                            property: {
+                                                id: "",
+                                                className: ""
                                             }
                                         }
                                     },
@@ -421,7 +432,7 @@ export default {
                                 cellsType: "6-6"
                             },
                             horizontalAlignFlex: {
-                                desktop: "center"
+                                desktop: "flex-start"
                             },
                             verticalAlign: {
                                 desktop: "flex-start"
@@ -437,7 +448,7 @@ export default {
                                     margin: {
                                         desktop: {
                                             top: "0px",
-                                            right: "0%",
+                                            right: "0px",
                                             bottom: "0px",
                                             left: "-8px",
                                             advanced: true
@@ -464,9 +475,9 @@ export default {
                                             image: {
                                                 file: {
                                                     id: "602282e07a77e60008f70d63",
-                                                    name: "welcome-to-webiny-page-9l9mjlg59-feature-card-bg.svg",
-                                                    key: "welcome-to-webiny-page-9l9mjlg59-feature-card-bg.svg",
-                                                    src: "https://d2n80qe7mhvfm4.cloudfront.net/files/welcome-to-webiny-page-9l9mjlg59-feature-card-bg.svg",
+                                                    name: "welcome-to-webiny-page-8lbpa1ytn-feature-card-bg.svg",
+                                                    key: "welcome-to-webiny-page-8lbpa1ytn-feature-card-bg.svg",
+                                                    src: "https://d1oz4sdkoxkl16.cloudfront.net/files/welcome-to-webiny-page-8lbpa1ytn-feature-card-bg.svg",
                                                     size: 888,
                                                     type: "image/svg+xml"
                                                 }
@@ -486,7 +497,7 @@ export default {
                                                 typography: "heading6",
                                                 alignment: "center",
                                                 tag: "h6",
-                                                color: "theme:color5"
+                                                color: "var(--webiny-theme-color-surface)"
                                             },
                                             data: {
                                                 text: "Scalable"
@@ -505,6 +516,10 @@ export default {
                                             },
                                             horizontalAlign: {
                                                 desktop: "center"
+                                            },
+                                            property: {
+                                                id: "",
+                                                className: ""
                                             }
                                         }
                                     },
@@ -521,7 +536,7 @@ export default {
                                                 typography: "paragraph2",
                                                 alignment: "center",
                                                 tag: "div",
-                                                color: "theme:color5"
+                                                color: "var(--webiny-theme-color-surface)"
                                             },
                                             data: {
                                                 text: "<p>Webiny apps can scale to handle the most demanding workloads.<br></p>"
@@ -537,6 +552,10 @@ export default {
                                                 desktop: {
                                                     all: "0px"
                                                 }
+                                            },
+                                            property: {
+                                                id: "",
+                                                className: ""
                                             }
                                         }
                                     },
@@ -577,9 +596,9 @@ export default {
                                             image: {
                                                 file: {
                                                     id: "602282e07a77e60008f70d63",
-                                                    name: "welcome-to-webiny-page-9l9mjlg59-feature-card-bg.svg",
-                                                    key: "welcome-to-webiny-page-9l9mjlg59-feature-card-bg.svg",
-                                                    src: "https://d2n80qe7mhvfm4.cloudfront.net/files/welcome-to-webiny-page-9l9mjlg59-feature-card-bg.svg",
+                                                    name: "welcome-to-webiny-page-8lbpa1ytn-feature-card-bg.svg",
+                                                    key: "welcome-to-webiny-page-8lbpa1ytn-feature-card-bg.svg",
+                                                    src: "https://d1oz4sdkoxkl16.cloudfront.net/files/welcome-to-webiny-page-8lbpa1ytn-feature-card-bg.svg",
                                                     size: 888,
                                                     type: "image/svg+xml"
                                                 }
@@ -599,7 +618,7 @@ export default {
                                                 typography: "heading6",
                                                 alignment: "center",
                                                 tag: "h6",
-                                                color: "theme:color5"
+                                                color: "var(--webiny-theme-color-surface)"
                                             },
                                             data: {
                                                 text: "No custom tooling required"
@@ -618,6 +637,10 @@ export default {
                                             },
                                             horizontalAlign: {
                                                 desktop: "center"
+                                            },
+                                            property: {
+                                                id: "",
+                                                className: ""
                                             }
                                         }
                                     },
@@ -634,7 +657,7 @@ export default {
                                                 typography: "paragraph2",
                                                 alignment: "center",
                                                 tag: "div",
-                                                color: "theme:color5"
+                                                color: "var(--webiny-theme-color-surface)"
                                             },
                                             data: {
                                                 text: "<p>Webiny eliminates the need to build custom tooling to create serverless app<br></p>"
@@ -650,6 +673,10 @@ export default {
                                                 desktop: {
                                                     all: "0px"
                                                 }
+                                            },
+                                            property: {
+                                                id: "",
+                                                className: ""
                                             }
                                         }
                                     },
@@ -737,9 +764,9 @@ export default {
                                             image: {
                                                 file: {
                                                     id: "602282e07a77e60008f70d63",
-                                                    name: "welcome-to-webiny-page-9l9mjlg59-feature-card-bg.svg",
-                                                    key: "welcome-to-webiny-page-9l9mjlg59-feature-card-bg.svg",
-                                                    src: "https://d2n80qe7mhvfm4.cloudfront.net/files/welcome-to-webiny-page-9l9mjlg59-feature-card-bg.svg",
+                                                    name: "welcome-to-webiny-page-8lbpa1ytn-feature-card-bg.svg",
+                                                    key: "welcome-to-webiny-page-8lbpa1ytn-feature-card-bg.svg",
+                                                    src: "https://d1oz4sdkoxkl16.cloudfront.net/files/welcome-to-webiny-page-8lbpa1ytn-feature-card-bg.svg",
                                                     size: 888,
                                                     type: "image/svg+xml"
                                                 }
@@ -759,7 +786,7 @@ export default {
                                                 typography: "heading6",
                                                 alignment: "center",
                                                 tag: "h6",
-                                                color: "theme:color5"
+                                                color: "var(--webiny-theme-color-surface)"
                                             },
                                             data: {
                                                 text: "Cost effective"
@@ -778,6 +805,10 @@ export default {
                                             },
                                             horizontalAlign: {
                                                 desktop: "center"
+                                            },
+                                            property: {
+                                                id: "",
+                                                className: ""
                                             }
                                         }
                                     },
@@ -794,7 +825,7 @@ export default {
                                                 typography: "paragraph2",
                                                 alignment: "center",
                                                 tag: "div",
-                                                color: "theme:color5"
+                                                color: "var(--webiny-theme-color-surface)"
                                             },
                                             data: {
                                                 text: "<p>Webiny apps run on serverless infrastructure which costs 80% less than VMs<br></p>"
@@ -810,6 +841,10 @@ export default {
                                                 desktop: {
                                                     all: "0px"
                                                 }
+                                            },
+                                            property: {
+                                                id: "",
+                                                className: ""
                                             }
                                         }
                                     },
@@ -855,9 +890,9 @@ export default {
                                             image: {
                                                 file: {
                                                     id: "602282e07a77e60008f70d63",
-                                                    name: "welcome-to-webiny-page-9l9mjlg59-feature-card-bg.svg",
-                                                    key: "welcome-to-webiny-page-9l9mjlg59-feature-card-bg.svg",
-                                                    src: "https://d2n80qe7mhvfm4.cloudfront.net/files/welcome-to-webiny-page-9l9mjlg59-feature-card-bg.svg",
+                                                    name: "welcome-to-webiny-page-8lbpa1ytn-feature-card-bg.svg",
+                                                    key: "welcome-to-webiny-page-8lbpa1ytn-feature-card-bg.svg",
+                                                    src: "https://d1oz4sdkoxkl16.cloudfront.net/files/welcome-to-webiny-page-8lbpa1ytn-feature-card-bg.svg",
                                                     size: 888,
                                                     type: "image/svg+xml"
                                                 }
@@ -877,7 +912,7 @@ export default {
                                                 typography: "heading6",
                                                 alignment: "center",
                                                 tag: "h6",
-                                                color: "theme:color5"
+                                                color: "var(--webiny-theme-color-surface)"
                                             },
                                             data: {
                                                 text: "Resolves serverless challenges"
@@ -896,6 +931,10 @@ export default {
                                             },
                                             horizontalAlign: {
                                                 desktop: "center"
+                                            },
+                                            property: {
+                                                id: "",
+                                                className: ""
                                             }
                                         }
                                     },
@@ -912,7 +951,7 @@ export default {
                                                 typography: "paragraph2",
                                                 alignment: "center",
                                                 tag: "div",
-                                                color: "theme:color5"
+                                                color: "var(--webiny-theme-color-surface)"
                                             },
                                             data: {
                                                 text: "<p>Webiny removes all the challenges of building serverless applications<br></p>"
@@ -928,6 +967,10 @@ export default {
                                                 desktop: {
                                                     all: "0px"
                                                 }
+                                            },
+                                            property: {
+                                                id: "",
+                                                className: ""
                                             }
                                         }
                                     },
@@ -977,6 +1020,10 @@ export default {
                     },
                     verticalAlign: {
                         desktop: "flex-start"
+                    },
+                    property: {
+                        id: "",
+                        className: ""
                     }
                 }
             },
@@ -1056,7 +1103,7 @@ export default {
                                                 typography: "heading1",
                                                 alignment: "center",
                                                 tag: "h1",
-                                                color: "theme:color3"
+                                                color: "color3"
                                             },
                                             data: {
                                                 text: "<b>Get to know Webiny products</b>"
@@ -1075,6 +1122,10 @@ export default {
                                             },
                                             horizontalAlign: {
                                                 desktop: "center"
+                                            },
+                                            property: {
+                                                id: "",
+                                                className: ""
                                             }
                                         }
                                     },
@@ -1091,7 +1142,7 @@ export default {
                                                 typography: "heading2",
                                                 alignment: "center",
                                                 tag: "h2",
-                                                color: "theme:color3"
+                                                color: "color3"
                                             },
                                             data: {
                                                 text: "Architect. Code. Deploy."
@@ -1112,6 +1163,10 @@ export default {
                                             },
                                             horizontalAlign: {
                                                 desktop: "center"
+                                            },
+                                            property: {
+                                                id: "",
+                                                className: ""
                                             }
                                         }
                                     },
@@ -1206,7 +1261,7 @@ export default {
                                         settings: {
                                             width: {
                                                 desktop: {
-                                                    value: "auto"
+                                                    value: "1100px"
                                                 }
                                             },
                                             margin: {
@@ -1298,17 +1353,15 @@ export default {
                                                         image: {
                                                             file: {
                                                                 id: "6022814a0df4b000088735bb",
-                                                                name: "welcome-to-webiny-page-9l9mjlg5b-webiny-serverless-application-framework.svg",
-                                                                key: "welcome-to-webiny-page-9l9mjlg5b-webiny-serverless-application-framework.svg",
-                                                                src: "https://d2n80qe7mhvfm4.cloudfront.net/files/welcome-to-webiny-page-9l9mjlg5b-webiny-serverless-application-framework.svg",
+                                                                name: "welcome-to-webiny-page-8lbpa1yu3-webiny-serverless-application-framework.svg",
+                                                                key: "welcome-to-webiny-page-8lbpa1yu3-webiny-serverless-application-framework.svg",
+                                                                src: "https://d1oz4sdkoxkl16.cloudfront.net/files/welcome-to-webiny-page-8lbpa1yu3-webiny-serverless-application-framework.svg",
                                                                 size: 3661,
                                                                 type: "image/svg+xml"
                                                             },
                                                             height: "90px"
                                                         },
-                                                        link: {
-                                                            href: ""
-                                                        }
+                                                        link: {}
                                                     },
                                                     elements: [],
                                                     path: [
@@ -1361,10 +1414,10 @@ export default {
                                                         text: {
                                                             desktop: {
                                                                 type: "heading",
-                                                                typography: "heading3",
+                                                                typography:
+                                                                    "webiny-pb-typography-heading",
                                                                 alignment: "left",
-                                                                tag: "h3",
-                                                                color: "theme:color3"
+                                                                tag: "h3"
                                                             },
                                                             data: {
                                                                 text: "<p>Webiny Serverless </p><p>Application Framework</p>"
@@ -1383,6 +1436,10 @@ export default {
                                                             },
                                                             horizontalAlign: {
                                                                 desktop: "center"
+                                                            },
+                                                            property: {
+                                                                id: "",
+                                                                className: ""
                                                             }
                                                         }
                                                     },
@@ -1415,7 +1472,7 @@ export default {
                                         settings: {
                                             width: {
                                                 desktop: {
-                                                    value: "auto"
+                                                    value: "1100px"
                                                 }
                                             },
                                             margin: {
@@ -1480,10 +1537,10 @@ export default {
                                                         text: {
                                                             desktop: {
                                                                 type: "paragraph",
-                                                                typography: "paragraph1",
+                                                                typography:
+                                                                    "webiny-pb-typography-body",
                                                                 alignment: "left",
-                                                                tag: "div",
-                                                                color: "theme:color3"
+                                                                tag: "div"
                                                             },
                                                             data: {
                                                                 text: "<p>Everything you need to create and deploy applications on top of the serverless infrastructure.&nbsp;<br></p>"
@@ -1499,6 +1556,10 @@ export default {
                                                                 desktop: {
                                                                     all: "0px"
                                                                 }
+                                                            },
+                                                            property: {
+                                                                id: "",
+                                                                className: ""
                                                             }
                                                         }
                                                     },
@@ -1531,7 +1592,7 @@ export default {
                                         settings: {
                                             width: {
                                                 desktop: {
-                                                    value: "auto"
+                                                    value: "1100px"
                                                 }
                                             },
                                             margin: {
@@ -1596,10 +1657,10 @@ export default {
                                                         text: {
                                                             desktop: {
                                                                 type: "heading",
-                                                                typography: "heading4",
+                                                                typography:
+                                                                    "webiny-pb-typography-heading",
                                                                 alignment: "left",
-                                                                tag: "h4",
-                                                                color: "theme:color3"
+                                                                tag: "h4"
                                                             },
                                                             data: {
                                                                 text: "Use it to build:"
@@ -1650,7 +1711,7 @@ export default {
                                         settings: {
                                             width: {
                                                 desktop: {
-                                                    value: "auto"
+                                                    value: "1100px"
                                                 }
                                             },
                                             margin: {
@@ -1715,10 +1776,10 @@ export default {
                                                         text: {
                                                             desktop: {
                                                                 type: "list",
-                                                                typography: "paragraph1",
+                                                                typography:
+                                                                    "webiny-pb-typography-list--secondary",
                                                                 alignment: "left",
-                                                                tag: "div",
-                                                                color: "theme:color3"
+                                                                tag: "div"
                                                             },
                                                             data: {
                                                                 text: "<ul>\n                    <li>Full-stack applications<br></li><li>Multi-tenant solutions<br></li>\n                </ul>"
@@ -1734,6 +1795,10 @@ export default {
                                                                 desktop: {
                                                                     all: "0px"
                                                                 }
+                                                            },
+                                                            property: {
+                                                                id: "",
+                                                                className: ""
                                                             }
                                                         }
                                                     },
@@ -1788,10 +1853,10 @@ export default {
                                                         text: {
                                                             desktop: {
                                                                 type: "list",
-                                                                typography: "paragraph1",
+                                                                typography:
+                                                                    "webiny-pb-typography-list--secondary",
                                                                 alignment: "left",
-                                                                tag: "div",
-                                                                color: "theme:color3"
+                                                                tag: "div"
                                                             },
                                                             data: {
                                                                 text: "<ul>\n                    <li>APIs</li><li>Microservice</li>\n                </ul>"
@@ -1839,7 +1904,7 @@ export default {
                                         settings: {
                                             width: {
                                                 desktop: {
-                                                    value: "auto"
+                                                    value: "1100px"
                                                 }
                                             },
                                             margin: {
@@ -1868,11 +1933,6 @@ export default {
                                             },
                                             verticalAlign: {
                                                 desktop: "flex-start"
-                                            },
-                                            height: {
-                                                desktop: {
-                                                    value: "auto"
-                                                }
                                             }
                                         }
                                     },
@@ -1929,11 +1989,6 @@ export default {
                                                             svg: '<svg width="16" viewBox="0 0 448 512"><path d="M313.941 216H12c-6.627 0-12 5.373-12 12v56c0 6.627 5.373 12 12 12h301.941v46.059c0 21.382 25.851 32.09 40.971 16.971l86.059-86.059c9.373-9.373 9.373-24.569 0-33.941l-86.059-86.059c-15.119-15.119-40.971-4.411-40.971 16.971V216z" fill="currentColor"></path></svg>',
                                                             position: "right",
                                                             width: "16"
-                                                        },
-                                                        action: {
-                                                            href: "https://www.webiny.com/serverless-application-framework/",
-                                                            newTab: true,
-                                                            actionType: "link"
                                                         }
                                                     },
                                                     elements: [],
@@ -2007,7 +2062,7 @@ export default {
                                         settings: {
                                             width: {
                                                 desktop: {
-                                                    value: "auto"
+                                                    value: "1100px"
                                                 }
                                             },
                                             margin: {
@@ -2082,21 +2137,22 @@ export default {
                                                                 desktop: {
                                                                     all: "0px"
                                                                 }
+                                                            },
+                                                            property: {
+                                                                id: ""
                                                             }
                                                         },
                                                         image: {
                                                             file: {
                                                                 id: "6022814891bd1300087bd24c",
-                                                                name: "welcome-to-webiny-page-9l9mjlg8j-webiny-infrastructure-overview.svg",
-                                                                key: "welcome-to-webiny-page-9l9mjlg8j-webiny-infrastructure-overview.svg",
-                                                                src: "https://d2n80qe7mhvfm4.cloudfront.net/files/welcome-to-webiny-page-9l9mjlg8j-webiny-infrastructure-overview.svg",
+                                                                name: "welcome-to-webiny-page-8lbpa1yv7-webiny-infrastructure-overview.svg",
+                                                                key: "welcome-to-webiny-page-8lbpa1yv7-webiny-infrastructure-overview.svg",
+                                                                src: "https://d1oz4sdkoxkl16.cloudfront.net/files/welcome-to-webiny-page-8lbpa1yv7-webiny-infrastructure-overview.svg",
                                                                 size: 87624,
                                                                 type: "image/svg+xml"
                                                             }
                                                         },
-                                                        link: {
-                                                            href: ""
-                                                        }
+                                                        link: {}
                                                     },
                                                     elements: [],
                                                     path: [
@@ -2104,8 +2160,7 @@ export default {
                                                         "vm0cFfH8KG",
                                                         "1e0_OJgMx",
                                                         "Kg3rMc1Re",
-                                                        "LAcQHMs8K",
-                                                        "8oaRz-Gko_"
+                                                        "LAcQHMs8K"
                                                     ]
                                                 }
                                             ],
@@ -2127,7 +2182,7 @@ export default {
                                         settings: {
                                             width: {
                                                 desktop: {
-                                                    value: "auto"
+                                                    value: "1100px"
                                                 }
                                             },
                                             margin: {
@@ -2192,10 +2247,10 @@ export default {
                                                         text: {
                                                             desktop: {
                                                                 type: "heading",
-                                                                typography: "heading2",
+                                                                typography:
+                                                                    "webiny-pb-typography-heading",
                                                                 alignment: "left",
-                                                                tag: "h2",
-                                                                color: "theme:color3"
+                                                                tag: "h2"
                                                             },
                                                             data: {
                                                                 text: "An easier way to build serverless apps"
@@ -2235,10 +2290,10 @@ export default {
                                                         text: {
                                                             desktop: {
                                                                 type: "paragraph",
-                                                                typography: "paragraph1",
+                                                                typography:
+                                                                    "webiny-pb-typography-body",
                                                                 alignment: "left",
-                                                                tag: "div",
-                                                                color: "theme:color3"
+                                                                tag: "div"
                                                             },
                                                             data: {
                                                                 text: "<p>There are many solutions that help you run, deploy and monitor serverless functions, but when it comes to actually coding one, there are none. Webiny is a solution that helps you code your serverless app by providing you with all the components like ACL, routing, file storage and many more.<br></p>"
@@ -2330,9 +2385,9 @@ export default {
                             image: {
                                 file: {
                                     id: "60228148f98841000981c723",
-                                    name: "welcome-to-webiny-page-9l9mjlg5r-pink-shape.svg",
-                                    key: "welcome-to-webiny-page-9l9mjlg5r-pink-shape.svg",
-                                    src: "https://d2n80qe7mhvfm4.cloudfront.net/files/welcome-to-webiny-page-9l9mjlg5r-pink-shape.svg",
+                                    name: "welcome-to-webiny-page-8lbpa1yun-pink-shape.svg",
+                                    key: "welcome-to-webiny-page-8lbpa1yun-pink-shape.svg",
+                                    src: "https://d1oz4sdkoxkl16.cloudfront.net/files/welcome-to-webiny-page-8lbpa1yun-pink-shape.svg",
                                     size: 390,
                                     type: "image/svg+xml"
                                 }
@@ -2415,10 +2470,9 @@ export default {
                                         text: {
                                             desktop: {
                                                 type: "heading",
-                                                typography: "heading1",
+                                                typography: "webiny-pb-typography-heading",
                                                 alignment: "center",
-                                                tag: "h1",
-                                                color: "theme:color3"
+                                                tag: "h1"
                                             },
                                             data: {
                                                 text: "<b>Framework features</b>"
@@ -2527,7 +2581,7 @@ export default {
                                         settings: {
                                             width: {
                                                 desktop: {
-                                                    value: "auto"
+                                                    value: "1100px"
                                                 }
                                             },
                                             margin: {
@@ -2607,17 +2661,15 @@ export default {
                                                         image: {
                                                             file: {
                                                                 id: "6022814bef4a940008b3ba27",
-                                                                name: "welcome-to-webiny-page-9l9mjlg5p-security.svg",
-                                                                key: "welcome-to-webiny-page-9l9mjlg5p-security.svg",
-                                                                src: "https://d2n80qe7mhvfm4.cloudfront.net/files/welcome-to-webiny-page-9l9mjlg5p-security.svg",
+                                                                name: "welcome-to-webiny-page-8lbpa1yuq-security.svg",
+                                                                key: "welcome-to-webiny-page-8lbpa1yuq-security.svg",
+                                                                src: "https://d1oz4sdkoxkl16.cloudfront.net/files/welcome-to-webiny-page-8lbpa1yuq-security.svg",
                                                                 size: 17711,
                                                                 type: "image/svg+xml"
                                                             },
                                                             height: "170px"
                                                         },
-                                                        link: {
-                                                            href: ""
-                                                        }
+                                                        link: {}
                                                     },
                                                     elements: [],
                                                     path: [
@@ -2648,7 +2700,7 @@ export default {
                                         settings: {
                                             width: {
                                                 desktop: {
-                                                    value: "auto"
+                                                    value: "1100px"
                                                 }
                                             },
                                             margin: {
@@ -2713,10 +2765,10 @@ export default {
                                                         text: {
                                                             desktop: {
                                                                 type: "heading",
-                                                                typography: "heading6",
+                                                                typography:
+                                                                    "webiny-pb-typography-heading",
                                                                 alignment: "center",
-                                                                tag: "h6",
-                                                                color: "theme:color3"
+                                                                tag: "h6"
                                                             },
                                                             data: {
                                                                 text: "<b>Users, groups, roles &amp; scopes</b>"
@@ -2769,10 +2821,10 @@ export default {
                                         text: {
                                             desktop: {
                                                 type: "paragraph",
-                                                typography: "paragraph2",
+                                                typography: "webiny-pb-typography-description",
                                                 alignment: "center",
                                                 tag: "div",
-                                                color: "theme:color3"
+                                                color: "var(--webiny-theme-color-text-primary)"
                                             },
                                             data: {
                                                 text: "<p>Security is a crucial layer in any application. Webiny includes a full-featured security module that's connected to the built-in GraphQL API.Users, groups, roles &amp; scopes<br></p>"
@@ -2836,7 +2888,7 @@ export default {
                                         settings: {
                                             width: {
                                                 desktop: {
-                                                    value: "auto"
+                                                    value: "1100px"
                                                 }
                                             },
                                             margin: {
@@ -2865,11 +2917,6 @@ export default {
                                             },
                                             verticalAlign: {
                                                 desktop: "flex-start"
-                                            },
-                                            height: {
-                                                desktop: {
-                                                    value: "auto"
-                                                }
                                             }
                                         }
                                     },
@@ -2921,16 +2968,13 @@ export default {
                                                         image: {
                                                             file: {
                                                                 id: "6022814bef4a940008b3ba26",
-                                                                name: "welcome-to-webiny-page-9l9mjlg7d-scaffolding.svg",
-                                                                key: "welcome-to-webiny-page-9l9mjlg7d-scaffolding.svg",
-                                                                src: "https://d2n80qe7mhvfm4.cloudfront.net/files/welcome-to-webiny-page-9l9mjlg7d-scaffolding.svg",
+                                                                name: "welcome-to-webiny-page-8lbpa1yvu-scaffolding.svg",
+                                                                key: "welcome-to-webiny-page-8lbpa1yvu-scaffolding.svg",
+                                                                src: "https://d1oz4sdkoxkl16.cloudfront.net/files/welcome-to-webiny-page-8lbpa1yvu-scaffolding.svg",
                                                                 size: 32856,
                                                                 type: "image/svg+xml"
                                                             },
                                                             height: "170px"
-                                                        },
-                                                        link: {
-                                                            href: ""
                                                         }
                                                     },
                                                     elements: [],
@@ -2962,7 +3006,7 @@ export default {
                                         settings: {
                                             width: {
                                                 desktop: {
-                                                    value: "auto"
+                                                    value: "1100px"
                                                 }
                                             },
                                             margin: {
@@ -3027,10 +3071,10 @@ export default {
                                                         text: {
                                                             desktop: {
                                                                 type: "heading",
-                                                                typography: "heading6",
+                                                                typography:
+                                                                    "webiny-pb-typography-heading",
                                                                 alignment: "center",
-                                                                tag: "h6",
-                                                                color: "theme:color3"
+                                                                tag: "h6"
                                                             },
                                                             data: {
                                                                 text: "<b>Scaffolding</b>"
@@ -3081,10 +3125,10 @@ export default {
                                         text: {
                                             desktop: {
                                                 type: "paragraph",
-                                                typography: "paragraph2",
+                                                typography: "webiny-pb-typography-description",
                                                 alignment: "center",
                                                 tag: "div",
-                                                color: "theme:color3"
+                                                color: "var(--webiny-theme-color-text-primary)"
                                             },
                                             data: {
                                                 text: "<p>Quickly generate boilerplate code using CLI plugins. From lambda functions to new GraphQL APIs.<br></p>"
@@ -3150,7 +3194,7 @@ export default {
                                         settings: {
                                             width: {
                                                 desktop: {
-                                                    value: "auto"
+                                                    value: "1100px"
                                                 }
                                             },
                                             margin: {
@@ -3230,17 +3274,15 @@ export default {
                                                         image: {
                                                             file: {
                                                                 id: "60228148f98841000981c724",
-                                                                name: "welcome-to-webiny-page-9l9mjlgqu-idp.svg",
-                                                                key: "welcome-to-webiny-page-9l9mjlgqu-idp.svg",
-                                                                src: "https://d2n80qe7mhvfm4.cloudfront.net/files/welcome-to-webiny-page-9l9mjlgqu-idp.svg",
+                                                                name: "welcome-to-webiny-page-8lbpa1zdk-idp.svg",
+                                                                key: "welcome-to-webiny-page-8lbpa1zdk-idp.svg",
+                                                                src: "https://d1oz4sdkoxkl16.cloudfront.net/files/welcome-to-webiny-page-8lbpa1zdk-idp.svg",
                                                                 size: 27878,
                                                                 type: "image/svg+xml"
                                                             },
                                                             height: "170px"
                                                         },
-                                                        link: {
-                                                            href: ""
-                                                        }
+                                                        link: {}
                                                     },
                                                     elements: [],
                                                     path: [
@@ -3271,7 +3313,7 @@ export default {
                                         settings: {
                                             width: {
                                                 desktop: {
-                                                    value: "auto"
+                                                    value: "1100px"
                                                 }
                                             },
                                             margin: {
@@ -3336,10 +3378,10 @@ export default {
                                                         text: {
                                                             desktop: {
                                                                 type: "heading",
-                                                                typography: "heading6",
+                                                                typography:
+                                                                    "webiny-pb-typography-heading",
                                                                 alignment: "center",
-                                                                tag: "h6",
-                                                                color: "theme:color3"
+                                                                tag: "h6"
                                                             },
                                                             data: {
                                                                 text: "<b>Customizable security</b>"
@@ -3390,10 +3432,10 @@ export default {
                                         text: {
                                             desktop: {
                                                 type: "paragraph",
-                                                typography: "paragraph2",
+                                                typography: "webiny-pb-typography-description",
                                                 alignment: "center",
                                                 tag: "div",
-                                                color: "theme:color3"
+                                                color: "var(--webiny-theme-color-text-primary)"
                                             },
                                             data: {
                                                 text: "<p>Use the default AWS Cognito, or replace with 3rd party identity providers like Okta, Auth0, etc. Using plugins you can make Webiny work with any identity provider.<br></p>"
@@ -3462,7 +3504,7 @@ export default {
                                         settings: {
                                             width: {
                                                 desktop: {
-                                                    value: "auto"
+                                                    value: "1100px"
                                                 }
                                             },
                                             margin: {
@@ -3542,16 +3584,13 @@ export default {
                                                         image: {
                                                             file: {
                                                                 id: "6022814bef4a940008b3ba28",
-                                                                name: "welcome-to-webiny-page-9l9mjlg8l-environments.svg",
-                                                                key: "welcome-to-webiny-page-9l9mjlg8l-environments.svg",
-                                                                src: "https://d2n80qe7mhvfm4.cloudfront.net/files/welcome-to-webiny-page-9l9mjlg8l-environments.svg",
+                                                                name: "welcome-to-webiny-page-8lbpa1ywe-environments.svg",
+                                                                key: "welcome-to-webiny-page-8lbpa1ywe-environments.svg",
+                                                                src: "https://d1oz4sdkoxkl16.cloudfront.net/files/welcome-to-webiny-page-8lbpa1ywe-environments.svg",
                                                                 size: 132767,
                                                                 type: "image/svg+xml"
                                                             },
                                                             height: "170px"
-                                                        },
-                                                        link: {
-                                                            href: ""
                                                         }
                                                     },
                                                     elements: [],
@@ -3583,7 +3622,7 @@ export default {
                                         settings: {
                                             width: {
                                                 desktop: {
-                                                    value: "auto"
+                                                    value: "1100px"
                                                 }
                                             },
                                             margin: {
@@ -3648,10 +3687,10 @@ export default {
                                                         text: {
                                                             desktop: {
                                                                 type: "heading",
-                                                                typography: "heading6",
+                                                                typography:
+                                                                    "webiny-pb-typography-heading",
                                                                 alignment: "center",
-                                                                tag: "h6",
-                                                                color: "theme:color3"
+                                                                tag: "h6"
                                                             },
                                                             data: {
                                                                 text: "<b>Multiple environments</b>"
@@ -3702,10 +3741,10 @@ export default {
                                         text: {
                                             desktop: {
                                                 type: "paragraph",
-                                                typography: "paragraph2",
+                                                typography: "webiny-pb-typography-description",
                                                 alignment: "center",
                                                 tag: "div",
-                                                color: "theme:color3"
+                                                color: "var(--webiny-theme-color-text-primary)"
                                             },
                                             data: {
                                                 text: "<p>No code change goes directly into a production environment. Webiny CLI makes it easy to manage and create multiple environments for your project.<br></p>"
@@ -3857,7 +3896,7 @@ export default {
                                         settings: {
                                             width: {
                                                 desktop: {
-                                                    value: "auto"
+                                                    value: "1100px"
                                                 }
                                             },
                                             margin: {
@@ -3937,9 +3976,9 @@ export default {
                                                         image: {
                                                             file: {
                                                                 id: "602281486ed41f0008bc2dad",
-                                                                name: "welcome-to-webiny-page-9l9mjlg56-webiny-serverless-cms.png",
-                                                                key: "welcome-to-webiny-page-9l9mjlg56-webiny-serverless-cms.png",
-                                                                src: "https://d2n80qe7mhvfm4.cloudfront.net/files/welcome-to-webiny-page-9l9mjlg56-webiny-serverless-cms.png",
+                                                                name: "welcome-to-webiny-page-8lbpa1ywc-webiny-serverless-cms.png",
+                                                                key: "welcome-to-webiny-page-8lbpa1ywc-webiny-serverless-cms.png",
+                                                                src: "https://d1oz4sdkoxkl16.cloudfront.net/files/welcome-to-webiny-page-8lbpa1ywc-webiny-serverless-cms.png",
                                                                 size: 108898,
                                                                 type: "image/png"
                                                             },
@@ -3975,7 +4014,7 @@ export default {
                                         settings: {
                                             width: {
                                                 desktop: {
-                                                    value: "auto"
+                                                    value: "1100px"
                                                 }
                                             },
                                             margin: {
@@ -4040,10 +4079,10 @@ export default {
                                                         text: {
                                                             desktop: {
                                                                 type: "heading",
-                                                                typography: "heading2",
+                                                                typography:
+                                                                    "webiny-pb-typography-heading",
                                                                 alignment: "left",
-                                                                tag: "h2",
-                                                                color: "theme:color3"
+                                                                tag: "h2"
                                                             },
                                                             data: {
                                                                 text: "One size doesn't fit all"
@@ -4094,10 +4133,9 @@ export default {
                                         text: {
                                             desktop: {
                                                 type: "paragraph",
-                                                typography: "paragraph1",
+                                                typography: "webiny-pb-typography-body",
                                                 alignment: "left",
-                                                tag: "div",
-                                                color: "theme:color3"
+                                                tag: "div"
                                             },
                                             data: {
                                                 text: "<p>It's a very different set of requirements a technical team has to a marketing team to a business development team. Webiny Serverless CMS comes with several different apps you can use independently, or together as part of a cohesive solution.<br></p>"
@@ -4162,7 +4200,7 @@ export default {
                                         settings: {
                                             width: {
                                                 desktop: {
-                                                    value: "auto"
+                                                    value: "1100px"
                                                 }
                                             },
                                             margin: {
@@ -4253,9 +4291,9 @@ export default {
                                                         image: {
                                                             file: {
                                                                 id: "602281486639200009fd35eb",
-                                                                name: "welcome-to-webiny-page-9l9mjlg6u-serverless-cms-logo.svg",
-                                                                key: "welcome-to-webiny-page-9l9mjlg6u-serverless-cms-logo.svg",
-                                                                src: "https://d2n80qe7mhvfm4.cloudfront.net/files/welcome-to-webiny-page-9l9mjlg6u-serverless-cms-logo.svg",
+                                                                name: "welcome-to-webiny-page-8lbpa1yxg-serverless-cms-logo.svg",
+                                                                key: "welcome-to-webiny-page-8lbpa1yxg-serverless-cms-logo.svg",
+                                                                src: "https://d1oz4sdkoxkl16.cloudfront.net/files/welcome-to-webiny-page-8lbpa1yxg-serverless-cms-logo.svg",
                                                                 size: 1758,
                                                                 type: "image/svg+xml"
                                                             },
@@ -4314,10 +4352,10 @@ export default {
                                                         text: {
                                                             desktop: {
                                                                 type: "heading",
-                                                                typography: "heading3",
+                                                                typography:
+                                                                    "webiny-pb-typography-heading",
                                                                 alignment: "left",
-                                                                tag: "h3",
-                                                                color: "theme:color3"
+                                                                tag: "h3"
                                                             },
                                                             data: {
                                                                 text: "<p>Webiny Serverless </p><p>CMS</p>"
@@ -4368,7 +4406,7 @@ export default {
                                         settings: {
                                             width: {
                                                 desktop: {
-                                                    value: "auto"
+                                                    value: "1100px"
                                                 }
                                             },
                                             margin: {
@@ -4433,10 +4471,10 @@ export default {
                                                         text: {
                                                             desktop: {
                                                                 type: "heading",
-                                                                typography: "heading5",
+                                                                typography:
+                                                                    "webiny-pb-typography-heading",
                                                                 alignment: "left",
-                                                                tag: "h5",
-                                                                color: "theme:color3"
+                                                                tag: "h5"
                                                             },
                                                             data: {
                                                                 text: "A suite of applications to help you manage your content. "
@@ -4487,7 +4525,7 @@ export default {
                                         settings: {
                                             width: {
                                                 desktop: {
-                                                    value: "auto"
+                                                    value: "1100px"
                                                 }
                                             },
                                             margin: {
@@ -4552,10 +4590,10 @@ export default {
                                                         text: {
                                                             desktop: {
                                                                 type: "heading",
-                                                                typography: "heading4",
+                                                                typography:
+                                                                    "webiny-pb-typography-heading",
                                                                 alignment: "left",
-                                                                tag: "h4",
-                                                                color: "theme:color3"
+                                                                tag: "h4"
                                                             },
                                                             data: {
                                                                 text: "<b>Use it to build:</b>"
@@ -4606,7 +4644,7 @@ export default {
                                         settings: {
                                             width: {
                                                 desktop: {
-                                                    value: "auto"
+                                                    value: "1100px"
                                                 }
                                             },
                                             margin: {
@@ -4671,10 +4709,10 @@ export default {
                                                         text: {
                                                             desktop: {
                                                                 type: "list",
-                                                                typography: "paragraph1",
+                                                                typography:
+                                                                    "webiny-pb-typography-list--secondary",
                                                                 alignment: "left",
-                                                                tag: "div",
-                                                                color: "theme:color3"
+                                                                tag: "div"
                                                             },
                                                             data: {
                                                                 text: "<ul>\n                    <li>Marketing sites</li>\n                    <li>Multi-website solutions</li>\n                    <li>Content hubs<br></li>\n                </ul>"
@@ -4744,10 +4782,10 @@ export default {
                                                         text: {
                                                             desktop: {
                                                                 type: "list",
-                                                                typography: "paragraph1",
+                                                                typography:
+                                                                    "webiny-pb-typography-list--secondary",
                                                                 alignment: "left",
-                                                                tag: "div",
-                                                                color: "theme:color3"
+                                                                tag: "div"
                                                             },
                                                             data: {
                                                                 text: "<ul>\n                    <li>Multi-language sites<br></li>\n                    <li>Intranet portals<br></li>\n                    <li>Headless content models<br></li>\n                </ul>"
@@ -4815,11 +4853,6 @@ export default {
                                             svg: '<svg width="16" viewBox="0 0 448 512"><path d="M313.941 216H12c-6.627 0-12 5.373-12 12v56c0 6.627 5.373 12 12 12h301.941v46.059c0 21.382 25.851 32.09 40.971 16.971l86.059-86.059c9.373-9.373 9.373-24.569 0-33.941l-86.059-86.059c-15.119-15.119-40.971-4.411-40.971 16.971V216z" fill="currentColor"></path></svg>',
                                             position: "right",
                                             width: "16"
-                                        },
-                                        action: {
-                                            href: "https://www.webiny.com/serverless-cms/",
-                                            newTab: true,
-                                            actionType: "link"
                                         }
                                     },
                                     elements: [],
@@ -4874,9 +4907,9 @@ export default {
                             image: {
                                 file: {
                                     id: "602281486639200009fd35ec",
-                                    name: "welcome-to-webiny-page-9l9mjlg7z-cms-benefits-shape.svg",
-                                    key: "welcome-to-webiny-page-9l9mjlg7z-cms-benefits-shape.svg",
-                                    src: "https://d2n80qe7mhvfm4.cloudfront.net/files/welcome-to-webiny-page-9l9mjlg7z-cms-benefits-shape.svg",
+                                    name: "welcome-to-webiny-page-8lbpa1yvx-cms-benefits-shape.svg",
+                                    key: "welcome-to-webiny-page-8lbpa1yvx-cms-benefits-shape.svg",
+                                    src: "https://d1oz4sdkoxkl16.cloudfront.net/files/welcome-to-webiny-page-8lbpa1yvx-cms-benefits-shape.svg",
                                     size: 392,
                                     type: "image/svg+xml"
                                 }
@@ -4958,10 +4991,9 @@ export default {
                                         text: {
                                             desktop: {
                                                 type: "heading",
-                                                typography: "heading1",
+                                                typography: "webiny-pb-typography-heading",
                                                 alignment: "center",
-                                                tag: "h1",
-                                                color: "theme:color3"
+                                                tag: "h1"
                                             },
                                             data: {
                                                 text: "<b>CMS benefits</b>"
@@ -5086,17 +5118,15 @@ export default {
                                         image: {
                                             file: {
                                                 id: "60228148fa244d0008c47c79",
-                                                name: "welcome-to-webiny-page-9l9mjlg6w-scalable-icon.svg",
-                                                key: "welcome-to-webiny-page-9l9mjlg6w-scalable-icon.svg",
-                                                src: "https://d2n80qe7mhvfm4.cloudfront.net/files/welcome-to-webiny-page-9l9mjlg6w-scalable-icon.svg",
+                                                name: "welcome-to-webiny-page-8lbpa1yvw-scalable-icon.svg",
+                                                key: "welcome-to-webiny-page-8lbpa1yvw-scalable-icon.svg",
+                                                src: "https://d1oz4sdkoxkl16.cloudfront.net/files/welcome-to-webiny-page-8lbpa1yvw-scalable-icon.svg",
                                                 size: 7806,
                                                 type: "image/svg+xml"
                                             },
                                             height: "146px"
                                         },
-                                        link: {
-                                            href: ""
-                                        }
+                                        link: {}
                                     },
                                     elements: [],
                                     path: ["Fv1PpPWu-", "mjmNmloeUS", "juBaAPJ76", "s95PSAToXK"]
@@ -5108,10 +5138,9 @@ export default {
                                         text: {
                                             desktop: {
                                                 type: "heading",
-                                                typography: "heading4",
+                                                typography: "webiny-pb-typography-heading",
                                                 alignment: "center",
-                                                tag: "h4",
-                                                color: "theme:color3"
+                                                tag: "h4"
                                             },
                                             data: {
                                                 text: "<b>Scalable</b>"
@@ -5145,10 +5174,9 @@ export default {
                                         text: {
                                             desktop: {
                                                 type: "paragraph",
-                                                typography: "paragraph1",
+                                                typography: "webiny-pb-typography-body",
                                                 alignment: "center",
-                                                tag: "div",
-                                                color: "theme:color3"
+                                                tag: "div"
                                             },
                                             data: {
                                                 text: "<p>No matter the demand, Webiny Serverless CMS can easily scale to meet even the most challenging workloads.<br></p>"
@@ -5229,17 +5257,15 @@ export default {
                                         image: {
                                             file: {
                                                 id: "60228145f98841000981c720",
-                                                name: "welcome-to-webiny-page-9l9mjlg6z-adaptable-icon.svg",
-                                                key: "welcome-to-webiny-page-9l9mjlg6z-adaptable-icon.svg",
-                                                src: "https://d2n80qe7mhvfm4.cloudfront.net/files/welcome-to-webiny-page-9l9mjlg6z-adaptable-icon.svg",
+                                                name: "welcome-to-webiny-page-8lbpa1ywy-adaptable-icon.svg",
+                                                key: "welcome-to-webiny-page-8lbpa1ywy-adaptable-icon.svg",
+                                                src: "https://d1oz4sdkoxkl16.cloudfront.net/files/welcome-to-webiny-page-8lbpa1ywy-adaptable-icon.svg",
                                                 size: 28918,
                                                 type: "image/svg+xml"
                                             },
                                             height: "146px"
                                         },
-                                        link: {
-                                            href: ""
-                                        }
+                                        link: {}
                                     },
                                     elements: [],
                                     path: ["Fv1PpPWu-", "mjmNmloeUS", "juBaAPJ76", "SmrEQ9OZ8"]
@@ -5251,10 +5277,9 @@ export default {
                                         text: {
                                             desktop: {
                                                 type: "heading",
-                                                typography: "heading4",
+                                                typography: "webiny-pb-typography-heading",
                                                 alignment: "center",
-                                                tag: "h4",
-                                                color: "theme:color3"
+                                                tag: "h4"
                                             },
                                             data: {
                                                 text: "<b>Adaptable</b>"
@@ -5288,10 +5313,9 @@ export default {
                                         text: {
                                             desktop: {
                                                 type: "paragraph",
-                                                typography: "paragraph1",
+                                                typography: "webiny-pb-typography-body",
                                                 alignment: "center",
-                                                tag: "div",
-                                                color: "theme:color3"
+                                                tag: "div"
                                             },
                                             data: {
                                                 text: "<p>Being an open-source project, it's easy to modify and adapt things to your own needs.<br></p>"
@@ -5375,9 +5399,9 @@ export default {
                                         image: {
                                             file: {
                                                 id: "6022814851197600081724ae",
-                                                name: "welcome-to-webiny-page-9l9mjlgol-cost-icon.svg",
-                                                key: "welcome-to-webiny-page-9l9mjlgol-cost-icon.svg",
-                                                src: "https://d2n80qe7mhvfm4.cloudfront.net/files/welcome-to-webiny-page-9l9mjlgol-cost-icon.svg",
+                                                name: "welcome-to-webiny-page-8lbpa1zcf-cost-icon.svg",
+                                                key: "welcome-to-webiny-page-8lbpa1zcf-cost-icon.svg",
+                                                src: "https://d1oz4sdkoxkl16.cloudfront.net/files/welcome-to-webiny-page-8lbpa1zcf-cost-icon.svg",
                                                 size: 60602,
                                                 type: "image/svg+xml"
                                             },
@@ -5395,10 +5419,9 @@ export default {
                                         text: {
                                             desktop: {
                                                 type: "heading",
-                                                typography: "heading4",
+                                                typography: "webiny-pb-typography-heading",
                                                 alignment: "center",
-                                                tag: "h4",
-                                                color: "theme:color3"
+                                                tag: "h4"
                                             },
                                             data: {
                                                 text: "<b>Low cost of ownership</b>"
@@ -5432,10 +5455,9 @@ export default {
                                         text: {
                                             desktop: {
                                                 type: "paragraph",
-                                                typography: "paragraph1",
+                                                typography: "webiny-pb-typography-body",
                                                 alignment: "center",
-                                                tag: "div",
-                                                color: "theme:color3"
+                                                tag: "div"
                                             },
                                             data: {
                                                 text: "<p>Self-hosted on top of serverless infrastructure. No infrastructure to mange, less people required to operate and maintain.<br></p>"
@@ -5558,9 +5580,9 @@ export default {
                                         image: {
                                             file: {
                                                 id: "60228148f98841000981c724",
-                                                name: "welcome-to-webiny-page-9l9mjlgqu-idp.svg",
-                                                key: "welcome-to-webiny-page-9l9mjlgqu-idp.svg",
-                                                src: "https://d2n80qe7mhvfm4.cloudfront.net/files/welcome-to-webiny-page-9l9mjlgqu-idp.svg",
+                                                name: "welcome-to-webiny-page-8lbpa1zdk-idp.svg",
+                                                key: "welcome-to-webiny-page-8lbpa1zdk-idp.svg",
+                                                src: "https://d1oz4sdkoxkl16.cloudfront.net/files/welcome-to-webiny-page-8lbpa1zdk-idp.svg",
                                                 size: 27878,
                                                 type: "image/svg+xml"
                                             },
@@ -5578,10 +5600,9 @@ export default {
                                         text: {
                                             desktop: {
                                                 type: "heading",
-                                                typography: "heading4",
+                                                typography: "webiny-pb-typography-heading",
                                                 alignment: "center",
-                                                tag: "h4",
-                                                color: "theme:color3"
+                                                tag: "h4"
                                             },
                                             data: {
                                                 text: "<b>Secure</b>"
@@ -5615,10 +5636,9 @@ export default {
                                         text: {
                                             desktop: {
                                                 type: "paragraph",
-                                                typography: "paragraph1",
+                                                typography: "webiny-pb-typography-body",
                                                 alignment: "center",
-                                                tag: "div",
-                                                color: "theme:color3"
+                                                tag: "div"
                                             },
                                             data: {
                                                 text: "<p>Secured by AWS Cognito. It's also easy to integrate services like OKTA, Auth0 and similar.<br></p>"
@@ -5699,9 +5719,9 @@ export default {
                                         image: {
                                             file: {
                                                 id: "602281486ed41f0008bc2dac",
-                                                name: "welcome-to-webiny-page-9l9mjlgpo-data-icon.svg",
-                                                key: "welcome-to-webiny-page-9l9mjlgpo-data-icon.svg",
-                                                src: "https://d2n80qe7mhvfm4.cloudfront.net/files/welcome-to-webiny-page-9l9mjlgpo-data-icon.svg",
+                                                name: "welcome-to-webiny-page-8lbpa1zd1-data-icon.svg",
+                                                key: "welcome-to-webiny-page-8lbpa1zd1-data-icon.svg",
+                                                src: "https://d1oz4sdkoxkl16.cloudfront.net/files/welcome-to-webiny-page-8lbpa1zd1-data-icon.svg",
                                                 size: 73153,
                                                 type: "image/svg+xml"
                                             },
@@ -5719,10 +5739,9 @@ export default {
                                         text: {
                                             desktop: {
                                                 type: "heading",
-                                                typography: "heading4",
+                                                typography: "webiny-pb-typography-heading",
                                                 alignment: "center",
-                                                tag: "h4",
-                                                color: "theme:color3"
+                                                tag: "h4"
                                             },
                                             data: {
                                                 text: "<b>Data ownership</b>"
@@ -5756,10 +5775,9 @@ export default {
                                         text: {
                                             desktop: {
                                                 type: "paragraph",
-                                                typography: "paragraph1",
+                                                typography: "webiny-pb-typography-body",
                                                 alignment: "center",
-                                                tag: "div",
-                                                color: "theme:color3"
+                                                tag: "div"
                                             },
                                             data: {
                                                 text: "<p>Webiny is self-hosted, it means your data stays within your data center. <br></p>"
@@ -5843,9 +5861,9 @@ export default {
                                         image: {
                                             file: {
                                                 id: "602281486ed41f0008bc2dab",
-                                                name: "welcome-to-webiny-page-9l9mjlgqw-permission-icon.svg",
-                                                key: "welcome-to-webiny-page-9l9mjlgqw-permission-icon.svg",
-                                                src: "https://d2n80qe7mhvfm4.cloudfront.net/files/welcome-to-webiny-page-9l9mjlgqw-permission-icon.svg",
+                                                name: "welcome-to-webiny-page-8lbpa1zep-permission-icon.svg",
+                                                key: "welcome-to-webiny-page-8lbpa1zep-permission-icon.svg",
+                                                src: "https://d1oz4sdkoxkl16.cloudfront.net/files/welcome-to-webiny-page-8lbpa1zep-permission-icon.svg",
                                                 size: 67402,
                                                 type: "image/svg+xml"
                                             },
@@ -5863,10 +5881,9 @@ export default {
                                         text: {
                                             desktop: {
                                                 type: "heading",
-                                                typography: "heading4",
+                                                typography: "webiny-pb-typography-heading",
                                                 alignment: "center",
-                                                tag: "h4",
-                                                color: "theme:color3"
+                                                tag: "h4"
                                             },
                                             data: {
                                                 text: "<b>Permission control</b>"
@@ -5900,10 +5917,9 @@ export default {
                                         text: {
                                             desktop: {
                                                 type: "paragraph",
-                                                typography: "paragraph1",
+                                                typography: "webiny-pb-typography-body",
                                                 alignment: "center",
-                                                tag: "div",
-                                                color: "theme:color3"
+                                                tag: "div"
                                             },
                                             data: {
                                                 text: "<p>Powerful options to control the permissions your users will have. They perfectly align with your business requirements.&nbsp;<br></p>"
@@ -6046,20 +6062,12 @@ export default {
                                         text: {
                                             desktop: {
                                                 type: "heading",
-                                                typography: "heading1",
+                                                typography: "webiny-pb-typography-heading",
                                                 alignment: "center",
-                                                tag: "h1",
-                                                color: "theme:color3"
+                                                tag: "h1"
                                             },
                                             data: {
                                                 text: "<p>Serverless makes infrastructure easy, </p><p>Webiny makes serverless easy</p>"
-                                            },
-                                            tablet: {
-                                                type: "heading",
-                                                typography: "heading1",
-                                                alignment: "center",
-                                                tag: "h1",
-                                                color: "theme:color3"
                                             }
                                         },
                                         settings: {
@@ -6185,17 +6193,15 @@ export default {
                                         image: {
                                             file: {
                                                 id: "60228145f98841000981c721",
-                                                name: "welcome-to-webiny-page-9l9mjlgp5-developer.svg",
-                                                key: "welcome-to-webiny-page-9l9mjlgp5-developer.svg",
-                                                src: "https://d2n80qe7mhvfm4.cloudfront.net/files/welcome-to-webiny-page-9l9mjlgp5-developer.svg",
+                                                name: "welcome-to-webiny-page-8lbpa1zdp-developer.svg",
+                                                key: "welcome-to-webiny-page-8lbpa1zdp-developer.svg",
+                                                src: "https://d1oz4sdkoxkl16.cloudfront.net/files/welcome-to-webiny-page-8lbpa1zdp-developer.svg",
                                                 size: 27804,
                                                 type: "image/svg+xml"
                                             },
                                             height: "200px"
                                         },
-                                        link: {
-                                            href: ""
-                                        }
+                                        link: {}
                                     },
                                     elements: [],
                                     path: ["Fv1PpPWu-", "5ggqk561Ka", "oYf9t6Uwz", "RdazJP-4W1"]
@@ -6207,20 +6213,13 @@ export default {
                                         text: {
                                             desktop: {
                                                 type: "heading",
-                                                typography: "heading4",
+                                                typography: "webiny-pb-typography-heading",
                                                 alignment: "center",
                                                 tag: "h4",
-                                                color: "theme:color3"
+                                                color: ""
                                             },
                                             data: {
                                                 text: "1. Developer-friendly"
-                                            },
-                                            tablet: {
-                                                type: "heading",
-                                                typography: "heading4",
-                                                alignment: "center",
-                                                tag: "h4",
-                                                color: "theme:color3"
                                             }
                                         },
                                         settings: {
@@ -6251,20 +6250,12 @@ export default {
                                         text: {
                                             desktop: {
                                                 type: "paragraph",
-                                                typography: "paragraph1",
+                                                typography: "webiny-pb-typography-body",
                                                 alignment: "center",
-                                                tag: "div",
-                                                color: "theme:color3"
+                                                tag: "div"
                                             },
                                             data: {
                                                 text: "<p>Webiny has been made with the developer in mind. It helps them develop serverless applications with ease.<br></p>"
-                                            },
-                                            tablet: {
-                                                type: "paragraph",
-                                                typography: "paragraph1",
-                                                alignment: "center",
-                                                tag: "div",
-                                                color: "theme:color3"
                                             }
                                         },
                                         settings: {
@@ -6342,9 +6333,9 @@ export default {
                                         image: {
                                             file: {
                                                 id: "60228145f98841000981c71f",
-                                                name: "welcome-to-webiny-page-9l9mjlgpr-octo-cat.svg",
-                                                key: "welcome-to-webiny-page-9l9mjlgpr-octo-cat.svg",
-                                                src: "https://d2n80qe7mhvfm4.cloudfront.net/files/welcome-to-webiny-page-9l9mjlgpr-octo-cat.svg",
+                                                name: "welcome-to-webiny-page-8lbpa1zcz-octo-cat.svg",
+                                                key: "welcome-to-webiny-page-8lbpa1zcz-octo-cat.svg",
+                                                src: "https://d1oz4sdkoxkl16.cloudfront.net/files/welcome-to-webiny-page-8lbpa1zcz-octo-cat.svg",
                                                 size: 30007,
                                                 type: "image/svg+xml"
                                             },
@@ -6362,20 +6353,12 @@ export default {
                                         text: {
                                             desktop: {
                                                 type: "heading",
-                                                typography: "heading4",
+                                                typography: "webiny-pb-typography-heading",
                                                 alignment: "center",
-                                                tag: "h4",
-                                                color: "theme:color3"
+                                                tag: "h4"
                                             },
                                             data: {
                                                 text: "2. Open source"
-                                            },
-                                            tablet: {
-                                                type: "heading",
-                                                typography: "heading4",
-                                                alignment: "center",
-                                                tag: "h4",
-                                                color: "theme:color3"
                                             }
                                         },
                                         settings: {
@@ -6406,20 +6389,12 @@ export default {
                                         text: {
                                             desktop: {
                                                 type: "paragraph",
-                                                typography: "paragraph1",
+                                                typography: "webiny-pb-typography-body",
                                                 alignment: "center",
-                                                tag: "div",
-                                                color: "theme:color3"
+                                                tag: "div"
                                             },
                                             data: {
                                                 text: '<p>Webiny is created and maintained by an amazing group of people. Being open source means Webiny grows and evolves much faster. <a href="https://github.com/webiny/webiny-js/blob/v5/docs/CONTRIBUTING.md">Contributor</a> are welcome.<br></p>'
-                                            },
-                                            tablet: {
-                                                type: "paragraph",
-                                                typography: "paragraph1",
-                                                alignment: "center",
-                                                tag: "div",
-                                                color: "theme:color3"
                                             }
                                         },
                                         settings: {
@@ -6501,9 +6476,9 @@ export default {
                                         image: {
                                             file: {
                                                 id: "60228148fa244d0008c47c7a",
-                                                name: "welcome-to-webiny-page-9l9mjlgp7-community-icon.png",
-                                                key: "welcome-to-webiny-page-9l9mjlgp7-community-icon.png",
-                                                src: "https://d2n80qe7mhvfm4.cloudfront.net/files/welcome-to-webiny-page-9l9mjlgp7-community-icon.png",
+                                                name: "welcome-to-webiny-page-8lbpa1zen-community-icon.png",
+                                                key: "welcome-to-webiny-page-8lbpa1zen-community-icon.png",
+                                                src: "https://d1oz4sdkoxkl16.cloudfront.net/files/welcome-to-webiny-page-8lbpa1zen-community-icon.png",
                                                 size: 17382,
                                                 type: "image/png"
                                             },
@@ -6522,20 +6497,12 @@ export default {
                                         text: {
                                             desktop: {
                                                 type: "heading",
-                                                typography: "heading4",
+                                                typography: "webiny-pb-typography-heading",
                                                 alignment: "center",
-                                                tag: "h4",
-                                                color: "theme:color3"
+                                                tag: "h4"
                                             },
                                             data: {
                                                 text: "3. Community"
-                                            },
-                                            tablet: {
-                                                type: "heading",
-                                                typography: "heading4",
-                                                alignment: "center",
-                                                tag: "h4",
-                                                color: "theme:color3"
                                             }
                                         },
                                         settings: {
@@ -6566,20 +6533,12 @@ export default {
                                         text: {
                                             desktop: {
                                                 type: "paragraph",
-                                                typography: "paragraph1",
+                                                typography: "webiny-pb-typography-body",
                                                 alignment: "center",
-                                                tag: "div",
-                                                color: "theme:color3"
+                                                tag: "div"
                                             },
                                             data: {
                                                 text: '<p>We have an active community on <a href="https://webiny.com/slack">slack</a>. Talk to the core-team, and get help. Webiny team is always there for any questions.<br></p>'
-                                            },
-                                            tablet: {
-                                                type: "paragraph",
-                                                typography: "paragraph1",
-                                                alignment: "center",
-                                                tag: "div",
-                                                color: "theme:color3"
                                             }
                                         },
                                         settings: {
@@ -6695,15 +6654,10 @@ export default {
                                             id: ["fab", "github"],
                                             svg: '<svg width="16" viewBox="0 0 496 512"><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z" fill="currentColor"></path></svg>',
                                             width: "16"
-                                        },
-                                        action: {
-                                            href: "https://github.com/webiny/webiny-js",
-                                            newTab: true,
-                                            actionType: "link"
                                         }
                                     },
                                     elements: [],
-                                    path: ["Fv1PpPWu-", "5ggqk561Ka", "OYp5Z-6Xo"]
+                                    path: ["Fv1PpPWu-", "5ggqk561Ka", "OYp5Z-6Xo", "woaE-6v5bN"]
                                 }
                             ],
                             path: ["Fv1PpPWu-", "5ggqk561Ka", "OYp5Z-6Xo"]

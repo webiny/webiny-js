@@ -1,19 +1,18 @@
 import React from "react";
 import { PbEditorElement } from "~/types";
-import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
 import PeIcon from "./PeIcon";
 import PbIcon from "./PbIcon";
+import { isLegacyRenderingEngine } from "~/utils";
 
 interface IconProps {
     element: PbEditorElement;
 }
 
 const Icon: React.FC<IconProps> = props => {
-    const pageElements = usePageElements();
-    if (pageElements) {
-        return <PeIcon {...props} />;
+    if (isLegacyRenderingEngine) {
+        return <PbIcon {...props} />;
     }
-    return <PbIcon {...props} />;
+    return <PeIcon {...props} />;
 };
 
 export default Icon;

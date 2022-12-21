@@ -7,15 +7,24 @@ const { boolean } = require("boolean");
 // Disable help processing until after plugins are imported.
 yargs.help(false);
 
-// Immediately load .env.{PASSED_ENVIRONMENT} and .env files.
-// This way we ensure all of the environment variables are not loaded too late.
+// Immediately load environment variables from following locations:
+// - `webiny.project.ts` file
+// - `.env.{PASSED_ENVIRONMENT}` file
+// - `.env` file
+
 const project = getProject();
+
+// `webiny.project.ts` file.
+Object.assign(process.env, project.config.env);
+
+// `.env.{PASSED_ENVIRONMENT}` and `.env` files.
 let paths = [path.join(project.root, ".env")];
 
 if (yargs.argv.env) {
     paths.push(path.join(project.root, `.env.${yargs.argv.env}`));
 }
 
+// Finally, let's load environment variables
 for (let i = 0; i < paths.length; i++) {
     const path = paths[i];
     const { error } = require("dotenv").config({ path });

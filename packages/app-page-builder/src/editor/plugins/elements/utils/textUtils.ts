@@ -33,6 +33,7 @@ export const createInitialTextValue = ({
     alignment = "left",
     tag = "div"
 }: CreateInitialTextValueArgs) => {
+    // Get from theme object
     const typography = getTypographyFromTheme(type);
 
     return {

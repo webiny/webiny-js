@@ -11,6 +11,7 @@ import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePage
 import { isPerBreakpointStylesObject } from "@webiny/app-page-builder-elements/utils";
 import { useUI } from "~/editor/hooks/useUI";
 import { setDisplayModeMutation } from "~/editor/recoil/modules";
+import { isLegacyRenderingEngine } from "~/utils";
 
 const classes = {
     wrapper: css({
@@ -109,7 +110,7 @@ export const ResponsiveModeSelector: React.FC = () => {
     );
 
     const pageElements = usePageElements();
-    if (pageElements) {
+    if (!isLegacyRenderingEngine) {
         // By default, we want to only assign styles for the first breakpoint in line, which is "desktop".
         // We only care about tablet, mobile-landscape, and mobile-portrait if user selects one of those.
         useEffect(() => {
@@ -136,7 +137,6 @@ export const ResponsiveModeSelector: React.FC = () => {
                 } else {
                     Object.assign(assignTo, styles);
                 }
-
 
                 return assignTo;
             });

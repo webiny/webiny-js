@@ -19,6 +19,9 @@ import codesandbox from "@webiny/app-page-builder/editor/plugins/elements/code/c
 import pagesList from "@webiny/app-page-builder/editor/plugins/elements/pagesList";
 import imagesList from "@webiny/app-page-builder/editor/plugins/elements/imagesList";
 import heading from "@webiny/app-page-builder/editor/plugins/elements/heading";
+
+import iframe2 from "@extensions/pb-element-iframe/editor";
+
 // Element groups
 import basicGroup from "@webiny/app-page-builder/editor/plugins/elementGroups/basic";
 import layoutGroup from "@webiny/app-page-builder/editor/plugins/elementGroups/layout";
@@ -79,6 +82,7 @@ export default [
     vimeo(),
     youtube(),
     iframe(),
+    iframe2(),
     pinterest(),
     twitter(),
     codesandbox(),
