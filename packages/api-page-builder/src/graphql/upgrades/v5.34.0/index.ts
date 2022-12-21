@@ -3,17 +3,80 @@ import WebinyError from "@webiny/error";
 import { PageBuilderContextObject, PbContext } from "~/graphql/types";
 import { Tenant } from "@webiny/api-tenancy/types";
 import { I18NContextObject } from "@webiny/api-i18n/types";
-import { IFolders } from "@webiny/api-folders/types";
+import { Folders } from "@webiny/api-folders/types";
 
 interface CreatePageLinksParams {
     tenant: Tenant;
     pageBuilder: PageBuilderContextObject;
-    folders: IFolders;
+    folders: Folders;
     i18n: I18NContextObject;
 }
 
+interface FetchPagesAndCreateLinksParams {
+    pageBuilder: PageBuilderContextObject;
+    folders: Folders;
+}
+
+const fetchPagesAndCreateLinks = async (
+    params: FetchPagesAndCreateLinksParams
+): Promise<(string | undefined)[]> => {
+    const { pageBuilder, folders } = params;
+
+    /**
+     *  Since `listPages` is paginated, we need a recursive function to fetch pages and create links.
+     *
+     * @param acc accumulator for results.
+     * @param hasMoreItems continue the iteration or return the accumulator.
+     * @param after the cursor value to pass to `listPages`.
+     */
+    async function fetchAndCreate(
+        acc: (string | undefined)[],
+        hasMoreItems: boolean,
+        after?: string | null
+    ): Promise<(string | undefined)[]> {
+        /**
+         * No more pages to fetch, return the accumulator.
+         */
+        if (!hasMoreItems) {
+            return acc;
+        }
+
+        /**
+         * Fetch page data and meta
+         */
+        const [data, meta] = await pageBuilder.listLatestPages({ limit: 100, after });
+        const pageIds = data.map(page => page.pid);
+
+        /**
+         * Create `links` and return the `id`.
+         */
+        const linkIds = await Promise.all(
+            pageIds.map(async id => {
+                try {
+                    const link = await folders.createLink({ id, folderId: "ROOT" });
+                    return link.id;
+                } catch (e) {
+                    /**
+                     * In case the link already exists for the current page, just return and continue the process.
+                     */
+                    if (e.code === "LINK_EXISTS") {
+                        return;
+                    }
+                    throw e;
+                }
+            })
+        );
+
+        const result = [...acc, ...linkIds];
+        return await fetchAndCreate(result, meta.hasMoreItems, meta.cursor);
+    }
+
+    return await fetchAndCreate([], true);
+};
+
 const createPageLinks = async (params: CreatePageLinksParams): Promise<void> => {
-    const { tenant, pageBuilder, i18n } = params;
+    const { tenant, pageBuilder, folders, i18n } = params;
+
     /**
      * Find all locales for the current tenant, so we can find all pages for each locale.
      */
@@ -23,83 +86,31 @@ const createPageLinks = async (params: CreatePageLinksParams): Promise<void> => 
         },
         limit: 100
     });
+
     if (locales.length === 0) {
         console.log(`There are no locales under the tenant "${tenant.id}".`);
         return;
     }
+
     for (const locale of locales) {
         i18n.setContentLocale(locale);
 
-        const [pages] = await pageBuilder.listLatestPages({ limit: 100 });
+        /**
+         * Fetch all pages for the current locale and create links
+         */
+        const linkIds = await fetchPagesAndCreateLinks({ pageBuilder, folders });
 
-        const pageIds = pages.map(page => page.pid);
+        if (linkIds.length === 0) {
+            console.log(`There are no pages under the locale "${locale.code}".`);
+            continue;
+        }
 
-        console.log(pageIds);
+        console.log(
+            `${locale.code}: created ${linkIds.filter(Boolean).length} links from ${
+                linkIds.length
+            } pages.`
+        );
     }
-    /**
-     * We need all the models that are not plugin models.
-     */
-
-    //
-    //
-    // const models = await cms.storageOperations.models.list({
-    //     where: {
-    //         tenant: tenant.id,
-    //         locale: locale.code
-    //     }
-    // });
-    // if (models.length === 0) {
-    //     console.log(
-    //         `No models in tenant "${tenant.id}" and locale "${locale.code}" combination.`
-    //     );
-    //     continue;
-    // }
-    //
-    // /**
-    //  * Then we need to go into each of the model fields and add the storageId, which is the same as the fieldId
-    //  */
-    // const updatedModels = models
-    //     .filter(model => {
-    //         /**
-    //          * If model has at least one field with no storageId, continue with the update.
-    //          */
-    //         const toUpdate = shouldUpdate(model.fields);
-    //
-    //         /**
-    //          * If not updating the model, lets log it - just in case...
-    //          */
-    //         if (!toUpdate) {
-    //             console.log(
-    //                 `Skipping update of model "${model.modelId} - ${tenant.id} - ${locale.code}".`
-    //             );
-    //             return false;
-    //         }
-    //         return true;
-    //     })
-    //     .map(model => {
-    //         return {
-    //             ...model,
-    //             fields: assignStorageId(model.fields)
-    //         };
-    //     });
-    // /**
-    //  * And update all the models
-    //  */
-    // for (const model of updatedModels) {
-    //     try {
-    //         await cms.storageOperations.models.update({
-    //             model
-    //         });
-    //     } catch (ex) {
-    //         throw new WebinyError(
-    //             `Could not update CMS model ${model.modelId}`,
-    //             "MODEL_UPGRADE_ERROR",
-    //             {
-    //                 model
-    //             }
-    //         );
-    //     }
-    // }
 };
 
 export const createUpgrade = (): UpgradePlugin<PbContext> => {
@@ -153,49 +164,5 @@ export const createUpgrade = (): UpgradePlugin<PbContext> => {
                 tenancy.setCurrentTenant(initialTenant);
             }
         }
-        //     const { security, tenancy, cms, i18n } = context;
-        //
-        //     /**
-        //      * We need to be able to access all data.
-        //      */
-        //     security.disableAuthorization();
-        //
-        //     const initialTenant = tenancy.getCurrentTenant();
-        //
-        //     const tenants = await tenancy.listTenants();
-        //     try {
-        //         for (const tenant of tenants) {
-        //             tenancy.setCurrentTenant(tenant);
-        //             await upgradeTenantModels({
-        //                 tenant,
-        //                 cms,
-        //                 i18n
-        //             });
-        //         }
-        //     } catch (ex) {
-        //         console.log(
-        //             `Upgrade error: ${JSON.stringify({
-        //                 message: ex.message,
-        //                 code: ex.code,
-        //                 data: ex.data
-        //             })}`
-        //         );
-        //         throw new WebinyError(
-        //             `Could not finish the 5.33.0 upgrade. Please contact Webiny team on Slack and share the error.`,
-        //             "UPGRADE_ERROR",
-        //             {
-        //                 message: ex.message,
-        //                 code: ex.code,
-        //                 data: ex.data
-        //             }
-        //         );
-        //     } finally {
-        //         /**
-        //          * Always enable the security after all the code runs.
-        //          */
-        //         security.enableAuthorization();
-        //         tenancy.setCurrentTenant(initialTenant);
-        //     }
-        // }
     };
 };
