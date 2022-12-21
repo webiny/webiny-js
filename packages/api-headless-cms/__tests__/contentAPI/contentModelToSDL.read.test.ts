@@ -5,10 +5,10 @@ import contentModels from "./mocks/contentModels";
 import categorySDL from "./snapshots/category.read";
 import productSDL from "./snapshots/product.read";
 import reviewSDL from "./snapshots/review.read";
-import articleSDL from "./snapshots/article.read";
+import pageSDL from "./snapshots/page.read";
 import { CmsModel, CmsModelFieldToGraphQLPlugin } from "~/types";
 import { filterModelsDeletedFields } from "~/utils/filterModelFields";
-import { articleModel } from "./mocks/articleWithDynamicZonesModel";
+import { pageModel } from "./mocks/pageWithDynamicZonesModel";
 
 /**
  * Method createReadDSL expected model with filtered deleted fields.
@@ -65,9 +65,9 @@ describe("READ - ContentModel to SDL", () => {
     });
 
     test("Dynamic Zone SDL", async () => {
-        const sdl = createReadSDL({ model: articleModel, fieldTypePlugins });
+        const sdl = createReadSDL({ model: pageModel, fieldTypePlugins });
         const prettyGql = prettier.format(sdl.trim(), { parser: "graphql" });
-        const prettySnapshot = prettier.format(articleSDL.trim(), { parser: "graphql" });
+        const prettySnapshot = prettier.format(pageSDL.trim(), { parser: "graphql" });
         expect(prettyGql).toBe(prettySnapshot);
     });
 });

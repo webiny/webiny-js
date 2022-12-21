@@ -46,11 +46,6 @@ export const createReadSDL: CreateReadSDL = ({ model, fieldTypePlugins }): strin
 
     return `
         """${model.description || ""}"""
-        ${fieldsRender
-            .map(f => f.typeDefs)
-            .filter(Boolean)
-            .join("\n")}
-        
         type ${rTypeName} {
             id: ID!
             entryId: String!
@@ -60,6 +55,11 @@ export const createReadSDL: CreateReadSDL = ({ model, fieldTypePlugins }): strin
             ownedBy: CmsOwnedBy!
             ${fieldsRender.map(f => f.fields).join("\n")}
         }
+        
+        ${fieldsRender
+            .map(f => f.typeDefs)
+            .filter(Boolean)
+            .join("\n")}
         
         ${
             getFilterFieldsRender &&

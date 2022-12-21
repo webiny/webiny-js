@@ -2,6 +2,7 @@ import upperFirst from "lodash/upperFirst";
 import { CmsModelFieldToGraphQLPlugin } from "~/types";
 import { attachRequiredFieldValue } from "./helpers";
 import { createTypeFromFields } from "~/utils/createTypeFromFields";
+import { createTypeName } from "~/utils/createTypeName";
 
 export const createObjectField = (): CmsModelFieldToGraphQLPlugin => {
     return {
@@ -16,7 +17,7 @@ export const createObjectField = (): CmsModelFieldToGraphQLPlugin => {
                     typeOfType: "type",
                     model,
                     type: "read",
-                    fieldId: field.fieldId,
+                    typeName: createTypeName(field.fieldId),
                     fields: field.settings?.fields || [],
                     fieldTypePlugins
                 });
@@ -56,7 +57,7 @@ export const createObjectField = (): CmsModelFieldToGraphQLPlugin => {
                     typeOfType: "type",
                     model,
                     type: "manage",
-                    fieldId: field.fieldId,
+                    typeName: createTypeName(field.fieldId),
                     fields: field.settings?.fields || [],
                     fieldTypePlugins
                 });
@@ -78,7 +79,7 @@ export const createObjectField = (): CmsModelFieldToGraphQLPlugin => {
                     typeOfType: "input",
                     model,
                     type: "manage",
-                    fieldId: field.fieldId,
+                    typeName: createTypeName(field.fieldId),
                     fields: field.settings?.fields || [],
                     fieldTypePlugins
                 });

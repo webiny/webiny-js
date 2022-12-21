@@ -1,45 +1,45 @@
 export default /* GraphQL */ `
     """
-    Article
+    Page
     """
-    type Article {
+    type Page {
         id: ID!
         entryId: String!
         createdOn: DateTime!
         savedOn: DateTime!
         createdBy: CmsCreatedBy!
         ownedBy: CmsOwnedBy!
-        content: [Article_Content!]!
-        header: Article_Header
+        content: [Page_Content!]
+        header: Page_Header
     }
 
-    union Article_Content = Article_Content_Hero | Article_Content_SimpleText
+    union Page_Content = Page_Content_Hero | Page_Content_SimpleText
 
-    type Article_Content_Hero {
+    type Page_Content_Hero {
         title: String
     }
 
-    type Article_Content_SimpleText {
+    type Page_Content_SimpleText {
         text: String
     }
 
-    union Article_Header = Article_Header_TextHeader | Article_Header_ImageHeader
+    union Page_Header = Page_Header_TextHeader | Page_Header_ImageHeader
 
-    type Article_Header_TextHeader {
+    type Page_Header_TextHeader {
         title: String
     }
 
-    type Article_Header_ImageHeader {
+    type Page_Header_ImageHeader {
         title: String
         image: String
     }
 
-    input ArticleGetWhereInput {
+    input PageGetWhereInput {
         id: ID
         entryId: String
     }
 
-    input ArticleListWhereInput {
+    input PageListWhereInput {
         id: ID
         id_not: ID
         id_in: [ID!]
@@ -72,7 +72,7 @@ export default /* GraphQL */ `
         ownedBy_not_in: [String!]
     }
 
-    enum ArticleListSorter {
+    enum PageListSorter {
         id_ASC
         id_DESC
         savedOn_ASC
@@ -81,25 +81,25 @@ export default /* GraphQL */ `
         createdOn_DESC
     }
 
-    type ArticleResponse {
-        data: Article
+    type PageResponse {
+        data: Page
         error: CmsError
     }
 
-    type ArticleListResponse {
-        data: [Article]
+    type PageListResponse {
+        data: [Page]
         meta: CmsListMeta
         error: CmsError
     }
 
     extend type Query {
-        getArticle(where: ArticleGetWhereInput!): ArticleResponse
+        getPage(where: PageGetWhereInput!): PageResponse
 
-        listArticles(
-            where: ArticleListWhereInput
-            sort: [ArticleListSorter]
+        listPages(
+            where: PageListWhereInput
+            sort: [PageListSorter]
             limit: Int
             after: String
-        ): ArticleListResponse
+        ): PageListResponse
     }
 `;

@@ -1,66 +1,23 @@
 const { version: webinyVersion } = require("@webiny/cli/package.json");
 import { CmsModel } from "~/types";
 
-export const articleModel: CmsModel = {
+export const pageModel: CmsModel = {
     tenant: "root",
     webinyVersion,
     locale: "en-US",
-    name: "Custom",
+    name: "Page",
     group: {
         id: "62f39c13ebe1d800091bf33c",
         name: "Ungrouped"
     },
-    description: "",
-    modelId: "article",
+    description: "Page",
+    modelId: "page",
     savedOn: "2022-12-19T19:10:02.731Z",
-    titleFieldId: "title",
-    lockedFields: [
-        {
-            multipleValues: false,
-            type: "text",
-            fieldId: "text@mjnhop80"
-        },
-        {
-            multipleValues: true,
-            type: "dynamicZone",
-            fieldId: "dynamic-zone@peeeyhtc"
-        },
-        {
-            multipleValues: false,
-            type: "dynamicZone",
-            fieldId: "dynamic-zone@kcq9kt40"
-        }
-    ],
-    layout: [["mjnhop80"], ["kcq9kt40"], ["5mnzjqhn"], ["peeeyhtc"]],
+    titleFieldId: "id",
+    lockedFields: [],
+    layout: [["kcq9kt40"], ["peeeyhtc"]],
     tags: ["type:model"],
     fields: [
-        {
-            id: "mjnhop80",
-            fieldId: "title",
-            storageId: "text@mjnhop80",
-            type: "text",
-            label: "Title",
-            tags: [],
-            placeholderText: null,
-            helpText: null,
-            predefinedValues: {
-                enabled: false,
-                values: []
-            },
-            multipleValues: false,
-            renderer: {
-                name: "text-input"
-            },
-            validation: [
-                {
-                    name: "required",
-                    settings: {},
-                    message: "Value is required."
-                }
-            ],
-            listValidation: [],
-            settings: {}
-        },
         {
             id: "peeeyhtc",
             fieldId: "content",

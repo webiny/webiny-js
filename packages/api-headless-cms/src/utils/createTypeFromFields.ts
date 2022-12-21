@@ -1,5 +1,4 @@
-import upperFirst from "lodash/upperFirst";
-import { createManageTypeName, createTypeName } from "~/utils/createTypeName";
+import { createTypeName } from "~/utils/createTypeName";
 import { renderField } from "~/utils/renderFields";
 import { renderInputField } from "~/utils/renderInputFields";
 import { ApiEndpoint, CmsFieldTypePlugins, CmsModel, CmsModelField } from "~/types";
@@ -8,7 +7,7 @@ interface TypeFromFieldParams {
     typeOfType: "type" | "input";
     model: CmsModel;
     type: ApiEndpoint;
-    fieldId: string;
+    typeName: string;
     fields: CmsModelField[];
     fieldTypePlugins: CmsFieldTypePlugins;
 }
@@ -19,12 +18,11 @@ interface TypeFromFieldResponse {
 }
 
 export const createTypeFromFields = (params: TypeFromFieldParams): TypeFromFieldResponse | null => {
-    const { typeOfType, model, type, fieldId, fields, fieldTypePlugins } = params;
+    const { typeOfType, model, type, typeName, fields, fieldTypePlugins } = params;
     const typeSuffix = typeOfType === "input" ? "Input" : "";
-    const typeName = createTypeName(model.modelId);
-    const mTypeName = createManageTypeName(typeName);
+    const mTypeName = createTypeName(model.modelId);
 
-    const fieldTypeName = `${mTypeName}_${upperFirst(fieldId)}`;
+    const fieldTypeName = `${mTypeName}_${typeName}`;
 
     const typeFields = [];
     const nestedTypes = [];

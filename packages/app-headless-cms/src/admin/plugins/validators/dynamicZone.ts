@@ -2,7 +2,7 @@ import { CmsModelFieldValidatorPlugin } from "~/types";
 import { createValidators } from "~/admin/components/ContentEntryForm/functions/createValidators";
 
 interface TemplateValue {
-    __template: string;
+    _templateId: string;
     [key: string]: any;
 }
 
@@ -15,7 +15,7 @@ export const dynamicZoneValidator: CmsModelFieldValidatorPlugin = {
             const templates = field.settings?.templates || [];
             for (const template of templates) {
                 const validationRules = template.validation || [];
-                const templateValue = value.filter(v => v.__template === template.id);
+                const templateValue = value.filter(v => v._templateId === template.id);
                 const validators = createValidators(field, validationRules);
                 for (const validator of validators) {
                     await validator(templateValue);
