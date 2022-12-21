@@ -188,6 +188,7 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCrud => 
                     // We can safely cast.
                     initialPagesData.map(() => this.createPage((staticCategory as Category).slug))
                 );
+
                 const updatedPages = await Promise.all(
                     initialPagesData.map((data, index) => {
                         return this.updatePage(initialPages[index].id, data);
@@ -204,6 +205,13 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCrud => 
                         notFound: notFoundPage.pid
                     }
                 });
+
+                // Create folder link for initialPages
+                await Promise.all(
+                    initialPagesData.map(page =>
+                        context.folders.createLink({ id: page.id, folderId: "ROOT" })
+                    )
+                );
             }
 
             // 6. Mark the Page Builder app as installed.
@@ -232,7 +240,7 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCrud => 
 
             await plugin.apply(context);
 
-            //Store new app version
+            // Store new app version
             await this.setSystemVersion(version);
 
             return true;
