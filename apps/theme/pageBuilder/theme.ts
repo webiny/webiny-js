@@ -1,7 +1,7 @@
 import { createTheme } from "@webiny/app-page-builder-theme";
 import { CSSObject } from "@emotion/core";
 
-// Defaults first (colors, fonts, border radius, ...).
+// Colors.
 const colors = {
     color1: { base: "#fa5723" }, // primary
     color2: { base: "#00ccb0" }, // secondary
@@ -10,16 +10,19 @@ const colors = {
     color5: { base: "#ffffff" } // white background
 };
 
+// Fonts.
 const fonts = {
     primary: "'IBM Plex Sans', sans-serif;",
     secondary: "'Lato', sans-serif;"
 };
 
+// Border radius.
 const borderRadius = 4;
 
+// Typography.
 const headings = {
     fontFamily: fonts.secondary,
-    color: colors.color1.base,
+    color: colors.color3.base,
     WebkitFontSmoothing: "antialiased"
 };
 
@@ -31,6 +34,29 @@ const paragraphs = {
     WebkitFontSmoothing: "antialiased"
 };
 
+const typography = {
+    heading1: { ...headings, fontWeight: "bold", fontSize: 48 },
+    heading2: { ...headings, fontSize: 36 },
+    heading3: { ...headings, fontSize: 30 },
+    heading4: { ...headings, fontSize: 24 },
+    heading5: { ...headings, fontSize: 20 },
+    heading6: { ...headings, fontSize: 18, lineHeight: "1.75rem" },
+    paragraph1: { ...paragraphs, fontSize: 17 },
+    paragraph2: {
+        ...paragraphs,
+        fontSize: 12.5,
+        letterSpacing: "0.45px",
+        lineHeight: "19px"
+    },
+    quote: {
+        ...paragraphs,
+        fontWeight: "bold",
+        fontSize: 22
+    },
+    list: { ...paragraphs, fontSize: 17 }
+};
+
+// Buttons.
 const buttons = (overrides: CSSObject) => ({
     a: { textDecoration: "none" },
     ".button-body": {
@@ -64,32 +90,12 @@ const theme = createTheme({
     },
     styles: {
         colors,
-        typography: {
-            paragraph1: {
-                ...paragraphs,
-                fontSize: 17
-            },
-            paragraph2: {
-                ...paragraphs,
-                fontSize: 12.5,
-                letterSpacing: "0.45px",
-                lineHeight: "19px"
-            },
-
-            heading1: { ...headings, fontWeight: "bold", fontSize: 48 },
-            heading2: { ...headings, fontSize: 36 },
-            heading3: { ...headings, fontSize: 30 },
-            heading4: { ...headings, fontSize: 24 },
-            heading5: { ...headings, fontSize: 20 },
-            heading6: { ...headings, fontSize: 18, lineHeight: "1.75rem" },
-            quote: { ...paragraphs }
-        },
+        typography,
         elements: {
+            document: {
+                a: { color: colors.color1.base }
+            },
             quote: {
-                color: colors.color3.base,
-                fontFamily: fonts.primary,
-                fontWeight: "bold",
-                fontSize: 22,
                 "blockquote > q": {
                     quotes: "auto",
                     "&:before": { content: "open-quote" },
@@ -113,6 +119,7 @@ const theme = createTheme({
                     "&:hover": { transform: "translateY(-1px)" }
                 })
             },
+
             list: {
                 li: {
                     marginBottom: "12px",

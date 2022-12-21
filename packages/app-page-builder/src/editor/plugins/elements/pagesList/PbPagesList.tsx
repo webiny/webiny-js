@@ -18,7 +18,7 @@ interface PagesListProps {
         resultsPerPage: string;
     };
 }
-const PagesList: React.FC<PagesListProps> = props => {
+const PbPagesList: React.FC<PagesListProps> = props => {
     const { component, ...vars } = props.data;
     const components = plugins.byType<PbPageElementPagesListComponentPlugin>(
         "pb-page-element-pages-list-component"
@@ -100,4 +100,4 @@ const PagesList: React.FC<PagesListProps> = props => {
     );
 };
 
-export default React.memo(PagesList);
+export default React.memo(PbPagesList);

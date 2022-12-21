@@ -14,7 +14,7 @@ interface CellPropsType {
     index: number;
     isLast?: boolean;
 }
-const Cell: React.FC<CellPropsType> = ({ id, dropElement, index, isLast = false, type }) => {
+const PbCell: React.FC<CellPropsType> = ({ id, dropElement, index, isLast = false, type }) => {
     return (
         <CellStyle>
             <DropZone.Above type={type} onDrop={source => dropElement(source, index)} />
@@ -26,4 +26,4 @@ const Cell: React.FC<CellPropsType> = ({ id, dropElement, index, isLast = false,
     );
 };
 
-export default React.memo(Cell);
+export default React.memo(PbCell);

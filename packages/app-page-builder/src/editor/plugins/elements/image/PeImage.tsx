@@ -28,7 +28,7 @@ type ImagePropsType = {
     isActive?: boolean;
 };
 
-const Image: React.FC<ImagePropsType> = ({ element, isActive }) => {
+const PeImage: React.FC<ImagePropsType> = ({ element, isActive }) => {
     const { renderers } = usePageElements();
     const Image = renderers.image as ImageRenderer;
 
@@ -75,4 +75,4 @@ const Image: React.FC<ImagePropsType> = ({ element, isActive }) => {
     return <Image element={element as Element} renderEmpty={<RenderBlank />} />;
 };
 
-export default Image;
+export default PeImage;

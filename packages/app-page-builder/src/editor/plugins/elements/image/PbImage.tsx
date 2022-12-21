@@ -6,7 +6,7 @@ import { ElementRoot } from "../../../../render/components/ElementRoot";
 type ImagePropsType = {
     element: PbEditorElement;
 };
-const Image: React.FC<ImagePropsType> = ({ element }) => {
+const PbImage: React.FC<ImagePropsType> = ({ element }) => {
     return (
         <ElementRoot
             element={element}
@@ -17,4 +17,4 @@ const Image: React.FC<ImagePropsType> = ({ element }) => {
     );
 };
 
-export default Image;
+export default PbImage;

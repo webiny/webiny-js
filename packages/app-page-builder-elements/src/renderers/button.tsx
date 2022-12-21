@@ -66,30 +66,6 @@ const ButtonText: React.FC<{ text: string }> = ({ text }) => {
     return <div className={"button-text"}>{text}</div>;
 };
 
-export interface ButtonElementData {
-    buttonText: string;
-    type: string;
-    action: {
-        actionType: "link" | "clickHandler" | "scrollToElement";
-        href?: string;
-        newTab?: boolean;
-        clickHandler: string;
-        scrollToElement: string;
-        variables: string;
-    };
-    link?: {
-        href?: string;
-        newTab?: boolean;
-    };
-    icon?: {
-        color: string;
-        svg: string;
-        id: Array<string>;
-        width: number;
-        position: string;
-    };
-}
-
 export type ButtonRenderer = ReturnType<typeof createButton>;
 
 export const createButton = (params: CreateButtonParams = {}) => {

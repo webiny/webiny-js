@@ -7,7 +7,7 @@ interface DocumentProps {
     element: PbEditorElement;
 }
 
-const Document: React.FC<DocumentProps> = ({ element }) => {
+const PbDocument: React.FC<DocumentProps> = ({ element }) => {
     return (
         <div className={"webiny-pb-page-document"} data-testid={"pb-editor-page-canvas-section"}>
             {element.elements.map((target, index) => {
@@ -22,4 +22,4 @@ const Document: React.FC<DocumentProps> = ({ element }) => {
     );
 };
 
-export default React.memo(Document);
+export default React.memo(PbDocument);

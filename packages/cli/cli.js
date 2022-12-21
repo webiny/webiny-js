@@ -15,7 +15,16 @@ yargs.help(false);
 const project = getProject();
 
 // `webiny.project.ts` file.
-Object.assign(process.env, project.config.env);
+// Environment variables defined via the `env` property.
+if (project.config.env) {
+    Object.assign(process.env, project.config.env);
+}
+
+// Feature flags defined via the `featureFlags` property.
+if (project.config.featureFlags) {
+    process.env.WEBINY_FEATURE_FLAGS = JSON.stringify(project.config.featureFlags);
+    process.env.REACT_APP_WEBINY_FEATURE_FLAGS = JSON.stringify(project.config.featureFlags);
+}
 
 // `.env.{PASSED_ENVIRONMENT}` and `.env` files.
 let paths = [path.join(project.root, ".env")];
@@ -24,7 +33,7 @@ if (yargs.argv.env) {
     paths.push(path.join(project.root, `.env.${yargs.argv.env}`));
 }
 
-// Finally, let's load environment variables
+// Let's load environment variables
 for (let i = 0; i < paths.length; i++) {
     const path = paths[i];
     const { error } = require("dotenv").config({ path });

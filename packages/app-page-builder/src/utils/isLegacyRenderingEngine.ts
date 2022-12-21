@@ -1,2 +1,3 @@
-export const isLegacyRenderingEngine =
-    process.env.REACT_APP_PB_ELEMENTS_LEGACY_RENDERING_ENGINE === "true";
+import { featureFlags } from "@webiny/feature-flags";
+
+export const isLegacyRenderingEngine = featureFlags.pbLegacyRenderingEngine === true;

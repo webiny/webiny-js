@@ -7,9 +7,15 @@ import {
 import { createRenderer } from "~/createRenderer";
 import { useRenderer } from "~/hooks/useRenderer";
 
+export interface PagesListComponent {
+    id: string;
+    name: string;
+    component: RenderPagesListComponent;
+}
+
 export interface CreatePagesListParams {
     dataLoader: DataLoader;
-    pagesListComponents: Record<string, RenderPagesListComponent>;
+    pagesListComponents: PagesListComponent[];
 }
 
 interface Cursors {
@@ -18,7 +24,7 @@ interface Cursors {
     next: string | null;
 }
 
-export type PagesListComponent = ReturnType<typeof createPagesList>;
+export type PagesListRenderer = ReturnType<typeof createPagesList>;
 
 export const createPagesList = (params: CreatePagesListParams) => {
     const { dataLoader, pagesListComponents } = params;
@@ -110,10 +116,12 @@ export const createPagesList = (params: CreatePagesListParams) => {
             loadPage();
         }, [variablesHash]);
 
-        const PagesListComponent = pagesListComponents[component];
-        if (!PagesListComponent) {
+        const pagesListComponent = pagesListComponents.find(item => item.id === component);
+        if (!pagesListComponent) {
             return <div>Selected page list component not found!</div>;
         }
+
+        const { component: PagesListComponent } = pagesListComponent;
 
         return (
             <div {...getAttributes()}>

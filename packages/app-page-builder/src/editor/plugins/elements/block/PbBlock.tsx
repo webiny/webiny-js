@@ -13,7 +13,7 @@ const BlockStyle = styled("div")({
 interface BlockType {
     element: PbEditorElement;
 }
-const Block: React.FC<BlockType> = ({ element }) => {
+const PbBlock: React.FC<BlockType> = ({ element }) => {
     const { id } = element;
 
     return (
@@ -38,4 +38,4 @@ const Block: React.FC<BlockType> = ({ element }) => {
     );
 };
 
-export default React.memo(Block);
+export default React.memo(PbBlock);

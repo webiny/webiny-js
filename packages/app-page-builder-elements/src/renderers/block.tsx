@@ -10,7 +10,7 @@ export interface BlockComponentProps {
     className?: string;
 }
 
-export type BlockComponent = Renderer<BlockComponentProps>;
+export type BlockRenderer = Renderer<BlockComponentProps>;
 
 interface Props {
     elements?: Element[];

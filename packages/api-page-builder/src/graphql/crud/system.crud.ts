@@ -3,6 +3,7 @@ import { NotAuthorizedError } from "@webiny/api-security";
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
 import { getApplicablePlugin } from "@webiny/api-upgrade";
 import { preparePageData } from "./install/welcome-to-webiny-page-data";
+import { preparePageDataLegacy } from "./install/welcome-to-webiny-page-data-legacy";
 import { notFoundPageData } from "./install/notFoundPageData";
 import savePageAssets from "./install/utils/savePageAssets";
 import {
@@ -17,12 +18,14 @@ import {
     SystemCrud
 } from "~/types";
 import { createTopic } from "@webiny/pubsub";
+import { featureFlags } from "@webiny/feature-flags";
 
 export interface CreateSystemCrudParams {
     context: PbContext;
     storageOperations: PageBuilderStorageOperations;
     getTenantId: () => string;
 }
+
 export const createSystemCrud = (params: CreateSystemCrudParams): SystemCrud => {
     const { context, storageOperations, getTenantId } = params;
     const onSystemBeforeInstall = createTopic<OnSystemBeforeInstallTopicParams>(
@@ -156,10 +159,18 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCrud => 
                 // 5. Create sample pages.
                 const fmSettings = await fileManager.settings.getSettings();
 
-                const welcomeToWebinyPageContent = preparePageData({
-                    srcPrefix: fmSettings ? fmSettings.srcPrefix : "",
-                    fileIdToFileMap: fileIdToFileMap
-                });
+                let welcomeToWebinyPageContent;
+                if (featureFlags.pbLegacyRenderingEngine === true) {
+                    welcomeToWebinyPageContent = preparePageDataLegacy({
+                        srcPrefix: fmSettings ? fmSettings.srcPrefix : "",
+                        fileIdToFileMap: fileIdToFileMap
+                    });
+                } else {
+                    welcomeToWebinyPageContent = preparePageData({
+                        srcPrefix: fmSettings ? fmSettings.srcPrefix : "",
+                        fileIdToFileMap: fileIdToFileMap
+                    });
+                }
 
                 const initialPagesData: Page[] = [
                     /**

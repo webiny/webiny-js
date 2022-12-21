@@ -7,7 +7,8 @@ import {
     PbRenderElementPlugin,
     PbPageElementPagesListComponentPlugin
 } from "~/types";
-import { PluginCollection } from "@webiny/plugins/types";
+import {PluginCollection} from "@webiny/plugins/types";
+import {createPagesList} from "@webiny/app-page-builder-elements/renderers/pagesList";
 
 export default (args: PbRenderElementPluginArgs = {}): PluginCollection => {
     const elementType = kebabCase(args.elementType || "pages-list");
@@ -17,13 +18,14 @@ export default (args: PbRenderElementPluginArgs = {}): PluginCollection => {
             name: `pb-render-page-element-${elementType}`,
             type: "pb-render-page-element",
             elementType: elementType,
-            render({ element, theme }) {
+            renderer: createPagesList({pagesListComponents: []}),
+            render({element, theme}) {
                 /**
                  * Figure out correct type for element data or PagesList.data
                  */
                 // TODO @ts-refactor
                 // @ts-ignore
-                return <PagesList data={element.data} theme={theme} />;
+                return <PagesList data={element.data} theme={theme}/>;
             }
         } as PbRenderElementPlugin,
         {

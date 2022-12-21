@@ -1,125 +1,13 @@
-import React, {HTMLAttributes} from "react";
-import {type CSSObject} from "@emotion/core";
-import {Theme, Breakpoint, StylesObject} from "@webiny/app-page-builder-theme/types";
+import React, { HTMLAttributes } from "react";
+import { type CSSObject } from "@emotion/core";
+import { Theme, Breakpoint, StylesObject } from "@webiny/app-page-builder-theme/types";
 
 export type Content = Element;
 
-/**
- * TODO @ts-refactor
- * We should have a single type for all page builder apps elements.
- * Currently, we have Element, PbElement and PbEditorElement.
- */
 export interface Element<TElementData = Record<string, any>> {
     id: string;
     type: string;
     data: TElementData;
-    // settings?: {
-    //     grid?: {
-    //         cellsType: string;
-    //         size: string;
-    //     };
-    //     horizontalAlignFlex?: {
-    //         [key: string]: string;
-    //     };
-    //     verticalAlign?: {
-    //         [key: string]: string;
-    //     };
-    //     background?: {
-    //         [key: string]: string;
-    //     };
-    //     border?: {
-    //         [key: string]: {
-    //             style?: string;
-    //             color?: string;
-    //             radius?: {
-    //                 advanced?: boolean;
-    //                 top?: string;
-    //                 bottom?: string;
-    //                 left?: string;
-    //                 right?: string;
-    //                 all?: string;
-    //             };
-    //             width?: {
-    //                 advanced?: boolean;
-    //                 top?: string;
-    //                 bottom?: string;
-    //                 left?: string;
-    //                 right?: string;
-    //                 all?: string;
-    //             };
-    //         };
-    //     };
-    //     shadow?: {
-    //         horizontal?: string;
-    //         vertical?: string;
-    //         blur?: string;
-    //         spread?: string;
-    //         color?: string;
-    //     };
-    //     height?: {
-    //         [key: string]: {
-    //             value: string;
-    //         };
-    //     };
-    //     width?: {
-    //         [key: string]: {
-    //             value: string;
-    //         };
-    //     };
-    //     margin?: {
-    //         [key: string]: {
-    //             advanced?: boolean;
-    //             top?: string;
-    //             bottom?: string;
-    //             left?: string;
-    //             right?: string;
-    //             all?: string;
-    //         };
-    //     };
-    //     padding?: {
-    //         [key: string]: {
-    //             advanced?: boolean;
-    //             top?: string;
-    //             bottom?: string;
-    //             left?: string;
-    //             right?: string;
-    //             all?: string;
-    //         };
-    //     };
-    //     [key: string]: any;
-    // };
-    // text: {
-    //     data: {
-    //         text?: string;
-    //         typography: string;
-    //         color?: string;
-    //         alignment?: CSSObject["textAlign"];
-    //         tag?: string;
-    //     };
-    //     desktop: {
-    //         text?: string;
-    //         typography: string;
-    //         color?: string;
-    //         alignment?: CSSObject["textAlign"];
-    //         tag?: string;
-    //     };
-    //     [key: string]: {
-    //         text?: string;
-    //         typography: string;
-    //         color?: string;
-    //         alignment?: CSSObject["textAlign"];
-    //         tag?: string;
-    //     };
-    // };
-    // image: {
-    //     file: {
-    //         name: string;
-    //         src: string;
-    //     };
-    //     width: number;
-    //     height: number;
-    // };
-    // [key: string]: any;
     elements: Element[];
     path?: string[];
 }
@@ -144,9 +32,7 @@ export type AttributesObject = React.ComponentProps<any>;
 
 export type GetElementAttributes = (element: Element) => AttributesObject;
 export type GetElementStyles = (element: Element) => CSSObject;
-export type GetStyles = (
-    styles: StylesObject | ((theme: Theme) => Stylesobject)
-) => CSSObject;
+export type GetStyles = (styles: StylesObject | ((theme: Theme) => Stylesobject)) => CSSObject;
 
 interface SetAssignAttributesCallbackParams {
     attributes: AttributesObject;

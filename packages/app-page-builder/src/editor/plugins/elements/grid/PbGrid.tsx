@@ -21,7 +21,7 @@ type GridPropsType = {
     element: PbEditorElement;
     displayMode: DisplayMode;
 };
-const Grid: React.FC<GridPropsType> = ({
+const PbGrid: React.FC<GridPropsType> = ({
     elementStyle,
     elementAttributes,
     customClasses,
@@ -71,4 +71,4 @@ const Grid: React.FC<GridPropsType> = ({
         </StyledGrid>
     );
 };
-export default React.memo(Grid);
+export default React.memo(PbGrid);
