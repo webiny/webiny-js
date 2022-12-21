@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useCallback, useState } from "react";
 import gql from "graphql-tag";
 import { i18n } from "@webiny/app/i18n";
@@ -87,7 +86,13 @@ const Upgrade: React.FC<UpgradeProps> = ({ onInstalled }) => {
                 </Grid>
             </SimpleFormContent>
             <SimpleFormFooter>
-                <ButtonPrimary onClick={startUpgrade}>Upgrade</ButtonPrimary>
+                <ButtonPrimary
+                    onClick={() => {
+                        startUpgrade();
+                    }}
+                >
+                    Upgrade
+                </ButtonPrimary>
             </SimpleFormFooter>
         </SimpleForm>
     );
