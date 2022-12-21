@@ -18,6 +18,7 @@
     "@commodo/fields": "beta",
     "@webiny/api": "^5.33.2",
     "@webiny/api-file-manager": "^5.33.2",
+    "@webiny/api-folders": "^5.33.2",
     "@webiny/api-i18n": "^5.33.2",
     "@webiny/api-prerendering-service": "^5.33.2",
     "@webiny/api-security": "^5.33.2",
