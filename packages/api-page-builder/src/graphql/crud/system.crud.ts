@@ -233,7 +233,7 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCrud => 
             await plugin.apply(context);
 
             //Store new app version
-            //await this.setSystemVersion(version);
+            await this.setSystemVersion(version);
 
             return true;
         }
