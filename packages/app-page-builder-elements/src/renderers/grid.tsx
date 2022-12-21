@@ -17,13 +17,13 @@ export const createGrid = () => {
             );
         },
         {
-            getBaseStyles: () => ({
+            baseStyles: {
                 display: "flex",
                 flexDirection: "row",
                 justifyContent: "flex-start",
                 alignItems: "flex-start",
                 maxWidth: "100%"
-            })
+            }
         }
     );
 };

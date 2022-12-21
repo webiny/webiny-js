@@ -7,14 +7,13 @@ import {
     AssignAttributesCallback,
     AssignStylesCallback,
     AttributesObject,
-    Breakpoint,
     ElementAttributesCallback,
     ElementRendererProps,
     ElementStylesCallback,
-    StylesCallback,
-    StylesObjects,
-    ThemeStylesCallback
+    StylesCallback
 } from "~/types";
+
+import { Breakpoint, StylesObject } from "@webiny/app-page-builder-theme/types";
 
 let usingPageElementsFlag = false;
 
@@ -40,7 +39,7 @@ export const isPerBreakpointStylesObject = ({
     styles
 }: {
     breakpoints: Record<string, Breakpoint>;
-    styles: StylesObjects;
+    styles: StylesObject;
 }): boolean => {
     for (const breakpointName in breakpoints) {
         if (styles[breakpointName]) {
@@ -52,7 +51,7 @@ export const isPerBreakpointStylesObject = ({
 
 export const assignStyles: AssignStylesCallback = (params: {
     breakpoints: Record<string, Breakpoint>;
-    styles: StylesObjects;
+    styles: StylesObject;
     assignTo?: CSSObject;
 }) => {
     const { breakpoints, styles = {}, assignTo = {} } = params;
@@ -93,7 +92,6 @@ export const defaultElementAttributesCallback: ElementAttributesCallback = ({
             theme,
             renderers,
             modifiers,
-            attributes
         });
 
         assignAttributes({
@@ -132,17 +130,17 @@ export const defaultElementStylesCallback: ElementStylesCallback = ({
         });
     }
 
-    return [styles];
+    return styles;
 };
 
-export const defaultThemeStylesCallback: ThemeStylesCallback = ({
+export const defaultStylesCallback: StylesCallback = ({
     theme,
-    getStyles,
+    styles,
     assignStyles: customAssignStylesCallback
 }) => {
-    let themeStyles = {};
+    let returnStyles = {};
     try {
-        themeStyles = getStyles(theme);
+        returnStyles = typeof styles === 'function' ? styles(theme) : styles;
     } catch (e) {
         // Do nothing.
         console.warn("Could not load theme styles:");
@@ -150,15 +148,11 @@ export const defaultThemeStylesCallback: ThemeStylesCallback = ({
     }
 
     const assign = customAssignStylesCallback || assignStyles;
-    const styles = assign({
+    return assign({
         breakpoints: theme.breakpoints || {},
-        styles: themeStyles
+        styles: returnStyles
     });
-
-    return [styles];
 };
-
-export const defaultStylesCallback: StylesCallback = ({ styles }) => [styles];
 
 export const elementDataPropsAreEqual = (
     prevProps: ElementRendererProps,

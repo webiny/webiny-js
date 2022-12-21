@@ -29,13 +29,13 @@ export const createBlock = () => {
             );
         },
         {
-            getBaseStyles: () => ({
+            baseStyles: {
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "flex-start",
                 alignItems: "flex-start",
                 boxSizing: "border-box"
-            })
+            }
         }
     );
 };

@@ -4,14 +4,11 @@ import {
     PageElementsProviderProps,
     ElementStylesCallback,
     StylesCallback,
-    ThemeStylesCallback,
     GetElementAttributes,
     GetElementStyles,
-    GetThemeStyles,
     GetStyles,
     AssignStylesCallback,
     SetElementStylesCallback,
-    SetThemeStylesCallback,
     SetStylesCallback,
     SetAssignStylesCallback
 } from "~/types";
@@ -19,8 +16,7 @@ import {
     setUsingPageElements,
     defaultElementAttributesCallback,
     defaultElementStylesCallback,
-    defaultThemeStylesCallback,
-    defaultStylesCallback
+    defaultStylesCallback,
 } from "~/utils";
 
 export const PageElementsContext = createContext<PageElementsContextValue>(null as unknown as any);
@@ -46,9 +42,8 @@ export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
         useState<AssignStylesCallback>();
     const [customElementStylesCallback, setCustomElementStylesCallback] =
         useState<ElementStylesCallback>();
-    const [customThemeStylesCallback, setCustomThemeStylesCallback] =
-        useState<ThemeStylesCallback>();
-    const [customStylesCallback, setCustomStylesCallback] = useState<StylesCallback>();
+    const [customStylesCallback, setCustomStylesCallback] =
+        useState<StylesCallback>();
 
     const setAssignStylesCallback = useCallback<SetAssignStylesCallback>(callback => {
         setCustomAssignStylesCallback(() => callback);
@@ -56,10 +51,6 @@ export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
 
     const setElementStylesCallback = useCallback<SetElementStylesCallback>(callback => {
         setCustomElementStylesCallback(() => callback);
-    }, []);
-
-    const setThemeStylesCallback = useCallback<SetThemeStylesCallback>(callback => {
-        setCustomThemeStylesCallback(() => callback);
     }, []);
 
     const setStylesCallback = useCallback<SetStylesCallback>(callback => {
@@ -82,24 +73,9 @@ export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
         [customElementStylesCallback, customAssignStylesCallback]
     );
 
-    const getThemeStyles = useCallback<GetThemeStyles>(
-        getStyles => {
-            const callback = customThemeStylesCallback || defaultThemeStylesCallback;
-            return callback({
-                getStyles,
-                theme,
-                renderers,
-                modifiers,
-                assignStyles: customAssignStylesCallback
-            });
-        },
-        [customThemeStylesCallback, customAssignStylesCallback]
-    );
-
     const getStyles = useCallback<GetStyles>(
         styles => {
             const callback = customStylesCallback || defaultStylesCallback;
-
             return callback({
                 styles,
                 theme,
@@ -122,11 +98,9 @@ export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
         modifiers,
         getElementAttributes,
         getElementStyles,
-        getThemeStyles,
         getStyles,
         setAssignStylesCallback,
         setElementStylesCallback,
-        setThemeStylesCallback,
         setStylesCallback
     };
 

@@ -1,6 +1,6 @@
-import React, { HTMLAttributes } from "react";
-import { type CSSObject } from "@emotion/core";
-import { Theme, Breakpoint } from "@webiny/app-page-builder-theme/types";
+import React, {HTMLAttributes} from "react";
+import {type CSSObject} from "@emotion/core";
+import {Theme, Breakpoint, StylesObject} from "@webiny/app-page-builder-theme/types";
 
 export type Content = Element;
 
@@ -9,10 +9,10 @@ export type Content = Element;
  * We should have a single type for all page builder apps elements.
  * Currently, we have Element, PbElement and PbEditorElement.
  */
-export interface Element<TData = any> {
+export interface Element<TElementData = Record<string, any>> {
     id: string;
     type: string;
-    data: TData;
+    data: TElementData;
     // settings?: {
     //     grid?: {
     //         cellsType: string;
@@ -127,7 +127,7 @@ export interface Element<TData = any> {
 /**
  * Should be a `CSSObject` object or an object with breakpoint names as keys and `CSSObject` objects as values.
  */
-export interface StylesObjects {
+export interface Stylesobject {
     [key: string]: CSSObject | string | number | undefined;
 }
 
@@ -143,9 +143,10 @@ export interface PageElementsProviderProps {
 export type AttributesObject = React.ComponentProps<any>;
 
 export type GetElementAttributes = (element: Element) => AttributesObject;
-export type GetElementStyles = (element: Element) => Array<CSSObject>;
-export type GetThemeStyles = (getStyles: (theme: Theme) => StylesObjects) => Array<CSSObject>;
-export type GetStyles = (styles: StylesObjects) => Array<CSSObject>;
+export type GetElementStyles = (element: Element) => CSSObject;
+export type GetStyles = (
+    styles: StylesObject | ((theme: Theme) => Stylesobject)
+) => CSSObject;
 
 interface SetAssignAttributesCallbackParams {
     attributes: AttributesObject;
@@ -154,7 +155,7 @@ interface SetAssignAttributesCallbackParams {
 
 interface SetAssignStylesCallbackParams {
     breakpoints: Record<string, Breakpoint>;
-    styles: StylesObjects;
+    styles: Stylesobject;
     assignTo?: CSSObject;
 }
 
@@ -167,13 +168,8 @@ interface SetElementStylesCallbackParams extends PageElementsProviderProps {
     assignStyles?: AssignStylesCallback;
 }
 
-interface SetThemeStylesCallbackParams extends PageElementsProviderProps {
-    getStyles: (theme: Theme) => StylesObjects;
-    assignStyles?: AssignStylesCallback;
-}
-
 interface SetStylesCallbackParams extends PageElementsProviderProps {
-    styles: StylesObjects;
+    styles: StylesObject | ((theme: Theme) => Stylesobject);
     assignStyles?: AssignStylesCallback;
 }
 
@@ -184,23 +180,19 @@ export type AssignStylesCallback = (params: SetAssignStylesCallbackParams) => CS
 export type ElementAttributesCallback = (
     params: SetElementAttributesCallbackParams
 ) => AttributesObject;
-export type ElementStylesCallback = (params: SetElementStylesCallbackParams) => Array<CSSObject>;
-export type ThemeStylesCallback = (params: SetThemeStylesCallbackParams) => Array<CSSObject>;
-export type StylesCallback = (params: SetStylesCallbackParams) => Array<CSSObject>;
+export type ElementStylesCallback = (params: SetElementStylesCallbackParams) => CSSObject;
+export type StylesCallback = (params: SetStylesCallbackParams) => CSSObject;
 
 export type SetAssignStylesCallback = (callback: AssignStylesCallback) => void;
 export type SetElementStylesCallback = (callback: ElementStylesCallback) => void;
-export type SetThemeStylesCallback = (callback: ThemeStylesCallback) => void;
 export type SetStylesCallback = (callback: StylesCallback) => void;
 
 export interface PageElementsContextValue extends PageElementsProviderProps {
     getElementAttributes: GetElementAttributes;
     getElementStyles: GetElementStyles;
-    getThemeStyles: GetThemeStyles;
     getStyles: GetStyles;
     setAssignStylesCallback: SetAssignStylesCallback;
     setElementStylesCallback: SetElementStylesCallback;
-    setThemeStylesCallback: SetThemeStylesCallback;
     setStylesCallback: SetStylesCallback;
 }
 
@@ -214,8 +206,8 @@ export interface RendererProviderProps {
     attributes: HTMLAttributes<HTMLElement>;
 }
 
-export type ElementRendererProps = {
-    element: Element;
+export type ElementRendererProps<TElement = Record<string, any>> = {
+    element: Element<TElement>;
 };
 
 export type Renderer<T = {}> = React.ComponentType<ElementRendererProps & T>;
@@ -232,6 +224,6 @@ export type ElementStylesModifier = (args: {
     theme: Theme;
     renderers?: PageElementsProviderProps["renderers"];
     modifiers?: PageElementsProviderProps["modifiers"];
-}) => StylesObjects | null;
+}) => Stylesobject | null;
 
 export type LinkComponent = React.ComponentType<React.HTMLProps<HTMLAnchorElement>>;

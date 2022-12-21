@@ -98,7 +98,7 @@ export const createButton = (params: CreateButtonParams = {}) => {
 
     const RendererComponent = createRenderer(
         () => {
-            const { getThemeStyles } = usePageElements();
+            const { getStyles } = usePageElements();
             const { getElement, getAttributes } = useRenderer();
             const element = getElement();
             const { buttonText, link, icon, action } = element.data;
@@ -121,7 +121,7 @@ export const createButton = (params: CreateButtonParams = {}) => {
                         width: icon.width,
                         ...ICON_POSITION_MARGIN[position]
                     },
-                    getThemeStyles(theme => {
+                    getStyles(theme => {
                         const themeColor = theme.styles.colors?.[color]?.base;
                         return {
                             color: themeColor || color
@@ -167,7 +167,7 @@ export const createButton = (params: CreateButtonParams = {}) => {
             );
         },
         {
-            getThemeStyles({ theme, element }) {
+            themeStyles({ theme, element }) {
                 const { type } = element.data;
                 return theme.styles.elements?.button[type];
             }
