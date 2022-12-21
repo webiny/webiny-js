@@ -8,7 +8,6 @@ import {
 import { createReadTypeName } from "~/utils/createTypeName";
 import { parseIdentifier } from "@webiny/utils";
 import { createGraphQLInputField } from "./helpers";
-import { getBaseFieldType } from "~/utils/getBaseFieldType";
 
 interface RefFieldValue {
     /**
@@ -19,14 +18,8 @@ interface RefFieldValue {
     modelId: string;
 }
 
-interface UnionField {
-    model: CmsModel;
-    field: CmsModelField;
-    typeName: string;
-}
-
 const createUnionTypeName = (model: CmsModel, field: CmsModelField) => {
-    return `${createReadTypeName(model.modelId)}${createReadTypeName(field.fieldId)}`;
+    return `${createReadTypeName(model.modelId)}_${createReadTypeName(field.fieldId)}`;
 };
 
 interface CreateListFilterParams {
@@ -89,7 +82,17 @@ export const createRefField = (): CmsModelFieldToGraphQLPlugin => {
                         ? createUnionTypeName(model, field)
                         : createReadTypeName(models[0].modelId);
 
-                return field.fieldId + `: ${field.multipleValues ? `[${gqlType}]` : gqlType}`;
+                const typeDefs =
+                    models.length > 1
+                        ? `union ${gqlType} = ${getFieldModels(field)
+                              .map(({ modelId }) => createReadTypeName(modelId))
+                              .join(" | ")}`
+                        : "";
+
+                return {
+                    fields: field.fieldId + `: ${field.multipleValues ? `[${gqlType}]` : gqlType}`,
+                    typeDefs
+                };
             },
             /**
              * TS is complaining about mixed types for createResolver.
@@ -186,40 +189,9 @@ export const createRefField = (): CmsModelFieldToGraphQLPlugin => {
                     };
                 };
             },
-            createSchema({ models }) {
-                const unionFields: UnionField[] = [];
-                for (const model of models) {
-                    // Generate a dedicated union type for every `ref` field which has more than 1 content model assigned.
-                    model.fields
-                        .filter(field => {
-                            const baseType = getBaseFieldType(field);
-                            return baseType === "ref" && (field.settings?.models || []).length > 1;
-                        })
-                        .forEach(field =>
-                            unionFields.push({
-                                model,
-                                field,
-                                typeName: createUnionTypeName(model, field)
-                            })
-                        );
-                }
-                const unionFieldsTypeDef = unionFields
-                    .map(
-                        ({ field, typeName }) =>
-                            `union ${typeName} = ${getFieldModels(field)
-                                .map(({ modelId }) => createReadTypeName(modelId))
-                                .join(" | ")}`
-                    )
-                    .join("\n");
-
-                const filteringTypeDef = `
-                ${createFilteringTypeDef()}
-                
-                ${unionFieldsTypeDef}
-            `;
-
+            createSchema() {
                 return {
-                    typeDefs: filteringTypeDef,
+                    typeDefs: createFilteringTypeDef(),
                     resolvers: {}
                 };
             },

@@ -17,7 +17,7 @@ interface RefFieldValue {
 }
 
 const createUnionTypeName = (model: CmsModel, field: CmsModelField) => {
-    return `${createReadTypeName(model.modelId)}${createReadTypeName(field.fieldId)}`;
+    return `${createReadTypeName(model.modelId)}_${createReadTypeName(field.fieldId)}`;
 };
 
 const getFieldTemplates = (field: CmsModelField): CmsDynamicZoneTemplate[] => {
