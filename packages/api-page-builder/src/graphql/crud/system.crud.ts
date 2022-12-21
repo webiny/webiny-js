@@ -209,7 +209,7 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCrud => 
                 // Create folder link for initialPages
                 await Promise.all(
                     initialPagesData.map(page =>
-                        context.folders.createLink({ id: page.id, folderId: "ROOT" })
+                        context.folders.createLink({ id: page.pid, folderId: "ROOT" })
                     )
                 );
             }
