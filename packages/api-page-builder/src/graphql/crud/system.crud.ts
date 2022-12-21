@@ -205,13 +205,6 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCrud => 
                         notFound: notFoundPage.pid
                     }
                 });
-
-                // Create folder link for initialPages
-                await Promise.all(
-                    initialPagesData.map(page =>
-                        context.folders.createLink({ id: page.pid, folderId: "ROOT" })
-                    )
-                );
             }
 
             // 6. Mark the Page Builder app as installed.
