@@ -1,5 +1,5 @@
 import gql from "graphql-tag";
-import { PbElement, PbErrorResponse, PbPageRevision } from "~/types";
+import { PbElement, PbErrorResponse, PbPageRevision, PbPageDataSettings } from "~/types";
 
 const error = `
     error {
@@ -17,6 +17,7 @@ export interface PageResponseData {
     locked: boolean;
     status: string;
     revisions: PbPageRevision[];
+    settings: PbPageDataSettings;
 }
 export const DATA_FIELDS = `
     id
@@ -34,7 +35,37 @@ export const DATA_FIELDS = `
         status
         version
     }
-    
+    settings {
+        general {
+            snippet
+            tags
+            layout
+            image {
+                id
+                src
+            }
+        }
+        social {
+            meta {
+                property
+                content
+            }
+            title
+            description
+            image {
+                id
+                src
+            }
+        }
+        seo {
+            title
+            description
+            meta {
+                name
+                content
+            }
+        }
+    }
 `;
 
 export const LIST_PAGES_DATA_FIELDS = `
@@ -58,6 +89,19 @@ export const CREATE_PAGE = gql`
     mutation PbCreatePage($from: ID, $category: String) {
         pageBuilder {
             createPage(from: $from, category: $category) {
+                data {
+                    ${LIST_PAGES_DATA_FIELDS}
+                }
+                ${error}
+            }
+        }
+    }
+`;
+
+export const UPDATE_PAGE = gql`
+    mutation PbUpdatePage($id: ID!, $data: PbUpdatePageInput!) {
+        pageBuilder {
+            updatePage(id: $id, data: $data) {
                 data {
                     ${LIST_PAGES_DATA_FIELDS}
                 }
@@ -122,6 +166,7 @@ export const GET_PAGE = gql`
                     savedOn
                     category {
                         name
+                        slug
                     }
                     content
 

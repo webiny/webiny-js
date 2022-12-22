@@ -31,6 +31,37 @@ const DATA_FIELD = `
             version
             savedOn
         }
+        settings {
+            general {
+                snippet
+                tags
+                layout
+                image {
+                    id
+                    src
+                }
+            }
+            social {
+                meta {
+                    property
+                    content
+                }
+                title
+                description
+                image {
+                    id
+                    src
+                }
+            }
+            seo {
+                title
+                description
+                meta {
+                    name
+                    content
+                }
+            }
+        }
         createdBy {
             id
         }

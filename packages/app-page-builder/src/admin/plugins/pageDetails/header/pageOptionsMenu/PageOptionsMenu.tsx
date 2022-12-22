@@ -1,11 +1,16 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
+import { useApolloClient } from "@apollo/react-hooks";
 import { IconButton } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
+import { useSecurity } from "@webiny/app-security";
 import { ReactComponent as MoreVerticalIcon } from "~/admin/assets/more_vert.svg";
 import { ReactComponent as PreviewIcon } from "~/admin/assets/visibility.svg";
 import { ReactComponent as HomeIcon } from "~/admin/assets/round-home-24px.svg";
+import { ReactComponent as DuplicateIcon } from "~/editor/assets/icons/round-queue-24px.svg";
 import { ListItemGraphic } from "@webiny/ui/List";
 import { MenuItem, Menu } from "@webiny/ui/Menu";
+import { CREATE_PAGE, UPDATE_PAGE } from "~/admin/graphql/pages";
+import * as GQLCache from "~/admin/views/Pages/cache";
 import { usePageBuilderSettings } from "~/admin/hooks/usePageBuilderSettings";
 import { useSiteStatus } from "~/admin/hooks/useSiteStatus";
 import { css } from "emotion";
@@ -14,7 +19,11 @@ import classNames from "classnames";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
 import { useConfigureWebsiteUrlDialog } from "~/admin/hooks/useConfigureWebsiteUrl";
 import { plugins } from "@webiny/plugins";
-import { PbPageData, PbPageDetailsHeaderRightOptionsMenuItemPlugin } from "~/types";
+import {
+    PbPageData,
+    PbPageDetailsHeaderRightOptionsMenuItemPlugin,
+    PageBuilderSecurityPermission
+} from "~/types";
 import { SecureView } from "@webiny/app-security";
 import { useAdminPageBuilder } from "~/admin/hooks/useAdminPageBuilder";
 
@@ -35,6 +44,7 @@ const PageOptionsMenu: React.FC<PageOptionsMenuProps> = props => {
     const { page } = props;
     const { settings, isSpecialPage, getPageUrl, getWebsiteUrl, updateSettingsMutation } =
         usePageBuilderSettings();
+    const client = useApolloClient();
 
     const [isSiteRunning, refreshSiteStatus] = useSiteStatus(getWebsiteUrl());
     const { showConfigureWebsiteUrlDialog } = useConfigureWebsiteUrlDialog(
@@ -68,6 +78,53 @@ const PageOptionsMenu: React.FC<PageOptionsMenuProps> = props => {
             showConfigureWebsiteUrlDialog();
         }
     }, [url, isSiteRunning]);
+
+    const handleDuplicateClick = useCallback(async () => {
+        try {
+            const { data } = await client.mutate({
+                mutation: CREATE_PAGE,
+                variables: { category: page.category.slug }
+            });
+
+            await client.mutate({
+                mutation: UPDATE_PAGE,
+                variables: {
+                    id: data.pageBuilder.createPage.data.id,
+                    data: {
+                        title: `(Copy) ${page.title}`,
+                        path: `${page.path}-copy`,
+                        content: page.content,
+                        settings: page.settings
+                    }
+                },
+                update(cache, { data }) {
+                    if (data.pageBuilder.updatePage.error) {
+                        return;
+                    }
+
+                    GQLCache.addPageToListCache(cache, data.pageBuilder.updatePage.data);
+                    showSnackbar(`Duplicated "${page.title}".`);
+                }
+            });
+        } catch (error) {
+            showSnackbar(error.message);
+        }
+    }, [page]);
+
+    const { identity, getPermission } = useSecurity();
+
+    const canDuplicate = useMemo(() => {
+        const permission = getPermission<PageBuilderSecurityPermission>("pb.page");
+        if (!permission) {
+            return false;
+        }
+
+        if (typeof permission.rwd !== "string") {
+            return true;
+        }
+
+        return permission.rwd.includes("w");
+    }, [identity]);
 
     const previewButtonLabel = page.locked ? "View" : "Preview";
     return (
@@ -139,6 +196,15 @@ const PageOptionsMenu: React.FC<PageOptionsMenuProps> = props => {
                     Set as homepage
                 </MenuItem>
             </SecureView>
+
+            {canDuplicate && (
+                <MenuItem onClick={handleDuplicateClick}>
+                    <ListItemGraphic>
+                        <Icon icon={<DuplicateIcon />} />
+                    </ListItemGraphic>
+                    Copy
+                </MenuItem>
+            )}
 
             {plugins
                 .byType<PbPageDetailsHeaderRightOptionsMenuItemPlugin>(
