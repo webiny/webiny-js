@@ -271,13 +271,9 @@ jobs:
       - name: Set git username
         run: git config --global user.name "webiny-bot"
 
-      - name: Version packages (no push, no changelog)
+      - name: Version and publish to Verdaccio
         working-directory: next
-        run: yarn lerna:version:verdaccio
-
-      - name: Release to Verdaccio
-        working-directory: next
-        run: yarn lerna:publish:verdaccio
+        run: yarn release --type=verdaccio
 
       - name: Create verdaccio-files artifact
         uses: actions/upload-artifact@v3
@@ -300,8 +296,8 @@ jobs:
       - name: Create a new Webiny project
         working-directory: xyz
         run: >
-          npx create-webiny-project@next test-project
-          --tag next --no-interactive
+          npx create-webiny-project@local-npm test-project
+          --tag local-npm --no-interactive
           --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"region":"${{ env.AWS_REGION }}","storageOperations":"ddb"}'
 
@@ -525,13 +521,9 @@ jobs:
       - name: Set git username
         run: git config --global user.name "webiny-bot"
 
-      - name: Version packages (no push, no changelog)
+      - name: Version and publish to Verdaccio
         working-directory: next
-        run: yarn lerna:version:verdaccio
-
-      - name: Release to Verdaccio
-        working-directory: next
-        run: yarn lerna:publish:verdaccio
+        run: yarn release --type=verdaccio
 
       - name: Create verdaccio-files artifact
         uses: actions/upload-artifact@v3
@@ -554,8 +546,8 @@ jobs:
       - name: Create a new Webiny project
         working-directory: xyz
         run: >
-          npx create-webiny-project@next test-project
-          --tag next --no-interactive
+          npx create-webiny-project@local-npm test-project
+          --tag local-npm --no-interactive
           --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"region":"${{ env.AWS_REGION }}","storageOperations":"ddb-es"}'
 
@@ -679,7 +671,14 @@ jobs:
           workdir: next/cypress
           message-text: Cypress tests failed! Screenshots have been placed in this thread, good luck.
   npm-release-unstable:
-    needs: [init, code-analysis, jest-tests, e2e-wby-cms-ddb-cypress-tests, e2e-wby-cms-ddb-es-cypress-tests]
+    needs:
+      [
+        init,
+        code-analysis,
+        jest-tests,
+        e2e-wby-cms-ddb-cypress-tests,
+        e2e-wby-cms-ddb-es-cypress-tests
+      ]
     name: NPM release ("unstable" tag)
     runs-on: webiny-js-4-cores
     environment: release
@@ -720,10 +719,5 @@ jobs:
           git config --global user.email "webiny-bot@webiny.com"
           git config --global user.name "webiny-bot"
 
-      - name: Version packages
-        run: |
-          yarn lerna version 0.0.0-unstable.$(git rev-parse --short HEAD) --force-publish --no-push --no-git-tag-version --no-changelog --yes
-          git commit -am "chore: version packages"
-
-      - name: Publish packages to NPM
-        run: yarn lerna publish from-package --dist-tag unstable --yes
+      - name: Version and publish to NPM
+        run: yarn release --type=unstable

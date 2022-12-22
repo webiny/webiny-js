@@ -273,11 +273,46 @@ describe("Page blocks Security Test", () => {
         }
 
         const sufficientPermissions = [
-            [[{ name: "content.i18n" }, { name: "pb.block" }], identityA],
-            [[{ name: "content.i18n" }, { name: "pb.block", own: true }], identityA],
-            [[{ name: "content.i18n" }, { name: "pb.block", rwd: "rw" }], identityA],
-            [[{ name: "content.i18n" }, { name: "pb.block", rwd: "rwd" }], identityA],
-            [[{ name: "content.i18n", locales: ["en-US"] }, { name: "pb.block" }], identityA]
+            [
+                [
+                    { name: "content.i18n" },
+                    { name: "pb.block" },
+                    { name: "pb.blockCategory", rwd: "rw" }
+                ],
+                identityA
+            ],
+            [
+                [
+                    { name: "content.i18n" },
+                    { name: "pb.block", own: true },
+                    { name: "pb.blockCategory", rwd: "rw" }
+                ],
+                identityA
+            ],
+            [
+                [
+                    { name: "content.i18n" },
+                    { name: "pb.block", rwd: "rw" },
+                    { name: "pb.blockCategory", rwd: "rw" }
+                ],
+                identityA
+            ],
+            [
+                [
+                    { name: "content.i18n" },
+                    { name: "pb.block", rwd: "rwd" },
+                    { name: "pb.blockCategory", rwd: "rw" }
+                ],
+                identityA
+            ],
+            [
+                [
+                    { name: "content.i18n", locales: ["en-US"] },
+                    { name: "pb.block" },
+                    { name: "pb.blockCategory", rwd: "rw" }
+                ],
+                identityA
+            ]
         ];
 
         for (let i = 0; i < sufficientPermissions.length; i++) {
@@ -354,11 +389,46 @@ describe("Page blocks Security Test", () => {
         }
 
         const sufficientPermissions = [
-            [[{ name: "content.i18n" }, { name: "pb.block" }], identityA],
-            [[{ name: "content.i18n" }, { name: "pb.block", own: true }], identityA],
-            [[{ name: "content.i18n" }, { name: "pb.block", rwd: "rw" }], identityA],
-            [[{ name: "content.i18n" }, { name: "pb.block", rwd: "rwd" }], identityA],
-            [[{ name: "content.i18n", locales: ["en-US"] }, { name: "pb.block" }], identityA]
+            [
+                [
+                    { name: "content.i18n" },
+                    { name: "pb.block" },
+                    { name: "pb.blockCategory", rwd: "rw" }
+                ],
+                identityA
+            ],
+            [
+                [
+                    { name: "content.i18n" },
+                    { name: "pb.block", own: true },
+                    { name: "pb.blockCategory", rwd: "rw" }
+                ],
+                identityA
+            ],
+            [
+                [
+                    { name: "content.i18n" },
+                    { name: "pb.block", rwd: "rw" },
+                    { name: "pb.blockCategory", rwd: "rw" }
+                ],
+                identityA
+            ],
+            [
+                [
+                    { name: "content.i18n" },
+                    { name: "pb.block", rwd: "rwd" },
+                    { name: "pb.blockCategory", rwd: "rw" }
+                ],
+                identityA
+            ],
+            [
+                [
+                    { name: "content.i18n", locales: ["en-US"] },
+                    { name: "pb.block" },
+                    { name: "pb.blockCategory", rwd: "rw" }
+                ],
+                identityA
+            ]
         ];
 
         for (let i = 0; i < sufficientPermissions.length; i++) {
@@ -415,14 +485,36 @@ describe("Page blocks Security Test", () => {
     );
 
     const deletePageBlockSufficientPermissions = [
-        [[{ name: "content.i18n" }, { name: "pb.block" }], identityA],
-        [[{ name: "content.i18n" }, { name: "pb.block", own: true }], identityA],
-        [[{ name: "content.i18n" }, { name: "pb.block", rwd: "rwd" }], identityA],
+        [
+            [
+                { name: "content.i18n" },
+                { name: "pb.block" },
+                { name: "pb.blockCategory", rwd: "rw" }
+            ],
+            identityA
+        ],
+        [
+            [
+                { name: "content.i18n" },
+                { name: "pb.block", own: true },
+                { name: "pb.blockCategory", rwd: "rw" }
+            ],
+            identityA
+        ],
+        [
+            [
+                { name: "content.i18n" },
+                { name: "pb.block", rwd: "rwd" },
+                { name: "pb.blockCategory", rwd: "rw" }
+            ],
+            identityA
+        ],
         [
             [
                 { name: "content.i18n" },
                 { name: "content.i18n", locales: ["en-US"] },
-                { name: "pb.block" }
+                { name: "pb.block" },
+                { name: "pb.blockCategory", rwd: "rw" }
             ],
             identityA
         ]

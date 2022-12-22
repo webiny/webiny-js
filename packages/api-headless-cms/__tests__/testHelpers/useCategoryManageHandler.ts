@@ -1,4 +1,5 @@
 import { GraphQLHandlerParams, useGraphQLHandler } from "./useGraphQLHandler";
+import { CmsEntryListParams } from "~/types";
 
 const categoryFields = `
     id
@@ -182,7 +183,10 @@ export const useCategoryManageHandler = (params: GraphQLHandlerParams) => {
                 headers
             });
         },
-        async listCategories(variables = {}, headers: Record<string, any> = {}) {
+        async listCategories(
+            variables: CmsEntryListParams = {},
+            headers: Record<string, any> = {}
+        ) {
             return await contentHandler.invoke({
                 body: { query: listCategoriesQuery, variables },
                 headers

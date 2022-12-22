@@ -13,12 +13,18 @@ interface Props {
 }
 
 const Container = styled("div")`
+    padding: 8px 0;
+    width: 100%;
     display: flex;
     justify-content: flex-end;
-    margin-bottom: 24px;
+    background: var(--mdc-theme-surface);
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
 
     > button {
-        margin-left: 16px;
+        margin-right: 16px;
     }
 `;
 

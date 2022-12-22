@@ -18,13 +18,21 @@ describe("`links` CRUD", () => {
         const linkC = responseC.data.folders.createLink.data;
         expect(linkC).toEqual({ linkId: linkC.linkId, ...mocks.linkC });
 
+        const [responseD] = await links.create({ data: mocks.linkD });
+        const linkD = responseD.data.folders.createLink.data;
+        expect(linkD).toEqual({ linkId: linkD.linkId, ...mocks.linkD });
+
+        const [responseE] = await links.create({ data: mocks.linkE });
+        const linkE = responseE.data.folders.createLink.data;
+        expect(linkE).toEqual({ linkId: linkE.linkId, ...mocks.linkE });
+
         // Let's check whether both of the link exists, listing them by `folderId`.
         const [listResponse] = await links.list({ where: { folderId: "folder-1" } });
         expect(listResponse.data.folders.listLinks).toEqual(
             expect.objectContaining({
                 data: expect.arrayContaining([
                     {
-                        id: expect.stringMatching(/link-a|link-b/),
+                        id: expect.stringMatching(/link-a|link-b|link-d|link-e/),
                         linkId: expect.any(String),
                         folderId: expect.stringMatching("folder-1")
                     }
@@ -43,6 +51,59 @@ describe("`links` CRUD", () => {
                         folderId: expect.stringMatching("folder-2")
                     }
                 ]),
+                error: null
+            })
+        );
+
+        // Let's check cursor based pagination meta.
+        const [listLimitResponse] = await links.list({
+            where: { folderId: "folder-1" },
+            limit: 2
+        });
+
+        expect(listLimitResponse.data.folders.listLinks.data.length).toEqual(2);
+        expect(listLimitResponse.data.folders.listLinks).toEqual(
+            expect.objectContaining({
+                data: expect.arrayContaining([
+                    {
+                        id: expect.stringMatching(/link-a|link-b/),
+                        linkId: expect.any(String),
+                        folderId: expect.stringMatching("folder-1")
+                    }
+                ]),
+                meta: expect.objectContaining({
+                    cursor: expect.any(String),
+                    totalCount: 4,
+                    hasMoreItems: true
+                }),
+                error: null
+            })
+        );
+
+        // Let's use previously returned cursor to continue with pagination.
+        const cursor = listLimitResponse.data.folders.listLinks.meta.cursor;
+
+        const [listCursorResponse] = await links.list({
+            where: { folderId: "folder-1" },
+            limit: 2,
+            after: cursor
+        });
+
+        expect(listCursorResponse.data.folders.listLinks.data.length).toEqual(2);
+        expect(listCursorResponse.data.folders.listLinks).toEqual(
+            expect.objectContaining({
+                data: expect.arrayContaining([
+                    {
+                        id: expect.stringMatching(/link-d|link-e/),
+                        linkId: expect.any(String),
+                        folderId: expect.stringMatching("folder-1")
+                    }
+                ]),
+                meta: expect.objectContaining({
+                    cursor: expect.any(String),
+                    totalCount: 4,
+                    hasMoreItems: false
+                }),
                 error: null
             })
         );

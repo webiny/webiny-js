@@ -11,8 +11,8 @@ const createPath: CreatePathCallable<string> = ({ field, key }) => {
     return `${field.storageId}.entryId`;
 };
 
-const transform: TransformCallable<string> = params => {
-    return params.value;
+const transform: TransformCallable = ({ value }) => {
+    return value;
 };
 
 export const createRefSearchPlugin = (): CmsEntryElasticsearchQueryBuilderValueSearchPlugin => {

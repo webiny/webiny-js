@@ -59,7 +59,7 @@ export const FolderDialogDelete = ({ folder, open, onClose }: Props) => {
 
     return (
         <DialogContainer open={dialogOpen} onClose={onClose}>
-            {loading.DELETE_FOLDER && <CircularProgress label={t`Deleting folder...`} />}
+            {loading.DELETE && <CircularProgress label={t`Deleting folder...`} />}
             <DialogTitle>{t`Delete folder`}</DialogTitle>
             <DialogContent>
                 {t`You are about to delete the entire folder "{name}" and all the entries inside! Are you sure you want to continue?`(

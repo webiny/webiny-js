@@ -29,7 +29,11 @@ import tenantManager from "@webiny/api-tenant-manager";
 import { createApwPageBuilderContext, createApwGraphQL } from "@webiny/api-apw";
 import { createStorageOperations as createApwSaStorageOperations } from "@webiny/api-apw-scheduler-so-ddb";
 
-import { createFoldersGraphQL, createFoldersContext } from "@webiny/api-folders";
+import {
+    createFoldersGraphQL,
+    createFoldersContext,
+    createFoldersSubscriptions
+} from "@webiny/api-folders";
 import { createStorageOperations as createFoldersStorageOperations } from "@webiny/api-folders-so-ddb";
 
 // Imports plugins created via scaffolding utilities.
@@ -94,6 +98,7 @@ export const handler = createHandler({
             })
         }),
         createFoldersGraphQL(),
+        createFoldersSubscriptions(),
         scaffoldsPlugins()
     ],
     http: { debug }

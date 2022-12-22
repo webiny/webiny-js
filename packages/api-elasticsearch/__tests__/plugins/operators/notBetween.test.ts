@@ -9,6 +9,7 @@ describe("ElasticsearchQueryBuilderOperatorNotBetweenPlugin", () => {
         const query = createBlankQuery();
 
         plugin.apply(query, {
+            name: "id",
             path: "id",
             basePath: "id",
             value: [100, 200],

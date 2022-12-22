@@ -1,7 +1,7 @@
 import React from "react";
-import { ReactComponent as Folder } from "@material-design-icons/svg/filled/folder.svg";
 import { DragLayerMonitorProps } from "@minoru/react-dnd-treeview";
 
+import { FolderNode } from "~/components/Tree/Node";
 import { Container } from "./styled";
 
 import { DndItemData } from "~/types";
@@ -15,8 +15,7 @@ export const NodePreview: React.FC<Props> = props => {
 
     return (
         <Container>
-            <Folder />
-            {item.text}
+            <FolderNode text={item.text} isOpen={false} />
         </Container>
     );
 };

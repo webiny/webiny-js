@@ -94,7 +94,9 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
         ${
             listFilterFieldsRender &&
             `input ${mTypeName}ListWhereInput {
-            ${listFilterFieldsRender}
+                ${listFilterFieldsRender}
+                AND: [${mTypeName}ListWhereInput!]
+                OR: [${mTypeName}ListWhereInput!]
         }`
         }
 

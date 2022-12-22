@@ -41,7 +41,7 @@ const UpdateDataModel = withFields({
     description: string({ validation: validation.create("minLength:1,maxLength:100") })
 })();
 
-const PERMISSION_NAME = "pb.block";
+const PERMISSION_NAME = "pb.blockCategory";
 
 export interface CreateBlockCategoriesCrudParams {
     context: PbContext;

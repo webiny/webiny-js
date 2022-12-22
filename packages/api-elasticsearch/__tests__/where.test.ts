@@ -1,7 +1,7 @@
-import { parseWhereKey } from "~/where";
+import { parseWhereKey, ParseWhereKeyResult } from "~/where";
 
 describe("where", () => {
-    const whereKeys = [
+    const whereKeys: [string, ParseWhereKeyResult][] = [
         [
             "id",
             {
@@ -25,13 +25,16 @@ describe("where", () => {
         ]
     ];
 
-    test.each(whereKeys)("parse should result in field and operator values", (key, expected) => {
-        const result = parseWhereKey(key as unknown as string);
+    test.each(whereKeys)(
+        "parse should result in field and operator values - %s",
+        (key, expected) => {
+            const result = parseWhereKey(key as unknown as string);
 
-        expect(result).toEqual(expected);
-    });
+            expect(result).toEqual(expected);
+        }
+    );
 
-    const malformedWhereKeys = [["_a"], ["_"], ["__"], ["a_"]];
+    const malformedWhereKeys: string[][] = [["_a"], ["_"], ["__"], ["a_"]];
 
     test.each(malformedWhereKeys)(
         `should throw error when malformed key is passed "%s"`,

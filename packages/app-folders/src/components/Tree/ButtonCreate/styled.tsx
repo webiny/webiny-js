@@ -7,7 +7,7 @@ export const Button = styled("button")`
     cursor: pointer;
     outline: none;
     font-family: var(--mdc-typography-font-family);
-    color: var(--webiny-theme-color-text-primary);
+    color: var(--webiny-theme-color-text-secondary);
     fill: currentColor;
     display: flex;
     align-items: center;
@@ -16,15 +16,13 @@ export const Button = styled("button")`
 `;
 
 export const IconContainer = styled.div`
-    margin-right: 8px;
-    height: 24px;
-    width: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
 `;
 
 export const Icon = styled(Plus)`
-    width: 16px;
+    padding: 0 4px;
     height: 16px;
+    width: 16px;
 `;

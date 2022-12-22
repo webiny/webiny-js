@@ -953,3 +953,7 @@ export interface PageBuilderSecurityPermission extends SecurityPermission {
     rwd?: string;
     pw?: string | boolean;
 }
+
+export type Loading<T extends string> = { [P in T]?: boolean };
+
+export type LoadingActions = "INIT" | "LIST" | "LIST_MORE";

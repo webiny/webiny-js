@@ -17,26 +17,22 @@ export interface LinkItem {
     folderId: string;
 }
 
-export type Loading<T extends string> = Record<string, { [P in T]?: boolean }>;
+export type Loading<T extends string> = { [P in T]?: boolean };
 
-export type FoldersActions =
-    | "LIST_FOLDERS"
-    | "GET_FOLDER"
-    | "CREATE_FOLDER"
-    | "UPDATE_FOLDER"
-    | "DELETE_FOLDER";
-
-export type LinksActions =
-    | "LIST_LINKS"
-    | "GET_LINK"
-    | "CREATE_LINK"
-    | "UPDATE_LINK"
-    | "DELETE_LINK";
+export type LoadingActions = "INIT" | "LIST" | "LIST_MORE" | "GET" | "CREATE" | "UPDATE" | "DELETE";
 
 export interface Error {
     code: string;
     message: string;
     data: any;
+}
+
+export type Meta<T> = Record<string, { [P in keyof T]: T[P] }>;
+
+export interface ListMeta {
+    cursor: string | null;
+    totalCount: number;
+    hasMoreItems: boolean;
 }
 
 export interface ListFoldersResponse {
@@ -109,6 +105,7 @@ export interface ListLinksResponse {
     folders: {
         listLinks: {
             data: LinkItem[] | null;
+            meta: ListMeta | null;
             error: Error | null;
         };
     };
@@ -116,6 +113,8 @@ export interface ListLinksResponse {
 
 export interface ListLinksQueryVariables {
     folderId: string;
+    limit?: number;
+    after?: string | null;
 }
 
 export interface GetLinkResponse {

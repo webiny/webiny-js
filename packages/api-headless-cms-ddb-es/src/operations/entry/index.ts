@@ -1,3 +1,5 @@
+import lodashCloneDeep from "lodash/cloneDeep";
+import WebinyError from "@webiny/error";
 import {
     CmsEntry,
     CmsEntryStorageOperations,
@@ -21,15 +23,8 @@ import {
     CONTENT_ENTRY_STATUS,
     StorageOperationsCmsModel
 } from "@webiny/api-headless-cms/types";
-import {
-    createElasticsearchQueryBody,
-    extractEntriesFromIndex,
-    prepareEntryToIndex
-} from "~/helpers";
+import { extractEntriesFromIndex, prepareEntryToIndex } from "~/helpers";
 import { configurations } from "~/configurations";
-import WebinyError from "@webiny/error";
-import lodashCloneDeep from "lodash/cloneDeep";
-import lodashOmit from "lodash/omit";
 import { Entity } from "dynamodb-toolbox";
 import { Client } from "@elastic/elasticsearch";
 import { PluginsContainer } from "@webiny/plugins";
@@ -42,37 +37,39 @@ import {
     createRevisionSortKey
 } from "~/operations/entry/keys";
 import { queryAll, queryOne, QueryOneParams } from "@webiny/db-dynamodb/utils/query";
-import { createLimit, encodeCursor, compress, decompress } from "@webiny/api-elasticsearch";
+import {
+    createLimit,
+    encodeCursor,
+    compress,
+    decompress,
+    decodeCursor
+} from "@webiny/api-elasticsearch";
 import { get as getRecord } from "@webiny/db-dynamodb/utils/get";
 import { zeroPad } from "@webiny/utils";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import { ElasticsearchSearchResponse } from "@webiny/api-elasticsearch/types";
 import { CmsIndexEntry } from "~/types";
+import { createElasticsearchBody } from "~/operations/entry/elasticsearch/body";
+import { createLatestRecordType, createPublishedRecordType, createRecordType } from "./recordType";
 
-const createType = (): string => {
-    return "cms.entry";
-};
-export const createLatestType = (): string => {
-    return `${createType()}.l`;
-};
-export const createPublishedType = (): string => {
-    return `${createType()}.p`;
-};
-
-const getEntryData = (entry: CmsEntry) => {
-    return {
-        ...lodashOmit(entry, ["PK", "SK", "published", "latest"]),
-        TYPE: createType(),
-        __type: createType()
+const getEntryData = (input: CmsEntry): CmsEntry => {
+    const output: any = {
+        ...input
     };
+    delete output["PK"];
+    delete output["SK"];
+    delete output["published"];
+    delete output["latest"];
+
+    return output;
 };
 
 const getESLatestEntryData = async (plugins: PluginsContainer, entry: CmsEntry) => {
     return compress(plugins, {
         ...getEntryData(entry),
         latest: true,
-        TYPE: createLatestType(),
-        __type: createLatestType()
+        TYPE: createLatestRecordType(),
+        __type: createLatestRecordType()
     });
 };
 
@@ -80,8 +77,8 @@ const getESPublishedEntryData = async (plugins: PluginsContainer, entry: CmsEntr
     return compress(plugins, {
         ...getEntryData(entry),
         published: true,
-        TYPE: createPublishedType(),
-        __type: createPublishedType()
+        TYPE: createPublishedRecordType(),
+        __type: createPublishedRecordType()
     });
 };
 
@@ -198,13 +195,13 @@ export const createEntriesStorageOperations = (
                 ...storageEntry,
                 locked,
                 ...revisionKeys,
-                TYPE: createType()
+                TYPE: createRecordType()
             }),
             entity.putBatch({
                 ...storageEntry,
                 locked,
                 ...latestKeys,
-                TYPE: createLatestType()
+                TYPE: createLatestRecordType()
             })
         ];
 
@@ -214,7 +211,7 @@ export const createEntriesStorageOperations = (
                     ...storageEntry,
                     locked,
                     ...publishedKeys,
-                    TYPE: createPublishedType()
+                    TYPE: createPublishedRecordType()
                 })
             );
         }
@@ -320,12 +317,12 @@ export const createEntriesStorageOperations = (
         const items = [
             entity.putBatch({
                 ...storageEntry,
-                TYPE: createType(),
+                TYPE: createRecordType(),
                 ...revisionKeys
             }),
             entity.putBatch({
                 ...storageEntry,
-                TYPE: createLatestType(),
+                TYPE: createLatestRecordType(),
                 ...latestKeys
             })
         ];
@@ -439,7 +436,7 @@ export const createEntriesStorageOperations = (
                 ...storageEntry,
                 locked,
                 ...revisionKeys,
-                TYPE: createType()
+                TYPE: createRecordType()
             })
         ];
         if (isPublished) {
@@ -448,7 +445,7 @@ export const createEntriesStorageOperations = (
                     ...storageEntry,
                     locked,
                     ...publishedKeys,
-                    TYPE: createPublishedType()
+                    TYPE: createPublishedRecordType()
                 })
             );
         }
@@ -528,8 +525,8 @@ export const createEntriesStorageOperations = (
                 elasticsearchPublishedData = {
                     ...elasticsearchLatestData,
                     published: true,
-                    TYPE: createPublishedType(),
-                    __type: createPublishedType()
+                    TYPE: createPublishedRecordType(),
+                    __type: createPublishedRecordType()
                 };
                 delete elasticsearchPublishedData.latest;
             }
@@ -731,7 +728,7 @@ export const createEntriesStorageOperations = (
                     ...latestStorageEntry,
                     PK: partitionKey,
                     SK: createLatestSortKey(),
-                    TYPE: createLatestType()
+                    TYPE: createLatestRecordType()
                 })
             );
             esItems.push(
@@ -803,7 +800,7 @@ export const createEntriesStorageOperations = (
             const result = await elasticsearch.indices.exists({
                 index
             });
-            if (!result || !result.body) {
+            if (!result?.body) {
                 return {
                     hasMoreItems: false,
                     totalCount: 0,
@@ -822,17 +819,17 @@ export const createEntriesStorageOperations = (
             );
         }
 
-        const body = createElasticsearchQueryBody({
+        const body = createElasticsearchBody({
             model,
-            args: {
+            params: {
                 ...params,
-                limit
+                limit,
+                after: decodeCursor(params.after)
             },
-            plugins,
-            parentPath: "values"
+            plugins
         });
 
-        let response: ElasticsearchSearchResponse;
+        let response: ElasticsearchSearchResponse<CmsIndexEntry>;
         try {
             response = await elasticsearch.search({
                 index,
@@ -847,7 +844,7 @@ export const createEntriesStorageOperations = (
             });
         }
 
-        const { hits, total } = response.body.hits;
+        const { hits, total } = response?.body?.hits || {};
 
         const items = extractEntriesFromIndex({
             plugins,
@@ -961,7 +958,7 @@ export const createEntriesStorageOperations = (
             entity.putBatch({
                 ...storageEntry,
                 ...revisionKeys,
-                TYPE: createType()
+                TYPE: createRecordType()
             })
         ];
         const esItems = [];
@@ -982,12 +979,6 @@ export const createEntriesStorageOperations = (
                 model,
                 ids: [publishedStorageEntry.id]
             });
-            //
-            // const previouslyPublishedEntry = convertToStorageEntry({
-            //     model,
-            //     entry: initialPreviouslyPublishedEntry
-            // });
-
             items.push(
                 /**
                  * Update currently published entry (unpublish it)
@@ -996,7 +987,7 @@ export const createEntriesStorageOperations = (
                     ...previouslyPublishedEntry,
                     status: CONTENT_ENTRY_STATUS.UNPUBLISHED,
                     savedOn: entry.savedOn,
-                    TYPE: createType(),
+                    TYPE: createRecordType(),
                     PK: createPartitionKey(publishedStorageEntry),
                     SK: createRevisionSortKey(publishedStorageEntry)
                 })
@@ -1009,7 +1000,7 @@ export const createEntriesStorageOperations = (
             entity.putBatch({
                 ...storageEntry,
                 ...publishedKeys,
-                TYPE: createPublishedType()
+                TYPE: createPublishedRecordType()
             })
         );
 
@@ -1048,13 +1039,13 @@ export const createEntriesStorageOperations = (
                     index,
                     PK: createPartitionKey(latestEsEntryDataDecompressed),
                     SK: createLatestSortKey(),
-                    data: {
+                    data: await getESLatestEntryData(plugins, {
                         ...latestEsEntryDataDecompressed,
                         status: CONTENT_ENTRY_STATUS.PUBLISHED,
                         locked: true,
                         savedOn: entry.savedOn,
                         publishedOn: entry.publishedOn
-                    }
+                    })
                 })
             );
         }
@@ -1068,13 +1059,13 @@ export const createEntriesStorageOperations = (
         /**
          * Update the published revision entry in ES.
          */
-        const esLatestData = await getESPublishedEntryData(plugins, preparedEntryData);
+        const esPublishedData = await getESPublishedEntryData(plugins, preparedEntryData);
 
         esItems.push(
             esEntity.putBatch({
                 ...publishedKeys,
                 index,
-                data: esLatestData
+                data: esPublishedData
             })
         );
 
@@ -1163,7 +1154,7 @@ export const createEntriesStorageOperations = (
                 ...storageEntry,
                 PK: partitionKey,
                 SK: createRevisionSortKey(entry),
-                TYPE: createType()
+                TYPE: createRecordType()
             })
         ];
 
@@ -1379,7 +1370,7 @@ export const createEntriesStorageOperations = (
                 filters: [
                     {
                         attr: "TYPE",
-                        eq: createType()
+                        eq: createRecordType()
                     },
                     {
                         attr: "version",
