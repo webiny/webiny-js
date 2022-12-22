@@ -19,7 +19,7 @@ export const UnderlineAction = () => {
             className={"popup-item spaced " + (isUnderline ? "active" : "")}
             aria-label="Format text as italic"
         >
-            <i className="format italic" />
+            <i className="format underline" />
         </button>
     );
 };
