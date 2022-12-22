@@ -1,12 +1,11 @@
 .floating-text-format-popup {
   display: flex;
-  background: #fff;
   padding: 4px;
   vertical-align: middle;
   position: absolute;
   top: 0;
   left: 0;
-  z-index: 10;
+  z-index: 1000;
   opacity: 0;
   background-color: #fff;
   box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.3);

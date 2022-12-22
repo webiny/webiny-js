@@ -1,5 +1,5 @@
 {
-  "name": "@webiny/app-lexical-editor",
+  "name": "@webiny/lexical-editor",
   "version": "5.33.1",
   "description": "Core framework of the Webiny admin app.",
   "repository": {
