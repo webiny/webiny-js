@@ -15,6 +15,9 @@ import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
 import logsPlugins from "@webiny/handler-logs";
+import fileManagerPlugins from "@webiny/api-file-manager/plugins";
+import fileManagerDynamoDbStorageOperation from "@webiny/api-file-manager-ddb";
+import fileManagerS3 from "@webiny/api-file-manager-s3";
 import securityPlugins from "./security";
 
 const documentClient = new DocumentClient({
@@ -36,6 +39,9 @@ export const handler = createHandler({
         i18nPlugins(),
         i18nDynamoDbStorageOperations(),
         i18nContentPlugins(),
+        fileManagerPlugins(),
+        fileManagerDynamoDbStorageOperation(),
+        fileManagerS3(),
         createPageBuilderContext({
             storageOperations: createPageBuilderStorageOperations({
                 documentClient
