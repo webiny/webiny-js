@@ -1,8 +1,9 @@
 import React, { ReactElement } from "react";
 
-import styled from "@emotion/styled";
 import { i18n } from "@webiny/app/i18n";
 import { ButtonPrimary, ButtonSecondary } from "@webiny/ui/Button";
+
+import { Container } from "./styled";
 
 const t = i18n.ns("app-page-builder/admin/views/pages/table/header");
 
@@ -11,22 +12,6 @@ interface Props {
     onCreatePage: (event?: React.SyntheticEvent) => void;
     onCreateFolder: (event?: React.SyntheticEvent) => void;
 }
-
-const Container = styled("div")`
-    padding: 8px 0;
-    width: 100%;
-    display: flex;
-    justify-content: flex-end;
-    background: var(--mdc-theme-surface);
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 1;
-
-    > button {
-        margin-right: 16px;
-    }
-`;
 
 export const Header = ({ canCreate, onCreatePage, onCreateFolder }: Props): ReactElement => {
     if (canCreate) {
