@@ -4,16 +4,16 @@ import { ContextPlugin } from "@webiny/api";
 import checkBasePermissions from "@webiny/api-page-builder/graphql/crud/utils/checkBasePermissions";
 import { ImportExportTaskStatus, PagesImportExportCrud, PbImportExportContext } from "~/types";
 import { invokeHandlerClient } from "~/client";
-import { Payload as CreateHandlerPayload } from "~/importPages/create";
-import { initialStats } from "~/importPages/utils";
-import { Payload as ExportPagesProcessHandlerPayload } from "~/exportPages/process";
-import { EXPORT_PAGES_FOLDER_KEY } from "~/exportPages/utils";
+import { Payload as CreateHandlerPayload } from "~/import/create";
+import { initialStats } from "~/import/utils";
+import { Payload as ExportPagesProcessHandlerPayload } from "~/export/process";
+import { EXPORT_PAGES_FOLDER_KEY } from "~/export/utils";
 import { MetaResponse } from "@webiny/api-page-builder/types";
 import { zeroPad } from "@webiny/utils";
 
 const PERMISSION_NAME = "pb.page";
-const EXPORT_PAGES_PROCESS_HANDLER = process.env.EXPORT_PAGES_PROCESS_HANDLER as string;
-const IMPORT_PAGES_CREATE_HANDLER = process.env.IMPORT_PAGES_CREATE_HANDLER as string;
+const EXPORT_PAGES_PROCESS_HANDLER = process.env.EXPORT_PROCESS_HANDLER as string;
+const IMPORT_PAGES_CREATE_HANDLER = process.env.IMPORT_CREATE_HANDLER as string;
 
 export default new ContextPlugin<PbImportExportContext>(context => {
     const importExportCrud: PagesImportExportCrud = {

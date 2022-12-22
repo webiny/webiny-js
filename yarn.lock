@@ -15037,9 +15037,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"api-page-builder-export-pages-combine@workspace:apps/api/pageBuilder/exportPages/combine":
+"api-page-builder-export-combine@workspace:apps/api/pageBuilder/export/combine":
   version: 0.0.0-use.local
-  resolution: "api-page-builder-export-pages-combine@workspace:apps/api/pageBuilder/exportPages/combine"
+  resolution: "api-page-builder-export-combine@workspace:apps/api/pageBuilder/export/combine"
   dependencies:
     "@webiny/api-i18n": ^5.33.2
     "@webiny/api-i18n-content": ^5.33.2
@@ -15061,9 +15061,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"api-page-builder-export-pages-process@workspace:apps/api/pageBuilder/exportPages/process":
+"api-page-builder-export-process@workspace:apps/api/pageBuilder/export/process":
   version: 0.0.0-use.local
-  resolution: "api-page-builder-export-pages-process@workspace:apps/api/pageBuilder/exportPages/process"
+  resolution: "api-page-builder-export-process@workspace:apps/api/pageBuilder/export/process"
   dependencies:
     "@webiny/api-file-manager": ^5.33.2
     "@webiny/api-file-manager-ddb": ^5.33.2
@@ -15088,9 +15088,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"api-page-builder-import-pages-create@workspace:apps/api/pageBuilder/importPages/create":
+"api-page-builder-import-create@workspace:apps/api/pageBuilder/import/create":
   version: 0.0.0-use.local
-  resolution: "api-page-builder-import-pages-create@workspace:apps/api/pageBuilder/importPages/create"
+  resolution: "api-page-builder-import-create@workspace:apps/api/pageBuilder/import/create"
   dependencies:
     "@webiny/api-i18n": ^5.33.2
     "@webiny/api-i18n-content": ^5.33.2
@@ -15112,9 +15112,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"api-page-builder-import-pages-process@workspace:apps/api/pageBuilder/importPages/process":
+"api-page-builder-import-process@workspace:apps/api/pageBuilder/import/process":
   version: 0.0.0-use.local
-  resolution: "api-page-builder-import-pages-process@workspace:apps/api/pageBuilder/importPages/process"
+  resolution: "api-page-builder-import-process@workspace:apps/api/pageBuilder/import/process"
   dependencies:
     "@webiny/api-file-manager": ^5.33.2
     "@webiny/api-file-manager-ddb": ^5.33.2

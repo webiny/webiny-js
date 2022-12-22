@@ -14,8 +14,8 @@
       "apps/api/graphql",
       "apps/api/headlessCMS",
       "apps/api/pageBuilder/updateSettings",
-      "apps/api/pageBuilder/importPages/*",
-      "apps/api/pageBuilder/exportPages/*"
+      "apps/api/pageBuilder/import/*",
+      "apps/api/pageBuilder/export/*"
     ]
   },
   "author": "Webiny Ltd.",
