@@ -576,7 +576,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
 
             managers.delete(model.modelId);
         },
-        async initializeModel(modelId) {
+        async initializeModel(modelId, data) {
             /**
              * We require that users have write permissions to initialize models.
              * Maybe introduce another permission for it?
@@ -585,7 +585,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
 
             const model = await getModel(modelId);
 
-            await onModelInitialize.publish({ model });
+            await onModelInitialize.publish({ model, data });
 
             return true;
         },

@@ -78,10 +78,10 @@ export const createModelsSchema = (context: CmsContext): GraphQLSchemaPlugin<Cms
                 }
             },
             initializeModel: async (_, args, context) => {
-                const { modelId } = args;
+                const { modelId, data } = args;
 
                 try {
-                    const result = await context.cms.initializeModel(modelId);
+                    const result = await context.cms.initializeModel(modelId, data || {});
                     return new Response(result);
                 } catch (e) {
                     return new ErrorResponse(e);
@@ -175,7 +175,8 @@ export const createModelsSchema = (context: CmsContext): GraphQLSchemaPlugin<Cms
 
                 deleteContentModel(modelId: ID!): CmsDeleteResponse
 
-                initializeModel(modelId: ID!): InitializeModelResponse!
+                # users can send anything into the data variable
+                initializeModel(modelId: ID!, data: JSON): InitializeModelResponse!
             }
         `;
     }
