@@ -1,5 +1,5 @@
 const path = require("path");
-const { getProjectApplication } = require("@webiny/cli/utils");
+const { getProjectApplication, getProject } = require("@webiny/cli/utils");
 const createProjectApplicationWorkspace = require("./createProjectApplicationWorkspace");
 const login = require("./login");
 const loadEnvVariables = require("./loadEnvVariables");
@@ -22,6 +22,15 @@ const createPulumiCommand = ({
             }
 
             return plugin[name](inputs, context);
+        } else {
+            // Detect if an app alias was provided.
+            const project = getProject();
+            if (project.config.cli.appAliases) {
+                const appAliases = project.config.cli.appAliases;
+                if (appAliases[inputs.folder]) {
+                    inputs.folder = appAliases[inputs.folder];
+                }
+            }
         }
 
         if (!inputs.env) {
