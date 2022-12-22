@@ -156,26 +156,42 @@ export const createEventHandler = () => {
                     body: operations
                 });
                 checkErrors(res);
-                if (process.env.DEBUG === "true") {
-                    console.log("Bulk response", JSON.stringify(res, null, 2));
-                }
             } catch (error) {
                 if (process.env.DEBUG === "true") {
-                    console.log("Bulk error", JSON.stringify(error, null, 2));
+                    const meta = error?.meta || {};
+                    delete meta["meta"];
+                    console.log("Bulk error", JSON.stringify(meta, null, 2));
                 }
                 throw error;
             }
         };
 
+        const maxRetryTime = getNumberEnvVariable(
+            "WEBINY_DYNAMODB_TO_ELASTICSEARCH_MAX_RETRY_TIME",
+            300000
+        );
+        const retries = getNumberEnvVariable("WEBINY_DYNAMODB_TO_ELASTICSEARCH_RETRIES", 20);
+        const minTimeout = getNumberEnvVariable(
+            "WEBINY_DYNAMODB_TO_ELASTICSEARCH_MIN_TIMEOUT",
+            1500
+        );
+        const maxTimeout = getNumberEnvVariable(
+            "WEBINY_DYNAMODB_TO_ELASTICSEARCH_MAX_TIMEOUT",
+            30000
+        );
+
         await pRetry(execute, {
-            maxRetryTime: getNumberEnvVariable(
-                "WEBINY_DYNAMODB_TO_ELASTICSEARCH_MAX_RETRY_TIME",
-                300000
-            ),
-            retries: getNumberEnvVariable("WEBINY_DYNAMODB_TO_ELASTICSEARCH_RETRIES", 10),
-            minTimeout: getNumberEnvVariable("WEBINY_DYNAMODB_TO_ELASTICSEARCH_MIN_TIMEOUT", 1500),
-            maxTimeout: getNumberEnvVariable("WEBINY_DYNAMODB_TO_ELASTICSEARCH_MAX_TIMEOUT", 30000),
+            maxRetryTime,
+            retries,
+            minTimeout,
+            maxTimeout,
             onFailedAttempt: error => {
+                /**
+                 * We will only log attempts which are after 3/4 of total attempts.
+                 */
+                if (error.attemptNumber < retries * 0.75) {
+                    return;
+                }
                 console.log(`Attempt #${error.attemptNumber} failed.`);
                 console.log(error.message);
             }
