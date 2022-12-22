@@ -25,8 +25,8 @@ const createPulumiCommand = ({
         } else {
             // Detect if an app alias was provided.
             const project = getProject();
-            if (project.config.cli.appAliases) {
-                const appAliases = project.config.cli.appAliases;
+            if (project.config.appAliases) {
+                const appAliases = project.config.appAliases;
                 if (appAliases[inputs.folder]) {
                     inputs.folder = appAliases[inputs.folder];
                 }

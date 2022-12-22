@@ -40,14 +40,13 @@ export default {
                 // If the whole promise fails, act as if there are no plugins.
                 return [];
             }
-        },
-
-        appsAliases: {
-            core: "apps/core",
-            api: "apps/api",
-            admin: "apps/admin",
-            website: "apps/website"
         }
+    },
+    appAliases: {
+        core: "apps/core",
+        api: "apps/api",
+        admin: "apps/admin",
+        website: "apps/website"
     },
     featureFlags: {
         // Enforces usage of legacy PB page elements rendering engine.
