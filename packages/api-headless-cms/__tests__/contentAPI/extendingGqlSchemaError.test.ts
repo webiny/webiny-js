@@ -16,11 +16,11 @@ describe("invalid schema error formatting", () => {
             plugins: [graphqlSchemaPlugin]
         });
 
-        const [{ error }] = await invoke({
+        const [response] = await invoke({
             body: { query: `{ irrelevant }` }
         });
 
-        expect(error).toEqual({
+        expect(response).toEqual({
             message: 'Syntax Error: Expected Name, found "}".',
             code: "INVALID_GRAPHQL_SCHEMA",
             data: {

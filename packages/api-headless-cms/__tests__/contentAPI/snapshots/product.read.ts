@@ -2,25 +2,6 @@ export default /* GraphQL */ `
     """
     Products being sold in our webshop
     """
-    type Product_Variant_Options {
-        name: String
-        price: Number
-        category: Category
-        categories: [Category]
-        longText: [String]
-    }
-
-    type Product_Variant {
-        name: String
-        price: Number
-        category: Category
-        options: [Product_Variant_Options!]
-    }
-
-    type Product_FieldsObject {
-        text: String
-    }
-
     type Product {
         id: ID!
         entryId: String!
@@ -41,6 +22,26 @@ export default /* GraphQL */ `
         variant: Product_Variant
         fieldsObject: Product_FieldsObject
     }
+
+    type Product_Variant_Options {
+        name: String
+        price: Number
+        category: Category
+        categories: [Category]
+        longText: [String]
+    }
+
+    type Product_Variant {
+        name: String
+        price: Number
+        category: Category
+        options: [Product_Variant_Options!]
+    }
+
+    type Product_FieldsObject {
+        text: String
+    }
+
 
     input ProductGetWhereInput {
         id: ID
