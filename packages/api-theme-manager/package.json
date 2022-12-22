@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-theme-manager",
-  "version": "5.33.4",
+  "version": "5.33.5-beta.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -10,15 +10,15 @@
   "author": "Webiny LTD",
   "license": "MIT",
   "dependencies": {
-    "@webiny/api-security": "^5.33.4",
-    "@webiny/api-tenancy": "^5.33.4",
-    "@webiny/handler-graphql": "^5.33.4"
+    "@webiny/api-security": "^5.33.5-beta.0",
+    "@webiny/api-tenancy": "^5.33.5-beta.0",
+    "@webiny/handler-graphql": "^5.33.5-beta.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
     "@babel/core": "^7.5.5",
-    "@webiny/cli": "^5.33.4",
-    "@webiny/project-utils": "^5.33.4",
+    "@webiny/cli": "^5.33.5-beta.0",
+    "@webiny/project-utils": "^5.33.5-beta.0",
     "jest": "^28.1.0",
     "rimraf": "^3.0.2",
     "ttypescript": "^1.5.12",

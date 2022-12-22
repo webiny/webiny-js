@@ -1,6 +1,6 @@
 {
   "name": "@webiny/pulumi-aws",
-  "version": "5.33.4",
+  "version": "5.33.5-beta.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
@@ -15,8 +15,8 @@
   "dependencies": {
     "@pulumi/aws": "^5.8.0",
     "@pulumi/pulumi": "^3.34.0",
-    "@webiny/cli-plugin-deploy-pulumi": "^5.33.4",
-    "@webiny/pulumi": "^5.33.4",
+    "@webiny/cli-plugin-deploy-pulumi": "^5.33.5-beta.0",
+    "@webiny/pulumi": "^5.33.5-beta.0",
     "form-data": "^4.0.0",
     "node-fetch": "^2.6.7"
   },
@@ -26,10 +26,10 @@
     "@babel/preset-env": "^7.16.4",
     "@babel/preset-typescript": "^7.16.0",
     "@babel/runtime": "^7.16.3",
-    "@webiny/api-page-builder": "^5.33.4",
-    "@webiny/aws-layers": "^5.33.4",
-    "@webiny/cli": "^5.33.4",
-    "@webiny/project-utils": "^5.33.4",
+    "@webiny/api-page-builder": "^5.33.5-beta.0",
+    "@webiny/aws-layers": "^5.33.5-beta.0",
+    "@webiny/cli": "^5.33.5-beta.0",
+    "@webiny/project-utils": "^5.33.5-beta.0",
     "chalk": "^4.1.0",
     "lodash": "^4.5.0",
     "mime": "2.5.2",
