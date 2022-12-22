@@ -28,6 +28,7 @@ import { $getRoot, $createTextNode, LexicalEditor } from "lexical";
 import WebinyNodes from "../../../nodes/webinyNodes";
 import { $createParagraphNode } from "lexical";
 import { HeadingToolbar } from "~/components/inputs/HeadingLexicalInput/Toolbar";
+import CodeHighlightPlugin from "~/plugins/CodeHighlightPlugin/CodeHighlightPlugin";
 
 interface HeadingLexicalInputProps {
     tag?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
@@ -96,6 +97,7 @@ const HeadingLexicalInput: React.FC<HeadingLexicalInputProps> = ({ onChange }) =
                     <OnChangePlugin onChange={handleOnChange} />
                     <AutoFocusPlugin />
                     <ClearEditorPlugin />
+                    <CodeHighlightPlugin />
                     <RichTextPlugin
                         contentEditable={
                             <div className="editor-scroller">

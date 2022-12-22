@@ -14,9 +14,7 @@ import { AutoLinkNode, LinkNode } from "@lexical/link";
 import { ListItemNode, ListNode } from "@lexical/list";
 import { MarkNode } from "@lexical/mark";
 import { OverflowNode } from "@lexical/overflow";
-import { HorizontalRuleNode } from "@lexical/react/LexicalHorizontalRuleNode";
 import { HeadingNode, QuoteNode } from "@lexical/rich-text";
-import { TableCellNode, TableNode, TableRowNode } from "@lexical/table";
 
 const WebinyNodes: Array<Klass<LexicalNode>> = [
     HeadingNode,
@@ -24,15 +22,11 @@ const WebinyNodes: Array<Klass<LexicalNode>> = [
     ListItemNode,
     QuoteNode,
     CodeNode,
-    TableNode,
-    TableCellNode,
-    TableRowNode,
     HashtagNode,
     CodeHighlightNode,
     AutoLinkNode,
     LinkNode,
     OverflowNode,
-    HorizontalRuleNode,
     MarkNode
 ];
 
