@@ -1,10 +1,10 @@
 import { createWcpContext } from "@webiny/api-wcp";
 import { createHandler } from "@webiny/handler-aws/raw";
 import graphqlHandler from "@webiny/handler-graphql";
-import pageImportExportTaskPlugins from "~/graphql/crud/pageImportExportTasks.crud";
+import importExportTaskPlugins from "~/graphql/crud/importExportTasks.crud";
 import { ContextPlugin } from "@webiny/api";
 import { createTenancyAndSecurity } from "../tenancySecurity";
-import { PbPageImportExportContext } from "~/graphql/types";
+import { PbImportExportContext } from "~/graphql/types";
 import { EventPlugin } from "@webiny/handler";
 
 interface Params {
@@ -16,14 +16,14 @@ export default (params: Params = {}) => {
 
     // @ts-ignore
     const { storageOperations } = __getStorageOperations();
-    const handler = createHandler<any, PbPageImportExportContext>({
+    const handler = createHandler<any, PbImportExportContext>({
         plugins: [
             createWcpContext(),
             ...createTenancyAndSecurity(),
             graphqlHandler(),
             {
                 type: "context",
-                apply: (context: PbPageImportExportContext) => {
+                apply: (context: PbImportExportContext) => {
                     if (context.i18n) {
                         return;
                     }
@@ -54,10 +54,10 @@ export default (params: Params = {}) => {
                     };
                 }
             },
-            new ContextPlugin<PbPageImportExportContext>(context => {
+            new ContextPlugin<PbImportExportContext>(context => {
                 context.pageBuilder = {} as any;
             }),
-            pageImportExportTaskPlugins({ storageOperations }),
+            importExportTaskPlugins({ storageOperations }),
             /**
              * We need an EventPlugin defined because it returns the context which we actually use in tests.
              */
