@@ -8,9 +8,9 @@ import { createRichTextField } from "./richText";
 import { createFileField } from "./file";
 import { createObjectField } from "./object";
 import { createDynamicZoneField } from "~/graphqlFields/dynamicZone";
-import { PluginCollection } from "@webiny/plugins/types";
+import { CmsModelFieldToGraphQLPlugin } from "~/types";
 
-export const createGraphQLFields = (): PluginCollection => [
+export const createGraphQLFields = (): CmsModelFieldToGraphQLPlugin<any>[] => [
     createTextField(),
     createRefField(),
     createNumberField(),

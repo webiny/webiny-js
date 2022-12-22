@@ -44,7 +44,7 @@ const createTypeDefsForTemplates = ({
     const templateTypes: string[] = [];
 
     templates.forEach(template => {
-        const typeName = [createTypeName(field.fieldId), createTypeName(template.name)].join("_");
+        const typeName = [createTypeName(field.fieldId), template.gqlTypeName].join("_");
 
         const result = createTypeFromFields({
             typeOfType,
@@ -92,88 +92,92 @@ const createResolver: CmsModelFieldToGraphQLCreateResolver<CmsModelDynamicZoneFi
     };
 };
 
-export const dynamicZoneField: CmsModelFieldToGraphQLPlugin<CmsModelDynamicZoneField> = {
-    name: "cms-model-field-to-graphql-dynamic-zone",
-    type: "cms-model-field-to-graphql",
-    fieldType: "dynamicZone",
-    isSortable: false,
-    isSearchable: false,
-    read: {
-        createTypeField({ model, field, fieldTypePlugins }) {
-            const templates = getFieldTemplates(field);
-            const unionTypeName = createUnionTypeName(model, field);
+export const createDynamicZoneField =
+    (): CmsModelFieldToGraphQLPlugin<CmsModelDynamicZoneField> => {
+        return {
+            name: "cms-model-field-to-graphql-dynamic-zone",
+            type: "cms-model-field-to-graphql",
+            fieldType: "dynamicZone",
+            isSortable: false,
+            isSearchable: false,
+            read: {
+                createTypeField({ model, field, fieldTypePlugins }) {
+                    const templates = getFieldTemplates(field);
+                    const unionTypeName = createUnionTypeName(model, field);
 
-            const { typeDefs, templateTypes } = createTypeDefsForTemplates({
-                field,
-                type: "read",
-                typeOfType: "type",
-                model,
-                fieldTypePlugins,
-                templates
-            });
+                    const { typeDefs, templateTypes } = createTypeDefsForTemplates({
+                        field,
+                        type: "read",
+                        typeOfType: "type",
+                        model,
+                        fieldTypePlugins,
+                        templates
+                    });
 
-            typeDefs.unshift(`union ${unionTypeName} = ${templateTypes.join(" | ")}`);
+                    typeDefs.unshift(`union ${unionTypeName} = ${templateTypes.join(" | ")}`);
 
-            return {
-                fields: `${field.fieldId}: ${
-                    field.multipleValues ? `[${unionTypeName}!]` : unionTypeName
-                }`,
-                typeDefs: typeDefs.join("\n")
-            };
-        },
-        createResolver
-    },
-    manage: {
-        createTypeField({ model, field, fieldTypePlugins }) {
-            const templates = getFieldTemplates(field);
-            const unionTypeName = createUnionTypeName(model, field);
+                    return {
+                        fields: `${field.fieldId}: ${
+                            field.multipleValues ? `[${unionTypeName}!]` : unionTypeName
+                        }`,
+                        typeDefs: typeDefs.join("\n")
+                    };
+                },
+                createResolver
+            },
+            manage: {
+                createTypeField({ model, field, fieldTypePlugins }) {
+                    const templates = getFieldTemplates(field);
+                    const unionTypeName = createUnionTypeName(model, field);
 
-            const { typeDefs, templateTypes } = createTypeDefsForTemplates({
-                field,
-                type: "manage",
-                typeOfType: "type",
-                model,
-                fieldTypePlugins,
-                templates
-            });
+                    const { typeDefs, templateTypes } = createTypeDefsForTemplates({
+                        field,
+                        type: "manage",
+                        typeOfType: "type",
+                        model,
+                        fieldTypePlugins,
+                        templates
+                    });
 
-            typeDefs.unshift(`union ${unionTypeName} = ${templateTypes.join(" | ")}`);
+                    typeDefs.unshift(`union ${unionTypeName} = ${templateTypes.join(" | ")}`);
 
-            return {
-                fields: `${field.fieldId}: ${
-                    field.multipleValues ? `[${unionTypeName}!]` : unionTypeName
-                }`,
-                typeDefs: typeDefs.join("\n")
-            };
-        },
-        createInputField({ model, field, fieldTypePlugins }) {
-            const templates = getFieldTemplates(field);
+                    return {
+                        fields: `${field.fieldId}: ${
+                            field.multipleValues ? `[${unionTypeName}!]` : unionTypeName
+                        }`,
+                        typeDefs: typeDefs.join("\n")
+                    };
+                },
+                createInputField({ model, field, fieldTypePlugins }) {
+                    const templates = getFieldTemplates(field);
 
-            const { typeDefs, templateTypes } = createTypeDefsForTemplates({
-                field,
-                type: "manage",
-                typeOfType: "input",
-                model,
-                fieldTypePlugins,
-                templates
-            });
+                    const { typeDefs, templateTypes } = createTypeDefsForTemplates({
+                        field,
+                        type: "manage",
+                        typeOfType: "input",
+                        model,
+                        fieldTypePlugins,
+                        templates
+                    });
 
-            const typeName = `${createTypeName(model.modelId)}_${createTypeName(field.fieldId)}`;
+                    const typeName = `${createTypeName(model.modelId)}_${createTypeName(
+                        field.fieldId
+                    )}`;
 
-            const inputProperties = templateTypes.map(inputTypeName => {
-                const key = inputTypeName.replace(`${typeName}_`, "").replace("Input", "");
-                return [key, inputTypeName];
-            });
+                    const inputProperties = templateTypes.map(inputTypeName => {
+                        const key = inputTypeName.replace(`${typeName}_`, "").replace("Input", "");
+                        return [key, inputTypeName];
+                    });
 
-            /**
-             * Generate a field input type, similar to this example:
-             *
-             * input Article_ContentInput {
-             *     Hero: Article_Content_HeroInput
-             *     SimpleText: Article_Content_SimpleTextInput
-             * }
-             */
-            typeDefs.push(`input ${typeName}Input {
+                    /**
+                     * Generate a field input type, similar to this example:
+                     *
+                     * input Article_ContentInput {
+                     *     Hero: Article_Content_HeroInput
+                     *     SimpleText: Article_Content_SimpleTextInput
+                     * }
+                     */
+                    typeDefs.push(`input ${typeName}Input {
                         ${inputProperties.map(
                             ([key, value]) => `
                             ${key}: ${value}
@@ -181,11 +185,12 @@ export const dynamicZoneField: CmsModelFieldToGraphQLPlugin<CmsModelDynamicZoneF
                         )} 
                     }`);
 
-            return {
-                fields: createGraphQLInputField(field, `${typeName}Input`),
-                typeDefs: typeDefs.join("\n")
-            };
-        },
-        createResolver
-    }
-};
+                    return {
+                        fields: createGraphQLInputField(field, `${typeName}Input`),
+                        typeDefs: typeDefs.join("\n")
+                    };
+                },
+                createResolver
+            }
+        };
+    };

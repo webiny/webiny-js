@@ -238,6 +238,7 @@ export interface CmsModelField {
 export interface CmsDynamicZoneTemplate {
     id: string;
     name: string;
+    gqlTypeName: string;
     description: string;
     icon: string;
     fields: CmsModelField[];
@@ -512,7 +513,7 @@ interface CmsModelFieldToGraphQLCreateResolverParams<TField> {
     field: TField;
     createFieldResolvers: any;
 }
-export interface CmsModelFieldToGraphQLCreateResolver<TField> {
+export interface CmsModelFieldToGraphQLCreateResolver<TField = CmsModelField> {
     (params: CmsModelFieldToGraphQLCreateResolverParams<TField>):
         | GraphQLFieldResolver
         | { resolver: GraphQLFieldResolver | null; typeResolvers: Resolvers<CmsContext> }
@@ -524,7 +525,8 @@ export interface CmsModelFieldToGraphQLCreateResolver<TField> {
  * @category ModelField
  * @category GraphQL
  */
-export interface CmsModelFieldToGraphQLPlugin<TField = CmsModelField> extends Plugin {
+export interface CmsModelFieldToGraphQLPlugin<TField extends CmsModelField = CmsModelField>
+    extends Plugin {
     /**
      * A plugin type
      */

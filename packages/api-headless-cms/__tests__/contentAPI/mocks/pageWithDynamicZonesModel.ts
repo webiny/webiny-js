@@ -47,7 +47,8 @@ export const pageModel: CmsModel = {
                 templates: [
                     {
                         layout: [["dwodev6q"]],
-                        name: "Hero",
+                        name: "Hero #1",
+                        gqlTypeName: "Hero",
                         icon: "fas/flag",
                         description: "The top piece of content on every page.",
                         id: "cv2zf965v324ivdc7e1vt",
@@ -87,7 +88,8 @@ export const pageModel: CmsModel = {
                     },
                     {
                         layout: [["zsmj94iu"]],
-                        name: "Simple Text",
+                        name: "Simple Text #1",
+                        gqlTypeName: "SimpleText",
                         icon: "fas/file-text",
                         description: "Simple paragraph of text.",
                         id: "81qiz2v453wx9uque0gox",
@@ -144,7 +146,8 @@ export const pageModel: CmsModel = {
             settings: {
                 templates: [
                     {
-                        name: "Text Header",
+                        name: "Text Header #1",
+                        gqlTypeName: "TextHeader",
                         icon: "fas/file-text",
                         layout: [["6te8u0pe"]],
                         description: "Simple text based header.",
@@ -163,7 +166,8 @@ export const pageModel: CmsModel = {
                         ]
                     },
                     {
-                        name: "Image Header",
+                        name: "Image Header #1",
+                        gqlTypeName: "ImageHeader",
                         icon: "far/image",
                         layout: [["lqp0175z"], ["1qc22e85"]],
                         description: "Text with background image.",
