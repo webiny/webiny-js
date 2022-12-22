@@ -14,13 +14,13 @@ import { orderBy } from "lodash";
 import TimeAgo from "timeago-react";
 import useDeepCompareEffect from "use-deep-compare-effect";
 
-import { FolderName, PageName } from "~/admin/components/Table/Row/Name";
-import { FolderActionDelete } from "~/admin/components/Table/Row/Folder/FolderActionDelete";
-import { FolderActionEdit } from "~/admin/components/Table/Row/Folder/FolderActionEdit";
-import { PageActionDelete } from "~/admin/components/Table/Row/Page/PageActionDelete";
-import { PageActionEdit } from "~/admin/components/Table/Row/Page/PageActionEdit";
-import { PageActionPreview } from "~/admin/components/Table/Row/Page/PageActionPreview";
-import { PageActionPublish } from "~/admin/components/Table/Row/Page/PageActionPublish";
+import { FolderName, PageName } from "./Row/Name";
+import { FolderActionDelete } from "./Row/Folder/FolderActionDelete";
+import { FolderActionEdit } from "./Row/Folder/FolderActionEdit";
+import { PageActionDelete } from "./Row/Page/PageActionDelete";
+import { PageActionEdit } from "./Row/Page/PageActionEdit";
+import { PageActionPreview } from "./Row/Page/PageActionPreview";
+import { PageActionPublish } from "./Row/Page/PageActionPublish";
 
 import statusLabels from "~/admin/constants/pageStatusesLabels";
 
