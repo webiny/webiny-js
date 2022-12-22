@@ -7,7 +7,7 @@ interface Params {
     attributes?: Attributes;
 }
 
-export const createPageImportExportTaskEntity = ({ entityName, table, attributes }: Params) => {
+export const createImportExportTaskEntity = ({ entityName, table, attributes }: Params) => {
     return new Entity({
         name: entityName,
         table,
