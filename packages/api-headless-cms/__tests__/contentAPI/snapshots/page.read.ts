@@ -1,4 +1,4 @@
-export default /* GraphQL */ `
+export default `
     """
     Page
     """

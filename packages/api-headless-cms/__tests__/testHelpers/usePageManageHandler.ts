@@ -6,18 +6,22 @@ const pageFields = `
     content {
         ...on Page_Content_Hero {
             title
+            __typename
         }
         ...on Page_Content_SimpleText {
             text
+            __typename
         }
     }
     header {
         ...on Page_Header_TextHeader {
             title
+            __typename
         }
         ...on Page_Header_ImageHeader {
             title
             image
+            __typename
         }
     }
 `;

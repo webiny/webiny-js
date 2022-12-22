@@ -1,22 +1,27 @@
-import { CmsGroup } from "~/types";
 import { pageModel } from "./mocks/pageWithDynamicZonesModel";
+import { setupGroupAndModels } from "../testHelpers/setup";
 import { usePageManageHandler } from "../testHelpers/usePageManageHandler";
+import { usePageReadHandler } from "../testHelpers/usePageReadHandler";
 
 const contentEntryQueryData = {
     content: [
         {
-            text: "Simple Text #1"
+            text: "Simple Text #1",
+            __typename: "Page_Content_SimpleText"
         },
         {
-            title: "Hero Title #1"
+            title: "Hero Title #1",
+            __typename: "Page_Content_Hero"
         },
         {
-            title: "Hero Title #2"
+            title: "Hero Title #2",
+            __typename: "Page_Content_Hero"
         }
     ],
     header: {
         title: "Header #1",
-        image: "https://d3bwcib4j08r73.cloudfront.net/files/webiny-serverless-cms.png"
+        image: "https://d3bwcib4j08r73.cloudfront.net/files/webiny-serverless-cms.png",
+        __typename: "Page_Header_ImageHeader"
     }
 };
 
@@ -42,55 +47,15 @@ const contentEntryMutationData = {
 
 describe("dynamicZone field", () => {
     const manageOpts = { path: "manage/en-US" };
+    const previewOpts = { path: "preview/en-US" };
 
-    const handler = usePageManageHandler(manageOpts);
-
-    // This function is not directly within `beforeEach` as we don't always setup the same content model.
-    // We call this function manually at the beginning of each test, where needed.
-    const setupContentModelGroup = async (): Promise<CmsGroup> => {
-        const [createCMG] = await handler.createContentModelGroupMutation({
-            data: {
-                name: "Group",
-                slug: "group",
-                icon: "ico/ico",
-                description: "description"
-            }
-        });
-        return createCMG.data.createContentModelGroup.data;
-    };
-
-    const setupContentModel = async (contentModelGroup: CmsGroup) => {
-        const model = pageModel;
-
-        // Create initial record
-        const [create] = await handler.createContentModelMutation({
-            data: {
-                name: model.name,
-                modelId: model.modelId,
-                group: contentModelGroup.id
-            }
-        });
-
-        if (create.errors) {
-            console.error(`[beforeEach] ${create.errors[0].message}`);
-            process.exit(1);
-        }
-
-        const [update] = await handler.updateContentModelMutation({
-            modelId: create.data.createContentModel.data.modelId,
-            data: {
-                fields: model.fields,
-                layout: model.layout
-            }
-        });
-        return update.data.updateContentModel.data;
-    };
+    const manage = usePageManageHandler(manageOpts);
+    const preview = usePageReadHandler(previewOpts);
 
     test("should create a page with dynamic zone fields", async () => {
-        const contentModelGroup = await setupContentModelGroup();
-        await setupContentModel(contentModelGroup);
+        await setupGroupAndModels({ manager: manage, models: [pageModel] });
 
-        const [createPageResponse] = await handler.createPage({
+        const [createPageResponse] = await manage.createPage({
             data: contentEntryMutationData
         });
 
@@ -109,13 +74,32 @@ describe("dynamicZone field", () => {
 
         const page = createPageResponse.data.createPage.data;
 
-        const [response] = await handler.getPage({
+        // Test `manage` get
+        const [manageGet] = await manage.getPage({
+            revision: page.id
+        });
+
+        expect(manageGet).toEqual({
+            data: {
+                getPage: {
+                    data: {
+                        id: page.id,
+                        content: contentEntryQueryData.content,
+                        header: contentEntryQueryData.header
+                    },
+                    error: null
+                }
+            }
+        });
+
+        // Test `read` get
+        const [previewGet] = await preview.getPage({
             where: {
                 id: page.id
             }
         });
 
-        expect(response).toEqual({
+        expect(previewGet).toEqual({
             data: {
                 getPage: {
                     data: {

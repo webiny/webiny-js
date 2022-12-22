@@ -7,10 +7,10 @@ import { createDateTimeField } from "./datetime";
 import { createRichTextField } from "./richText";
 import { createFileField } from "./file";
 import { createObjectField } from "./object";
-import { CmsModelFieldToGraphQLPlugin } from "~/types";
 import { createDynamicZoneField } from "~/graphqlFields/dynamicZone";
+import { PluginCollection } from "@webiny/plugins/types";
 
-export const createGraphQLFields = (): CmsModelFieldToGraphQLPlugin[] => [
+export const createGraphQLFields = (): PluginCollection => [
     createTextField(),
     createRefField(),
     createNumberField(),
