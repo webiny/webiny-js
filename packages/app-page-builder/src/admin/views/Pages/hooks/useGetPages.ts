@@ -78,12 +78,18 @@ const useGetPages = (links: LinkItem[], folderId = FOLDER_ID_DEFAULT) => {
                     setLoading(state => {
                         return {
                             ...state,
-                            INIT: false,
                             [action]: false
                         };
                     });
                 });
         }
+
+        setLoading(state => {
+            return {
+                ...state,
+                INIT: false
+            };
+        });
     };
 
     const updatePage = (page: PbPageData) => {
