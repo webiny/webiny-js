@@ -4,8 +4,8 @@ import { PbContext } from "~/types";
 
 export const afterSystemInstall = () => {
     return new ContextPlugin<PbContext>(async context => {
-        try {
-            context.pageBuilder.onSystemAfterInstall.subscribe(async () => {
+        context.pageBuilder.onSystemAfterInstall.subscribe(async () => {
+            try {
                 const [data] = await context.pageBuilder.listLatestPages({ limit: 100 });
                 const pageIds = data.map(page => page.pid);
 
@@ -24,12 +24,12 @@ export const afterSystemInstall = () => {
                         }
                     })
                 );
-            });
-        } catch (error) {
-            throw WebinyError.from(error, {
-                message: "Error while creating page links to ROOT folder.",
-                code: "AFTER_PAGE_BUILDER_SYSTEM_INSTALL"
-            });
-        }
+            } catch (error) {
+                throw WebinyError.from(error, {
+                    message: "Error while creating page links to ROOT folder.",
+                    code: "AFTER_PAGE_BUILDER_SYSTEM_INSTALL"
+                });
+            }
+        });
     });
 };
