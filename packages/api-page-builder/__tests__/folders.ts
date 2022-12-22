@@ -1,6 +1,4 @@
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import { ContextPlugin } from "@webiny/api";
-import { FoldersContext, Link } from "@webiny/api-folders/types";
 import { createFoldersContext, createFoldersGraphQL } from "@webiny/api-folders";
 import { createStorageOperations } from "@webiny/api-folders-so-ddb";
 
@@ -22,24 +20,6 @@ export const createFolders = () => {
                 table: process.env.DB_TABLE
             })
         }),
-        createFoldersGraphQL(),
-        new ContextPlugin<FoldersContext>(async context => {
-            context.folders.createLink = async ({ id, folderId }): Promise<Link> => {
-                return {
-                    id: id || "id",
-                    linkId: "linkId",
-                    folderId: folderId || "folderId",
-                    createdOn: new Date().toISOString(),
-                    createdBy: {
-                        id: "1",
-                        displayName: "Admin Webiny",
-                        type: "type"
-                    },
-                    tenant: "root",
-                    locale: "en-US",
-                    webinyVersion: process.env.WEBINY_VERSION || "5.34.0"
-                };
-            };
-        })
+        createFoldersGraphQL()
     ];
 };
