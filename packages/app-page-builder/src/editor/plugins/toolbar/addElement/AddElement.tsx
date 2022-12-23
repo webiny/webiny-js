@@ -201,7 +201,7 @@ const AddElement: React.FC = () => {
                                               source: { type: plugin.elementType } as any,
                                               target: params as DropElementActionArgsType["target"]
                                           });
-                                          deactivatePlugin();
+                                          setTimeout(deactivatePlugin, 20);
                                       }
                                     : null,
                                 params ? "Click to Add" : "Drag to Add",
