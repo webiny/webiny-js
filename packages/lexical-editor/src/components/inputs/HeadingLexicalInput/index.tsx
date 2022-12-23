@@ -16,9 +16,6 @@ import ClickableLinkPlugin from "../../../plugins/ClickableLinkPlugin";
 import { $generateHtmlFromNodes } from "@lexical/html";
 import React from "react";
 
-// import FloatingTextFormatToolbarPlugin from "../../../plugins/FloatingTextFormatToolbarPlugin";
-import { MaxLengthPlugin } from "../../../plugins/MaxLengthPlugin";
-
 import ContentEditable from "../../../ui/ContentEditable";
 import theme from "../../../themes/webinyLexicalTheme";
 import Placeholder from "../../../ui/Placeholder";
@@ -29,6 +26,9 @@ import WebinyNodes from "../../../nodes/webinyNodes";
 import { $createParagraphNode } from "lexical";
 import { HeadingToolbar } from "~/components/inputs/HeadingLexicalInput/Toolbar";
 import CodeHighlightPlugin from "~/plugins/CodeHighlightPlugin/CodeHighlightPlugin";
+import FloatingLinkEditorPlugin from "~/plugins/FloatingLinkEditorPlugin";
+import { LinkPlugin } from "@lexical/react/LexicalLinkPlugin";
+import { LexicalAutoLinkPlugin } from "~/plugins/AutoLinkPlugin";
 
 interface HeadingLexicalInputProps {
     tag?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
@@ -50,7 +50,9 @@ const HeadingLexicalInput: React.FC<HeadingLexicalInputProps> = ({ onChange }) =
     const text = "Enter some heading text...";
     const placeholder = <Placeholder>{text}</Placeholder>;
     const scrollRef = useRef(null);
-    const [floatingAnchorElem, setFloatingAnchorElem] = useState<HTMLDivElement | null>(null);
+    const [floatingAnchorElem, setFloatingAnchorElem] = useState<HTMLElement | undefined>(
+        undefined
+    );
 
     const onRef = (_floatingAnchorElem: HTMLDivElement) => {
         if (_floatingAnchorElem !== null) {
@@ -93,11 +95,13 @@ const HeadingLexicalInput: React.FC<HeadingLexicalInputProps> = ({ onChange }) =
         <h1 data-marker="styles" style={{ fontSize: 24, color: "red" }}>
             <LexicalComposer initialConfig={initialConfig}>
                 <div ref={scrollRef}>
-                    <MaxLengthPlugin maxLength={300} />
                     <OnChangePlugin onChange={handleOnChange} />
                     <AutoFocusPlugin />
+                    <LexicalAutoLinkPlugin />
+                    <LinkPlugin />
                     <ClearEditorPlugin />
                     <CodeHighlightPlugin />
+                    <FloatingLinkEditorPlugin anchorElem={floatingAnchorElem} />
                     <RichTextPlugin
                         contentEditable={
                             <div className="editor-scroller">

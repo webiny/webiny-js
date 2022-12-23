@@ -144,6 +144,7 @@ const useToolbar: FC<useToolbarProps> = ({
             }
 
             const node = getSelectedNode(selection);
+
             if (
                 !$isCodeHighlightNode(selection.anchor.getNode()) &&
                 selection.getTextContent() !== ""
