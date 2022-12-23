@@ -286,6 +286,7 @@ export interface CmsEditorFieldPredefinedValues {
 export interface CmsDynamicZoneTemplate {
     id: string;
     name: string;
+    gqlTypeName: string;
     description: string;
     icon: string;
     fields: CmsModelField[];
