@@ -9,8 +9,7 @@ import { EditorBar } from "~/editor";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import { useBlock } from "~/blockEditor/hooks/useBlock";
 import { SaveBlockActionEvent } from "~/blockEditor/config/eventActions/saveBlock/event";
-import { useUI } from "~/editor/hooks/useUI";
-import { setDisplayModeMutation } from "~/editor/recoil/modules";
+import { useDisplayMode } from "~/editor/hooks/useDisplayMode";
 import { DisplayMode } from "~/types";
 
 const SpinnerWrapper = styled.div`
@@ -23,11 +22,11 @@ const DefaultSaveBlockButton: React.FC = () => {
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
     const [loading, setLoading] = useState(false);
-    const [, setUiValue] = useUI();
+    const { setDisplayMode } = useDisplayMode();
 
     const saveChanges = useCallback(() => {
         setLoading(true);
-        setUiValue(prev => setDisplayModeMutation(prev, "desktop" as DisplayMode));
+        setDisplayMode(DisplayMode.DESKTOP);
         setTimeout(() => {
             eventActionHandler.trigger(
                 new SaveBlockActionEvent({
@@ -39,7 +38,7 @@ const DefaultSaveBlockButton: React.FC = () => {
                     }
                 })
             );
-        });
+        }, 200);
     }, [block.name]);
 
     return (
