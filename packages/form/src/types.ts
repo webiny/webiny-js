@@ -55,7 +55,7 @@ export interface FormSetValue<T = any> {
 }
 
 export interface FormRenderPropParams<T extends GenericFormData = GenericFormData> {
-    form: FormAPI;
+    form: FormAPI<T>;
     Bind: BindComponent;
     data: T;
     submit: FormRenderPropParamsSubmit;
