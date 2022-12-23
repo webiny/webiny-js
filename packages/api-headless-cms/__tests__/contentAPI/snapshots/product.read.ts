@@ -42,7 +42,6 @@ export default /* GraphQL */ `
         text: String
     }
 
-
     input ProductGetWhereInput {
         id: ID
         entryId: String
