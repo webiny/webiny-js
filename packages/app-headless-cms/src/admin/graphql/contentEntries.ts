@@ -54,7 +54,7 @@ export const createReadQuery = (model: CmsEditorContentModel) => {
                     createdBy {
                         id
                     }
-                    ${createFieldsList(model.fields)}
+                    ${createFieldsList({ model, fields: model.fields })}
                     savedOn
                     meta {
                         ${CONTENT_META_FIELDS}
@@ -205,7 +205,7 @@ export const createCreateMutation = (model: CmsEditorContentModel) => {
                 data {
                     id
                     savedOn
-                    ${createFieldsList(model.fields)}
+                    ${createFieldsList({ model, fields: model.fields })}
                     meta {
                         ${CONTENT_META_FIELDS}
                     }
@@ -241,7 +241,7 @@ export const createCreateFromMutation = (model: CmsEditorContentModel) => {
                 data {
                     id
                     savedOn
-                    ${createFieldsList(model.fields)}
+                    ${createFieldsList({ model, fields: model.fields })}
                     meta {
                         ${CONTENT_META_FIELDS}
                     }
@@ -275,7 +275,7 @@ export const createUpdateMutation = (model: CmsEditorContentModel) => {
             content: update${ucFirstModelId}(revision: $revision, data: $data) {
                 data {
                     id
-                    ${createFieldsList(model.fields)}
+                    ${createFieldsList({ model, fields: model.fields })}
                     savedOn
                     meta {
                         ${CONTENT_META_FIELDS}

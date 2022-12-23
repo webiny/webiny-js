@@ -1,9 +1,10 @@
 import React from "react";
 import { ReactComponent as ObjectIcon } from "@material-design-icons/svg/outlined/dynamic_form.svg";
-import { CmsEditorFieldTypePlugin } from "~/types";
 import { i18n } from "@webiny/app/i18n";
 import { DynamicZone } from "~/admin/plugins/fields/dynamicZone/DynamicZone";
-// import {createFieldsList} from "~/admin/graphql/createFieldsList";
+import { createFieldsList } from "~/admin/graphql/createFieldsList";
+import { createTypeName } from "~/utils/createTypeName";
+import { CmsEditorFieldTypePlugin } from "~/types";
 
 const t = i18n.ns("app-headless-cms/admin/fields");
 
@@ -51,13 +52,20 @@ export const dynamicZoneField: CmsEditorFieldTypePlugin = {
         },
         render() {
             return <DynamicZone />;
+        },
+        graphql: {
+            queryField({ model, field }) {
+                const prefix = `${createTypeName(model.modelId)}_${createTypeName(field.fieldId)}`;
+                const templates = field.settings?.templates || [];
+
+                const fragments = templates.map(template => {
+                    return `...on ${prefix}_${template.gqlTypeName} {
+                        ${createFieldsList({ model, fields: template.fields || [] })} 
+                        __typename
+                    }`;
+                });
+                return `{ ${fragments.join("\n")} }`;
+            }
         }
-        // graphql: {
-        //     queryField({ field }) {
-        //         return `{ ${createFieldsList(
-        //             (field.settings ? field.settings.fields : []) || []
-        //         )} }`;
-        //     }
-        // }
     }
 };

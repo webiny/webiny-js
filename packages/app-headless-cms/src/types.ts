@@ -13,6 +13,7 @@ import { SecurityPermission } from "@webiny/app-security/types";
 import { DragSource } from "~/admin/components/FieldEditor/FieldEditorContext";
 
 interface QueryFieldParams {
+    model: CmsModel;
     field: CmsModelField;
 }
 
@@ -512,7 +513,8 @@ export interface CmsIconsPlugin extends Plugin {
 /**
  * Transform field value when sending data to the API.
  */
-export interface CmsFieldValueTransformer extends Plugin {
+export interface CmsFieldValueTransformer<TField extends CmsModelField = CmsModelField>
+    extends Plugin {
     /**
      * A plugin type.
      */
@@ -524,7 +526,7 @@ export interface CmsFieldValueTransformer extends Plugin {
     /**
      * A transformer function that takes a value and returns a new one.
      */
-    transform: (value: any, field: CmsModelField) => any;
+    transform: (value: any, field: TField) => any;
 }
 
 /**
