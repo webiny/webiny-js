@@ -4,9 +4,10 @@ import { useRouter } from "@webiny/react-router";
 
 interface Props {
     folderId?: string;
+    defaultFolderName: string;
 }
 
-export const Sidebar = ({ folderId }: Props): ReactElement => {
+export const Sidebar = ({ folderId, defaultFolderName }: Props): ReactElement => {
     const [focusedFolderId, setFocusedFolderId] = useState<string>();
     const { history, location } = useRouter();
     const query = new URLSearchParams(location.search);
@@ -24,7 +25,7 @@ export const Sidebar = ({ folderId }: Props): ReactElement => {
     return (
         <FolderTree
             type={"page"}
-            title={"All pages"}
+            title={defaultFolderName}
             focusedFolderId={focusedFolderId}
             onTitleClick={() => history.push("/page-builder/pages-table")}
             onFolderClick={data => data?.id && onFolderClick(data?.id)}
