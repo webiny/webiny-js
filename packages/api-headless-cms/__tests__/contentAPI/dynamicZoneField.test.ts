@@ -2,6 +2,7 @@ import { pageModel } from "./mocks/pageWithDynamicZonesModel";
 import { setupGroupAndModels } from "../testHelpers/setup";
 import { usePageManageHandler } from "../testHelpers/usePageManageHandler";
 import { usePageReadHandler } from "../testHelpers/usePageReadHandler";
+import { until } from "../testHelpers/helpers";
 
 const contentEntryQueryData = {
     content: [
@@ -93,11 +94,26 @@ describe("dynamicZone field", () => {
         });
 
         // Test `read` get
-        const [previewGet] = await preview.getPage({
-            where: {
-                id: page.id
+        const previewGet = await until(
+            () => {
+                return preview
+                    .getPage({
+                        where: {
+                            id: page.id
+                        }
+                    })
+                    .then(([data]) => data);
+            },
+            ({ data }: any) => {
+                return data.getPage.data !== null;
+            },
+            {
+                name: "get page from /read endpoint",
+                tries: 20,
+                debounce: 2000,
+                wait: 2000
             }
-        });
+        );
 
         expect(previewGet).toEqual({
             data: {
