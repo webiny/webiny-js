@@ -36,3 +36,11 @@ for (let i = 0; i < paths.length; i++) {
     }
 }
 
+// Feature flags defined via the `featureFlags` property.
+// We set twice, to be available for both backend and frontend application code.
+// TODO: one day we might want to sync this up a bit.
+if (project.config.featureFlags) {
+    process.env.WEBINY_FEATURE_FLAGS = JSON.stringify(project.config.featureFlags);
+    process.env.REACT_APP_WEBINY_FEATURE_FLAGS = JSON.stringify(project.config.featureFlags);
+}
+
