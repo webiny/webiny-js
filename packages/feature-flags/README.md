@@ -12,10 +12,8 @@ A small library that provides a simple way to define and read feature flags in a
 -   [Overview](#overview)
 -   [Examples](#examples)
 -   [Reference](#reference)
-    -   [Functions](#functions)
-        -   [`getFeature-flagsAppUrl`](#getFeature-flagsAppUrl)
-        -   [`getFeature-flagsApiUrl`](#getFeature-flagsApiUrl)
-        -   [`getFeature-flagsGqlApiUrl`](#getFeature-flagsGqlApiUrl)
+    -   [Objects](#objects)
+        -   [`featureflags`](#featureflags)
 
 ## Installation
 
@@ -43,6 +41,8 @@ export default {
     cli: {
         ...
     },
+    
+    // Feature flags are defined via a simple JavaScript object.
     featureFlags: {
         myCustomFeatureFlag: false,
         someFeature: { enabled: true, myCustomProperty: 123, thisIsJson: "yes"}
@@ -50,7 +50,7 @@ export default {
 };
 ```
 
-Within both backend and frontend application code, the `featureFlags` object can be read like the following:
+Within both backend and frontend application code, the `featureFlags` object can then be read like so:
 
 ```ts
 import { featureFlags } from "@webiny/feature-flags"; 
@@ -60,7 +60,8 @@ const useMyCustomFeature = featureFlags.myCustomFeatureFlag;
 const someOtherFeatureMyCustomProperty = featureFlags.someFeature.myCustomProperty;
 ```
 
-> NOTE
+> **NOTE**
+> 
 > Behind the scenes, it's the [Webiny CLI](https://www.webiny.com/docs/core-development-concepts/basics/webiny-cli) is that enables the propagation of the values defined via the `featureFlags` parameter to the application both. As mentioned, the values are propagated to both backend and frontend application code. 
 
 ## Examples
