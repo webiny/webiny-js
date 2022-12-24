@@ -13,7 +13,7 @@ A small library that provides a simple way to define and read feature flags in a
 -   [Examples](#examples)
 -   [Reference](#reference)
     -   [Objects](#objects)
-        -   [`featureflags`](#featureflags)
+        -   [`featureFlags`](#featureFlags)
 
 ## Installation
 
