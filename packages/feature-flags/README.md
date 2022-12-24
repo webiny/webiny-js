@@ -62,7 +62,7 @@ const someOtherFeatureMyCustomProperty = featureFlags.someFeature.myCustomProper
 
 > **NOTE**
 > 
-> Behind the scenes, it's the [Webiny CLI](https://www.webiny.com/docs/core-development-concepts/basics/webiny-cli) that enables the propagation of the `featureFlags` object into the actual application. As mentioned, the `featureFlags` object is propagated to both backend and frontend application code. 
+> Behind the scenes, it's the [Webiny CLI](https://www.webiny.com/docs/core-development-concepts/basics/webiny-cli) that enables the propagation of the `featureFlags` object into the actual applications. As mentioned, the `featureFlags` object can be accessed within both backend and frontend application code. 
 
 ## Examples
 
