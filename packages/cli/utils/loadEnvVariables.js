@@ -35,4 +35,3 @@ for (let i = 0; i < paths.length; i++) {
         }
     }
 }
-
