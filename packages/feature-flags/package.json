@@ -6,6 +6,7 @@
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
   },
+  "description": "A small library that provides a simple way to define and read feature flags in a Webiny project.",
   "contributors": [
     "Adrian Smijulj <adrian@webiny.com>"
   ],
