@@ -43,4 +43,3 @@ if (project.config.featureFlags) {
     process.env.WEBINY_FEATURE_FLAGS = JSON.stringify(project.config.featureFlags);
     process.env.REACT_APP_WEBINY_FEATURE_FLAGS = JSON.stringify(project.config.featureFlags);
 }
-
