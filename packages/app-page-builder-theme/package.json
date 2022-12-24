@@ -6,6 +6,7 @@
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
   },
+  "description": "A small package that provides Webiny Page Builder theme-related types and utilities.",
   "author": "Adrian Smijulj",
   "license": "MIT",
   "dependencies": {
