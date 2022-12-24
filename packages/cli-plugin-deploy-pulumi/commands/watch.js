@@ -5,7 +5,7 @@ const path = require("path");
 const localtunnel = require("localtunnel");
 const express = require("express");
 const bodyParser = require("body-parser");
-const { getProjectApplication } = require("@webiny/cli/utils");
+const { getProjectApplication, getProject } = require("@webiny/cli/utils");
 const get = require("lodash/get");
 const merge = require("lodash/merge");
 const browserOutput = require("./watch/output/browserOutput");
@@ -40,6 +40,15 @@ module.exports = async (inputs, context) => {
 
     let projectApplication;
     if (inputs.folder) {
+        // Detect if an app alias was provided.
+        const project = getProject();
+        if (project.config.appAliases) {
+            const appAliases = project.config.appAliases;
+            if (appAliases[inputs.folder]) {
+                inputs.folder = appAliases[inputs.folder];
+            }
+        }
+
         // Get project application metadata. Will throw an error if invalid folder specified.
         projectApplication = getProjectApplication({
             cwd: path.join(process.cwd(), inputs.folder)
