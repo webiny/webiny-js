@@ -13379,6 +13379,22 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/feature-flags@workspace:packages/feature-flags":
+  version: 0.0.0-use.local
+  resolution: "@webiny/feature-flags@workspace:packages/feature-flags"
+  dependencies:
+    "@babel/cli": ^7.19.3
+    "@babel/core": ^7.19.3
+    "@babel/runtime": ^7.19.0
+    "@types/uniqid": ^5.3.2
+    "@webiny/cli": ^5.33.2
+    "@webiny/project-utils": ^5.33.2
+    rimraf: ^3.0.2
+    ttypescript: ^1.5.13
+    typescript: 4.7.4
+  languageName: unknown
+  linkType: soft
+
 "@webiny/form@^5.33.2, @webiny/form@workspace:packages/form":
   version: 0.0.0-use.local
   resolution: "@webiny/form@workspace:packages/form"
