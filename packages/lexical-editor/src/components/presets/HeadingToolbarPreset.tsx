@@ -5,9 +5,14 @@ import { ItalicAction } from "~/components/Toolbar/ToolbarActions/ItalicAction";
 import { UnderlineAction } from "~/components/Toolbar/ToolbarActions/UnderlineAction";
 import { CodeHighlightAction } from "~/components/Toolbar/ToolbarActions/CodeHighlightAction";
 import { LinkAction } from "~/components/Toolbar/ToolbarActions/LinkAction";
+import {FontSizeAction} from "~/components/Toolbar/ToolbarActions/FontSizeAction";
+import { Divider } from "../../ui/Divider";
+
 export const HeadingToolbarPreset = () => {
     return (
         <>
+            <AddToolbarAction element={<FontSizeAction />} type={"heading"} />
+            <AddToolbarAction element={<Divider />} type={"heading"} />
             <AddToolbarAction element={<BoldAction />} type={"heading"} />
             <AddToolbarAction element={<ItalicAction />} type={"heading"} />
             <AddToolbarAction element={<UnderlineAction />} type={"heading"} />

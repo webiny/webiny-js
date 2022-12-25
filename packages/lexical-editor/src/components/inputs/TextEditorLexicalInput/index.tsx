@@ -18,14 +18,12 @@ import React from "react";
 
 // import ComponentPickerPlugin from '../../../plugins/ComponentPickerPlugin';
 import FloatingLinkEditorPlugin from "../../../plugins/FloatingLinkEditorPlugin";
-import { MaxLengthPlugin } from "../../../plugins/MaxLengthPlugin";
 
 import ContentEditable from "../../../ui/ContentEditable";
 import theme from "../../../themes/webinyLexicalTheme";
 import Placeholder from "../../../ui/Placeholder";
 import { EditorState } from "lexical/LexicalEditorState";
 import { LexicalEditor } from "lexical";
-import FloatingTextFormatToolbarPlugin from "~/plugins/FloatingTextFormatToolbarPlugin";
 
 interface TextEditorLexicalInput {
     onChange?: (htmlString: string) => void;
@@ -77,7 +75,6 @@ const TextEditorLexicalInput: React.FC<TextEditorLexicalInput> = ({ onChange }) 
     return (
         <LexicalComposer initialConfig={initialConfig}>
             <div className="editor-container" ref={scrollRef}>
-                <MaxLengthPlugin maxLength={300} />
                 <OnChangePlugin onChange={handleOnChange} />
                 <AutoFocusPlugin />
                 <ClearEditorPlugin />
@@ -96,7 +93,6 @@ const TextEditorLexicalInput: React.FC<TextEditorLexicalInput> = ({ onChange }) 
                 {floatingAnchorElem && (
                     <>
                         <FloatingLinkEditorPlugin anchorElem={floatingAnchorElem} />
-                        <FloatingTextFormatToolbarPlugin anchorElem={floatingAnchorElem} />
                     </>
                 )}
             </div>

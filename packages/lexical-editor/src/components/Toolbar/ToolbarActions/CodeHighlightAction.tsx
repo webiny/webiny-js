@@ -3,7 +3,8 @@ import { FORMAT_TEXT_COMMAND } from "lexical";
 import React, { useState } from "react";
 
 /**
- * Toolbar action. On toolbar, you can see the button that is italic.
+ * Toolbar action. User can highlight the selected text.
+ * - Gray background will be visible on selected text after clicking on the button.
  */
 export const CodeHighlightAction = () => {
     const [editor] = useLexicalComposerContext();

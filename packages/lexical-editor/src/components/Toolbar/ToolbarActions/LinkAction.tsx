@@ -5,14 +5,15 @@ import { getSelectedNode } from "~/utils/getSelectedNode";
 import { $getSelection, $isRangeSelection } from "lexical";
 
 /**
- * Toolbar action. On toolbar, you can see the button that is underline.
+ * Toolbar action. User can convert selected text in clickble link.
+ * - Small size popup will be opened with input so user can enter the link.
+ * - To remove the link, user need to select the already added link and click again in the action button.
  */
 export const LinkAction = () => {
     const [editor] = useLexicalComposerContext();
     const [isLink, setIsLink] = useState(false);
 
     const insertLink = useCallback(() => {
-        console.log("insert lnk");
         if (!isLink) {
             editor.dispatchCommand(TOGGLE_LINK_COMMAND, "https://");
         } else {
@@ -26,12 +27,10 @@ export const LinkAction = () => {
             if (!$isRangeSelection(selection)) {
                 return;
             }
-            console.log("LINK");
             const node = getSelectedNode(selection);
             // Update links
             const parent = node.getParent();
             if ($isLinkNode(parent) || $isLinkNode(node)) {
-                console.log("SET LINK");
                 setIsLink(true);
             } else {
                 setIsLink(false);

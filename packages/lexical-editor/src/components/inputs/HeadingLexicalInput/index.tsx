@@ -72,9 +72,10 @@ const HeadingLexicalInput: React.FC<HeadingLexicalInputProps> = ({ onChange }) =
 
     // When the editor changes, you can get notified via the
     // LexicalOnChangePlugin!
+    //TODO: remove all comments when data flow task is finished
     function handleOnChange(editorState: EditorState, editor: LexicalEditor) {
         // json
-        console.log(editorState.toJSON());
+        // console.log(editorState.toJSON());
         editorState.read(() => {
             if (typeof onChange === "function") {
                 // Read the contents of the EditorState here.
@@ -115,10 +116,7 @@ const HeadingLexicalInput: React.FC<HeadingLexicalInputProps> = ({ onChange }) =
                     />
                     <ClickableLinkPlugin />
                     {floatingAnchorElem && (
-                        <>
-                            {/* <FloatingLinkEditorPlugin anchorElem={floatingAnchorElem} /> */}
-                            <HeadingToolbar anchorElem={floatingAnchorElem} />
-                        </>
+                        <HeadingToolbar anchorElem={floatingAnchorElem} />
                     )}
                 </div>
             </LexicalComposer>

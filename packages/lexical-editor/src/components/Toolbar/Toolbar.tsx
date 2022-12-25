@@ -18,6 +18,7 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { getSelectedNode } from "~/utils/getSelectedNode";
 import { $isCodeHighlightNode } from "@lexical/code";
 import { createPortal } from "react-dom";
+import "./Toolbar.css";
 
 interface FloatingToolbarProps {
     type: ToolbarType;
