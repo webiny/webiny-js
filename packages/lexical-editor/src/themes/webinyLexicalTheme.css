@@ -278,9 +278,10 @@
   background-color: #ffbbbb !important;
 }
 .PlaygroundEditorTheme__ol1 {
+  list-style: auto;
   padding: 0;
   margin: 0;
-  margin-left: 16px;
+  margin-left: 10px;
   list-style-position: inside;
 }
 .PlaygroundEditorTheme__ol2 {

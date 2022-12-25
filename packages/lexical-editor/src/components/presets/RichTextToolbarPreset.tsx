@@ -6,13 +6,17 @@ import { UnderlineAction } from "~/components/Toolbar/ToolbarActions/UnderlineAc
 import { CodeHighlightAction } from "~/components/Toolbar/ToolbarActions/CodeHighlightAction";
 import { LinkAction } from "~/components/Toolbar/ToolbarActions/LinkAction";
 import {FontSizeAction} from "~/components/Toolbar/ToolbarActions/FontSizeAction";
-export const HeadingToolbarPreset = () => {
+import {Divider} from "~/ui/Divider";
+import {NumberedListAction} from "~/components/Toolbar/ToolbarActions/NumberedListAction";
+export const RichTextToolbarPreset = () => {
     return (
         <>
+            <AddToolbarAction element={<FontSizeAction />} type={"heading"} />
+            <AddToolbarAction element={<NumberedListAction />} type={"heading"} />
+            <AddToolbarAction element={<Divider />} type={"heading"} />
             <AddToolbarAction element={<BoldAction />} type={"heading"} />
             <AddToolbarAction element={<ItalicAction />} type={"heading"} />
             <AddToolbarAction element={<UnderlineAction />} type={"heading"} />
-            <AddToolbarAction element={<FontSizeAction />} type={"heading"} />
             <AddToolbarAction element={<CodeHighlightAction />} type={"heading"} />
             <AddToolbarAction element={<LinkAction />} type={"heading"} />
         </>

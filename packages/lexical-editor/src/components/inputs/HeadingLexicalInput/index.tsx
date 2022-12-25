@@ -10,6 +10,7 @@ import { ClearEditorPlugin } from "@lexical/react/LexicalClearEditorPlugin";
 import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
+import {ListPlugin} from '@lexical/react/LexicalListPlugin';
 import { useRef, useState } from "react";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import ClickableLinkPlugin from "../../../plugins/ClickableLinkPlugin";
@@ -103,6 +104,7 @@ const HeadingLexicalInput: React.FC<HeadingLexicalInputProps> = ({ onChange }) =
                     <ClearEditorPlugin />
                     <CodeHighlightPlugin />
                     <FloatingLinkEditorPlugin anchorElem={floatingAnchorElem} />
+                    <ListPlugin />
                     <RichTextPlugin
                         contentEditable={
                             <div className="editor-scroller">

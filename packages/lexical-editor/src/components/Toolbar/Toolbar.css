@@ -322,6 +322,26 @@ i.chevron-down {
   background-image: url("../../images/icons/chevron-down.svg");
 }
 
+
+.icon.bullet-list,
+.icon.bullet {
+  background-image: url("../../images/icons/list-ul.svg");
+}
+
+.icon.check-list,
+.icon.check {
+  background-image: url("../../images/icons/square-check.svg");
+}
+
+.icon.numbered-list,
+.icon.number {
+  background-image: url("../../images/icons/list-ol.svg");
+}
+
+.icon.quote {
+  background-image: url("../../images/icons/chat-square-quote.svg");
+}
+
 .link-editor .button.active,
 .toolbar .button.active {
   background-color: rgb(223, 232, 250);

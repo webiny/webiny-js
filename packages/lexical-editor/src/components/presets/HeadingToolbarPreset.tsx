@@ -7,11 +7,13 @@ import { CodeHighlightAction } from "~/components/Toolbar/ToolbarActions/CodeHig
 import { LinkAction } from "~/components/Toolbar/ToolbarActions/LinkAction";
 import {FontSizeAction} from "~/components/Toolbar/ToolbarActions/FontSizeAction";
 import { Divider } from "../../ui/Divider";
+import {NumberedListAction} from "~/components/Toolbar/ToolbarActions/NumberedListAction";
 
 export const HeadingToolbarPreset = () => {
     return (
         <>
             <AddToolbarAction element={<FontSizeAction />} type={"heading"} />
+            <AddToolbarAction element={<NumberedListAction />} type={"heading"} />
             <AddToolbarAction element={<Divider />} type={"heading"} />
             <AddToolbarAction element={<BoldAction />} type={"heading"} />
             <AddToolbarAction element={<ItalicAction />} type={"heading"} />
