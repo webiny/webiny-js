@@ -11,6 +11,8 @@ import { PluginCollection } from "@webiny/plugins/types";
 import { createPagesList } from "@webiny/app-page-builder-elements/renderers/pagesList";
 import { createDefaultDataLoader } from "@webiny/app-page-builder-elements/renderers/pagesList/dataLoaders";
 import { plugins } from "@webiny/plugins";
+import { isLegacyRenderingEngine } from "~/utils";
+import { createDefaultPagesListComponent } from "@webiny/app-page-builder-elements/renderers/pagesList/pagesListComponents";
 
 export default (args: PbRenderElementPluginArgs = {}): PluginCollection => {
     const elementType = kebabCase(args.elementType || "pages-list");
@@ -34,7 +36,7 @@ export default (args: PbRenderElementPluginArgs = {}): PluginCollection => {
 
                     return registeredPlugins.map(plugin => {
                         return {
-                            id: plugin.name!,
+                            id: plugin.componentName,
                             name: plugin.title,
                             component: plugin.component
                         };
@@ -55,7 +57,7 @@ export default (args: PbRenderElementPluginArgs = {}): PluginCollection => {
             type: "pb-page-element-pages-list-component",
             title: "Grid list",
             componentName: "default",
-            component: GridPageList
+            component: isLegacyRenderingEngine ? GridPageList : createDefaultPagesListComponent()
         } as PbPageElementPagesListComponentPlugin
     ];
 };
