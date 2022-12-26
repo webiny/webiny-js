@@ -12,10 +12,8 @@ A small package that provides theme-related utilities for Webiny's Page Builder 
 -   [Overview](#overview)
 -   [Examples](#examples)
 -   [Reference](#reference)
-    -   [Types](#Types)
-        -   [`types`](#featureFlags)
     -   [Functions](#functions)
-        -   [`featureFlags`](#featureFlags)
+        -   [`createTheme`](#createTheme)
 
 ## Installation
 
