@@ -9,6 +9,7 @@ import {FontSizeAction} from "~/components/Toolbar/ToolbarActions/FontSizeAction
 import { Divider } from "../../ui/Divider";
 import {NumberedListAction} from "~/components/Toolbar/ToolbarActions/NumberedListAction";
 import {BulletListAction} from "~/components/Toolbar/ToolbarActions/BulletListAction";
+import {QuoteAction} from "~/components/Toolbar/ToolbarActions/QuoteAction";
 
 export const HeadingToolbarPreset = () => {
     return (
@@ -16,6 +17,7 @@ export const HeadingToolbarPreset = () => {
             <AddToolbarAction element={<FontSizeAction />} type={"heading"} />
             <AddToolbarAction element={<NumberedListAction />} type={"heading"} />
             <AddToolbarAction element={<BulletListAction />} type={"heading"} />
+            <AddToolbarAction element={<QuoteAction />} type={"heading"} />
             <AddToolbarAction element={<Divider />} type={"heading"} />
             <AddToolbarAction element={<BoldAction />} type={"heading"} />
             <AddToolbarAction element={<ItalicAction />} type={"heading"} />

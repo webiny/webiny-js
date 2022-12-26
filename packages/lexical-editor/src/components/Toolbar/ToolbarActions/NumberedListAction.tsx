@@ -96,7 +96,7 @@ export const NumberedListAction = () => {
         <button
             onClick={() => formatNumberedList()}
             className={"popup-item spaced " + (isActive ? "active" : "")}
-            aria-label="Format text as bold"
+            aria-label="Format text as numbered list"
         >
             <i className="icon numbered-list" />
         </button>

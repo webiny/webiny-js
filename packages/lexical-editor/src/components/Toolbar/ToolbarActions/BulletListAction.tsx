@@ -96,7 +96,7 @@ export const BulletListAction = () => {
         <button
             onClick={() => formatBulletList()}
             className={"popup-item spaced " + (isActive ? "active" : "")}
-            aria-label="Format text as bold"
+            aria-label="Format text as bullet list"
         >
             <i className="icon bullet-list" />
         </button>
