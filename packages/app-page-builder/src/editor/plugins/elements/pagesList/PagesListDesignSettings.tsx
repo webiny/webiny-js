@@ -14,9 +14,9 @@ import {
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { BindComponent } from "@webiny/form";
 import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
-import startCase from "lodash/startCase";
-import { PagesListComponent } from "@webiny/app-page-builder-elements/renderers/pagesList";
+import { PagesListRenderer } from "@webiny/app-page-builder-elements/renderers/pagesList";
 import { isLegacyRenderingEngine } from "~/utils";
+import { PagesListComponent } from "@webiny/app-page-builder-elements/renderers/pagesList";
 
 interface PagesListDesignSettingsProps {
     Bind: BindComponent;
@@ -32,15 +32,24 @@ const PagesListDesignSettings: React.FC<PagesListDesignSettingsProps> = ({ Bind,
 
     if (!isLegacyRenderingEngine) {
         const { renderers } = usePageElements();
-        const PagesList = renderers?.["pages-list"] as PagesListComponent;
+        const PagesList = renderers?.["pages-list"] as PagesListRenderer;
         // @ts-ignore
         const pagesListRendererParams = PagesList?.params;
         if (pagesListRendererParams?.pagesListComponents) {
-            components = Object.keys(pagesListRendererParams?.pagesListComponents).map(key => {
+            const pagesListComponents = pagesListRendererParams?.pagesListComponents;
+
+            let pagesListComponentsList: PagesListComponent[];
+            if (typeof pagesListComponents === "function") {
+                pagesListComponentsList = pagesListComponents();
+            } else {
+                pagesListComponentsList = pagesListComponents;
+            }
+
+            components = pagesListComponentsList.map(item => {
                 return {
-                    title: startCase(key),
-                    name: key,
-                    componentName: key
+                    title: item.name,
+                    name: item.name,
+                    componentName: item.id
                 };
             });
         }

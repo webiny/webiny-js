@@ -15,7 +15,7 @@ export interface PagesListComponent {
 
 export interface CreatePagesListParams {
     dataLoader: DataLoader;
-    pagesListComponents: PagesListComponent[];
+    pagesListComponents: PagesListComponent[] | (() => PagesListComponent[]);
 }
 
 interface Cursors {
@@ -67,7 +67,7 @@ export const createPagesList = (params: CreatePagesListParams) => {
             next: null
         });
 
-        // Let's cached the data retrieved by the data loader and make the UX a bit smoother.
+        // Let's cache the data retrieved by the data loader and make the UX a bit smoother.
         const cache = useRef<Record<string, { cursors: Cursors; data: DataLoaderResult }>>({});
 
         const loadPage = (cursor: string | null = null) => {
@@ -116,7 +116,14 @@ export const createPagesList = (params: CreatePagesListParams) => {
             loadPage();
         }, [variablesHash]);
 
-        const pagesListComponent = pagesListComponents.find(item => item.id === component);
+        let pagesListComponentsList: PagesListComponent[];
+        if (typeof pagesListComponents === "function") {
+            pagesListComponentsList = pagesListComponents();
+        } else {
+            pagesListComponentsList = pagesListComponents;
+        }
+
+        const pagesListComponent = pagesListComponentsList.find(item => item.id === component);
         if (!pagesListComponent) {
             return <div>Selected page list component not found!</div>;
         }

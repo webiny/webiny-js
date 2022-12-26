@@ -10,6 +10,7 @@ import { CoreOptions } from "medium-editor";
 import { MenuTreeItem } from "~/admin/views/Menus/types";
 import { SecurityPermission } from "@webiny/app-security/types";
 import { LinkItem } from "@webiny/app-folders/types";
+import { PagesListComponent } from "@webiny/app-page-builder-elements/renderers/pagesList/types";
 
 export enum PageStatus {
     PUBLISHED = "published",
@@ -419,7 +420,7 @@ export type PbPageElementPagesListComponentPlugin = Plugin & {
     type: "pb-page-element-pages-list-component";
     title: string;
     componentName: string;
-    component: ComponentType<any>;
+    component: ComponentType<any> | PagesListComponent;
 };
 
 export interface PbDocumentElementPluginRenderProps {

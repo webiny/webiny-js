@@ -117,31 +117,33 @@ export const PageElementsProvider: React.FC = ({ children }) => {
             return { ...current, [item.elementType]: item.renderer };
         }, {});
 
+    const modifiers = {
+        attributes: {
+            dataElementType: createDataElementType(),
+            id: createId(),
+            className: createClassName()
+        },
+        styles: {
+            background: createBackground(),
+            border: createBorder(),
+            height: createHeight(),
+            horizontalAlign: createHorizontalAlign(),
+            margin: createMargin(),
+            text: createText(),
+            textAlign: createTextAlign(),
+            padding: createPadding(),
+            shadow: createShadow(),
+            verticalAlign: createVerticalAlign(),
+            width: createWidth()
+        }
+    };
+
     return (
         <PbPageElementsProvider
             // We can assign `Theme` here because we know at this point we're using the new elements rendering engine.
             theme={pageBuilder.theme as Theme}
             renderers={renderers}
-            modifiers={{
-                attributes: {
-                    dataElementType: createDataElementType(),
-                    id: createId(),
-                    className: createClassName()
-                },
-                styles: {
-                    background: createBackground(),
-                    border: createBorder(),
-                    height: createHeight(),
-                    horizontalAlign: createHorizontalAlign(),
-                    margin: createMargin(),
-                    text: createText(),
-                    textAlign: createTextAlign(),
-                    padding: createPadding(),
-                    shadow: createShadow(),
-                    verticalAlign: createVerticalAlign(),
-                    width: createWidth()
-                }
-            }}
+            modifiers={modifiers}
         >
             {children}
         </PbPageElementsProvider>
