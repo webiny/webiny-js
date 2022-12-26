@@ -29,6 +29,10 @@ Or if you prefer yarn:
 yarn add @webiny/app-page-builder-theme
 ```
 
+> ℹ️ **NOTE**
+> 
+> In most cases, manual installation is not needed as the package is already included in every Webiny project. 
+
 ## Overview
 
 A small package that provides Webiny Page Builder theme-related utilities. More specifically, it provides the `createTheme` factory function, which is used to construct a theme object. The theme object is used to style the website created with the Page Builder application.
@@ -37,33 +41,33 @@ Additionally, the package also provides TypeScript types.
 
 ## Examples
 
-| Example                                                     | Description                                                   |
-|-------------------------------------------------------------|---------------------------------------------------------------|
-| [Creating the Theme Object](./docs/examples/createTheme.md) | Shows how to create a new theme object. |
+| Example                                                     | Description                            |
+|-------------------------------------------------------------|----------------------------------------|
+| [Creating the Theme Object](./docs/examples/createTheme.md) | An example of creating a theme object. |
 
 ## Reference
 
-### Interfaces
+### Functions
 
-#### `Theme`
+#### `createTheme`
 
 <details>
 <summary>Type Declaration</summary>
 <p>
 
 ```ts
-export interface Theme {
-    breakpoints: ThemeBreakpoints;
-    styles: ThemeStyles;
-}
+export declare const createTheme: (theme: Theme) => Theme;
 ```
 
 </p>
 </details>
 
+Creates a new theme object.
 
 ```ts
-TODO
+import { createTheme } from "@webiny/app-page-builder-theme";
+
+console.log(getWcpAppUrl()); // Returns "https://d3mudimnmgk2a9.cloudfront.net".
 ```
 
 ### Functions
@@ -83,5 +87,17 @@ export declare const createTheme: (theme: Theme) => Theme;
 
 
 ```ts
-TODO
+const theme = createTheme({
+    breakpoints: {
+        desktop: { mediaQuery: "@media (max-width: 4000px)" },
+        tablet: { mediaQuery: "@media (max-width: 991px)" },
+        "mobile-landscape": { mediaQuery: "@media (max-width: 767px)" },
+        "mobile-portrait": { mediaQuery: "@media (max-width: 478px)" }
+    },
+    styles: {
+        colors: { ... },
+        typography: { ... },
+        elements: { ... }
+    }
+});
 ```

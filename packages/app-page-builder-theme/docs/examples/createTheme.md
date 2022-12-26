@@ -2,8 +2,13 @@
 
 We use the `createTheme` factory function to create a new theme object.
 
+For example, in a Webiny project, we might have something like the following:
+
 ```ts
+// apps/theme/pageBuilder/theme.ts
 import { createTheme } from "@webiny/app-page-builder-theme";
+
+// Optionally, for better auto-complete functionality, we can pull in the `CSSObject` type.
 import { CSSObject } from "@emotion/core";
 
 // Colors.
