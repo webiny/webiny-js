@@ -65,28 +65,6 @@ export declare const createTheme: (theme: Theme) => Theme;
 Creates a new theme object.
 
 ```ts
-import { createTheme } from "@webiny/app-page-builder-theme";
-
-console.log(getWcpAppUrl()); // Returns "https://d3mudimnmgk2a9.cloudfront.net".
-```
-
-### Functions
-
-#### `createTheme`
-
-<details>
-<summary>Type Declaration</summary>
-<p>
-
-```ts
-export declare const createTheme: (theme: Theme) => Theme;
-```
-
-</p>
-</details>
-
-
-```ts
 const theme = createTheme({
     breakpoints: {
         desktop: { mediaQuery: "@media (max-width: 4000px)" },
