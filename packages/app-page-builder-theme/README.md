@@ -4,7 +4,7 @@
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
-A small package that provides Webiny Page Builder theme-related TypeScript interfaces and utilities.
+A small package that provides Webiny Page Builder theme-related utilities.
 
 ## Table of Contents
 
@@ -29,14 +29,17 @@ Or if you prefer yarn:
 yarn add @webiny/app-page-builder-theme
 ```
 
-
 ## Overview
 
-TODO  
+A small package that provides Webiny Page Builder theme-related utilities. More specifically, it provides the `createTheme` factory function, which is used to construct a theme object. The theme object is used to style the website created with the Page Builder application.
+
+Additionally, the package also provides TypeScript types.
 
 ## Examples
 
-TODO
+| Example                                                     | Description                                                   |
+|-------------------------------------------------------------|---------------------------------------------------------------|
+| [Creating the Theme Object](./docs/examples/createTheme.md) | Shows how to create a new theme object. |
 
 ## Reference
 
