@@ -65,6 +65,8 @@ export declare const createTheme: (theme: Theme) => Theme;
 Creates a new theme object.
 
 ```ts
+import { createTheme } from "@webiny/app-page-builder-theme";
+
 const theme = createTheme({
     breakpoints: {
         desktop: { mediaQuery: "@media (max-width: 4000px)" },
