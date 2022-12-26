@@ -2,7 +2,7 @@ import React, {useCallback, useEffect, useState} from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import {
     $isListNode,
-    INSERT_ORDERED_LIST_COMMAND, ListNode,
+    INSERT_UNORDERED_LIST_COMMAND, ListNode,
     REMOVE_LIST_COMMAND
 } from '@lexical/list';
 import {
@@ -16,9 +16,9 @@ import {$findMatchingParent, $getNearestNodeOfType, mergeRegister} from "@lexica
 
 
 /**
- * Toolbar action. On toolbar, you can see as button that is bold.
+ * Toolbar button action. On click will wrap the content in bullet list style.
  */
-export const NumberedListAction = () => {
+export const BulletListAction = () => {
     const [editor] = useLexicalComposerContext();
     const [activeEditor, setActiveEditor] = useState(editor);
     const [isActive, setIsActive] = useState<boolean>(false);
@@ -50,7 +50,7 @@ export const NumberedListAction = () => {
                     ? parentList.getListType()
                     : element.getListType();
                 // set the button as active for numbered list
-                if(type === "number") {
+                if(type === "bullet") {
                     setIsActive(true);
                 }else {
                     setIsActive(false);
@@ -81,22 +81,24 @@ export const NumberedListAction = () => {
         );
     }, [editor, updateToolbar]);
 
-    const formatNumberedList = () => {
-        if(!isActive) {
-            editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined);
+    const formatBulletList = () => {
+        if (!isActive) {
+            // will update the active state in the useEffect
+            editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined);
         } else {
             editor.dispatchCommand(REMOVE_LIST_COMMAND, undefined);
+            // removing will not update correctly the active state, so we need to set to false manually.
             setIsActive(false);
         }
     };
 
     return (
         <button
-            onClick={() => formatNumberedList()}
+            onClick={() => formatBulletList()}
             className={"popup-item spaced " + (isActive ? "active" : "")}
             aria-label="Format text as bold"
         >
-            <i className="icon numbered-list" />
+            <i className="icon bullet-list" />
         </button>
     );
 };

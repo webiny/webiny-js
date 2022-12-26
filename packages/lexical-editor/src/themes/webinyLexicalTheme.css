@@ -281,10 +281,11 @@
   list-style: auto;
   padding: 0;
   margin: 0;
-  margin-left: 10px;
+  margin-left: 16px;
   list-style-position: inside;
 }
 .PlaygroundEditorTheme__ol2 {
+  list-style: initial;
   padding: 0;
   margin: 0;
   margin-left: 16px;
@@ -292,6 +293,8 @@
   list-style-position: inside;
 }
 .PlaygroundEditorTheme__ol3 {
+  list-style: initial;
+  list-style: auto;
   padding: 0;
   margin: 0;
   margin-left: 16px;
@@ -299,6 +302,7 @@
   list-style-position: inside;
 }
 .PlaygroundEditorTheme__ol4 {
+  list-style: initial;
   padding: 0;
   margin: 0;
   margin-left: 16px;
@@ -306,6 +310,7 @@
   list-style-position: inside;
 }
 .PlaygroundEditorTheme__ol5 {
+  list-style: initial;
   padding: 0;
   margin: 0;
   margin-left: 16px;
@@ -313,6 +318,7 @@
   list-style-position: inside;
 }
 .PlaygroundEditorTheme__ul {
+  list-style: initial;
   padding: 0;
   margin: 0;
   margin-left: 16px;

@@ -16,7 +16,7 @@ import {$findMatchingParent, $getNearestNodeOfType, mergeRegister} from "@lexica
 
 
 /**
- * Toolbar action. On toolbar, you can see as button that is bold.
+ * Toolbar button action. On click will wrap the content in numbered list style.
  */
 export const NumberedListAction = () => {
     const [editor] = useLexicalComposerContext();
@@ -26,7 +26,6 @@ export const NumberedListAction = () => {
 
     const updateToolbar = useCallback(() => {
         const selection = $getSelection();
-        console.log("SELECTION", selection);
         if ($isRangeSelection(selection)) {
             const anchorNode = selection.anchor.getNode();
             let element =
@@ -50,8 +49,7 @@ export const NumberedListAction = () => {
                 const type = parentList
                     ? parentList.getListType()
                     : element.getListType();
-                // set active for numbered list
-                console.log("TYPE", type);
+                // set the button as active for numbered list
                 if(type === "number") {
                     setIsActive(true);
                 }else {
@@ -85,9 +83,11 @@ export const NumberedListAction = () => {
 
     const formatNumberedList = () => {
         if(!isActive) {
+            // will update the active state in the useEffect
             editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined);
         } else {
             editor.dispatchCommand(REMOVE_LIST_COMMAND, undefined);
+            // removing will not update correctly the active state, so we need to set to false manually.
             setIsActive(false);
         }
     };
