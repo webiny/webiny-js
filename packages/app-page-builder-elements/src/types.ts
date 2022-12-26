@@ -2,6 +2,11 @@ import React, { HTMLAttributes } from "react";
 import { type CSSObject } from "@emotion/core";
 import { Theme, Breakpoint, StylesObject } from "@webiny/app-page-builder-theme/types";
 
+export interface Page {
+    path: string;
+    content: Content;
+}
+
 export type Content = Element;
 
 export interface Element<TElementData = Record<string, any>> {
@@ -94,6 +99,14 @@ export interface RendererProviderProps {
 
 export type ElementRendererProps<TElement = Record<string, any>> = {
     element: Element<TElement>;
+};
+
+export interface PageProviderProps {
+    page: Page;
+}
+
+export type PageContextValue = {
+    getPage: () => Page;
 };
 
 export type Renderer<T = {}> = React.ComponentType<ElementRendererProps & T>;

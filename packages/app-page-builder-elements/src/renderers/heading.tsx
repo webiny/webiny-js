@@ -31,7 +31,8 @@ export const createHeading = () => {
         {
             propsAreEqual: (prevProps: Props, nextProps: Props) => {
                 return prevProps.as === nextProps.as;
-            }
+            },
+            baseStyles: { width: "100%" }
         }
     );
 };

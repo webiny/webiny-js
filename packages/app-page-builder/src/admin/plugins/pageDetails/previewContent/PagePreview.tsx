@@ -4,6 +4,7 @@ import styled from "@emotion/styled";
 import classNames from "classnames";
 import { Typography } from "@webiny/ui/Typography";
 import { Select } from "@webiny/ui/Select";
+import { Page } from "@webiny/app-page-builder-elements/components/Page";
 import { Zoom } from "./Zoom";
 import { PbPageData } from "~/types";
 import useResponsiveClassName from "~/hooks/useResponsiveClassName";
@@ -23,7 +24,7 @@ const pageInnerWrapper = css({
     overflowX: "hidden",
     height: "calc(100vh - 230px)",
     position: "relative",
-    ".webiny-pb-page-document": {
+    '.webiny-pb-page-document, [data-pb-element-type="document"]': {
         transform: "scale(var(--webiny-pb-page-preview-scale))",
         transition: "transform 0.5s ease-in-out",
         transformOrigin: "top center"
@@ -60,25 +61,21 @@ const PagePreviewToolbar = styled("div")({
 });
 
 interface PagePreviewInnerProps {
-    page: PbPageData;
     zoom: number;
     setZoom: (zoom: number) => void;
 }
 
-const PagePreviewInner = ({ page, zoom, setZoom }: PagePreviewInnerProps) => (
-    <>
-        <RenderElement key={page.id} element={page.content} />
-        <PagePreviewToolbar>
-            <span>
-                <Typography use={"overline"}>Zoom:&nbsp;</Typography>
-            </span>
-            <Select value={zoom.toString()} onChange={setZoom} className={webinyZoomStyles}>
-                <option value={"1"}>100%</option>
-                <option value={"0.75"}>75%</option>
-                <option value={"0.5"}>50%</option>
-            </Select>
-        </PagePreviewToolbar>
-    </>
+const SelectPageZoom: React.ComponentType<PagePreviewInnerProps> = ({ zoom, setZoom }) => (
+    <PagePreviewToolbar>
+        <span>
+            <Typography use={"overline"}>Zoom:&nbsp;</Typography>
+        </span>
+        <Select value={zoom.toString()} onChange={setZoom} className={webinyZoomStyles}>
+            <option value={"1"}>100%</option>
+            <option value={"0.75"}>75%</option>
+            <option value={"0.5"}>50%</option>
+        </Select>
+    </PagePreviewToolbar>
 );
 
 interface PagePreviewProps {
@@ -97,7 +94,8 @@ const PagePreview: React.FC<PagePreviewProps> = ({ page }) => {
                         className={classNames(pageInnerWrapper, responsiveClassName)}
                         style={{ "--webiny-pb-page-preview-scale": zoom } as CSSProperties}
                     >
-                        <PagePreviewInner page={page} zoom={zoom} setZoom={setZoom} />
+                        <RenderElement key={page.id} element={page.content} />
+                        <SelectPageZoom zoom={zoom} setZoom={setZoom} />
                     </div>
                 )}
             </Zoom>
@@ -111,7 +109,8 @@ const PagePreview: React.FC<PagePreviewProps> = ({ page }) => {
                     className={pageInnerWrapper}
                     style={{ "--webiny-pb-page-preview-scale": zoom } as CSSProperties}
                 >
-                    <PagePreviewInner page={page} zoom={zoom} setZoom={setZoom} />
+                    <Page page={page} />
+                    <SelectPageZoom zoom={zoom} setZoom={setZoom} />
                 </div>
             )}
         </Zoom>

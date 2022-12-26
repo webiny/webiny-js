@@ -6,6 +6,7 @@ import {
 } from "~/renderers/pagesList/types";
 import { createRenderer } from "~/createRenderer";
 import { useRenderer } from "~/hooks/useRenderer";
+import { usePage } from "~/hooks/usePage";
 
 export interface PagesListComponent {
     id: string;
@@ -31,8 +32,10 @@ export const createPagesList = (params: CreatePagesListParams) => {
 
     const RendererComponent = createRenderer(() => {
         const { getElement, getAttributes } = useRenderer();
+        const { getPage } = usePage();
 
         const element = getElement();
+        const page = getPage();
 
         const { component, ...vars } = element.data;
 
@@ -52,7 +55,7 @@ export const createPagesList = (params: CreatePagesListParams) => {
             },
             limit: parseInt(vars.resultsPerPage),
             after: null,
-            exclude: []
+            exclude: [page.path]
         };
 
         const variablesHash = JSON.stringify(variables);
