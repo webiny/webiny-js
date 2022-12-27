@@ -58,7 +58,8 @@ export function createRenderer<T = {}>(
         // Styles applied via registered styles modifiers (applied via the PB editor's right sidebar).
         styles.push(getElementStyles(element));
 
-        const StyledRendererComponent = styled((styledRendererProps: any) => {
+        // Used "O" in order to keep the final class name shorter. For example: "css-1c63dz3-O".
+        const O = styled((styledRendererProps: any) => {
             const className = [styledRendererProps.className, attributes.className]
                 .filter(Boolean)
                 .join(" ");
@@ -72,7 +73,7 @@ export function createRenderer<T = {}>(
             );
         })(styles);
 
-        return <StyledRendererComponent />;
+        return <O />;
     };
 
     return React.memo(renderer, (prevProps, nextProps) => {
