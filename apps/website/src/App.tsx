@@ -12,7 +12,7 @@ import createCache from "@emotion/cache";
 // "If you are using Puppeteer to prerender your application, emotion's
 // speedy option has to be disabled so that the CSS is rendered into the DOM."
 const emotionCache = createCache({
-    key: "emotion-cache-no-speedy",
+    key: "wby",
     speedy: false
 });
 

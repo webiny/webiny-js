@@ -7,11 +7,11 @@ import {
     PbPageDataSettingsSocial
 } from "@webiny/app-page-builder/types";
 import Layout from "./Layout";
-import Element from "@webiny/app-page-builder/render/components/Element";
 import WebsiteScripts from "@webiny/app-page-builder/render/components/WebsiteScripts";
 import DefaultNotFoundPage from "theme/pageBuilder/components/defaultPages/DefaultNotFoundPage";
 import DefaultErrorPage from "theme/pageBuilder/components/defaultPages/DefaultErrorPage";
 import { SettingsQueryResponseData } from "./graphql";
+import { Page } from "@webiny/app-page-builder-elements";
 
 interface Head {
     favicon?: {
@@ -62,8 +62,7 @@ const Render: React.FC<RenderProps> = ({ page, error, settings }) => {
     };
 
     return (
-        <div className="webiny-pb-page">
-            <ps-tag data-key={"pb-page"} data-value={page.id} />
+        <>
             <Helmet>
                 {/* Read favicon from settings. */}
                 {head.favicon && (
@@ -107,9 +106,9 @@ const Render: React.FC<RenderProps> = ({ page, error, settings }) => {
                 footerTags={settings?.htmlTags?.footer}
             />
             <Layout page={page} settings={settings}>
-                <Element element={page.content} />
+                <Page page={page} key={page.id} />
             </Layout>
-        </div>
+        </>
     );
 };
 

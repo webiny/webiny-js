@@ -13,7 +13,7 @@ import {
     StylesCallback
 } from "~/types";
 
-import { Breakpoint, StylesObject } from "@webiny/app-page-builder-theme/types";
+import {StylesObject, ThemeBreakpoints} from "@webiny/app-page-builder-theme/types";
 
 let usingPageElementsFlag = false;
 
@@ -38,7 +38,7 @@ export const isPerBreakpointStylesObject = ({
     breakpoints,
     styles
 }: {
-    breakpoints: Record<string, Breakpoint>;
+    breakpoints: ThemeBreakpoints;
     styles: StylesObject;
 }): boolean => {
     for (const breakpointName in breakpoints) {
@@ -50,7 +50,7 @@ export const isPerBreakpointStylesObject = ({
 };
 
 export const assignStyles: AssignStylesCallback = (params: {
-    breakpoints: Record<string, Breakpoint>;
+    breakpoints: ThemeBreakpoints
     styles: StylesObject;
     assignTo?: CSSObject;
 }) => {
@@ -59,14 +59,14 @@ export const assignStyles: AssignStylesCallback = (params: {
         for (const breakpointName in breakpoints) {
             const breakpoint = breakpoints[breakpointName];
             if (styles && styles[breakpointName]) {
-                if (!assignTo[breakpoint.mediaQuery]) {
-                    assignTo[breakpoint.mediaQuery] = {};
+                if (!assignTo[breakpoint]) {
+                    assignTo[breakpoint] = {};
                 }
                 /**
                  * We must cast because it breaks on TS 4.7.4.
                  * Object is not undefined, so it is safe.
                  */
-                Object.assign(assignTo[breakpoint.mediaQuery] as CSSObject, styles[breakpointName]);
+                Object.assign(assignTo[breakpoint] as CSSObject, styles[breakpointName]);
             }
         }
     } else {

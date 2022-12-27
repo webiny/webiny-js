@@ -22,7 +22,7 @@ export const createGrid = () => {
                 flexDirection: "row",
                 justifyContent: "flex-start",
                 alignItems: "flex-start",
-                maxWidth: "100%"
+                width: "100%"
             }
         }
     );

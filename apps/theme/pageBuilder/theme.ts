@@ -1,47 +1,56 @@
 import { createTheme } from "@webiny/app-page-builder-theme";
 import { CSSObject } from "@emotion/core";
 
+// Breakpoints.
+export const breakpoints = {
+    desktop: "@media (max-width: 4000px)",
+    tablet: "@media (max-width: 991px)",
+    "mobile-landscape": "@media (max-width: 767px)",
+    "mobile-portrait": "@media (max-width: 478px)"
+};
+
 // Colors.
-const colors = {
-    color1: "#fa5723",  // primary
-    color2: "#00ccb0",  // secondary
-    color3: "#0a0a0a",  // text primary
-    color4: "#eaecec",  // background
-    color5: "#ffffff"  // white background
+export const colors = {
+    color1: "#fa5723", // primary
+    color2: "#00ccb0", // secondary
+    color3: "#0a0a0a", // text primary
+    color4: "#eaecec", // background
+    color5: "#ffffff", // white background
+    color6: "#616161" // text secondary
 };
 
 // Fonts.
-const fonts = {
-    primary: "'IBM Plex Sans', sans-serif;",
-    secondary: "'Lato', sans-serif;"
+export const fonts = {
+    font1: "'IBM Plex Sans', sans-serif;", // Primary.
+    font2: "'Lato', sans-serif;" // Secondary.
 };
 
 // Border radius.
-const borderRadius = 4;
+export const borderRadius = 4;
 
 // Typography.
 const headings = {
-    fontFamily: fonts.secondary,
+    fontFamily: fonts.font2,
     color: colors.color3,
     WebkitFontSmoothing: "antialiased"
 };
 
 const paragraphs = {
-    fontFamily: fonts.primary,
+    fontFamily: fonts.font1,
     color: colors.color3,
     fontWeight: 400,
     lineHeight: "1.5rem",
     WebkitFontSmoothing: "antialiased"
 };
 
-const typography = {
+export const typography = {
     heading1: { ...headings, fontWeight: "bold", fontSize: 48 },
     heading2: { ...headings, fontSize: 36 },
     heading3: { ...headings, fontSize: 30 },
     heading4: { ...headings, fontSize: 24 },
     heading5: { ...headings, fontSize: 20 },
     heading6: { ...headings, fontSize: 18, lineHeight: "1.75rem" },
-    paragraph1: { ...paragraphs, fontSize: 17 },
+    paragraph1: { ...paragraphs, fontSize: 16.5 },
     paragraph2: {
         ...paragraphs,
         fontSize: 12.5,
@@ -62,7 +71,7 @@ const buttons = (overrides: CSSObject) => ({
     ".button-body": {
         borderRadius,
         padding: "14px 20px",
-        fontFamily: fonts.primary,
+        fontFamily: fonts.font1,
         textTransform: "uppercase",
         display: "flex",
         alignItems: "center",
@@ -82,12 +91,7 @@ const buttons = (overrides: CSSObject) => ({
 
 // Theme object.
 const theme = createTheme({
-    breakpoints: {
-        desktop: { mediaQuery: "@media (max-width: 4000px)" },
-        tablet: { mediaQuery: "@media (max-width: 991px)" },
-        "mobile-landscape": { mediaQuery: "@media (max-width: 767px)" },
-        "mobile-portrait": { mediaQuery: "@media (max-width: 478px)" }
-    },
+    breakpoints,
     styles: {
         colors,
         typography,
@@ -147,7 +151,7 @@ const theme = createTheme({
                 }
             },
             grid: { "mobile-landscape": { flexWrap: "wrap" } },
-            cell: { tablet: { width: "100%" } }
+            cell: { tablet: { width: "100% !important" } }
         }
     }
 });

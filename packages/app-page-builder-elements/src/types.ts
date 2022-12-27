@@ -1,6 +1,6 @@
 import React, { HTMLAttributes } from "react";
 import { type CSSObject } from "@emotion/core";
-import { Theme, Breakpoint, StylesObject } from "@webiny/app-page-builder-theme/types";
+import { Theme, StylesObject, ThemeBreakpoints } from "@webiny/app-page-builder-theme/types";
 
 export interface Page {
     path: string;
@@ -45,7 +45,7 @@ interface SetAssignAttributesCallbackParams {
 }
 
 interface SetAssignStylesCallbackParams {
-    breakpoints: Record<string, Breakpoint>;
+    breakpoints: ThemeBreakpoints;
     styles: Stylesobject;
     assignTo?: CSSObject;
 }

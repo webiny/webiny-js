@@ -9,11 +9,7 @@ export interface StylesObject {
     [key: string]: CSSObject | string | number | undefined;
 }
 
-export interface Breakpoint {
-    mediaQuery: string;
-}
-
-export type ThemeBreakpoints = Record<string, Breakpoint>;
+export type ThemeBreakpoints = Record<string, string>;
 
 export interface ThemeStyles {
     colors: Record<string, any>;
