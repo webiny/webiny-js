@@ -67,8 +67,8 @@ const background: ElementStylesModifier = ({ element, theme }) => {
         }
 
         let backgroundColor = values.color;
-        if (theme.styles.colors?.[backgroundColor]?.base) {
-            backgroundColor = theme.styles.colors?.[backgroundColor]?.base;
+        if (theme.styles.colors?.[backgroundColor]) {
+            backgroundColor = theme.styles.colors?.[backgroundColor];
         }
 
         const styles = {

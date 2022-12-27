@@ -148,7 +148,7 @@ export const createDefaultPagesListComponent = (
         const styles: CSSObject = {
             a: {
                 textDecoration: "none",
-                color: theme.styles.colors.color1.base
+                color: theme.styles.colors.color1
             },
             "pb-pages-list-default-list": {
                 display: "flex",
@@ -185,7 +185,7 @@ export const createDefaultPagesListComponent = (
                 width: "100%",
                 a: {
                     ...theme.styles.typography.paragraph1,
-                    color: theme.styles.colors.color1.base,
+                    color: theme.styles.colors.color1,
                     display: "flex",
                     alignItems: "center",
                     cursor: "pointer"

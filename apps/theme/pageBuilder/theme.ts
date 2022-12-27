@@ -3,11 +3,11 @@ import { CSSObject } from "@emotion/core";
 
 // Colors.
 const colors = {
-    color1: { base: "#fa5723" }, // primary
-    color2: { base: "#00ccb0" }, // secondary
-    color3: { base: "#0a0a0a" }, // text primary
-    color4: { base: "#eaecec" }, // background
-    color5: { base: "#ffffff" } // white background
+    color1: "#fa5723",  // primary
+    color2: "#00ccb0",  // secondary
+    color3: "#0a0a0a",  // text primary
+    color4: "#eaecec",  // background
+    color5: "#ffffff"  // white background
 };
 
 // Fonts.
@@ -22,13 +22,13 @@ const borderRadius = 4;
 // Typography.
 const headings = {
     fontFamily: fonts.secondary,
-    color: colors.color3.base,
+    color: colors.color3,
     WebkitFontSmoothing: "antialiased"
 };
 
 const paragraphs = {
     fontFamily: fonts.primary,
-    color: colors.color3.base,
+    color: colors.color3,
     fontWeight: 400,
     lineHeight: "1.5rem",
     WebkitFontSmoothing: "antialiased"
@@ -93,7 +93,7 @@ const theme = createTheme({
         typography,
         elements: {
             document: {
-                a: { color: colors.color1.base }
+                a: { color: colors.color1 }
             },
             quote: {
                 "blockquote > q": {
@@ -103,19 +103,19 @@ const theme = createTheme({
                 }
             },
             button: {
-                default: buttons({ background: colors.color4.base, color: colors.color3.base }),
-                primary: buttons({ background: colors.color1.base, color: colors.color5.base }),
-                secondary: buttons({ background: colors.color2.base, color: colors.color5.base }),
+                default: buttons({ background: colors.color4, color: colors.color3 }),
+                primary: buttons({ background: colors.color1, color: colors.color5 }),
+                secondary: buttons({ background: colors.color2, color: colors.color5 }),
                 outlinePrimary: buttons({
-                    border: `2px solid ${colors.color1.base}`,
-                    color: colors.color1.base
+                    border: `2px solid ${colors.color1}`,
+                    color: colors.color1
                 }),
                 outlineSecondary: buttons({
-                    border: `2px solid ${colors.color2.base}`,
-                    color: colors.color2.base
+                    border: `2px solid ${colors.color2}`,
+                    color: colors.color2
                 }),
                 simple: buttons({
-                    color: colors.color1.base,
+                    color: colors.color1,
                     "&:hover": { transform: "translateY(-1px)" }
                 })
             },

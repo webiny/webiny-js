@@ -24,8 +24,8 @@ const text: ElementStylesModifier = ({ element, theme }) => {
 
         if (values.color) {
             let color = values.color;
-            if (theme.styles.colors?.[color]?.base) {
-                color = theme.styles.colors?.[color]?.base;
+            if (theme.styles.colors?.[color]) {
+                color = theme.styles.colors?.[color];
             }
 
             breakpointStyles.color = color;

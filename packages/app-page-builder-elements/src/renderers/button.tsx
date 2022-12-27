@@ -98,7 +98,7 @@ export const createButton = (params: CreateButtonParams = {}) => {
                         ...ICON_POSITION_MARGIN[position]
                     },
                     getStyles(theme => {
-                        const themeColor = theme.styles.colors?.[color]?.base;
+                        const themeColor = theme.styles.colors?.[color];
                         return {
                             color: themeColor || color
                         };

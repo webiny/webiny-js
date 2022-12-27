@@ -11,8 +11,8 @@ export const createIcon = () => {
         const element = getElement();
 
         let color = element.data.icon.color;
-        if (theme.styles.colors?.[color]?.base) {
-            color = theme.styles.colors?.[color]?.base;
+        if (theme.styles.colors?.[color]) {
+            color = theme.styles.colors?.[color];
         }
 
         return (

@@ -10,8 +10,8 @@ const shadow: ElementStylesModifier = ({ element, theme }) => {
 
     let color = shadow.color;
     if (color) {
-        if (theme.styles.colors?.[color]?.base) {
-            color = theme.styles.colors?.[color]?.base;
+        if (theme.styles.colors?.[color]) {
+            color = theme.styles.colors?.[color];
         }
     }
 
