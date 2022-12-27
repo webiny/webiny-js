@@ -26,6 +26,7 @@ import { useUpdateElement } from "~/editor/hooks/useUpdateElement";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import { ButtonRenderer } from "@webiny/app-page-builder-elements/renderers/button";
 import { isLegacyRenderingEngine } from "~/utils";
+import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
 
 const classes = {
     gridClass: css({
@@ -90,7 +91,8 @@ const ActionSettingsComponent: React.FC<ActionSettingsPropsType> = ({
             []
         );
     } else {
-        const Button = pageElements.renderers.button as ButtonRenderer;
+        const { renderers } = usePageElements();
+        const Button = renderers.button as ButtonRenderer;
         // @ts-ignore
         if (Button.params.clickHandlers) {
             // @ts-ignore
