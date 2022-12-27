@@ -14,7 +14,7 @@ describe("value via object-path", () => {
 
         const variantSpecificationsKey = getValue(
             createEntry(),
-            "values.variant.specifications.*.key"
+            "values.variant.specifications.key"
         );
 
         expect(variantSpecificationsKey).toEqual([
@@ -25,7 +25,7 @@ describe("value via object-path", () => {
 
         const variantSpecificationsInfoImages = getValue(
             createEntry(),
-            "values.variant.specifications.*.info.images"
+            "values.variant.specifications.info.images"
         );
         expect(variantSpecificationsInfoImages).toEqual([
             { files: ["image1.jpg", "image2.jpg", "image3.jpg", "image4.jpg"] },
@@ -34,7 +34,7 @@ describe("value via object-path", () => {
 
         const variantSpecificationsInfoImagesFiles = getValue(
             createEntry(),
-            "values.variant.specifications.*.info.images.files"
+            "values.variant.specifications.info.images.files"
         );
         expect(variantSpecificationsInfoImagesFiles).toEqual([
             "image1.jpg",
@@ -49,7 +49,7 @@ describe("value via object-path", () => {
 
         const variantSpecificationsInfoTagsKey = getValue(
             createEntry(),
-            "values.variant.specifications.*.info.tags.*.key"
+            "values.variant.specifications.info.tags.key"
         );
 
         expect(variantSpecificationsInfoTagsKey).toEqual(["size", "weight", "price"]);

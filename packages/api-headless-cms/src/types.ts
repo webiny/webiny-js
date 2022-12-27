@@ -1691,6 +1691,7 @@ export interface CmsEntryListWhere {
         | number[]
         | null
         | CmsEntryListWhere[]
+        | CmsEntryListWhere
         | CmsEntryListWhereRef;
     /**
      * To allow querying via nested queries, we added the AND / OR properties.

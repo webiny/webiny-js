@@ -20,7 +20,7 @@ describe("create filters from where conditions", () => {
         });
     });
 
-    it("should create simple filters", async () => {
+    it("should create simple, non-nested, filters", async () => {
         const result = createFilters({
             plugins,
             fields,
@@ -121,6 +121,50 @@ describe("create filters from where conditions", () => {
                 },
                 negate: false,
                 path: "values.authors.*.entryId",
+                transformValue: expect.any(Function)
+            }
+        ]);
+    });
+
+    it("should create complex nested filters", async () => {
+        const result = createFilters({
+            plugins,
+            fields,
+            where: {
+                options: {
+                    keys_in: ["key#1", "key#2", "key#3"],
+                    optionId_gte: 250
+                }
+            }
+        });
+
+        expect(result).toEqual([
+            {
+                compareValue: ["key#1", "key#2", "key#3"],
+                fieldId: "keys",
+                filterPlugin: {
+                    _params: {
+                        matches: expect.any(Function),
+                        operation: "in"
+                    },
+                    name: expect.stringMatching(/dynamodb\.value\.filter\-/)
+                },
+                negate: false,
+                path: "values.options.*.keys",
+                transformValue: expect.any(Function)
+            },
+            {
+                compareValue: 250,
+                fieldId: "optionId",
+                filterPlugin: {
+                    _params: {
+                        matches: expect.any(Function),
+                        operation: "gte"
+                    },
+                    name: expect.stringMatching(/dynamodb\.value\.filter\-/)
+                },
+                negate: false,
+                path: "values.options.*.optionId",
                 transformValue: expect.any(Function)
             }
         ]);

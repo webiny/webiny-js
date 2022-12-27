@@ -8,6 +8,7 @@ import { Field } from "./types";
 import { getMappedPlugins } from "./mapPlugins";
 import { extractWhereParams } from "./where";
 import { transformValue } from "./transform";
+import { CmsEntryFieldFilterPlugin } from "~/plugins/CmsEntryFieldFilterPlugin";
 
 interface GetFilterPluginParams {
     plugins: Record<string, ValueFilterPlugin>;
@@ -61,9 +62,9 @@ interface CreateFiltersParams {
 }
 
 export interface ItemFilter {
-    fieldId: string;
+    field: Field;
     path: string;
-    filterPlugin: ValueFilterPlugin;
+    plugin: ValueFilterPlugin;
     negate: boolean;
     compareValue: any;
     transformValue: <I = any, O = any>(value: I) => O;
@@ -125,6 +126,13 @@ export const createFilters = (params: CreateFiltersParams): ItemFilter[] => {
         type: CmsEntryFieldFilterPathPlugin.type,
         property: "fieldType"
     });
+    const fieldFilterCreatePlugins = getMappedPlugins<CmsEntryFieldFilterPlugin>({
+        plugins,
+        type: CmsEntryFieldFilterPlugin.type,
+        property: "fieldType"
+    });
+
+    const defaultFilterCreatePlugin = fieldFilterCreatePlugins["*"] as CmsEntryFieldFilterPlugin;
 
     const filters: ItemFilter[] = [];
 
@@ -170,6 +178,22 @@ export const createFilters = (params: CreateFiltersParams): ItemFilter[] => {
             );
         }
 
+        /**
+         * We need a filter create plugin for this type.
+         */
+
+        const filterCreatePlugin =
+            fieldFilterCreatePlugins[field.type] || defaultFilterCreatePlugin;
+        if (!filterCreatePlugin) {
+            throw new WebinyError(
+                `There is no filter create plugin for the field type "${field.type}".`,
+                "MISSING_FILTER_CREATE_PLUGIN",
+                {
+                    type: field.type
+                }
+            );
+        }
+
         const transformValuePlugin: CmsFieldFilterValueTransformPlugin =
             transformValuePlugins[field.type];
 
@@ -188,6 +212,11 @@ export const createFilters = (params: CreateFiltersParams): ItemFilter[] => {
             value,
             field
         };
+
+        /**
+         * In case of the ref field, we need to create a filter a bit differently.
+         */
+
         if (isObjectFiltering(objectFilteringParams)) {
             const propertyFilters = Object.keys(value);
             if (propertyFilters.length === 0) {
@@ -227,25 +256,52 @@ export const createFilters = (params: CreateFiltersParams): ItemFilter[] => {
             continue;
         }
 
-        const filterPlugin = getFilterPlugin({
+        // const filterPlugin = getFilterPlugin({
+        //     plugins: filterPlugins,
+        //     operation
+        // });
+        const result = filterCreatePlugin.create({
+            key,
+            value,
             plugins: filterPlugins,
-            operation
-        });
-
-        filters.push({
-            fieldId,
-            path: createValuePath({
-                field,
-                plugins: valuePathPlugins
-            }),
-            filterPlugin,
+            operation,
             negate,
+            field,
             compareValue: transformValue({
                 value,
                 transform: transformValueCallable
             }),
             transformValue: transformValueCallable
         });
+        /**
+         * There is a possibility of
+         * - no result
+         * - result being an array
+         * - result being an object
+         */
+        if (!result) {
+            continue;
+        }
+        if (Array.isArray(result)) {
+            filters.push(...result);
+            continue;
+        }
+        filters.push(result);
+
+        // filters.push({
+        //     fieldId,
+        //     path: createValuePath({
+        //         field,
+        //         plugins: valuePathPlugins
+        //     }),
+        //     filterPlugin,
+        //     negate,
+        //     compareValue: transformValue({
+        //         value,
+        //         transform: transformValueCallable
+        //     }),
+        //     transformValue: transformValueCallable
+        // });
     }
 
     return filters;

@@ -10,7 +10,7 @@ const addArrayResult = (target: any[], result: any[]): void => {
  * A recursive function which goes through given input paths and returns the value in it.
  * In case a path is an array (determined by *), it goes through the array of those values to get values further down the path line.
  */
-const find = (target: Record<string, any>, input: string[]): any => {
+const find = (target: Record<string, any>, input: string[]): any[] | undefined => {
     const paths = [...input];
     const path = paths.shift();
 
@@ -22,28 +22,21 @@ const find = (target: Record<string, any>, input: string[]): any => {
     const value = target[path];
     if (paths.length === 0) {
         return value;
-    } else if (paths[0] === "*") {
-        if (Array.isArray(value)) {
-            if (value.length === 0) {
-                return undefined;
-            }
-            return value.reduce<any[]>((collection, v) => {
-                const result = find(v, paths.slice(1));
-                if (result === undefined) {
-                    return collection;
-                } else if (Array.isArray(result)) {
-                    addArrayResult(collection, result);
-                    return collection;
-                }
-                collection.push(result);
-                return collection;
-            }, []);
-        }
-        throw new Error(`Cannot use * when value is not an array.`);
     } else if (Array.isArray(value)) {
-        throw new Error(
-            `Cannot exec find in array. When targeting an array of values, use the "*".`
-        );
+        if (value.length === 0) {
+            return undefined;
+        }
+        return value.reduce<any[]>((collection, v) => {
+            const result = find(v, paths);
+            if (result === undefined) {
+                return collection;
+            } else if (Array.isArray(result)) {
+                addArrayResult(collection, result);
+                return collection;
+            }
+            collection.push(result);
+            return collection;
+        }, []);
     }
     return find(value, paths);
 };

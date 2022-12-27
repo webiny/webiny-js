@@ -63,6 +63,22 @@ export const createModel = (): CmsModel => {
                 settings: {
                     fields: [
                         {
+                            id: "optionId",
+                            multipleValues: false,
+                            label: "Option ID",
+                            type: "number",
+                            storageId: "number@optionIdStorageId",
+                            fieldId: "optionId"
+                        },
+                        {
+                            id: "keys",
+                            multipleValues: false,
+                            label: "Keys",
+                            type: "text",
+                            storageId: "text@keysStorageId",
+                            fieldId: "keys"
+                        },
+                        {
                             id: "variant",
                             multipleValues: false,
                             label: "Variant",

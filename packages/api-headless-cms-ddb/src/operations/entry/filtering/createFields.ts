@@ -90,16 +90,13 @@ export const createFields = (params: Params) => {
                     if (valuePathPlugin) {
                         return valuePathPlugin.createPath(params);
                     }
-                    console.log(params.field.fieldId);
                     const parentFieldId = parents
                         .map(parent => {
                             return `${parent.fieldId}${parent.multipleValues ? ".*" : ""}`;
                         })
                         .join(".");
-                    // const multiValue = params.field.multipleValues ? "*." : "";
-                    const p = `values.${parentFieldId}${params.field.fieldId}`;
-                    console.log(p);
-                    return p;
+
+                    return `values.${parentFieldId}${params.field.fieldId}`;
                 },
                 transform: value => {
                     if (!transformPlugin) {

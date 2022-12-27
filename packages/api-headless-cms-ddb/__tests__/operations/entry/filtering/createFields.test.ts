@@ -209,6 +209,40 @@ describe("create system and model fields", () => {
                 label: "Options",
                 settings: expect.any(Object)
             },
+            "options.keys": {
+                createPath: expect.any(Function),
+                fieldId: "keys",
+                id: "keys",
+                label: "Keys",
+                multipleValues: false,
+                parents: [
+                    {
+                        fieldId: "options",
+                        multipleValues: true
+                    }
+                ],
+                storageId: "text@keysStorageId",
+                system: false,
+                transform: expect.any(Function),
+                type: "text"
+            },
+            "options.optionId": {
+                createPath: expect.any(Function),
+                fieldId: "optionId",
+                id: "optionId",
+                label: "Option ID",
+                multipleValues: false,
+                parents: [
+                    {
+                        fieldId: "options",
+                        multipleValues: true
+                    }
+                ],
+                storageId: "number@optionIdStorageId",
+                system: false,
+                transform: expect.any(Function),
+                type: "number"
+            },
             "options.variant": {
                 parents: [
                     {
