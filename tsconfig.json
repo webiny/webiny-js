@@ -2,6 +2,8 @@
   "extends": "./tsconfig.build.json",
   "compilerOptions": {
     "noEmit": true,
+    "noUnusedParameters": false,
+    "noUnusedLocals": false,
     "emitDeclarationOnly": false,
     "composite": false
   },
