@@ -27,7 +27,7 @@ export const useLinks = (folderId: string) => {
              * As soon as you call `useLinks()`, you'll initiate fetching of `links`, which is managed by the `LinksContext`.
              * Since this method lists links with pagination, you might need to call it multiple times passing the `after` param.
              */
-            loading: loading[folderId] || {},
+            loading,
             meta: meta[folderId] || {},
             links: links.filter(link => link.folderId === folderId),
             listLinks(after: string, limit?: number) {

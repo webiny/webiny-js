@@ -56,8 +56,9 @@ const EmptyPageDetails: React.FC<EmptyPageDetailsProps> = ({ onCreatePage, canCr
 interface PageDetailsProps {
     onCreatePage: (event?: React.SyntheticEvent) => void;
     canCreate: boolean;
+    onDelete: () => void;
 }
-const PageDetails: React.FC<PageDetailsProps> = ({ onCreatePage, canCreate }) => {
+const PageDetails: React.FC<PageDetailsProps> = ({ onCreatePage, canCreate, onDelete }) => {
     const { history, location } = useRouter();
     const { showSnackbar } = useSnackbar();
 
@@ -89,7 +90,8 @@ const PageDetails: React.FC<PageDetailsProps> = ({ onCreatePage, canCreate }) =>
                     <test-id data-testid="pb-page-details">
                         {renderPlugins("pb-page-details", {
                             page,
-                            getPageQuery
+                            getPageQuery,
+                            onDelete
                         })}
                     </test-id>
                 </DetailsContainer>

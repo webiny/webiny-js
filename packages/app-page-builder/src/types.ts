@@ -929,6 +929,6 @@ export interface PageBuilderSecurityPermission extends SecurityPermission {
     pw?: string | boolean;
 }
 
-export type Loading<T extends string> = Record<string, { [P in T]?: boolean }>;
+export type Loading<T extends string> = { [P in T]?: boolean };
 
-export type PagesLinksActions = "LIST_PAGES_BY_LINKS" | "LIST_MORE_PAGES_BY_LINKS";
+export type LoadingActions = "INIT" | "LIST" | "LIST_MORE";
