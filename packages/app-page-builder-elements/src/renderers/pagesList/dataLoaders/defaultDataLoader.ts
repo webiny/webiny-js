@@ -1,6 +1,6 @@
 import { DataLoader } from "~/renderers/pagesList/types";
 
-export const LIST_PUBLISHED_PAGES = `
+export const LIST_PUBLISHED_PAGES = /* GraphQL */ `
     query ListPublishedPages(
         $where: PbListPublishedPagesWhereInput
         $limit: Int
@@ -16,6 +16,11 @@ export const LIST_PUBLISHED_PAGES = `
                 exclude: $exclude
                 after: $after
             ) {
+                error {
+                    data
+                    message
+                    code
+                }
                 data {
                     id
                     title
@@ -62,7 +67,9 @@ export const createDefaultDataLoader: CreateDefaultDataLoader = ({
     includeHeaders = {}
 }) => {
     if (!apiUrl) {
-        throw new Error("Default pages list data loader cannot be initialized because the API URL wasn't provided.")
+        throw new Error(
+            "Default pages list data loader cannot be initialized because the API URL wasn't provided."
+        );
     }
 
     return ({ variables }) => {

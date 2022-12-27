@@ -158,9 +158,5 @@ export const createButton = (params: CreateButtonParams = {}) => {
         }
     );
 
-    Object.assign(RendererComponent, {
-        params
-    });
-
     return RendererComponent;
 };

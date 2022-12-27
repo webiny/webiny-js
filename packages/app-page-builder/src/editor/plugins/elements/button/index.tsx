@@ -59,6 +59,7 @@ const buttonElementPluginsFactory = (args: PbEditorElementPluginArgs = {}) => {
                     type: this.elementType,
                     elements: [],
                     data: {
+                        type: "default",
                         buttonText: "Click me",
                         settings: {
                             margin: createInitialPerDeviceSettingValue(

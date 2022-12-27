@@ -38,6 +38,7 @@ export const GET_PUBLISHED_PAGE = () => {
                     data {
                         id
                         title
+                        path
                         url
                         version
                         publishedOn
