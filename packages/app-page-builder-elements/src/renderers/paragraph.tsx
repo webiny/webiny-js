@@ -19,7 +19,7 @@ export const createParagraph = () => {
             }
 
             const __html = getElement().data.text.data.text;
-            return <div {...getAttributes()} dangerouslySetInnerHTML={{ __html }} />;
+            return <p {...getAttributes()} dangerouslySetInnerHTML={{ __html }} />;
         },
         {
             propsAreEqual: (prevProps: Props, nextProps: Props) => {

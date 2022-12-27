@@ -15,6 +15,7 @@ import { ReactComponent as ColorizeIcon } from "./colorize.svg";
 import { ReactComponent as NoColorSelectedIcon } from "./unselected.svg";
 import { COLORS } from "../../plugins/elementSettings/components/StyledComponents";
 import { isLegacyRenderingEngine } from "~/utils";
+import { PbTheme } from "~/types";
 
 const ColorPickerStyle = styled("div")({
     display: "flex",
@@ -224,13 +225,14 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
     let themeColors: Record<string, any> = {};
 
     if (isLegacyRenderingEngine) {
-        themeColors = theme?.colors || {};
+        const legacyTheme = theme as PbTheme;
+        themeColors = legacyTheme?.colors || {};
     } else {
         const colors = pageElements.theme?.styles?.colors;
         if (colors) {
             for (const key in colors) {
-                if (colors[key].base) {
-                    themeColors[key] = colors[key].base;
+                if (colors[key]) {
+                    themeColors[key] = colors[key];
                 }
             }
         }
