@@ -60,7 +60,7 @@ import visibility from "@webiny/app-page-builder/editor/plugins/elementSettings/
 import responsiveEditorMode from "@webiny/app-page-builder/editor/plugins/responsiveMode";
 // Page settings
 import pageSettingsPlugins from "@webiny/app-page-builder/editor/plugins/pageSettings";
-// default presets for grid
+// default ToolbarPresets for grid
 import { gridPresets } from "@webiny/app-page-builder/editor/plugins/gridPresets";
 
 export default [
@@ -86,7 +86,7 @@ export default [
     twitter(),
     codesandbox(),
     pagesList(),
-    // grid presets
+    // grid ToolbarPresets
     ...gridPresets,
     // Icons
     icons,

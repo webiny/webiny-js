@@ -1,1 +1,0 @@
-type HtmlString = string;

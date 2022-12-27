@@ -1,7 +1,6 @@
+import { createComponentPlugin } from "@webiny/react-composition";
 import React, { FC } from "react";
 import { Toolbar } from "~/components/Toolbar/Toolbar";
-import { createComponentPlugin } from "@webiny/react-composition";
-
 interface AddToolbarActionProps {
     type?: "heading" | "paragraph";
     element: JSX.Element;

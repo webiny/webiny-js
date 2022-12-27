@@ -7,7 +7,7 @@ import {
     SELECTION_CHANGE_COMMAND
 } from "lexical";
 import React, {useCallback, useEffect, useState} from "react";
-import  DropDown,{ DropDownItem } from "../../../ui/DropDown";
+import  DropDown,{ DropDownItem } from "../../ui/DropDown";
 import {$getSelectionStyleValueForProperty, $patchStyleText} from "@lexical/selection";
 import {mergeRegister} from "@lexical/utils";
 

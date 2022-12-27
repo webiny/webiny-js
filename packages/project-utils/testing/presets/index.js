@@ -73,17 +73,17 @@ const getPackagesPresets = (targetKeywords, nameSuffix) => {
         return `${name}-${nameSuffix}`;
     };
     /**
-     * We go through all available packages to build presets for them.
+     * We go through all available packages to build ToolbarPresets for them.
      */
     for (const pkg of packages) {
         const name = getPackageName(pkg);
-        const presetsPath = path.join(pkg.path, "__tests__/__api__/presets.js");
+        const presetsPath = path.join(pkg.path, "__tests__/__api__/ToolbarPresets.js");
         if (!fs.existsSync(presetsPath)) {
             throw new Error(`Missing presets.js of the "${pkg.name}" package: ${presetsPath}`);
         }
         /**
-         * We expect presets file to contain an array of presets.
-         * We do not check for the actual contents of the presets arrays since they can be quite different per package.
+         * We expect ToolbarPresets file to contain an array of ToolbarPresets.
+         * We do not check for the actual contents of the ToolbarPresets arrays since they can be quite different per package.
          */
         const presets = require(presetsPath);
         if (Array.isArray(presets) === false) {
@@ -92,7 +92,7 @@ const getPackagesPresets = (targetKeywords, nameSuffix) => {
             throw new Error(`There are no presets in the file "${presetsPath}".`);
         }
         /**
-         * We expect that last object in the presets array contains testEnvironment path.
+         * We expect that last object in the ToolbarPresets array contains testEnvironment path.
          */
         const last = presets[presets.length - 1];
         if (!last.testEnvironment) {

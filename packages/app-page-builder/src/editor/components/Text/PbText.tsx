@@ -9,7 +9,8 @@ import { ElementRoot } from "~/render/components/ElementRoot";
 import useUpdateHandlers from "../../plugins/elementSettings/useUpdateHandlers";
 import ReactMediumEditor from "../../components/MediumEditor";
 import { applyFallbackDisplayMode } from "../../plugins/elementSettings/elementSettingsUtils";
-import { HeadingLexicalInput } from "@webiny/lexical-editor";
+import { TextLexicalEditor } from "@webiny/lexical-editor";
+import { TextLexicalEditorTag } from "@webiny/lexical-editor/types";
 
 export const textClassName = "webiny-pb-base-page-element-style webiny-pb-page-element-text";
 const DATA_NAMESPACE = "data.text";
@@ -61,12 +62,15 @@ const PbText: React.FC<TextElementProps> = ({ elementId, mediumEditorOptions, ro
     const textContent = get(element, `${DATA_NAMESPACE}.data.text`);
     const tag = get(value, "tag");
     const typography = get(value, "typography");
+    const tagName = (tagValue: string | [string, Record<string, any>]): string => {
+        return Array.isArray(tagValue) ? tagValue[0] : tagValue;
+    }
     return (
         <ElementRoot
             element={element}
             className={classNames(textClassName, rootClassName, typography)}
         >
-            <HeadingLexicalInput />
+            <TextLexicalEditor tag={tagName(tag) as TextLexicalEditorTag} value={null} onChange={(jsonString) => console.log(jsonString)} />
             {"do not show medium editor" === elementId ? (
                 <ReactMediumEditor
                     elementId={elementId}

@@ -1,7 +1,7 @@
 import React from "react";
 import { Admin } from "@webiny/app-serverless-cms";
 import { Cognito } from "@webiny/app-admin-users-cognito";
-import { HeadingToolbarPreset } from "@webiny/lexical-editor";
+import { HeadingToolbarPreset, ParagraphToolbarPreset } from "@webiny/lexical-editor";
 import "./App.scss";
 
 export const App: React.FC = () => {
@@ -9,6 +9,7 @@ export const App: React.FC = () => {
         <Admin>
             <Cognito />
             <HeadingToolbarPreset />
+            <ParagraphToolbarPreset />
         </Admin>
     );
 };

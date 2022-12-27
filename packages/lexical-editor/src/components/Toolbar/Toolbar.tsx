@@ -194,6 +194,10 @@ interface ToolbarProps {
     anchorElem: HTMLElement;
     children?: React.ReactNode;
 }
+
+/**
+ * @description Main toolbar container
+ */
 export const Toolbar = makeComposable<ToolbarProps>(
     "Toolbar",
     ({ anchorElem, type, children }): JSX.Element | null => {
