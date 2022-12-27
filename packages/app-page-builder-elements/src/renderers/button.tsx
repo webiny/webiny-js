@@ -34,7 +34,7 @@ export interface ButtonClickHandler {
 
 export interface CreateButtonParams {
     linkComponent?: LinkComponent;
-    clickHandlers?: Array<ButtonClickHandler>;
+    clickHandlers?: Array<ButtonClickHandler> | (() => Array<ButtonClickHandler>);
 }
 
 const ButtonBody: React.FC<{ className?: string; onClick?: () => void }> = ({
@@ -70,7 +70,6 @@ export type ButtonRenderer = ReturnType<typeof createButton>;
 
 export const createButton = (params: CreateButtonParams = {}) => {
     const LinkComponent = params?.linkComponent || DefaultLinkComponent;
-    const clickHandlers = params?.clickHandlers || [];
 
     const RendererComponent = createRenderer(
         () => {
@@ -129,6 +128,15 @@ export const createButton = (params: CreateButtonParams = {}) => {
 
             let clickHandler: ButtonClickHandler["handler"] | undefined;
             if (action?.clickHandler) {
+                let clickHandlers: Array<ButtonClickHandler> = [];
+                if (params?.clickHandlers) {
+                    if (typeof params.clickHandlers === "function") {
+                        clickHandlers = params.clickHandlers();
+                    } else {
+                        clickHandlers = params.clickHandlers;
+                    }
+                }
+
                 clickHandler = clickHandlers?.find(
                     item => item.id === action?.clickHandler
                 )?.handler;
@@ -150,7 +158,9 @@ export const createButton = (params: CreateButtonParams = {}) => {
         }
     );
 
-    Object.assign(RendererComponent, { params });
+    Object.assign(RendererComponent, {
+        params
+    });
 
     return RendererComponent;
 };

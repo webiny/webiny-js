@@ -80,29 +80,13 @@ const ActionSettingsComponent: React.FC<ActionSettingsPropsType> = ({
         title: string;
         name?: string;
         variables?: PbButtonElementClickHandlerVariable[];
-    }> = [];
-
-    if (isLegacyRenderingEngine) {
-        clickHandlers = useMemo(
-            () =>
-                plugins.byType<PbButtonElementClickHandlerPlugin>(
-                    "pb-page-element-button-click-handler"
-                ),
-            []
-        );
-    } else {
-        const { renderers } = usePageElements();
-        const Button = renderers.button as ButtonRenderer;
-        // @ts-ignore
-        if (Button.params.clickHandlers) {
-            // @ts-ignore
-            clickHandlers = Button.params.clickHandlers.map(item => ({
-                name: item.id,
-                title: item.name,
-                variables: item.variables
-            }));
-        }
-    }
+    }> = useMemo(
+        () =>
+            plugins.byType<PbButtonElementClickHandlerPlugin>(
+                "pb-page-element-button-click-handler"
+            ),
+        []
+    );
 
     const selectedHandler = useMemo(() => {
         return clickHandlers.find(handler => clickHandler === handler.name);
@@ -280,5 +264,4 @@ const ActionSettingsComponent: React.FC<ActionSettingsPropsType> = ({
         </Accordion>
     );
 };
-
 export default withActiveElement()(ActionSettingsComponent);
