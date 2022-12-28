@@ -4,7 +4,7 @@ import { useRenderer } from "~/hooks/useRenderer";
 
 interface Props {
     as?: React.ComponentType;
-    value?: string
+    value?: string;
 }
 
 export type QuoteRenderer = ReturnType<typeof createQuote>;

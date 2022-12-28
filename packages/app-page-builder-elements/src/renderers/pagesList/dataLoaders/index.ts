@@ -1,1 +1,1 @@
-export * from "./defaultDataLoader"
+export * from "./defaultDataLoader";

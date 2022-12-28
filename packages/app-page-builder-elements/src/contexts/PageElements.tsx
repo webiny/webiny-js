@@ -16,7 +16,7 @@ import {
     setUsingPageElements,
     defaultElementAttributesCallback,
     defaultElementStylesCallback,
-    defaultStylesCallback,
+    defaultStylesCallback
 } from "~/utils";
 
 export const PageElementsContext = createContext<PageElementsContextValue>(null as unknown as any);
@@ -33,7 +33,7 @@ export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
             element,
             theme,
             renderers,
-            modifiers,
+            modifiers
         });
     }, []);
 
@@ -42,8 +42,7 @@ export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
         useState<AssignStylesCallback>();
     const [customElementStylesCallback, setCustomElementStylesCallback] =
         useState<ElementStylesCallback>();
-    const [customStylesCallback, setCustomStylesCallback] =
-        useState<StylesCallback>();
+    const [customStylesCallback, setCustomStylesCallback] = useState<StylesCallback>();
 
     const setAssignStylesCallback = useCallback<SetAssignStylesCallback>(callback => {
         setCustomAssignStylesCallback(() => callback);

@@ -1,1 +1,1 @@
-export * from "./DefaultLinkComponent"
+export * from "./DefaultLinkComponent";

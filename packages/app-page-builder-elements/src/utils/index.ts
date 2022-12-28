@@ -13,7 +13,7 @@ import {
     StylesCallback
 } from "~/types";
 
-import {StylesObject, ThemeBreakpoints} from "@webiny/app-page-builder-theme/types";
+import { StylesObject, ThemeBreakpoints } from "@webiny/app-page-builder-theme/types";
 
 let usingPageElementsFlag = false;
 
@@ -50,7 +50,7 @@ export const isPerBreakpointStylesObject = ({
 };
 
 export const assignStyles: AssignStylesCallback = (params: {
-    breakpoints: ThemeBreakpoints
+    breakpoints: ThemeBreakpoints;
     styles: StylesObject;
     assignTo?: CSSObject;
 }) => {
@@ -91,7 +91,7 @@ export const defaultElementAttributesCallback: ElementAttributesCallback = ({
             element,
             theme,
             renderers,
-            modifiers,
+            modifiers
         });
 
         assignAttributes({
@@ -140,7 +140,7 @@ export const defaultStylesCallback: StylesCallback = ({
 }) => {
     let returnStyles = {};
     try {
-        returnStyles = typeof styles === 'function' ? styles(theme) : styles;
+        returnStyles = typeof styles === "function" ? styles(theme) : styles;
     } catch (e) {
         // Do nothing.
         console.warn("Could not load theme styles:");
@@ -154,10 +154,7 @@ export const defaultStylesCallback: StylesCallback = ({
     });
 };
 
-export const elementDataPropsAreEqual = (
-    prevProps: RendererProps,
-    nextProps: RendererProps
-) => {
+export const elementDataPropsAreEqual = (prevProps: RendererProps, nextProps: RendererProps) => {
     const prevElementDataHash = JSON.stringify(prevProps.element.data);
     const nextElementDataHash = JSON.stringify(nextProps.element.data);
     return prevElementDataHash === nextElementDataHash;
