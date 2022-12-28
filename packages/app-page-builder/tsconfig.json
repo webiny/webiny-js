@@ -34,6 +34,8 @@
       "@webiny/app-i18n": ["../app-i18n/src"],
       "@webiny/app-page-builder-elements/*": ["../app-page-builder-elements/src/*"],
       "@webiny/app-page-builder-elements": ["../app-page-builder-elements/src"],
+      "@webiny/app-page-builder-theme/*": ["../app-page-builder-theme/src/*"],
+      "@webiny/app-page-builder-theme": ["../app-page-builder-theme/src"],
       "@webiny/app-plugin-admin-welcome-screen/*": ["../app-plugin-admin-welcome-screen/src/*"],
       "@webiny/app-plugin-admin-welcome-screen": ["../app-plugin-admin-welcome-screen/src"],
       "@webiny/app-security/*": ["../app-security/src/*"],

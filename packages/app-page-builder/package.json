@@ -30,6 +30,7 @@
     "@webiny/app-folders": "^5.33.2",
     "@webiny/app-i18n": "^5.33.2",
     "@webiny/app-page-builder-elements": "^5.33.2",
+    "@webiny/app-page-builder-theme": "^5.33.2",
     "@webiny/app-plugin-admin-welcome-screen": "^5.33.2",
     "@webiny/app-security": "^5.33.2",
     "@webiny/app-tenancy": "^5.33.2",
