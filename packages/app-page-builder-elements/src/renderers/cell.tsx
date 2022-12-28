@@ -1,31 +1,28 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Elements } from "~/components/Elements";
-import { usePageElements } from "~/hooks/usePageElements";
-import { ElementRenderer } from "~/types";
+import { createRenderer } from "~/createRenderer";
+import { useRenderer } from "~/hooks/useRenderer";
 
-declare global {
-    //eslint-disable-next-line
-    namespace JSX {
-        interface IntrinsicElements {
-            "pb-cell": any;
-        }
-    }
-}
+export type CellRenderer = ReturnType<typeof createCell>;
 
-const defaultStyles = { display: "block" };
+export const createCell = () => {
+    return createRenderer(() => {
+        const { getElement, getAttributes } = useRenderer();
 
-const Cell: ElementRenderer = ({ element }) => {
-    const { getClassNames, getElementClassNames, combineClassNames } = usePageElements();
-    const classNames = combineClassNames(
-        getClassNames(defaultStyles),
-        getElementClassNames(element)
-    );
+        const element = getElement();
 
-    return (
-        <pb-cell class={classNames}>
-            <Elements element={element} />
-        </pb-cell>
-    );
+        const width = useMemo<string>(() => {
+            const size = element.data?.settings?.cell?.size;
+            if (typeof size !== "number") {
+                return "100%";
+            }
+            return `${(size / 12) * 100}%`;
+        }, [element.id]);
+
+        return (
+            <div {...getAttributes()} style={{ width }}>
+                <Elements element={element} />
+            </div>
+        );
+    });
 };
-
-export const createCell = () => Cell;

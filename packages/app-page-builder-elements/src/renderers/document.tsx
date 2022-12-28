@@ -1,22 +1,23 @@
 import React from "react";
 import { Elements } from "~/components/Elements";
-import { ElementRenderer } from "~/types";
+import { createRenderer } from "~/createRenderer";
+import { useRenderer } from "~/hooks/useRenderer";
+import { Element } from "~/types";
 
-declare global {
-    //eslint-disable-next-line
-    namespace JSX {
-        interface IntrinsicElements {
-            "pb-document": any;
-        }
-    }
+interface Props {
+    elements?: Element[];
 }
 
-const Document: ElementRenderer = ({ element }) => {
-    return (
-        <pb-document>
-            <Elements element={element} />
-        </pb-document>
-    );
-};
+export type DocumentRenderer = ReturnType<typeof createDocument>;
 
-export const createDocument = () => Document;
+export const createDocument = () => {
+    return createRenderer<Props>(() => {
+        const { getAttributes, getElement } = useRenderer();
+
+        return (
+            <div className={"webiny-pb-page-document"} {...getAttributes()}>
+                <Elements element={getElement()} />
+            </div>
+        );
+    });
+};

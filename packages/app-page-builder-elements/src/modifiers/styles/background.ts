@@ -4,9 +4,11 @@ interface Scaling {
     backgroundSize: string;
     backgroundRepeat: string;
 }
+
 interface ScalingMap {
     [key: string]: Scaling;
 }
+
 const SCALING_MAP: ScalingMap = {
     cover: {
         backgroundSize: "cover",
@@ -39,7 +41,7 @@ const DEFAULT_SCALING = {
     backgroundRepeat: "no-repeat"
 };
 
-const DEFAULT_POSITION = "top left";
+const DEFAULT_POSITION = "center center";
 
 interface Values {
     color: string;
@@ -64,8 +66,13 @@ const background: ElementStylesModifier = ({ element, theme }) => {
             return returnStyles;
         }
 
+        let backgroundColor = values.color;
+        if (theme.styles.colors?.[backgroundColor]) {
+            backgroundColor = theme.styles.colors?.[backgroundColor];
+        }
+
         const styles = {
-            backgroundColor: values.color
+            backgroundColor
         };
 
         const { image } = values;

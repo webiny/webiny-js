@@ -1,31 +1,31 @@
 import React from "react";
-import { usePageElements } from "~/hooks/usePageElements";
-import { ElementRenderer } from "~/types";
+import { createRenderer } from "~/createRenderer";
+import { useRenderer } from "~/hooks/useRenderer";
 
-declare global {
-    //eslint-disable-next-line
-    namespace JSX {
-        interface IntrinsicElements {
-            "pb-paragraph": any;
-        }
-    }
+interface Props {
+    as?: React.ComponentType;
+    value?: string
 }
 
-const defaultStyles = { display: "block" };
+export type ParagraphRenderer = ReturnType<typeof createParagraph>;
 
-const Paragraph: ElementRenderer = ({ element }) => {
-    const { getClassNames, getElementClassNames, combineClassNames } = usePageElements();
-    const classNames = combineClassNames(
-        getClassNames(defaultStyles),
-        getElementClassNames(element)
-    );
+export const createParagraph = () => {
+    return createRenderer<Props>(
+        props => {
+            const { getElement, getAttributes } = useRenderer();
 
-    return (
-        <pb-paragraph
-            class={classNames}
-            dangerouslySetInnerHTML={{ __html: element.data.text.data.text }}
-        />
+            if (props.as) {
+                const As = props.as;
+                return <As />;
+            }
+
+            const __html = props.value || getElement().data.text.data.text;
+            return <p {...getAttributes()} dangerouslySetInnerHTML={{ __html }} />;
+        },
+        {
+            propsAreEqual: (prevProps: Props, nextProps: Props) => {
+                return prevProps.as === nextProps.as && prevProps.value === nextProps.value;
+            }
+        }
     );
 };
-
-export const createParagraph = () => Paragraph;

@@ -1,31 +1,38 @@
 import React from "react";
-import { usePageElements } from "~/hooks/usePageElements";
-import { ElementRenderer } from "~/types";
+import { createRenderer } from "~/createRenderer";
+import { useRenderer } from "~/hooks/useRenderer";
 
-declare global {
-    //eslint-disable-next-line
-    namespace JSX {
-        interface IntrinsicElements {
-            "pb-list": any;
-        }
-    }
+interface Props {
+    as?: React.ComponentType;
+    value?: string
 }
 
-const defaultStyles = { display: "block" };
+export type ListRenderer = ReturnType<typeof createList>;
 
-const List: ElementRenderer = ({ element }) => {
-    const { getClassNames, getElementClassNames, combineClassNames } = usePageElements();
-    const classNames = combineClassNames(
-        getClassNames(defaultStyles),
-        getElementClassNames(element)
-    );
+export const createList = () => {
+    return createRenderer<Props>(
+        props => {
+            const { getElement, getAttributes } = useRenderer();
 
-    return (
-        <pb-list
-            class={classNames}
-            dangerouslySetInnerHTML={{ __html: element.data.text.data.text }}
-        />
+            if (props.as) {
+                const As = props.as;
+                return <As />;
+            }
+
+            const __html = props.value || getElement().data.text.data.text;
+
+            return (
+                <div
+                    {...getAttributes()}
+                    style={{ display: "block", width: "100%" }}
+                    dangerouslySetInnerHTML={{ __html }}
+                />
+            );
+        },
+        {
+            propsAreEqual: (prevProps: Props, nextProps: Props) => {
+                return prevProps.as === nextProps.as && prevProps.value === nextProps.value;
+            }
+        }
     );
 };
-
-export const createList = () => List;

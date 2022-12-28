@@ -1,32 +1,46 @@
 import React from "react";
-import { usePageElements } from "~/hooks/usePageElements";
-import { ElementRenderer } from "~/types";
+import styled from "@emotion/styled";
+import { createRenderer } from "~/createRenderer";
+import { useRenderer } from "~/hooks/useRenderer";
 
-declare global {
-    //eslint-disable-next-line
-    namespace JSX {
-        interface IntrinsicElements {
-            "pb-image": any;
-        }
-    }
+export type ImageRenderer = ReturnType<typeof createImage>;
+
+interface Props {
+    onClick?: React.MouseEventHandler<HTMLImageElement>;
+    renderEmpty?: React.ReactNode;
+    value?: { id: string; src: string };
 }
 
-const defaultStyles = { display: "block" };
+export const createImage = () => {
+    return createRenderer<Props>(
+        ({ onClick, renderEmpty, value }) => {
+            const { getElement, getAttributes } = useRenderer();
 
-const Image: ElementRenderer = ({ element }) => {
-    const { getClassNames, getElementClassNames, combineClassNames } = usePageElements();
-    const classNames = combineClassNames(
-        getClassNames(defaultStyles),
-        getElementClassNames(element)
-    );
+            const element = getElement();
 
-    const { src, name } = element.data.image.file;
+            let content;
+            if (element.data?.image?.file?.src) {
+                // Image has its width / height set from its own settings.
+                const PbImg = styled.img({
+                    width: element.data.image.width,
+                    height: element.data.image.height,
+                    maxWidth: "100%"
+                });
 
-    return (
-        <pb-image class={classNames}>
-            <img alt={name} src={src} />
-        </pb-image>
+                const { title } = element.data.image;
+                const { src } = value || element.data?.image?.file;
+                content = <PbImg alt={title} title={title} src={src} onClick={onClick} />;
+            } else {
+                content = renderEmpty || null;
+            }
+
+            return <div {...getAttributes()}>{content}</div>;
+        },
+        {
+            baseStyles: { width: "100%" },
+            propsAreEqual: (prevProps: Props, nextProps: Props) => {
+                return prevProps.value === nextProps.value;
+            }
+        }
     );
 };
-
-export const createImage = () => Image;

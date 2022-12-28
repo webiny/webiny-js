@@ -1,31 +1,41 @@
 import React from "react";
 import { Elements } from "~/components/Elements";
-import { usePageElements } from "~/hooks/usePageElements";
-import { ElementRenderer } from "~/types";
+import { Element, Renderer } from "~/types";
+import { createRenderer } from "~/createRenderer";
+import { useRenderer } from "~/hooks/useRenderer";
 
-declare global {
-    //eslint-disable-next-line
-    namespace JSX {
-        interface IntrinsicElements {
-            "pb-block": any;
-            "pb-block-inner": any;
-        }
-    }
+export interface BlockComponentProps {
+    element: Element;
+    elements?: Array<Element>;
+    className?: string;
 }
 
-const defaultStyles = { display: "block", boxSizing: "border-box" };
+export type BlockRenderer = Renderer<BlockComponentProps>;
 
-const Block: ElementRenderer = ({ element }) => {
-    const { getClassNames, getElementClassNames } = usePageElements();
-    const classNames = getClassNames(defaultStyles);
+interface Props {
+    elements?: Element[];
+}
 
-    return (
-        <pb-block class={classNames}>
-            <pb-block-inner class={getElementClassNames(element)}>
-                <Elements element={element} />
-            </pb-block-inner>
-        </pb-block>
+export const createBlock = () => {
+    return createRenderer(
+        (props: Props) => {
+            const { getElement, getAttributes } = useRenderer();
+
+            const element = getElement();
+            return (
+                <div {...getAttributes()}>
+                    <Elements element={element} elements={props.elements} />
+                </div>
+            );
+        },
+        {
+            baseStyles: {
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "flex-start",
+                alignItems: "flex-start",
+                boxSizing: "border-box"
+            }
+        }
     );
 };
-
-export const createBlock = () => Block;
