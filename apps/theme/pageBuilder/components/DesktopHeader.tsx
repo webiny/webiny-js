@@ -2,6 +2,35 @@ import React from "react";
 import { Link } from "@webiny/react-router";
 import Menu from "./Menu";
 import Navigation from "./Navigation";
+import styled from "@emotion/styled";
+
+import { fonts, breakpoints } from "../theme";
+
+const StyledDesktopHeader = styled.div`
+    align-items: center;
+    display: flex;
+    height: 35px;
+    justify-content: space-between;
+    margin: 0 auto;
+    max-width: 1200px;
+
+    ${breakpoints.tablet} {
+        display: none;
+    }
+
+    > div {
+        img {
+            max-height: 30px;
+        }
+    }
+
+    > nav {
+        -moz-osx-font-smoothing: grayscale;
+        -webkit-font-smoothing: antialiased;
+        flex: 1;
+        font-family: ${fonts.font1};
+    }
+`;
 
 interface DesktopHeaderProps {
     menuName: string;
@@ -13,22 +42,17 @@ interface DesktopHeaderProps {
 
 const DesktopHeader: React.FC<DesktopHeaderProps> = ({ menuName, logo, name }) => {
     return (
-        <div
-            className="webiny-pb-section-header__wrapper hide-on-mobile"
-            data-testid={"pb-desktop-header"}
-        >
-            <div className={"webiny-pb-section-header__logo"}>
+        <StyledDesktopHeader data-testid={"pb-desktop-header"}>
+            <div>
                 <Link to="/">
                     {logo && logo.src && <img src={logo.src} alt={name} />}{" "}
-                    {(!logo || !logo.src) && (
-                        <span className={"webiny-pb-section-header__site-name"}>{name}</span>
-                    )}
+                    {(!logo || !logo.src) && <span>{name}</span>}
                 </Link>
             </div>
-            <nav className={"webiny-pb-section-header__navigation"}>
+            <nav>
                 <Menu slug={menuName} component={Navigation} />
             </nav>
-        </div>
+        </StyledDesktopHeader>
     );
 };
 

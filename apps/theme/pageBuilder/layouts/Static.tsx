@@ -11,11 +11,14 @@ interface StaticProps {
 
 const Static: React.FC<StaticProps> = ({ children, ...rest }) => {
     return (
-        <React.Fragment>
+        <>
             <Header {...rest} />
-            {children}
+            <article>
+                <ps-tag data-key={"pb-page"} data-value={rest.page.id} />
+                {children}
+            </article>
             <Footer {...rest} />
-        </React.Fragment>
+        </>
     );
 };
 

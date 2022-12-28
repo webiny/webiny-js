@@ -1,11 +1,3 @@
-# Creating the Theme Object
-
-We use the `createTheme` factory function to create a new theme object.
-
-For example, in a Webiny project, we might have something like the following:
-
-```ts
-// apps/theme/pageBuilder/theme.ts
 import { createTheme } from "@webiny/app-page-builder-theme";
 import { CSSObject } from "@emotion/core";
 
@@ -165,4 +157,3 @@ const theme = createTheme({
 });
 
 export default theme;
-```

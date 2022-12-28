@@ -1,14 +1,118 @@
 import React from "react";
 import HamburgerMenu from "react-hamburger-menu";
-import classNames from "classnames";
 import { useQuery } from "@apollo/react-hooks";
 import { Link } from "@webiny/react-router";
 import Menu, { GET_PUBLIC_MENU, hasMenuItems } from "./Menu";
 import Navigation from "./Navigation";
 
+import styled from "@emotion/styled";
+import { ClassNames } from "@emotion/core";
+
+import { colors, fonts, breakpoints } from "../theme";
+
+const StyledMobileHeader = styled.div`
+    display: none;
+
+    @keyframes slide-in {
+        100% {
+            transform: translateX(0%);
+        }
+    }
+
+    @keyframes slide-out {
+        0% {
+            transform: translateX(0%);
+        }
+        100% {
+            transform: translateX(200%);
+        }
+    }
+
+    ${breakpoints.tablet} {
+        align-items: center;
+        display: flex;
+        height: 35px;
+        justify-content: space-between;
+        margin: 0 auto;
+        max-width: 1200px;
+
+        > .logo {
+            ${breakpoints.tablet} {
+                margin-left: 25px;
+                width: 50%;
+            }
+
+            img {
+                max-height: 30px;
+            }
+        }
+
+        > nav {
+            -moz-osx-font-smoothing: grayscale;
+            -webkit-font-smoothing: antialiased;
+            animation: slide-out 0.5s forwards;
+            animation-timing-function: ease-in-out;
+            background: ${colors.color4};
+            color: ${colors.color1};
+            font-family: ${fonts.font1};
+            height: 100%;
+            position: fixed;
+            right: 0;
+            top: 0;
+            transform: translateX(200%);
+            width: 250px;
+            z-index: 11;
+
+            &.active {
+                animation: slide-in 0.5s forwards;
+                display: block;
+            }
+
+            > div {
+                position: fixed;
+                right: -25px;
+                top: 28px;
+                width: calc(100% - 25px);
+                z-index: 12;
+
+                a {
+                    font-size: 1.2rem;
+                    font-weight: 700;
+                    text-transform: uppercase;
+                }
+            }
+        }
+
+        > .hamburger-icon {
+            position: fixed;
+            right: 25px;
+            top: 18px;
+            z-index: 12;
+        }
+
+        .mobile-overlay {
+            background-color: var(--webiny-theme-color-on-background, #131313);
+            opacity: 0;
+            transition: opacity 0.25s ease-in-out;
+
+            &.active {
+                height: 100vh;
+                left: 0;
+                opacity: 0.5;
+                overflow: hidden;
+                position: fixed;
+                top: 0;
+                width: 100vw;
+                z-index: 10;
+            }
+        }
+    }
+`;
+
 interface MobileHeaderPropsLogo {
     src: string;
 }
+
 interface MobileHeaderProps {
     menuName: string;
     logo: MobileHeaderPropsLogo;
@@ -16,6 +120,7 @@ interface MobileHeaderProps {
     active: boolean;
     toggleMenu: () => void;
 }
+
 const MobileHeader: React.FC<MobileHeaderProps> = ({
     menuName,
     logo,
@@ -25,30 +130,21 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
 }) => {
     const { data } = useQuery(GET_PUBLIC_MENU, { variables: { slug: menuName } });
     return (
-        <div
-            className="webiny-pb-section-header__wrapper hide-on-desktop-and-tablet"
-            data-testid={"pb-mobile-header"}
-        >
-            <div className={"webiny-pb-section-header__logo"}>
+        <StyledMobileHeader data-testid={"pb-mobile-header"}>
+            <div className={"logo"}>
                 <Link to="/">
                     {logo && logo.src && <img src={logo.src} alt={name} />}{" "}
-                    {(!logo || !logo.src) && (
-                        <span className={"webiny-pb-section-header__site-name"}>{name}</span>
-                    )}
+                    {(!logo || !logo.src) && <span>{name}</span>}
                 </Link>
             </div>
-            <nav
-                className={classNames("webiny-pb-section-header__navigation", {
-                    "webiny-pb-section-header__navigation--mobile-active": active
-                })}
-            >
+            <nav className={active ? "active" : ""}>
                 <Menu slug={menuName} component={Navigation} />
-                <div className={"webiny-pb-section-header__mobile-site-name"}>
+                <div>
                     <a href="/">{name}</a>
                 </div>
             </nav>
             {hasMenuItems(data) && (
-                <div onClick={toggleMenu} className="webiny-pb-section-header__mobile-icon">
+                <div onClick={toggleMenu} className="hamburger-icon">
                     <HamburgerMenu
                         isOpen={active}
                         menuClicked={toggleMenu}
@@ -62,13 +158,12 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
                     />
                 </div>
             )}
-            <div
-                onClick={toggleMenu}
-                className={classNames("webiny-pb-section-header__mobile-overlay", {
-                    "webiny-pb-section-header__mobile-overlay--active": active
-                })}
-            />
-        </div>
+            <ClassNames>
+                {({ cx }) => (
+                    <div onClick={toggleMenu} className={cx("mobile-overlay", { active })} />
+                )}
+            </ClassNames>
+        </StyledMobileHeader>
     );
 };
 
