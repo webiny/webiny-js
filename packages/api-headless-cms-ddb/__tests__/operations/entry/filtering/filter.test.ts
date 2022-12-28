@@ -202,5 +202,180 @@ describe("filtering", () => {
                 };
             })
         );
+
+        const resultNumber3 = await filter({
+            items: records as any,
+            where: {
+                options: {
+                    keys_contains: " - 3"
+                }
+            },
+            plugins,
+            fields,
+            fromStorage: async (_, value) => {
+                return value;
+            }
+        });
+
+        expect(resultNumber3).toHaveLength(0);
+
+        expect(resultNumber3).toMatchObject([]);
+    });
+
+    it("should filter by nested options variant colors", async () => {
+        const records = createEntries(100);
+
+        const resultRed = await filter({
+            items: records as any,
+            where: {
+                options: {
+                    variant: {
+                        colors: ["red"]
+                    }
+                }
+            },
+            plugins,
+            fields,
+            fromStorage: async (_, value) => {
+                return value;
+            }
+        });
+
+        expect(resultRed).toHaveLength(50);
+
+        expect(resultRed).toMatchObject(
+            [...Array(50)].map(() => {
+                return {
+                    values: {
+                        options: [
+                            {
+                                variant: {
+                                    colors: ["red", "blue"]
+                                }
+                            },
+                            {
+                                variant: {
+                                    colors: ["yellow", "green"]
+                                }
+                            }
+                        ]
+                    }
+                };
+            })
+        );
+
+        const resultTeal = await filter({
+            items: records as any,
+            where: {
+                options: {
+                    variant: {
+                        colors: ["teal"]
+                    }
+                }
+            },
+            plugins,
+            fields,
+            fromStorage: async (_, value) => {
+                return value;
+            }
+        });
+
+        expect(resultTeal).toHaveLength(50);
+
+        expect(resultTeal).toMatchObject(
+            [...Array(50)].map(() => {
+                return {
+                    values: {
+                        options: [
+                            {
+                                variant: {
+                                    colors: ["black", "white"]
+                                }
+                            },
+                            {
+                                variant: {
+                                    colors: ["teal", "gray"]
+                                }
+                            }
+                        ]
+                    }
+                };
+            })
+        );
+
+        const resultBoth = await filter({
+            items: records as any,
+            where: {
+                options: {
+                    variant: {
+                        colors_in: ["teal", "green"]
+                    }
+                }
+            },
+            plugins,
+            fields,
+            fromStorage: async (_, value) => {
+                return value;
+            }
+        });
+
+        expect(resultBoth).toHaveLength(100);
+
+        expect(resultBoth).toMatchObject(
+            [...Array(100)].map((_, index) => {
+                return {
+                    values: {
+                        options: [
+                            {
+                                variant: {
+                                    colors: index % 2 === 0 ? ["red", "blue"] : ["black", "white"]
+                                }
+                            },
+                            {
+                                variant: {
+                                    colors: index % 2 === 0 ? ["yellow", "green"] : ["teal", "gray"]
+                                }
+                            }
+                        ]
+                    }
+                };
+            })
+        );
+
+        const resultNoneOrange = await filter({
+            items: records as any,
+            where: {
+                options: {
+                    variant: {
+                        colors_in: ["orange"]
+                    }
+                }
+            },
+            plugins,
+            fields,
+            fromStorage: async (_, value) => {
+                return value;
+            }
+        });
+
+        expect(resultNoneOrange).toHaveLength(0);
+
+        const resultNoneEmpty = await filter({
+            items: records as any,
+            where: {
+                options: {
+                    variant: {
+                        colors_in: []
+                    }
+                }
+            },
+            plugins,
+            fields,
+            fromStorage: async (_, value) => {
+                return value;
+            }
+        });
+
+        expect(resultNoneEmpty).toHaveLength(0);
     });
 });
