@@ -67,10 +67,10 @@ import { createTheme } from "@webiny/app-page-builder-theme";
 
 const theme = createTheme({
     breakpoints: {
-        desktop: { mediaQuery: "@media (max-width: 4000px)" },
-        tablet: { mediaQuery: "@media (max-width: 991px)" },
-        "mobile-landscape": { mediaQuery: "@media (max-width: 767px)" },
-        "mobile-portrait": { mediaQuery: "@media (max-width: 478px)" }
+        desktop: "@media (max-width: 4000px)",
+        tablet: "@media (max-width: 991px)",
+        "mobile-landscape": "@media (max-width: 767px)",
+        "mobile-portrait": "@media (max-width: 478px)" 
     },
     styles: {
         colors: { ... },
