@@ -24,7 +24,7 @@ const ICON_POSITION_MARGIN: Record<string, CSSObject> = {
 export interface ButtonClickHandler {
     id: string;
     name: string;
-    handler: (variables: Record<string, any>) => void | Promise<void>;
+    handler: (params: { variables: Record<string, any> }) => void | Promise<void>;
     variables?: Array<{
         name: string;
         label: string;
@@ -169,7 +169,9 @@ export const createButton = (params: CreateButtonParams = {}) => {
             return (
                 <div {...getAttributes()}>
                     <StyledButtonBody
-                        onClick={() => clickHandler?.(element.data.action.variables!)}
+                        onClick={() =>
+                            clickHandler?.({ variables: element.data.action.variables! })
+                        }
                     >
                         {buttonInnerContent}
                     </StyledButtonBody>
