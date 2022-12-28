@@ -106,7 +106,7 @@ const Render: React.FC<RenderProps> = ({ page, error, settings }) => {
                 footerTags={settings?.htmlTags?.footer}
             />
             <Layout page={page} settings={settings}>
-                <Page page={page} key={page.id} />
+                <Page page={page} />
             </Layout>
         </>
     );

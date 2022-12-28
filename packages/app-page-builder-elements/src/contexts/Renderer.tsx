@@ -1,4 +1,4 @@
-import React, {createContext, useCallback} from "react";
+import React, { createContext, useCallback } from "react";
 import { usePageElements } from "~/hooks/usePageElements";
 import { RendererContextValue, RendererProviderProps } from "~/types";
 
@@ -9,11 +9,12 @@ export const RendererProvider: React.FC<RendererProviderProps> = ({
     element,
     attributes
 }) => {
-
     const getElement = useCallback(() => element, []);
     const getAttributes = useCallback(() => attributes, []);
 
     const pageElements = usePageElements();
+
+    // @ts-ignore Resolve the `getElement` issue.
     const value: RendererContextValue = { ...pageElements, getElement, getAttributes };
 
     return <RendererContext.Provider value={value}>{children}</RendererContext.Provider>;

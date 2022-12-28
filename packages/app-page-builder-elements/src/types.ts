@@ -3,6 +3,7 @@ import { type CSSObject } from "@emotion/core";
 import { Theme, StylesObject, ThemeBreakpoints } from "@webiny/app-page-builder-theme/types";
 
 export interface Page {
+    id: string;
     path: string;
     content: Content;
 }
@@ -87,9 +88,12 @@ export interface PageElementsContextValue extends PageElementsProviderProps {
     setStylesCallback: SetStylesCallback;
 }
 
+type GetElement = <TElementData = Record<string, any>>() => Element<TElementData>;
+type GetAttributes = () => HTMLAttributes<HTMLElement>;
+
 export interface RendererContextValue extends PageElementsContextValue {
-    getElement: () => Element;
-    getAttributes: () => HTMLAttributes<HTMLElement>;
+    getElement: GetElement;
+    getAttributes: GetAttributes;
 }
 
 export interface RendererProviderProps {
@@ -97,7 +101,7 @@ export interface RendererProviderProps {
     attributes: HTMLAttributes<HTMLElement>;
 }
 
-export type ElementRendererProps<TElement = Record<string, any>> = {
+export type RendererProps<TElement = Record<string, any>> = {
     element: Element<TElement>;
 };
 
@@ -109,7 +113,9 @@ export type PageContextValue = {
     getPage: () => Page;
 };
 
-export type Renderer<T = {}> = React.ComponentType<ElementRendererProps & T>;
+export type Renderer<T = {}, TElementData = Record<string, any>> = React.ComponentType<
+    RendererProps<TElementData> & T
+>;
 
 export type ElementAttributesModifier = (args: {
     element: Element;

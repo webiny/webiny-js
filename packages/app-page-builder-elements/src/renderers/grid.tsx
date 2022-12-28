@@ -3,6 +3,8 @@ import { Element } from "~/components/Element";
 import { createRenderer } from "~/createRenderer";
 import { useRenderer } from "~/hooks/useRenderer";
 
+export type GridRenderer = ReturnType<typeof createGrid>;
+
 export const createGrid = () => {
     return createRenderer(
         () => {

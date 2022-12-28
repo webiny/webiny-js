@@ -11,7 +11,7 @@ export const Page: React.ComponentType<PageProps> = props => {
     const { page } = props;
 
     return (
-        <PageProvider page={page}>
+        <PageProvider page={page} key={page.id}>
             <Content content={page.content} />
         </PageProvider>
     );

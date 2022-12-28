@@ -8,7 +8,7 @@ import {
     AssignStylesCallback,
     AttributesObject,
     ElementAttributesCallback,
-    ElementRendererProps,
+    RendererProps,
     ElementStylesCallback,
     StylesCallback
 } from "~/types";
@@ -155,8 +155,8 @@ export const defaultStylesCallback: StylesCallback = ({
 };
 
 export const elementDataPropsAreEqual = (
-    prevProps: ElementRendererProps,
-    nextProps: ElementRendererProps
+    prevProps: RendererProps,
+    nextProps: RendererProps
 ) => {
     const prevElementDataHash = JSON.stringify(prevProps.element.data);
     const nextElementDataHash = JSON.stringify(nextProps.element.data);

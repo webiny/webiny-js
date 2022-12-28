@@ -24,7 +24,7 @@ const ICON_POSITION_MARGIN: Record<string, CSSObject> = {
 export interface ButtonClickHandler {
     id: string;
     name: string;
-    handler: (params: { variables: Record<string, any> }) => void | Promise<void>;
+    handler: (variables: Record<string, any>) => void | Promise<void>;
     variables?: Array<{
         name: string;
         label: string;
@@ -68,15 +68,39 @@ const ButtonText: React.FC<{ text: string }> = ({ text }) => {
 
 export type ButtonRenderer = ReturnType<typeof createButton>;
 
+export interface ButtonElementData {
+    buttonText: string;
+    link: {
+        newTab: boolean;
+        href: string;
+    };
+    icon: { position: string; color: string; svg: string; width: string };
+    action: {
+        actionType: "link" | "scrollToElement" | "onClickHandler";
+        newTab: boolean;
+        href: string;
+        clickHandler?: string;
+        variables?: Record<string, any>;
+    };
+}
+
+interface Props {
+    buttonText?: string;
+    action?: ButtonElementData["action"];
+}
+
 export const createButton = (params: CreateButtonParams = {}) => {
     const LinkComponent = params?.linkComponent || DefaultLinkComponent;
 
-    const RendererComponent = createRenderer(
-        () => {
+    return createRenderer<Props>(
+        props => {
             const { getStyles } = usePageElements();
             const { getElement, getAttributes } = useRenderer();
-            const element = getElement();
-            const { buttonText, link, icon, action } = element.data;
+            const element = getElement<ButtonElementData>();
+            const { link, icon } = element.data;
+
+            const buttonText = props.buttonText || element.data.buttonText;
+            const action = props.action || element.data.action;
 
             let buttonInnerContent = <ButtonText text={buttonText} />;
 
@@ -144,7 +168,9 @@ export const createButton = (params: CreateButtonParams = {}) => {
 
             return (
                 <div {...getAttributes()}>
-                    <StyledButtonBody onClick={() => clickHandler?.(element.data.action.variables)}>
+                    <StyledButtonBody
+                        onClick={() => clickHandler?.(element.data.action.variables!)}
+                    >
                         {buttonInnerContent}
                     </StyledButtonBody>
                 </div>
@@ -154,9 +180,13 @@ export const createButton = (params: CreateButtonParams = {}) => {
             themeStyles({ theme, element }) {
                 const { type } = element.data;
                 return theme.styles.elements?.button[type];
+            },
+            propsAreEqual: (prevProps: Props, nextProps: Props) => {
+                return (
+                    prevProps.buttonText === nextProps.buttonText &&
+                    prevProps.action === nextProps.action
+                );
             }
         }
     );
-
-    return RendererComponent;
 };

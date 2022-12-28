@@ -6,6 +6,7 @@ import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePage
 import { QuoteRenderer } from "@webiny/app-page-builder-elements/renderers/quote";
 import { Element } from "@webiny/app-page-builder-elements/types";
 import { useRenderer } from "@webiny/app-page-builder-elements";
+import { useElementVariableValue } from "~/editor/hooks/useElementVariableValue";
 
 const DEFAULT_EDITOR_OPTIONS = {
     toolbar: {
@@ -26,6 +27,7 @@ interface PeQuoteProps {
 const PeQuote: React.FC<PeQuoteProps> = props => {
     const { element, isActive, mediumEditorOptions } = props;
     const { renderers } = usePageElements();
+    const variableValue = useElementVariableValue(element);
 
     const Quote = renderers.quote as QuoteRenderer;
 
@@ -49,10 +51,10 @@ const PeQuote: React.FC<PeQuoteProps> = props => {
     }, []);
 
     if (isActive) {
-        return <Quote element={element as Element} as={EditorComponent} />;
+        return <Quote element={element as Element} as={EditorComponent} value={variableValue} />;
     }
 
-    return <Quote element={element as Element} />;
+    return <Quote element={element as Element} value={variableValue} />;
 };
 
 export default PeQuote;

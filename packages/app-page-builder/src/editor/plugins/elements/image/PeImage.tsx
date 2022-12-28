@@ -11,6 +11,7 @@ import { Element } from "@webiny/app-page-builder-elements/types";
 import { AddImageIconWrapper, AddImageWrapper } from "@webiny/ui/ImageUpload/styled";
 import { ReactComponent as AddImageIcon } from "@webiny/ui/ImageUpload/icons/round-add_photo_alternate-24px.svg";
 import { Typography } from "@webiny/ui/Typography";
+import { useElementVariableValue } from "~/editor/hooks/useElementVariableValue";
 
 const RenderBlank = (props: { onClick?: () => void }) => {
     return (
@@ -31,6 +32,7 @@ type ImagePropsType = {
 const PeImage: React.FC<ImagePropsType> = ({ element, isActive }) => {
     const { renderers } = usePageElements();
     const Image = renderers.image as ImageRenderer;
+    const variableValue = useElementVariableValue(element);
 
     const handler = useEventActionHandler();
 
@@ -66,13 +68,16 @@ const PeImage: React.FC<ImagePropsType> = ({ element, isActive }) => {
                         element={element as Element}
                         onClick={() => showFileManager()}
                         renderEmpty={<RenderBlank onClick={showFileManager} />}
+                        value={variableValue}
                     />
                 )}
             />
         );
     }
 
-    return <Image element={element as Element} renderEmpty={<RenderBlank />} />;
+    return (
+        <Image element={element as Element} renderEmpty={<RenderBlank />} value={variableValue} />
+    );
 };
 
 export default PeImage;

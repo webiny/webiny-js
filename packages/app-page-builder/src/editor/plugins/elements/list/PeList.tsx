@@ -6,6 +6,7 @@ import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePage
 import { ListRenderer } from "@webiny/app-page-builder-elements/renderers/list";
 import { Element } from "@webiny/app-page-builder-elements/types";
 import { useRenderer } from "@webiny/app-page-builder-elements";
+import { useElementVariableValue } from "~/editor/hooks/useElementVariableValue";
 
 const DEFAULT_EDITOR_OPTIONS = {
     toolbar: {
@@ -26,6 +27,7 @@ interface PeListProps {
 const PeList: React.FC<PeListProps> = props => {
     const { element, isActive, mediumEditorOptions } = props;
     const { renderers } = usePageElements();
+    const variableValue = useElementVariableValue(element);
 
     const List = renderers.list as ListRenderer;
 
@@ -51,9 +53,9 @@ const PeList: React.FC<PeListProps> = props => {
     );
 
     if (isActive) {
-        return <List element={element as Element} as={EditorComponent} />;
+        return <List element={element as Element} as={EditorComponent} value={variableValue} />;
     }
 
-    return <List element={element as Element} />;
+    return <List element={element as Element} value={variableValue} />;
 };
 export default PeList;

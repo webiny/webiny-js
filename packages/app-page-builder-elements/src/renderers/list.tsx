@@ -4,6 +4,7 @@ import { useRenderer } from "~/hooks/useRenderer";
 
 interface Props {
     as?: React.ComponentType;
+    value?: string
 }
 
 export type ListRenderer = ReturnType<typeof createList>;
@@ -18,7 +19,8 @@ export const createList = () => {
                 return <As />;
             }
 
-            const __html = getElement().data.text.data.text;
+            const __html = props.value || getElement().data.text.data.text;
+
             return (
                 <div
                     {...getAttributes()}
@@ -29,7 +31,7 @@ export const createList = () => {
         },
         {
             propsAreEqual: (prevProps: Props, nextProps: Props) => {
-                return prevProps.as === nextProps.as;
+                return prevProps.as === nextProps.as && prevProps.value === nextProps.value;
             }
         }
     );

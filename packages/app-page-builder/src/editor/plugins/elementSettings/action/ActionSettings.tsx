@@ -24,9 +24,6 @@ import InputField from "../components/InputField";
 import SelectField from "../components/SelectField";
 import { useUpdateElement } from "~/editor/hooks/useUpdateElement";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
-import { ButtonRenderer } from "@webiny/app-page-builder-elements/renderers/button";
-import { isLegacyRenderingEngine } from "~/utils";
-import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
 
 const classes = {
     gridClass: css({
