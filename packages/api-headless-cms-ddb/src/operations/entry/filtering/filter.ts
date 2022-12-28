@@ -1,12 +1,12 @@
 import { CmsEntry, CmsEntryListWhere } from "@webiny/api-headless-cms/types";
 import { ValueFilterPlugin } from "@webiny/db-dynamodb/plugins/definitions/ValueFilterPlugin";
 import WebinyError from "@webiny/error";
-import dotProp from "dot-prop";
 import { PluginsContainer } from "@webiny/plugins";
 import { Field, FilterItemFromStorage } from "./types";
 import { createFullTextSearch } from "./fullTextSearch";
 import { createFilters, ItemFilter } from "./createFilters";
 import { transformValue } from "./transform";
+import { getValue } from "~/operations/entry/filtering/getValue";
 
 interface ExecFilterParams {
     value: any;
@@ -90,7 +90,7 @@ export const filter = async (params: Params): Promise<CmsEntry[]> => {
              */
             // const valuePath = getFilterValuePath(filter);
 
-            const rawValue = dotProp.get(record, filter.path);
+            const rawValue = getValue(record, filter.path);
             // if (valuePath !== filter.path) {
             //     /**
             //      * Calculated is different other than the original because we need to search in the array of objects.
@@ -135,9 +135,9 @@ export const filter = async (params: Params): Promise<CmsEntry[]> => {
             /**
              * If raw value is not same as the value after the storage transform, set the value to the items being filtered.
              */
-            if (plainValue !== rawValue) {
-                record = dotProp.set(record, filter.path, plainValue);
-            }
+            // if (plainValue !== rawValue) {
+            //     record = dotProp.set(record, filter.path, plainValue);
+            // }
 
             const result = execFilter({
                 value: plainValue,

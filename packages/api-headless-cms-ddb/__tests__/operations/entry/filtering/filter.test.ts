@@ -1,4 +1,4 @@
-import { createEntries } from "./mocks/entry";
+import { createEntries } from "./mocks/entry.model";
 import { createFilters } from "~/operations/entry/filtering/createFilters";
 import { PluginsContainer } from "@webiny/plugins";
 import { CmsModel } from "@webiny/api-headless-cms/types";
@@ -31,7 +31,7 @@ describe("filtering", () => {
 
     it.each(filterByCreatedOn)(
         "should filter entries by createdOn - %s results",
-        async (results, modifier) => {
+        async (expectedResults, modifier) => {
             const records = createEntries(100).map(r => {
                 // @ts-ignore
                 delete r.values;
@@ -70,7 +70,7 @@ describe("filtering", () => {
                             matches: expect.any(Function),
                             operation: "gte"
                         },
-                        name: expect.stringMatching(/dynamodb\.value\.filter\-/)
+                        name: "dynamodb.value.filter.gte"
                     }),
                     negate: false,
                     path: "createdOn",
@@ -83,16 +83,124 @@ describe("filtering", () => {
                 where: createFiltersParams.where,
                 plugins,
                 fields,
-                fromStorage: (_, value) => {
+                fromStorage: async (_, value) => {
                     return value;
-                },
-                fullTextSearch: {
-                    term: "",
-                    fields: []
                 }
             });
 
-            expect(result).toHaveLength(results);
+            expect(result).toHaveLength(expectedResults);
+
+            expect(result).toEqual(records.slice(modifier));
         }
     );
+
+    it("should filter by title", async () => {
+        const records = createEntries(100);
+
+        const createFiltersParams = {
+            plugins,
+            where: {
+                title_contains: "tttt"
+            },
+            fields
+        };
+
+        const result = await filter({
+            items: records as any,
+            where: createFiltersParams.where,
+            plugins,
+            fields,
+            fromStorage: async (_, value) => {
+                return value;
+            }
+        });
+
+        expect(result).toHaveLength(10);
+
+        expect(result).toMatchObject(
+            [...Array(10)].map((_, index) => {
+                return {
+                    values: {
+                        title: `Title modeled entry ${String(index).padStart(5, "t")}`
+                    }
+                };
+            })
+        );
+    });
+
+    it("should filter by nested options keys", async () => {
+        const records = createEntries(100);
+
+        const resultBoth = await filter({
+            items: records as any,
+            where: {
+                options: {
+                    keys_contains: "the modeled entry kkkk"
+                }
+            },
+            plugins,
+            fields,
+            fromStorage: async (_, value) => {
+                return value;
+            }
+        });
+
+        expect(resultBoth).toHaveLength(10);
+
+        expect(resultBoth).toMatchObject(
+            [...Array(10)].map((_, index) => {
+                return {
+                    values: {
+                        options: [
+                            {
+                                keys: `keys of the modeled entry kkkk${index} - 1`
+                            },
+                            {
+                                keys: `keys of the modeled entry kkkk${index} - 2`
+                            }
+                        ]
+                    }
+                };
+            })
+        );
+
+        const resultNumber2 = await filter({
+            items: records as any,
+            where: {
+                options: {
+                    keys_contains: " - 2"
+                }
+            },
+            plugins,
+            fields,
+            fromStorage: async (_, value) => {
+                return value;
+            }
+        });
+
+        expect(resultNumber2).toHaveLength(100);
+
+        expect(resultNumber2).toMatchObject(
+            [...Array(100)].map((_, index) => {
+                return {
+                    values: {
+                        options: [
+                            {
+                                keys: `keys of the modeled entry ${String(index).padStart(
+                                    5,
+                                    "k"
+                                )} - 1`
+                            },
+                            {
+                                keys: `keys of the modeled entry ${String(index).padStart(
+                                    5,
+                                    "k"
+                                )} - 2`
+                            }
+                        ]
+                    }
+                };
+            })
+        );
+    });
 });

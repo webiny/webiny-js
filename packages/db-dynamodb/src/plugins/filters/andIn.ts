@@ -6,7 +6,7 @@ interface MatchesParams {
     compareValue?: any[];
 }
 
-export default new ValueFilterPlugin({
+const plugin = new ValueFilterPlugin({
     operation: "and_in",
     matches: ({ value, compareValue }: MatchesParams) => {
         if (!compareValue || Array.isArray(compareValue) === false) {
@@ -25,3 +25,7 @@ export default new ValueFilterPlugin({
         return compareValue.includes(value);
     }
 });
+
+plugin.name = "dynamodb.value.filter.and_in";
+
+export default plugin;

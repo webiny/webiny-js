@@ -1,6 +1,6 @@
 import { ValueFilterPlugin } from "../definitions/ValueFilterPlugin";
 
-export default new ValueFilterPlugin({
+const plugin = new ValueFilterPlugin({
     operation: "startsWith",
     matches: ({ value, compareValue }) => {
         /**
@@ -20,3 +20,7 @@ export default new ValueFilterPlugin({
         return value.toLowerCase().startsWith(compareValueInLowerCase);
     }
 });
+
+plugin.name = "dynamodb.value.filter.startsWith";
+
+export default plugin;

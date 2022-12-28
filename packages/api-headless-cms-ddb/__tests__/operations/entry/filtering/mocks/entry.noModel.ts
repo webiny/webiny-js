@@ -6,7 +6,7 @@ interface ValuesOption {
 
 interface ValuesVariantSpecification {
     key: string;
-    value: string;
+    value: string | number;
     info?: {
         [key: string]: any;
     };
@@ -40,7 +40,7 @@ export const createEntry = (index = 0): Result => {
             displayName: "Admin"
         },
         values: {
-            title: "Title",
+            title: `Title #${String(index).padStart(5, "t")}`,
             options: Array.from({ length: 100 }).map((_, optionIndex) => {
                 return {
                     title: `Option #${index + optionIndex + 1}`,
@@ -48,10 +48,10 @@ export const createEntry = (index = 0): Result => {
                 };
             }),
             variant: {
-                title: "Variant title",
+                title: `Variant title ${String(index).padStart(5, "a")}`,
                 specifications: [
                     {
-                        key: `Specification #${index}`,
+                        key: `Specification #${index === 0 ? 1 : index}`,
                         value: `${index + 100}`,
                         info: {
                             images: {
@@ -60,15 +60,15 @@ export const createEntry = (index = 0): Result => {
                             tags: [
                                 {
                                     key: "size",
-                                    value: "55"
+                                    value: 55
                                 },
                                 {
                                     key: "weight",
-                                    value: "105"
+                                    value: 105
                                 },
                                 {
                                     key: "price",
-                                    value: "999 EUR"
+                                    value: 999
                                 }
                             ]
                         }
@@ -87,11 +87,11 @@ export const createEntry = (index = 0): Result => {
                             tags: [
                                 {
                                     key: "size",
-                                    value: "355"
+                                    value: 355
                                 },
                                 {
                                     key: "price",
-                                    value: "3999 EUR"
+                                    value: 3999
                                 }
                             ]
                         }

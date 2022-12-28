@@ -50,7 +50,7 @@ describe("create filters from where conditions", () => {
                         matches: expect.any(Function),
                         operation: "gte"
                     },
-                    name: expect.stringMatching(/dynamodb\.value\.filter\-/)
+                    name: "dynamodb.value.filter.gte"
                 }),
                 negate: false,
                 path: "id",
@@ -66,7 +66,7 @@ describe("create filters from where conditions", () => {
                         matches: expect.any(Function),
                         operation: "contains"
                     },
-                    name: expect.stringMatching(/dynamodb\.value\.filter\-/)
+                    name: "dynamodb.value.filter.contains"
                 }),
                 negate: true,
                 path: "values.title",
@@ -82,7 +82,7 @@ describe("create filters from where conditions", () => {
                         matches: expect.any(Function),
                         operation: "in"
                     },
-                    name: expect.stringMatching(/dynamodb\.value\.filter\-/)
+                    name: "dynamodb.value.filter.in"
                 }),
                 negate: false,
                 path: "values.priority",
@@ -98,7 +98,7 @@ describe("create filters from where conditions", () => {
                         matches: expect.any(Function),
                         operation: "eq"
                     },
-                    name: expect.stringMatching(/dynamodb\.value\.filter\-/)
+                    name: "dynamodb.value.filter.eq"
                 }),
                 negate: false,
                 path: "createdBy.id",
@@ -114,7 +114,7 @@ describe("create filters from where conditions", () => {
                         matches: expect.any(Function),
                         operation: "in"
                     },
-                    name: expect.stringMatching(/dynamodb\.value\.filter\-/)
+                    name: "dynamodb.value.filter.in"
                 }),
                 negate: false,
                 path: "values.parent.id",
@@ -130,7 +130,7 @@ describe("create filters from where conditions", () => {
                         matches: expect.any(Function),
                         operation: "in"
                     },
-                    name: expect.stringMatching(/dynamodb\.value\.filter\-/)
+                    name: "dynamodb.value.filter.in"
                 }),
                 negate: false,
                 path: "values.authors.entryId",
@@ -164,7 +164,7 @@ describe("create filters from where conditions", () => {
                         matches: expect.any(Function),
                         operation: "in"
                     },
-                    name: expect.stringMatching(/dynamodb\.value\.filter\-/)
+                    name: "dynamodb.value.filter.in"
                 }),
                 negate: false,
                 path: "values.options.keys",
@@ -180,7 +180,7 @@ describe("create filters from where conditions", () => {
                         matches: expect.any(Function),
                         operation: "gte"
                     },
-                    name: expect.stringMatching(/dynamodb\.value\.filter\-/)
+                    name: "dynamodb.value.filter.gte"
                 }),
                 negate: false,
                 path: "values.options.optionId",

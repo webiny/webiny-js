@@ -1,5 +1,5 @@
 import { getValue } from "~/operations/entry/filtering/getValue";
-import { createEntry } from "./mocks/entry";
+import { createEntry } from "./mocks/entry.noModel";
 
 describe("value via object-path", () => {
     it("should find values complex object / array structure", async () => {
