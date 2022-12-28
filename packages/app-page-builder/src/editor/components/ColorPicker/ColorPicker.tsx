@@ -1,4 +1,3 @@
-// @ts-nocheck TODO: WILL BE HANDLED IN A UPCOMING PR.
 import React, { useState, useCallback } from "react";
 import classnames from "classnames";
 import styled from "@emotion/styled";
@@ -9,13 +8,14 @@ import { ChromePicker } from "react-color";
 import { Menu } from "@webiny/ui/Menu";
 import { usePageBuilder } from "~/hooks/usePageBuilder";
 import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
-import { Theme } from "@webiny/app-page-builder-elements/types";
 
 // Icons
 import { ReactComponent as IconPalette } from "../../assets/icons/round-color_lens-24px.svg";
 import { ReactComponent as ColorizeIcon } from "./colorize.svg";
 import { ReactComponent as NoColorSelectedIcon } from "./unselected.svg";
 import { COLORS } from "../../plugins/elementSettings/components/StyledComponents";
+import { isLegacyRenderingEngine } from "~/utils";
+import { PbTheme } from "~/types";
 
 const ColorPickerStyle = styled("div")({
     display: "flex",
@@ -219,21 +219,33 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
     );
 
     const { theme } = usePageBuilder();
-    let peTheme: Theme = {};
+
     const pageElements = usePageElements();
-    if (pageElements) {
-        peTheme = pageElements.theme;
+
+    let themeColors: Record<string, any> = {};
+
+    if (isLegacyRenderingEngine) {
+        const legacyTheme = theme as PbTheme;
+        themeColors = legacyTheme?.colors || {};
+    } else {
+        const colors = pageElements.theme?.styles?.colors;
+        if (colors) {
+            for (const key in colors) {
+                if (colors[key]) {
+                    themeColors[key] = colors[key];
+                }
+            }
+        }
     }
 
-    const colors = theme ? theme.colors : {};
-
-    const themeColors = { ...colors, ...peTheme.styles?.colors };
+    // Either a custom color or a color coming from the theme object.
+    const actualSelectedColor = themeColors[value] || value || "#fff";
 
     let themeColor = false;
-
     const colorPicker = (
         <ColorPickerStyle onClick={hidePicker}>
-            {Object.values(themeColors).map((color, index) => {
+            {Object.keys(themeColors).map((key, index) => {
+                const color = themeColors[key];
                 if (color === value || value === "transparent") {
                     themeColor = true;
                 }
@@ -241,11 +253,19 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
                 return (
                     <ColorBox key={index}>
                         <Color
-                            className={color === value ? styles.selectedColor : ""}
+                            className={key === value ? styles.selectedColor : ""}
                             style={{ backgroundColor: color }}
                             onClick={() => {
                                 hidePicker();
-                                onChangeComplete(color);
+
+                                // With page elements implementation, we want to store the color key and
+                                // then the actual color will be retrieved from the theme object.
+                                let value = color;
+                                if (!isLegacyRenderingEngine) {
+                                    value = key;
+                                }
+
+                                onChangeComplete(value);
                             }}
                         />
                     </ColorBox>
@@ -276,7 +296,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
             {showPicker && (
                 <span onClick={e => e.stopPropagation()} className={chromePickerStyles}>
                     <ChromePicker
-                        color={value || "#fff"}
+                        color={actualSelectedColor}
                         onChange={onColorChange}
                         onChangeComplete={onColorChangeComplete}
                     />
@@ -304,7 +324,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
                     {value ? (
                         <button
                             className={classNames(styles.button, "color")}
-                            style={{ backgroundColor: value }}
+                            style={{ backgroundColor: actualSelectedColor }}
                             onClick={() => onChange("")}
                         />
                     ) : (

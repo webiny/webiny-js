@@ -7,6 +7,9 @@ import { ChromePicker } from "react-color";
 import { Menu } from "@webiny/ui/Menu";
 import { usePageBuilder } from "../../../hooks/usePageBuilder";
 import { ReactComponent as IconPalette } from "../../assets/icons/round-color_lens-24px.svg";
+import { isLegacyRenderingEngine } from "~/utils";
+import { PbTheme } from "~/types";
+import { Theme } from "@webiny/app-page-builder-theme/types";
 
 const ColorPickerStyle = styled("div")({
     display: "flex",
@@ -160,7 +163,14 @@ const ColorPicker = ({
 
     let themeColor = false;
 
-    const themeColors = theme ? theme.colors : {};
+    let themeColors;
+    if (isLegacyRenderingEngine) {
+        const legacyTheme = theme as PbTheme;
+        themeColors = legacyTheme.colors;
+    } else {
+        const newTheme = theme as Theme;
+        themeColors = newTheme.styles.colors;
+    }
 
     const colorPicker = (
         <ColorPickerStyle onClick={hidePicker}>

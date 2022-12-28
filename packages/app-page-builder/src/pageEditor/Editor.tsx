@@ -3,6 +3,8 @@ import { useApolloClient, useMutation } from "@apollo/react-hooks";
 import { plugins } from "@webiny/plugins";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
+import { PageProvider } from "@webiny/app-page-builder-elements/contexts/Page";
+import { Page } from "@webiny/app-page-builder-elements/types";
 import get from "lodash/get";
 import { Editor as PbEditor } from "~/admin/components/Editor";
 import { createElement, addElementId } from "~/editor/helpers";
@@ -183,10 +185,12 @@ export const PageEditor: React.FC = () => {
 
     return (
         <React.Suspense fallback={<EditorLoadingScreen />}>
-            <PageEditorConfig />
-            <LoadData>
-                <PbEditor stateInitializerFactory={createStateInitializer(page!, revisions)} />
-            </LoadData>
+            <PageProvider page={page as Page}>
+                <PageEditorConfig />
+                <LoadData>
+                    <PbEditor stateInitializerFactory={createStateInitializer(page!, revisions)} />
+                </LoadData>
+            </PageProvider>
         </React.Suspense>
     );
 };
