@@ -5,7 +5,8 @@ export const createDefaultFilterCreate = () => {
     return new CmsEntryFieldFilterPlugin({
         fieldType: CmsEntryFieldFilterPlugin.ALL,
         create: params => {
-            const plugin = params.plugins[params.operation];
+            const { negate, transformValue, field, compareValue, valueFilterPlugins } = params;
+            const plugin = valueFilterPlugins[params.operation];
             if (!plugin) {
                 throw new WebinyError(
                     `Missing ValueFilterPlugin for operation "${params.operation}".`,
@@ -16,9 +17,12 @@ export const createDefaultFilterCreate = () => {
                 );
             }
             return {
-                ...params,
-                path: params.field.createPath({
-                    field: params.field
+                negate,
+                transformValue,
+                field,
+                compareValue,
+                path: field.createPath({
+                    field
                 }),
                 plugin
             };

@@ -5,12 +5,7 @@ import dotProp from "dot-prop";
 import { PluginsContainer } from "@webiny/plugins";
 import { Field, FilterItemFromStorage } from "./types";
 import { createFullTextSearch } from "./fullTextSearch";
-import {
-    createFilters,
-    getFilterValuePath,
-    getFilterValuePropertyPath,
-    ItemFilter
-} from "./createFilters";
+import { createFilters, ItemFilter } from "./createFilters";
 import { transformValue } from "./transform";
 
 interface ExecFilterParams {
@@ -24,7 +19,7 @@ const execFilter = (params: ExecFilterParams) => {
         value: plainValue,
         transform: filter.transformValue
     });
-    const matched = filter.filterPlugin.matches({
+    const matched = filter.plugin.matches({
         value,
         compareValue: filter.compareValue
     });
@@ -93,50 +88,50 @@ export const filter = async (params: Params): Promise<CmsEntry[]> => {
              * In case is multiple values field, last part is removed from path.
              * -> values.categories.id -> values.categories
              */
-            const valuePath = getFilterValuePath(filter);
+            // const valuePath = getFilterValuePath(filter);
 
-            const rawValue = dotProp.get(record, valuePath);
-            if (valuePath !== filter.path) {
-                /**
-                 * Calculated is different other than the original because we need to search in the array of objects.
-                 */
-                const propertyPath = getFilterValuePropertyPath(filter);
-                if (!propertyPath) {
-                    console.log(`Cannot determine the property path of "${filter.path}".`);
-                    continue;
-                }
+            const rawValue = dotProp.get(record, filter.path);
+            // if (valuePath !== filter.path) {
+            //     /**
+            //      * Calculated is different other than the original because we need to search in the array of objects.
+            //      */
+            //     const propertyPath = getFilterValuePropertyPath(filter);
+            //     if (!propertyPath) {
+            //         console.log(`Cannot determine the property path of "${filter.path}".`);
+            //         continue;
+            //     }
+            //
+            //     const plainValue = await fromStorage<Record<string, string>[]>(
+            //         fields[filter.field.fieldId],
+            //         rawValue
+            //     );
+            //     /**
+            //      * We cannot go through the value because it is not array. Log the error and continue.
+            //      */
+            //     if (Array.isArray(plainValue) === false) {
+            //         console.log(
+            //             `Cannot go through the value on ${valuePath} because it is not an array, and we expect it to be.`
+            //         );
+            //         continue;
+            //     }
+            //     record = dotProp.set(record, valuePath, plainValue);
+            //
+            //     const values = plainValue.map(value => {
+            //         return value[propertyPath];
+            //     });
+            //
+            //     const result = execFilter({
+            //         value: values,
+            //         filter
+            //     });
+            //
+            //     if (!result) {
+            //         return null;
+            //     }
+            //     continue;
+            // }
 
-                const plainValue = await fromStorage<Record<string, string>[]>(
-                    fields[filter.fieldId],
-                    rawValue
-                );
-                /**
-                 * We cannot go through the value because it is not array. Log the error and continue.
-                 */
-                if (Array.isArray(plainValue) === false) {
-                    console.log(
-                        `Cannot go through the value on ${valuePath} because it is not an array, and we expect it to be.`
-                    );
-                    continue;
-                }
-                record = dotProp.set(record, valuePath, plainValue);
-
-                const values = plainValue.map(value => {
-                    return value[propertyPath];
-                });
-
-                const result = execFilter({
-                    value: values,
-                    filter
-                });
-
-                if (!result) {
-                    return null;
-                }
-                continue;
-            }
-
-            const plainValue = await fromStorage(fields[filter.fieldId], rawValue);
+            const plainValue = await fromStorage(fields[filter.field.fieldId], rawValue);
             /**
              * If raw value is not same as the value after the storage transform, set the value to the items being filtered.
              */
@@ -169,13 +164,14 @@ export const filter = async (params: Params): Promise<CmsEntry[]> => {
 
         return record;
     });
+
     /**
      * We run filtering as promises so it is a bit faster than in for ... of loop.
      */
     const results: (CmsEntry | null)[] = await Promise.all(promises);
+
     /**
      * And filter out the null values which are returned when filter is not satisfied.
      */
-
     return results.filter(Boolean) as CmsEntry[];
 };

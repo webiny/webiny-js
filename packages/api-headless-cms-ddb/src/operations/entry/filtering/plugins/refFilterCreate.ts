@@ -10,7 +10,7 @@ export const createRefFilterCreate = () => {
     return new CmsEntryFieldFilterPlugin({
         fieldType: "ref",
         create: params => {
-            const { value, plugins, field } = params;
+            const { value, valueFilterPlugins, transformValuePlugins, field } = params;
             const propertyFilters = Object.keys(value);
             if (propertyFilters.length === 0) {
                 return null;
@@ -23,13 +23,21 @@ export const createRefFilterCreate = () => {
                 if (!whereParams) {
                     continue;
                 }
-                const {
-                    fieldId: propertyId,
-                    operation: propertyOperation,
-                    negate: propertyNegate
-                } = whereParams;
+                const { fieldId: propertyId, operation: propertyOperation, negate } = whereParams;
 
-                const filterPlugin = plugins[propertyOperation];
+                const transformValuePlugin = transformValuePlugins[field.type];
+
+                const transformValueCallable = (value: any) => {
+                    if (!transformValuePlugin) {
+                        return value;
+                    }
+                    return transformValuePlugin.transform({
+                        field,
+                        value
+                    });
+                };
+
+                const filterPlugin = valueFilterPlugins[propertyOperation];
                 if (!filterPlugin) {
                     throw new WebinyError(
                         `Missing operation filter for "${propertyOperation}".`,
@@ -37,13 +45,18 @@ export const createRefFilterCreate = () => {
                     );
                 }
 
-                const multiValue = field.multipleValues ? ".*." : ".";
+                const paths = [
+                    field.createPath({
+                        field
+                    }),
+                    propertyId
+                ];
 
                 filters.push({
                     field,
-                    path: `${field.createPath({ field })}${multiValue}${propertyId}`,
+                    path: paths.join("."),
                     plugin: filterPlugin,
-                    negate: propertyNegate,
+                    negate,
                     compareValue: transformValue({
                         value: value[propertyFilter],
                         transform: transformValueCallable

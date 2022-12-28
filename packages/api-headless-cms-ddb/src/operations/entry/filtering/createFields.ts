@@ -90,13 +90,11 @@ export const createFields = (params: Params) => {
                     if (valuePathPlugin) {
                         return valuePathPlugin.createPath(params);
                     }
-                    const parentFieldId = parents
-                        .map(parent => {
-                            return `${parent.fieldId}${parent.multipleValues ? ".*" : ""}`;
-                        })
-                        .join(".");
 
-                    return `values.${parentFieldId}${params.field.fieldId}`;
+                    return ["values"]
+                        .concat(parents.map(parent => parent.fieldId))
+                        .concat([params.field.fieldId])
+                        .join(".");
                 },
                 transform: value => {
                     if (!transformPlugin) {

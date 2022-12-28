@@ -20,13 +20,20 @@ interface Values {
     options: ValuesOption[];
     variant: ValuesVariant;
 }
-export const createEntry = (): Pick<
-    CmsEntry<Values>,
-    "values" | "createdBy" | "createdOn" | "id"
-> => {
+
+type Result = Pick<CmsEntry<Values>, "id" | "createdBy" | "createdOn" | "values">;
+
+const createCreatedOn = (index: number) => {
+    const d = new Date();
+    d.setTime(d.getTime() + index * 1000 * 86400);
+
+    return d.toISOString();
+};
+
+export const createEntry = (index = 0): Result => {
     return {
-        id: "1234567890#0005",
-        createdOn: "2022-12-15T14:54:59Z",
+        id: `${index + 100000}#0001`,
+        createdOn: createCreatedOn(index),
         createdBy: {
             id: "userId",
             type: "admin",
@@ -34,18 +41,18 @@ export const createEntry = (): Pick<
         },
         values: {
             title: "Title",
-            options: Array.from({ length: 100 }).map((_, index) => {
+            options: Array.from({ length: 100 }).map((_, optionIndex) => {
                 return {
-                    title: `Option #${index + 1}`,
-                    value: index + 1
+                    title: `Option #${index + optionIndex + 1}`,
+                    value: index + optionIndex + 1
                 };
             }),
             variant: {
                 title: "Variant title",
                 specifications: [
                     {
-                        key: "Specification #1",
-                        value: "1",
+                        key: `Specification #${index}`,
+                        value: `${index + 100}`,
                         info: {
                             images: {
                                 files: ["image1.jpg", "image2.jpg", "image3.jpg", "image4.jpg"]
@@ -93,4 +100,10 @@ export const createEntry = (): Pick<
             }
         }
     };
+};
+
+export const createEntries = (amount: number) => {
+    return [...Array(amount)].map((_, index) => {
+        return createEntry(index);
+    });
 };

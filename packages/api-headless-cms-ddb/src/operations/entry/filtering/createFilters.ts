@@ -1,7 +1,6 @@
-import { CmsEntryListWhere, CmsModelField } from "@webiny/api-headless-cms/types";
+import { CmsEntryListWhere } from "@webiny/api-headless-cms/types";
 import { ValueFilterPlugin } from "@webiny/db-dynamodb/plugins/definitions/ValueFilterPlugin";
 import { CmsFieldFilterValueTransformPlugin } from "~/types";
-import { CmsEntryFieldFilterPathPlugin } from "~/plugins";
 import WebinyError from "@webiny/error";
 import { PluginsContainer } from "@webiny/plugins";
 import { Field } from "./types";
@@ -10,50 +9,24 @@ import { extractWhereParams } from "./where";
 import { transformValue } from "./transform";
 import { CmsEntryFieldFilterPlugin } from "~/plugins/CmsEntryFieldFilterPlugin";
 
-interface GetFilterPluginParams {
-    plugins: Record<string, ValueFilterPlugin>;
-    operation: string;
-}
-const getFilterPlugin = (params: GetFilterPluginParams) => {
-    const { plugins, operation } = params;
-    const plugin = plugins[operation];
-    if (plugin) {
-        return plugin;
-    }
-    throw new WebinyError(
-        `There is no filter plugin for operation "${operation}".`,
-        "FILTER_PLUGIN_ERROR",
-        {
-            operation
-        }
-    );
-};
-
-interface CreateValuePathParams {
-    field: Field;
-    plugins: Record<string, CmsEntryFieldFilterPathPlugin>;
-    index?: number;
-}
-const createValuePath = (params: CreateValuePathParams): string => {
-    const { field, plugins, index } = params;
-    const valuePathPlugin = plugins[field.type];
-
-    const result: string[] = [];
-    if (!valuePathPlugin || valuePathPlugin.canUse(field) === false) {
-        result.push(
-            field.createPath({
-                field
-            })
-        );
-        return result.filter(Boolean).join(".");
-    }
-    const path = valuePathPlugin.createPath({
-        field,
-        index
-    });
-    result.push(path);
-    return result.filter(Boolean).join(".");
-};
+// interface GetFilterPluginParams {
+//     plugins: Record<string, ValueFilterPlugin>;
+//     operation: string;
+// }
+// const getFilterPlugin = (params: GetFilterPluginParams) => {
+//     const { plugins, operation } = params;
+//     const plugin = plugins[operation];
+//     if (plugin) {
+//         return plugin;
+//     }
+//     throw new WebinyError(
+//         `There is no filter plugin for operation "${operation}".`,
+//         "FILTER_PLUGIN_ERROR",
+//         {
+//             operation
+//         }
+//     );
+// };
 
 interface CreateFiltersParams {
     plugins: PluginsContainer;
@@ -74,40 +47,40 @@ export interface ItemFilter {
  * In case filter field is not multiple values one, return exact path.
  * If is multiple values field, use path without the last part
  */
-export const getFilterValuePath = (filter: ItemFilter): string => {
-    if (filter.path.includes(".%s.") === false) {
-        return filter.path;
-    }
-    const paths = filter.path.split(".%s.");
-    return paths.shift() as string;
-};
+// export const getFilterValuePath = (filter: ItemFilter): string => {
+//     if (filter.path.includes(".%s.") === false) {
+//         return filter.path;
+//     }
+//     const paths = filter.path.split(".%s.");
+//     return paths.shift() as string;
+// };
 
-export const getFilterValuePropertyPath = (filter: ItemFilter): string | null => {
-    if (filter.path.includes(".%s.") === false) {
-        return null;
-    }
-    const paths = filter.path.split(".%s.");
-    return paths.pop() || null;
-};
+// export const getFilterValuePropertyPath = (filter: ItemFilter): string | null => {
+//     if (filter.path.includes(".%s.") === false) {
+//         return null;
+//     }
+//     const paths = filter.path.split(".%s.");
+//     return paths.pop() || null;
+// };
 
-interface ObjectFilteringParams {
-    key: string;
-    field: Pick<CmsModelField, "id">;
-    value: any;
-}
-const isObjectFiltering = (params: ObjectFilteringParams): boolean => {
-    const { value } = params;
-    if (!value) {
-        return false;
-    } else if (Array.isArray(value) === true) {
-        return false;
-    } else if (value instanceof Date || !!value.toISOString) {
-        return false;
-    } else if (typeof value !== "object") {
-        return false;
-    }
-    return true;
-};
+// interface ObjectFilteringParams {
+//     key: string;
+//     field: Pick<CmsModelField, "id">;
+//     value: any;
+// }
+// const isObjectFiltering = (params: ObjectFilteringParams): boolean => {
+//     const { value } = params;
+//     if (!value) {
+//         return false;
+//     } else if (Array.isArray(value) === true) {
+//         return false;
+//     } else if (value instanceof Date || !!value.toISOString) {
+//         return false;
+//     } else if (typeof value !== "object") {
+//         return false;
+//     }
+//     return true;
+// };
 
 export const createFilters = (params: CreateFiltersParams): ItemFilter[] => {
     const { where, plugins, fields } = params;
@@ -121,11 +94,6 @@ export const createFilters = (params: CreateFiltersParams): ItemFilter[] => {
         type: "cms-field-filter-value-transform",
         property: "fieldType"
     });
-    const valuePathPlugins = getMappedPlugins<CmsEntryFieldFilterPathPlugin>({
-        plugins,
-        type: CmsEntryFieldFilterPathPlugin.type,
-        property: "fieldType"
-    });
     const fieldFilterCreatePlugins = getMappedPlugins<CmsEntryFieldFilterPlugin>({
         plugins,
         type: CmsEntryFieldFilterPlugin.type,
@@ -134,6 +102,20 @@ export const createFilters = (params: CreateFiltersParams): ItemFilter[] => {
 
     const defaultFilterCreatePlugin = fieldFilterCreatePlugins["*"] as CmsEntryFieldFilterPlugin;
 
+    const getFilterCreatePlugin = (type: string) => {
+        const filterCreatePlugin = fieldFilterCreatePlugins[type] || defaultFilterCreatePlugin;
+        if (filterCreatePlugin) {
+            return filterCreatePlugin;
+        }
+        throw new WebinyError(
+            `There is no filter create plugin for the field type "${type}".`,
+            "MISSING_FILTER_CREATE_PLUGIN",
+            {
+                type
+            }
+        );
+    };
+
     const filters: ItemFilter[] = [];
 
     for (const key in where) {
@@ -141,7 +123,7 @@ export const createFilters = (params: CreateFiltersParams): ItemFilter[] => {
             continue;
         }
         /**
-         * At the moment we do not allow OR and AND conditional filtering, so throw an error on it.
+         * At the moment we do not allow "OR" and "AND" conditional filtering, so throw an error on it.
          */
         if (key === "AND") {
             throw new WebinyError(
@@ -182,17 +164,7 @@ export const createFilters = (params: CreateFiltersParams): ItemFilter[] => {
          * We need a filter create plugin for this type.
          */
 
-        const filterCreatePlugin =
-            fieldFilterCreatePlugins[field.type] || defaultFilterCreatePlugin;
-        if (!filterCreatePlugin) {
-            throw new WebinyError(
-                `There is no filter create plugin for the field type "${field.type}".`,
-                "MISSING_FILTER_CREATE_PLUGIN",
-                {
-                    type: field.type
-                }
-            );
-        }
+        const filterCreatePlugin = getFilterCreatePlugin(field.type);
 
         const transformValuePlugin: CmsFieldFilterValueTransformPlugin =
             transformValuePlugins[field.type];
@@ -207,66 +179,70 @@ export const createFilters = (params: CreateFiltersParams): ItemFilter[] => {
             });
         };
 
-        const objectFilteringParams = {
-            key,
-            value,
-            field
-        };
+        // const objectFilteringParams = {
+        //     key,
+        //     value,
+        //     field
+        // };
 
         /**
          * In case of the ref field, we need to create a filter a bit differently.
          */
 
-        if (isObjectFiltering(objectFilteringParams)) {
-            const propertyFilters = Object.keys(value);
-            if (propertyFilters.length === 0) {
-                continue;
-            }
-            for (const propertyFilter of propertyFilters) {
-                const whereParams = extractWhereParams(propertyFilter);
-                if (!whereParams) {
-                    continue;
-                }
-                const {
-                    fieldId: propertyId,
-                    operation: propertyOperation,
-                    negate: propertyNegate
-                } = whereParams;
+        // if (isObjectFiltering(objectFilteringParams)) {
+        //     const propertyFilters = Object.keys(value);
+        //     if (propertyFilters.length === 0) {
+        //         continue;
+        //     }
+        //     for (const propertyFilter of propertyFilters) {
+        //         const whereParams = extractWhereParams(propertyFilter);
+        //         if (!whereParams) {
+        //             continue;
+        //         }
+        //         const {
+        //             fieldId: propertyId,
+        //             operation: propertyOperation,
+        //             negate: propertyNegate
+        //         } = whereParams;
+        //
+        //         const filterPlugin = getFilterPlugin({
+        //             plugins: filterPlugins,
+        //             operation: propertyOperation
+        //         });
+        //
+        //         const paths = [
+        //             field.createPath({
+        //                 field
+        //             }),
+        //             propertyId
+        //         ];
+        //
+        //         filters.push({
+        //             field,
+        //             path: paths.join("."),
+        //             plugin: filterPlugin,
+        //             negate: propertyNegate,
+        //             compareValue: transformValue({
+        //                 value: value[propertyFilter],
+        //                 transform: transformValueCallable
+        //             }),
+        //             transformValue: transformValueCallable
+        //         });
+        //     }
+        //
+        //     continue;
+        // }
 
-                const filterPlugin = getFilterPlugin({
-                    plugins: filterPlugins,
-                    operation: propertyOperation
-                });
-
-                const multiValue = field.multipleValues ? ".*." : ".";
-
-                filters.push({
-                    fieldId,
-                    path: `${field.createPath({ field })}${multiValue}${propertyId}`,
-                    filterPlugin,
-                    negate: propertyNegate,
-                    compareValue: transformValue({
-                        value: value[propertyFilter],
-                        transform: transformValueCallable
-                    }),
-                    transformValue: transformValueCallable
-                });
-            }
-
-            continue;
-        }
-
-        // const filterPlugin = getFilterPlugin({
-        //     plugins: filterPlugins,
-        //     operation
-        // });
         const result = filterCreatePlugin.create({
             key,
             value,
-            plugins: filterPlugins,
+            valueFilterPlugins: filterPlugins,
+            transformValuePlugins,
+            getFilterCreatePlugin,
             operation,
             negate,
             field,
+            fields,
             compareValue: transformValue({
                 value,
                 transform: transformValueCallable
