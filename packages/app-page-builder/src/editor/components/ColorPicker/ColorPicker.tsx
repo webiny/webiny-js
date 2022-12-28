@@ -1,3 +1,4 @@
+// @ts-nocheck TODO: WILL BE HANDLED IN A UPCOMING PR.
 import React, { useState, useCallback } from "react";
 import classnames from "classnames";
 import styled from "@emotion/styled";
