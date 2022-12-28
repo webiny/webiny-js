@@ -9,12 +9,3 @@ export const Container = styled("div")`
     left: 0;
     z-index: 1;
 `;
-
-export const ButtonContainer = styled("div")`
-    display: flex;
-    justify-content: flex-end;
-
-    > button {
-        margin-right: 8px;
-    }
-`;
