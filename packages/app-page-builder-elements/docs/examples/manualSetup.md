@@ -1,166 +1,138 @@
 # Manual Setup
 
-An example of manually setting up the `PageElementsProvider`, with all of the default renderers and modifiers. Useful when rendering pages in an external project, for example in a standalone Next.js application.
+An example of manually setting up the `PageElementsProvider`, with all of the default renderers and modifiers. Useful
+when rendering pages in an external project, for example in a standalone Next.js application.
 
-```ts
-// apps/theme/pageBuilder/theme.ts
-import { createTheme } from "@webiny/app-page-builder-theme";
-import { CSSObject } from "@emotion/core";
+```tsx
+import React from "react";
+import { PageElementsProvider as PbPageElementsProvider } from "@webiny/app-page-builder-elements/PageElements";
 
-// Breakpoints.
-export const breakpoints = {
-    desktop: "@media (max-width: 4000px)",
-    tablet: "@media (max-width: 991px)",
-    "mobile-landscape": "@media (max-width: 767px)",
-    "mobile-portrait": "@media (max-width: 478px)"
-};
+// Elements.
+import { createBlock } from "@webiny/app-page-builder-elements/renderers/block";
+import { createButton } from "@webiny/app-page-builder-elements/renderers/button";
+import { createCell } from "@webiny/app-page-builder-elements/renderers/cell";
+import { createDocument } from "@webiny/app-page-builder-elements/renderers/document";
+import { createGrid } from "@webiny/app-page-builder-elements/renderers/grid";
+import { createHeading } from "@webiny/app-page-builder-elements/renderers/heading";
+import { createList } from "@webiny/app-page-builder-elements/renderers/list";
+import { createIcon } from "@webiny/app-page-builder-elements/renderers/icon";
+import { createImage } from "@webiny/app-page-builder-elements/renderers/image";
 
-// Colors.
-export const colors = {
-    color1: "#fa5723", // primary
-    color2: "#00ccb0", // secondary
-    color3: "#0a0a0a", // text primary
-    color4: "#eaecec", // background
-    color5: "#ffffff", // white background
-    color6: "#616161" // text secondary
-};
+import { createPagesList } from "@webiny/app-page-builder-elements/renderers/pagesList";
+import { createDefaultDataLoader } from "@webiny/app-page-builder-elements/renderers/pagesList/dataLoaders";
+import { createDefaultPagesListComponent } from "@webiny/app-page-builder-elements/renderers/pagesList/pagesListComponents";
 
-// Fonts.
-export const fonts = {
-    font1: "'IBM Plex Sans', sans-serif;", // Primary.
-    font2: "'Lato', sans-serif;" // Secondary.
-};
+import { createParagraph } from "@webiny/app-page-builder-elements/renderers/paragraph";
+import { createQuote } from "@webiny/app-page-builder-elements/renderers/quote";
 
-// Border radius.
-export const borderRadius = 4;
+import { createTwitter } from "@webiny/app-page-builder-elements/renderers/embeds/twitter";
+import { createPinterest } from "@webiny/app-page-builder-elements/renderers/embeds/pinterest";
+import { createCodesandbox } from "@webiny/app-page-builder-elements/renderers/embeds/codesandbox";
+import { createSoundcloud } from "@webiny/app-page-builder-elements/renderers/embeds/soundcloud";
+import { createYoutube } from "@webiny/app-page-builder-elements/renderers/embeds/youtube";
+import { createVimeo } from "@webiny/app-page-builder-elements/renderers/embeds/vimeo";
 
-// Typography.
-const headings = {
-    fontFamily: fonts.font2,
-    color: colors.color3,
-    WebkitFontSmoothing: "antialiased"
-};
+// Attributes modifiers.
+import { createId } from "@webiny/app-page-builder-elements/modifiers/attributes/id";
+import { createClassName } from "@webiny/app-page-builder-elements/modifiers/attributes/className";
+import { createDataElementType } from "@webiny/app-page-builder-elements/modifiers/attributes/dataElementType";
 
-const paragraphs = {
-    fontFamily: fonts.font1,
-    color: colors.color3,
-    fontWeight: 400,
-    lineHeight: "1.5rem",
-    WebkitFontSmoothing: "antialiased"
-};
+// Styles modifiers.
+import { createBackground } from "@webiny/app-page-builder-elements/modifiers/styles/background";
+import { createBorder } from "@webiny/app-page-builder-elements/modifiers/styles/border";
+import { createHeight } from "@webiny/app-page-builder-elements/modifiers/styles/height";
+import { createHorizontalAlign } from "@webiny/app-page-builder-elements/modifiers/styles/horizontalAlign";
+import { createMargin } from "@webiny/app-page-builder-elements/modifiers/styles/margin";
+import { createPadding } from "@webiny/app-page-builder-elements/modifiers/styles/padding";
+import { createShadow } from "@webiny/app-page-builder-elements/modifiers/styles/shadow";
+import { createText } from "@webiny/app-page-builder-elements/modifiers/styles/text";
+import { createTextAlign } from "@webiny/app-page-builder-elements/modifiers/styles/textAlign";
+import { createVerticalAlign } from "@webiny/app-page-builder-elements/modifiers/styles/verticalAlign";
+import { createVisiblity } from "@webiny/app-page-builder-elements/modifiers/styles/visibility";
+import { createWidth } from "@webiny/app-page-builder-elements/modifiers/styles/width";
 
-export const typography = {
-    heading1: { ...headings, fontWeight: "bold", fontSize: 48 },
-    heading2: { ...headings, fontSize: 36 },
-    heading3: { ...headings, fontSize: 30 },
-    heading4: { ...headings, fontSize: 24 },
-    heading5: { ...headings, fontSize: 20 },
-    heading6: { ...headings, fontSize: 18, lineHeight: "1.75rem" },
-    paragraph1: { ...paragraphs, fontSize: 16.5 },
-    paragraph2: {
-        ...paragraphs,
-        fontSize: 12.5,
-        letterSpacing: "0.45px",
-        lineHeight: "19px"
-    },
-    quote: {
-        ...paragraphs,
-        fontWeight: "bold",
-        fontSize: 22
-    },
-    list: { ...paragraphs, fontSize: 17 }
-};
+// A theme object. For more info, see:
+// https://github.com/webiny/webiny-js/tree/dev/packages/app-page-builder-theme
+import { theme } from "./theme";
 
-// Buttons.
-const buttons = (overrides: CSSObject) => ({
-    a: { textDecoration: "none" },
-    ".button-body": {
-        borderRadius,
-        padding: "14px 20px",
-        fontFamily: fonts.font1,
-        textTransform: "uppercase",
-        display: "flex",
-        alignItems: "center",
-        fontSize: "14px",
-        fontWeight: 600,
-        justifyContent: "center",
-        textAlign: "center",
-        cursor: "pointer",
-        transition: "all .2s",
-        "&:hover": {
-            boxShadow: "0 7px 14px rgb(50 50 93 / 10%), 0 3px 6px rgb(0 0 0 / 8%)",
-            transform: "translateY(-1px)"
-        },
-        ...overrides
-    }
-});
-
-// Theme object.
-const theme = createTheme({
-    breakpoints,
-    styles: {
-        colors,
-        typography,
-        elements: {
-            document: {
-                a: { color: colors.color1 }
-            },
-            quote: {
-                "blockquote > q": {
-                    quotes: "auto",
-                    "&:before": { content: "open-quote" },
-                    "&:after": { content: "close-quote" }
-                }
-            },
-            button: {
-                default: buttons({ background: colors.color4, color: colors.color3 }),
-                primary: buttons({ background: colors.color1, color: colors.color5 }),
-                secondary: buttons({ background: colors.color2, color: colors.color5 }),
-                outlinePrimary: buttons({
-                    border: `2px solid ${colors.color1}`,
-                    color: colors.color1
-                }),
-                outlineSecondary: buttons({
-                    border: `2px solid ${colors.color2}`,
-                    color: colors.color2
-                }),
-                simple: buttons({
-                    color: colors.color1,
-                    "&:hover": { transform: "translateY(-1px)" }
-                })
-            },
-
-            list: {
-                li: {
-                    marginBottom: "12px",
-                    marginLeft: "1.875rem",
-                    position: "relative",
-                    "&:before,&:after": {
-                        position: "absolute",
-                        content: '""',
-                        borderRadius: "50%"
-                    },
-                    "&:before": {
-                        backgroundColor: "#90c418",
-                        height: "1.25rem",
-                        width: "1.25rem",
-                        left: "-1.875rem",
-                        top: "0.125rem"
-                    },
-                    "&:after": {
-                        backgroundColor: "#ffffff",
-                        height: "0.5rem",
-                        left: "-1.5rem",
-                        top: "0.5rem",
-                        width: "0.5rem"
-                    }
-                }
-            },
-            grid: { "mobile-landscape": { flexWrap: "wrap" } },
-            cell: { tablet: { width: "100% !important" } }
+export const PageElementsProvider: React.FC = ({ children }) => (
+  <PbPageElementsProvider
+    theme={theme}
+    renderers={{
+      block: createBlock(),
+      button: createButton({
+        clickHandlers: [
+          {
+            id: "myHandler1",
+            name: "My Handler 1",
+            variables: [
+              { name: "myVarName", label: "My Var Label", defaultValue: "My Default Value" }
+            ],
+            handler: (params: any) => {
+              console.log("variable myVarName", params["myVarName"]);
+            }
+          },
+          {
+            id: "myHandler2",
+            name: "My Handler 2",
+            handler: () => {
+              alert("Alert!");
+            }
+          }
+        ]
+      }),
+      cell: createCell(),
+      document: createDocument(),
+      grid: createGrid(),
+      heading: createHeading(),
+      list: createList(),
+      icon: createIcon(),
+      image: createImage(),
+      paragraph: createParagraph(),
+      quote: createQuote(),
+      twitter: createTwitter(),
+      pinterest: createPinterest(),
+      codesandbox: createCodesandbox(),
+      soundcloud: createSoundcloud(),
+      youtube: createYoutube(),
+      vimeo: createVimeo(),
+      "pages-list": createPagesList({
+        dataLoader: createDefaultDataLoader({
+          apiUrl: process.env.MY_WEBINY_GRAPHQL_API_URL,
+          includeHeaders: {
+            "x-tenant": "root"
+          }
+        }),
+        pagesListComponents: {
+          default: createDefaultPagesListComponent(),
+          default2: createDefaultPagesListComponent(),
+          default3: createDefaultPagesListComponent()
         }
-    }
-});
-
-export default theme;
+      })
+    }}
+    modifiers={{
+      attributes: {
+        dataElementType: createDataElementType(),
+        id: createId(),
+        className: createClassName()
+      },
+      styles: {
+        background: createBackground(),
+        border: createBorder(),
+        height: createHeight(),
+        horizontalAlign: createHorizontalAlign(),
+        margin: createMargin(),
+        text: createText(),
+        textAlign: createTextAlign(),
+        padding: createPadding(),
+        shadow: createShadow(),
+        verticalAlign: createVerticalAlign(),
+        visibility: createVisiblity(),
+        width: createWidth()
+      }
+    }}
+  >
+    {children}
+  </PbPageElementsProvider>
+);
 ```

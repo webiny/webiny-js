@@ -13,8 +13,8 @@ A small package that provides all the tools necessary to render pages created wi
 - [Overview](#overview)
 - [Examples](#examples)
 - [Reference](#reference)
-    - [Functions](#functions)
-        - [`createTheme`](#createTheme)
+  - [Functions](#functions)
+    - [`createTheme`](#createTheme)
 
 ## Installation
 
@@ -41,42 +41,60 @@ cell, or grid, but also the necessary utilities to create new ones.
 ## Examples
 
 | Example                                        | Description                                                                                                                                                                                                         |
-|------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [Manual Setup](./docs/examples/manualSetup.md) | An example of manually setting up the `PageElementsProvider`, with all of the default renderers and modifiers. Useful when rendering pages in an external project, for example in a standalone Next.js application. |
 
 ## Reference
 
-### Functions
+### Components
 
-#### `createTheme`
+#### `PageElementsProvider`
 
 <details>
 <summary>Type Declaration</summary>
 <p>
 
 ```ts
-export declare const createTheme: (theme: Theme) => Theme;
+export declare const PageElementsProvider: React.FC<PageElementsProviderProps>;
 ```
 
 </p>
 </details>
 
-Creates a new theme object.
+Sets up all the page element renderers and modifiers. Must be mounted at the beginning of your React application.
 
-```ts
-import {createTheme} from "@webiny/app-page-builder-elements";
+```tsx
+import React from "react";
+import { PageElementsProvider as PbPageElementsProvider } from "@webiny/app-page-builder-elements/PageElements";
 
-const theme = createTheme({
-    breakpoints: {
-        desktop: "@media (max-width: 4000px)",
-        tablet: "@media (max-width: 991px)",
-        "mobile-landscape": "@media (max-width: 767px)",
-        "mobile-portrait": "@media (max-width: 478px)"
-    },
-    styles: {
-        colors: {...},
-        typography: {...},
-        elements: {...}
+// Import element renderers.
+// ( ... )
+
+// Import modifiers.
+// ( ... )
+
+// A theme object. For more info, see:
+// https://github.com/webiny/webiny-js/tree/dev/packages/app-page-builder-theme
+import { theme } from "./theme";
+
+export const PageElementsProvider: React.FC = ({ children }) => (
+  <PbPageElementsProvider
+    theme={theme}
+    renderers={
+      {
+        /* ... */
+      }
     }
-});
+    modifiers={{
+      attributes: {
+        /* ... */
+      },
+      styles: {
+        /* ... */
+      }
+    }}
+  >
+    {children}
+  </PbPageElementsProvider>
+);
 ```
