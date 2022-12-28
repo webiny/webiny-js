@@ -13,15 +13,51 @@ import {
 } from "../../elementSettings/components/StyledComponents";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { BindComponent } from "@webiny/form";
+import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
+import { PagesListRenderer } from "@webiny/app-page-builder-elements/renderers/pagesList";
+import { isLegacyRenderingEngine } from "~/utils";
+import { PagesListComponent } from "@webiny/app-page-builder-elements/renderers/pagesList";
 
 interface PagesListDesignSettingsProps {
     Bind: BindComponent;
     submit: (event: React.MouseEvent) => void;
 }
+
 const PagesListDesignSettings: React.FC<PagesListDesignSettingsProps> = ({ Bind, submit }) => {
-    const components = plugins.byType<PbPageElementPagesListComponentPlugin>(
-        "pb-page-element-pages-list-component"
-    );
+    let components: Array<{
+        name?: string;
+        title: string;
+        componentName: string;
+    }> = [];
+
+    if (!isLegacyRenderingEngine) {
+        const { renderers } = usePageElements();
+        const PagesList = renderers?.["pages-list"] as PagesListRenderer;
+        // @ts-ignore
+        const pagesListRendererParams = PagesList?.params;
+        if (pagesListRendererParams?.pagesListComponents) {
+            const pagesListComponents = pagesListRendererParams?.pagesListComponents;
+
+            let pagesListComponentsList: PagesListComponent[];
+            if (typeof pagesListComponents === "function") {
+                pagesListComponentsList = pagesListComponents();
+            } else {
+                pagesListComponentsList = pagesListComponents;
+            }
+
+            components = pagesListComponentsList.map(item => {
+                return {
+                    title: item.name,
+                    name: item.name,
+                    componentName: item.id
+                };
+            });
+        }
+    } else {
+        components = plugins.byType<PbPageElementPagesListComponentPlugin>(
+            "pb-page-element-pages-list-component"
+        );
+    }
 
     return (
         <Accordion title={"Design"} defaultValue={true}>
@@ -72,5 +108,4 @@ const PagesListDesignSettings: React.FC<PagesListDesignSettingsProps> = ({ Bind,
         </Accordion>
     );
 };
-
 export default PagesListDesignSettings;

@@ -1,33 +1,19 @@
 import React from "react";
-import classNames from "classnames";
-import Text from "../../../components/Text";
-import { PbEditorTextElementProps } from "~/types";
-import { getMediumEditorOptions } from "../utils/textUtils";
+import { MediumEditorOptions, PbEditorElement } from "~/types";
+import PeQuote from "./PeQuote";
+import PbQuote from "./PbQuote";
+import { isLegacyRenderingEngine } from "~/utils";
 
-export const className = classNames(
-    "webiny-pb-base-page-element-style webiny-pb-page-element-text"
-);
+interface QuoteProps {
+    element: PbEditorElement;
+    mediumEditorOptions?: MediumEditorOptions;
+}
 
-const DEFAULT_EDITOR_OPTIONS = {
-    toolbar: {
-        buttons: ["bold", "italic", "underline", "anchor", "quote"]
-    },
-    anchor: {
-        targetCheckbox: true,
-        targetCheckboxText: "Open in a new tab"
+const Quote: React.FC<QuoteProps> = props => {
+    if (isLegacyRenderingEngine) {
+        return <PbQuote {...props} elementId={props.element.id} />;
     }
+    return <PeQuote {...props} />;
 };
 
-const Quote: React.FC<PbEditorTextElementProps> = ({ elementId, mediumEditorOptions }) => {
-    return (
-        <Text
-            elementId={elementId}
-            mediumEditorOptions={getMediumEditorOptions(
-                DEFAULT_EDITOR_OPTIONS,
-                mediumEditorOptions
-            )}
-            rootClassName={className}
-        />
-    );
-};
 export default React.memo(Quote);
