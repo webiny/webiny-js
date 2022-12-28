@@ -1,6 +1,6 @@
 import React, { useEffect, useCallback } from "react";
-import { css } from "emotion";
 import { Element } from "~/types";
+import styled from "@emotion/styled";
 
 export interface OEmbedPropsInitCallableParams {
     props: OEmbedProps;
@@ -46,7 +46,7 @@ function initEmbed(props: OEmbedProps): void {
     }
 }
 
-const centerAlign = css({
+const CenterAlign = styled.div({
     "*:first-of-type": {
         marginLeft: "auto !important",
         marginRight: "auto !important"
@@ -63,9 +63,8 @@ export const OEmbed: React.FC<OEmbedProps> = props => {
         }
 
         return (
-            <div
+            <CenterAlign
                 id={element.id}
-                className={centerAlign}
                 dangerouslySetInnerHTML={{ __html: element?.data?.oembed?.html || "" }}
             />
         );
