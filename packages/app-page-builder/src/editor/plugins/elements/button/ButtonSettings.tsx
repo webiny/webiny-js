@@ -3,7 +3,7 @@ import { useRecoilValue } from "recoil";
 import { css } from "emotion";
 import { usePageBuilder } from "~/hooks/usePageBuilder";
 import { activeElementAtom, elementWithChildrenByIdSelector } from "../../../recoil/modules";
-import {PbEditorElement, PbEditorPageElementSettingsRenderComponentProps, PbTheme} from "~/types";
+import { PbEditorElement, PbEditorPageElementSettingsRenderComponentProps, PbTheme } from "~/types";
 // Components
 import IconPickerComponent from "../../../components/IconPicker";
 import Accordion from "../../elementSettings/components/Accordion";
