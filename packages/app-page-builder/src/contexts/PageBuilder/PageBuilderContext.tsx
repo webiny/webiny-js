@@ -1,6 +1,10 @@
 import * as React from "react";
 import { plugins } from "@webiny/plugins";
-import { DisplayMode, PbTheme, PbThemePlugin } from "~/types";
+import { DisplayMode, PbTheme, PbThemePlugin as PbThemePluginType } from "~/types";
+import { isLegacyRenderingEngine } from "~/utils";
+import { PbThemePlugin } from "~/plugins";
+import { Theme } from "@webiny/app-page-builder-theme/types";
+import { PageElementsProvider } from "./PageElementsProvider";
 
 export interface ResponsiveDisplayMode {
     displayMode: DisplayMode;
@@ -13,7 +17,7 @@ export interface ExportPageData {
 }
 
 export interface PageBuilderContextValue {
-    theme: PbTheme;
+    theme: Theme | PbTheme;
     defaults?: {
         pages?: {
             notFound?: React.ComponentType<any>;
@@ -55,11 +59,27 @@ export const PageBuilderProvider: React.FC<PageBuilderProviderProps> = ({ childr
     const [displayMode, setDisplayMode] = React.useState(DisplayMode.DESKTOP);
     const [revisionType, setRevisionType] = React.useState("published");
 
+    let childrenToRender = children;
+    if (!isLegacyRenderingEngine) {
+        // With the new page elements rendering engine, we also want to include the configured `PageElementsProvider`.
+        childrenToRender = <PageElementsProvider>{childrenToRender}</PageElementsProvider>;
+    }
+
     return (
         <PageBuilderContext.Provider
             value={{
                 get theme() {
-                    const [themePlugin] = plugins.byType<PbThemePlugin>("pb-theme");
+                    let themePlugin;
+                    if (isLegacyRenderingEngine) {
+                        const [firstThemePlugin] = plugins.byType<PbThemePluginType>("pb-theme");
+                        themePlugin = firstThemePlugin;
+                    } else {
+                        const [firstThemePlugin] = plugins.byType<PbThemePlugin>(
+                            PbThemePlugin.type
+                        );
+                        themePlugin = firstThemePlugin;
+                    }
+
                     if (!themePlugin) {
                         throw new Error(
                             "Theme plugin does not exist. Make sure that at least one plugin is loaded."
@@ -77,7 +97,7 @@ export const PageBuilderProvider: React.FC<PageBuilderProviderProps> = ({ childr
                 }
             }}
         >
-            {children}
+            {childrenToRender}
         </PageBuilderContext.Provider>
     );
 };
