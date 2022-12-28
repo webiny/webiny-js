@@ -41,5 +41,11 @@ export default {
                 return [];
             }
         }
+    },
+    appAliases: {
+        core: "apps/core",
+        api: "apps/api",
+        admin: "apps/admin",
+        website: "apps/website"
     }
 };
