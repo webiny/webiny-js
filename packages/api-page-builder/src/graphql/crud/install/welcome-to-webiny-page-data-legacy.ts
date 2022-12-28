@@ -34,7 +34,7 @@ interface PreparePageDataParams {
  * Too complex to handle atm.
  */
 // TODO @ts-refactor figure type for the content
-export const preparePageData = ({
+export const preparePageDataLegacy = ({
     srcPrefix,
     fileIdToFileMap
 }: PreparePageDataParams): Record<string, any> => {
@@ -247,16 +247,17 @@ export const preparePageData = ({
                                             text: {
                                                 desktop: {
                                                     type: "heading",
-                                                    typography: "heading1",
+                                                    typography: "webiny-pb-typography-heading",
                                                     alignment: "center",
                                                     tag: "h1",
-                                                    color: "color5"
+                                                    color: "var(--webiny-theme-color-surface)"
                                                 },
                                                 data: { text: "<b>Welcome to Webiny</b>" }
                                             },
                                             settings: {
                                                 margin: { desktop: { all: "0px" } },
-                                                padding: { desktop: { all: "0px" } }
+                                                padding: { desktop: { all: "0px" } },
+                                                horizontalAlign: { desktop: "center" }
                                             }
                                         },
                                         elements: []
@@ -321,10 +322,10 @@ export const preparePageData = ({
                                             text: {
                                                 desktop: {
                                                     type: "paragraph",
-                                                    typography: "paragraph1",
+                                                    typography: "webiny-pb-typography-body",
                                                     alignment: "center",
                                                     tag: "div",
-                                                    color: "color5"
+                                                    color: "var(--webiny-theme-color-surface)"
                                                 },
                                                 data: {
                                                     text: "<p>Webiny makes it easy to build applications and websites on top of the serverless infrastructure by providing you with a ready-made CMS and a development framework.<br></p>"
@@ -438,16 +439,17 @@ export const preparePageData = ({
                                             text: {
                                                 desktop: {
                                                     type: "heading",
-                                                    typography: "heading6",
+                                                    typography: "webiny-pb-typography-heading",
                                                     alignment: "center",
                                                     tag: "h6",
-                                                    color: "color5"
+                                                    color: "var(--webiny-theme-color-surface)"
                                                 },
                                                 data: { text: "Scalable" }
                                             },
                                             settings: {
                                                 margin: { desktop: { all: "0px" } },
-                                                padding: { desktop: { all: "0px" } }
+                                                padding: { desktop: { all: "0px" } },
+                                                horizontalAlign: { desktop: "center" }
                                             }
                                         },
                                         elements: []
@@ -459,10 +461,10 @@ export const preparePageData = ({
                                             text: {
                                                 desktop: {
                                                     type: "paragraph",
-                                                    typography: "paragraph2",
+                                                    typography: "webiny-pb-typography-description",
                                                     alignment: "center",
                                                     tag: "div",
-                                                    color: "color5"
+                                                    color: "var(--webiny-theme-color-surface)"
                                                 },
                                                 data: {
                                                     text: "<p>Webiny apps can scale to handle the most demanding workloads.<br></p>"
@@ -527,16 +529,17 @@ export const preparePageData = ({
                                             text: {
                                                 desktop: {
                                                     type: "heading",
-                                                    typography: "heading6",
+                                                    typography: "webiny-pb-typography-heading",
                                                     alignment: "center",
                                                     tag: "h6",
-                                                    color: "color5"
+                                                    color: "var(--webiny-theme-color-surface)"
                                                 },
                                                 data: { text: "No custom tooling required" }
                                             },
                                             settings: {
                                                 margin: { desktop: { all: "0px" } },
-                                                padding: { desktop: { all: "0px" } }
+                                                padding: { desktop: { all: "0px" } },
+                                                horizontalAlign: { desktop: "center" }
                                             }
                                         },
                                         elements: []
@@ -548,10 +551,10 @@ export const preparePageData = ({
                                             text: {
                                                 desktop: {
                                                     type: "paragraph",
-                                                    typography: "paragraph2",
+                                                    typography: "webiny-pb-typography-description",
                                                     alignment: "center",
                                                     tag: "div",
-                                                    color: "color5"
+                                                    color: "var(--webiny-theme-color-surface)"
                                                 },
                                                 data: {
                                                     text: "<p>Webiny eliminates the need to build custom tooling to create serverless app<br></p>"
@@ -653,16 +656,17 @@ export const preparePageData = ({
                                             text: {
                                                 desktop: {
                                                     type: "heading",
-                                                    typography: "heading6",
+                                                    typography: "webiny-pb-typography-heading",
                                                     alignment: "center",
                                                     tag: "h6",
-                                                    color: "color5"
+                                                    color: "var(--webiny-theme-color-surface)"
                                                 },
                                                 data: { text: "Cost effective" }
                                             },
                                             settings: {
                                                 margin: { desktop: { all: "0px" } },
-                                                padding: { desktop: { all: "0px" } }
+                                                padding: { desktop: { all: "0px" } },
+                                                horizontalAlign: { desktop: "center" }
                                             }
                                         },
                                         elements: []
@@ -674,10 +678,10 @@ export const preparePageData = ({
                                             text: {
                                                 desktop: {
                                                     type: "paragraph",
-                                                    typography: "paragraph2",
+                                                    typography: "webiny-pb-typography-description",
                                                     alignment: "center",
                                                     tag: "div",
-                                                    color: "color5"
+                                                    color: "var(--webiny-theme-color-surface)"
                                                 },
                                                 data: {
                                                     text: "<p>Webiny apps run on serverless infrastructure which costs 80% less than VMs<br></p>"
@@ -743,16 +747,17 @@ export const preparePageData = ({
                                             text: {
                                                 desktop: {
                                                     type: "heading",
-                                                    typography: "heading_",
+                                                    typography: "webiny-pb-typography-heading",
                                                     alignment: "center",
                                                     tag: "h6",
-                                                    color: "color5"
+                                                    color: "var(--webiny-theme-color-surface)"
                                                 },
                                                 data: { text: "Resolves serverless challenges" }
                                             },
                                             settings: {
                                                 margin: { desktop: { all: "0px" } },
-                                                padding: { desktop: { all: "0px" } }
+                                                padding: { desktop: { all: "0px" } },
+                                                horizontalAlign: { desktop: "center" }
                                             }
                                         },
                                         elements: []
@@ -764,10 +769,10 @@ export const preparePageData = ({
                                             text: {
                                                 desktop: {
                                                     type: "paragraph",
-                                                    typography: "paragraph2",
+                                                    typography: "webiny-pb-typography-description",
                                                     alignment: "center",
                                                     tag: "div",
-                                                    color: "color5"
+                                                    color: "var(--webiny-theme-color-surface)"
                                                 },
                                                 data: {
                                                     text: "<p>Webiny removes all the challenges of building serverless applications<br></p>"
@@ -872,16 +877,16 @@ export const preparePageData = ({
                                             text: {
                                                 desktop: {
                                                     type: "heading",
-                                                    typography: "heading1",
+                                                    typography: "webiny-pb-typography-heading",
                                                     alignment: "center",
-                                                    tag: "h1",
-                                                    color: "color3"
+                                                    tag: "h1"
                                                 },
                                                 data: { text: "<b>Get to know Webiny products</b>" }
                                             },
                                             settings: {
                                                 margin: { desktop: { all: "0px" } },
-                                                padding: { desktop: { all: "0px" } }
+                                                padding: { desktop: { all: "0px" } },
+                                                horizontalAlign: { desktop: "center" }
                                             }
                                         },
                                         elements: []
@@ -893,10 +898,9 @@ export const preparePageData = ({
                                             text: {
                                                 desktop: {
                                                     type: "heading",
-                                                    typography: "heading2",
+                                                    typography: "webiny-pb-typography-heading",
                                                     alignment: "center",
-                                                    tag: "h2",
-                                                    color: "color3"
+                                                    tag: "h2"
                                                 },
                                                 data: { text: "Architect. Code. Deploy." }
                                             },
@@ -908,7 +912,8 @@ export const preparePageData = ({
                                                         top: "16px"
                                                     }
                                                 },
-                                                padding: { desktop: { all: "0px" } }
+                                                padding: { desktop: { all: "0px" } },
+                                                horizontalAlign: { desktop: "center" }
                                             }
                                         },
                                         elements: []
@@ -1094,10 +1099,10 @@ export const preparePageData = ({
                                                             text: {
                                                                 desktop: {
                                                                     type: "heading",
-                                                                    typography: "heading3",
+                                                                    typography:
+                                                                        "webiny-pb-typography-heading",
                                                                     alignment: "left",
-                                                                    tag: "h3",
-                                                                    color: "color3"
+                                                                    tag: "h3"
                                                                 },
                                                                 data: {
                                                                     text: "<p>Webiny Serverless </p><p>Application Framework</p>"
@@ -1107,6 +1112,9 @@ export const preparePageData = ({
                                                                 margin: { desktop: { all: "0px" } },
                                                                 padding: {
                                                                     desktop: { all: "0px" }
+                                                                },
+                                                                horizontalAlign: {
+                                                                    desktop: "center"
                                                                 }
                                                             }
                                                         },
@@ -1172,10 +1180,10 @@ export const preparePageData = ({
                                                             text: {
                                                                 desktop: {
                                                                     type: "paragraph",
-                                                                    typography: "paragraph1",
+                                                                    typography:
+                                                                        "webiny-pb-typography-body",
                                                                     alignment: "left",
-                                                                    tag: "div",
-                                                                    color: "color3"
+                                                                    tag: "div"
                                                                 },
                                                                 data: {
                                                                     text: "<p>Everything you need to create and deploy applications on top of the serverless infrastructure.&nbsp;<br></p>"
@@ -1248,10 +1256,10 @@ export const preparePageData = ({
                                                             text: {
                                                                 desktop: {
                                                                     type: "heading",
-                                                                    typography: "heading4",
+                                                                    typography:
+                                                                        "webiny-pb-typography-heading",
                                                                     alignment: "left",
-                                                                    tag: "h4",
-                                                                    color: "color3"
+                                                                    tag: "h4"
                                                                 },
                                                                 data: { text: "Use it to build:" }
                                                             },
@@ -1259,6 +1267,9 @@ export const preparePageData = ({
                                                                 margin: { desktop: { all: "0px" } },
                                                                 padding: {
                                                                     desktop: { all: "0px" }
+                                                                },
+                                                                horizontalAlign: {
+                                                                    desktop: "center"
                                                                 }
                                                             }
                                                         },
@@ -1324,10 +1335,10 @@ export const preparePageData = ({
                                                             text: {
                                                                 desktop: {
                                                                     type: "list",
-                                                                    typography: "list",
+                                                                    typography:
+                                                                        "webiny-pb-typography-list--secondary",
                                                                     alignment: "left",
-                                                                    tag: "div",
-                                                                    color: "color3"
+                                                                    tag: "div"
                                                                 },
                                                                 data: {
                                                                     text: "<ul>\n                    <li>Full-stack applications<br></li><li>Multi-tenant solutions<br></li>\n                </ul>"
@@ -1368,10 +1379,10 @@ export const preparePageData = ({
                                                             text: {
                                                                 desktop: {
                                                                     type: "list",
-                                                                    typography: "list",
+                                                                    typography:
+                                                                        "webiny-pb-typography-list--secondary",
                                                                     alignment: "left",
-                                                                    tag: "div",
-                                                                    color: "color3"
+                                                                    tag: "div"
                                                                 },
                                                                 data: {
                                                                     text: "<ul>\n                    <li>APIs</li><li>Microservice</li>\n                </ul>"
@@ -1647,10 +1658,10 @@ export const preparePageData = ({
                                                             text: {
                                                                 desktop: {
                                                                     type: "heading",
-                                                                    typography: "heading2",
+                                                                    typography:
+                                                                        "webiny-pb-typography-heading",
                                                                     alignment: "left",
-                                                                    tag: "h2",
-                                                                    color: "color3"
+                                                                    tag: "h2"
                                                                 },
                                                                 data: {
                                                                     text: "An easier way to build serverless apps"
@@ -1665,6 +1676,9 @@ export const preparePageData = ({
                                                                 },
                                                                 padding: {
                                                                     desktop: { all: "0px" }
+                                                                },
+                                                                horizontalAlign: {
+                                                                    desktop: "center"
                                                                 }
                                                             }
                                                         },
@@ -1677,10 +1691,10 @@ export const preparePageData = ({
                                                             text: {
                                                                 desktop: {
                                                                     type: "paragraph",
-                                                                    typography: "paragraph1",
+                                                                    typography:
+                                                                        "webiny-pb-typography-body",
                                                                     alignment: "left",
-                                                                    tag: "div",
-                                                                    color: "color3"
+                                                                    tag: "div"
                                                                 },
                                                                 data: {
                                                                     text: "<p>There are many solutions that help you run, deploy and monitor serverless functions, but when it comes to actually coding one, there are none. Webiny is a solution that helps you code your serverless app by providing you with all the components like ACL, routing, file storage and many more.<br></p>"
@@ -1819,16 +1833,16 @@ export const preparePageData = ({
                                             text: {
                                                 desktop: {
                                                     type: "heading",
-                                                    typography: "heading1",
+                                                    typography: "webiny-pb-typography-heading",
                                                     alignment: "center",
-                                                    tag: "h1",
-                                                    color: "color3"
+                                                    tag: "h1"
                                                 },
                                                 data: { text: "<b>Framework features</b>" }
                                             },
                                             settings: {
                                                 margin: { desktop: { all: "0px" } },
-                                                padding: { desktop: { all: "0px" } }
+                                                padding: { desktop: { all: "0px" } },
+                                                horizontalAlign: { desktop: "center" }
                                             }
                                         },
                                         elements: []
@@ -2033,10 +2047,10 @@ export const preparePageData = ({
                                                             text: {
                                                                 desktop: {
                                                                     type: "heading",
-                                                                    typography: "heading6",
+                                                                    typography:
+                                                                        "webiny-pb-typography-heading",
                                                                     alignment: "center",
-                                                                    tag: "h6",
-                                                                    color: "color3"
+                                                                    tag: "h6"
                                                                 },
                                                                 data: {
                                                                     text: "<b>Users, groups, roles &amp; scopes</b>"
@@ -2052,6 +2066,9 @@ export const preparePageData = ({
                                                                 },
                                                                 padding: {
                                                                     desktop: { all: "0px" }
+                                                                },
+                                                                horizontalAlign: {
+                                                                    desktop: "center"
                                                                 }
                                                             }
                                                         },
@@ -2068,10 +2085,10 @@ export const preparePageData = ({
                                             text: {
                                                 desktop: {
                                                     type: "paragraph",
-                                                    typography: "paragraph2",
+                                                    typography: "webiny-pb-typography-description",
                                                     alignment: "center",
                                                     tag: "div",
-                                                    color: "color3"
+                                                    color: "var(--webiny-theme-color-text-primary)"
                                                 },
                                                 data: {
                                                     text: "<p>Security is a crucial layer in any application. Webiny includes a full-featured security module that's connected to the built-in GraphQL API.Users, groups, roles &amp; scopes<br></p>"
@@ -2256,10 +2273,10 @@ export const preparePageData = ({
                                                             text: {
                                                                 desktop: {
                                                                     type: "heading",
-                                                                    typography: "heading6",
+                                                                    typography:
+                                                                        "webiny-pb-typography-heading",
                                                                     alignment: "center",
-                                                                    tag: "h6",
-                                                                    color: "color3"
+                                                                    tag: "h6"
                                                                 },
                                                                 data: { text: "<b>Scaffolding</b>" }
                                                             },
@@ -2267,6 +2284,9 @@ export const preparePageData = ({
                                                                 margin: { desktop: { all: "0px" } },
                                                                 padding: {
                                                                     desktop: { all: "0px" }
+                                                                },
+                                                                horizontalAlign: {
+                                                                    desktop: "center"
                                                                 }
                                                             }
                                                         },
@@ -2283,10 +2303,10 @@ export const preparePageData = ({
                                             text: {
                                                 desktop: {
                                                     type: "paragraph",
-                                                    typography: "paragraph2",
+                                                    typography: "webiny-pb-typography-description",
                                                     alignment: "center",
                                                     tag: "div",
-                                                    color: "color3"
+                                                    color: "var(--webiny-theme-color-text-primary)"
                                                 },
                                                 data: {
                                                     text: "<p>Quickly generate boilerplate code using CLI plugins. From lambda functions to new GraphQL APIs.<br></p>"
@@ -2478,10 +2498,10 @@ export const preparePageData = ({
                                                             text: {
                                                                 desktop: {
                                                                     type: "heading",
-                                                                    typography: "heading6",
+                                                                    typography:
+                                                                        "webiny-pb-typography-heading",
                                                                     alignment: "center",
-                                                                    tag: "h6",
-                                                                    color: "color3"
+                                                                    tag: "h6"
                                                                 },
                                                                 data: {
                                                                     text: "<b>Customizable security</b>"
@@ -2491,6 +2511,9 @@ export const preparePageData = ({
                                                                 margin: { desktop: { all: "0px" } },
                                                                 padding: {
                                                                     desktop: { all: "0px" }
+                                                                },
+                                                                horizontalAlign: {
+                                                                    desktop: "center"
                                                                 }
                                                             }
                                                         },
@@ -2507,10 +2530,10 @@ export const preparePageData = ({
                                             text: {
                                                 desktop: {
                                                     type: "paragraph",
-                                                    typography: "paragraph2",
+                                                    typography: "webiny-pb-typography-description",
                                                     alignment: "center",
                                                     tag: "div",
-                                                    color: "color3"
+                                                    color: "var(--webiny-theme-color-text-primary)"
                                                 },
                                                 data: {
                                                     text: "<p>Use the default AWS Cognito, or replace with 3rd party identity providers like Okta, Auth0, etc. Using plugins you can make Webiny work with any identity provider.<br></p>"
@@ -2697,10 +2720,10 @@ export const preparePageData = ({
                                                             text: {
                                                                 desktop: {
                                                                     type: "heading",
-                                                                    typography: "heading6",
+                                                                    typography:
+                                                                        "webiny-pb-typography-heading",
                                                                     alignment: "center",
-                                                                    tag: "h6",
-                                                                    color: "color3"
+                                                                    tag: "h6"
                                                                 },
                                                                 data: {
                                                                     text: "<b>Multiple environments</b>"
@@ -2710,6 +2733,9 @@ export const preparePageData = ({
                                                                 margin: { desktop: { all: "0px" } },
                                                                 padding: {
                                                                     desktop: { all: "0px" }
+                                                                },
+                                                                horizontalAlign: {
+                                                                    desktop: "center"
                                                                 }
                                                             }
                                                         },
@@ -2726,10 +2752,10 @@ export const preparePageData = ({
                                             text: {
                                                 desktop: {
                                                     type: "paragraph",
-                                                    typography: "paragraph2",
+                                                    typography: "webiny-pb-typography-description",
                                                     alignment: "center",
                                                     tag: "div",
-                                                    color: "color3"
+                                                    color: "var(--webiny-theme-color-text-primary)"
                                                 },
                                                 data: {
                                                     text: "<p>No code change goes directly into a production environment. Webiny CLI makes it easy to manage and create multiple environments for your project.<br></p>"
@@ -2980,10 +3006,10 @@ export const preparePageData = ({
                                                             text: {
                                                                 desktop: {
                                                                     type: "heading",
-                                                                    typography: "heading2",
+                                                                    typography:
+                                                                        "webiny-pb-typography-heading",
                                                                     alignment: "left",
-                                                                    tag: "h2",
-                                                                    color: "color3"
+                                                                    tag: "h2"
                                                                 },
                                                                 data: {
                                                                     text: "One size doesn't fit all"
@@ -2993,6 +3019,9 @@ export const preparePageData = ({
                                                                 margin: { desktop: { all: "0px" } },
                                                                 padding: {
                                                                     desktop: { all: "0px" }
+                                                                },
+                                                                horizontalAlign: {
+                                                                    desktop: "center"
                                                                 }
                                                             }
                                                         },
@@ -3009,10 +3038,9 @@ export const preparePageData = ({
                                             text: {
                                                 desktop: {
                                                     type: "paragraph",
-                                                    typography: "paragraph1",
+                                                    typography: "webiny-pb-typography-body",
                                                     alignment: "left",
-                                                    tag: "div",
-                                                    color: "color3"
+                                                    tag: "div"
                                                 },
                                                 data: {
                                                     text: "<p>It's a very different set of requirements a technical team has to a marketing team to a business development team. Webiny Serverless CMS comes with several different apps you can use independently, or together as part of a cohesive solution.<br></p>"
@@ -3175,7 +3203,8 @@ export const preparePageData = ({
                                                             text: {
                                                                 desktop: {
                                                                     type: "heading",
-                                                                    typography: "heading3",
+                                                                    typography:
+                                                                        "webiny-pb-typography-heading",
                                                                     alignment: "left",
                                                                     tag: "h3"
                                                                 },
@@ -3187,6 +3216,9 @@ export const preparePageData = ({
                                                                 margin: { desktop: { all: "0px" } },
                                                                 padding: {
                                                                     desktop: { all: "0px" }
+                                                                },
+                                                                horizontalAlign: {
+                                                                    desktop: "center"
                                                                 }
                                                             }
                                                         },
@@ -3252,10 +3284,10 @@ export const preparePageData = ({
                                                             text: {
                                                                 desktop: {
                                                                     type: "heading",
-                                                                    typography: "heading5",
+                                                                    typography:
+                                                                        "webiny-pb-typography-heading",
                                                                     alignment: "left",
-                                                                    tag: "h5",
-                                                                    color: "color3"
+                                                                    tag: "h5"
                                                                 },
                                                                 data: {
                                                                     text: "A suite of applications to help you manage your content. "
@@ -3265,6 +3297,9 @@ export const preparePageData = ({
                                                                 margin: { desktop: { all: "0px" } },
                                                                 padding: {
                                                                     desktop: { all: "0px" }
+                                                                },
+                                                                horizontalAlign: {
+                                                                    desktop: "center"
                                                                 }
                                                             }
                                                         },
@@ -3330,10 +3365,10 @@ export const preparePageData = ({
                                                             text: {
                                                                 desktop: {
                                                                     type: "heading",
-                                                                    typography: "heading4",
+                                                                    typography:
+                                                                        "webiny-pb-typography-heading",
                                                                     alignment: "left",
-                                                                    tag: "h4",
-                                                                    color: "color3"
+                                                                    tag: "h4"
                                                                 },
                                                                 data: {
                                                                     text: "<b>Use it to build:</b>"
@@ -3343,6 +3378,9 @@ export const preparePageData = ({
                                                                 margin: { desktop: { all: "0px" } },
                                                                 padding: {
                                                                     desktop: { all: "0px" }
+                                                                },
+                                                                horizontalAlign: {
+                                                                    desktop: "center"
                                                                 }
                                                             }
                                                         },
@@ -3408,10 +3446,10 @@ export const preparePageData = ({
                                                             text: {
                                                                 desktop: {
                                                                     type: "list",
-                                                                    typography: "list",
+                                                                    typography:
+                                                                        "webiny-pb-typography-list--secondary",
                                                                     alignment: "left",
-                                                                    tag: "div",
-                                                                    color: "color3"
+                                                                    tag: "div"
                                                                 },
                                                                 data: {
                                                                     text: "<ul>\n                    <li>Marketing sites</li>\n                    <li>Multi-website solutions</li>\n                    <li>Content hubs<br></li>\n                </ul>"
@@ -3452,10 +3490,10 @@ export const preparePageData = ({
                                                             text: {
                                                                 desktop: {
                                                                     type: "list",
-                                                                    typography: "list",
+                                                                    typography:
+                                                                        "webiny-pb-typography-list--secondary",
                                                                     alignment: "left",
-                                                                    tag: "div",
-                                                                    color: "color3"
+                                                                    tag: "div"
                                                                 },
                                                                 data: {
                                                                     text: "<ul>\n                    <li>Multi-language sites<br></li>\n                    <li>Intranet portals<br></li>\n                    <li>Headless content models<br></li>\n                </ul>"
@@ -3618,16 +3656,16 @@ export const preparePageData = ({
                                             text: {
                                                 desktop: {
                                                     type: "heading",
-                                                    typography: "heading1",
+                                                    typography: "webiny-pb-typography-heading",
                                                     alignment: "center",
-                                                    tag: "h1",
-                                                    color: "color3"
+                                                    tag: "h1"
                                                 },
                                                 data: { text: "<b>CMS benefits</b>" }
                                             },
                                             settings: {
                                                 margin: { desktop: { all: "0px" } },
-                                                padding: { desktop: { all: "0px" } }
+                                                padding: { desktop: { all: "0px" } },
+                                                horizontalAlign: { desktop: "center" }
                                             }
                                         },
                                         elements: []
@@ -3732,10 +3770,9 @@ export const preparePageData = ({
                                             text: {
                                                 desktop: {
                                                     type: "heading",
-                                                    typography: "heading4",
+                                                    typography: "webiny-pb-typography-heading",
                                                     alignment: "center",
-                                                    tag: "h4",
-                                                    color: "color3"
+                                                    tag: "h4"
                                                 },
                                                 data: { text: "<b>Scalable</b>" }
                                             },
@@ -3747,7 +3784,8 @@ export const preparePageData = ({
                                                         top: "10px"
                                                     }
                                                 },
-                                                padding: { desktop: { all: "0px" } }
+                                                padding: { desktop: { all: "0px" } },
+                                                horizontalAlign: { desktop: "center" }
                                             }
                                         },
                                         elements: []
@@ -3759,10 +3797,9 @@ export const preparePageData = ({
                                             text: {
                                                 desktop: {
                                                     type: "paragraph",
-                                                    typography: "paragraph1",
+                                                    typography: "webiny-pb-typography-body",
                                                     alignment: "center",
-                                                    tag: "div",
-                                                    color: "color3"
+                                                    tag: "div"
                                                 },
                                                 data: {
                                                     text: "<p>No matter the demand, Webiny Serverless CMS can easily scale to meet even the most challenging workloads.<br></p>"
@@ -3850,10 +3887,9 @@ export const preparePageData = ({
                                             text: {
                                                 desktop: {
                                                     type: "heading",
-                                                    typography: "heading4",
+                                                    typography: "webiny-pb-typography-heading",
                                                     alignment: "center",
-                                                    tag: "h4",
-                                                    color: "color3"
+                                                    tag: "h4"
                                                 },
                                                 data: { text: "<b>Adaptable</b>" }
                                             },
@@ -3865,7 +3901,8 @@ export const preparePageData = ({
                                                         top: "10px"
                                                     }
                                                 },
-                                                padding: { desktop: { all: "0px" } }
+                                                padding: { desktop: { all: "0px" } },
+                                                horizontalAlign: { desktop: "center" }
                                             }
                                         },
                                         elements: []
@@ -3877,10 +3914,9 @@ export const preparePageData = ({
                                             text: {
                                                 desktop: {
                                                     type: "paragraph",
-                                                    typography: "paragraph1",
+                                                    typography: "webiny-pb-typography-body",
                                                     alignment: "center",
-                                                    tag: "div",
-                                                    color: "color3"
+                                                    tag: "div"
                                                 },
                                                 data: {
                                                     text: "<p>Being an open-source project, it's easy to modify and adapt things to your own needs.<br></p>"
@@ -3964,10 +4000,9 @@ export const preparePageData = ({
                                             text: {
                                                 desktop: {
                                                     type: "heading",
-                                                    typography: "heading4",
+                                                    typography: "webiny-pb-typography-heading",
                                                     alignment: "center",
-                                                    tag: "h4",
-                                                    color: "color3"
+                                                    tag: "h4"
                                                 },
                                                 data: { text: "<b>Low cost of ownership</b>" }
                                             },
@@ -3979,7 +4014,8 @@ export const preparePageData = ({
                                                         top: "10px"
                                                     }
                                                 },
-                                                padding: { desktop: { all: "0px" } }
+                                                padding: { desktop: { all: "0px" } },
+                                                horizontalAlign: { desktop: "center" }
                                             }
                                         },
                                         elements: []
@@ -3991,10 +4027,9 @@ export const preparePageData = ({
                                             text: {
                                                 desktop: {
                                                     type: "paragraph",
-                                                    typography: "paragraph1",
+                                                    typography: "webiny-pb-typography-body",
                                                     alignment: "center",
-                                                    tag: "div",
-                                                    color: "color3"
+                                                    tag: "div"
                                                 },
                                                 data: {
                                                     text: "<p>Self-hosted on top of serverless infrastructure. No infrastructure to mange, less people required to operate and maintain.<br></p>"
@@ -4109,10 +4144,9 @@ export const preparePageData = ({
                                             text: {
                                                 desktop: {
                                                     type: "heading",
-                                                    typography: "heading4",
+                                                    typography: "webiny-pb-typography-heading",
                                                     alignment: "center",
-                                                    tag: "h4",
-                                                    color: "color3"
+                                                    tag: "h4"
                                                 },
                                                 data: { text: "<b>Secure</b>" }
                                             },
@@ -4124,7 +4158,8 @@ export const preparePageData = ({
                                                         top: "10px"
                                                     }
                                                 },
-                                                padding: { desktop: { all: "0px" } }
+                                                padding: { desktop: { all: "0px" } },
+                                                horizontalAlign: { desktop: "center" }
                                             }
                                         },
                                         elements: []
@@ -4136,10 +4171,9 @@ export const preparePageData = ({
                                             text: {
                                                 desktop: {
                                                     type: "paragraph",
-                                                    typography: "paragraph1",
+                                                    typography: "webiny-pb-typography-body",
                                                     alignment: "center",
-                                                    tag: "div",
-                                                    color: "color3"
+                                                    tag: "div"
                                                 },
                                                 data: {
                                                     text: "<p>Secured by AWS Cognito. It's also easy to integrate services like OKTA, Auth0 and similar.<br></p>"
@@ -4227,10 +4261,9 @@ export const preparePageData = ({
                                             text: {
                                                 desktop: {
                                                     type: "heading",
-                                                    typography: "heading4",
+                                                    typography: "webiny-pb-typography-heading",
                                                     alignment: "center",
-                                                    tag: "h4",
-                                                    color: "color3"
+                                                    tag: "h4"
                                                 },
                                                 data: { text: "<b>Data ownership</b>" }
                                             },
@@ -4242,7 +4275,8 @@ export const preparePageData = ({
                                                         top: "10px"
                                                     }
                                                 },
-                                                padding: { desktop: { all: "0px" } }
+                                                padding: { desktop: { all: "0px" } },
+                                                horizontalAlign: { desktop: "center" }
                                             }
                                         },
                                         elements: []
@@ -4254,7 +4288,7 @@ export const preparePageData = ({
                                             text: {
                                                 desktop: {
                                                     type: "paragraph",
-                                                    typography: "paragraph1",
+                                                    typography: "webiny-pb-typography-body",
                                                     alignment: "center",
                                                     tag: "div"
                                                 },
@@ -4340,10 +4374,9 @@ export const preparePageData = ({
                                             text: {
                                                 desktop: {
                                                     type: "heading",
-                                                    typography: "heading4",
+                                                    typography: "webiny-pb-typography-heading",
                                                     alignment: "center",
-                                                    tag: "h4",
-                                                    color: "color3"
+                                                    tag: "h4"
                                                 },
                                                 data: { text: "<b>Permission control</b>" }
                                             },
@@ -4355,7 +4388,8 @@ export const preparePageData = ({
                                                         top: "10px"
                                                     }
                                                 },
-                                                padding: { desktop: { all: "0px" } }
+                                                padding: { desktop: { all: "0px" } },
+                                                horizontalAlign: { desktop: "center" }
                                             }
                                         },
                                         elements: []
@@ -4367,10 +4401,9 @@ export const preparePageData = ({
                                             text: {
                                                 desktop: {
                                                     type: "paragraph",
-                                                    typography: "paragraph1",
+                                                    typography: "webiny-pb-typography-body",
                                                     alignment: "center",
-                                                    tag: "div",
-                                                    color: "color3"
+                                                    tag: "div"
                                                 },
                                                 data: {
                                                     text: "<p>Powerful options to control the permissions your users will have. They perfectly align with your business requirements.&nbsp;<br></p>"
@@ -4481,10 +4514,9 @@ export const preparePageData = ({
                                             text: {
                                                 desktop: {
                                                     type: "heading",
-                                                    typography: "heading1",
+                                                    typography: "webiny-pb-typography-heading",
                                                     alignment: "center",
-                                                    tag: "h1",
-                                                    color: "color3"
+                                                    tag: "h1"
                                                 },
                                                 data: {
                                                     text: "<p>Serverless makes infrastructure easy, </p><p>Webiny makes serverless easy</p>"
@@ -4492,7 +4524,8 @@ export const preparePageData = ({
                                             },
                                             settings: {
                                                 margin: { desktop: { all: "0px" } },
-                                                padding: { desktop: { all: "0px" } }
+                                                padding: { desktop: { all: "0px" } },
+                                                horizontalAlign: { desktop: "center" }
                                             }
                                         },
                                         elements: []
@@ -4598,10 +4631,10 @@ export const preparePageData = ({
                                             text: {
                                                 desktop: {
                                                     type: "heading",
-                                                    typography: "heading4",
+                                                    typography: "webiny-pb-typography-heading",
                                                     alignment: "center",
                                                     tag: "h4",
-                                                    color: "color3"
+                                                    color: ""
                                                 },
                                                 data: { text: "1. Developer-friendly" }
                                             },
@@ -4613,7 +4646,8 @@ export const preparePageData = ({
                                                         top: "20px"
                                                     }
                                                 },
-                                                padding: { desktop: { all: "0px" } }
+                                                padding: { desktop: { all: "0px" } },
+                                                horizontalAlign: { desktop: "center" }
                                             }
                                         },
                                         elements: []
@@ -4625,10 +4659,9 @@ export const preparePageData = ({
                                             text: {
                                                 desktop: {
                                                     type: "paragraph",
-                                                    typography: "paragraph1",
+                                                    typography: "webiny-pb-typography-body",
                                                     alignment: "center",
-                                                    tag: "div",
-                                                    color: "color3"
+                                                    tag: "div"
                                                 },
                                                 data: {
                                                     text: "<p>Webiny has been made with the developer in mind. It helps them develop serverless applications with ease.<br></p>"
@@ -4716,10 +4749,9 @@ export const preparePageData = ({
                                             text: {
                                                 desktop: {
                                                     type: "heading",
-                                                    typography: "heading4",
+                                                    typography: "webiny-pb-typography-heading",
                                                     alignment: "center",
-                                                    tag: "h4",
-                                                    color: "color3"
+                                                    tag: "h4"
                                                 },
                                                 data: { text: "2. Open source" }
                                             },
@@ -4731,7 +4763,8 @@ export const preparePageData = ({
                                                         top: "20px"
                                                     }
                                                 },
-                                                padding: { desktop: { all: "0px" } }
+                                                padding: { desktop: { all: "0px" } },
+                                                horizontalAlign: { desktop: "center" }
                                             }
                                         },
                                         elements: []
@@ -4743,10 +4776,9 @@ export const preparePageData = ({
                                             text: {
                                                 desktop: {
                                                     type: "paragraph",
-                                                    typography: "paragraph1",
+                                                    typography: "webiny-pb-typography-body",
                                                     alignment: "center",
-                                                    tag: "div",
-                                                    color: "color3"
+                                                    tag: "div"
                                                 },
                                                 data: {
                                                     text: '<p>Webiny is created and maintained by an amazing group of people. Being open source means Webiny grows and evolves much faster. <a href="https://github.com/webiny/webiny-js/blob/v5/docs/CONTRIBUTING.md">Contributor</a> are welcome.<br></p>'
@@ -4835,10 +4867,9 @@ export const preparePageData = ({
                                             text: {
                                                 desktop: {
                                                     type: "heading",
-                                                    typography: "heading4",
+                                                    typography: "webiny-pb-typography-heading",
                                                     alignment: "center",
-                                                    tag: "h4",
-                                                    color: "color3"
+                                                    tag: "h4"
                                                 },
                                                 data: { text: "3. Community" }
                                             },
@@ -4850,7 +4881,8 @@ export const preparePageData = ({
                                                         top: "10px"
                                                     }
                                                 },
-                                                padding: { desktop: { all: "0px" } }
+                                                padding: { desktop: { all: "0px" } },
+                                                horizontalAlign: { desktop: "center" }
                                             }
                                         },
                                         elements: []
@@ -4862,10 +4894,9 @@ export const preparePageData = ({
                                             text: {
                                                 desktop: {
                                                     type: "paragraph",
-                                                    typography: "paragraph1",
+                                                    typography: "webiny-pb-typography-body",
                                                     alignment: "center",
-                                                    tag: "div",
-                                                    color: "color3"
+                                                    tag: "div"
                                                 },
                                                 data: {
                                                     text: '<p>We have an active community on <a href="https://webiny.com/slack">slack</a>. Talk to the core-team, and get help. Webiny team is always there for any questions.<br></p>'
