@@ -34,6 +34,7 @@
     "@webiny/app-plugin-admin-welcome-screen": "^5.33.2",
     "@webiny/app-security": "^5.33.2",
     "@webiny/app-tenancy": "^5.33.2",
+    "@webiny/feature-flags": "^5.33.2",
     "@webiny/form": "^5.33.2",
     "@webiny/plugins": "^5.33.2",
     "@webiny/react-composition": "^5.33.2",

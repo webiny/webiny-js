@@ -23,7 +23,8 @@
     { "path": "../api-tenancy-so-ddb/tsconfig.build.json" },
     { "path": "../api-wcp/tsconfig.build.json" },
     { "path": "../handler-aws/tsconfig.build.json" },
-    { "path": "../handler/tsconfig.build.json" }
+    { "path": "../handler/tsconfig.build.json" },
+    { "path": "../feature-flags/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
