@@ -6,6 +6,7 @@
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
   },
+  "description": "A small package that provides all the tools necessary to render pages created with Webiny's Page Builder application.",
   "author": {
     "name": "Webiny Ltd",
     "email": "info@webiny.com",
