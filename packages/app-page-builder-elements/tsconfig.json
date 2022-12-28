@@ -1,12 +1,20 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
-  "references": [],
+  "references": [
+    {
+      "path": "../app-page-builder-theme"
+    }
+  ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",
     "declarationDir": "./dist",
-    "paths": { "~/*": ["./src/*"] },
+    "paths": {
+      "~/*": ["./src/*"],
+      "@webiny/app-page-builder-theme/*": ["../app-page-builder-theme/src/*"],
+      "@webiny/app-page-builder-theme": ["../app-page-builder-theme/src"]
+    },
     "baseUrl": "."
   }
 }
