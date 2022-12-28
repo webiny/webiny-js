@@ -5,7 +5,7 @@
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
-A small package that provides all the tools necessary to render pages created with Webiny's Page Builder application.
+A package that provides all the tools necessary to render pages created with Webiny's Page Builder application.
 
 ## Table of Contents
 
@@ -34,9 +34,9 @@ yarn add @webiny/app-page-builder-elements
 
 ## Overview
 
-A small package that provides all the tools necessary to render pages created with Webiny's Page Builder application. It
-not only contains a set od default **page element renderers** (or simply **renderers**), like paragraph, heading, block,
-cell, or grid, but also the necessary utilities to create new ones.
+A package that provides all the tools necessary to render pages created with Webiny's Page Builder application. It
+not only contains a set od default **page element renderers** (paragraph, heading, block,
+cell, grid, ...), but also the necessary utilities to create new ones.
 
 ## Examples
 
