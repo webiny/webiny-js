@@ -13,6 +13,8 @@ import useResponsiveClassName from "@webiny/app-page-builder/hooks/useResponsive
 import DefaultNotFoundPage from "theme/pageBuilder/components/defaultPages/DefaultNotFoundPage";
 import DefaultErrorPage from "theme/pageBuilder/components/defaultPages/DefaultErrorPage";
 import { SettingsQueryResponseData } from "./graphql";
+import { Page } from "@webiny/app-page-builder-elements";
+import { featureFlags } from "@webiny/feature-flags";
 
 interface Head {
     favicon?: {
@@ -31,6 +33,11 @@ interface RenderProps {
     error: PbErrorResponse | null;
     settings: SettingsQueryResponseData;
 }
+
+// Doesn't exist in CWP. This is here for legacy testing purposes.
+// @deprecation-warning pb-legacy-rendering-engine
+export const isLegacyRenderingEngine = featureFlags.pbLegacyRenderingEngine === true;
+
 const Render: React.FC<RenderProps> = ({ page, error, settings }) => {
     const { pageElementRef, responsiveClassName } = useResponsiveClassName();
 
@@ -63,9 +70,8 @@ const Render: React.FC<RenderProps> = ({ page, error, settings }) => {
         }
     };
 
-    return (
-        <div className="webiny-pb-page">
-            <ps-tag data-key={"pb-page"} data-value={page.id} />
+    const content = (
+        <>
             <Helmet>
                 {/* Read favicon from settings. */}
                 {head.favicon && (
@@ -108,13 +114,30 @@ const Render: React.FC<RenderProps> = ({ page, error, settings }) => {
                 headerTags={settings?.htmlTags?.header}
                 footerTags={settings?.htmlTags?.footer}
             />
-            <div className={responsiveClassName} ref={pageElementRef}>
+            {isLegacyRenderingEngine ? (
+                <div className={responsiveClassName} ref={pageElementRef}>
+                    <Layout page={page} settings={settings}>
+                        <Element element={page.content} />
+                    </Layout>
+                </div>
+            ) : (
                 <Layout page={page} settings={settings}>
-                    <Element element={page.content} />
+                    <Page page={page} />
                 </Layout>
-            </div>
-        </div>
+            )}
+        </>
     );
+
+    if (isLegacyRenderingEngine) {
+        return (
+            <div className="webiny-pb-page">
+                <ps-tag data-key={"pb-page"} data-value={page.id} />
+                {content}
+            </div>
+        );
+    }
+
+    return content;
 };
 
 export default Render;
