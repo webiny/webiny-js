@@ -133,10 +133,43 @@ interface FieldTypePlugin {
     unmappedType?: (field: CmsModelField) => string | undefined;
     isSearchable: boolean;
     isSortable: boolean;
+    fullTextSearch?: boolean;
 }
 interface FieldTypePlugins {
     [key: string]: FieldTypePlugin;
 }
+
+interface BuildParams {
+    plugins: FieldTypePlugins;
+    fields: CmsModelField[];
+    parents: string[];
+}
+const buildFieldsList = (params: BuildParams) => {
+    const { plugins, fields, parents } = params;
+
+    return fields.reduce<ModelFields>((result, field) => {
+        const plugin = plugins[field.type];
+        if (!plugin) {
+            throw new WebinyError(`There is no plugin for field type "${field.type}".`);
+        }
+
+        const { isSearchable, isSortable, unmappedType, fullTextSearch } = plugin;
+
+        const path = [...parents, field.fieldId].join(".");
+
+        result[path] = {
+            type: field.type,
+            isSearchable,
+            isSortable,
+            fullTextSearch,
+            unmappedType: typeof unmappedType === "function" ? unmappedType(field) : undefined,
+            isSystemField: false,
+            field
+        };
+
+        return result;
+    }, {});
+};
 
 interface Params {
     plugins: PluginsContainer;
@@ -164,30 +197,22 @@ export const createModelFields = ({ plugins, fields }: Params) => {
     const fieldTypePlugins = plugins
         .byType<CmsModelFieldToGraphQLPlugin>("cms-model-field-to-graphql")
         .reduce<FieldTypePlugins>((types, plugin) => {
-            const { fieldType, isSearchable, isSortable } = plugin;
+            const { fieldType, isSearchable, isSortable, fullTextSearch } = plugin;
             types[fieldType] = {
                 unmappedType: unmappedTypes[fieldType],
                 isSearchable,
-                isSortable
+                isSortable,
+                fullTextSearch
             };
             return types;
         }, {});
 
-    return fields.reduce((collection, field) => {
-        const { fieldId, type } = field;
-        if (!fieldTypePlugins[type]) {
-            throw new WebinyError(`There is no plugin for field type "${type}".`);
-        }
-        const { isSearchable, isSortable, unmappedType } = fieldTypePlugins[type];
-        collection[fieldId] = {
-            type,
-            isSearchable,
-            isSortable,
-            unmappedType: typeof unmappedType === "function" ? unmappedType(field) : undefined,
-            isSystemField: false,
-            field
-        };
-
-        return collection;
-    }, createSystemFields());
+    return {
+        ...createSystemFields(),
+        ...buildFieldsList({
+            fields,
+            plugins: fieldTypePlugins,
+            parents: []
+        })
+    };
 };

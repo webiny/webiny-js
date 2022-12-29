@@ -16,6 +16,7 @@ export interface ModelField {
     isSystemField?: boolean;
     field: CmsModelField;
     path?: ModelFieldPath;
+    fullTextSearch?: boolean;
 }
 
 export interface ModelFields {
