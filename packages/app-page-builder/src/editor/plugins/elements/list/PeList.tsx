@@ -32,23 +32,24 @@ const PeList: React.FC<PeListProps> = props => {
     const List = renderers.list as ListRenderer;
 
     const EditorComponent = useMemo<React.VFC>(
-        () => () => {
-            const { getAttributes, getElement } = useRenderer();
+        () =>
+            function EditorComponent() {
+                const { getAttributes, getElement } = useRenderer();
 
-            const attributes = getAttributes();
-            const element = getElement();
+                const attributes = getAttributes();
+                const element = getElement();
 
-            return (
-                <Text
-                    tag={["div", attributes]}
-                    elementId={element.id}
-                    mediumEditorOptions={getMediumEditorOptions(
-                        DEFAULT_EDITOR_OPTIONS,
-                        mediumEditorOptions
-                    )}
-                />
-            );
-        },
+                return (
+                    <Text
+                        tag={["div", attributes]}
+                        elementId={element.id}
+                        mediumEditorOptions={getMediumEditorOptions(
+                            DEFAULT_EDITOR_OPTIONS,
+                            mediumEditorOptions
+                        )}
+                    />
+                );
+            },
         []
     );
 

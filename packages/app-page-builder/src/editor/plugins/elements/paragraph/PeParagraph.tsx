@@ -33,23 +33,24 @@ const PeParagraph: React.FC<PeParagraphProps> = props => {
     const Paragraph = renderers.paragraph as ParagraphRenderer;
 
     const EditorComponent = useMemo<React.ComponentType>(
-        () => () => {
-            const { getAttributes, getElement } = useRenderer();
+        () =>
+            function EditorComponent() {
+                const { getAttributes, getElement } = useRenderer();
 
-            const attributes = getAttributes();
-            const element = getElement();
+                const attributes = getAttributes();
+                const element = getElement();
 
-            return (
-                <Text
-                    tag={["p", attributes]}
-                    elementId={element.id}
-                    mediumEditorOptions={getMediumEditorOptions(
-                        DEFAULT_EDITOR_OPTIONS,
-                        mediumEditorOptions
-                    )}
-                />
-            );
-        },
+                return (
+                    <Text
+                        tag={["p", attributes]}
+                        elementId={element.id}
+                        mediumEditorOptions={getMediumEditorOptions(
+                            DEFAULT_EDITOR_OPTIONS,
+                            mediumEditorOptions
+                        )}
+                    />
+                );
+            },
         []
     );
 

@@ -33,24 +33,25 @@ const PeHeading: React.FC<PeHeadingProps> = props => {
     const Heading = renderers.heading as HeadingRenderer;
 
     const EditorComponent = useMemo<React.VFC>(
-        () => () => {
-            const { getAttributes, getElement } = useRenderer();
+        () =>
+            function EditorComponent() {
+                const { getAttributes, getElement } = useRenderer();
 
-            const attributes = getAttributes();
-            const element = getElement();
+                const attributes = getAttributes();
+                const element = getElement();
 
-            const tag = element.data?.text?.desktop?.tag || "h1";
-            return (
-                <Text
-                    tag={[tag, attributes]}
-                    elementId={element.id}
-                    mediumEditorOptions={getMediumEditorOptions(
-                        DEFAULT_EDITOR_OPTIONS,
-                        mediumEditorOptions
-                    )}
-                />
-            );
-        },
+                const tag = element.data?.text?.desktop?.tag || "h1";
+                return (
+                    <Text
+                        tag={[tag, attributes]}
+                        elementId={element.id}
+                        mediumEditorOptions={getMediumEditorOptions(
+                            DEFAULT_EDITOR_OPTIONS,
+                            mediumEditorOptions
+                        )}
+                    />
+                );
+            },
         []
     );
 
