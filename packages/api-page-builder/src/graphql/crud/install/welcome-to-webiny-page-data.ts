@@ -327,7 +327,7 @@ export const preparePageData = ({
                                                     color: "color5"
                                                 },
                                                 data: {
-                                                    text: "<p>Webiny makes it easy to build applications and websites on top of the serverless infrastructure by providing you with a ready-made CMS and a development framework.<br></p>"
+                                                    text: "Webiny makes it easy to build applications and websites on top of the serverless infrastructure by providing you with a ready-made CMS and a development framework.<br>"
                                                 }
                                             },
                                             settings: {
@@ -465,7 +465,7 @@ export const preparePageData = ({
                                                     color: "color5"
                                                 },
                                                 data: {
-                                                    text: "<p>Webiny apps can scale to handle the most demanding workloads.<br></p>"
+                                                    text: "Webiny apps can scale to handle the most demanding workloads.<br>"
                                                 }
                                             },
                                             settings: {
@@ -554,7 +554,7 @@ export const preparePageData = ({
                                                     color: "color5"
                                                 },
                                                 data: {
-                                                    text: "<p>Webiny eliminates the need to build custom tooling to create serverless app<br></p>"
+                                                    text: "Webiny eliminates the need to build custom tooling to create serverless app<br>"
                                                 }
                                             },
                                             settings: {
@@ -680,7 +680,7 @@ export const preparePageData = ({
                                                     color: "color5"
                                                 },
                                                 data: {
-                                                    text: "<p>Webiny apps run on serverless infrastructure which costs 80% less than VMs<br></p>"
+                                                    text: "Webiny apps run on serverless infrastructure which costs 80% less than VMs<br>"
                                                 }
                                             },
                                             settings: {
@@ -770,7 +770,7 @@ export const preparePageData = ({
                                                     color: "color5"
                                                 },
                                                 data: {
-                                                    text: "<p>Webiny removes all the challenges of building serverless applications<br></p>"
+                                                    text: "Webiny removes all the challenges of building serverless applications<br>"
                                                 }
                                             },
                                             settings: {
@@ -1100,7 +1100,7 @@ export const preparePageData = ({
                                                                     color: "color3"
                                                                 },
                                                                 data: {
-                                                                    text: "<p>Webiny Serverless </p><p>Application Framework</p>"
+                                                                    text: "Webiny Serverless </p><p>Application Framework"
                                                                 }
                                                             },
                                                             settings: {
@@ -1178,7 +1178,7 @@ export const preparePageData = ({
                                                                     color: "color3"
                                                                 },
                                                                 data: {
-                                                                    text: "<p>Everything you need to create and deploy applications on top of the serverless infrastructure.&nbsp;<br></p>"
+                                                                    text: "Everything you need to create and deploy applications on top of the serverless infrastructure.&nbsp;<br>"
                                                                 }
                                                             },
                                                             settings: {
@@ -1683,7 +1683,7 @@ export const preparePageData = ({
                                                                     color: "color3"
                                                                 },
                                                                 data: {
-                                                                    text: "<p>There are many solutions that help you run, deploy and monitor serverless functions, but when it comes to actually coding one, there are none. Webiny is a solution that helps you code your serverless app by providing you with all the components like ACL, routing, file storage and many more.<br></p>"
+                                                                    text: "There are many solutions that help you run, deploy and monitor serverless functions, but when it comes to actually coding one, there are none. Webiny is a solution that helps you code your serverless app by providing you with all the components like ACL, routing, file storage and many more.<br>"
                                                                 }
                                                             },
                                                             settings: {
@@ -2074,7 +2074,7 @@ export const preparePageData = ({
                                                     color: "color3"
                                                 },
                                                 data: {
-                                                    text: "<p>Security is a crucial layer in any application. Webiny includes a full-featured security module that's connected to the built-in GraphQL API.Users, groups, roles &amp; scopes<br></p>"
+                                                    text: "Security is a crucial layer in any application. Webiny includes a full-featured security module that's connected to the built-in GraphQL API.Users, groups, roles &amp; scopes<br>"
                                                 }
                                             },
                                             settings: {
@@ -2289,7 +2289,7 @@ export const preparePageData = ({
                                                     color: "color3"
                                                 },
                                                 data: {
-                                                    text: "<p>Quickly generate boilerplate code using CLI plugins. From lambda functions to new GraphQL APIs.<br></p>"
+                                                    text: "Quickly generate boilerplate code using CLI plugins. From lambda functions to new GraphQL APIs.<br>"
                                                 }
                                             },
                                             settings: {
@@ -2513,7 +2513,7 @@ export const preparePageData = ({
                                                     color: "color3"
                                                 },
                                                 data: {
-                                                    text: "<p>Use the default AWS Cognito, or replace with 3rd party identity providers like Okta, Auth0, etc. Using plugins you can make Webiny work with any identity provider.<br></p>"
+                                                    text: "Use the default AWS Cognito, or replace with 3rd party identity providers like Okta, Auth0, etc. Using plugins you can make Webiny work with any identity provider.<br>"
                                                 }
                                             },
                                             settings: {
@@ -2732,7 +2732,7 @@ export const preparePageData = ({
                                                     color: "color3"
                                                 },
                                                 data: {
-                                                    text: "<p>No code change goes directly into a production environment. Webiny CLI makes it easy to manage and create multiple environments for your project.<br></p>"
+                                                    text: "No code change goes directly into a production environment. Webiny CLI makes it easy to manage and create multiple environments for your project.<br>"
                                                 }
                                             },
                                             settings: {
@@ -3015,7 +3015,7 @@ export const preparePageData = ({
                                                     color: "color3"
                                                 },
                                                 data: {
-                                                    text: "<p>It's a very different set of requirements a technical team has to a marketing team to a business development team. Webiny Serverless CMS comes with several different apps you can use independently, or together as part of a cohesive solution.<br></p>"
+                                                    text: "It's a very different set of requirements a technical team has to a marketing team to a business development team. Webiny Serverless CMS comes with several different apps you can use independently, or together as part of a cohesive solution.<br>"
                                                 }
                                             },
                                             settings: {
@@ -3180,7 +3180,7 @@ export const preparePageData = ({
                                                                     tag: "h3"
                                                                 },
                                                                 data: {
-                                                                    text: "<p>Webiny Serverless </p><p>CMS</p>"
+                                                                    text: "Webiny Serverless </p><p>CMS"
                                                                 }
                                                             },
                                                             settings: {
@@ -3765,7 +3765,7 @@ export const preparePageData = ({
                                                     color: "color3"
                                                 },
                                                 data: {
-                                                    text: "<p>No matter the demand, Webiny Serverless CMS can easily scale to meet even the most challenging workloads.<br></p>"
+                                                    text: "No matter the demand, Webiny Serverless CMS can easily scale to meet even the most challenging workloads.<br>"
                                                 }
                                             },
                                             settings: {
@@ -3883,7 +3883,7 @@ export const preparePageData = ({
                                                     color: "color3"
                                                 },
                                                 data: {
-                                                    text: "<p>Being an open-source project, it's easy to modify and adapt things to your own needs.<br></p>"
+                                                    text: "Being an open-source project, it's easy to modify and adapt things to your own needs.<br>"
                                                 }
                                             },
                                             settings: {
@@ -3997,7 +3997,7 @@ export const preparePageData = ({
                                                     color: "color3"
                                                 },
                                                 data: {
-                                                    text: "<p>Self-hosted on top of serverless infrastructure. No infrastructure to mange, less people required to operate and maintain.<br></p>"
+                                                    text: "Self-hosted on top of serverless infrastructure. No infrastructure to mange, less people required to operate and maintain.<br>"
                                                 }
                                             },
                                             settings: {
@@ -4142,7 +4142,7 @@ export const preparePageData = ({
                                                     color: "color3"
                                                 },
                                                 data: {
-                                                    text: "<p>Secured by AWS Cognito. It's also easy to integrate services like OKTA, Auth0 and similar.<br></p>"
+                                                    text: "Secured by AWS Cognito. It's also easy to integrate services like OKTA, Auth0 and similar.<br>"
                                                 }
                                             },
                                             settings: {
@@ -4259,7 +4259,7 @@ export const preparePageData = ({
                                                     tag: "div"
                                                 },
                                                 data: {
-                                                    text: "<p>Webiny is self-hosted, it means your data stays within your data center. <br></p>"
+                                                    text: "Webiny is self-hosted, it means your data stays within your data center. <br>"
                                                 }
                                             },
                                             settings: {
@@ -4373,7 +4373,7 @@ export const preparePageData = ({
                                                     color: "color3"
                                                 },
                                                 data: {
-                                                    text: "<p>Powerful options to control the permissions your users will have. They perfectly align with your business requirements.&nbsp;<br></p>"
+                                                    text: "Powerful options to control the permissions your users will have. They perfectly align with your business requirements.&nbsp;<br>"
                                                 }
                                             },
                                             settings: {
@@ -4487,7 +4487,7 @@ export const preparePageData = ({
                                                     color: "color3"
                                                 },
                                                 data: {
-                                                    text: "<p>Serverless makes infrastructure easy, </p><p>Webiny makes serverless easy</p>"
+                                                    text: "Serverless makes infrastructure easy, </p><p>Webiny makes serverless easy"
                                                 }
                                             },
                                             settings: {
@@ -4631,7 +4631,7 @@ export const preparePageData = ({
                                                     color: "color3"
                                                 },
                                                 data: {
-                                                    text: "<p>Webiny has been made with the developer in mind. It helps them develop serverless applications with ease.<br></p>"
+                                                    text: "Webiny has been made with the developer in mind. It helps them develop serverless applications with ease.<br>"
                                                 }
                                             },
                                             settings: {
@@ -4749,7 +4749,7 @@ export const preparePageData = ({
                                                     color: "color3"
                                                 },
                                                 data: {
-                                                    text: '<p>Webiny is created and maintained by an amazing group of people. Being open source means Webiny grows and evolves much faster. <a href="https://github.com/webiny/webiny-js/blob/v5/docs/CONTRIBUTING.md">Contributor</a> are welcome.<br></p>'
+                                                    text: 'Webiny is created and maintained by an amazing group of people. Being open source means Webiny grows and evolves much faster. <a href="https://github.com/webiny/webiny-js/blob/v5/docs/CONTRIBUTING.md">Contributor</a> are welcome.<br>'
                                                 }
                                             },
                                             settings: {
@@ -4868,7 +4868,7 @@ export const preparePageData = ({
                                                     color: "color3"
                                                 },
                                                 data: {
-                                                    text: '<p>We have an active community on <a href="https://webiny.com/slack">slack</a>. Talk to the core-team, and get help. Webiny team is always there for any questions.<br></p>'
+                                                    text: 'We have an active community on <a href="https://webiny.com/slack">slack</a>. Talk to the core-team, and get help. Webiny team is always there for any questions.<br>'
                                                 }
                                             },
                                             settings: {
