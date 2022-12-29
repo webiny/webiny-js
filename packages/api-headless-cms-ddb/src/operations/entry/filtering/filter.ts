@@ -45,7 +45,7 @@ export const filter = async (params: Params): Promise<CmsEntry[]> => {
     const { items: records, where, plugins, fields, fromStorage, fullTextSearch } = params;
 
     const keys = Object.keys(where);
-    if (keys.length === 0) {
+    if (keys.length === 0 && !fullTextSearch) {
         return records;
     }
     const filters = createFilters({
@@ -75,7 +75,10 @@ export const filter = async (params: Params): Promise<CmsEntry[]> => {
     }
 
     const search = createFullTextSearch({
-        ...fullTextSearch,
+        term: fullTextSearch?.term,
+        targetFields: fullTextSearch?.fields,
+        fields,
+        fromStorage,
         plugin: fullTextSearchPlugin
     });
 
@@ -154,9 +157,7 @@ export const filter = async (params: Params): Promise<CmsEntry[]> => {
             return record;
         }
         const result = await search({
-            item: record,
-            fromStorage,
-            fields
+            item: record
         });
         if (!result) {
             return null;

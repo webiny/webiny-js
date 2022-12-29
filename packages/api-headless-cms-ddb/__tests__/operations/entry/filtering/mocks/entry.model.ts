@@ -88,7 +88,7 @@ export const createEntry = (index = 0): Result => {
                     optionId: `option 2 #${String(index).padStart(10, "o")}`,
                     keys: `keys of the modeled entry ${String(index).padStart(5, "k")} - 2`,
                     variant: {
-                        colors: index % 2 === 0 ? ["yellow", "green"] : ["teal", "gray"],
+                        colors: index % 2 === 0 ? ["yellow", "green"] : ["teal", "grey"],
                         number: index
                     }
                 }

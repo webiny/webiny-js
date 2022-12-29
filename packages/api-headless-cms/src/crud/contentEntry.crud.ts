@@ -33,7 +33,6 @@ import {
     CreateCmsEntryInput,
     CmsModelField,
     CreatedBy,
-    CmsModelFieldToGraphQLPlugin,
     StorageOperationsCmsModel,
     HeadlessCms,
     CmsEntryStatus,
@@ -54,7 +53,6 @@ import { assignBeforeEntryUpdate } from "./contentEntry/beforeUpdate";
 import { createIdentifier, parseIdentifier } from "@webiny/utils";
 import { assignAfterEntryDelete } from "./contentEntry/afterDelete";
 import { referenceFieldsMapping } from "./contentEntry/referenceFieldsMapping";
-import { PluginsContainer } from "@webiny/plugins";
 import { Tenant } from "@webiny/api-tenancy/types";
 import lodashMerge from "lodash/merge";
 import { checkPermissions } from "~/utils/permissions";
@@ -62,6 +60,7 @@ import { checkModelAccess } from "~/utils/access";
 import { checkOwnership, validateOwnership } from "~/utils/ownership";
 import { entryFromStorageTransform, entryToStorageTransform } from "~/utils/entryStorage";
 import { attachCmsModelFieldConverters } from "~/utils/converters/valueKeyStorageConverter";
+import { getSearchableFields } from "./contentEntry/searchableFields";
 
 export const STATUS_DRAFT = "draft";
 export const STATUS_PUBLISHED = "published";
@@ -230,39 +229,6 @@ const increaseEntryIdVersion = (id: string): EntryIdResult => {
             version: version + 1
         })
     };
-};
-
-interface GetSearchableFieldsParams {
-    plugins: PluginsContainer;
-    model: CmsModel;
-    fields?: string[];
-}
-const getSearchableFields = (params: GetSearchableFieldsParams): string[] => {
-    const { plugins, model, fields } = params;
-
-    const fieldPluginMap = plugins
-        .byType<CmsModelFieldToGraphQLPlugin>("cms-model-field-to-graphql")
-        .reduce((collection, field) => {
-            collection[field.fieldType] = field;
-            return collection;
-        }, {} as Record<string, CmsModelFieldToGraphQLPlugin>);
-
-    return model.fields
-        .filter(field => {
-            if (!field.fieldId) {
-                return false;
-            }
-            const plugin = fieldPluginMap[field.type];
-            if (!plugin) {
-                return false;
-            } else if (!plugin.fullTextSearch) {
-                return false;
-            } else if (!fields || fields.length === 0) {
-                return true;
-            }
-            return fields.includes(field.fieldId);
-        })
-        .map(field => field.fieldId);
 };
 
 const allowedEntryStatus: string[] = ["draft", "published", "unpublished"];
@@ -633,9 +599,9 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             }
 
             const fields = getSearchableFields({
-                model,
+                fields: model.fields,
                 plugins: context.plugins,
-                fields: params.fields || []
+                input: params.fields || []
             });
 
             try {

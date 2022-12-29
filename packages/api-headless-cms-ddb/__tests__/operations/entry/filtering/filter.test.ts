@@ -7,6 +7,7 @@ import { createPluginsContainer } from "../../helpers/pluginsContainer";
 import { createModel } from "../../helpers/createModel";
 import { createFields } from "~/operations/entry/filtering/createFields";
 import { filter } from "~/operations/entry/filtering";
+import { getSearchableFields } from "@webiny/api-headless-cms/crud/contentEntry/searchableFields";
 
 describe("filtering", () => {
     let plugins: PluginsContainer;
@@ -294,7 +295,7 @@ describe("filtering", () => {
                             },
                             {
                                 variant: {
-                                    colors: ["teal", "gray"]
+                                    colors: ["teal", "grey"]
                                 }
                             }
                         ]
@@ -333,7 +334,7 @@ describe("filtering", () => {
                             },
                             {
                                 variant: {
-                                    colors: index % 2 === 0 ? ["yellow", "green"] : ["teal", "gray"]
+                                    colors: index % 2 === 0 ? ["yellow", "green"] : ["teal", "grey"]
                                 }
                             }
                         ]
@@ -377,5 +378,86 @@ describe("filtering", () => {
         });
 
         expect(resultNoneEmpty).toHaveLength(0);
+    });
+
+    it("should run a full text search", async () => {
+        const records = createEntries(5);
+
+        const searchableFields = getSearchableFields({
+            fields: model.fields,
+            input: [],
+            plugins
+        });
+        /**
+         * Find yellow color items.
+         */
+        const resultsYellow = await filter({
+            items: records as any,
+            where: {},
+            plugins,
+            fields,
+            fromStorage: async (_, value) => {
+                return value;
+            },
+            fullTextSearch: {
+                term: "yellow",
+                fields: searchableFields
+            }
+        });
+        expect(resultsYellow).toHaveLength(3);
+
+        /**
+         * Find yellow color items.
+         */
+        const resultsWhite = await filter({
+            items: records as any,
+            where: {},
+            plugins,
+            fields,
+            fromStorage: async (_, value) => {
+                return value;
+            },
+            fullTextSearch: {
+                term: "white",
+                fields: searchableFields
+            }
+        });
+        expect(resultsWhite).toHaveLength(2);
+
+        /**
+         * Find grey color items.
+         */
+        const resultsGrey = await filter({
+            items: records as any,
+            where: {},
+            plugins,
+            fields,
+            fromStorage: async (_, value) => {
+                return value;
+            },
+            fullTextSearch: {
+                term: "grey",
+                fields: searchableFields
+            }
+        });
+        expect(resultsGrey).toHaveLength(2);
+
+        /**
+         * Find red color items.
+         */
+        const resultsRed = await filter({
+            items: records as any,
+            where: {},
+            plugins,
+            fields,
+            fromStorage: async (_, value) => {
+                return value;
+            },
+            fullTextSearch: {
+                term: "red",
+                fields: searchableFields
+            }
+        });
+        expect(resultsRed).toHaveLength(3);
     });
 });

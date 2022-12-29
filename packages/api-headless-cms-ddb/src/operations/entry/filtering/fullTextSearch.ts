@@ -2,36 +2,41 @@ import WebinyError from "@webiny/error";
 import { ValueFilterPlugin } from "@webiny/db-dynamodb/plugins/definitions/ValueFilterPlugin";
 import { CmsEntry } from "@webiny/api-headless-cms/types";
 import { Field, FilterItemFromStorage } from "./types";
+import { getValue } from "./getValue";
 
 interface Params {
     term?: string;
-    fields?: string[];
+    targetFields?: string[];
+    fromStorage: FilterItemFromStorage;
+    fields: Record<string, Field>;
     plugin: ValueFilterPlugin;
 }
 
 interface FtParams {
     item: CmsEntry;
-    fromStorage: FilterItemFromStorage;
-    fields: Record<string, Field>;
 }
 /**
  * Unfortunately we must use the contains plugin directly as plugins do not support multi field searching.
  */
-export const createFullTextSearch = ({ term, fields: targetFields, plugin }: Params) => {
+export const createFullTextSearch = (params: Params) => {
+    const { term, targetFields, fromStorage, fields: fieldDefinitions, plugin } = params;
     if (!term || term.trim().length === 0 || !targetFields || targetFields.length === 0) {
         return null;
     }
-    return async ({ item, fromStorage, fields }: FtParams) => {
+    return async ({ item }: FtParams) => {
         for (const target of targetFields) {
-            const field = Object.values(fields).find(field => {
-                return field.fieldId === target;
-            });
+            /**
+             * As fields is a mapped Field objects where key is a path to the value, we can directly find the related field.
+             */
+            const field = fieldDefinitions[target];
+
             if (!field) {
                 throw new WebinyError(`Unknown field "${target}" in the model.`, "UNKNOWN_FIELD", {
                     target
                 });
             }
-            const value = await fromStorage(field, item.values[target]);
+            const targetValue = getValue(item.values, target);
+            const value = await fromStorage(field, targetValue);
             if (!value) {
                 continue;
             }
