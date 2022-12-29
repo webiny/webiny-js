@@ -743,7 +743,7 @@ export const preparePageData = ({
                                             text: {
                                                 desktop: {
                                                     type: "heading",
-                                                    typography: "heading_",
+                                                    typography: "heading6",
                                                     alignment: "center",
                                                     tag: "h6",
                                                     color: "color5"
