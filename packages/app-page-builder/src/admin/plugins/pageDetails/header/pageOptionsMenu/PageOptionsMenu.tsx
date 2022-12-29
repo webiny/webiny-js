@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
+import { useRouter } from "@webiny/react-router";
 import { IconButton } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
 import { useSecurity } from "@webiny/app-security";
@@ -45,6 +46,7 @@ const PageOptionsMenu: React.FC<PageOptionsMenuProps> = props => {
     const { settings, isSpecialPage, getPageUrl, getWebsiteUrl, updateSettingsMutation } =
         usePageBuilderSettings();
     const client = useApolloClient();
+    const { history } = useRouter();
 
     const [isSiteRunning, refreshSiteStatus] = useSiteStatus(getWebsiteUrl());
     const { showConfigureWebsiteUrlDialog } = useConfigureWebsiteUrlDialog(
@@ -104,6 +106,11 @@ const PageOptionsMenu: React.FC<PageOptionsMenuProps> = props => {
 
                     GQLCache.addPageToListCache(cache, data.pageBuilder.updatePage.data);
                     showSnackbar(`Duplicated "${page.title}".`);
+                    history.push(
+                        `/page-builder/pages?id=${encodeURIComponent(
+                            data.pageBuilder.updatePage.data.id
+                        )}`
+                    );
                 }
             });
         } catch (error) {
@@ -202,7 +209,7 @@ const PageOptionsMenu: React.FC<PageOptionsMenuProps> = props => {
                     <ListItemGraphic>
                         <Icon icon={<DuplicateIcon />} />
                     </ListItemGraphic>
-                    Copy
+                    Duplicate
                 </MenuItem>
             )}
 
