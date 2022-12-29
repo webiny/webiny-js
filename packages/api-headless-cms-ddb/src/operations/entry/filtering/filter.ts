@@ -134,7 +134,8 @@ export const filter = async (params: Params): Promise<CmsEntry[]> => {
             //     continue;
             // }
 
-            const plainValue = await fromStorage(fields[filter.field.fieldId], rawValue);
+            const field = fields[filter.fieldPathId];
+            const plainValue = await fromStorage(field, rawValue);
             /**
              * If raw value is not same as the value after the storage transform, set the value to the items being filtered.
              */
@@ -167,7 +168,7 @@ export const filter = async (params: Params): Promise<CmsEntry[]> => {
     });
 
     /**
-     * We run filtering as promises so it is a bit faster than in for ... of loop.
+     * We run filtering as promises, so it is a bit faster than in for ... of loop.
      */
     const results: (CmsEntry | null)[] = await Promise.all(promises);
 

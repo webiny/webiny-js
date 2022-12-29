@@ -32,6 +32,7 @@ interface CmsEntryFieldFilterPluginCreateParams {
 export interface CmsEntryFieldFilterPluginCreateResponse {
     field: Field;
     path: string;
+    fieldPathId: string;
     plugin: ValueFilterPlugin;
     negate: boolean;
     compareValue: any;

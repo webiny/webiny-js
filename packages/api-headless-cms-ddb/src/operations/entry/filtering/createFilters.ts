@@ -37,6 +37,7 @@ interface CreateFiltersParams {
 export interface ItemFilter {
     field: Field;
     path: string;
+    fieldPathId: string;
     plugin: ValueFilterPlugin;
     negate: boolean;
     compareValue: any;

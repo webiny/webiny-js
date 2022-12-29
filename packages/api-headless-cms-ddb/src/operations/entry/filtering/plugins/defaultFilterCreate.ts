@@ -21,6 +21,7 @@ export const createDefaultFilterCreate = () => {
                 transformValue,
                 field,
                 compareValue,
+                fieldPathId: [...field.parents.map(f => f.fieldId), field.fieldId].join("."),
                 path: field.createPath({
                     field
                 }),
