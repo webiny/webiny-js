@@ -12,7 +12,7 @@ export const createCell = () => {
         const element = getElement();
 
         const width = useMemo<string>(() => {
-            const size = element.data?.settings?.cell?.size;
+            const size = element.data?.settings?.grid?.size;
             if (typeof size !== "number") {
                 return "100%";
             }
