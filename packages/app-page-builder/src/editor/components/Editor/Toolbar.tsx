@@ -52,8 +52,8 @@ const drawerStyle = css({
         position: "fixed",
         top: 64,
         height: "calc(100vh - 64px)",
-        width: "320px !important",
-        maxWidth: "320px !important",
+        width: "280px !important",
+        maxWidth: "280px !important",
         ".mdc-drawer__content": {
             width: "100%"
         }
