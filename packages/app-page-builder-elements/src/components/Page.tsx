@@ -5,14 +5,22 @@ import { PageProvider } from "~/contexts/Page";
 
 export interface PageProps {
     page: PageType;
+    layout?: React.ComponentType<{ children: React.ReactNode }>;
 }
 
-export const Page: React.ComponentType<PageProps> = props => {
+export const Page: React.FC<PageProps> = props => {
     const { page } = props;
+
+    let content = <Content content={page.content} />;
+
+    const Layout = props.layout;
+    if (Layout) {
+        content = <Layout>{content}</Layout>;
+    }
 
     return (
         <PageProvider page={page} key={page.id}>
-            <Content content={page.content} />
+            {content}
         </PageProvider>
     );
 };
