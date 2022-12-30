@@ -345,7 +345,7 @@ export interface PbPageData {
     version?: number;
     category: PbCategory;
     status: string | "draft" | "published" | "unpublished";
-    settings?: PbPageDataSettings;
+    settings: PbPageDataSettings;
     createdOn: string;
     savedOn: string;
     publishedOn: string;
