@@ -4,6 +4,7 @@ import { ReactComponent as More } from "@material-design-icons/svg/filled/more_v
 import { FolderDialogUpdate } from "@webiny/app-folders";
 import { FolderItem } from "@webiny/app-folders/types";
 import { Columns, DataTable } from "@webiny/ui/DataTable";
+import { IconButton } from "@webiny/ui/Button";
 import { Menu } from "@webiny/ui/Menu";
 
 import { orderBy } from "lodash";
@@ -123,8 +124,7 @@ export const Table = ({ folders, pages, loading, openPreviewDrawer }: Props): Re
         original: {
             header: "",
             meta: {
-                hasFormControl: true,
-                alignMiddle: true
+                alignEnd: true
             },
             cell: ({ type, original }) => {
                 if (!original) {

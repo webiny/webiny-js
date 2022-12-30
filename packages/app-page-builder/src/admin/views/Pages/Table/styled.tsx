@@ -17,4 +17,13 @@ export const Wrapper = styled("div")`
     .mdc-data-table {
         display: inline-table;
     }
+
+    .mdc-data-table__cell {
+        width: 250px;
+        max-width: 250px;
+
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
 `;
