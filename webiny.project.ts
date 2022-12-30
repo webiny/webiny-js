@@ -51,7 +51,7 @@ export default {
     featureFlags: {
         // Enforces usage of legacy PB page elements rendering engine.
         // To migrate to the latest one, please read:
-        // https://www.webiny.com/docs/...
-        pbLegacyRenderingEngine: false
+        // https://www.webiny.com/docs/page-builder-rendering-upgrade
+        pbLegacyRenderingEngine: true
     }
 };
