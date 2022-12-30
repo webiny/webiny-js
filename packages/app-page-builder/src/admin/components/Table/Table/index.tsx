@@ -85,8 +85,7 @@ export const Table = ({ folders, pages, loading, openPreviewDrawer }: Props): Re
 
         const dataset = orderBy([...foldersData, ...pagesData], ["type", "name"], ["asc", "asc"]);
         setData(dataset);
-        // TODO: remove Object.assign in favour of straight arrays
-    }, [Object.assign({}, folders), Object.assign({}, pages)]);
+    }, [{ ...folders }, { ...pages }]);
 
     const columns: Columns<Entry> = {
         title: {
