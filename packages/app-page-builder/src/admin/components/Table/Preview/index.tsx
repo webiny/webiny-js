@@ -13,7 +13,7 @@ interface PreviewProps {
 
 export const Preview = ({ open, onClose, canCreate, onCreatePage }: PreviewProps): ReactElement => {
     return (
-        <Content modal={true} open={open} dir="rtl" onClose={onClose}>
+        <Content modal={true} open={open} onClose={onClose} dir="rtl">
             <DrawerContent dir="ltr">
                 <PageDetails canCreate={canCreate} onCreatePage={onCreatePage} onDelete={onClose} />
             </DrawerContent>
