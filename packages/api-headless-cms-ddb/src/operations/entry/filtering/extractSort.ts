@@ -28,6 +28,12 @@ export const extractSort = (params: Params): Result => {
     const [fieldId, order] = result;
 
     const field = Object.values(fields).find(field => {
+        /**
+         * We do not support sorting by nested fields.
+         */
+        if (field.parents.length > 0) {
+            return false;
+        }
         return field.fieldId === fieldId;
     });
 

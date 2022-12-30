@@ -87,61 +87,10 @@ export const filter = async (params: Params): Promise<CmsEntry[]> => {
          * We need to go through all the filters and apply them to the given record.
          */
         for (const filter of filters) {
-            /**
-             * In case is multiple values field, last part is removed from path.
-             * -> values.categories.id -> values.categories
-             */
-            // const valuePath = getFilterValuePath(filter);
-
             const rawValue = getValue(record, filter.path);
-            // if (valuePath !== filter.path) {
-            //     /**
-            //      * Calculated is different other than the original because we need to search in the array of objects.
-            //      */
-            //     const propertyPath = getFilterValuePropertyPath(filter);
-            //     if (!propertyPath) {
-            //         console.log(`Cannot determine the property path of "${filter.path}".`);
-            //         continue;
-            //     }
-            //
-            //     const plainValue = await fromStorage<Record<string, string>[]>(
-            //         fields[filter.field.fieldId],
-            //         rawValue
-            //     );
-            //     /**
-            //      * We cannot go through the value because it is not array. Log the error and continue.
-            //      */
-            //     if (Array.isArray(plainValue) === false) {
-            //         console.log(
-            //             `Cannot go through the value on ${valuePath} because it is not an array, and we expect it to be.`
-            //         );
-            //         continue;
-            //     }
-            //     record = dotProp.set(record, valuePath, plainValue);
-            //
-            //     const values = plainValue.map(value => {
-            //         return value[propertyPath];
-            //     });
-            //
-            //     const result = execFilter({
-            //         value: values,
-            //         filter
-            //     });
-            //
-            //     if (!result) {
-            //         return null;
-            //     }
-            //     continue;
-            // }
 
             const field = fields[filter.fieldPathId];
             const plainValue = await fromStorage(field, rawValue);
-            /**
-             * If raw value is not same as the value after the storage transform, set the value to the items being filtered.
-             */
-            // if (plainValue !== rawValue) {
-            //     record = dotProp.set(record, filter.path, plainValue);
-            // }
 
             const result = execFilter({
                 value: plainValue,

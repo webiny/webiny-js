@@ -40,7 +40,7 @@ export interface CmsEntryFieldFilterPluginCreateResponse {
 }
 
 export class CmsEntryFieldFilterPlugin extends Plugin {
-    public static override readonly type: string = "cms.field.filter";
+    public static override readonly type: string = "cms.dynamodb.entry.field.filter";
     public static readonly ALL: string = "*";
 
     private readonly config: CmsEntryFieldFilterPluginParams;
