@@ -2,7 +2,7 @@ import { createComponentPlugin } from "@webiny/react-composition";
 import React, { FC } from "react";
 import { Toolbar } from "~/components/Toolbar/Toolbar";
 interface AddToolbarActionProps {
-    type?: "heading" | "paragraph";
+    type?: "heading" | "paragraph" | string;
     element: JSX.Element;
 }
 

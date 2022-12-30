@@ -20,11 +20,11 @@ import { LinkPlugin } from "@lexical/react/LexicalLinkPlugin";
 import { LexicalAutoLinkPlugin } from "~/plugins/AutoLinkPlugin";
 import {ParagraphToolbar} from "~/components/Toolbar/ParagraphToolbar";
 import {EditorStateJSONString} from "~/types";
-import {EditorProps} from "~/components/Editor/TextLexicalEditor";
+import {EditorProps} from "~/components/Editor/RichTextEditor";
 import {getEmptyEditorStateJSONString} from "~/utils/getEmptyEditorStateJSONString";
 
 interface ParagraphLexicalEditorProps extends EditorProps {
-    onChange: (json: EditorStateJSONString) => void;
+    onChange?: (json: EditorStateJSONString) => void;
 }
 
 const ParagraphLexicalEditor: React.FC<ParagraphLexicalEditorProps> = ({ value, onChange }) => {

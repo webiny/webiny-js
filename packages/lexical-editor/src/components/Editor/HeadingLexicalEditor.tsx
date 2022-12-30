@@ -19,12 +19,12 @@ import FloatingLinkEditorPlugin from "~/plugins/FloatingLinkEditorPlugin";
 import { LinkPlugin } from "@lexical/react/LexicalLinkPlugin";
 import { LexicalAutoLinkPlugin } from "~/plugins/AutoLinkPlugin";
 import { EditorStateJSONString } from "~/types";
-import {EditorProps} from "~/components/Editor/TextLexicalEditor";
+import {EditorProps} from "~/components/Editor/RichTextEditor";
 import {getEmptyEditorStateJSONString} from "~/utils/getEmptyEditorStateJSONString";
 
 
 interface HeadingLexicalInputProps extends EditorProps {
-    onChange: (editorState: EditorStateJSONString) => void;
+    onChange?: (editorState: EditorStateJSONString) => void;
 }
 
 const HeadingLexicalEditor: React.FC<HeadingLexicalInputProps> = ({ value, onChange }) => {

@@ -19,6 +19,7 @@ import { getSelectedNode } from "~/utils/getSelectedNode";
 import { $isCodeHighlightNode } from "@lexical/code";
 import { createPortal } from "react-dom";
 import "./Toolbar.css";
+import {$isLinkNode} from "@lexical/link";
 
 interface FloatingToolbarProps {
     type: ToolbarType;
@@ -40,16 +41,28 @@ const FloatingToolbar: FC<FloatingToolbarProps> = ({ children, anchorElem, edito
             return;
         }
 
+        let isLink = false;
+        if ($isRangeSelection(selection)) {
+            const node = getSelectedNode(selection);
+            // Update links
+            const parent = node.getParent();
+
+            if ($isLinkNode(parent) || $isLinkNode(node)) {
+                isLink = true;
+            }
+
+        }
+        console.log(isLink);
         const rootElement = editor.getRootElement();
         if (
             selection !== null &&
             nativeSelection !== null &&
             !nativeSelection.isCollapsed &&
             rootElement !== null &&
-            rootElement.contains(nativeSelection.anchorNode)
+            rootElement.contains(nativeSelection.anchorNode) &&
+            !isLink
         ) {
             const rangeRect = getDOMRangeRect(nativeSelection, rootElement);
-
             setFloatingElemPosition(rangeRect, popupCharStylesEditorElem, anchorElem);
         }
     }, [editor, anchorElem]);
