@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import debounce from "lodash/debounce";
 import useDeepCompareEffect from "use-deep-compare-effect";
@@ -15,6 +15,7 @@ import useGetPages from "~/admin/views/Pages/hooks/useGetPages";
 import { Empty } from "~/admin/components/Table/Empty";
 import { Header } from "~/admin/components/Table/Header";
 import { LoadingMore } from "~/admin/components/Table/LoadingMore";
+import { LoadMoreButton } from "~/admin/components/Table/LoadMoreButton";
 import { Preview } from "~/admin/components/Table/Preview";
 import { Table } from "~/admin/components/Table/Table";
 
@@ -22,7 +23,7 @@ import { FOLDER_ID_DEFAULT, FOLDER_TYPE } from "~/admin/constants/folders";
 
 import { Container, Wrapper } from "./styled";
 
-import { FolderItem } from "@webiny/app-folders/types";
+import { FolderItem, ListMeta } from "@webiny/app-folders/types";
 
 interface Props {
     folderId?: string;
@@ -77,6 +78,18 @@ export const Main = ({ folderId }: Props) => {
 
     const canCreate = useCanCreatePage();
 
+    const { innerHeight: windowHeight } = window;
+    const [tableHeight, setTableHeight] = useState(0);
+    const tableRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        setTableHeight(tableRef?.current?.clientHeight || 0);
+
+        return () => {
+            setTableHeight(0);
+        };
+    });
+
     useDeepCompareEffect(() => {
         const subFolders = getCurrentFolderList(folders, folderId);
         setSubFolders(subFolders);
@@ -90,16 +103,24 @@ export const Main = ({ folderId }: Props) => {
         folderId
     });
 
+    const loadMoreLinks = async ({ hasMoreItems, cursor }: ListMeta) => {
+        if (hasMoreItems && cursor) {
+            await listLinks(cursor);
+        }
+    };
+
     const loadMoreOnScroll = useCallback(
         debounce(async ({ scrollFrame }) => {
             if (scrollFrame.top > 0.8) {
-                if (meta.hasMoreItems && meta.cursor) {
-                    await listLinks(meta.cursor);
-                }
+                await loadMoreLinks(meta);
             }
         }, 200),
         [meta]
     );
+
+    const loadMoreOnClick = useCallback(async () => {
+        await loadMoreLinks(meta);
+    }, [meta]);
 
     const isLoading = useMemo(() => {
         return (
@@ -154,10 +175,18 @@ export const Main = ({ folderId }: Props) => {
                                 onScrollFrame={scrollFrame => loadMoreOnScroll({ scrollFrame })}
                             >
                                 <Table
+                                    ref={tableRef}
                                     folders={subFolders}
                                     pages={pages}
                                     loading={isLoading}
                                     openPreviewDrawer={openPreviewDrawer}
+                                />
+                                <LoadMoreButton
+                                    disabled={isLoadingMore}
+                                    meta={meta}
+                                    windowHeight={windowHeight}
+                                    tableHeight={tableHeight}
+                                    onClick={loadMoreOnClick}
                                 />
                             </Scrollbar>
                             {isLoadingMore && <LoadingMore />}

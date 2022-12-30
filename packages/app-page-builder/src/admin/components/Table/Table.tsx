@@ -1,4 +1,4 @@
-import React, { ReactElement, useMemo, useState } from "react";
+import React, { forwardRef, useMemo, useState } from "react";
 
 import { ReactComponent as More } from "@material-design-icons/svg/filled/more_vert.svg";
 import { FolderDialogUpdate } from "@webiny/app-folders";
@@ -46,7 +46,9 @@ interface Entry {
     original: PbPageDataLink | FolderItem;
 }
 
-export const Table = ({ folders, pages, loading, openPreviewDrawer }: Props): ReactElement => {
+export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
+    const { folders, pages, loading, openPreviewDrawer } = props;
+
     const [data, setData] = useState<Entry[]>([]);
     const [selectedFolder, setSelectedFolder] = useState<FolderItem>();
     const [updateDialogOpen, setUpdateDialogOpen] = useState<boolean>(false);
@@ -163,7 +165,7 @@ export const Table = ({ folders, pages, loading, openPreviewDrawer }: Props): Re
     };
 
     return (
-        <>
+        <div ref={ref}>
             <DataTable columns={columns} data={data} loadingInitial={loading} />
             {selectedFolder && (
                 <>
@@ -179,6 +181,8 @@ export const Table = ({ folders, pages, loading, openPreviewDrawer }: Props): Re
                     />
                 </>
             )}
-        </>
+        </div>
     );
-};
+});
+
+Table.displayName = "Table";
