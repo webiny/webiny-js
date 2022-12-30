@@ -5,7 +5,7 @@ export const PageContext = createContext<PageContextValue>(null as unknown as an
 
 export const PageProvider: React.FC<PageProviderProps> = ({ children, page }) => {
     const value: PageContextValue = {
-        getPage: () => page
+        page
     };
 
     return <PageContext.Provider value={value}>{children}</PageContext.Provider>;

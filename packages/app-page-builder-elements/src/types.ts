@@ -110,7 +110,7 @@ export interface PageProviderProps {
 }
 
 export type PageContextValue = {
-    getPage: () => Page;
+    page: Page;
 };
 
 export type Renderer<T = {}, TElementData = Record<string, any>> = React.ComponentType<
