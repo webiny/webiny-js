@@ -1,10 +1,11 @@
 import React from "react";
 import { Link } from "@webiny/react-router";
-import Menu from "./Menu";
+import Menu from "./../../components/Menu";
 import Navigation from "./Navigation";
 import styled from "@emotion/styled";
 
-import { fonts, breakpoints } from "../theme";
+import { fonts, breakpoints } from "../../theme";
+import { usePage } from "@webiny/app-page-builder-elements";
 
 const StyledDesktopHeader = styled.div`
     align-items: center;
@@ -32,15 +33,10 @@ const StyledDesktopHeader = styled.div`
     }
 `;
 
-interface DesktopHeaderProps {
-    menuName: string;
-    logo: {
-        src: string;
-    };
-    name: string;
-}
+const HeaderDesktop: React.FC = () => {
+    const { page } = usePage();
+    const { name, logo } = page.settings;
 
-const DesktopHeader: React.FC<DesktopHeaderProps> = ({ menuName, logo, name }) => {
     return (
         <StyledDesktopHeader data-testid={"pb-desktop-header"}>
             <div>
@@ -50,10 +46,10 @@ const DesktopHeader: React.FC<DesktopHeaderProps> = ({ menuName, logo, name }) =
                 </Link>
             </div>
             <nav>
-                <Menu slug={menuName} component={Navigation} />
+                <Menu slug={"main-menu"} component={Navigation} />
             </nav>
         </StyledDesktopHeader>
     );
 };
 
-export default DesktopHeader;
+export default HeaderDesktop;

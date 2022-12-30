@@ -1,14 +1,13 @@
-import React from "react";
+import React, { useCallback, useState } from "react";
 import HamburgerMenu from "react-hamburger-menu";
 import { useQuery } from "@apollo/react-hooks";
 import { Link } from "@webiny/react-router";
-import Menu, { GET_PUBLIC_MENU, hasMenuItems } from "./Menu";
+import Menu, { GET_PUBLIC_MENU, hasMenuItems } from "./../../components/Menu";
 import Navigation from "./Navigation";
-
 import styled from "@emotion/styled";
 import { ClassNames } from "@emotion/core";
-
-import { colors, fonts, breakpoints } from "../theme";
+import { colors, fonts, breakpoints } from "../../theme";
+import { usePage } from "@webiny/app-page-builder-elements";
 
 const StyledMobileHeader = styled.div`
     display: none;
@@ -109,26 +108,17 @@ const StyledMobileHeader = styled.div`
     }
 `;
 
-interface MobileHeaderPropsLogo {
-    src: string;
-}
+const HeaderMobile: React.FC = () => {
+    const { page } = usePage();
+    const { data } = useQuery(GET_PUBLIC_MENU, { variables: { slug: "main-menu" } });
+    const [menuOpened, setMenuOpened] = useState(false);
 
-interface MobileHeaderProps {
-    menuName: string;
-    logo: MobileHeaderPropsLogo;
-    name: string;
-    active: boolean;
-    toggleMenu: () => void;
-}
+    const toggleMenu = useCallback(() => {
+        setMenuOpened(!menuOpened);
+    }, [menuOpened]);
 
-const MobileHeader: React.FC<MobileHeaderProps> = ({
-    menuName,
-    logo,
-    name,
-    active,
-    toggleMenu
-}) => {
-    const { data } = useQuery(GET_PUBLIC_MENU, { variables: { slug: menuName } });
+    const { name, logo } = page.settings;
+
     return (
         <StyledMobileHeader data-testid={"pb-mobile-header"}>
             <div className={"logo"}>
@@ -137,8 +127,8 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
                     {(!logo || !logo.src) && <span>{name}</span>}
                 </Link>
             </div>
-            <nav className={active ? "active" : ""}>
-                <Menu slug={menuName} component={Navigation} />
+            <nav className={menuOpened ? "active" : ""}>
+                <Menu slug={"main-menu"} component={Navigation} />
                 <div>
                     <a href="/">{name}</a>
                 </div>
@@ -146,7 +136,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
             {hasMenuItems(data) && (
                 <div onClick={toggleMenu} className="hamburger-icon">
                     <HamburgerMenu
-                        isOpen={active}
+                        isOpen={menuOpened}
                         menuClicked={toggleMenu}
                         width={18}
                         height={15}
@@ -160,11 +150,14 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
             )}
             <ClassNames>
                 {({ cx }) => (
-                    <div onClick={toggleMenu} className={cx("mobile-overlay", { active })} />
+                    <div
+                        onClick={toggleMenu}
+                        className={cx("mobile-overlay", { active: menuOpened })}
+                    />
                 )}
             </ClassNames>
         </StyledMobileHeader>
     );
 };
 
-export default MobileHeader;
+export default HeaderMobile;

@@ -18,14 +18,12 @@
     "emotion": "^10.0.17",
     "graphql": "^15.7.2",
     "graphql-tag": "^2.12.6",
-    "invariant": "^2.2.4",
     "lodash": "^4.4.2",
     "react": "17.0.2",
     "react-hamburger-menu": "^1.1.1",
     "react-helmet": "^6.1.0"
   },
   "devDependencies": {
-    "@types/invariant": "^2.2.35",
     "@types/lodash": "^4.14.178",
     "@types/react-hamburger-menu": "^0.0.4"
   }

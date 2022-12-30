@@ -1,6 +1,6 @@
 import React from "react";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
+import Header from "./Static/Header";
+import Footer from "./Static/Footer";
 import styled from "@emotion/styled";
 
 const Layout = styled.div`

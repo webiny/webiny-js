@@ -1,45 +1,54 @@
 import * as React from "react";
 import { Query } from "@apollo/react-components";
 import gql from "graphql-tag";
-import get from "lodash/get";
-import invariant from "invariant";
 
 declare global {
-    // eslint-disable-next-line
     namespace JSX {
         interface IntrinsicElements {
             "ps-tag": {
-                key?: string;
-                value?: string;
+                "data-key": string;
+                "data-value": string;
             };
         }
     }
 }
 
-export const hasMenuItems = (data: GetPublishMenuQueryResponse): boolean => {
-    return Boolean(
-        data &&
-            Array.isArray(data.pageBuilder.getPublicMenu.data?.items) &&
-            data.pageBuilder.getPublicMenu.data.items.length
-    );
-};
+export interface PublishedMenuData {
+    title: string;
+    slug: string;
+    items: Array<{
+        id: string;
+        title: string;
+        path: string;
+        url: string;
+        children: Array<{
+            id: string;
+            title: string;
+            path: string;
+            url: string;
+        }>;
+    }>;
+}
 
-export interface GetPublishMenuQueryResponse {
+export interface PublishedMenuError {
+    code: string;
+    message: string;
+    data: Record<string, any>;
+}
+
+export interface GetPublishMenuResponse {
     pageBuilder: {
         getPublicMenu: {
-            data: {
-                title: string;
-                slug: string;
-                items: any[];
-            };
-            error: {
-                code: string;
-                message: string;
-                data: Record<string, any>;
-            };
+            data: PublishedMenuData;
+            error: PublishedMenuError;
         };
     };
 }
+
+export const hasMenuItems = (data: GetPublishMenuResponse) => {
+    return data?.pageBuilder?.getPublicMenu?.data?.items?.length > 0;
+};
+
 export const GET_PUBLIC_MENU = gql`
     query GetPublicMenu($slug: String!) {
         pageBuilder {
@@ -57,29 +66,20 @@ export const GET_PUBLIC_MENU = gql`
     }
 `;
 
-interface MenuProps {
+interface Props {
     slug: string;
-    component: React.FC<any>;
+    component: React.ComponentType<{ data?: PublishedMenuData }>;
 }
-const Menu: React.FC<MenuProps> = ({ slug, component: Component }) => {
-    invariant(Component, `You must provide a valid Menu component name (via "component" prop).`);
 
+const Menu: React.FC<Props> = ({ slug, component: Component }) => {
     return (
-        <Query<GetPublishMenuQueryResponse> query={GET_PUBLIC_MENU} variables={{ slug }}>
-            {props => {
-                const data = get(props, "data.pageBuilder.getPublicMenu.data", {
-                    items: [],
-                    title: null,
-                    slug: null
-                });
-
-                return (
-                    <>
-                        <ps-tag data-key="pb-menu" data-value={slug} />
-                        <Component {...props} data={data} />
-                    </>
-                );
-            }}
+        <Query<GetPublishMenuResponse> query={GET_PUBLIC_MENU} variables={{ slug }}>
+            {({ data }) => (
+                <>
+                    <ps-tag data-key="pb-menu" data-value={slug} />
+                    <Component data={data?.pageBuilder?.getPublicMenu?.data} />
+                </>
+            )}
         </Query>
     );
 };

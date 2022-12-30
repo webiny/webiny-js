@@ -1,30 +1,10 @@
 import React from "react";
 import { Link } from "@webiny/react-router";
 
-interface NavigationPropsItemChild {
-    id: string;
-    title: string;
-    path: string;
-    url: string;
-}
-
-interface NavigationPropsItem {
-    id: string;
-    title: string;
-    path: string;
-    url: string;
-    children: NavigationPropsItemChild[];
-}
-
-interface NavigationProps {
-    data: {
-        items: NavigationPropsItem[];
-    };
-}
-
 import styled from "@emotion/styled";
 
-import { colors, borderRadius, breakpoints } from "../theme";
+import { colors, borderRadius, breakpoints } from "../../theme";
+import { PublishedMenuData } from "../../components/Menu";
 
 const StyledUl = styled.ul`
     display: flex;
@@ -65,15 +45,15 @@ const StyledUl = styled.ul`
     }
 `;
 
-const Navigation: React.FC<NavigationProps> = ({ data }) => {
-    const items = data?.items;
-    if (!Array.isArray(items)) {
+const Navigation: React.ComponentType<{ data?: PublishedMenuData }> = ({ data }) => {
+    if (!data) {
         return null;
     }
+    const { items } = data;
 
     return (
         <StyledUl>
-            {data.items.map((item, index) => {
+            {items.map((item, index) => {
                 if (Array.isArray(item.children)) {
                     return (
                         <li key={item.id + index}>

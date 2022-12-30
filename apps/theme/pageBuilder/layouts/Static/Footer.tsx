@@ -3,10 +3,9 @@ import { Link } from "@webiny/react-router";
 import { ReactComponent as FacebookIcon } from "./assets/facebook-square-brands.svg";
 import { ReactComponent as TwitterIcon } from "./assets/twitter-square-brands.svg";
 import { ReactComponent as InstagramIcon } from "./assets/instagram-brands.svg";
-import { PbPageData } from "@webiny/app-page-builder/types";
-
 import styled from "@emotion/styled";
-import { breakpoints, colors, typography } from "../theme";
+import { breakpoints, colors, typography } from "../../theme";
+import { usePage } from "@webiny/app-page-builder-elements";
 
 const Wrapper = styled.footer`
     background-color: ${colors.color4};
@@ -71,13 +70,9 @@ const Social = styled.div`
     }
 `;
 
-interface FooterProps {
-    settings: Record<string, any>;
-    page: PbPageData;
-}
-
-const Footer: React.FC<FooterProps> = ({ settings }) => {
-    const { name, logo, social } = settings;
+const Footer: React.FC = () => {
+    const { page } = usePage();
+    const { name, logo, social } = page.settings;
 
     return (
         <Wrapper data-testid={"pb-footer"}>
