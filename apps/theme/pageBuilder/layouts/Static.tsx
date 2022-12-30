@@ -1,24 +1,25 @@
 import React from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import { PbPageData } from "@webiny/app-page-builder/types";
+import styled from "@emotion/styled";
 
-interface StaticProps {
-    children: React.ReactNode;
-    settings: Record<string, any>;
-    page: PbPageData;
-}
+const Layout = styled.div`
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 
-const Static: React.FC<StaticProps> = ({ children, ...rest }) => {
+    footer {
+        margin-top: auto;
+    }
+`;
+
+const Static: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     return (
-        <>
-            <Header {...rest} />
-            <article>
-                <ps-tag data-key={"pb-page"} data-value={rest.page.id} />
-                {children}
-            </article>
-            <Footer {...rest} />
-        </>
+        <Layout>
+            <Header />
+            <main>{children}</main>
+            <Footer />
+        </Layout>
     );
 };
 

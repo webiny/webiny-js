@@ -1,18 +1,15 @@
 import React, { useMemo, createElement } from "react";
 import { plugins } from "@webiny/plugins";
-import { PbPageLayoutPlugin, PbPageData } from "@webiny/app-page-builder/types";
-import { SettingsQueryResponseData } from "./graphql";
+import { PbPageLayoutPlugin } from "@webiny/app-page-builder/types";
+import { usePage } from "@webiny/app-page-builder-elements";
 
-interface LayoutProps {
-    page: PbPageData;
-    settings: SettingsQueryResponseData;
-}
-
-const Layout: React.FC<LayoutProps> = ({ page, settings, children }) => {
+const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const layouts = useMemo(() => {
         const layoutPlugins = plugins.byType<PbPageLayoutPlugin>("pb-page-layout");
         return layoutPlugins.map(pl => pl.layout);
     }, []);
+
+    const { page } = usePage();
 
     const layout = page?.settings?.general?.layout || null;
     if (!layout) {
@@ -24,7 +21,7 @@ const Layout: React.FC<LayoutProps> = ({ page, settings, children }) => {
         return children as React.ReactElement;
     }
 
-    return createElement(themeLayout.component, { page, settings }, children);
+    return createElement(themeLayout.component, {}, children);
 };
 
 export default Layout;

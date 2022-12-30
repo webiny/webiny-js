@@ -7,6 +7,7 @@ import {
     PbPageDataSettingsSocial
 } from "@webiny/app-page-builder/types";
 import Layout from "./Layout";
+import LegacyLayout from "./LegacyLayout";
 import Element from "@webiny/app-page-builder/render/components/Element";
 import WebsiteScripts from "@webiny/app-page-builder/render/components/WebsiteScripts";
 import useResponsiveClassName from "@webiny/app-page-builder/hooks/useResponsiveClassName";
@@ -116,14 +117,12 @@ const Render: React.FC<RenderProps> = ({ page, error, settings }) => {
             />
             {isLegacyRenderingEngine ? (
                 <div className={responsiveClassName} ref={pageElementRef}>
-                    <Layout page={page} settings={settings}>
+                    <LegacyLayout page={page} settings={settings}>
                         <Element element={page.content} />
-                    </Layout>
+                    </LegacyLayout>
                 </div>
             ) : (
-                <Layout page={page} settings={settings}>
-                    <Page page={page} />
-                </Layout>
+                <Page page={page} layout={Layout} />
             )}
         </>
     );
@@ -137,7 +136,12 @@ const Render: React.FC<RenderProps> = ({ page, error, settings }) => {
         );
     }
 
-    return content;
+    return (
+        <>
+            <ps-tag data-key={"pb-page"} data-value={page.id} />
+            {content}
+        </>
+    );
 };
 
 export default Render;
