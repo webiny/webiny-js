@@ -7,16 +7,24 @@ import { CmsModelField } from "@webiny/api-headless-cms/types";
  */
 type ModelFieldPath = string | ((value: string) => string);
 
+export type FieldType = "text" | "date" | "datetime" | "time" | "number" | "boolean" | string;
+
+export interface ModelFieldParent {
+    fieldId: string;
+    storageId: string;
+    type: FieldType;
+}
 export interface ModelField {
     unmappedType?: string;
     keyword?: boolean;
     isSearchable: boolean;
     isSortable: boolean;
-    type: "text" | "date" | "datetime" | "time" | "number" | "boolean" | string;
+    type: FieldType;
     isSystemField?: boolean;
     field: CmsModelField;
     path?: ModelFieldPath;
     fullTextSearch?: boolean;
+    parents: ModelFieldParent[];
 }
 
 export interface ModelFields {
