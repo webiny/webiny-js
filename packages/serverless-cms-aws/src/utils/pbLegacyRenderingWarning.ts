@@ -6,7 +6,7 @@ export const isLegacyRenderingEngine = featureFlags.pbLegacyRenderingEngine === 
 
 const DOCS_LINK = "https://www.webiny.com/docs/page-builder-rendering-upgrade.";
 
-const hook = async (params: Record<string, any>, context: CliContext) => {
+const hook = async (_: Record<string, any>, context: CliContext) => {
     if (!isLegacyRenderingEngine) {
         return;
     }
