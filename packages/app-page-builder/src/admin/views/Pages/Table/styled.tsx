@@ -13,4 +13,8 @@ export const Wrapper = styled("div")`
     bottom: 0;
     left: 0;
     background: var(--mdc-theme-surface);
+
+    .mdc-data-table {
+        display: inline-table;
+    }
 `;

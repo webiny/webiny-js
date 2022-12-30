@@ -7,5 +7,6 @@ export const Container = styled("div")`
     position: absolute;
     top: 0;
     left: 0;
-    z-index: 1;
+    z-index: 3;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12); ;
 `;

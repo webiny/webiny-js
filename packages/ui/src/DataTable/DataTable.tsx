@@ -57,6 +57,14 @@ interface Props<T> {
      * Render the skeleton state at the initial data loading.
      */
     loadingInitial?: boolean;
+    /*
+     * The number of columns to affix to the side of the table when scrolling.
+     */
+    stickyColumns?: number;
+    /*
+     * The number of rows to affix to the top of the table when scrolling.
+     */
+    stickyRows?: number;
 }
 
 const defineColumns = <T,>(
@@ -138,7 +146,14 @@ const defineData = <T,>(
     }, [data, loadingInitial]);
 };
 
-export const DataTable = <T,>({ data, columns, onSelectRow, loadingInitial }: Props<T>) => {
+export const DataTable = <T,>({
+    columns,
+    data,
+    loadingInitial,
+    onSelectRow,
+    stickyColumns,
+    stickyRows
+}: Props<T>) => {
     const [rowSelection, setRowSelection] = React.useState({});
 
     const table = useReactTable({
@@ -160,7 +175,7 @@ export const DataTable = <T,>({ data, columns, onSelectRow, loadingInitial }: Pr
     }, [rowSelection]);
 
     return (
-        <Table>
+        <Table stickyColumns={stickyColumns} stickyRows={stickyRows}>
             <DataTableContent>
                 <DataTableHead>
                     {table.getHeaderGroups().map(headerGroup => (

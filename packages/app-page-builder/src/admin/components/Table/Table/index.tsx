@@ -164,7 +164,7 @@ export const Table = ({ folders, pages, loading, openPreviewDrawer }: Props): Re
 
     return (
         <>
-            <DataTable columns={columns} data={data} loadingInitial={loading} />
+            <DataTable columns={columns} data={data} loadingInitial={loading} stickyRows={1} />
             {selectedFolder && (
                 <>
                     <FolderDialogUpdate
