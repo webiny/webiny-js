@@ -3,10 +3,9 @@ import React, { ReactElement, useMemo, useState } from "react";
 import { ReactComponent as More } from "@material-design-icons/svg/filled/more_vert.svg";
 import { FolderDialogUpdate } from "@webiny/app-folders";
 import { FolderItem } from "@webiny/app-folders/types";
-import { Columns, DataTable } from "@webiny/ui/DataTable";
 import { IconButton } from "@webiny/ui/Button";
+import { Columns, DataTable } from "@webiny/ui/DataTable";
 import { Menu } from "@webiny/ui/Menu";
-
 import { orderBy } from "lodash";
 /**
  * Package timeago-react does not have types.
@@ -133,7 +132,7 @@ export const Table = ({ folders, pages, loading, openPreviewDrawer }: Props): Re
 
                 if (type === "PAGE") {
                     return (
-                        <Menu handle={<More />}>
+                        <Menu handle={<IconButton icon={<More />} />}>
                             <PageActionEdit page={original as PbPageDataLink} />
                             <PageActionPreview page={original as PbPageDataLink} />
                             <PageActionPublish page={original as PbPageDataLink} />
@@ -142,7 +141,7 @@ export const Table = ({ folders, pages, loading, openPreviewDrawer }: Props): Re
                     );
                 } else {
                     return (
-                        <Menu handle={<More />}>
+                        <Menu handle={<IconButton icon={<More />} />}>
                             <FolderActionEdit
                                 onClick={() => {
                                     setUpdateDialogOpen(true);
