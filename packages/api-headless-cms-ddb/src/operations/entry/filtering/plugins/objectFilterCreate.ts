@@ -12,7 +12,6 @@ export const objectFilterCreate = () => {
                 value: objectValue,
                 valueFilterPlugins,
                 transformValuePlugins,
-                // transformValue,
                 getFilterCreatePlugin,
                 field: parentField,
                 fields

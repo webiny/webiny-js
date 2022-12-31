@@ -30,6 +30,7 @@ import {
     CmsEntryElasticsearchQueryModifierPlugin,
     CmsEntryElasticsearchSortModifierPlugin
 } from "~/plugins";
+import { createFilterPlugins } from "~/operations/entry/elasticsearch/filtering/plugins";
 
 export * from "./plugins";
 
@@ -113,6 +114,10 @@ export const createStorageOperations: StorageOperationsFactory = params => {
          * Built-in Elasticsearch index templates.
          */
         elasticsearchIndexPlugins(),
+        /**
+         * Filter plugins used to apply filtering from where conditions to Elasticsearch query.
+         */
+        createFilterPlugins(),
         /**
          * User defined custom plugins.
          * They are at the end because we can then override existing plugins.

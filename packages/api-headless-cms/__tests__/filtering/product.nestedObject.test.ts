@@ -32,53 +32,53 @@ describe("complex product nestedObject filtering", () => {
     });
 
     it("should filter a single product with nested object filter", async () => {
-        // /**
-        //  * Filtering by variant name contains v1
-        //  */
-        // const [responseVariantNameV1] = await listProducts({
-        //     where: {
-        //         variant: {
-        //             name_contains: "v1"
-        //         }
-        //     }
-        // });
-        //
-        // expect(responseVariantNameV1).toEqual({
-        //     data: {
-        //         listProducts: {
-        //             data: [getProduct("tv"), getProduct("server")],
-        //             meta: {
-        //                 hasMoreItems: false,
-        //                 totalCount: 2,
-        //                 cursor: null
-        //             },
-        //             error: null
-        //         }
-        //     }
-        // });
-        // /**
-        //  * Filtering by variant price between
-        //  */
-        // const [responseVariantPriceBetween] = await listProducts({
-        //     where: {
-        //         variant: {
-        //             price_between: [675, 685]
-        //         }
-        //     }
-        // });
-        // expect(responseVariantPriceBetween).toEqual({
-        //     data: {
-        //         listProducts: {
-        //             data: [getProduct("tv")],
-        //             meta: {
-        //                 hasMoreItems: false,
-        //                 totalCount: 1,
-        //                 cursor: null
-        //             },
-        //             error: null
-        //         }
-        //     }
-        // });
+        /**
+         * Filtering by variant name contains v1
+         */
+        const [responseVariantNameV1] = await listProducts({
+            where: {
+                variant: {
+                    name_contains: "v1"
+                }
+            }
+        });
+
+        expect(responseVariantNameV1).toEqual({
+            data: {
+                listProducts: {
+                    data: [getProduct("tv"), getProduct("server")],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 2,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+        /**
+         * Filtering by variant price between
+         */
+        const [responseVariantPriceBetween] = await listProducts({
+            where: {
+                variant: {
+                    price_between: [675, 685]
+                }
+            }
+        });
+        expect(responseVariantPriceBetween).toEqual({
+            data: {
+                listProducts: {
+                    data: [getProduct("tv")],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 1,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
         /**
          * Filtering by variant category and price range
          */
@@ -89,9 +89,9 @@ describe("complex product nestedObject filtering", () => {
                     id: category.id
                 },
                 variant: {
-                    // category: {
-                    //     id: category.id
-                    // },
+                    category: {
+                        id: category.id
+                    },
                     price_between: [675, 681]
                 }
             }

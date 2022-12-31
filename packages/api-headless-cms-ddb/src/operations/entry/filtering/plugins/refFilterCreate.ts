@@ -55,6 +55,7 @@ export const createRefFilterCreate = () => {
                 filters.push({
                     field,
                     path: paths.join("."),
+                    fieldPathId: [...field.parents.map(f => f.fieldId), field.fieldId].join("."),
                     plugin: filterPlugin,
                     negate,
                     compareValue: transformValue({
