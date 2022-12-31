@@ -1,0 +1,193 @@
+import { createFilters } from "~/operations/entry/filtering/createFilters";
+import { PluginsContainer } from "@webiny/plugins";
+import { CmsModel } from "@webiny/api-headless-cms/types";
+import { createModel } from "../../helpers/createModel";
+import { createFields } from "~/operations/entry/filtering/createFields";
+import { Field } from "~/operations/entry/filtering/types";
+import { createPluginsContainer } from "../../helpers/pluginsContainer";
+import { CmsEntryFieldFilterPluginCreateResponse } from "~/plugins/CmsEntryFieldFilterPlugin";
+
+describe("create filters from where conditions", () => {
+    let plugins: PluginsContainer;
+    let model: CmsModel;
+    let fields: Record<string, Field>;
+
+    beforeEach(() => {
+        plugins = createPluginsContainer();
+        model = createModel();
+        fields = createFields({
+            plugins,
+            model
+        });
+    });
+
+    it("should create simple, non-nested, filters", async () => {
+        const result = createFilters({
+            plugins,
+            fields,
+            where: {
+                id_gte: 500,
+                title_not_contains: "webiny",
+                priority_in: [2],
+                createdBy: "123#admin",
+                parent: {
+                    id_in: ["parentIdNumber"]
+                },
+                authors: {
+                    entryId_in: ["authorId1", "authorId2"]
+                }
+            }
+        });
+
+        const expected: CmsEntryFieldFilterPluginCreateResponse[] = [
+            {
+                compareValue: 500,
+                field: expect.objectContaining({
+                    fieldId: "id"
+                }),
+                plugin: expect.objectContaining({
+                    _params: {
+                        matches: expect.any(Function),
+                        operation: "gte"
+                    },
+                    name: "dynamodb.value.filter.gte"
+                }),
+                negate: false,
+                path: "id",
+                transformValue: expect.any(Function)
+            },
+            {
+                compareValue: "webiny",
+                field: expect.objectContaining({
+                    fieldId: "title"
+                }),
+                plugin: expect.objectContaining({
+                    _params: {
+                        matches: expect.any(Function),
+                        operation: "contains"
+                    },
+                    name: "dynamodb.value.filter.contains"
+                }),
+                negate: true,
+                path: "values.title",
+                transformValue: expect.any(Function)
+            },
+            {
+                compareValue: [2],
+                field: expect.objectContaining({
+                    fieldId: "priority"
+                }),
+                plugin: expect.objectContaining({
+                    _params: {
+                        matches: expect.any(Function),
+                        operation: "in"
+                    },
+                    name: "dynamodb.value.filter.in"
+                }),
+                negate: false,
+                path: "values.priority",
+                transformValue: expect.any(Function)
+            },
+            {
+                compareValue: "123#admin",
+                field: expect.objectContaining({
+                    fieldId: "createdBy"
+                }),
+                plugin: expect.objectContaining({
+                    _params: {
+                        matches: expect.any(Function),
+                        operation: "eq"
+                    },
+                    name: "dynamodb.value.filter.eq"
+                }),
+                negate: false,
+                path: "createdBy.id",
+                transformValue: expect.any(Function)
+            },
+            {
+                compareValue: ["parentIdNumber"],
+                field: expect.objectContaining({
+                    fieldId: "parent"
+                }),
+                plugin: expect.objectContaining({
+                    _params: {
+                        matches: expect.any(Function),
+                        operation: "in"
+                    },
+                    name: "dynamodb.value.filter.in"
+                }),
+                negate: false,
+                path: "values.parent.id",
+                transformValue: expect.any(Function)
+            },
+            {
+                compareValue: ["authorId1", "authorId2"],
+                field: expect.objectContaining({
+                    fieldId: "authors"
+                }),
+                plugin: expect.objectContaining({
+                    _params: {
+                        matches: expect.any(Function),
+                        operation: "in"
+                    },
+                    name: "dynamodb.value.filter.in"
+                }),
+                negate: false,
+                path: "values.authors.entryId",
+                transformValue: expect.any(Function)
+            }
+        ];
+
+        expect(result).toEqual(expected);
+    });
+
+    it("should create complex nested filters", async () => {
+        const result = createFilters({
+            plugins,
+            fields,
+            where: {
+                options: {
+                    keys_in: ["key#1", "key#2", "key#3"],
+                    optionId_gte: 250
+                }
+            }
+        });
+
+        const expected: CmsEntryFieldFilterPluginCreateResponse[] = [
+            {
+                compareValue: ["key#1", "key#2", "key#3"],
+                field: expect.objectContaining({
+                    fieldId: "keys"
+                }),
+                plugin: expect.objectContaining({
+                    _params: {
+                        matches: expect.any(Function),
+                        operation: "in"
+                    },
+                    name: "dynamodb.value.filter.in"
+                }),
+                negate: false,
+                path: "values.options.keys",
+                transformValue: expect.any(Function)
+            },
+            {
+                compareValue: 250,
+                field: expect.objectContaining({
+                    fieldId: "optionId"
+                }),
+                plugin: expect.objectContaining({
+                    _params: {
+                        matches: expect.any(Function),
+                        operation: "gte"
+                    },
+                    name: "dynamodb.value.filter.gte"
+                }),
+                negate: false,
+                path: "values.options.optionId",
+                transformValue: expect.any(Function)
+            }
+        ];
+
+        expect(result).toEqual(expected);
+    });
+});
