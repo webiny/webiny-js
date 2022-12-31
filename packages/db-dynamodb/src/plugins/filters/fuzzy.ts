@@ -4,7 +4,7 @@ import {
     ValueFilterPlugin
 } from "../definitions/ValueFilterPlugin";
 
-export default new ValueFilterPlugin({
+const plugin = new ValueFilterPlugin({
     operation: "fuzzy",
     matches: ({
         value,
@@ -19,3 +19,7 @@ export default new ValueFilterPlugin({
         return result.length > 0;
     }
 });
+
+plugin.name = "dynamodb.value.filter.fuzzy";
+
+export default plugin;

@@ -7,14 +7,22 @@ import { CmsModelField } from "@webiny/api-headless-cms/types";
 
 const excludeTypes = ["time", "dateTimeWithTimezone"];
 
-const convertFromStorage = (field: CmsModelField, value: string | string[]) => {
+const convertFromStorage = (
+    field: Pick<CmsModelField, "multipleValues">,
+    value: string | string[]
+) => {
     try {
         if (field.multipleValues) {
-            return ((value as string[]) || [])
-                .filter(v => !!v)
-                .map((v: string) => {
-                    return new Date(v);
-                });
+            const result: Date[] = [];
+            for (const v of value) {
+                if (!v) {
+                    continue;
+                }
+                try {
+                    result.push(new Date(v));
+                } catch {}
+            }
+            return result;
         }
         return new Date(value as string);
     } catch {

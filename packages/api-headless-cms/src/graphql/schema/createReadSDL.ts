@@ -72,7 +72,9 @@ export const createReadSDL: CreateReadSDL = ({ model, fieldTypePlugins }): strin
         ${
             listFilterFieldsRender &&
             `input ${rTypeName}ListWhereInput {
-            ${listFilterFieldsRender}
+                ${listFilterFieldsRender}
+                AND: [${rTypeName}ListWhereInput!]
+                OR: [${rTypeName}ListWhereInput!]
         }`
         }
         

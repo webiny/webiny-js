@@ -77,6 +77,9 @@ export default /* GraphQL */ `
         rating_not_between: [Number!]
 
         author: RefFieldWhereInput
+
+        AND: [ReviewListWhereInput!]
+        OR: [ReviewListWhereInput!]
     }
 
     enum ReviewListSorter {
