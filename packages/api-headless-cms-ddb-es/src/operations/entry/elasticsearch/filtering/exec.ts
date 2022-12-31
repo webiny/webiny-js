@@ -7,10 +7,10 @@ import { createSearchPluginList } from "~/operations/entry/elasticsearch/plugins
 import { createOperatorPluginList } from "~/operations/entry/elasticsearch/plugins/operator";
 import { createBaseQuery } from "~/operations/entry/elasticsearch/initialQuery";
 import { parseWhereKey } from "@webiny/api-elasticsearch";
-import { getValues } from "./values";
+import { getWhereValues } from "./values";
 import { getPopulated } from "./populated";
 import { createApplyFiltering } from "./applyFiltering";
-import { isRefFieldFiltering } from "~/operations/entry/elasticsearch/filtering/isRefFieldFiltering";
+import { CmsEntryFilterPlugin } from "~/plugins/CmsEntryFilterPlugin";
 
 export interface CreateExecParams {
     model: CmsModel;
@@ -46,6 +46,28 @@ export const createExecFiltering = (params: CreateExecParams): CreateExecFilteri
         searchPlugins
     });
 
+    const filteringPlugins = plugins
+        .byType<CmsEntryFilterPlugin>(CmsEntryFilterPlugin.type)
+        .reduce<Record<string, CmsEntryFilterPlugin>>((collection, plugin) => {
+            collection[plugin.fieldType] = plugin;
+
+            return collection;
+        }, {});
+
+    const getFilterPlugin = (type: string) => {
+        const plugin = filteringPlugins[type] || filteringPlugins["*"];
+        if (plugin) {
+            return plugin;
+        }
+        throw new WebinyError(
+            `There is no filtering plugin for the given field type "${type}".`,
+            "FILTERING_PLUGIN_ERROR",
+            {
+                type
+            }
+        );
+    };
+
     const execFiltering = (params: ExecParams) => {
         const { where: initialWhere, query } = params;
         /**
@@ -73,7 +95,7 @@ export const createExecFiltering = (params: CreateExecParams): CreateExecFilteri
              * When we are running with AND, the "value" MUST be an array.
              */
             else if (key === "AND") {
-                const childWhereList = getValues(value, "AND");
+                const childWhereList = getWhereValues(value, "AND");
 
                 const childQuery = createBaseQuery();
 
@@ -98,7 +120,7 @@ export const createExecFiltering = (params: CreateExecParams): CreateExecFilteri
              * When we are running with OR, the "value" must be an array.
              */
             else if (key === "OR") {
-                const childWhereList = getValues(value, "OR");
+                const childWhereList = getWhereValues(value, "OR");
                 /**
                  * Each of the conditions MUST produce it's own should section.
                  */
@@ -151,42 +173,20 @@ export const createExecFiltering = (params: CreateExecParams): CreateExecFilteri
             }
 
             const field = fields[fieldId];
-
             if (!field) {
                 throw new WebinyError(`There is no field "${fieldId}".`);
             }
+            const filterPlugin = getFilterPlugin(field.type);
 
-            if (!field.isSearchable) {
-                throw new WebinyError(`Field "${field.field.fieldId}" is not searchable.`);
-            }
-
-            /**
-             * There is a possibility that value is an object.
-             * In that case, check if field is ref field and continue a bit differently.
-             */
-            if (isRefFieldFiltering({ key, value, field })) {
-                /**
-                 * We need to go through each key in where[key] to determine the filters.
-                 */
-                for (const whereKey in value) {
-                    const { operator } = parseWhereKey(whereKey);
-                    applyFiltering({
-                        query,
-                        field,
-                        operator,
-                        key: whereKey,
-                        value: value[whereKey]
-                    });
-                }
-                continue;
-            }
-
-            applyFiltering({
+            filterPlugin.exec({
+                applyFiltering,
+                getFilterPlugin,
                 key,
                 value,
-                query,
+                operator,
                 field,
-                operator
+                fields,
+                query
             });
         }
     };

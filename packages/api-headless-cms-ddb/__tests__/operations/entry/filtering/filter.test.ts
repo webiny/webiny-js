@@ -74,6 +74,7 @@ describe("filtering", () => {
                         name: "dynamodb.value.filter.gte"
                     }),
                     negate: false,
+                    fieldPathId: "createdOn",
                     path: "createdOn",
                     transformValue: expect.any(Function)
                 }

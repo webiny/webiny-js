@@ -53,6 +53,7 @@ describe("create filters from where conditions", () => {
                     name: "dynamodb.value.filter.gte"
                 }),
                 negate: false,
+                fieldPathId: "id",
                 path: "id",
                 transformValue: expect.any(Function)
             },
@@ -69,6 +70,7 @@ describe("create filters from where conditions", () => {
                     name: "dynamodb.value.filter.contains"
                 }),
                 negate: true,
+                fieldPathId: "title",
                 path: "values.title",
                 transformValue: expect.any(Function)
             },
@@ -85,6 +87,7 @@ describe("create filters from where conditions", () => {
                     name: "dynamodb.value.filter.in"
                 }),
                 negate: false,
+                fieldPathId: "priority",
                 path: "values.priority",
                 transformValue: expect.any(Function)
             },
@@ -101,6 +104,7 @@ describe("create filters from where conditions", () => {
                     name: "dynamodb.value.filter.eq"
                 }),
                 negate: false,
+                fieldPathId: "createdBy",
                 path: "createdBy.id",
                 transformValue: expect.any(Function)
             },
@@ -117,6 +121,7 @@ describe("create filters from where conditions", () => {
                     name: "dynamodb.value.filter.in"
                 }),
                 negate: false,
+                fieldPathId: "parent",
                 path: "values.parent.id",
                 transformValue: expect.any(Function)
             },
@@ -133,6 +138,7 @@ describe("create filters from where conditions", () => {
                     name: "dynamodb.value.filter.in"
                 }),
                 negate: false,
+                fieldPathId: "authors",
                 path: "values.authors.entryId",
                 transformValue: expect.any(Function)
             }
@@ -167,6 +173,7 @@ describe("create filters from where conditions", () => {
                     name: "dynamodb.value.filter.in"
                 }),
                 negate: false,
+                fieldPathId: "options.keys",
                 path: "values.options.keys",
                 transformValue: expect.any(Function)
             },
@@ -183,6 +190,7 @@ describe("create filters from where conditions", () => {
                     name: "dynamodb.value.filter.gte"
                 }),
                 negate: false,
+                fieldPathId: "options.optionId",
                 path: "values.options.optionId",
                 transformValue: expect.any(Function)
             }

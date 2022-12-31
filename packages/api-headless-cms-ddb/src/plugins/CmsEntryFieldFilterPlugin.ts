@@ -32,6 +32,7 @@ interface CmsEntryFieldFilterPluginCreateParams {
 export interface CmsEntryFieldFilterPluginCreateResponse {
     field: Field;
     path: string;
+    fieldPathId: string;
     plugin: ValueFilterPlugin;
     negate: boolean;
     compareValue: any;
@@ -39,7 +40,7 @@ export interface CmsEntryFieldFilterPluginCreateResponse {
 }
 
 export class CmsEntryFieldFilterPlugin extends Plugin {
-    public static override readonly type: string = "cms.field.filter";
+    public static override readonly type: string = "cms.dynamodb.entry.field.filter";
     public static readonly ALL: string = "*";
 
     private readonly config: CmsEntryFieldFilterPluginParams;
