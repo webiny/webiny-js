@@ -2,6 +2,8 @@ import React, { ReactElement, useEffect, useState } from "react";
 import { FolderTree } from "@webiny/app-folders";
 import { useRouter } from "@webiny/react-router";
 
+import { SidebarContainer } from "./styled";
+
 interface Props {
     folderId?: string;
     defaultFolderName: string;
@@ -23,12 +25,14 @@ export const Sidebar = ({ folderId, defaultFolderName }: Props): ReactElement =>
     };
 
     return (
-        <FolderTree
-            type={"page"}
-            title={defaultFolderName}
-            focusedFolderId={focusedFolderId}
-            onTitleClick={() => history.push("/page-builder/pages-table")}
-            onFolderClick={data => data?.id && onFolderClick(data?.id)}
-        />
+        <SidebarContainer>
+            <FolderTree
+                type={"page"}
+                title={defaultFolderName}
+                focusedFolderId={focusedFolderId}
+                onTitleClick={() => history.push("/page-builder/pages-table")}
+                onFolderClick={data => data?.id && onFolderClick(data?.id)}
+            />
+        </SidebarContainer>
     );
 };

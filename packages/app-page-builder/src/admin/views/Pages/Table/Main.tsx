@@ -20,7 +20,7 @@ import { Table } from "~/admin/components/Table/Table";
 
 import { FOLDER_ID_DEFAULT, FOLDER_TYPE } from "~/admin/constants/folders";
 
-import { Container, Wrapper } from "./styled";
+import { MainContainer, Wrapper } from "./styled";
 
 import { FolderItem } from "@webiny/app-folders/types";
 
@@ -132,7 +132,7 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
 
     return (
         <>
-            <Container>
+            <MainContainer>
                 <Header
                     title={!isLoading ? folderName : undefined}
                     canCreate={canCreate}
@@ -169,7 +169,7 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
                         </>
                     )}
                 </Wrapper>
-            </Container>
+            </MainContainer>
             <FolderDialogCreate
                 type={"page"}
                 open={showFoldersDialog}
