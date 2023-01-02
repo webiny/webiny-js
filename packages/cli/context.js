@@ -92,7 +92,7 @@ class Context {
     log = log.log;
     info = log.info;
     success = log.success;
-    debug = process.argv.includes("--debug") ? log.debug : noop;
+    debug = process.argv.some(v => v.match("--debug")) ? log.debug : noop;
     warning = log.warning;
     error = log.error;
 
