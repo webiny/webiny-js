@@ -67,8 +67,6 @@ export const List = ({
         if (folders) {
             setInitialOpenList(createInitialOpenList(folders, openFolderIds, focusedFolderId));
         }
-
-        return () => setInitialOpenList(undefined);
     }, []);
 
     const handleDrop = async (
