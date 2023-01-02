@@ -42,6 +42,14 @@ export default /* GraphQL */ `
         text: String
     }
 
+    extend type Page_Content_Hero {
+        _templateId: ID!
+    }
+    
+    extend type Page_Content_SimpleText {
+        _templateId: ID!
+    }
+
     union Page_Header = Page_Header_TextHeader | Page_Header_ImageHeader
 
     type Page_Header_TextHeader {
@@ -51,6 +59,14 @@ export default /* GraphQL */ `
     type Page_Header_ImageHeader {
         title: String
         image: String
+    }
+
+    extend type Page_Header_TextHeader {
+        _templateId: ID!
+    }
+    
+    extend type Page_Header_ImageHeader {
+        _templateId: ID!
     }
 
     input Page_Content_HeroInput {
