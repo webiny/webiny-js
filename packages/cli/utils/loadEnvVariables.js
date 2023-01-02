@@ -1,7 +1,7 @@
 const path = require("path");
 const yargs = require("yargs");
 const { log } = require("./log");
-const { getProject } = require("./getProject");
+const getProject = require("./getProject");
 const { boolean } = require("boolean");
 
 // Load environment variables from following sources:
