@@ -45,7 +45,7 @@ export default /* GraphQL */ `
     extend type Page_Content_Hero {
         _templateId: ID!
     }
-    
+
     extend type Page_Content_SimpleText {
         _templateId: ID!
     }
@@ -64,7 +64,7 @@ export default /* GraphQL */ `
     extend type Page_Header_TextHeader {
         _templateId: ID!
     }
-    
+
     extend type Page_Header_ImageHeader {
         _templateId: ID!
     }
