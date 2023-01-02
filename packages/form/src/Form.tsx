@@ -217,7 +217,11 @@ function FormInner<T extends GenericFormData = GenericFormData>(
 
     useImperativeHandle(ref, () => ({
         submit: (ev: React.SyntheticEvent) => {
-            formRef.current.submit(ev);
+            /**
+             * We need to `return` to utilize the `props.onSubmit` return value. It's useful for plugins and chaining
+             * of `onSubmit` callbacks, where return value needs to be passed to the next handler.
+             */
+            return formRef.current.submit(ev);
         }
     }));
 
