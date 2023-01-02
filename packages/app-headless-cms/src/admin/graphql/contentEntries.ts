@@ -9,6 +9,7 @@ import {
     CmsMetaResponse
 } from "~/types";
 import { createFieldsList } from "./createFieldsList";
+import { getModelTitleFieldId } from "~/utils/getModelTitleFieldId";
 
 const ERROR_FIELD = /* GraphQL */ `
     {
@@ -96,13 +97,6 @@ export const createRevisionsQuery = (model: CmsEditorContentModel) => {
             }
         }
     `;
-};
-
-const getModelTitleFieldId = (model: CmsEditorContentModel): string => {
-    if (!model.titleFieldId || model.titleFieldId === "id") {
-        return "";
-    }
-    return model.titleFieldId;
 };
 
 /**

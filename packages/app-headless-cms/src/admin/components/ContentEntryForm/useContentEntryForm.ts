@@ -14,12 +14,13 @@ import {
     CmsEntryCreateFromMutationResponse,
     CmsEntryCreateFromMutationVariables
 } from "~/admin/graphql/contentEntries";
-import { useModel, useMutation } from "~/admin/hooks";
+import { useApolloClient, useModel, useMutation } from "~/admin/hooks";
 import * as GQLCache from "~/admin/views/contentEntries/ContentEntry/cache";
 import { prepareFormData } from "~/admin/views/contentEntries/ContentEntry/prepareFormData";
 import { CmsEditorContentEntry, CmsModelField, CmsEditorFieldRendererPlugin } from "~/types";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
 import { plugins } from "@webiny/plugins";
+import { getFetchPolicy } from "~/utils/getFetchPolicy";
 
 /**
  * Used for some fields to convert their values.
@@ -62,6 +63,7 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
     const { model } = useModel();
     const { entry } = params;
     const { history } = useRouter();
+    const client = useApolloClient();
     const { showSnackbar } = useSnackbar();
     const [invalidFields, setInvalidFields] = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(false);
@@ -116,45 +118,34 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
     };
 
     const createContent: FormOnSubmit = useCallback(
-        async (data, form) => {
+        async (formData, form) => {
             setLoading(true);
             const response = await createMutation({
-                variables: { data },
-                update(cache, response) {
-                    if (!response.data) {
-                        showSnackbar("Missing response data in Create Entry.");
-                        return;
-                    }
-                    const { data } = response;
-                    const { data: entry, error } = data.content || {};
-                    if (error) {
-                        showSnackbar(error.message);
-                        setInvalidFieldValues(error.data as InvalidFieldError[]);
-                        return;
-                    } else if (!entry) {
-                        showSnackbar(
-                            "Missing entry data in update callback on Create Entry Response."
-                        );
-                        return;
-                    }
-                    resetInvalidFieldValues();
-                    if (params.addEntryToListCache) {
-                        GQLCache.addEntryToListCache(model, cache, entry, listQueryVariables);
-                    }
-                }
+                variables: { data: formData },
+                fetchPolicy: getFetchPolicy(model)
             });
+
             setLoading(false);
 
-            const { error, data: entry } = response.data?.content || {};
+            // Finalize "create" process
+            if (!response.data) {
+                showSnackbar("Missing response data in Create Entry.");
+                return;
+            }
+            const { data: entry, error } = response.data.content || {};
             if (error) {
                 showSnackbar(error.message);
                 setInvalidFieldValues(error.data as InvalidFieldError[]);
-                return null;
+                return;
             } else if (!entry) {
                 showSnackbar("Missing entry data in Create Entry Response.");
-                return null;
+                return;
             }
             resetInvalidFieldValues();
+            if (params.addEntryToListCache) {
+                GQLCache.addEntryToListCache(model, client.cache, entry, listQueryVariables);
+            }
+
             showSnackbar(`${model.name} entry created successfully!`);
             if (typeof params.onSubmit === "function") {
                 params.onSubmit(entry, form);
