@@ -2,14 +2,66 @@ import React, { useCallback, useState } from "react";
 import HamburgerMenu from "react-hamburger-menu";
 import { useQuery } from "@apollo/react-hooks";
 import { Link } from "@webiny/react-router";
-import Menu, { GET_PUBLIC_MENU, hasMenuItems } from "./../../components/Menu";
-import Navigation from "./Navigation";
-import styled from "@emotion/styled";
-import { ClassNames } from "@emotion/core";
-import { colors, fonts, breakpoints } from "../../theme";
 import { usePage } from "@webiny/app-page-builder-elements";
+import { ClassNames } from "@emotion/core";
+import styled from "@emotion/styled";
+import { Menu, GET_PUBLIC_MENU, hasMenuItems } from "../../components/Menu";
+import { Navigation } from "./Navigation";
+import { colors, fonts, breakpoints } from "../../theme";
 
-const StyledMobileHeader = styled.div`
+export const HeaderMobile: React.FC = () => {
+    const { page } = usePage();
+    const { data } = useQuery(GET_PUBLIC_MENU, { variables: { slug: "main-menu" } });
+    const [menuOpened, setMenuOpened] = useState(false);
+
+    const toggleMenu = useCallback(() => {
+        setMenuOpened(!menuOpened);
+    }, [menuOpened]);
+
+    const { name, logo } = page.settings;
+
+    return (
+        <HeaderMobileWrapper data-testid={"pb-mobile-header"}>
+            <div className={"logo"}>
+                <Link to="/">
+                    {logo && logo.src && <img src={logo.src} alt={name} />}{" "}
+                    {(!logo || !logo.src) && <span>{name}</span>}
+                </Link>
+            </div>
+            <nav className={menuOpened ? "active" : ""}>
+                <Menu slug={"main-menu"} component={Navigation} />
+                <div>
+                    <a href="/">{name}</a>
+                </div>
+            </nav>
+            {hasMenuItems(data) && (
+                <div onClick={toggleMenu} className="hamburger-icon">
+                    <HamburgerMenu
+                        isOpen={menuOpened}
+                        menuClicked={toggleMenu}
+                        width={18}
+                        height={15}
+                        strokeWidth={1}
+                        rotate={0}
+                        color="black"
+                        borderRadius={0}
+                        animationDuration={0.5}
+                    />
+                </div>
+            )}
+            <ClassNames>
+                {({ cx }) => (
+                    <div
+                        onClick={toggleMenu}
+                        className={cx("mobile-overlay", { active: menuOpened })}
+                    />
+                )}
+            </ClassNames>
+        </HeaderMobileWrapper>
+    );
+};
+
+const HeaderMobileWrapper = styled.div`
     display: none;
 
     @keyframes slide-in {
@@ -107,57 +159,3 @@ const StyledMobileHeader = styled.div`
         }
     }
 `;
-
-const HeaderMobile: React.FC = () => {
-    const { page } = usePage();
-    const { data } = useQuery(GET_PUBLIC_MENU, { variables: { slug: "main-menu" } });
-    const [menuOpened, setMenuOpened] = useState(false);
-
-    const toggleMenu = useCallback(() => {
-        setMenuOpened(!menuOpened);
-    }, [menuOpened]);
-
-    const { name, logo } = page.settings;
-
-    return (
-        <StyledMobileHeader data-testid={"pb-mobile-header"}>
-            <div className={"logo"}>
-                <Link to="/">
-                    {logo && logo.src && <img src={logo.src} alt={name} />}{" "}
-                    {(!logo || !logo.src) && <span>{name}</span>}
-                </Link>
-            </div>
-            <nav className={menuOpened ? "active" : ""}>
-                <Menu slug={"main-menu"} component={Navigation} />
-                <div>
-                    <a href="/">{name}</a>
-                </div>
-            </nav>
-            {hasMenuItems(data) && (
-                <div onClick={toggleMenu} className="hamburger-icon">
-                    <HamburgerMenu
-                        isOpen={menuOpened}
-                        menuClicked={toggleMenu}
-                        width={18}
-                        height={15}
-                        strokeWidth={1}
-                        rotate={0}
-                        color="black"
-                        borderRadius={0}
-                        animationDuration={0.5}
-                    />
-                </div>
-            )}
-            <ClassNames>
-                {({ cx }) => (
-                    <div
-                        onClick={toggleMenu}
-                        className={cx("mobile-overlay", { active: menuOpened })}
-                    />
-                )}
-            </ClassNames>
-        </StyledMobileHeader>
-    );
-};
-
-export default HeaderMobile;

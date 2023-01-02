@@ -1,13 +1,31 @@
 import React from "react";
 import { Link } from "@webiny/react-router";
-import Menu from "./../../components/Menu";
-import Navigation from "./Navigation";
 import styled from "@emotion/styled";
-
-import { fonts, breakpoints } from "../../theme";
 import { usePage } from "@webiny/app-page-builder-elements";
+import { fonts, breakpoints } from "../../theme";
+import { Menu } from "../../components/Menu";
+import { Navigation } from "./Navigation";
 
-const StyledDesktopHeader = styled.div`
+export const HeaderDesktop: React.FC = () => {
+    const { page } = usePage();
+    const { name, logo } = page.settings;
+
+    return (
+        <HeaderDesktopWrapper data-testid={"pb-desktop-header"}>
+            <div>
+                <Link to="/">
+                    {logo && logo.src && <img src={logo.src} alt={name} />}{" "}
+                    {(!logo || !logo.src) && <span>{name}</span>}
+                </Link>
+            </div>
+            <nav>
+                <Menu slug={"main-menu"} component={Navigation} />
+            </nav>
+        </HeaderDesktopWrapper>
+    );
+};
+
+const HeaderDesktopWrapper = styled.div`
     align-items: center;
     display: flex;
     height: 35px;
@@ -32,24 +50,3 @@ const StyledDesktopHeader = styled.div`
         font-family: ${fonts.font1};
     }
 `;
-
-const HeaderDesktop: React.FC = () => {
-    const { page } = usePage();
-    const { name, logo } = page.settings;
-
-    return (
-        <StyledDesktopHeader data-testid={"pb-desktop-header"}>
-            <div>
-                <Link to="/">
-                    {logo && logo.src && <img src={logo.src} alt={name} />}{" "}
-                    {(!logo || !logo.src) && <span>{name}</span>}
-                </Link>
-            </div>
-            <nav>
-                <Menu slug={"main-menu"} component={Navigation} />
-            </nav>
-        </StyledDesktopHeader>
-    );
-};
-
-export default HeaderDesktop;

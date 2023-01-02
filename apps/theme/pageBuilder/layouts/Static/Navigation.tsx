@@ -1,12 +1,44 @@
 import React from "react";
 import { Link } from "@webiny/react-router";
-
 import styled from "@emotion/styled";
-
 import { colors, borderRadius, breakpoints } from "../../theme";
 import { PublishedMenuData } from "../../components/Menu";
 
-const StyledUl = styled.ul`
+export const Navigation: React.ComponentType<{ data?: PublishedMenuData }> = ({ data }) => {
+    if (!data) {
+        return null;
+    }
+    const { items } = data;
+
+    return (
+        <NavigationUl>
+            {items.map((item, index) => {
+                if (Array.isArray(item.children)) {
+                    return (
+                        <li key={item.id + index}>
+                            {item.title}
+                            <ul>
+                                {item.children.map((item, index) => (
+                                    <li key={item.id + index}>
+                                        <Link to={item.path || item.url}>{item.title}</Link>
+                                    </li>
+                                ))}
+                            </ul>
+                        </li>
+                    );
+                }
+
+                return (
+                    <li key={item.id + index}>
+                        <Link to={item.path || item.url}>{item.title}</Link>
+                    </li>
+                );
+            })}
+        </NavigationUl>
+    );
+};
+
+const NavigationUl = styled.ul`
     display: flex;
     justify-content: flex-end;
     box-sizing: border-box;
@@ -44,39 +76,3 @@ const StyledUl = styled.ul`
         }
     }
 `;
-
-const Navigation: React.ComponentType<{ data?: PublishedMenuData }> = ({ data }) => {
-    if (!data) {
-        return null;
-    }
-    const { items } = data;
-
-    return (
-        <StyledUl>
-            {items.map((item, index) => {
-                if (Array.isArray(item.children)) {
-                    return (
-                        <li key={item.id + index}>
-                            {item.title}
-                            <ul>
-                                {item.children.map((item, index) => (
-                                    <li key={item.id + index}>
-                                        <Link to={item.path || item.url}>{item.title}</Link>
-                                    </li>
-                                ))}
-                            </ul>
-                        </li>
-                    );
-                }
-
-                return (
-                    <li key={item.id + index}>
-                        <Link to={item.path || item.url}>{item.title}</Link>
-                    </li>
-                );
-            })}
-        </StyledUl>
-    );
-};
-
-export default Navigation;

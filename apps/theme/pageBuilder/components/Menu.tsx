@@ -71,7 +71,7 @@ interface Props {
     component: React.ComponentType<{ data?: PublishedMenuData }>;
 }
 
-const Menu: React.FC<Props> = ({ slug, component: Component }) => {
+export const Menu: React.FC<Props> = ({ slug, component: Component }) => {
     return (
         <Query<GetPublishMenuResponse> query={GET_PUBLIC_MENU} variables={{ slug }}>
             {({ data }) => (
@@ -83,5 +83,3 @@ const Menu: React.FC<Props> = ({ slug, component: Component }) => {
         </Query>
     );
 };
-
-export default Menu;

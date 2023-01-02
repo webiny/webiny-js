@@ -7,12 +7,49 @@ import styled from "@emotion/styled";
 import { breakpoints, colors, typography } from "../../theme";
 import { usePage } from "@webiny/app-page-builder-elements";
 
-const Wrapper = styled.footer`
+export const Footer: React.FC = () => {
+    const { page } = usePage();
+    const { name, logo, social } = page.settings;
+
+    return (
+        <FooterWrapper data-testid={"pb-footer"}>
+            <FooterBody>
+                <FooterLogo className={"logo"}>
+                    <Link to="/">{logo && logo.src && <img src={logo.src} alt={name} />}</Link>
+                    <div className={"copy"}>
+                        {name} © {new Date().getFullYear()}
+                    </div>
+                </FooterLogo>
+                {social && (
+                    <FooterSocial className={"social"}>
+                        {social.facebook && (
+                            <a href={social.facebook}>
+                                <FacebookIcon />
+                            </a>
+                        )}
+                        {social.twitter && (
+                            <a href={social.twitter}>
+                                <TwitterIcon />
+                            </a>
+                        )}
+                        {social.instagram && (
+                            <a href={social.instagram}>
+                                <InstagramIcon />
+                            </a>
+                        )}
+                    </FooterSocial>
+                )}
+            </FooterBody>
+        </FooterWrapper>
+    );
+};
+
+const FooterWrapper = styled.footer`
     background-color: ${colors.color4};
     height: 100px;
 `;
 
-const Inner = styled.div`
+const FooterBody = styled.div`
     align-items: center;
     display: flex;
     flex-direction: row;
@@ -26,7 +63,7 @@ const Inner = styled.div`
     }
 `;
 
-const Logo = styled.div`
+const FooterLogo = styled.div`
     align-items: center;
     display: flex;
     flex: 1;
@@ -46,7 +83,7 @@ const Logo = styled.div`
     }
 `;
 
-const Social = styled.div`
+const FooterSocial = styled.div`
     text-align: right;
 
     ${breakpoints.tablet} {
@@ -69,42 +106,3 @@ const Social = styled.div`
         }
     }
 `;
-
-const Footer: React.FC = () => {
-    const { page } = usePage();
-    const { name, logo, social } = page.settings;
-
-    return (
-        <Wrapper data-testid={"pb-footer"}>
-            <Inner>
-                <Logo className={"logo"}>
-                    <Link to="/">{logo && logo.src && <img src={logo.src} alt={name} />}</Link>
-                    <div className={"copy"}>
-                        {name} © {new Date().getFullYear()}
-                    </div>
-                </Logo>
-                {social && (
-                    <Social className={"social"}>
-                        {social.facebook && (
-                            <a href={social.facebook}>
-                                <FacebookIcon />
-                            </a>
-                        )}
-                        {social.twitter && (
-                            <a href={social.twitter}>
-                                <TwitterIcon />
-                            </a>
-                        )}
-                        {social.instagram && (
-                            <a href={social.instagram}>
-                                <InstagramIcon />
-                            </a>
-                        )}
-                    </Social>
-                )}
-            </Inner>
-        </Wrapper>
-    );
-};
-
-export default Footer;
