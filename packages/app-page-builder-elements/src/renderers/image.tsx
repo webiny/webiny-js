@@ -2,6 +2,9 @@ import React from "react";
 import styled from "@emotion/styled";
 import { createRenderer } from "~/createRenderer";
 import { useRenderer } from "~/hooks/useRenderer";
+import { LinkComponent } from "~/types";
+import { ButtonClickHandler } from "~/renderers/button";
+import { DefaultLinkComponent } from "~/renderers/components";
 
 export type ImageRenderer = ReturnType<typeof createImage>;
 
@@ -11,7 +14,13 @@ interface Props {
     value?: { id: string; src: string };
 }
 
-export const createImage = () => {
+export interface CreateImageParams {
+    linkComponent?: LinkComponent;
+}
+
+export const createImage = (params: CreateImageParams) => {
+    const LinkComponent = params?.linkComponent || DefaultLinkComponent;
+
     return createRenderer<Props>(
         ({ onClick, renderEmpty, value }) => {
             const { getElement, getAttributes } = useRenderer();
@@ -32,6 +41,15 @@ export const createImage = () => {
                 content = <PbImg alt={title} title={title} src={src} onClick={onClick} />;
             } else {
                 content = renderEmpty || null;
+            }
+
+            if (element.data?.link) {
+                const { href, newTab } = element.data.link;
+                content = (
+                    <LinkComponent href={href} target={newTab ? "_blank" : "_self"}>
+                        {content}
+                    </LinkComponent>
+                );
             }
 
             return <div {...getAttributes()}>{content}</div>;
