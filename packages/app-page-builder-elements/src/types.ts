@@ -6,7 +6,7 @@ export interface Page {
     id: string;
     path: string;
     content: Content;
-    settings: Record<string, any>
+    settings: Record<string, any>;
 }
 
 export type Content = Element;

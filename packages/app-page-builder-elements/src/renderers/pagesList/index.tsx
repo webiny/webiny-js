@@ -32,10 +32,9 @@ export const createPagesList = (params: CreatePagesListParams) => {
 
     const RendererComponent = createRenderer(() => {
         const { getElement, getAttributes } = useRenderer();
-        const { getPage } = usePage();
+        const { page } = usePage();
 
         const element = getElement();
-        const page = getPage();
 
         const { component, ...vars } = element.data;
 
