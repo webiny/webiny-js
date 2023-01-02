@@ -24,13 +24,6 @@ export const createDynamicZoneTransformer = (): CmsFieldValueTransformer => ({
     fieldType: "dynamicZone",
     transform: (value, field) => {
         const templates = field.settings?.templates || [];
-        value = field.multipleValues ? value || [] : value;
-
-        if (field.multipleValues) {
-            return (value as any[])
-                .map(value => convertToGraphQLInput(value, templates))
-                .filter(Boolean);
-        }
 
         return value ? convertToGraphQLInput(value, templates) : null;
     }

@@ -1,7 +1,6 @@
 import React from "react";
 import styled from "@emotion/styled";
 import cloneDeep from "lodash/cloneDeep";
-import { Alert } from "@webiny/ui/Alert";
 import { Accordion, AccordionItem } from "@webiny/ui/Accordion";
 import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/outlined/delete_outline.svg";
 import { ReactComponent as CloneIcon } from "@material-design-icons/svg/outlined/library_add.svg";
@@ -121,15 +120,9 @@ export const MultiValueDynamicZone = ({
 
     const values: TemplateValue[] = bind.value || [];
     const hasValues = values.length > 0;
-    const { isValid, message } = bind.validation || {};
 
     return (
         <>
-            {isValid === false && (
-                <Alert title={`Invalid value`} type={"danger"}>
-                    {message}
-                </Alert>
-            )}
             {hasValues ? (
                 <Accordion>
                     {values.map((value, index) => (

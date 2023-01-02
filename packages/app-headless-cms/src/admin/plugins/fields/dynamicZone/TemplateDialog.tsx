@@ -108,7 +108,7 @@ export const TemplateDialog = (props: TemplateDialogProps) => {
                                 <Cell span={12}>
                                     <Bind
                                         name={"name"}
-                                        validators={[validation.create("required,minLength:3")]}
+                                        validators={[validation.create("required")]}
                                     >
                                         <Input label={"Name"} onBlur={nameOnBlur(form)} />
                                     </Bind>

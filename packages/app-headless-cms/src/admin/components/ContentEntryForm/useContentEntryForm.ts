@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useCallback, useMemo, useState } from "react";
+import { Dispatch, SetStateAction, useCallback, useMemo, useState, useEffect } from "react";
 import pick from "lodash/pick";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
@@ -14,7 +14,7 @@ import {
     CmsEntryCreateFromMutationResponse,
     CmsEntryCreateFromMutationVariables
 } from "~/admin/graphql/contentEntries";
-import { useApolloClient, useModel, useMutation } from "~/admin/hooks";
+import { useApolloClient, useCms, useModel, useMutation } from "~/admin/hooks";
 import * as GQLCache from "~/admin/views/contentEntries/ContentEntry/cache";
 import { prepareFormData } from "~/admin/views/contentEntries/ContentEntry/prepareFormData";
 import { CmsEditorContentEntry, CmsModelField, CmsEditorFieldRendererPlugin } from "~/types";
@@ -58,15 +58,39 @@ export interface UseContentEntryFormParams {
     addEntryToListCache: boolean;
 }
 
+function useEntry(entryFromProps: Partial<CmsEditorContentEntry>) {
+    // We need to keep track of the entry locally
+    const [entry, setEntry] = useState(entryFromProps);
+    const { onEntryRevisionPublish } = useCms();
+
+    useEffect(() => {
+        if (!entryFromProps.id) {
+            return;
+        }
+
+        setEntry(entryFromProps);
+
+        return onEntryRevisionPublish(next => async params => {
+            const publishRes = await next(params);
+            setEntry(entry => {
+                return { ...entry, meta: publishRes?.entry?.meta || {} };
+            });
+            return publishRes;
+        });
+    }, [entryFromProps, entry.id]);
+
+    return entry;
+}
+
 export function useContentEntryForm(params: UseContentEntryFormParams): UseContentEntryForm {
     const { listQueryVariables } = useContentEntry();
     const { model } = useModel();
-    const { entry } = params;
     const { history } = useRouter();
     const client = useApolloClient();
     const { showSnackbar } = useSnackbar();
     const [invalidFields, setInvalidFields] = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(false);
+    const entry = useEntry(params.entry);
 
     const renderPlugins = useMemo(
         () => plugins.byType<CmsEditorFieldRendererPlugin>("cms-editor-field-renderer"),
@@ -161,7 +185,8 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
         async (revision, data) => {
             setLoading(true);
             const response = await updateMutation({
-                variables: { revision, data }
+                variables: { revision, data },
+                fetchPolicy: getFetchPolicy(model)
             });
             setLoading(false);
             if (!response.data) {
@@ -189,51 +214,37 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
             setLoading(true);
             const response = await createFromMutation({
                 variables: { revision, data: formData },
-                update(cache, response) {
-                    if (!response.data) {
-                        showSnackbar(
-                            "Missing data in update callback on Create From Entry Response."
-                        );
-                        return;
-                    }
-                    const { data: newRevision, error } = response.data.content;
-                    if (error) {
-                        showSnackbar(error.message);
-                        setInvalidFieldValues(error.data as InvalidFieldError[]);
-                        return;
-                    } else if (!newRevision) {
-                        showSnackbar("Missing entry data in update callback on Create From Entry.");
-                        return;
-                    }
-                    resetInvalidFieldValues();
-                    GQLCache.updateLatestRevisionInListCache(
-                        model,
-                        cache,
-                        newRevision,
-                        listQueryVariables
-                    );
-                    GQLCache.addRevisionToRevisionsCache(model, cache, newRevision);
-
-                    showSnackbar("A new revision was created!");
-                    goToRevision(newRevision.id);
-                }
+                fetchPolicy: getFetchPolicy(model)
             });
-            setLoading(false);
 
             if (!response.data) {
-                showSnackbar("Missing response data on Create From Entry Mutation.");
+                showSnackbar("Missing data in update callback on Create From Entry Response.");
                 return;
             }
-
-            const { data, error } = response.data.content;
+            const { data: newRevision, error } = response.data.content;
             if (error) {
                 showSnackbar(error.message);
                 setInvalidFieldValues(error.data as InvalidFieldError[]);
-                return null;
+                return;
+            } else if (!newRevision) {
+                showSnackbar("Missing entry data in update callback on Create From Entry.");
+                return;
             }
             resetInvalidFieldValues();
+            GQLCache.updateLatestRevisionInListCache(
+                model,
+                client.cache,
+                newRevision,
+                listQueryVariables
+            );
+            GQLCache.addRevisionToRevisionsCache(model, client.cache, newRevision);
 
-            return data;
+            showSnackbar("A new revision was created!");
+            goToRevision(newRevision.id);
+
+            setLoading(false);
+
+            return newRevision;
         },
         [model.modelId, listQueryVariables]
     );
@@ -260,6 +271,7 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
         if (!isLocked) {
             return updateContent(entry.id, gqlData);
         }
+
         return createContentFrom(entry.id, gqlData);
     };
 

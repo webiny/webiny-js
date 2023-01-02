@@ -12,10 +12,11 @@ export const dynamicZoneValidator: CmsModelFieldValidatorPlugin = {
     validator: {
         name: "dynamicZone",
         validate: async (value: TemplateValue[], _, field) => {
+            // This validator only runs for Dynamic Zone fields with `multipleValues=true`.
             const templates = field.settings?.templates || [];
             for (const template of templates) {
                 const validationRules = template.validation || [];
-                const templateValue = value.filter(v => v._templateId === template.id);
+                const templateValue = (value || []).filter(v => v._templateId === template.id);
                 const validators = createValidators(field, validationRules);
                 for (const validator of validators) {
                     await validator(templateValue);

@@ -60,7 +60,8 @@ export const dynamicZoneField: CmsEditorFieldTypePlugin = {
 
                 const fragments = templates.map(template => {
                     return `...on ${prefix}_${template.gqlTypeName} {
-                        ${createFieldsList({ model, fields: template.fields || [] })} 
+                        ${createFieldsList({ model, fields: template.fields || [] })}
+                        _templateId 
                         __typename
                     }`;
                 });
