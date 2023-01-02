@@ -219,7 +219,7 @@ const TextSettings: React.FC<TextSettingsProps> = ({ defaultAccordionValue, opti
                         {themeTypographyOptions}
                     </SelectField>
                 </Wrapper>
-                {themeTypographyOptions.length === 0 && (
+                {isLegacyRenderingEngine && themeTypographyOptions.length === 0 && (
                     <Grid className={classes.warningMessageGrid}>
                         <Cell span={12}>
                             <Typography use={"caption"}>
