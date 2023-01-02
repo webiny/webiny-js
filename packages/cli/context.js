@@ -116,7 +116,7 @@ class Context {
         }
 
         if (!fs.existsSync(filePath)) {
-            debug && this.debug(`No environment file found on ${this.debug.hl(filePath)}.`);
+            debug && this.debug(`No environment file found on %s.`, filePath);
             return;
         }
 
