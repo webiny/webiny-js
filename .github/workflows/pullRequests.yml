@@ -9,14 +9,14 @@ env:
 jobs:
   validate-commits:
     name: Validate commit messages
-    runs-on: webiny-js-4-cores
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: webiny/action-conventional-commits@v1.1.0
 
   init:
     name: Init
-    runs-on: webiny-js-4-cores
+    runs-on: ubuntu-latest
     outputs:
       jest-packages: ${{ steps.list-jest-packages.outputs.jest-packages }}
       day: ${{ steps.get-day.outputs.day }}
@@ -77,7 +77,7 @@ jobs:
   code-analysis:
     needs: init
     name: Static code analysis
-    runs-on: webiny-js-4-cores
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-node@v3
         with:
@@ -112,7 +112,7 @@ jobs:
 
   code-analysis-typescript:
     name: Static code analysis (TypeScript)
-    runs-on: webiny-js-4-cores
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-node@v3
         with:
@@ -179,7 +179,7 @@ jobs:
     if: needs.init.outputs.is-fork-pr != 'true' # Do not run this job if a PR has been submitted from a fork.
     needs: init
     name: Publish to Verdaccio
-    runs-on: webiny-js-4-cores
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-node@v3
         with:

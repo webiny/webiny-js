@@ -12,7 +12,7 @@ env:
 jobs:
   cache-keys:
     name: Create cache keys
-    runs-on: webiny-js-4-cores
+    runs-on: ubuntu-latest
     outputs:
       day: ${{ steps.create-cache-keys.outputs.day }}
     steps:
@@ -22,7 +22,7 @@ jobs:
 
   cache-dependencies-packages-root:
     name: Cache dependencies and packages
-    runs-on: webiny-js-4-cores
+    runs-on: ubuntu-latest
     needs: cache-keys
     steps:
       - uses: actions/setup-node@v3
@@ -51,7 +51,7 @@ jobs:
 
   cache-dependencies-packages-next:
     name: Cache dependencies and packages ("next" folder)
-    runs-on: webiny-js-4-cores
+    runs-on: ubuntu-latest
     needs: cache-keys
     steps:
       - uses: actions/setup-node@v3
