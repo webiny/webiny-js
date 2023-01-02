@@ -26,7 +26,7 @@ export const Sidebar = ({ folderId }: Props): ReactElement => {
             type={"page"}
             title={"All pages"}
             focusedFolderId={focusedFolderId}
-            onTitleClick={() => history.push("/page-builder/pages-table")}
+            onTitleClick={() => history.push("/page-builder/pages")}
             onFolderClick={data => data?.id && onFolderClick(data?.id)}
         />
     );
