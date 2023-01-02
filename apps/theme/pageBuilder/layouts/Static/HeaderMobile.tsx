@@ -10,7 +10,6 @@ import { Navigation } from "./Navigation";
 import { colors, fonts, breakpoints } from "../../theme";
 
 export const HeaderMobile: React.FC = () => {
-    const { page } = usePage();
     const { data } = useQuery(GET_PUBLIC_MENU, { variables: { slug: "main-menu" } });
     const [menuOpened, setMenuOpened] = useState(false);
 
@@ -18,7 +17,8 @@ export const HeaderMobile: React.FC = () => {
         setMenuOpened(!menuOpened);
     }, [menuOpened]);
 
-    const { name, logo } = page.settings;
+    const { layoutProps } = usePage();
+    const { name, logo } = layoutProps.settings;
 
     return (
         <HeaderMobileWrapper data-testid={"pb-mobile-header"}>

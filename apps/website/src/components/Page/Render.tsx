@@ -122,7 +122,7 @@ const Render: React.FC<RenderProps> = ({ page, error, settings }) => {
                     </LegacyLayout>
                 </div>
             ) : (
-                <Page page={page} layout={Layout} />
+                <Page page={page} layout={Layout} layoutProps={{ settings }} />
             )}
         </>
     );

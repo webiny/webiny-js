@@ -6,20 +6,21 @@ import { PageProvider } from "~/contexts/Page";
 export interface PageProps {
     page: PageType;
     layout?: React.ComponentType<{ children: React.ReactNode }>;
+    layoutProps?: Record<string, any>;
 }
 
 export const Page: React.FC<PageProps> = props => {
-    const { page } = props;
+    const { page, layout } = props;
 
     let content = <Content content={page.content} />;
 
-    const Layout = props.layout;
-    if (Layout) {
+    if (layout) {
+        const Layout = layout;
         content = <Layout>{content}</Layout>;
     }
 
     return (
-        <PageProvider page={page} key={page.id}>
+        <PageProvider key={page.id} {...props}>
             {content}
         </PageProvider>
     );

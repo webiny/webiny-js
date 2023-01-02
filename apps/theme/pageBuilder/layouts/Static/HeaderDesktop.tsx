@@ -7,8 +7,9 @@ import { Menu } from "../../components/Menu";
 import { Navigation } from "./Navigation";
 
 export const HeaderDesktop: React.FC = () => {
-    const { page } = usePage();
-    const { name, logo } = page.settings;
+    const { layoutProps } = usePage();
+    const { settings } = layoutProps;
+    const { name, logo } = settings;
 
     return (
         <HeaderDesktopWrapper data-testid={"pb-desktop-header"}>
