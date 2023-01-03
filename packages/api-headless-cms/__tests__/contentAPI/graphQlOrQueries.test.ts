@@ -11,10 +11,6 @@ const categories = [
     "Page and Form Builder and CMS"
 ];
 
-const getIt = (name = "") => {
-    return name.match("elasticsearch") !== null ? it : it.skip;
-};
-
 describe(`graphql "or" queries`, () => {
     const manager = useCategoryManageHandler({
         path: "manage/en-US"
@@ -35,8 +31,6 @@ describe(`graphql "or" queries`, () => {
             });
         }
     };
-
-    const it = getIt(manager.storageOperations.name);
 
     beforeEach(async () => {
         await createCategories();
@@ -62,6 +56,9 @@ describe(`graphql "or" queries`, () => {
                 OR: [
                     {
                         title_contains: "headless"
+                    },
+                    {
+                        title_contains: "project"
                     }
                 ]
             }
@@ -72,14 +69,11 @@ describe(`graphql "or" queries`, () => {
                 listCategories: {
                     data: [
                         {
-                            title: "Page and Form Builder and CMS"
-                        },
-                        {
                             title: "Webiny Headless CMS Project"
                         }
                     ],
                     meta: {
-                        totalCount: 2,
+                        totalCount: 1,
                         cursor: null,
                         hasMoreItems: false
                     },
@@ -139,20 +133,14 @@ describe(`graphql "or" queries`, () => {
                 listCategories: {
                     data: [
                         {
-                            title: "Webiny Headless CMS Project"
-                        },
-                        {
                             title: "Webiny Page Builder"
                         },
                         {
                             title: "Webiny Form Builder"
-                        },
-                        {
-                            title: "File Manager Webiny"
                         }
                     ],
                     meta: {
-                        totalCount: 4,
+                        totalCount: 2,
                         cursor: null,
                         hasMoreItems: false
                     },
@@ -458,7 +446,7 @@ describe(`graphql "or" queries`, () => {
         });
     });
 
-    it(`should filter via nested "OR" conditions and not return any record`, async () => {
+    it(`should filter via nested "OR" conditions`, async () => {
         /**
          * We will add a single non-existing character to "cms", "project" and "webiny"
          */
