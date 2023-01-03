@@ -2,17 +2,18 @@ import { CmsEntry, CmsEntryListWhere } from "@webiny/api-headless-cms/types";
 import { ValueFilterPlugin } from "@webiny/db-dynamodb/plugins/definitions/ValueFilterPlugin";
 import WebinyError from "@webiny/error";
 import { PluginsContainer } from "@webiny/plugins";
-import { Field, FilterItemFromStorage } from "./types";
+import { Field } from "./types";
 import { createFullTextSearch } from "./fullTextSearch";
-import { createFilters, ItemFilter } from "./createFilters";
+import { createExpressions, Expression, Filter } from "./createExpressions";
 import { transformValue } from "./transform";
 import { getValue } from "~/operations/entry/filtering/getValue";
 
-interface ExecFilterParams {
+interface ExecuteFilterParams {
     value: any;
-    filter: ItemFilter;
+    filter: Filter;
 }
-const execFilter = (params: ExecFilterParams) => {
+
+const executeFilter = (params: ExecuteFilterParams) => {
     const { value: plainValue, filter } = params;
 
     const value = transformValue({
@@ -29,40 +30,93 @@ const execFilter = (params: ExecFilterParams) => {
     return matched;
 };
 
+interface ExecuteExpressionsParams {
+    getCachedValue: (filter: Filter) => Promise<any>;
+    expressions: Expression[];
+    condition?: Expression["condition"];
+}
+
+const executeExpressions = (params: ExecuteExpressionsParams): boolean => {
+    const { expressions, getCachedValue, condition = "AND" } = params;
+    if (expressions.length === 0) {
+        return true;
+    }
+
+    for (const expression of expressions) {
+        /**
+         * Case where there are no filters is whe AND / OR condition with child expressions.
+         * So we need to execute all the child expressions.
+         */
+        if (!expression.filters) {
+            const result = executeExpressions({
+                getCachedValue,
+                expressions: expression.children,
+                condition: expression.condition
+            });
+            if (result && condition === "OR") {
+                return true;
+            } else if (!result && condition == "AND") {
+                return false;
+            }
+            continue;
+        }
+        /**
+         * Case where there are filters, we just execute them one by one.
+         */
+        for (const filter of expression.filters) {
+            const value = getCachedValue(filter);
+
+            const result = executeFilter({
+                value,
+                filter
+            });
+            if (result && condition === "OR") {
+                return true;
+            } else if (!result && condition === "AND") {
+                return false;
+            }
+        }
+    }
+    /**
+     * If condition is an OR, we can fail the expressions check because the code would return a lot earlier than this line.
+     *
+     * Also, if condition is not an OR, we can say that the expressions check is ok, because it would fail a lot earlier than this line.
+     */
+    return condition === "OR" ? false : true;
+};
+
 interface Params {
     items: CmsEntry[];
     where: Partial<CmsEntryListWhere>;
     plugins: PluginsContainer;
     fields: Record<string, Field>;
-    fromStorage: FilterItemFromStorage;
     fullTextSearch?: {
         term?: string;
         fields?: string[];
     };
 }
 
-export const filter = async (params: Params): Promise<CmsEntry[]> => {
-    const { items: records, where, plugins, fields, fromStorage, fullTextSearch } = params;
+export const filter = (params: Params): CmsEntry[] => {
+    const { items: records, where, plugins, fields, fullTextSearch } = params;
 
     const keys = Object.keys(where);
     if (keys.length === 0 && !fullTextSearch) {
         return records;
     }
-    const filters = createFilters({
+    const expressions = createExpressions({
         plugins,
         where,
         fields
     });
 
     /**
-     * No point in going further if there are no filters to be applied and no full text search to be executed.
+     * No point in going further if there are no expressions to be applied and no full text search to be executed.
      */
-    if (filters.length === 0 && !fullTextSearch) {
+    if (expressions.length === 0 && !fullTextSearch?.term) {
         return records;
     }
     /**
      * We need the contains plugin to run the full text search.
-     * TODO check out to maybe implement fuzzy search.
      */
     const fullTextSearchPlugin = plugins
         .byType<ValueFilterPlugin>(ValueFilterPlugin.type)
@@ -78,51 +132,31 @@ export const filter = async (params: Params): Promise<CmsEntry[]> => {
         term: fullTextSearch?.term,
         targetFields: fullTextSearch?.fields,
         fields,
-        fromStorage,
         plugin: fullTextSearchPlugin
     });
 
-    const promises: Promise<CmsEntry | null>[] = records.map(async record => {
-        /**
-         * We need to go through all the filters and apply them to the given record.
-         */
-        for (const filter of filters) {
-            const rawValue = getValue(record, filter.path);
+    return records.filter(record => {
+        const cachedValues: Record<string, any> = {};
 
-            const field = fields[filter.fieldPathId];
-            const plainValue = await fromStorage(field, rawValue);
-
-            const result = execFilter({
-                value: plainValue,
-                filter
-            });
-            if (result === false) {
-                return null;
+        const getCachedValue = ({ path }: Filter) => {
+            if (cachedValues[path] !== undefined) {
+                return cachedValues[path];
             }
-        }
+            const plainValue = getValue(record, path);
+
+            cachedValues[path] = plainValue;
+            return plainValue;
+        };
+
+        const exprResult = executeExpressions({ getCachedValue, expressions });
         /**
-         * If we have full text search defined, run it. Just return the given record if not full text search.
+         * If expression result is false we do not need to continue further.
+         * Also, if there is no full text search defined, just return the expression result.
          */
-        if (!search) {
-            return record;
-        }
-        const result = await search({
-            item: record
-        });
-        if (!result) {
-            return null;
+        if (!exprResult || !search) {
+            return exprResult;
         }
 
-        return record;
+        return search(record);
     });
-
-    /**
-     * We run filtering as promises, so it is a bit faster than in for ... of loop.
-     */
-    const results: (CmsEntry | null)[] = await Promise.all(promises);
-
-    /**
-     * And filter out the null values which are returned when filter is not satisfied.
-     */
-    return results.filter(Boolean) as CmsEntry[];
 };

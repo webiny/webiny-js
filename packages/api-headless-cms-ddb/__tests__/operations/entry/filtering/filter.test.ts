@@ -1,5 +1,5 @@
 import { createEntries } from "./mocks/entry.model";
-import { createFilters } from "~/operations/entry/filtering/createFilters";
+import { createExpressions } from "~/operations/entry/filtering/createExpressions";
 import { PluginsContainer } from "@webiny/plugins";
 import { CmsModel } from "@webiny/api-headless-cms/types";
 import { Field } from "~/operations/entry/filtering/types";
@@ -59,7 +59,7 @@ describe("filtering", () => {
             /**
              * We want to make sure that filters are properly constructed
              */
-            const filters = createFilters(createFiltersParams);
+            const filters = createExpressions(createFiltersParams);
             expect(filters).toEqual([
                 {
                     compareValue: createdOn.toISOString(),

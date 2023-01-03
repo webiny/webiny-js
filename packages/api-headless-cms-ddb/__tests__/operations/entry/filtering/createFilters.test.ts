@@ -1,4 +1,4 @@
-import { createFilters } from "~/operations/entry/filtering/createFilters";
+import { createExpressions } from "~/operations/entry/filtering/createExpressions";
 import { PluginsContainer } from "@webiny/plugins";
 import { CmsModel } from "@webiny/api-headless-cms/types";
 import { createModel } from "../../helpers/createModel";
@@ -22,7 +22,7 @@ describe("create filters from where conditions", () => {
     });
 
     it("should create simple, non-nested, filters", async () => {
-        const result = createFilters({
+        const result = createExpressions({
             plugins,
             fields,
             where: {
@@ -148,7 +148,7 @@ describe("create filters from where conditions", () => {
     });
 
     it("should create complex nested filters", async () => {
-        const result = createFilters({
+        const result = createExpressions({
             plugins,
             fields,
             where: {
