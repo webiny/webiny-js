@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
+import { i18n } from "@webiny/app/i18n";
 
 import { Sidebar } from "~/admin/views/Pages/Table/Sidebar";
 import { Main } from "~/admin/views/Pages/Table/Main";
