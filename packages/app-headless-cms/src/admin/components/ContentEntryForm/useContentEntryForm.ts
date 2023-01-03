@@ -64,11 +64,11 @@ function useEntry(entryFromProps: Partial<CmsEditorContentEntry>) {
     const { onEntryRevisionPublish } = useCms();
 
     useEffect(() => {
+        setEntry(entryFromProps);
+
         if (!entryFromProps.id) {
             return;
         }
-
-        setEntry(entryFromProps);
 
         return onEntryRevisionPublish(next => async params => {
             const publishRes = await next(params);
