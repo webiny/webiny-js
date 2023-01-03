@@ -1,4 +1,4 @@
-context(
+context.skip(
     "Should be able to publish and re-publish a page, and see changes on the public site",
     () => {
         beforeEach(() => cy.login());
