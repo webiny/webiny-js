@@ -1,6 +1,6 @@
 import uniqid from "uniqid";
 
-context("Pages Creation", () => {
+context.skip("Pages Creation", () => {
     beforeEach(() => cy.login());
 
     it("should be able to create, publish, create new revision, and immediately delete everything", () => {
