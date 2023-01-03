@@ -11,6 +11,7 @@ import { getWhereValues } from "./values";
 import { getPopulated } from "./populated";
 import { createApplyFiltering } from "./applyFiltering";
 import { CmsEntryFilterPlugin } from "~/plugins/CmsEntryFilterPlugin";
+import { assignMinimumShouldMatchToQuery } from "~/operations/entry/elasticsearch/assignMinimumShouldMatchToQuery";
 
 export interface CreateExecParams {
     model: CmsModel;
@@ -136,9 +137,7 @@ export const createExecFiltering = (params: CreateExecParams): CreateExecFilteri
                         continue;
                     }
                     should.push({
-                        bool: {
-                            ...childQueryBool
-                        }
+                        bool: childQueryBool
                     });
                 }
                 if (should.length === 0) {
@@ -149,10 +148,9 @@ export const createExecFiltering = (params: CreateExecParams): CreateExecFilteri
                  * If there are any should, minimum to have is 1.
                  * Of course, do not override if it's already set.
                  */
-                if (query.should.length > 0 && !query.minimum_should_match) {
-                    query.minimum_should_match = 1;
-                }
-
+                assignMinimumShouldMatchToQuery({
+                    query
+                });
                 continue;
             }
             const { field: whereFieldId, operator } = parseWhereKey(key);
