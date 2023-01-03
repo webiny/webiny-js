@@ -70,8 +70,8 @@ jobs:
       cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
     environment: next
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.DEPLOY_WEBINY_PROJECT_AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.DEPLOY_WEBINY_PROJECT_AWS_SECRET_ACCESS_KEY }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       CYPRESS_DEPLOYSENTINEL_KEY: ${{ secrets.CYPRESS_DEPLOYSENTINEL_KEY }}
       CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
@@ -137,13 +137,9 @@ jobs:
       - name: Set git username
         run: git config --global user.name "webiny-bot"
 
-      - name: Version packages (no push, no changelog)
+      - name: Version and publish to Verdaccio
         working-directory: dev
-        run: yarn lerna:version:verdaccio
-
-      - name: Release to Verdaccio
-        working-directory: dev
-        run: yarn lerna:publish:verdaccio
+        run: yarn release --type=verdaccio
 
       - name: Create verdaccio-files artifact
         uses: actions/upload-artifact@v3
@@ -166,8 +162,8 @@ jobs:
       - name: Create a new Webiny project
         working-directory: xyz
         run: >
-          npx create-webiny-project@next test-project
-          --tag next --no-interactive
+          npx create-webiny-project@local-npm test-project
+          --tag local-npm --no-interactive
           --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"region":"${{ env.AWS_REGION }}","storageOperations":"ddb"}'
 
@@ -334,9 +330,9 @@ jobs:
       cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
     environment: next
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.DEPLOY_WEBINY_PROJECT_AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.DEPLOY_WEBINY_PROJECT_AWS_SECRET_ACCESS_KEY }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       CYPRESS_DEPLOYSENTINEL_KEY: ${{ secrets.CYPRESS_DEPLOYSENTINEL_KEY }}
       CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
@@ -404,13 +400,9 @@ jobs:
       - name: Set git username
         run: git config --global user.name "webiny-bot"
 
-      - name: Version packages (no push, no changelog)
+      - name: Version and publish to Verdaccio
         working-directory: dev
-        run: yarn lerna:version:verdaccio
-
-      - name: Release to Verdaccio
-        working-directory: dev
-        run: yarn lerna:publish:verdaccio
+        run: yarn release --type=verdaccio
 
       - name: Create verdaccio-files artifact
         uses: actions/upload-artifact@v3
@@ -433,8 +425,8 @@ jobs:
       - name: Create a new Webiny project
         working-directory: xyz
         run: >
-          npx create-webiny-project@next test-project
-          --tag next --no-interactive
+          npx create-webiny-project@local-npm test-project
+          --tag local-npm --no-interactive
           --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"region":"${{ env.AWS_REGION }}","storageOperations":"ddb-es"}'
 
