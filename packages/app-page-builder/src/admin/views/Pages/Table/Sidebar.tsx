@@ -15,13 +15,13 @@ export const Sidebar = ({ folderId, defaultFolderName }: Props): ReactElement =>
 
     return (
         <SidebarContainer>
-        <FolderTree
-            type={"page"}
-            title={defaultFolderName}
-            focusedFolderId={folderId}
-            onTitleClick={navigateToPageHome}
-            onFolderClick={data => data?.id && navigateToFolder(data?.id)}
-        />
+            <FolderTree
+                type={"page"}
+                title={defaultFolderName}
+                focusedFolderId={folderId}
+                onTitleClick={navigateToPageHome}
+                onFolderClick={data => data?.id && navigateToFolder(data?.id)}
+            />
         </SidebarContainer>
     );
 };
