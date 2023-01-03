@@ -1,15 +1,11 @@
-import React, { useMemo } from "react";
-import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
+import React from "react";
 import Text from "~/editor/components/Text";
-import { getMediumEditorOptions } from "../utils/textUtils";
 import { CoreOptions } from "medium-editor";
-import { MediumEditorOptions, PbEditorElement } from "~/types";
-import { HeadingRenderer } from "@webiny/app-page-builder-elements/renderers/heading";
-import { Element } from "@webiny/app-page-builder-elements/types";
-import { useRenderer } from "@webiny/app-page-builder-elements";
+import { createRenderer, useRenderer } from "@webiny/app-page-builder-elements";
 import { useElementVariableValue } from "~/editor/hooks/useElementVariableValue";
+import { useActiveElementId } from "~/editor/hooks/useActiveElementId";
 
-const DEFAULT_EDITOR_OPTIONS: CoreOptions = {
+const mediumEditorOptions: CoreOptions = {
     toolbar: {
         buttons: ["bold", "italic", "underline", "anchor"]
     },
@@ -19,47 +15,25 @@ const DEFAULT_EDITOR_OPTIONS: CoreOptions = {
     }
 };
 
-interface PeHeadingProps {
-    isActive?: boolean;
-    element: PbEditorElement;
-    mediumEditorOptions?: MediumEditorOptions;
-}
-
-const PeHeading: React.FC<PeHeadingProps> = props => {
-    const { element, isActive, mediumEditorOptions } = props;
-    const { renderers } = usePageElements();
+const PeHeading = createRenderer(() => {
+    const { getElement } = useRenderer();
+    const element = getElement();
     const variableValue = useElementVariableValue(element);
 
-    const Heading = renderers.heading as HeadingRenderer;
+    const [activeElementId] = useActiveElementId();
+    const isActive = activeElementId === element.id;
 
-    const EditorComponent = useMemo<React.VFC>(
-        () =>
-            function EditorComponent() {
-                const { getAttributes, getElement } = useRenderer();
-
-                const attributes = getAttributes();
-                const element = getElement();
-
-                const tag = element.data?.text?.desktop?.tag || "h1";
-                return (
-                    <Text
-                        tag={[tag, attributes]}
-                        elementId={element.id}
-                        mediumEditorOptions={getMediumEditorOptions(
-                            DEFAULT_EDITOR_OPTIONS,
-                            mediumEditorOptions
-                        )}
-                    />
-                );
-            },
-        []
-    );
+    const tag = element.data?.text?.desktop?.tag || "h1";
 
     if (isActive) {
-        return <Heading element={element as Element} as={EditorComponent} value={variableValue} />;
+        return <Text tag={tag} elementId={element.id} mediumEditorOptions={mediumEditorOptions} />;
     }
 
-    return <Heading element={element as Element} value={variableValue} />;
-};
+    const __html = variableValue || element.data.text.data.text;
+
+    return React.createElement(tag, {
+        dangerouslySetInnerHTML: { __html }
+    });
+});
 
 export default PeHeading;

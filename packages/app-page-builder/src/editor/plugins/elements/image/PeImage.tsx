@@ -1,17 +1,15 @@
 import React, { useCallback } from "react";
-import { PbEditorElement } from "~/types";
-import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
 import { FileManager, SingleImageUploadProps } from "@webiny/app-admin";
 import { UpdateElementActionEvent } from "~/editor/recoil/actions";
 import pick from "lodash/pick";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
-import { ImageRenderer } from "@webiny/app-page-builder-elements/renderers/image";
-import { Element } from "@webiny/app-page-builder-elements/types";
-
+import { createImage, ImageRenderer } from "@webiny/app-page-builder-elements/renderers/image";
 import { AddImageIconWrapper, AddImageWrapper } from "@webiny/ui/ImageUpload/styled";
 import { ReactComponent as AddImageIcon } from "@webiny/ui/ImageUpload/icons/round-add_photo_alternate-24px.svg";
 import { Typography } from "@webiny/ui/Typography";
 import { useElementVariableValue } from "~/editor/hooks/useElementVariableValue";
+import { createRenderer, useRenderer } from "@webiny/app-page-builder-elements";
+import { useActiveElementId } from "~/editor/hooks/useActiveElementId";
 
 const RenderBlank = (props: { onClick?: () => void }) => {
     return (
@@ -24,15 +22,15 @@ const RenderBlank = (props: { onClick?: () => void }) => {
     );
 };
 
-type ImagePropsType = {
-    element: PbEditorElement;
-    isActive?: boolean;
-};
+const Image = createImage();
 
-const PeImage: React.FC<ImagePropsType> = ({ element, isActive }) => {
-    const { renderers } = usePageElements();
-    const Image = renderers.image as ImageRenderer;
+const PeImage = createRenderer(() => {
+    const { getElement } = useRenderer();
+    const element = getElement();
     const variableValue = useElementVariableValue(element);
+
+    const [activeElementId] = useActiveElementId();
+    const isActive = activeElementId === element.id;
 
     const handler = useEventActionHandler();
 
@@ -65,10 +63,14 @@ const PeImage: React.FC<ImagePropsType> = ({ element, isActive }) => {
                 onChange={onChange}
                 render={({ showFileManager }) => (
                     <Image
-                        element={element as Element}
+                        element={element}
                         onClick={() => showFileManager()}
                         renderEmpty={<RenderBlank onClick={showFileManager} />}
                         value={variableValue}
+                        // Even if the link might've been applied via the right sidebar, we still don't
+                        // want to have it rendered in the editor. Because, otherwise, user wouldn't be
+                        // able to click again on the component and bring back the file manager overlay.
+                        link={{ href: "" }}
                     />
                 )}
             />
@@ -76,8 +78,16 @@ const PeImage: React.FC<ImagePropsType> = ({ element, isActive }) => {
     }
 
     return (
-        <Image element={element as Element} renderEmpty={<RenderBlank />} value={variableValue} />
+        <Image
+            element={element}
+            renderEmpty={<RenderBlank />}
+            value={variableValue}
+            // Even if the link might've been applied via the right sidebar, we still don't
+            // want to have it rendered in the editor. Because, otherwise, user wouldn't be
+            // able to click again on the component and bring back the file manager overlay.
+            link={{ href: "" }}
+        />
     );
-};
+});
 
 export default PeImage;

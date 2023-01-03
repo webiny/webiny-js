@@ -1,18 +1,29 @@
 import React from "react";
-import { PbEditorElement } from "~/types";
-import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
-import { Element } from "@webiny/app-page-builder-elements/types";
+import { PbPageElementPagesListComponentPlugin } from "~/types";
+import { createPagesList } from "@webiny/app-page-builder-elements/renderers/pagesList";
+import { createDefaultDataLoader } from "@webiny/app-page-builder-elements/renderers/pagesList/dataLoaders";
+import { plugins } from "@webiny/plugins";
 
-interface PePagesListProps {
-    element: PbEditorElement;
-}
+const PePagesList = createPagesList({
+    dataLoader: createDefaultDataLoader({
+        apiUrl: process.env.REACT_APP_API_URL + "/graphql",
+        includeHeaders: {
+            "x-tenant": "root"
+        }
+    }),
+    pagesListComponents: () => {
+        const registeredPlugins = plugins.byType<PbPageElementPagesListComponentPlugin>(
+            "pb-page-element-pages-list-component"
+        );
 
-const PePagesList: React.FC<PePagesListProps> = props => {
-    const { element } = props;
-    const { renderers } = usePageElements();
+        return registeredPlugins.map(plugin => {
+            return {
+                id: plugin.componentName,
+                name: plugin.title,
+                component: plugin.component
+            };
+        });
+    }
+});
 
-    const PagesList = renderers["pages-list"];
-
-    return <PagesList element={element as Element} />;
-};
 export default PePagesList;

@@ -25,7 +25,9 @@ export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
     children,
     theme,
     renderers = {},
-    modifiers
+    modifiers,
+    beforeRenderer = null,
+    afterRenderer = null
 }) => {
     // Attributes-related callbacks.
     const getElementAttributes = useCallback<GetElementAttributes>(element => {
@@ -33,7 +35,9 @@ export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
             element,
             theme,
             renderers,
-            modifiers
+            modifiers,
+            beforeRenderer,
+            afterRenderer
         });
     }, []);
 
@@ -66,7 +70,9 @@ export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
                 theme,
                 renderers,
                 modifiers,
-                assignStyles: customAssignStylesCallback
+                assignStyles: customAssignStylesCallback,
+                beforeRenderer,
+                afterRenderer
             });
         },
         [customElementStylesCallback, customAssignStylesCallback]
@@ -80,7 +86,9 @@ export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
                 theme,
                 renderers,
                 modifiers,
-                assignStyles: customAssignStylesCallback
+                assignStyles: customAssignStylesCallback,
+                beforeRenderer,
+                afterRenderer
             });
         },
         [customStylesCallback, customAssignStylesCallback]
@@ -100,7 +108,9 @@ export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
         getStyles,
         setAssignStylesCallback,
         setElementStylesCallback,
-        setStylesCallback
+        setStylesCallback,
+        beforeRenderer,
+        afterRenderer
     };
 
     return <PageElementsContext.Provider value={value}>{children}</PageElementsContext.Provider>;

@@ -1,14 +1,11 @@
-import React, { useMemo } from "react";
+import React from "react";
 import Text from "../../../components/Text";
-import { MediumEditorOptions, PbEditorElement } from "~/types";
-import { getMediumEditorOptions } from "../utils/textUtils";
-import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
-import { QuoteRenderer } from "@webiny/app-page-builder-elements/renderers/quote";
-import { Element } from "@webiny/app-page-builder-elements/types";
-import { useRenderer } from "@webiny/app-page-builder-elements";
+import { createRenderer, useRenderer } from "@webiny/app-page-builder-elements";
 import { useElementVariableValue } from "~/editor/hooks/useElementVariableValue";
+import { useActiveElementId } from "~/editor/hooks/useActiveElementId";
+import { CoreOptions } from "medium-editor";
 
-const DEFAULT_EDITOR_OPTIONS = {
+const mediumEditorOptions: CoreOptions = {
     toolbar: {
         buttons: ["bold", "italic", "underline", "anchor", "quote"]
     },
@@ -18,43 +15,22 @@ const DEFAULT_EDITOR_OPTIONS = {
     }
 };
 
-interface PeQuoteProps {
-    isActive?: boolean;
-    element: PbEditorElement;
-    mediumEditorOptions?: MediumEditorOptions;
-}
-
-const PeQuote: React.FC<PeQuoteProps> = props => {
-    const { element, isActive, mediumEditorOptions } = props;
-    const { renderers } = usePageElements();
+const PeQuote = createRenderer(() => {
+    const { getElement } = useRenderer();
+    const element = getElement();
     const variableValue = useElementVariableValue(element);
 
-    const Quote = renderers.quote as QuoteRenderer;
-
-    const EditorComponent = useMemo<React.VFC>(() => {
-        return function EditorComponent() {
-            const { getElement, getAttributes } = useRenderer();
-            const attributes = getAttributes();
-            const element = getElement();
-
-            return (
-                <Text
-                    tag={["div", attributes]}
-                    elementId={element.id}
-                    mediumEditorOptions={getMediumEditorOptions(
-                        DEFAULT_EDITOR_OPTIONS,
-                        mediumEditorOptions
-                    )}
-                />
-            );
-        };
-    }, []);
+    const [activeElementId] = useActiveElementId();
+    const isActive = activeElementId === element.id;
 
     if (isActive) {
-        return <Quote element={element as Element} as={EditorComponent} value={variableValue} />;
+        return (
+            <Text tag={"div"} elementId={element.id} mediumEditorOptions={mediumEditorOptions} />
+        );
     }
 
-    return <Quote element={element as Element} value={variableValue} />;
-};
+    const __html = variableValue || element.data.text.data.text;
+    return <div dangerouslySetInnerHTML={{ __html }} />;
+});
 
 export default PeQuote;

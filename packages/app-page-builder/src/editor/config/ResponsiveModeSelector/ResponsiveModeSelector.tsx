@@ -12,6 +12,7 @@ import { isPerBreakpointStylesObject } from "@webiny/app-page-builder-elements/u
 import { useUI } from "~/editor/hooks/useUI";
 import { setDisplayModeMutation } from "~/editor/recoil/modules";
 import { isLegacyRenderingEngine } from "~/utils";
+import { CSSObject } from "@emotion/core";
 
 const classes = {
     wrapper: css({
@@ -86,6 +87,20 @@ const classes = {
     })
 };
 
+// This function ensures properties that have `undefined` as its
+// value are not assigned to the target object.
+function assignDefined(target: Record<string, any>, ...sources: Array<Record<string, any>>) {
+    for (const source of sources) {
+        for (const key of Object.keys(source)) {
+            const val = source[key];
+            if (val !== undefined) {
+                target[key] = val;
+            }
+        }
+    }
+    return target;
+}
+
 export const ResponsiveModeSelector: React.FC = () => {
     const [{ displayMode, pagePreviewDimension }, setUiValue] = useUI();
     const {
@@ -131,7 +146,8 @@ export const ResponsiveModeSelector: React.FC = () => {
                             styles[breakpointName] &&
                             whitelistedBreakpoints.includes(breakpointName)
                         ) {
-                            Object.assign(assignTo, styles[breakpointName]);
+                            // Filter out properties that have `undefined` set as its value.
+                            assignDefined(assignTo, styles[breakpointName] as CSSObject);
                         }
                     }
                 } else {

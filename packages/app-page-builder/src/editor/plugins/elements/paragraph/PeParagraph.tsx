@@ -1,15 +1,12 @@
-import React, { useMemo } from "react";
+import React from "react";
 import Text from "~/editor/components/Text";
 import { CoreOptions } from "medium-editor";
-import { MediumEditorOptions, PbEditorElement } from "~/types";
-import { getMediumEditorOptions } from "../utils/textUtils";
-import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
-import { ParagraphRenderer } from "@webiny/app-page-builder-elements/renderers/paragraph";
-import { Element } from "@webiny/app-page-builder-elements/types";
 import { useRenderer } from "@webiny/app-page-builder-elements/hooks/useRenderer";
 import { useElementVariableValue } from "~/editor/hooks/useElementVariableValue";
+import { useActiveElementId } from "~/editor/hooks/useActiveElementId";
+import { createRenderer } from "@webiny/app-page-builder-elements";
 
-const DEFAULT_EDITOR_OPTIONS: CoreOptions = {
+const mediumEditorOptions: CoreOptions = {
     toolbar: {
         buttons: ["bold", "italic", "underline", "anchor"]
     },
@@ -19,47 +16,20 @@ const DEFAULT_EDITOR_OPTIONS: CoreOptions = {
     }
 };
 
-interface PeParagraphProps {
-    isActive?: boolean;
-    element: PbEditorElement;
-    mediumEditorOptions?: MediumEditorOptions;
-}
-
-const PeParagraph: React.FC<PeParagraphProps> = props => {
-    const { element, isActive, mediumEditorOptions } = props;
-    const { renderers } = usePageElements();
+const PeParagraph = createRenderer(() => {
+    const { getElement } = useRenderer();
+    const element = getElement();
     const variableValue = useElementVariableValue(element);
 
-    const Paragraph = renderers.paragraph as ParagraphRenderer;
-
-    const EditorComponent = useMemo<React.ComponentType>(
-        () =>
-            function EditorComponent() {
-                const { getAttributes, getElement } = useRenderer();
-
-                const attributes = getAttributes();
-                const element = getElement();
-
-                return (
-                    <Text
-                        tag={["p", attributes]}
-                        elementId={element.id}
-                        mediumEditorOptions={getMediumEditorOptions(
-                            DEFAULT_EDITOR_OPTIONS,
-                            mediumEditorOptions
-                        )}
-                    />
-                );
-            },
-        []
-    );
+    const [activeElementId] = useActiveElementId();
+    const isActive = activeElementId === element.id;
 
     if (isActive) {
-        return (
-            <Paragraph element={element as Element} as={EditorComponent} value={variableValue} />
-        );
+        return <Text tag={"p"} elementId={element.id} mediumEditorOptions={mediumEditorOptions} />;
     }
 
-    return <Paragraph element={element as Element} value={variableValue} />;
-};
+    const __html = variableValue || element.data.text.data.text;
+    return <p dangerouslySetInnerHTML={{ __html }} />;
+});
+
 export default PeParagraph;

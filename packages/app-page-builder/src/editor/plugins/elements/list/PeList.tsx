@@ -1,14 +1,11 @@
-import React, { useMemo } from "react";
+import React from "react";
 import Text from "~/editor/components/Text";
-import { MediumEditorOptions, PbEditorElement } from "~/types";
-import { getMediumEditorOptions } from "../utils/textUtils";
-import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
-import { ListRenderer } from "@webiny/app-page-builder-elements/renderers/list";
-import { Element } from "@webiny/app-page-builder-elements/types";
-import { useRenderer } from "@webiny/app-page-builder-elements";
+import { createRenderer, useRenderer } from "@webiny/app-page-builder-elements";
 import { useElementVariableValue } from "~/editor/hooks/useElementVariableValue";
+import { useActiveElementId } from "~/editor/hooks/useActiveElementId";
+import { CoreOptions } from "medium-editor";
 
-const DEFAULT_EDITOR_OPTIONS = {
+const mediumEditorOptions: CoreOptions = {
     toolbar: {
         buttons: ["bold", "italic", "underline", "anchor", "unorderedlist", "orderedlist"]
     },
@@ -18,45 +15,22 @@ const DEFAULT_EDITOR_OPTIONS = {
     }
 };
 
-interface PeListProps {
-    isActive?: boolean;
-    element: PbEditorElement;
-    mediumEditorOptions?: MediumEditorOptions;
-}
-
-const PeList: React.FC<PeListProps> = props => {
-    const { element, isActive, mediumEditorOptions } = props;
-    const { renderers } = usePageElements();
+const PeList = createRenderer(() => {
+    const { getElement } = useRenderer();
+    const element = getElement();
     const variableValue = useElementVariableValue(element);
 
-    const List = renderers.list as ListRenderer;
-
-    const EditorComponent = useMemo<React.VFC>(
-        () =>
-            function EditorComponent() {
-                const { getAttributes, getElement } = useRenderer();
-
-                const attributes = getAttributes();
-                const element = getElement();
-
-                return (
-                    <Text
-                        tag={["div", attributes]}
-                        elementId={element.id}
-                        mediumEditorOptions={getMediumEditorOptions(
-                            DEFAULT_EDITOR_OPTIONS,
-                            mediumEditorOptions
-                        )}
-                    />
-                );
-            },
-        []
-    );
+    const [activeElementId] = useActiveElementId();
+    const isActive = activeElementId === element.id;
 
     if (isActive) {
-        return <List element={element as Element} as={EditorComponent} value={variableValue} />;
+        return (
+            <Text tag={"div"} elementId={element.id} mediumEditorOptions={mediumEditorOptions} />
+        );
     }
 
-    return <List element={element as Element} value={variableValue} />;
-};
+    const __html = variableValue || element.data.text.data.text;
+    return <div style={{ width: "100%" }} dangerouslySetInnerHTML={{ __html }} />;
+});
+
 export default PeList;

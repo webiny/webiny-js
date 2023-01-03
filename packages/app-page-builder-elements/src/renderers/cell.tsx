@@ -6,23 +6,21 @@ import { useRenderer } from "~/hooks/useRenderer";
 export type CellRenderer = ReturnType<typeof createCell>;
 
 export const createCell = () => {
-    return createRenderer(() => {
-        const { getElement, getAttributes } = useRenderer();
+    return createRenderer(
+        () => {
+            const { getElement } = useRenderer();
 
-        const element = getElement();
-
-        const width = useMemo<string>(() => {
-            const size = element.data?.settings?.grid?.size;
-            if (typeof size !== "number") {
-                return "100%";
+            const element = getElement();
+            return <Elements element={element} />;
+        },
+        {
+            baseStyles: ({ element }) => {
+                const size = element.data?.settings?.grid?.size;
+                if (typeof size !== "number") {
+                    return { width: "100%" };
+                }
+                return { width: `${(size / 12) * 100}%` };
             }
-            return `${(size / 12) * 100}%`;
-        }, [element.id]);
-
-        return (
-            <div {...getAttributes()} style={{ width }}>
-                <Elements element={element} />
-            </div>
-        );
-    });
+        }
+    );
 };

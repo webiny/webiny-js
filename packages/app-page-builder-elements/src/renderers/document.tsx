@@ -12,12 +12,9 @@ export type DocumentRenderer = ReturnType<typeof createDocument>;
 
 export const createDocument = () => {
     return createRenderer<Props>(() => {
-        const { getAttributes, getElement } = useRenderer();
+        const { getElement } = useRenderer();
 
-        return (
-            <div className={"webiny-pb-page-document"} {...getAttributes()}>
-                <Elements element={getElement()} />
-            </div>
-        );
+        const element = getElement();
+        return <Elements element={element} />;
     });
 };

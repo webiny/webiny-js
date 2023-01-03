@@ -16,4 +16,4 @@ const Heading: React.FC<HeadingProps> = props => {
     return <PeHeading {...props} />;
 };
 
-export default React.memo(Heading);
+export default Heading;

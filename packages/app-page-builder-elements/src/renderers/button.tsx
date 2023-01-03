@@ -95,7 +95,7 @@ export const createButton = (params: CreateButtonParams = {}) => {
     return createRenderer<Props>(
         props => {
             const { getStyles } = usePageElements();
-            const { getElement, getAttributes } = useRenderer();
+            const { getElement } = useRenderer();
             const element = getElement<ButtonElementData>();
             const { link, icon } = element.data;
 
@@ -142,11 +142,9 @@ export const createButton = (params: CreateButtonParams = {}) => {
                 const newTab = link?.newTab || action?.newTab;
 
                 return (
-                    <div {...getAttributes()}>
-                        <LinkComponent href={href} target={newTab ? "_blank" : "_self"}>
-                            <StyledButtonBody>{buttonInnerContent}</StyledButtonBody>
-                        </LinkComponent>
-                    </div>
+                    <LinkComponent href={href} target={newTab ? "_blank" : "_self"}>
+                        <StyledButtonBody>{buttonInnerContent}</StyledButtonBody>
+                    </LinkComponent>
                 );
             }
 
@@ -167,15 +165,11 @@ export const createButton = (params: CreateButtonParams = {}) => {
             }
 
             return (
-                <div {...getAttributes()}>
-                    <StyledButtonBody
-                        onClick={() =>
-                            clickHandler?.({ variables: element.data.action.variables! })
-                        }
-                    >
-                        {buttonInnerContent}
-                    </StyledButtonBody>
-                </div>
+                <StyledButtonBody
+                    onClick={() => clickHandler?.({ variables: element.data.action.variables! })}
+                >
+                    {buttonInnerContent}
+                </StyledButtonBody>
             );
         },
         {

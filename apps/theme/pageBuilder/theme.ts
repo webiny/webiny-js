@@ -151,7 +151,7 @@ const theme = createTheme({
                 }
             },
             grid: { "mobile-landscape": { flexWrap: "wrap" } },
-            cell: { tablet: { width: "100% !important" } }
+            cell: { "mobile-landscape": { width: "100% !important" } }
         }
     }
 });

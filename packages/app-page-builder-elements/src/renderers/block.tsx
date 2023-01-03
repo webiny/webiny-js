@@ -19,14 +19,10 @@ interface Props {
 export const createBlock = () => {
     return createRenderer(
         (props: Props) => {
-            const { getElement, getAttributes } = useRenderer();
+            const { getElement } = useRenderer();
 
             const element = getElement();
-            return (
-                <div {...getAttributes()}>
-                    <Elements element={element} elements={props.elements} />
-                </div>
-            );
+            return <Elements element={element} elements={props.elements} />;
         },
         {
             baseStyles: {

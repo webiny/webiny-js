@@ -3,29 +3,44 @@ import styled from "@emotion/styled";
 import { createRenderer } from "~/createRenderer";
 import { useRenderer } from "~/hooks/useRenderer";
 import { LinkComponent } from "~/types";
-import { ButtonClickHandler } from "~/renderers/button";
 import { DefaultLinkComponent } from "~/renderers/components";
 
-export type ImageRenderer = ReturnType<typeof createImage>;
+export interface ImageElementData {
+    image?: {
+        title: string;
+        width: string;
+        height: string;
+        file?: {
+            src: string;
+        };
+    };
+    link?: {
+        newTab: boolean;
+        href: string;
+    };
+}
 
 interface Props {
     onClick?: React.MouseEventHandler<HTMLImageElement>;
     renderEmpty?: React.ReactNode;
     value?: { id: string; src: string };
+    link?: { href: string; newTab?: boolean };
 }
 
 export interface CreateImageParams {
     linkComponent?: LinkComponent;
 }
 
-export const createImage = (params: CreateImageParams) => {
+export type ImageRenderer = ReturnType<typeof createImage>;
+
+export const createImage = (params: CreateImageParams = {}) => {
     const LinkComponent = params?.linkComponent || DefaultLinkComponent;
 
     return createRenderer<Props>(
-        ({ onClick, renderEmpty, value }) => {
-            const { getElement, getAttributes } = useRenderer();
+        ({ onClick, renderEmpty, value, link }) => {
+            const { getElement } = useRenderer();
 
-            const element = getElement();
+            const element = getElement<ImageElementData>();
 
             let content;
             if (element.data?.image?.file?.src) {
@@ -43,16 +58,19 @@ export const createImage = (params: CreateImageParams) => {
                 content = renderEmpty || null;
             }
 
-            if (element.data?.link) {
-                const { href, newTab } = element.data.link;
-                content = (
-                    <LinkComponent href={href} target={newTab ? "_blank" : "_self"}>
-                        {content}
-                    </LinkComponent>
-                );
+            const linkProps = link || element.data?.link;
+            if (linkProps) {
+                const { href, newTab } = linkProps;
+                if (href) {
+                    content = (
+                        <LinkComponent href={href} target={newTab ? "_blank" : "_self"}>
+                            {content}
+                        </LinkComponent>
+                    );
+                }
             }
 
-            return <div {...getAttributes()}>{content}</div>;
+            return <>{content}</>;
         },
         {
             baseStyles: { width: "100%" },

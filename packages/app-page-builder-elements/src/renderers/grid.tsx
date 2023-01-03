@@ -1,5 +1,5 @@
 import React from "react";
-import { Element } from "~/components/Element";
+import { Elements } from "~/components/Elements";
 import { createRenderer } from "~/createRenderer";
 import { useRenderer } from "~/hooks/useRenderer";
 
@@ -8,15 +8,10 @@ export type GridRenderer = ReturnType<typeof createGrid>;
 export const createGrid = () => {
     return createRenderer(
         () => {
-            const { getElement, getAttributes } = useRenderer();
+            const { getElement } = useRenderer();
 
-            return (
-                <div {...getAttributes()}>
-                    {getElement().elements.map(element => (
-                        <Element key={element.id} element={element} />
-                    ))}
-                </div>
-            );
+            const element = getElement();
+            return <Elements element={element} />;
         },
         {
             baseStyles: {
@@ -29,3 +24,5 @@ export const createGrid = () => {
         }
     );
 };
+
+

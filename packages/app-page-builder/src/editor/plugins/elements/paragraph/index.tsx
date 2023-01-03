@@ -9,6 +9,7 @@ import {
 import Paragraph, { textClassName } from "./Paragraph";
 import { createInitialTextValue } from "../utils/textUtils";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
+import {createParagraph} from "@webiny/app-page-builder-elements/renderers/paragraph";
 
 export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementPlugin => {
     const defaultText = `Lorem ipsum dolor sit amet, consectetur adipiscing elit.

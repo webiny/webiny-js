@@ -6,7 +6,7 @@ export type IconRenderer = ReturnType<typeof createIcon>;
 
 export const createIcon = () => {
     return createRenderer(() => {
-        const { getElement, getAttributes, theme } = useRenderer();
+        const { getElement, theme } = useRenderer();
 
         const element = getElement();
 
@@ -16,11 +16,7 @@ export const createIcon = () => {
         }
 
         return (
-            <div
-                {...getAttributes()}
-                style={{ color }}
-                dangerouslySetInnerHTML={{ __html: element.data.icon.svg }}
-            />
+            <div style={{ color }} dangerouslySetInnerHTML={{ __html: element.data.icon.svg }} />
         );
     });
 };

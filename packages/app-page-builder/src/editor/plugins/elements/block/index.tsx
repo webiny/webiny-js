@@ -17,6 +17,9 @@ import {
 import { AfterDropElementActionEvent } from "~/editor/recoil/actions/afterDropElement";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 import { executeAction } from "~/editor/recoil/eventActions";
+import { createRenderer, Element, Elements, useRenderer } from "@webiny/app-page-builder-elements";
+import { useRecoilValue } from "recoil";
+import { elementWithChildrenByIdSelector } from "~/editor/recoil/modules";
 
 export default (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin => {
     const elementSettings = [
@@ -91,6 +94,7 @@ export default (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin
         render(props) {
             return <Block {...props} />;
         },
+
         // This callback is executed when another element is dropped on the drop zones with type "block"
         onReceived({ source, target, position, state, meta }) {
             const element = createDroppedElement(source as any, target);

@@ -1,21 +1,14 @@
 import React from "react";
-import { PbEditorElement } from "~/types";
-import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
-import { IconRenderer } from "@webiny/app-page-builder-elements/renderers/icon";
-import { Element } from "@webiny/app-page-builder-elements/types";
+import { createIcon } from "@webiny/app-page-builder-elements/renderers/icon";
+import { createRenderer, useRenderer } from "@webiny/app-page-builder-elements";
 
-interface PeIconProps {
-    isActive?: boolean;
-    element: PbEditorElement;
-}
+const Icon = createIcon();
 
-const PeIcon: React.FC<PeIconProps> = props => {
-    const { element } = props;
-    const { renderers } = usePageElements();
+const PeIcon = createRenderer(() => {
+    const { getElement } = useRenderer();
+    const element = getElement();
 
-    const Icon = renderers.icon as IconRenderer;
-
-    return <Icon element={element as Element} />;
-};
+    return <Icon element={element} />;
+});
 
 export default PeIcon;

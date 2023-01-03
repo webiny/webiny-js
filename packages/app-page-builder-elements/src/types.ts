@@ -33,6 +33,8 @@ export interface PageElementsProviderProps {
         styles: Record<string, ElementStylesModifier>;
         attributes: Record<string, ElementAttributesModifier>;
     };
+    beforeRenderer?: React.VFC | null;
+    afterRenderer?: React.VFC | null;
 }
 
 export type AttributesObject = React.ComponentProps<any>;
@@ -95,11 +97,19 @@ type GetAttributes = () => HTMLAttributes<HTMLElement>;
 export interface RendererContextValue extends PageElementsContextValue {
     getElement: GetElement;
     getAttributes: GetAttributes;
+    beforeRenderer: React.VFC | null;
+    afterRenderer: React.VFC | null;
+    meta: RendererProviderMeta
+}
+
+export interface RendererProviderMeta {
+    calculatedStyles: CSSObject[];
 }
 
 export interface RendererProviderProps {
     element: Element;
     attributes: HTMLAttributes<HTMLElement>;
+    meta: RendererProviderMeta;
 }
 
 export type RendererProps<TElement = Record<string, any>> = {

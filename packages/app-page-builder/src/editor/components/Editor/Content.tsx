@@ -15,18 +15,23 @@ import {
 import { usePageBuilder } from "~/hooks/usePageBuilder";
 import Element from "../Element";
 import { EditorContent } from "~/editor";
+import { isLegacyRenderingEngine } from "~/utils";
+import { Element as PeElement } from "@webiny/app-page-builder-elements";
+import { Element as ElementType } from "@webiny/app-page-builder-elements/types";
 
 const BREADCRUMB_HEIGHT = 33;
+
 interface ContentContainerParams {
     theme: PbTheme | null;
 }
+
 const ContentContainer = styled("div")(({ theme }: ContentContainerParams) => {
     const backgroundColor = theme?.colors?.background;
     return {
         backgroundColor,
         position: "relative",
         margin: "0 auto",
-        ".webiny-pb-page-document": {
+        ".webiny-pb-page-document, pb-document": {
             overflowY: "visible", // cuts off the block selector tooltip
             overflowX: "visible",
             // We need this extra spacing so that editor content won't get cutoff
@@ -86,17 +91,38 @@ const Content: React.FC = () => {
 
     const { theme } = usePageBuilder();
 
+    if (isLegacyRenderingEngine) {
+        return (
+            <Elevation className={contentContainerWrapper} z={0}>
+                <ContentContainer
+                    theme={theme as any}
+                    className={`mdc-elevation--z1 webiny-pb-editor-device--${kebabCase(
+                        displayMode
+                    )} webiny-pb-media-query--${kebabCase(displayMode)}`}
+                >
+                    <EditorContent />
+                    <BaseContainer
+                        ref={pagePreviewRef}
+                        className={"webiny-pb-editor-content-preview"}
+                    >
+                        <Element id={rootElement.id} />
+                    </BaseContainer>
+                </ContentContainer>
+            </Elevation>
+        );
+    }
+
     return (
         <Elevation className={contentContainerWrapper} z={0}>
             <ContentContainer
-                theme={theme as any}
                 className={`mdc-elevation--z1 webiny-pb-editor-device--${kebabCase(
                     displayMode
                 )} webiny-pb-media-query--${kebabCase(displayMode)}`}
+                style={{ minHeight: "calc(100vh - 230px)" }}
             >
                 <EditorContent />
                 <BaseContainer ref={pagePreviewRef} className={"webiny-pb-editor-content-preview"}>
-                    <Element id={rootElement.id} />
+                    <PeElement element={rootElement as ElementType} />
                 </BaseContainer>
             </ContentContainer>
         </Elevation>

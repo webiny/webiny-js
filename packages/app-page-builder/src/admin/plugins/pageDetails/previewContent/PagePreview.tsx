@@ -24,7 +24,7 @@ const pageInnerWrapper = css({
     overflowX: "hidden",
     height: "calc(100vh - 230px)",
     position: "relative",
-    ".webiny-pb-page-document, .pb-document": {
+    ".webiny-pb-page-document, pb-document": {
         transform: "scale(var(--webiny-pb-page-preview-scale))",
         transition: "transform 0.5s ease-in-out",
         transformOrigin: "top center"

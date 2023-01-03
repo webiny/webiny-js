@@ -18,17 +18,26 @@ type CreateRendererOptions = Partial<{
     baseStyles: StylesObject | ((params: GetStylesParams) => StylesObject);
 }>;
 
+const DEFAULT_RENDERER_STYLES: StylesObject = { display: "block", position: "relative" };
+
 export function createRenderer<T = {}>(
     RendererComponent: React.ComponentType<T>,
     options: CreateRendererOptions = {}
 ): Renderer<T> {
     const renderer: Renderer<T> = function Renderer(props) {
-        const { getElementStyles, getStyles, getElementAttributes, theme } = usePageElements();
+        const {
+            getElementStyles,
+            getStyles,
+            getElementAttributes,
+            theme,
+            beforeRenderer,
+            afterRenderer
+        } = usePageElements();
 
         const { element, ...componentProps } = props;
         const attributes = getElementAttributes(element);
 
-        const styles: CSSObject[] = [];
+        const styles: CSSObject[] = [DEFAULT_RENDERER_STYLES];
 
         if (options.baseStyles) {
             let baseStylesObject = options.baseStyles;
@@ -51,7 +60,9 @@ export function createRenderer<T = {}>(
             const cssObject = getStyles(themeStylesObject);
             styles.push(cssObject);
         } else {
-            const cssObject = getStyles(theme.styles.elements[element.type]);
+            const themeStylesObject = theme.styles.elements[element.type];
+
+            const cssObject = getStyles(themeStylesObject);
             styles.push(cssObject);
         }
 
@@ -60,15 +71,30 @@ export function createRenderer<T = {}>(
 
         // Used "O" in order to keep the final class name shorter. For example: "css-1c63dz3-O".
         const O = styled((styledRendererProps: any) => {
-            const className = [styledRendererProps.className, attributes.className]
+            const BeforeRenderer = beforeRenderer;
+            const AfterRenderer = afterRenderer;
+
+            const className = [styledRendererProps.className, attributes.class]
                 .filter(Boolean)
                 .join(" ");
 
             return (
-                <RendererProvider element={element} attributes={{ ...attributes, className }}>
+                <RendererProvider
+                    element={element}
+                    attributes={{ ...attributes, className }}
+                    meta={{ calculatedStyles: styles }}
+                >
                     {/* Would've liked if the `as unknown as T` part wasn't
                         needed, but unfortunately I could not figure it out. */}
-                    <RendererComponent {...(componentProps as unknown as T)} />
+                    {React.createElement(
+                        `pb-${element.type}`,
+                        { ...attributes, class: className },
+                        <>
+                            {BeforeRenderer ? <BeforeRenderer /> : null}
+                            <RendererComponent {...(componentProps as unknown as T)} />
+                            {AfterRenderer ? <AfterRenderer /> : null}
+                        </>
+                    )}
                 </RendererProvider>
             );
         })(styles);

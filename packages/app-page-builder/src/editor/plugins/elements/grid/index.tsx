@@ -139,6 +139,6 @@ export default (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin
         },
         render(props) {
             return <Grid {...props} />;
-        }
+        },
     };
 };

@@ -6,12 +6,14 @@ import {
     PbEditorPageElementPlugin,
     PbEditorPageElementStyleSettingsPlugin,
     PbEditorElementPluginArgs,
-    PbEditorElement
+    PbEditorElement, PbButtonElementClickHandlerPlugin
 } from "~/types";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 import ButtonSettings from "./ButtonSettings";
 import ButtonSettingsV2 from "./ButtonSettingsV2";
 import Button from "./Button";
+import {createButton} from "@webiny/app-page-builder-elements/renderers/button";
+import {plugins} from "@webiny/plugins";
 
 const buttonWrapper = css({
     display: "flex",
@@ -79,7 +81,23 @@ const buttonElementPluginsFactory = (args: PbEditorElementPluginArgs = {}) => {
             },
             render(props) {
                 return <Button {...props} />;
-            }
+            },
+            renderer: createButton({
+                clickHandlers: () => {
+                    const registeredPlugins = plugins.byType<PbButtonElementClickHandlerPlugin>(
+                        "pb-page-element-button-click-handler"
+                    );
+
+                    return registeredPlugins.map(plugin => {
+                        return {
+                            id: plugin.name!,
+                            name: plugin.title,
+                            handler: plugin.handler,
+                            variables: plugin.variables
+                        };
+                    });
+                }
+            }),
         } as PbEditorPageElementPlugin,
         {
             name: "pb-editor-page-element-style-settings-button",
