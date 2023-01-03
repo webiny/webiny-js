@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import {
     DropOptions,
@@ -54,7 +54,6 @@ export const List = ({
     useDeepCompareEffect(() => {
         if (folders) {
             setTreeData(createTreeData(folders, focusedFolderId));
-            setInitialOpenList(createInitialOpenList(folders, openFolderIds, focusedFolderId));
         }
 
         /**
@@ -63,6 +62,12 @@ export const List = ({
          *  TODO: need investigation.
          */
     }, [{ ...folders }, focusedFolderId]);
+
+    useEffect(() => {
+        if (folders) {
+            setInitialOpenList(createInitialOpenList(folders, openFolderIds, focusedFolderId));
+        }
+    }, []);
 
     const handleDrop = async (
         newTree: NodeModel<DndItemData>[],
