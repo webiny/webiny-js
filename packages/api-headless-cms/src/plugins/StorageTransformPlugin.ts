@@ -12,7 +12,8 @@ export interface ToStorageParams<T> {
 
 export interface FromStorageParams<T> {
     model: CmsModel;
-    field: CmsModelField;
+    field: Partial<CmsModelField> &
+        Pick<CmsModelField, "id" | "fieldId" | "storageId" | "type" | "settings">;
     value: T;
     getStoragePlugin(fieldType: string): StorageTransformPlugin<T>;
     plugins: PluginsContainer;

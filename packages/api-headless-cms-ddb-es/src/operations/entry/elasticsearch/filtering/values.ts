@@ -1,7 +1,7 @@
 import { CmsEntryListWhere } from "@webiny/api-headless-cms/types";
 import WebinyError from "@webiny/error";
 
-export const getValues = (value: unknown, condition: "AND" | "OR") => {
+export const getWhereValues = (value: unknown, condition: "AND" | "OR") => {
     const values = value as CmsEntryListWhere[] | undefined;
     if (!Array.isArray(values)) {
         throw new WebinyError(

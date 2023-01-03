@@ -5,9 +5,9 @@ import { createCategoryFactory } from "./product/category";
 import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
 import { Product, ProductCategory } from "../types";
 import { getIt } from "./it";
-import lodashCamelCase from "lodash/camelCase";
+import { createGetProduct } from "./product/getProductFactory";
 
-describe("complex product filtering", () => {
+describe("complex product conditional filtering", () => {
     const options = {
         path: "manage/en-US"
     };
@@ -23,14 +23,7 @@ describe("complex product filtering", () => {
 
     let category: ProductCategory;
     let products: Product[];
-
-    const getProduct = (name: string): Product => {
-        const product = products.find(p => lodashCamelCase(p.title) === lodashCamelCase(name));
-        if (!product) {
-            throw new Error(`There is no product "${name}".`);
-        }
-        return product;
-    };
+    let getProduct: ReturnType<typeof createGetProduct>;
 
     const it = getIt(categoryManager.storageOperations.name);
 
@@ -38,11 +31,12 @@ describe("complex product filtering", () => {
         await init();
         category = await createCategory();
         products = await createEntries(category);
+        getProduct = createGetProduct(products);
     });
     /**
      * This tests proves that nested filtering results in a single required record.
      */
-    it("should filter a single product with a nested filter - server", async () => {
+    it("should filter a single product with a nested conditional filter - server", async () => {
         /**
          * Query which must find the product - AND.
          */
@@ -139,7 +133,7 @@ describe("complex product filtering", () => {
      *
      * This test proves that nested filtering, with a single wrong parameter, will not produce a record.
      */
-    it("should filter out all products - server proof - and", async () => {
+    it("should filter out all products with conditional filters - server proof - and", async () => {
         /**
          * Expectation is the same for all responses in this test.
          */
@@ -263,7 +257,7 @@ describe("complex product filtering", () => {
      *
      * This test proves that nested filtering, with all wrong parameters, will not produce a record.
      */
-    it("should filter out all products - server proof - or", async () => {
+    it("should filter out all products with conditional filters - server proof - or", async () => {
         /**
          * Expectation is the same for all responses in this test.
          */
@@ -317,7 +311,7 @@ describe("complex product filtering", () => {
     /**
      *
      */
-    it("should filter a single product with a nested filter - server and gaming console", async () => {
+    it("should filter a single product with a nested conditional filter - server and gaming console", async () => {
         /**
          * Query which must find the products - AND.
          */

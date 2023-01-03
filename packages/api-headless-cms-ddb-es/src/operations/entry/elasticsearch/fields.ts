@@ -2,7 +2,7 @@ import WebinyError from "@webiny/error";
 import { PluginsContainer } from "@webiny/plugins";
 import { CmsModelField, CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
 import { CmsModelFieldToElasticsearchPlugin } from "~/types";
-import { ModelFields } from "./types";
+import { ModelFieldParent, ModelFields } from "./types";
 
 type PartialCmsModelField = Partial<CmsModelField> &
     Pick<CmsModelField, "storageId" | "fieldId" | "type">;
@@ -25,7 +25,8 @@ const createSystemFields = (): ModelFields => {
                 storageId: "id",
                 fieldId: "id",
                 type: "text"
-            })
+            }),
+            parents: []
         },
         entryId: {
             type: "text",
@@ -36,7 +37,8 @@ const createSystemFields = (): ModelFields => {
                 storageId: "entryId",
                 fieldId: "entryId",
                 type: "text"
-            })
+            }),
+            parents: []
         },
         savedOn: {
             type: "date",
@@ -52,7 +54,8 @@ const createSystemFields = (): ModelFields => {
                 settings: {
                     type: "dateTimeWithoutTimezone"
                 }
-            })
+            }),
+            parents: []
         },
         createdOn: {
             type: "date",
@@ -68,7 +71,8 @@ const createSystemFields = (): ModelFields => {
                 settings: {
                     type: "dateTimeWithoutTimezone"
                 }
-            })
+            }),
+            parents: []
         },
         createdBy: {
             type: "text",
@@ -81,7 +85,8 @@ const createSystemFields = (): ModelFields => {
                 storageId: "createdBy",
                 fieldId: "createdBy",
                 type: "text"
-            })
+            }),
+            parents: []
         },
         ownedBy: {
             type: "text",
@@ -94,7 +99,8 @@ const createSystemFields = (): ModelFields => {
                 storageId: "ownedBy",
                 fieldId: "ownedBy",
                 type: "text"
-            })
+            }),
+            parents: []
         },
         version: {
             type: "number",
@@ -107,7 +113,8 @@ const createSystemFields = (): ModelFields => {
                 storageId: "version",
                 fieldId: "version",
                 type: "number"
-            })
+            }),
+            parents: []
         },
         status: {
             type: "string",
@@ -120,7 +127,8 @@ const createSystemFields = (): ModelFields => {
                 storageId: "status",
                 fieldId: "status",
                 type: "string"
-            })
+            }),
+            parents: []
         }
     };
 };
@@ -133,10 +141,69 @@ interface FieldTypePlugin {
     unmappedType?: (field: CmsModelField) => string | undefined;
     isSearchable: boolean;
     isSortable: boolean;
+    fullTextSearch?: boolean;
 }
 interface FieldTypePlugins {
     [key: string]: FieldTypePlugin;
 }
+
+interface BuildParams {
+    plugins: FieldTypePlugins;
+    fields: CmsModelField[];
+    parents: ModelFieldParent[];
+}
+const buildFieldsList = (params: BuildParams): ModelFields => {
+    const { plugins, fields, parents } = params;
+
+    return fields.reduce<ModelFields>((result, field) => {
+        const plugin = plugins[field.type];
+        if (!plugin) {
+            throw new WebinyError(`There is no plugin for field type "${field.type}".`);
+        }
+
+        const { isSearchable, isSortable, unmappedType, fullTextSearch } = plugin;
+        /**
+         * If a field has child fields, go through them and add them to a result.
+         */
+        const childFields = field.settings?.fields || [];
+        if (childFields.length > 0) {
+            /**
+             * Let's build all the child fields
+             */
+            const childResult = buildFieldsList({
+                fields: childFields,
+                plugins,
+                parents: [
+                    ...parents,
+                    {
+                        fieldId: field.fieldId,
+                        storageId: field.storageId,
+                        type: field.type
+                    }
+                ]
+            });
+            /**
+             *
+             */
+            Object.assign(result, childResult);
+        }
+
+        const identifier = [...parents.map(p => p.fieldId), field.fieldId].join(".");
+
+        result[identifier] = {
+            type: field.type,
+            parents,
+            isSearchable,
+            isSortable,
+            fullTextSearch,
+            unmappedType: typeof unmappedType === "function" ? unmappedType(field) : undefined,
+            isSystemField: false,
+            field
+        };
+
+        return result;
+    }, {});
+};
 
 interface Params {
     plugins: PluginsContainer;
@@ -164,30 +231,22 @@ export const createModelFields = ({ plugins, fields }: Params) => {
     const fieldTypePlugins = plugins
         .byType<CmsModelFieldToGraphQLPlugin>("cms-model-field-to-graphql")
         .reduce<FieldTypePlugins>((types, plugin) => {
-            const { fieldType, isSearchable, isSortable } = plugin;
+            const { fieldType, isSearchable, isSortable, fullTextSearch } = plugin;
             types[fieldType] = {
                 unmappedType: unmappedTypes[fieldType],
                 isSearchable,
-                isSortable
+                isSortable,
+                fullTextSearch
             };
             return types;
         }, {});
 
-    return fields.reduce((collection, field) => {
-        const { fieldId, type } = field;
-        if (!fieldTypePlugins[type]) {
-            throw new WebinyError(`There is no plugin for field type "${type}".`);
-        }
-        const { isSearchable, isSortable, unmappedType } = fieldTypePlugins[type];
-        collection[fieldId] = {
-            type,
-            isSearchable,
-            isSortable,
-            unmappedType: typeof unmappedType === "function" ? unmappedType(field) : undefined,
-            isSystemField: false,
-            field
-        };
-
-        return collection;
-    }, createSystemFields());
+    return {
+        ...createSystemFields(),
+        ...buildFieldsList({
+            fields,
+            plugins: fieldTypePlugins,
+            parents: []
+        })
+    };
 };

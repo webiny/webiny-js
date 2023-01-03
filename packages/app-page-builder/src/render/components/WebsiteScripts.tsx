@@ -65,6 +65,12 @@ type WebsiteScriptsProps = {
 };
 
 const WebsiteScripts: React.FC<WebsiteScriptsProps> = ({ headerTags, footerTags }) => {
+    // `WebsiteScripts` component doesn't do anything if we're
+    // in the middle of a prerendering process.
+    if ("__PS_RENDER__" in window) {
+        return null;
+    }
+
     const htmlHeadTags = useMemo(() => {
         return parseHeaderTags(headerTags);
     }, [headerTags]);

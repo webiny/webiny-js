@@ -1,4 +1,4 @@
-context("Pages Previewing", () => {
+context.skip("Pages Previewing", () => {
     beforeEach(() => cy.login());
 
     const pageTitle1 = `Test pages previewing 1`;

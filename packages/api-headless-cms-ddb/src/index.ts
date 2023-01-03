@@ -15,6 +15,8 @@ import { createModelsStorageOperations } from "~/operations/model";
 import { createEntriesStorageOperations } from "./operations/entry";
 import { CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
 
+import { createFilterCreatePlugins } from "~/operations/entry/filtering/plugins";
+
 export * from "./plugins";
 
 export const createStorageOperations: StorageOperationsFactory = params => {
@@ -62,6 +64,10 @@ export const createStorageOperations: StorageOperationsFactory = params => {
          * Field plugins for DynamoDB.
          */
         dynamoDbPlugins(),
+        /**
+         * Filter create plugins.
+         */
+        createFilterCreatePlugins(),
         /**
          * User defined custom plugins.
          */

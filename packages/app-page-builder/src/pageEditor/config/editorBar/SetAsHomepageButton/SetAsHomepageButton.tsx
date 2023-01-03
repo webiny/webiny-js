@@ -1,6 +1,5 @@
 import React, { useCallback } from "react";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { useRouter } from "@webiny/react-router";
 import { ReactComponent as HomeIcon } from "~/admin/assets/round-home-24px.svg";
 import { usePageBuilderSettings } from "~/admin/hooks/usePageBuilderSettings";
 import { useAdminPageBuilder } from "~/admin/hooks/useAdminPageBuilder";
@@ -8,11 +7,12 @@ import { usePage } from "~/pageEditor/hooks/usePage";
 import { createComponentPlugin } from "@webiny/react-composition";
 import { PageOptionsMenu, PageOptionsMenuItem } from "~/pageEditor";
 import { useConfirmationDialog } from "@webiny/app-admin";
+import { usePageViewNavigation } from "~/hooks/usePageViewNavigation";
 
 export const SetAsHomepageButtonPlugin = createComponentPlugin(PageOptionsMenu, Original => {
     return function SetAsHomepageButton({ items, ...props }) {
         const [page] = usePage();
-        const { history } = useRouter();
+        const { navigateToLatestFolder } = usePageViewNavigation();
         const { showSnackbar } = useSnackbar();
         const pageBuilder = useAdminPageBuilder();
         const { showConfirmation } = useConfirmationDialog({
@@ -61,7 +61,7 @@ export const SetAsHomepageButtonPlugin = createComponentPlugin(PageOptionsMenu, 
                 return showSnackbar(error.message);
             }
 
-            history.push(`/page-builder/pages?id=${page.id}`);
+            navigateToLatestFolder();
 
             // Let's wait a bit, because we are also redirecting the user.
             setTimeout(() => showSnackbar("New homepage set successfully!"), 500);

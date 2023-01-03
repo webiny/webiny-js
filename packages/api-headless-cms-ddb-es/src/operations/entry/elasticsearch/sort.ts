@@ -34,6 +34,12 @@ export const createElasticsearchSort = (params: Params): esSort => {
     const sortPlugins = Object.values(modelFields).reduce<
         Record<string, CmsEntryElasticsearchFieldPlugin>
     >((plugins, field) => {
+        /**
+         * We do not support sorting by nested fields.
+         */
+        if (field.parents.length > 0) {
+            return plugins;
+        }
         const { fieldId, storageId } = field.field;
 
         fieldIdToStorageIdIdMap[fieldId] = fieldId;

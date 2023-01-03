@@ -83,7 +83,8 @@ export const createFields = (): Fields => {
             isSearchable: true,
             isSortable: true,
             isSystemField: true,
-            type: "string"
+            type: "string",
+            parents: []
         },
         age: {
             field: {
@@ -96,7 +97,8 @@ export const createFields = (): Fields => {
             isSearchable: true,
             isSortable: true,
             isSystemField: false,
-            type: "number"
+            type: "number",
+            parents: []
         },
         title: {
             field: {
@@ -109,7 +111,8 @@ export const createFields = (): Fields => {
             isSearchable: true,
             isSortable: true,
             isSystemField: false,
-            type: "text"
+            type: "text",
+            parents: []
         },
         date: {
             field: {
@@ -122,7 +125,8 @@ export const createFields = (): Fields => {
             isSearchable: true,
             isSortable: true,
             isSystemField: false,
-            type: "datetime"
+            type: "datetime",
+            parents: []
         },
         isMarried: {
             field: {
@@ -135,7 +139,8 @@ export const createFields = (): Fields => {
             isSearchable: true,
             isSortable: true,
             isSystemField: false,
-            type: "date"
+            type: "date",
+            parents: []
         },
         price: {
             field: {
@@ -148,7 +153,8 @@ export const createFields = (): Fields => {
             isSearchable: true,
             isSortable: true,
             isSystemField: false,
-            type: "number"
+            type: "number",
+            parents: []
         },
         availableOn: {
             field: {
@@ -161,7 +167,8 @@ export const createFields = (): Fields => {
             isSearchable: true,
             isSortable: true,
             isSystemField: false,
-            type: "date"
+            type: "date",
+            parents: []
         }
     };
 };

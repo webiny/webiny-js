@@ -6,6 +6,8 @@ import styled from "@emotion/styled";
 import { Typography } from "@webiny/ui/Typography";
 import { useRouter } from "@webiny/react-router";
 
+import { usePageViewNavigation } from "~/hooks/usePageViewNavigation";
+
 const Title = styled("div")`
     display: flex;
     align-items: center;
@@ -33,16 +35,10 @@ interface PageProps extends Props {
 }
 
 export const FolderName = ({ name, id }: Props): ReactElement => {
-    const { location, history } = useRouter();
-    const query = new URLSearchParams(location.search);
+    const { navigateToFolder } = usePageViewNavigation();
 
     return (
-        <Title
-            onClick={() => {
-                query.set("folderId", id);
-                history.push({ search: query.toString() });
-            }}
-        >
+        <Title onClick={() => navigateToFolder(id)}>
             <Icon>
                 <Folder />
             </Icon>

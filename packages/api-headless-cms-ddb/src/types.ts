@@ -15,7 +15,8 @@ interface CmsFieldFilterValueTransformParams {
     /**
      * A field which value we are transforming.
      */
-    field: CmsModelField;
+    field: Partial<CmsModelField> &
+        Pick<CmsModelField, "id" | "storageId" | "fieldId" | "settings">;
     value: any;
 }
 
