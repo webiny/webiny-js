@@ -10,13 +10,13 @@ export default (): Promise<string> => {
                 resolve(response.ip);
             };
             xhr.onabort = function () {
-                resolve('0.0.0.0');
+                resolve("0.0.0.0");
             };
             xhr.onerror = function () {
-                resolve('0.0.0.0');
+                resolve("0.0.0.0");
             };
         } catch (e) {
-            resolve('0.0.0.0');
+            resolve("0.0.0.0");
         }
     });
 };
