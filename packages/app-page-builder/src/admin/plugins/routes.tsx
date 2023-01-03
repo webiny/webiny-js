@@ -59,8 +59,8 @@ const plugins: RoutePlugin[] = [
         )
     },
     /**
-     * @deprecated since version 3.34
-     * The old Page Datalist view will be removed completely within version 3.36
+     * @deprecated since version 5.34
+     * The old Page Datalist view will be removed completely within version 5.36
      */
     {
         name: "route-pb-pages-old",
