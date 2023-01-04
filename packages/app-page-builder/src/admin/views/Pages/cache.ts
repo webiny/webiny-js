@@ -102,9 +102,9 @@ const addRevisionIdToEntryCache = (cache: DataProxy, revision: PbPageRevision): 
 
         const data = cache.readQuery(gqlParams);
 
-    if (!data) {
-        return;
-    }
+        if (!data) {
+            return;
+        }
 
         cache.writeQuery({
             ...gqlParams,
