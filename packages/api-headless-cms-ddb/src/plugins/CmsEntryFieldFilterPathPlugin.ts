@@ -3,7 +3,7 @@ import { Plugin } from "@webiny/plugins/Plugin";
 import { CmsModelField } from "@webiny/api-headless-cms/types";
 
 export interface CreatePathCallableParams {
-    field: CmsModelField;
+    field: Partial<CmsModelField> & Pick<CmsModelField, "fieldId" | "storageId" | "id">;
     index?: number;
 }
 export interface CreatePathCallable {
@@ -31,7 +31,7 @@ export class CmsEntryFieldFilterPathPlugin extends Plugin {
         this.name = `${(this.constructor as any).type}-${this.config.fieldType}`;
     }
 
-    public canUse(field: CmsModelField): boolean {
+    public canUse(field: Pick<CmsModelField, "fieldId" | "type">): boolean {
         if (field.type !== this.config.fieldType) {
             return false;
         }

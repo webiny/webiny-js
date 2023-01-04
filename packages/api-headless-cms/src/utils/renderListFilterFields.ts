@@ -96,7 +96,7 @@ export const renderListFilterFields: RenderListFilterFields = (params): string =
         if (typeof createListFilters !== "function") {
             continue;
         }
-        fields.push(createListFilters({ model, field }));
+        fields.push(createListFilters({ model, field, plugins: fieldTypePlugins }));
     }
 
     return fields.filter(Boolean).join("\n");

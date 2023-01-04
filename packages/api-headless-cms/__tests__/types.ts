@@ -22,10 +22,34 @@ export type ProductManager = ReturnType<typeof useProductManageHandler>;
 /**
  * CMS Entries
  */
+/**
+ * Category
+ */
 export interface ProductCategory {
     id: string;
     title: string;
     slug: string;
+}
+
+/**
+ * ////// Product
+ */
+export interface ProductCategoryRef {
+    modelId: string;
+    id: string;
+}
+export interface ProductVariantOption {
+    name: string;
+    price: number;
+    category: ProductCategoryRef;
+    categories: ProductCategoryRef[];
+    longText: string[];
+}
+export interface ProductVariant {
+    name: string;
+    price: number;
+    category: ProductCategoryRef;
+    options?: ProductVariantOption[];
 }
 export interface Product {
     title: string;
@@ -36,8 +60,8 @@ export interface Product {
     color: string;
     availableSizes: string[];
     image: string;
-    category: {
-        modelId: string;
-        id: string;
-    };
+    richText?: Record<string, any>;
+    category: ProductCategoryRef;
+    variant?: ProductVariant;
+    fieldsObject?: Record<string, any>;
 }

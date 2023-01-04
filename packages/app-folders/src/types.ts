@@ -17,22 +17,9 @@ export interface LinkItem {
     folderId: string;
 }
 
-export type Loading<T extends string> = Record<string, { [P in T]?: boolean }>;
+export type Loading<T extends string> = { [P in T]?: boolean };
 
-export type FoldersActions =
-    | "LIST_FOLDERS"
-    | "GET_FOLDER"
-    | "CREATE_FOLDER"
-    | "UPDATE_FOLDER"
-    | "DELETE_FOLDER";
-
-export type LinksActions =
-    | "LIST_LINKS"
-    | "LIST_MORE_LINKS"
-    | "GET_LINK"
-    | "CREATE_LINK"
-    | "UPDATE_LINK"
-    | "DELETE_LINK";
+export type LoadingActions = "INIT" | "LIST" | "LIST_MORE" | "GET" | "CREATE" | "UPDATE" | "DELETE";
 
 export interface Error {
     code: string;

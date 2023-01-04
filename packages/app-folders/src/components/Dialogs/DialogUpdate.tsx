@@ -74,7 +74,7 @@ export const FolderDialogUpdate: React.FC<Props> = ({ folder, onClose, open }) =
                     >
                         {({ Bind, submit }) => (
                             <>
-                                {loading.UPDATE_FOLDER && (
+                                {loading.UPDATE && (
                                     <CircularProgress label={t`Updating folder...`} />
                                 )}
                                 <DialogTitle>{t`Update folder`}</DialogTitle>

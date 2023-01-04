@@ -611,7 +611,11 @@ export interface CmsModelFieldToGraphQLPlugin<TField extends CmsModelField = Cms
          * }
          * ```
          */
-        createListFilters?(params: { model: CmsModel; field: TField }): string;
+        createListFilters?(params: {
+            model: CmsModel;
+            field: TField;
+            plugins: CmsFieldTypePlugins;
+        }): string;
         /**
          * Definition of the field type for GraphQL - be aware if multiple values is selected.
          *
@@ -685,7 +689,11 @@ export interface CmsModelFieldToGraphQLPlugin<TField extends CmsModelField = Cms
          * }
          * ```
          */
-        createListFilters?: (params: { model: CmsModel; field: TField }) => string;
+        createListFilters?: (params: {
+            model: CmsModel;
+            field: TField;
+            plugins: CmsFieldTypePlugins;
+        }) => string;
         /**
          * Manage API schema definitions for the field and resolvers for them. Probably similar to `read.createSchema`.
          *
@@ -1711,7 +1719,22 @@ export interface CmsEntryListWhere {
     /**
      * This is to allow querying by any content model field defined by the user.
      */
-    [key: string]: any | CmsEntryListWhereRef;
+    [key: string]:
+        | string
+        | number
+        | boolean
+        | undefined
+        | string[]
+        | number[]
+        | null
+        | CmsEntryListWhere[]
+        | CmsEntryListWhere
+        | CmsEntryListWhereRef;
+    /**
+     * To allow querying via nested queries, we added the AND / OR properties.
+     */
+    AND?: CmsEntryListWhere[];
+    OR?: CmsEntryListWhere[];
 }
 
 /**
@@ -2694,6 +2717,7 @@ export interface CmsSystemStorageOperations {
 }
 
 export interface HeadlessCmsStorageOperations<C = CmsContext> {
+    name: string;
     system: CmsSystemStorageOperations;
     settings: CmsSettingsStorageOperations;
     groups: CmsGroupStorageOperations;

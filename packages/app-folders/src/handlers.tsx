@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction } from "react";
 import { ApolloQueryResult } from "apollo-client/core/types";
 import { FetchResult } from "apollo-link";
-import { Loading } from "~/types";
+import { Loading, LoadingActions } from "~/types";
 
 /**
  * A simple wrapper for Apollo fetching operations that handles the `loading` state as side effect.
@@ -10,14 +10,13 @@ import { Loading } from "~/types";
  * @param apolloQuery: Apollo Query or Mutation
  */
 export const apolloFetchingHandler = async (
-    loadingHandler: () => void,
+    loadingHandler: (flag: boolean) => void,
     apolloQuery: () => Promise<ApolloQueryResult<any> | FetchResult<any>>
 ) => {
-    loadingHandler();
+    loadingHandler(true);
 
     const response = await apolloQuery();
-
-    loadingHandler();
+    loadingHandler(false);
 
     return response;
 };
@@ -25,25 +24,19 @@ export const apolloFetchingHandler = async (
 /**
  * A simple function to handle `loading` state.
  *
- * @param context: string that define where the context the operation works.
  * @param action: the `action` that has been performed.
  * @param setState: the logic to update the loading state.
  */
-export const loadingHandler = <T extends string>(
-    context: string,
-    action: T,
-    setState: Dispatch<SetStateAction<Loading<T>>>
-): void => {
-    setState(state => {
-        const currentContext = state[context] || {};
-        const currentAction = currentContext[action] || false;
-
-        return {
-            ...state,
-            [context]: {
-                ...currentContext,
-                [action]: !currentAction
-            }
-        };
-    });
+export const loadingHandler = (
+    action: LoadingActions,
+    setState: Dispatch<SetStateAction<Loading<LoadingActions>>>
+) => {
+    return (flag: boolean) => {
+        setState(state => {
+            return {
+                ...state,
+                [action]: flag
+            };
+        });
+    };
 };

@@ -17,6 +17,7 @@ interface ReactMediumEditorProps {
     onSelect: (value: string) => void;
     tag: string | [string, Record<string, any>];
     options?: CoreOptions;
+    autoFocus?: boolean;
     [key: string]: any;
 }
 
@@ -25,7 +26,8 @@ const ReactMediumEditor: React.FC<ReactMediumEditorProps> = ({
     value,
     onChange,
     options = {},
-    onSelect
+    onSelect,
+    autoFocus
 }) => {
     const elementRef = React.useRef<HTMLElement>(null);
     const editorRef = React.useRef<MediumEditor.MediumEditor>();
@@ -105,6 +107,19 @@ const ReactMediumEditor: React.FC<ReactMediumEditorProps> = ({
             editorRef.current.unsubscribe("editableInput", handleSelect);
         };
     }, [handleChange, handleSelect, tagName]);
+
+    useEffect(() => {
+        if (autoFocus && editorRef.current && elementRef.current) {
+            // We need time to finish initialization of Medium Editor
+            setTimeout(() => {
+                // Approach was taken from: https://github.com/yabwe/medium-editor/issues/850
+                editorRef.current?.selectElement(elementRef.current as HTMLElement);
+                elementRef.current?.click();
+                // @ts-ignore
+                MediumEditor.selection.moveCursor(document, elementRef.current);
+            }, 200);
+        }
+    }, [autoFocus, editorRef.current, elementRef.current]);
 
     return createElement(tagName, {
         dangerouslySetInnerHTML: { __html: value },

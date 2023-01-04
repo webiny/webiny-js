@@ -33,6 +33,7 @@ export const createFieldPathFactory = ({ plugins }: FieldPathFactoryParams) => {
         if (!field.isSystemField) {
             result.push("values");
         }
+        result.push(...field.parents.map(p => p.storageId));
         result.push(fieldPath);
 
         return {

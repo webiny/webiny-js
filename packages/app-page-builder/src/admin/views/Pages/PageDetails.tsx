@@ -23,18 +23,22 @@ declare global {
         }
     }
 }
-const DetailsContainer = styled("div")({
-    height: "calc(100% - 10px)",
-    overflow: "hidden",
-    position: "relative",
-    nav: {
-        backgroundColor: "var(--mdc-theme-surface)"
+
+const DetailsContainer = styled("div")`
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+    
+  nav: {
+        background: var(--mdc-theme-surface)"
     }
-});
+`;
+
 interface EmptyPageDetailsProps {
     onCreatePage: (event?: React.SyntheticEvent) => void;
     canCreate: boolean;
 }
+
 const EmptyPageDetails: React.FC<EmptyPageDetailsProps> = ({ onCreatePage, canCreate }) => {
     return (
         <EmptyView
@@ -56,8 +60,9 @@ const EmptyPageDetails: React.FC<EmptyPageDetailsProps> = ({ onCreatePage, canCr
 interface PageDetailsProps {
     onCreatePage: (event?: React.SyntheticEvent) => void;
     canCreate: boolean;
+    onDelete: () => void;
 }
-const PageDetails: React.FC<PageDetailsProps> = ({ onCreatePage, canCreate }) => {
+const PageDetails: React.FC<PageDetailsProps> = ({ onCreatePage, canCreate, onDelete }) => {
     const { history, location } = useRouter();
     const { showSnackbar } = useSnackbar();
 
@@ -89,7 +94,8 @@ const PageDetails: React.FC<PageDetailsProps> = ({ onCreatePage, canCreate }) =>
                     <test-id data-testid="pb-page-details">
                         {renderPlugins("pb-page-details", {
                             page,
-                            getPageQuery
+                            getPageQuery,
+                            onDelete
                         })}
                     </test-id>
                 </DetailsContainer>

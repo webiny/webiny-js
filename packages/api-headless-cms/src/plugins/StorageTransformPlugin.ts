@@ -10,9 +10,10 @@ export interface ToStorageParams<T, F> {
     plugins: PluginsContainer;
 }
 
-export interface FromStorageParams<T, F> {
+export interface FromStorageParams<T, F extends CmsModelField> {
     model: CmsModel;
-    field: F;
+    field: Partial<F> &
+        Pick<F, "id" | "fieldId" | "storageId" | "type" | "settings">;
     value: T;
     getStoragePlugin(fieldType: string): StorageTransformPlugin<T>;
     plugins: PluginsContainer;

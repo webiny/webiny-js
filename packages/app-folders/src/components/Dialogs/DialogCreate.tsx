@@ -57,9 +57,7 @@ export const FolderDialogCreate: React.FC<Props> = ({ type, onClose, open, paren
                 <Form onSubmit={onSubmit}>
                     {({ Bind, submit }) => (
                         <>
-                            {loading.CREATE_FOLDER && (
-                                <CircularProgress label={t`Creating folder...`} />
-                            )}
+                            {loading.CREATE && <CircularProgress label={t`Creating folder...`} />}
                             <DialogTitle>{t`Create a new folder`}</DialogTitle>
                             <DialogContent>
                                 <Grid>
