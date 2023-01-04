@@ -187,8 +187,8 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
                                     openPreviewDrawer={openPreviewDrawer}
                                 />
                                 <LoadMoreButton
+                                    show={!isLoading && meta.hasMoreItems}
                                     disabled={isLoadingMore}
-                                    meta={meta}
                                     windowHeight={windowHeight}
                                     tableHeight={tableHeight}
                                     onClick={loadMoreOnClick}
