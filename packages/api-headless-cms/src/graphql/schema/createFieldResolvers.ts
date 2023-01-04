@@ -41,7 +41,7 @@ const getCreateResolver = (
 };
 /**
  * We use a factory to avoid passing the parameters for recursive invocations.
- * This way they will always be in the function scope and we can only pass "fields".
+ * This way they will always be in the function scope, and we can only pass "fields".
  */
 export const createFieldResolversFactory = (factoryParams: CreateFieldResolversFactoryParams) => {
     const { endpointType, models, model, fieldTypePlugins } = factoryParams;

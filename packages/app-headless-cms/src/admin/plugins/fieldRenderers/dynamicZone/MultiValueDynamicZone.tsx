@@ -27,7 +27,7 @@ const BottomMargin = styled.div`
 type GetBind = CmsEditorFieldRendererProps["getBind"];
 
 interface TemplateValue {
-    __template: string;
+    _templateId: string;
     [key: string]: any;
 }
 
@@ -58,7 +58,7 @@ const TemplateValueForm = ({
     const templates = field.settings?.templates || [];
 
     const template: CmsDynamicZoneTemplate | undefined = templates.find(
-        tpl => tpl.id === value.__template
+        tpl => tpl.id === value._templateId
     );
 
     if (!template) {
@@ -111,7 +111,7 @@ export const MultiValueDynamicZone = ({
     contentModel
 }: MultiValueDynamicZoneProps) => {
     const onTemplate = (template: CmsDynamicZoneTemplate) => {
-        bind.appendValue({ __template: template.id });
+        bind.appendValue({ _templateId: template.id });
     };
 
     const cloneValue = (index: number) => {

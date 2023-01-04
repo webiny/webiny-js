@@ -235,6 +235,29 @@ export interface CmsModelField {
     settings?: CmsModelFieldSettings;
 }
 
+export interface CmsDynamicZoneTemplate {
+    id: string;
+    name: string;
+    gqlTypeName: string;
+    description: string;
+    icon: string;
+    fields: CmsModelField[];
+    layout: string[][];
+    validation: CmsModelFieldValidation[];
+}
+
+/**
+ * A definition for dynamic-zone field to show possible type of the field in settings.
+ */
+export interface CmsModelDynamicZoneField extends CmsModelField {
+    /**
+     * Settings object for the field. Contains `templates` property.
+     */
+    settings: {
+        templates: CmsDynamicZoneTemplate[];
+    };
+}
+
 /**
  * Used for our internal functionality.
  */
@@ -247,7 +270,7 @@ export interface CmsModelFieldWithParent extends CmsModelField {
  */
 export interface CmsModelDateTimeField extends CmsModelField {
     /**
-     * Settings object for the field. Contains type property.
+     * Settings object for the field. Contains `type` property.
      */
     settings: {
         type: "time" | "date" | "dateTimeWithoutTimezone" | "dateTimeWithTimezone";
@@ -483,15 +506,15 @@ export interface CmsModelFieldDefinition {
     typeDefs?: string;
 }
 
-interface CmsModelFieldToGraphQLCreateResolverParams {
+interface CmsModelFieldToGraphQLCreateResolverParams<TField> {
     models: CmsModel[];
     model: CmsModel;
     graphQLType: string;
-    field: CmsModelField;
+    field: TField;
     createFieldResolvers: any;
 }
-export interface CmsModelFieldToGraphQLCreateResolver {
-    (params: CmsModelFieldToGraphQLCreateResolverParams):
+export interface CmsModelFieldToGraphQLCreateResolver<TField = CmsModelField> {
+    (params: CmsModelFieldToGraphQLCreateResolverParams<TField>):
         | GraphQLFieldResolver
         | { resolver: GraphQLFieldResolver | null; typeResolvers: Resolvers<CmsContext> }
         | false;
@@ -502,7 +525,8 @@ export interface CmsModelFieldToGraphQLCreateResolver {
  * @category ModelField
  * @category GraphQL
  */
-export interface CmsModelFieldToGraphQLPlugin extends Plugin {
+export interface CmsModelFieldToGraphQLPlugin<TField extends CmsModelField = CmsModelField>
+    extends Plugin {
     /**
      * A plugin type
      */
@@ -554,10 +578,7 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
      * }
      * ```
      */
-    createStorageId?: (params: {
-        model: CmsModel;
-        field: CmsModelField;
-    }) => string | null | undefined;
+    createStorageId?: (params: { model: CmsModel; field: TField }) => string | null | undefined;
     /**
      * Read API methods.
      */
@@ -573,7 +594,7 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
          * }
          * ```
          */
-        createGetFilters?(params: { model: CmsModel; field: CmsModelField }): string;
+        createGetFilters?(params: { model: CmsModel; field: TField }): string;
         /**
          * Definition for list filtering for GraphQL.
          *
@@ -590,7 +611,7 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
          * }
          * ```
          */
-        createListFilters?(params: { model: CmsModel; field: CmsModelField }): string;
+        createListFilters?(params: { model: CmsModel; field: TField }): string;
         /**
          * Definition of the field type for GraphQL - be aware if multiple values is selected.
          *
@@ -608,12 +629,12 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
          */
         createTypeField(params: {
             model: CmsModel;
-            field: CmsModelField;
+            field: TField;
             fieldTypePlugins: CmsFieldTypePlugins;
         }): CmsModelFieldDefinition | string | null;
         /**
          * Definition for field resolver.
-         * By default it is simple return of the `instance.values[storageId]` but if required, users can define their own.
+         * By default, it is simple return of the `instance.values[storageId]` but if required, users can define their own.
          *
          * ```ts
          * read: {
@@ -625,7 +646,7 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
          * }
          * ```
          */
-        createResolver?: CmsModelFieldToGraphQLCreateResolver;
+        createResolver?: CmsModelFieldToGraphQLCreateResolver<TField>;
         /**
          * Read API schema definitions for the field and resolvers for them.
          *
@@ -664,7 +685,7 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
          * }
          * ```
          */
-        createListFilters?: (params: { model: CmsModel; field: CmsModelField }) => string;
+        createListFilters?: (params: { model: CmsModel; field: TField }) => string;
         /**
          * Manage API schema definitions for the field and resolvers for them. Probably similar to `read.createSchema`.
          *
@@ -700,7 +721,7 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
          */
         createTypeField: (params: {
             model: CmsModel;
-            field: CmsModelField;
+            field: TField;
             fieldTypePlugins: CmsFieldTypePlugins;
         }) => CmsModelFieldDefinition | string | null;
         /**
@@ -720,12 +741,12 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
          */
         createInputField: (params: {
             model: CmsModel;
-            field: CmsModelField;
+            field: TField;
             fieldTypePlugins: CmsFieldTypePlugins;
         }) => CmsModelFieldDefinition | string | null;
         /**
          * Definition for field resolver.
-         * By default it is simple return of the `instance.values[storageId]` but if required, users can define their own.
+         * By default, it is simple return of the `instance.values[storageId]` but if required, users can define their own.
          *
          * ```ts
          * manage: {
@@ -737,7 +758,7 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
          * }
          * ```
          */
-        createResolver?: CmsModelFieldToGraphQLCreateResolver;
+        createResolver?: CmsModelFieldToGraphQLCreateResolver<TField>;
     };
 }
 
@@ -775,7 +796,7 @@ export interface CmsFieldTypePlugins {
 }
 
 /**
- * A interface describing the reference to a user that created some data in the database.
+ * An interface describing the reference to a user that created some data in the database.
  *
  * @category General
  */
@@ -876,7 +897,7 @@ export type CmsSystemContext = {
 };
 
 /**
- * A GraphQL params.data parameter received when creating content model group.
+ * A GraphQL `params.data` parameter received when creating content model group.
  *
  * @category CmsGroup
  * @category GraphQL params
@@ -889,7 +910,7 @@ export interface CmsGroupCreateInput {
 }
 
 /**
- * A GraphQL params.data parameter received when updating content model group.
+ * A GraphQL `params.data` parameter received when updating content model group.
  *
  * @category CmsGroup
  * @category GraphQL params
@@ -961,7 +982,7 @@ export interface CmsGroup {
 }
 
 /**
- * A data.where parameter received when listing content model groups.
+ * A `data.where` parameter received when listing content model groups.
  *
  * @category CmsGroup
  * @category GraphQL params
@@ -1111,7 +1132,7 @@ export interface CmsModelFieldValidation {
 }
 
 /**
- * A GraphQL params.data parameter received when creating content model.
+ * A GraphQL `params.data` parameter received when creating content model.
  *
  * @category GraphQL params
  * @category CmsModel
@@ -1160,7 +1181,7 @@ export interface CmsModelCreateInput {
 }
 
 /**
- * A GraphQL params.data parameter received when creating content model from existing model.
+ * A GraphQL `params.data` parameter received when creating content model from existing model.
  *
  * @category GraphQL params
  * @category CmsModel
@@ -1238,7 +1259,7 @@ export interface CmsModelFieldInput {
 }
 
 /**
- * A GraphQL params.data parameter received when updating content model.
+ * A GraphQL `params.data` parameter received when updating content model.
  *
  * @category GraphQL params
  * @category CmsModel
@@ -1321,7 +1342,7 @@ export interface CmsEntryValues {
 export interface CmsEntry<T = CmsEntryValues> {
     /**
      * A version of the webiny this entry was created with.
-     * This can be used when upgrading the system so we know which entries to update.
+     * This can be used when upgrading the system, so we know which entries to update.
      */
     webinyVersion: string;
     /**
@@ -1391,10 +1412,10 @@ export interface CmsEntry<T = CmsEntryValues> {
     /**
      * Settings for the given entry.
      *
-     * Introduced with Advanced Publishing Workflow - will be always inserted after this PR is merged.
-     * Be aware that when accessing properties in it on old systems - it will break if not checked first.
+     * Introduced with Advanced Publishing Workflow. Will always be inserted once this PR is merged.
+     * Be aware that when accessing properties in it on old systems, it will break if not checked first.
      *
-     * Available only on the Manage API in entry GraphQL type meta.data property.
+     * Available only on the Manage API in entry GraphQL type `meta.data` property.
      */
     meta?: {
         [key: string]: any;
@@ -1429,7 +1450,7 @@ export interface CmsModelManager {
      */
     getPublishedByIds: (ids: string[]) => Promise<CmsEntry[]>;
     /**
-     * Get a list of latest entries by the ID list.
+     * Get a list of the latest entries by the ID list.
      */
     getLatestByIds: (ids: string[]) => Promise<CmsEntry[]>;
     /**
@@ -1437,15 +1458,15 @@ export interface CmsModelManager {
      */
     get: (id: string) => Promise<CmsEntry>;
     /**
-     * Create a entry.
+     * Create an entry.
      */
     create: (data: CreateCmsEntryInput) => Promise<CmsEntry>;
     /**
-     * Update a entry.
+     * Update an entry.
      */
     update: (id: string, data: UpdateCmsEntryInput) => Promise<CmsEntry>;
     /**
-     * Delete a entry.
+     * Delete an entry.
      */
     delete: (id: string) => Promise<void>;
 }
@@ -1538,7 +1559,7 @@ export interface CmsModelContext {
      */
     initializeModel: (modelId: string) => Promise<boolean>;
     /**
-     * Get a instance of CmsModelManager for given content modelId.
+     * Get an instance of CmsModelManager for given content modelId.
      *
      * @see CmsModelManager
      *
@@ -1934,7 +1955,7 @@ export interface CmsEntryContext {
         params: CmsEntryListParams
     ) => Promise<[CmsEntry[], CmsEntryMeta]>;
     /**
-     * Lists latest entries. Used for manage API.
+     * Lists the latest entries. Used for manage API.
      */
     listLatestEntries: (
         model: CmsModel,
@@ -2147,13 +2168,13 @@ export interface BaseCmsSecurityPermission extends SecurityPermission {
  */
 export interface CmsModelPermission extends BaseCmsSecurityPermission {
     /**
-     * A object representing `key: model.modelId` values where key is locale code.
+     * An object representing `key: model.modelId` values where key is locale code.
      */
     models?: {
         [key: string]: string[];
     };
     /**
-     * A object representing `key: group.id` values where key is locale code.
+     * {locale: groupId[]} map, where key is a locale code.
      */
     groups?: {
         [key: string]: string[];
@@ -2168,7 +2189,7 @@ export interface CmsModelPermission extends BaseCmsSecurityPermission {
  */
 export interface CmsGroupPermission extends BaseCmsSecurityPermission {
     /**
-     * A object representing `key: group.id` values where key is locale code.
+     * {locale: groupId[]} map, where key is a locale code.
      */
     groups?: {
         [key: string]: string[];
@@ -2184,13 +2205,13 @@ export interface CmsGroupPermission extends BaseCmsSecurityPermission {
 export interface CmsEntryPermission extends BaseCmsSecurityPermission {
     pw?: string;
     /**
-     * A object representing `key: model.modelId` values where key is locale code.
+     * An object representing `key: model.modelId` values where key is locale code.
      */
     models?: {
         [key: string]: string[];
     };
     /**
-     * A object representing `key: group.id` values where key is locale code.
+     * {locale: groupId[]} map, where key is a locale code.
      */
     groups?: {
         [key: string]: string[];

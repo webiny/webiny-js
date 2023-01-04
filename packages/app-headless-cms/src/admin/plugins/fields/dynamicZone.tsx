@@ -11,7 +11,7 @@ export const dynamicZoneField: CmsEditorFieldTypePlugin = {
     type: "cms-editor-field-type",
     name: "cms-editor-field-type-dynamic-zone",
     field: {
-        type: "dynamic-zone",
+        type: "dynamicZone",
         label: t`Dynamic Zone`,
         description: t`Define content templates to be used during content creation.`,
         icon: <ObjectIcon />,
@@ -34,7 +34,7 @@ export const dynamicZoneField: CmsEditorFieldTypePlugin = {
             description: "These validators are applied to the entire dynamic zone."
         },
         canAccept(_, draggable) {
-            return draggable.fieldType !== "dynamic-zone";
+            return draggable.fieldType !== "dynamicZone";
         },
         multipleValuesLabel: t`Use as a list of values`,
         createField() {
@@ -45,7 +45,7 @@ export const dynamicZoneField: CmsEditorFieldTypePlugin = {
                     templates: []
                 },
                 renderer: {
-                    name: "dynamic-zone"
+                    name: "dynamicZone"
                 }
             };
         },

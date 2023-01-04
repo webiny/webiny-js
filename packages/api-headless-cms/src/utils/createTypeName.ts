@@ -1,7 +1,8 @@
 import upperFirst from "lodash/upperFirst";
+import camelCase from "lodash/camelCase";
 
 export const createTypeName = (modelId: string): string => {
-    return upperFirst(modelId);
+    return upperFirst(camelCase(modelId));
 };
 
 export const createReadTypeName = (baseTypeName: string): string => {

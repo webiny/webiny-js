@@ -29,13 +29,13 @@ export const SingleValueDynamicZone = ({
     getBind
 }: SingleValueDynamicZoneProps) => {
     const onTemplate = (template: CmsDynamicZoneTemplate) => {
-        bind.onChange({ __template: template.id });
+        bind.onChange({ _templateId: template.id });
     };
 
     const templates = field.settings?.templates || [];
 
     const template: CmsDynamicZoneTemplate | undefined = bind.value
-        ? templates.find(tpl => tpl.id === bind.value.__template)
+        ? templates.find(tpl => tpl.id === bind.value._templateId)
         : undefined;
 
     const Bind = getBind();

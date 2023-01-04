@@ -4,26 +4,6 @@ export default /* GraphQL */ `
     """
     Products being sold in our webshop
     """
-    type Product_Variant_Options {
-        name: String
-        price: Number
-        category: RefField
-        categories: [RefField!]
-        longText: [String]
-    }
-    
-    type Product_Variant {
-        name: String
-        price: Number
-        category: RefField
-        options: [Product_Variant_Options!]
-    }
-
-    type Product_FieldsObject {
-        text: String
-    }
-
-
     type Product {
         id: ID!
         entryId: String!
@@ -57,6 +37,25 @@ export default /* GraphQL */ `
         title: String
         ${metaDataComment}
         data: JSON
+    }
+
+    type Product_Variant_Options {
+        name: String
+        price: Number
+        category: RefField
+        categories: [RefField!]
+        longText: [String]
+    }
+
+    type Product_Variant {
+        name: String
+        price: Number
+        category: RefField
+        options: [Product_Variant_Options!]
+    }
+
+    type Product_FieldsObject {
+    text: String
     }
     
     input Product_Variant_OptionsInput {
