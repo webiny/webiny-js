@@ -1,8 +1,8 @@
 import styled from "@emotion/styled";
 
-import { DataTable as RmwcDataTable } from "@rmwc/data-table";
+import { DataTable as RmwcDataTable, DataTableProps } from "@rmwc/data-table";
 
-export const Table = styled(RmwcDataTable)`
+export const Table = styled(RmwcDataTable)<DataTableProps>`
     width: 100%;
 
     th,

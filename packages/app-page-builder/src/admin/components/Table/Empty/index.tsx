@@ -1,24 +1,12 @@
 import React, { ReactElement } from "react";
 
-import styled from "@emotion/styled";
-import { ReactComponent as Add } from "@material-design-icons/svg/filled/add.svg";
 import { i18n } from "@webiny/app/i18n";
 import EmptyView from "@webiny/app-admin/components/EmptyView";
 import { ButtonDefault } from "@webiny/ui/Button";
 
+import { Buttons, Icon } from "./styled";
+
 const t = i18n.ns("app-page-builder/admin/views/pages/table/empty");
-
-const Buttons = styled("div")`
-    > button {
-        margin: 0 8px;
-    }
-`;
-
-const Icon = styled(Add)`
-    fill: var(--mdc-theme-primary);
-    width: 18px;
-    margin-right: 8px;
-`;
 
 interface Props {
     onCreatePage: (event?: React.SyntheticEvent) => void;
