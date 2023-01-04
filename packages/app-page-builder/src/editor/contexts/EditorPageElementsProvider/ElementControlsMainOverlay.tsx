@@ -58,24 +58,42 @@ const StyledElementControlsMainOverlay = styled.div<{
     isActive: boolean;
     isDragging: boolean;
 }>(({ element, elementRendererMeta, isActive, isDragging }) => {
-    const margins = elementRendererMeta.calculatedStyles.reduce((current, item) => {
-        if (item.margin) {
-            current.marginTop = item.margin;
-            current.marginRight = item.margin;
-            current.marginBottom = item.margin;
-            current.marginLeft = item.margin;
-        } else if (item.marginTop) {
-            current.marginTop = item.marginTop;
-        } else if (item.marginRight) {
-            current.marginRight = item.marginRight;
-        } else if (item.marginBottom) {
-            current.marginBottom = item.marginBottom;
-        } else if (item.marginLeft) {
-            current.marginLeft = item.marginLeft;
-        }
+    // By default, the element controls overlay takes the size of the actual element.
+    // But, if margins were set, they won't be taken into consideration. The shown
+    // overlay is smaller than the actual space the page element takes. That's why,
+    // when calculating the size of the overlay, we also need to take into consideration
+    // any margins that the user might've set.
+    const margins: CSSObject = elementRendererMeta.calculatedStyles.reduce(
+        (current, item) => {
+            if (item.margin) {
+                current.marginTop = item.margin;
+                current.marginRight = item.margin;
+                current.marginBottom = item.margin;
+                current.marginLeft = item.margin;
+            } else {
+                if (item.marginTop) {
+                    current.marginTop = item.marginTop;
+                }
+                if (item.marginRight) {
+                    current.marginRight = item.marginRight;
+                }
+                if (item.marginBottom) {
+                    current.marginBottom = item.marginBottom;
+                }
+                if (item.marginLeft) {
+                    current.marginLeft = item.marginLeft;
+                }
+            }
 
-        return current;
-    }, {});
+            return current;
+        },
+        {
+            marginTop: "0px",
+            marginRight: "0px",
+            marginBottom: "0px",
+            marginLeft: "0px"
+        }
+    );
 
     const hoverStyles: CSSObject = {
         "&.hover": {
@@ -114,6 +132,10 @@ const StyledElementControlsMainOverlay = styled.div<{
         });
 
         if (!isDragging) {
+            // When an element is active, we're increasing the z-index of the actual page element.
+            // We are putting it "in front of the user", above the element controls overlay.
+            // This enables us to actually interact with the page element. For example, when
+            // activating a paragraph page element, we get to type the paragraph text.
             Object.assign(activeStyles, {
                 "& + *": {
                     zIndex: 5,
@@ -128,9 +150,9 @@ const StyledElementControlsMainOverlay = styled.div<{
         position: "absolute",
         zIndex: 1,
         top: `calc(0px - ${margins.marginTop})`,
-        left: 0,
-        width: "100%",
-        height: `calc(100%  + ${margins.marginTop})`,
+        left: `calc(0px - ${margins.marginLeft})`,
+        width: `calc(100%  + ${margins.marginLeft} + ${margins.marginRight})`,
+        height: `calc(100%  + ${margins.marginTop} + ${margins.marginBottom})`,
         transition: "box-shadow 0.3s cubic-bezier(0.165, 0.84, 0.44, 1)",
         cursor: "pointer",
         ...hoverStyles,
