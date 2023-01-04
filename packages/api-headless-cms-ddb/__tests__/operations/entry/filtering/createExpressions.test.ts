@@ -1,7 +1,7 @@
 import { createExpressions, Expression } from "~/operations/entry/filtering/createExpressions";
 import { PluginsContainer } from "@webiny/plugins";
 import { Field } from "~/operations/entry/filtering/types";
-import { createPluginsContainer } from "./mocks/plugins";
+import { createPluginsContainer } from "../../helpers/pluginsContainer";
 import { createFields } from "./mocks/fields";
 
 describe("create expressions from where conditions", () => {

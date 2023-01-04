@@ -205,6 +205,11 @@ export const createExpressions = (params: Params): Expression[] => {
             return;
         }
 
+        /**
+         * What we want to do here is to add current filters to existing single expression, if the expression has the same condition as the current iteration.
+         *
+         * This is mostly cosmetically - to group filters under a single expression.
+         */
         const lastExpressionCondition =
             expressions.length === 1 && expressions[0].condition === condition ? condition : null;
         if (!lastExpressionCondition) {
@@ -215,10 +220,9 @@ export const createExpressions = (params: Params): Expression[] => {
             return;
         }
         /**
-         * We know that the expressions[0] exists.
+         * We know that the expressions[0] exists...
          */
-        // @ts-ignore
-        expressions[0].filters.push(...filters);
+        expressions[0].filters!.push(...filters);
     };
 
     const expressions: Expression[] = [];

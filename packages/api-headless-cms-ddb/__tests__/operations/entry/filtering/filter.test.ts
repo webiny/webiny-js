@@ -1,5 +1,5 @@
 import { createEntries } from "./mocks/entry.model";
-import { createExpressions } from "~/operations/entry/filtering/createExpressions";
+import { createExpressions, Expression } from "~/operations/entry/filtering/createExpressions";
 import { PluginsContainer } from "@webiny/plugins";
 import { CmsModel } from "@webiny/api-headless-cms/types";
 import { Field } from "~/operations/entry/filtering/types";
@@ -19,7 +19,7 @@ describe("filtering", () => {
         model = createModel();
         fields = createFields({
             plugins,
-            model
+            fields: model.fields
         });
     });
 
@@ -48,7 +48,7 @@ describe("filtering", () => {
              */
             createdOn.setTime(createdOn.getTime() + modifier * 1000 * 86400 - 5000);
 
-            const createFiltersParams = {
+            const createExpressionsParams = {
                 plugins,
                 where: {
                     createdOn_gte: createdOn.toISOString()
@@ -59,35 +59,39 @@ describe("filtering", () => {
             /**
              * We want to make sure that filters are properly constructed
              */
-            const filters = createExpressions(createFiltersParams);
-            expect(filters).toEqual([
-                {
-                    compareValue: createdOn.toISOString(),
-                    field: expect.objectContaining({
-                        fieldId: "createdOn"
-                    }),
-                    plugin: expect.objectContaining({
-                        _params: {
-                            matches: expect.any(Function),
-                            operation: "gte"
-                        },
-                        name: "dynamodb.value.filter.gte"
-                    }),
-                    negate: false,
-                    fieldPathId: "createdOn",
-                    path: "createdOn",
-                    transformValue: expect.any(Function)
-                }
-            ]);
+            const expressions = createExpressions(createExpressionsParams);
 
-            const result = await filter({
-                items: records as any,
-                where: createFiltersParams.where,
-                plugins,
-                fields,
-                fromStorage: async (_, value) => {
-                    return value;
+            const expectedExpressions: Expression[] = [
+                {
+                    condition: "AND",
+                    filters: [
+                        {
+                            compareValue: createdOn.toISOString(),
+                            field: expect.objectContaining({
+                                fieldId: "createdOn"
+                            }),
+                            plugin: expect.objectContaining({
+                                _params: {
+                                    matches: expect.any(Function),
+                                    operation: "gte"
+                                },
+                                name: "dynamodb.value.filter.gte"
+                            }),
+                            negate: false,
+                            fieldPathId: "createdOn",
+                            path: "createdOn",
+                            transformValue: expect.any(Function)
+                        }
+                    ]
                 }
+            ];
+            expect(expressions).toEqual(expectedExpressions);
+
+            const result = filter({
+                items: records as any,
+                where: createExpressionsParams.where,
+                plugins,
+                fields
             });
 
             expect(result).toHaveLength(expectedResults);
@@ -99,22 +103,13 @@ describe("filtering", () => {
     it("should filter by title", async () => {
         const records = createEntries(100);
 
-        const createFiltersParams = {
-            plugins,
+        const result = filter({
+            items: records as any,
             where: {
                 title_contains: "tttt"
             },
-            fields
-        };
-
-        const result = await filter({
-            items: records as any,
-            where: createFiltersParams.where,
             plugins,
-            fields,
-            fromStorage: async (_, value) => {
-                return value;
-            }
+            fields
         });
 
         expect(result).toHaveLength(10);
@@ -133,7 +128,7 @@ describe("filtering", () => {
     it("should filter by nested options keys", async () => {
         const records = createEntries(100);
 
-        const resultBoth = await filter({
+        const resultBoth = filter({
             items: records as any,
             where: {
                 options: {
@@ -141,10 +136,7 @@ describe("filtering", () => {
                 }
             },
             plugins,
-            fields,
-            fromStorage: async (_, value) => {
-                return value;
-            }
+            fields
         });
 
         expect(resultBoth).toHaveLength(10);
@@ -166,7 +158,7 @@ describe("filtering", () => {
             })
         );
 
-        const resultNumber2 = await filter({
+        const resultNumber2 = filter({
             items: records as any,
             where: {
                 options: {
@@ -174,10 +166,7 @@ describe("filtering", () => {
                 }
             },
             plugins,
-            fields,
-            fromStorage: async (_, value) => {
-                return value;
-            }
+            fields
         });
 
         expect(resultNumber2).toHaveLength(100);
@@ -205,7 +194,7 @@ describe("filtering", () => {
             })
         );
 
-        const resultNumber3 = await filter({
+        const resultNumber3 = filter({
             items: records as any,
             where: {
                 options: {
@@ -213,10 +202,7 @@ describe("filtering", () => {
                 }
             },
             plugins,
-            fields,
-            fromStorage: async (_, value) => {
-                return value;
-            }
+            fields
         });
 
         expect(resultNumber3).toHaveLength(0);
@@ -227,7 +213,7 @@ describe("filtering", () => {
     it("should filter by nested options variant colors", async () => {
         const records = createEntries(100);
 
-        const resultRed = await filter({
+        const resultRed = filter({
             items: records as any,
             where: {
                 options: {
@@ -237,10 +223,7 @@ describe("filtering", () => {
                 }
             },
             plugins,
-            fields,
-            fromStorage: async (_, value) => {
-                return value;
-            }
+            fields
         });
 
         expect(resultRed).toHaveLength(50);
@@ -266,7 +249,7 @@ describe("filtering", () => {
             })
         );
 
-        const resultTeal = await filter({
+        const resultTeal = filter({
             items: records as any,
             where: {
                 options: {
@@ -276,10 +259,7 @@ describe("filtering", () => {
                 }
             },
             plugins,
-            fields,
-            fromStorage: async (_, value) => {
-                return value;
-            }
+            fields
         });
 
         expect(resultTeal).toHaveLength(50);
@@ -305,7 +285,7 @@ describe("filtering", () => {
             })
         );
 
-        const resultBoth = await filter({
+        const resultBoth = filter({
             items: records as any,
             where: {
                 options: {
@@ -315,10 +295,7 @@ describe("filtering", () => {
                 }
             },
             plugins,
-            fields,
-            fromStorage: async (_, value) => {
-                return value;
-            }
+            fields
         });
 
         expect(resultBoth).toHaveLength(100);
@@ -344,7 +321,7 @@ describe("filtering", () => {
             })
         );
 
-        const resultNoneOrange = await filter({
+        const resultNoneOrange = filter({
             items: records as any,
             where: {
                 options: {
@@ -354,15 +331,12 @@ describe("filtering", () => {
                 }
             },
             plugins,
-            fields,
-            fromStorage: async (_, value) => {
-                return value;
-            }
+            fields
         });
 
         expect(resultNoneOrange).toHaveLength(0);
 
-        const resultNoneEmpty = await filter({
+        const resultNoneEmpty = filter({
             items: records as any,
             where: {
                 options: {
@@ -372,10 +346,7 @@ describe("filtering", () => {
                 }
             },
             plugins,
-            fields,
-            fromStorage: async (_, value) => {
-                return value;
-            }
+            fields
         });
 
         expect(resultNoneEmpty).toHaveLength(0);
@@ -392,14 +363,11 @@ describe("filtering", () => {
         /**
          * Find yellow color items.
          */
-        const resultsYellow = await filter({
+        const resultsYellow = filter({
             items: records as any,
             where: {},
             plugins,
             fields,
-            fromStorage: async (_, value) => {
-                return value;
-            },
             fullTextSearch: {
                 term: "yellow",
                 fields: searchableFields
@@ -410,14 +378,11 @@ describe("filtering", () => {
         /**
          * Find yellow color items.
          */
-        const resultsWhite = await filter({
+        const resultsWhite = filter({
             items: records as any,
             where: {},
             plugins,
             fields,
-            fromStorage: async (_, value) => {
-                return value;
-            },
             fullTextSearch: {
                 term: "white",
                 fields: searchableFields
@@ -428,14 +393,11 @@ describe("filtering", () => {
         /**
          * Find grey color items.
          */
-        const resultsGrey = await filter({
+        const resultsGrey = filter({
             items: records as any,
             where: {},
             plugins,
             fields,
-            fromStorage: async (_, value) => {
-                return value;
-            },
             fullTextSearch: {
                 term: "grey",
                 fields: searchableFields
@@ -446,14 +408,11 @@ describe("filtering", () => {
         /**
          * Find red color items.
          */
-        const resultsRed = await filter({
+        const resultsRed = filter({
             items: records as any,
             where: {},
             plugins,
             fields,
-            fromStorage: async (_, value) => {
-                return value;
-            },
             fullTextSearch: {
                 term: "red",
                 fields: searchableFields
