@@ -44,13 +44,17 @@ const createTypeDefsForTemplates = ({
     const templateTypes: string[] = [];
 
     templates.forEach(template => {
-        const typeName = [createTypeName(field.fieldId), template.gqlTypeName].join("_");
+        const typeName = [
+            createTypeName(model.modelId),
+            createTypeName(field.fieldId),
+            template.gqlTypeName
+        ].join("_");
 
         const result = createTypeFromFields({
             typeOfType,
             model,
             type,
-            typeName,
+            typeNamePrefix: typeName,
             fields: template.fields,
             fieldTypePlugins
         });

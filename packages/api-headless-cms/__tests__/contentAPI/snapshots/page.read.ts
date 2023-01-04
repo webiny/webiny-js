@@ -70,6 +70,8 @@ export default `
         ownedBy_not: String
         ownedBy_in: [String!]
         ownedBy_not_in: [String!]
+        AND: [PageListWhereInput!]
+        OR: [PageListWhereInput!]
     }
 
     enum PageListSorter {

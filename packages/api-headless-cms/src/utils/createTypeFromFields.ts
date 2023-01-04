@@ -7,7 +7,7 @@ interface TypeFromFieldParams {
     typeOfType: "type" | "input";
     model: CmsModel;
     type: ApiEndpoint;
-    typeName: string;
+    typeNamePrefix: string;
     fields: CmsModelField[];
     fieldTypePlugins: CmsFieldTypePlugins;
 }
@@ -18,11 +18,9 @@ interface TypeFromFieldResponse {
 }
 
 export const createTypeFromFields = (params: TypeFromFieldParams): TypeFromFieldResponse | null => {
-    const { typeOfType, model, type, typeName, fields, fieldTypePlugins } = params;
+    const { typeOfType, model, type, typeNamePrefix, fields, fieldTypePlugins } = params;
     const typeSuffix = typeOfType === "input" ? "Input" : "";
     const mTypeName = createTypeName(model.modelId);
-
-    const fieldTypeName = `${mTypeName}_${typeName}`;
 
     const typeFields = [];
     const nestedTypes = [];
@@ -46,18 +44,18 @@ export const createTypeFromFields = (params: TypeFromFieldParams): TypeFromField
 
         const { fields, typeDefs } = result;
 
-        typeFields.push(fields.replace(replace, `${fieldTypeName}_`));
+        typeFields.push(fields.replace(replace, `${typeNamePrefix}_`));
         if (typeDefs) {
-            nestedTypes.push(typeDefs.replace(replace, `${fieldTypeName}_`));
+            nestedTypes.push(typeDefs.replace(replace, `${typeNamePrefix}_`));
         }
     }
 
     return {
-        fieldType: `${fieldTypeName}${typeSuffix}`,
+        fieldType: `${typeNamePrefix}${typeSuffix}`,
         typeDefs: /* GraphQL */ `
             ${nestedTypes.join("\n")}
 
-            ${typeOfType} ${fieldTypeName}${typeSuffix} {
+            ${typeOfType} ${typeNamePrefix}${typeSuffix} {
                 ${typeFields.join("\n")}
             }
         `

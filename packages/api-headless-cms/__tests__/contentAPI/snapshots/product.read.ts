@@ -102,7 +102,7 @@ export default /* GraphQL */ `
         text_contains: String
         text_not_contains: String
     }
-    
+
     input ProductGetWhereInput {
         id: ID
         entryId: String
