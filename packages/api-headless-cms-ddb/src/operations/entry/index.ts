@@ -724,7 +724,7 @@ export const createEntriesStorageOperations = (
          */
         const modelFields = createFields({
             plugins,
-            model
+            fields: model.fields
         });
 
         const fromStorage = createStorageTransformCallable(model);

@@ -13,6 +13,7 @@ import { getWhereValues } from "~/operations/entry/filtering/values";
 interface ApplyExpressionsParams {
     where: Partial<CmsEntryListWhere>;
     expressions: Expression[];
+    condition: "AND" | "OR";
 }
 
 interface Params {
@@ -79,7 +80,9 @@ export const createExpressions = (params: Params): Expression[] => {
     };
 
     const applyExpressions = (params: ApplyExpressionsParams): void => {
-        const { where, expressions } = params;
+        const { where, expressions, condition } = params;
+
+        const filters: Filter[] = [];
 
         for (const key in where) {
             if (where.hasOwnProperty(key) === false) {
@@ -92,28 +95,45 @@ export const createExpressions = (params: Params): Expression[] => {
             }
 
             /**
-             * First we check conditional filtering.
+             * If there are "AND" or "OR" keys, let's sort them out first.
              *
-             * Same logic is applied for both "AND" and "OR" filtering, with a difference of expression is set to either AND or OR.
+             *
+             * AND conditional
              */
-            if (key === "AND" || key === "OR") {
+            if (key === "AND") {
                 const childWhereList = getWhereValues(value, key);
-
                 const childExpressions: Expression[] = [];
                 for (const childWhere of childWhereList) {
                     applyExpressions({
                         where: childWhere,
+                        condition: key,
                         expressions: childExpressions
                     });
                 }
-                if (childExpressions.length === 0) {
-                    continue;
+                if (childExpressions.length > 0) {
+                    expressions.push(...childExpressions);
                 }
-
-                expressions.push({
-                    children: childExpressions,
-                    condition: key
-                });
+                continue;
+            }
+            /**
+             * OR conditional
+             */
+            if (key === "OR") {
+                const childWhereList = getWhereValues(value, key);
+                const childExpressions: Expression[] = [];
+                for (const childWhere of childWhereList) {
+                    applyExpressions({
+                        where: childWhere,
+                        condition: key,
+                        expressions: childExpressions
+                    });
+                }
+                if (childExpressions.length > 0) {
+                    expressions.push({
+                        children: childExpressions,
+                        condition: key
+                    });
+                }
                 continue;
             }
 
@@ -178,18 +198,35 @@ export const createExpressions = (params: Params): Expression[] => {
             if (!result || (Array.isArray(result) && result.length === 0)) {
                 continue;
             }
-            expressions.push({
-                filters: Array.isArray(result) ? result : [result],
-                condition: "AND"
-            });
+
+            filters.push(...(Array.isArray(result) ? result : [result]));
         }
+        if (filters.length === 0) {
+            return;
+        }
+
+        const lastExpressionCondition =
+            expressions.length === 1 && expressions[0].condition === condition ? condition : null;
+        if (!lastExpressionCondition) {
+            expressions.push({
+                filters,
+                condition
+            });
+            return;
+        }
+        /**
+         * We know that the expressions[0] exists.
+         */
+        // @ts-ignore
+        expressions[0].filters.push(...filters);
     };
 
     const expressions: Expression[] = [];
 
     applyExpressions({
         where,
-        expressions
+        expressions,
+        condition: "AND"
     });
 
     return expressions;
