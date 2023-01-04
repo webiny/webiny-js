@@ -8,8 +8,9 @@ import { TogglePluginActionEvent } from "~/editor/recoil/actions";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import styled from "@emotion/styled";
 import { IconButton } from "@webiny/ui/Button";
+import {useActiveElementId} from "~/editor/hooks/useActiveElementId";
 
-const EmptyCell = styled.div`
+const EmptyCell = styled.div<{ isActive: boolean }>`
     height: 100px;
     display: flex;
     justify-content: center;
@@ -18,7 +19,8 @@ const EmptyCell = styled.div`
     align-items: center;
 
     button {
-        color: var(--mdc-theme-secondary);
+        color: ${props =>
+            props.isActive ? "var(--mdc-theme-primary)" : "var(--mdc-theme-secondary)"};
         transition: transform 0.2s;
 
         &:hover {
@@ -32,6 +34,8 @@ const PeCell = createRenderer(
         const { getElement } = useRenderer();
         const element = getElement();
         const handler = useEventActionHandler();
+        const [activeElementId] = useActiveElementId();
+        const isActive = activeElementId === element.id;
 
         const elementWithChildren = useRecoilValue(
             elementWithChildrenByIdSelector(element.id)
@@ -55,7 +59,7 @@ const PeCell = createRenderer(
         const { id, path, type } = element;
 
         return (
-            <EmptyCell>
+            <EmptyCell isActive={isActive}>
                 <IconButton
                     className={"addIcon"}
                     icon={<AddCircleOutline />}

@@ -8,22 +8,24 @@ import { ReactComponent as AddCircleOutline } from "~/editor/assets/icons/baseli
 import { TogglePluginActionEvent } from "~/editor/recoil/actions";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import styled from "@emotion/styled";
+import { useActiveElementId } from "~/editor/hooks/useActiveElementId";
 
-const EmptyCell = styled.div`
+const EmptyCell = styled.div<{ isActive: boolean }>`
     height: 100px;
     display: flex;
     justify-content: center;
     width: 100%;
     border: 1px dashed var(--mdc-theme-secondary);
     align-items: center;
-    
-    button {
-      color: var(--mdc-theme-secondary);
-      transition: transform 0.2s;
 
-      &:hover {
-        transform: scale(1.3);
-      }
+    button {
+        color: ${props =>
+            props.isActive ? "var(--mdc-theme-primary)" : "var(--mdc-theme-secondary)"};
+        transition: transform 0.2s;
+
+        &:hover {
+            transform: scale(1.3);
+        }
     }
 `;
 
@@ -32,6 +34,8 @@ const PeBlock = createRenderer(
         const { getElement } = useRenderer();
         const element = getElement();
         const handler = useEventActionHandler();
+        const [activeElementId] = useActiveElementId();
+        const isActive = activeElementId === element.id;
 
         const elementWithChildren = useRecoilValue(
             elementWithChildrenByIdSelector(element.id)
@@ -53,9 +57,8 @@ const PeBlock = createRenderer(
         }
 
         const { id, path, type } = element;
-
         return (
-            <EmptyCell>
+            <EmptyCell isActive={isActive}>
                 <IconButton icon={<AddCircleOutline />} onClick={onAddClick} />
             </EmptyCell>
         );
