@@ -125,29 +125,38 @@ const theme = createTheme({
             },
 
             list: {
-                li: {
-                    marginBottom: "12px",
-                    marginLeft: "1.875rem",
-                    position: "relative",
-                    "&:before,&:after": {
-                        position: "absolute",
-                        content: '""',
-                        borderRadius: "50%"
-                    },
-                    "&:before": {
-                        backgroundColor: "#90c418",
-                        height: "1.25rem",
-                        width: "1.25rem",
-                        left: "-1.875rem",
-                        top: "0.125rem"
-                    },
-                    "&:after": {
-                        backgroundColor: "#ffffff",
-                        height: "0.5rem",
-                        left: "-1.5rem",
-                        top: "0.5rem",
-                        width: "0.5rem"
+                "ul, ol": {
+                    li: {
+                        marginBottom: "12px",
+                        marginLeft: "1.875rem",
+                        position: "relative"
                     }
+                },
+                ul: {
+                    li: {
+                        "&:before,&:after": {
+                            position: "absolute",
+                            content: '""',
+                            borderRadius: "50%"
+                        },
+                        "&:before": {
+                            backgroundColor: "#90c418",
+                            height: "1.25rem",
+                            width: "1.25rem",
+                            left: "-1.875rem",
+                            top: "0.125rem"
+                        },
+                        "&:after": {
+                            backgroundColor: "#ffffff",
+                            height: "0.5rem",
+                            left: "-1.5rem",
+                            top: "0.5rem",
+                            width: "0.5rem"
+                        }
+                    }
+                },
+                ol: {
+                    listStyleType: "decimal"
                 }
             },
             grid: { "mobile-landscape": { flexWrap: "wrap" } },

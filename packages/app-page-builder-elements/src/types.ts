@@ -19,13 +19,6 @@ export interface Element<TElementData = Record<string, any>> {
     path?: string[];
 }
 
-/**
- * Should be a `CSSObject` object or an object with breakpoint names as keys and `CSSObject` objects as values.
- */
-export interface Stylesobject {
-    [key: string]: CSSObject | string | number | undefined;
-}
-
 export interface PageElementsProviderProps {
     theme: Theme;
     renderers: Record<string, Renderer>;
@@ -41,7 +34,7 @@ export type AttributesObject = React.ComponentProps<any>;
 
 export type GetElementAttributes = (element: Element) => AttributesObject;
 export type GetElementStyles = (element: Element) => CSSObject;
-export type GetStyles = (styles: StylesObject | ((theme: Theme) => Stylesobject)) => CSSObject;
+export type GetStyles = (styles: StylesObject | ((theme: Theme) => StylesObject)) => CSSObject;
 
 interface SetAssignAttributesCallbackParams {
     attributes: AttributesObject;
@@ -50,7 +43,7 @@ interface SetAssignAttributesCallbackParams {
 
 interface SetAssignStylesCallbackParams {
     breakpoints: ThemeBreakpoints;
-    styles: Stylesobject;
+    styles: StylesObject;
     assignTo?: CSSObject;
 }
 
@@ -64,7 +57,7 @@ interface SetElementStylesCallbackParams extends PageElementsProviderProps {
 }
 
 interface SetStylesCallbackParams extends PageElementsProviderProps {
-    styles: StylesObject | ((theme: Theme) => Stylesobject);
+    styles: StylesObject | ((theme: Theme) => StylesObject);
     assignStyles?: AssignStylesCallback;
 }
 
@@ -147,6 +140,6 @@ export type ElementStylesModifier = (args: {
     theme: Theme;
     renderers?: PageElementsProviderProps["renderers"];
     modifiers?: PageElementsProviderProps["modifiers"];
-}) => Stylesobject | null;
+}) => StylesObject | null;
 
 export type LinkComponent = React.ComponentType<React.HTMLProps<HTMLAnchorElement>>;

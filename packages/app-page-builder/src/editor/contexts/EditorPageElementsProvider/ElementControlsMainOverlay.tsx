@@ -4,8 +4,8 @@ import styled from "@emotion/styled";
 import { CSSObject } from "@emotion/core";
 import { useActiveElementId } from "~/editor/hooks/useActiveElementId";
 import { useRenderer } from "@webiny/app-page-builder-elements";
-import {useRecoilValue} from "recoil";
-import {uiAtom} from "~/editor/recoil/modules";
+import { useRecoilValue } from "recoil";
+import { uiAtom } from "~/editor/recoil/modules";
 
 const ACTIVE_COLOR = "var(--mdc-theme-primary)";
 const HOVER_COLOR = "var(--mdc-theme-secondary)";
@@ -110,10 +110,6 @@ const StyledElementControlsMainOverlay = styled.div<{
                 fontSize: "10px",
                 textAlign: "center",
                 lineHeight: "14px"
-            },
-            "& + *": {
-                zIndex: 5,
-                position: "relative"
             }
         });
 
@@ -124,7 +120,6 @@ const StyledElementControlsMainOverlay = styled.div<{
                     position: "relative"
                 }
             });
-
         }
     }
 

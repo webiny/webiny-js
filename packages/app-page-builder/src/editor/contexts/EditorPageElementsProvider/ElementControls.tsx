@@ -1,12 +1,17 @@
-import React, { useMemo } from "react";
-import { plugins } from "@webiny/plugins";
-import { PbEditorPageElementPlugin } from "~/types";
+import React from "react";
 import { useRenderer } from "@webiny/app-page-builder-elements";
 import { ElementControlsMainOverlay } from "./ElementControlsMainOverlay";
 import { ElementControlHorizontalDropZones } from "./ElementControlHorizontalDropZones";
 import { DropElementActionEvent } from "~/editor/recoil/actions";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import Droppable, { DragObjectWithTypeWithTarget } from "~/editor/components/Droppable";
+import { useRecoilValue } from "recoil";
+import { uiAtom } from "~/editor/recoil/modules";
+
+// Lists elements that, when empty, can receive other elements as children using
+// drag and drop. For now, the element types that are hardcoded. Down the road,
+// we might want to expose this, enabling users to create more complex elements.
+const EMPTY_DROPPABLE_ELEMENTS = ["block", "cell"];
 
 // Provides controls and visual feedback for page elements:
 // - hover / active visual overlays
@@ -24,39 +29,36 @@ export const ElementControls = () => {
     }
 
     const handler = useEventActionHandler();
+    const { isDragging } = useRecoilValue(uiAtom);
 
-    const isDroppable = useMemo(() => {
-        const plugin = plugins
-            .byType<PbEditorPageElementPlugin>("pb-editor-page-element")
-            .find(plugin => plugin.elementType === element.type);
-
-        return plugin && plugin.onReceived;
-    }, [element.id]);
-
-    const dropElementAction = (source: DragObjectWithTypeWithTarget, position: number) => {
+    const dropElementAction = (source: DragObjectWithTypeWithTarget) => {
         handler.trigger(
             new DropElementActionEvent({
                 source,
                 target: {
                     id: element.id,
                     type: element.type,
-                    position
+                    position: 0
                 }
             })
         );
     };
 
-    // if (isDroppable) {
-    //     return (
-    //         <Droppable
-    //             onDrop={source => dropElementAction(source, 0)}
-    //             type={element.type}
-    //             isVisible={() => true}
-    //         >
-    //             {({ drop }) => <ElementControlsMainOverlay innerRef={drop} />}
-    //         </Droppable>
-    //     );
-    // }
+    const isEmpty = element.elements.length === 0;
+    const isDroppable = EMPTY_DROPPABLE_ELEMENTS.includes(element.type);
+    if (isEmpty && isDroppable && isDragging) {
+        // Here we don't need to render `ElementControlHorizontalDropZones` as it's simply
+        // not needed. It's only needed when at least one element has been dropped.
+        return (
+            <Droppable
+                onDrop={source => dropElementAction(source)}
+                type={element.type}
+                isVisible={() => true}
+            >
+                {({ drop }) => <ElementControlsMainOverlay innerRef={drop} />}
+            </Droppable>
+        );
+    }
 
     return (
         <ElementControlsMainOverlay>
