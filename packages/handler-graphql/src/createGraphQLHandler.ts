@@ -1,11 +1,12 @@
 import { boolean } from "boolean";
-import { HandlerGraphQLOptions } from "./types";
-import { createGraphQLSchema } from "./createGraphQLSchema";
-import { PluginCollection } from "@webiny/plugins/types";
-import debugPlugins from "./debugPlugins";
-import processRequestBody from "./processRequestBody";
 import { GraphQLSchema } from "graphql";
 import { RoutePlugin } from "@webiny/handler";
+import WebinyError from "@webiny/error";
+import { PluginCollection } from "@webiny/plugins/types";
+import { HandlerGraphQLOptions } from "./types";
+import { createGraphQLSchema } from "./createGraphQLSchema";
+import debugPlugins from "./debugPlugins";
+import processRequestBody from "./processRequestBody";
 
 const DEFAULT_CACHE_MAX_AGE = 30758400; // 1 year
 
@@ -14,6 +15,22 @@ const DEFAULT_CACHE_MAX_AGE = 30758400; // 1 year
  */
 const createRequestBody = (body: any): any => {
     return typeof body === "string" ? JSON.parse(body) : body;
+};
+
+const formatErrorPayload = (error: Error) => {
+    if (error instanceof WebinyError) {
+        return {
+            message: error.message,
+            code: error.code,
+            data: error.data
+        };
+    }
+
+    return {
+        name: error.name,
+        message: error.message,
+        stack: error.stack
+    };
 };
 
 export default (options: HandlerGraphQLOptions = {}): PluginCollection => {
@@ -34,7 +51,11 @@ export default (options: HandlerGraphQLOptions = {}): PluginCollection => {
         });
         onPost(path, async (request, reply) => {
             if (!schema) {
-                schema = createGraphQLSchema(context);
+                try {
+                    schema = createGraphQLSchema(context);
+                } catch (ex) {
+                    return reply.code(500).send(formatErrorPayload(ex));
+                }
             }
             const body = createRequestBody(request.body);
             const result = await processRequestBody(body, schema, context);

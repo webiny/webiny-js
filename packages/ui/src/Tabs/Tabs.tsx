@@ -56,6 +56,7 @@ export const TabsContext = createContext<TabsContext | undefined>(undefined);
 
 export interface TabsImperativeApi {
     switchTab(index: number): void;
+    getActiveIndex(): number;
 }
 /**
  * Use Tabs component to display a list of choices, once the handler is triggered.
@@ -76,6 +77,9 @@ export const Tabs = forwardRef<TabsImperativeApi | undefined, TabsProps>((props,
     }, []);
 
     useImperativeHandle(ref, () => ({
+        getActiveIndex() {
+            return activeIndex;
+        },
         switchTab(tabIndex: number) {
             activateTabIndex(tabIndex);
         }
@@ -106,6 +110,10 @@ export const Tabs = forwardRef<TabsImperativeApi | undefined, TabsProps>((props,
             }}
         >
             {tabs.map(item => {
+                if (!item.visible) {
+                    return null;
+                }
+
                 const style = item.style || {};
                 if (item.disabled) {
                     Object.assign(style, disabledStyles);
@@ -126,7 +134,7 @@ export const Tabs = forwardRef<TabsImperativeApi | undefined, TabsProps>((props,
         </TabBar>
     );
 
-    const content = tabs.map((tab, index) => {
+    const content = tabs.filter(Boolean).map((tab, index) => {
         if (activeIndex === index) {
             return <div key={index}>{tab.children}</div>;
         } else {

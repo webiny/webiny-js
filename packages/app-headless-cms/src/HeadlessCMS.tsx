@@ -9,6 +9,7 @@ import apiInformation from "./admin/plugins/apiInformation";
 import { ContentEntriesModule } from "./admin/views/contentEntries/experiment/ContentEntriesModule";
 import { DefaultOnEntryDelete } from "./admin/plugins/entry/DefaultOnEntryDelete";
 import { DefaultOnEntryPublish } from "~/admin/plugins/entry/DefaultOnEntryPublish";
+import allPlugins from "./allPlugins";
 
 const createHeadlessCMSProvider =
     (createApolloClient: CreateApolloClient) =>
@@ -35,6 +36,7 @@ export interface HeadlessCMSProps {
 
 const HeadlessCMSExtension = ({ createApolloClient }: HeadlessCMSProps) => {
     plugins.register(apiInformation);
+    plugins.register(allPlugins);
 
     plugins.register(
         new ApolloCacheObjectIdPlugin(obj => {

@@ -2,6 +2,27 @@ export default /* GraphQL */ `
     """
     Products being sold in our webshop
     """
+    type Product {
+        id: ID!
+        entryId: String!
+        createdOn: DateTime!
+        savedOn: DateTime!
+        createdBy: CmsCreatedBy!
+        ownedBy: CmsOwnedBy!
+        title: String
+        category: Category
+        price: Number
+        inStock: Boolean
+        itemsInStock: Number
+        availableOn: Date
+        color: String
+        availableSizes: [String]
+        image: String
+        richText: JSON
+        variant: Product_Variant
+        fieldsObject: Product_FieldsObject
+    }
+
     type Product_Variant_Options {
         name: String
         price: Number
@@ -80,27 +101,6 @@ export default /* GraphQL */ `
         text_not_in: [String]
         text_contains: String
         text_not_contains: String
-    }
-
-    type Product {
-        id: ID!
-        entryId: String!
-        createdOn: DateTime!
-        savedOn: DateTime!
-        createdBy: CmsCreatedBy!
-        ownedBy: CmsOwnedBy!
-        title: String
-        category: Category
-        price: Number
-        inStock: Boolean
-        itemsInStock: Number
-        availableOn: Date
-        color: String
-        availableSizes: [String]
-        image: String
-        richText: JSON
-        variant: Product_Variant
-        fieldsObject: Product_FieldsObject
     }
 
     input ProductGetWhereInput {

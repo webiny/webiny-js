@@ -27,6 +27,7 @@ export const ContentModelFieldModel = withFields({
     helpText: string({ validation: shortString }),
     placeholderText: string({ validation: shortString }),
     type: setOnce()(string({ validation: requiredShortString })),
+    tags: object({ value: [], required: false }),
     multipleValues: boolean({ value: false }),
     predefinedValues: fields({
         value: {},
@@ -75,7 +76,8 @@ export const CreateContentModelModel = withFields({
     description: string({ validation: shortString }),
     group: string({ validation: requiredShortString }),
     fields: fields({ instanceOf: ContentModelFieldModel, value: [], list: true, required: true }),
-    layout: object({ value: [], required: true })
+    layout: object({ value: [], required: true }),
+    tags: object({ value: [], required: false })
 })();
 
 export const CreateContentModelModelFrom = withFields({
@@ -92,5 +94,6 @@ export const UpdateContentModelModel = withFields({
     group: string({ validation: shortString }),
     titleFieldId: string(),
     fields: fields({ instanceOf: ContentModelFieldModel, value: [], list: true, required: true }),
-    layout: object({ value: [], required: true })
+    layout: object({ value: [], required: true }),
+    tags: object({ value: [], required: false })
 })();

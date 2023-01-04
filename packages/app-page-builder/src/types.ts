@@ -5,7 +5,7 @@ import { PbState } from "./editor/recoil/modules/types";
 import { Plugin } from "@webiny/app/types";
 import { BindComponent } from "@webiny/form";
 import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
-import { FormData, FormOnSubmit, FormSetValue, FormAPI } from "@webiny/form/types";
+import { GenericFormData, FormOnSubmit, FormSetValue, FormAPI } from "@webiny/form/types";
 import { CoreOptions } from "medium-editor";
 import { MenuTreeItem } from "~/admin/views/Menus/types";
 import { SecurityPermission } from "@webiny/app-security/types";
@@ -625,7 +625,7 @@ export type PbEditorPageElementAdvancedSettingsPlugin = Plugin & {
     type: "pb-editor-page-element-advanced-settings";
     elementType: string;
     render(params: { Bind: BindComponent; data: any; submit: () => void }): ReactElement;
-    onSave?: (data: FormData) => Promise<FormData>;
+    onSave?: (data: GenericFormData) => Promise<GenericFormData>;
 };
 
 export type PbEditorEventActionPlugin = Plugin & {

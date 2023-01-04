@@ -2,7 +2,7 @@ import React from "react";
 import { css } from "emotion";
 import { Cell } from "@webiny/ui/Grid";
 import { IconButton } from "@webiny/ui/Button";
-import { CmsEditorField } from "~/types";
+import { CmsModelField } from "~/types";
 
 export const UTC_TIMEZONES = [
     {
@@ -166,7 +166,7 @@ export const UTC_TIMEZONES = [
 export const DEFAULT_TIMEZONE = "+01:00";
 
 export const getDefaultFieldValue = (
-    field: CmsEditorField,
+    field: CmsModelField,
     bind: {
         value: string | null | undefined;
     },

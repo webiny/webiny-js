@@ -88,11 +88,12 @@ const searchInput = css({
 
 const { useState, useCallback, useMemo } = React;
 
-interface IconPickerProps extends FormComponentProps {
+export interface IconPickerProps extends FormComponentProps {
     label?: React.ReactNode;
     description?: React.ReactNode;
 }
-const IconPicker: React.FC<IconPickerProps> = ({
+
+export const IconPicker: React.FC<IconPickerProps> = ({
     value,
     onChange,
     label,
@@ -226,5 +227,3 @@ const IconPicker: React.FC<IconPickerProps> = ({
         </>
     );
 };
-
-export default IconPicker;

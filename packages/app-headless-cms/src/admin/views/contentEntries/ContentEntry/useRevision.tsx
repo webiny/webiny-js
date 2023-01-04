@@ -13,6 +13,7 @@ import {
     CmsEntryUnpublishMutationResponse,
     CmsEntryUnpublishMutationVariables
 } from "~/admin/graphql/contentEntries";
+import { getFetchPolicy } from "~/utils/getFetchPolicy";
 
 interface CreateRevisionHandler {
     (id?: string): Promise<void>;
@@ -73,36 +74,11 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
                             variables: {
                                 revision: id || revision.id
                             },
-                            update(cache, result) {
-                                if (!result || !result.data) {
-                                    showSnackbar(
-                                        `Missing result in update callback on Create Revision Mutation.`
-                                    );
-                                    return;
-                                }
-                                const newRevision = result.data.content.data;
-                                if (!newRevision) {
-                                    showSnackbar(
-                                        "Missing revision data in update callback on Create Revision Mutation."
-                                    );
-                                    return;
-                                }
-
-                                GQLCache.updateLatestRevisionInListCache(
-                                    contentModel,
-                                    cache,
-                                    newRevision,
-                                    listQueryVariables
-                                );
-                                GQLCache.addRevisionToRevisionsCache(
-                                    contentModel,
-                                    cache,
-                                    newRevision
-                                );
-                            }
+                            fetchPolicy: getFetchPolicy(contentModel)
                         });
 
                         setLoading(false);
+
                         if (!createResponse || !createResponse.data) {
                             showSnackbar(`Missing response data in Create Revision Callable.`);
                             return;
@@ -117,6 +93,14 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
                             showSnackbar(`Missing data in Create Revision callable.`);
                             return;
                         }
+
+                        GQLCache.updateLatestRevisionInListCache(
+                            contentModel,
+                            client.cache,
+                            data,
+                            listQueryVariables
+                        );
+                        GQLCache.addRevisionToRevisionsCache(contentModel, client.cache, data);
 
                         history.push(
                             `/cms/content-entries/${modelId}?id=${encodeURIComponent(data.id)}`

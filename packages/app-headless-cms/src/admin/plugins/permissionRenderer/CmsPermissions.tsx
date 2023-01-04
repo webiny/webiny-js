@@ -172,7 +172,7 @@ export const CMSPermissions: React.FC<CMSPermissionsProps> = ({ value, onChange 
             };
         }
 
-        const hasFullAccess = value.find(
+        const hasFullAccess = value.some(
             item => item.name === CMS_PERMISSION_FULL_ACCESS || item.name === "*"
         );
 
@@ -238,7 +238,7 @@ export const CMSPermissions: React.FC<CMSPermissionsProps> = ({ value, onChange 
         });
 
         return returnData;
-    }, []);
+    }, []) as CmsSecurityPermission;
 
     const locales = getFormLocales();
 
@@ -249,15 +249,7 @@ export const CMSPermissions: React.FC<CMSPermissionsProps> = ({ value, onChange 
     }, []);
 
     return (
-        <Form
-            data={formData}
-            onChange={data => {
-                /**
-                 * We know that data is CmsSecurityPermission.
-                 */
-                return onFormChange(data as unknown as CmsSecurityPermission);
-            }}
-        >
+        <Form<CmsSecurityPermission> data={formData} onChange={onFormChange}>
             {({ data, Bind, setValue }) => {
                 const endpoints = data.endpoints || [];
                 const graphQLEndpointAccess =

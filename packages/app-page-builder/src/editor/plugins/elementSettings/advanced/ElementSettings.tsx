@@ -2,10 +2,9 @@ import React from "react";
 import { merge } from "dot-prop-immutable";
 import { renderPlugins } from "@webiny/app/plugins";
 import { plugins } from "@webiny/plugins";
-import { Form, FormRenderPropParams } from "@webiny/form";
+import { Form, FormOnSubmit, FormRenderPropParams } from "@webiny/form";
 import { PbEditorPageElementAdvancedSettingsPlugin } from "~/types";
 import { useUpdateElement } from "~/editor/hooks/useUpdateElement";
-import { FormData } from "@webiny/form/types";
 import { useActiveElement } from "~/editor/hooks/useActiveElement";
 import { makeComposable } from "@webiny/app-admin";
 
@@ -13,7 +12,7 @@ export const ElementSettings: React.FC = () => {
     const [element] = useActiveElement();
     const updateElement = useUpdateElement();
 
-    const onSubmit = async (formData: FormData) => {
+    const onSubmit: FormOnSubmit = async formData => {
         const settingsPlugins = plugins
             .byType<PbEditorPageElementAdvancedSettingsPlugin>(
                 "pb-editor-page-element-advanced-settings"

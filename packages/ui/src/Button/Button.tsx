@@ -5,29 +5,53 @@ import { Icon, IconProps } from "../Icon/Icon";
 import classNames from "classnames";
 import { SyntheticEvent } from "react";
 import { webinyButtonStyles } from "./Button.styles";
+
 export interface ButtonProps {
-    // Make button flat (only applicable to Primary button).
+    /**
+     * Make button flat (only applicable to Primary button).
+     */
     flat?: boolean;
 
-    // Make button smaller.
+    /**
+     * Make button smaller.
+     */
     small?: boolean;
 
-    // onClick handler.
-    onClick?: (event: React.MouseEvent<any, MouseEvent>) => void | null;
+    /**
+     * Returning `any` allows us to pass callbacks to the button without worrying about their
+     * specific return types. Buttons don't use return values from callbacks, so we don't have to worry
+     * about their return types at all.
+     */
+    onClick?: (event: React.MouseEvent<any, MouseEvent>) => any;
 
-    // Label and optionally an icon (using Button.Icon component).
+    /**
+     * Label and optionally an icon (using Button.Icon component).
+     */
     children?: React.ReactNode;
 
-    // Show ripple effect on button click. Default: true
+    /**
+     * Show ripple effect on button click.
+     */
     ripple?: boolean;
 
+    /**
+     * Additional button class name.
+     */
     className?: string;
 
+    /**
+     * Is button disabled?
+     */
     disabled?: boolean;
 
+    /**
+     * Additional inline styles.
+     */
     style?: { [key: string]: any };
 
-    // For testing purposes.
+    /**
+     * ID of the element for testing purposes.
+     */
     "data-testid"?: string;
 }
 

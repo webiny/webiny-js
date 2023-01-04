@@ -1,6 +1,6 @@
 import React from "react";
-import { ReactComponent as ObjectIcon } from "./icons/ballot_black_24dp.svg";
-import { CmsEditorFieldTypePlugin } from "~/types";
+import { ReactComponent as ObjectIcon } from "@material-design-icons/svg/outlined/ballot.svg";
+import { CmsEditorFieldTypePlugin, CmsModelField } from "~/types";
 import { i18n } from "@webiny/app/i18n";
 import { ObjectFields } from "./object/ObjectFields";
 import { createFieldsList } from "~/admin/graphql/createFieldsList";
@@ -35,10 +35,9 @@ const plugin: CmsEditorFieldTypePlugin = {
             return <ObjectFields {...props} />;
         },
         graphql: {
-            queryField({ field }) {
-                return `{ ${createFieldsList(
-                    (field.settings ? field.settings.fields : []) || []
-                )} }`;
+            queryField({ field, model }) {
+                const fields = (field.settings ? field.settings.fields : []) as CmsModelField[];
+                return `{ ${createFieldsList({ model, fields })} }`;
             }
         }
     }

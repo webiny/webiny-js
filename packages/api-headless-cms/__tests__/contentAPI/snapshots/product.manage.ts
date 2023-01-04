@@ -4,86 +4,6 @@ export default /* GraphQL */ `
     """
     Products being sold in our webshop
     """
-    type Product_Variant_Options {
-        name: String
-        price: Number
-        category: RefField
-        categories: [RefField!]
-        longText: [String]
-    }
-    input Product_Variant_OptionsWhereInput {
-        name: String
-        name_not: String
-        name_in: [String]
-        name_not_in: [String]
-        name_contains: String
-        name_not_contains: String
-        
-        price: Number
-        price_not: Number
-        price_in: [Number]
-        price_not_in: [Number]
-        price_lt: Number
-        price_lte: Number
-        price_gt: Number
-        price_gte: Number
-        # there must be two numbers sent in the array
-        price_between: [Number!]
-        # there must be two numbers sent in the array
-        price_not_between: [Number!]
-        
-        category: RefFieldWhereInput
-        
-        categories: RefFieldWhereInput
-        
-        longText_contains: String
-        longText_not_contains: String
-    }
-    
-    type Product_Variant {
-        name: String
-        price: Number
-        category: RefField
-        options: [Product_Variant_Options!]
-    }
-    input Product_VariantWhereInput {
-        name: String
-        name_not: String
-        name_in: [String]
-        name_not_in: [String]
-        name_contains: String
-        name_not_contains: String
-        
-        price: Number
-        price_not: Number
-        price_in: [Number]
-        price_not_in: [Number]
-        price_lt: Number
-        price_lte: Number
-        price_gt: Number
-        price_gte: Number
-        # there must be two numbers sent in the array
-        price_between: [Number!]
-        # there must be two numbers sent in the array
-        price_not_between: [Number!]
-        
-        category: RefFieldWhereInput
-        
-        options: Product_Variant_OptionsWhereInput
-    }
-
-    type Product_FieldsObject {
-        text: String
-    }
-    input Product_FieldsObjectWhereInput {
-        text: String
-        text_not: String
-        text_in: [String]
-        text_not_in: [String]
-        text_contains: String
-        text_not_contains: String
-    }
-
     type Product {
         id: ID!
         entryId: String!
@@ -117,6 +37,86 @@ export default /* GraphQL */ `
         title: String
         ${metaDataComment}
         data: JSON
+    }
+
+    type Product_Variant_Options {
+    name: String
+    price: Number
+    category: RefField
+    categories: [RefField!]
+    longText: [String]
+    }
+    input Product_Variant_OptionsWhereInput {
+    name: String
+    name_not: String
+    name_in: [String]
+    name_not_in: [String]
+    name_contains: String
+    name_not_contains: String
+
+    price: Number
+    price_not: Number
+    price_in: [Number]
+    price_not_in: [Number]
+    price_lt: Number
+    price_lte: Number
+    price_gt: Number
+    price_gte: Number
+    # there must be two numbers sent in the array
+    price_between: [Number!]
+    # there must be two numbers sent in the array
+    price_not_between: [Number!]
+
+    category: RefFieldWhereInput
+
+    categories: RefFieldWhereInput
+
+    longText_contains: String
+    longText_not_contains: String
+    }
+
+    type Product_Variant {
+    name: String
+    price: Number
+    category: RefField
+    options: [Product_Variant_Options!]
+    }
+    input Product_VariantWhereInput {
+    name: String
+    name_not: String
+    name_in: [String]
+    name_not_in: [String]
+    name_contains: String
+    name_not_contains: String
+
+    price: Number
+    price_not: Number
+    price_in: [Number]
+    price_not_in: [Number]
+    price_lt: Number
+    price_lte: Number
+    price_gt: Number
+    price_gte: Number
+    # there must be two numbers sent in the array
+    price_between: [Number!]
+    # there must be two numbers sent in the array
+    price_not_between: [Number!]
+
+    category: RefFieldWhereInput
+
+    options: Product_Variant_OptionsWhereInput
+    }
+
+    type Product_FieldsObject {
+    text: String
+    }
+    input Product_FieldsObjectWhereInput {
+    text: String
+    text_not: String
+    text_in: [String]
+    text_not_in: [String]
+    text_contains: String
+    text_not_contains: String
     }
     
     input Product_Variant_OptionsInput {

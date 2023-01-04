@@ -10,19 +10,16 @@ import { parseIdentifier } from "@webiny/utils";
 import { createGraphQLInputField } from "./helpers";
 
 interface RefFieldValue {
+    /**
+     * `id` is optional for backwards compatibility with records created before this property was introduced.
+     */
     id?: string;
     entryId: string;
     modelId: string;
 }
 
-interface UnionField {
-    model: CmsModel;
-    field: CmsModelField;
-    typeName: string;
-}
-
 const createUnionTypeName = (model: CmsModel, field: CmsModelField) => {
-    return `${createReadTypeName(model.modelId)}${createReadTypeName(field.fieldId)}`;
+    return `${createReadTypeName(model.modelId)}_${createReadTypeName(field.fieldId)}`;
 };
 
 interface CreateListFilterParams {
@@ -85,7 +82,17 @@ export const createRefField = (): CmsModelFieldToGraphQLPlugin => {
                         ? createUnionTypeName(model, field)
                         : createReadTypeName(models[0].modelId);
 
-                return field.fieldId + `: ${field.multipleValues ? `[${gqlType}]` : gqlType}`;
+                const typeDefs =
+                    models.length > 1
+                        ? `union ${gqlType} = ${getFieldModels(field)
+                              .map(({ modelId }) => createReadTypeName(modelId))
+                              .join(" | ")}`
+                        : "";
+
+                return {
+                    fields: field.fieldId + `: ${field.multipleValues ? `[${gqlType}]` : gqlType}`,
+                    typeDefs
+                };
             },
             /**
              * TS is complaining about mixed types for createResolver.
@@ -182,40 +189,9 @@ export const createRefField = (): CmsModelFieldToGraphQLPlugin => {
                     };
                 };
             },
-            createSchema({ models }) {
-                const unionFields: UnionField[] = [];
-                for (const model of models) {
-                    // Generate a dedicated union type for every `ref` field which has more than 1 content model assigned.
-                    model.fields
-                        .filter(
-                            field =>
-                                field.type === "ref" && (field.settings?.models || []).length > 1
-                        )
-                        .forEach(field =>
-                            unionFields.push({
-                                model,
-                                field,
-                                typeName: createUnionTypeName(model, field)
-                            })
-                        );
-                }
-                const unionFieldsTypeDef = unionFields
-                    .map(
-                        ({ field, typeName }) =>
-                            `union ${typeName} = ${getFieldModels(field)
-                                .map(({ modelId }) => createReadTypeName(modelId))
-                                .join(" | ")}`
-                    )
-                    .join("\n");
-
-                const filteringTypeDef = `
-                ${createFilteringTypeDef()}
-                
-                ${unionFieldsTypeDef}
-            `;
-
+            createSchema() {
                 return {
-                    typeDefs: filteringTypeDef,
+                    typeDefs: createFilteringTypeDef(),
                     resolvers: {}
                 };
             },
@@ -224,23 +200,25 @@ export const createRefField = (): CmsModelFieldToGraphQLPlugin => {
         manage: {
             createSchema() {
                 /**
-                 * entryId in RefFieldInput is deprecated but cannot mark it as GraphQL does not allow marking input fields as deprecated
+                 * `entryId` in `RefFieldInput` is deprecated, but we cannot mark it as such in GraphQL.
+                 * `entryId` is extracted at runtime from the `id` which contains both the `entryId` and revision number.
+                 * See: `packages/api-headless-cms/src/crud/contentEntry/referenceFieldsMapping.ts`
                  */
                 return {
-                    typeDefs: `
-                    type RefField {
-                        modelId: String!
-                        entryId: ID!
-                        id: ID!
-                    }
-                    
-                    input RefFieldInput {
-                        modelId: String!
-                        id: ID!
-                    }
-                    
-                    ${createFilteringTypeDef()}
-                `,
+                    typeDefs: /* GraphQL */ `
+                        type RefField {
+                            modelId: String!
+                            entryId: ID!
+                            id: ID!
+                        }
+
+                        input RefFieldInput {
+                            modelId: String!
+                            id: ID!
+                        }
+
+                        ${createFilteringTypeDef()}
+                    `,
                     resolvers: {
                         RefField: {
                             entryId: (parent: RefFieldValue) => {

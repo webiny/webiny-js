@@ -1,4 +1,4 @@
-export interface FormComponentProps {
+export interface FormComponentProps<TValue = any> {
     validation?: {
         /* Is form element's value valid? */
         isValid: boolean;
@@ -12,8 +12,8 @@ export interface FormComponentProps {
     validate?: () => Promise<boolean | any>;
 
     /* Form component's value. */
-    value?: any;
+    value?: TValue;
 
     /* A callback that is executed each time a value is changed. */
-    onChange?: (value: any) => void;
+    onChange?: (value: TValue) => void;
 }
