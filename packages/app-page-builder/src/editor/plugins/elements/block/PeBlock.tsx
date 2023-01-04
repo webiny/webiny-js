@@ -15,9 +15,8 @@ const EmptyCell = styled.div`
     justify-content: center;
     width: 100%;
     border: 1px dashed var(--mdc-theme-secondary);
-    pointer-events: none;
     align-items: center;
-
+    
     button {
       color: var(--mdc-theme-secondary);
       transition: transform 0.2s;

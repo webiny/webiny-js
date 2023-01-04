@@ -99,12 +99,12 @@ export interface RendererContextValue extends PageElementsContextValue {
     getAttributes: GetAttributes;
     beforeRenderer: React.VFC | null;
     afterRenderer: React.VFC | null;
-    meta: RendererProviderMeta
+    meta: RendererProviderMeta;
 }
 
-export interface RendererProviderMeta {
+export type RendererProviderMeta = {
     calculatedStyles: CSSObject[];
-}
+} & Record<string, any>;
 
 export interface RendererProviderProps {
     element: Element;
@@ -112,8 +112,11 @@ export interface RendererProviderProps {
     meta: RendererProviderMeta;
 }
 
+export type RendererMeta = RendererProviderMeta;
+
 export type RendererProps<TElement = Record<string, any>> = {
     element: Element<TElement>;
+    meta?: RendererMeta
 };
 
 export interface PageProviderProps {

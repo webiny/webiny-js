@@ -157,5 +157,11 @@ export const defaultStylesCallback: StylesCallback = ({
 export const elementDataPropsAreEqual = (prevProps: RendererProps, nextProps: RendererProps) => {
     const prevElementDataHash = JSON.stringify(prevProps.element.data);
     const nextElementDataHash = JSON.stringify(nextProps.element.data);
-    return prevElementDataHash === nextElementDataHash;
+    if (prevElementDataHash !== nextElementDataHash) {
+        return false;
+    }
+
+    const prevRendererMetaHash = JSON.stringify(prevProps.meta);
+    const nextRendererMetaHash = JSON.stringify(nextProps.meta);
+    return prevRendererMetaHash === nextRendererMetaHash;
 };

@@ -34,7 +34,7 @@ export function createRenderer<T = {}>(
             afterRenderer
         } = usePageElements();
 
-        const { element, ...componentProps } = props;
+        const { element, meta, ...componentProps } = props;
         const attributes = getElementAttributes(element);
 
         const styles: CSSObject[] = [DEFAULT_RENDERER_STYLES];
@@ -82,7 +82,7 @@ export function createRenderer<T = {}>(
                 <RendererProvider
                     element={element}
                     attributes={{ ...attributes, className }}
-                    meta={{ calculatedStyles: styles }}
+                    meta={{ ...meta, calculatedStyles: styles }}
                 >
                     {/* Would've liked if the `as unknown as T` part wasn't
                         needed, but unfortunately I could not figure it out. */}

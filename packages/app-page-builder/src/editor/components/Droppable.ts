@@ -12,6 +12,7 @@ interface DefaultVisibilityPropType {
 const defaultVisibility = ({ type, isDragging, item }: DefaultVisibilityPropType): boolean => {
     const target = (item && item.target) || [];
 
+    console.log(type,  item, isDragging)
     if (!item || !target.includes(type)) {
         return false;
     }

@@ -15,22 +15,31 @@ const mediumEditorOptions: CoreOptions = {
     }
 };
 
-const PeList = createRenderer(() => {
-    const { getElement } = useRenderer();
-    const element = getElement();
-    const variableValue = useElementVariableValue(element);
+const PeList = createRenderer(
+    () => {
+        const { getElement } = useRenderer();
+        const element = getElement();
+        const variableValue = useElementVariableValue(element);
 
-    const [activeElementId] = useActiveElementId();
-    const isActive = activeElementId === element.id;
+        const [activeElementId] = useActiveElementId();
+        const isActive = activeElementId === element.id;
 
-    if (isActive) {
-        return (
-            <Text tag={"div"} elementId={element.id} mediumEditorOptions={mediumEditorOptions} />
-        );
+        if (isActive) {
+            return (
+                <Text
+                    tag={"div"}
+                    elementId={element.id}
+                    mediumEditorOptions={mediumEditorOptions}
+                />
+            );
+        }
+
+        const __html = variableValue || element.data.text.data.text;
+        return <div style={{ width: "100%" }} dangerouslySetInnerHTML={{ __html }} />;
+    },
+    {
+        baseStyles: { width: "100%" }
     }
-
-    const __html = variableValue || element.data.text.data.text;
-    return <div style={{ width: "100%" }} dangerouslySetInnerHTML={{ __html }} />;
-});
+);
 
 export default PeList;
