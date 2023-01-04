@@ -33,7 +33,7 @@ export interface ProductCategory {
 }
 
 /**
- * ////// Product
+ * **** Product
  */
 export interface ProductCategoryRef {
     modelId: string;

@@ -10,6 +10,17 @@ import { transformValue } from "./transform";
 import { CmsEntryFieldFilterPlugin } from "~/plugins/CmsEntryFieldFilterPlugin";
 import { getWhereValues } from "~/operations/entry/filtering/values";
 
+const isLastExpressionEligible = (expressions: Expression[], condition: "AND" | "OR"): boolean => {
+    if (expressions.length !== 1) {
+        return false;
+    } else if (expressions[0].children) {
+        return false;
+    } else if (expressions[0].condition !== condition) {
+        return false;
+    }
+    return true;
+};
+
 interface ApplyExpressionsParams {
     where: Partial<CmsEntryListWhere>;
     expressions: Expression[];
@@ -210,9 +221,7 @@ export const createExpressions = (params: Params): Expression[] => {
          *
          * This is mostly cosmetically - to group filters under a single expression.
          */
-        const lastExpressionCondition =
-            expressions.length === 1 && expressions[0].condition === condition ? condition : null;
-        if (!lastExpressionCondition) {
+        if (isLastExpressionEligible(expressions, condition) === false) {
             expressions.push({
                 filters,
                 condition
@@ -222,7 +231,7 @@ export const createExpressions = (params: Params): Expression[] => {
         /**
          * We know that the expressions[0] exists...
          */
-        expressions[0].filters!.push(...filters);
+        expressions[0].filters = [...(expressions[0].filters || []), ...filters];
     };
 
     const expressions: Expression[] = [];
