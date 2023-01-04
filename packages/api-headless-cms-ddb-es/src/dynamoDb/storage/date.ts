@@ -5,9 +5,11 @@ import WebinyError from "@webiny/error";
 import { StorageTransformPlugin } from "@webiny/api-headless-cms";
 import { CmsModelField } from "@webiny/api-headless-cms/types";
 
+type PartialCmsModelField = Pick<CmsModelField, "fieldId" | "storageId" | "multipleValues">;
+
 const excludeTypes = ["time", "dateTimeWithTimezone"];
 
-const convertFromStorage = (field: CmsModelField, value: string | string[]) => {
+const convertFromStorage = (field: PartialCmsModelField, value: string | string[]) => {
     try {
         if (field.multipleValues) {
             return ((value as string[]) || [])
@@ -23,7 +25,7 @@ const convertFromStorage = (field: CmsModelField, value: string | string[]) => {
     }
 };
 
-const convertValueToStorage = (field: CmsModelField, value: any): any => {
+const convertValueToStorage = (field: PartialCmsModelField, value: any): any => {
     if ((value as any).toISOString) {
         return (value as Date).toISOString();
     } else if (typeof value === "string") {

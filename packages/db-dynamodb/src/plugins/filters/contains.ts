@@ -1,6 +1,6 @@
 import { ValueFilterPlugin } from "../definitions/ValueFilterPlugin";
 
-export default new ValueFilterPlugin({
+const plugin = new ValueFilterPlugin({
     operation: "contains",
     matches: ({ value, compareValue }) => {
         if (typeof value !== "string") {
@@ -16,3 +16,7 @@ export default new ValueFilterPlugin({
         return value.match(re) !== null;
     }
 });
+
+plugin.name = "dynamodb.value.filter.contains";
+
+export default plugin;

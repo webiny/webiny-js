@@ -6,6 +6,8 @@ import styled from "@emotion/styled";
 import { Typography } from "@webiny/ui/Typography";
 import { useRouter } from "@webiny/react-router";
 
+import { usePageViewNavigation } from "~/hooks/usePageViewNavigation";
+
 const Title = styled("div")`
     display: flex;
     align-items: center;
@@ -16,6 +18,13 @@ const Icon = styled("div")`
     margin-right: 8px;
     height: 24px;
 `;
+
+const Text = styled(Typography)`
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+`;
+
 interface Props {
     name: string;
     id: string;
@@ -26,20 +35,14 @@ interface PageProps extends Props {
 }
 
 export const FolderName = ({ name, id }: Props): ReactElement => {
-    const { location, history } = useRouter();
-    const query = new URLSearchParams(location.search);
+    const { navigateToFolder } = usePageViewNavigation();
 
     return (
-        <Title
-            onClick={() => {
-                query.set("folderId", id);
-                history.push({ search: query.toString() });
-            }}
-        >
+        <Title onClick={() => navigateToFolder(id)}>
             <Icon>
                 <Folder />
             </Icon>
-            <Typography use={"subtitle2"}>{name}</Typography>
+            <Text use={"subtitle2"}>{name}</Text>
         </Title>
     );
 };
@@ -59,7 +62,7 @@ export const PageName = ({ name, id, onClick }: PageProps): ReactElement => {
             <Icon>
                 <File />
             </Icon>
-            <Typography use={"subtitle2"}>{name}</Typography>
+            <Text use={"subtitle2"}>{name}</Text>
         </Title>
     );
 };

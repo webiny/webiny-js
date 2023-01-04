@@ -3,9 +3,9 @@ import React, { forwardRef, useMemo, useState } from "react";
 import { ReactComponent as More } from "@material-design-icons/svg/filled/more_vert.svg";
 import { FolderDialogUpdate } from "@webiny/app-folders";
 import { FolderItem } from "@webiny/app-folders/types";
+import { IconButton } from "@webiny/ui/Button";
 import { Columns, DataTable } from "@webiny/ui/DataTable";
 import { Menu } from "@webiny/ui/Menu";
-
 import { orderBy } from "lodash";
 /**
  * Package timeago-react does not have types.
@@ -14,13 +14,13 @@ import { orderBy } from "lodash";
 import TimeAgo from "timeago-react";
 import useDeepCompareEffect from "use-deep-compare-effect";
 
-import { FolderName, PageName } from "~/admin/components/Table/Row/Name";
-import { FolderActionDelete } from "~/admin/components/Table/Row/Folder/FolderActionDelete";
-import { FolderActionEdit } from "~/admin/components/Table/Row/Folder/FolderActionEdit";
-import { PageActionDelete } from "~/admin/components/Table/Row/Page/PageActionDelete";
-import { PageActionEdit } from "~/admin/components/Table/Row/Page/PageActionEdit";
-import { PageActionPreview } from "~/admin/components/Table/Row/Page/PageActionPreview";
-import { PageActionPublish } from "~/admin/components/Table/Row/Page/PageActionPublish";
+import { FolderName, PageName } from "./Row/Name";
+import { FolderActionDelete } from "./Row/Folder/FolderActionDelete";
+import { FolderActionEdit } from "./Row/Folder/FolderActionEdit";
+import { PageActionDelete } from "./Row/Page/PageActionDelete";
+import { PageActionEdit } from "./Row/Page/PageActionEdit";
+import { PageActionPreview } from "./Row/Page/PageActionPreview";
+import { PageActionPublish } from "./Row/Page/PageActionPublish";
 
 import statusLabels from "~/admin/constants/pageStatusesLabels";
 
@@ -87,8 +87,7 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
 
         const dataset = orderBy([...foldersData, ...pagesData], ["type", "name"], ["asc", "asc"]);
         setData(dataset);
-        // TODO: remove Object.assign in favour of straight arrays
-    }, [Object.assign({}, folders), Object.assign({}, pages)]);
+    }, [{ ...folders }, { ...pages }]);
 
     const columns: Columns<Entry> = {
         title: {
@@ -125,8 +124,7 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
         original: {
             header: "",
             meta: {
-                hasFormControl: true,
-                alignMiddle: true
+                alignEnd: true
             },
             cell: ({ type, original }) => {
                 if (!original) {
@@ -135,7 +133,7 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
 
                 if (type === "PAGE") {
                     return (
-                        <Menu handle={<More />}>
+                        <Menu handle={<IconButton icon={<More />} />}>
                             <PageActionEdit page={original as PbPageDataLink} />
                             <PageActionPreview page={original as PbPageDataLink} />
                             <PageActionPublish page={original as PbPageDataLink} />
@@ -144,7 +142,7 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
                     );
                 } else {
                     return (
-                        <Menu handle={<More />}>
+                        <Menu handle={<IconButton icon={<More />} />}>
                             <FolderActionEdit
                                 onClick={() => {
                                     setUpdateDialogOpen(true);
@@ -166,7 +164,7 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
 
     return (
         <div ref={ref}>
-            <DataTable columns={columns} data={data} loadingInitial={loading} />
+            <DataTable columns={columns} data={data} loadingInitial={loading} stickyRows={1} />
             {selectedFolder && (
                 <>
                     <FolderDialogUpdate
