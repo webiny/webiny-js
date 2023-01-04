@@ -18,6 +18,13 @@ const Icon = styled("div")`
     margin-right: 8px;
     height: 24px;
 `;
+
+const Text = styled(Typography)`
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+`;
+
 interface Props {
     name: string;
     id: string;
@@ -35,7 +42,7 @@ export const FolderName = ({ name, id }: Props): ReactElement => {
             <Icon>
                 <Folder />
             </Icon>
-            <Typography use={"subtitle2"}>{name}</Typography>
+            <Text use={"subtitle2"}>{name}</Text>
         </Title>
     );
 };
@@ -55,7 +62,7 @@ export const PageName = ({ name, id, onClick }: PageProps): ReactElement => {
             <Icon>
                 <File />
             </Icon>
-            <Typography use={"subtitle2"}>{name}</Typography>
+            <Text use={"subtitle2"}>{name}</Text>
         </Title>
     );
 };

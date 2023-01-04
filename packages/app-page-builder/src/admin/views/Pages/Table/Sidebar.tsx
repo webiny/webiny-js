@@ -3,20 +3,25 @@ import { FolderTree } from "@webiny/app-folders";
 
 import { usePageViewNavigation } from "~/hooks/usePageViewNavigation";
 
+import { SidebarContainer } from "./styled";
+
 interface Props {
     folderId?: string;
+    defaultFolderName: string;
 }
 
-export const Sidebar = ({ folderId }: Props): ReactElement => {
+export const Sidebar = ({ folderId, defaultFolderName }: Props): ReactElement => {
     const { navigateToPageHome, navigateToFolder } = usePageViewNavigation();
 
     return (
-        <FolderTree
-            type={"page"}
-            title={"All pages"}
-            focusedFolderId={folderId}
-            onTitleClick={navigateToPageHome}
-            onFolderClick={data => data?.id && navigateToFolder(data?.id)}
-        />
+        <SidebarContainer>
+            <FolderTree
+                type={"page"}
+                title={defaultFolderName}
+                focusedFolderId={folderId}
+                onTitleClick={navigateToPageHome}
+                onFolderClick={data => data?.id && navigateToFolder(data?.id)}
+            />
+        </SidebarContainer>
     );
 };

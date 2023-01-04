@@ -20,12 +20,13 @@ import { Table } from "~/admin/components/Table/Table";
 
 import { FOLDER_ID_DEFAULT, FOLDER_TYPE } from "~/admin/constants/folders";
 
-import { Container, Wrapper } from "./styled";
+import { MainContainer, Wrapper } from "./styled";
 
 import { FolderItem } from "@webiny/app-folders/types";
 
 interface Props {
     folderId?: string;
+    defaultFolderName: string;
 }
 
 enum LoadingLabel {
@@ -46,7 +47,7 @@ const getCurrentFolderList = (
     }
 };
 
-export const Main = ({ folderId }: Props) => {
+export const Main = ({ folderId, defaultFolderName }: Props) => {
     const location = useLocation();
     const history = useHistory();
 
@@ -61,6 +62,7 @@ export const Main = ({ folderId }: Props) => {
     const { pages, loading: pagesLoading } = useGetPages(links, folderId);
 
     const [subFolders, setSubFolders] = useState<FolderItem[]>([]);
+    const [folderName, setFolderName] = useState<string>();
 
     const [loadingLabel, setLoadingLabel] = useState<string | null>(null);
     const [showCategoriesDialog, setCategoriesDialog] = useState(false);
@@ -79,9 +81,11 @@ export const Main = ({ folderId }: Props) => {
 
     useDeepCompareEffect(() => {
         const subFolders = getCurrentFolderList(folders, folderId);
+        const currentFolder = folders.find(folder => folder.id === folderId);
+
         setSubFolders(subFolders);
-        // TODO: remove Object.assign in favour of folders array
-    }, [Object.assign({}, folders), folderId]);
+        setFolderName(currentFolder?.name || defaultFolderName);
+    }, [{ ...folders }, folderId]);
 
     const { createPageMutation } = useCreatePage({
         setLoadingLabel: () => setLoadingLabel(LoadingLabel.CREATING_PAGE),
@@ -128,8 +132,9 @@ export const Main = ({ folderId }: Props) => {
 
     return (
         <>
-            <Container>
+            <MainContainer>
                 <Header
+                    title={!isLoading ? folderName : undefined}
                     canCreate={canCreate}
                     onCreatePage={openCategoryDialog}
                     onCreateFolder={openFoldersDialog}
@@ -164,7 +169,7 @@ export const Main = ({ folderId }: Props) => {
                         </>
                     )}
                 </Wrapper>
-            </Container>
+            </MainContainer>
             <FolderDialogCreate
                 type={"page"}
                 open={showFoldersDialog}
