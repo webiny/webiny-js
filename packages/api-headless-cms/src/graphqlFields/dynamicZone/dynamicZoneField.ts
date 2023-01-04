@@ -139,13 +139,21 @@ export const createDynamicZoneField =
                         templates
                     });
 
+                    // Add _templateId
+                    const templateIds = templateTypes.map(type => {
+                        return `extend type ${type} {
+                            _templateId: ID!
+                        }
+                        `;
+                    });
+
                     typeDefs.unshift(`union ${unionTypeName} = ${templateTypes.join(" | ")}`);
 
                     return {
                         fields: `${field.fieldId}: ${
                             field.multipleValues ? `[${unionTypeName}!]` : unionTypeName
                         }`,
-                        typeDefs: typeDefs.join("\n")
+                        typeDefs: typeDefs.concat(templateIds).join("\n")
                     };
                 },
                 createInputField({ model, field, fieldTypePlugins }) {

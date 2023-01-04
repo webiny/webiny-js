@@ -124,9 +124,7 @@ export const ContentEntryForm: React.FC<ContentEntryFormProps> = ({ onForm, ...p
             invalidFields={invalidFields}
             onInvalid={() => {
                 setIsDirty(true);
-                showSnackbar(
-                    "You have fields that did not pass the validation. Please check the form."
-                );
+                showSnackbar("Some fields did not pass the validation. Please check the form.");
             }}
         >
             {formProps => {

@@ -54,8 +54,8 @@ export function useBind({ Bind: ParentBind, field }: UseBindProps) {
                             const props = { ...bind };
                             if (field.multipleValues && index === -1) {
                                 props.appendValue = (newValue: any, index?: number) => {
-                                    const newIndex = index ?? bind.value.length;
                                     const currentValue = bind.value || [];
+                                    const newIndex = index ?? currentValue.length;
 
                                     bind.onChange([
                                         ...currentValue.slice(0, newIndex),

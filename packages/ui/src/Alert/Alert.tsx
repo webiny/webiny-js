@@ -12,7 +12,7 @@ const alertStyles = css({
         marginBottom: 5
     },
     ".webiny-ui-alert__message": {
-        lineHeight: "100%",
+        lineHeight: "120%",
         fontSize: 14,
         color: "var(--mdc-theme-on-surface)"
     },
@@ -32,7 +32,7 @@ const alertStyles = css({
 
 export type AlertType = "success" | "info" | "warning" | "danger";
 
-interface AlertProps {
+export interface AlertProps {
     // Alert title.
     title: string;
 

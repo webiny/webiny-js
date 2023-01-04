@@ -1,5 +1,4 @@
 import React from "react";
-
 import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/outlined/delete_outline.svg";
 import { Accordion, AccordionItem } from "@webiny/ui/Accordion";
 import { Fields } from "~/admin/components/ContentEntryForm/Fields";

@@ -99,16 +99,20 @@ const addRevisionIdToEntryCache = (cache: DataProxy, revision: PbPageRevision): 
         variables: { id: revision.pid }
     };
 
-    const data = cache.readQuery(gqlParams);
+    try {
+        const data = cache.readQuery(gqlParams);
 
-    if (!data) {
-        return;
+        if (!data) {
+            return;
+        }
+
+        cache.writeQuery({
+            ...gqlParams,
+            data: dotProp.set(data, "pageBuilder.getPage.data.id", revision.id)
+        });
+    } catch (e) {
+        console.error(e);
     }
-
-    cache.writeQuery({
-        ...gqlParams,
-        data: dotProp.set(data, "pageBuilder.getPage.data.id", revision.id)
-    });
 };
 
 export const updateLatestRevisionInListCache = (
