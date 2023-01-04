@@ -8,9 +8,10 @@ import Draggable from "../Draggable";
 import EditFieldDialog from "./EditFieldDialog";
 import Field from "./Field";
 import { rowHandle, fieldHandle, fieldContainer, Row, RowContainer } from "./Styled";
-import { useFieldEditor } from "./useFieldEditor";
-import { FieldEditorProvider } from "./FieldEditorContext";
-import { CmsEditorField, CmsEditorFieldsLayout } from "~/types";
+import { useModelFieldEditor } from "./useModelFieldEditor";
+import { DragSource, FieldEditorProvider, IsVisibleCallable } from "./FieldEditorContext";
+import { CmsModelField, CmsEditorFieldsLayout, CmsEditorFieldTypePlugin } from "~/types";
+import { ModelFieldProvider } from "~/admin/components/ModelFieldProvider";
 
 const t = i18n.namespace("app-headless-cms/admin/components/editor");
 
@@ -29,20 +30,65 @@ const Editor: React.FC = () => {
         onFieldDrop,
         onEndDrag,
         field,
-        dropTarget
-    } = useFieldEditor();
+        dropTarget,
+        getFieldPlugin
+    } = useModelFieldEditor();
+
+    const canDropIntoField = (field: CmsModelField, draggable: DragSource) => {
+        const fieldPlugin = getFieldPlugin(field.type) as CmsEditorFieldTypePlugin;
+        const canAccept = fieldPlugin.field.canAccept;
+        if (typeof canAccept === "function" && !canAccept(field, draggable)) {
+            return false;
+        }
+
+        return true;
+    };
+
+    const isVerticalDropzoneVisible = (cb: IsVisibleCallable) => {
+        return (item: DragSource) => {
+            if (!parent) {
+                return cb(item);
+            }
+
+            const fieldPlugin = getFieldPlugin(parent.type) as CmsEditorFieldTypePlugin;
+            const allowLayout = fieldPlugin.field.allowLayout ?? true;
+            if (!allowLayout) {
+                return false;
+            }
+
+            if (!canDropIntoField(parent, item)) {
+                return false;
+            }
+
+            return cb(item);
+        };
+    };
+
+    const isHorizontalDropzoneVisible = (cb: IsVisibleCallable) => {
+        return (item: DragSource) => {
+            if (!parent) {
+                return cb(item);
+            }
+
+            if (!canDropIntoField(parent, item)) {
+                return false;
+            }
+
+            return cb(item);
+        };
+    };
 
     return (
         <Fragment>
             {fields.length === 0 && (
                 <Center
+                    isDroppable={isHorizontalDropzoneVisible(() => true)}
                     onDrop={item =>
                         onFieldDrop(item, {
                             row: 0,
                             index: 0
                         })
                     }
-                    style={{ padding: "5px 0 15px 0" }}
                 >
                     {t`Drop your first field here`}
                 </Center>
@@ -70,83 +116,95 @@ const Editor: React.FC = () => {
                                 <Icon icon={<HandleIcon />} />
                             </div>
                             <Horizontal
+                                isVisible={isHorizontalDropzoneVisible(noConflict())}
                                 data-testid={`cms-editor-row-droppable-top-${index}`}
-                                isVisible={noConflict()}
                                 onDrop={item => onFieldDrop(item, { row: index, index: null })}
                             />
                             {/* Row start - includes field drop zones and fields */}
                             <Row data-testid={"cms.editor.field-row"}>
                                 {row.map((field, fieldIndex) => (
-                                    <Draggable
-                                        key={field.fieldId}
-                                        beginDrag={{
-                                            parent: parent ? parent.fieldId : null,
-                                            type: "field",
-                                            field,
-                                            pos: {
-                                                row: index,
-                                                index: fieldIndex
-                                            }
-                                        }}
-                                        endDrag={onEndDrag}
-                                    >
-                                        {({ drag }) => (
-                                            <div className={fieldContainer} ref={drag}>
-                                                <Vertical
-                                                    depth={depth}
-                                                    onDrop={item =>
-                                                        onFieldDrop(item, {
-                                                            row: index,
-                                                            index: fieldIndex
-                                                        })
-                                                    }
-                                                    isVisible={noConflict(
-                                                        item =>
-                                                            fieldTypes.includes(item.type) &&
-                                                            (row.length < 4 ||
-                                                                get(item, "pos.row") === index)
-                                                    )}
-                                                />
-
-                                                <div className={fieldHandle}>
-                                                    <Field
-                                                        parent={parent}
-                                                        field={field}
-                                                        onEdit={editField}
-                                                        onDelete={deleteField}
-                                                    />
-                                                </div>
-
-                                                {/* Field end */}
-                                                {fieldIndex === row.length - 1 && (
+                                    <ModelFieldProvider field={field} key={field.fieldId}>
+                                        <Draggable
+                                            beginDrag={{
+                                                parent: parent ? parent.fieldId : null,
+                                                type: "field",
+                                                field,
+                                                pos: {
+                                                    row: index,
+                                                    index: fieldIndex
+                                                }
+                                            }}
+                                            endDrag={onEndDrag}
+                                        >
+                                            {({ drag }) => (
+                                                <div className={fieldContainer} ref={drag}>
                                                     <Vertical
-                                                        last
                                                         depth={depth}
-                                                        isVisible={noConflict(
-                                                            item =>
-                                                                fieldTypes.includes(item.type) &&
-                                                                (row.length < 4 ||
-                                                                    get(item, "pos.row") === index)
-                                                        )}
                                                         onDrop={item =>
                                                             onFieldDrop(item, {
                                                                 row: index,
-                                                                index: fieldIndex + 1
+                                                                index: fieldIndex
                                                             })
                                                         }
+                                                        isVisible={isVerticalDropzoneVisible(
+                                                            noConflict(
+                                                                item =>
+                                                                    fieldTypes.includes(
+                                                                        item.type
+                                                                    ) &&
+                                                                    (row.length < 4 ||
+                                                                        get(item, "pos.row") ===
+                                                                            index)
+                                                            )
+                                                        )}
                                                     />
-                                                )}
-                                            </div>
-                                        )}
-                                    </Draggable>
+
+                                                    <div className={fieldHandle}>
+                                                        <Field
+                                                            parent={parent}
+                                                            field={field}
+                                                            onEdit={editField}
+                                                            onDelete={deleteField}
+                                                        />
+                                                    </div>
+
+                                                    {/* Field end */}
+                                                    {fieldIndex === row.length - 1 && (
+                                                        <Vertical
+                                                            last
+                                                            depth={depth}
+                                                            isVisible={isVerticalDropzoneVisible(
+                                                                noConflict(item => {
+                                                                    return (
+                                                                        fieldTypes.includes(
+                                                                            item.type
+                                                                        ) &&
+                                                                        (row.length < 4 ||
+                                                                            get(item, "pos.row") ===
+                                                                                index)
+                                                                    );
+                                                                })
+                                                            )}
+                                                            onDrop={item =>
+                                                                onFieldDrop(item, {
+                                                                    row: index,
+                                                                    index: fieldIndex + 1
+                                                                })
+                                                            }
+                                                        />
+                                                    )}
+                                                </div>
+                                            )}
+                                        </Draggable>
+                                    </ModelFieldProvider>
                                 ))}
                             </Row>
                             {/* Row end */}
-                            {index === fields.length - 1 && (
+                            {index === fields.length - 1 ? (
                                 <Horizontal
                                     data-testid={`cms-editor-row-droppable-bottom-${index}`}
                                     last
-                                    isVisible={noConflict()}
+                                    isVisible={isHorizontalDropzoneVisible(noConflict())}
                                     onDrop={item =>
                                         onFieldDrop(item, {
                                             row: index + 1,
@@ -154,35 +212,38 @@ const Editor: React.FC = () => {
                                         })
                                     }
                                 />
-                            )}
+                            ) : null}
                         </RowContainer>
                     )}
                 </Draggable>
             ))}
 
-            <EditFieldDialog
-                field={field}
-                onClose={() => editField(null)}
-                onSubmit={field => {
-                    if (field.id) {
-                        updateField(field);
-                        editField(null);
-                        return;
-                    }
-                    insertField({ field, position: dropTarget });
+            {field ? (
+                <ModelFieldProvider field={field}>
+                    <EditFieldDialog
+                        onClose={() => editField(null)}
+                        onSubmit={field => {
+                            if (field.id) {
+                                updateField(field);
+                                editField(null);
+                                return;
+                            }
+                            insertField({ field, position: dropTarget });
 
-                    editField(null);
-                }}
-            />
+                            editField(null);
+                        }}
+                    />
+                </ModelFieldProvider>
+            ) : null}
         </Fragment>
     );
 };
 
 export interface FieldEditorProps {
-    parent?: CmsEditorField;
+    parent?: CmsModelField;
     layout: CmsEditorFieldsLayout;
-    fields: CmsEditorField[];
-    onChange: (params: { fields: CmsEditorField[]; layout: CmsEditorFieldsLayout }) => void;
+    fields: CmsModelField[];
+    onChange: (params: { fields: CmsModelField[]; layout: CmsEditorFieldsLayout }) => void;
 }
 
 export const FieldEditor: React.FC<FieldEditorProps> = props => {

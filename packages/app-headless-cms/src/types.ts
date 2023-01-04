@@ -2,19 +2,29 @@ import * as React from "react";
 import { Plugin } from "@webiny/plugins/types";
 import { ReactElement, ReactNode } from "react";
 import {
-    FormRenderPropParams,
     FormAPI,
     BindComponent as BaseBindComponent,
     BindComponentRenderProp as BaseBindComponentRenderProp,
     BindComponentProps as BaseBindComponentProps
 } from "@webiny/form";
-import { ApolloClient } from "apollo-client";
 import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
 import Label from "./admin/components/ContentEntryForm/Label";
 import { SecurityPermission } from "@webiny/app-security/types";
+import { DragSource } from "~/admin/components/FieldEditor/FieldEditorContext";
 
 interface QueryFieldParams {
-    field: CmsEditorField;
+    model: CmsModel;
+    field: CmsModelField;
+}
+
+export interface CmsEditorFieldValidatorsDefinition {
+    validators: string[];
+    title?: string;
+    description?: string;
+}
+
+export interface CmsEditorFieldValidatorsFactory {
+    (field: CmsModelField): string[] | CmsEditorFieldValidatorsDefinition;
 }
 
 export interface CmsEditorFieldTypePlugin extends Plugin {
@@ -50,7 +60,10 @@ export interface CmsEditorFieldTypePlugin extends Plugin {
          * ]
          * ```
          */
-        validators?: string[];
+        validators?:
+            | string[]
+            | CmsEditorFieldValidatorsDefinition
+            | CmsEditorFieldValidatorsFactory;
         /**
          * A list of available validators when a model field accepts a list (array) of values.
          *
@@ -61,7 +74,7 @@ export interface CmsEditorFieldTypePlugin extends Plugin {
          * ]
          * ```
          */
-        listValidators?: string[];
+        listValidators?: string[] | CmsEditorFieldValidatorsDefinition;
         /**
          * An explanation of the field displayed beneath the label.
          *
@@ -111,7 +124,23 @@ export interface CmsEditorFieldTypePlugin extends Plugin {
          * })
          * ```
          */
-        createField: () => Pick<CmsEditorField, "type" | "validation" | "renderer" | "settings">;
+        createField: () => Pick<CmsModelField, "type" | "validation" | "renderer" | "settings">;
+        /**
+         * If `true` (default), this field will be configurable via a settings dialog.
+         * If `false`, a user will not be able to open the settings dialog, not will the dialog be opened on field drop.
+         */
+        canEditSettings?: boolean;
+        /**
+         * Determine if a `draggable` can be dropped into this field.
+         * NOTE: This is only applicable to nested field types.
+         */
+        canAccept?(field: CmsModelField, draggable: DragSource): boolean;
+        /**
+         * If `true` (default), will allow fields to be laid out into columns (next to each other).
+         * If `false`, horizontal layout will not be allowed.
+         * NOTE: This is only applicable to nested field types.
+         */
+        allowLayout?: boolean;
         /**
          * A ReactNode that you can add in the section below the help text when creating/editing field.
          *
@@ -122,10 +151,9 @@ export interface CmsEditorFieldTypePlugin extends Plugin {
          * ```
          */
         renderSettings?: (params: {
-            form: FormRenderPropParams;
             afterChangeLabel: (value: string) => void;
             uniqueFieldIdValidator: (fieldId: string) => void;
-            contentModel: CmsEditorContentModel;
+            contentModel: CmsModel;
         }) => React.ReactNode;
         /**
          * A ReactNode that renders in the Predefined values tab.
@@ -142,8 +170,6 @@ export interface CmsEditorFieldTypePlugin extends Plugin {
          * ```
          */
         renderPredefinedValues?: (params: {
-            form: FormRenderPropParams;
-            field: CmsEditorField;
             getBind: (index?: number) => any;
         }) => React.ReactElement;
         /**
@@ -168,14 +194,15 @@ export interface CmsEditorFieldTypePlugin extends Plugin {
             queryField?: string | ((params: QueryFieldParams) => string);
         };
         render?(params: any): React.ReactElement;
+        tags?: string[];
     };
 }
 
 export interface CmsEditorFieldRendererProps {
-    field: CmsEditorField;
+    field: CmsModelField;
     Label: typeof Label;
     getBind: (index?: number, key?: string) => BindComponent;
-    contentModel: CmsEditorContentModel;
+    contentModel: CmsModel;
 }
 
 export interface CmsEditorFieldRendererPlugin extends Plugin {
@@ -193,7 +220,7 @@ export interface CmsEditorFieldRendererPlugin extends Plugin {
          */
         rendererName: string;
         /**
-         * A display name for the field in the UI. It is a `ReactNode` type so you can return a component if you want to.
+         * A display name for the field in the UI. It is a `ReactNode` type, so you can use a JSX element.
          *
          * ```tsx
          * name: <MyFieldNameComponent />
@@ -219,7 +246,7 @@ export interface CmsEditorFieldRendererPlugin extends Plugin {
          * }
          * ```
          */
-        canUse(props: { field: CmsEditorField }): boolean;
+        canUse(props: { field: CmsModelField; fieldPlugin: CmsEditorFieldTypePlugin }): boolean;
         /**
          * Renders a field in the UI.
          *
@@ -257,7 +284,23 @@ export interface CmsEditorFieldPredefinedValues {
     values: CmsEditorFieldPredefinedValuesEntry[];
 }
 
-export type CmsEditorField<T = unknown> = T & {
+export interface CmsDynamicZoneTemplate {
+    id: string;
+    name: string;
+    gqlTypeName: string;
+    description: string;
+    icon: string;
+    fields: CmsModelField[];
+    layout: string[][];
+    validation: CmsEditorFieldValidator[];
+}
+
+/**
+ * @deprecated Use `CmsModelField` instead.
+ */
+export type CmsEditorField<T = unknown> = CmsModelField<T>;
+
+export type CmsModelField<T = unknown> = T & {
     id: string;
     type: string;
     fieldId: CmsEditorFieldId;
@@ -273,28 +316,30 @@ export type CmsEditorField<T = unknown> = T & {
         defaultValue?: string | null | undefined;
         defaultSetValue?: string;
         type?: string;
-        fields?: CmsEditorField<any>[];
+        fields?: CmsModelField<any>[];
         layout?: string[][];
         models?: Pick<CmsModel, "modelId" | "name">[];
+        templates?: CmsDynamicZoneTemplate[];
         imagesOnly?: boolean;
         [key: string]: any;
     };
     renderer: {
         name: string;
     };
+    tags?: string[];
 };
 
 export type CmsEditorFieldId = string;
 export type CmsEditorFieldsLayout = CmsEditorFieldId[][];
 
-export interface CmsEditorContentModel {
+export interface CmsModel {
     id: string;
     group: Pick<CmsGroup, "id" | "name">;
     description?: string;
     version: number;
     layout?: CmsEditorFieldsLayout;
-    fields: CmsEditorField[];
-    lockedFields: CmsEditorField[];
+    fields: CmsModelField[];
+    lockedFields: CmsModelField[];
     name: string;
     modelId: string;
     titleFieldId: string;
@@ -305,6 +350,7 @@ export interface CmsEditorContentModel {
     savedOn: string;
     meta: any;
     createdBy: CmsCreatedBy;
+    tags: string[];
     /**
      * If model is a plugin one (it cannot be changed/deleted)
      */
@@ -344,8 +390,8 @@ export interface CmsContentEntryRevision {
 
 export interface CmsEditorFieldValidator {
     name: string;
-    message: string;
-    settings: any;
+    message?: string;
+    settings?: any;
 }
 
 export interface CmsEditorFieldValidatorPluginValidator {
@@ -354,13 +400,8 @@ export interface CmsEditorFieldValidatorPluginValidator {
     description: string;
     defaultMessage: string;
     defaultSettings?: Record<string, any>;
-    renderSettings?: (props: {
-        field: CmsEditorField;
-        Bind: BindComponent;
-        setValue: (name: string, value: any) => void;
-        setMessage: (message: string) => void;
-        data: CmsEditorFieldValidator;
-    }) => React.ReactElement;
+    renderSettings?: () => React.ReactElement;
+    renderCustomUi?: () => React.ReactElement;
 }
 export interface CmsEditorFieldValidatorPlugin extends Plugin {
     type: "cms-editor-field-validator";
@@ -379,11 +420,6 @@ export interface CmsContentDetailsPlugin extends Plugin {
     render: (params: any) => ReactNode;
 }
 
-export interface CmsContentDetailsRevisionContentPlugin extends Plugin {
-    type: "cms-content-details-revision-content";
-    render(params: any): ReactElement;
-}
-
 export interface CmsEditorFieldValidatorPatternPlugin extends Plugin {
     type: "cms-editor-field-validator-pattern";
     pattern: {
@@ -395,15 +431,15 @@ export interface CmsEditorFieldValidatorPatternPlugin extends Plugin {
 
 export interface CmsFieldValidator {
     name: string;
-    message: any;
-    settings: any;
+    message?: string;
+    settings?: any;
 }
 
 export interface CmsModelFieldValidatorPlugin<T = any> extends Plugin {
     type: "cms-model-field-validator";
     validator: {
         name: string;
-        validate: (value: T, validator: CmsFieldValidator) => Promise<any>;
+        validate: (value: T, validator: CmsFieldValidator, field: CmsModelField) => Promise<any>;
     };
 }
 
@@ -474,15 +510,11 @@ export interface CmsIconsPlugin extends Plugin {
     getIcons(): CmsIcon[];
 }
 
-export interface UseContentModelEditorReducerState {
-    apolloClient: ApolloClient<any>;
-    id: string;
-}
-
 /**
  * Transform field value when sending data to the API.
  */
-export interface CmsFieldValueTransformer extends Plugin {
+export interface CmsFieldValueTransformer<TField extends CmsModelField = CmsModelField>
+    extends Plugin {
     /**
      * A plugin type.
      */
@@ -494,7 +526,7 @@ export interface CmsFieldValueTransformer extends Plugin {
     /**
      * A transformer function that takes a value and returns a new one.
      */
-    transform: (value: any, field: CmsEditorField) => any;
+    transform: (value: any, field: TField) => any;
 }
 
 /**
@@ -517,7 +549,7 @@ export interface CmsContentFormRendererPlugin extends Plugin {
         /**
          * Content model that is being rendered.
          */
-        contentModel: CmsEditorContentModel;
+        contentModel: CmsModel;
         /**
          * Content entry data handled by the Form element.
          */
@@ -556,7 +588,7 @@ export interface CmsCreatedBy {
  * @category GraphQL
  * @category Model
  */
-export type CmsModel = CmsEditorContentModel;
+export type CmsEditorContentModel = CmsModel;
 /**
  * @category GraphQL
  * @category Group
@@ -598,7 +630,7 @@ export interface CmsMetaResponse {
  */
 export interface BindComponentRenderProp extends BaseBindComponentRenderProp {
     parentName: string;
-    appendValue: (value: any) => void;
+    appendValue: (value: any, index?: number) => void;
     prependValue: (value: any) => void;
     appendValues: (values: any[]) => void;
     removeValue: (index: number) => void;

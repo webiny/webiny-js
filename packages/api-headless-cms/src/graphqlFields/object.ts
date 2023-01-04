@@ -1,90 +1,13 @@
 import upperFirst from "lodash/upperFirst";
 import {
-    ApiEndpoint,
     CmsFieldTypePlugins,
     CmsModel,
     CmsModelField,
     CmsModelFieldToGraphQLPlugin
 } from "~/types";
-import { renderField } from "~/utils/renderFields";
-import { renderInputField } from "~/utils/renderInputFields";
-import {
-    createManageTypeName,
-    createTypeName as createModelTypeName
-} from "~/utils/createTypeName";
 import { attachRequiredFieldValue } from "./helpers";
 import lodashUpperFirst from "lodash/upperFirst";
-
-interface TypeFromFieldParams {
-    typeOfType: string;
-    model: CmsModel;
-    type: ApiEndpoint;
-    field: CmsModelField;
-    fieldTypePlugins: CmsFieldTypePlugins;
-}
-interface TypeFromFieldResponse {
-    fieldType: string;
-    typeDefs: string;
-}
-const typeFromField = (params: TypeFromFieldParams): TypeFromFieldResponse | null => {
-    const { typeOfType, model, type, field: parentField, fieldTypePlugins } = params;
-    const typeSuffix = typeOfType === "input" ? "Input" : "";
-    const typeName = createModelTypeName(model.modelId);
-    const mTypeName = createManageTypeName(typeName);
-
-    // `field` is an "object" field
-    const fields: CmsModelField[] = parentField.settings?.fields || [];
-
-    const fieldTypeName = `${mTypeName}_${upperFirst(parentField.fieldId)}`;
-
-    const typeFields = [];
-    const nestedTypes = [];
-
-    // Once the loop below starts, we'll be executing a recursive "object" type generation.
-    // The main trick here is that nested objects don't know who the parent is, and will generate
-    // type names using the "model", as if they're at the top level:
-    // Every time the types are returned, we need to replace the model name in the generated type name
-    // with the actual prefix which includes parent field name type.
-    const replace = new RegExp(`${mTypeName}_`, "g");
-
-    for (const field of fields) {
-        const result =
-            typeOfType === "type"
-                ? renderField({
-                      field,
-                      type,
-                      model,
-                      fieldTypePlugins
-                  })
-                : renderInputField({
-                      field,
-                      model,
-                      fieldTypePlugins
-                  });
-
-        if (!result) {
-            continue;
-        }
-
-        const { fields, typeDefs } = result;
-
-        typeFields.push(fields.replace(replace, `${fieldTypeName}_`));
-        if (typeDefs) {
-            nestedTypes.push(typeDefs.replace(replace, `${fieldTypeName}_`));
-        }
-    }
-
-    return {
-        fieldType: `${fieldTypeName}${typeSuffix}`,
-        typeDefs: /* GraphQL */ `
-            ${nestedTypes.join("\n")}
-            
-            ${typeOfType} ${fieldTypeName}${typeSuffix} {
-                ${typeFields.join("\n")}
-            }
-        `
-    };
-};
+import { createTypeFromFields } from "~/utils/createTypeFromFields";
 
 interface AttachTypeDefinitionsParams {
     model: CmsModel;
@@ -172,11 +95,16 @@ export const createObjectField = (): CmsModelFieldToGraphQLPlugin => {
         isSearchable: false,
         read: {
             createTypeField({ field, model, fieldTypePlugins }) {
-                const result = typeFromField({
+                const result = createTypeFromFields({
                     typeOfType: "type",
                     model,
                     type: "read",
-                    field,
+                    typeNamePrefix: createTypeName({
+                        model,
+                        field,
+                        parents: field.settings?.parents
+                    }),
+                    fields: field.settings?.fields || [],
                     fieldTypePlugins
                 });
 
@@ -219,11 +147,16 @@ export const createObjectField = (): CmsModelFieldToGraphQLPlugin => {
         },
         manage: {
             createTypeField({ model, field, fieldTypePlugins }) {
-                const result = typeFromField({
+                const result = createTypeFromFields({
                     typeOfType: "type",
                     model,
                     type: "manage",
-                    field,
+                    typeNamePrefix: createTypeName({
+                        model,
+                        field,
+                        parents: field.settings?.parents
+                    }),
+                    fields: field.settings?.fields || [],
                     fieldTypePlugins
                 });
 
@@ -247,11 +180,16 @@ export const createObjectField = (): CmsModelFieldToGraphQLPlugin => {
                 };
             },
             createInputField({ model, field, fieldTypePlugins }) {
-                const result = typeFromField({
+                const result = createTypeFromFields({
                     typeOfType: "input",
                     model,
                     type: "manage",
-                    field,
+                    typeNamePrefix: createTypeName({
+                        model,
+                        field,
+                        parents: field.settings?.parents
+                    }),
+                    fields: field.settings?.fields || [],
                     fieldTypePlugins
                 });
                 if (!result) {

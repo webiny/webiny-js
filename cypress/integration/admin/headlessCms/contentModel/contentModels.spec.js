@@ -103,14 +103,16 @@ context("Headless CMS - Content Models CRUD", () => {
             // b) Select validation tab from dialog
             cy.findByTestId("cms.editor.field.tabs.validators").click();
             // c) Add required validator
-            cy.findByTestId("cms.editor.field-validator.required").within(() => {
-                cy.findByLabelText("Enabled").check();
-                cy.findByTestId("cms.editfield.validators.required")
-                    .clear()
-                    .type("Title is required.")
-                    .blur();
-                cy.wait(1000);
-            });
+            cy.findByTestId("cms.editor.field-validator.required")
+                .parent()
+                .within(() => {
+                    cy.findByLabelText("Enabled").check();
+                    cy.findByTestId("cms.editfield.validators.required")
+                        .clear()
+                        .type("Title is required.")
+                        .blur();
+                    cy.wait(1000);
+                });
             // d) Save field
             cy.findByTestId("cms.editor.field.settings.save").click();
         });

@@ -1,6 +1,6 @@
 import dot from "dot-prop-immutable";
 import {
-    CmsEditorField,
+    CmsModelField,
     CmsEditorFieldId,
     CmsModel as BaseCmsModel,
     FieldLayoutPosition
@@ -10,7 +10,7 @@ import getFieldPosition from "./getFieldPosition";
 type CmsModel = Required<Pick<BaseCmsModel, "fields" | "layout">>;
 
 interface MoveFieldParams<T> {
-    field: CmsEditorFieldId | Pick<CmsEditorField, "id">;
+    field: CmsEditorFieldId | Pick<CmsModelField, "id">;
     position: FieldLayoutPosition;
     data: T;
 }

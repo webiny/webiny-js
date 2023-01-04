@@ -1,6 +1,5 @@
 import React, { useCallback } from "react";
 import gql from "graphql-tag";
-import { css } from "emotion";
 import get from "lodash/get";
 import { useRouter } from "@webiny/react-router";
 import { Form } from "@webiny/form";
@@ -25,19 +24,9 @@ import { CmsGroup } from "~/types";
 import { CmsGroupOption } from "./types";
 import lodashUpperFirst from "lodash/upperFirst";
 import lodashCamelCase from "lodash/camelCase";
+import { Dialog } from "~/admin/components/Dialog";
 
 const t = i18n.ns("app-headless-cms/admin/views/content-models/new-content-model-dialog");
-
-const narrowDialog = css({
-    ".mdc-dialog__surface": {
-        width: 600,
-        minWidth: 600
-    }
-});
-
-const noPadding = css({
-    padding: "5px !important"
-});
 
 /**
  * This list is to disallow creating models that might interfere with GraphQL schema creation.
@@ -166,12 +155,7 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
     };
 
     return (
-        <UID.Dialog
-            open={open}
-            onClose={onClose}
-            className={narrowDialog}
-            data-testid="cms-new-content-model-modal"
-        >
+        <Dialog open={open} onClose={onClose} data-testid="cms-new-content-model-modal">
             {open && (
                 <Form
                     data={{ group }}
@@ -187,7 +171,7 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
                             {loading && <CircularProgress label={"Creating content model..."} />}
                             <UID.DialogTitle>{t`New Content Model`}</UID.DialogTitle>
                             <UID.DialogContent>
-                                <Grid className={noPadding}>
+                                <Grid>
                                     <Cell span={12}>
                                         <Bind
                                             name={"name"}
@@ -245,7 +229,7 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
                     )}
                 </Form>
             )}
-        </UID.Dialog>
+        </Dialog>
     );
 };
 

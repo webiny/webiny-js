@@ -1,12 +1,12 @@
-import React, { useContext } from "react";
-import { Context as ContentEntriesContext } from "~/admin/views/contentEntries/ContentEntriesContext";
-import { CmsEditorField } from "~/types";
+import React from "react";
+import { CmsModelField } from "~/types";
 import MissingEntryHelpText, {
     ReferenceMultipleModelsHelpText
 } from "../components/MissingEntryHelpText";
+import { useContentEntries } from "~/admin/views/contentEntries/hooks/useContentEntries";
 
 interface UseNewRefEntryParams {
-    field: CmsEditorField;
+    field: CmsModelField;
 }
 
 interface UseNewRefEntry {
@@ -20,34 +20,35 @@ export const useNewRefEntry = ({ field }: UseNewRefEntryParams): UseNewRefEntry 
     const [{ modelId: refModelId }] = models;
     const referenceMultipleModels = models.length > 1;
 
-    const contentEntriesContextValue = useContext(ContentEntriesContext);
+    let contentEntriesContext = null;
+    try {
+        contentEntriesContext = useContentEntries();
+    } catch {
+        // Means there's no `ContentEntriesContextProvider`, so we must be in model editor "preview".
+    }
 
     /**
      * We don't wrap the "ContentEntryForm" with "ContentEntriesContextProvider"
      * when rendering it inside content model editor's preview tab.
      *
      * And we also don't want to have new ref field Dialog in the preview tab.
-     * Therefore, we check for "contentEntriesContextValue" to know that we're inside preview tab.
+     * Therefore, we check for "contentEntriesContext" to know that we're inside preview tab.
      */
-    const renderedInPreviewTab = contentEntriesContextValue === null;
+    const renderedInPreviewTab = contentEntriesContext === null;
 
-    /**
-     * Set "renderNewEntryModal" value.
-     */
-    let renderNewEntryModal;
+    let renderNewEntryModal = false;
 
     if (renderedInPreviewTab) {
         renderNewEntryModal = false;
     } else if (referenceMultipleModels) {
         renderNewEntryModal = false;
-    } else {
-        const { insideDialog } = contentEntriesContextValue;
-        renderNewEntryModal = !insideDialog;
+    } else if (contentEntriesContext) {
+        renderNewEntryModal = !contentEntriesContext.insideDialog;
     }
     /**
      * Set "helpText" value.
      */
-    let helpText = null;
+    let helpText;
     if (referenceMultipleModels) {
         helpText = <ReferenceMultipleModelsHelpText />;
     } else {

@@ -23,7 +23,7 @@
     "commodo-fields-object": "^1.0.6",
     "deep-equal": "^2.0.5",
     "mdbid": "^1.0.0",
-    "minimatch": "^3.0.4"
+    "minimatch": "^5.1.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.19.3",

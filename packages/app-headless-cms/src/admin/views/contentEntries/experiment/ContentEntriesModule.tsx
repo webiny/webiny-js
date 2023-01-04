@@ -22,24 +22,24 @@ const FilterByStatus: React.FC = () => {
         return plugins.byType<CmsEntryFilterStatusPlugin>("cms.entry.filter.status");
     }, []);
 
+    const options = [
+        { label: "All", value: "all" },
+        { label: "Draft", value: "draft" },
+        { label: "Published", value: "published" },
+        { label: "Unpublished", value: "unpublished" }
+    ];
+
+    filterStatusPlugins.forEach(pl => {
+        options.push({ label: pl.label, value: pl.value });
+    });
+
     return (
         <Select
             {...bind}
             label={"Filter by status"}
             description={"Filter by a specific entry status."}
-        >
-            <option value={"all"}>All</option>
-            <option value={"draft"}>Draft</option>
-            <option value={"published"}>Published</option>
-            <option value={"unpublished"}>Unpublished</option>
-            {filterStatusPlugins.map(pl => {
-                return (
-                    <option key={pl.value} value={pl.value}>
-                        {pl.label}
-                    </option>
-                );
-            })}
-        </Select>
+            options={options}
+        />
     );
 };
 

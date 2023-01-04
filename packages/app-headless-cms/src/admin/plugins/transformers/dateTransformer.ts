@@ -122,7 +122,7 @@ const transformers: Record<string, TransformerCallable<string>> = {
     dateTimeWithTimezone
 };
 
-export default (): CmsFieldValueTransformer => ({
+export const createDateTransformer = (): CmsFieldValueTransformer => ({
     type: "cms-field-value-transformer",
     name: "cms-field-value-transformer-date",
     fieldType: "datetime",
