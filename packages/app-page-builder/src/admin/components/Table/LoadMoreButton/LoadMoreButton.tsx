@@ -7,7 +7,7 @@ import { Container } from "./styled";
 
 const t = i18n.ns("app-headless-cms/app-page-builder/pages-table/load-more-button");
 
-export interface Props {
+export interface LoadMoreButtonProps {
     windowHeight: number;
     tableHeight: number;
     onClick: () => void;
@@ -21,7 +21,7 @@ export const LoadMoreButton = ({
     tableHeight,
     show,
     onClick
-}: Props): ReactElement => {
+}: LoadMoreButtonProps): ReactElement | null => {
     if (show && windowHeight > tableHeight) {
         return (
             <Container>
@@ -34,5 +34,5 @@ export const LoadMoreButton = ({
         );
     }
 
-    return <></>;
+    return null;
 };
