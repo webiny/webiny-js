@@ -62,11 +62,12 @@ export const ElementControlsOverlay: React.FC<Props> = props => {
 };
 
 const PbElementControlsOverlay = styled(
-    ({ className, onMouseEnter, onMouseLeave, ref, children }) => {
+    ({ className, onClick, onMouseEnter, onMouseLeave, ref, children }) => {
         return (
             <pb-element-controls-overlay
                 // @ts-ignore Not supported by `React.HTMLProps<HTMLDivElement>`.
                 class={className}
+                onClick={onClick}
                 onMouseEnter={onMouseEnter}
                 onMouseLeave={onMouseLeave}
                 ref={ref}
