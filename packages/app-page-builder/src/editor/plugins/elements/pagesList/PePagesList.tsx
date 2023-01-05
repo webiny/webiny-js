@@ -1,4 +1,3 @@
-import React from "react";
 import { PbPageElementPagesListComponentPlugin } from "~/types";
 import { createPagesList } from "@webiny/app-page-builder-elements/renderers/pagesList";
 import { createDefaultDataLoader } from "@webiny/app-page-builder-elements/renderers/pagesList/dataLoaders";

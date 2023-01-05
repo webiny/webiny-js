@@ -8,7 +8,7 @@ import { TogglePluginActionEvent } from "~/editor/recoil/actions";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import styled from "@emotion/styled";
 import { IconButton } from "@webiny/ui/Button";
-import {useActiveElementId} from "~/editor/hooks/useActiveElementId";
+import { useActiveElementId } from "~/editor/hooks/useActiveElementId";
 
 const EmptyCell = styled.div<{ isActive: boolean }>`
     height: 100%;

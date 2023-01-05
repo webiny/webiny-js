@@ -98,8 +98,8 @@ const theme = createTheme({
         elements: {
             document: {
                 a: { color: colors.color1 },
-                b: { fontWeight: 'bold' },
-                i: { fontStyle: 'italic' }
+                b: { fontWeight: "bold" },
+                i: { fontStyle: "italic" }
             },
             quote: {
                 "blockquote > q": {

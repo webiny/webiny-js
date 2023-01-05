@@ -1,4 +1,3 @@
-import React from "react";
 import { createIcon } from "@webiny/app-page-builder-elements/renderers/icon";
 
 const PeIcon = createIcon();

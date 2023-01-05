@@ -3,6 +3,7 @@ import { MediumEditorOptions, PbEditorElement } from "~/types";
 import PeParagraph from "./PeParagraph";
 import PbParagraph from "./PbParagraph";
 import { isLegacyRenderingEngine } from "~/utils";
+import { Element } from "@webiny/app-page-builder-elements/types";
 
 export const textClassName = "webiny-pb-base-page-element-style webiny-pb-page-element-text";
 
@@ -15,7 +16,7 @@ const Paragraph: React.FC<ParagraphProps> = props => {
     if (isLegacyRenderingEngine) {
         return <PbParagraph {...props} elementId={props.element.id} />;
     }
-    return <PeParagraph {...props} />;
+    return <PeParagraph element={props.element as Element} />;
 };
 
 export default Paragraph;

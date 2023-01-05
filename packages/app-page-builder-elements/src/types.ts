@@ -105,11 +105,11 @@ export interface RendererProviderProps {
     meta: RendererProviderMeta;
 }
 
-export type RendererMeta = RendererProviderMeta;
+export type RendererMeta = Record<string, any>;
 
 export type RendererProps<TElement = Record<string, any>> = {
     element: Element<TElement>;
-    meta?: RendererMeta
+    meta?: RendererMeta;
 };
 
 export interface PageProviderProps {

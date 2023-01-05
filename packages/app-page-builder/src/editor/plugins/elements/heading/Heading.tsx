@@ -3,6 +3,7 @@ import { MediumEditorOptions, PbEditorElement } from "~/types";
 import PeHeading from "./PeHeading";
 import PbHeading from "./PbHeading";
 import { isLegacyRenderingEngine } from "~/utils";
+import { Element } from "@webiny/app-page-builder-elements/types";
 
 interface HeadingProps {
     element: PbEditorElement;
@@ -13,7 +14,7 @@ const Heading: React.FC<HeadingProps> = props => {
     if (isLegacyRenderingEngine) {
         return <PbHeading {...props} elementId={props.element.id} />;
     }
-    return <PeHeading {...props} />;
+    return <PeHeading element={props.element as Element} />;
 };
 
 export default Heading;

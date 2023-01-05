@@ -3,6 +3,7 @@ import { PbEditorElement } from "~/types";
 import CellContainer from "./CellContainer";
 import { isLegacyRenderingEngine } from "~/utils";
 import PeCell from "~/editor/plugins/elements/cell/PeCell";
+import { Element } from "@webiny/app-page-builder-elements/types";
 
 interface CellProps {
     element: PbEditorElement;
@@ -14,7 +15,7 @@ const Cell: React.FC<CellProps> = props => {
         return <CellContainer {...props} elementId={props.element.id} />;
     }
 
-    return <PeCell {...props} />;
+    return <PeCell element={props.element as Element} />;
 };
 
 export default Cell;

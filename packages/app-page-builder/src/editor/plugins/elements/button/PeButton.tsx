@@ -1,4 +1,3 @@
-import React from "react";
 import { PbButtonElementClickHandlerPlugin } from "~/types";
 import { createButton } from "@webiny/app-page-builder-elements/renderers/button";
 import { plugins } from "@webiny/plugins";

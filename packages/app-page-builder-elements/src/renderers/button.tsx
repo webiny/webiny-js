@@ -84,7 +84,7 @@ export interface ButtonElementData {
     };
 }
 
-interface Props {
+export interface Props {
     buttonText?: string;
     action?: ButtonElementData["action"];
 }

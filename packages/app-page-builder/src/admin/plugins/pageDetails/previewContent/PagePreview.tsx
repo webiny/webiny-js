@@ -24,7 +24,8 @@ const pageInnerWrapper = css`
     overflow-x: hidden;
     height: calc(100vh - 165px);
 
-    .webiny-pb-page-document, pb-document {
+    .webiny-pb-page-document,
+    pb-document {
         transform: scale(var(--webiny-pb-page-preview-scale));
         transition: transform 0.5s ease-in-out;
         transform-origin: top center;

@@ -14,7 +14,7 @@ declare global {
     // eslint-disable-next-line
     namespace JSX {
         interface IntrinsicElements {
-            "pb-element-controls-overlay": React.HTMLProps<HTMLDivElement>
+            "pb-element-controls-overlay": React.HTMLProps<HTMLDivElement>;
         }
     }
 }
@@ -88,7 +88,7 @@ const PbElementControlsOverlay = styled(
     // when calculating the size of the overlay, we also need to take into consideration
     // any margins that the user might've set.
     const margins: CSSObject = elementRendererMeta.calculatedStyles.reduce(
-        (current, item) => {
+        (current: CSSObject, item: CSSObject) => {
             if (item.margin) {
                 current.marginTop = item.margin;
                 current.marginRight = item.margin;

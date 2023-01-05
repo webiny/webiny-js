@@ -3,7 +3,7 @@ import { FileManager, SingleImageUploadProps } from "@webiny/app-admin";
 import { UpdateElementActionEvent } from "~/editor/recoil/actions";
 import pick from "lodash/pick";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
-import { createImage, ImageRenderer } from "@webiny/app-page-builder-elements/renderers/image";
+import { createImage } from "@webiny/app-page-builder-elements/renderers/image";
 import { AddImageIconWrapper, AddImageWrapper } from "@webiny/ui/ImageUpload/styled";
 import { ReactComponent as AddImageIcon } from "@webiny/ui/ImageUpload/icons/round-add_photo_alternate-24px.svg";
 import { Typography } from "@webiny/ui/Typography";

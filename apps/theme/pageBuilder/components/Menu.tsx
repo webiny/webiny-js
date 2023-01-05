@@ -3,6 +3,7 @@ import { Query } from "@apollo/react-components";
 import gql from "graphql-tag";
 
 declare global {
+    // eslint-disable-next-line
     namespace JSX {
         interface IntrinsicElements {
             "ps-tag": {

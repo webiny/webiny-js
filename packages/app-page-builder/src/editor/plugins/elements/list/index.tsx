@@ -12,7 +12,6 @@ import { className } from "./PbList";
 import List from "./List";
 import { createInitialTextValue } from "../utils/textUtils";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
-import { createList } from "@webiny/app-page-builder-elements/renderers/list";
 
 export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementPlugin => {
     const elementType = kebabCase(args.elementType || "list");

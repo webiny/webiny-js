@@ -42,7 +42,7 @@ const DONEEEEE = [
     "list",
     "pages-list",
     "paragraph",
-    "quote",
+    "quote"
 ];
 
 export const EditorPageElementsProvider: React.FC = ({ children }) => {
