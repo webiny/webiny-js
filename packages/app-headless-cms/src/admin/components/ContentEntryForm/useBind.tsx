@@ -1,5 +1,5 @@
 import React, { useRef, useCallback, cloneElement } from "react";
-import { createValidators } from "./functions/createValidators";
+import { createValidators } from "~/utils/createValidators";
 import { BindComponent, CmsModelField } from "~/types";
 import { Validator } from "@webiny/validation/types";
 

@@ -2,24 +2,6 @@ import { plugins } from "@webiny/plugins";
 import { CmsModelField, CmsModelFieldValidator, CmsModelFieldValidatorPlugin } from "~/types";
 import { Validator } from "@webiny/validation/types";
 
-interface FieldValidationErrorContext {
-    validator: CmsModelFieldValidator;
-    validatorPlugin: CmsModelFieldValidatorPlugin;
-}
-
-class FieldValidationError extends Error {
-    private _context: FieldValidationErrorContext;
-
-    constructor(message: string, context: FieldValidationErrorContext) {
-        super(message);
-        this._context = context;
-    }
-
-    get context() {
-        return this._context;
-    }
-}
-
 export const createValidators = (
     field: CmsModelField,
     validation: CmsModelFieldValidator[]
@@ -41,7 +23,11 @@ export const createValidators = (
             let isInvalid;
             let message = item.message;
             try {
-                const result = await validatorPlugin.validator.validate(value, item, field);
+                const result = await validatorPlugin.validator.validate(value, {
+                    validator: item,
+                    field
+                });
+
                 isInvalid = result === false;
             } catch (e) {
                 isInvalid = true;
@@ -55,7 +41,7 @@ export const createValidators = (
 
                 const getVariableValues = validatorPlugin.validator.getVariableValues;
                 if (typeof getVariableValues === "function") {
-                    const variables = getVariableValues(item);
+                    const variables = getVariableValues({ validator: item });
 
                     Object.keys(variables).forEach(key => {
                         const regex = new RegExp(`\{${key}\}`, "g");
@@ -63,10 +49,7 @@ export const createValidators = (
                     });
                 }
 
-                throw new FieldValidationError(interpolated, {
-                    validator: item,
-                    validatorPlugin
-                });
+                throw new Error(interpolated);
             }
         };
         collection.push(validator);

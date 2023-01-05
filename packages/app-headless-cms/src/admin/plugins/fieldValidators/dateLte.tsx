@@ -51,7 +51,7 @@ export default (): CmsModelFieldValidatorPlugin => ({
         renderSettings() {
             return <DateLteSettings />;
         },
-        validate: async (value, validator) => {
+        validate: async (value, { validator }) => {
             const { value: lteValue, type } = validator.settings;
             if (typeof lteValue === "undefined") {
                 return true;

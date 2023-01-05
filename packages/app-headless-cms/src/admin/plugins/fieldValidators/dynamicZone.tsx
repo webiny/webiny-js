@@ -8,7 +8,7 @@ import {
     CmsModelFieldValidatorPlugin
 } from "~/types";
 import { ValidatorsList } from "~/admin/components/FieldEditor/EditFieldDialog/ValidatorsList";
-import { createValidators } from "~/admin/components/ContentEntryForm/functions/createValidators";
+import { createValidators } from "~/utils/createValidators";
 import { CmsModelFieldValidatorConfigAdapter } from "~/utils/CmsModelFieldValidatorConfigAdapter";
 import { useModelField } from "~/admin/components/ModelFieldProvider";
 import { commonValidators } from "~/admin/plugins/fields/dynamicZone/commonValidators";
@@ -78,7 +78,7 @@ export const dynamicZoneFieldValidator: CmsModelFieldValidatorPlugin = {
         renderCustomUi() {
             return <TemplateValidationSettings />;
         },
-        validate: async (value: TemplateValue[], _, field) => {
+        validate: async (value: TemplateValue[], { field }) => {
             // This validator only runs for Dynamic Zone fields with `multipleValues=true`.
             const templates = field.settings?.templates || [];
             for (const template of templates) {

@@ -88,7 +88,7 @@ const plugin: CmsModelFieldValidatorPlugin = {
         renderSettings() {
             return <PatternSettings />;
         },
-        validate: async (value, validator) => {
+        validate: async (value, { validator }) => {
             if (!value) {
                 return true;
             }

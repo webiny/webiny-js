@@ -28,7 +28,7 @@ const plugin: CmsModelFieldValidatorPlugin = {
                 </Grid>
             );
         },
-        validate: async (value, validator) => {
+        validate: async (value, { validator }) => {
             const values = validator.settings.values;
             if (Array.isArray(values) === false || values.length === 0) {
                 return true;

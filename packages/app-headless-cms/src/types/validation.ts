@@ -54,13 +54,17 @@ export interface CmsModelFieldValidatorPlugin<T = any> extends Plugin {
         defaultMessage: string;
         variables?: CmsModelFieldValidatorVariable[];
         defaultSettings?: Record<string, any>;
-        getVariableValues?: (validator: CmsModelFieldValidator) => Record<string, string>;
+        getVariableValues?: (context: {
+            validator: CmsModelFieldValidator;
+        }) => Record<string, string>;
         renderSettings?: (config: CmsModelFieldValidatorConfigAdapter) => React.ReactElement;
         renderCustomUi?: () => React.ReactElement;
         validate: (
             value: T,
-            validator: CmsModelFieldValidator,
-            field: CmsModelField
+            context: {
+                validator: CmsModelFieldValidator;
+                field: CmsModelField;
+            }
         ) => Promise<any>;
     };
 }
