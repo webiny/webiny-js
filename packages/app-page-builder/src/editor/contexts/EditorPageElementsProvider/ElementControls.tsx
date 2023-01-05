@@ -1,6 +1,6 @@
 import React from "react";
 import { useRenderer } from "@webiny/app-page-builder-elements";
-import { ElementControlsMainOverlay } from "./ElementControlsMainOverlay";
+import { ElementControlsOverlay } from "./ElementControlsOverlay";
 import { ElementControlHorizontalDropZones } from "./ElementControlHorizontalDropZones";
 import { DropElementActionEvent } from "~/editor/recoil/actions";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
@@ -62,14 +62,14 @@ export const ElementControls = () => {
                 type={element.type}
                 isVisible={() => true}
             >
-                {({ drop }) => <ElementControlsMainOverlay innerRef={drop} />}
+                {({ drop }) => <ElementControlsOverlay innerRef={drop} />}
             </Droppable>
         );
     }
 
     return (
-        <ElementControlsMainOverlay>
+        <ElementControlsOverlay>
             <ElementControlHorizontalDropZones />
-        </ElementControlsMainOverlay>
+        </ElementControlsOverlay>
     );
 };

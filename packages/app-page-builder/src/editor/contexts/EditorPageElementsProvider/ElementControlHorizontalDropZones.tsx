@@ -4,10 +4,10 @@ import { DropElementActionEvent } from "~/editor/recoil/actions";
 import Droppable, { DragObjectWithTypeWithTarget } from "~/editor/components/Droppable";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import styled from "@emotion/styled";
-import {useRecoilValue} from "recoil";
-import {uiAtom} from "~/editor/recoil/modules";
+import { useRecoilValue } from "recoil";
+import { uiAtom } from "~/editor/recoil/modules";
 
-export const OuterOuterDiv = styled.div<{ below: boolean }>(({ below }) => ({
+export const WrapperDroppable = styled.div<{ below: boolean }>(({ below }) => ({
     height: "25px",
     width: "100%",
     position: "absolute",
@@ -94,27 +94,25 @@ export const ElementControlHorizontalDropZones = () => {
                 type={type}
             >
                 {({ drop, isOver }) => (
-                    <OuterOuterDiv ref={drop} below={false}>
+                    <WrapperDroppable ref={drop} below={false}>
                         <OuterDiv isOver={isOver} below={false}>
                             <InnerDiv />
                         </OuterDiv>
-                    </OuterOuterDiv>
+                    </WrapperDroppable>
                 )}
             </Droppable>
             {meta.isLastElement && (
                 <Droppable
                     isVisible={() => true}
-                    onDrop={source =>
-                        dropElementAction(source, meta.collection?.length)
-                    }
+                    onDrop={source => dropElementAction(source, meta.collection?.length)}
                     type={type}
                 >
                     {({ drop, isOver }) => (
-                        <OuterOuterDiv ref={drop} below>
+                        <WrapperDroppable ref={drop} below>
                             <OuterDiv isOver={isOver} below>
                                 <InnerDiv />
                             </OuterDiv>
-                        </OuterOuterDiv>
+                        </WrapperDroppable>
                     )}
                 </Droppable>
             )}

@@ -10,12 +10,21 @@ import { uiAtom } from "~/editor/recoil/modules";
 const ACTIVE_COLOR = "var(--mdc-theme-primary)";
 const HOVER_COLOR = "var(--mdc-theme-secondary)";
 
+declare global {
+    // eslint-disable-next-line
+    namespace JSX {
+        interface IntrinsicElements {
+            "pb-element-controls-overlay": React.HTMLProps<HTMLDivElement>
+        }
+    }
+}
+
 interface Props {
     children?: React.ReactNode;
     innerRef?: React.Ref<any>;
 }
 
-export const ElementControlsMainOverlay: React.FC<Props> = props => {
+export const ElementControlsOverlay: React.FC<Props> = props => {
     const { isDragging } = useRecoilValue(uiAtom);
     const [activeElementId, setActiveElementId] = useActiveElementId();
 
@@ -27,19 +36,19 @@ export const ElementControlsMainOverlay: React.FC<Props> = props => {
     const { children, innerRef, ...rest } = props;
 
     return (
-        <StyledElementControlsMainOverlay
+        <PbElementControlsOverlay
             isDragging={isDragging}
             isActive={isActive}
             element={element}
             elementRendererMeta={meta}
             onClick={() => setActiveElementId(element.id)}
             className={isActive ? "active" : ""}
-            onMouseEnter={e => {
+            onMouseEnter={(e: MouseEvent) => {
                 e.stopPropagation();
                 const target = e.target as HTMLDivElement;
                 target.classList.add("hover");
             }}
-            onMouseLeave={e => {
+            onMouseLeave={(e: MouseEvent) => {
                 e.stopPropagation();
                 const target = e.target as HTMLDivElement;
                 target.classList.remove("hover");
@@ -48,11 +57,25 @@ export const ElementControlsMainOverlay: React.FC<Props> = props => {
             {...rest}
         >
             {children}
-        </StyledElementControlsMainOverlay>
+        </PbElementControlsOverlay>
     );
 };
 
-const StyledElementControlsMainOverlay = styled.div<{
+const PbElementControlsOverlay = styled(
+    ({ className, onMouseEnter, onMouseLeave, ref, children }) => {
+        return (
+            <pb-element-controls-overlay
+                // @ts-ignore Not supported by `React.HTMLProps<HTMLDivElement>`.
+                class={className}
+                onMouseEnter={onMouseEnter}
+                onMouseLeave={onMouseLeave}
+                ref={ref}
+            >
+                {children}
+            </pb-element-controls-overlay>
+        );
+    }
+)<{
     element: Element;
     elementRendererMeta: RendererMeta;
     isActive: boolean;
@@ -146,6 +169,7 @@ const StyledElementControlsMainOverlay = styled.div<{
     }
 
     return {
+        display: "block",
         outline: element.type === "cell" ? "1px dashed #757575" : undefined,
         position: "absolute",
         zIndex: 1,
