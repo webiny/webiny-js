@@ -13,7 +13,6 @@ import { getWhereValues } from "~/operations/entry/filtering/values";
 interface ApplyExpressionsParams {
     where: Partial<CmsEntryListWhere>;
     expressions: Expression[];
-    condition: "AND" | "OR";
 }
 
 interface Params {
@@ -80,7 +79,7 @@ export const createExpressions = (params: Params): Expression[] => {
     };
 
     const applyExpressions = (params: ApplyExpressionsParams): void => {
-        const { where, expressions, condition } = params;
+        const { where, expressions } = params;
 
         const filters: Filter[] = [];
 
@@ -106,7 +105,6 @@ export const createExpressions = (params: Params): Expression[] => {
                 for (const childWhere of childWhereList) {
                     applyExpressions({
                         where: childWhere,
-                        condition: key,
                         expressions: childExpressions
                     });
                 }
@@ -128,7 +126,6 @@ export const createExpressions = (params: Params): Expression[] => {
                 for (const childWhere of childWhereList) {
                     applyExpressions({
                         where: childWhere,
-                        condition: key,
                         expressions: childExpressions
                     });
                 }
@@ -209,38 +206,17 @@ export const createExpressions = (params: Params): Expression[] => {
             return;
         }
 
-        /**
-         * What we want to do here is to add current filters to existing single expression, if the expression has the same condition as the current iteration.
-         *
-         * This is mostly cosmetically - to group filters under a single expression.
-         */
-
         expressions.push({
             filters,
-            condition
+            condition: "AND"
         });
-        /*
-        if (isLastExpressionEligible(expressions, condition) === false) {
-            expressions.push({
-                filters,
-                condition
-            });
-            return;
-        }
-        /**
-         * We know that the expressions[0] exists...
-         * /
-        expressions[0].filters = [...(expressions[0].filters || []), ...filters];
-        
-        */
     };
 
     const expressions: Expression[] = [];
 
     applyExpressions({
         where,
-        expressions,
-        condition: "AND"
+        expressions
     });
 
     return expressions;
