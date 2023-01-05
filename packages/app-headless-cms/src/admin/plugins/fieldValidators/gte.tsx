@@ -31,7 +31,7 @@ const plugin: CmsModelFieldValidatorPlugin = {
                 </Grid>
             );
         },
-        validate: async (value, validator) => {
+        validate: async (value, { validator }) => {
             const gteValue = validator.settings.value;
             if (typeof gteValue === "undefined") {
                 return true;

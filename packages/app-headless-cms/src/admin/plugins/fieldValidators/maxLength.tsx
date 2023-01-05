@@ -14,7 +14,7 @@ const plugin: CmsModelFieldValidatorPlugin = {
         description: "Entered value must not be longer than the provided max length.",
         defaultMessage: "Value is too long.",
         variables: [{ name: "value", description: "This is the minimum allowed length." }],
-        getVariableValues: validator => {
+        getVariableValues: ({ validator }) => {
             return { value: validator.settings.value };
         },
         renderSettings(config) {
@@ -35,7 +35,7 @@ const plugin: CmsModelFieldValidatorPlugin = {
                 </Grid>
             );
         },
-        validate: async (value, validator) => {
+        validate: async (value, { validator }) => {
             const maxLengthValue = validator.settings.value;
             if (typeof maxLengthValue === "undefined") {
                 return true;
