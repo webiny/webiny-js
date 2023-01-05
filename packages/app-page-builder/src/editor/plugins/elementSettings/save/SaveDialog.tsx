@@ -20,7 +20,7 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { Form, FormOnSubmit } from "@webiny/form";
 import styled from "@emotion/styled";
 import { validation } from "@webiny/validation";
-import { PbEditorBlockCategoryPlugin, PbEditorElement } from "../../../../types";
+import { PbEditorBlockCategoryPlugin, PbEditorElement } from "~/types";
 
 const narrowDialog = css({
     ".mdc-dialog__surface": {
@@ -52,7 +52,7 @@ interface Props {
 }
 
 const SaveDialog = (props: Props) => {
-    const { element, open, onClose, onSubmit, type } = props;
+    const { element, open, onClose, type } = props;
     const [loading, setLoading] = useState(false);
 
     const blockCategoriesOptions = plugins
@@ -64,16 +64,15 @@ const SaveDialog = (props: Props) => {
             };
         });
 
+    const onSubmit: FormOnSubmit = async (data, form) => {
+        setLoading(true);
+        await props.onSubmit(data, form);
+        setLoading(false);
+    };
+
     return (
         <Dialog open={open} onClose={onClose} className={narrowDialog}>
-            <Form
-                onSubmit={async data => {
-                    setLoading(true);
-                    await onSubmit(data);
-                    setLoading(false);
-                }}
-                data={{ type, category: "general" }}
-            >
+            <Form onSubmit={onSubmit} data={{ type, category: "general" }}>
                 {({ data, submit, Bind }) => (
                     <React.Fragment>
                         <DialogTitle>Save {type}</DialogTitle>

@@ -1,4 +1,5 @@
 import { CmsFieldTypePlugins, CmsModel, CmsModelFieldToGraphQLPlugin } from "~/types";
+import { getBaseFieldType } from "~/utils/getBaseFieldType";
 
 interface RenderGetFilterFieldsParams {
     model: CmsModel;
@@ -26,10 +27,11 @@ export const renderGetFilterFields: RenderGetFilterFields = ({ model, fieldTypeP
             // want to be careful when accessing the field plugin here too. It is still possible to have a content model
             // that contains a field, for which we don't have a plugin registered on the backend. For example, user
             // could've just removed the plugin from the backend.
-            if (!fieldTypePlugins[field.type]) {
+            const baseType = getBaseFieldType(field);
+            if (!fieldTypePlugins[baseType]) {
                 return false;
             }
-            return fieldTypePlugins[field.type].isSearchable;
+            return fieldTypePlugins[baseType].isSearchable;
         })
         .map(f => f.fieldId);
 
@@ -40,7 +42,8 @@ export const renderGetFilterFields: RenderGetFilterFields = ({ model, fieldTypeP
         if (!field) {
             continue;
         }
-        const createGetFilters = getCreateFilters(fieldTypePlugins, field.type);
+        const baseType = getBaseFieldType(field);
+        const createGetFilters = getCreateFilters(fieldTypePlugins, baseType);
         if (typeof createGetFilters !== "function") {
             continue;
         }

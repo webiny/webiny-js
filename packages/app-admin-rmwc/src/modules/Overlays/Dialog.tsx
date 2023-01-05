@@ -2,6 +2,7 @@ import React, { useCallback } from "react";
 import { get } from "lodash";
 import { useUi } from "@webiny/app/hooks/useUi";
 import { Dialog, DialogAccept, DialogTitle, DialogActions, DialogContent } from "@webiny/ui/Dialog";
+import { ButtonPrimary } from "@webiny/ui/Button";
 
 export const DialogContainer: React.FC = () => {
     const ui = useUi();
@@ -28,9 +29,14 @@ export const DialogContainer: React.FC = () => {
                     </DialogAccept>
                 )}
                 {actions.accept && (
-                    <DialogAccept onClick={actions.accept.onClick}>
+                    <ButtonPrimary
+                        onClick={() => {
+                            actions.accept.onClick();
+                            hideDialog();
+                        }}
+                    >
                         {actions.accept.label}
-                    </DialogAccept>
+                    </ButtonPrimary>
                 )}
             </DialogActions>
         </Dialog>

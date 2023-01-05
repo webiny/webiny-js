@@ -199,6 +199,7 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCrud => 
                     // We can safely cast.
                     initialPagesData.map(() => this.createPage((staticCategory as Category).slug))
                 );
+
                 const updatedPages = await Promise.all(
                     initialPagesData.map((data, index) => {
                         return this.updatePage(initialPages[index].id, data);

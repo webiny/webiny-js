@@ -6,6 +6,7 @@ import { createGraphQLFields } from "~/graphqlFields";
 import { createValidators } from "~/validators";
 import { createDefaultStorageTransform } from "~/storage/default";
 import { createObjectStorageTransform } from "~/storage/object";
+import { createDynamicZoneStorageTransform } from "~/graphqlFields/dynamicZone/dynamicZoneStorage";
 import {
     createContextParameterPlugin,
     createHeaderParameterPlugin,
@@ -52,6 +53,7 @@ export const createHeadlessCmsContext = (params: ContentContextParams) => {
         createValidators(),
         createDefaultStorageTransform(),
         createObjectStorageTransform(),
+        createDynamicZoneStorageTransform(),
         createUpgrades()
     ];
 };

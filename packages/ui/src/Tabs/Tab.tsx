@@ -4,6 +4,8 @@ import shortid from "shortid";
 import { TabsContext } from "./Tabs";
 
 export type TabProps = RmwcTabProps & {
+    visible?: boolean;
+
     tag?: string;
     /**
      * Is tab disabled?
@@ -24,7 +26,7 @@ export const Tab: React.FC<TabProps> = React.memo(props => {
     const idRef = useRef(shortid.generate());
 
     useEffect(() => {
-        tabsContext!.addTab({ ...props, id: idRef.current });
+        tabsContext!.addTab({ ...props, id: idRef.current, visible: props.visible ?? true });
     }, [props]);
 
     useEffect(() => {

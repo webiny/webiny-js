@@ -1,32 +1,27 @@
-import { ElasticsearchBoolQueryConfig } from "@webiny/api-elasticsearch/types";
 import WebinyError from "@webiny/error";
 import { transformValueForSearch } from "~/operations/entry/elasticsearch/transformValueForSearch";
 import { hasKeyword } from "~/operations/entry/elasticsearch/keyword";
 import {
     ElasticsearchQueryBuilderOperatorPlugins,
-    ElasticsearchQuerySearchValuePlugins,
-    ModelField
+    ElasticsearchQuerySearchValuePlugins
 } from "~/operations/entry/elasticsearch/types";
 import { createFieldPathFactory } from "~/operations/entry/elasticsearch/filtering/path";
+import { ApplyFilteringCb } from "~/plugins/CmsEntryFilterPlugin";
 
 interface CreateParams {
     operatorPlugins: ElasticsearchQueryBuilderOperatorPlugins;
     searchPlugins: ElasticsearchQuerySearchValuePlugins;
 }
-interface ApplyParams {
-    key: string;
-    value: any;
-    query: ElasticsearchBoolQueryConfig;
-    operator: string;
-    field: ModelField;
-}
 
-export const createApplyFiltering = ({ operatorPlugins, searchPlugins }: CreateParams) => {
+export const createApplyFiltering = ({
+    operatorPlugins,
+    searchPlugins
+}: CreateParams): ApplyFilteringCb => {
     const createFieldPath = createFieldPathFactory({
         plugins: searchPlugins
     });
 
-    return (params: ApplyParams) => {
+    return params => {
         const { key, value: initialValue, query, operator, field } = params;
 
         const plugin = operatorPlugins[operator];

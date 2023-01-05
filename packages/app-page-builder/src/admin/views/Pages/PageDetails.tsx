@@ -23,18 +23,22 @@ declare global {
         }
     }
 }
-const DetailsContainer = styled("div")({
-    height: "calc(100% - 10px)",
-    overflow: "hidden",
-    position: "relative",
-    nav: {
-        backgroundColor: "var(--mdc-theme-surface)"
+
+const DetailsContainer = styled("div")`
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+    
+  nav: {
+        background: var(--mdc-theme-surface)"
     }
-});
+`;
+
 interface EmptyPageDetailsProps {
     onCreatePage: (event?: React.SyntheticEvent) => void;
     canCreate: boolean;
 }
+
 const EmptyPageDetails: React.FC<EmptyPageDetailsProps> = ({ onCreatePage, canCreate }) => {
     return (
         <EmptyView

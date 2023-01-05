@@ -10,6 +10,7 @@ import { useContentEntryForm, UseContentEntryFormParams } from "./useContentEntr
 import { Fields } from "./Fields";
 import { Prompt } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin";
+import { ModelProvider, useModel } from "~/admin/components/ModelProvider";
 
 const FormWrapper = styled("div")({
     height: "calc(100vh - 260px)",
@@ -36,7 +37,6 @@ const isDifferent = (value: any, compare: any): boolean => {
 };
 
 export const ContentEntryForm: React.FC<ContentEntryFormProps> = ({ onForm, ...props }) => {
-    const { contentModel } = props;
     const {
         loading,
         data: initialData,
@@ -44,6 +44,7 @@ export const ContentEntryForm: React.FC<ContentEntryFormProps> = ({ onForm, ...p
         onSubmit,
         invalidFields
     } = useContentEntryForm(props);
+    const { model } = useModel();
 
     const [isDirty, setIsDirty] = React.useState<boolean>(false);
     /**
@@ -69,11 +70,11 @@ export const ContentEntryForm: React.FC<ContentEntryFormProps> = ({ onForm, ...p
 
     const formRenderer = plugins
         .byType<CmsContentFormRendererPlugin>("cms-content-form-renderer")
-        .find(pl => pl.modelId === contentModel.modelId);
+        .find(pl => pl.modelId === model.modelId);
 
     const renderCustomLayout = useCallback(
         (formRenderProps: FormRenderPropParams) => {
-            const fields = contentModel.fields.reduce((acc, field) => {
+            const fields = model.fields.reduce((acc, field) => {
                 /**
                  * TODO @ts-refactor
                  * Figure out type for Bind.
@@ -82,18 +83,18 @@ export const ContentEntryForm: React.FC<ContentEntryFormProps> = ({ onForm, ...p
                     <RenderFieldElement
                         field={field}
                         Bind={formRenderProps.Bind as any}
-                        contentModel={contentModel}
+                        contentModel={model}
                     />
                 );
 
                 return acc;
             }, {} as Record<string, React.ReactElement>);
             if (!formRenderer) {
-                return <>{`Missing form renderer for modelId "${contentModel.modelId}".`}</>;
+                return <>{`Missing form renderer for modelId "${model.modelId}".`}</>;
             }
             return formRenderer.render({
                 ...formRenderProps,
-                contentModel,
+                contentModel: model,
                 fields,
                 /**
                  * TODO @ts-refactor
@@ -123,14 +124,12 @@ export const ContentEntryForm: React.FC<ContentEntryFormProps> = ({ onForm, ...p
             invalidFields={invalidFields}
             onInvalid={() => {
                 setIsDirty(true);
-                showSnackbar(
-                    "You have fields that did not pass the validation. Please check the form."
-                );
+                showSnackbar("Some fields did not pass the validation. Please check the form.");
             }}
         >
             {formProps => {
                 return (
-                    <>
+                    <ModelProvider model={model}>
                         <Prompt
                             when={isDirty}
                             message={
@@ -143,15 +142,15 @@ export const ContentEntryForm: React.FC<ContentEntryFormProps> = ({ onForm, ...p
                                 renderCustomLayout(formProps)
                             ) : (
                                 <Fields
-                                    contentModel={contentModel}
-                                    fields={contentModel.fields || []}
-                                    layout={contentModel.layout || []}
+                                    contentModel={model}
+                                    fields={model.fields || []}
+                                    layout={model.layout || []}
                                     {...formProps}
                                     Bind={formProps.Bind as any}
                                 />
                             )}
                         </FormWrapper>
-                    </>
+                    </ModelProvider>
                 );
             }}
         </Form>

@@ -24,7 +24,7 @@
     "localtunnel": "2.0.2",
     "lodash": "4.17.20",
     "mime": "2.5.2",
-    "minimatch": "3.0.4",
+    "minimatch": "^5.1.0",
     "ncp": "2.0.0",
     "node-notifier": "7.0.2",
     "open": "8.3.0",

@@ -36,11 +36,6 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
 
     return /* GraphQL */ `
         """${model.description || model.modelId}"""
-        ${fields
-            .map(f => f.typeDefs)
-            .filter(Boolean)
-            .join("\n")}
-
         type ${mTypeName} {
             id: ID!
             entryId: String!
@@ -69,7 +64,11 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
             """
             data: JSON
         }
-        
+
+        ${fields
+            .map(f => f.typeDefs)
+            .filter(Boolean)
+            .join("\n")}
         
         ${inputFields
             .map(f => f.typeDefs)

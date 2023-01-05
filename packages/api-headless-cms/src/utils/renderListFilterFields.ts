@@ -1,4 +1,5 @@
 import { ApiEndpoint, CmsFieldTypePlugins, CmsModel, CmsModelFieldToGraphQLPlugin } from "~/types";
+import { getBaseFieldType } from "~/utils/getBaseFieldType";
 
 interface RenderListFilterFieldsParams {
     model: CmsModel;
@@ -87,11 +88,15 @@ export const renderListFilterFields: RenderListFilterFields = (params): string =
         // that contains a field, for which we don't have a plugin registered on the backend. For example, user
         // could've just removed the plugin from the backend.
 
-        const createListFilters = getCreateListFilters(fieldTypePlugins, field.type, type);
+        const createListFilters = getCreateListFilters(
+            fieldTypePlugins,
+            getBaseFieldType(field),
+            type
+        );
         if (typeof createListFilters !== "function") {
             continue;
         }
-        fields.push(createListFilters({ model, field }));
+        fields.push(createListFilters({ model, field, plugins: fieldTypePlugins }));
     }
 
     return fields.filter(Boolean).join("\n");

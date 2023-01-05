@@ -3,6 +3,7 @@ import { Converter } from "./Converter";
 import { CmsEntryValues, CmsModelField, CmsModelFieldToGraphQLPlugin } from "~/types";
 import { CmsModelFieldConverterPlugin } from "~/plugins";
 import { PluginsContainer } from "@webiny/plugins";
+import { getBaseFieldType } from "~/utils/getBaseFieldType";
 
 export interface CmsModelFieldsWithParent extends CmsModelField {
     parent?: CmsModelField | null;
@@ -82,7 +83,8 @@ export class ConverterCollection {
         this.attachHasOwnProperty(inputValues);
 
         return fields.reduce<CmsEntryValues>((output, field) => {
-            const converter = this.getConverter(field.type);
+            const baseType = getBaseFieldType(field);
+            const converter = this.getConverter(baseType);
             if (inputValues === null || inputValues.hasOwnProperty(field.fieldId) === false) {
                 return output;
             }
@@ -107,7 +109,8 @@ export class ConverterCollection {
         }
 
         return fields.reduce((output, field) => {
-            const converter = this.getConverter(field.type);
+            const baseType = getBaseFieldType(field);
+            const converter = this.getConverter(baseType);
             if (inputValues === null || inputValues.hasOwnProperty(field.storageId) === false) {
                 return output;
             }

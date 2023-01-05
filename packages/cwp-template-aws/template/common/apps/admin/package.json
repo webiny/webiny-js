@@ -11,7 +11,6 @@
     "@webiny/app-admin": "latest",
     "@webiny/app-admin-users-cognito": "latest",
     "@webiny/app-form-builder": "latest",
-    "@webiny/app-headless-cms": "latest",
     "@webiny/app-page-builder": "latest",
     "@webiny/app-serverless-cms": "latest",
     "@webiny/cli": "latest",

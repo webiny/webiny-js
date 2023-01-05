@@ -7,9 +7,10 @@ import {
     ElasticsearchQuerySearchValuePlugins
 } from "~/operations/entry/elasticsearch/types";
 import { createSearchPluginList } from "~/operations/entry/elasticsearch/plugins/search";
+import { createFilterPlugins } from "~/operations/entry/elasticsearch/filtering/plugins";
 
 export const createPluginsContainer = (plugins: Plugin[] = []) => {
-    return new PluginsContainer([getElasticsearchOperators(), ...plugins]);
+    return new PluginsContainer([getElasticsearchOperators(), createFilterPlugins(), ...plugins]);
 };
 
 export const buildElasticsearchOperatorPlugins = (container?: PluginsContainer) => {

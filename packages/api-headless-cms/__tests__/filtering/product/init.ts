@@ -15,6 +15,12 @@ const createModelFactory = (manager: ProductManager, group: CmsGroup) => {
                 group: group.id
             }
         });
+        const error = createResponse.data?.createContentModel?.error;
+        if (error) {
+            console.log(`Error while creating content model "${modelId}".`);
+            console.log(JSON.stringify(error));
+            throw new Error(error.message, error.code);
+        }
 
         const [updateResponse] = await manager.updateContentModelMutation({
             modelId: createResponse.data.createContentModel.data.modelId,
@@ -23,6 +29,12 @@ const createModelFactory = (manager: ProductManager, group: CmsGroup) => {
                 layout: model.layout
             }
         });
+        const updateError = updateResponse.data?.updateContentModel?.error;
+        if (updateError) {
+            console.log(`Error while updating content model "${modelId}".`);
+            console.log(JSON.stringify(updateError));
+            throw new Error(updateError.message, updateError.code);
+        }
         return updateResponse.data.updateContentModel.data as CmsModel;
     };
 };

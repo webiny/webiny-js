@@ -11,7 +11,7 @@ env:
 jobs:
   init:
     name: Init
-    runs-on: webiny-js-4-cores
+    runs-on: ubuntu-latest
     outputs:
       jest-packages: ${{ steps.list-jest-packages.outputs.jest-packages }}
       day: ${{ steps.get-day.outputs.day }}
@@ -48,7 +48,7 @@ jobs:
   build:
     name: Build
     needs: init
-    runs-on: webiny-js-4-cores
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-node@v3
         with:
@@ -83,7 +83,7 @@ jobs:
   code-analysis:
     name: Static code analysis
     needs: [init, build]
-    runs-on: webiny-js-4-cores
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-node@v3
         with:
@@ -154,7 +154,7 @@ jobs:
 
   code-analysis-typescript:
     name: Static code analysis (TypeScript)
-    runs-on: webiny-js-4-cores
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-node@v3
         with:
@@ -176,7 +176,7 @@ jobs:
   npm-release-experimental:
     needs: [init, code-analysis, jest-tests, code-analysis-typescript]
     name: Release ${{ needs.init.outputs.experimental-version }}
-    runs-on: webiny-js-4-cores
+    runs-on: ubuntu-latest
     if: needs.init.outputs.experimental-version
     env:
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
