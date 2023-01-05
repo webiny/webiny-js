@@ -17,6 +17,7 @@ const PeGrid = createRenderer(
     },
     {
         baseStyles: {
+            boxSizing: "border-box",
             display: "flex",
             flexDirection: "row",
             justifyContent: "flex-start",

@@ -11,7 +11,7 @@ import { IconButton } from "@webiny/ui/Button";
 import {useActiveElementId} from "~/editor/hooks/useActiveElementId";
 
 const EmptyCell = styled.div<{ isActive: boolean }>`
-    height: 100px;
+    height: 100%;
     display: flex;
     justify-content: center;
     width: 100%;
@@ -70,11 +70,14 @@ const PeCell = createRenderer(
     },
     {
         baseStyles: ({ element }) => {
+            const styles = { height: "100%", width: "100%" };
             const size = element.data?.settings?.grid?.size;
             if (typeof size !== "number") {
-                return { width: "100%" };
+                return styles;
             }
-            return { width: `${(size / 12) * 100}%` };
+
+            styles.width = `${(size / 12) * 100}%`;
+            return styles;
         }
     }
 );

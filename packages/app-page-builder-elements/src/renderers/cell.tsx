@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { Elements } from "~/components/Elements";
 import { createRenderer } from "~/createRenderer";
 import { useRenderer } from "~/hooks/useRenderer";
@@ -15,11 +15,14 @@ export const createCell = () => {
         },
         {
             baseStyles: ({ element }) => {
+                const styles = { height: "100%", width: "100%" };
                 const size = element.data?.settings?.grid?.size;
                 if (typeof size !== "number") {
-                    return { width: "100%" };
+                    return styles;
                 }
-                return { width: `${(size / 12) * 100}%` };
+
+                styles.width = `${(size / 12) * 100}%`;
+                return styles;
             }
         }
     );

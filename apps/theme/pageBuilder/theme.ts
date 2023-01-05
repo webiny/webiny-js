@@ -97,7 +97,9 @@ const theme = createTheme({
         typography,
         elements: {
             document: {
-                a: { color: colors.color1 }
+                a: { color: colors.color1 },
+                b: { fontWeight: 'bold' },
+                i: { fontStyle: 'italic' }
             },
             quote: {
                 "blockquote > q": {

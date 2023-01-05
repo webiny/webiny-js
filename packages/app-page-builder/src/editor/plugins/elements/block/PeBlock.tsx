@@ -11,7 +11,7 @@ import styled from "@emotion/styled";
 import { useActiveElementId } from "~/editor/hooks/useActiveElementId";
 
 const EmptyCell = styled.div<{ isActive: boolean }>`
-    height: 100px;
+    height: 100%;
     display: flex;
     justify-content: center;
     width: 100%;

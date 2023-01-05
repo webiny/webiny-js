@@ -15,6 +15,7 @@ export const createGrid = () => {
         },
         {
             baseStyles: {
+                boxSizing: "border-box",
                 display: "flex",
                 flexDirection: "row",
                 justifyContent: "flex-start",
