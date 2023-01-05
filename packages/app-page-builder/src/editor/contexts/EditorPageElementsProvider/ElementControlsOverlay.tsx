@@ -41,8 +41,8 @@ export const ElementControlsOverlay: React.FC<Props> = props => {
             isActive={isActive}
             element={element}
             elementRendererMeta={meta}
-            onClick={() => setActiveElementId(element.id)}
             className={isActive ? "active" : ""}
+            onClick={() => setActiveElementId(element.id)}
             onMouseEnter={(e: MouseEvent) => {
                 e.stopPropagation();
                 const target = e.target as HTMLDivElement;
@@ -53,7 +53,7 @@ export const ElementControlsOverlay: React.FC<Props> = props => {
                 const target = e.target as HTMLDivElement;
                 target.classList.remove("hover");
             }}
-            ref={innerRef}
+            dropRef={innerRef}
             {...rest}
         >
             {children}
@@ -62,7 +62,7 @@ export const ElementControlsOverlay: React.FC<Props> = props => {
 };
 
 const PbElementControlsOverlay = styled(
-    ({ className, onClick, onMouseEnter, onMouseLeave, ref, children }) => {
+    ({ className, onClick, onMouseEnter, onMouseLeave, dropRef, children }) => {
         return (
             <pb-element-controls-overlay
                 // @ts-ignore Not supported by `React.HTMLProps<HTMLDivElement>`.
@@ -70,7 +70,7 @@ const PbElementControlsOverlay = styled(
                 onClick={onClick}
                 onMouseEnter={onMouseEnter}
                 onMouseLeave={onMouseLeave}
-                ref={ref}
+                ref={dropRef}
             >
                 {children}
             </pb-element-controls-overlay>

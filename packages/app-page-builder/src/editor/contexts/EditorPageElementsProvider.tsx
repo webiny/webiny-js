@@ -27,17 +27,22 @@ import { createClassName } from "@webiny/app-page-builder-elements/modifiers/att
 import { ElementControls } from "./EditorPageElementsProvider/ElementControls";
 
 const DONEEEEE = [
+    "block",
+    "button",
+    "cell",
+    // "code",
     "document",
-    "quote",
-    "paragraph",
+    // "embed",
+    // form",
+    "grid",
     "heading",
-    "pages-list",
-    "list",
     "icon",
     "image",
-    "block",
-    "grid",
-    "cell"
+    // "images-list",
+    "list",
+    "pages-list",
+    "paragraph",
+    "quote",
 ];
 
 export const EditorPageElementsProvider: React.FC = ({ children }) => {

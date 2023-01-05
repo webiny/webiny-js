@@ -31,7 +31,7 @@ export const createPagesList = (params: CreatePagesListParams) => {
     const { dataLoader, pagesListComponents } = params;
 
     const RendererComponent = createRenderer(() => {
-        const { getElement, getAttributes } = useRenderer();
+        const { getElement } = useRenderer();
         const { page } = usePage();
 
         const element = getElement();
@@ -133,18 +133,16 @@ export const createPagesList = (params: CreatePagesListParams) => {
         const { component: PagesListComponent } = pagesListComponent;
 
         return (
-            <div {...getAttributes()}>
-                <PagesListComponent
-                    variables={variables}
-                    loading={loading}
-                    initialLoading={initialLoading}
-                    data={data}
-                    hasPreviousPage={hasPreviousPage}
-                    previousPage={previousPage}
-                    hasNextPage={hasNextPage}
-                    nextPage={nextPage}
-                />
-            </div>
+            <PagesListComponent
+                variables={variables}
+                loading={loading}
+                initialLoading={initialLoading}
+                data={data}
+                hasPreviousPage={hasPreviousPage}
+                previousPage={previousPage}
+                hasNextPage={hasNextPage}
+                nextPage={nextPage}
+            />
         );
     });
 

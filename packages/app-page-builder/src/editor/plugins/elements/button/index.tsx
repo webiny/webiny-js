@@ -82,22 +82,6 @@ const buttonElementPluginsFactory = (args: PbEditorElementPluginArgs = {}) => {
             render(props) {
                 return <Button {...props} />;
             },
-            renderer: createButton({
-                clickHandlers: () => {
-                    const registeredPlugins = plugins.byType<PbButtonElementClickHandlerPlugin>(
-                        "pb-page-element-button-click-handler"
-                    );
-
-                    return registeredPlugins.map(plugin => {
-                        return {
-                            id: plugin.name!,
-                            name: plugin.title,
-                            handler: plugin.handler,
-                            variables: plugin.variables
-                        };
-                    });
-                }
-            }),
         } as PbEditorPageElementPlugin,
         {
             name: "pb-editor-page-element-style-settings-button",
