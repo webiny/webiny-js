@@ -32,7 +32,8 @@ const DONEEEEE = [
     "cell",
     // "code",
     "document",
-    // "embed",
+    // embeds
+    "iframe",
     // form",
     "grid",
     "heading",
