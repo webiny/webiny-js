@@ -1,7 +1,7 @@
+import WebinyError from "@webiny/error";
 import { CmsEntryListWhere } from "@webiny/api-headless-cms/types";
 import { ValueFilterPlugin } from "@webiny/db-dynamodb/plugins/definitions/ValueFilterPlugin";
 import { CmsFieldFilterValueTransformPlugin } from "~/types";
-import WebinyError from "@webiny/error";
 import { PluginsContainer } from "@webiny/plugins";
 import { Field } from "./types";
 import { getMappedPlugins } from "./mapPlugins";
@@ -9,17 +9,6 @@ import { extractWhereParams } from "./where";
 import { transformValue } from "./transform";
 import { CmsEntryFieldFilterPlugin } from "~/plugins/CmsEntryFieldFilterPlugin";
 import { getWhereValues } from "~/operations/entry/filtering/values";
-
-const isLastExpressionEligible = (expressions: Expression[], condition: "AND" | "OR"): boolean => {
-    if (expressions.length !== 1) {
-        return false;
-    } else if (expressions[0].children) {
-        return false;
-    } else if (expressions[0].condition !== condition) {
-        return false;
-    }
-    return true;
-};
 
 interface ApplyExpressionsParams {
     where: Partial<CmsEntryListWhere>;
@@ -36,10 +25,10 @@ interface Params {
 interface FilterExpression {
     filters: Filter[];
     condition: "AND" | "OR";
-    children?: never;
+    expressions?: never;
 }
 interface ChildrenExpression {
-    children: Expression[];
+    expressions: Expression[];
     filters?: never;
     condition: "AND" | "OR";
 }
@@ -122,7 +111,11 @@ export const createExpressions = (params: Params): Expression[] => {
                     });
                 }
                 if (childExpressions.length > 0) {
-                    expressions.push(...childExpressions);
+                    // expressions.push(...childExpressions);
+                    expressions.push({
+                        condition: key,
+                        expressions: childExpressions
+                    });
                 }
                 continue;
             }
@@ -141,7 +134,7 @@ export const createExpressions = (params: Params): Expression[] => {
                 }
                 if (childExpressions.length > 0) {
                     expressions.push({
-                        children: childExpressions,
+                        expressions: childExpressions,
                         condition: key
                     });
                 }
@@ -221,6 +214,12 @@ export const createExpressions = (params: Params): Expression[] => {
          *
          * This is mostly cosmetically - to group filters under a single expression.
          */
+
+        expressions.push({
+            filters,
+            condition
+        });
+        /*
         if (isLastExpressionEligible(expressions, condition) === false) {
             expressions.push({
                 filters,
@@ -230,8 +229,10 @@ export const createExpressions = (params: Params): Expression[] => {
         }
         /**
          * We know that the expressions[0] exists...
-         */
+         * /
         expressions[0].filters = [...(expressions[0].filters || []), ...filters];
+        
+        */
     };
 
     const expressions: Expression[] = [];

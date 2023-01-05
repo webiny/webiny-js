@@ -50,7 +50,7 @@ const executeExpressions = (params: ExecuteExpressionsParams): boolean => {
         if (!expression.filters) {
             const result = executeExpressions({
                 getCachedValue,
-                expressions: expression.children,
+                expressions: expression.expressions,
                 condition: expression.condition
             });
             if (result && condition === "OR") {
