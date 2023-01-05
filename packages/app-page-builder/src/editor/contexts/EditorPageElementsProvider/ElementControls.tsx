@@ -17,7 +17,7 @@ const EMPTY_DROPPABLE_ELEMENTS = ["block", "cell"];
 // - hover / active visual overlays
 // - drag and drop functionality
 export const ElementControls = () => {
-    const { getElement } = useRenderer();
+    const { getElement, meta } = useRenderer();
 
     const element = getElement();
 
@@ -25,6 +25,13 @@ export const ElementControls = () => {
     // Note that the element type never changes, that's why we're safe to return here,
     // despite the fact that below we're using more React hooks.
     if (element.type === "document") {
+        return null;
+    }
+
+    // If the current element is a child of a pre-made block (via the Blocks module),
+    // then we don't want to render any controls for any child elements.
+    const isBlockChild = meta?.parentBlockElement;
+    if (isBlockChild) {
         return null;
     }
 
