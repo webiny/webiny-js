@@ -13,7 +13,9 @@ const Image: React.FC<ImageProps> = props => {
     if (isLegacyRenderingEngine) {
         return <PbImage {...props} />;
     }
-    return <PeImage element={props.element as Element} />;
+
+    const { element, ...rest } = props;
+    return <PeImage element={props.element as Element} {...rest} />;
 };
 
 export default React.memo(Image);

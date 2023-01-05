@@ -15,7 +15,8 @@ const Cell: React.FC<CellProps> = props => {
         return <CellContainer {...props} elementId={props.element.id} />;
     }
 
-    return <PeCell element={props.element as Element} />;
+    const { element, ...rest } = props;
+    return <PeCell element={props.element as Element} {...rest} />;
 };
 
 export default Cell;

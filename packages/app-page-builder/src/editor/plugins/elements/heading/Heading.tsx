@@ -14,7 +14,9 @@ const Heading: React.FC<HeadingProps> = props => {
     if (isLegacyRenderingEngine) {
         return <PbHeading {...props} elementId={props.element.id} />;
     }
-    return <PeHeading element={props.element as Element} />;
+
+    const { element, ...rest } = props;
+    return <PeHeading element={props.element as Element} {...rest} />;
 };
 
 export default Heading;

@@ -16,7 +16,9 @@ const Paragraph: React.FC<ParagraphProps> = props => {
     if (isLegacyRenderingEngine) {
         return <PbParagraph {...props} elementId={props.element.id} />;
     }
-    return <PeParagraph element={props.element as Element} />;
+
+    const { element, ...rest } = props;
+    return <PeParagraph element={props.element as Element} {...rest} />;
 };
 
 export default Paragraph;

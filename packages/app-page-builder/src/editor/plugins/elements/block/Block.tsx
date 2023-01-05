@@ -14,7 +14,8 @@ const Block: React.FC<BlockProps> = props => {
         return <PbBlock {...props} />;
     }
 
-    return <PeBlock element={props.element as Element} />;
+    const { element, ...rest } = props;
+    return <PeBlock element={element as Element} {...rest} />;
 };
 
 export default Block;

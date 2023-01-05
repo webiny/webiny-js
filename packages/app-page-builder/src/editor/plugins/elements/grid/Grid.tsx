@@ -14,7 +14,8 @@ const Grid: React.FC<GridProps> = props => {
         return <GridContainer {...props} />;
     }
 
-    return <PeGrid element={props.element as Element} />;
+    const { element, ...rest } = props;
+    return <PeGrid element={props.element as Element} {...rest} />;
 };
 
 export default Grid;

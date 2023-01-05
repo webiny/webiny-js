@@ -13,7 +13,9 @@ const PagesList: React.FC<PagesListProps> = props => {
     if (isLegacyRenderingEngine) {
         return <PbPagesList {...props} data={props.element.data as any} />;
     }
-    return <PePagesList element={props.element as Element} />;
+
+    const { element, ...rest } = props;
+    return <PePagesList element={props.element as Element} {...rest} />;
 };
 
 export default React.memo(PagesList);

@@ -13,7 +13,9 @@ const Button: React.FC<ButtonProps> = props => {
     if (isLegacyRenderingEngine) {
         return <PbButton {...props} />;
     }
-    return <PeButton element={props.element as Element} />;
+
+    const { element, ...rest } = props;
+    return <PeButton element={props.element as Element} {...rest} />;
 };
 
 export default Button;

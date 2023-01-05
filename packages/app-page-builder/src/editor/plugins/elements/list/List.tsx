@@ -14,7 +14,9 @@ const List: React.FC<ListProps> = props => {
     if (isLegacyRenderingEngine) {
         return <PbList {...props} elementId={props.element.id} />;
     }
-    return <PeList element={props.element as Element} />;
+
+    const { element, ...rest } = props;
+    return <PeList element={props.element as Element} {...rest} />;
 };
 
 export default React.memo(List);

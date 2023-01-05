@@ -14,7 +14,9 @@ const Quote: React.FC<QuoteProps> = props => {
     if (isLegacyRenderingEngine) {
         return <PbQuote {...props} elementId={props.element.id} />;
     }
-    return <PeQuote element={props.element as Element} />;
+
+    const { element, ...rest } = props;
+    return <PeQuote element={props.element as Element} {...rest} />;
 };
 
 export default React.memo(Quote);

@@ -13,7 +13,9 @@ const Icon: React.FC<IconProps> = props => {
     if (isLegacyRenderingEngine) {
         return <PbIcon {...props} />;
     }
-    return <PeIcon element={props.element as Element} />;
+
+    const { element, ...rest } = props;
+    return <PeIcon element={props.element as Element} {...rest} />;
 };
 
 export default Icon;
