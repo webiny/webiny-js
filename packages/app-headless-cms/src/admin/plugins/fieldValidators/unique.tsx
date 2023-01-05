@@ -1,14 +1,17 @@
-import { CmsEditorFieldValidatorPlugin } from "~/types";
+import { CmsModelFieldValidatorPlugin } from "~/types";
 
-export default (): CmsEditorFieldValidatorPlugin => {
+export default (): CmsModelFieldValidatorPlugin => {
     return {
-        type: "cms-editor-field-validator",
+        type: "cms-model-field-validator",
         name: "cms-editor-field-validator-unique",
         validator: {
             name: "unique",
             label: "Unique",
             description: "You won't be able to submit the form if this field is not unique",
-            defaultMessage: "Value must be unique."
+            defaultMessage: "Value must be unique.",
+            validate: async () => {
+                return true;
+            }
         }
     };
 };

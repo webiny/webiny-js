@@ -2,11 +2,11 @@ import React from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { validation } from "@webiny/validation";
-import { CmsEditorFieldValidatorPlugin } from "~/types";
+import { CmsModelFieldValidatorPlugin } from "~/types";
 import { Bind } from "@webiny/form";
 
-const plugin: CmsEditorFieldValidatorPlugin = {
-    type: "cms-editor-field-validator",
+const plugin: CmsModelFieldValidatorPlugin = {
+    type: "cms-model-field-validator",
     name: "cms-editor-field-validator-lte",
     validator: {
         name: "lte",
@@ -30,6 +30,13 @@ const plugin: CmsEditorFieldValidatorPlugin = {
                     </Cell>
                 </Grid>
             );
+        },
+        validate: async (value, validator) => {
+            const lteValue = validator.settings.value;
+            if (typeof lteValue === "undefined") {
+                return true;
+            }
+            return validation.validate(value, `lte:${lteValue}`);
         }
     }
 };

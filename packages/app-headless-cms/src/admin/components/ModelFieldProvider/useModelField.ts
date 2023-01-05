@@ -1,15 +1,15 @@
 import { useContext } from "react";
 import { ModelFieldContext } from "./ModelFieldContext";
 import { plugins } from "@webiny/plugins";
-import { CmsEditorFieldTypePlugin } from "~/types";
+import { CmsModelFieldTypePlugin } from "~/types";
 
 interface GetFieldPlugin {
-    (type: string): CmsEditorFieldTypePlugin;
+    (type: string): CmsModelFieldTypePlugin;
 }
 
 const getFieldPlugin: GetFieldPlugin = type => {
     const plugin = plugins
-        .byType<CmsEditorFieldTypePlugin>("cms-editor-field-type")
+        .byType<CmsModelFieldTypePlugin>("cms-editor-field-type")
         .find(plugin => plugin.field.type === type);
 
     if (!plugin) {

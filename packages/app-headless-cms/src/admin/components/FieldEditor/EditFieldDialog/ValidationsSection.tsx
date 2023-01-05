@@ -2,13 +2,13 @@ import React from "react";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Typography } from "@webiny/ui/Typography";
 import { ValidatorsList } from "./ValidatorsList";
-import { ValidationSection } from "./getValidators";
+import { CmsModelFieldValidatorConfigAdapter } from "~/utils/CmsModelFieldValidatorConfigAdapter";
 
 interface ValidatorsSectionProps {
     title: string;
     fieldKey: "validators" | "listValidators";
     description: string;
-    validation: ValidationSection;
+    validators: CmsModelFieldValidatorConfigAdapter[];
 }
 
 const bindTo = {
@@ -16,11 +16,12 @@ const bindTo = {
     listValidators: "listValidation"
 };
 
-export const ValidationsSection = ({ fieldKey, validation, ...props }: ValidatorsSectionProps) => {
-    const { validators } = validation;
-    const title = validation.title || props.title;
-    const description = validation.description || props.description;
-
+export const ValidationsSection = ({
+    title,
+    description,
+    fieldKey,
+    validators
+}: ValidatorsSectionProps) => {
     return (
         <Grid>
             <Cell span={12}>

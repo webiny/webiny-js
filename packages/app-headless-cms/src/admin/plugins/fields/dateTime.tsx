@@ -3,7 +3,7 @@ import { get } from "lodash";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 import { Input } from "@webiny/ui/Input";
-import { CmsModelField, CmsEditorFieldTypePlugin } from "~/types";
+import { CmsModelField, CmsModelFieldTypePlugin } from "~/types";
 import { i18n } from "@webiny/app/i18n";
 import { ReactComponent as DateTimeIcon } from "./icons/schedule-black-24px.svg";
 import { useModel, useModelField } from "~/admin/hooks";
@@ -69,7 +69,7 @@ const DateTimeSettings = () => {
     );
 };
 
-const plugin: CmsEditorFieldTypePlugin = {
+const plugin: CmsModelFieldTypePlugin = {
     type: "cms-editor-field-type",
     name: "cms-editor-field-type-dateTime",
     field: {

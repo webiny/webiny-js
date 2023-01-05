@@ -6,7 +6,7 @@ import { Cell, Grid } from "@webiny/ui/Grid";
 import { MultiAutoComplete } from "@webiny/ui/AutoComplete";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { CmsEditorFieldTypePlugin, CmsModel } from "~/types";
+import { CmsModelFieldTypePlugin, CmsModel } from "~/types";
 import { ReactComponent as RefIcon } from "./icons/round-link-24px.svg";
 import { i18n } from "@webiny/app/i18n";
 import { Bind, BindComponentRenderProp, useForm } from "@webiny/form";
@@ -78,7 +78,7 @@ const RefFieldSettings = () => {
     );
 };
 
-const plugin: CmsEditorFieldTypePlugin = {
+const plugin: CmsModelFieldTypePlugin = {
     type: "cms-editor-field-type",
     name: "cms-editor-field-type-ref",
     field: {
