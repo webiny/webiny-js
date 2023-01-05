@@ -10,7 +10,7 @@ import Field from "./Field";
 import { rowHandle, fieldHandle, fieldContainer, Row, RowContainer } from "./Styled";
 import { useModelFieldEditor } from "./useModelFieldEditor";
 import { DragSource, FieldEditorProvider, IsVisibleCallable } from "./FieldEditorContext";
-import { CmsModelField, CmsEditorFieldsLayout, CmsEditorFieldTypePlugin } from "~/types";
+import { CmsModelField, CmsEditorFieldsLayout, CmsModelFieldTypePlugin } from "~/types";
 import { ModelFieldProvider } from "~/admin/components/ModelFieldProvider";
 
 const t = i18n.namespace("app-headless-cms/admin/components/editor");
@@ -35,7 +35,7 @@ const Editor: React.FC = () => {
     } = useModelFieldEditor();
 
     const canDropIntoField = (field: CmsModelField, draggable: DragSource) => {
-        const fieldPlugin = getFieldPlugin(field.type) as CmsEditorFieldTypePlugin;
+        const fieldPlugin = getFieldPlugin(field.type) as CmsModelFieldTypePlugin;
         const canAccept = fieldPlugin.field.canAccept;
         if (typeof canAccept === "function" && !canAccept(field, draggable)) {
             return false;
@@ -50,7 +50,7 @@ const Editor: React.FC = () => {
                 return cb(item);
             }
 
-            const fieldPlugin = getFieldPlugin(parent.type) as CmsEditorFieldTypePlugin;
+            const fieldPlugin = getFieldPlugin(parent.type) as CmsModelFieldTypePlugin;
             const allowLayout = fieldPlugin.field.allowLayout ?? true;
             if (!allowLayout) {
                 return false;

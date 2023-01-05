@@ -1,13 +1,13 @@
 import React from "react";
 import { ReactComponent as ObjectIcon } from "@material-design-icons/svg/outlined/ballot.svg";
-import { CmsEditorFieldTypePlugin, CmsModelField } from "~/types";
+import { CmsModelFieldTypePlugin, CmsModelField } from "~/types";
 import { i18n } from "@webiny/app/i18n";
 import { ObjectFields } from "./object/ObjectFields";
 import { createFieldsList } from "~/admin/graphql/createFieldsList";
 
 const t = i18n.ns("app-headless-cms/admin/fields");
 
-const plugin: CmsEditorFieldTypePlugin = {
+const plugin: CmsModelFieldTypePlugin = {
     type: "cms-editor-field-type",
     name: "cms-editor-field-type-object",
     field: {

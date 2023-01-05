@@ -12,9 +12,9 @@ import Label from "~/admin/components/ContentEntryForm/Label";
 import { SecurityPermission } from "@webiny/app-security/types";
 import { DragSource } from "~/admin/components/FieldEditor/FieldEditorContext";
 import {
-    CmsEditorFieldValidator,
-    CmsEditorFieldValidatorsDefinition,
-    CmsEditorFieldValidatorsFactory
+    CmsModelFieldValidator,
+    CmsModelFieldValidatorsGroup,
+    CmsModelFieldValidatorsFactory
 } from "./validation";
 
 import { CmsModelField, CmsModel } from "./model";
@@ -29,7 +29,9 @@ interface QueryFieldParams {
     field: CmsModelField;
 }
 
-export interface CmsEditorFieldTypePlugin extends Plugin {
+export type CmsEditorFieldTypePlugin = CmsModelFieldTypePlugin;
+
+export interface CmsModelFieldTypePlugin extends Plugin {
     /**
      * a plugin type
      */
@@ -62,10 +64,7 @@ export interface CmsEditorFieldTypePlugin extends Plugin {
          * ]
          * ```
          */
-        validators?:
-            | string[]
-            | CmsEditorFieldValidatorsDefinition
-            | CmsEditorFieldValidatorsFactory;
+        validators?: string[] | CmsModelFieldValidatorsGroup | CmsModelFieldValidatorsFactory;
         /**
          * A list of available validators when a model field accepts a list (array) of values.
          *
@@ -76,7 +75,7 @@ export interface CmsEditorFieldTypePlugin extends Plugin {
          * ]
          * ```
          */
-        listValidators?: string[] | CmsEditorFieldValidatorsDefinition;
+        listValidators?: string[] | CmsModelFieldValidatorsGroup | CmsModelFieldValidatorsFactory;
         /**
          * An explanation of the field displayed beneath the label.
          *
@@ -294,7 +293,7 @@ export interface CmsDynamicZoneTemplate {
     icon: string;
     fields: CmsModelField[];
     layout: string[][];
-    validation: CmsEditorFieldValidator[];
+    validation: CmsModelFieldValidator[];
 }
 
 export type CmsContentEntryStatusType = "draft" | "published" | "unpublished";

@@ -22,25 +22,6 @@ import checkboxesFieldRenderer from "~/admin/plugins/fieldRenderers/checkboxes";
 import refFieldRenderer from "~/admin/plugins/fieldRenderers/ref";
 import objectFieldRenderer from "~/admin/plugins/fieldRenderers/object";
 
-import gteFieldValidator from "~/admin/plugins/validators/gte";
-import inValidatorFieldValidator from "~/admin/plugins/validators/in";
-import lteFieldValidator from "~/admin/plugins/validators/lte";
-import requiredFieldValidator from "~/admin/plugins/validators/required";
-import minLengthFieldValidator from "~/admin/plugins/validators/minLength";
-import maxLengthFieldValidator from "~/admin/plugins/validators/maxLength";
-import patternFieldValidator from "~/admin/plugins/validators/pattern";
-import emailFieldValidator from "~/admin/plugins/validators/patternPlugins/email";
-import urlFieldValidator from "~/admin/plugins/validators/patternPlugins/url";
-import lowerCaseFieldValidator from "~/admin/plugins/validators/patternPlugins/lowerCase";
-import upperCaseFieldValidator from "~/admin/plugins/validators/patternPlugins/upperCase";
-import lowerCaseSpaceFieldValidator from "~/admin/plugins/validators/patternPlugins/lowerCaseSpace";
-import upperCaseSpaceFieldValidator from "~/admin/plugins/validators/patternPlugins/upperCaseSpace";
-import dateGteFieldValidator from "~/admin/plugins/validators/dateGte";
-import dateLteFieldValidator from "~/admin/plugins/validators/dateLte";
-import timeGteFieldValidator from "~/admin/plugins/validators/timeGte";
-import timeLteFieldValidator from "~/admin/plugins/validators/timeLte";
-import uniqueFieldValidator from "~/admin/plugins/validators/unique";
-
 import editorGteFieldValidator from "~/admin/plugins/fieldValidators/gte";
 import editorDateGteFieldValidator from "~/admin/plugins/fieldValidators/dateGte";
 import editorDateLteFieldValidator from "~/admin/plugins/fieldValidators/dateLte";
@@ -61,7 +42,6 @@ import welcomeScreenWidget from "~/admin/plugins/welcomeScreenWidget";
 import { dynamicZoneField } from "~/admin/plugins/fields/dynamicZone";
 import { dynamicZoneFieldRenderer } from "~/admin/plugins/fieldRenderers/dynamicZone/dynamicZoneRenderer";
 import { dynamicZoneFieldValidator } from "~/admin/plugins/fieldValidators/dynamicZone";
-import { dynamicZoneValidator } from "~/admin/plugins/validators/dynamicZone";
 
 export default [
     headlessCmsPlugins(),
@@ -84,24 +64,6 @@ export default [
     selectFieldRenderer,
     checkboxesFieldRenderer,
     refFieldRenderer,
-    gteFieldValidator,
-    inValidatorFieldValidator,
-    lteFieldValidator,
-    requiredFieldValidator,
-    minLengthFieldValidator,
-    maxLengthFieldValidator,
-    patternFieldValidator,
-    emailFieldValidator,
-    urlFieldValidator,
-    lowerCaseFieldValidator,
-    upperCaseFieldValidator,
-    lowerCaseSpaceFieldValidator,
-    upperCaseSpaceFieldValidator,
-    dateGteFieldValidator(),
-    dateLteFieldValidator(),
-    timeGteFieldValidator(),
-    timeLteFieldValidator(),
-    uniqueFieldValidator(),
     editorGteFieldValidator,
     editorDateGteFieldValidator(),
     editorDateLteFieldValidator(),
@@ -118,11 +80,10 @@ export default [
     editorUpperCaseFieldValidator,
     editorLowerCaseSpaceFieldValidator,
     editorUpperCaseSpaceFieldValidator,
+    dynamicZoneFieldValidator,
     welcomeScreenWidget,
     objectField,
     objectFieldRenderer,
     dynamicZoneField,
-    dynamicZoneFieldRenderer,
-    dynamicZoneFieldValidator,
-    dynamicZoneValidator
+    dynamicZoneFieldRenderer
 ];

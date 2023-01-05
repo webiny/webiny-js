@@ -2,11 +2,11 @@ import React from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Tags } from "@webiny/ui/Tags";
 import { validation } from "@webiny/validation";
-import { CmsEditorFieldValidatorPlugin } from "~/types";
+import { CmsModelFieldValidatorPlugin } from "~/types";
 import { Bind } from "@webiny/form";
 
-const plugin: CmsEditorFieldValidatorPlugin = {
-    type: "cms-editor-field-validator",
+const plugin: CmsModelFieldValidatorPlugin = {
+    type: "cms-model-field-validator",
     name: "cms-editor-field-validator-in",
     validator: {
         name: "in",
@@ -27,6 +27,13 @@ const plugin: CmsEditorFieldValidatorPlugin = {
                     </Cell>
                 </Grid>
             );
+        },
+        validate: async (value, validator) => {
+            const values = validator.settings.values;
+            if (Array.isArray(values) === false || values.length === 0) {
+                return true;
+            }
+            return validation.validate(value, `in:${values.join(":")}`);
         }
     }
 };

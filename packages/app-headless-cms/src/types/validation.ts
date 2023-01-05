@@ -1,63 +1,45 @@
 import * as React from "react";
 import { Plugin } from "@webiny/plugins/types";
 
-import { CmsEditorFieldValidatorConfig } from "~/utils/CmsEditorFieldValidatorConfig";
 import { CmsModelField } from "~/types";
+import { CmsModelFieldValidatorConfigAdapter } from "~/utils/CmsModelFieldValidatorConfigAdapter";
 
-export interface CmsEditorFieldValidatorVariable {
+export interface CmsModelFieldValidatorVariable {
     name: string;
     description: string;
 }
 
-export interface CmsEditorFieldValidatorDefinition {
+/**
+ * This interface is used in the validator configuration UI (Field dialog).
+ */
+export interface CmsModelFieldValidatorConfig {
     name: string;
-    label: string;
-    description: string;
-    defaultMessage: string;
-    variables: CmsEditorFieldValidatorVariable[];
+    required?: boolean;
+    label?: string;
+    description?: string;
+    defaultMessage?: string;
+    defaultSettings?: Record<string, any>;
+    variables?: CmsModelFieldValidatorVariable[];
 }
 
-export interface CmsEditorFieldValidatorsDefinition {
-    validators: (string | CmsEditorFieldValidatorDefinition)[];
+/**
+ * This interface allows you to control the title, description, and validators located in the specific
+ * validators group, like `validators` or `listValidators` within the Field dialog.
+ */
+export interface CmsModelFieldValidatorsGroup {
+    validators: (string | CmsModelFieldValidatorConfig)[];
     title?: string;
     description?: string;
 }
 
-export interface CmsEditorFieldValidatorsFactory {
-    (field: CmsModelField): string[] | CmsEditorFieldValidatorsDefinition;
+/**
+ * This interface allows you to generate validators based on the field configuration.
+ */
+export interface CmsModelFieldValidatorsFactory {
+    (field: CmsModelField): string[] | CmsModelFieldValidatorsGroup;
 }
 
-export interface CmsEditorFieldValidator {
-    name: string;
-    message?: string;
-    settings?: any;
-}
-
-export interface CmsEditorFieldValidatorPluginValidator {
-    name: string;
-    label: string;
-    description: string;
-    defaultMessage: string;
-    defaultSettings?: Record<string, any>;
-    variables?: CmsEditorFieldValidatorVariable[];
-    renderSettings?: (config: CmsEditorFieldValidatorConfig) => React.ReactElement;
-    renderCustomUi?: () => React.ReactElement;
-}
-export interface CmsEditorFieldValidatorPlugin extends Plugin {
-    type: "cms-editor-field-validator";
-    validator: CmsEditorFieldValidatorPluginValidator;
-}
-
-export interface CmsEditorFieldValidatorPatternPlugin extends Plugin {
-    type: "cms-editor-field-validator-pattern";
-    pattern: {
-        name: string;
-        message: string;
-        label: string;
-    };
-}
-
-export interface CmsFieldValidator {
+export interface CmsModelFieldValidator {
     name: string;
     message?: string;
     settings?: any;
@@ -67,35 +49,29 @@ export interface CmsModelFieldValidatorPlugin<T = any> extends Plugin {
     type: "cms-model-field-validator";
     validator: {
         name: string;
-        validate: (value: T, validator: CmsFieldValidator, field: CmsModelField) => Promise<any>;
+        label: string;
+        description: string;
+        defaultMessage: string;
+        variables?: CmsModelFieldValidatorVariable[];
+        defaultSettings?: Record<string, any>;
+        getVariableValues?: (validator: CmsModelFieldValidator) => Record<string, string>;
+        renderSettings?: (config: CmsModelFieldValidatorConfigAdapter) => React.ReactElement;
+        renderCustomUi?: () => React.ReactElement;
+        validate: (
+            value: T,
+            validator: CmsModelFieldValidator,
+            field: CmsModelField
+        ) => Promise<any>;
     };
 }
 
-/**
- * @category Plugin
- * @category ContentModelField
- * @category FieldValidation
- */
-export interface CmsModelFieldValidatorPatternPlugin extends Plugin {
-    /**
-     * A plugin type
-     */
-    type: "cms-model-field-validator-pattern";
-    /**
-     * A pattern object for the validator.
-     */
+export interface CmsModelFieldRegexValidatorExpressionPlugin extends Plugin {
+    type: "cms-model-field-regex-validator-expression";
     pattern: {
-        /**
-         * name of the pattern.
-         */
         name: string;
-        /**
-         * RegExp of the validator.
-         */
+        message: string;
+        label: string;
         regex: string;
-        /**
-         * RegExp flags
-         */
         flags: string;
     };
 }

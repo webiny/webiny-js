@@ -1,4 +1,4 @@
-import { CmsEditorFieldValidator } from "~/types/validation";
+import { CmsModelFieldValidator } from "~/types/validation";
 import { CmsDynamicZoneTemplate, CmsEditorFieldPredefinedValues } from "~/types/index";
 import { CmsCreatedBy } from "~/types/shared";
 
@@ -15,8 +15,8 @@ export type CmsModelField<T = unknown> = T & {
     label?: string;
     helpText?: string;
     placeholderText?: string;
-    validation?: CmsEditorFieldValidator[];
-    listValidation?: CmsEditorFieldValidator[];
+    validation?: CmsModelFieldValidator[];
+    listValidation?: CmsModelFieldValidator[];
     multipleValues?: boolean;
     predefinedValues?: CmsEditorFieldPredefinedValues;
     settings?: {

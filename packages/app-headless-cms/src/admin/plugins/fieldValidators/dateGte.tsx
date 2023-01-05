@@ -1,7 +1,7 @@
 import React from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { validation } from "@webiny/validation";
-import { CmsEditorFieldValidatorPlugin } from "~/types";
+import { CmsModelFieldValidatorPlugin } from "~/types";
 import { createInputField } from "./date/createDateInputField";
 import { getAvailableValidators } from "./date/availableValidators";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
@@ -40,8 +40,8 @@ function DateGteSettings() {
     );
 }
 
-export default (): CmsEditorFieldValidatorPlugin => ({
-    type: "cms-editor-field-validator",
+export default (): CmsModelFieldValidatorPlugin => ({
+    type: "cms-model-field-validator",
     name: "cms-editor-field-validator-date-gte",
     validator: {
         name: "dateGte",
@@ -50,6 +50,15 @@ export default (): CmsEditorFieldValidatorPlugin => ({
         defaultMessage: `Date/time is earlier than the provided one.`,
         renderSettings() {
             return <DateGteSettings />;
+        },
+        validate: async (value, validator) => {
+            const { value: gteValue, type } = validator.settings;
+            if (typeof gteValue === "undefined") {
+                return true;
+            } else if (type === "time") {
+                return validation.validate(value, `timeGte:${gteValue}`);
+            }
+            return validation.validate(value, `dateGte:${gteValue}`);
         }
     }
 });

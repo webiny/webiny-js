@@ -4,14 +4,14 @@ import { Input } from "@webiny/ui/Input";
 import { Select } from "@webiny/ui/Select";
 import { plugins } from "@webiny/plugins";
 import { validation } from "@webiny/validation";
-import { CmsEditorFieldValidatorPlugin, CmsEditorFieldValidatorPatternPlugin } from "~/types";
+import { CmsModelFieldValidatorPlugin, CmsModelFieldRegexValidatorExpressionPlugin } from "~/types";
 import { useForm, Bind } from "@webiny/form";
 
 const PatternSettings = () => {
     const { data: validator, setValue } = useForm();
     const inputsDisabled = validator.settings.preset !== "custom";
-    const presetPlugins = plugins.byType<CmsEditorFieldValidatorPatternPlugin>(
-        "cms-editor-field-validator-pattern"
+    const presetPlugins = plugins.byType<CmsModelFieldRegexValidatorExpressionPlugin>(
+        "cms-model-field-regex-validator-expression"
     );
 
     const setMessage = (message: string) => {
@@ -74,8 +74,8 @@ const PatternSettings = () => {
     );
 };
 
-const plugin: CmsEditorFieldValidatorPlugin = {
-    type: "cms-editor-field-validator",
+const plugin: CmsModelFieldValidatorPlugin = {
+    type: "cms-model-field-validator",
     name: "cms-editor-field-validator-pattern",
     validator: {
         name: "pattern",
@@ -87,6 +87,34 @@ const plugin: CmsEditorFieldValidatorPlugin = {
         },
         renderSettings() {
             return <PatternSettings />;
+        },
+        validate: async (value, validator) => {
+            if (!value) {
+                return true;
+            }
+
+            const { settings } = validator;
+
+            let pattern;
+            if (settings.preset === "custom") {
+                pattern = settings;
+            } else {
+                const patternPlugin = plugins
+                    .byType<CmsModelFieldRegexValidatorExpressionPlugin>(
+                        "cms-model-field-regex-validator-expression"
+                    )
+                    .find(item => item.pattern.name === settings.preset);
+
+                if (patternPlugin) {
+                    pattern = patternPlugin.pattern;
+                }
+            }
+
+            if (!pattern) {
+                return true;
+            }
+
+            return new RegExp(pattern.regex, pattern.flags).test(value);
         }
     }
 };
