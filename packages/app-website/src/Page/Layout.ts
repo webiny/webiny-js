@@ -3,7 +3,7 @@ import { plugins } from "@webiny/plugins";
 import { PbPageLayoutPlugin } from "@webiny/app-page-builder/types";
 import { usePage } from "@webiny/app-page-builder-elements";
 
-const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const layouts = useMemo(() => {
         const layoutPlugins = plugins.byType<PbPageLayoutPlugin>("pb-page-layout");
         return layoutPlugins.map(pl => pl.layout);
@@ -23,5 +23,3 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
     return createElement(themeLayout.component, {}, children);
 };
-
-export default Layout;

@@ -1,7 +1,6 @@
 import React, { useCallback } from "react";
 import { useQuery } from "@apollo/react-hooks";
 import Render from "./Render";
-import trim from "lodash/trim";
 import {
     GET_SETTINGS,
     GET_PUBLISHED_PAGE,
@@ -22,7 +21,8 @@ declare global {
 // visiting `/xyz`, but delivery URL is forcing `/xyz/`. This ensures the path is standardized, and the GraphQL
 // queries are the same on both sides.
 const trimPath = (value: string) => {
-    return "/" + trim(value, "/");
+    const trimmed = value.replace(/^\/|\/$/g, "");
+    return "/" + trimmed;
 };
 
 // We want to write the initial path which returned the not-found page. That way, we still
@@ -34,7 +34,7 @@ const notFoundInitialPath = trimPath(location.pathname);
  * `preview` query parameter is present, we're getting the page directly by its ID, instead of the URL.
  * The `preview` search parameter is set, for example, when previewing pages from Page Builder's editor / Admin app.
  */
-const Page: React.FC = () => {
+export const Page: React.FC = () => {
     const { pathname } = useLocation();
     const [search] = useSearchParams();
 
@@ -77,5 +77,3 @@ const Page: React.FC = () => {
     // Let's render the page.
     return <Render page={page} error={error} settings={settings} />;
 };
-
-export default Page;

@@ -1,6 +1,6 @@
 import * as React from "react";
-import { Query } from "@apollo/react-components";
 import gql from "graphql-tag";
+import { useQuery } from "@apollo/react-hooks";
 
 declare global {
     // eslint-disable-next-line
@@ -73,14 +73,11 @@ interface Props {
 }
 
 export const Menu: React.FC<Props> = ({ slug, component: Component }) => {
+    const { data } = useQuery(GET_PUBLIC_MENU, { variables: { slug } });
     return (
-        <Query<GetPublishMenuResponse> query={GET_PUBLIC_MENU} variables={{ slug }}>
-            {({ data }) => (
-                <>
-                    <ps-tag data-key="pb-menu" data-value={slug} />
-                    <Component data={data?.pageBuilder?.getPublicMenu?.data} />
-                </>
-            )}
-        </Query>
+        <>
+            <ps-tag data-key="pb-menu" data-value={slug} />
+            <Component data={data?.pageBuilder?.getPublicMenu?.data} />
+        </>
     );
 };

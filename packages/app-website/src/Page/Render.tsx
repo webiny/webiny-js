@@ -6,16 +6,11 @@ import {
     PbPageDataSettingsSeo,
     PbPageDataSettingsSocial
 } from "@webiny/app-page-builder/types";
-import Layout from "./Layout";
-import LegacyLayout from "./LegacyLayout";
-import Element from "@webiny/app-page-builder/render/components/Element";
 import WebsiteScripts from "@webiny/app-page-builder/render/components/WebsiteScripts";
-import useResponsiveClassName from "@webiny/app-page-builder/hooks/useResponsiveClassName";
-import DefaultNotFoundPage from "theme/pageBuilder/components/defaultPages/DefaultNotFoundPage";
-import DefaultErrorPage from "theme/pageBuilder/components/defaultPages/DefaultErrorPage";
-import { SettingsQueryResponseData } from "./graphql";
 import { Page } from "@webiny/app-page-builder-elements";
-import { featureFlags } from "@webiny/feature-flags";
+import { Layout } from "./Layout";
+import { SettingsQueryResponseData } from "./graphql";
+import { ErrorPage } from "./ErrorPage";
 
 interface Head {
     favicon?: {
@@ -35,18 +30,9 @@ interface RenderProps {
     settings: SettingsQueryResponseData;
 }
 
-// Doesn't exist in CWP. This is here for legacy testing purposes.
-// @deprecation-warning pb-legacy-rendering-engine
-export const isLegacyRenderingEngine = featureFlags.pbLegacyRenderingEngine === true;
-
 const Render: React.FC<RenderProps> = ({ page, error, settings }) => {
-    const { pageElementRef, responsiveClassName } = useResponsiveClassName();
-
     if (error) {
-        if (error.code === "NOT_FOUND") {
-            return <DefaultNotFoundPage />;
-        }
-        return <DefaultErrorPage error={error} />;
+        return <ErrorPage error={error} />;
     }
 
     if (!page) {
@@ -115,26 +101,9 @@ const Render: React.FC<RenderProps> = ({ page, error, settings }) => {
                 headerTags={settings?.htmlTags?.header}
                 footerTags={settings?.htmlTags?.footer}
             />
-            {isLegacyRenderingEngine ? (
-                <div className={responsiveClassName} ref={pageElementRef}>
-                    <LegacyLayout page={page} settings={settings}>
-                        <Element element={page.content} />
-                    </LegacyLayout>
-                </div>
-            ) : (
-                <Page page={page} layout={Layout} layoutProps={{ settings }} />
-            )}
+            <Page page={page} layout={Layout} layoutProps={{ settings }} />
         </>
     );
-
-    if (isLegacyRenderingEngine) {
-        return (
-            <div className="webiny-pb-page">
-                <ps-tag data-key={"pb-page"} data-value={page.id} />
-                {content}
-            </div>
-        );
-    }
 
     return (
         <>
