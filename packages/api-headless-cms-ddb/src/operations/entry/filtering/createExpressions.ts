@@ -10,9 +10,34 @@ import { transformValue } from "./transform";
 import { CmsEntryFieldFilterPlugin } from "~/plugins/CmsEntryFieldFilterPlugin";
 import { getWhereValues } from "~/operations/entry/filtering/values";
 
-interface ApplyExpressionsParams {
+/**
+ * If there are no filters and there is a single expression with, return it instead of the parent.
+ * There is no point to return nested expressions just for the sake of keeping the where filter structure.
+ */
+const getExpression = (expression: Expression, condition?: "AND" | "OR"): Expression => {
+    if (expression.filters.length === 0 && expression.expressions.length === 1) {
+        const target = expression.expressions[0];
+        if (!condition) {
+            return getExpression(target, condition);
+        }
+        target.condition = condition;
+        return getExpression(target, condition);
+        // if (expression.expressions[0].condition !== expression.condition) {
+        // expression.expressions[0].condition = expression.condition;
+        // }
+        // return getExpression(expression.expressions[0]);
+    }
+
+    return expression;
+};
+
+interface CreateExpressionParams {
     where: Partial<CmsEntryListWhere>;
-    expressions: Expression[];
+    condition: "AND" | "OR";
+}
+
+interface CreateExpressionCb {
+    (params: CreateExpressionParams): Expression;
 }
 
 interface Params {
@@ -21,18 +46,11 @@ interface Params {
     fields: Record<string, Field>;
 }
 
-interface FilterExpression {
+export interface Expression {
+    expressions: Expression[];
     filters: Filter[];
     condition: "AND" | "OR";
-    expressions?: never;
 }
-interface ChildrenExpression {
-    expressions: Expression[];
-    filters?: never;
-    condition: "AND" | "OR";
-}
-
-export type Expression = FilterExpression | ChildrenExpression;
 
 export interface Filter {
     field: Field;
@@ -44,7 +62,7 @@ export interface Filter {
     transformValue: <I = any, O = any>(value: I) => O;
 }
 
-export const createExpressions = (params: Params): Expression[] => {
+export const createExpressions = (params: Params): Expression => {
     const { where, plugins, fields } = params;
     const filterPlugins = getMappedPlugins<ValueFilterPlugin>({
         plugins,
@@ -78,10 +96,12 @@ export const createExpressions = (params: Params): Expression[] => {
         );
     };
 
-    const applyExpressions = (params: ApplyExpressionsParams): void => {
-        const { where, expressions } = params;
-
-        const filters: Filter[] = [];
+    const createExpression: CreateExpressionCb = ({ where, condition }) => {
+        const expression: Expression = {
+            filters: [],
+            expressions: [],
+            condition
+        };
 
         for (const key in where) {
             if (where.hasOwnProperty(key) === false) {
@@ -101,20 +121,19 @@ export const createExpressions = (params: Params): Expression[] => {
              */
             if (key === "AND") {
                 const childWhereList = getWhereValues(value, key);
-                const childExpressions: Expression[] = [];
+                const childExpression: Expression = {
+                    condition: "AND",
+                    filters: [],
+                    expressions: []
+                };
                 for (const childWhere of childWhereList) {
-                    applyExpressions({
+                    const result = createExpression({
                         where: childWhere,
-                        expressions: childExpressions
+                        condition: "AND"
                     });
+                    childExpression.expressions.push(getExpression(result));
                 }
-                if (childExpressions.length > 0) {
-                    // expressions.push(...childExpressions);
-                    expressions.push({
-                        condition: key,
-                        expressions: childExpressions
-                    });
-                }
+                expression.expressions.push(getExpression(childExpression));
                 continue;
             }
             /**
@@ -122,19 +141,20 @@ export const createExpressions = (params: Params): Expression[] => {
              */
             if (key === "OR") {
                 const childWhereList = getWhereValues(value, key);
-                const childExpressions: Expression[] = [];
+
+                const childExpression: Expression = {
+                    condition: "OR",
+                    filters: [],
+                    expressions: []
+                };
                 for (const childWhere of childWhereList) {
-                    applyExpressions({
+                    const result = createExpression({
                         where: childWhere,
-                        expressions: childExpressions
+                        condition: "AND"
                     });
+                    childExpression.expressions.push(getExpression(result));
                 }
-                if (childExpressions.length > 0) {
-                    expressions.push({
-                        expressions: childExpressions,
-                        condition: key
-                    });
-                }
+                expression.expressions.push(getExpression(childExpression, "OR"));
                 continue;
             }
 
@@ -200,24 +220,14 @@ export const createExpressions = (params: Params): Expression[] => {
                 continue;
             }
 
-            filters.push(...(Array.isArray(result) ? result : [result]));
-        }
-        if (filters.length === 0) {
-            return;
+            expression.filters.push(...(Array.isArray(result) ? result : [result]));
         }
 
-        expressions.push({
-            filters,
-            condition: "AND"
-        });
+        return getExpression(expression);
     };
 
-    const expressions: Expression[] = [];
-
-    applyExpressions({
+    return createExpression({
         where,
-        expressions
+        condition: "AND"
     });
-
-    return expressions;
 };
