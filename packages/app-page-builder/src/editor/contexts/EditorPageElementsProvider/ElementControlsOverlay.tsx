@@ -44,11 +44,17 @@ export const ElementControlsOverlay: React.FC<Props> = props => {
             className={isActive ? "active" : ""}
             onClick={() => setActiveElementId(element.id)}
             onMouseEnter={(e: MouseEvent) => {
+                if (isActive) {
+                    return;
+                }
                 e.stopPropagation();
                 const target = e.target as HTMLDivElement;
                 target.classList.add("hover");
             }}
             onMouseLeave={(e: MouseEvent) => {
+                if (isActive) {
+                    return;
+                }
                 e.stopPropagation();
                 const target = e.target as HTMLDivElement;
                 target.classList.remove("hover");

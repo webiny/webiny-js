@@ -4,6 +4,7 @@ import { PageElementsProvider as PbPageElementsProvider } from "@webiny/app-page
 // Attributes modifiers.
 import { createId } from "@webiny/app-page-builder-elements/modifiers/attributes/id";
 import { createClassName } from "@webiny/app-page-builder-elements/modifiers/attributes/className";
+import { createAnimation } from "@webiny/app-page-builder-elements/modifiers/attributes/animation";
 
 // Styles modifiers.
 import { createBackground } from "@webiny/app-page-builder-elements/modifiers/styles/background";
@@ -37,7 +38,8 @@ export const PageElementsProvider: React.FC = ({ children }) => {
     const modifiers = {
         attributes: {
             id: createId(),
-            className: createClassName()
+            className: createClassName(),
+            animation: createAnimation()
         },
         styles: {
             background: createBackground(),

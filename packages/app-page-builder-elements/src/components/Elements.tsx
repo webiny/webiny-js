@@ -3,10 +3,6 @@ import { Element as ElementType } from "~/types";
 import { Element } from "./Element";
 import { useRenderer } from "~/hooks/useRenderer";
 
-export interface ElementsProps {
-    element: ElementType;
-}
-
 // All elements have a unique ID. The only exception are the elements
 // nested in a pre-made block (a block created via the Blocks module).
 // In that case, for every nested element, we make the key by joining:
@@ -22,6 +18,10 @@ const getElementKey = (
     }
     return element.id;
 };
+
+export interface ElementsProps {
+    element: ElementType;
+}
 
 export const Elements: React.FC<ElementsProps> = props => {
     // `Elements` component is used within a renderer, meaning

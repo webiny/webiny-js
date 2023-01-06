@@ -35,7 +35,7 @@ import { createVimeo } from "@webiny/app-page-builder-elements/renderers/embeds/
 // Attributes modifiers.
 import { createId } from "@webiny/app-page-builder-elements/modifiers/attributes/id";
 import { createClassName } from "@webiny/app-page-builder-elements/modifiers/attributes/className";
-import { createDataElementType } from "@webiny/app-page-builder-elements/modifiers/attributes/dataElementType";
+import { createAnimation } from "@webiny/app-page-builder-elements/modifiers/attributes/animation";
 
 // Styles modifiers.
 import { createBackground } from "@webiny/app-page-builder-elements/modifiers/styles/background";
@@ -112,9 +112,9 @@ export const PageElementsProvider: React.FC = ({ children }) => (
     }}
     modifiers={{
       attributes: {
-        dataElementType: createDataElementType(),
         id: createId(),
-        className: createClassName()
+        className: createClassName(),
+        animation: createAnimation()
       },
       styles: {
         background: createBackground(),
