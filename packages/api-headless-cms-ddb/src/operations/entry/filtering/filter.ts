@@ -38,43 +38,38 @@ interface ExecuteExpressionsParams {
 }
 
 const executeExpressions = (params: ExecuteExpressionsParams): boolean => {
-    const { expressions, getCachedValue, condition } = params;
-    if (expressions.length === 0) {
+    const { expressions, getCachedValue, filters, condition } = params;
+    if (expressions.length === 0 && filters.length === 0) {
         return true;
     }
+    /**
+     * Always run filters first as they might trigger an early return.
+     */
+    for (const filter of filters) {
+        const value = getCachedValue(filter);
 
-    for (const expression of expressions) {
-        /**
-         * Case where there are no filters is whe AND / OR condition with child expressions.
-         * So we need to execute all the child expressions.
-         */
-        if (!expression.filters) {
-            const result = executeExpressions({
-                ...expression,
-                getCachedValue
-            });
-            if (result && condition === "OR") {
-                return true;
-            } else if (!result && condition == "AND") {
-                return false;
-            }
-            continue;
+        const result = executeFilter({
+            value,
+            filter
+        });
+        if (result && condition === "OR") {
+            return true;
+        } else if (!result && condition === "AND") {
+            return false;
         }
-        /**
-         * Case where there are filters, we just execute them one by one.
-         */
-        for (const filter of expression.filters) {
-            const value = getCachedValue(filter);
-
-            const result = executeFilter({
-                value,
-                filter
-            });
-            if (result && condition === "OR") {
-                return true;
-            } else if (!result && condition === "AND") {
-                return false;
-            }
+    }
+    /**
+     * Then we move onto expressions, which are basically nested upon nested filters with different conditions.
+     */
+    for (const expression of expressions) {
+        const result = executeExpressions({
+            ...expression,
+            getCachedValue
+        });
+        if (result && condition === "OR") {
+            return true;
+        } else if (!result && condition == "AND") {
+            return false;
         }
     }
     /**
