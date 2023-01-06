@@ -2,7 +2,7 @@ import React from "react";
 import styled from "@emotion/styled";
 import { usePageElements } from "~/hooks/usePageElements";
 import { Renderer, Element } from "~/types";
-import { Theme, StylesObject } from "@webiny/app-page-builder-theme/types";
+import { Theme, StylesObject } from "@webiny/theme/types";
 import { elementDataPropsAreEqual } from "~/utils";
 import { RendererProvider } from "~/contexts/Renderer";
 import { CSSObject } from "@emotion/core";

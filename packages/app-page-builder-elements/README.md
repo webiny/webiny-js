@@ -74,7 +74,7 @@ import { PageElementsProvider as PbPageElementsProvider } from "@webiny/app-page
 // ( ... )
 
 // A theme object. For more info, see:
-// https://github.com/webiny/webiny-js/tree/dev/packages/app-page-builder-theme
+// https://github.com/webiny/webiny-js/tree/dev/packages/theme
 import { theme } from "./theme";
 
 export const PageElementsProvider: React.FC = ({ children }) => (

@@ -11,7 +11,7 @@ import { MenuTreeItem } from "~/admin/views/Menus/types";
 import { SecurityPermission } from "@webiny/app-security/types";
 import { LinkItem } from "@webiny/app-folders/types";
 import { PagesListComponent } from "@webiny/app-page-builder-elements/renderers/pagesList/types";
-import { Theme } from "@webiny/app-page-builder-theme/types";
+import { Theme } from "@webiny/app-theme/types";
 
 export enum PageStatus {
     PUBLISHED = "published",

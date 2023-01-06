@@ -13,7 +13,7 @@ import {
     StylesCallback
 } from "~/types";
 
-import { StylesObject, ThemeBreakpoints } from "@webiny/app-page-builder-theme/types";
+import { StylesObject, ThemeBreakpoints } from "@webiny/theme/types";
 
 let usingPageElementsFlag = false;
 

@@ -21,7 +21,7 @@ import { createVisibility } from "@webiny/app-page-builder-elements/modifiers/st
 import { createWidth } from "@webiny/app-page-builder-elements/modifiers/styles/width";
 
 import { usePageBuilder } from "~/hooks/usePageBuilder";
-import { Theme } from "@webiny/app-page-builder-theme/types";
+import { Theme } from "@webiny/app-theme/types";
 import { plugins } from "@webiny/plugins";
 import { PbEditorPageElementPlugin } from "~/types";
 

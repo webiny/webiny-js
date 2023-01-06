@@ -1,6 +1,6 @@
-# `@webiny/app-page-builder-theme`
-[![](https://img.shields.io/npm/dw/@webiny/app-page-builder-theme.svg)](https://www.npmjs.com/package/@webiny/app-page-builder-theme)
-[![](https://img.shields.io/npm/v/@webiny/app-page-builder-theme.svg)](https://www.npmjs.com/package/@webiny/app-page-builder-theme)
+# `@webiny/theme`
+[![](https://img.shields.io/npm/dw/@webiny/theme.svg)](https://www.npmjs.com/package/@webiny/theme)
+[![](https://img.shields.io/npm/v/@webiny/theme.svg)](https://www.npmjs.com/package/@webiny/theme)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
@@ -18,13 +18,13 @@ A small package that provides theme-related utilities for Webiny's Page Builder 
 ## Installation
 
 ```
-npm install --save @webiny/app-page-builder-theme
+npm install --save @webiny/theme
 ```
 
 Or if you prefer yarn:
 
 ```
-yarn add @webiny/app-page-builder-theme
+yarn add @webiny/theme
 ```
 
 > ℹ️ **NOTE**
@@ -63,7 +63,7 @@ export declare const createTheme: (theme: Theme) => Theme;
 Creates a new theme object.
 
 ```ts
-import { createTheme } from "@webiny/app-page-builder-theme";
+import { createTheme } from "@webiny/theme";
 
 const theme = createTheme({
     breakpoints: {

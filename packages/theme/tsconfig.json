@@ -1,19 +1,13 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
-  "references": [
-    {
-      "path": "../theme"
-    }
-  ],
+  "references": [],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",
     "declarationDir": "./dist",
     "paths": {
-      "~/*": ["./src/*"],
-      "@webiny/theme/*": ["../theme/src/*"],
-      "@webiny/theme": ["../theme/src"]
+      "~/*": ["./src/*"]
     },
     "baseUrl": "."
   }

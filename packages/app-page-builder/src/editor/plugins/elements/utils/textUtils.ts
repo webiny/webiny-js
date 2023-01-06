@@ -2,7 +2,7 @@ import { CoreOptions } from "medium-editor";
 import { plugins } from "@webiny/plugins";
 import { MediumEditorOptions, PbThemePlugin as PbThemePluginType } from "~/types";
 import { isLegacyRenderingEngine } from "~/utils";
-import { PbThemePlugin } from "~/plugins";
+import { ThemePlugin } from "@webiny/app-theme";
 
 export const getMediumEditorOptions = (
     defaultOptions: CoreOptions,
@@ -27,7 +27,7 @@ const getTypographyFromTheme = (type: string): string | undefined => {
         return defaultType.className;
     }
 
-    const [{ theme }] = plugins.byType<PbThemePlugin>(PbThemePlugin.type);
+    const [{ theme }] = plugins.byType<ThemePlugin>(ThemePlugin.type);
     const { typography } = theme.styles;
 
     // We try either `{type}` or `{type}1`. If none found, the theme will be responsible for defining styles.

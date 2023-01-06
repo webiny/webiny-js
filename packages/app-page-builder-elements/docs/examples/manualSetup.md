@@ -52,7 +52,7 @@ import { createVisiblity } from "@webiny/app-page-builder-elements/modifiers/sty
 import { createWidth } from "@webiny/app-page-builder-elements/modifiers/styles/width";
 
 // A theme object. For more info, see:
-// https://github.com/webiny/webiny-js/tree/dev/packages/app-page-builder-theme
+// https://github.com/webiny/webiny-js/tree/dev/packages/theme
 import { theme } from "./theme";
 
 export const PageElementsProvider: React.FC = ({ children }) => (

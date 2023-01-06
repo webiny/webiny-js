@@ -1,4 +1,4 @@
-import { createTheme } from "@webiny/app-page-builder-theme";
+import { createTheme } from "@webiny/app-theme";
 import { CSSObject } from "@emotion/core";
 
 // Breakpoints (desktop, tablet, mobile).

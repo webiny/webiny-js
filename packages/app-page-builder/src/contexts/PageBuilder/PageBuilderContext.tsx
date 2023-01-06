@@ -2,8 +2,8 @@ import * as React from "react";
 import { plugins } from "@webiny/plugins";
 import { DisplayMode, PbTheme, PbThemePlugin as PbThemePluginType } from "~/types";
 import { isLegacyRenderingEngine } from "~/utils";
-import { PbThemePlugin } from "~/plugins";
-import { Theme } from "@webiny/app-page-builder-theme/types";
+import { Theme } from "@webiny/app-theme/types";
+import { ThemePlugin } from "@webiny/app-theme";
 import { PageElementsProvider } from "./PageElementsProvider";
 
 export interface ResponsiveDisplayMode {
@@ -74,8 +74,8 @@ export const PageBuilderProvider: React.FC<PageBuilderProviderProps> = ({ childr
                         const [firstThemePlugin] = plugins.byType<PbThemePluginType>("pb-theme");
                         themePlugin = firstThemePlugin;
                     } else {
-                        const [firstThemePlugin] = plugins.byType<PbThemePlugin>(
-                            PbThemePlugin.type
+                        const [firstThemePlugin] = plugins.byType<ThemePlugin>(
+                            ThemePlugin.type
                         );
                         themePlugin = firstThemePlugin;
                     }

@@ -1,11 +1,13 @@
 import StaticLayout from "./layouts/pages/Static";
 import theme from "./theme";
 
-import { PbThemePlugin, PbPageLayoutPlugin } from "@webiny/app-page-builder";
+// TODO CLEAN!
+import { PbPageLayoutPlugin } from "@webiny/app-page-builder";
+import { ThemePlugin } from "@webiny/app-website";
 import DefaultFormLayout from "./layouts/forms/DefaultFormLayout";
 
 export default () => [
-    new PbThemePlugin(theme),
+    new ThemePlugin(theme),
     new PbPageLayoutPlugin({
         name: "static",
         title: "Static page",

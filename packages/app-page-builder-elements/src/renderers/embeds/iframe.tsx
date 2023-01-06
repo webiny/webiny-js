@@ -1,5 +1,6 @@
 import React from "react";
-import { createRenderer, useRenderer } from "@webiny/app-page-builder-elements";
+import { createRenderer } from "~/createRenderer";
+import { useRenderer } from "~/hooks/useRenderer";
 
 export interface IFrameElementData {
     iframe: {
