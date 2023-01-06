@@ -1,9 +1,9 @@
 import React from "react";
 import { ApolloProvider } from "@apollo/react-components";
 import { BrowserRouter, Routes, Route } from "@webiny/react-router";
+import { Page } from "@webiny/app-website";
 import { PageBuilderProvider } from "@webiny/app-page-builder/contexts/PageBuilder";
-import { createApolloClient } from "./components/apolloClient";
-import Page from "./components/Page";
+import { createApolloClient } from "./apolloClient";
 
 import { CacheProvider } from "@emotion/core";
 import createCache from "@emotion/cache";

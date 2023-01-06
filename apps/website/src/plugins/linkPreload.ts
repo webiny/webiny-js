@@ -1,6 +1,7 @@
 import { ReactRouterOnLinkPlugin } from "@webiny/react-router/types";
 import gql from "graphql-tag";
-import { GET_PUBLISHED_PAGE } from "../components/Page/graphql";
+import { isPrerendering} from "@webiny/app-website";
+import { GET_PUBLISHED_PAGE} from "@webiny/app-website/Page/graphql";
 
 declare global {
     interface Window {
@@ -16,7 +17,7 @@ export default (): ReactRouterOnLinkPlugin => {
         type: "react-router-on-link",
         async onLink({ link: path, apolloClient }) {
             // Only if we're serving a pre-rendered page, we want to activate this feature.
-            if (!window.__PS_RENDER_ID__) {
+            if (isPrerendering()) {
                 return;
             }
 

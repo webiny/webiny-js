@@ -12859,6 +12859,35 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/app-website@^5.33.2, @webiny/app-website@workspace:packages/app-website":
+  version: 0.0.0-use.local
+  resolution: "@webiny/app-website@workspace:packages/app-website"
+  dependencies:
+    "@apollo/react-hooks": ^3.1.5
+    "@babel/cli": ^7.19.3
+    "@babel/core": ^7.19.3
+    "@babel/preset-env": ^7.19.4
+    "@babel/preset-react": ^7.0.0
+    "@babel/preset-typescript": ^7.18.6
+    "@babel/runtime": ^7.19.0
+    "@emotion/core": ^10.0.27
+    "@emotion/styled": ^10.0.17
+    "@webiny/app-page-builder": ^5.33.2
+    "@webiny/app-page-builder-elements": ^5.33.2
+    "@webiny/cli": ^5.33.2
+    "@webiny/plugins": ^5.33.2
+    "@webiny/project-utils": ^5.33.2
+    "@webiny/react-router": ^5.33.2
+    graphql-tag: ^2.12.6
+    react: 17.0.2
+    react-dom: 17.0.2
+    react-helmet: ^6.1.0
+    rimraf: ^3.0.2
+    ttypescript: ^1.5.12
+    typescript: 4.7.4
+  languageName: unknown
+  linkType: soft
+
 "@webiny/app@^5.33.2, @webiny/app@workspace:packages/app":
   version: 0.0.0-use.local
   resolution: "@webiny/app@workspace:packages/app"
@@ -13861,6 +13890,7 @@ __metadata:
     "@webiny/cli": ^5.33.2
     "@webiny/cli-plugin-deploy-pulumi": ^5.33.2
     "@webiny/db-dynamodb": ^5.33.2
+    "@webiny/feature-flags": ^5.33.2
     "@webiny/handler-aws": ^5.33.2
     "@webiny/handler-db": ^5.33.2
     "@webiny/handler-logs": ^5.33.2
@@ -28751,7 +28781,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash@npm:4.17.21, lodash@npm:^4.0.1, lodash@npm:^4.17.10, lodash@npm:^4.17.11, lodash@npm:^4.17.12, lodash@npm:^4.17.14, lodash@npm:^4.17.15, lodash@npm:^4.17.19, lodash@npm:^4.17.20, lodash@npm:^4.17.21, lodash@npm:^4.17.3, lodash@npm:^4.17.4, lodash@npm:^4.17.5, lodash@npm:^4.2.1, lodash@npm:^4.3.0, lodash@npm:^4.4.2, lodash@npm:^4.5.0, lodash@npm:^4.6.2, lodash@npm:~4.17.21, lodash@npm:~>=4.17.21":
+"lodash@npm:4.17.21, lodash@npm:^4.0.1, lodash@npm:^4.17.10, lodash@npm:^4.17.11, lodash@npm:^4.17.12, lodash@npm:^4.17.14, lodash@npm:^4.17.15, lodash@npm:^4.17.19, lodash@npm:^4.17.20, lodash@npm:^4.17.21, lodash@npm:^4.17.3, lodash@npm:^4.17.4, lodash@npm:^4.17.5, lodash@npm:^4.2.1, lodash@npm:^4.3.0, lodash@npm:^4.5.0, lodash@npm:^4.6.2, lodash@npm:~4.17.21, lodash@npm:~>=4.17.21":
   version: 4.17.21
   resolution: "lodash@npm:4.17.21"
   checksum: eb835a2e51d381e561e508ce932ea50a8e5a68f4ebdd771ea240d3048244a8d13658acbd502cd4829768c56f2e16bdd4340b9ea141297d472517b83868e677f7
@@ -38331,7 +38361,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "theme@workspace:apps/theme"
   dependencies:
-    "@apollo/react-components": ^3.1.5
     "@apollo/react-hooks": ^3.1.5
     "@emotion/core": ^10.0.17
     "@emotion/styled": ^10.0.17
@@ -38339,18 +38368,16 @@ __metadata:
     "@types/react-hamburger-menu": ^0.0.4
     "@webiny/app-form-builder": ^5.33.2
     "@webiny/app-page-builder": ^5.33.2
+    "@webiny/app-page-builder-elements": ^5.33.2
     "@webiny/app-page-builder-theme": ^5.33.2
+    "@webiny/app-website": ^5.33.2
     "@webiny/form": ^5.33.2
     "@webiny/react-rich-text-renderer": ^5.33.2
     "@webiny/react-router": ^5.33.2
     "@webiny/validation": ^5.33.2
-    emotion: ^10.0.17
     graphql: ^15.7.2
-    graphql-tag: ^2.12.6
-    lodash: ^4.4.2
     react: 17.0.2
     react-hamburger-menu: ^1.1.1
-    react-helmet: ^6.1.0
   languageName: unknown
   linkType: soft
 
@@ -40253,7 +40280,6 @@ __metadata:
   resolution: "website@workspace:apps/website"
   dependencies:
     "@apollo/react-components": ^3.1.5
-    "@apollo/react-hooks": ^3.1.5
     "@emotion/cache": ^10.0.17
     "@emotion/core": ^10.0.17
     "@types/react": 17.0.39
@@ -40261,9 +40287,8 @@ __metadata:
     "@webiny/app": ^5.33.2
     "@webiny/app-form-builder": ^5.33.2
     "@webiny/app-page-builder": ^5.33.2
-    "@webiny/app-page-builder-elements": ^5.33.2
+    "@webiny/app-website": ^5.33.2
     "@webiny/cli": ^5.33.2
-    "@webiny/feature-flags": ^5.33.2
     "@webiny/plugins": ^5.33.2
     "@webiny/project-utils": ^5.33.2
     "@webiny/react-router": ^5.33.2
@@ -40276,10 +40301,8 @@ __metadata:
     cross-fetch: ^3.0.4
     graphql: ^15.7.2
     graphql-tag: ^2.12.6
-    lodash: ^4.4.2
     react: 17.0.2
     react-dom: 17.0.2
-    react-helmet: ^6.1.0
     regenerator-runtime: ^0.13.5
     theme: ^0.1.0
   languageName: unknown
