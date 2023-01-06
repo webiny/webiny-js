@@ -4,7 +4,7 @@ import WebinyError from "@webiny/error";
 import { PluginsContainer } from "@webiny/plugins";
 import { Field } from "./types";
 import { createFullTextSearch } from "./fullTextSearch";
-import { createExpressions, Expression, Filter } from "./createExpressions";
+import { createExpressions, Expression, ExpressionCondition, Filter } from "./createExpressions";
 import { transformValue } from "./transform";
 import { getValue } from "~/operations/entry/filtering/getValue";
 
@@ -33,11 +33,12 @@ const executeFilter = (params: ExecuteFilterParams) => {
 interface ExecuteExpressionsParams {
     getCachedValue: (filter: Filter) => Promise<any>;
     expressions: Expression[];
-    condition?: Expression["condition"];
+    filters: Filter[];
+    condition: ExpressionCondition;
 }
 
 const executeExpressions = (params: ExecuteExpressionsParams): boolean => {
-    const { expressions, getCachedValue, condition = "AND" } = params;
+    const { expressions, getCachedValue, condition } = params;
     if (expressions.length === 0) {
         return true;
     }
@@ -49,9 +50,8 @@ const executeExpressions = (params: ExecuteExpressionsParams): boolean => {
          */
         if (!expression.filters) {
             const result = executeExpressions({
-                getCachedValue,
-                expressions: expression.expressions,
-                condition: expression.condition
+                ...expression,
+                getCachedValue
             });
             if (result && condition === "OR") {
                 return true;
@@ -103,7 +103,7 @@ export const filter = (params: Params): CmsEntry[] => {
     if (keys.length === 0 && !fullTextSearch) {
         return records;
     }
-    const expressions = createExpressions({
+    const expression = createExpressions({
         plugins,
         where,
         fields
@@ -112,7 +112,11 @@ export const filter = (params: Params): CmsEntry[] => {
     /**
      * No point in going further if there are no expressions to be applied and no full text search to be executed.
      */
-    if (expressions.length === 0 && !fullTextSearch?.term) {
+    if (
+        expression.filters.length === 0 &&
+        expression.expressions.length === 0 &&
+        !fullTextSearch?.term
+    ) {
         return records;
     }
     /**
@@ -148,7 +152,7 @@ export const filter = (params: Params): CmsEntry[] => {
             return plainValue;
         };
 
-        const exprResult = executeExpressions({ getCachedValue, expressions });
+        const exprResult = executeExpressions({ ...expression, getCachedValue });
         /**
          * If expression result is false we do not need to continue further.
          * Also, if there is no full text search defined, just return the expression result.

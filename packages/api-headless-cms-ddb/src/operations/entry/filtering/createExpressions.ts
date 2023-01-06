@@ -14,7 +14,7 @@ import { getWhereValues } from "~/operations/entry/filtering/values";
  * If there are no filters and there is a single expression with, return it instead of the parent.
  * There is no point to return nested expressions just for the sake of keeping the where filter structure.
  */
-const getExpression = (expression: Expression, condition?: "AND" | "OR"): Expression => {
+const getExpression = (expression: Expression, condition?: ExpressionCondition): Expression => {
     if (expression.filters.length === 0 && expression.expressions.length === 1) {
         const target = expression.expressions[0];
         if (!condition) {
@@ -22,10 +22,6 @@ const getExpression = (expression: Expression, condition?: "AND" | "OR"): Expres
         }
         target.condition = condition;
         return getExpression(target, condition);
-        // if (expression.expressions[0].condition !== expression.condition) {
-        // expression.expressions[0].condition = expression.condition;
-        // }
-        // return getExpression(expression.expressions[0]);
     }
 
     return expression;
@@ -33,7 +29,7 @@ const getExpression = (expression: Expression, condition?: "AND" | "OR"): Expres
 
 interface CreateExpressionParams {
     where: Partial<CmsEntryListWhere>;
-    condition: "AND" | "OR";
+    condition: ExpressionCondition;
 }
 
 interface CreateExpressionCb {
@@ -46,10 +42,12 @@ interface Params {
     fields: Record<string, Field>;
 }
 
+export type ExpressionCondition = "AND" | "OR";
+
 export interface Expression {
     expressions: Expression[];
     filters: Filter[];
-    condition: "AND" | "OR";
+    condition: ExpressionCondition;
 }
 
 export interface Filter {

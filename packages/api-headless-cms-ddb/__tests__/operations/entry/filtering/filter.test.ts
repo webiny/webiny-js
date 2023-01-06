@@ -61,30 +61,29 @@ describe("filtering", () => {
              */
             const expressions = createExpressions(createExpressionsParams);
 
-            const expectedExpressions: Expression[] = [
-                {
-                    condition: "AND",
-                    filters: [
-                        {
-                            compareValue: createdOn.toISOString(),
-                            field: expect.objectContaining({
-                                fieldId: "createdOn"
-                            }),
-                            plugin: expect.objectContaining({
-                                _params: {
-                                    matches: expect.any(Function),
-                                    operation: "gte"
-                                },
-                                name: "dynamodb.value.filter.gte"
-                            }),
-                            negate: false,
-                            fieldPathId: "createdOn",
-                            path: "createdOn",
-                            transformValue: expect.any(Function)
-                        }
-                    ]
-                }
-            ];
+            const expectedExpressions: Expression = {
+                condition: "AND",
+                expressions: [],
+                filters: [
+                    {
+                        compareValue: createdOn.toISOString(),
+                        field: expect.objectContaining({
+                            fieldId: "createdOn"
+                        }),
+                        plugin: expect.objectContaining({
+                            _params: {
+                                matches: expect.any(Function),
+                                operation: "gte"
+                            },
+                            name: "dynamodb.value.filter.gte"
+                        }),
+                        negate: false,
+                        fieldPathId: "createdOn",
+                        path: "createdOn",
+                        transformValue: expect.any(Function)
+                    }
+                ]
+            };
             expect(expressions).toEqual(expectedExpressions);
 
             const result = filter({
