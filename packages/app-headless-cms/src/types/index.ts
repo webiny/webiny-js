@@ -8,26 +8,30 @@ import {
     BindComponentProps as BaseBindComponentProps
 } from "@webiny/form";
 import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
-import Label from "./admin/components/ContentEntryForm/Label";
+import Label from "~/admin/components/ContentEntryForm/Label";
 import { SecurityPermission } from "@webiny/app-security/types";
 import { DragSource } from "~/admin/components/FieldEditor/FieldEditorContext";
+import {
+    CmsModelFieldValidator,
+    CmsModelFieldValidatorsGroup,
+    CmsModelFieldValidatorsFactory
+} from "./validation";
+
+import { CmsModelField, CmsModel } from "./model";
+import { CmsCreatedBy } from "~/types/shared";
+
+export * from "./validation";
+export * from "./model";
+export * from "./shared";
 
 interface QueryFieldParams {
     model: CmsModel;
     field: CmsModelField;
 }
 
-export interface CmsEditorFieldValidatorsDefinition {
-    validators: string[];
-    title?: string;
-    description?: string;
-}
+export type CmsEditorFieldTypePlugin = CmsModelFieldTypePlugin;
 
-export interface CmsEditorFieldValidatorsFactory {
-    (field: CmsModelField): string[] | CmsEditorFieldValidatorsDefinition;
-}
-
-export interface CmsEditorFieldTypePlugin extends Plugin {
+export interface CmsModelFieldTypePlugin extends Plugin {
     /**
      * a plugin type
      */
@@ -60,10 +64,7 @@ export interface CmsEditorFieldTypePlugin extends Plugin {
          * ]
          * ```
          */
-        validators?:
-            | string[]
-            | CmsEditorFieldValidatorsDefinition
-            | CmsEditorFieldValidatorsFactory;
+        validators?: string[] | CmsModelFieldValidatorsGroup | CmsModelFieldValidatorsFactory;
         /**
          * A list of available validators when a model field accepts a list (array) of values.
          *
@@ -74,7 +75,7 @@ export interface CmsEditorFieldTypePlugin extends Plugin {
          * ]
          * ```
          */
-        listValidators?: string[] | CmsEditorFieldValidatorsDefinition;
+        listValidators?: string[] | CmsModelFieldValidatorsGroup | CmsModelFieldValidatorsFactory;
         /**
          * An explanation of the field displayed beneath the label.
          *
@@ -292,69 +293,7 @@ export interface CmsDynamicZoneTemplate {
     icon: string;
     fields: CmsModelField[];
     layout: string[][];
-    validation: CmsEditorFieldValidator[];
-}
-
-/**
- * @deprecated Use `CmsModelField` instead.
- */
-export type CmsEditorField<T = unknown> = CmsModelField<T>;
-
-export type CmsModelField<T = unknown> = T & {
-    id: string;
-    type: string;
-    fieldId: CmsEditorFieldId;
-    storageId?: string;
-    label?: string;
-    helpText?: string;
-    placeholderText?: string;
-    validation?: CmsEditorFieldValidator[];
-    listValidation?: CmsEditorFieldValidator[];
-    multipleValues?: boolean;
-    predefinedValues?: CmsEditorFieldPredefinedValues;
-    settings?: {
-        defaultValue?: string | null | undefined;
-        defaultSetValue?: string;
-        type?: string;
-        fields?: CmsModelField<any>[];
-        layout?: string[][];
-        models?: Pick<CmsModel, "modelId" | "name">[];
-        templates?: CmsDynamicZoneTemplate[];
-        imagesOnly?: boolean;
-        [key: string]: any;
-    };
-    renderer: {
-        name: string;
-    };
-    tags?: string[];
-};
-
-export type CmsEditorFieldId = string;
-export type CmsEditorFieldsLayout = CmsEditorFieldId[][];
-
-export interface CmsModel {
-    id: string;
-    group: Pick<CmsGroup, "id" | "name">;
-    description?: string;
-    version: number;
-    layout?: CmsEditorFieldsLayout;
-    fields: CmsModelField[];
-    lockedFields: CmsModelField[];
-    name: string;
-    modelId: string;
-    titleFieldId: string;
-    settings: {
-        [key: string]: any;
-    };
-    status: string;
-    savedOn: string;
-    meta: any;
-    createdBy: CmsCreatedBy;
-    tags: string[];
-    /**
-     * If model is a plugin one (it cannot be changed/deleted)
-     */
-    plugin?: boolean;
+    validation: CmsModelFieldValidator[];
 }
 
 export type CmsContentEntryStatusType = "draft" | "published" | "unpublished";
@@ -388,26 +327,6 @@ export interface CmsContentEntryRevision {
     };
 }
 
-export interface CmsEditorFieldValidator {
-    name: string;
-    message?: string;
-    settings?: any;
-}
-
-export interface CmsEditorFieldValidatorPluginValidator {
-    name: string;
-    label: string;
-    description: string;
-    defaultMessage: string;
-    defaultSettings?: Record<string, any>;
-    renderSettings?: () => React.ReactElement;
-    renderCustomUi?: () => React.ReactElement;
-}
-export interface CmsEditorFieldValidatorPlugin extends Plugin {
-    type: "cms-editor-field-validator";
-    validator: CmsEditorFieldValidatorPluginValidator;
-}
-
 export type CmsEditorContentTab = React.FC<{ activeTab: boolean }>;
 
 // ------------------------------------------------------------------------------------------------------------
@@ -418,58 +337,6 @@ export interface CmsEditorFieldOptionPlugin extends Plugin {
 
 export interface CmsContentDetailsPlugin extends Plugin {
     render: (params: any) => ReactNode;
-}
-
-export interface CmsEditorFieldValidatorPatternPlugin extends Plugin {
-    type: "cms-editor-field-validator-pattern";
-    pattern: {
-        name: string;
-        message: string;
-        label: string;
-    };
-}
-
-export interface CmsFieldValidator {
-    name: string;
-    message?: string;
-    settings?: any;
-}
-
-export interface CmsModelFieldValidatorPlugin<T = any> extends Plugin {
-    type: "cms-model-field-validator";
-    validator: {
-        name: string;
-        validate: (value: T, validator: CmsFieldValidator, field: CmsModelField) => Promise<any>;
-    };
-}
-
-/**
- * @category Plugin
- * @category ContentModelField
- * @category FieldValidation
- */
-export interface CmsModelFieldValidatorPatternPlugin extends Plugin {
-    /**
-     * A plugin type
-     */
-    type: "cms-model-field-validator-pattern";
-    /**
-     * A pattern object for the validator.
-     */
-    pattern: {
-        /**
-         * name of the pattern.
-         */
-        name: string;
-        /**
-         * RegExp of the validator.
-         */
-        regex: string;
-        /**
-         * RegExp flags
-         */
-        flags: string;
-    };
 }
 
 export interface FieldLayoutPosition {
@@ -579,33 +446,7 @@ export interface CmsSecurityPermission extends SecurityPermission {
     own?: boolean;
     pw?: string;
 }
-export interface CmsCreatedBy {
-    id: string;
-    displayName: string;
-    type: string;
-}
-/**
- * @category GraphQL
- * @category Model
- */
-export type CmsEditorContentModel = CmsModel;
-/**
- * @category GraphQL
- * @category Group
- */
-export interface CmsGroup {
-    id: string;
-    name: string;
-    slug: string;
-    icon?: string;
-    description?: string;
-    contentModels: CmsModel[];
-    createdBy: CmsCreatedBy;
-    /**
-     * Tells if this group is a plugin one (cannot be changed/deleted)
-     */
-    plugin?: boolean;
-}
+
 /**
  * @category GraphQL
  * @category Error

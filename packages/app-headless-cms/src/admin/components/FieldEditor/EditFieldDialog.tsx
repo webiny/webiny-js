@@ -151,10 +151,13 @@ const EditFieldDialog: React.FC<EditFieldDialogProps> = props => {
                                         {shadowField.multipleValues ? (
                                             <>
                                                 <ValidationsSection
-                                                    validation={listValidation}
+                                                    validators={listValidation.validators}
                                                     fieldKey={"listValidators"}
-                                                    title={"List validators"}
+                                                    title={
+                                                        listValidation.title || "List validators"
+                                                    }
                                                     description={
+                                                        listValidation.description ||
                                                         "These validators are applied to the entire list of values."
                                                     }
                                                 />
@@ -162,9 +165,13 @@ const EditFieldDialog: React.FC<EditFieldDialogProps> = props => {
                                                 {hasValidators ? (
                                                     <ValidationsSection
                                                         fieldKey={"validators"}
-                                                        validation={individualValidation}
-                                                        title={"Individual value validators"}
+                                                        validators={individualValidation.validators}
+                                                        title={
+                                                            individualValidation.title ||
+                                                            "Individual value validators"
+                                                        }
                                                         description={
+                                                            individualValidation.description ||
                                                             "These validators are applied to each value in the list."
                                                         }
                                                     />

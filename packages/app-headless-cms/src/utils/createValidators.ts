@@ -1,10 +1,10 @@
 import { plugins } from "@webiny/plugins";
-import { CmsModelField, CmsEditorFieldValidator, CmsModelFieldValidatorPlugin } from "~/types";
+import { CmsModelField, CmsModelFieldValidator, CmsModelFieldValidatorPlugin } from "~/types";
 import { Validator } from "@webiny/validation/types";
 
 export const createValidators = (
     field: CmsModelField,
-    validation: CmsEditorFieldValidator[]
+    validation: CmsModelFieldValidator[]
 ): Validator[] => {
     const validatorPlugins = plugins.byType<CmsModelFieldValidatorPlugin>(
         "cms-model-field-validator"
@@ -23,7 +23,11 @@ export const createValidators = (
             let isInvalid;
             let message = item.message;
             try {
-                const result = await validatorPlugin.validator.validate(value, item, field);
+                const result = await validatorPlugin.validator.validate(value, {
+                    validator: item,
+                    field
+                });
+
                 isInvalid = result === false;
             } catch (e) {
                 isInvalid = true;
@@ -33,7 +37,19 @@ export const createValidators = (
             }
 
             if (isInvalid) {
-                throw new Error(message || "Invalid value.");
+                let interpolated = message || "Invalid value.";
+
+                const getVariableValues = validatorPlugin.validator.getVariableValues;
+                if (typeof getVariableValues === "function") {
+                    const variables = getVariableValues({ validator: item });
+
+                    Object.keys(variables).forEach(key => {
+                        const regex = new RegExp(`\{${key}\}`, "g");
+                        interpolated = interpolated.replace(regex, variables[key]);
+                    });
+                }
+
+                throw new Error(interpolated);
             }
         };
         collection.push(validator);
