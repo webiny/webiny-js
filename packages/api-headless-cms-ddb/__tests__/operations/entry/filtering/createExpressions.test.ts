@@ -1080,4 +1080,977 @@ describe("create expressions from where conditions", () => {
 
         expect(result).toEqual(expected);
     });
+
+    it("should convert a simple root level AND and OR into expression", async () => {
+        const result = createExpressions({
+            plugins,
+            fields,
+            where: {
+                price_gte: 100,
+                OR: [
+                    {
+                        title_contains: "some value"
+                    },
+                    {
+                        title_contains: "some other value"
+                    }
+                ]
+            }
+        });
+
+        const expected: Expression = {
+            condition: "AND",
+            filters: [
+                {
+                    fieldPathId: "price",
+                    negate: false,
+                    path: "values.price",
+                    compareValue: 100,
+                    transformValue: expect.any(Function),
+                    plugin: expect.any(Object),
+                    field: expect.any(Object)
+                }
+            ],
+            expressions: [
+                {
+                    condition: "OR",
+                    filters: [],
+                    expressions: [
+                        {
+                            condition: "AND",
+                            expressions: [],
+                            filters: [
+                                {
+                                    fieldPathId: "title",
+                                    negate: false,
+                                    path: "values.title",
+                                    compareValue: "some value",
+                                    transformValue: expect.any(Function),
+                                    plugin: expect.any(Object),
+                                    field: expect.any(Object)
+                                }
+                            ]
+                        },
+                        {
+                            condition: "AND",
+                            expressions: [],
+                            filters: [
+                                {
+                                    fieldPathId: "title",
+                                    negate: false,
+                                    path: "values.title",
+                                    compareValue: "some other value",
+                                    transformValue: expect.any(Function),
+                                    plugin: expect.any(Object),
+                                    field: expect.any(Object)
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        };
+
+        expect(result).toEqual(expected);
+    });
+
+    it("should convert complex OR / AND where into expression", async () => {
+        const rootOrResult = createExpressions({
+            plugins,
+            fields,
+            where: {
+                OR: [
+                    {
+                        title_contains: "some value"
+                    },
+                    {
+                        title_contains: "some other value"
+                    },
+                    {
+                        OR: [
+                            {
+                                title_contains: "some level #3 value",
+                                price_gte: 100
+                            },
+                            {
+                                title_contains: "some level #3.1 value",
+                                OR: [
+                                    {
+                                        price_gte: 110,
+                                        price_lte: 490
+                                    },
+                                    {
+                                        title_contains: "some level #4 value"
+                                    }
+                                ]
+                            }
+                        ],
+                        AND: [
+                            {
+                                price_gte: 100,
+                                price_lte: 500
+                            },
+                            {
+                                isMarried: true,
+                                OR: [
+                                    {
+                                        price_gte: 120,
+                                        price_lte: 480
+                                    },
+                                    {
+                                        title_contains: "some level #4 value"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        });
+
+        const rootOrExpected: Expression = {
+            condition: "OR",
+            filters: [],
+            expressions: [
+                {
+                    condition: "AND",
+                    expressions: [],
+                    filters: [
+                        {
+                            fieldPathId: "title",
+                            negate: false,
+                            path: "values.title",
+                            compareValue: "some value",
+                            transformValue: expect.any(Function),
+                            plugin: expect.any(Object),
+                            field: expect.any(Object)
+                        }
+                    ]
+                },
+                {
+                    condition: "AND",
+                    expressions: [],
+                    filters: [
+                        {
+                            fieldPathId: "title",
+                            negate: false,
+                            path: "values.title",
+                            compareValue: "some other value",
+                            transformValue: expect.any(Function),
+                            plugin: expect.any(Object),
+                            field: expect.any(Object)
+                        }
+                    ]
+                },
+                {
+                    condition: "AND",
+                    filters: [],
+                    expressions: [
+                        {
+                            condition: "OR",
+                            filters: [],
+                            expressions: [
+                                {
+                                    condition: "AND",
+                                    expressions: [],
+                                    filters: [
+                                        {
+                                            fieldPathId: "title",
+                                            negate: false,
+                                            path: "values.title",
+                                            compareValue: "some level #3 value",
+                                            transformValue: expect.any(Function),
+                                            plugin: expect.any(Object),
+                                            field: expect.any(Object)
+                                        },
+                                        {
+                                            fieldPathId: "price",
+                                            negate: false,
+                                            path: "values.price",
+                                            compareValue: 100,
+                                            transformValue: expect.any(Function),
+                                            plugin: expect.any(Object),
+                                            field: expect.any(Object)
+                                        }
+                                    ]
+                                },
+                                {
+                                    condition: "AND",
+                                    filters: [
+                                        {
+                                            fieldPathId: "title",
+                                            negate: false,
+                                            path: "values.title",
+                                            compareValue: "some level #3.1 value",
+                                            transformValue: expect.any(Function),
+                                            plugin: expect.any(Object),
+                                            field: expect.any(Object)
+                                        }
+                                    ],
+                                    expressions: [
+                                        {
+                                            condition: "OR",
+                                            filters: [],
+                                            expressions: [
+                                                {
+                                                    condition: "AND",
+                                                    expressions: [],
+                                                    filters: [
+                                                        {
+                                                            fieldPathId: "price",
+                                                            negate: false,
+                                                            path: "values.price",
+                                                            compareValue: 110,
+                                                            transformValue: expect.any(Function),
+                                                            plugin: expect.any(Object),
+                                                            field: expect.any(Object)
+                                                        },
+                                                        {
+                                                            fieldPathId: "price",
+                                                            negate: false,
+                                                            path: "values.price",
+                                                            compareValue: 490,
+                                                            transformValue: expect.any(Function),
+                                                            plugin: expect.any(Object),
+                                                            field: expect.any(Object)
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    condition: "AND",
+                                                    expressions: [],
+                                                    filters: [
+                                                        {
+                                                            fieldPathId: "title",
+                                                            negate: false,
+                                                            path: "values.title",
+                                                            compareValue: "some level #4 value",
+                                                            transformValue: expect.any(Function),
+                                                            plugin: expect.any(Object),
+                                                            field: expect.any(Object)
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            condition: "AND",
+                            filters: [],
+                            expressions: [
+                                {
+                                    condition: "AND",
+                                    expressions: [],
+                                    filters: [
+                                        {
+                                            fieldPathId: "price",
+                                            negate: false,
+                                            path: "values.price",
+                                            compareValue: 100,
+                                            transformValue: expect.any(Function),
+                                            plugin: expect.any(Object),
+                                            field: expect.any(Object)
+                                        },
+                                        {
+                                            fieldPathId: "price",
+                                            negate: false,
+                                            path: "values.price",
+                                            compareValue: 500,
+                                            transformValue: expect.any(Function),
+                                            plugin: expect.any(Object),
+                                            field: expect.any(Object)
+                                        }
+                                    ]
+                                },
+                                {
+                                    condition: "AND",
+                                    filters: [
+                                        {
+                                            fieldPathId: "isMarried",
+                                            negate: false,
+                                            path: "values.isMarried",
+                                            compareValue: true,
+                                            transformValue: expect.any(Function),
+                                            plugin: expect.any(Object),
+                                            field: expect.any(Object)
+                                        }
+                                    ],
+                                    expressions: [
+                                        {
+                                            condition: "OR",
+                                            filters: [],
+                                            expressions: [
+                                                {
+                                                    condition: "AND",
+                                                    expressions: [],
+                                                    filters: [
+                                                        {
+                                                            fieldPathId: "price",
+                                                            negate: false,
+                                                            path: "values.price",
+                                                            compareValue: 120,
+                                                            transformValue: expect.any(Function),
+                                                            plugin: expect.any(Object),
+                                                            field: expect.any(Object)
+                                                        },
+                                                        {
+                                                            fieldPathId: "price",
+                                                            negate: false,
+                                                            path: "values.price",
+                                                            compareValue: 480,
+                                                            transformValue: expect.any(Function),
+                                                            plugin: expect.any(Object),
+                                                            field: expect.any(Object)
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    condition: "AND",
+                                                    expressions: [],
+                                                    filters: [
+                                                        {
+                                                            fieldPathId: "title",
+                                                            negate: false,
+                                                            path: "values.title",
+                                                            compareValue: "some level #4 value",
+                                                            transformValue: expect.any(Function),
+                                                            plugin: expect.any(Object),
+                                                            field: expect.any(Object)
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        };
+
+        expect(rootOrResult).toEqual(rootOrExpected);
+
+        const rootAndResult = createExpressions({
+            plugins,
+            fields,
+            where: {
+                AND: [
+                    {
+                        title_contains: "some value"
+                    },
+                    {
+                        title_contains: "some other value"
+                    },
+                    {
+                        OR: [
+                            {
+                                title_contains: "some level #3 value",
+                                price_gte: 100
+                            },
+                            {
+                                title_contains: "some level #3.1 value",
+                                OR: [
+                                    {
+                                        price_gte: 110,
+                                        price_lte: 490
+                                    },
+                                    {
+                                        title_contains: "some level #4 value"
+                                    }
+                                ]
+                            }
+                        ],
+                        AND: [
+                            {
+                                price_gte: 100,
+                                price_lte: 500
+                            },
+                            {
+                                isMarried: true,
+                                OR: [
+                                    {
+                                        price_gte: 120,
+                                        price_lte: 480
+                                    },
+                                    {
+                                        title_contains: "some level #4 value"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        });
+
+        const rootAndExpected: Expression = {
+            condition: "AND",
+            filters: [],
+            expressions: [
+                {
+                    condition: "AND",
+                    expressions: [],
+                    filters: [
+                        {
+                            fieldPathId: "title",
+                            negate: false,
+                            path: "values.title",
+                            compareValue: "some value",
+                            transformValue: expect.any(Function),
+                            plugin: expect.any(Object),
+                            field: expect.any(Object)
+                        }
+                    ]
+                },
+                {
+                    condition: "AND",
+                    expressions: [],
+                    filters: [
+                        {
+                            fieldPathId: "title",
+                            negate: false,
+                            path: "values.title",
+                            compareValue: "some other value",
+                            transformValue: expect.any(Function),
+                            plugin: expect.any(Object),
+                            field: expect.any(Object)
+                        }
+                    ]
+                },
+                {
+                    condition: "AND",
+                    filters: [],
+                    expressions: [
+                        {
+                            condition: "OR",
+                            filters: [],
+                            expressions: [
+                                {
+                                    condition: "AND",
+                                    expressions: [],
+                                    filters: [
+                                        {
+                                            fieldPathId: "title",
+                                            negate: false,
+                                            path: "values.title",
+                                            compareValue: "some level #3 value",
+                                            transformValue: expect.any(Function),
+                                            plugin: expect.any(Object),
+                                            field: expect.any(Object)
+                                        },
+                                        {
+                                            fieldPathId: "price",
+                                            negate: false,
+                                            path: "values.price",
+                                            compareValue: 100,
+                                            transformValue: expect.any(Function),
+                                            plugin: expect.any(Object),
+                                            field: expect.any(Object)
+                                        }
+                                    ]
+                                },
+                                {
+                                    condition: "AND",
+                                    filters: [
+                                        {
+                                            fieldPathId: "title",
+                                            negate: false,
+                                            path: "values.title",
+                                            compareValue: "some level #3.1 value",
+                                            transformValue: expect.any(Function),
+                                            plugin: expect.any(Object),
+                                            field: expect.any(Object)
+                                        }
+                                    ],
+                                    expressions: [
+                                        {
+                                            condition: "OR",
+                                            filters: [],
+                                            expressions: [
+                                                {
+                                                    condition: "AND",
+                                                    expressions: [],
+                                                    filters: [
+                                                        {
+                                                            fieldPathId: "price",
+                                                            negate: false,
+                                                            path: "values.price",
+                                                            compareValue: 110,
+                                                            transformValue: expect.any(Function),
+                                                            plugin: expect.any(Object),
+                                                            field: expect.any(Object)
+                                                        },
+                                                        {
+                                                            fieldPathId: "price",
+                                                            negate: false,
+                                                            path: "values.price",
+                                                            compareValue: 490,
+                                                            transformValue: expect.any(Function),
+                                                            plugin: expect.any(Object),
+                                                            field: expect.any(Object)
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    condition: "AND",
+                                                    expressions: [],
+                                                    filters: [
+                                                        {
+                                                            fieldPathId: "title",
+                                                            negate: false,
+                                                            path: "values.title",
+                                                            compareValue: "some level #4 value",
+                                                            transformValue: expect.any(Function),
+                                                            plugin: expect.any(Object),
+                                                            field: expect.any(Object)
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            condition: "AND",
+                            filters: [],
+                            expressions: [
+                                {
+                                    condition: "AND",
+                                    expressions: [],
+                                    filters: [
+                                        {
+                                            fieldPathId: "price",
+                                            negate: false,
+                                            path: "values.price",
+                                            compareValue: 100,
+                                            transformValue: expect.any(Function),
+                                            plugin: expect.any(Object),
+                                            field: expect.any(Object)
+                                        },
+                                        {
+                                            fieldPathId: "price",
+                                            negate: false,
+                                            path: "values.price",
+                                            compareValue: 500,
+                                            transformValue: expect.any(Function),
+                                            plugin: expect.any(Object),
+                                            field: expect.any(Object)
+                                        }
+                                    ]
+                                },
+                                {
+                                    condition: "AND",
+                                    filters: [
+                                        {
+                                            fieldPathId: "isMarried",
+                                            negate: false,
+                                            path: "values.isMarried",
+                                            compareValue: true,
+                                            transformValue: expect.any(Function),
+                                            plugin: expect.any(Object),
+                                            field: expect.any(Object)
+                                        }
+                                    ],
+                                    expressions: [
+                                        {
+                                            condition: "OR",
+                                            filters: [],
+                                            expressions: [
+                                                {
+                                                    condition: "AND",
+                                                    expressions: [],
+                                                    filters: [
+                                                        {
+                                                            fieldPathId: "price",
+                                                            negate: false,
+                                                            path: "values.price",
+                                                            compareValue: 120,
+                                                            transformValue: expect.any(Function),
+                                                            plugin: expect.any(Object),
+                                                            field: expect.any(Object)
+                                                        },
+                                                        {
+                                                            fieldPathId: "price",
+                                                            negate: false,
+                                                            path: "values.price",
+                                                            compareValue: 480,
+                                                            transformValue: expect.any(Function),
+                                                            plugin: expect.any(Object),
+                                                            field: expect.any(Object)
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    condition: "AND",
+                                                    expressions: [],
+                                                    filters: [
+                                                        {
+                                                            fieldPathId: "title",
+                                                            negate: false,
+                                                            path: "values.title",
+                                                            compareValue: "some level #4 value",
+                                                            transformValue: expect.any(Function),
+                                                            plugin: expect.any(Object),
+                                                            field: expect.any(Object)
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        };
+
+        expect(rootAndResult).toEqual(rootAndExpected);
+
+        const rootAndOrResult = createExpressions({
+            plugins,
+            fields,
+            where: {
+                AND: [
+                    {
+                        title_contains: "some value"
+                    },
+                    {
+                        title_contains: "some other value"
+                    },
+                    {
+                        OR: [
+                            {
+                                title_contains: "some level #3 value",
+                                price_gte: 100
+                            },
+                            {
+                                title_contains: "some level #3.1 value",
+                                OR: [
+                                    {
+                                        price_gte: 110,
+                                        price_lte: 490
+                                    },
+                                    {
+                                        title_contains: "some level #4 value"
+                                    }
+                                ]
+                            }
+                        ],
+                        AND: [
+                            {
+                                price_gte: 100,
+                                price_lte: 500
+                            },
+                            {
+                                isMarried: true,
+                                OR: [
+                                    {
+                                        price_gte: 120,
+                                        price_lte: 480
+                                    },
+                                    {
+                                        title_contains: "some level #4 value"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ],
+                OR: [
+                    {
+                        price_gte: 777
+                    },
+                    {
+                        isMarried: false
+                    }
+                ]
+            }
+        });
+
+        const rootAndOrExpected: Expression = {
+            condition: "AND",
+            filters: [],
+            expressions: [
+                {
+                    condition: "AND",
+                    filters: [],
+                    expressions: [
+                        {
+                            condition: "AND",
+                            expressions: [],
+                            filters: [
+                                {
+                                    fieldPathId: "title",
+                                    negate: false,
+                                    path: "values.title",
+                                    compareValue: "some value",
+                                    transformValue: expect.any(Function),
+                                    plugin: expect.any(Object),
+                                    field: expect.any(Object)
+                                }
+                            ]
+                        },
+                        {
+                            condition: "AND",
+                            expressions: [],
+                            filters: [
+                                {
+                                    fieldPathId: "title",
+                                    negate: false,
+                                    path: "values.title",
+                                    compareValue: "some other value",
+                                    transformValue: expect.any(Function),
+                                    plugin: expect.any(Object),
+                                    field: expect.any(Object)
+                                }
+                            ]
+                        },
+                        {
+                            condition: "AND",
+                            filters: [],
+                            expressions: [
+                                {
+                                    condition: "OR",
+                                    filters: [],
+                                    expressions: [
+                                        {
+                                            condition: "AND",
+                                            expressions: [],
+                                            filters: [
+                                                {
+                                                    fieldPathId: "title",
+                                                    negate: false,
+                                                    path: "values.title",
+                                                    compareValue: "some level #3 value",
+                                                    transformValue: expect.any(Function),
+                                                    plugin: expect.any(Object),
+                                                    field: expect.any(Object)
+                                                },
+                                                {
+                                                    fieldPathId: "price",
+                                                    negate: false,
+                                                    path: "values.price",
+                                                    compareValue: 100,
+                                                    transformValue: expect.any(Function),
+                                                    plugin: expect.any(Object),
+                                                    field: expect.any(Object)
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            condition: "AND",
+                                            filters: [
+                                                {
+                                                    fieldPathId: "title",
+                                                    negate: false,
+                                                    path: "values.title",
+                                                    compareValue: "some level #3.1 value",
+                                                    transformValue: expect.any(Function),
+                                                    plugin: expect.any(Object),
+                                                    field: expect.any(Object)
+                                                }
+                                            ],
+                                            expressions: [
+                                                {
+                                                    condition: "OR",
+                                                    filters: [],
+                                                    expressions: [
+                                                        {
+                                                            condition: "AND",
+                                                            expressions: [],
+                                                            filters: [
+                                                                {
+                                                                    fieldPathId: "price",
+                                                                    negate: false,
+                                                                    path: "values.price",
+                                                                    compareValue: 110,
+                                                                    transformValue:
+                                                                        expect.any(Function),
+                                                                    plugin: expect.any(Object),
+                                                                    field: expect.any(Object)
+                                                                },
+                                                                {
+                                                                    fieldPathId: "price",
+                                                                    negate: false,
+                                                                    path: "values.price",
+                                                                    compareValue: 490,
+                                                                    transformValue:
+                                                                        expect.any(Function),
+                                                                    plugin: expect.any(Object),
+                                                                    field: expect.any(Object)
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            condition: "AND",
+                                                            expressions: [],
+                                                            filters: [
+                                                                {
+                                                                    fieldPathId: "title",
+                                                                    negate: false,
+                                                                    path: "values.title",
+                                                                    compareValue:
+                                                                        "some level #4 value",
+                                                                    transformValue:
+                                                                        expect.any(Function),
+                                                                    plugin: expect.any(Object),
+                                                                    field: expect.any(Object)
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    condition: "AND",
+                                    filters: [],
+                                    expressions: [
+                                        {
+                                            condition: "AND",
+                                            expressions: [],
+                                            filters: [
+                                                {
+                                                    fieldPathId: "price",
+                                                    negate: false,
+                                                    path: "values.price",
+                                                    compareValue: 100,
+                                                    transformValue: expect.any(Function),
+                                                    plugin: expect.any(Object),
+                                                    field: expect.any(Object)
+                                                },
+                                                {
+                                                    fieldPathId: "price",
+                                                    negate: false,
+                                                    path: "values.price",
+                                                    compareValue: 500,
+                                                    transformValue: expect.any(Function),
+                                                    plugin: expect.any(Object),
+                                                    field: expect.any(Object)
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            condition: "AND",
+                                            filters: [
+                                                {
+                                                    fieldPathId: "isMarried",
+                                                    negate: false,
+                                                    path: "values.isMarried",
+                                                    compareValue: true,
+                                                    transformValue: expect.any(Function),
+                                                    plugin: expect.any(Object),
+                                                    field: expect.any(Object)
+                                                }
+                                            ],
+                                            expressions: [
+                                                {
+                                                    condition: "OR",
+                                                    filters: [],
+                                                    expressions: [
+                                                        {
+                                                            condition: "AND",
+                                                            expressions: [],
+                                                            filters: [
+                                                                {
+                                                                    fieldPathId: "price",
+                                                                    negate: false,
+                                                                    path: "values.price",
+                                                                    compareValue: 120,
+                                                                    transformValue:
+                                                                        expect.any(Function),
+                                                                    plugin: expect.any(Object),
+                                                                    field: expect.any(Object)
+                                                                },
+                                                                {
+                                                                    fieldPathId: "price",
+                                                                    negate: false,
+                                                                    path: "values.price",
+                                                                    compareValue: 480,
+                                                                    transformValue:
+                                                                        expect.any(Function),
+                                                                    plugin: expect.any(Object),
+                                                                    field: expect.any(Object)
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            condition: "AND",
+                                                            expressions: [],
+                                                            filters: [
+                                                                {
+                                                                    fieldPathId: "title",
+                                                                    negate: false,
+                                                                    path: "values.title",
+                                                                    compareValue:
+                                                                        "some level #4 value",
+                                                                    transformValue:
+                                                                        expect.any(Function),
+                                                                    plugin: expect.any(Object),
+                                                                    field: expect.any(Object)
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    condition: "OR",
+                    filters: [],
+                    expressions: [
+                        {
+                            condition: "AND",
+                            expressions: [],
+                            filters: [
+                                {
+                                    fieldPathId: "price",
+                                    negate: false,
+                                    path: "values.price",
+                                    compareValue: 777,
+                                    transformValue: expect.any(Function),
+                                    plugin: expect.any(Object),
+                                    field: expect.any(Object)
+                                }
+                            ]
+                        },
+                        {
+                            condition: "AND",
+                            expressions: [],
+                            filters: [
+                                {
+                                    fieldPathId: "isMarried",
+                                    negate: false,
+                                    path: "values.isMarried",
+                                    compareValue: false,
+                                    transformValue: expect.any(Function),
+                                    plugin: expect.any(Object),
+                                    field: expect.any(Object)
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        };
+
+        expect(rootAndOrResult).toEqual(rootAndOrExpected);
+    });
 });
