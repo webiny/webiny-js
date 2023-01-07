@@ -11,7 +11,7 @@ import "./ColorPicker.css";
 import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import * as React from "react";
 
-import DropDown from "./DropDown";
+import { DropDown } from "./DropDown";
 import TextInput from "./TextInput";
 
 interface ColorPickerProps {
