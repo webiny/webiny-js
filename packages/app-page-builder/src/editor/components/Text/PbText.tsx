@@ -9,8 +9,7 @@ import { ElementRoot } from "~/render/components/ElementRoot";
 import useUpdateHandlers from "../../plugins/elementSettings/useUpdateHandlers";
 import ReactMediumEditor from "../../components/MediumEditor";
 import { applyFallbackDisplayMode } from "../../plugins/elementSettings/elementSettingsUtils";
-import {CustomRichTextEditor} from "@webiny/lexical-editor";
-import { RichTextEditorTag } from "@webiny/lexical-editor/types";
+import {HeadingEditor, isHeadingTag, ParagraphEditor} from "@webiny/lexical-editor";
 
 export const textClassName = "webiny-pb-base-page-element-style webiny-pb-page-element-text";
 const DATA_NAMESPACE = "data.text";
@@ -70,11 +69,11 @@ const PbText: React.FC<TextElementProps> = ({ elementId, mediumEditorOptions, ro
             element={element}
             className={classNames(textClassName, rootClassName, typography)}
         >
-            <CustomRichTextEditor
-                tag={tagName(tag) as RichTextEditorTag}
-                value={null}
-                onChange={(jsonString) => console.log(jsonString)}
-                toolbarType={"heading"} />
+            {isHeadingTag(tagName(tag)) ?
+                <HeadingEditor value={null} onChange={(json) => {console.log(json)} }/> :
+                <ParagraphEditor value={null} onChange={(json) => {console.log(json)} }/>
+            }
+
 
             {"do not show medium editor" === elementId ? (
                 <ReactMediumEditor

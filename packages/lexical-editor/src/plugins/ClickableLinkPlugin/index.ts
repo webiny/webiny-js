@@ -16,7 +16,7 @@ import { useEffect } from "react";
 
 type LinkFilter = (event: MouseEvent, linkNode: LinkNode) => boolean;
 
-export default function ClickableLinkPlugin({
+export function ClickableLinkPlugin({
     filter,
     newTab = true
 }: {

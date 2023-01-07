@@ -1,17 +1,19 @@
 // presets
-export { ParagraphEditorPreset } from "~/components/EditorPresets/ParagraphEditorPreset";
+
+
 export { ParagraphToolbarPreset } from "~/components/ToolbarPresets/ParagraphToolbarPreset";
-export { HeadingEditorPreset } from "~/components/EditorPresets/HeadingEditorPreset";
 export { HeadingToolbarPreset } from "./components/ToolbarPresets/HeadingToolbarPreset";
 
 // editor
 export { RichTextEditor } from "~/components/Editor/RichTextEditor";
-export { CustomRichTextEditor } from "~/components/Editor/CustomRichTextEditor";
+export { HeadingEditor } from "~/components/Editor/HeadingEditor";
+export { ParagraphEditor } from "~/components/Editor/ParagraphEditor";
+
 // composition
 export  { AddToolbarAction } from "~/components/ToolbarComposable/AddToolbarAction";
-export { AddRichTextEditor } from "~/components/EditorComposable/AddRichTextEditor";
+export { AddRichTextEditorPlugin } from "~/components/EditorComposable/AddRichTextEditorPlugin";
 // utils
-export { isEditorSupportedTag, editorSupportedTags } from "~/utils/htmlTags";
+export { isHeadingTag, isEditorSupportedTag, editorSupportedTags } from "~/utils/htmlTags";
 export { getEmptyEditorStateJSONString } from "~/utils/getEmptyEditorStateJSONString";
 //types
 export * as types from "./types";

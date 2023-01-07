@@ -16,7 +16,7 @@ import { MarkNode } from "@lexical/mark";
 import { OverflowNode } from "@lexical/overflow";
 import { HeadingNode, QuoteNode } from "@lexical/rich-text";
 
-const WebinyNodes: Array<Klass<LexicalNode>> = [
+export const WebinyNodes: Array<Klass<LexicalNode>> = [
     HeadingNode,
     ListNode,
     ListItemNode,
@@ -29,5 +29,3 @@ const WebinyNodes: Array<Klass<LexicalNode>> = [
     OverflowNode,
     MarkNode
 ];
-
-export default WebinyNodes;

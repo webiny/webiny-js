@@ -202,7 +202,7 @@ const useToolbar: FC<useToolbarProps> = ({
     );
 };
 
-interface ToolbarProps {
+export interface ToolbarProps {
     type: ToolbarType;
     anchorElem: HTMLElement;
     children?: React.ReactNode;

@@ -10,7 +10,7 @@ import type { EditorThemeClasses } from "lexical";
 
 import "./webinyLexicalTheme.css";
 
-const theme: EditorThemeClasses = {
+export const theme: EditorThemeClasses = {
     characterLimit: "PlaygroundEditorTheme__characterLimit",
     code: "PlaygroundEditorTheme__code",
     codeHighlight: {
@@ -108,4 +108,3 @@ const theme: EditorThemeClasses = {
     }
 };
 
-export default theme;
