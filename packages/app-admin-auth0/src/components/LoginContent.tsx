@@ -21,9 +21,9 @@ export const LoginContent = makeComposable("LoginContent", () => {
             ) : (
                 <>
                     <Title>
-                        <h1>
-                            <Typography use="headline4">Sign In</Typography>
-                        </h1>
+                        <Typography tag={"h1"} use={"headline4"}>
+                            Sign In
+                        </Typography>
                     </Title>
                     <div className={alignCenter}>
                         <Typography use={"body1"}>

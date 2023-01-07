@@ -13,7 +13,7 @@ export const createAuth0 = (config: CreateAuth0Config) => {
 
     return [
         createAuthenticator({
-            issuer: config.issuer,
+            domain: config.domain,
             getIdentity: config.getIdentity
         }),
         createGroupAuthorizer({

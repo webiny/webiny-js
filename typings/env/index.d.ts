@@ -48,6 +48,18 @@ declare namespace NodeJS {
         ELASTIC_SEARCH_ENDPOINT?: string;
         EVENT_BUS?: string;
         /**
+         * Okta
+         */
+        OKTA_ISSUER?: string;
+        REACT_APP_OKTA_ISSUER?: string;
+        /**
+         * Auth0
+         */
+        AUTH0_DOMAIN?: string;
+        AUTH0_CLIENT_ID?: string;
+        REACT_APP_AUTH0_DOMAIN?: string;
+        REACT_APP_AUTH0_CLIENT_ID?: string;
+        /**
          * api-mailer
          */
         WEBINY_MAILER_HOST?: string;

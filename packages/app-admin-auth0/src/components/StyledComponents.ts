@@ -49,7 +49,7 @@ export const Footer = styled("div")({
 
 export const Title = styled("div")({
     textAlign: "center",
-    margin: "10px 25px"
+    marginBottom: "10px"
 });
 
 export const alignCenter = css({

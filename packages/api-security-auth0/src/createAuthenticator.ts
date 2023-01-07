@@ -11,8 +11,8 @@ const isJwt = (token: string) => token.split(".").length === 3;
 type Context = SecurityContext;
 
 export interface AuthenticatorConfig {
-    // Auth0 issuer endpoint
-    issuer: string;
+    // Auth0 domain endpoint
+    domain: string;
     // Create an identity object using the verified idToken
     getIdentity(params: { token: { [key: string]: any } }): SecurityIdentity;
 }
@@ -25,10 +25,10 @@ type WithKid<T> = T & {
 
 export const createAuthenticator = (config: AuthenticatorConfig) => {
     const getJWKs = async (): Promise<WithKid<jwkToPem.JWK>[]> => {
-        const key = config.issuer;
+        const key = config.domain;
 
         if (!jwksCache.has(key)) {
-            const response = await fetch(`${config.issuer}/.well-known/jwks.json`).then(res =>
+            const response = await fetch(`${config.domain}/.well-known/jwks.json`).then(res =>
                 res.json()
             );
             jwksCache.set(key, response.keys);
