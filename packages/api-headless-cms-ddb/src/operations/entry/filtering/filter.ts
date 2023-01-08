@@ -14,12 +14,8 @@ interface ExecuteFilterParams {
 }
 
 const executeFilter = (params: ExecuteFilterParams) => {
-    const { value: plainValue, filter } = params;
+    const { value, filter } = params;
 
-    const value = transformValue({
-        value: plainValue,
-        transform: filter.transformValue
-    });
     const matched = filter.plugin.matches({
         value,
         compareValue: filter.compareValue
@@ -52,11 +48,18 @@ const executeExpressions = (params: ExecuteExpressionsParams): boolean => {
             value,
             filter
         });
-        if (result && condition === "OR") {
-            return true;
-        } else if (!result && condition === "AND") {
+        /**
+         * Filters are ALWAYS executed as an AND.
+         * So if even one is false, everything false
+         */
+        if (!result) {
             return false;
         }
+        // if (result && condition === "OR") {
+        //     return true;
+        // } else if (!result && condition === "AND") {
+        //     return false;
+        // }
     }
     /**
      * Then we move onto expressions, which are basically nested upon nested filters with different conditions.
@@ -137,14 +140,20 @@ export const filter = (params: Params): CmsEntry[] => {
     return records.filter(record => {
         const cachedValues: Record<string, any> = {};
 
-        const getCachedValue = ({ path }: Filter) => {
+        const getCachedValue = (filter: Filter) => {
+            const { path } = filter;
             if (cachedValues[path] !== undefined) {
                 return cachedValues[path];
             }
             const plainValue = getValue(record, path);
 
-            cachedValues[path] = plainValue;
-            return plainValue;
+            const rawValue = transformValue({
+                value: plainValue,
+                transform: filter.transformValue
+            });
+
+            cachedValues[path] = rawValue;
+            return rawValue;
         };
 
         const exprResult = executeExpressions({ ...expression, getCachedValue });
