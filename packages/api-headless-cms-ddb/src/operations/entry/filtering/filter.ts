@@ -50,16 +50,11 @@ const executeExpressions = (params: ExecuteExpressionsParams): boolean => {
         });
         /**
          * Filters are ALWAYS executed as an AND.
-         * So if even one is false, everything false
+         * So if even one is false, everything false.
          */
         if (!result) {
             return false;
         }
-        // if (result && condition === "OR") {
-        //     return true;
-        // } else if (!result && condition === "AND") {
-        //     return false;
-        // }
     }
     /**
      * Then we move onto expressions, which are basically nested upon nested filters with different conditions.

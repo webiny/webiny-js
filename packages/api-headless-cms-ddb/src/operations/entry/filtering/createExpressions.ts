@@ -10,23 +10,6 @@ import { transformValue } from "./transform";
 import { CmsEntryFieldFilterPlugin } from "~/plugins/CmsEntryFieldFilterPlugin";
 import { getWhereValues } from "~/operations/entry/filtering/values";
 
-/**
- * If there are no filters and there is a single expression with, return it instead of the parent.
- * There is no point to return nested expressions just for the sake of keeping the where filter structure.
- */
-const getExpression = (expression: Expression, condition?: ExpressionCondition): Expression => {
-    if (expression.filters.length === 0 && expression.expressions.length === 1) {
-        const target = expression.expressions[0];
-        if (!condition) {
-            return getExpression(target, condition);
-        }
-        target.condition = condition;
-        return getExpression(target, condition);
-    }
-
-    return expression;
-};
-
 interface CreateExpressionParams {
     where: Partial<CmsEntryListWhere>;
     condition: ExpressionCondition;
@@ -129,9 +112,9 @@ export const createExpressions = (params: Params): Expression => {
                         where: childWhere,
                         condition: "AND"
                     });
-                    childExpression.expressions.push(getExpression(result));
+                    childExpression.expressions.push(result);
                 }
-                expression.expressions.push(getExpression(childExpression));
+                expression.expressions.push(childExpression);
                 continue;
             }
             /**
@@ -150,9 +133,9 @@ export const createExpressions = (params: Params): Expression => {
                         where: childWhere,
                         condition: "AND"
                     });
-                    childExpression.expressions.push(getExpression(result));
+                    childExpression.expressions.push(result);
                 }
-                expression.expressions.push(getExpression(childExpression, "OR"));
+                expression.expressions.push(childExpression);
                 continue;
             }
 
@@ -221,11 +204,19 @@ export const createExpressions = (params: Params): Expression => {
             expression.filters.push(...(Array.isArray(result) ? result : [result]));
         }
 
-        return getExpression(expression);
+        return expression;
     };
 
-    return createExpression({
+    const expression = createExpression({
         where,
         condition: "AND"
     });
+    /**
+     * If the first expression has no filters and has only one expression, put that expression as main one.
+     * This will mostly be used when having an OR condition as the single expression in the root level of the where
+     */
+    if (expression.filters.length > 0 || expression.expressions.length !== 1) {
+        return expression;
+    }
+    return expression.expressions[0];
 };
