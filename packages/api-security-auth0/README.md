@@ -9,15 +9,15 @@ In `.env` file, add your Auth0 variables:
 
 ```yaml
 # Auth0 variables for the API.
-AUTH0_ISSUER=https://dev-12345678.us.auth0.com
+AUTH0_DOMAIN=https://dev-12345678.us.auth0.com
 AUTH0_CLIENT_ID=111111111111111
 
 # Auth0 variables for React apps (webpack will pick this up).
-REACT_APP_AUTH0_ISSUER=https://dev-12345678.us.auth0.com
+REACT_APP_AUTH0_DOMAIN=https://dev-12345678.us.auth0.com
 REACT_APP_AUTH0_CLIENT_ID=111111111111111
 ```
 
-Action to add custom claims:
+Auth0 Action to add custom claims:
 
 ```js
 /**
