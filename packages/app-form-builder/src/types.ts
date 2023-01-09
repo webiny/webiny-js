@@ -275,7 +275,7 @@ export type FormRenderPropsType<T = Record<string, any>> = {
     formData: FbFormModel;
 };
 
-export type FormLayoutComponent = (props: FormRenderPropsType) => React.ReactNode;
+export type FormLayoutComponent = React.ComponentType<FormRenderPropsType>;
 
 export interface FormComponentPropsType {
     preview?: boolean;

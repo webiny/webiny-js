@@ -23,7 +23,7 @@ const PeForm = createForm({
         logFormView: createLogFormViewDataLoader(dataLoadersConfig)
     },
     formLayoutComponents: () => {
-        const registeredPlugins = plugins.byType<FbFormLayoutPlugin>("form-layout");
+        const registeredPlugins = plugins.byType<FbFormLayoutPlugin>(FbFormLayoutPlugin.type);
 
         return registeredPlugins.map(plugin => {
             return {

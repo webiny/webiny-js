@@ -27,6 +27,22 @@ export interface FormDataField {
     };
 }
 
+export interface FormDataCreatedBy {
+    id: string;
+    displayName: string;
+    type: string;
+}
+
+export interface FormDataRevision {
+    id: string;
+    name: string;
+    version: number;
+    published: boolean;
+    status: string;
+    savedOn: string;
+    createdBy: FormDataCreatedBy;
+}
+
 export interface FormData {
     id: string;
     version: number;
@@ -38,11 +54,13 @@ export interface FormData {
     settings: any;
     status: string;
     savedOn: string;
+    revisions: FormDataRevision[];
     overallStats: {
         submissions: number;
         views: number;
         conversionRate: number;
     };
+    createdBy: FormDataCreatedBy;
     triggers: Record<string, any>;
 }
 

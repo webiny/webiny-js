@@ -7,7 +7,6 @@ import { Element } from "@webiny/app-page-builder-elements/types";
 
 interface FormProps {
     element: PbEditorElement;
-    isActive: boolean;
 }
 
 const FormElementComponent: React.FC<FormProps> = props => {
