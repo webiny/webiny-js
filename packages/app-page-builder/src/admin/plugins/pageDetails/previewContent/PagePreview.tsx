@@ -20,7 +20,7 @@ const webinyZoomStyles = css`
 const pageInnerWrapper = css`
     overflow-y: scroll;
     overflow-x: hidden;
-    height: calc(100vh - 165px);
+    height: calc(100vh - 230px);
 
     .webiny-pb-page-document {
         transform: scale(var(--webiny-pb-page-preview-scale));
