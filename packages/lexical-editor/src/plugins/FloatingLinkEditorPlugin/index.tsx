@@ -93,6 +93,11 @@ function FloatingLinkEditor({
         return true;
     }, [anchorElem, editor]);
 
+    const removeLink = () => {
+        editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
+        setEditMode(false);
+    }
+
     useEffect(() => {
         const scrollerElem = anchorElem.parentElement;
 
@@ -197,7 +202,7 @@ function FloatingLinkEditor({
                             tabIndex={0}
                             onMouseDown={event => event.preventDefault()}
                             onClick={() => {
-                                setEditMode(true);
+                                removeLink();
                             }}
                         />
                     </div>

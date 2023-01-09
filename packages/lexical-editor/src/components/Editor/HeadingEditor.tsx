@@ -6,13 +6,12 @@ import {LinkPlugin} from "@lexical/react/LexicalLinkPlugin";
 import {ClickableLinkPlugin} from "~/plugins/ClickableLinkPlugin";
 import {FloatingLinkEditorPlugin} from "~/plugins/FloatingLinkEditorPlugin";
 
-
 interface HeadingEditorProps  {
     value: EditorStateJSONString | null;
     onChange?: (editorState: EditorStateJSONString) => void;
 }
 
-const HeadingEditor: React.FC<HeadingEditorProps> = (props) => {
+export const HeadingEditor: React.FC<HeadingEditorProps> = (props) => {
     return (
         <RichTextEditor toolbar={<HeadingToolbar />} tag={"h1"} placeholder={"Enter your heading text here..."} {...props} >
             <LinkPlugin />
@@ -21,5 +20,3 @@ const HeadingEditor: React.FC<HeadingEditorProps> = (props) => {
         </RichTextEditor>
     );
 };
-
-export { HeadingEditor };

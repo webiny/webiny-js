@@ -1,3 +1,6 @@
+// context
+export { RichTextEditorContextProps } from "~/context/RichTextEditorContext";
+export { RichTextEditorContext } from "~/context/RichTextEditorContext";
 // UI elements
 export { Divider } from "~/ui/Divider";
 export { DropDownItem } from "~/ui/DropDown";

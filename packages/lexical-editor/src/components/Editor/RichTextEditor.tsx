@@ -14,6 +14,7 @@ import {RichTextPlugin} from "@lexical/react/LexicalRichTextPlugin";
 import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
 import { makeComposable } from "@webiny/react-composition";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
+import {RichTextEditorProvider} from "~/context/RichTextEditorContext";
 
 export interface RichTextEditorProps  {
 
@@ -64,28 +65,29 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({ toolbar, onChange, 
     }
 
     return (
-        <LexicalComposer initialConfig={initialConfig}>
-            <div ref={scrollRef}>
-                <OnChangePlugin onChange={handleOnChange} />
-                <AutoFocusPlugin />
-                <ClearEditorPlugin />
-                {children}
-                <RichTextPlugin
-                    contentEditable={
-                        <div className="editor-scroller">
-                            <div className="editor" ref={onRef}>
-                                <ContentEditable />
+
+            <LexicalComposer initialConfig={initialConfig}>
+                <div ref={scrollRef}>
+                    <OnChangePlugin onChange={handleOnChange} />
+                    <AutoFocusPlugin />
+                    <ClearEditorPlugin />
+                    {children}
+                    <RichTextPlugin
+                        contentEditable={
+                            <div className="editor-scroller">
+                                <div className="editor" ref={onRef}>
+                                    <ContentEditable />
+                                </div>
                             </div>
-                        </div>
-                    }
-                    placeholder={placeholderElem}
-                    ErrorBoundary={LexicalErrorBoundary}
-                />
-                {floatingAnchorElem && (
-                    toolbar
-                )}
-            </div>
-        </LexicalComposer>
+                        }
+                        placeholder={placeholderElem}
+                        ErrorBoundary={LexicalErrorBoundary}
+                    />
+                    {floatingAnchorElem && (
+                        toolbar
+                    )}
+                </div>
+            </LexicalComposer>
     );
 }
 
@@ -95,6 +97,10 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({ toolbar, onChange, 
 export const RichTextEditor = makeComposable<RichTextEditorProps>(
     "RichTextEditor",
     (props): JSX.Element | null => {
-       return <BaseRichTextEditor {...props} />
+       return (
+           <RichTextEditorProvider>
+               <BaseRichTextEditor {...props} />
+           </RichTextEditorProvider>
+       );
     }
 );

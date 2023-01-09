@@ -6,6 +6,7 @@ import {LinkPlugin} from "@lexical/react/LexicalLinkPlugin";
 import {FloatingLinkEditorPlugin} from "~/plugins/FloatingLinkEditorPlugin";
 import {ClickableLinkPlugin} from "~/plugins/ClickableLinkPlugin";
 import {ParagraphToolbar} from "~/components/Toolbar/ParagraphToolbar";
+import {ListPlugin} from "@lexical/react/LexicalListPlugin";
 
 interface ParagraphLexicalEditorProps {
     value: EditorStateJSONString | null;
@@ -19,6 +20,7 @@ const ParagraphEditor: React.FC<ParagraphLexicalEditorProps> = (props) => {
             <CodeHighlightPlugin/>
             <ClickableLinkPlugin />
             <FloatingLinkEditorPlugin anchorElem={document.body} />
+            <ListPlugin />
         </RichTextEditor>
     );
 };

@@ -5,7 +5,7 @@
   z-index: 10;
   max-width: 400px;
   width: 100%;
-  height: 57px;
+  height: 48px;
   opacity: 0;
   background-color: #fff;
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
@@ -53,6 +53,20 @@
 }
 
 .link-editor .link-input .link-unlink {
+  background-image: url(../../images/icons/unlink_icon.svg);
+  background-size: 18px;
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 35px;
+  vertical-align: -0.25em;
+  position: absolute;
+  right: 5px;
+  top: 0;
+  bottom: 0;
+  cursor: pointer;
+}
+
+.link-editor .link-input .link-edit {
   background-image: url(../../images/icons/pencil-fill.svg);
   background-size: 16px;
   background-position: center;
@@ -60,7 +74,7 @@
   width: 35px;
   vertical-align: -0.25em;
   position: absolute;
-  right: 36px;
+  right: 35px;
   top: 0;
   bottom: 0;
   cursor: pointer;

@@ -1,7 +1,7 @@
 // @ts-ignore
 
 import { makeComposable } from "@webiny/react-composition";
-import React, { FC, useCallback, useEffect, useRef, useState } from "react";
+import React, {FC, useCallback, useContext, useEffect, useRef } from "react";
 import { ToolbarType } from "~/types";
 import {
     $getSelection,
@@ -20,6 +20,7 @@ import { $isCodeHighlightNode } from "@lexical/code";
 import { createPortal } from "react-dom";
 import "./Toolbar.css";
 import {$isLinkNode} from "@lexical/link";
+import {RichTextEditorContext, RichTextEditorContextProps} from "~/context/RichTextEditorContext";
 
 interface FloatingToolbarProps {
     type: ToolbarType;
@@ -52,7 +53,7 @@ const FloatingToolbar: FC<FloatingToolbarProps> = ({ children, anchorElem, edito
             }
 
         }
-        console.log(isLink);
+
         const rootElement = editor.getRootElement();
         if (
             selection !== null &&
@@ -131,7 +132,8 @@ const useToolbar: FC<useToolbarProps> = ({
     type,
     children
 }): JSX.Element | null => {
-    const [isText, setIsText] = useState(false);
+    // const [isText, setIsText] = useState(false);
+    const { nodeIsText, setNodeIsText  } = useContext<RichTextEditorContextProps>(RichTextEditorContext);
 
     const updatePopup = useCallback(() => {
         editor.getEditorState().read(() => {
@@ -149,7 +151,7 @@ const useToolbar: FC<useToolbarProps> = ({
                     rootElement === null ||
                     !rootElement.contains(nativeSelection.anchorNode))
             ) {
-                setIsText(false);
+                setNodeIsText(false);
                 return;
             }
 
@@ -163,9 +165,9 @@ const useToolbar: FC<useToolbarProps> = ({
                 !$isCodeHighlightNode(selection.anchor.getNode()) &&
                 selection.getTextContent() !== ""
             ) {
-                setIsText($isTextNode(node));
+                setNodeIsText($isTextNode(node));
             } else {
-                setIsText(false);
+                setNodeIsText(false);
             }
         });
     }, [editor]);
@@ -184,13 +186,13 @@ const useToolbar: FC<useToolbarProps> = ({
             }),
             editor.registerRootListener(() => {
                 if (editor.getRootElement() === null) {
-                    setIsText(false);
+                    setNodeIsText(false);
                 }
             })
         );
     }, [editor, updatePopup]);
 
-    if (!isText) {
+    if (!nodeIsText) {
         return null;
     }
 

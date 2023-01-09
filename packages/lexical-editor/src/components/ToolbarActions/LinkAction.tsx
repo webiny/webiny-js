@@ -1,8 +1,9 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import React, { useCallback, useEffect, useState } from "react";
+import React, {useCallback, useContext, useEffect, useState} from "react";
 import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
 import { getSelectedNode } from "~/utils/getSelectedNode";
 import { $getSelection, $isRangeSelection } from "lexical";
+import {RichTextEditorContext, RichTextEditorContextProps} from "~/context/RichTextEditorContext";
 
 /**
  * Toolbar action. User can convert selected text in clickble link.
@@ -12,10 +13,12 @@ import { $getSelection, $isRangeSelection } from "lexical";
 export const LinkAction = () => {
     const [editor] = useLexicalComposerContext();
     const [isLink, setIsLink] = useState(false);
+    const { setNodeIsText  } = useContext<RichTextEditorContextProps>(RichTextEditorContext);
 
     const insertLink = useCallback(() => {
         if (!isLink) {
             editor.dispatchCommand(TOGGLE_LINK_COMMAND, "https://");
+            setNodeIsText(false);
         } else {
             editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
         }
