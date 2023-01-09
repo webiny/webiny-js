@@ -1018,6 +1018,15 @@ export interface OnGroupBeforeCreateTopicParams {
 export interface OnGroupAfterCreateTopicParams {
     group: CmsGroup;
 }
+/**
+ * @category CmsGroup
+ * @category Topic
+ */
+export interface OnGroupCreateErrorTopicParams {
+    input: CmsGroupCreateInput;
+    group: CmsGroup;
+    error: Error;
+}
 
 /**
  * @category CmsGroup
@@ -1036,6 +1045,16 @@ export interface OnGroupAfterUpdateTopicParams {
     original: CmsGroup;
     group: CmsGroup;
 }
+/**
+ * @category CmsGroup
+ * @category Topic
+ */
+export interface OnGroupUpdateErrorTopicParams {
+    input: CmsGroupUpdateInput;
+    original: CmsGroup;
+    group: CmsGroup;
+    error: Error;
+}
 
 /**
  * @category CmsGroup
@@ -1051,6 +1070,14 @@ export interface OnGroupBeforeDeleteTopicParams {
  */
 export interface OnGroupAfterDeleteTopicParams {
     group: CmsGroup;
+}
+/**
+ * @category CmsGroup
+ * @category Topic
+ */
+export interface OnGroupDeleteErrorTopicParams {
+    group: CmsGroup;
+    error: Error;
 }
 
 /**
@@ -1116,10 +1143,13 @@ export interface CmsGroupContext {
      */
     onGroupBeforeCreate: Topic<OnGroupBeforeCreateTopicParams>;
     onGroupAfterCreate: Topic<OnGroupAfterCreateTopicParams>;
+    onGroupCreateError: Topic<OnGroupCreateErrorTopicParams>;
     onGroupBeforeUpdate: Topic<OnGroupBeforeUpdateTopicParams>;
     onGroupAfterUpdate: Topic<OnGroupAfterUpdateTopicParams>;
+    onGroupUpdateError: Topic<OnGroupUpdateErrorTopicParams>;
     onGroupBeforeDelete: Topic<OnGroupBeforeDeleteTopicParams>;
     onGroupAfterDelete: Topic<OnGroupAfterDeleteTopicParams>;
+    onGroupDeleteError: Topic<OnGroupDeleteErrorTopicParams>;
 }
 
 /**
@@ -1479,6 +1509,9 @@ export interface CmsModelManager {
     delete: (id: string) => Promise<void>;
 }
 
+/**
+ * Create
+ */
 export interface OnModelBeforeCreateTopicParams {
     input: CmsModelCreateInput;
     model: CmsModel;
@@ -1487,6 +1520,15 @@ export interface OnModelAfterCreateTopicParams {
     input: CmsModelCreateInput;
     model: CmsModel;
 }
+export interface OnModelCreateErrorTopicParams {
+    input: CmsModelCreateInput;
+    model: CmsModel;
+    error: Error;
+}
+
+/**
+ * Create From / Clone
+ */
 export interface OnModelBeforeCreateFromTopicParams {
     input: CmsModelCreateInput;
     original: CmsModel;
@@ -1497,6 +1539,16 @@ export interface OnModelAfterCreateFromTopicParams {
     original: CmsModel;
     model: CmsModel;
 }
+export interface OnModelCreateFromErrorParams {
+    input: CmsModelCreateInput;
+    original: CmsModel;
+    model: CmsModel;
+    error: Error;
+}
+
+/**
+ * Update
+ */
 export interface OnModelBeforeUpdateTopicParams {
     input: CmsModelUpdateInput;
     original: CmsModel;
@@ -1507,17 +1559,36 @@ export interface OnModelAfterUpdateTopicParams {
     original: CmsModel;
     model: CmsModel;
 }
+export interface OnModelUpdateErrorTopicParams {
+    input: CmsModelUpdateInput;
+    original: CmsModel;
+    model: CmsModel;
+    error: Error;
+}
+/**
+ * Delete
+ */
 export interface OnModelBeforeDeleteTopicParams {
     model: CmsModel;
 }
 export interface OnModelAfterDeleteTopicParams {
     model: CmsModel;
 }
+export interface OnModelDeleteErrorTopicParams {
+    model: CmsModel;
+    error: Error;
+}
 
+/**
+ * Initialize
+ */
 export interface OnModelInitializeParams {
     model: CmsModel;
 }
 
+/**
+ *
+ */
 export interface CmsModelUpdateDirectParams {
     model: CmsModel;
     original: CmsModel;
@@ -1626,12 +1697,16 @@ export interface CmsModelContext {
      */
     onModelBeforeCreate: Topic<OnModelBeforeCreateTopicParams>;
     onModelAfterCreate: Topic<OnModelAfterCreateTopicParams>;
+    onModelCreateError: Topic<OnModelCreateErrorTopicParams>;
     onModelBeforeCreateFrom: Topic<OnModelBeforeCreateFromTopicParams>;
     onModelAfterCreateFrom: Topic<OnModelAfterCreateFromTopicParams>;
+    onModelCreateFromError: Topic<OnModelCreateFromErrorParams>;
     onModelBeforeUpdate: Topic<OnModelBeforeUpdateTopicParams>;
     onModelAfterUpdate: Topic<OnModelAfterUpdateTopicParams>;
+    onModelUpdateError: Topic<OnModelUpdateErrorTopicParams>;
     onModelBeforeDelete: Topic<OnModelBeforeDeleteTopicParams>;
     onModelAfterDelete: Topic<OnModelAfterDeleteTopicParams>;
+    onModelDeleteError: Topic<OnModelDeleteErrorTopicParams>;
     onModelInitialize: Topic<OnModelInitializeParams>;
 }
 
@@ -1829,6 +1904,7 @@ export interface OnEntryRevisionAfterCreateTopicParams {
 export interface OnEntryCreateRevisionErrorTopicParams {
     error: Error;
     input: CreateFromCmsEntryInput;
+    original: CmsEntry;
     entry: CmsEntry;
     model: CmsModel;
 }

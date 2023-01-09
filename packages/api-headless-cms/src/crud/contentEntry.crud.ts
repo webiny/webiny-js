@@ -249,13 +249,17 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
     const { plugins } = context;
 
-    // create
+    /**
+     * Create
+     */
     const onEntryBeforeCreate =
         createTopic<OnEntryBeforeCreateTopicParams>("cms.onEntryBeforeCreate");
     const onEntryAfterCreate = createTopic<OnEntryAfterCreateTopicParams>("cms.onEntryAfterCreate");
     const onEntryCreateError = createTopic<OnEntryCreateErrorTopicParams>("cms.onEntryCreateError");
 
-    // create revision
+    /**
+     * Create new revision
+     */
     const onEntryBeforeCreateRevision = createTopic<OnEntryRevisionBeforeCreateTopicParams>(
         "cms.onEntryBeforeCreateRevision"
     );
@@ -266,13 +270,17 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         "cms.onEntryCreateRevisionError"
     );
 
-    // update
+    /**
+     * Update
+     */
     const onEntryBeforeUpdate =
         createTopic<OnEntryBeforeUpdateTopicParams>("cms.onEntryBeforeUpdate");
     const onEntryAfterUpdate = createTopic<OnEntryAfterUpdateTopicParams>("cms.onEntryAfterUpdate");
     const onEntryUpdateError = createTopic<OnEntryUpdateErrorTopicParams>("cms.onEntryUpdateError");
 
-    // publish
+    /**
+     * Publish
+     */
     const onEntryBeforePublish = createTopic<OnEntryBeforePublishTopicParams>(
         "cms.onEntryBeforePublish"
     );
@@ -282,7 +290,9 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     const onEntryPublishError =
         createTopic<OnEntryPublishErrorTopicParams>("cms.onEntryPublishError");
 
-    // unpublish
+    /**
+     * Unpublish
+     */
     const onEntryBeforeUnpublish = createTopic<OnEntryBeforeUnpublishTopicParams>(
         "cms.onEntryBeforeUnpublish"
     );
@@ -293,7 +303,9 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         "cms.onEntryUnpublishError"
     );
 
-    // delete
+    /**
+     * Delete
+     */
     const onEntryBeforeDelete =
         createTopic<OnEntryBeforeDeleteTopicParams>("cms.onEntryBeforeDelete");
     const onEntryAfterDelete = createTopic<OnEntryAfterDeleteTopicParams>("cms.onEntryAfterDelete");
@@ -414,31 +426,45 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         onBeforeEntryList: onEntryBeforeList,
         /**
          * Released in 5.34.0
+         *
+         * Create
          */
         onEntryBeforeCreate,
         onEntryAfterCreate,
         onEntryCreateError,
-
+        /**
+         * Create revision
+         */
         onEntryRevisionBeforeCreate: onEntryBeforeCreateRevision,
         onEntryRevisionAfterCreate,
         onEntryRevisionCreateError: onEntryCreateRevisionError,
-
+        /**
+         * Update
+         */
         onEntryBeforeUpdate,
         onEntryAfterUpdate,
         onEntryUpdateError,
-
+        /**
+         * Delete whole entry
+         */
         onEntryBeforeDelete,
         onEntryAfterDelete,
         onEntryDeleteError,
-
+        /**
+         * Delete entry revision
+         */
         onEntryRevisionBeforeDelete,
         onEntryRevisionAfterDelete,
         onEntryRevisionDeleteError,
-
+        /**
+         * Publish
+         */
         onEntryBeforePublish,
         onEntryAfterPublish,
         onEntryPublishError,
-
+        /**
+         * Unpublish
+         */
         onEntryBeforeUnpublish,
         onEntryAfterUnpublish,
         onEntryUnpublishError,
@@ -489,7 +515,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             return entries.filter(entry => validateOwnership(context, permission, entry));
         },
         /**
-         * Get latest revisions by entry IDs.
+         * Get the latest revisions by entry IDs.
          */
         async getLatestEntriesByIds(initialModel: CmsModel, ids: string[]) {
             const permission = await checkEntryPermissions({ rwd: "r" });
@@ -880,6 +906,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             } catch (ex) {
                 await onEntryCreateRevisionError.publish({
                     entry,
+                    original: originalEntry,
                     model,
                     input,
                     error: ex
@@ -1021,6 +1048,10 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 );
             }
         },
+        /**
+         * Method used internally. Not documented and should not be used in users systems.
+         * @internal
+         */
         async republishEntry(initialModel, id) {
             await checkEntryPermissions({ rwd: "w" });
             await checkModelAccess(context, initialModel);
