@@ -134,7 +134,7 @@ describe("create system and model fields", () => {
         };
         const result = createFields({
             plugins,
-            model: testModel
+            fields: testModel.fields
         });
 
         expect(result).toEqual(expectedSystemFields);
@@ -143,7 +143,7 @@ describe("create system and model fields", () => {
     it("should create system fields and model fields all the nested fields", async () => {
         const result = createFields({
             plugins,
-            model
+            fields: model.fields
         });
 
         const expected: ExpectedFields = {
