@@ -10,7 +10,7 @@ import { ReactComponent as HomeIcon } from "~/admin/assets/round-home-24px.svg";
 import { ReactComponent as DuplicateIcon } from "~/editor/assets/icons/round-queue-24px.svg";
 import { ListItemGraphic } from "@webiny/ui/List";
 import { MenuItem, Menu } from "@webiny/ui/Menu";
-import { CREATE_PAGE, UPDATE_PAGE } from "~/admin/graphql/pages";
+import { DUPLICATE_PAGE } from "~/admin/graphql/pages";
 import * as GQLCache from "~/admin/views/Pages/cache";
 import { usePageBuilderSettings } from "~/admin/hooks/usePageBuilderSettings";
 import { useSiteStatus } from "~/admin/hooks/useSiteStatus";
@@ -83,32 +83,19 @@ const PageOptionsMenu: React.FC<PageOptionsMenuProps> = props => {
 
     const handleDuplicateClick = useCallback(async () => {
         try {
-            const { data } = await client.mutate({
-                mutation: CREATE_PAGE,
-                variables: { category: page.category.slug }
-            });
-
             await client.mutate({
-                mutation: UPDATE_PAGE,
-                variables: {
-                    id: data.pageBuilder.createPage.data.id,
-                    data: {
-                        title: `(Copy) ${page.title}`,
-                        path: `${page.path}-copy`,
-                        content: page.content,
-                        settings: page.settings
-                    }
-                },
+                mutation: DUPLICATE_PAGE,
+                variables: { id: page.id },
                 update(cache, { data }) {
-                    if (data.pageBuilder.updatePage.error) {
+                    if (data.pageBuilder.duplicatePage.error) {
                         return;
                     }
 
-                    GQLCache.addPageToListCache(cache, data.pageBuilder.updatePage.data);
+                    GQLCache.addPageToListCache(cache, data.pageBuilder.duplicatePage.data);
                     showSnackbar(`Duplicated "${page.title}".`);
                     history.push(
                         `/page-builder/pages?id=${encodeURIComponent(
-                            data.pageBuilder.updatePage.data.id
+                            data.pageBuilder.duplicatePage.data.id
                         )}`
                     );
                 }
