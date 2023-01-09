@@ -9,8 +9,9 @@ import { Cell } from "./DefaultFormLayout/Cell";
 import { Field } from "./DefaultFormLayout/Field";
 import { SuccessMessage } from "./DefaultFormLayout/SuccessMessage";
 import { SubmitButton } from "./DefaultFormLayout/SubmitButton";
-import { TermsOfServiceSection } from "./DefaultFormLayout/TermsOfServiceSection";
 import { FieldMessage } from "./DefaultFormLayout/fields/components/FieldMessage";
+import { TermsOfServiceSection } from "./DefaultFormLayout/TermsOfServiceSection";
+import { ReCaptchaSection } from "./DefaultFormLayout/ReCaptchaSection";
 
 import theme from "../../theme";
 
@@ -101,12 +102,8 @@ const DefaultFormLayout: FormLayoutComponent = ({
                         </Row>
                     ))}
 
-                    {/*
-                        At the bottom of the Form, we render the terms of service,
-                        the reCAPTCHA field, and the submit button.
-                    */}
                     <TermsOfServiceSection component={TermsOfService} />
-                    {renderReCaptcha(Bind)}
+                    <ReCaptchaSection component={ReCaptcha} />
 
                     <SubmitButton onClick={submit} loading={loading}>
                         {formData.settings.submitButtonLabel || "Submit"}

@@ -87,7 +87,7 @@ export type FormLayoutComponentProps<T = any> = {
 
 export type FormLayoutComponent = React.ComponentType<FormLayoutComponentProps>;
 
-interface ReCaptchaChildrenFunction {
+export interface ReCaptchaChildrenFunction {
     ({ errorMessage }: { errorMessage: string }): React.ReactNode;
 }
 
