@@ -1,5 +1,5 @@
 import React, { ReactElement } from "react";
-import { FolderTree } from "@webiny/app-folders";
+import { FolderTree } from "@webiny/app-aco";
 
 import { usePageViewNavigation } from "~/hooks/usePageViewNavigation";
 

@@ -3,6 +3,12 @@
   "include": ["src"],
   "references": [
     {
+      "path": "../../../packages/api-aco/tsconfig.build.json"
+    },
+    {
+      "path": "../../../packages/api-aco-so-ddb/tsconfig.build.json"
+    },
+    {
       "path": "../../../packages/api-admin-users-cognito/tsconfig.build.json"
     },
     {
@@ -19,12 +25,6 @@
     },
     {
       "path": "../../../packages/api-file-manager-s3/tsconfig.build.json"
-    },
-    {
-      "path": "../../../packages/api-folders/tsconfig.build.json"
-    },
-    {
-      "path": "../../../packages/api-folders-so-ddb/tsconfig.build.json"
     },
     {
       "path": "../../../packages/api-form-builder/tsconfig.build.json"
@@ -108,6 +108,10 @@
   "compilerOptions": {
     "paths": {
       "~/*": ["./src/*"],
+      "@webiny/api-aco/*": ["../../../packages/api-aco/src/*"],
+      "@webiny/api-aco": ["../../../packages/api-aco/src"],
+      "@webiny/api-aco-so-ddb/*": ["../../../packages/api-aco-so-ddb/src/*"],
+      "@webiny/api-aco-so-ddb": ["../../../packages/api-aco-so-ddb/src"],
       "@webiny/api-admin-users-cognito/*": ["../../../packages/api-admin-users-cognito/src/*"],
       "@webiny/api-admin-users-cognito": ["../../../packages/api-admin-users-cognito/src"],
       "@webiny/api-admin-users-cognito-so-ddb/*": [
@@ -124,10 +128,6 @@
       "@webiny/api-file-manager-ddb": ["../../../packages/api-file-manager-ddb/src"],
       "@webiny/api-file-manager-s3/*": ["../../../packages/api-file-manager-s3/src/*"],
       "@webiny/api-file-manager-s3": ["../../../packages/api-file-manager-s3/src"],
-      "@webiny/api-folders/*": ["../../../packages/api-folders/src/*"],
-      "@webiny/api-folders": ["../../../packages/api-folders/src"],
-      "@webiny/api-folders-so-ddb/*": ["../../../packages/api-folders-so-ddb/src/*"],
-      "@webiny/api-folders-so-ddb": ["../../../packages/api-folders-so-ddb/src"],
       "@webiny/api-form-builder/*": ["../../../packages/api-form-builder/src/*"],
       "@webiny/api-form-builder": ["../../../packages/api-form-builder/src"],
       "@webiny/api-form-builder-so-ddb/*": ["../../../packages/api-form-builder-so-ddb/src/*"],
