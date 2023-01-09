@@ -156,6 +156,7 @@ export const createHandler = (params: CreateHandlerParams) => {
      *
      * https://github.com/fastify/fastify-cookie
      */
+    // @ts-ignore
     app.register(fastifyCookie, {
         parseOptions: {} // options for parsing cookies
     });
@@ -164,6 +165,7 @@ export const createHandler = (params: CreateHandlerParams) => {
      *
      * https://github.com/fastify/fastify-compress
      */
+    // @ts-ignore
     app.register(fastifyCompress, {
         global: true,
         threshold: 1024,
