@@ -695,9 +695,9 @@ export const createEntriesStorageOperations = (
                 gte: " "
             }
         };
-        let records = [];
+        let storageEntries: CmsStorageEntry[] = [];
         try {
-            records = await queryAll(queryAllParams);
+            storageEntries = await queryAll<CmsStorageEntry>(queryAllParams);
         } catch (ex) {
             throw new WebinyError(ex.message, "QUERY_ENTRIES_ERROR", {
                 error: ex,
@@ -705,7 +705,7 @@ export const createEntriesStorageOperations = (
                 options: queryAllParams.options
             });
         }
-        if (records.length === 0) {
+        if (storageEntries.length === 0) {
             return {
                 hasMoreItems: false,
                 totalCount: 0,
@@ -724,24 +724,41 @@ export const createEntriesStorageOperations = (
          */
         const modelFields = createFields({
             plugins,
-            model
+            fields: model.fields
         });
 
+        const fromStorage = createStorageTransformCallable(model);
+        /**
+         * Let's transform records from storage ones to regular ones, so we do not need to do it later.
+         *
+         * This is always being done, but at least its in parallel.
+         */
+        const records = await Promise.all(
+            storageEntries.map(async storageEntry => {
+                const entry = convertFromStorageEntry({
+                    storageEntry,
+                    model
+                });
+
+                for (const field of model.fields) {
+                    entry.values[field.fieldId] = await fromStorage(
+                        field,
+                        entry.values[field.fieldId]
+                    );
+                }
+
+                return entry as CmsEntry;
+            })
+        );
         /**
          * Filter the read items via the code.
          * It will build the filters out of the where input and transform the values it is using.
          */
-        const filteredItems = await filter({
-            items: records.map(record => {
-                return convertFromStorageEntry({
-                    storageEntry: record,
-                    model
-                });
-            }),
+        const filteredItems = filter({
+            items: records,
             where,
             plugins,
             fields: modelFields,
-            fromStorage: createStorageTransformCallable(model),
             fullTextSearch: {
                 term: search,
                 fields: fields || []

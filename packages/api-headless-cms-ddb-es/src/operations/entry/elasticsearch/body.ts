@@ -10,6 +10,7 @@ import { createBodyModifierPluginList } from "./plugins/bodyModifier";
 import { createElasticsearchSort } from "./sort";
 import { PrimitiveValue, SearchBody, BoolQueryConfig } from "@webiny/api-elasticsearch/types";
 import { createExecFiltering } from "./filtering";
+import { assignMinimumShouldMatchToQuery } from "./assignMinimumShouldMatchToQuery";
 
 interface Params {
     plugins: PluginsContainer;
@@ -110,13 +111,10 @@ export const createElasticsearchBody = ({ plugins, model, params }: Params): Sea
         should: query.should.length > 0 ? query.should : undefined,
         filter: query.filter.length > 0 ? query.filter : undefined
     };
-    if (
-        Array.isArray(boolQuery.should) &&
-        boolQuery.should.length > 1 &&
-        !boolQuery.minimum_should_match
-    ) {
-        boolQuery.minimum_should_match = 1;
-    }
+
+    assignMinimumShouldMatchToQuery({
+        query: boolQuery
+    });
 
     const body: SearchBody = {
         query: {

@@ -255,9 +255,6 @@ describe("Content entries", () => {
             }
         ]);
 
-        // await new Promise(resolve => {
-        //     setTimeout(resolve, 5000);
-        // });
         /**
          * Exact entries queries.
          */

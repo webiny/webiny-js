@@ -4,7 +4,6 @@ import { createEntriesFactory } from "./product/entries";
 import { createCategoryFactory } from "./product/category";
 import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
 import { Product, ProductCategory } from "../types";
-import { getIt } from "./it";
 import { createGetProduct } from "./product/getProductFactory";
 
 describe("complex product conditional filtering", () => {
@@ -24,8 +23,6 @@ describe("complex product conditional filtering", () => {
     let category: ProductCategory;
     let products: Product[];
     let getProduct: ReturnType<typeof createGetProduct>;
-
-    const it = getIt(categoryManager.storageOperations.name);
 
     beforeEach(async () => {
         await init();
