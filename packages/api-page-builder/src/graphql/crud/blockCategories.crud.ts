@@ -94,7 +94,7 @@ export const createBlockCategoriesCrud = (
                 }
             };
 
-            if (auth === false) {
+            if (!auth) {
                 return await storageOperations.blockCategories.get(params);
             }
 

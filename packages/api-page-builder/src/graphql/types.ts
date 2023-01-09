@@ -770,14 +770,21 @@ export interface OnAfterPageBlockDeleteTopicParams {
     pageBlock: PageBlock;
 }
 
+export type PageBlockCreateInput = Omit<
+    PageBlock,
+    "id" | "tenant" | "locale" | "createdBy" | "createdOn"
+>;
+
+export type PageBlockUpdateInput = Partial<PageBlockCreateInput>;
+
 /**
  * @category PageBlocks
  */
 export interface PageBlocksCrud {
     getPageBlock(id: string): Promise<PageBlock | null>;
     listPageBlocks(params?: ListPageBlocksParams): Promise<PageBlock[]>;
-    createPageBlock(data: Record<string, any>): Promise<PageBlock>;
-    updatePageBlock(id: string, data: Record<string, any>): Promise<PageBlock>;
+    createPageBlock(data: PageBlockCreateInput): Promise<PageBlock>;
+    updatePageBlock(id: string, data: PageBlockUpdateInput): Promise<PageBlock>;
     deletePageBlock(id: string): Promise<PageBlock>;
     resolvePageBlocks(page: Page): Promise<any>;
 

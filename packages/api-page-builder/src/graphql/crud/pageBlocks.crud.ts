@@ -236,12 +236,10 @@ export const createPageBlocksCrud = (params: CreatePageBlocksCrudParams): PageBl
             const updateDataModel = new UpdateDataModel().populate(input);
             await updateDataModel.validate();
 
-            if (input.hasOwnProperty("blockCategory")) {
+            if (input.blockCategory) {
                 const blockCategory = await this.getBlockCategory(input.blockCategory);
                 if (!blockCategory) {
-                    throw new NotFoundError(
-                        `Cannot update page block because failed to find such block category.`
-                    );
+                    throw new NotFoundError(`Requested page block category doesn't exist.`);
                 }
             }
 
