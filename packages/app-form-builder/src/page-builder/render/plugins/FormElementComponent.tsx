@@ -10,7 +10,7 @@ interface FormProps {
     isActive: boolean;
 }
 
-const Form: React.FC<FormProps> = props => {
+const FormElementComponent: React.FC<FormProps> = props => {
     if (isLegacyRenderingEngine) {
         return <PbForm {...props} />;
     }
@@ -19,4 +19,5 @@ const Form: React.FC<FormProps> = props => {
     return <PeForm element={element as Element} {...rest} />;
 };
 
-export default Form;
+export default FormElementComponent;
+

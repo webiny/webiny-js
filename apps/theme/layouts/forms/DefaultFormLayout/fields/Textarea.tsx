@@ -12,7 +12,6 @@ interface TextareaProps {
 }
 
 const StyledTextarea = styled.textarea`
-    font-size: 1rem;
     border: 1px solid ${theme.styles.colors.color4};
     background-color: ${theme.styles.colors.color4};
     width: 100%;
@@ -20,6 +19,7 @@ const StyledTextarea = styled.textarea`
     border-radius: ${theme.styles.borderRadius};
     box-sizing: border-box;
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    ${theme.styles.typography.paragraph1};
 
     &:focus {
         border-color: ${theme.styles.colors.color2};

@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Form, BindComponent } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import { FormLayoutComponent } from "@webiny/app-form-builder/types";
-import { RichTextRenderer } from "@webiny/react-rich-text-renderer";
 import styled from "@emotion/styled";
 
 import { Row } from "./DefaultFormLayout/Row";
@@ -10,6 +9,7 @@ import { Cell } from "./DefaultFormLayout/Cell";
 import { Field } from "./DefaultFormLayout/Field";
 import { SuccessMessage } from "./DefaultFormLayout/SuccessMessage";
 import { SubmitButton } from "./DefaultFormLayout/SubmitButton";
+import { TermsOfServiceSection } from "./DefaultFormLayout/TermsOfServiceSection";
 import { FieldMessage } from "./DefaultFormLayout/fields/components/FieldMessage";
 
 import theme from "../../theme";
@@ -81,53 +81,6 @@ const DefaultFormLayout: FormLayoutComponent = ({
         );
     };
 
-    /**
-     * Renders the Terms of Service checkbox - which forces the user to agree to the terms
-     * before the form is submitted.
-     */
-    const renderTermsOfService = (Bind: BindComponent) => {
-        return (
-            <TermsOfService>
-                {({ message, errorMessage, onChange }) => (
-                    <div className="webiny-fb-form-tos">
-                        <Bind
-                            name={"tosAccepted"}
-                            validators={validation.create("required")}
-                            afterChange={onChange}
-                        >
-                            {({ onChange, value, validation }) => (
-                                <div className="webiny-fb-form-field webiny-fb-form-field--checkbox">
-                                    <div className="webiny-fb-form-field__checkbox-group">
-                                        <div className="webiny-fb-form-field__checkbox">
-                                            <input
-                                                className="webiny-fb-form-field__checkbox-input"
-                                                type={"checkbox"}
-                                                name="webiny-tos-checkbox"
-                                                id="webiny-tos-checkbox"
-                                                checked={Boolean(value)}
-                                                onChange={() => onChange(!value)}
-                                            />
-                                            <label
-                                                htmlFor={"webiny-tos-checkbox"}
-                                                className="webiny-fb-form-field__checkbox-label"
-                                            >
-                                                <RichTextRenderer data={message} />
-                                            </label>
-                                        </div>
-                                    </div>
-                                    <FieldMessage
-                                        isValid={validation.isValid}
-                                        errorMessage={errorMessage}
-                                    />
-                                </div>
-                            )}
-                        </Bind>
-                    </div>
-                )}
-            </TermsOfService>
-        );
-    };
-
     if (formSuccess) {
         return <SuccessMessage formData={formData} />;
     }
@@ -152,7 +105,7 @@ const DefaultFormLayout: FormLayoutComponent = ({
                         At the bottom of the Form, we render the terms of service,
                         the reCAPTCHA field, and the submit button.
                     */}
-                    {renderTermsOfService(Bind)}
+                    <TermsOfService>{props => <TermsOfServiceSection {...props} />}</TermsOfService>
                     {renderReCaptcha(Bind)}
 
                     <SubmitButton onClick={submit} loading={loading}>

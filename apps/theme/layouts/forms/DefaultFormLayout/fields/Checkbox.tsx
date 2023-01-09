@@ -7,17 +7,15 @@ import { FieldLabel } from "./components/FieldLabel";
 import styled from "@emotion/styled";
 import theme from "../../../../theme";
 
-const CheckboxGroup = styled.div`
+export const CheckboxGroup = styled.div`
     align-items: center;
     display: flex;
     margin: 5px 50px 5px 2px;
     width: 100%;
 `;
 
-const CheckboxButton = styled.input`
-    font-size: 1.5rem;
+export const CheckboxButton = styled.input`
     margin-left: 0;
-    line-height: 100%;
     background-color: ${theme.styles.colors.color4};
     min-width: 25px;
     width: 25px;
@@ -36,7 +34,6 @@ const CheckboxButton = styled.input`
     }
 
     & + label {
-        line-height: 100%;
         margin-left: 10px;
         padding-top: 2px;
     }
@@ -109,4 +106,3 @@ export const CheckboxField: React.FC<CheckboxProps> = ({ field }) => {
         </Field>
     );
 };
-

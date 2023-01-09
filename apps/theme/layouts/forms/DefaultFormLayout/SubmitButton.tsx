@@ -5,7 +5,14 @@ import theme from "./../../../theme";
 
 export const Wrapper = styled.div([
     theme.styles.elements.button.primary,
-    { ".button-body": { width: "100%" } }
+    {
+        ".button-body": {
+            width: "100%",
+            "&:disabled": {
+                opacity: 0.5
+            }
+        }
+    }
 ]);
 
 interface Props {

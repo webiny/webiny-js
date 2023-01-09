@@ -1,40 +1,34 @@
-import { plugins } from "@webiny/plugins";
-import { cloneDeep, get } from "lodash";
-import React, { useEffect, useRef, useMemo } from "react";
-import { useApolloClient } from "@apollo/react-hooks";
-import { createReCaptchaComponent, createTermsOfServiceComponent } from "./components";
+import React, { useEffect, useRef } from "react";
+import { createReCaptchaComponent, createTermsOfServiceComponent } from "./RenderForm/components";
 import {
     createFormSubmission,
     handleFormTriggers,
-    onFormMounted,
     reCaptchaEnabled,
-    termsOfServiceEnabled
-} from "./functions";
+    termsOfServiceEnabled,
+    onFormMounted
+} from "./RenderForm/functions";
 
 import {
-    FormRenderPropsType,
-    FbFormRenderComponentProps,
-    FormSubmitResponseType,
-    FbFormSubmissionData,
-    FbFormFieldValidatorPlugin,
-    FbFormLayoutPlugin as FbFormLayoutPluginType,
-    FbFormModelField,
-    FormRenderFbFormModelField,
-    FbFormModel,
-    FbFormLayout
-} from "~/types";
-import { PbThemePlugin } from "@webiny/app-page-builder/types";
-import { isLegacyRenderingEngine } from "~/utils";
-import { FbFormLayoutPlugin } from "~/plugins";
+    FormLayoutComponent as FormLayoutComponentType,
+    FormData,
+    FormDataField,
+    RenderFormComponentDataField,
+    FormSubmission,
+    FormSubmissionResponse,
+    FormLayoutComponentProps,
+    CreateFormParams,
+    FormDataFieldsLayout,
+    FormSubmissionFieldValues,
+    CreateFormParamsFormLayoutComponent
+} from "./types";
 
 declare global {
     // eslint-disable-next-line
     namespace JSX {
         interface IntrinsicElements {
-            // @ts-ignore
             "ps-tag": {
-                class?: string;
-                id?: string;
+                "data-key": string;
+                "data-value": string;
             };
         }
     }
@@ -44,57 +38,67 @@ interface FieldValidator {
     (value: string): Promise<boolean>;
 }
 
-const FormRender: React.FC<FbFormRenderComponentProps> = props => {
-    const theme = useMemo(
-        () => Object.assign({}, ...plugins.byType<PbThemePlugin>("pb-theme").map(pl => pl.theme)),
-        []
-    );
+export interface FormRenderProps {
+    createFormParams: CreateFormParams;
+    formData: FormData | null;
+    loading: boolean;
+}
 
-    const client = useApolloClient();
-    const data = props.data || ({} as FbFormModel);
-
-    useEffect((): void => {
-        if (!data.id) {
-            return;
-        }
-        onFormMounted({
-            preview: props.preview || false,
-            data: props.data || null,
-            client
-        });
-    }, [data.id]);
+const FormRender: React.FC<FormRenderProps> = props => {
+    const { formData, createFormParams } = props;
+    const { preview = false, formLayoutComponents = [] } = createFormParams;
 
     const reCaptchaResponseToken = useRef("");
     const termsOfServiceAccepted = useRef(false);
 
-    if (!data.id) {
-        return null;
+    useEffect((): void => {
+        formData && onFormMounted(props);
+    }, [formData?.id]);
+
+    if (!formData) {
+        return <span>Loading...</span>;
     }
 
-    const formData: FbFormModel = cloneDeep(data);
+    let formLayoutComponentsList: CreateFormParamsFormLayoutComponent[];
+    if (typeof formLayoutComponents === "function") {
+        formLayoutComponentsList = formLayoutComponents();
+    } else {
+        formLayoutComponentsList = formLayoutComponents;
+    }
+
+    let FormLayoutComponent: FormLayoutComponentType | undefined;
+    if (formData) {
+        FormLayoutComponent = formLayoutComponentsList.find(
+            item => item.id === formData.settings.layout.renderer
+        )?.component;
+    }
+
+    if (!FormLayoutComponent) {
+        return <div>Selected form component not found.</div>;
+    }
+
     const { layout, fields, settings } = formData;
 
-    const getFieldById = (id: string): FbFormModelField | null => {
+    const getFieldById = (id: string): FormDataField | null => {
         return fields.find(field => field._id === id) || null;
     };
 
-    const getFieldByFieldId = (id: string): FbFormModelField | null => {
+    const getFieldByFieldId = (id: string): FormDataField | null => {
         return fields.find(field => field.fieldId === id) || null;
     };
 
-    const getFields = (): FormRenderFbFormModelField[][] => {
-        const fieldLayout = cloneDeep(layout);
-        const validatorPlugins =
-            plugins.byType<FbFormFieldValidatorPlugin>("fb-form-field-validator");
+    const getFields = (): RenderFormComponentDataField[][] => {
+        const fieldLayout = structuredClone(layout) as FormDataFieldsLayout;
+        const validatorPlugins = createFormParams.fieldValidators;
 
         return fieldLayout.map(row => {
             return row.map(id => {
                 /**
                  * We can cast safely because we are adding validators
                  */
-                const field = getFieldById(id) as FormRenderFbFormModelField;
+                const field = getFieldById(id) as RenderFormComponentDataField;
                 field.validators = (field.validation || []).reduce((collection, item) => {
-                    const validatorPlugin = validatorPlugins.find(
+                    const validatorPlugin = validatorPlugins?.find(
                         plugin => plugin.validator.name === item.name
                     );
 
@@ -145,11 +149,13 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
         return { ...values, ...overrides };
     };
 
-    const submit = async (data: FbFormSubmissionData): Promise<FormSubmitResponseType> => {
+    const submit = async (
+        formSubmissionFieldValues: FormSubmissionFieldValues
+    ): Promise<FormSubmissionResponse> => {
         if (reCaptchaEnabled(formData) && !reCaptchaResponseToken.current) {
             return {
                 data: null,
-                preview: Boolean(props.preview),
+                preview,
                 error: {
                     code: "RECAPTCHA_NOT_PASSED",
                     message: settings.reCaptcha.errorMessage
@@ -160,7 +166,7 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
         if (termsOfServiceEnabled(formData) && !termsOfServiceAccepted.current) {
             return {
                 data: null,
-                preview: Boolean(props.preview),
+                preview,
                 error: {
                     code: "TOS_NOT_ACCEPTED",
                     message: settings.termsOfServiceMessage.errorMessage
@@ -169,42 +175,28 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
         }
 
         const formSubmission = await createFormSubmission({
-            client,
             props,
-            data,
+            formSubmissionFieldValues,
             reCaptchaResponseToken: reCaptchaResponseToken.current
         });
 
-        await handleFormTriggers({ props, data, formSubmission });
+        await handleFormTriggers({ props, formSubmissionData: formSubmissionFieldValues });
         return formSubmission;
     };
 
-    const layouts: Array<FbFormLayout> = React.useMemo(() => {
-        return plugins.byType<FbFormLayoutPlugin>(FbFormLayoutPlugin.type).map(pl => pl.layout);
-    }, []);
-
-    // Get form layout, defined in theme.
-    let LayoutRenderComponent: any = layouts.find(item => item.name === settings.layout.renderer);
-
-    if (!LayoutRenderComponent) {
-        return <span>Cannot render form, layout missing.</span>;
-    }
-
-    LayoutRenderComponent = LayoutRenderComponent.component;
-
     const ReCaptcha = createReCaptchaComponent({
-        props,
+        createFormParams,
         formData,
         setResponseToken: value => (reCaptchaResponseToken.current = value)
     });
 
     const TermsOfService = createTermsOfServiceComponent({
-        props,
+        createFormParams,
         formData,
         setTermsOfServiceAccepted: value => (termsOfServiceAccepted.current = value)
     });
 
-    const layoutProps: FormRenderPropsType<FbFormSubmissionData> = {
+    const layoutProps: FormLayoutComponentProps<FormSubmission> = {
         getFieldById,
         getFieldByFieldId,
         getDefaultValues,
@@ -217,8 +209,8 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
 
     return (
         <>
-            <ps-tag data-key="fb-form" data-value={data.parent} />
-            <LayoutRenderComponent {...layoutProps} />
+            <FormLayoutComponent {...layoutProps} />
+            <ps-tag data-key="fb-form" data-value={formData.parent} />
         </>
     );
 };

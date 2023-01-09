@@ -19,7 +19,6 @@ const RadioGroup = styled.div`
 `;
 
 const RadioButton = styled.input`
-    font-size: 1.5rem;
     margin-left: 0;
     line-height: 100%;
     background-color: ${theme.styles.colors.color4};
@@ -62,7 +61,7 @@ export const RadioField: React.FC<RadioProps> = ({ field }) => {
 
             {(field.options || []).map(option => {
                 return (
-                    <RadioGroup>
+                    <RadioGroup key={option.value}>
                         <RadioButton
                             checked={value === option.value}
                             onChange={() => onChange(option.value)}

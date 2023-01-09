@@ -3,7 +3,6 @@ import styled from "@emotion/styled";
 import theme from "../../../../../theme";
 
 const Wrapper = styled.div<{ isInvalid: boolean }>`
-  font-size: 0.8rem;
   margin-left: 2px;
   margin-top: 5px;
   color: ${props => (props.isInvalid ? theme.styles.colors.color1 : theme.styles.colors.color2)};

@@ -36,7 +36,7 @@ const DONEEEEE = [
     "document",
     // embeds
     "iframe",
-    // form",
+    "form",
     "grid",
     "heading",
     "icon",
