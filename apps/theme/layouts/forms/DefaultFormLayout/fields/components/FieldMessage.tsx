@@ -16,7 +16,7 @@ const Wrapper = styled.div<{ isInvalid: boolean }>`
 interface HelperMessageProps {
     helperMessage?: React.ReactNode;
     errorMessage: React.ReactNode;
-    isValid: boolean;
+    isValid: boolean | null;
 }
 
 /**
@@ -24,8 +24,8 @@ interface HelperMessageProps {
  */
 export const FieldMessage: React.FC<HelperMessageProps> = props => {
     return (
-        <Wrapper isInvalid={!props.isValid}>
-            {!props.isValid ? props.errorMessage : props.helperMessage}
+        <Wrapper isInvalid={props.isValid === false}>
+            {props.isValid === false ? props.errorMessage : props.helperMessage}
         </Wrapper>
     );
 };

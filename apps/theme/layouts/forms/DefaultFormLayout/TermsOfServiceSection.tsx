@@ -8,15 +8,29 @@ import { Row } from "./Row";
 import { Cell } from "./Cell";
 import { FieldLabel } from "./fields/components/FieldLabel";
 import { CheckboxButton, CheckboxGroup } from "./fields/Checkbox";
-import {TermsOfServiceChildrenFunction} from "@webiny/app-page-builder-elements/renderers/form/types";
+import {
+    TermsOfServiceComponent,
+    TermsOfServiceChildrenFunction
+} from "@webiny/app-page-builder-elements/renderers/form/types";
+import styled from "@emotion/styled";
+import theme from "../../../theme";
 
 interface Props {
-    message: any;
-    errorMessage: any;
-    onChange: any;
+    component: TermsOfServiceComponent;
 }
 
-export const TermsOfServiceSection: TermsOfServiceChildrenFunction = ({ message, errorMessage, onChange }) => {
+const RteFieldLabel = styled(FieldLabel)`
+    .rte-block-paragraph {
+        ${theme.styles.typography.paragraph1};
+        margin: 0;
+    }
+`;
+
+export const renderCheckbox: TermsOfServiceChildrenFunction = ({
+    onChange,
+    errorMessage,
+    message
+}) => {
     const bind = useBind({
         name: "tosAccepted",
         validators: validation.create("required"),
@@ -35,13 +49,17 @@ export const TermsOfServiceSection: TermsOfServiceChildrenFunction = ({ message,
                             checked={Boolean(bind.value)}
                             onChange={() => bind.onChange(!bind.value)}
                         />
-                        <FieldLabel>
+                        <RteFieldLabel>
                             <RichTextRenderer data={message} />
-                        </FieldLabel>
+                        </RteFieldLabel>
                     </CheckboxGroup>
                     <FieldMessage isValid={bind.validation.isValid} errorMessage={errorMessage} />
                 </Field>
             </Cell>
         </Row>
     );
+};
+
+export const TermsOfServiceSection: React.FC<Props> = ({ component: TermsOfServiceComponent }) => {
+    return <TermsOfServiceComponent>{renderCheckbox}</TermsOfServiceComponent>;
 };

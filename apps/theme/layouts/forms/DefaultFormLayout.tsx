@@ -105,7 +105,7 @@ const DefaultFormLayout: FormLayoutComponent = ({
                         At the bottom of the Form, we render the terms of service,
                         the reCAPTCHA field, and the submit button.
                     */}
-                    <TermsOfService>{props => <TermsOfServiceSection {...props} />}</TermsOfService>
+                    <TermsOfServiceSection component={TermsOfService} />
                     {renderReCaptcha(Bind)}
 
                     <SubmitButton onClick={submit} loading={loading}>
