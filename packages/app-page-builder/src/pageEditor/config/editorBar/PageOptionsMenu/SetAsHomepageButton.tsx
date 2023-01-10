@@ -12,7 +12,7 @@ import { usePageViewNavigation } from "~/hooks/usePageViewNavigation";
 
 export const SetAsHomepageButton: React.FC = React.memo(() => {
     const [page] = usePage();
-    const { navigateToLatestFolder } = usePageViewNavigation();
+    const { navigateToPageHome } = usePageViewNavigation();
     const { showSnackbar } = useSnackbar();
     const pageBuilder = useAdminPageBuilder();
 
@@ -50,7 +50,8 @@ export const SetAsHomepageButton: React.FC = React.memo(() => {
             return showSnackbar(error.message);
         }
 
-        navigateToLatestFolder();
+        // TODO: @leopuleo use navigateToLatestFolder() for the rollout of the new ACO
+        navigateToPageHome(page.id);
 
         // Let's wait a bit, because we are also redirecting the user.
         setTimeout(() => showSnackbar("New homepage set successfully!"), 500);

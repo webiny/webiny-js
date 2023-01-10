@@ -9,7 +9,7 @@ import { GenericFormData, FormOnSubmit, FormSetValue, FormAPI } from "@webiny/fo
 import { CoreOptions } from "medium-editor";
 import { MenuTreeItem } from "~/admin/views/Menus/types";
 import { SecurityPermission } from "@webiny/app-security/types";
-import { LinkItem } from "@webiny/app-folders/types";
+import { LinkItem } from "@webiny/app-aco/types";
 
 export enum PageStatus {
     PUBLISHED = "published",

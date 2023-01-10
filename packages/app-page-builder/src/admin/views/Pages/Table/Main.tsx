@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 import debounce from "lodash/debounce";
 import useDeepCompareEffect from "use-deep-compare-effect";
-import { FolderDialogCreate, useFolders, useLinks } from "@webiny/app-folders";
+import { FolderDialogCreate, useFolders, useLinks } from "@webiny/app-aco";
 import { useHistory, useLocation } from "@webiny/react-router";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
@@ -23,7 +23,7 @@ import { FOLDER_ID_DEFAULT, FOLDER_TYPE } from "~/admin/constants/folders";
 
 import { MainContainer, Wrapper } from "./styled";
 
-import { FolderItem, ListMeta } from "@webiny/app-folders/types";
+import { FolderItem, ListMeta } from "@webiny/app-aco/types";
 
 interface Props {
     folderId?: string;
@@ -103,8 +103,7 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
     const { createPageMutation } = useCreatePage({
         setLoadingLabel: () => setLoadingLabel(LoadingLabel.CREATING_PAGE),
         clearLoadingLabel: () => setLoadingLabel(null),
-        closeDialog: closeCategoryDialog,
-        folderId
+        closeDialog: closeCategoryDialog
     });
 
     const loadMoreLinks = async ({ hasMoreItems, cursor }: ListMeta) => {
