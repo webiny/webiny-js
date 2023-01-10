@@ -25,7 +25,7 @@ interface ContentContainerParams {
     theme: PbTheme | null;
 }
 
-const ContentContainer = styled("div")(({ theme }: ContentContainerParams) => {
+const LegacyContentContainer = styled.div(({ theme }: ContentContainerParams) => {
     const backgroundColor = theme?.colors?.background;
     return {
         backgroundColor,
@@ -39,6 +39,27 @@ const ContentContainer = styled("div")(({ theme }: ContentContainerParams) => {
         }
     };
 });
+
+// TODO: For now, these dimensions are hardcoded.
+// TODO: At some point in future, we might want to expose these.
+const ContentContainer = styled(LegacyContentContainer)`
+    &.webiny-pb-editor-device--desktop {
+        max-width: 100%;
+    }
+
+    &.webiny-pb-editor-device--tablet {
+        max-width: 768px;
+    }
+
+    &.webiny-pb-editor-device--mobile-landscape {
+        max-width: 568px;
+    }
+
+    &.webiny-pb-editor-device--mobile-portrait {
+        max-width: 320px;
+    }
+`;
+
 const contentContainerWrapper = css({
     margin: "95px 65px 50px 85px",
     padding: 0,
@@ -48,6 +69,7 @@ const contentContainerWrapper = css({
     boxSizing: "border-box",
     zIndex: 1
 });
+
 const BaseContainer = styled("div")({
     width: "100%",
     left: 52,
@@ -60,41 +82,40 @@ const Content: React.FC = () => {
     const [{ displayMode }, setUiAtomValue] = useRecoilState(uiAtom);
     const pagePreviewRef = useRef<HTMLDivElement>(null);
 
-    const setPagePreviewDimension = useCallback(
-        pagePreviewDimension => {
-            setUiAtomValue(prev => setPagePreviewDimensionMutation(prev, pagePreviewDimension));
-        },
-        [uiAtom]
-    );
-
-    const resizeObserver = useMemo(() => {
-        return new ResizeObserver((entries: ResizeObserverEntry[]) => {
-            for (const entry of entries) {
-                const { width, height } = entry.contentRect;
-                setPagePreviewDimension({ width, height });
-            }
-        });
-    }, []);
-
-    // Set resize observer
-    useEffect(() => {
-        if (pagePreviewRef.current) {
-            // Add resize observer
-            resizeObserver.observe(pagePreviewRef.current);
-        }
-
-        // Cleanup
-        return () => {
-            resizeObserver.disconnect();
-        };
-    }, []);
-
-    const { theme } = usePageBuilder();
-
     if (isLegacyRenderingEngine) {
+        const setPagePreviewDimension = useCallback(
+            pagePreviewDimension => {
+                setUiAtomValue(prev => setPagePreviewDimensionMutation(prev, pagePreviewDimension));
+            },
+            [uiAtom]
+        );
+
+        const resizeObserver = useMemo(() => {
+            return new ResizeObserver((entries: ResizeObserverEntry[]) => {
+                for (const entry of entries) {
+                    const { width, height } = entry.contentRect;
+                    setPagePreviewDimension({ width, height });
+                }
+            });
+        }, []);
+
+        // Set resize observer
+        useEffect(() => {
+            if (pagePreviewRef.current) {
+                // Add resize observer
+                resizeObserver.observe(pagePreviewRef.current);
+            }
+
+            // Cleanup
+            return () => {
+                resizeObserver.disconnect();
+            };
+        }, []);
+
+        const { theme } = usePageBuilder();
         return (
             <Elevation className={contentContainerWrapper} z={0}>
-                <ContentContainer
+                <LegacyContentContainer
                     theme={theme as any}
                     className={`mdc-elevation--z1 webiny-pb-editor-device--${kebabCase(
                         displayMode
@@ -107,7 +128,7 @@ const Content: React.FC = () => {
                     >
                         <Element id={rootElement.id} />
                     </BaseContainer>
-                </ContentContainer>
+                </LegacyContentContainer>
             </Elevation>
         );
     }
