@@ -1,6 +1,7 @@
+import React, { useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { FORMAT_TEXT_COMMAND } from "lexical";
-import React, { useState } from "react";
+
 
 /**
  * Toolbar action. On toolbar, you can see the button that is italic.

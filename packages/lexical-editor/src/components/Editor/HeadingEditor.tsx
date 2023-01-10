@@ -1,10 +1,10 @@
 import React from "react";
-import { EditorStateJSONString } from "~/types";
-import { RichTextEditor } from "~/components/Editor/RichTextEditor";
-import { HeadingToolbar } from "~/components/Toolbar/HeadingToolbar";
 import { LinkPlugin } from "@lexical/react/LexicalLinkPlugin";
-import { ClickableLinkPlugin } from "~/plugins/ClickableLinkPlugin";
-import { FloatingLinkEditorPlugin } from "~/plugins/FloatingLinkEditorPlugin";
+import { ClickableLinkPlugin } from "~/plugins/ClickableLinkPlugin/ClickableLinkPlugin";
+import { FloatingLinkEditorPlugin } from "~/plugins/FloatingLinkEditorPlugin/FloatingLinkEditorPlugin";
+import { EditorStateJSONString } from "~/types";
+import { HeadingToolbar } from "~/components/Toolbar/HeadingToolbar";
+import { RichTextEditor } from "~/components/Editor/RichTextEditor";
 
 interface HeadingEditorProps {
     value: EditorStateJSONString | null;

@@ -1,6 +1,6 @@
+import React, { useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { FORMAT_TEXT_COMMAND } from "lexical";
-import React, { useState } from "react";
 
 /**
  * Toolbar action. User can highlight the selected text.

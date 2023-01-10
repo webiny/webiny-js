@@ -27,12 +27,13 @@ export { HeadingEditor } from "~/components/Editor/HeadingEditor";
 export { ParagraphEditor } from "~/components/Editor/ParagraphEditor";
 // plugins
 export { LinkPlugin } from "@lexical/react/LexicalLinkPlugin";
-export { FloatingLinkEditorPlugin } from "~/plugins/FloatingLinkEditorPlugin";
+export { FloatingLinkEditorPlugin } from "~/plugins/FloatingLinkEditorPlugin/FloatingLinkEditorPlugin";
 export { CodeHighlightPlugin } from "~/plugins/CodeHighlightPlugin/CodeHighlightPlugin";
-export { ClickableLinkPlugin } from "~/plugins/ClickableLinkPlugin";
+export { ClickableLinkPlugin } from "~/plugins/ClickableLinkPlugin/ClickableLinkPlugin";
 // composition
 export { AddToolbarAction } from "~/components/AddToolbarAction";
 export { AddRichTextEditorPlugin } from "~/components/AddRichTextEditorPlugin";
+export { AddRichTextEditorNodeType } from "~/components/AddRichTextEditorNodeType";
 // utils
 export { getEmptyEditorStateJSONString } from "~/utils/getEmptyEditorStateJSONString";
 // types

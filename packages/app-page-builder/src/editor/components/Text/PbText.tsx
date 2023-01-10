@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo} from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import get from "lodash/get";
 import classNames from "classnames";
@@ -9,10 +9,15 @@ import { ElementRoot } from "~/render/components/ElementRoot";
 import useUpdateHandlers from "../../plugins/elementSettings/useUpdateHandlers";
 import ReactMediumEditor from "../../components/MediumEditor";
 import { applyFallbackDisplayMode } from "../../plugins/elementSettings/elementSettingsUtils";
-import {HeadingEditor, ParagraphEditor} from "@webiny/lexical-editor";
 
 export const textClassName = "webiny-pb-base-page-element-style webiny-pb-page-element-text";
 const DATA_NAMESPACE = "data.text";
+
+const RichTextLexicalEditor = React.lazy(() =>
+    import("../../LexicalEditor").then(m => ({
+        default: m.LexicalEditor
+    }))
+);
 
 interface TextElementProps {
     elementId: string;
@@ -61,24 +66,13 @@ const PbText: React.FC<TextElementProps> = ({ elementId, mediumEditorOptions, ro
     const textContent = get(element, `${DATA_NAMESPACE}.data.text`);
     const tag = get(value, "tag");
     const typography = get(value, "typography");
-    const tagName = (tagValue: string | [string, Record<string, any>]): string => {
-        return Array.isArray(tagValue) ? tagValue[0] : tagValue;
-    }
-
-    const isHeadingTag = (): boolean => {
-        return tagName(tag).toLowerCase().includes("h");
-    }
 
     return (
         <ElementRoot
             element={element}
             className={classNames(textClassName, rootClassName, typography)}
         >
-            {isHeadingTag() ?
-                <HeadingEditor value={null} onChange={(json) => {console.log(json)} }/> :
-                <ParagraphEditor value={null} onChange={(json) => {console.log(json)} }/>
-            }
-
+            <RichTextLexicalEditor tag={tag} value={null} onChange={(json) => {console.log(json)}} />
             {"do not show medium editor" === elementId ? (
                 <ReactMediumEditor
                     elementId={elementId}

@@ -1,5 +1,4 @@
 import React, { FC } from "react";
-
 import { Toolbar } from "~/components/Toolbar/Toolbar";
 
 interface ParagraphToolbarProps {

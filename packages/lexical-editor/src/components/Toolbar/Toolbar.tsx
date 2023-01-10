@@ -1,11 +1,4 @@
 import React, { FC, useCallback, useEffect, useRef } from "react";
-import { $isCodeHighlightNode } from "@lexical/code";
-import { createPortal } from "react-dom";
-import { mergeRegister } from "@lexical/utils";
-import { $isLinkNode } from "@lexical/link";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { makeComposable } from "@webiny/react-composition";
-import { ToolbarType } from "~/types";
 import {
     $getSelection,
     $isRangeSelection,
@@ -14,10 +7,17 @@ import {
     LexicalEditor,
     SELECTION_CHANGE_COMMAND
 } from "lexical";
+import { makeComposable } from "@webiny/react-composition";
+import { $isLinkNode } from "@lexical/link";
+import { createPortal } from "react-dom";
+import { mergeRegister } from "@lexical/utils";
+import { $isCodeHighlightNode } from "@lexical/code";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import "./Toolbar.css";
+import { ToolbarType } from "~/types";
 import { getDOMRangeRect } from "~/utils/getDOMRangeRect";
 import { setFloatingElemPosition } from "~/utils/setFloatingElemPosition";
 import { getSelectedNode } from "~/utils/getSelectedNode";
-import "./Toolbar.css";
 import { useRichTextEditor } from "~/hooks/useRichTextEditor";
 
 interface FloatingToolbarProps {
@@ -129,7 +129,6 @@ const useToolbar: FC<useToolbarProps> = ({
     type,
     children
 }): JSX.Element | null => {
-    // const [isText, setIsText] = useState(false);
     const { nodeIsText, setNodeIsText } = useRichTextEditor();
 
     const updatePopup = useCallback(() => {

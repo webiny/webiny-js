@@ -1,27 +1,27 @@
 import React from "react";
-import { RichTextEditor } from "~/components/Editor/RichTextEditor";
-import { EditorStateJSONString } from "~/types";
+import { ListPlugin } from "@lexical/react/LexicalListPlugin";
 import { CodeHighlightPlugin } from "~/plugins/CodeHighlightPlugin/CodeHighlightPlugin";
 import { LinkPlugin } from "@lexical/react/LexicalLinkPlugin";
-import { FloatingLinkEditorPlugin } from "~/plugins/FloatingLinkEditorPlugin";
-import { ClickableLinkPlugin } from "~/plugins/ClickableLinkPlugin";
+import { FloatingLinkEditorPlugin } from "~/plugins/FloatingLinkEditorPlugin/FloatingLinkEditorPlugin";
+import { ClickableLinkPlugin } from "~/plugins/ClickableLinkPlugin/ClickableLinkPlugin";
 import { ParagraphToolbar } from "~/components/Toolbar/ParagraphToolbar";
-import { ListPlugin } from "@lexical/react/LexicalListPlugin";
+import { RichTextEditor } from "~/components/Editor/RichTextEditor";
+import { EditorStateJSONString } from "~/types";
 
 interface ParagraphLexicalEditorProps {
     value: EditorStateJSONString | null;
     onChange?: (json: EditorStateJSONString) => void;
+    tag?: "p";
+    placeholder?: string;
 }
 
-// TODO: look at HeadingEditor and use the same approach
-
-const ParagraphEditor: React.FC<ParagraphLexicalEditorProps> = props => {
+const ParagraphEditor: React.FC<ParagraphLexicalEditorProps> = ({ placeholder, tag, ...rest }) => {
     return (
         <RichTextEditor
             toolbar={<ParagraphToolbar />}
-            tag={"p"}
-            placeholder={"Enter your text here..."}
-            {...props}
+            tag={tag ?? "p"}
+            placeholder={placeholder ?? "Enter your text here..."}
+            {...rest}
         >
             <LinkPlugin />
             <CodeHighlightPlugin />

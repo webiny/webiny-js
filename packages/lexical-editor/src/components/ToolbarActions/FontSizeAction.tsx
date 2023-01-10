@@ -1,3 +1,4 @@
+import React, {useCallback, useEffect, useState} from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import {
     $getSelection,
@@ -6,7 +7,6 @@ import {
     LexicalEditor,
     SELECTION_CHANGE_COMMAND
 } from "lexical";
-import React, {useCallback, useEffect, useState} from "react";
 import { DropDown, DropDownItem} from "../../ui/DropDown";
 import {$getSelectionStyleValueForProperty, $patchStyleText} from "@lexical/selection";
 import {mergeRegister} from "@lexical/utils";
@@ -16,17 +16,23 @@ import {mergeRegister} from "@lexical/utils";
  */
 
 const FONT_SIZE_OPTIONS: [string, string][] = [
+    ['8px', '8px'],
+    ['9px', '9px'],
     ['10px', '10px'],
     ['11px', '11px'],
     ['12px', '12px'],
-    ['13px', '13px'],
     ['14px', '14px'],
     ['15px', '15px'],
     ['16px', '16px'],
-    ['17px', '17px'],
     ['18px', '18px'],
-    ['19px', '19px'],
-    ['20px', '20px'],
+    ['21px', '21px'],
+    ['24px', '24px'],
+    ['30px', '30px'],
+    ['36px', '36px'],
+    ['48px', '48px'],
+    ['60px', '60px'],
+    ['72px', '72px'],
+    ['96px', '96px'],
 ];
 
 function dropDownActiveClass(active: boolean) {
