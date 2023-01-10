@@ -62,6 +62,7 @@
         "@okta/okta-signin-widget",
         "@okta/okta-auth-js",
         "@webiny/app-admin-okta",
+        "@webiny/app-admin-auth0",
         "@webiny/app-tenant-manager",
         "@webiny/app-theme-manager",
         "@webiny/app-page-builder-elements"
