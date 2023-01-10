@@ -128,10 +128,8 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
 
                     S3_BUCKET: core.fileManagerBucketId,
                     EVENT_BUS: core.eventBusArn,
-                    IMPORT_PAGES_CREATE_HANDLER:
-                        pageBuilder.importPages.functions.create.output.arn,
-                    EXPORT_PAGES_PROCESS_HANDLER:
-                        pageBuilder.exportPages.functions.process.output.arn,
+                    IMPORT_CREATE_HANDLER: pageBuilder.import.functions.create.output.arn,
+                    EXPORT_PROCESS_HANDLER: pageBuilder.export.functions.process.output.arn,
                     // TODO: move to okta plugin
                     OKTA_ISSUER: process.env["OKTA_ISSUER"],
                     WEBINY_LOGS_FORWARD_URL,

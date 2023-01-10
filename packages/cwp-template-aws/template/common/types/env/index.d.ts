@@ -37,8 +37,8 @@ declare namespace NodeJS {
         IMAGE_TRANSFORMER_FUNCTION?: string;
         S3_BUCKET?: string;
         ELASTIC_SEARCH_INDEX_PREFIX?: string;
-        EXPORT_PAGES_PROCESS_HANDLER?: string;
-        IMPORT_PAGES_CREATE_HANDLER?: string;
+        EXPORT_PROCESS_HANDLER?: string;
+        IMPORT_CREATE_HANDLER?: string;
         PUBLIC_URL?: string;
         WEBINY_HEADLESS_CMS_GRAPHQL_INPUT_REQUIRE_ARRAY_ITEM?: "false" | string;
         WEBINY_ELASTICSEARCH_INDEX_LOCALE?: "true" | string;

@@ -4,7 +4,7 @@ import {
     EntityCompositeAttributes
 } from "dynamodb-toolbox/dist/classes/Entity";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import { PageImportExportTaskStorageOperations } from "@webiny/api-page-builder-import-export/types";
+import { ImportExportTaskStorageOperations } from "@webiny/api-page-builder-import-export/types";
 
 export type AttributeDefinition = DynamoDBTypes | EntityAttributeConfig | EntityCompositeAttributes;
 
@@ -15,5 +15,5 @@ export interface CreateStorageOperations {
         documentClient: DocumentClient;
         table?: string;
         attributes?: Attributes;
-    }): PageImportExportTaskStorageOperations;
+    }): ImportExportTaskStorageOperations;
 }
