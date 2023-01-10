@@ -2,7 +2,7 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
-    { "path": "../api-aco"},
+    { "path": "../api-aco" },
     { "path": "../api-file-manager" },
     { "path": "../api-i18n" },
     { "path": "../api-prerendering-service" },
