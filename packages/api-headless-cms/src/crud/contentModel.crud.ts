@@ -3,7 +3,6 @@ import {
     CmsModel,
     CmsModelContext,
     CmsModelManager,
-    CmsModelPermission,
     HeadlessCmsStorageOperations,
     OnModelBeforeCreateTopicParams,
     OnModelAfterCreateTopicParams,
@@ -17,7 +16,6 @@ import {
     CmsModelCreateInput,
     CmsModelUpdateInput,
     CmsModelCreateFromInput,
-    CmsModelField,
     OnModelCreateErrorTopicParams,
     OnModelCreateFromErrorParams,
     OnModelUpdateErrorTopicParams,
@@ -50,57 +48,15 @@ import { filterAsync } from "~/utils/filterAsync";
 import { checkOwnership, validateOwnership } from "~/utils/ownership";
 import { checkModelAccess, validateModelAccess } from "~/utils/access";
 import { validateModelFields } from "~/crud/contentModel/validateModelFields";
-import semver, { SemVer } from "semver";
-
-/**
- * TODO: remove for 5.34.0
- * Required because of the 5.33.0 upgrade.
- * Until the upgrade is done, API will break because there is no storageId assigned.
- */
-const featureVersion = semver.coerce("5.33.0") as SemVer;
-
-const attachStorageIdToFields = (fields: CmsModelField[]): CmsModelField[] => {
-    return fields.map(field => {
-        if (field.settings?.fields) {
-            field.settings.fields = attachStorageIdToFields(field.settings.fields);
-        }
-        if (!field.storageId) {
-            field.storageId = field.fieldId;
-        }
-        return field;
-    });
-};
-
-const attachStorageIdToModelFields = (model: CmsModel): CmsModelField[] => {
-    if (!model.webinyVersion) {
-        return model.fields;
-    }
-
-    const version = semver.coerce(model.webinyVersion);
-    if (!version) {
-        return model.fields;
-    }
-    /**
-     * Unfortunately we need to check for beta and next.
-     * TODO remove after 5.33.0
-     */
-    if (model.webinyVersion.match(/beta|next/)) {
-        return attachStorageIdToFields(model.fields);
-    }
-    if (semver.compare(version, featureVersion) >= 0) {
-        return model.fields;
-    }
-    return attachStorageIdToFields(model.fields);
-};
 
 /**
  * Given a model, return an array of tags ensuring the `type` tag is set.
  */
 const ensureTypeTag = (model: Pick<CmsModel, "tags">) => {
     // Let's make sure we have a `type` tag assigned.
-    // If `type` tag is not set, set it to a default one (`contentModel`).
+    // If `type` tag is not set, set it to a default one (`model`).
     const tags = model.tags || [];
-    if (!tags.find(tag => tag.startsWith("type:"))) {
+    if (!tags.some(tag => tag.startsWith("type:"))) {
         tags.push("type:model");
     }
 
@@ -131,7 +87,6 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                     return {
                         ...model,
                         tags: ensureTypeTag(model),
-                        fields: attachStorageIdToModelFields(model),
                         tenant: model.tenant || getTenant().id,
                         locale: model.locale || getLocale().code
                     };
@@ -156,7 +111,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         return manager;
     };
 
-    const checkModelPermissions = (check: string): Promise<CmsModelPermission> => {
+    const checkModelPermissions = (check: string) => {
         return checkPermissions(context, "cms.contentModel", { rwd: check });
     };
 
@@ -171,10 +126,10 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
              * If it does not have tenant or locale define, it is for every locale and tenant
              */
             .filter(plugin => {
-                const { tenant: t, locale: l } = plugin.contentModel;
-                if (t && t !== tenant) {
+                const { tenant: modelTenant, locale: modelLocale } = plugin.contentModel;
+                if (modelTenant && modelTenant !== tenant) {
                     return false;
-                } else if (l && l !== locale) {
+                } else if (modelLocale && modelLocale !== locale) {
                     return false;
                 }
                 return true;
