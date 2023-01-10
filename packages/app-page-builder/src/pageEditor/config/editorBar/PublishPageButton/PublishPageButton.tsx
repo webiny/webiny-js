@@ -15,7 +15,7 @@ const DefaultPublishPageButton: React.FC = () => {
     const { showSnackbar } = useSnackbar();
     const pageBuilder = useAdminPageBuilder();
     const { canPublish } = usePermission();
-    const { navigateToLatestFolder } = usePageViewNavigation();
+    const { navigateToPageHome } = usePageViewNavigation();
 
     if (!canPublish()) {
         return null;
@@ -39,7 +39,8 @@ const DefaultPublishPageButton: React.FC = () => {
             return;
         }
 
-        navigateToLatestFolder();
+        // TODO: @leopuleo use navigateToLatestFolder() for the rollout of the new ACO
+        navigateToPageHome(page.id);
 
         // Let's wait a bit, because we are also redirecting the user.
         setTimeout(() => {
