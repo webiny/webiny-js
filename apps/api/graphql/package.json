@@ -6,6 +6,8 @@
     "watch": "yarn webiny run watch"
   },
   "dependencies": {
+    "@webiny/api-aco": "^5.33.2",
+    "@webiny/api-aco-so-ddb": "^5.33.2",
     "@webiny/api-admin-users-cognito": "^5.33.2",
     "@webiny/api-admin-users-cognito-so-ddb": "^5.33.2",
     "@webiny/api-apw": "^5.33.2",
@@ -13,8 +15,6 @@
     "@webiny/api-file-manager": "^5.33.2",
     "@webiny/api-file-manager-ddb": "^5.33.2",
     "@webiny/api-file-manager-s3": "^5.33.2",
-    "@webiny/api-folders": "^5.33.2",
-    "@webiny/api-folders-so-ddb": "^5.33.2",
     "@webiny/api-form-builder": "^5.33.2",
     "@webiny/api-form-builder-so-ddb": "^5.33.2",
     "@webiny/api-headless-cms": "^5.33.2",

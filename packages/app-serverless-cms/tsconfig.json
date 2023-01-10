@@ -8,7 +8,6 @@
     { "path": "../app-apw" },
     { "path": "../app-file-manager" },
     { "path": "../app-file-manager-s3" },
-    { "path": "../app-folders" },
     { "path": "../app-form-builder" },
     { "path": "../app-graphql-playground" },
     { "path": "../app-headless-cms" },

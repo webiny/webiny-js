@@ -28,9 +28,9 @@ const DetailsContainer = styled("div")`
     height: 100%;
     overflow: hidden;
     position: relative;
-    
-  nav: {
-        background: var(--mdc-theme-surface)"
+
+    nav {
+        background: var(--mdc-theme-surface);
     }
 `;
 
