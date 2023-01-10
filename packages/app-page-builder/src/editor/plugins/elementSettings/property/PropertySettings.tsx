@@ -7,8 +7,7 @@ import get from "lodash/get";
 import { plugins } from "@webiny/plugins";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { Switch } from "@webiny/ui/Switch";
-import { Form, FormAPI } from "@webiny/form";
-import { FormData } from "@webiny/form/types";
+import { Form, FormOnSubmit } from "@webiny/form";
 import { Validator } from "@webiny/validation/types";
 import {
     PbEditorElement,
@@ -107,7 +106,7 @@ const PropertySettings: React.FC<
     const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
     const handler = useEventActionHandler();
 
-    const updateSettings = async (data: FormData, form: FormAPI) => {
+    const updateSettings: FormOnSubmit = async (data, form) => {
         const valid = await form.validate();
         if (!valid) {
             return null;
