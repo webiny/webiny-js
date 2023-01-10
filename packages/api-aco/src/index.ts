@@ -13,7 +13,7 @@ export interface FoldersConfig {
 }
 
 export const createACO = () => {
-    return;
+    return [];
 };
 
 export const createFoldersContext = ({ storageOperations }: FoldersConfig) => {
