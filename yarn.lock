@@ -10325,7 +10325,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@webiny/api-aco-so-ddb@^5.33.2, @webiny/api-aco-so-ddb@workspace:packages/api-aco-so-ddb":
+"@webiny/api-aco-so-ddb@workspace:packages/api-aco-so-ddb":
   version: 0.0.0-use.local
   resolution: "@webiny/api-aco-so-ddb@workspace:packages/api-aco-so-ddb"
   dependencies:
@@ -14941,7 +14941,6 @@ __metadata:
   resolution: "api-graphql@workspace:apps/api/graphql"
   dependencies:
     "@webiny/api-aco": ^5.33.2
-    "@webiny/api-aco-so-ddb": ^5.33.2
     "@webiny/api-admin-users-cognito": ^5.33.2
     "@webiny/api-admin-users-cognito-so-ddb": ^5.33.2
     "@webiny/api-apw": ^5.33.2
