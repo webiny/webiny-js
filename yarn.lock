@@ -13396,7 +13396,7 @@ __metadata:
     "@webiny/plugins": ^5.33.2
     "@webiny/project-utils": ^5.33.2
     aws-lambda: ^1.0.7
-    fastify: ^4.7.0
+    fastify: 4.9.2
     rimraf: ^3.0.2
     ttypescript: ^1.5.13
     typescript: 4.7.4
@@ -18637,7 +18637,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"content-type@npm:^1.0.4, content-type@npm:~1.0.4":
+"content-type@npm:~1.0.4":
   version: 1.0.4
   resolution: "content-type@npm:1.0.4"
   checksum: 3d93585fda985d1554eca5ebd251994327608d2e200978fdbfba21c0c679914d5faf266d17027de44b34a72c7b0745b18584ecccaa7e1fdfb6a68ac7114f12e0
@@ -22698,29 +22698,6 @@ __metadata:
     semver: ^7.3.7
     tiny-lru: ^9.0.2
   checksum: 78d931a569b8ef30ceade1c3f6c820ad36eebb4caf1551e4c3f181fd4750309c4912e3db85fbeeb1cabf087454d7cc1568f2614e17aef44f69461268968c87a3
-  languageName: node
-  linkType: hard
-
-"fastify@npm:^4.7.0":
-  version: 4.11.0
-  resolution: "fastify@npm:4.11.0"
-  dependencies:
-    "@fastify/ajv-compiler": ^3.3.1
-    "@fastify/error": ^3.0.0
-    "@fastify/fast-json-stringify-compiler": ^4.1.0
-    abstract-logging: ^2.0.1
-    avvio: ^8.2.0
-    content-type: ^1.0.4
-    find-my-way: ^7.3.0
-    light-my-request: ^5.6.1
-    pino: ^8.5.0
-    process-warning: ^2.0.0
-    proxy-addr: ^2.0.7
-    rfdc: ^1.3.0
-    secure-json-parse: ^2.5.0
-    semver: ^7.3.7
-    tiny-lru: ^10.0.0
-  checksum: 814803b1015ae47cce4d7877a16788abee3ba6bba23e7e1b08a6cc62b43828aa6c38624de835c5b422da902fa93b316d1222d191b8373bebd8acbd68c8843584
   languageName: node
   linkType: hard
 
@@ -38616,13 +38593,6 @@ __metadata:
   version: 2.1.0
   resolution: "tiny-emitter@npm:2.1.0"
   checksum: fbcfb5145751a0e3b109507a828eb6d6d4501352ab7bb33eccef46e22e9d9ad3953158870a6966a59e57ab7c3f9cfac7cab8521db4de6a5e757012f4677df2dd
-  languageName: node
-  linkType: hard
-
-"tiny-lru@npm:^10.0.0":
-  version: 10.0.1
-  resolution: "tiny-lru@npm:10.0.1"
-  checksum: 58b5f17a357625335aa3b90ee8c9b3e9abede5c1f46066c73deb129574a205efb112807d6d473909e73f1d874ea99bf14eb5c88223d540eb32ebb5e1ff146689
   languageName: node
   linkType: hard
 
