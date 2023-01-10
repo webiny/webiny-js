@@ -1,30 +1,33 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { FontAwesomeIcon, FontAwesomeIconProps } from "@fortawesome/react-fontawesome";
 import { AccordionItem } from "@webiny/ui/Accordion";
-import { plugins } from "@webiny/plugins";
 import { Bind } from "@webiny/form";
-import { CmsDynamicZoneTemplate, CmsEditorFieldValidatorPlugin } from "~/types";
+import {
+    CmsDynamicZoneTemplate,
+    CmsModelFieldValidatorConfig,
+    CmsModelFieldValidatorPlugin
+} from "~/types";
 import { ValidatorsList } from "~/admin/components/FieldEditor/EditFieldDialog/ValidatorsList";
-import { Validator } from "~/admin/components/FieldEditor/EditFieldDialog/getValidators";
-
-function getValidator(name: string) {
-    const allValidators = plugins.byType<CmsEditorFieldValidatorPlugin>(
-        "cms-editor-field-validator"
-    );
-    const plugin = allValidators.find(v => v.validator.name === name);
-    if (!plugin) {
-        throw Error(`Missing "${name}" validator plugin!`);
-    }
-    return plugin.validator;
-}
+import { createValidators } from "~/utils/createValidators";
+import { CmsModelFieldValidatorConfigAdapter } from "~/utils/CmsModelFieldValidatorConfigAdapter";
+import { useModelField } from "~/admin/components/ModelFieldProvider";
+import { commonValidators } from "~/admin/plugins/fields/dynamicZone/commonValidators";
 
 function TemplateValidationSettings() {
-    const commonValidators = useMemo((): Validator[] => {
-        return [
-            { optional: true, validator: getValidator("minLength") },
-            { optional: true, validator: getValidator("maxLength") }
-        ];
-    }, []);
+    const { field } = useModelField();
+
+    const validators: CmsModelFieldValidatorConfig[] = commonValidators.map(validator => {
+        return {
+            ...validator,
+            variables: [
+                ...(validator.variables || []),
+                {
+                    name: "templateName",
+                    description: "This will be interpreted as the current template name."
+                }
+            ]
+        };
+    });
 
     return (
         <Bind<CmsDynamicZoneTemplate[]> name={"settings.templates"}>
@@ -45,7 +48,9 @@ function TemplateValidationSettings() {
                                 >
                                     <ValidatorsList
                                         name={`settings.templates.${index}.validation`}
-                                        validators={commonValidators}
+                                        validators={validators.map(
+                                            v => new CmsModelFieldValidatorConfigAdapter(field, v)
+                                        )}
                                     />
                                 </AccordionItem>
                             );
@@ -57,8 +62,13 @@ function TemplateValidationSettings() {
     );
 }
 
-export const dynamicZoneFieldValidator: CmsEditorFieldValidatorPlugin = {
-    type: "cms-editor-field-validator",
+interface TemplateValue {
+    _templateId: string;
+    [key: string]: any;
+}
+
+export const dynamicZoneFieldValidator: CmsModelFieldValidatorPlugin = {
+    type: "cms-model-field-validator",
     name: "cms-editor-field-validator-dynamic-zone",
     validator: {
         name: "dynamicZone",
@@ -67,6 +77,26 @@ export const dynamicZoneFieldValidator: CmsEditorFieldValidatorPlugin = {
         defaultMessage: "",
         renderCustomUi() {
             return <TemplateValidationSettings />;
+        },
+        validate: async (value: TemplateValue[], { field }) => {
+            // This validator only runs for Dynamic Zone fields with `multipleValues=true`.
+            const templates = field.settings?.templates || [];
+            for (const template of templates) {
+                const validationRules = template.validation || [];
+                const templateValue = (value || []).filter(v => v._templateId === template.id);
+                const validators = createValidators(field, validationRules);
+                for (const validator of validators) {
+                    try {
+                        await validator(templateValue);
+                    } catch (e) {
+                        const messageWithTemplate = e.message.replace(
+                            /\{templateName\}/g,
+                            template.name
+                        );
+                        throw new Error(messageWithTemplate);
+                    }
+                }
+            }
         }
     }
 };

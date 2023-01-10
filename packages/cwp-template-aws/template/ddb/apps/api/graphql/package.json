@@ -6,13 +6,12 @@
     "watch": "yarn webiny run watch"
   },
   "dependencies": {
+    "@webiny/api-aco": "latest",
     "@webiny/api-apw": "latest",
     "@webiny/api-apw-scheduler-so-ddb": "latest",
     "@webiny/api-file-manager": "latest",
     "@webiny/api-file-manager-ddb": "latest",
     "@webiny/api-file-manager-s3": "latest",
-    "@webiny/api-folders": "latest",
-    "@webiny/api-folders-so-ddb": "latest",
     "@webiny/api-form-builder": "latest",
     "@webiny/api-form-builder-so-ddb": "latest",
     "@webiny/api-i18n": "latest",

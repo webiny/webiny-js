@@ -1,4 +1,4 @@
-import { CmsModel, CmsModelField } from "@webiny/api-headless-cms/types";
+import { CmsModelField } from "@webiny/api-headless-cms/types";
 import { createSystemFields } from "./systemFields";
 import { Field, FieldParent } from "./types";
 import { PluginsContainer } from "@webiny/plugins";
@@ -7,22 +7,16 @@ import { CmsEntryFieldFilterPathPlugin } from "~/plugins";
 import { getMappedPlugins } from "./mapPlugins";
 
 interface Params {
-    model: CmsModel;
+    fields: CmsModelField[];
     plugins: PluginsContainer;
 }
-
-interface Fields {
-    [key: string]: Field;
-}
-
 /**
  * This method will map the fieldId (fieldId -> field) to the actual field.
  *
  * In case of nested fields, fieldId is all the parent fieldIds + current one, joined by the dot (.).
- * @param params
  */
 export const createFields = (params: Params) => {
-    const { model, plugins } = params;
+    const { fields, plugins } = params;
 
     const transformValuePlugins = getMappedPlugins<CmsFieldFilterValueTransformPlugin>({
         plugins,
@@ -35,7 +29,7 @@ export const createFields = (params: Params) => {
         property: "fieldType"
     });
 
-    const collection = createSystemFields().reduce<Fields>((fields, field) => {
+    const collection = createSystemFields().reduce<Record<string, Field>>((fields, field) => {
         const transformPlugin = transformValuePlugins[field.type];
 
         fields[field.fieldId] = {
@@ -120,7 +114,7 @@ export const createFields = (params: Params) => {
         }
     };
 
-    addFieldsToCollection(model.fields);
+    addFieldsToCollection(fields);
 
     return collection;
 };

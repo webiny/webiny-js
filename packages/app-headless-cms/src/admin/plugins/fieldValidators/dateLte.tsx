@@ -1,7 +1,7 @@
 import React from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { validation } from "@webiny/validation";
-import { CmsEditorFieldValidatorPlugin } from "~/types";
+import { CmsModelFieldValidatorPlugin } from "~/types";
 import { createInputField } from "./date/createDateInputField";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 import { getAvailableValidators } from "./date/availableValidators";
@@ -40,8 +40,8 @@ function DateLteSettings() {
     );
 }
 
-export default (): CmsEditorFieldValidatorPlugin => ({
-    type: "cms-editor-field-validator",
+export default (): CmsModelFieldValidatorPlugin => ({
+    type: "cms-model-field-validator",
     name: "cms-editor-field-validator-date-lte",
     validator: {
         name: "dateLte",
@@ -50,6 +50,15 @@ export default (): CmsEditorFieldValidatorPlugin => ({
         defaultMessage: `Date/time is later than the provided one.`,
         renderSettings() {
             return <DateLteSettings />;
+        },
+        validate: async (value, { validator }) => {
+            const { value: lteValue, type } = validator.settings;
+            if (typeof lteValue === "undefined") {
+                return true;
+            } else if (type === "time") {
+                return validation.validate(value, `timeLte:${lteValue}`);
+            }
+            return validation.validate(value, `dateLte:${lteValue}`);
         }
     }
 });

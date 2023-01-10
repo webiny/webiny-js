@@ -3,8 +3,8 @@
   "include": ["src"],
   "references": [
     { "path": "../app/tsconfig.build.json" },
+    { "path": "../app-aco/tsconfig.build.json" },
     { "path": "../app-admin/tsconfig.build.json" },
-    { "path": "../app-folders/tsconfig.build.json" },
     { "path": "../app-i18n/tsconfig.build.json" },
     { "path": "../app-page-builder-elements/tsconfig.build.json" },
     { "path": "../app-plugin-admin-welcome-screen/tsconfig.build.json" },

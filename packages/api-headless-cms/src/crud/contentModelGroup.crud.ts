@@ -22,7 +22,10 @@ import {
     OnGroupBeforeUpdateTopicParams,
     OnGroupAfterUpdateTopicParams,
     OnGroupBeforeDeleteTopicParams,
-    OnGroupAfterDeleteTopicParams
+    OnGroupAfterDeleteTopicParams,
+    OnGroupCreateErrorTopicParams,
+    OnGroupUpdateErrorTopicParams,
+    OnGroupDeleteErrorTopicParams
 } from "~/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import WebinyError from "@webiny/error";
@@ -152,18 +155,27 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
         }
     };
 
-    // create
+    /**
+     * Create
+     */
     const onGroupBeforeCreate =
         createTopic<OnGroupBeforeCreateTopicParams>("cms.onGroupBeforeCreate");
     const onGroupAfterCreate = createTopic<OnGroupAfterCreateTopicParams>("cms.onGroupAfterCreate");
-    // update
+    const onGroupCreateError = createTopic<OnGroupCreateErrorTopicParams>("cms.onGroupCreateError");
+    /**
+     * Update
+     */
     const onGroupBeforeUpdate =
         createTopic<OnGroupBeforeUpdateTopicParams>("cms.onGroupBeforeUpdate");
     const onGroupAfterUpdate = createTopic<OnGroupAfterUpdateTopicParams>("cms.onGroupAfterUpdate");
-    // delete
+    const onGroupUpdateError = createTopic<OnGroupUpdateErrorTopicParams>("cms.onGroupUpdateError");
+    /**
+     * Delete
+     */
     const onGroupBeforeDelete =
         createTopic<OnGroupBeforeDeleteTopicParams>("cms.onGroupBeforeDelete");
     const onGroupAfterDelete = createTopic<OnGroupAfterDeleteTopicParams>("cms.onGroupAfterDelete");
+    const onGroupDeleteError = createTopic<OnGroupDeleteErrorTopicParams>("cms.onGroupDeleteError");
 
     /**
      * We need to assign some default behaviors.
@@ -198,10 +210,13 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
          */
         onGroupBeforeCreate,
         onGroupAfterCreate,
+        onGroupCreateError,
         onGroupBeforeUpdate,
         onGroupAfterUpdate,
+        onGroupUpdateError,
         onGroupBeforeDelete,
         onGroupAfterDelete,
+        onGroupDeleteError,
         clearGroupsCache,
         getGroup: async id => {
             const permission = await checkPermissions("r");
@@ -280,6 +295,11 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
 
                 return group;
             } catch (ex) {
+                await onGroupCreateError.publish({
+                    input,
+                    group,
+                    error: ex
+                });
                 throw new WebinyError(
                     ex.message || "Could not save data model group.",
                     ex.code || "ERROR_ON_CREATE",
@@ -338,6 +358,12 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
 
                 return updatedGroup;
             } catch (ex) {
+                await onGroupUpdateError.publish({
+                    input,
+                    original,
+                    group,
+                    error: ex
+                });
                 throw new WebinyError(ex.message, ex.code || "UPDATE_ERROR", {
                     error: ex,
                     original,
@@ -365,6 +391,10 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
                     group
                 });
             } catch (ex) {
+                await onGroupDeleteError.publish({
+                    group,
+                    error: ex
+                });
                 throw new WebinyError(ex.message, ex.code || "DELETE_ERROR", {
                     ...(ex.data || {}),
                     id

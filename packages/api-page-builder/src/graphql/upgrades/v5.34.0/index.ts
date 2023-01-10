@@ -3,7 +3,7 @@ import WebinyError from "@webiny/error";
 import { PageBuilderContextObject, PbContext } from "~/graphql/types";
 import { Tenant } from "@webiny/api-tenancy/types";
 import { I18NContextObject } from "@webiny/api-i18n/types";
-import { Folders } from "@webiny/api-folders/types";
+import { Folders } from "@webiny/api-aco/types";
 
 interface CreatePageLinksParams {
     tenant: Tenant;

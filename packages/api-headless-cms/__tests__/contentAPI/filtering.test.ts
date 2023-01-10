@@ -1056,7 +1056,6 @@ describe("filtering", () => {
     test("should filter entries by empty datetime field", async () => {
         const categoryManager = useCategoryManageHandler(manageOpts);
         const productManager = useProductManageHandler(manageOpts);
-        // const productReader = useProductReadHandler(readOpts);
 
         const group = await setupContentModelGroup(mainManager);
         const { category: categoryModel } = await setupContentModels(mainManager, group, [

@@ -1,8 +1,8 @@
 import React, { forwardRef, useMemo, useState } from "react";
 
 import { ReactComponent as More } from "@material-design-icons/svg/filled/more_vert.svg";
-import { FolderDialogUpdate } from "@webiny/app-folders";
-import { FolderItem } from "@webiny/app-folders/types";
+import { FolderDialogUpdate } from "@webiny/app-aco";
+import { FolderItem } from "@webiny/app-aco/types";
 import { IconButton } from "@webiny/ui/Button";
 import { Columns, DataTable } from "@webiny/ui/DataTable";
 import { Menu } from "@webiny/ui/Menu";
@@ -25,7 +25,7 @@ import { PageActionPublish } from "./Row/Page/PageActionPublish";
 import statusLabels from "~/admin/constants/pageStatusesLabels";
 
 import { PbPageDataLink } from "~/types";
-import { FolderDialogDelete } from "@webiny/app-folders/components";
+import { FolderDialogDelete } from "@webiny/app-aco/components";
 
 interface Props {
     pages: PbPageDataLink[];

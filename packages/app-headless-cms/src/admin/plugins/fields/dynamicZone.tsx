@@ -4,9 +4,16 @@ import { i18n } from "@webiny/app/i18n";
 import { DynamicZone } from "~/admin/plugins/fields/dynamicZone/DynamicZone";
 import { createFieldsList } from "~/admin/graphql/createFieldsList";
 import { createTypeName } from "~/utils/createTypeName";
-import { CmsEditorFieldTypePlugin } from "~/types";
+import { CmsEditorFieldTypePlugin, CmsModelFieldValidatorsGroup } from "~/types";
+import { commonValidators } from "./dynamicZone/commonValidators";
 
 const t = i18n.ns("app-headless-cms/admin/fields");
+
+const listValidators: CmsModelFieldValidatorsGroup = {
+    validators: commonValidators,
+    title: "List validators",
+    description: "These validators are applied to the entire dynamic zone."
+};
 
 export const dynamicZoneField: CmsEditorFieldTypePlugin = {
     type: "cms-editor-field-type",
@@ -29,11 +36,7 @@ export const dynamicZoneField: CmsEditorFieldTypePlugin = {
 
             return ["required"];
         },
-        listValidators: {
-            validators: ["minLength", "maxLength"],
-            title: "List validators",
-            description: "These validators are applied to the entire dynamic zone."
-        },
+        listValidators,
         canAccept(_, draggable) {
             return draggable.fieldType !== "dynamicZone";
         },

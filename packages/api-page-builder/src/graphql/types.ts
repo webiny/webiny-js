@@ -21,7 +21,7 @@ import {
 } from "~/types";
 import { PrerenderingServiceClientContext } from "@webiny/api-prerendering-service/client/types";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
-import { FoldersContext } from "@webiny/api-folders/types";
+import { ACOContext } from "@webiny/api-aco/types";
 
 // CRUD types.
 export interface ListPagesParams {
@@ -820,7 +820,7 @@ export interface PbContext
         TenancyContext,
         FileManagerContext,
         PrerenderingServiceClientContext,
-        FoldersContext {
+        ACOContext {
     pageBuilder: PageBuilderContextObject;
 }
 
