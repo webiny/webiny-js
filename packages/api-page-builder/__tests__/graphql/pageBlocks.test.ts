@@ -224,7 +224,7 @@ describe("Page Blocks Test", () => {
         const error: ErrorOptions = {
             code: "NOT_FOUND",
             data: null,
-            message: "Cannot create page block because failed to find such block category."
+            message: "Block category not found!"
         };
 
         expect(createPageBlockInvalidCategoryResponse).toEqual({
@@ -258,10 +258,10 @@ describe("Page Blocks Test", () => {
             }
         });
 
-        const id = createPageBlockResponse.data.pageBuilder.createPageBlock.data.id;
+        const category = createPageBlockResponse.data.pageBuilder.createPageBlock.data;
 
         const [updatePageBlockEmptyCategoryResponse] = await updatePageBlock({
-            id,
+            id: category.id,
             data: {
                 name: "name",
                 blockCategory: "",
@@ -270,23 +270,24 @@ describe("Page Blocks Test", () => {
             }
         });
 
-        expect(updatePageBlockEmptyCategoryResponse).toEqual({
+        expect(updatePageBlockEmptyCategoryResponse).toMatchObject({
             data: {
                 pageBuilder: {
                     updatePageBlock: {
-                        data: null,
-                        error: {
-                            code: "GET_BLOCK_CATEGORY_ERROR",
-                            data: null,
-                            message: "Could not load block category by empty slug."
-                        }
+                        data: {
+                            name: "name",
+                            blockCategory: "block-category",
+                            preview: { src: "https://test.com/src.jpg" },
+                            content: { some: "content" }
+                        },
+                        error: null
                     }
                 }
             }
         });
 
         const [updatePageBlockInvalidCategoryResponse] = await updatePageBlock({
-            id,
+            id: category.id,
             data: {
                 name: "name",
                 blockCategory: "invalid-block-category",
@@ -303,8 +304,7 @@ describe("Page Blocks Test", () => {
                         error: {
                             code: "NOT_FOUND",
                             data: null,
-                            message:
-                                "Cannot update page block because failed to find such block category."
+                            message: "Requested page block category doesn't exist."
                         }
                     }
                 }

@@ -1,5 +1,5 @@
 // TODO: find a better way to share IconPicker with icons across apps.
-import * as React from "react";
+import React, { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import { css } from "emotion";
 import { plugins } from "@webiny/plugins";
 import { Typography } from "@webiny/ui/Typography";
@@ -19,11 +19,16 @@ import { GridCellProps } from "react-virtualized/dist/es/Grid";
  */
 const iconPickerLabel = css({ marginBottom: 5, marginLeft: 2 });
 
-const MenuWrapper = css({
-    color: "var(--mdc-theme-text-secondary-on-background)",
-    backgroundColor: "var(--mdc-theme-on-background)",
-    padding: "16px 8px"
-});
+const MenuWrapper = css`
+    color: var(--mdc-theme-text-secondary-on-background);
+    background-color: var(--mdc-theme-on-background);
+    border-bottom: 1px solid var(--mdc-theme-text-secondary-on-background, rgba(0, 0, 0, 0.54));
+    padding: 16px 8px;
+    cursor: pointer;
+    :hover {
+        border-bottom: 1px solid rgba(0, 0, 0, 1);
+    }
+`;
 
 const NoResultWrapper = css({
     width: 640,
@@ -87,8 +92,6 @@ const searchInput = css({
     }
 });
 
-const { useState, useCallback, useMemo } = React;
-
 interface IconPickerProps extends FormComponentProps {
     label?: React.ReactNode;
     description?: React.ReactNode;
@@ -102,6 +105,15 @@ const IconPicker: React.FC<IconPickerProps> = ({
 }) => {
     const [filter, setFilter] = useState("");
     const [mustRenderGrid, setMustRenderGrid] = useState(false);
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        setTimeout(() => {
+            if (mustRenderGrid && inputRef.current) {
+                inputRef.current.focus();
+            }
+        }, 50);
+    }, [mustRenderGrid]);
 
     const onFilterChange = useCallback(
         (value, cb) => {
@@ -163,7 +175,7 @@ const IconPicker: React.FC<IconPickerProps> = ({
                     <DelayedOnChange value={filter} onChange={onFilterChange}>
                         {({ value, onChange }) => (
                             <Input
-                                autoFocus
+                                inputRef={inputRef}
                                 className={searchInput}
                                 value={value}
                                 onChange={onChange}
@@ -205,19 +217,20 @@ const IconPicker: React.FC<IconPickerProps> = ({
                     <Typography use={"body1"}>{label}</Typography>
                 </div>
             )}
-            <div className={MenuWrapper}>
-                <Menu
-                    onOpen={() => setMustRenderGrid(true)}
-                    onClose={() => setMustRenderGrid(false)}
-                    handle={
+            <Menu
+                onOpen={() => setMustRenderGrid(true)}
+                onClose={() => setMustRenderGrid(false)}
+                handle={
+                    <div className={MenuWrapper}>
                         <div className={pickIcon}>
                             <FontAwesomeIcon icon={fontAwesomeIconValue} size={"2x"} />
                         </div>
-                    }
-                >
-                    {mustRenderGrid && renderGrid}
-                </Menu>
-            </div>
+                    </div>
+                }
+            >
+                {mustRenderGrid && renderGrid}
+            </Menu>
+
             {validationIsValid === false && (
                 <FormElementMessage error>{validationMessage}</FormElementMessage>
             )}
