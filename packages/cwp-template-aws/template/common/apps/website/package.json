@@ -3,34 +3,31 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@apollo/react-components": "^3.1.5",
-    "@apollo/react-hooks": "^3.1.5",
-    "@types/react": "^17.0.2",
+    "@emotion/core": "^10.0.17",
+    "@types/react": "17.0.39",
     "@webiny/app": "latest",
     "@webiny/app-form-builder": "latest",
     "@webiny/app-page-builder": "latest",
+    "@webiny/app-website": "latest",
     "@webiny/cli": "latest",
-    "@webiny/cli-plugin-deploy-pulumi": "latest",
     "@webiny/plugins": "latest",
     "@webiny/project-utils": "latest",
     "@webiny/react-router": "latest",
+    "@webiny/serverless-cms-aws": "latest",
     "apollo-client": "^2.6.10",
     "apollo-link": "^1.2.14",
-    "apollo-link-batch-http": "^1.2.14",
     "core-js": "^3.0.1",
     "cross-fetch": "^3.0.4",
     "graphql": "^15.7.2",
     "graphql-tag": "^2.12.6",
-    "invariant": "^2.2.4",
     "react": "17.0.2",
     "react-dom": "17.0.2",
-    "react-helmet": "^6.1.0",
     "regenerator-runtime": "^0.13.5",
     "theme": "^0.1.0"
   },
   "devDependencies": {
-    "cross-env": "^5.0.2",
-    "@types/react-helmet": "^6.1.0"
+    "@types/react-helmet": "^6.1.0",
+    "cross-env": "^5.0.2"
   },
   "scripts": {
     "analyze": "source-map-explorer build/static/js/main.*",
@@ -48,12 +45,5 @@
       "not op_mini all",
       "ie 11"
     ]
-  },
-  "adio": {
-    "ignore": {
-      "dependencies": [
-        "@webiny/cli"
-      ]
-    }
   }
 }
