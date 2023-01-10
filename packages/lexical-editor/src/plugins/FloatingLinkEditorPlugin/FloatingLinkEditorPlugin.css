@@ -39,6 +39,7 @@
 .link-editor .link-input {
   display: block;
   width: calc(100% - 24px);
+  height: 32px;
   box-sizing: border-box;
   margin: 8px 12px;
   padding: 8px 12px;
