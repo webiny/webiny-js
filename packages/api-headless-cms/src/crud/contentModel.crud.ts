@@ -54,7 +54,7 @@ import { validateModelFields } from "~/crud/contentModel/validateModelFields";
  */
 const ensureTypeTag = (model: Pick<CmsModel, "tags">) => {
     // Let's make sure we have a `type` tag assigned.
-    // If `type` tag is not set, set it to a default one (`contentModel`).
+    // If `type` tag is not set, set it to a default one (`model`).
     const tags = model.tags || [];
     if (!tags.some(tag => tag.startsWith("type:"))) {
         tags.push("type:model");
