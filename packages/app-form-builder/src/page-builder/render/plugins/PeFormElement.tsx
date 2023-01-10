@@ -6,11 +6,12 @@ import {
     createLogFormViewDataLoader
 } from "@webiny/app-page-builder-elements/renderers/form/dataLoaders";
 import { plugins } from "@webiny/plugins";
+import { getTenantId } from "~/utils";
 
 const dataLoadersConfig = {
     apiUrl: process.env.REACT_APP_API_URL + "/graphql",
     includeHeaders: {
-        "x-tenant": "root"
+        "x-tenant": getTenantId()
     }
 };
 

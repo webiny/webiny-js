@@ -161,9 +161,7 @@ const theme = createTheme({
                 ol: {
                     listStyleType: "decimal"
                 }
-            },
-            grid: { "mobile-landscape": { flexWrap: "wrap" } },
-            cell: { "mobile-landscape": { width: "100% !important" } }
+            }
         }
     }
 });

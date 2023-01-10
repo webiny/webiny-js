@@ -9,6 +9,7 @@ import { createClassName } from "@webiny/app-page-builder-elements/modifiers/att
 // Styles modifiers.
 import { createBackground } from "@webiny/app-page-builder-elements/modifiers/styles/background";
 import { createBorder } from "@webiny/app-page-builder-elements/modifiers/styles/border";
+import { createGridFlexWrap } from "@webiny/app-page-builder-elements/modifiers/styles/gridFlexWrap";
 import { createHeight } from "@webiny/app-page-builder-elements/modifiers/styles/height";
 import { createHorizontalAlign } from "@webiny/app-page-builder-elements/modifiers/styles/horizontalAlign";
 import { createMargin } from "@webiny/app-page-builder-elements/modifiers/styles/margin";
@@ -25,36 +26,7 @@ import { Theme } from "@webiny/app-theme/types";
 import { plugins } from "@webiny/plugins";
 import { PbEditorPageElementPlugin } from "~/types";
 
-
 import { ElementControls } from "./EditorPageElementsProvider/ElementControls";
-
-const DONEEEEE = [
-    "block",
-    "button",
-    "cell",
-    // Code
-    "codesandbox",
-
-    "document",
-
-    "iframe",
-    "form",
-    "grid",
-    "heading",
-    "icon",
-    "image",
-    // "images-list",
-    "list",
-    "pages-list",
-    "paragraph",
-    "quote",
-    // Social
-    "twitter",
-    "pinterest",
-    "youtube",
-    "vimeo",
-    "soundcloud",
-];
 
 export const EditorPageElementsProvider: React.FC = ({ children }) => {
     const pageBuilder = usePageBuilder();
@@ -62,16 +34,13 @@ export const EditorPageElementsProvider: React.FC = ({ children }) => {
     const renderers = plugins
         .byType<PbEditorPageElementPlugin>("pb-editor-page-element")
         .reduce((current, item) => {
-            if (DONEEEEE.includes(item.elementType)) {
-                return { ...current, [item.elementType]: item.render };
-            }
-            return { ...current, [item.elementType]: item.renderer };
+            return { ...current, [item.elementType]: item.render };
         }, {});
 
     const modifiers = {
         attributes: {
             id: createId(),
-            className: createClassName(),
+            className: createClassName()
 
             // TODO: fix animation preview in editor.
             // animation: createAnimation()
@@ -79,6 +48,7 @@ export const EditorPageElementsProvider: React.FC = ({ children }) => {
         styles: {
             background: createBackground(),
             border: createBorder(),
+            gridFlexWrap: createGridFlexWrap(),
             height: createHeight(),
             horizontalAlign: createHorizontalAlign(),
             margin: createMargin(),

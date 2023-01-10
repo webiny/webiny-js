@@ -56,7 +56,7 @@ export const LIST_PUBLISHED_PAGES = /* GraphQL */ `
 export interface CreateDefaultDataLoaderParams {
     apiUrl: string;
     query?: string;
-    includeHeaders?: Record<string, any>;
+    includeHeaders?: Record<string, string>;
 }
 
 export type CreateDefaultDataLoader = (params: CreateDefaultDataLoaderParams) => DataLoader;
@@ -72,12 +72,20 @@ export const createDefaultDataLoader: CreateDefaultDataLoader = ({
         );
     }
 
+    // Let's remove non-string values from the headers object.
+    const sanitizedHeaders:Record<string,string> = {};
+    for (const key in includeHeaders) {
+        if (typeof includeHeaders[key] === 'string') {
+            sanitizedHeaders[key] = includeHeaders[key];
+        }
+    }
+
     return ({ variables }) => {
         return fetch(apiUrl, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                ...includeHeaders
+                ...sanitizedHeaders
             },
             body: JSON.stringify({
                 query,

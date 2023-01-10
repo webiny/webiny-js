@@ -11,7 +11,7 @@ import { PluginCollection } from "@webiny/plugins/types";
 import { createPagesList } from "@webiny/app-page-builder-elements/renderers/pagesList";
 import { createDefaultDataLoader } from "@webiny/app-page-builder-elements/renderers/pagesList/dataLoaders";
 import { plugins } from "@webiny/plugins";
-import { isLegacyRenderingEngine } from "~/utils";
+import { getTenantId, isLegacyRenderingEngine } from "~/utils";
 import { createDefaultPagesListComponent } from "@webiny/app-page-builder-elements/renderers/pagesList/pagesListComponents";
 
 export default (args: PbRenderElementPluginArgs = {}): PluginCollection => {
@@ -26,7 +26,7 @@ export default (args: PbRenderElementPluginArgs = {}): PluginCollection => {
                 dataLoader: createDefaultDataLoader({
                     apiUrl: process.env.REACT_APP_API_URL + "/graphql",
                     includeHeaders: {
-                        "x-tenant": "root"
+                        "x-tenant": getTenantId()
                     }
                 }),
                 pagesListComponents: () => {
