@@ -17,8 +17,7 @@ import {
 import { useCallback, useEffect, useRef, useState } from "react";
 import * as React from "react";
 import { createPortal } from "react-dom";
-
-import LinkPreview from "../../ui/LinkPreview";
+import { LinkPreview } from "../../ui/LinkPreview";
 import { getSelectedNode } from "../../utils/getSelectedNode";
 import { sanitizeUrl } from "../../utils/sanitizeUrl";
 import { setFloatingElemPosition } from "../../utils/setFloatingElemPosition";

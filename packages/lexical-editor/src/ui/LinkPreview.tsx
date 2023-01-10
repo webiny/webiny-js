@@ -88,7 +88,7 @@ function Glimmer(props: { style: CSSProperties; index: number }): JSX.Element {
     );
 }
 
-export default function LinkPreview({
+export function LinkPreview({
     url
 }: Readonly<{
     url: string;
