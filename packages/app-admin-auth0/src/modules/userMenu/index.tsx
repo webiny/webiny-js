@@ -8,7 +8,7 @@ import {
 import { UserInfo } from "~/modules/userMenu/userInfo";
 import { SignOut } from "~/modules/userMenu/signOut";
 import { UserImage } from "~/modules/userMenu/userImage";
-import { ExitTenant } from "~/modules/userMenu/exitTenant";
+import { ExitTenant } from "./exitTenant";
 
 const UserImageHOC = (): React.FC => {
     return function UserImageHOC() {
