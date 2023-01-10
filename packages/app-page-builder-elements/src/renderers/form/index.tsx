@@ -38,7 +38,6 @@ export const createForm = (params: CreateFormParams) => {
 
         // Let's cache the data retrieved by the data loader and make the UX a bit smoother.
         const cache = useRef<Record<string, FormData>>({});
-        console.log(cache.current);
         const variablesHash = JSON.stringify(variables);
 
         useEffect(() => {
@@ -50,7 +49,6 @@ export const createForm = (params: CreateFormParams) => {
                     setLoading(true);
                     dataLoaders.getForm({ variables }).then(formData => {
                         setFormFormData(formData);
-                        console.log("estam hash");
                         cache.current[variablesHash] = formData;
                         setLoading(false);
                     });

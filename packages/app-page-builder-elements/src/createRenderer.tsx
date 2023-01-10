@@ -12,19 +12,19 @@ interface GetStylesParams {
     element: Element;
 }
 
-type CreateRendererOptions = Partial<{
-    propsAreEqual: <T = {}>(prevProps: T, nextProps: T) => boolean;
+export type CreateRendererOptions<TRenderComponentProps> = Partial<{
+    propsAreEqual: (prevProps: TRenderComponentProps, nextProps: TRenderComponentProps) => boolean;
     themeStyles: StylesObject | ((params: GetStylesParams) => StylesObject);
     baseStyles: StylesObject | ((params: GetStylesParams) => StylesObject);
 }>;
 
-const DEFAULT_RENDERER_STYLES: StylesObject = { display: "block", position: "relative" };
+const DEFAULT_RENDERER_STYLES: StylesObject = { display: "block", position: "relative", width: '100%' };
 
-export function createRenderer<T = {}>(
-    RendererComponent: React.ComponentType<T>,
-    options: CreateRendererOptions = {}
-): Renderer<T> {
-    const renderer: Renderer<T> = function Renderer(props) {
+export function createRenderer<TRenderComponentProps = {}>(
+    RendererComponent: React.ComponentType<TRenderComponentProps>,
+    options: CreateRendererOptions<TRenderComponentProps> = {}
+): Renderer<TRenderComponentProps> {
+    const renderer: Renderer<TRenderComponentProps> = function Renderer(props) {
         const {
             getElementStyles,
             getStyles,
@@ -91,7 +91,7 @@ export function createRenderer<T = {}>(
                         { ...attributes, class: className },
                         <>
                             {BeforeRenderer ? <BeforeRenderer /> : null}
-                            <RendererComponent {...(componentProps as unknown as T)} />
+                            <RendererComponent {...(componentProps as unknown as TRenderComponentProps)} />
                             {AfterRenderer ? <AfterRenderer /> : null}
                         </>
                     )}
@@ -102,10 +102,11 @@ export function createRenderer<T = {}>(
         return <O />;
     };
 
+
     return React.memo(renderer, (prevProps, nextProps) => {
         const { propsAreEqual } = options;
         if (propsAreEqual) {
-            if (propsAreEqual(prevProps as T, nextProps as T) === false) {
+            if (propsAreEqual(prevProps as TRenderComponentProps, nextProps as TRenderComponentProps) === false) {
                 return false;
             }
         }

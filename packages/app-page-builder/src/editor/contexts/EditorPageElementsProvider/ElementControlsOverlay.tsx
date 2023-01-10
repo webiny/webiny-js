@@ -4,8 +4,7 @@ import styled from "@emotion/styled";
 import { CSSObject } from "@emotion/core";
 import { useActiveElementId } from "~/editor/hooks/useActiveElementId";
 import { useRenderer } from "@webiny/app-page-builder-elements";
-import { useRecoilValue } from "recoil";
-import { uiAtom } from "~/editor/recoil/modules";
+import { useUI } from "~/editor/hooks/useUI";
 
 const ACTIVE_COLOR = "var(--mdc-theme-primary)";
 const HOVER_COLOR = "var(--mdc-theme-secondary)";
@@ -25,7 +24,7 @@ interface Props {
 }
 
 export const ElementControlsOverlay: React.FC<Props> = props => {
-    const { isDragging } = useRecoilValue(uiAtom);
+    const [{ isDragging }] = useUI();
     const [activeElementId, setActiveElementId] = useActiveElementId();
 
     const { getElement, meta } = useRenderer();

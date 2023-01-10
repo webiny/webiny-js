@@ -6,12 +6,8 @@ import { useRenderer } from "~/hooks/useRenderer";
 
 export const createSoundcloud = () => {
     return createRenderer(() => {
-        const { getAttributes, getElement } = useRenderer();
+        const { getElement } = useRenderer();
 
-        return (
-            <div {...getAttributes()}>
-                <OEmbed element={getElement()} />
-            </div>
-        );
+        return <OEmbed element={getElement()} />;
     });
 };

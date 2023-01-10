@@ -6,6 +6,12 @@ import { ApolloDynamicLink } from "@webiny/app/plugins/ApolloDynamicLink";
 import { plugins } from "@webiny/plugins";
 import { ApolloCacheObjectIdPlugin } from "@webiny/app/plugins/ApolloCacheObjectIdPlugin";
 
+declare global {
+    interface Window {
+        getApolloState: () => Record<string,any>;
+    }
+}
+
 export const createApolloClient = () => {
     const cache = new InMemoryCache({
         addTypename: true,
@@ -38,10 +44,9 @@ export const createApolloClient = () => {
     const uri = process.env.REACT_APP_GRAPHQL_API_URL;
     const link = ApolloLink.from([new ApolloDynamicLink(), new BatchHttpLink({ uri })]);
 
-    // @ts-ignore
     window.getApolloState = () => {
-        // @ts-ignore
-        return cache.data.data;
+        // @ts-ignore `cache.data` is marked as private in the `apollo-cache-inmemory` package.
+        return cache?.data?.data;
     };
 
     return new ApolloClient({ link, cache });

@@ -3,7 +3,7 @@ import { FileManager, SingleImageUploadProps } from "@webiny/app-admin";
 import { UpdateElementActionEvent } from "~/editor/recoil/actions";
 import pick from "lodash/pick";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
-import { createImage } from "@webiny/app-page-builder-elements/renderers/image";
+import { ImageRendererComponent } from "@webiny/app-page-builder-elements/renderers/image";
 import { AddImageIconWrapper, AddImageWrapper } from "@webiny/ui/ImageUpload/styled";
 import { ReactComponent as AddImageIcon } from "@webiny/ui/ImageUpload/icons/round-add_photo_alternate-24px.svg";
 import { Typography } from "@webiny/ui/Typography";
@@ -21,8 +21,6 @@ const RenderBlank = (props: { onClick?: () => void }) => {
         </AddImageWrapper>
     );
 };
-
-const Image = createImage();
 
 const PeImage = createRenderer(() => {
     const { getElement } = useRenderer();
@@ -62,8 +60,7 @@ const PeImage = createRenderer(() => {
             <FileManager
                 onChange={onChange}
                 render={({ showFileManager }) => (
-                    <Image
-                        element={element}
+                    <ImageRendererComponent
                         onClick={() => showFileManager()}
                         renderEmpty={<RenderBlank onClick={showFileManager} />}
                         value={variableValue}
@@ -78,8 +75,7 @@ const PeImage = createRenderer(() => {
     }
 
     return (
-        <Image
-            element={element}
+        <ImageRendererComponent
             renderEmpty={<RenderBlank />}
             value={variableValue}
             // Even if the link might've been applied via the right sidebar, we still don't

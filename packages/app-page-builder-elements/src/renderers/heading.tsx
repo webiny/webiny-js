@@ -18,7 +18,8 @@ export const createHeading = () => {
             });
         },
         {
-            baseStyles: { width: "100%" }
+
+
         }
     );
 };

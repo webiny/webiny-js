@@ -6,12 +6,9 @@ import { useRenderer } from "~/hooks/useRenderer";
 
 export const createCodesandbox = () => {
     return createRenderer(() => {
-        const { getAttributes, getElement } = useRenderer();
+        const { getElement } = useRenderer();
+        const element = getElement();
 
-        return (
-            <div {...getAttributes()}>
-                <OEmbed element={getElement()} />
-            </div>
-        );
+        return <OEmbed element={element} />;
     });
 };

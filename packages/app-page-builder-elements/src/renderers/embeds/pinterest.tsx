@@ -57,12 +57,8 @@ const Pinterest: PinterestComponent = ({ element }) => {
 
 export const createPinterest = () => {
     return createRenderer(() => {
-        const { getAttributes, getElement } = useRenderer();
+        const { getElement } = useRenderer();
 
-        return (
-            <div {...getAttributes()}>
-                <Pinterest element={getElement()} />
-            </div>
-        );
+        return <Pinterest element={getElement()} />;
     });
 };

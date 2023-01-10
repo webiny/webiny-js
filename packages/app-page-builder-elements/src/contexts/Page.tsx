@@ -17,9 +17,3 @@ export const PageProvider: React.FC<PageProviderProps> = ({
 
     return <PageContext.Provider value={value}>{children}</PageContext.Provider>;
 };
-
-export const PageConsumer: React.FC = ({ children }) => (
-    <PageContext.Consumer>
-        {(props: any) => React.cloneElement(children as unknown as React.ReactElement, props)}
-    </PageContext.Consumer>
-);

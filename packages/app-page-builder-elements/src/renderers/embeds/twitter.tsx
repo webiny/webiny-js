@@ -15,11 +15,9 @@ const oembed: Partial<OEmbedProps> = {
 
 export const createTwitter = () => {
     return createRenderer(() => {
-        const { getAttributes, getElement } = useRenderer();
+        const { getElement } = useRenderer();
         return (
-            <div {...getAttributes()}>
                 <OEmbed element={getElement()} {...oembed} />
-            </div>
         );
     });
 };

@@ -21,10 +21,18 @@
   },
   "peerDependencies": {
     "react": "^17.0.2",
-    "aos": "^2.3.4"
+    "aos": "^2.3.4",
+    "react-google-recaptcha": "^2.3.4",
+    "@editorjs/editorjs": "^2.20.1"
   },
   "peerDependenciesMeta": {
     "aos": {
+      "optional": true
+    },
+    "react-google-recaptcha": {
+      "optional": true
+    },
+    "@editorjs/editorjs": {
       "optional": true
     }
   },

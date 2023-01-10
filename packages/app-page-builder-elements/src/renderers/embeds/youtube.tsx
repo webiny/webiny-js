@@ -64,12 +64,8 @@ const renderEmbed: OEmbedProps["renderEmbed"] = props => {
 
 export const createYoutube = () => {
     return createRenderer(() => {
-        const { getAttributes, getElement } = useRenderer();
+        const { getElement } = useRenderer();
 
-        return (
-            <div {...getAttributes()}>
-                <OEmbed element={getElement()} renderEmbed={renderEmbed} />
-            </div>
-        );
+        return <OEmbed element={getElement()} renderEmbed={renderEmbed} />;
     });
 };

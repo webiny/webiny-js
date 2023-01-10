@@ -20,9 +20,3 @@ export const RendererProvider: React.FC<RendererProviderProps> = ({
 
     return <RendererContext.Provider value={value}>{children}</RendererContext.Provider>;
 };
-
-export const RendererConsumer: React.FC = ({ children }) => (
-    <RendererContext.Consumer>
-        {(props: any) => React.cloneElement(children as unknown as React.ReactElement, props)}
-    </RendererContext.Consumer>
-);

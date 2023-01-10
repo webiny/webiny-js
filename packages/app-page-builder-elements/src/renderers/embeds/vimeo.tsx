@@ -59,11 +59,7 @@ const renderEmbed: OEmbedProps["renderEmbed"] = props => {
 
 export const createVimeo = () => {
     return createRenderer(() => {
-        const { getAttributes, getElement } = useRenderer();
-        return (
-            <div {...getAttributes()}>
-                <OEmbed element={getElement()} renderEmbed={renderEmbed} />
-            </div>
-        );
+        const { getElement } = useRenderer();
+        return <OEmbed element={getElement()} renderEmbed={renderEmbed} />;
     });
 };

@@ -8,10 +8,11 @@ export interface IFrameElementData {
     };
 }
 
-export const IFrame = createRenderer(() => {
-    const { getElement } = useRenderer();
+export const createIFrame = () =>
+    createRenderer(() => {
+        const { getElement } = useRenderer();
 
-    const element = getElement<IFrameElementData>();
+        const element = getElement<IFrameElementData>();
 
-    return <iframe src={element.data.iframe.url} width="100%" height="100%" />;
-});
+        return <iframe src={element.data.iframe.url} width="100%" height="100%" />;
+    });

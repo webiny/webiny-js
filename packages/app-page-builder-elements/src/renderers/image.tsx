@@ -1,8 +1,8 @@
 import React from "react";
 import styled from "@emotion/styled";
-import { createRenderer } from "~/createRenderer";
+import { createRenderer, CreateRendererOptions } from "~/createRenderer";
 import { useRenderer } from "~/hooks/useRenderer";
-import { LinkComponent } from "~/types";
+import { LinkComponent as LinkComponentType } from "~/types";
 import { DefaultLinkComponent } from "~/renderers/components";
 
 export interface ImageElementData {
@@ -20,6 +20,61 @@ export interface ImageElementData {
     };
 }
 
+export interface ImageRendererComponentProps extends Props, CreateImageParams {}
+
+export const ImageRendererComponent: React.FC<ImageRendererComponentProps> = ({
+    onClick,
+    renderEmpty,
+    value,
+    link,
+    linkComponent
+}) => {
+    const LinkComponent = linkComponent || DefaultLinkComponent;
+
+    const { getElement } = useRenderer();
+
+    const element = getElement<ImageElementData>();
+
+    let content;
+    if (element.data?.image?.file?.src) {
+        // Image has its width / height set from its own settings.
+        const PbImg = styled.img({
+            width: element.data.image.width,
+            height: element.data.image.height,
+            maxWidth: "100%"
+        });
+
+        const { title } = element.data.image;
+        const { src } = value || element.data?.image?.file;
+        content = <PbImg alt={title} title={title} src={src} onClick={onClick} />;
+    } else {
+        content = renderEmpty || null;
+    }
+
+    const linkProps = link || element.data?.link;
+    if (linkProps) {
+        const { href, newTab } = linkProps;
+        if (href) {
+            content = (
+                <LinkComponent href={href} target={newTab ? "_blank" : "_self"}>
+                    {content}
+                </LinkComponent>
+            );
+        }
+    }
+
+    return <>{content}</>;
+};
+
+export const imageRendererOptions: CreateRendererOptions<Props> = {
+    baseStyles: { width: "100%" },
+    propsAreEqual: (prevProps: Props, nextProps: Props) => {
+        return prevProps.value === nextProps.value;
+    }
+};
+
+export type ImageRenderer = ReturnType<typeof createImage>;
+
 interface Props {
     onClick?: React.MouseEventHandler<HTMLImageElement>;
     renderEmpty?: React.ReactNode;
@@ -28,55 +83,11 @@ interface Props {
 }
 
 export interface CreateImageParams {
-    linkComponent?: LinkComponent;
+    linkComponent?: LinkComponentType;
 }
 
-export type ImageRenderer = ReturnType<typeof createImage>;
-
 export const createImage = (params: CreateImageParams = {}) => {
-    const LinkComponent = params?.linkComponent || DefaultLinkComponent;
-
-    return createRenderer<Props>(
-        ({ onClick, renderEmpty, value, link }) => {
-            const { getElement } = useRenderer();
-
-            const element = getElement<ImageElementData>();
-
-            let content;
-            if (element.data?.image?.file?.src) {
-                // Image has its width / height set from its own settings.
-                const PbImg = styled.img({
-                    width: element.data.image.width,
-                    height: element.data.image.height,
-                    maxWidth: "100%"
-                });
-
-                const { title } = element.data.image;
-                const { src } = value || element.data?.image?.file;
-                content = <PbImg alt={title} title={title} src={src} onClick={onClick} />;
-            } else {
-                content = renderEmpty || null;
-            }
-
-            const linkProps = link || element.data?.link;
-            if (linkProps) {
-                const { href, newTab } = linkProps;
-                if (href) {
-                    content = (
-                        <LinkComponent href={href} target={newTab ? "_blank" : "_self"}>
-                            {content}
-                        </LinkComponent>
-                    );
-                }
-            }
-
-            return <>{content}</>;
-        },
-        {
-            baseStyles: { width: "100%" },
-            propsAreEqual: (prevProps: Props, nextProps: Props) => {
-                return prevProps.value === nextProps.value;
-            }
-        }
-    );
+    return createRenderer<Props>(props => {
+        return <ImageRendererComponent {...params} {...props} />;
+    }, imageRendererOptions);
 };

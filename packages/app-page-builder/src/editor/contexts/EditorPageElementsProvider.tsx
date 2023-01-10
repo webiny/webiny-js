@@ -32,9 +32,11 @@ const DONEEEEE = [
     "block",
     "button",
     "cell",
-    // "code",
+    // Code
+    "codesandbox",
+
     "document",
-    // embeds
+
     "iframe",
     "form",
     "grid",
@@ -45,7 +47,13 @@ const DONEEEEE = [
     "list",
     "pages-list",
     "paragraph",
-    "quote"
+    "quote",
+    // Social
+    "twitter",
+    "pinterest",
+    "youtube",
+    "vimeo",
+    "soundcloud",
 ];
 
 export const EditorPageElementsProvider: React.FC = ({ children }) => {
