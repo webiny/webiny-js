@@ -174,9 +174,7 @@ export const createPageBlocksCrud = (params: CreatePageBlocksCrudParams): PageBl
 
             const blockCategory = await this.getBlockCategory(input.blockCategory);
             if (!blockCategory) {
-                throw new NotFoundError(
-                    `Cannot create page block because failed to find such block category.`
-                );
+                throw new NotFoundError(`Block category not found!`);
             }
 
             const id: string = mdbid();
@@ -233,15 +231,17 @@ export const createPageBlocksCrud = (params: CreatePageBlocksCrudParams): PageBl
             const identity = context.security.getIdentity();
             checkOwnPermissions(identity, permission, original);
 
-            const updateDataModel = new UpdateDataModel().populate(input);
-            await updateDataModel.validate();
-
             if (input.blockCategory) {
                 const blockCategory = await this.getBlockCategory(input.blockCategory);
                 if (!blockCategory) {
                     throw new NotFoundError(`Requested page block category doesn't exist.`);
                 }
+            } else {
+                delete input["blockCategory"];
             }
+
+            const updateDataModel = new UpdateDataModel().populate(input);
+            await updateDataModel.validate();
 
             const data = await updateDataModel.toJSON({ onlyDirty: true });
 

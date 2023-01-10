@@ -77,14 +77,13 @@ export const createBlockCategoriesCrud = (
          * This method should return category or null. No error throwing on not found.
          */
         async getBlockCategory(slug, options = { auth: true }) {
-            const { auth } = options;
-
-            if (slug === "") {
-                throw new WebinyError(
-                    "Could not load block category by empty slug.",
-                    "GET_BLOCK_CATEGORY_ERROR"
-                );
+            if (!slug) {
+                throw new WebinyError({
+                    message: "Block category slug cannot be empty!",
+                    code: "GET_BLOCK_CATEGORY_EMPTY_SLUG"
+                });
             }
+            const { auth } = options;
 
             const params: BlockCategoryStorageOperationsGetParams = {
                 where: {
@@ -299,7 +298,7 @@ export const createBlockCategoriesCrud = (
             if (pageBlocks?.length > 0) {
                 throw new WebinyError(
                     "Cannot delete block category because some page blocks are linked to it.",
-                    "CANNOT_DELETE_BLOCK_CATEGORY_PAGE_BLOCK_EXISTING"
+                    "BLOCK_CATEGORY_HAS_LINKED_BLOCKS"
                 );
             }
 
