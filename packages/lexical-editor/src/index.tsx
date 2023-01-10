@@ -1,6 +1,5 @@
-// context
-export { RichTextEditorContextProps } from "~/context/RichTextEditorContext";
-export { RichTextEditorContext } from "~/context/RichTextEditorContext";
+// hooks
+export { useRichTextEditor } from "~/hooks/useRichTextEditor";
 // UI elements
 export { Divider } from "~/ui/Divider";
 export { DropDownItem } from "~/ui/DropDown";
@@ -27,13 +26,13 @@ export { RichTextEditor } from "~/components/Editor/RichTextEditor";
 export { HeadingEditor } from "~/components/Editor/HeadingEditor";
 export { ParagraphEditor } from "~/components/Editor/ParagraphEditor";
 // plugins
-export {LinkPlugin} from "@lexical/react/LexicalLinkPlugin";
+export { LinkPlugin } from "@lexical/react/LexicalLinkPlugin";
 export { FloatingLinkEditorPlugin } from "~/plugins/FloatingLinkEditorPlugin";
 export { CodeHighlightPlugin } from "~/plugins/CodeHighlightPlugin/CodeHighlightPlugin";
 export { ClickableLinkPlugin } from "~/plugins/ClickableLinkPlugin";
 // composition
-export  { AddToolbarAction } from "~/components/ToolbarComposable/AddToolbarAction";
-export { AddRichTextEditorPlugin } from "~/components/EditorComposable/AddRichTextEditorPlugin";
+export { AddToolbarAction } from "~/components/AddToolbarAction";
+export { AddRichTextEditorPlugin } from "~/components/AddRichTextEditorPlugin";
 // utils
 export { getEmptyEditorStateJSONString } from "~/utils/getEmptyEditorStateJSONString";
 // types

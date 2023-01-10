@@ -1,38 +1,42 @@
 import React, { useRef, useState } from "react";
 import { EditorStateJSONString } from "../../types";
 import { Placeholder } from "~/ui/Placeholder";
-import {getEmptyEditorStateJSONString} from "~/utils/getEmptyEditorStateJSONString";
+import { getEmptyEditorStateJSONString } from "~/utils/getEmptyEditorStateJSONString";
 import { WebinyNodes } from "~/nodes/webinyNodes";
 import { theme } from "~/themes/webinyLexicalTheme";
-import {EditorState} from "lexical/LexicalEditorState";
-import {LexicalEditor} from "lexical";
-import {LexicalComposer} from "@lexical/react/LexicalComposer";
-import {OnChangePlugin} from "@lexical/react/LexicalOnChangePlugin";
-import {AutoFocusPlugin} from "@lexical/react/LexicalAutoFocusPlugin";
-import {ClearEditorPlugin} from "@lexical/react/LexicalClearEditorPlugin";
-import {RichTextPlugin} from "@lexical/react/LexicalRichTextPlugin";
+import { EditorState } from "lexical/LexicalEditorState";
+import { Klass, LexicalEditor, LexicalNode } from "lexical";
+import { LexicalComposer } from "@lexical/react/LexicalComposer";
+import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
+import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
+import { ClearEditorPlugin } from "@lexical/react/LexicalClearEditorPlugin";
+import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
 import { makeComposable } from "@webiny/react-composition";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
-import {RichTextEditorProvider} from "~/context/RichTextEditorContext";
+import { RichTextEditorProvider } from "~/context/RichTextEditorContext";
 
-export interface RichTextEditorProps  {
-
-    toolbar: React.ReactNode,
-    /**
-     * @description Specify the html tag that this editor and toolbar action will be visible.
-     */
-    tag: string,
+export interface RichTextEditorProps {
+    toolbar: React.ReactNode;
+    tag: string;
     onChange?: (json: EditorStateJSONString) => void;
     value: EditorStateJSONString | undefined | null;
     placeholder?: string;
+    nodes?: Klass<LexicalNode>[];
     /**
      * @description Lexical plugins
      */
     children?: React.ReactNode | React.ReactNode[];
 }
 
-const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({ toolbar, onChange, value, placeholder, children }: RichTextEditorProps) => {
+const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
+    toolbar,
+    onChange,
+    value,
+    nodes,
+    placeholder,
+    children
+}: RichTextEditorProps) => {
     const placeholderElem = <Placeholder>{placeholder || "Enter text..."}</Placeholder>;
     const scrollRef = useRef(null);
     const [floatingAnchorElem, setFloatingAnchorElem] = useState<HTMLElement | undefined>(
@@ -51,7 +55,7 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({ toolbar, onChange, 
         onError: (error: Error) => {
             throw error;
         },
-        nodes: [...WebinyNodes],
+        nodes: [...WebinyNodes, ...(nodes || [])],
         theme: theme
     };
 
@@ -65,42 +69,36 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({ toolbar, onChange, 
     }
 
     return (
-
-            <LexicalComposer initialConfig={initialConfig}>
-                <div ref={scrollRef}>
-                    <OnChangePlugin onChange={handleOnChange} />
-                    <AutoFocusPlugin />
-                    <ClearEditorPlugin />
-                    {children}
-                    <RichTextPlugin
-                        contentEditable={
-                            <div className="editor-scroller">
-                                <div className="editor" ref={onRef}>
-                                    <ContentEditable />
-                                </div>
+        <LexicalComposer initialConfig={initialConfig}>
+            <div ref={scrollRef}>
+                <OnChangePlugin onChange={handleOnChange} />
+                <AutoFocusPlugin />
+                <ClearEditorPlugin />
+                {children}
+                <RichTextPlugin
+                    contentEditable={
+                        <div className="editor-scroller">
+                            <div className="editor" ref={onRef}>
+                                <ContentEditable />
                             </div>
-                        }
-                        placeholder={placeholderElem}
-                        ErrorBoundary={LexicalErrorBoundary}
-                    />
-                    {floatingAnchorElem && (
-                        toolbar
-                    )}
-                </div>
-            </LexicalComposer>
+                        </div>
+                    }
+                    placeholder={placeholderElem}
+                    ErrorBoundary={LexicalErrorBoundary}
+                />
+                {floatingAnchorElem && toolbar}
+            </div>
+        </LexicalComposer>
     );
-}
+};
 
 /**
  * @description Main editor container
  */
-export const RichTextEditor = makeComposable<RichTextEditorProps>(
-    "RichTextEditor",
-    (props): JSX.Element | null => {
-       return (
-           <RichTextEditorProvider>
-               <BaseRichTextEditor {...props} />
-           </RichTextEditorProvider>
-       );
-    }
-);
+export const RichTextEditor = makeComposable<RichTextEditorProps>("RichTextEditor", props => {
+    return (
+        <RichTextEditorProvider>
+            <BaseRichTextEditor {...props} />
+        </RichTextEditorProvider>
+    );
+});

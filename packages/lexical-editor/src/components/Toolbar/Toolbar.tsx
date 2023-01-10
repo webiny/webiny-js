@@ -1,7 +1,10 @@
-// @ts-ignore
-
+import React, { FC, useCallback, useEffect, useRef } from "react";
+import { $isCodeHighlightNode } from "@lexical/code";
+import { createPortal } from "react-dom";
+import { mergeRegister } from "@lexical/utils";
+import { $isLinkNode } from "@lexical/link";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { makeComposable } from "@webiny/react-composition";
-import React, {FC, useCallback, useContext, useEffect, useRef } from "react";
 import { ToolbarType } from "~/types";
 import {
     $getSelection,
@@ -13,14 +16,9 @@ import {
 } from "lexical";
 import { getDOMRangeRect } from "~/utils/getDOMRangeRect";
 import { setFloatingElemPosition } from "~/utils/setFloatingElemPosition";
-import { mergeRegister } from "@lexical/utils";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { getSelectedNode } from "~/utils/getSelectedNode";
-import { $isCodeHighlightNode } from "@lexical/code";
-import { createPortal } from "react-dom";
 import "./Toolbar.css";
-import {$isLinkNode} from "@lexical/link";
-import {RichTextEditorContext, RichTextEditorContextProps} from "~/context/RichTextEditorContext";
+import { useRichTextEditor } from "~/hooks/useRichTextEditor";
 
 interface FloatingToolbarProps {
     type: ToolbarType;
@@ -51,7 +49,6 @@ const FloatingToolbar: FC<FloatingToolbarProps> = ({ children, anchorElem, edito
             if ($isLinkNode(parent) || $isLinkNode(node)) {
                 isLink = true;
             }
-
         }
 
         const rootElement = editor.getRootElement();
@@ -133,7 +130,7 @@ const useToolbar: FC<useToolbarProps> = ({
     children
 }): JSX.Element | null => {
     // const [isText, setIsText] = useState(false);
-    const { nodeIsText, setNodeIsText  } = useContext<RichTextEditorContextProps>(RichTextEditorContext);
+    const { nodeIsText, setNodeIsText } = useRichTextEditor();
 
     const updatePopup = useCallback(() => {
         editor.getEditorState().read(() => {

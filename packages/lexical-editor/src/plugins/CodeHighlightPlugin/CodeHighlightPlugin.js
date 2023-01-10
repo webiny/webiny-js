@@ -3,9 +3,9 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { useEffect } from "react";
 
 export function CodeHighlightPlugin() {
-  const [editor] = useLexicalComposerContext();
-  useEffect(() => {
-    return registerCodeHighlighting(editor);
-  }, [editor]);
-  return null;
+    const [editor] = useLexicalComposerContext();
+    useEffect(() => {
+        return registerCodeHighlighting(editor);
+    }, [editor]);
+    return null;
 }
