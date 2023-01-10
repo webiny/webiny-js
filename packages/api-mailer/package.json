@@ -22,9 +22,9 @@
     "@webiny/plugins": "^5.33.2",
     "@webiny/pubsub": "^5.33.2",
     "crypto-js": "^4.1.1",
-    "joi": "^17.6.0",
     "lodash": "^4.17.21",
-    "nodemailer": "^6.7.6"
+    "nodemailer": "^6.7.6",
+    "zod": "^3.20.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.19.3",

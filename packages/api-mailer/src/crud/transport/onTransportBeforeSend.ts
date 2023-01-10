@@ -1,25 +1,24 @@
-import { Topic } from "@webiny/pubsub/types";
-import { TransportSendData, OnTransportBeforeSendParams } from "~/types";
-import joi, { EmailOptions } from "joi";
 import WebinyError from "@webiny/error";
+import zod from "zod";
+import { Topic } from "@webiny/pubsub/types";
+import { OnTransportBeforeSendParams } from "~/types";
+import { SafeParseReturnType } from "zod/lib/types";
 
-const options: EmailOptions = {
-    tlds: false
-};
+const requiredString = zod.string();
+const requiredEmail = requiredString.email();
 
-const requiredString = joi.string().required();
-const requiredEmail = requiredString.email(options);
-
-const schema = joi.object<TransportSendData>({
-    to: joi.array().items(requiredEmail),
-    from: joi.string().email(options),
+const schema = zod.object({
+    to: zod.array(requiredEmail),
+    from: zod.string().email(),
     subject: requiredString.max(1024),
-    cc: joi.array().items(requiredEmail),
-    bcc: joi.array().items(requiredEmail),
-    replyTo: joi.string().email(options),
+    cc: zod.array(requiredEmail),
+    bcc: zod.array(requiredEmail),
+    replyTo: zod.string().email(),
     text: requiredString.min(10),
-    html: joi.string()
+    html: zod.string()
 });
+
+type SchemaType = zod.infer<typeof schema>;
 
 interface Params {
     onTransportBeforeSend: Topic<OnTransportBeforeSendParams>;
@@ -28,14 +27,25 @@ export const attachOnTransportBeforeSend = (params: Params) => {
     const { onTransportBeforeSend } = params;
 
     onTransportBeforeSend.subscribe(async ({ data: input }) => {
-        let result: joi.ValidationResult<TransportSendData>;
+        let result: SafeParseReturnType<SchemaType, SchemaType>;
         try {
-            result = await schema.validate(input);
+            result = schema.safeParse(input);
 
-            if (!result.error) {
+            if (result.success) {
                 return;
             }
+            throw new WebinyError({
+                message: "Error while validating e-mail params.",
+                code: "VALIDATION_ERROR",
+                data: {
+                    error: result.error,
+                    input
+                }
+            });
         } catch (ex) {
+            if (ex instanceof WebinyError) {
+                throw ex;
+            }
             throw new WebinyError({
                 message: "Error while validating e-mail params.",
                 code: "VALIDATION_ERROR",
@@ -45,12 +55,5 @@ export const attachOnTransportBeforeSend = (params: Params) => {
                 }
             });
         }
-        throw new WebinyError({
-            message: "Error while validating e-mail params.",
-            code: "VALIDATION_ERROR",
-            data: {
-                ...result.error
-            }
-        });
     });
 };
