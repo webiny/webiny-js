@@ -94,7 +94,7 @@ function FloatingLinkEditor({
     const removeLink = () => {
         editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
         setEditMode(false);
-    }
+    };
 
     useEffect(() => {
         const scrollerElem = anchorElem.parentElement;

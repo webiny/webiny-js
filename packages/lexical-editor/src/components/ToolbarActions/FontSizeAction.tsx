@@ -1,5 +1,7 @@
-import React, {useCallback, useEffect, useState} from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { $getSelectionStyleValueForProperty, $patchStyleText } from "@lexical/selection";
+import { mergeRegister } from "@lexical/utils";
 import {
     $getSelection,
     $isRangeSelection,
@@ -7,37 +9,38 @@ import {
     LexicalEditor,
     SELECTION_CHANGE_COMMAND
 } from "lexical";
-import { DropDown, DropDownItem} from "../../ui/DropDown";
-import {$getSelectionStyleValueForProperty, $patchStyleText} from "@lexical/selection";
-import {mergeRegister} from "@lexical/utils";
+import { DropDown, DropDownItem } from "../../ui/DropDown";
+
 
 /**
  * Toolbar action. Allow user to change font size for selected text.
  */
 
 const FONT_SIZE_OPTIONS: [string, string][] = [
-    ['8px', '8px'],
-    ['9px', '9px'],
-    ['10px', '10px'],
-    ['11px', '11px'],
-    ['12px', '12px'],
-    ['14px', '14px'],
-    ['15px', '15px'],
-    ['16px', '16px'],
-    ['18px', '18px'],
-    ['21px', '21px'],
-    ['24px', '24px'],
-    ['30px', '30px'],
-    ['36px', '36px'],
-    ['48px', '48px'],
-    ['60px', '60px'],
-    ['72px', '72px'],
-    ['96px', '96px'],
+    ["8px", "8px"],
+    ["9px", "9px"],
+    ["10px", "10px"],
+    ["11px", "11px"],
+    ["12px", "12px"],
+    ["14px", "14px"],
+    ["15px", "15px"],
+    ["16px", "16px"],
+    ["18px", "18px"],
+    ["21px", "21px"],
+    ["24px", "24px"],
+    ["30px", "30px"],
+    ["36px", "36px"],
+    ["48px", "48px"],
+    ["60px", "60px"],
+    ["72px", "72px"],
+    ["96px", "96px"]
 ];
 
 function dropDownActiveClass(active: boolean) {
-    if (active) { return 'active dropdown-item-active'; }
-     return '';
+    if (active) {
+        return "active dropdown-item-active";
+    }
+    return "";
 }
 
 interface FontSizeDropDownProps {
@@ -47,19 +50,19 @@ interface FontSizeDropDownProps {
 }
 
 function FontSizeDropDown(props: FontSizeDropDownProps): JSX.Element {
-    const { editor, value, disabled = false} = props;
+    const { editor, value, disabled = false } = props;
     const handleClick = useCallback(
         (option: string) => {
             editor.update(() => {
                 const selection = $getSelection();
                 if ($isRangeSelection(selection)) {
                     $patchStyleText(selection, {
-                        ["font-size"]: option,
+                        ["font-size"]: option
                     });
                 }
             });
         },
-        [editor],
+        [editor]
     );
 
     return (
@@ -67,17 +70,17 @@ function FontSizeDropDown(props: FontSizeDropDownProps): JSX.Element {
             disabled={disabled}
             buttonClassName="toolbar-item font-size"
             buttonLabel={value}
-            buttonAriaLabel={"Formatting options for font size"}>
-            {(FONT_SIZE_OPTIONS).map(
-                ([option, text]) => (
-                    <DropDownItem
-                        className={`item fontsize-item ${dropDownActiveClass(value === option)}`}
-                        onClick={() => handleClick(option)}
-                        key={option}>
-                        <span className="text">{text}</span>
-                    </DropDownItem>
-                ),
-            )}
+            buttonAriaLabel={"Formatting options for font size"}
+        >
+            {FONT_SIZE_OPTIONS.map(([option, text]) => (
+                <DropDownItem
+                    className={`item fontsize-item ${dropDownActiveClass(value === option)}`}
+                    onClick={() => handleClick(option)}
+                    key={option}
+                >
+                    <span className="text">{text}</span>
+                </DropDownItem>
+            ))}
         </DropDown>
     );
 }
@@ -91,23 +94,22 @@ export const FontSizeAction = () => {
     const updateToolbar = useCallback(() => {
         const selection = $getSelection();
         if ($isRangeSelection(selection)) {
-            setFontSize(
-                $getSelectionStyleValueForProperty(selection, 'font-size', '15px')
-            );
+            setFontSize($getSelectionStyleValueForProperty(selection, "font-size", "15px"));
         }
     }, [activeEditor]);
 
     useEffect(() => {
         return mergeRegister(
-            editor.registerEditableListener((editable) => {
+            editor.registerEditableListener(editable => {
                 setIsEditable(editable);
             }),
-            activeEditor.registerUpdateListener(({editorState}) => {
+            activeEditor.registerUpdateListener(({ editorState }) => {
                 editorState.read(() => {
                     updateToolbar();
                 });
-            }));
-    },[activeEditor, editor, updateToolbar]);
+            })
+        );
+    }, [activeEditor, editor, updateToolbar]);
 
     useEffect(() => {
         return editor.registerCommand(
@@ -117,16 +119,12 @@ export const FontSizeAction = () => {
                 setActiveEditor(newEditor);
                 return false;
             },
-            COMMAND_PRIORITY_CRITICAL,
+            COMMAND_PRIORITY_CRITICAL
         );
     }, [editor, updateToolbar]);
     return (
         <>
-            <FontSizeDropDown
-                disabled={!isEditable}
-                value={fontSize}
-                editor={editor}
-            />
+            <FontSizeDropDown disabled={!isEditable} value={fontSize} editor={editor} />
         </>
     );
 };

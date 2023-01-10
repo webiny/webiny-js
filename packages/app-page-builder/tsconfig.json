@@ -6,7 +6,7 @@
     { "path": "../app-admin" },
     { "path": "../app-i18n" },
     { "path": "../app-page-builder-elements" },
-    { "path": "../lexical-editor"},
+    { "path": "../lexical-editor" },
     { "path": "../app-plugin-admin-welcome-screen" },
     { "path": "../app-security" },
     { "path": "../app-tenancy" },

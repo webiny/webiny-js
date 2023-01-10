@@ -107,4 +107,3 @@ export const theme: EditorThemeClasses = {
         underlineStrikethrough: "PlaygroundEditorTheme__textUnderlineStrikethrough"
     }
 };
-

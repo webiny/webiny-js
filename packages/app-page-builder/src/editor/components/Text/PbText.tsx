@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo} from "react";
+import React, { useCallback, useMemo } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import get from "lodash/get";
 import classNames from "classnames";
@@ -72,7 +72,13 @@ const PbText: React.FC<TextElementProps> = ({ elementId, mediumEditorOptions, ro
             element={element}
             className={classNames(textClassName, rootClassName, typography)}
         >
-            <RichTextLexicalEditor tag={tag} value={null} onChange={(json) => {console.log(json)}} />
+            <RichTextLexicalEditor
+                tag={tag}
+                value={null}
+                onChange={json => {
+                    console.log(json);
+                }}
+            />
             {"do not show medium editor" === elementId ? (
                 <ReactMediumEditor
                     elementId={elementId}
