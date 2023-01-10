@@ -1,4 +1,4 @@
-import { LinkItem } from "@webiny/app-folders/types";
+import { LinkItem } from "@webiny/app-aco/types";
 import { GetPageQueryResponse, GetPageQueryVariables } from "~/pageEditor/graphql";
 import { GET_PAGE } from "~/admin/graphql/pages";
 import { useApolloClient } from "@apollo/react-hooks";
@@ -8,7 +8,7 @@ import { FOLDER_ID_DEFAULT } from "~/admin/constants/folders";
 import { useSnackbar } from "@webiny/app-admin";
 import { i18n } from "@webiny/app/i18n";
 import { useAdminPageBuilder } from "~/admin/hooks/useAdminPageBuilder";
-import { useLinks } from "@webiny/app-folders";
+import { useLinks } from "@webiny/app-aco";
 
 const t = i18n.ns("app-headless-cms/app-page-builder/pages-table/get-pages");
 

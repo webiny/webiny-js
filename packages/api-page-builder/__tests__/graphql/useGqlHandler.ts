@@ -73,7 +73,6 @@ import fs from "fs";
 import { until } from "@webiny/project-utils/testing/helpers/until";
 import { createTenancyAndSecurity } from "../tenancySecurity";
 import { getStorageOperations } from "../storageOperations";
-import { createFolders } from "../folders";
 
 interface Params {
     permissions?: any;
@@ -105,7 +104,6 @@ export default ({ permissions, identity, plugins, storageOperationPlugins }: Par
                 storageOperations: ops.storageOperations
             }),
             prerenderingHookPlugins(),
-            ...createFolders(),
             prerenderingServicePlugins({
                 handlers: {
                     render: "render",

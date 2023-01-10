@@ -65,10 +65,6 @@ const categories = [
     "Webiny Page and Form Builder and CMS"
 ];
 
-const getIt = (name = "") => {
-    return name.match("elasticsearch") !== null ? it : it.skip;
-};
-
 describe(`graphql "and" queries`, () => {
     const manager = useCategoryManageHandler({
         path: "manage/en-US"
@@ -107,8 +103,6 @@ describe(`graphql "and" queries`, () => {
             });
         }
     };
-
-    const it = getIt(manager.storageOperations.name);
 
     beforeEach(async () => {
         await createProducts();
