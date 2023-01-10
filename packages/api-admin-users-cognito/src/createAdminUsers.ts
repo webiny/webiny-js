@@ -47,8 +47,8 @@ export const createAdminUsers = ({
     const onUserBeforeDelete = createTopic("adminUsers.onDeleteBefore");
     const onUserBeforeUpdate = createTopic("adminUsers.onUpdateBefore");
     const onUserCreateError = createTopic("adminUsers.onCreateError");
-    // const onUserUpdateError =createTopic("adminUsers.onUpdateError");
-    // const onUserDeleteError =createTopic("adminUsers.onDeleteError");
+    const onUserUpdateError = createTopic("adminUsers.onUpdateError");
+    const onUserDeleteError = createTopic("adminUsers.onDeleteError");
     const onBeforeInstall = createTopic("adminUsers.onSystemBeforeInstall");
     const onSystemBeforeInstall = createTopic("adminUsers.onSystemBeforeInstall");
     const onInstall = createTopic("adminUsers.onSystemInstall");
@@ -69,8 +69,8 @@ export const createAdminUsers = ({
         onUserBeforeDelete,
         onUserBeforeUpdate,
         onUserCreateError,
-        // onUserUpdateError,
-        // onUserDeleteError,
+        onUserUpdateError,
+        onUserDeleteError,
         onBeforeInstall,
         onSystemBeforeInstall,
         onInstall,
@@ -129,7 +129,7 @@ export const createAdminUsers = ({
             await incrementWcpSeats();
 
             try {
-                await this.onUserBeforeCreate.publish({ user, inputData: data });
+                await onUserBeforeCreate.publish({ user, inputData: data });
                 /**
                  * Always delete `password` from the user data!
                  */
@@ -144,7 +144,7 @@ export const createAdminUsers = ({
                     });
                 }
                 try {
-                    await this.onUserAfterCreate.publish({ user: result, inputData: data });
+                    await onUserAfterCreate.publish({ user: result, inputData: data });
                 } catch (err) {
                     console.log("@webiny/api-admin-users-cognito/src/createAdminUsers.ts");
                     // Not sure if we care about errors in `onAfterCreate`.
@@ -155,7 +155,7 @@ export const createAdminUsers = ({
 
                 loaders.getUser.clear(result.id).prime(result.id, result);
             } catch (e) {
-                await this.onUserCreateError.publish({
+                await onUserCreateError.publish({
                     user,
                     inputData: data,
                     error: e
@@ -182,16 +182,16 @@ export const createAdminUsers = ({
             }
 
             try {
-                await this.onUserBeforeDelete.publish({ user });
+                await onUserBeforeDelete.publish({ user });
                 await storageOperations.deleteUser({ user });
                 loaders.clearLoadersCache([{ tenant: getTenant(), id }]);
 
                 // Notify WCP about the deleted user.
                 await decrementWcpSeats();
 
-                await this.onUserAfterDelete.publish({ user });
+                await onUserAfterDelete.publish({ user });
             } catch (err) {
-                await this.onUserDeleteError.publish({
+                await onUserDeleteError.publish({
                     user,
                     error: err
                 });
@@ -248,7 +248,7 @@ export const createAdminUsers = ({
             const updateData = cloneDeep(data);
 
             try {
-                await this.onUserBeforeUpdate.publish({
+                await onUserBeforeUpdate.publish({
                     user: originalUser,
                     updateData,
                     inputData: data
@@ -258,7 +258,7 @@ export const createAdminUsers = ({
 
                 await storageOperations.updateUser({ user: updatedUser });
 
-                await this.onUserAfterUpdate.publish({
+                await onUserAfterUpdate.publish({
                     originalUser,
                     updatedUser,
                     inputData: data
@@ -268,7 +268,7 @@ export const createAdminUsers = ({
 
                 return updatedUser;
             } catch (err) {
-                await this.onUserUpdateError.publish({
+                await onUserUpdateError.publish({
                     user: originalUser,
                     inputData: data,
                     error: err
@@ -331,11 +331,11 @@ export const createAdminUsers = ({
             const installEvent = { tenant: getTenant(), user };
 
             try {
-                await this.onSystemBeforeInstall.publish(installEvent);
-                await this.onInstall.publish(installEvent);
-                await this.onSystemAfterInstall.publish(installEvent);
+                await onSystemBeforeInstall.publish(installEvent);
+                await onInstall.publish(installEvent);
+                await onSystemAfterInstall.publish(installEvent);
             } catch (err) {
-                await this.onCleanup.publish({ error: err, tenant: getTenant(), user });
+                await onCleanup.publish({ error: err, tenant: getTenant(), user });
 
                 throw WebinyError.from(err, { message: "ADMIN_USERS_INSTALL_ABORTED" });
             }
