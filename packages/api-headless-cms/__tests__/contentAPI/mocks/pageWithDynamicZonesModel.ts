@@ -15,13 +15,13 @@ export const pageModel: CmsModel = {
     savedOn: "2022-12-19T19:10:02.731Z",
     titleFieldId: "id",
     lockedFields: [],
-    layout: [["kcq9kt40"], ["peeeyhtc"]],
+    layout: [["kcq9kt40"], ["peeeyhtc"], ["t4pfesadsa"]],
     tags: ["type:model"],
     fields: [
         {
             id: "peeeyhtc",
             fieldId: "content",
-            storageId: "dynamic-zone@peeeyhtc",
+            storageId: "dynamic-zone@peeeyhtc", // storage ID does not have any effect
             type: "dynamicZone",
             label: "Content",
             tags: [],
@@ -114,6 +114,57 @@ export const pageModel: CmsModel = {
                                 }
                             }
                         ]
+                    },
+                    {
+                        layout: [["ttyh493ugfd"]],
+                        name: "Objecting",
+                        gqlTypeName: "Objecting",
+                        icon: "fas/file-text",
+                        description: "Objecting test.",
+                        id: "9ht43gurhegkbdfsaafyads",
+                        fields: [
+                            {
+                                id: "ttyh493ugfd",
+                                fieldId: "nestedObject",
+                                storageId: "someMockStorageIdWhichIsNotUsed",
+                                label: "Nested Object",
+                                type: "object",
+                                settings: {
+                                    fields: [
+                                        {
+                                            id: "rt3uhvds",
+                                            fieldId: "objectTitle",
+                                            storageId: "objectTitleStorageId",
+                                            type: "text",
+                                            label: "Object title"
+                                        },
+                                        {
+                                            id: "r329gdfhsaufdsa",
+                                            fieldId: "objectNestedObject",
+                                            storageId: "objectNestedObjectStorageId",
+                                            type: "object",
+                                            label: "Object nested object",
+                                            multipleValues: true,
+                                            settings: {
+                                                fields: [
+                                                    {
+                                                        id: "g9huerprgds",
+                                                        fieldId: "nestedObjectNestedTitle",
+                                                        storageId:
+                                                            "nestedObjectNestedTitleStorageId",
+                                                        type: "text",
+                                                        label: "Nested object nested title"
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    ]
+                                },
+                                renderer: {
+                                    name: "dynamicZone"
+                                }
+                            }
+                        ]
                     }
                 ]
             }
@@ -195,6 +246,68 @@ export const pageModel: CmsModel = {
                                 type: "file",
                                 validation: [],
                                 fieldId: "image"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            id: "t4pfesadsa",
+            fieldId: "objective",
+            storageId: "dynamicZone@objectiveStorageId",
+            type: "dynamicZone",
+            label: "Objective",
+            settings: {
+                templates: [
+                    {
+                        layout: [["ngutrblkf"]],
+                        name: "Objecting",
+                        gqlTypeName: "Objecting",
+                        icon: "fas/file-text",
+                        description: "Objecting test.",
+                        id: "t804h3gufashguasffds",
+                        fields: [
+                            {
+                                id: "ngutrblkf",
+                                fieldId: "nestedObject",
+                                storageId: "someMockStorageIdWhichIsNotUsed",
+                                label: "Nested Object",
+                                type: "object",
+                                settings: {
+                                    fields: [
+                                        {
+                                            id: "gpbebgjbefs",
+                                            fieldId: "objectTitle",
+                                            storageId: "objectTitleStorageId",
+                                            type: "text",
+                                            label: "Object title"
+                                        },
+                                        {
+                                            id: "xj0waxngrejno",
+                                            fieldId: "objectNestedObject",
+                                            storageId: "objectNestedObjectStorageId",
+                                            type: "object",
+                                            label: "Object nested object",
+                                            multipleValues: true,
+                                            settings: {
+                                                fields: [
+                                                    {
+                                                        id: "hpgtierghpiue",
+                                                        fieldId: "nestedObjectNestedTitle",
+                                                        storageId:
+                                                            "nestedObjectNestedTitleStorageId",
+                                                        type: "text",
+                                                        label: "Nested object nested title"
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    ]
+                                },
+                                renderer: {
+                                    name: "dynamicZone"
+                                }
                             }
                         ]
                     }

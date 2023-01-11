@@ -17,12 +17,40 @@ const contentEntryQueryData = {
         {
             title: "Hero Title #2",
             __typename: "Page_Content_Hero"
+        },
+        {
+            __typename: "Page_Content_Objecting",
+            nestedObject: {
+                objectNestedObject: [
+                    {
+                        nestedObjectNestedTitle: "Objective nested title #1"
+                    },
+                    {
+                        nestedObjectNestedTitle: "Objective nested title #2"
+                    }
+                ],
+                objectTitle: "Objective title #1"
+            }
         }
     ],
     header: {
         title: "Header #1",
         image: "https://d3bwcib4j08r73.cloudfront.net/files/webiny-serverless-cms.png",
         __typename: "Page_Header_ImageHeader"
+    },
+    objective: {
+        nestedObject: {
+            objectNestedObject: [
+                {
+                    nestedObjectNestedTitle: "Objective nested title #1"
+                },
+                {
+                    nestedObjectNestedTitle: "Objective nested title #2"
+                }
+            ],
+            objectTitle: "Objective title #1"
+        },
+        __typename: "Page_Objective_Objecting"
     }
 };
 
@@ -36,12 +64,42 @@ const contentEntryMutationData = {
         },
         {
             Hero: { title: "Hero Title #2" }
+        },
+        {
+            Objecting: {
+                nestedObject: {
+                    objectTitle: "Objective title #1",
+                    objectNestedObject: [
+                        {
+                            nestedObjectNestedTitle: "Objective nested title #1"
+                        },
+                        {
+                            nestedObjectNestedTitle: "Objective nested title #2"
+                        }
+                    ]
+                }
+            }
         }
     ],
     header: {
         ImageHeader: {
             title: "Header #1",
             image: "https://d3bwcib4j08r73.cloudfront.net/files/webiny-serverless-cms.png"
+        }
+    },
+    objective: {
+        Objecting: {
+            nestedObject: {
+                objectTitle: "Objective title #1",
+                objectNestedObject: [
+                    {
+                        nestedObjectNestedTitle: "Objective nested title #1"
+                    },
+                    {
+                        nestedObjectNestedTitle: "Objective nested title #2"
+                    }
+                ]
+            }
         }
     }
 };
@@ -66,7 +124,8 @@ describe("dynamicZone field", () => {
                     data: {
                         id: expect.any(String),
                         content: contentEntryQueryData.content,
-                        header: contentEntryQueryData.header
+                        header: contentEntryQueryData.header,
+                        objective: contentEntryQueryData.objective
                     },
                     error: null
                 }
@@ -86,7 +145,8 @@ describe("dynamicZone field", () => {
                     data: {
                         id: page.id,
                         content: contentEntryQueryData.content,
-                        header: contentEntryQueryData.header
+                        header: contentEntryQueryData.header,
+                        objective: contentEntryQueryData.objective
                     },
                     error: null
                 }
@@ -121,7 +181,8 @@ describe("dynamicZone field", () => {
                     data: {
                         id: page.id,
                         content: contentEntryQueryData.content,
-                        header: contentEntryQueryData.header
+                        header: contentEntryQueryData.header,
+                        objective: contentEntryQueryData.objective
                     },
                     error: null
                 }

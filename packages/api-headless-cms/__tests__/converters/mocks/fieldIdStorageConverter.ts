@@ -1,9 +1,11 @@
-import { CmsEntry, CmsModel, CmsModelField } from "~/types";
+import { CmsEntry, CmsModel, CmsModelDynamicZoneField, CmsModelField } from "~/types";
 import lodashCamelCase from "lodash/camelCase";
 
-const createModelField = (
-    base: Partial<CmsModelField> & Pick<CmsModelField, "fieldId" | "type">
-): CmsModelField => {
+type BaseCmsModelField =
+    | (Partial<CmsModelDynamicZoneField> & Pick<CmsModelDynamicZoneField, "fieldId" | "type">)
+    | (Partial<CmsModelField> & Pick<CmsModelField, "fieldId" | "type">);
+
+const createModelField = (base: BaseCmsModelField): CmsModelField => {
     const { fieldId, type } = base;
     const id = base.id || `${fieldId}Id`;
     return {
@@ -471,6 +473,108 @@ const createModelFields = (): CmsModelField[] => {
                     })
                 ]
             }
+        }),
+        createModelField({
+            type: "dynamicZone",
+            fieldId: "dynamicZoneArray",
+            multipleValues: true,
+            settings: {
+                templates: [
+                    {
+                        layout: [["dzText", "dzObject", "dzObjectArray"]],
+                        name: "DZ Text",
+                        gqlTypeName: "DzText",
+                        icon: "fas/flag",
+                        description: "",
+                        id: "dzTemplateArray1",
+                        fields: [
+                            createModelField({
+                                fieldId: "dzText",
+                                type: "text"
+                            }),
+                            createModelField({
+                                type: "object",
+                                multipleValues: true,
+                                fieldId: "dzObjectArray",
+                                settings: {
+                                    fields: [
+                                        createModelField({
+                                            type: "text",
+                                            multipleValues: false,
+                                            fieldId: "titleInDzObjectArray"
+                                        })
+                                    ]
+                                }
+                            }),
+                            createModelField({
+                                type: "object",
+                                multipleValues: false,
+                                fieldId: "dzObject",
+                                settings: {
+                                    fields: [
+                                        createModelField({
+                                            type: "text",
+                                            multipleValues: false,
+                                            fieldId: "titleInDzObject"
+                                        })
+                                    ]
+                                }
+                            })
+                        ]
+                    }
+                ]
+            }
+        }),
+        createModelField({
+            type: "dynamicZone",
+            fieldId: "dynamicZoneObject",
+            multipleValues: false,
+            settings: {
+                templates: [
+                    {
+                        layout: [["dzText", "dzObject", "dzObjectArray"]],
+                        name: "DZ Text",
+                        gqlTypeName: "DzText",
+                        icon: "fas/flag",
+                        description: "",
+                        id: "dzTemplateObject1",
+                        fields: [
+                            createModelField({
+                                fieldId: "dzText",
+                                type: "text"
+                            }),
+                            createModelField({
+                                type: "object",
+                                multipleValues: true,
+                                fieldId: "dzObjectArray",
+                                settings: {
+                                    fields: [
+                                        createModelField({
+                                            type: "text",
+                                            multipleValues: false,
+                                            fieldId: "titleInDzObjectArray"
+                                        })
+                                    ]
+                                }
+                            }),
+                            createModelField({
+                                type: "object",
+                                multipleValues: false,
+                                fieldId: "dzObject",
+                                settings: {
+                                    fields: [
+                                        createModelField({
+                                            type: "text",
+                                            multipleValues: false,
+                                            fieldId: "titleInDzObject"
+                                        })
+                                    ]
+                                }
+                            })
+                        ]
+                    }
+                ]
+            }
         })
     ];
 };
@@ -607,7 +711,33 @@ const createRawValues = () => {
                     titleInRepeatableObjectsObject: "Title In My Object List Child Object #2"
                 }
             }
-        ]
+        ],
+        dynamicZoneArray: [
+            {
+                dzText: "Dynamic zone array title",
+                dzObjectArray: [
+                    {
+                        titleInDzObjectArray: "Dynamic zone object array title"
+                    }
+                ],
+                dzObject: {
+                    titleInDzObject: "Dynamic zone object title"
+                },
+                _templateId: "dzTemplateArray1"
+            }
+        ],
+        dynamicZoneObject: {
+            dzText: "Dynamic zone object title",
+            dzObjectArray: [
+                {
+                    titleInDzObjectArray: "Dynamic zone object array title"
+                }
+            ],
+            dzObject: {
+                titleInDzObject: "Dynamic zone object title"
+            },
+            _templateId: "dzTemplateObject1"
+        }
     };
 };
 
@@ -727,7 +857,33 @@ const createStoredValues = () => {
                         "Title In My Object List Child Object #2"
                 }
             }
-        ]
+        ],
+        "dynamicZone@dynamicZoneArrayId": [
+            {
+                "text@dzTextId": "Dynamic zone array title",
+                "object@dzObjectArrayId": [
+                    {
+                        "text@titleInDzObjectArrayId": "Dynamic zone object array title"
+                    }
+                ],
+                "object@dzObjectId": {
+                    "text@titleInDzObjectId": "Dynamic zone object title"
+                },
+                _templateId: "dzTemplateArray1"
+            }
+        ],
+        "dynamicZone@dynamicZoneObjectId": {
+            "text@dzTextId": "Dynamic zone object title",
+            "object@dzObjectArrayId": [
+                {
+                    "text@titleInDzObjectArrayId": "Dynamic zone object array title"
+                }
+            ],
+            "object@dzObjectId": {
+                "text@titleInDzObjectId": "Dynamic zone object title"
+            },
+            _templateId: "dzTemplateObject1"
+        }
     };
 };
 

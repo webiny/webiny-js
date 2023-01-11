@@ -28,7 +28,33 @@ describe("field id storage converter", () => {
         expect(entry).toMatchObject({
             id: "someEntryId#0001",
             values: {
-                name: "John Doe"
+                name: "John Doe",
+                dynamicZoneArray: [
+                    {
+                        dzText: "Dynamic zone array title",
+                        dzObjectArray: [
+                            {
+                                titleInDzObjectArray: "Dynamic zone object array title"
+                            }
+                        ],
+                        dzObject: {
+                            titleInDzObject: "Dynamic zone object title"
+                        },
+                        _templateId: "dzTemplateArray1"
+                    }
+                ],
+                dynamicZoneObject: {
+                    dzText: "Dynamic zone object title",
+                    dzObjectArray: [
+                        {
+                            titleInDzObjectArray: "Dynamic zone object array title"
+                        }
+                    ],
+                    dzObject: {
+                        titleInDzObject: "Dynamic zone object title"
+                    },
+                    _templateId: "dzTemplateObject1"
+                }
             }
         });
 

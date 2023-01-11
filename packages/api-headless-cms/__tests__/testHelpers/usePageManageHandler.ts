@@ -12,6 +12,15 @@ const pageFields = `
             text
             __typename
         }
+        ...on Page_Content_Objecting {
+            nestedObject {
+                objectTitle
+                objectNestedObject {
+                    nestedObjectNestedTitle
+                }
+            }
+            __typename
+        }
     }
     header {
         ...on Page_Header_TextHeader {
@@ -21,6 +30,17 @@ const pageFields = `
         ...on Page_Header_ImageHeader {
             title
             image
+            __typename
+        }
+    }
+    objective {
+        ...on Page_Objective_Objecting {
+            nestedObject {
+                objectTitle
+                objectNestedObject {
+                    nestedObjectNestedTitle
+                }
+            }
             __typename
         }
     }
