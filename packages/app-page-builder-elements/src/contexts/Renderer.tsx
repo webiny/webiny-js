@@ -1,4 +1,4 @@
-import React, { createContext, useCallback } from "react";
+import React, { createContext } from "react";
 import { usePageElements } from "~/hooks/usePageElements";
 import { RendererContextValue, RendererProviderProps } from "~/types";
 
@@ -10,8 +10,8 @@ export const RendererProvider: React.FC<RendererProviderProps> = ({
     attributes,
     meta
 }) => {
-    const getElement = useCallback(() => element, []);
-    const getAttributes = useCallback(() => attributes, []);
+    const getElement = () => element;
+    const getAttributes = () => attributes;
 
     const pageElements = usePageElements();
 

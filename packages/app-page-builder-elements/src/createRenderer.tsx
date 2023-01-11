@@ -1,11 +1,9 @@
 import React from "react";
-import styled from "@emotion/styled";
 import { usePageElements } from "~/hooks/usePageElements";
 import { Renderer, Element } from "~/types";
 import { Theme, StylesObject } from "@webiny/theme/types";
-import { elementDataPropsAreEqual } from "~/utils";
 import { RendererProvider } from "~/contexts/Renderer";
-import { CSSObject } from "@emotion/core";
+import { CSSObject, ClassNames } from "@emotion/core";
 
 interface GetStylesParams {
     theme: Theme;
@@ -29,7 +27,7 @@ export function createRenderer<TRenderComponentProps = {}>(
     RendererComponent: React.ComponentType<TRenderComponentProps>,
     options: CreateRendererOptions<TRenderComponentProps> = {}
 ): Renderer<TRenderComponentProps> {
-    const renderer: Renderer<TRenderComponentProps> = function Renderer(props) {
+    return function Renderer(props) {
         const {
             getElementStyles,
             getStyles,
@@ -74,54 +72,39 @@ export function createRenderer<TRenderComponentProps = {}>(
         // Styles applied via registered styles modifiers (applied via the PB editor's right sidebar).
         styles.push(getElementStyles(element));
 
-        // Used "O" in order to keep the final class name shorter. For example: "css-1c63dz3-O".
-        const O = styled((styledRendererProps: any) => {
-            const BeforeRenderer = beforeRenderer;
-            const AfterRenderer = afterRenderer;
+        return (
+            <ClassNames>
+                {({ css }) => {
+                    const BeforeRenderer = beforeRenderer;
+                    const AfterRenderer = afterRenderer;
 
-            const className = [styledRendererProps.className, attributes.class]
-                .filter(Boolean)
-                .join(" ");
+                    // Used "o" in order to keep the final class name shorter. For example: "css-1c63dz3-o".
+                    const o = [css(styles), attributes.class].filter(Boolean).join(" ");
 
-            return (
-                <RendererProvider
-                    element={element}
-                    attributes={{ ...attributes, className }}
-                    meta={{ ...meta, calculatedStyles: styles }}
-                >
-                    {/* Would've liked if the `as unknown as T` part wasn't
-                        needed, but unfortunately I could not figure it out. */}
-                    {React.createElement(
-                        `pb-${element.type}`,
-                        { ...attributes, class: className },
-                        <>
-                            {BeforeRenderer ? <BeforeRenderer /> : null}
-                            <RendererComponent
-                                {...(componentProps as unknown as TRenderComponentProps)}
-                            />
-                            {AfterRenderer ? <AfterRenderer /> : null}
-                        </>
-                    )}
-                </RendererProvider>
-            );
-        })(styles);
+                    return (
+                        <RendererProvider
+                            element={element}
+                            attributes={{ ...attributes, className: o }}
+                            meta={{ ...meta, calculatedStyles: styles }}
+                        >
+                            {React.createElement(
+                                `pb-${element.type}`,
+                                { ...attributes, class: o },
+                                <>
+                                    {BeforeRenderer ? <BeforeRenderer /> : null}
 
-        return <O />;
+                                    {/* Would've liked if the `as unknown as T` part wasn't
+                                        needed, but unfortunately, could not figure it out. */}
+                                    <RendererComponent
+                                        {...(componentProps as unknown as TRenderComponentProps)}
+                                    />
+                                    {AfterRenderer ? <AfterRenderer /> : null}
+                                </>
+                            )}
+                        </RendererProvider>
+                    );
+                }}
+            </ClassNames>
+        );
     };
-
-    return React.memo(renderer, (prevProps, nextProps) => {
-        const { propsAreEqual } = options;
-        if (propsAreEqual) {
-            if (
-                propsAreEqual(
-                    prevProps as TRenderComponentProps,
-                    nextProps as TRenderComponentProps
-                ) === false
-            ) {
-                return false;
-            }
-        }
-
-        return elementDataPropsAreEqual(prevProps, nextProps);
-    });
 }
