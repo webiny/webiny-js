@@ -9,7 +9,7 @@ import { usePage } from "@webiny/app-page-builder-elements";
 
 export const Footer: React.FC = () => {
     const { layoutProps } = usePage();
-    const { name, logo, social } = layoutProps.settings;
+    const { name, logo, social } = layoutProps["settings"];
 
     return (
         <FooterWrapper data-testid={"pb-footer"}>

@@ -4,7 +4,7 @@ import styled from "@emotion/styled";
 import theme from "./../../../theme";
 
 export const Wrapper = styled.div([
-    theme.styles.elements.button.primary,
+    theme.styles.elements["button"]["primary"],
     {
         ".button-body": {
             width: "100%",

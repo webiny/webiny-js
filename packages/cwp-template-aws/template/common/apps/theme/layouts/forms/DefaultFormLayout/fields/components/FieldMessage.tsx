@@ -1,14 +1,14 @@
 import * as React from "react";
 import styled from "@emotion/styled";
-import theme from "../../../../../theme";
+import { breakpoints, typography, colors } from "../../../../../theme";
 
 const Wrapper = styled.div<{ isInvalid: boolean }>`
   margin-left: 2px;
   margin-top: 5px;
-  ${theme.styles.typography.paragraph1};
-  color: ${props => (props.isInvalid ? theme.styles.colors.color1 : theme.styles.colors.color2)};
+  ${typography.paragraph1};
+  color: ${props => (props.isInvalid ? colors.color1 : colors.color2)};
 
-  ${theme.breakpoints["mobile-landscape"]} {
+  ${breakpoints["mobile-landscape"]} {
     text-align: left !important;
   }
 }

@@ -18,7 +18,7 @@ export const HeaderMobile: React.FC = () => {
     }, [menuOpened]);
 
     const { layoutProps } = usePage();
-    const { name, logo } = layoutProps.settings;
+    const { name, logo } = layoutProps["settings"];
 
     return (
         <HeaderMobileWrapper data-testid={"pb-mobile-header"}>

@@ -6,7 +6,7 @@ import styled from "@emotion/styled";
 import { FieldMessage } from "./components/FieldMessage";
 import { FieldLabel } from "./components/FieldLabel";
 import { Field } from "./components/Field";
-import theme from "../../../../theme";
+import { colors, borderRadius, typography } from "../../../../theme";
 
 interface InputProps {
     field: FormRenderFbFormModelField;
@@ -14,17 +14,17 @@ interface InputProps {
 }
 
 const StyledInput = styled.input`
-    border: 1px solid ${theme.styles.colors.color4};
-    background-color: ${theme.styles.colors.color4};
+    border: 1px solid ${colors.color4};
+    background-color: ${colors.color4};
     width: 100%;
     padding: 10px;
-    border-radius: ${theme.styles.borderRadius};
+    border-radius: ${borderRadius};
     box-sizing: border-box;
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-    ${theme.styles.typography.paragraph1};
+    ${typography.paragraph1};
 
     &:focus {
-        border-color: ${theme.styles.colors.color2};
+        border-color: ${colors.color2};
         box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
         outline: none;
     }

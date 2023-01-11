@@ -63,7 +63,7 @@ export const typography = {
         fontSize: 22
     },
     list: { ...paragraphs, fontSize: 17 }
-};
+} as const; // https://github.com/emotion-js/emotion/issues/1373#issuecomment-498059774
 
 // Buttons.
 const buttons = (overrides: CSSObject) => ({
