@@ -222,17 +222,19 @@ export class CmsModelDynamicZoneFieldConverterPlugin extends CmsModelFieldConver
             );
         }
 
-        const processedValues = template.fields.reduce<Record<string, any>>((values, field) => {
-            const converter = converterCollection.getConverter(field.type);
-            const converted = converter.convertFromStorage({
-                field,
-                value: value[field.storageId]
-            });
-            Object.assign(values, converted);
-            return values;
-        }, {});
-        return {
-            [template.gqlTypeName]: processedValues
-        };
+        return template.fields.reduce<Record<string, any>>(
+            (values, field) => {
+                const converter = converterCollection.getConverter(field.type);
+                const converted = converter.convertFromStorage({
+                    field,
+                    value: value[field.storageId]
+                });
+                Object.assign(values, converted);
+                return values;
+            },
+            {
+                _templateId: template.id
+            }
+        );
     }
 }

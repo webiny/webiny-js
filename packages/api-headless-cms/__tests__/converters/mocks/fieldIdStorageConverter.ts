@@ -714,22 +714,7 @@ const createRawValues = () => {
         ],
         dynamicZoneArray: [
             {
-                DzTextObjectArray: {
-                    dzText: "Dynamic zone array title",
-                    dzObjectArray: [
-                        {
-                            titleInDzObjectArray: "Dynamic zone object array title"
-                        }
-                    ],
-                    dzObject: {
-                        titleInDzObject: "Dynamic zone object title"
-                    }
-                }
-            }
-        ],
-        dynamicZoneObject: {
-            DzTextObject: {
-                dzText: "Dynamic zone object title",
+                dzText: "Dynamic zone array title",
                 dzObjectArray: [
                     {
                         titleInDzObjectArray: "Dynamic zone object array title"
@@ -737,8 +722,21 @@ const createRawValues = () => {
                 ],
                 dzObject: {
                     titleInDzObject: "Dynamic zone object title"
-                }
+                },
+                _templateId: "dzTemplateArray1"
             }
+        ],
+        dynamicZoneObject: {
+            dzText: "Dynamic zone object title",
+            dzObjectArray: [
+                {
+                    titleInDzObjectArray: "Dynamic zone object array title"
+                }
+            ],
+            dzObject: {
+                titleInDzObject: "Dynamic zone object title"
+            },
+            _templateId: "dzTemplateObject1"
         }
     };
 };
