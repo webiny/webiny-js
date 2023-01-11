@@ -483,7 +483,7 @@ const createModelFields = (): CmsModelField[] => {
                     {
                         layout: [["dzText", "dzObject", "dzObjectArray"]],
                         name: "DZ Text",
-                        gqlTypeName: "DzText",
+                        gqlTypeName: "DzTextObjectArray",
                         icon: "fas/flag",
                         description: "",
                         id: "dzTemplateArray1",
@@ -534,7 +534,7 @@ const createModelFields = (): CmsModelField[] => {
                     {
                         layout: [["dzText", "dzObject", "dzObjectArray"]],
                         name: "DZ Text",
-                        gqlTypeName: "DzText",
+                        gqlTypeName: "DzTextObject",
                         icon: "fas/flag",
                         description: "",
                         id: "dzTemplateObject1",
@@ -714,7 +714,22 @@ const createRawValues = () => {
         ],
         dynamicZoneArray: [
             {
-                dzText: "Dynamic zone array title",
+                DzTextObjectArray: {
+                    dzText: "Dynamic zone array title",
+                    dzObjectArray: [
+                        {
+                            titleInDzObjectArray: "Dynamic zone object array title"
+                        }
+                    ],
+                    dzObject: {
+                        titleInDzObject: "Dynamic zone object title"
+                    }
+                }
+            }
+        ],
+        dynamicZoneObject: {
+            DzTextObject: {
+                dzText: "Dynamic zone object title",
                 dzObjectArray: [
                     {
                         titleInDzObjectArray: "Dynamic zone object array title"
@@ -722,21 +737,8 @@ const createRawValues = () => {
                 ],
                 dzObject: {
                     titleInDzObject: "Dynamic zone object title"
-                },
-                _templateId: "dzTemplateArray1"
-            }
-        ],
-        dynamicZoneObject: {
-            dzText: "Dynamic zone object title",
-            dzObjectArray: [
-                {
-                    titleInDzObjectArray: "Dynamic zone object array title"
                 }
-            ],
-            dzObject: {
-                titleInDzObject: "Dynamic zone object title"
-            },
-            _templateId: "dzTemplateObject1"
+            }
         }
     };
 };
