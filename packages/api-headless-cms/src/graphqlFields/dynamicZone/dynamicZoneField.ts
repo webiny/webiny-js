@@ -104,6 +104,26 @@ export const createDynamicZoneField =
             fieldType: "dynamicZone",
             isSortable: false,
             isSearchable: false,
+            validateChildFields: params => {
+                const { validate, originalField, field } = params;
+
+                const getOriginalTemplateFields = (templateId: string) => {
+                    if (!originalField?.settings?.templates) {
+                        return [];
+                    }
+                    const template = originalField.settings.templates.find(
+                        t => t.id === templateId
+                    );
+                    return template?.fields || [];
+                };
+
+                for (const template of field.settings.templates) {
+                    validate({
+                        fields: template.fields,
+                        originalFields: getOriginalTemplateFields(template.id)
+                    });
+                }
+            },
             read: {
                 createTypeField({ model, field, fieldTypePlugins }) {
                     const templates = getFieldTemplates(field);
@@ -194,7 +214,7 @@ export const createDynamicZoneField =
                             ([key, value]) => `
                             ${key}: ${value}
                         `
-                        )} 
+                        )}
                     }`);
 
                     return {

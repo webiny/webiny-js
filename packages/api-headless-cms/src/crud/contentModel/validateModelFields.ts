@@ -2,6 +2,7 @@ import {
     CmsModel,
     CmsModelField,
     CmsModelFieldToGraphQLPlugin,
+    CmsModelFieldToGraphQLPluginValidateChildFieldsValidate,
     CmsModelLockedFieldPlugin,
     LockedField
 } from "~/types";
@@ -130,6 +131,22 @@ const extractInvalidField = (model: CmsModel, err: GraphQLError) => {
     };
 };
 
+const createValidateChildFields = (
+    plugins: CmsModelFieldToGraphQLPlugin[]
+): CmsModelFieldToGraphQLPluginValidateChildFieldsValidate => {
+    return ({ fields, originalFields }) => {
+        if (fields.length === 0) {
+            return;
+        }
+        validateFields({
+            fields,
+            originalFields,
+            plugins,
+            lockedFields: []
+        });
+    };
+};
+
 interface ValidateFieldsParams {
     plugins: CmsModelFieldToGraphQLPlugin[];
     fields: CmsModelField[];
@@ -142,6 +159,8 @@ const validateFields = (params: ValidateFieldsParams) => {
     const fieldIdList: string[] = [];
 
     const storageIdList: string[] = [];
+
+    const validateChildFields = createValidateChildFields(plugins);
 
     for (const field of fields) {
         const baseType = getBaseFieldType(field);
@@ -222,27 +241,16 @@ const validateFields = (params: ValidateFieldsParams) => {
         }
         storageIdList.push(field.storageId);
         /**
-         * TODO maybe make this part pluginable?
-         * We need to check the object field child fields.
-         * It must be recursive.
+         * There might be some plugins which allow child fields.
+         * We use this method to validate them as well.
          */
-        if (field.type !== "object") {
+        if (!plugin.validateChildFields) {
             continue;
         }
-        const childFields = field.settings?.fields || [];
-        const originalChildFields = originalField?.settings?.fields || [];
-        /**
-         * No point in going further if there are no child fields.
-         * Code will break if child fields were removed but used in the entries.
-         */
-        if (childFields.length === 0) {
-            continue;
-        }
-        validateFields({
-            fields: childFields,
-            originalFields: originalChildFields,
-            plugins,
-            lockedFields: []
+        plugin.validateChildFields({
+            field,
+            originalField,
+            validate: validateChildFields
         });
     }
 };
