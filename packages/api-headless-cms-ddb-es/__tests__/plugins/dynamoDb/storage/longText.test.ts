@@ -144,4 +144,42 @@ describe("long text storage plugin", () => {
             data: expect.any(Object)
         });
     });
+
+    it("should not compress already compressed value", async () => {
+        const plugin = createLongTextStorageTransformPlugin();
+
+        const value: string[] = [
+            "some text which is going to get compressed",
+            "some text which is going to get compressed 2",
+            "some text which is going to get compressed 3"
+        ];
+
+        const compressResult = await plugin.toStorage({
+            ...defaultArgs,
+            value
+        });
+
+        expect(compressResult).toEqual({
+            compression: "gzip",
+            value: expect.any(String),
+            isArray: true
+        });
+
+        const compressAgainResult = await plugin.toStorage({
+            ...defaultArgs,
+            value
+        });
+
+        expect(compressAgainResult).toEqual({
+            compression: "gzip",
+            value: expect.any(String),
+            isArray: true
+        });
+
+        const decompressResult = await plugin.fromStorage({
+            ...defaultArgs,
+            value: compressAgainResult
+        });
+        expect(decompressResult).toEqual(value);
+    });
 });
