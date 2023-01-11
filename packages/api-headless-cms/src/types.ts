@@ -163,6 +163,7 @@ export interface CmsModelField {
         | "ref"
         | "rich-text"
         | "text"
+        | "dynamicZone"
         | string;
     /**
      * A unique storage ID for storing actual values.
@@ -263,6 +264,9 @@ export interface CmsModelDynamicZoneField extends CmsModelField {
  */
 export interface CmsModelFieldWithParent extends CmsModelField {
     parent?: CmsModelFieldWithParent | null;
+}
+export interface CmsModelDynamicZoneFieldWithParent extends CmsModelDynamicZoneField {
+    parent?: CmsModelDynamicZoneFieldWithParent | null;
 }
 
 /**
