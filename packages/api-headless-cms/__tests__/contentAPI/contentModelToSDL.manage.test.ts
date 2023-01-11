@@ -42,7 +42,7 @@ describe("MANAGE - ContentModel to SDL", () => {
     });
 
     test("Dynamic Zone SDL", async () => {
-        const sdl = createManageSDL({ model: pageModel, fieldTypePlugins });
+        const sdl = createManageSDL({ model: pageModel as any, fieldTypePlugins });
         const prettyGql = prettier.format(sdl.trim(), { parser: "graphql" });
         const prettySnapshot = prettier.format(pageManage.trim(), { parser: "graphql" });
         expect(prettyGql).toBe(prettySnapshot);
