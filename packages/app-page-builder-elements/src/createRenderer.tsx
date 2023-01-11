@@ -18,7 +18,12 @@ export type CreateRendererOptions<TRenderComponentProps> = Partial<{
     baseStyles: StylesObject | ((params: GetStylesParams) => StylesObject);
 }>;
 
-const DEFAULT_RENDERER_STYLES: StylesObject = { display: "block", position: "relative", width: '100%' };
+const DEFAULT_RENDERER_STYLES: StylesObject = {
+    display: "block",
+    position: "relative",
+    width: "100%",
+    boxSizing: "border-box"
+};
 
 export function createRenderer<TRenderComponentProps = {}>(
     RendererComponent: React.ComponentType<TRenderComponentProps>,
@@ -91,7 +96,9 @@ export function createRenderer<TRenderComponentProps = {}>(
                         { ...attributes, class: className },
                         <>
                             {BeforeRenderer ? <BeforeRenderer /> : null}
-                            <RendererComponent {...(componentProps as unknown as TRenderComponentProps)} />
+                            <RendererComponent
+                                {...(componentProps as unknown as TRenderComponentProps)}
+                            />
                             {AfterRenderer ? <AfterRenderer /> : null}
                         </>
                     )}
@@ -102,11 +109,15 @@ export function createRenderer<TRenderComponentProps = {}>(
         return <O />;
     };
 
-
     return React.memo(renderer, (prevProps, nextProps) => {
         const { propsAreEqual } = options;
         if (propsAreEqual) {
-            if (propsAreEqual(prevProps as TRenderComponentProps, nextProps as TRenderComponentProps) === false) {
+            if (
+                propsAreEqual(
+                    prevProps as TRenderComponentProps,
+                    nextProps as TRenderComponentProps
+                ) === false
+            ) {
                 return false;
             }
         }

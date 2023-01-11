@@ -176,7 +176,6 @@ const PbElementControlsOverlay = styled(
 
     return {
         display: "block",
-        outline: element.type === "cell" ? "1px dashed #757575" : undefined,
         position: "absolute",
         zIndex: 1,
         top: `calc(0px - ${margins.marginTop})`,

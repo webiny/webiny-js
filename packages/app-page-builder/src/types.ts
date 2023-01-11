@@ -508,7 +508,7 @@ export type PbEditorPageElementPlugin = Plugin & {
     // A function to create an element data structure.
     create: (options: Partial<PbElement>, parent?: PbEditorElement) => Omit<PbEditorElement, "id">;
     // A function to render an element in the editor.
-    render: (params: { theme?: PbTheme; element: PbEditorElement; isActive: boolean, config }) => ReactNode;
+    render: (params: { theme?: PbTheme; element: PbEditorElement; isActive: boolean }) => ReactNode;
     // A function to check if an element can be deleted.
     canDelete?: (params: { element: PbEditorElement }) => boolean;
     // Executed when another element is dropped on the drop zones of current element.

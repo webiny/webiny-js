@@ -9,6 +9,7 @@ import { createAnimation } from "@webiny/app-page-builder-elements/modifiers/att
 // Styles modifiers.
 import { createBackground } from "@webiny/app-page-builder-elements/modifiers/styles/background";
 import { createBorder } from "@webiny/app-page-builder-elements/modifiers/styles/border";
+import { createGridFlexWrap } from "@webiny/app-page-builder-elements/modifiers/styles/gridFlexWrap";
 import { createHeight } from "@webiny/app-page-builder-elements/modifiers/styles/height";
 import { createHorizontalAlign } from "@webiny/app-page-builder-elements/modifiers/styles/horizontalAlign";
 import { createMargin } from "@webiny/app-page-builder-elements/modifiers/styles/margin";
@@ -44,6 +45,7 @@ export const PageElementsProvider: React.FC = ({ children }) => {
         styles: {
             background: createBackground(),
             border: createBorder(),
+            gridFlexWrap: createGridFlexWrap(),
             height: createHeight(),
             horizontalAlign: createHorizontalAlign(),
             margin: createMargin(),

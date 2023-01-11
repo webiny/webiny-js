@@ -131,6 +131,14 @@ export const preparePageData = ({
                                     }
                                 },
                                 grid: { cellsType: "12" },
+                                gridSettings: {
+                                    desktop: {
+                                        flexDirection: "row"
+                                    },
+                                    "mobile-landscape": {
+                                        flexDirection: "column"
+                                    }
+                                },
                                 horizontalAlignFlex: { desktop: "flex-start" },
                                 verticalAlign: { desktop: "flex-start" }
                             }
@@ -216,6 +224,14 @@ export const preparePageData = ({
                                     }
                                 },
                                 grid: { cellsType: "12" },
+                                gridSettings: {
+                                    desktop: {
+                                        flexDirection: "row"
+                                    },
+                                    "mobile-landscape": {
+                                        flexDirection: "column"
+                                    }
+                                },
                                 horizontalAlignFlex: { desktop: "flex-start" },
                                 verticalAlign: { desktop: "flex-start" }
                             }
@@ -290,6 +306,14 @@ export const preparePageData = ({
                                     }
                                 },
                                 grid: { cellsType: "12" },
+                                gridSettings: {
+                                    desktop: {
+                                        flexDirection: "row"
+                                    },
+                                    "mobile-landscape": {
+                                        flexDirection: "column"
+                                    }
+                                },
                                 horizontalAlignFlex: { desktop: "flex-start" },
                                 verticalAlign: { desktop: "flex-start" }
                             }
@@ -378,6 +402,14 @@ export const preparePageData = ({
                                     }
                                 },
                                 grid: { cellsType: "6-6" },
+                                gridSettings: {
+                                    desktop: {
+                                        flexDirection: "row"
+                                    },
+                                    "mobile-landscape": {
+                                        flexDirection: "column"
+                                    }
+                                },
                                 horizontalAlignFlex: { desktop: "flex-start" },
                                 verticalAlign: { desktop: "flex-start" }
                             }
@@ -594,6 +626,14 @@ export const preparePageData = ({
                                     }
                                 },
                                 grid: { cellsType: "6-6" },
+                                gridSettings: {
+                                    desktop: {
+                                        flexDirection: "row"
+                                    },
+                                    "mobile-landscape": {
+                                        flexDirection: "column"
+                                    }
+                                },
                                 horizontalAlignFlex: { desktop: "flex-start" },
                                 verticalAlign: { desktop: "flex-start" }
                             }
@@ -841,6 +881,14 @@ export const preparePageData = ({
                                     }
                                 },
                                 grid: { cellsType: "12" },
+                                gridSettings: {
+                                    desktop: {
+                                        flexDirection: "row"
+                                    },
+                                    "mobile-landscape": {
+                                        flexDirection: "column"
+                                    }
+                                },
                                 horizontalAlignFlex: { desktop: "flex-start" },
                                 verticalAlign: { desktop: "flex-start" }
                             }
@@ -942,6 +990,14 @@ export const preparePageData = ({
                                     }
                                 },
                                 grid: { cellsType: "6-6" },
+                                gridSettings: {
+                                    desktop: {
+                                        flexDirection: "row"
+                                    },
+                                    "mobile-landscape": {
+                                        flexDirection: "column"
+                                    }
+                                },
                                 horizontalAlignFlex: { desktop: "flex-start" },
                                 verticalAlign: { desktop: "flex-start" }
                             }
@@ -996,6 +1052,14 @@ export const preparePageData = ({
                                                     }
                                                 },
                                                 grid: { cellsType: "4-8" },
+                                                gridSettings: {
+                                                    desktop: {
+                                                        flexDirection: "row"
+                                                    },
+                                                    "mobile-landscape": {
+                                                        flexDirection: "column"
+                                                    }
+                                                },
                                                 horizontalAlignFlex: { desktop: "flex-start" },
                                                 verticalAlign: { desktop: "center" },
                                                 border: {
@@ -1141,6 +1205,14 @@ export const preparePageData = ({
                                                     }
                                                 },
                                                 grid: { cellsType: "12" },
+                                                gridSettings: {
+                                                    desktop: {
+                                                        flexDirection: "row"
+                                                    },
+                                                    "mobile-landscape": {
+                                                        flexDirection: "column"
+                                                    }
+                                                },
                                                 horizontalAlignFlex: { desktop: "flex-start" },
                                                 verticalAlign: { desktop: "flex-start" }
                                             }
@@ -1217,6 +1289,14 @@ export const preparePageData = ({
                                                     }
                                                 },
                                                 grid: { cellsType: "12" },
+                                                gridSettings: {
+                                                    desktop: {
+                                                        flexDirection: "row"
+                                                    },
+                                                    "mobile-landscape": {
+                                                        flexDirection: "column"
+                                                    }
+                                                },
                                                 horizontalAlignFlex: { desktop: "flex-start" },
                                                 verticalAlign: { desktop: "flex-start" }
                                             }
@@ -1293,6 +1373,14 @@ export const preparePageData = ({
                                                     }
                                                 },
                                                 grid: { cellsType: "6-6" },
+                                                gridSettings: {
+                                                    desktop: {
+                                                        flexDirection: "row"
+                                                    },
+                                                    "mobile-landscape": {
+                                                        flexDirection: "column"
+                                                    }
+                                                },
                                                 horizontalAlignFlex: { desktop: "flex-start" },
                                                 verticalAlign: { desktop: "flex-start" }
                                             }
@@ -1413,6 +1501,14 @@ export const preparePageData = ({
                                                     }
                                                 },
                                                 grid: { cellsType: "12" },
+                                                gridSettings: {
+                                                    desktop: {
+                                                        flexDirection: "row"
+                                                    },
+                                                    "mobile-landscape": {
+                                                        flexDirection: "column"
+                                                    }
+                                                },
                                                 horizontalAlignFlex: { desktop: "flex-start" },
                                                 verticalAlign: { desktop: "flex-start" }
                                             }
@@ -1529,6 +1625,14 @@ export const preparePageData = ({
                                                     }
                                                 },
                                                 grid: { cellsType: "12" },
+                                                gridSettings: {
+                                                    desktop: {
+                                                        flexDirection: "row"
+                                                    },
+                                                    "mobile-landscape": {
+                                                        flexDirection: "column"
+                                                    }
+                                                },
                                                 horizontalAlignFlex: { desktop: "flex-start" },
                                                 verticalAlign: { desktop: "flex-start" }
                                             }
@@ -1616,6 +1720,14 @@ export const preparePageData = ({
                                                     }
                                                 },
                                                 grid: { cellsType: "12" },
+                                                gridSettings: {
+                                                    desktop: {
+                                                        flexDirection: "row"
+                                                    },
+                                                    "mobile-landscape": {
+                                                        flexDirection: "column"
+                                                    }
+                                                },
                                                 horizontalAlignFlex: { desktop: "flex-start" },
                                                 verticalAlign: { desktop: "flex-start" }
                                             }
@@ -1788,6 +1900,14 @@ export const preparePageData = ({
                                     }
                                 },
                                 grid: { cellsType: "12" },
+                                gridSettings: {
+                                    desktop: {
+                                        flexDirection: "row"
+                                    },
+                                    "mobile-landscape": {
+                                        flexDirection: "column"
+                                    }
+                                },
                                 horizontalAlignFlex: { desktop: "flex-start" },
                                 verticalAlign: { desktop: "flex-start" }
                             }
@@ -1862,6 +1982,14 @@ export const preparePageData = ({
                                     }
                                 },
                                 grid: { cellsType: "3-3-3-3" },
+                                gridSettings: {
+                                    desktop: {
+                                        flexDirection: "row"
+                                    },
+                                    "mobile-landscape": {
+                                        flexDirection: "column"
+                                    }
+                                },
                                 horizontalAlignFlex: { desktop: "flex-start" },
                                 verticalAlign: { desktop: "flex-start" }
                             }
@@ -1914,6 +2042,14 @@ export const preparePageData = ({
                                                     }
                                                 },
                                                 grid: { cellsType: "12" },
+                                                gridSettings: {
+                                                    desktop: {
+                                                        flexDirection: "row"
+                                                    },
+                                                    "mobile-landscape": {
+                                                        flexDirection: "column"
+                                                    }
+                                                },
                                                 horizontalAlignFlex: { desktop: "flex-start" },
                                                 verticalAlign: { desktop: "flex-start" }
                                             }
@@ -2002,6 +2138,14 @@ export const preparePageData = ({
                                                     }
                                                 },
                                                 grid: { cellsType: "12" },
+                                                gridSettings: {
+                                                    desktop: {
+                                                        flexDirection: "row"
+                                                    },
+                                                    "mobile-landscape": {
+                                                        flexDirection: "column"
+                                                    }
+                                                },
                                                 horizontalAlignFlex: { desktop: "flex-start" },
                                                 verticalAlign: { desktop: "flex-start" }
                                             }
@@ -2138,6 +2282,14 @@ export const preparePageData = ({
                                                     }
                                                 },
                                                 grid: { cellsType: "12" },
+                                                gridSettings: {
+                                                    desktop: {
+                                                        flexDirection: "row"
+                                                    },
+                                                    "mobile-landscape": {
+                                                        flexDirection: "column"
+                                                    }
+                                                },
                                                 horizontalAlignFlex: { desktop: "flex-start" },
                                                 verticalAlign: { desktop: "flex-start" }
                                             }
@@ -2225,6 +2377,14 @@ export const preparePageData = ({
                                                     }
                                                 },
                                                 grid: { cellsType: "12" },
+                                                gridSettings: {
+                                                    desktop: {
+                                                        flexDirection: "row"
+                                                    },
+                                                    "mobile-landscape": {
+                                                        flexDirection: "column"
+                                                    }
+                                                },
                                                 horizontalAlignFlex: { desktop: "flex-start" },
                                                 verticalAlign: { desktop: "flex-start" }
                                             }
@@ -2359,6 +2519,14 @@ export const preparePageData = ({
                                                     }
                                                 },
                                                 grid: { cellsType: "12" },
+                                                gridSettings: {
+                                                    desktop: {
+                                                        flexDirection: "row"
+                                                    },
+                                                    "mobile-landscape": {
+                                                        flexDirection: "column"
+                                                    }
+                                                },
                                                 horizontalAlignFlex: { desktop: "flex-start" },
                                                 verticalAlign: { desktop: "flex-start" }
                                             }
@@ -2447,6 +2615,14 @@ export const preparePageData = ({
                                                     }
                                                 },
                                                 grid: { cellsType: "12" },
+                                                gridSettings: {
+                                                    desktop: {
+                                                        flexDirection: "row"
+                                                    },
+                                                    "mobile-landscape": {
+                                                        flexDirection: "column"
+                                                    }
+                                                },
                                                 horizontalAlignFlex: { desktop: "flex-start" },
                                                 verticalAlign: { desktop: "flex-start" }
                                             }
@@ -2579,6 +2755,14 @@ export const preparePageData = ({
                                                     }
                                                 },
                                                 grid: { cellsType: "12" },
+                                                gridSettings: {
+                                                    desktop: {
+                                                        flexDirection: "row"
+                                                    },
+                                                    "mobile-landscape": {
+                                                        flexDirection: "column"
+                                                    }
+                                                },
                                                 horizontalAlignFlex: { desktop: "flex-start" },
                                                 verticalAlign: { desktop: "flex-start" }
                                             }
@@ -2666,6 +2850,14 @@ export const preparePageData = ({
                                                     }
                                                 },
                                                 grid: { cellsType: "12" },
+                                                gridSettings: {
+                                                    desktop: {
+                                                        flexDirection: "row"
+                                                    },
+                                                    "mobile-landscape": {
+                                                        flexDirection: "column"
+                                                    }
+                                                },
                                                 horizontalAlignFlex: { desktop: "flex-start" },
                                                 verticalAlign: { desktop: "flex-start" }
                                             }
@@ -2809,6 +3001,14 @@ export const preparePageData = ({
                                     }
                                 },
                                 grid: { cellsType: "6-6" },
+                                gridSettings: {
+                                    desktop: {
+                                        flexDirection: "row"
+                                    },
+                                    "mobile-landscape": {
+                                        flexDirection: "column"
+                                    }
+                                },
                                 horizontalAlignFlex: { desktop: "flex-start" },
                                 verticalAlign: { desktop: "flex-start" }
                             }
@@ -2862,6 +3062,14 @@ export const preparePageData = ({
                                                     }
                                                 },
                                                 grid: { cellsType: "12" },
+                                                gridSettings: {
+                                                    desktop: {
+                                                        flexDirection: "row"
+                                                    },
+                                                    "mobile-landscape": {
+                                                        flexDirection: "column"
+                                                    }
+                                                },
                                                 horizontalAlignFlex: { desktop: "flex-start" },
                                                 verticalAlign: { desktop: "flex-start" }
                                             }
@@ -2949,6 +3157,14 @@ export const preparePageData = ({
                                                     }
                                                 },
                                                 grid: { cellsType: "12" },
+                                                gridSettings: {
+                                                    desktop: {
+                                                        flexDirection: "row"
+                                                    },
+                                                    "mobile-landscape": {
+                                                        flexDirection: "column"
+                                                    }
+                                                },
                                                 horizontalAlignFlex: { desktop: "flex-start" },
                                                 verticalAlign: { desktop: "flex-start" }
                                             }
@@ -3081,6 +3297,14 @@ export const preparePageData = ({
                                                     }
                                                 },
                                                 grid: { cellsType: "4-8" },
+                                                gridSettings: {
+                                                    desktop: {
+                                                        flexDirection: "row"
+                                                    },
+                                                    "mobile-landscape": {
+                                                        flexDirection: "column"
+                                                    }
+                                                },
                                                 horizontalAlignFlex: { desktop: "flex-start" },
                                                 verticalAlign: { desktop: "flex-start" },
                                                 border: {
@@ -3221,6 +3445,14 @@ export const preparePageData = ({
                                                     }
                                                 },
                                                 grid: { cellsType: "12" },
+                                                gridSettings: {
+                                                    desktop: {
+                                                        flexDirection: "row"
+                                                    },
+                                                    "mobile-landscape": {
+                                                        flexDirection: "column"
+                                                    }
+                                                },
                                                 horizontalAlignFlex: { desktop: "flex-start" },
                                                 verticalAlign: { desktop: "flex-start" }
                                             }
@@ -3299,6 +3531,14 @@ export const preparePageData = ({
                                                     }
                                                 },
                                                 grid: { cellsType: "12" },
+                                                gridSettings: {
+                                                    desktop: {
+                                                        flexDirection: "row"
+                                                    },
+                                                    "mobile-landscape": {
+                                                        flexDirection: "column"
+                                                    }
+                                                },
                                                 horizontalAlignFlex: { desktop: "flex-start" },
                                                 verticalAlign: { desktop: "flex-start" }
                                             }
@@ -3377,6 +3617,14 @@ export const preparePageData = ({
                                                     }
                                                 },
                                                 grid: { cellsType: "6-6" },
+                                                gridSettings: {
+                                                    desktop: {
+                                                        flexDirection: "row"
+                                                    },
+                                                    "mobile-landscape": {
+                                                        flexDirection: "column"
+                                                    }
+                                                },
                                                 horizontalAlignFlex: { desktop: "flex-start" },
                                                 verticalAlign: { desktop: "flex-start" }
                                             }
@@ -3587,6 +3835,14 @@ export const preparePageData = ({
                                     }
                                 },
                                 grid: { cellsType: "12" },
+                                gridSettings: {
+                                    desktop: {
+                                        flexDirection: "row"
+                                    },
+                                    "mobile-landscape": {
+                                        flexDirection: "column"
+                                    }
+                                },
                                 horizontalAlignFlex: { desktop: "flex-start" },
                                 verticalAlign: { desktop: "flex-start" }
                             }
@@ -3661,6 +3917,14 @@ export const preparePageData = ({
                                     }
                                 },
                                 grid: { cellsType: "4-4-4" },
+                                gridSettings: {
+                                    desktop: {
+                                        flexDirection: "row"
+                                    },
+                                    "mobile-landscape": {
+                                        flexDirection: "column"
+                                    }
+                                },
                                 horizontalAlignFlex: { desktop: "flex-start" },
                                 verticalAlign: { desktop: "flex-start" }
                             }
@@ -4042,6 +4306,14 @@ export const preparePageData = ({
                                     }
                                 },
                                 grid: { cellsType: "4-4-4" },
+                                gridSettings: {
+                                    desktop: {
+                                        flexDirection: "row"
+                                    },
+                                    "mobile-landscape": {
+                                        flexDirection: "column"
+                                    }
+                                },
                                 horizontalAlignFlex: { desktop: "flex-start" },
                                 verticalAlign: { desktop: "flex-start" }
                             }
@@ -4450,6 +4722,14 @@ export const preparePageData = ({
                                     }
                                 },
                                 grid: { cellsType: "12" },
+                                gridSettings: {
+                                    desktop: {
+                                        flexDirection: "row"
+                                    },
+                                    "mobile-landscape": {
+                                        flexDirection: "column"
+                                    }
+                                },
                                 horizontalAlignFlex: { desktop: "flex-start" },
                                 verticalAlign: { desktop: "flex-start" }
                             }
@@ -4526,6 +4806,14 @@ export const preparePageData = ({
                                     }
                                 },
                                 grid: { cellsType: "4-4-4" },
+                                gridSettings: {
+                                    desktop: {
+                                        flexDirection: "row"
+                                    },
+                                    "mobile-landscape": {
+                                        flexDirection: "column"
+                                    }
+                                },
                                 horizontalAlignFlex: { desktop: "flex-start" },
                                 verticalAlign: { desktop: "flex-start" }
                             }
@@ -4913,6 +5201,14 @@ export const preparePageData = ({
                                     }
                                 },
                                 grid: { cellsType: "12" },
+                                gridSettings: {
+                                    desktop: {
+                                        flexDirection: "row"
+                                    },
+                                    "mobile-landscape": {
+                                        flexDirection: "column"
+                                    }
+                                },
                                 horizontalAlignFlex: { desktop: "flex-start" },
                                 verticalAlign: { desktop: "flex-start" }
                             }
@@ -4941,7 +5237,7 @@ export const preparePageData = ({
                                         id: "Y8ndbn88hy",
                                         type: "button",
                                         data: {
-                                            buttonText: "View webiny on github",
+                                            buttonText: "View Webiny on GitHub",
                                             settings: {
                                                 margin: { desktop: { all: "0px" } },
                                                 horizontalAlignFlex: { desktop: "center" }

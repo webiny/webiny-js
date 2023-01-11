@@ -2,7 +2,7 @@
  * Too complex to handle atm.
  */
 // TODO @ts-refactor
-export const notFoundPageData: any = {
+export const notFoundPageDataLegacy: any = {
     id: "h0HqpItbGT",
     type: "document",
     data: { settings: {} },
@@ -45,14 +45,6 @@ export const notFoundPageData: any = {
                             },
                             padding: { desktop: { all: "10px" } },
                             grid: { cellsType: "12" },
-                            gridSettings: {
-                                desktop: {
-                                    flexDirection: "row"
-                                },
-                                "mobile-landscape": {
-                                    flexDirection: "column"
-                                }
-                            },
                             horizontalAlignFlex: { desktop: "flex-start" },
                             verticalAlign: { desktop: "flex-start" }
                         }
@@ -86,16 +78,17 @@ export const notFoundPageData: any = {
                                         text: {
                                             desktop: {
                                                 type: "heading",
-                                                typography: "heading1",
+                                                typography: "webiny-pb-typography-heading",
                                                 alignment: "center",
                                                 tag: "h1",
-                                                color: "color3"
+                                                color: "rgba(17, 17, 17, 1)"
                                             },
                                             data: { text: "Page not found!" }
                                         },
                                         settings: {
                                             margin: { desktop: { all: "0px" } },
-                                            padding: { desktop: { all: "0px" } }
+                                            padding: { desktop: { all: "0px" } },
+                                            horizontalAlign: { desktop: "center" }
                                         }
                                     },
                                     elements: []
@@ -107,13 +100,13 @@ export const notFoundPageData: any = {
                                         text: {
                                             desktop: {
                                                 type: "paragraph",
-                                                typography: "paragraph1",
+                                                typography: "webiny-pb-typography-body",
                                                 alignment: "center",
                                                 tag: "div",
-                                                color: "color3"
+                                                color: "rgba(17, 17, 17, 1)"
                                             },
                                             data: {
-                                                text: "Sorry, but the page you were looking for could not be found."
+                                                text: "<p>Sorry, but the page you were looking for could not be found.</p>"
                                             }
                                         },
                                         settings: {

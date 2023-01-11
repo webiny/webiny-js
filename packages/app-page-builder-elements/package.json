@@ -20,19 +20,19 @@
     "@webiny/theme": "^5.33.2"
   },
   "peerDependencies": {
-    "react": "^17.0.2",
+    "@editorjs/editorjs": "^2.20.1",
     "aos": "^2.3.4",
-    "react-google-recaptcha": "^2.3.4",
-    "@editorjs/editorjs": "^2.20.1"
+    "react": "^17.0.2",
+    "react-google-recaptcha": "^2.3.4"
   },
   "peerDependenciesMeta": {
+    "@editorjs/editorjs": {
+      "optional": true
+    },
     "aos": {
       "optional": true
     },
     "react-google-recaptcha": {
-      "optional": true
-    },
-    "@editorjs/editorjs": {
       "optional": true
     }
   },

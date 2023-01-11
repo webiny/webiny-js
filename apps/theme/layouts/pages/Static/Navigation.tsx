@@ -12,7 +12,7 @@ export const Navigation: React.ComponentType<{ data?: PublishedMenuData }> = ({ 
 
     return (
         <NavigationUl>
-            {items.map((item, index) => {
+            {items?.map((item, index) => {
                 if (Array.isArray(item.children)) {
                     return (
                         <li key={item.id + index}>

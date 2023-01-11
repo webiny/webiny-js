@@ -137,7 +137,7 @@ export const createButton = (params: CreateButtonParams = {}) => {
             }
 
             const linkActions = ["link", "scrollToElement"];
-            if (linkActions.includes(action?.actionType)) {
+            if (link?.href || linkActions.includes(action?.actionType)) {
                 const href = link?.href || action?.href;
                 const newTab = link?.newTab || action?.newTab;
 

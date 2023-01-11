@@ -27,7 +27,8 @@
   },
   "devDependencies": {
     "@types/react-helmet": "^6.1.0",
-    "cross-env": "^5.0.2"
+    "cross-env": "^5.0.2",
+    "source-map-explorer": "^2.5.3"
   },
   "scripts": {
     "analyze": "source-map-explorer build/static/js/main.*",
