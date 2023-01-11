@@ -231,7 +231,7 @@ export type FbEditorFieldGroup = Plugin & {
 export type FbFormLayout = {
     name: string;
     title: string;
-    component: FormLayoutComponent
+    component: FormLayoutComponent;
 };
 
 export type FbFormLayoutPlugin = Plugin & {

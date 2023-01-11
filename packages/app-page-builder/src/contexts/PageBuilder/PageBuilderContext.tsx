@@ -74,9 +74,7 @@ export const PageBuilderProvider: React.FC<PageBuilderProviderProps> = ({ childr
                         const [firstThemePlugin] = plugins.byType<PbThemePluginType>("pb-theme");
                         themePlugin = firstThemePlugin;
                     } else {
-                        const [firstThemePlugin] = plugins.byType<ThemePlugin>(
-                            ThemePlugin.type
-                        );
+                        const [firstThemePlugin] = plugins.byType<ThemePlugin>(ThemePlugin.type);
                         themePlugin = firstThemePlugin;
                     }
 

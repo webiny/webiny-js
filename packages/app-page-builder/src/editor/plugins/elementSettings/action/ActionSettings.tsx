@@ -221,42 +221,38 @@ const ActionSettingsComponent: React.FC<ActionSettingsPropsType> = ({
                                     </Bind>
                                 </>
                             )}
-                            {actionType !== "onClickHandler" &&
-                                actionType !== "scrollToElement" && (
-                                    <>
-                                        <Wrapper
-                                            label={"URL"}
-                                            containerClassName={classes.gridClass}
+                            {actionType !== "onClickHandler" && actionType !== "scrollToElement" && (
+                                <>
+                                    <Wrapper label={"URL"} containerClassName={classes.gridClass}>
+                                        <Bind
+                                            name={"href"}
+                                            validators={validation.create(
+                                                "url:allowRelative:allowHref"
+                                            )}
                                         >
-                                            <Bind
-                                                name={"href"}
-                                                validators={validation.create(
-                                                    "url:allowRelative:allowHref"
+                                            <DelayedOnChange>
+                                                {props => (
+                                                    <InputField
+                                                        {...props}
+                                                        value={props.value || ""}
+                                                        onChange={props.onChange}
+                                                        placeholder={"https://webiny.com/blog"}
+                                                    />
                                                 )}
-                                            >
-                                                <DelayedOnChange>
-                                                    {props => (
-                                                        <InputField
-                                                            {...props}
-                                                            value={props.value || ""}
-                                                            onChange={props.onChange}
-                                                            placeholder={"https://webiny.com/blog"}
-                                                        />
-                                                    )}
-                                                </DelayedOnChange>
-                                            </Bind>
-                                        </Wrapper>
-                                        <Wrapper
-                                            label={"New tab"}
-                                            containerClassName={classes.gridClass}
-                                            rightCellClassName={classes.gridCellClass}
-                                        >
-                                            <Bind name={"newTab"}>
-                                                <Switch />
-                                            </Bind>
-                                        </Wrapper>
-                                    </>
-                                )}
+                                            </DelayedOnChange>
+                                        </Bind>
+                                    </Wrapper>
+                                    <Wrapper
+                                        label={"New tab"}
+                                        containerClassName={classes.gridClass}
+                                        rightCellClassName={classes.gridCellClass}
+                                    >
+                                        <Bind name={"newTab"}>
+                                            <Switch />
+                                        </Bind>
+                                    </Wrapper>
+                                </>
+                            )}
                         </>
                     );
                 }}

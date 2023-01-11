@@ -13,7 +13,7 @@ const initializeAos = () => {
             aos.init();
         });
     }
-}
+};
 
 const animation: ElementAttributesModifier = ({ element }) => {
     const animation = element.data.settings?.animation;

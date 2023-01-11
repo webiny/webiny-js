@@ -8,7 +8,7 @@ import { ApolloCacheObjectIdPlugin } from "@webiny/app/plugins/ApolloCacheObject
 
 declare global {
     interface Window {
-        getApolloState: () => Record<string,any>;
+        getApolloState: () => Record<string, any>;
     }
 }
 

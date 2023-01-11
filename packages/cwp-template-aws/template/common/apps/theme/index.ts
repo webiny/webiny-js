@@ -12,7 +12,7 @@ export default () => [
     new PbPageLayoutPlugin({
         name: "static",
         title: "Static page",
-        component: StaticLayout,
+        component: StaticLayout
     }),
     new FbFormLayoutPlugin({
         name: "default",

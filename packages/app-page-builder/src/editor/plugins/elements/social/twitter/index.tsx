@@ -34,7 +34,7 @@ const PreviewBox = styled("div")({
 
 let render: EmbedPluginConfigRenderCallable;
 if (!isLegacyRenderingEngine) {
-    render = (props) => (
+    render = props => (
         // @ts-ignore Sync `elements` property type.
         <PeTwitter {...props} />
     );

@@ -73,9 +73,9 @@ export const createDefaultDataLoader: CreateDefaultDataLoader = ({
     }
 
     // Let's remove non-string values from the headers object.
-    const sanitizedHeaders:Record<string,string> = {};
+    const sanitizedHeaders: Record<string, string> = {};
     for (const key in includeHeaders) {
-        if (typeof includeHeaders[key] === 'string') {
+        if (typeof includeHeaders[key] === "string") {
             sanitizedHeaders[key] = includeHeaders[key];
         }
     }

@@ -17,13 +17,13 @@ const globalStyles = css`
 `;
 
 const Layout = styled.div`
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 
-  footer {
-    margin-top: auto;
-  }
+    footer {
+        margin-top: auto;
+    }
 `;
 
 const Static: React.FC<{ children: React.ReactNode }> = ({ children }) => {

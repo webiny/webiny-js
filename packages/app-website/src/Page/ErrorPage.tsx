@@ -1,5 +1,5 @@
 import React from "react";
-import {Helmet} from "react-helmet";
+import { Helmet } from "react-helmet";
 import styled from "@emotion/styled";
 
 const Wrapper = styled.div({
@@ -44,7 +44,7 @@ interface ErrorPageProps {
 
 let DEFAULT_ERROR_INFO = {
     title: "An error occurred",
-    message: <>The link is either broken or the page has been removed.</>,
+    message: <>The link is either broken or the page has been removed.</>
 };
 
 export const ErrorPage: React.FC<ErrorPageProps> = (props: ErrorPageProps) => {
@@ -53,7 +53,7 @@ export const ErrorPage: React.FC<ErrorPageProps> = (props: ErrorPageProps) => {
         errorInfo = getPbNotInstalledErrorMessage();
     }
 
-    const {title, message} = errorInfo;
+    const { title, message } = errorInfo;
 
     return (
         <Wrapper>

@@ -15,4 +15,3 @@ export const HiddenField: React.FC<InputProps> = ({ field, type }) => {
 
     return <input type="hidden" value={value} />;
 };
-
