@@ -7,11 +7,10 @@ import { CmsDynamicZoneTemplate, CmsEntryValues, CmsModelDynamicZoneField } from
 import { ConverterCollection } from "~/utils/converters/ConverterCollection";
 
 interface DynamicZoneValue {
-    _templateId: string;
     [key: string]: any;
 }
 
-interface ProcessToStorage {
+interface ProcessValue {
     templates: CmsDynamicZoneTemplate[];
     value: DynamicZoneValue | null;
     converterCollection: ConverterCollection;
@@ -81,19 +80,58 @@ export class CmsModelDynamicZoneFieldConverterPlugin extends CmsModelFieldConver
         };
     }
 
-    private processToStorage(params: ProcessToStorage) {
-        const { templates, value, converterCollection } = params;
+    private processToStorage(params: ProcessValue) {
+        const { templates, converterCollection } = params;
+        let { value } = params;
         if (value === null || value === undefined) {
             return undefined;
         }
+        /**
+         * There are two ways converter needs to work:
+         * 1. when there is a _templateId
+         * 2. when there is a key which identifies which template is the data for
+         */
 
-        const { _templateId } = value;
-
-        const template = templates.find(t => t.id === _templateId);
-        if (!template) {
-            throw new WebinyError("Unknown template.", "UNKNOWN_TEMPLATE", {
-                templateId: _templateId
+        /**
+         * When we have a template key, everything is simple.
+         */
+        const templateId = value._templateId;
+        let graphQlName: string | undefined = undefined;
+        let template: CmsDynamicZoneTemplate | undefined = undefined;
+        if (templateId) {
+            template = templates.find(t => {
+                return templateId === t.id;
             });
+        }
+        /**
+         * When we do not have a templateId, then the template identifier is the key of the value object.
+         * But at that point, values under that key become the value we are working with later on.
+         */
+        //
+        else {
+            const keys = Object.keys(value);
+            if (keys.length === 0) {
+                return undefined;
+            } else if (keys.length > 1) {
+                throw new WebinyError(
+                    "There cannot be more than one dynamic zone template in a single dynamic zone field.",
+                    "DYNAMIC_ZONE_TOO_MANY_TEMPLATES",
+                    {
+                        templates: keys
+                    }
+                );
+            }
+            graphQlName = keys[0] as string;
+            template = templates.find(t => t.gqlTypeName === graphQlName);
+        }
+
+        if (!template) {
+            throw new WebinyError("Unknown template - converting to storage.", "UNKNOWN_TEMPLATE", {
+                templateId,
+                graphQlName
+            });
+        } else if (graphQlName) {
+            value = value[graphQlName];
         }
 
         return template.fields.reduce<Record<string, any>>(
@@ -101,13 +139,13 @@ export class CmsModelDynamicZoneFieldConverterPlugin extends CmsModelFieldConver
                 const converter = converterCollection.getConverter(field.type);
                 const converted = converter.convertToStorage({
                     field,
-                    value: value[field.fieldId]
+                    value: value ? value[field.fieldId] : undefined
                 });
                 Object.assign(values, converted);
                 return values;
             },
             {
-                _templateId
+                _templateId: template.id
             }
         );
     }
@@ -165,7 +203,7 @@ export class CmsModelDynamicZoneFieldConverterPlugin extends CmsModelFieldConver
         };
     }
 
-    private processFromStorage(params: ProcessToStorage) {
+    private processFromStorage(params: ProcessValue) {
         const { templates, value, converterCollection } = params;
         if (value === null || value === undefined) {
             return undefined;
@@ -175,9 +213,13 @@ export class CmsModelDynamicZoneFieldConverterPlugin extends CmsModelFieldConver
 
         const template = templates.find(t => t.id === _templateId);
         if (!template) {
-            throw new WebinyError("Unknown template.", "UNKNOWN_TEMPLATE", {
-                templateId: _templateId
-            });
+            throw new WebinyError(
+                "Unknown template - converting from storage.",
+                "UNKNOWN_TEMPLATE",
+                {
+                    templateId: _templateId
+                }
+            );
         }
         return template.fields.reduce<Record<string, any>>(
             (values, field) => {

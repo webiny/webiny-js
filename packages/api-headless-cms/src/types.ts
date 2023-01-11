@@ -524,6 +524,27 @@ export interface CmsModelFieldToGraphQLCreateResolver<TField = CmsModelField> {
         | false;
 }
 
+export interface CmsModelFieldToGraphQLPluginValidateChildFieldsValidateParams<
+    TField extends CmsModelField = CmsModelField
+> {
+    fields: TField[];
+    originalFields: TField[];
+}
+export interface CmsModelFieldToGraphQLPluginValidateChildFieldsValidate {
+    (params: CmsModelFieldToGraphQLPluginValidateChildFieldsValidateParams): void;
+}
+export interface CmsModelFieldToGraphQLPluginValidateChildFieldsParams<
+    TField extends CmsModelField = CmsModelField
+> {
+    field: TField;
+    originalField?: TField;
+    validate: CmsModelFieldToGraphQLPluginValidateChildFieldsValidate;
+}
+export interface CmsModelFieldToGraphQLPluginValidateChildFields<
+    TField extends CmsModelField = CmsModelField
+> {
+    (params: CmsModelFieldToGraphQLPluginValidateChildFieldsParams<TField>): void;
+}
 /**
  * @category Plugin
  * @category ModelField
@@ -772,6 +793,11 @@ export interface CmsModelFieldToGraphQLPlugin<TField extends CmsModelField = Cms
          */
         createResolver?: CmsModelFieldToGraphQLCreateResolver<TField>;
     };
+    /**
+     *
+     * @param field
+     */
+    validateChildFields?: CmsModelFieldToGraphQLPluginValidateChildFields<TField>;
 }
 
 /**
