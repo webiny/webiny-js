@@ -48,7 +48,22 @@ const contentEntryQueryData = {
                     nestedObjectNestedTitle: "Objective nested title #2"
                 }
             ],
-            objectTitle: "Objective title #1"
+            objectTitle: "Objective title #1",
+            objectBody: [
+                {
+                    tag: "h1",
+                    content: "Rich Text"
+                },
+                {
+                    tag: "div",
+                    children: [
+                        {
+                            tag: "p",
+                            content: "Testing the rich text storage"
+                        }
+                    ]
+                }
+            ]
         },
         __typename: "Page_Objective_Objecting"
     }
@@ -91,6 +106,21 @@ const contentEntryMutationData = {
         Objecting: {
             nestedObject: {
                 objectTitle: "Objective title #1",
+                objectBody: [
+                    {
+                        tag: "h1",
+                        content: "Rich Text"
+                    },
+                    {
+                        tag: "div",
+                        children: [
+                            {
+                                tag: "p",
+                                content: "Testing the rich text storage"
+                            }
+                        ]
+                    }
+                ],
                 objectNestedObject: [
                     {
                         nestedObjectNestedTitle: "Objective nested title #1"

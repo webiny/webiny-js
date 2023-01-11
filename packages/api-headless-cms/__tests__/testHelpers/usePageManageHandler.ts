@@ -37,6 +37,7 @@ const pageFields = `
         ...on Page_Objective_Objecting {
             nestedObject {
                 objectTitle
+                objectBody
                 objectNestedObject {
                     nestedObjectNestedTitle
                 }

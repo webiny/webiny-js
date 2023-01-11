@@ -279,6 +279,12 @@ export const pageModel: CmsModel = {
                                             label: "Object title"
                                         },
                                         {
+                                            id: "ijg4ufdsundsj",
+                                            fieldId: "objectBody",
+                                            type: "rich-text",
+                                            label: "Object body"
+                                        },
+                                        {
                                             id: "xj0waxngrejno",
                                             fieldId: "objectNestedObject",
                                             type: "object",
