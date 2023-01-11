@@ -31,13 +31,20 @@ export const GridSettings: React.FC<PbEditorPageElementSettingsRenderComponentPr
     const updateElement = useUpdateElement();
     const propName = `${DATA_NAMESPACE}.${displayMode}.flexDirection`;
 
-    const fallbackValue = useMemo(
-        () =>
-            applyFallbackDisplayMode(displayMode, mode =>
-                get(element, `${DATA_NAMESPACE}.${mode}.flexDirection`)
-            ),
-        [displayMode]
-    );
+    const fallbackValue = useMemo(() => {
+        const value = applyFallbackDisplayMode(displayMode, mode =>
+            get(element, `${DATA_NAMESPACE}.${mode}.flexDirection`)
+        );
+        // For backward compatibility
+        if (!value && (displayMode === "desktop" || displayMode === "tablet")) {
+            return "row";
+        }
+        if (!value && (displayMode === "mobile-landscape" || displayMode === "mobile-portrait")) {
+            return "column";
+        }
+
+        return value;
+    }, [displayMode]);
 
     const flexDirection = get(element, propName, fallbackValue || "row");
 

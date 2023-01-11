@@ -30,7 +30,7 @@
 }
 
 .webiny-pb-media-query--desktop .webiny-pb-layout-grid {
-  flex-direction: var(--desktop-flex-direction, "row");
+  flex-direction: var(--desktop-flex-direction, row);
 
   &-cell {
     @for $current from 1 to 13 {
@@ -41,7 +41,7 @@
   }
 }
 .webiny-pb-media-query--tablet .webiny-pb-layout-grid {
-  flex-direction: var(--tablet-flex-direction, "row");
+  flex-direction: var(--tablet-flex-direction, row);
 
   &-cell {
     @for $current from 1 to 13 {
@@ -52,7 +52,7 @@
   }
 }
 .webiny-pb-media-query--mobile-landscape .webiny-pb-layout-grid {
-  flex-direction: var(--mobile-landscape-flex-direction, "column");
+  flex-direction: var(--mobile-landscape-flex-direction, column);
 
   &-cell {
     @for $current from 1 to 13 {
@@ -63,7 +63,7 @@
   }
 }
 .webiny-pb-media-query--mobile-portrait .webiny-pb-layout-grid {
-  flex-direction: var(--mobile-portrait-flex-direction, "column");
+  flex-direction: var(--mobile-portrait-flex-direction, column);
 
   &-cell {
     @for $current from 1 to 13 {
