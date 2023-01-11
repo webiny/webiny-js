@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.33.5](https://github.com/webiny/webiny-js/compare/v5.33.5-beta.0...v5.33.5) (2022-12-23)
+
+**Note:** Version bump only for package webiny-js
+
+
+
+
+
+## [5.33.5-beta.0](https://github.com/webiny/webiny-js/compare/v5.33.4...v5.33.5-beta.0) (2022-12-22)
+
+
+### Bug Fixes
+
+* **api-dynamodb-to-elasticsearch:** retries for bulk insert ([#2842](https://github.com/webiny/webiny-js/issues/2842)) ([b4bf399](https://github.com/webiny/webiny-js/commit/b4bf39918747326d83a9597667bd2731c2a1a3aa))
+* **api-headless-cms:** generate nested ref field union types ([c09d420](https://github.com/webiny/webiny-js/commit/c09d420732efa7a5129beda2669f2172181ce89c))
+* **api-headless-cms:** initialize model data param ([#2888](https://github.com/webiny/webiny-js/issues/2888)) ([7ea275c](https://github.com/webiny/webiny-js/commit/7ea275c45a2faf64fb249f335b5e1e76de429cc7))
+* **api-headless-cms-ddb-es:** compress latest data on publish ([#2889](https://github.com/webiny/webiny-js/issues/2889)) ([9b80237](https://github.com/webiny/webiny-js/commit/9b8023797dc47266205b6d5b0df5b82a1b24f35a))
+* **serverless-cms-aws:** increase body limit to 1gb ([#2885](https://github.com/webiny/webiny-js/issues/2885)) ([a781bd7](https://github.com/webiny/webiny-js/commit/a781bd7e3c36f58e1216bc6ca21b557a2727ddfb))
+
+
+
+
+
 ## [5.33.4](https://github.com/webiny/webiny-js/compare/v5.33.4-beta.0...v5.33.4) (2022-12-15)
 
 

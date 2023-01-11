@@ -1,6 +1,6 @@
 {
   "name": "@webiny/handler",
-  "version": "5.33.4",
+  "version": "5.33.5",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -14,11 +14,11 @@
   "dependencies": {
     "@babel/runtime": "^7.16.3",
     "@fastify/cookie": "^7.2.0",
-    "@webiny/api": "^5.33.4",
-    "@webiny/error": "^5.33.4",
-    "@webiny/handler-client": "^5.33.4",
-    "@webiny/plugins": "^5.33.4",
-    "@webiny/utils": "^5.33.4",
+    "@webiny/api": "^5.33.5",
+    "@webiny/error": "^5.33.5",
+    "@webiny/handler-client": "^5.33.5",
+    "@webiny/plugins": "^5.33.5",
+    "@webiny/utils": "^5.33.5",
     "fastify": "^4.3.0"
   },
   "devDependencies": {
@@ -26,8 +26,8 @@
     "@babel/core": "^7.16.0",
     "@babel/preset-env": "^7.16.4",
     "@babel/preset-typescript": "^7.16.0",
-    "@webiny/cli": "^5.33.4",
-    "@webiny/project-utils": "^5.33.4",
+    "@webiny/cli": "^5.33.5",
+    "@webiny/project-utils": "^5.33.5",
     "babel-plugin-lodash": "^3.3.4",
     "merge": "^1.2.1",
     "rimraf": "^3.0.2",
