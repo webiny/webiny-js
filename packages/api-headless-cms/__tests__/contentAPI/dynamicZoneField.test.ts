@@ -112,7 +112,7 @@ describe("dynamicZone field", () => {
     const preview = usePageReadHandler(previewOpts);
 
     test("should create a page with dynamic zone fields", async () => {
-        await setupGroupAndModels({ manager: manage, models: [pageModel] });
+        await setupGroupAndModels({ manager: manage, models: [pageModel as any] });
 
         const [createPageResponse] = await manage.createPage({
             data: contentEntryMutationData

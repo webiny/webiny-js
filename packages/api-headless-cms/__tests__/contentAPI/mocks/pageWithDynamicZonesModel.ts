@@ -1,5 +1,10 @@
 const { version: webinyVersion } = require("@webiny/cli/package.json");
-import { CmsModel } from "~/types";
+import { CmsModel as BaseCmsModel, CmsModelField as BaseCmsModelField } from "~/types";
+
+type CmsModelField = Omit<BaseCmsModelField, "storageId">;
+interface CmsModel extends Omit<BaseCmsModel, "fields"> {
+    fields: CmsModelField[];
+}
 
 export const pageModel: CmsModel = {
     tenant: "root",
@@ -21,7 +26,6 @@ export const pageModel: CmsModel = {
         {
             id: "peeeyhtc",
             fieldId: "content",
-            storageId: "dynamic-zone@peeeyhtc", // storage ID does not have any effect
             type: "dynamicZone",
             label: "Content",
             tags: [],
@@ -126,7 +130,6 @@ export const pageModel: CmsModel = {
                             {
                                 id: "ttyh493ugfd",
                                 fieldId: "nestedObject",
-                                storageId: "someMockStorageIdWhichIsNotUsed",
                                 label: "Nested Object",
                                 type: "object",
                                 settings: {
@@ -134,14 +137,12 @@ export const pageModel: CmsModel = {
                                         {
                                             id: "rt3uhvds",
                                             fieldId: "objectTitle",
-                                            storageId: "objectTitleStorageId",
                                             type: "text",
                                             label: "Object title"
                                         },
                                         {
                                             id: "r329gdfhsaufdsa",
                                             fieldId: "objectNestedObject",
-                                            storageId: "objectNestedObjectStorageId",
                                             type: "object",
                                             label: "Object nested object",
                                             multipleValues: true,
@@ -150,8 +151,6 @@ export const pageModel: CmsModel = {
                                                     {
                                                         id: "g9huerprgds",
                                                         fieldId: "nestedObjectNestedTitle",
-                                                        storageId:
-                                                            "nestedObjectNestedTitleStorageId",
                                                         type: "text",
                                                         label: "Nested object nested title"
                                                     }
@@ -172,7 +171,6 @@ export const pageModel: CmsModel = {
         {
             id: "kcq9kt40",
             fieldId: "header",
-            storageId: "dynamic-zone@kcq9kt40",
             type: "dynamicZone",
             label: "Header",
             tags: [],
@@ -255,7 +253,6 @@ export const pageModel: CmsModel = {
         {
             id: "t4pfesadsa",
             fieldId: "objective",
-            storageId: "dynamicZone@objectiveStorageId",
             type: "dynamicZone",
             label: "Objective",
             settings: {
@@ -271,7 +268,6 @@ export const pageModel: CmsModel = {
                             {
                                 id: "ngutrblkf",
                                 fieldId: "nestedObject",
-                                storageId: "someMockStorageIdWhichIsNotUsed",
                                 label: "Nested Object",
                                 type: "object",
                                 settings: {
@@ -279,14 +275,12 @@ export const pageModel: CmsModel = {
                                         {
                                             id: "gpbebgjbefs",
                                             fieldId: "objectTitle",
-                                            storageId: "objectTitleStorageId",
                                             type: "text",
                                             label: "Object title"
                                         },
                                         {
                                             id: "xj0waxngrejno",
                                             fieldId: "objectNestedObject",
-                                            storageId: "objectNestedObjectStorageId",
                                             type: "object",
                                             label: "Object nested object",
                                             multipleValues: true,
@@ -295,8 +289,6 @@ export const pageModel: CmsModel = {
                                                     {
                                                         id: "hpgtierghpiue",
                                                         fieldId: "nestedObjectNestedTitle",
-                                                        storageId:
-                                                            "nestedObjectNestedTitleStorageId",
                                                         type: "text",
                                                         label: "Nested object nested title"
                                                     }
