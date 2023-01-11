@@ -46,6 +46,20 @@
   }
 }
 
+.pb-editor {
+  &.pb-editor-no-highlight {
+    .type {
+      display: none !important;
+    }
+    .webiny-pb-page-element-container::after {
+      content: none;
+    }
+    .webiny-pb-base-page-element-style::after {
+      content: none;
+    }
+  }
+}
+
 /**
  *  `Medium editor` styles
  */

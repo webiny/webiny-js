@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { css } from "emotion";
+import styled from "@emotion/styled";
 import { i18n } from "@webiny/app/i18n";
 import { useRouter } from "@webiny/react-router";
 import { useQuery, useApolloClient } from "@apollo/react-hooks";
@@ -28,27 +29,45 @@ import { ButtonDefault, ButtonIcon, ButtonSecondary } from "@webiny/ui/Button";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
+import { ReactComponent as DownloadFileIcon } from "~/editor/plugins/defaultBar/components/icons/file_download.svg";
+import { ReactComponent as UploadFileIcon } from "~/editor/plugins/defaultBar/components/icons/file_upload.svg";
 import { Icon } from "~/admin/utils/createBlockCategoryPlugin";
 
 import { PbBlockCategory, PbPageBlock } from "~/types";
 import { LIST_PAGE_BLOCKS_AND_CATEGORIES, LIST_PAGE_BLOCKS, CREATE_PAGE_BLOCK } from "./graphql";
 
 import { addElementId } from "~/editor/helpers";
+import useImportBlock from "~/admin/views/PageBlocks/hooks/useImportBlock";
+import useExportBlockDialog from "~/editor/plugins/defaultBar/components/ExportBlockButton/useExportBlockDialog";
 
 const t = i18n.ns("app-page-builder/admin/page-blocks/by-categories-data-list");
 
-const narrowDialog = css({
-    ".mdc-dialog__surface": {
-        width: 400,
-        minWidth: 400
+const narrowDialog = css`
+    .mdc-dialog__surface {
+        width: 400px;
+        min-width: 400px;
     }
-});
+`;
 
-const noRecordsWrapper = css({
-    display: "flex",
-    justifyContent: "center",
-    color: "var(--mdc-theme-on-surface)"
-});
+const noRecordsWrapper = css`
+    display: flex;
+    justify-content: center;
+    color: var(--mdc-theme-on-surface);
+`;
+
+const DataListActionsWrapper = styled.div`
+    display: flex;
+    justify-content: flex-end;
+
+    & button {
+        margin-left: 8px;
+    }
+`;
+
+enum Operation {
+    CREATE = "create",
+    IMPORT = "import"
+}
 
 interface Sorter {
     label: string;
@@ -77,13 +96,15 @@ type PageBuilderBlocksByCategoriesDataListProps = {
     canCreate: boolean;
 };
 const BlocksByCategoriesDataList = ({ canCreate }: PageBuilderBlocksByCategoriesDataListProps) => {
+    const [operation, setOperation] = useState<string>(Operation.CREATE);
     const [filter, setFilter] = useState<string>("");
     const [sort, setSort] = useState<string>(SORTERS[0].sort);
-    const [isNewPageBlockDialogOpen, setIsNewPageBlockDialogOpen] = useState<boolean>(false);
+    const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
     const { history } = useRouter();
     const client = useApolloClient();
     const { showSnackbar } = useSnackbar();
     const listQuery = useQuery(LIST_PAGE_BLOCKS_AND_CATEGORIES);
+    const { showExportBlockInitializeDialog } = useExportBlockDialog();
 
     const blockCategoriesData: PbBlockCategory[] =
         listQuery?.data?.pageBuilder?.listBlockCategories?.data || [];
@@ -188,20 +209,44 @@ const BlocksByCategoriesDataList = ({ canCreate }: PageBuilderBlocksByCategories
         });
         const { error, data } = get(res, `pageBuilder.pageBlock`);
         if (data) {
-            setIsNewPageBlockDialogOpen(false);
+            setIsDialogOpen(false);
             history.push(`/page-builder/block-editor/${data.id}`);
         } else {
             showSnackbar(error.message);
         }
     };
 
+    const { showImportDialog } = useImportBlock();
+
+    const handleImportClick = useCallback(() => {
+        setOperation(Operation.IMPORT);
+        setIsDialogOpen(true);
+    }, []);
+
+    const handleExportClick = useCallback(() => {
+        showExportBlockInitializeDialog();
+    }, []);
+
     const handleNewBlockClick = useCallback(() => {
         if (selectedBlocksCategory) {
             onCreatePageBlock(selectedBlocksCategory);
         } else {
-            setIsNewPageBlockDialogOpen(true);
+            setOperation(Operation.CREATE);
+            setIsDialogOpen(true);
         }
     }, [selectedBlocksCategory]);
+
+    const onSelect = useCallback(
+        (slug: string) => {
+            if (operation === Operation.CREATE) {
+                onCreatePageBlock(slug);
+            } else {
+                showImportDialog({ slug });
+                setIsDialogOpen(false);
+            }
+        },
+        [operation]
+    );
 
     return (
         <>
@@ -210,11 +255,19 @@ const BlocksByCategoriesDataList = ({ canCreate }: PageBuilderBlocksByCategories
                 loading={Boolean(loading)}
                 data={categoryList}
                 actions={
-                    canCreate ? (
-                        <ButtonSecondary onClick={handleNewBlockClick}>
-                            <ButtonIcon icon={<AddIcon />} /> {t`New Block`}
+                    <DataListActionsWrapper>
+                        <ButtonSecondary onClick={handleImportClick}>
+                            <ButtonIcon icon={<UploadFileIcon />} /> {t`Import`}
                         </ButtonSecondary>
-                    ) : null
+                        <ButtonSecondary onClick={handleExportClick}>
+                            <ButtonIcon icon={<DownloadFileIcon />} /> {t`Export`}
+                        </ButtonSecondary>
+                        {canCreate ? (
+                            <ButtonSecondary onClick={handleNewBlockClick}>
+                                <ButtonIcon icon={<AddIcon />} /> {t`New Block`}
+                            </ButtonSecondary>
+                        ) : null}
+                    </DataListActionsWrapper>
                 }
                 search={
                     <SearchUI
@@ -269,8 +322,8 @@ const BlocksByCategoriesDataList = ({ canCreate }: PageBuilderBlocksByCategories
                 )}
             </DataList>
             <Dialog
-                open={isNewPageBlockDialogOpen}
-                onClose={() => setIsNewPageBlockDialogOpen(false)}
+                open={isDialogOpen}
+                onClose={() => setIsDialogOpen(false)}
                 className={narrowDialog}
             >
                 <DialogTitle>
@@ -287,10 +340,7 @@ const BlocksByCategoriesDataList = ({ canCreate }: PageBuilderBlocksByCategories
                         ) : (
                             <List twoLine>
                                 {categoryList.map(item => (
-                                    <ListItem
-                                        key={item.slug}
-                                        onClick={() => onCreatePageBlock(item.slug)}
-                                    >
+                                    <ListItem key={item.slug} onClick={() => onSelect(item.slug)}>
                                         <ListItemGraphic>
                                             <Icon category={item} />
                                         </ListItemGraphic>

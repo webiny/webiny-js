@@ -38,7 +38,7 @@ import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/fil
 import SearchUI from "@webiny/app-admin/components/SearchUI";
 import * as GQLCache from "~/admin/views/Pages/cache";
 import { ReactComponent as FileUploadIcon } from "~/editor/plugins/defaultBar/components/icons/file_upload.svg";
-import useImportPageDialog from "~/editor/plugins/defaultBar/components/ImportPageButton/useImportPageDialog";
+import useImportPageDialog from "~/editor/plugins/defaultBar/components/ImportButton/page/useImportPageDialog";
 import { useMultiSelect } from "~/admin/views/Pages/hooks/useMultiSelect";
 import { ExportPagesButton } from "~/editor/plugins/defaultBar/components/ExportPageButton";
 import { PbCategory } from "~/types";

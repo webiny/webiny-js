@@ -19,7 +19,7 @@ export enum PageStatus {
     DRAFT = "draft"
 }
 
-export enum PageImportExportTaskStatus {
+export enum ImportExportTaskStatus {
     PENDING = "pending",
     PROCESSING = "processing",
     COMPLETED = "completed",
