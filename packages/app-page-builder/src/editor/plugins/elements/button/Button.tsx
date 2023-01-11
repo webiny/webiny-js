@@ -15,7 +15,7 @@ const Button: React.FC<ButtonProps> = props => {
     }
 
     const { element, ...rest } = props;
-    return <PeButton element={props.element as Element} {...rest} />;
+    return <PeButton element={element as Element} {...rest} />;
 };
 
 export default Button;

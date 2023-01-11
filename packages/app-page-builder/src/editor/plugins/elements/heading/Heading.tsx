@@ -16,7 +16,7 @@ const Heading: React.FC<HeadingProps> = props => {
     }
 
     const { element, ...rest } = props;
-    return <PeHeading element={props.element as Element} {...rest} />;
+    return <PeHeading element={element as Element} {...rest} />;
 };
 
 export default Heading;

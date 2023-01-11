@@ -15,7 +15,7 @@ const Document: React.FC<DocumentProps> = props => {
     }
 
     const { element, ...rest } = props;
-    return <PeDocument element={props.element as Element} {...rest} />;
+    return <PeDocument element={element as Element} {...rest} />;
 };
 
 export default Document;

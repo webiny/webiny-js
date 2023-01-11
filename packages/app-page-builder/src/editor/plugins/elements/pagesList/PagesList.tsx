@@ -15,7 +15,7 @@ const PagesList: React.FC<PagesListProps> = props => {
     }
 
     const { element, ...rest } = props;
-    return <PePagesList element={props.element as Element} {...rest} />;
+    return <PePagesList element={element as Element} {...rest} />;
 };
 
 export default React.memo(PagesList);

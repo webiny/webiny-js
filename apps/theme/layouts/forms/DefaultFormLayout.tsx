@@ -1,15 +1,12 @@
 import React, { useState } from "react";
-import { Form, BindComponent } from "@webiny/form";
-import { validation } from "@webiny/validation";
+import { Form } from "@webiny/form";
 import { FormLayoutComponent } from "@webiny/app-form-builder/types";
 import styled from "@emotion/styled";
-
 import { Row } from "./DefaultFormLayout/Row";
 import { Cell } from "./DefaultFormLayout/Cell";
 import { Field } from "./DefaultFormLayout/Field";
 import { SuccessMessage } from "./DefaultFormLayout/SuccessMessage";
 import { SubmitButton } from "./DefaultFormLayout/SubmitButton";
-import { FieldMessage } from "./DefaultFormLayout/fields/components/FieldMessage";
 import { TermsOfServiceSection } from "./DefaultFormLayout/TermsOfServiceSection";
 import { ReCaptchaSection } from "./DefaultFormLayout/ReCaptchaSection";
 
@@ -57,31 +54,6 @@ const DefaultFormLayout: FormLayoutComponent = ({
         }
     };
 
-    /**
-     * Renders Google reCAPTCHA field (checkbox) - to protect us from spam and bots.
-     */
-    const renderReCaptcha = (Bind: BindComponent) => {
-        return (
-            <ReCaptcha>
-                {({ errorMessage }) => (
-                    <div className="webiny-fb-form-recaptcha">
-                        <Bind name={"reCaptcha"} validators={validation.create("required")}>
-                            {({ onChange, validation }) => (
-                                <>
-                                    <ReCaptcha onChange={onChange} />
-                                    <FieldMessage
-                                        isValid={validation.isValid}
-                                        errorMessage={errorMessage}
-                                    />
-                                </>
-                            )}
-                        </Bind>
-                    </div>
-                )}
-            </ReCaptcha>
-        );
-    };
-
     if (formSuccess) {
         return <SuccessMessage formData={formData} />;
     }
@@ -90,7 +62,7 @@ const DefaultFormLayout: FormLayoutComponent = ({
         /* "onSubmit" callback gets triggered once all of the fields are valid. */
         /* We also pass the default values for all fields via the getDefaultValues callback. */
         <Form onSubmit={submitForm} data={getDefaultValues()}>
-            {({ submit, Bind }) => (
+            {({ submit }) => (
                 <Wrapper>
                     {fields.map((row, rowIndex) => (
                         <Row key={rowIndex}>

@@ -42,7 +42,7 @@ interface ErrorPageProps {
     error?: any;
 }
 
-let DEFAULT_ERROR_INFO = {
+const DEFAULT_ERROR_INFO = {
     title: "An error occurred",
     message: <>The link is either broken or the page has been removed.</>
 };

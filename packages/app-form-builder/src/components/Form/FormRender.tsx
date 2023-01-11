@@ -1,6 +1,6 @@
 import { plugins } from "@webiny/plugins";
-import { cloneDeep, get } from "lodash";
-import React, { useEffect, useRef, useMemo } from "react";
+import { cloneDeep } from "lodash";
+import React, { useEffect, useRef } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
 import { createReCaptchaComponent, createTermsOfServiceComponent } from "./components";
 import {
@@ -17,14 +17,11 @@ import {
     FormSubmitResponseType,
     FbFormSubmissionData,
     FbFormFieldValidatorPlugin,
-    FbFormLayoutPlugin as FbFormLayoutPluginType,
     FbFormModelField,
     FormRenderFbFormModelField,
     FbFormModel,
     FbFormLayout
 } from "~/types";
-import { PbThemePlugin } from "@webiny/app-page-builder/types";
-import { isLegacyRenderingEngine } from "~/utils";
 import { FbFormLayoutPlugin } from "~/plugins";
 
 declare global {
@@ -45,11 +42,6 @@ interface FieldValidator {
 }
 
 const FormRender: React.FC<FbFormRenderComponentProps> = props => {
-    const theme = useMemo(
-        () => Object.assign({}, ...plugins.byType<PbThemePlugin>("pb-theme").map(pl => pl.theme)),
-        []
-    );
-
     const client = useApolloClient();
     const data = props.data || ({} as FbFormModel);
 

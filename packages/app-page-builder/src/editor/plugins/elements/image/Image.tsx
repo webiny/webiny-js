@@ -15,7 +15,7 @@ const Image: React.FC<ImageProps> = props => {
     }
 
     const { element, ...rest } = props;
-    return <PeImage element={props.element as Element} {...rest} />;
+    return <PeImage element={element as Element} {...rest} />;
 };
 
 export default React.memo(Image);

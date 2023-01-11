@@ -15,7 +15,7 @@ const Icon: React.FC<IconProps> = props => {
     }
 
     const { element, ...rest } = props;
-    return <PeIcon element={props.element as Element} {...rest} />;
+    return <PeIcon element={element as Element} {...rest} />;
 };
 
 export default Icon;

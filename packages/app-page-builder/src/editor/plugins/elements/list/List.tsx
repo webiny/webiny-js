@@ -16,7 +16,7 @@ const List: React.FC<ListProps> = props => {
     }
 
     const { element, ...rest } = props;
-    return <PeList element={props.element as Element} {...rest} />;
+    return <PeList element={element as Element} {...rest} />;
 };
 
 export default React.memo(List);

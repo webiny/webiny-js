@@ -16,7 +16,7 @@ const Quote: React.FC<QuoteProps> = props => {
     }
 
     const { element, ...rest } = props;
-    return <PeQuote element={props.element as Element} {...rest} />;
+    return <PeQuote element={element as Element} {...rest} />;
 };
 
 export default React.memo(Quote);

@@ -15,7 +15,7 @@ const Iframe: React.FC<IframeProps> = props => {
     }
 
     const { element, ...rest } = props;
-    return <PeIframe element={props.element as Element} {...rest} />;
+    return <PeIframe element={element as Element} {...rest} />;
 };
 
 export default Iframe;

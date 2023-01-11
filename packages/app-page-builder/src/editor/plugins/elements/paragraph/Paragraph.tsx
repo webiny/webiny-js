@@ -18,7 +18,7 @@ const Paragraph: React.FC<ParagraphProps> = props => {
     }
 
     const { element, ...rest } = props;
-    return <PeParagraph element={props.element as Element} {...rest} />;
+    return <PeParagraph element={element as Element} {...rest} />;
 };
 
 export default Paragraph;
