@@ -121,6 +121,7 @@ export default /* GraphQL */ `
 
     type Page_Objective_Objecting_NestedObject {
         objectTitle: String
+        objectBody: JSON
         objectNestedObject: [Page_Objective_Objecting_NestedObject_ObjectNestedObject!]
     }
     input Page_Objective_Objecting_NestedObjectWhereInput {
@@ -189,6 +190,7 @@ export default /* GraphQL */ `
 
     input Page_Objective_Objecting_NestedObjectInput {
         objectTitle: String
+        objectBody: JSON
         objectNestedObject: [Page_Objective_Objecting_NestedObject_ObjectNestedObjectInput!]
     }
 

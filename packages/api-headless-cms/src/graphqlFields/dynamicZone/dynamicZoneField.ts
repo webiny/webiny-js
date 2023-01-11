@@ -103,7 +103,7 @@ export const createDynamicZoneField =
             type: "cms-model-field-to-graphql",
             fieldType: "dynamicZone",
             isSortable: false,
-            isSearchable: true,
+            isSearchable: false,
             validateChildFields: params => {
                 const { validate, originalField, field } = params;
 
