@@ -4,6 +4,11 @@
   box-sizing: border-box;
   background-color: var(--webiny-theme-color-surface, #ffffff);
 
+  .webiny-pb-base-page-element-style {
+    border: none;
+    box-shadow: none;
+  }
+
   .webiny-fb-form-layout-row,
   .webiny-fb-form-layout-column {
     display: flex;
