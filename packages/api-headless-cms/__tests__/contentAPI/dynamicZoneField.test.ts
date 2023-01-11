@@ -164,6 +164,36 @@ describe("dynamicZone field", () => {
 
         const page = createPageResponse.data.createPage.data;
 
+        await manage.until(
+            () => manage.listPages().then(([data]) => data),
+            ({ data }: any) => {
+                return data.listPages.data.length === 1;
+            }
+        );
+
+        const [manageList] = await manage.listPages();
+
+        expect(manageList).toEqual({
+            data: {
+                listPages: {
+                    data: [
+                        {
+                            id: page.id,
+                            content: contentEntryQueryData.content,
+                            header: contentEntryQueryData.header,
+                            objective: contentEntryQueryData.objective
+                        }
+                    ],
+                    meta: {
+                        totalCount: 1,
+                        hasMoreItems: false,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+
         // Test `manage` get
         const [manageGet] = await manage.getPage({
             revision: page.id
