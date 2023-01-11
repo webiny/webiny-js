@@ -15,19 +15,19 @@ const getStoragePluginFactory: GetStoragePluginFactory = context => {
         // we reverse plugins because we want to get latest added only
         .reverse()
         .reduce((collection, plugin) => {
-            // check if it's a default plugin
-            if (plugin.fieldType === "*" && !defaultStoragePlugin) {
+            /**
+             * Check if it's a default plugin and set it - always override the previous one.
+             */
+            if (plugin.fieldType === "*") {
                 defaultStoragePlugin = plugin;
                 return collection;
             }
 
             /**
-             * either existing plugin added or plugin fieldType does not exist in current model
-             * this is to iterate a bit less later
+             * We will just set the plugin for given type.
+             * The last one will override existing one - so users can override our default ones.
              */
-            if (!collection[plugin.fieldType]) {
-                collection[plugin.fieldType] = plugin;
-            }
+            collection[plugin.fieldType] = plugin;
 
             return collection;
         }, {} as Record<string, StorageTransformPlugin>);
