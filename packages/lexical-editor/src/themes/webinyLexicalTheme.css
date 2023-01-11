@@ -9,15 +9,15 @@
    line-height: 1.25;
  }
 .PlaygroundEditorTheme__ltr {
-  text-align: left;
+  text-align: inherit;
 }
 .PlaygroundEditorTheme__rtl {
-  text-align: right;
+  text-align: inherit;
 }
 .PlaygroundEditorTheme__paragraph {
   margin: 0;
   position: relative;
-  text-align: left;
+  text-align: inherit;
   font-size: inherit;
 }
 .PlaygroundEditorTheme__quote {
