@@ -246,7 +246,7 @@ export default {
                                                 typography: "heading1",
                                                 alignment: "center",
                                                 tag: "h1",
-                                                color: "color5"
+                                                color: "color6"
                                             },
                                             data: {
                                                 text: "<b>Welcome to Webiny</b>"
