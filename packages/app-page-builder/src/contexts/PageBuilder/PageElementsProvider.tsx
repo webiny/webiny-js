@@ -33,7 +33,7 @@ export const PageElementsProvider: React.FC = ({ children }) => {
     const renderers = plugins
         .byType<PbRenderElementPlugin>("pb-render-page-element")
         .reduce((current, item) => {
-            return { ...current, [item.elementType]: item.renderer };
+            return { ...current, [item.elementType]: item.render };
         }, {});
 
     const modifiers = {
