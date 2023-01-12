@@ -9,8 +9,8 @@
     { "path": "../error/tsconfig.build.json" },
     { "path": "../handler-db/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" },
-    { "path": "../api/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" },
+    { "path": "../api/tsconfig.build.json" },
     { "path": "../api-dynamodb-to-elasticsearch/tsconfig.build.json" },
     { "path": "../api-security/tsconfig.build.json" },
     { "path": "../api-tenancy/tsconfig.build.json" },
@@ -21,7 +21,7 @@
     "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist",
-    "paths": { "~/*": ["./src/*"] },
+    "paths": { "~/*": ["./src/*"], "~tests/*": ["./__tests__/*"] },
     "baseUrl": "."
   }
 }

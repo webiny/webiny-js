@@ -2,9 +2,9 @@
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
   "references": [
-    { "path": "../error/tsconfig.build.json" },
     { "path": "../api/tsconfig.build.json" },
     { "path": "../api-headless-cms/tsconfig.build.json" },
+    { "path": "../error/tsconfig.build.json" },
     { "path": "../handler-graphql/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" },
     { "path": "../pubsub/tsconfig.build.json" },
@@ -15,8 +15,8 @@
     { "path": "../api-security-so-ddb/tsconfig.build.json" },
     { "path": "../api-tenancy/tsconfig.build.json" },
     { "path": "../api-tenancy-so-ddb/tsconfig.build.json" },
-    { "path": "../handler/tsconfig.build.json" },
     { "path": "../db-dynamodb/tsconfig.build.json" },
+    { "path": "../handler/tsconfig.build.json" },
     { "path": "../handler-aws/tsconfig.build.json" },
     { "path": "../handler-db/tsconfig.build.json" }
   ],
@@ -24,7 +24,7 @@
     "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist",
-    "paths": { "~/*": ["./src/*"] },
+    "paths": { "~/*": ["./src/*"], "~tests/*": ["./__tests__/*"] },
     "baseUrl": "."
   }
 }

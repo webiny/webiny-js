@@ -14,7 +14,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
     name: "cms-editor-field-renderer-object",
     renderer: {
         rendererName: "object",
-        name: t`Object`,
+        name: t`Inline Form`,
         description: t`Renders a set of fields.`,
         canUse({ field }) {
             return field.type === "object" && !field.multipleValues;

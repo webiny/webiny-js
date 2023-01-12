@@ -16,6 +16,7 @@
     "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
       "@webiny/api-page-builder-import-export/*": ["../api-page-builder-import-export/src/*"],
       "@webiny/api-page-builder-import-export": ["../api-page-builder-import-export/src"],
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],

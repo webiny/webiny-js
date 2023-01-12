@@ -14,6 +14,7 @@
     "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
       "@webiny/api/*": ["../api/src/*"],
       "@webiny/api": ["../api/src"],
       "@webiny/error/*": ["../error/src/*"],
