@@ -1,5 +1,6 @@
 import { PluginCollection } from "@webiny/plugins/types";
 import fastify, {
+    FastifyInstance,
     FastifyServerOptions as ServerOptions,
     preSerializationAsyncHookHandler
 } from "fastify";
@@ -61,6 +62,7 @@ const OPTIONS_HEADERS: Record<string, string> = {
 export interface CreateHandlerParams {
     plugins: PluginCollection;
     options?: ServerOptions;
+    modify?: (app: FastifyInstance) => void;
 }
 
 export const createHandler = (params: CreateHandlerParams) => {
@@ -134,6 +136,12 @@ export const createHandler = (params: CreateHandlerParams) => {
     const app = fastify({
         ...(params.options || {})
     });
+    /**
+     * With this method we give users possibility to do what ever they want on our fastify instance.
+     */
+    if (params.modify) {
+        params.modify(app);
+    }
     /**
      * We need to register routes in our system so we can output headers later on and dissallow overriding routes.
      */
@@ -300,15 +308,32 @@ export const createHandler = (params: CreateHandlerParams) => {
 
     app.addHook("preSerialization", preSerialization);
 
-    app.addHook("onError", async (_, reply, error) => {
+    app.setErrorHandler<WebinyError>(async (error, request, reply) => {
+        return reply
+            .status(500)
+            .headers({
+                "Cache-Control": "no-store"
+            })
+            .send({
+                ...error,
+                message: error.message,
+                code: error.code,
+                data: error.data
+            });
+    });
+
+    app.addHook("onError", async (_, reply, error: any) => {
         const plugins = app.webiny.plugins.byType<HandlerErrorPlugin>(HandlerErrorPlugin.type);
-        // Log error to cloud, as these can be extremely annoying to debug!
+        /**
+         * Log error to cloud, as these can be extremely annoying to debug!
+         */
         console.log("@webiny/handler");
         console.log(
             JSON.stringify({
                 ...(error || {}),
                 message: error?.message,
-                code: error?.code
+                code: error?.code,
+                data: error?.data
             })
         );
         const handler = middleware(
@@ -321,6 +346,7 @@ export const createHandler = (params: CreateHandlerParams) => {
         await handler(app.webiny, error);
 
         return reply
+            .send(JSON.stringify(error))
             .headers({
                 "Cache-Control": "no-store"
             })
