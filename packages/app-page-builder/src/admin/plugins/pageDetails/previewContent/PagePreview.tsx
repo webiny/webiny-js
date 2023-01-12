@@ -17,46 +17,49 @@ const webinyZoomStyles = css`
     }
 `;
 
-const pageInnerWrapper = css({
-    overflowY: "scroll",
-    overflowX: "hidden",
-    height: "calc(100vh - 230px)",
-    position: "relative",
-    ".webiny-pb-page-document": {
-        transform: "scale(var(--webiny-pb-page-preview-scale))",
-        transition: "transform 0.5s ease-in-out",
-        transformOrigin: "top center"
-    }
-});
+const pageInnerWrapper = css`
+    overflow-y: scroll;
+    overflow-x: hidden;
+    height: calc(100vh - 230px);
 
-const PagePreviewToolbar = styled("div")({
-    position: "sticky",
-    bottom: 0,
-    height: 30,
-    paddingLeft: 15,
-    color: "var(--mdc-theme-text-secondary-on-background)",
-    borderTop: "1px solid var(--mdc-theme-on-background)",
-    backgroundColor: "var(--mdc-theme-background)",
-    width: "100%",
-    transform: "translateZ(0)",
-    display: "flex",
-    overflow: "hidden",
-    ".webiny-ui-select": {
-        color: "var(--mdc-theme-text-secondary-on-background)",
-        backgroundColor: "transparent !important",
-        width: "120px !important",
-        ".mdc-select__dropdown-icon": {
-            display: "none"
-        },
-        select: {
-            fontSize: 14,
-            border: "none",
-            height: 30,
-            padding: 0,
-            backgroundColor: "transparent !important"
+    .webiny-pb-page-document {
+        transform: scale(var(--webiny-pb-page-preview-scale));
+        transition: transform 0.5s ease-in-out;
+        transform-origin: top center;
+    }
+`;
+
+const PagePreviewToolbar = styled("div")`
+    position: absolute;
+    bottom: 0;
+    height: 30px;
+    padding-left: 15px;
+    color: var(--mdc-theme-text-secondary-on-background);
+    border-top: 1px solid var(--mdc-theme-on-background);
+    background: var(--mdc-theme-background);
+    width: 100%;
+    transform: translateZ(0);
+    display: flex;
+    overflow: hidden;
+
+    .webiny-ui-select {
+        color: var(--mdc-theme-text-secondary-on-background);
+        background: transparent !important;
+        width: 120px !important;
+
+        .mdc-select__dropdown-icon {
+            display: none;
+        }
+
+        select {
+            font-size: 14px;
+            border: none;
+            height: 30px;
+            padding: 0;
+            background-color: transparent !important;
         }
     }
-});
+`;
 
 interface PagePreviewProps {
     page: PbPageData;

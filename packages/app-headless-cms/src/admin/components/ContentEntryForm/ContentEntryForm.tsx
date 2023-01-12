@@ -10,6 +10,7 @@ import { useContentEntryForm, UseContentEntryFormParams } from "./useContentEntr
 import { Fields } from "./Fields";
 import { Prompt } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin";
+import { ModelProvider, useModel } from "~/admin/components/ModelProvider";
 
 const FormWrapper = styled("div")({
     height: "calc(100vh - 260px)",
@@ -37,7 +38,7 @@ const isDifferent = (value: any, compare: any): boolean => {
 
 export const ContentEntryForm: React.FC<ContentEntryFormProps> = ({ onForm, ...props }) => {
     const formElementRef = useRef<HTMLDivElement>(null);
-    const { contentModel } = props;
+    const { model } = useModel();
     const {
         loading,
         data: initialData,
@@ -78,11 +79,11 @@ export const ContentEntryForm: React.FC<ContentEntryFormProps> = ({ onForm, ...p
 
     const formRenderer = plugins
         .byType<CmsContentFormRendererPlugin>("cms-content-form-renderer")
-        .find(pl => pl.modelId === contentModel.modelId);
+        .find(pl => pl.modelId === model.modelId);
 
     const renderCustomLayout = useCallback(
         (formRenderProps: FormRenderPropParams) => {
-            const fields = contentModel.fields.reduce((acc, field) => {
+            const fields = model.fields.reduce((acc, field) => {
                 /**
                  * TODO @ts-refactor
                  * Figure out type for Bind.
@@ -91,18 +92,18 @@ export const ContentEntryForm: React.FC<ContentEntryFormProps> = ({ onForm, ...p
                     <RenderFieldElement
                         field={field}
                         Bind={formRenderProps.Bind as any}
-                        contentModel={contentModel}
+                        contentModel={model}
                     />
                 );
 
                 return acc;
             }, {} as Record<string, React.ReactElement>);
             if (!formRenderer) {
-                return <>{`Missing form renderer for modelId "${contentModel.modelId}".`}</>;
+                return <>{`Missing form renderer for modelId "${model.modelId}".`}</>;
             }
             return formRenderer.render({
                 ...formRenderProps,
-                contentModel,
+                contentModel: model,
                 fields,
                 /**
                  * TODO @ts-refactor
@@ -114,42 +115,30 @@ export const ContentEntryForm: React.FC<ContentEntryFormProps> = ({ onForm, ...p
         [formRenderer]
     );
 
-    const onFormSubmit = useCallback(
-        (data, form) => {
-            setIsDirty(false);
-            return onSubmit(data, form);
-        },
-        [onSubmit]
-    );
-
-    const onFormInvalid = useCallback(() => {
-        setIsDirty(true);
-        showSnackbar("You have fields that did not pass the validation. Please check the form.");
-    }, []);
-
-    const onFormChange = useCallback(
-        (data, form) => {
-            const different = isDifferent(data, initialData);
-            if (isDirty !== different) {
-                setIsDirty(different);
-            }
-            return onChange(data, form);
-        },
-        [onChange, initialData]
-    );
-
     return (
         <Form
-            onChange={onFormChange}
-            onSubmit={onFormSubmit}
+            onChange={(data, form) => {
+                const different = isDifferent(data, initialData);
+                if (isDirty !== different) {
+                    setIsDirty(different);
+                }
+                return onChange(data, form);
+            }}
+            onSubmit={(data, form) => {
+                setIsDirty(false);
+                return onSubmit(data, form);
+            }}
             data={initialData}
             ref={ref}
             invalidFields={invalidFields}
-            onInvalid={onFormInvalid}
+            onInvalid={() => {
+                setIsDirty(true);
+                showSnackbar("Some fields did not pass the validation. Please check the form.");
+            }}
         >
             {formProps => {
                 return (
-                    <>
+                    <ModelProvider model={model}>
                         <Prompt
                             when={isDirty}
                             message={
@@ -162,15 +151,15 @@ export const ContentEntryForm: React.FC<ContentEntryFormProps> = ({ onForm, ...p
                                 renderCustomLayout(formProps)
                             ) : (
                                 <Fields
-                                    contentModel={contentModel}
-                                    fields={contentModel.fields || []}
-                                    layout={contentModel.layout || []}
+                                    contentModel={model}
+                                    fields={model.fields || []}
+                                    layout={model.layout || []}
                                     {...formProps}
                                     Bind={formProps.Bind as any}
                                 />
                             )}
                         </FormWrapper>
-                    </>
+                    </ModelProvider>
                 );
             }}
         </Form>

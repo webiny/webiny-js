@@ -5,6 +5,7 @@ import styled from "@emotion/styled";
 import { css } from "emotion";
 import { Drawer, DrawerContent } from "@webiny/ui/Drawer";
 import { plugins } from "@webiny/plugins";
+import { makeComposable } from "@webiny/app-admin";
 import { PbEditorToolbarBottomPlugin, PbEditorToolbarTopPlugin } from "~/types";
 import { useKeyHandler } from "~/editor/hooks/useKeyHandler";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
@@ -37,7 +38,7 @@ const DrawerContainer = styled("div")(({ open }: any) => ({
         }
     }
 }));
-const ToolbarActions = styled("div")({
+const ToolbarActionsWrapper = styled("div")({
     position: "relative",
     display: "flex",
     flexDirection: "column",
@@ -50,8 +51,9 @@ const drawerStyle = css({
         marginLeft: 54,
         position: "fixed",
         top: 64,
-        width: "490px !important",
-        maxWidth: "490px !important",
+        height: "calc(100vh - 64px)",
+        width: "280px !important",
+        maxWidth: "280px !important",
         ".mdc-drawer__content": {
             width: "100%"
         }
@@ -102,7 +104,7 @@ const ToolbarDrawer: React.FC<ToolbarDrawerProps> = ({
         </DrawerContainer>
     );
 };
-const renderPlugin = (plugin: PbEditorToolbarTopPlugin | PbEditorToolbarBottomPlugin) => {
+export const renderPlugin = (plugin: PbEditorToolbarTopPlugin | PbEditorToolbarBottomPlugin) => {
     return React.cloneElement(plugin.renderAction(), { key: plugin.name });
 };
 
@@ -138,3 +140,7 @@ const Toolbar: React.FC = () => {
     );
 };
 export default React.memo(Toolbar);
+
+export const ToolbarActions = makeComposable("ToolbarActions", ({ children }) => {
+    return <ToolbarActionsWrapper>{children}</ToolbarActionsWrapper>;
+});

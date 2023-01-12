@@ -4,7 +4,7 @@ import { DndProvider } from "react-dnd";
 import { Editor } from "~/admin/components/ContentModelEditor/Editor";
 import { useRouter } from "@webiny/react-router";
 import { useCms } from "~/admin/hooks";
-import { ContentModelEditorProvider } from "~/admin/components/ContentModelEditor/Context";
+import { ContentModelEditorProvider } from "~/admin/components/ContentModelEditor";
 import { CmsModel } from "~/types";
 
 type QueryMatch = Pick<Partial<CmsModel>, "modelId">;

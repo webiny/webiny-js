@@ -76,6 +76,10 @@ export default /* GraphQL */ `
         ownedBy_not: String
         ownedBy_in: [String!]
         ownedBy_not_in: [String!]
+        status: String
+        status_not: String
+        status_in: [String!]
+        status_not_in: [String!]
 
         text: String
         text_not: String
@@ -94,8 +98,15 @@ export default /* GraphQL */ `
         rating_lte: Number
         rating_gt: Number
         rating_gte: Number
+        # there must be two numbers sent in the array
+        rating_between: [Number!]
+        # there must be two numbers sent in the array
+        rating_not_between: [Number!]
         
         author: RefFieldWhereInput
+
+        AND: [ReviewListWhereInput!]
+        OR: [ReviewListWhereInput!]
     }
 
     type ReviewResponse {
@@ -156,9 +167,5 @@ export default /* GraphQL */ `
         republishReview(revision: ID!): ReviewResponse
 
         unpublishReview(revision: ID!): ReviewResponse
-        
-        requestReviewReview(revision: ID!): ReviewResponse
-        
-        requestReviewChanges(revision: ID!): ReviewResponse
     }
 `;

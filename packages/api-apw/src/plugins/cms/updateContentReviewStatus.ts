@@ -1,8 +1,8 @@
 import {
     AdvancedPublishingWorkflow,
     ApwContentReviewStatus,
-    OnAfterCmsEntryPublishTopicParams,
-    OnAfterCmsEntryUnpublishTopicParams
+    OnCmsEntryAfterPublishTopicParams,
+    OnCmsEntryAfterUnpublishTopicParams
 } from "~/types";
 import { INITIAL_CONTENT_REVIEW_CONTENT_SCHEDULE_META } from "~/crud/utils";
 import { HeadlessCms } from "@webiny/api-headless-cms/types";
@@ -18,7 +18,7 @@ interface UpdateContentReviewStatusParams {
 export const updateContentReviewStatus = (params: UpdateContentReviewStatusParams) => {
     const { apw, cms, security } = params;
 
-    cms.onAfterEntryPublish.subscribe<OnAfterCmsEntryPublishTopicParams>(
+    cms.onEntryAfterPublish.subscribe<OnCmsEntryAfterPublishTopicParams>(
         async ({ entry, model }) => {
             if (isAwpModel(model)) {
                 return;
@@ -36,11 +36,11 @@ export const updateContentReviewStatus = (params: UpdateContentReviewStatusParam
             /**
              * If content review is "readyToBePublished set its status as "published" after page publish.
              */
-            if (contentReview.status !== ApwContentReviewStatus.READY_TO_BE_PUBLISHED) {
+            if (contentReview.reviewStatus !== ApwContentReviewStatus.READY_TO_BE_PUBLISHED) {
                 return;
             }
             await apw.contentReview.update(contentReviewId, {
-                status: ApwContentReviewStatus.PUBLISHED,
+                reviewStatus: ApwContentReviewStatus.PUBLISHED,
                 content: {
                     ...contentReview.content,
                     ...INITIAL_CONTENT_REVIEW_CONTENT_SCHEDULE_META,
@@ -49,7 +49,7 @@ export const updateContentReviewStatus = (params: UpdateContentReviewStatusParam
             });
         }
     );
-    cms.onAfterEntryUnpublish.subscribe<OnAfterCmsEntryUnpublishTopicParams>(
+    cms.onEntryAfterUnpublish.subscribe<OnCmsEntryAfterUnpublishTopicParams>(
         async ({ entry, model }) => {
             if (isAwpModel(model)) {
                 return;
@@ -67,11 +67,11 @@ export const updateContentReviewStatus = (params: UpdateContentReviewStatusParam
              * If content review is "published set its status as "readyToBePublished" after page unpublish.
              */
 
-            if (contentReview.status !== ApwContentReviewStatus.PUBLISHED) {
+            if (contentReview.reviewStatus !== ApwContentReviewStatus.PUBLISHED) {
                 return;
             }
             await apw.contentReview.update(contentReviewId, {
-                status: ApwContentReviewStatus.READY_TO_BE_PUBLISHED,
+                reviewStatus: ApwContentReviewStatus.READY_TO_BE_PUBLISHED,
                 content: {
                     ...contentReview.content,
                     ...INITIAL_CONTENT_REVIEW_CONTENT_SCHEDULE_META,

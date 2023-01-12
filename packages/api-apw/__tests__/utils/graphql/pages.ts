@@ -154,28 +154,6 @@ export const UNPUBLISH_PAGE = /* GraphQL */ `
     }
 `;
 
-export const REQUEST_REVIEW = /* GraphQL */ `
-    mutation RequestReview($id: ID!) {
-        pageBuilder {
-            requestReview(id: $id) {
-                data ${DATA_FIELD}
-                error ${ERROR_FIELD}
-            }
-        }
-    }
-`;
-
-export const REQUEST_CHANGES = /* GraphQL */ `
-    mutation RequestChanges($id: ID!) {
-        pageBuilder {
-            requestChanges(id: $id) {
-                data ${DATA_FIELD}
-                error ${ERROR_FIELD}
-            }
-        }
-    }
-`;
-
 export const LIST_PAGES = /* GraphQL */ `
     query ListPages($where: PbListPagesWhereInput, $limit: Int, $after: String, $sort: [PbListPagesSort!], $search: PbListPagesSearchInput) {
         pageBuilder {

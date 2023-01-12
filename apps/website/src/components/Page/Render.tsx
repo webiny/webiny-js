@@ -8,6 +8,7 @@ import {
 } from "@webiny/app-page-builder/types";
 import Layout from "./Layout";
 import Element from "@webiny/app-page-builder/render/components/Element";
+import WebsiteScripts from "@webiny/app-page-builder/render/components/WebsiteScripts";
 import useResponsiveClassName from "@webiny/app-page-builder/hooks/useResponsiveClassName";
 import DefaultNotFoundPage from "theme/pageBuilder/components/defaultPages/DefaultNotFoundPage";
 import DefaultErrorPage from "theme/pageBuilder/components/defaultPages/DefaultErrorPage";
@@ -103,6 +104,10 @@ const Render: React.FC<RenderProps> = ({ page, error, settings }) => {
                     return <meta key={index} property={preparedProperty} content={content} />;
                 })}
             </Helmet>
+            <WebsiteScripts
+                headerTags={settings?.htmlTags?.header}
+                footerTags={settings?.htmlTags?.footer}
+            />
             <div className={responsiveClassName} ref={pageElementRef}>
                 <Layout page={page} settings={settings}>
                     <Element element={page.content} />

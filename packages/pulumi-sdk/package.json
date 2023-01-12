@@ -25,9 +25,9 @@
     "tar": "^6.0.5"
   },
   "devDependencies": {
-    "@babel/cli": "^7.16.0",
-    "@babel/core": "^7.16.0",
-    "@types/lodash": "^4.14.178",
+    "@babel/cli": "^7.19.3",
+    "@babel/core": "^7.19.3",
+    "@types/lodash": "^4.14.190",
     "@types/node": "*",
     "@webiny/cli": "^5.33.5",
     "@webiny/project-utils": "^5.33.5",

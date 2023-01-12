@@ -1,7 +1,7 @@
 import WebinyError from "@webiny/error";
 import { ValueFilterPlugin } from "../definitions/ValueFilterPlugin";
 
-export default new ValueFilterPlugin({
+const plugin = new ValueFilterPlugin({
     operation: "between",
     matches: ({ value, compareValue }) => {
         if (Array.isArray(compareValue)) {
@@ -21,3 +21,7 @@ export default new ValueFilterPlugin({
         return value >= compareValue && value <= compareValue;
     }
 });
+
+plugin.name = "dynamodb.value.filter.between";
+
+export default plugin;

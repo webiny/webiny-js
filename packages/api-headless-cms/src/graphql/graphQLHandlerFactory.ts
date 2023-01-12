@@ -76,15 +76,14 @@ const getSchema = async (params: GetSchemaParams): Promise<GraphQLSchema> => {
             return schema;
         } catch (err) {
             const [location] = err.locations;
-            const invalidSegment = codeFrame(err.source.body, location.line, location.column, {
-                frameSize: 15
-            });
 
             throw new WebinyError({
                 code: "INVALID_GRAPHQL_SCHEMA",
                 message: err.message,
                 data: {
-                    invalidSegment
+                    invalidSegment: codeFrame(err.source.body, location.line, location.column, {
+                        frameSize: 15
+                    })
                 }
             });
         }
@@ -113,6 +112,22 @@ const checkEndpointAccess = async (context: CmsContext): Promise<void> => {
             }
         });
     }
+};
+
+const formatErrorPayload = (error: Error) => {
+    if (error instanceof WebinyError) {
+        return {
+            message: error.message,
+            code: error.code,
+            data: error.data
+        };
+    }
+
+    return {
+        name: error.name,
+        message: error.message,
+        stack: error.stack
+    };
 };
 
 export interface GraphQLHandlerFactoryParams {
@@ -145,18 +160,7 @@ const cmsRoutes = new RoutePlugin<CmsContext>(({ onPost, onOptions, context }) =
             const result = await processRequestBody(body, schema, context);
             return reply.code(200).send(result);
         } catch (ex) {
-            if (ex instanceof WebinyError) {
-                return reply.code(500).send({
-                    data: null,
-                    error: {
-                        message: ex.message,
-                        code: ex.code,
-                        data: ex.data
-                    }
-                });
-            }
-
-            return reply.code(500).send();
+            return reply.code(500).send(formatErrorPayload(ex));
         }
     });
 

@@ -6,6 +6,8 @@
     "watch": "yarn webiny run watch"
   },
   "dependencies": {
+    "@webiny/api-aco": "^5.33.5",
+    "@webiny/api-aco-so-ddb": "^5.33.5",
     "@webiny/api-admin-users-cognito": "^5.33.5",
     "@webiny/api-admin-users-cognito-so-ddb": "^5.33.5",
     "@webiny/api-apw": "^5.33.5",

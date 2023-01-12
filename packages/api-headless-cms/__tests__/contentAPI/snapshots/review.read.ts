@@ -71,8 +71,15 @@ export default /* GraphQL */ `
         rating_lte: Number
         rating_gt: Number
         rating_gte: Number
+        # there must be two numbers sent in the array
+        rating_between: [Number!]
+        # there must be two numbers sent in the array
+        rating_not_between: [Number!]
 
         author: RefFieldWhereInput
+
+        AND: [ReviewListWhereInput!]
+        OR: [ReviewListWhereInput!]
     }
 
     enum ReviewListSorter {

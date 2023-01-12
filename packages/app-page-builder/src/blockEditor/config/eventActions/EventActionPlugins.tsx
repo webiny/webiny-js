@@ -1,39 +1,41 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { EditorConfig } from "~/editor";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
-import {
-    saveBlockAction,
-    SaveBlockActionEvent,
-    toggleSaveBlockStateAction,
-    ToggleSaveBlockStateActionEvent
-} from "./saveBlock";
-import { updateBlockAction } from "./updateBlockAction";
+import { saveBlockAction, SaveBlockActionEvent } from "./saveBlock";
 import { UpdateDocumentActionEvent } from "~/editor/recoil/actions";
 import { BlockEditorEventActionCallableState } from "~/blockEditor/types";
+import { Prompt } from "@webiny/react-router";
 
 const EventActionHandlers = () => {
     const eventActionHandler = useEventActionHandler<BlockEditorEventActionCallableState>();
+    const [isDirty, setDirty] = useState(false);
 
     useEffect(() => {
-        const offSaveBlockAction = eventActionHandler.on(SaveBlockActionEvent, saveBlockAction);
-
-        const offToggleSaveBlockStateAction = eventActionHandler.on(
-            ToggleSaveBlockStateActionEvent,
-            toggleSaveBlockStateAction
-        );
+        const offSaveBlockAction = eventActionHandler.on(SaveBlockActionEvent, (...args) => {
+            setDirty(false);
+            return saveBlockAction(...args);
+        });
 
         const offUpdateBlockAction = eventActionHandler.on(
             UpdateDocumentActionEvent,
-            updateBlockAction
+            async state => {
+                setDirty(true);
+                return { state, actions: [] };
+            }
         );
 
         return () => {
             offSaveBlockAction();
-            offToggleSaveBlockStateAction();
             offUpdateBlockAction();
         };
     }, []);
-    return null;
+
+    return (
+        <Prompt
+            when={isDirty}
+            message="There are some unsaved changes! Are you sure you want to navigate away and discard all changes?"
+        />
+    );
 };
 
 export const EventActionPlugins = () => {

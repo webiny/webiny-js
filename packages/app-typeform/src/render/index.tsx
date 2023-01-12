@@ -12,7 +12,10 @@ export default (): PbRenderElementPlugin => ({
             return null;
         }
 
-        const style = { width: "100%", ...get(props, "element.settings.style") };
+        const style = {
+            width: "100%",
+            ...(get(props, "element.settings.style") as unknown as React.CSSProperties)
+        };
         return (
             <div style={style}>
                 <iframe

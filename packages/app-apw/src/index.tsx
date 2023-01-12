@@ -46,6 +46,8 @@ import { Module } from "~/plugins/Module";
 import { WorkflowScope } from "~/views/publishingWorkflows/components/WorkflowScope";
 import { DefaultBar } from "~/plugins/editor/defaultBar";
 import { MenuGroupRenderer } from "~/plugins/cms/MenuGroupRenderer";
+import { ApwPermissions } from "~/plugins/permissionRenderer";
+import { Module as MailerSettings } from "@webiny/app-mailer";
 
 export const AdvancedPublishingWorkflow: React.FC = () => {
     const { canUseFeature } = useWcp();
@@ -80,11 +82,13 @@ export const AdvancedPublishingWorkflow: React.FC = () => {
             <Compose with={MenuGroupRenderer} component={MenuItemRenderer} />
             <Plugins>
                 <DefaultBar />
+                <MailerSettings />
                 <Module />
                 <ApwOnPublish />
                 <ApwOnPageDelete />
                 <ApwOnEntryDelete />
                 <ApwOnEntryPublish />
+                <ApwPermissions />
             </Plugins>
         </>
     );

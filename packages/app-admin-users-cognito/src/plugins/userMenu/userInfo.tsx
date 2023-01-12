@@ -53,7 +53,7 @@ const linkStyles = css({
             maxWidth: 180,
             display: "block"
         },
-        ".mdc-typography--subtitle2": {
+        ".mdc-typography--body2": {
             overflow: "hidden",
             whiteSpace: "nowrap",
             textOverflow: "ellipsis",
@@ -96,7 +96,7 @@ export const UserInfo: React.FC = () => {
                     <h3>
                         <Typography use={"headline6"}>{fullName}</Typography>
                     </h3>
-                    <Typography use={"subtitle2"}>{email}</Typography>
+                    <Typography use={"body2"}>{email}</Typography>
                 </div>
             </ListItem>
         </wrapper.Component>

@@ -1,0 +1,27 @@
+{
+  "name": "api-page-builder-import-create",
+  "version": "0.1.0",
+  "scripts": {
+    "build": "yarn webiny run build",
+    "watch": "yarn webiny run watch"
+  },
+  "dependencies": {
+    "@webiny/api-i18n": "^5.33.5",
+    "@webiny/api-i18n-content": "^5.33.5",
+    "@webiny/api-i18n-ddb": "^5.33.5",
+    "@webiny/api-page-builder": "^5.33.5",
+    "@webiny/api-page-builder-import-export": "^5.33.5",
+    "@webiny/api-page-builder-import-export-so-ddb": "^5.33.5",
+    "@webiny/api-page-builder-so-ddb": "^5.33.5",
+    "@webiny/api-security": "^5.33.5",
+    "@webiny/api-security-so-ddb": "^5.33.5",
+    "@webiny/api-tenancy": "^5.33.5",
+    "@webiny/api-tenancy-so-ddb": "^5.33.5",
+    "@webiny/cli": "^5.33.5",
+    "@webiny/db-dynamodb": "^5.33.5",
+    "@webiny/handler-aws": "^5.33.5",
+    "@webiny/handler-db": "^5.33.5",
+    "@webiny/handler-logs": "^5.33.5",
+    "@webiny/project-utils": "^5.33.5"
+  }
+}

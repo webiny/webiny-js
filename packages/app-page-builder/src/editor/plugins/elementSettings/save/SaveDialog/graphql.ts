@@ -33,3 +33,14 @@ export const CREATE_FILE = gql`
         }
     }
 `;
+// TODO: for Webiny core team: export these queries from the app-file-manager package, to make them reusable
+export const DELETE_FILE = gql`
+    mutation deleteFile($id: ID!) {
+        fileManager {
+            deleteFile(id: $id) {
+                data
+                error ${ERROR_FIELDS}
+            }
+        }
+    }
+`;

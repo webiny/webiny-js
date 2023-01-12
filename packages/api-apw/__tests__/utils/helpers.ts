@@ -17,7 +17,8 @@ export interface PermissionsArg {
 export const identity = {
     id: "12345678",
     displayName: "John Doe",
-    type: "admin"
+    type: "admin",
+    email: "testing@webiny.com"
 };
 
 const getSecurityIdentity = () => {
@@ -57,6 +58,9 @@ export const createPermissions = (permissions?: PermissionsArg[]): PermissionsAr
         {
             name: "content.i18n",
             locales: ["en-US"]
+        },
+        {
+            name: "apw.publishingWorkflows"
         }
     ];
 };
@@ -96,7 +100,7 @@ const setupReviewer = async (gqlHandler: any) => {
     await gqlHandler.until(
         () => gqlHandler.reviewer.listReviewersQuery({}).then(([data]: any[]) => data),
         (response: any) => {
-            return response.data.apw.listReviewers.data.length === 1;
+            return response.data.apw.listReviewers.data.length > 0;
         },
         {
             name: "Wait for listReviewer query"

@@ -1,6 +1,7 @@
 import WebinyError from "@webiny/error";
 import { StorageTransformPlugin } from "~/plugins/StorageTransformPlugin";
 import { CmsEntry, CmsModel, CmsModelField, CmsContext } from "~/types";
+import { getBaseFieldType } from "~/utils/getBaseFieldType";
 
 interface GetStoragePluginFactory {
     (context: CmsContext): (fieldType: string) => StorageTransformPlugin<any>;
@@ -14,19 +15,19 @@ const getStoragePluginFactory: GetStoragePluginFactory = context => {
         // we reverse plugins because we want to get latest added only
         .reverse()
         .reduce((collection, plugin) => {
-            // check if it's a default plugin
-            if (plugin.fieldType === "*" && !defaultStoragePlugin) {
+            /**
+             * Check if it's a default plugin and set it - always override the previous one.
+             */
+            if (plugin.fieldType === "*") {
                 defaultStoragePlugin = plugin;
                 return collection;
             }
 
             /**
-             * either existing plugin added or plugin fieldType does not exist in current model
-             * this is to iterate a bit less later
+             * We will just set the plugin for given type.
+             * The last one will override existing one - so users can override our default ones.
              */
-            if (!collection[plugin.fieldType]) {
-                collection[plugin.fieldType] = plugin;
-            }
+            collection[plugin.fieldType] = plugin;
 
             return collection;
         }, {} as Record<string, StorageTransformPlugin>);
@@ -49,11 +50,12 @@ const entryStorageTransform = async (
 
     const transformedValues: Record<string, any> = {};
     for (const field of model.fields) {
-        const plugin = getStoragePlugin(field.type);
+        const baseType = getBaseFieldType(field);
+        const plugin = getStoragePlugin(baseType);
         // TODO: remove this once plugins are converted into classes
         if (typeof plugin[operation] !== "function") {
             throw new WebinyError(
-                `Missing "${operation}" function in storage plugin "${plugin.name}" for field type "${field.type}"`
+                `Missing "${operation}" function in storage plugin "${plugin.name}" for field type "${baseType}"`
             );
         }
 
@@ -106,12 +108,13 @@ export const entryFieldFromStorageTransform = async <T = any>(
     const { context, model, field, value } = params;
     const getStoragePlugin = getStoragePluginFactory(context);
 
-    const plugin = getStoragePlugin(field.type);
+    const baseType = getBaseFieldType(field);
+    const plugin = getStoragePlugin(baseType);
 
     // TODO: remove this once plugins are converted into classes
     if (typeof plugin.fromStorage !== "function") {
         throw new WebinyError(
-            `Missing "fromStorage" function in storage plugin "${plugin.name}" for field type "${field.type}"`
+            `Missing "fromStorage" function in storage plugin "${plugin.name}" for field type "${baseType}"`
         );
     }
 

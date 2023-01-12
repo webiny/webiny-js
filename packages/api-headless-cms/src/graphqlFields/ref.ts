@@ -10,6 +10,9 @@ import { parseIdentifier } from "@webiny/utils";
 import { createGraphQLInputField } from "./helpers";
 
 interface RefFieldValue {
+    /**
+     * `id` is optional for backwards compatibility with records created before this property was introduced.
+     */
     id?: string;
     entryId: string;
     modelId: string;
@@ -197,23 +200,25 @@ export const createRefField = (): CmsModelFieldToGraphQLPlugin => {
         manage: {
             createSchema() {
                 /**
-                 * entryId in RefFieldInput is deprecated but cannot mark it as GraphQL does not allow marking input fields as deprecated
+                 * `entryId` in `RefFieldInput` is deprecated, but we cannot mark it as such in GraphQL.
+                 * `entryId` is extracted at runtime from the `id` which contains both the `entryId` and revision number.
+                 * See: `packages/api-headless-cms/src/crud/contentEntry/referenceFieldsMapping.ts`
                  */
                 return {
-                    typeDefs: `
-                    type RefField {
-                        modelId: String!
-                        entryId: ID!
-                        id: ID!
-                    }
-                    
-                    input RefFieldInput {
-                        modelId: String!
-                        id: ID!
-                    }
-                    
-                    ${createFilteringTypeDef()}
-                `,
+                    typeDefs: /* GraphQL */ `
+                        type RefField {
+                            modelId: String!
+                            entryId: ID!
+                            id: ID!
+                        }
+
+                        input RefFieldInput {
+                            modelId: String!
+                            id: ID!
+                        }
+
+                        ${createFilteringTypeDef()}
+                    `,
                     resolvers: {
                         RefField: {
                             entryId: (parent: RefFieldValue) => {

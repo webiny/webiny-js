@@ -2,6 +2,7 @@ import {
     CmsModel,
     CmsModelField,
     CmsModelFieldToGraphQLPlugin,
+    CmsModelFieldToGraphQLPluginValidateChildFieldsValidate,
     CmsModelLockedFieldPlugin,
     LockedField
 } from "~/types";
@@ -11,6 +12,7 @@ import gql from "graphql-tag";
 import { PluginsContainer } from "@webiny/plugins";
 import { createFieldStorageId } from "./createFieldStorageId";
 import { GraphQLError } from "graphql";
+import { getBaseFieldType } from "~/utils/getBaseFieldType";
 
 const defaultTitleFieldId = "id";
 
@@ -30,7 +32,7 @@ const getContentModelTitleFieldId = (fields: CmsModelField[], titleFieldId?: str
      */
     if (!titleFieldId || titleFieldId === defaultTitleFieldId) {
         const titleField = fields.find(field => {
-            return field.type === "text" && !field.multipleValues;
+            return getBaseFieldType(field) === "text" && !field.multipleValues;
         });
         return titleField?.fieldId || defaultTitleFieldId;
     }
@@ -129,6 +131,22 @@ const extractInvalidField = (model: CmsModel, err: GraphQLError) => {
     };
 };
 
+const createValidateChildFields = (
+    plugins: CmsModelFieldToGraphQLPlugin[]
+): CmsModelFieldToGraphQLPluginValidateChildFieldsValidate => {
+    return ({ fields, originalFields }) => {
+        if (fields.length === 0) {
+            return;
+        }
+        validateFields({
+            fields,
+            originalFields,
+            plugins,
+            lockedFields: []
+        });
+    };
+};
+
 interface ValidateFieldsParams {
     plugins: CmsModelFieldToGraphQLPlugin[];
     fields: CmsModelField[];
@@ -142,11 +160,15 @@ const validateFields = (params: ValidateFieldsParams) => {
 
     const storageIdList: string[] = [];
 
+    const validateChildFields = createValidateChildFields(plugins);
+
     for (const field of fields) {
-        const plugin = plugins.find(item => item.fieldType === field.type);
+        const baseType = getBaseFieldType(field);
+        const plugin = plugins.find(plugin => plugin.fieldType === baseType);
+
         if (!plugin) {
             throw new Error(
-                `Cannot update content model because of the unknown "${field.type}" field.`
+                `Cannot update content model because of the unknown "${baseType}" field.`
             );
         }
         const originalField = originalFields.find(f => f.id === field.id);
@@ -219,27 +241,16 @@ const validateFields = (params: ValidateFieldsParams) => {
         }
         storageIdList.push(field.storageId);
         /**
-         * TODO maybe make this part pluginable?
-         * We need to check the object field child fields.
-         * It must be recursive.
+         * There might be some plugins which allow child fields.
+         * We use this method to validate them as well.
          */
-        if (field.type !== "object") {
+        if (!plugin.validateChildFields) {
             continue;
         }
-        const childFields = field.settings?.fields || [];
-        const originalChildFields = originalField?.settings?.fields || [];
-        /**
-         * No point in going further if there are no child fields.
-         * Code will break if child fields were removed but used in the entries.
-         */
-        if (childFields.length === 0) {
-            continue;
-        }
-        validateFields({
-            fields: childFields,
-            originalFields: originalChildFields,
-            plugins,
-            lockedFields: []
+        plugin.validateChildFields({
+            field,
+            originalField,
+            validate: validateChildFields
         });
     }
 };
@@ -325,17 +336,21 @@ export const validateModelFields = (params: ValidateModelFieldsParams) => {
                 `Cannot change "multipleValues" for the "${lockedField.fieldId}" field because it's already in use in created content.`,
                 "ENTRY_FIELD_USED",
                 {
+                    reason: `"multipleValues" changed`,
                     field: existingField
                 }
             );
         }
 
-        if (lockedField.type !== existingField.type) {
+        const fieldType = getBaseFieldType(existingField);
+        if (lockedField.type !== fieldType) {
             throw new WebinyError(
                 `Cannot change field type for the "${lockedField.fieldId}" field because it's already in use in created content.`,
                 "ENTRY_FIELD_USED",
                 {
-                    field: existingField
+                    reason: `"type" changed`,
+                    lockedFieldType: lockedField.type,
+                    existingFieldType: fieldType
                 }
             );
         }
@@ -344,7 +359,7 @@ export const validateModelFields = (params: ValidateModelFieldsParams) => {
          * Check `lockedField` invariant for specific field
          */
         const lockedFieldsByType = cmsLockedFieldPlugins.filter(
-            pl => pl.fieldType === lockedField.type
+            pl => pl.fieldType === getBaseFieldType(lockedField)
         );
         for (const plugin of lockedFieldsByType) {
             if (typeof plugin.checkLockedField !== "function") {

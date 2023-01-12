@@ -36,11 +36,6 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
 
     return /* GraphQL */ `
         """${model.description || model.modelId}"""
-        ${fields
-            .map(f => f.typeDefs)
-            .filter(Boolean)
-            .join("\n")}
-
         type ${mTypeName} {
             id: ID!
             entryId: String!
@@ -59,8 +54,8 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
             publishedOn: DateTime
             status: String
             """
-            CAUTION: this field is resolved by making an extra query to DB. 
-            RECOMMENDATION: Use it only with "get" queries (avoid in "list") 
+            CAUTION: this field is resolved by making an extra query to DB.
+            RECOMMENDATION: Use it only with "get" queries (avoid in "list")
             """
             revisions: [${mTypeName}]
             title: String
@@ -69,8 +64,12 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
             """
             data: JSON
         }
+
+        ${fields
+            .map(f => f.typeDefs)
+            .filter(Boolean)
+            .join("\n")}
         
-                    
         ${inputFields
             .map(f => f.typeDefs)
             .filter(Boolean)
@@ -94,7 +93,9 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
         ${
             listFilterFieldsRender &&
             `input ${mTypeName}ListWhereInput {
-            ${listFilterFieldsRender}
+                ${listFilterFieldsRender}
+                AND: [${mTypeName}ListWhereInput!]
+                OR: [${mTypeName}ListWhereInput!]
         }`
         }
 
@@ -150,10 +151,6 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
             republish${typeName}(revision: ID!): ${mTypeName}Response
 
             unpublish${typeName}(revision: ID!): ${mTypeName}Response
-            
-            request${typeName}Review(revision: ID!): ${mTypeName}Response
-            
-            request${typeName}Changes(revision: ID!): ${mTypeName}Response
         }
     `;
 };

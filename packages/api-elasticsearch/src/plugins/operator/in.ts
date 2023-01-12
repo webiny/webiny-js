@@ -12,24 +12,20 @@ export class ElasticsearchQueryBuilderOperatorInPlugin extends ElasticsearchQuer
         query: ElasticsearchBoolQueryConfig,
         params: ElasticsearchQueryBuilderArgsPlugin
     ): void {
-        const { value: values, path, basePath } = params;
+        const { value: values, path, basePath, name } = params;
         const isArray = Array.isArray(values);
         if (isArray === false || values.length === 0) {
             throw new Error(
-                `You cannot filter field "${path}" with "in" operator and not send an array of values.`
+                `You cannot filter field "${name}" with "in" operator and not send an array of values.`
             );
         }
 
-        let useBasePath = false;
         // Only use ".keyword" if all of the provided values are strings.
-        for (const value of values) {
-            if (typeof value !== "string") {
-                useBasePath = true;
-                break;
-            }
-        }
+        const useBasePath = values.some(
+            (value: string | number | boolean | null | undefined) => typeof value !== "string"
+        );
 
-        query.must.push({
+        query.filter.push({
             terms: {
                 [useBasePath ? basePath : path]: values
             }

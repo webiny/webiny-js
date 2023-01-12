@@ -3,7 +3,7 @@ import { plugins } from "@webiny/plugins";
 import styled from "@emotion/styled";
 import { Icon } from "@webiny/ui/Icon";
 import Draggable from "../Draggable";
-import { CmsEditorFieldTypePlugin } from "~/types";
+import { CmsModelFieldTypePlugin } from "~/types";
 
 const FieldContainer = styled("div")({
     padding: "10px 15px",
@@ -44,7 +44,7 @@ const FieldHandle = styled("div")({
 
 interface FieldProps {
     onFieldDragStart: DragEventHandler;
-    fieldType: CmsEditorFieldTypePlugin["field"];
+    fieldType: CmsModelFieldTypePlugin["field"];
 }
 const Field: React.FC<FieldProps> = props => {
     const {
@@ -79,7 +79,7 @@ interface FieldsSidebarProps {
     onFieldDragStart: DragEventHandler;
 }
 export const FieldsSidebar: React.FC<FieldsSidebarProps> = ({ onFieldDragStart }) => {
-    const fieldTypePlugin = plugins.byType<CmsEditorFieldTypePlugin>("cms-editor-field-type");
+    const fieldTypePlugin = plugins.byType<CmsModelFieldTypePlugin>("cms-editor-field-type");
 
     return (
         <React.Fragment>

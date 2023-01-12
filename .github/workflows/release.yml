@@ -3,7 +3,7 @@ name: Release (latest)
 on:
   workflow_dispatch:
   repository_dispatch:
-    types: [release-latest]
+    types: [release]
 
 env:
   NODE_OPTIONS: --max_old_space_size=4096
@@ -14,7 +14,7 @@ env:
 jobs:
   npm-release-latest:
     name: NPM release ("latest" tag)
-    runs-on: webiny-js-4-cores
+    runs-on: ubuntu-latest
     environment: release
     steps:
       - uses: actions/setup-node@v3
@@ -41,14 +41,5 @@ jobs:
       - name: Set git username
         run: git config --global user.name "webiny-bot"
 
-      - name: Create a release on GitHub
-        run: yarn lerna:version:latest
-
-      - name: Release packages to NPM
-        run: yarn lerna:publish:latest
-
-      - name: Update package versions in the sample project applications' packages
-        run: 'yarn webiny-versions && yarn prettier:fix && git add . && git commit --m "chore: update package versions (webiny-versions)" --no-verify && git push'
-
-      - name: Update and commit "yarn.lock" file
-        run: 'yarn && git add yarn.lock && git commit --m "chore: update yarn.lock" --no-verify && git push'
+      - name: Version and Publish
+        run: yarn release --type=${{ github.event.client_payload.type }} --tag=${{ github.event.client_payload.tag }}

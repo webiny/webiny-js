@@ -1,5 +1,10 @@
+import blocks from "./crud/blocks.crud";
 import pages from "./crud/pages.crud";
-import pageImportExportTask from "./crud/pageImportExportTasks.crud";
-import { PageImportExportPluginsParams } from "~/graphql/types";
+import importExportTask from "./crud/importExportTasks.crud";
+import { ImportExportPluginsParams } from "~/graphql/types";
 
-export default (params: PageImportExportPluginsParams) => [pages, pageImportExportTask(params)];
+export default (params: ImportExportPluginsParams) => [
+    blocks,
+    pages,
+    importExportTask(params as ImportExportPluginsParams)
+];

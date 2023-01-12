@@ -16,10 +16,17 @@ import {
     FormBuilderContext,
     FormBuilderStorageOperationsListSubmissionsParams,
     SubmissionsCRUD,
-    FbFormFieldValidatorPlugin
+    FbFormFieldValidatorPlugin,
+    OnFormSubmissionBeforeCreate,
+    OnFormSubmissionAfterCreate,
+    OnFormSubmissionBeforeUpdate,
+    OnFormSubmissionAfterUpdate,
+    OnFormSubmissionBeforeDelete,
+    OnFormSubmissionAfterDelete
 } from "~/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { NotAuthorizedError } from "@webiny/api-security";
+import { createTopic } from "@webiny/pubsub";
 
 interface CreateSubmissionsCrudParams {
     context: FormBuilderContext;
@@ -28,7 +35,37 @@ interface CreateSubmissionsCrudParams {
 export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): SubmissionsCRUD => {
     const { context } = params;
 
+    // create
+    const onFormSubmissionBeforeCreate = createTopic<OnFormSubmissionBeforeCreate>(
+        "formBuilder.onFormBeforeSubmissionCreate"
+    );
+    const onFormSubmissionAfterCreate = createTopic<OnFormSubmissionAfterCreate>(
+        "formBuilder.onFormSubmissionAfterCreate"
+    );
+
+    // update
+    const onFormSubmissionBeforeUpdate = createTopic<OnFormSubmissionBeforeUpdate>(
+        "formBuilder.onFormSubmissionBeforeUpdate"
+    );
+    const onFormSubmissionAfterUpdate = createTopic<OnFormSubmissionAfterUpdate>(
+        "formBuilder.onFormSubmissionAfterUpdate"
+    );
+
+    // delete
+    const onFormSubmissionBeforeDelete = createTopic<OnFormSubmissionBeforeDelete>(
+        "formBuilder.onFormSubmissionBeforeDelete"
+    );
+    const onFormSubmissionAfterDelete = createTopic<OnFormSubmissionAfterDelete>(
+        "formBuilder.onFormSubmissionAfterDelete"
+    );
+
     return {
+        onFormSubmissionBeforeCreate,
+        onFormSubmissionAfterCreate,
+        onFormSubmissionBeforeUpdate,
+        onFormSubmissionAfterUpdate,
+        onFormSubmissionBeforeDelete,
+        onFormSubmissionAfterDelete,
         async getSubmissionsByIds(this: FormBuilder, formId, submissionIds) {
             let form: FbForm;
             if (typeof formId === "string") {
@@ -248,8 +285,16 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
             };
 
             try {
+                await onFormSubmissionBeforeCreate.publish({
+                    form,
+                    submission
+                });
                 await this.storageOperations.createSubmission({
                     input: modelData,
+                    form,
+                    submission
+                });
+                await onFormSubmissionAfterCreate.publish({
                     form,
                     submission
                 });
@@ -342,8 +387,18 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
             };
 
             try {
+                await onFormSubmissionBeforeUpdate.publish({
+                    form,
+                    original,
+                    submission
+                });
                 await this.storageOperations.updateSubmission({
                     input: updatedData,
+                    form,
+                    original,
+                    submission
+                });
+                await onFormSubmissionAfterUpdate.publish({
                     form,
                     original,
                     submission
@@ -370,7 +425,15 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
                 throw new NotFoundError("Submission not found.");
             }
             try {
+                await onFormSubmissionBeforeDelete.publish({
+                    form,
+                    submission
+                });
                 await this.storageOperations.deleteSubmission({
+                    form,
+                    submission
+                });
+                await onFormSubmissionAfterDelete.publish({
                     form,
                     submission
                 });

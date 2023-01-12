@@ -10,6 +10,7 @@ import {
 import { entryFieldFromStorageTransform } from "~/utils/entryStorage";
 import { Resolvers } from "@webiny/handler-graphql/types";
 import WebinyError from "@webiny/error";
+import { getBaseFieldType } from "~/utils/getBaseFieldType";
 
 interface CreateFieldResolvers {
     graphQLType: string;
@@ -30,16 +31,17 @@ const getCreateResolver = (
     field: CmsModelField,
     endpointType: ApiEndpoint
 ): CmsModelFieldToGraphQLCreateResolver | null => {
-    if (!plugins[field.type]) {
+    const baseType = getBaseFieldType(field);
+    if (!plugins[baseType]) {
         return null;
-    } else if (!plugins[field.type][endpointType]) {
+    } else if (!plugins[baseType][endpointType]) {
         return null;
     }
-    return plugins[field.type][endpointType].createResolver;
+    return plugins[baseType][endpointType].createResolver;
 };
 /**
  * We use a factory to avoid passing the parameters for recursive invocations.
- * This way they will always be in the function scope and we can only pass "fields".
+ * This way they will always be in the function scope, and we can only pass "fields".
  */
 export const createFieldResolversFactory = (factoryParams: CreateFieldResolversFactoryParams) => {
     const { endpointType, models, model, fieldTypePlugins } = factoryParams;
@@ -50,7 +52,7 @@ export const createFieldResolversFactory = (factoryParams: CreateFieldResolversF
         const typeResolvers = {};
 
         for (const field of fields) {
-            if (!fieldTypePlugins[field.type]) {
+            if (!fieldTypePlugins[getBaseFieldType(field)]) {
                 continue;
             }
             /**

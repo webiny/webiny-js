@@ -1,6 +1,6 @@
 import { CmsFieldValueTransformer } from "~/types";
 
-export default (): CmsFieldValueTransformer => ({
+export const createNumberTransformer = (): CmsFieldValueTransformer => ({
     type: "cms-field-value-transformer",
     name: "cms-field-value-transformer-number",
     fieldType: "number",

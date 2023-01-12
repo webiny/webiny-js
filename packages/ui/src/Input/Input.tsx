@@ -7,7 +7,7 @@ import { ReactElement } from "react";
 import { css } from "emotion";
 import classNames from "classnames";
 
-export type InputProps = FormComponentProps &
+export type InputProps<TValue = any> = FormComponentProps<TValue> &
     TextFieldProps & {
         // Should this input be filled with browser values
         autoComplete?: string;

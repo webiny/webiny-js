@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { ListItem, ListItemGraphic, ListItemMeta } from "../List";
+import { ListItem, ListItemGraphic, ListItemMeta } from "~/List";
 import Transition from "react-transition-group/Transition";
 import { Icon } from "~/Icon";
 import styled from "@emotion/styled";
@@ -9,43 +9,51 @@ import { Typography } from "~/Typography";
 import { ReactComponent as UpArrow } from "./icons/round-keyboard_arrow_up-24px.svg";
 import { ReactComponent as DownArrow } from "./icons/round-keyboard_arrow_down-24px.svg";
 import classNames from "classnames";
+import { AccordionItemAction, AccordionItemActions } from "~/Accordion/AccordionItemActions";
 
-const Content = styled("div")({
-    width: "100%",
-    borderRight: "1px solid var(--mdc-theme-background)",
-    borderBottom: "1px solid var(--mdc-theme-background)",
-    borderLeft: "1px solid var(--mdc-theme-background)",
-    boxSizing: "border-box"
-});
-
-const listItem = css({
-    padding: "0 16px",
-    cursor: "pointer",
-    borderBottom: "1px solid var(--mdc-theme-background)",
-    height: 48,
-    "&:last-child": {
-        borderBottom: "none"
-    },
-    ".mdc-list-item__graphic": {
-        marginRight: 20
+const Content = styled.div`
+    width: 100%;
+    border-right: 1px solid var(--mdc-theme-background);
+    border-bottom: 1px solid var(--mdc-theme-background);
+    border-left: 1px solid var(--mdc-theme-background);
+    box-sizing: border-box;
+    > .mdc-layout-grid {
+        margin: -24px;
     }
-});
+`;
 
-const ListItemTitle = styled("div")({
-    fontWeight: 600,
-    marginBottom: 5
-});
+const listItem = css`
+    cursor: pointer;
+    border-bottom: 1px solid var(--mdc-theme-background);
+    &:last-child {
+        border-bottom: none;
+    }
+    .mdc-list-item__graphic {
+        margin-right: 20px;
+    }
+`;
 
-const ListItemDescription = styled("div")({});
+const ListItemTitle = styled.div`
+    font-weight: 600;
+    line-height: 100%;
+`;
 
-const TitleContent = styled("div")({
-    display: "flex",
-    flexDirection: "column"
-});
+const ListItemDescription = styled.div`
+    line-height: 100%;
+`;
 
-const openedState = css({
-    backgroundColor: "var(--mdc-theme-on-background)"
-});
+const TitleContent = styled.div`
+    display: flex;
+    flex-direction: column;
+`;
+
+const openedState = css`
+    background-color: var(--mdc-theme-on-background);
+`;
+
+const nonInteractive = css`
+    background-color: var(--mdc-theme-surface);
+`;
 
 const duration = 150;
 const defaultStyle = {
@@ -84,7 +92,28 @@ const transitionStyles = {
     }
 };
 
+const Divider = styled.span`
+    width: 1px;
+    margin: 0 15px;
+    height: 100%;
+    background-color: var(--mdc-theme-on-background);
+`;
+
+const Actions = styled(ListItemMeta)`
+    display: flex;
+    height: 40%;
+    align-items: center;
+`;
+
 export interface AccordionItemProps {
+    /**
+     * Can user toggle the accordion item by clicking it? Defaults to `true`.
+     */
+    interactive?: boolean;
+    /**
+     * Actions to show on the right side of the accordion item
+     */
+    actions?: React.ReactElement | null;
     /**
      * Left side icon
      */
@@ -119,26 +148,33 @@ export interface AccordionItemProps {
     iconClassName?: string;
 }
 
-const AccordionItem: React.FC<AccordionItemProps> = props => {
+const AccordionItemComponent: React.FC<AccordionItemProps> = props => {
     const [open, setState] = useState<boolean>(props.open ? props.open : false);
+    const { interactive = true, actions } = props;
 
     const toggleState = useCallback(() => {
         setState(!open);
     }, [open]);
 
+    const onClick = interactive ? toggleState : undefined;
+    const divider = interactive && actions ? <Divider /> : null;
+    const arrowIcon = interactive ? <Icon icon={!open ? <DownArrow /> : <UpArrow />} /> : null;
+
     useEffect(() => {
-        setState(props.open ? true : false);
+        setState(!!props.open);
     }, [props.open]);
 
     return (
         <div className={classNames("webiny-ui-accordion-item", props.className)}>
             <ListItem
+                disabled={!interactive}
                 className={classNames(
                     listItem,
                     { [openedState]: open },
+                    { [nonInteractive]: !interactive },
                     "webiny-ui-accordion-item__list-item"
                 )}
-                onClick={toggleState}
+                onClick={onClick}
                 data-testid={props["data-testid"]}
             >
                 {props.icon && (
@@ -151,13 +187,15 @@ const AccordionItem: React.FC<AccordionItemProps> = props => {
                     <ListItemTitle>{props.title}</ListItemTitle>
                     {props.description && (
                         <ListItemDescription>
-                            <Typography use={"subtitle2"}>{props.description}</Typography>
+                            <Typography use={"body2"}>{props.description}</Typography>
                         </ListItemDescription>
                     )}
                 </TitleContent>
-                <ListItemMeta>
-                    <Icon icon={!open ? <DownArrow /> : <UpArrow />} />
-                </ListItemMeta>
+                <Actions>
+                    {props.actions ? props.actions : null}
+                    {divider}
+                    {arrowIcon}
+                </Actions>
             </ListItem>
             <Transition in={open} timeout={duration}>
                 {(state: TransitionStylesState) => (
@@ -173,4 +211,14 @@ const AccordionItem: React.FC<AccordionItemProps> = props => {
     );
 };
 
-export { AccordionItem };
+type AccordionItem = React.FC<AccordionItemProps> & {
+    Divider: typeof Divider;
+    Actions: typeof AccordionItemActions;
+    Action: typeof AccordionItemAction;
+};
+
+export const AccordionItem: AccordionItem = Object.assign(AccordionItemComponent, {
+    Divider,
+    Action: AccordionItemAction,
+    Actions: AccordionItemActions
+});

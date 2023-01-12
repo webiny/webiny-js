@@ -6,6 +6,7 @@
     "watch": "yarn webiny run watch"
   },
   "dependencies": {
+    "@webiny/api-aco": "latest",
     "@webiny/api-apw": "latest",
     "@webiny/api-apw-scheduler-so-ddb": "latest",
     "@webiny/api-file-manager": "latest",

@@ -2,17 +2,18 @@ import React from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { validation } from "@webiny/validation";
-import { CmsEditorFieldValidatorPlugin } from "~/types";
+import { CmsModelFieldValidatorPlugin } from "~/types";
+import { Bind } from "@webiny/form";
 
-const plugin: CmsEditorFieldValidatorPlugin = {
-    type: "cms-editor-field-validator",
+const plugin: CmsModelFieldValidatorPlugin = {
+    type: "cms-model-field-validator",
     name: "cms-editor-field-validator-lte",
     validator: {
         name: "lte",
         label: "Smaller or equal",
         description: "Entered value must be equal or lower than the provided min value.",
         defaultMessage: "Value is too great.",
-        renderSettings({ Bind }) {
+        renderSettings() {
             return (
                 <Grid>
                     <Cell span={12}>
@@ -29,6 +30,13 @@ const plugin: CmsEditorFieldValidatorPlugin = {
                     </Cell>
                 </Grid>
             );
+        },
+        validate: async (value, { validator }) => {
+            const lteValue = validator.settings.value;
+            if (typeof lteValue === "undefined") {
+                return true;
+            }
+            return validation.validate(value, `lte:${lteValue}`);
         }
     }
 };

@@ -16,6 +16,7 @@ import ContentEntriesList from "~/admin/views/contentEntries/ContentEntriesList"
 import { ContentEntry } from "~/admin/views/contentEntries/ContentEntry";
 import { Provider as ContentEntryProvider } from "./ContentEntry/ContentEntryContext";
 import { CmsModel } from "~/types";
+import { ModelProvider } from "~/admin/components/ModelProvider";
 
 const t = i18n.ns("app-headless-cms/admin/content-entries");
 
@@ -57,18 +58,20 @@ const ContentEntries: React.FC = () => {
     }
 
     return (
-        <ContentEntriesProvider contentModel={contentModel} key={contentModel.modelId}>
-            <SplitView>
-                <LeftPanel span={4}>
-                    <ContentEntriesList />
-                </LeftPanel>
-                <RightPanel span={8}>
-                    <ContentEntryProvider>
-                        <ContentEntry />
-                    </ContentEntryProvider>
-                </RightPanel>
-            </SplitView>
-        </ContentEntriesProvider>
+        <ModelProvider model={contentModel}>
+            <ContentEntriesProvider contentModel={contentModel} key={contentModel.modelId}>
+                <SplitView>
+                    <LeftPanel span={4}>
+                        <ContentEntriesList />
+                    </LeftPanel>
+                    <RightPanel span={8}>
+                        <ContentEntryProvider>
+                            <ContentEntry />
+                        </ContentEntryProvider>
+                    </RightPanel>
+                </SplitView>
+            </ContentEntriesProvider>
+        </ModelProvider>
     );
 };
 

@@ -40,6 +40,25 @@ const typeField = () =>
         ]
     });
 
+const emailField = () =>
+    createModelField({
+        label: "E-mail",
+        fieldId: "email",
+        type: "text",
+        parent: "reviewer",
+        validation: [
+            {
+                message: "`email` field value in reviewer accepts only e-mails.",
+                name: "pattern",
+                settings: {
+                    preset: "email",
+                    regex: null,
+                    flags: null
+                }
+            }
+        ]
+    });
+
 export const REVIEWER_MODEL_ID = "apwReviewerModelDefinition";
 
 export const createReviewerModelDefinition = (): WorkflowModelDefinition => {
@@ -47,8 +66,13 @@ export const createReviewerModelDefinition = (): WorkflowModelDefinition => {
         name: "APW - Reviewer",
         modelId: REVIEWER_MODEL_ID,
         titleFieldId: "displayName",
-        layout: [["reviewer_identityId"], ["reviewer_displayName"], ["reviewer_type"]],
-        fields: [idField(), displayNameField(), typeField()],
+        layout: [
+            ["reviewer_identityId"],
+            ["reviewer_displayName"],
+            ["reviewer_type"],
+            ["reviewer_email"]
+        ],
+        fields: [idField(), displayNameField(), typeField(), emailField()],
         description: "",
         isPrivate: true
     };

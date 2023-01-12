@@ -1,5 +1,5 @@
 import React from "react";
-import IconPickerComponent from "../../../components/IconPicker";
+import IconPickerComponent from "~/editor/components/IconPicker";
 import { PbIcon } from "~/types";
 import { Typography } from "@webiny/ui/Typography";
 import { Cell } from "@webiny/ui/Grid";
