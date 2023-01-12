@@ -3,6 +3,61 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.33.5](https://github.com/webiny/webiny-js/compare/v5.33.5-beta.0...v5.33.5) (2022-12-23)
+
+**Note:** Version bump only for package @webiny/api-headless-cms
+
+
+
+
+
+## [5.33.5-beta.0](https://github.com/webiny/webiny-js/compare/v5.33.4...v5.33.5-beta.0) (2022-12-22)
+
+
+### Bug Fixes
+
+* **api-headless-cms:** generate nested ref field union types ([c09d420](https://github.com/webiny/webiny-js/commit/c09d420732efa7a5129beda2669f2172181ce89c))
+* **api-headless-cms:** initialize model data param ([#2888](https://github.com/webiny/webiny-js/issues/2888)) ([7ea275c](https://github.com/webiny/webiny-js/commit/7ea275c45a2faf64fb249f335b5e1e76de429cc7))
+
+
+
+
+
+## [5.33.4](https://github.com/webiny/webiny-js/compare/v5.33.4-beta.0...v5.33.4) (2022-12-15)
+
+**Note:** Version bump only for package @webiny/api-headless-cms
+
+
+
+
+
+## [5.33.4-beta.0](https://github.com/webiny/webiny-js/compare/v5.33.3...v5.33.4-beta.0) (2022-12-15)
+
+**Note:** Version bump only for package @webiny/api-headless-cms
+
+
+
+
+
+## [5.33.3](https://github.com/webiny/webiny-js/compare/v5.33.3-beta.0...v5.33.3) (2022-11-28)
+
+**Note:** Version bump only for package @webiny/api-headless-cms
+
+
+
+
+
+## [5.33.3-beta.0](https://github.com/webiny/webiny-js/compare/v5.33.2...v5.33.3-beta.0) (2022-11-28)
+
+
+### Bug Fixes
+
+* **api-headless-cms:** use code-frame to report the invalid part of schema ([20b1441](https://github.com/webiny/webiny-js/commit/20b144173aacc6e574c49c68aef473431b0f6b1f))
+
+
+
+
+
 ## [5.33.2](https://github.com/webiny/webiny-js/compare/v5.33.2-beta.2...v5.33.2) (2022-11-17)
 
 **Note:** Version bump only for package @webiny/api-headless-cms

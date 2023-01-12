@@ -1,13 +1,14 @@
 import React from "react";
 import { ReactComponent as TextIcon } from "./icons/round-text_fields-24px.svg";
 import { Grid, Cell } from "@webiny/ui/Grid";
-import { CmsEditorFieldTypePlugin } from "~/types";
+import { CmsModelFieldTypePlugin } from "~/types";
 import { i18n } from "@webiny/app/i18n";
 import { Input } from "@webiny/ui/Input";
 import PredefinedValuesDynamicFieldset from "./PredefinedValuesDynamicFieldset";
+import { Bind } from "@webiny/form";
 const t = i18n.ns("app-headless-cms/admin/fields");
 
-const plugin: CmsEditorFieldTypePlugin = {
+const plugin: CmsModelFieldTypePlugin = {
     type: "cms-editor-field-type",
     name: "cms-editor-field-type-text",
     field: {
@@ -28,7 +29,7 @@ const plugin: CmsEditorFieldTypePlugin = {
                 }
             };
         },
-        renderSettings({ form: { Bind } }) {
+        renderSettings() {
             return (
                 <Grid>
                     <Cell span={12}>

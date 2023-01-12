@@ -18,6 +18,7 @@
     "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
       "@webiny/api-apw/*": ["../api-apw/src/*"],
       "@webiny/api-apw": ["../api-apw/src"],
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],

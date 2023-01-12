@@ -1,0 +1,58 @@
+{
+  "name": "@webiny/app-admin-auth0",
+  "version": "0.0.0",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "description": "Identity provider plugin for Auth0",
+  "author": "Webiny Ltd.",
+  "license": "Webiny Enterprise",
+  "dependencies": {
+    "@apollo/react-hooks": "^3.1.5",
+    "@auth0/auth0-react": "^1.10.1",
+    "@emotion/styled": "^10.0.27",
+    "@webiny/app": "0.0.0",
+    "@webiny/app-admin": "0.0.0",
+    "@webiny/app-security": "0.0.0",
+    "@webiny/app-serverless-cms": "0.0.0",
+    "@webiny/app-tenancy": "0.0.0",
+    "@webiny/app-tenant-manager": "0.0.0",
+    "@webiny/form": "0.0.0",
+    "@webiny/plugins": "0.0.0",
+    "@webiny/ui": "0.0.0",
+    "@webiny/validation": "0.0.0",
+    "apollo-client": "^2.6.10",
+    "apollo-link-context": "^1.0.20",
+    "emotion": "^10.0.27",
+    "graphql": "^15.7.2",
+    "graphql-tag": "^2.12.6",
+    "lodash": "^4.4.2",
+    "react": "17.0.2",
+    "react-dom": "17.0.2"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.16.0",
+    "@babel/core": "^7.16.0",
+    "@babel/plugin-proposal-class-properties": "^7.16.0",
+    "@babel/plugin-proposal-throw-expressions": "^7.16.0",
+    "@babel/preset-env": "^7.16.4",
+    "@babel/preset-react": "^7.16.0",
+    "@babel/preset-typescript": "^7.16.0",
+    "@webiny/cli": "0.0.0",
+    "@webiny/project-utils": "0.0.0",
+    "babel-plugin-lodash": "^3.3.4",
+    "rimraf": "^3.0.2",
+    "ttypescript": "^1.5.13",
+    "typescript": "4.5.5"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "scripts": {
+    "build": "yarn webiny run build",
+    "watch": "yarn webiny run watch"
+  }
+}

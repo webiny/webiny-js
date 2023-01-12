@@ -60,7 +60,7 @@ const modifyCacheForAllListPagesQuery = (
  * We need to preserve the order of entries with new entry addition
  * because we're not re-fetching the list but updating it directly inside cache.
  * */
-const sortEntries = (list: string[], sort?: string) => {
+const sortEntries = (list: PbPageData[], sort?: string) => {
     if (!sort) {
         return list;
     }
@@ -73,7 +73,7 @@ export const addPageToListCache = (cache: DataProxy, page: PbPageData): void => 
     modifyCacheForAllListPagesQuery(cache, variables => {
         const gqlParams = { query: GQL.LIST_PAGES, variables };
         const data = cache.readQuery(gqlParams);
-        const listPagesData = get(data, "pageBuilder.listPages.data");
+        const listPagesData = get(data, "pageBuilder.listPages.data") as unknown as PbPageData[];
         if (!listPagesData) {
             return;
         }
@@ -89,15 +89,46 @@ export const addPageToListCache = (cache: DataProxy, page: PbPageData): void => 
     });
 };
 
+/*
+ * Since ACO is using GET_PAGE instead of LIST_PAGES to fetch pages information, we need to bind the newly created revision id
+ * to the exising entry cache. Otherwise, the page list continues to show the previous revision data.
+ */
+const addRevisionIdToEntryCache = (cache: DataProxy, revision: PbPageRevision): void => {
+    try {
+        const gqlParams = {
+            query: GQL.GET_PAGE,
+            variables: { id: revision.pid }
+        };
+
+        const data = cache.readQuery(gqlParams);
+
+        if (!data) {
+            return;
+        }
+
+        cache.writeQuery({
+            ...gqlParams,
+            data: dotProp.set(data, "pageBuilder.getPage.data.id", revision.id)
+        });
+    } catch {
+        /*
+         * In case the update is performed by the previous DataList view,
+         * this will throw an error because it won't find the `GET_PAGE` entry in cache to update.
+         */
+        return;
+    }
+};
+
 export const updateLatestRevisionInListCache = (
     cache: DataProxy,
     revision: PbPageRevision
 ): void => {
+    addRevisionIdToEntryCache(cache, revision);
     modifyCacheForAllListPagesQuery(cache, variables => {
         const gqlParams = { query: GQL.LIST_PAGES, variables };
         const data = cache.readQuery(gqlParams);
 
-        const listPagesData: PbPageData[] = get(data, "pageBuilder.listPages.data");
+        const listPagesData = get(data, "pageBuilder.listPages.data") as unknown as PbPageData[];
         if (!listPagesData) {
             return;
         }
@@ -121,7 +152,7 @@ export const removePageFromListCache = (cache: DataProxy, page: PbPageData): voi
         const gqlParams = { query: GQL.LIST_PAGES, variables };
         const data = cache.readQuery(gqlParams);
 
-        const listPagesData: PbPageData[] = get(data, "pageBuilder.listPages.data");
+        const listPagesData = get(data, "pageBuilder.listPages.data") as unknown as PbPageData[];
         if (!listPagesData) {
             return;
         }
@@ -149,7 +180,10 @@ export const removeRevisionFromEntryCache = (
     };
 
     const data = cache.readQuery(gqlParams);
-    const revisions: PbPageRevision[] = get(data, "pageBuilder.getPage.data.revisions");
+    const revisions = get(
+        data,
+        "pageBuilder.getPage.data.revisions"
+    ) as unknown as PbPageRevision[];
     if (!revisions) {
         return [];
     }

@@ -8,6 +8,7 @@
     "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
       "@webiny/pulumi/*": ["../pulumi/src/*"],
       "@webiny/pulumi": ["../pulumi/src"],
       "@webiny/api-page-builder/*": ["../api-page-builder/src/*"],

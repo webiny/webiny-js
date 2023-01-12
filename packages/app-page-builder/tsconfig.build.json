@@ -3,12 +3,15 @@
   "include": ["src"],
   "references": [
     { "path": "../app/tsconfig.build.json" },
+    { "path": "../app-aco/tsconfig.build.json" },
     { "path": "../app-admin/tsconfig.build.json" },
     { "path": "../app-i18n/tsconfig.build.json" },
     { "path": "../app-page-builder-elements/tsconfig.build.json" },
     { "path": "../app-plugin-admin-welcome-screen/tsconfig.build.json" },
     { "path": "../app-security/tsconfig.build.json" },
     { "path": "../app-tenancy/tsconfig.build.json" },
+    { "path": "../app-theme/tsconfig.build.json" },
+    { "path": "../feature-flags/tsconfig.build.json" },
     { "path": "../form/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" },
     { "path": "../react-composition/tsconfig.build.json" },
@@ -21,7 +24,7 @@
     "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist",
-    "paths": { "~/*": ["./src/*"] },
+    "paths": { "~/*": ["./src/*"], "~tests/*": ["./__tests__/*"] },
     "baseUrl": "."
   }
 }

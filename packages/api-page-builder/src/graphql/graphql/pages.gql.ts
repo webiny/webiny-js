@@ -149,8 +149,6 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                     published
                     unpublished
                     draft
-                    reviewRequested
-                    changesRequested
                 }
 
                 enum PbListPagesSort {
@@ -244,12 +242,6 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                     # Unpublish page
                     unpublishPage(id: ID!): PbPageResponse
 
-                    # Signifies that a page needs to be reviewed.
-                    requestReview(id: ID!): PbPageResponse
-
-                    # Signifies that certain changes are needed on given page.
-                    requestChanges(id: ID!): PbPageResponse
-
                     # Delete page and all of its revisions
                     deletePage(id: ID!): PbDeletePageResponse
 
@@ -278,6 +270,25 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                         const settings = await context.pageBuilder.getCurrentSettings();
                         const websiteUrl = lodashGet(settings, "websiteUrl") || "";
                         return websiteUrl + page.path;
+                    },
+                    content: async (page: Page, _, context) => {
+                        if (!page.content?.elements) {
+                            return page.content;
+                        }
+
+                        // Map block references
+                        const blocks = await context.pageBuilder.resolvePageBlocks(page);
+                        const pageWithNewContent = {
+                            ...page,
+                            content: { ...page.content, elements: blocks }
+                        };
+
+                        // Run element processors on the full page content for potential transformations.
+                        const processedPage = await context.pageBuilder.processPageContent(
+                            pageWithNewContent
+                        );
+
+                        return processedPage.content;
                     }
                 },
                 PbPageListItem: {
@@ -447,14 +458,6 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
 
                     unpublishPage: async (_, args: any, context) => {
                         return resolve(() => context.pageBuilder.unpublishPage(args.id));
-                    },
-
-                    requestReview: async (_, args: any, context) => {
-                        return resolve(() => context.pageBuilder.requestPageReview(args.id));
-                    },
-
-                    requestChanges: async (_, args: any, context) => {
-                        return resolve(() => context.pageBuilder.requestPageChanges(args.id));
                     },
 
                     rerenderPage: async (_, args: any, context) => {

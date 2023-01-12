@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React, { Dispatch, SetStateAction, useState, useCallback } from "react";
 import { i18n } from "@webiny/app/i18n";
 import { IconButton } from "@webiny/ui/Button";
 import { Cell } from "@webiny/ui/Grid";
@@ -37,31 +37,36 @@ interface ActionsProps {
 }
 
 const Actions: React.FC<ActionsProps> = ({ setHighlightIndex, bind, index }) => {
+    const { moveValueDown, moveValueUp } = bind.field;
+
+    const onDown = useCallback(
+        e => {
+            e.stopPropagation();
+            moveValueDown(index);
+            setHighlightIndex(map => ({
+                ...map,
+                [index + 1]: generateAlphaNumericLowerCaseId(12)
+            }));
+        },
+        [moveValueDown, index]
+    );
+
+    const onUp = useCallback(
+        e => {
+            e.stopPropagation();
+            moveValueUp(index);
+            setHighlightIndex(map => ({
+                ...map,
+                [index - 1]: generateAlphaNumericLowerCaseId(12)
+            }));
+        },
+        [moveValueUp, index]
+    );
+
     return index > 0 ? (
         <>
-            <IconButton
-                icon={<ArrowDown />}
-                onClick={e => {
-                    e.stopPropagation();
-                    bind.field.moveValueDown(index);
-                    setHighlightIndex(map => ({
-                        ...map,
-                        [index + 1]: generateAlphaNumericLowerCaseId(12)
-                    }));
-                }}
-            />
-            <IconButton
-                icon={<ArrowUp />}
-                onClick={e => {
-                    e.stopPropagation();
-                    bind.field.moveValueUp(index);
-                    setHighlightIndex(map => ({
-                        ...map,
-                        [index - 1]: generateAlphaNumericLowerCaseId(12)
-                    }));
-                }}
-            />
-
+            <IconButton icon={<ArrowDown />} onClick={onDown} />
+            <IconButton icon={<ArrowUp />} onClick={onUp} />
             <IconButton icon={<DeleteIcon />} onClick={() => bind.field.removeValue(index)} />
         </>
     ) : null;
@@ -123,10 +128,10 @@ const plugin: CmsEditorFieldRendererPlugin = {
     name: "cms-editor-field-renderer-objects",
     renderer: {
         rendererName: "objects",
-        name: t`Objects`,
+        name: t`Inline Form`,
         description: t`Renders a set of fields.`,
         canUse({ field }) {
-            return field.type === "object" && !!field.multipleValues;
+            return field.type === "object" && Boolean(field.multipleValues);
         },
         render(props) {
             return <ObjectsRenderer {...props} />;

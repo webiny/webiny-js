@@ -60,7 +60,7 @@ describe("Cms Entry Publishing Workflow", () => {
                                 type: ApwContentTypes.CMS_ENTRY,
                                 version: 1
                             },
-                            status: "underReview",
+                            reviewStatus: "underReview",
                             title: entry.name
                         },
                         error: null
@@ -111,7 +111,7 @@ describe("Cms Entry Publishing Workflow", () => {
             id: createdContentReview.id
         });
         const contentReview = getContentReviewResponse.data.apw.getContentReview.data;
-        expect(contentReview.status).toEqual("underReview");
+        expect(contentReview.reviewStatus).toEqual("underReview");
         expect(contentReview.title).toEqual(updatedProduct.name);
 
         /**
@@ -231,7 +231,7 @@ describe("Cms Entry Publishing Workflow", () => {
         });
         const updatedContentReview =
             getContentReviewAfterSignOffResponse.data.apw.getContentReview.data;
-        expect(updatedContentReview.status).toEqual("readyToBePublished");
+        expect(updatedContentReview.reviewStatus).toEqual("readyToBePublished");
         expect(updatedContentReview.title).toEqual(updatedProduct.name);
 
         /**
@@ -260,7 +260,8 @@ describe("Cms Entry Publishing Workflow", () => {
             id: createdContentReview.id
         });
         expect(
-            getContentReviewAfterRetractingSignOffResponse.data.apw.getContentReview.data.status
+            getContentReviewAfterRetractingSignOffResponse.data.apw.getContentReview.data
+                .reviewStatus
         ).toEqual("underReview");
 
         /**
@@ -332,9 +333,9 @@ describe("Cms Entry Publishing Workflow", () => {
             id: createdContentReview.id
         });
 
-        expect(getContentReviewAfterPublishResponse.data.apw.getContentReview.data.status).toEqual(
-            "published"
-        );
+        expect(
+            getContentReviewAfterPublishResponse.data.apw.getContentReview.data.reviewStatus
+        ).toEqual("published");
     });
 
     test(`Should able to "unpublish" entry for content review process`, async () => {
@@ -359,7 +360,7 @@ describe("Cms Entry Publishing Workflow", () => {
         /*
          * Check content status, it should be "under review".
          */
-        expect(createdContentReview.status).toEqual("underReview");
+        expect(createdContentReview.reviewStatus).toEqual("underReview");
         expect(createdContentReview.title).toEqual(entry.name);
 
         /*
@@ -382,7 +383,7 @@ describe("Cms Entry Publishing Workflow", () => {
             id: createdContentReview.id
         });
         const contentReview = getContentReviewResponse.data.apw.getContentReview.data;
-        expect(contentReview.status).toEqual("underReview");
+        expect(contentReview.reviewStatus).toEqual("underReview");
         expect(contentReview.title).toEqual(updatedProduct.name);
 
         /**
@@ -508,7 +509,7 @@ describe("Cms Entry Publishing Workflow", () => {
         });
         const updatedContentReview =
             getContentReviewAfterSignOffResponse.data.apw.getContentReview.data;
-        expect(updatedContentReview.status).toEqual("readyToBePublished");
+        expect(updatedContentReview.reviewStatus).toEqual("readyToBePublished");
         expect(updatedContentReview.title).toEqual(updatedProduct.name);
 
         /**
@@ -537,7 +538,7 @@ describe("Cms Entry Publishing Workflow", () => {
             id: createdContentReview.id
         });
         expect(
-            getContentReviewAfterRetractingResponse.data.apw.getContentReview.data.status
+            getContentReviewAfterRetractingResponse.data.apw.getContentReview.data.reviewStatus
         ).toEqual("underReview");
 
         /**
@@ -616,9 +617,9 @@ describe("Cms Entry Publishing Workflow", () => {
             id: createdContentReview.id
         });
 
-        expect(getContentReviewAfterPublishResponse.data.apw.getContentReview.data.status).toEqual(
-            "published"
-        );
+        expect(
+            getContentReviewAfterPublishResponse.data.apw.getContentReview.data.reviewStatus
+        ).toEqual("published");
 
         /**
          * Let's "unpublish" the content.
@@ -667,7 +668,7 @@ describe("Cms Entry Publishing Workflow", () => {
         });
 
         expect(
-            getContentReviewAfterUnpublishResponse.data.apw.getContentReview.data.status
+            getContentReviewAfterUnpublishResponse.data.apw.getContentReview.data.reviewStatus
         ).toEqual("readyToBePublished");
     });
 });

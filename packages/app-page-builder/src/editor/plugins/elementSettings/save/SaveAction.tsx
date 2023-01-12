@@ -15,6 +15,11 @@ import { plugins } from "@webiny/plugins";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useKeyHandler } from "../../../hooks/useKeyHandler";
 import { CREATE_PAGE_ELEMENT, UPDATE_PAGE_ELEMENT } from "~/admin/graphql/pages";
+import {
+    CREATE_PAGE_BLOCK,
+    UPDATE_PAGE_BLOCK,
+    LIST_PAGE_BLOCKS_AND_CATEGORIES
+} from "~/admin/views/PageBlocks/graphql";
 import { useRecoilValue } from "recoil";
 import { CREATE_FILE } from "./SaveDialog/graphql";
 import { FileUploaderPlugin } from "@webiny/app/types";
@@ -26,23 +31,7 @@ import {
     PbEditorElement
 } from "~/types";
 import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
-
-const removeIds = (el: PbElement): PbElement => {
-    // @ts-ignore
-    delete el.id;
-
-    el.elements = el.elements.map(el => {
-        // @ts-ignore
-        delete el.id;
-        if (el.elements && el.elements.length) {
-            el = removeIds(el);
-        }
-
-        return el;
-    });
-
-    return el;
-};
+import { removeElementId } from "~/editor/helpers";
 
 interface ImageDimensionsType {
     width: number;
@@ -89,7 +78,8 @@ const SaveAction: React.FC = ({ children }) => {
     const client = useApolloClient();
 
     const onSubmit = async (formData: PbDocumentElement) => {
-        formData.content = pluginOnSave(removeIds((await getElementTree(element)) as PbElement));
+        const pbElement = (await getElementTree({ element })) as PbElement;
+        formData.content = pluginOnSave(removeElementId(pbElement));
 
         const meta = await getDataURLImageDimensions(formData.preview);
         const blob = dataURLtoBlob(formData.preview);
@@ -124,33 +114,62 @@ const SaveAction: React.FC = ({ children }) => {
 
         formData.preview = createdImage.data;
 
-        const query = formData.overwrite ? UPDATE_PAGE_ELEMENT : CREATE_PAGE_ELEMENT;
+        if (formData.type === "block") {
+            const query = formData.overwrite ? UPDATE_PAGE_BLOCK : CREATE_PAGE_BLOCK;
 
-        const { data: res } = await client.mutate({
-            mutation: query,
-            variables: formData.overwrite
-                ? {
-                      id: element.source,
-                      data: pick(formData, ["content", "preview"])
-                  }
-                : { data: pick(formData, ["type", "category", "preview", "name", "content"]) }
-        });
+            const { data: res } = await client.mutate({
+                mutation: query,
+                variables: formData.overwrite
+                    ? {
+                          id: element.source,
+                          data: pick(formData, ["content", "preview"])
+                      }
+                    : { data: pick(formData, ["name", "blockCategory", "preview", "content"]) },
+                refetchQueries: [{ query: LIST_PAGE_BLOCKS_AND_CATEGORIES }]
+            });
 
-        hideDialog();
-        const mutationName = formData.overwrite ? "updatePageElement" : "createPageElement";
-        const data = get(res, `pageBuilder.${mutationName}.data`);
-        if (data.type === "block") {
+            const { error, data } = get(res, `pageBuilder.pageBlock`);
+
+            if (error) {
+                showSnackbar(error.message);
+                return;
+            }
+
+            hideDialog();
+
             createBlockPlugin(data);
+            showSnackbar(
+                <span>
+                    {formData.type[0].toUpperCase() + formData.type.slice(1)}{" "}
+                    <strong>{data.name}</strong> was saved!
+                </span>
+            );
         } else {
-            createElementPlugin(data);
-        }
+            const query = formData.overwrite ? UPDATE_PAGE_ELEMENT : CREATE_PAGE_ELEMENT;
 
-        showSnackbar(
-            <span>
-                {formData.type[0].toUpperCase() + formData.type.slice(1)}{" "}
-                <strong>{data.name}</strong> was saved!
-            </span>
-        );
+            const { data: res } = await client.mutate({
+                mutation: query,
+                variables: formData.overwrite
+                    ? {
+                          id: element.source,
+                          data: pick(formData, ["content", "preview"])
+                      }
+                    : { data: pick(formData, ["type", "category", "preview", "name", "content"]) }
+            });
+
+            hideDialog();
+            const mutationName = formData.overwrite ? "updatePageElement" : "createPageElement";
+            const data = get(res, `pageBuilder.${mutationName}.data`);
+
+            createElementPlugin(data);
+
+            showSnackbar(
+                <span>
+                    {formData.type[0].toUpperCase() + formData.type.slice(1)}{" "}
+                    <strong>{data.name}</strong> was saved!
+                </span>
+            );
+        }
     };
 
     useEffect(() => {

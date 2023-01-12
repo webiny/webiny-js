@@ -2,13 +2,15 @@ import WebinyError from "@webiny/error";
 import { NotAuthorizedError } from "@webiny/api-security";
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
 import { getApplicablePlugin } from "@webiny/api-upgrade";
-import { preparePageData } from "./install/welcome-to-webiny-page-data";
+import { preparePageData } from "./install/welcomeToWebinyPageData";
+import { preparePageDataLegacy } from "./install/welcomeToWebinyPageDataLegacy";
 import { notFoundPageData } from "./install/notFoundPageData";
+import { notFoundPageDataLegacy } from "./install/notFoundPageDataLegacy";
 import savePageAssets from "./install/utils/savePageAssets";
 import {
     Category,
-    OnAfterInstallTopicParams,
-    OnBeforeInstallTopicParams,
+    OnSystemAfterInstallTopicParams,
+    OnSystemBeforeInstallTopicParams,
     Page,
     PageBuilderContextObject,
     PageBuilderStorageOperations,
@@ -17,20 +19,34 @@ import {
     SystemCrud
 } from "~/types";
 import { createTopic } from "@webiny/pubsub";
+import { featureFlags } from "@webiny/feature-flags";
 
 export interface CreateSystemCrudParams {
     context: PbContext;
     storageOperations: PageBuilderStorageOperations;
     getTenantId: () => string;
 }
+
 export const createSystemCrud = (params: CreateSystemCrudParams): SystemCrud => {
     const { context, storageOperations, getTenantId } = params;
-    const onBeforeInstall = createTopic<OnBeforeInstallTopicParams>();
-    const onAfterInstall = createTopic<OnAfterInstallTopicParams>();
+    const onSystemBeforeInstall = createTopic<OnSystemBeforeInstallTopicParams>(
+        "pageBuilder.onSystemBeforeInstall"
+    );
+    const onSystemAfterInstall = createTopic<OnSystemAfterInstallTopicParams>(
+        "pageBuilder.onSystemAfterInstall"
+    );
 
     return {
-        onBeforeInstall,
-        onAfterInstall,
+        /**
+         * Lifecycle events - deprecated in 5.34.0 - will be removed in 5.36.0
+         */
+        onBeforeInstall: onSystemBeforeInstall,
+        onAfterInstall: onSystemAfterInstall,
+        /**
+         * Introduced in 5.34.0
+         */
+        onSystemBeforeInstall,
+        onSystemAfterInstall,
         async getSystem() {
             try {
                 return await storageOperations.system.get({
@@ -109,7 +125,7 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCrud => 
             /**
              * 1. Execute all beforeInstall installation hooks.
              */
-            await onBeforeInstall.publish({
+            await onSystemBeforeInstall.publish({
                 tenant: getTenantId()
             });
 
@@ -144,10 +160,22 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCrud => 
                 // 5. Create sample pages.
                 const fmSettings = await fileManager.settings.getSettings();
 
-                const welcomeToWebinyPageContent = preparePageData({
-                    srcPrefix: fmSettings ? fmSettings.srcPrefix : "",
-                    fileIdToFileMap: fileIdToFileMap
-                });
+                let welcomeToWebinyPageContent, notFoundPageContent;
+                if (featureFlags.pbLegacyRenderingEngine === true) {
+                    welcomeToWebinyPageContent = preparePageDataLegacy({
+                        srcPrefix: fmSettings ? fmSettings.srcPrefix : "",
+                        fileIdToFileMap: fileIdToFileMap
+                    });
+
+                    notFoundPageContent = notFoundPageDataLegacy;
+                } else {
+                    welcomeToWebinyPageContent = preparePageData({
+                        srcPrefix: fmSettings ? fmSettings.srcPrefix : "",
+                        fileIdToFileMap: fileIdToFileMap
+                    });
+
+                    notFoundPageContent = notFoundPageData;
+                }
 
                 const initialPagesData: Page[] = [
                     /**
@@ -157,7 +185,7 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCrud => 
                     {
                         title: "Not Found",
                         path: "/not-found",
-                        content: notFoundPageData,
+                        content: notFoundPageContent,
                         settings: {}
                     },
                     /**
@@ -176,6 +204,7 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCrud => 
                     // We can safely cast.
                     initialPagesData.map(() => this.createPage((staticCategory as Category).slug))
                 );
+
                 const updatedPages = await Promise.all(
                     initialPagesData.map((data, index) => {
                         return this.updatePage(initialPages[index].id, data);
@@ -197,7 +226,7 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCrud => 
             // 6. Mark the Page Builder app as installed.
             await this.setSystemVersion(context.WEBINY_VERSION);
 
-            await onAfterInstall.publish({
+            await onSystemAfterInstall.publish({
                 tenant: getTenantId()
             });
         },

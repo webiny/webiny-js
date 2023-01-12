@@ -2,18 +2,18 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
+    { "path": "../api" },
     { "path": "../api-authentication" },
     { "path": "../api-tenancy" },
     { "path": "../error" },
-    { "path": "../api" },
-    { "path": "../handler-aws" },
-    { "path": "../handler-graphql" },
     { "path": "../handler" },
+    { "path": "../handler-graphql" },
     { "path": "../plugins" },
     { "path": "../pubsub" },
     { "path": "../validation" },
     { "path": "../api-tenancy-so-ddb" },
-    { "path": "../api-wcp" }
+    { "path": "../api-wcp" },
+    { "path": "../handler-aws" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -21,20 +21,19 @@
     "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/api/*": ["../api/src/*"],
+      "@webiny/api": ["../api/src"],
       "@webiny/api-authentication/*": ["../api-authentication/src/*"],
       "@webiny/api-authentication": ["../api-authentication/src"],
       "@webiny/api-tenancy/*": ["../api-tenancy/src/*"],
       "@webiny/api-tenancy": ["../api-tenancy/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
-      "@webiny/api/*": ["../api/src/*"],
-      "@webiny/api": ["../api/src"],
-      "@webiny/handler-aws/*": ["../handler-aws/src/*"],
-      "@webiny/handler-aws": ["../handler-aws/src"],
-      "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
-      "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
+      "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
+      "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/pubsub/*": ["../pubsub/src/*"],
@@ -44,7 +43,9 @@
       "@webiny/api-tenancy-so-ddb/*": ["../api-tenancy-so-ddb/src/*"],
       "@webiny/api-tenancy-so-ddb": ["../api-tenancy-so-ddb/src"],
       "@webiny/api-wcp/*": ["../api-wcp/src/*"],
-      "@webiny/api-wcp": ["../api-wcp/src"]
+      "@webiny/api-wcp": ["../api-wcp/src"],
+      "@webiny/handler-aws/*": ["../handler-aws/src/*"],
+      "@webiny/handler-aws": ["../handler-aws/src"]
     },
     "baseUrl": "."
   }

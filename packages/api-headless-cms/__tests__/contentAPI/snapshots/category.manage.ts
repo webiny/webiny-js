@@ -72,6 +72,10 @@ export default /* GraphQL */ `
         ownedBy_not: String
         ownedBy_in: [String!]
         ownedBy_not_in: [String!]
+        status: String
+        status_not: String
+        status_in: [String!]
+        status_not_in: [String!]
 
         title: String
         title_not: String
@@ -86,13 +90,16 @@ export default /* GraphQL */ `
         slug_not_in: [String]
         slug_contains: String
         slug_not_contains: String
+    
+        AND: [CategoryListWhereInput!]
+        OR: [CategoryListWhereInput!]
     }
 
     type CategoryResponse {
         data: Category
         error: CmsError
     }
-        
+    
     type CategoryArrayResponse {
         data: [Category]
         error: CmsError
@@ -146,9 +153,5 @@ export default /* GraphQL */ `
         republishCategory(revision: ID!): CategoryResponse
 
         unpublishCategory(revision: ID!): CategoryResponse
-        
-        requestCategoryReview(revision: ID!): CategoryResponse
-        
-        requestCategoryChanges(revision: ID!): CategoryResponse
     }
 `;

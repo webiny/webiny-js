@@ -3,6 +3,54 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.33.5](https://github.com/webiny/webiny-js/compare/v5.33.5-beta.0...v5.33.5) (2022-12-23)
+
+**Note:** Version bump only for package @webiny/app-cognito-authenticator
+
+
+
+
+
+## [5.33.5-beta.0](https://github.com/webiny/webiny-js/compare/v5.33.4...v5.33.5-beta.0) (2022-12-22)
+
+**Note:** Version bump only for package @webiny/app-cognito-authenticator
+
+
+
+
+
+## [5.33.4](https://github.com/webiny/webiny-js/compare/v5.33.4-beta.0...v5.33.4) (2022-12-15)
+
+**Note:** Version bump only for package @webiny/app-cognito-authenticator
+
+
+
+
+
+## [5.33.4-beta.0](https://github.com/webiny/webiny-js/compare/v5.33.3...v5.33.4-beta.0) (2022-12-15)
+
+**Note:** Version bump only for package @webiny/app-cognito-authenticator
+
+
+
+
+
+## [5.33.3](https://github.com/webiny/webiny-js/compare/v5.33.3-beta.0...v5.33.3) (2022-11-28)
+
+**Note:** Version bump only for package @webiny/app-cognito-authenticator
+
+
+
+
+
+## [5.33.3-beta.0](https://github.com/webiny/webiny-js/compare/v5.33.2...v5.33.3-beta.0) (2022-11-28)
+
+**Note:** Version bump only for package @webiny/app-cognito-authenticator
+
+
+
+
+
 ## [5.33.2](https://github.com/webiny/webiny-js/compare/v5.33.2-beta.2...v5.33.2) (2022-11-17)
 
 **Note:** Version bump only for package @webiny/app-cognito-authenticator

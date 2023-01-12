@@ -1,5 +1,5 @@
 import React from "react";
-import { CmsEditorContentEntry, CmsEditorField, CmsEditorFieldRendererPlugin } from "~/types";
+import { CmsEditorContentEntry, CmsModelField, CmsEditorFieldRendererPlugin } from "~/types";
 import ContentEntriesMultiAutocomplete from "./components/ContentEntriesMultiAutoComplete";
 import { NewRefEntryDialogContextProvider } from "./hooks/useNewRefEntryDialog";
 
@@ -9,7 +9,7 @@ import { BindComponentRenderProp } from "@webiny/form";
 const t = i18n.ns("app-headless-cms/admin/fields/ref");
 
 const getKey = (
-    field: CmsEditorField,
+    field: CmsModelField,
     bind: BindComponentRenderProp<string, CmsEditorContentEntry>
 ): string => {
     return bind.form.data.id + "." + field.fieldId;

@@ -10,6 +10,8 @@ import {
     CmsEntriesListRevisionsQueryResponse,
     CmsEntriesListRevisionsQueryVariables
 } from "~/admin/graphql/contentEntries";
+import pick from "lodash/pick";
+import { getModelTitleFieldId } from "~/utils/getModelTitleFieldId";
 
 /*
  * We need to preserve the order of entries with new entry addition
@@ -52,7 +54,21 @@ export const addEntryToListCache = (
         data: {
             content: {
                 ...content,
-                data: sortEntries([entry, ...content.data], variables.sort)
+                data: sortEntries(
+                    [
+                        pick(entry, [
+                            "id",
+                            getModelTitleFieldId(model),
+                            "savedOn",
+                            "modelId",
+                            "createdBy",
+                            "meta",
+                            "__typename"
+                        ]) as CmsEditorContentEntry,
+                        ...content.data
+                    ],
+                    variables.sort
+                )
             }
         }
     });

@@ -40,6 +40,9 @@ export const createSettingsEntity = (params: Params): Entity<any> => {
             social: {
                 type: "map"
             },
+            htmlTags: {
+                type: "map"
+            },
             pages: {
                 type: "map"
             },

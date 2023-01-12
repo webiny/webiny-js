@@ -3,19 +3,19 @@ import { css } from "emotion";
 import styled from "@emotion/styled";
 import { IconButton } from "@webiny/ui/Button";
 import { Typography } from "@webiny/ui/Typography";
-import { ReactComponent as EditIcon } from "~/admin/icons/edit.svg";
+import { ReactComponent as EditIcon } from "@material-design-icons/svg/outlined/edit.svg";
 import { ReactComponent as DeleteIcon } from "~/admin/icons/delete.svg";
 import { ReactComponent as TitleIcon } from "~/admin/icons/title-24px.svg";
 import { ReactComponent as MoreVerticalIcon } from "~/admin/icons/more_vert.svg";
 import { Menu, MenuItem } from "@webiny/ui/Menu";
 import { plugins } from "@webiny/plugins";
-import { CmsEditorField, CmsEditorFieldOptionPlugin } from "~/types";
+import { CmsModelField, CmsEditorFieldOptionPlugin } from "~/types";
 import { ListItemGraphic } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
 import { i18n } from "@webiny/app/i18n";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { useContentModelEditor } from "~/admin/components/ContentModelEditor/useContentModelEditor";
-import { useFieldEditor } from "~/admin/components/FieldEditor/useFieldEditor";
+import { useModelEditor } from "~/admin/hooks";
+import { useModelFieldEditor } from "~/admin/components/FieldEditor/useModelFieldEditor";
 import { useConfirmationDialog } from "@webiny/app-admin";
 
 const t = i18n.ns("app-headless-cms/admin/components/editor/field");
@@ -26,6 +26,10 @@ const FieldContainer = styled("div")({
     justifyContent: "space-between",
     alignItems: "center"
 });
+
+const LowerCase = styled.span`
+    text-transform: lowercase;
+`;
 
 const Info = styled("div")({
     display: "flex",
@@ -55,9 +59,16 @@ const menuStyles = css({
     }
 });
 
+const FieldExtra = styled.div`
+    padding: 10px 0 10px;
+    :empty {
+        display: none;
+    }
+`;
+
 const allowedTitleFieldTypes: string[] = ["text", "number"];
 
-const isFieldAllowedToBeTitle = (field: CmsEditorField, parent?: CmsEditorField) => {
+const isFieldAllowedToBeTitle = (field: CmsModelField, parent?: CmsModelField) => {
     if (field.multipleValues || parent) {
         return false;
     } else if (allowedTitleFieldTypes.includes(field.type) === false) {
@@ -67,16 +78,16 @@ const isFieldAllowedToBeTitle = (field: CmsEditorField, parent?: CmsEditorField)
 };
 
 export interface FieldProps {
-    field: CmsEditorField;
-    onDelete: (field: CmsEditorField) => void;
-    onEdit: (field: CmsEditorField) => void;
-    parent?: CmsEditorField;
+    field: CmsModelField;
+    onDelete: (field: CmsModelField) => void;
+    onEdit: (field: CmsModelField) => void;
+    parent?: CmsModelField;
 }
 const Field: React.FC<FieldProps> = props => {
     const { field, onEdit, parent } = props;
     const { showSnackbar } = useSnackbar();
-    const { setData, data } = useContentModelEditor();
-    const { getFieldPlugin } = useFieldEditor();
+    const { setData, data } = useModelEditor();
+    const { getFieldPlugin, getFieldRendererPlugin } = useModelFieldEditor();
 
     const { showConfirmation } = useConfirmationDialog({
         title: t`Warning - You are trying to delete a locked field!`,
@@ -122,7 +133,17 @@ const Field: React.FC<FieldProps> = props => {
         return null;
     }
 
+    const rendererPlugin = getFieldRendererPlugin(field.renderer.name);
+    const canEdit = fieldPlugin.field.canEditSettings !== false;
     const isTitleField = data && field.fieldId === data.titleFieldId && !parent;
+
+    const info = [
+        rendererPlugin?.renderer.name,
+        field.multipleValues ? "multiple values" : null,
+        isTitleField ? "entry title" : null
+    ]
+        .filter(Boolean)
+        .join(", ");
 
     return (
         <Fragment>
@@ -130,17 +151,18 @@ const Field: React.FC<FieldProps> = props => {
                 <Info>
                     <Typography use={"subtitle1"}>{field.label}</Typography>
                     <Typography use={"caption"}>
-                        {fieldPlugin.field.label}{" "}
-                        {field.multipleValues && <>({t`multiple values`})</>}
-                        {isTitleField && <>({t`entry title`})</>}
+                        {fieldPlugin.field.label} {field.multipleValues && <></>}
+                        <LowerCase>({info})</LowerCase>
                     </Typography>
                 </Info>
                 <Actions>
-                    <IconButton
-                        data-testid={"cms.editor.edit-field"}
-                        icon={<EditIcon />}
-                        onClick={() => onEdit(field)}
-                    />
+                    {canEdit ? (
+                        <IconButton
+                            data-testid={"cms.editor.edit-field"}
+                            icon={<EditIcon />}
+                            onClick={() => onEdit(field)}
+                        />
+                    ) : null}
                     <Menu
                         className={menuStyles}
                         handle={<IconButton icon={<MoreVerticalIcon />} />}
@@ -167,9 +189,9 @@ const Field: React.FC<FieldProps> = props => {
                     </Menu>
                 </Actions>
             </FieldContainer>
-            <div className={"field-extra"}>
+            <FieldExtra>
                 {fieldPlugin.field.render && fieldPlugin.field.render({ field, data, setData })}
-            </div>
+            </FieldExtra>
         </Fragment>
     );
 };

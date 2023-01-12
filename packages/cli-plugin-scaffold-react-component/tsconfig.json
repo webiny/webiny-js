@@ -8,6 +8,7 @@
     "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
       "@webiny/cli-plugin-scaffold/*": ["../cli-plugin-scaffold/src/*"],
       "@webiny/cli-plugin-scaffold": ["../cli-plugin-scaffold/src"],
       "@webiny/error/*": ["../error/src/*"],

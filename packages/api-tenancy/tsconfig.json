@@ -2,12 +2,12 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
+    { "path": "../api" },
     { "path": "../api-wcp" },
     { "path": "../error" },
-    { "path": "../api" },
+    { "path": "../handler" },
     { "path": "../handler-db" },
     { "path": "../handler-graphql" },
-    { "path": "../handler" },
     { "path": "../pubsub" }
   ],
   "compilerOptions": {
@@ -16,18 +16,19 @@
     "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/api/*": ["../api/src/*"],
+      "@webiny/api": ["../api/src"],
       "@webiny/api-wcp/*": ["../api-wcp/src/*"],
       "@webiny/api-wcp": ["../api-wcp/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
-      "@webiny/api/*": ["../api/src/*"],
-      "@webiny/api": ["../api/src"],
+      "@webiny/handler/*": ["../handler/src/*"],
+      "@webiny/handler": ["../handler/src"],
       "@webiny/handler-db/*": ["../handler-db/src/*"],
       "@webiny/handler-db": ["../handler-db/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
       "@webiny/handler-graphql": ["../handler-graphql/src"],
-      "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"],
       "@webiny/pubsub/*": ["../pubsub/src/*"],
       "@webiny/pubsub": ["../pubsub/src"]
     },

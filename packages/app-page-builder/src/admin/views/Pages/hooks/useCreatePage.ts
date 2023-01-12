@@ -16,8 +16,8 @@ const useCreatePage = ({
     closeDialog
 }: UseCreatePageParams) => {
     const [create] = useMutation(CREATE_PAGE);
-    const { showSnackbar } = useSnackbar();
     const { history } = useRouter();
+    const { showSnackbar } = useSnackbar();
 
     const createPageMutation = useCallback(async ({ slug: category }) => {
         try {

@@ -25,13 +25,14 @@ import align from "@webiny/app-page-builder/render/plugins/elementSettings/align
 import animation from "@webiny/app-page-builder/render/plugins/elementSettings/animation";
 import background from "@webiny/app-page-builder/render/plugins/elementSettings/background";
 import border from "@webiny/app-page-builder/render/plugins/elementSettings/border";
+import gridSettings from "@webiny/app-page-builder/render/plugins/elementSettings/grid";
 import height from "@webiny/app-page-builder/render/plugins/elementSettings/height";
 import width from "@webiny/app-page-builder/render/plugins/elementSettings/width";
 import shadow from "@webiny/app-page-builder/render/plugins/elementSettings/shadow";
 import padding from "@webiny/app-page-builder/render/plugins/elementSettings/padding";
 import margin from "@webiny/app-page-builder/render/plugins/elementSettings/margin";
 import textSetting from "@webiny/app-page-builder/render/plugins/elementSettings/text";
-import visibility from "@webiny/app-page-builder/render/plugins/elementSettings/visibility";
+import property from "@webiny/app-page-builder/render/plugins/elementSettings/property";
 // Responsive mode
 import responsiveMode from "@webiny/app-page-builder/render/plugins/responsiveMode";
 
@@ -63,12 +64,13 @@ export default [
     animation,
     background,
     border,
+    gridSettings,
     height,
     width,
     shadow,
     padding,
     margin,
     textSetting,
-    visibility,
+    property,
     responsiveMode()
 ];

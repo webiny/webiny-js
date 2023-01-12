@@ -12,33 +12,37 @@ import {
     CmsContext,
     CmsStorageEntry,
     HeadlessCmsStorageOperations,
-    BeforeEntryCreateTopicParams,
-    AfterEntryCreateTopicParams,
-    BeforeEntryUpdateTopicParams,
-    AfterEntryUpdateTopicParams,
-    AfterEntryDeleteTopicParams,
-    BeforeEntryDeleteTopicParams,
-    BeforeEntryCreateRevisionTopicParams,
-    AfterEntryCreateRevisionTopicParams,
-    BeforeEntryPublishTopicParams,
-    AfterEntryPublishTopicParams,
-    BeforeEntryUnpublishTopicParams,
-    AfterEntryUnpublishTopicParams,
-    BeforeEntryRequestChangesTopicParams,
-    AfterEntryRequestChangesTopicParams,
-    BeforeEntryRequestReviewTopicParams,
-    AfterEntryRequestReviewTopicParams,
-    BeforeEntryDeleteRevisionTopicParams,
-    AfterEntryDeleteRevisionTopicParams,
-    BeforeEntryGetTopicParams,
-    BeforeEntryListTopicParams,
+    OnEntryBeforeCreateTopicParams,
+    OnEntryAfterCreateTopicParams,
+    OnEntryBeforeUpdateTopicParams,
+    OnEntryAfterUpdateTopicParams,
+    OnEntryAfterDeleteTopicParams,
+    OnEntryBeforeDeleteTopicParams,
+    OnEntryRevisionBeforeCreateTopicParams,
+    OnEntryRevisionAfterCreateTopicParams,
+    OnEntryBeforePublishTopicParams,
+    OnEntryAfterPublishTopicParams,
+    OnEntryBeforeUnpublishTopicParams,
+    OnEntryAfterUnpublishTopicParams,
+    OnEntryRevisionBeforeDeleteTopicParams,
+    OnEntryRevisionAfterDeleteTopicParams,
+    OnEntryBeforeGetTopicParams,
+    EntryBeforeListTopicParams,
     CmsEntryListWhere,
     UpdateCmsEntryInput,
     CreateCmsEntryInput,
     CmsModelField,
     CreatedBy,
-    CmsModelFieldToGraphQLPlugin,
-    StorageOperationsCmsModel
+    StorageOperationsCmsModel,
+    HeadlessCms,
+    CmsEntryStatus,
+    OnEntryCreateErrorTopicParams,
+    OnEntryCreateRevisionErrorTopicParams,
+    OnEntryUpdateErrorTopicParams,
+    OnEntryPublishErrorTopicParams,
+    OnEntryUnpublishErrorTopicParams,
+    OnEntryDeleteErrorTopicParams,
+    OnEntryRevisionDeleteErrorTopicParams
 } from "~/types";
 import { validateModelEntryData } from "./contentEntry/entryDataValidation";
 import WebinyError from "@webiny/error";
@@ -49,7 +53,6 @@ import { assignBeforeEntryUpdate } from "./contentEntry/beforeUpdate";
 import { createIdentifier, parseIdentifier } from "@webiny/utils";
 import { assignAfterEntryDelete } from "./contentEntry/afterDelete";
 import { referenceFieldsMapping } from "./contentEntry/referenceFieldsMapping";
-import { PluginsContainer } from "@webiny/plugins";
 import { Tenant } from "@webiny/api-tenancy/types";
 import lodashMerge from "lodash/merge";
 import { checkPermissions } from "~/utils/permissions";
@@ -57,12 +60,11 @@ import { checkModelAccess } from "~/utils/access";
 import { checkOwnership, validateOwnership } from "~/utils/ownership";
 import { entryFromStorageTransform, entryToStorageTransform } from "~/utils/entryStorage";
 import { attachCmsModelFieldConverters } from "~/utils/converters/valueKeyStorageConverter";
+import { getSearchableFields } from "./contentEntry/searchableFields";
 
 export const STATUS_DRAFT = "draft";
 export const STATUS_PUBLISHED = "published";
 export const STATUS_UNPUBLISHED = "unpublished";
-export const STATUS_CHANGES_REQUESTED = "changesRequested";
-export const STATUS_REVIEW_REQUESTED = "reviewRequested";
 
 type DefaultValue = boolean | number | string | null;
 /**
@@ -229,37 +231,10 @@ const increaseEntryIdVersion = (id: string): EntryIdResult => {
     };
 };
 
-interface GetSearchableFieldsParams {
-    plugins: PluginsContainer;
-    model: CmsModel;
-    fields?: string[];
-}
-const getSearchableFields = (params: GetSearchableFieldsParams): string[] => {
-    const { plugins, model, fields } = params;
+const allowedEntryStatus: string[] = ["draft", "published", "unpublished"];
 
-    const fieldPluginMap = plugins
-        .byType<CmsModelFieldToGraphQLPlugin>("cms-model-field-to-graphql")
-        .reduce((collection, field) => {
-            collection[field.fieldType] = field;
-            return collection;
-        }, {} as Record<string, CmsModelFieldToGraphQLPlugin>);
-
-    return model.fields
-        .filter(field => {
-            if (!field.fieldId) {
-                return false;
-            }
-            const plugin = fieldPluginMap[field.type];
-            if (!plugin) {
-                return false;
-            } else if (!plugin.fullTextSearch) {
-                return false;
-            } else if (!fields || fields.length === 0) {
-                return true;
-            }
-            return fields.includes(field.fieldId);
-        })
-        .map(field => field.fieldId);
+const transformEntryStatus = (status: CmsEntryStatus | string): CmsEntryStatus => {
+    return allowedEntryStatus.includes(status) ? (status as CmsEntryStatus) : "draft";
 };
 
 export interface CreateContentEntryCrudParams {
@@ -274,41 +249,99 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
     const { plugins } = context;
 
-    const onBeforeEntryCreate = createTopic<BeforeEntryCreateTopicParams>();
-    const onAfterEntryCreate = createTopic<AfterEntryCreateTopicParams>();
-    const onBeforeEntryCreateRevision = createTopic<BeforeEntryCreateRevisionTopicParams>();
-    const onAfterEntryCreateRevision = createTopic<AfterEntryCreateRevisionTopicParams>();
-    const onBeforeEntryUpdate = createTopic<BeforeEntryUpdateTopicParams>();
-    const onAfterEntryUpdate = createTopic<AfterEntryUpdateTopicParams>();
-    const onBeforeEntryPublish = createTopic<BeforeEntryPublishTopicParams>();
-    const onAfterEntryPublish = createTopic<AfterEntryPublishTopicParams>();
-    const onBeforeEntryUnpublish = createTopic<BeforeEntryUnpublishTopicParams>();
-    const onAfterEntryUnpublish = createTopic<AfterEntryUnpublishTopicParams>();
-    const onBeforeEntryRequestChanges = createTopic<BeforeEntryRequestChangesTopicParams>();
-    const onAfterEntryRequestChanges = createTopic<AfterEntryRequestChangesTopicParams>();
-    const onBeforeEntryRequestReview = createTopic<BeforeEntryRequestReviewTopicParams>();
-    const onAfterEntryRequestReview = createTopic<AfterEntryRequestReviewTopicParams>();
-    const onBeforeEntryDelete = createTopic<BeforeEntryDeleteTopicParams>();
-    const onAfterEntryDelete = createTopic<AfterEntryDeleteTopicParams>();
-    const onBeforeEntryDeleteRevision = createTopic<BeforeEntryDeleteRevisionTopicParams>();
-    const onAfterEntryDeleteRevision = createTopic<AfterEntryDeleteRevisionTopicParams>();
-    const onBeforeEntryGet = createTopic<BeforeEntryGetTopicParams>();
-    const onBeforeEntryList = createTopic<BeforeEntryListTopicParams>();
+    /**
+     * Create
+     */
+    const onEntryBeforeCreate =
+        createTopic<OnEntryBeforeCreateTopicParams>("cms.onEntryBeforeCreate");
+    const onEntryAfterCreate = createTopic<OnEntryAfterCreateTopicParams>("cms.onEntryAfterCreate");
+    const onEntryCreateError = createTopic<OnEntryCreateErrorTopicParams>("cms.onEntryCreateError");
+
+    /**
+     * Create new revision
+     */
+    const onEntryBeforeCreateRevision = createTopic<OnEntryRevisionBeforeCreateTopicParams>(
+        "cms.onEntryBeforeCreateRevision"
+    );
+    const onEntryRevisionAfterCreate = createTopic<OnEntryRevisionAfterCreateTopicParams>(
+        "cms.onEntryRevisionAfterCreate"
+    );
+    const onEntryCreateRevisionError = createTopic<OnEntryCreateRevisionErrorTopicParams>(
+        "cms.onEntryCreateRevisionError"
+    );
+
+    /**
+     * Update
+     */
+    const onEntryBeforeUpdate =
+        createTopic<OnEntryBeforeUpdateTopicParams>("cms.onEntryBeforeUpdate");
+    const onEntryAfterUpdate = createTopic<OnEntryAfterUpdateTopicParams>("cms.onEntryAfterUpdate");
+    const onEntryUpdateError = createTopic<OnEntryUpdateErrorTopicParams>("cms.onEntryUpdateError");
+
+    /**
+     * Publish
+     */
+    const onEntryBeforePublish = createTopic<OnEntryBeforePublishTopicParams>(
+        "cms.onEntryBeforePublish"
+    );
+    const onEntryAfterPublish =
+        createTopic<OnEntryAfterPublishTopicParams>("cms.onEntryAfterPublic");
+
+    const onEntryPublishError =
+        createTopic<OnEntryPublishErrorTopicParams>("cms.onEntryPublishError");
+
+    /**
+     * Unpublish
+     */
+    const onEntryBeforeUnpublish = createTopic<OnEntryBeforeUnpublishTopicParams>(
+        "cms.onEntryBeforeUnpublish"
+    );
+    const onEntryAfterUnpublish = createTopic<OnEntryAfterUnpublishTopicParams>(
+        "cms.onEntryAfterUnpublish"
+    );
+    const onEntryUnpublishError = createTopic<OnEntryUnpublishErrorTopicParams>(
+        "cms.onEntryUnpublishError"
+    );
+
+    /**
+     * Delete
+     */
+    const onEntryBeforeDelete =
+        createTopic<OnEntryBeforeDeleteTopicParams>("cms.onEntryBeforeDelete");
+    const onEntryAfterDelete = createTopic<OnEntryAfterDeleteTopicParams>("cms.onEntryAfterDelete");
+    const onEntryDeleteError = createTopic<OnEntryDeleteErrorTopicParams>("cms.onEntryDeleteError");
+
+    // delete revision
+    const onEntryRevisionBeforeDelete = createTopic<OnEntryRevisionBeforeDeleteTopicParams>(
+        "cms.onEntryRevisionBeforeDelete"
+    );
+    const onEntryRevisionAfterDelete = createTopic<OnEntryRevisionAfterDeleteTopicParams>(
+        "cms.onEntryRevisionAfterDelete"
+    );
+    const onEntryRevisionDeleteError = createTopic<OnEntryRevisionDeleteErrorTopicParams>(
+        "cms.onEntryRevisionDeleteError"
+    );
+
+    // get
+    const onEntryBeforeGet = createTopic<OnEntryBeforeGetTopicParams>("cms.onEntryBeforeGet");
+
+    // list
+    const onEntryBeforeList = createTopic<EntryBeforeListTopicParams>("cms.onEntryBeforeList");
 
     /**
      * We need to assign some default behaviors.
      */
     assignBeforeEntryCreate({
         context,
-        onBeforeEntryCreate
+        onEntryBeforeCreate
     });
     assignBeforeEntryUpdate({
         context,
-        onBeforeEntryUpdate
+        onEntryBeforeUpdate
     });
     assignAfterEntryDelete({
         context,
-        onAfterEntryDelete
+        onEntryAfterDelete
     });
 
     const checkEntryPermissions = (check: {
@@ -324,7 +357,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     const deleteEntry = async (params: DeleteEntryParams): Promise<void> => {
         const { model, entry } = params;
         try {
-            await onBeforeEntryDelete.publish({
+            await onEntryBeforeDelete.publish({
                 entry,
                 model
             });
@@ -333,11 +366,16 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 entry
             });
 
-            await onAfterEntryDelete.publish({
+            await onEntryAfterDelete.publish({
                 entry,
                 model
             });
         } catch (ex) {
+            await onEntryDeleteError.publish({
+                entry,
+                model,
+                error: ex
+            });
             throw new WebinyError(
                 ex.message || "Could not delete entry.",
                 ex.code || "DELETE_ERROR",
@@ -367,26 +405,72 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     };
 
     return {
-        onBeforeEntryCreate,
-        onAfterEntryCreate,
-        onBeforeEntryCreateRevision,
-        onAfterEntryCreateRevision,
-        onBeforeEntryUpdate,
-        onAfterEntryUpdate,
-        onBeforeEntryDelete,
-        onAfterEntryDelete,
-        onBeforeEntryDeleteRevision,
-        onAfterEntryDeleteRevision,
-        onBeforeEntryPublish,
-        onAfterEntryPublish,
-        onBeforeEntryUnpublish,
-        onAfterEntryUnpublish,
-        onBeforeEntryRequestChanges,
-        onAfterEntryRequestChanges,
-        onBeforeEntryRequestReview,
-        onAfterEntryRequestReview,
-        onBeforeEntryGet,
-        onBeforeEntryList,
+        /**
+         * Deprecated - will be removed in 5.35.0
+         */
+        onBeforeEntryCreate: onEntryBeforeCreate,
+        onAfterEntryCreate: onEntryAfterCreate,
+        onBeforeEntryCreateRevision: onEntryBeforeCreateRevision,
+        onAfterEntryCreateRevision: onEntryRevisionAfterCreate,
+        onBeforeEntryUpdate: onEntryBeforeUpdate,
+        onAfterEntryUpdate: onEntryAfterUpdate,
+        onBeforeEntryDelete: onEntryBeforeDelete,
+        onAfterEntryDelete: onEntryAfterDelete,
+        onBeforeEntryDeleteRevision: onEntryRevisionBeforeDelete,
+        onAfterEntryDeleteRevision: onEntryRevisionAfterDelete,
+        onBeforeEntryPublish: onEntryBeforePublish,
+        onAfterEntryPublish: onEntryAfterPublish,
+        onBeforeEntryUnpublish: onEntryBeforeUnpublish,
+        onAfterEntryUnpublish: onEntryAfterUnpublish,
+        onBeforeEntryGet: onEntryBeforeGet,
+        onBeforeEntryList: onEntryBeforeList,
+        /**
+         * Released in 5.34.0
+         *
+         * Create
+         */
+        onEntryBeforeCreate,
+        onEntryAfterCreate,
+        onEntryCreateError,
+        /**
+         * Create revision
+         */
+        onEntryRevisionBeforeCreate: onEntryBeforeCreateRevision,
+        onEntryRevisionAfterCreate,
+        onEntryRevisionCreateError: onEntryCreateRevisionError,
+        /**
+         * Update
+         */
+        onEntryBeforeUpdate,
+        onEntryAfterUpdate,
+        onEntryUpdateError,
+        /**
+         * Delete whole entry
+         */
+        onEntryBeforeDelete,
+        onEntryAfterDelete,
+        onEntryDeleteError,
+        /**
+         * Delete entry revision
+         */
+        onEntryRevisionBeforeDelete,
+        onEntryRevisionAfterDelete,
+        onEntryRevisionDeleteError,
+        /**
+         * Publish
+         */
+        onEntryBeforePublish,
+        onEntryAfterPublish,
+        onEntryPublishError,
+        /**
+         * Unpublish
+         */
+        onEntryBeforeUnpublish,
+        onEntryAfterUnpublish,
+        onEntryUnpublishError,
+
+        onEntryBeforeGet,
+        onEntryBeforeList,
         /**
          * Get entries by exact revision IDs from the database.
          */
@@ -394,7 +478,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         /**
          * Get a single entry by revision ID from the database.
          */
-        getEntryById: async (initialModel, id) => {
+        async getEntryById(initialModel, id) {
             const where: CmsEntryListWhere = {
                 id
             };
@@ -402,7 +486,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 model: initialModel,
                 plugins
             });
-            await onBeforeEntryGet.publish({
+            await onEntryBeforeGet.publish({
                 where,
                 model
             });
@@ -415,7 +499,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         /**
          * Get published revisions by entry IDs.
          */
-        getPublishedEntriesByIds: async (initialModel: CmsModel, ids: string[]) => {
+        async getPublishedEntriesByIds(initialModel: CmsModel, ids: string[]) {
             const permission = await checkEntryPermissions({ rwd: "r" });
             await checkModelAccess(context, initialModel);
 
@@ -431,9 +515,9 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             return entries.filter(entry => validateOwnership(context, permission, entry));
         },
         /**
-         * Get latest revisions by entry IDs.
+         * Get the latest revisions by entry IDs.
          */
-        getLatestEntriesByIds: async (initialModel: CmsModel, ids: string[]) => {
+        async getLatestEntriesByIds(initialModel: CmsModel, ids: string[]) {
             const permission = await checkEntryPermissions({ rwd: "r" });
             await checkModelAccess(context, initialModel);
 
@@ -448,8 +532,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
             return entries.filter(entry => validateOwnership(context, permission, entry));
         },
-
-        getEntryRevisions: async (initialModel, entryId) => {
+        async getEntryRevisions(initialModel, entryId) {
             const model = attachCmsModelFieldConverters({
                 model: initialModel,
                 plugins
@@ -464,7 +547,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
          *
          * @internal
          */
-        getEntry: async (initialModel, params) => {
+        async getEntry(this: HeadlessCms, initialModel, params) {
             await checkEntryPermissions({ rwd: "r" });
 
             const model = attachCmsModelFieldConverters({
@@ -474,12 +557,12 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
             const { where, sort } = params;
 
-            await onBeforeEntryGet.publish({
+            await onEntryBeforeGet.publish({
                 where,
                 model
             });
 
-            const [items] = await context.cms.listEntries(model, {
+            const [items] = await this.listEntries(model, {
                 where,
                 sort,
                 limit: 1
@@ -495,7 +578,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
          *
          * @internal
          */
-        listEntries: async (initialModel: CmsModel, params) => {
+        async listEntries(initialModel: CmsModel, params) {
             const permission = await checkEntryPermissions({ rwd: "r" });
             await checkModelAccess(context, initialModel);
 
@@ -542,13 +625,13 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             }
 
             const fields = getSearchableFields({
-                model,
+                fields: model.fields,
                 plugins: context.plugins,
-                fields: params.fields || []
+                input: params.fields || []
             });
 
             try {
-                await onBeforeEntryList.publish({
+                await onEntryBeforeList.publish({
                     where,
                     model
                 });
@@ -577,17 +660,21 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                     "LIST_ENTRIES_ERROR",
                     {
                         params,
-                        error: ex,
+                        error: {
+                            message: ex.message,
+                            code: ex.code,
+                            data: ex.data
+                        },
                         model,
                         fields
                     }
                 );
             }
         },
-        listLatestEntries: async function (model, params) {
+        async listLatestEntries(this: HeadlessCms, model, params) {
             const where = params?.where || ({} as CmsEntryListWhere);
 
-            return context.cms.listEntries(model, {
+            return this.listEntries(model, {
                 sort: ["createdOn_DESC"],
                 ...(params || {}),
                 where: {
@@ -596,10 +683,10 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 }
             });
         },
-        listPublishedEntries: async function (model, params) {
+        async listPublishedEntries(this: HeadlessCms, model, params) {
             const where = params?.where || ({} as CmsEntryListWhere);
 
-            return context.cms.listEntries(model, {
+            return this.listEntries(model, {
                 sort: ["createdOn_DESC"],
                 ...(params || {}),
                 where: {
@@ -608,7 +695,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 }
             });
         },
-        createEntry: async (initialModel, inputData) => {
+        async createEntry(this: HeadlessCms, initialModel, inputData) {
             await checkEntryPermissions({ rwd: "w" });
             await checkModelAccess(context, initialModel);
 
@@ -636,7 +723,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             });
 
             const identity = context.security.getIdentity();
-            const locale = context.cms.getLocale();
+            const locale = this.getLocale();
 
             const owner: CreatedBy = {
                 id: identity.id,
@@ -665,7 +752,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
             let storageEntry: CmsStorageEntry | null = null;
             try {
-                await onBeforeEntryCreate.publish({
+                await onEntryBeforeCreate.publish({
                     entry,
                     input,
                     model
@@ -677,7 +764,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                     storageEntry
                 });
 
-                await onAfterEntryCreate.publish({
+                await onEntryAfterCreate.publish({
                     entry,
                     storageEntry: result,
                     model,
@@ -686,6 +773,12 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
                 return result;
             } catch (ex) {
+                await onEntryCreateError.publish({
+                    error: ex,
+                    entry,
+                    model,
+                    input
+                });
                 throw new WebinyError(
                     ex.message || "Could not create content entry.",
                     ex.code || "CREATE_ENTRY_ERROR",
@@ -698,7 +791,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 );
             }
         },
-        createEntryRevisionFrom: async (initialModel, sourceId, inputData) => {
+        async createEntryRevisionFrom(initialModel, sourceId, inputData) {
             const permission = await checkEntryPermissions({ rwd: "w" });
             await checkModelAccess(context, initialModel);
 
@@ -788,7 +881,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             let storageEntry: CmsStorageEntry | null = null;
 
             try {
-                await onBeforeEntryCreateRevision.publish({
+                await onEntryBeforeCreateRevision.publish({
                     input,
                     entry,
                     original: originalEntry,
@@ -802,7 +895,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                     storageEntry
                 });
 
-                await onAfterEntryCreateRevision.publish({
+                await onEntryRevisionAfterCreate.publish({
                     input,
                     entry,
                     model,
@@ -811,6 +904,13 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 });
                 return result;
             } catch (ex) {
+                await onEntryCreateRevisionError.publish({
+                    entry,
+                    original: originalEntry,
+                    model,
+                    input,
+                    error: ex
+                });
                 throw new WebinyError(
                     ex.message || "Could not create entry from existing one.",
                     ex.code || "CREATE_FROM_REVISION_ERROR",
@@ -824,7 +924,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 );
             }
         },
-        updateEntry: async (initialModel, id, inputData, metaInput) => {
+        async updateEntry(initialModel, id, inputData, metaInput) {
             const permission = await checkEntryPermissions({ rwd: "w" });
             await checkModelAccess(context, initialModel);
 
@@ -899,13 +999,14 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 ...originalEntry,
                 savedOn: new Date().toISOString(),
                 values,
-                meta
+                meta,
+                status: transformEntryStatus(originalEntry.status)
             };
 
             let storageEntry: CmsStorageEntry | null = null;
 
             try {
-                await onBeforeEntryUpdate.publish({
+                await onEntryBeforeUpdate.publish({
                     entry,
                     model,
                     input,
@@ -919,7 +1020,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                     storageEntry
                 });
 
-                await onAfterEntryUpdate.publish({
+                await onEntryAfterUpdate.publish({
                     entry,
                     storageEntry: result,
                     model,
@@ -928,6 +1029,12 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 });
                 return result;
             } catch (ex) {
+                await onEntryUpdateError.publish({
+                    entry,
+                    model,
+                    input,
+                    error: ex
+                });
                 throw new WebinyError(
                     ex.message || "Could not update existing entry.",
                     ex.code || "UPDATE_ERROR",
@@ -941,7 +1048,11 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 );
             }
         },
-        republishEntry: async (initialModel, id) => {
+        /**
+         * Method used internally. Not documented and should not be used in users systems.
+         * @internal
+         */
+        async republishEntry(initialModel, id) {
             await checkEntryPermissions({ rwd: "w" });
             await checkModelAccess(context, initialModel);
 
@@ -1028,7 +1139,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 );
             }
         },
-        deleteEntryRevision: async (initialModel, revisionId) => {
+        async deleteEntryRevision(initialModel, revisionId) {
             const permission = await checkEntryPermissions({ rwd: "d" });
             await checkModelAccess(context, initialModel);
 
@@ -1094,7 +1205,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             }
 
             try {
-                await onBeforeEntryDeleteRevision.publish({
+                await onEntryRevisionBeforeDelete.publish({
                     entry: entryToDelete,
                     model
                 });
@@ -1106,11 +1217,16 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                     latestStorageEntry: storageEntryToSetAsLatest
                 });
 
-                await onAfterEntryDeleteRevision.publish({
+                await onEntryRevisionAfterDelete.publish({
                     entry: entryToDelete,
                     model
                 });
             } catch (ex) {
+                await onEntryRevisionDeleteError.publish({
+                    entry: entryToDelete,
+                    model,
+                    error: ex
+                });
                 throw new WebinyError(ex.message, ex.code || "DELETE_REVISION_ERROR", {
                     error: ex,
                     entry: entryToDelete,
@@ -1120,7 +1236,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 });
             }
         },
-        deleteEntry: async (initialModel, entryId) => {
+        async deleteEntry(initialModel, entryId) {
             const permission = await checkEntryPermissions({ rwd: "d" });
             await checkModelAccess(context, initialModel);
 
@@ -1146,7 +1262,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 entry
             });
         },
-        publishEntry: async (initialModel, id) => {
+        async publishEntry(initialModel, id) {
             const permission = await checkEntryPermissions({ pw: "p" });
             await checkModelAccess(context, initialModel);
 
@@ -1185,7 +1301,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             let storageEntry: CmsStorageEntry | null = null;
 
             try {
-                await onBeforeEntryPublish.publish({
+                await onEntryBeforePublish.publish({
                     entry,
                     model
                 });
@@ -1196,13 +1312,18 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                     storageEntry
                 });
 
-                await onAfterEntryPublish.publish({
+                await onEntryAfterPublish.publish({
                     entry,
                     storageEntry: result,
                     model
                 });
                 return result;
             } catch (ex) {
+                await onEntryPublishError.publish({
+                    entry,
+                    model,
+                    error: ex
+                });
                 throw new WebinyError(
                     ex.message || "Could not publish entry.",
                     ex.code || "PUBLISH_ERROR",
@@ -1216,166 +1337,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 );
             }
         },
-        requestEntryChanges: async (initialModel, id) => {
-            const permission = await checkEntryPermissions({ pw: "c" });
-
-            const model = attachCmsModelFieldConverters({
-                model: initialModel,
-                plugins
-            });
-
-            const originalStorageEntry = await storageOperations.entries.getRevisionById(model, {
-                id
-            });
-
-            if (!originalStorageEntry) {
-                throw new NotFoundError(`Entry "${id}" of model "${model.modelId}" was not found.`);
-            }
-
-            const originalEntry = await entryFromStorageTransform(
-                context,
-                model,
-                originalStorageEntry
-            );
-
-            if (originalEntry.status !== STATUS_REVIEW_REQUESTED) {
-                throw new WebinyError(
-                    "Cannot request changes on an entry that's not under review.",
-                    "ENTRY_NOT_UNDER_REVIEW"
-                );
-            }
-
-            const identity = context.security.getIdentity();
-            if (originalEntry.ownedBy.id === identity.id) {
-                throw new WebinyError(
-                    "You cannot request changes on your own entry.",
-                    "CANNOT_REQUEST_CHANGES_ON_OWN_ENTRY"
-                );
-            }
-
-            checkOwnership(context, permission, originalEntry);
-
-            const entry: CmsEntry = {
-                ...originalEntry,
-                status: STATUS_CHANGES_REQUESTED
-            };
-
-            let storageEntry: CmsStorageEntry | null = null;
-
-            try {
-                await onBeforeEntryRequestChanges.publish({
-                    entry,
-                    model
-                });
-
-                storageEntry = await entryToStorageTransform(context, model, entry);
-
-                const result = await storageOperations.entries.requestChanges(model, {
-                    entry,
-                    storageEntry
-                });
-
-                await onAfterEntryRequestChanges.publish({
-                    entry,
-                    storageEntry: result,
-                    model
-                });
-
-                return result;
-            } catch (ex) {
-                throw new WebinyError(
-                    ex.message || "Could not request changes for the entry.",
-                    ex.code || "REQUEST_CHANGES_ERROR",
-                    {
-                        entry,
-                        originalEntry
-                    }
-                );
-            }
-        },
-        requestEntryReview: async (initialModel, id) => {
-            const permission = await checkEntryPermissions({ pw: "r" });
-            const { id: entryId } = parseIdentifier(id);
-
-            const model = attachCmsModelFieldConverters({
-                model: initialModel,
-                plugins
-            });
-
-            const originalStorageEntry = await storageOperations.entries.getRevisionById(model, {
-                id
-            });
-            const latestEntryRevision = await storageOperations.entries.getLatestRevisionByEntryId(
-                model,
-                {
-                    id: entryId
-                }
-            );
-
-            if (!originalStorageEntry) {
-                throw new NotFoundError(`Entry "${id}" of model "${model.modelId}" was not found.`);
-            } else if (!latestEntryRevision) {
-                throw new NotFoundError(`Entry "${id}" does not have latest record`);
-            }
-
-            const originalEntry = await entryFromStorageTransform(
-                context,
-                model,
-                originalStorageEntry
-            );
-
-            const allowedStatuses = [STATUS_DRAFT, STATUS_CHANGES_REQUESTED];
-            if (!allowedStatuses.includes(originalEntry.status)) {
-                throw new WebinyError(
-                    "Cannot request review - entry is not a draft nor was a change request issued.",
-                    "REQUEST_REVIEW_ERROR",
-                    {
-                        entry: originalEntry
-                    }
-                );
-            }
-
-            checkOwnership(context, permission, originalEntry);
-
-            const entry: CmsEntry = {
-                ...originalEntry,
-                status: STATUS_REVIEW_REQUESTED
-            };
-
-            let storageEntry: CmsStorageEntry | null = null;
-
-            try {
-                await onBeforeEntryRequestReview.publish({
-                    entry,
-                    model
-                });
-
-                storageEntry = await entryToStorageTransform(context, model, entry);
-
-                const result = await storageOperations.entries.requestReview(model, {
-                    entry,
-                    storageEntry
-                });
-
-                await onAfterEntryRequestReview.publish({
-                    entry,
-                    storageEntry: result,
-                    model
-                });
-
-                return result;
-            } catch (ex) {
-                throw new WebinyError(
-                    ex.message || "Could not request review on the entry.",
-                    ex.code || "REQUEST_REVIEW_ERROR",
-                    {
-                        originalEntry,
-                        entry
-                    }
-                );
-            }
-        },
-        unpublishEntry: async (initialModel, id) => {
+        async unpublishEntry(initialModel, id) {
             const permission = await checkEntryPermissions({ pw: "u" });
 
             const model = attachCmsModelFieldConverters({
@@ -1416,7 +1378,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             let storageEntry: CmsStorageEntry | null = null;
 
             try {
-                await onBeforeEntryUnpublish.publish({
+                await onEntryBeforeUnpublish.publish({
                     entry,
                     model
                 });
@@ -1428,7 +1390,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                     storageEntry
                 });
 
-                await onAfterEntryUnpublish.publish({
+                await onEntryAfterUnpublish.publish({
                     entry,
                     storageEntry: result,
                     model
@@ -1436,6 +1398,11 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
                 return result;
             } catch (ex) {
+                await onEntryUnpublishError.publish({
+                    entry,
+                    model,
+                    error: ex
+                });
                 throw new WebinyError(
                     ex.message || "Could not unpublish entry.",
                     ex.code || "UNPUBLISH_ERROR",

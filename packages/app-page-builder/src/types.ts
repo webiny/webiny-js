@@ -5,25 +5,40 @@ import { PbState } from "./editor/recoil/modules/types";
 import { Plugin } from "@webiny/app/types";
 import { BindComponent } from "@webiny/form";
 import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
-import { FormData, FormOnSubmit, FormSetValue, FormAPI } from "@webiny/form/types";
+import { GenericFormData, FormOnSubmit, FormSetValue, FormAPI } from "@webiny/form/types";
 import { CoreOptions } from "medium-editor";
 import { MenuTreeItem } from "~/admin/views/Menus/types";
 import { SecurityPermission } from "@webiny/app-security/types";
+import { LinkItem } from "@webiny/app-aco/types";
+import { PagesListComponent } from "@webiny/app-page-builder-elements/renderers/pagesList/types";
+import { Theme } from "@webiny/app-theme/types";
 
 export enum PageStatus {
     PUBLISHED = "published",
     UNPUBLISHED = "unpublished",
-    REVIEW_REQUESTED = "reviewRequested",
-    CHANGES_REQUESTED = "changesRequested",
     DRAFT = "draft"
 }
 
-export enum PageImportExportTaskStatus {
+export enum ImportExportTaskStatus {
     PENDING = "pending",
     PROCESSING = "processing",
     COMPLETED = "completed",
     FAILED = "failed"
 }
+
+// TODO: for Webiny core team: create this type in the app-file-manager
+export interface File {
+    id: string;
+    name: string;
+    key: string;
+    src: string;
+    size: number;
+    type: string;
+    tags: string[];
+    meta: Record<string, any>;
+    createdOn: string;
+}
+
 export type PbElementDataSettingsSpacingValueType = {
     all?: string;
     top?: string;
@@ -90,6 +105,7 @@ export type PbElementDataTextType = {
         tag?: string;
     };
 };
+
 export interface PbElementDataImageType {
     width?: string | number;
     height?: string | number;
@@ -99,6 +115,7 @@ export interface PbElementDataImageType {
     };
     title?: string;
 }
+
 export type PbElementDataIconType = {
     id?: [string, string];
     width?: number;
@@ -110,6 +127,7 @@ export type PbElementDataSettingsFormType = {
     parent?: string;
     revision?: string;
 };
+
 export enum AlignmentTypesEnum {
     HORIZONTAL_LEFT = "horizontalLeft",
     HORIZONTAL_CENTER = "horizontalCenter",
@@ -118,6 +136,7 @@ export enum AlignmentTypesEnum {
     VERTICAL_CENTER = "verticalCenter",
     VERTICAL_BOTTOM = "verticalBottom"
 }
+
 export interface PbElementDataSettingsType {
     alignment?: AlignmentTypesEnum;
     horizontalAlign?: "left" | "center" | "right" | "justify";
@@ -145,6 +164,7 @@ export interface PbElementDataSettingsType {
     className?: string;
     cellsType?: string;
     form?: PbElementDataSettingsFormType;
+
     [key: string]: any;
 }
 
@@ -152,6 +172,7 @@ export interface PbElementDataTypeSource {
     url?: string;
     size?: string;
 }
+
 export type PbElementDataType = {
     action?: {
         href: string;
@@ -159,6 +180,7 @@ export type PbElementDataType = {
         clickHandler: string;
         actionType: string;
         variables: PbButtonElementClickHandlerVariable[];
+        scrollToElement: string;
     };
     settings?: PbElementDataSettingsType;
     // this needs to be any since editor can be changed
@@ -194,6 +216,7 @@ export interface PbEditorElement {
     content?: PbEditorElement;
     path?: string[];
     source?: string;
+
     [key: string]: any;
 }
 
@@ -206,8 +229,31 @@ export interface PbElement {
     text?: string;
 }
 
+export interface PbBlockVariable<TValue = any> {
+    id: string;
+    type: string;
+    label: string;
+    value: TValue;
+}
+
+export type PbBlockEditorCreateVariablePlugin = Plugin & {
+    type: "pb-block-editor-create-variable";
+    elementType: string;
+    createVariables: (params: { element: PbEditorElement }) => PbBlockVariable[];
+    getVariableValue: (params: { element: PbEditorElement; variableId?: string }) => any;
+};
+
+export type PbEditorPageElementVariableRendererPlugin = Plugin & {
+    type: "pb-editor-page-element-variable-renderer";
+    elementType: string;
+    getVariableValue: (element: PbEditorElement | null) => any;
+    renderVariableInput: (variableId: string) => ReactNode;
+    setElementValue: (element: PbElement, variables: PbBlockVariable[]) => PbElement;
+};
+
 /**
  * Determine types for elements
+ * @deprecation-warning pb-legacy-rendering-engine
  */
 export interface PbTheme {
     colors: {
@@ -229,6 +275,7 @@ export interface PbTheme {
         paragraph?: string;
         description?: string;
     };
+
     [key: string]: any;
 }
 
@@ -260,6 +307,7 @@ export interface PbErrorResponse {
 export interface PbPageDataSettingsGeneral {
     layout?: string;
 }
+
 export interface PbPageDataSettingsSeo {
     title: string;
     description: string;
@@ -268,6 +316,7 @@ export interface PbPageDataSettingsSeo {
         content: string;
     }[];
 }
+
 export interface PbPageDataSettingsSocial {
     title: string;
     description: string;
@@ -277,11 +326,13 @@ export interface PbPageDataSettingsSocial {
     }[];
     image?: { src: string } | null;
 }
+
 export interface PbPageDataSettings {
     general?: PbPageDataSettingsGeneral;
     seo?: PbPageDataSettingsSeo;
     social?: PbPageDataSettingsSocial;
 }
+
 export interface PbPageData {
     id: string;
     pid: string;
@@ -294,7 +345,7 @@ export interface PbPageData {
     version?: number;
     category: PbCategory;
     status: string | "draft" | "published" | "unpublished";
-    settings?: PbPageDataSettings;
+    settings: PbPageDataSettings;
     createdOn: string;
     savedOn: string;
     publishedOn: string;
@@ -312,10 +363,15 @@ export interface PbPageRevision {
     savedOn: string;
 }
 
+export interface PbPageDataLink extends PbPageData {
+    link: LinkItem;
+}
+
 export interface PbRenderElementPluginRenderParams {
     theme: PbTheme;
     element: PbElement;
 }
+
 export type PbRenderElementPlugin = Plugin & {
     type: "pb-render-page-element";
     // Name of the pb-element plugin this render plugin is handling.
@@ -366,12 +422,13 @@ export type PbPageElementPagesListComponentPlugin = Plugin & {
     type: "pb-page-element-pages-list-component";
     title: string;
     componentName: string;
-    component: ComponentType<any>;
+    component: ComponentType<any> | PagesListComponent;
 };
 
 export interface PbDocumentElementPluginRenderProps {
     [key: string]: any;
 }
+
 // TODO @ts-refactor verify and delete if not used
 export type PbDocumentElementPlugin = Plugin & {
     elementType: "document";
@@ -434,8 +491,9 @@ export interface PbEditorPageElementPluginToolbar {
     // Element group this element belongs to.
     group?: string;
     // A function to render an element preview in the toolbar.
-    preview?: (params?: { theme: PbTheme }) => ReactNode;
+    preview?: (params?: { theme: PbTheme | Theme }) => ReactNode; // @deprecation-warning pb-legacy-rendering-engine
 }
+
 export type PbEditorPageElementPluginSettings = string[] | Record<string, any>;
 export type PbEditorPageElementPlugin = Plugin & {
     type: "pb-editor-page-element";
@@ -554,16 +612,9 @@ export type PbEditorBlockPlugin = Plugin & {
     id?: string;
     type: "pb-editor-block";
     title: string;
-    category: string;
+    blockCategory: string;
     tags: string[];
-    image: {
-        src?: string;
-        meta: {
-            width: number;
-            height: number;
-            aspectRatio: number;
-        };
-    };
+    image: Partial<File>;
     create(): PbEditorElement;
     preview(): ReactElement;
 };
@@ -592,7 +643,7 @@ export type PbEditorPageElementAdvancedSettingsPlugin = Plugin & {
     type: "pb-editor-page-element-advanced-settings";
     elementType: string;
     render(params: { Bind: BindComponent; data: any; submit: () => void }): ReactElement;
-    onSave?: (data: FormData) => FormData;
+    onSave?: (data: GenericFormData) => Promise<GenericFormData>;
 };
 
 export type PbEditorEventActionPlugin = Plugin & {
@@ -688,11 +739,16 @@ export type PbRenderElementPluginArgs = {
     elementType?: string;
 };
 
+export type GetElementTreeProps = {
+    element?: PbEditorElement;
+    path?: string[];
+} | void;
+
 // ============== EVENT ACTION HANDLER ================= //
 // TODO: at some point, convert this into an interface, and use module augmentation to add new properties.
 export type EventActionHandlerCallableState<TState = PbState> = PbState<TState> & {
     getElementById(id: string): Promise<PbEditorElement>;
-    getElementTree(element?: PbEditorElement): Promise<any>;
+    getElementTree(props: GetElementTreeProps): Promise<PbEditorElement>;
 };
 
 export interface EventActionHandler<TCallableState = unknown> {
@@ -700,21 +756,24 @@ export interface EventActionHandler<TCallableState = unknown> {
         target: EventActionHandlerTarget,
         callable: EventActionCallable<any, TCallableState>
     ): EventActionHandlerUnregister;
+
     trigger<T extends EventActionHandlerCallableArgs>(
         ev: EventAction<T>
     ): Promise<Partial<PbState>>;
+
     undo: () => void;
     redo: () => void;
     startBatch: () => void;
     endBatch: () => void;
     enableHistory: () => void;
     disableHistory: () => void;
-    getElementTree: (element?: PbEditorElement) => Promise<PbEditorElement>;
+    getElementTree: (props: GetElementTreeProps) => Promise<PbEditorElement>;
 }
 
 export interface EventActionHandlerTarget {
     new (...args: any[]): EventAction<any>;
 }
+
 export interface EventActionHandlerUnregister {
     (): boolean;
 }
@@ -758,6 +817,7 @@ export interface PbIdentity {
     type: string;
     displayName: string;
 }
+
 export interface PbCategory {
     name: string;
     slug: string;
@@ -766,6 +826,7 @@ export interface PbCategory {
     createdOn: string;
     createdBy: PbIdentity;
 }
+
 export interface PbMenu {
     id: string;
     name: string;
@@ -774,6 +835,26 @@ export interface PbMenu {
     slug: string;
     description: string;
 }
+
+export interface PbBlockCategory {
+    name: string;
+    slug: string;
+    icon: string;
+    description: string;
+    createdOn: string;
+    createdBy: PbIdentity;
+}
+
+export interface PbPageBlock {
+    id: string;
+    name: string;
+    blockCategory: string;
+    content: any;
+    preview: File;
+    createdOn: string;
+    createdBy: PbIdentity;
+}
+
 /**
  * TODO: have types for both API and app in the same package?
  * GraphQL response types
@@ -786,6 +867,7 @@ export interface PageBuilderListCategoriesResponse {
         };
     };
 }
+
 export interface PageBuilderImportExportSubTask {
     id: string;
     createdOn: Date;
@@ -813,6 +895,7 @@ export interface PageBuilderGetPageDataResponse {
     data?: PbPageData;
     error?: PbErrorResponse;
 }
+
 export interface PageBuilderGetPageResponse {
     pageBuilder: {
         getPage: PageBuilderGetPageDataResponse;
@@ -823,11 +906,13 @@ export interface PageBuilderListDataResponse {
     data?: PbPageData[];
     error?: PbErrorResponse;
 }
+
 export interface PageBuilderListResponse {
     pageBuilder: {
         listPages: PageBuilderListDataResponse;
     };
 }
+
 /**
  * Form data
  */
@@ -840,6 +925,7 @@ export interface PageBuilderFormDataSettingsSocialMeta {
     property: string;
     content: string | number;
 }
+
 export interface PageBuilderFormDataSettings {
     settings: {
         general: {
@@ -870,3 +956,7 @@ export interface PageBuilderSecurityPermission extends SecurityPermission {
     rwd?: string;
     pw?: string | boolean;
 }
+
+export type Loading<T extends string> = { [P in T]?: boolean };
+
+export type LoadingActions = "INIT" | "LIST" | "LIST_MORE";

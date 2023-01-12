@@ -17,12 +17,15 @@ import {
     CmsContext,
     HeadlessCmsStorageOperations,
     CmsGroupCreateInput,
-    BeforeGroupCreateTopicParams,
-    AfterGroupCreateTopicParams,
-    BeforeGroupUpdateTopicParams,
-    AfterGroupUpdateTopicParams,
-    BeforeGroupDeleteTopicParams,
-    AfterGroupDeleteTopicParams
+    OnGroupBeforeCreateTopicParams,
+    OnGroupAfterCreateTopicParams,
+    OnGroupBeforeUpdateTopicParams,
+    OnGroupAfterUpdateTopicParams,
+    OnGroupBeforeDeleteTopicParams,
+    OnGroupAfterDeleteTopicParams,
+    OnGroupCreateErrorTopicParams,
+    OnGroupUpdateErrorTopicParams,
+    OnGroupDeleteErrorTopicParams
 } from "~/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import WebinyError from "@webiny/error";
@@ -152,38 +155,68 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
         }
     };
 
-    const onBeforeCreate = createTopic<BeforeGroupCreateTopicParams>();
-    const onAfterCreate = createTopic<AfterGroupCreateTopicParams>();
-    const onBeforeUpdate = createTopic<BeforeGroupUpdateTopicParams>();
-    const onAfterUpdate = createTopic<AfterGroupUpdateTopicParams>();
-    const onBeforeDelete = createTopic<BeforeGroupDeleteTopicParams>();
-    const onAfterDelete = createTopic<AfterGroupDeleteTopicParams>();
+    /**
+     * Create
+     */
+    const onGroupBeforeCreate =
+        createTopic<OnGroupBeforeCreateTopicParams>("cms.onGroupBeforeCreate");
+    const onGroupAfterCreate = createTopic<OnGroupAfterCreateTopicParams>("cms.onGroupAfterCreate");
+    const onGroupCreateError = createTopic<OnGroupCreateErrorTopicParams>("cms.onGroupCreateError");
+    /**
+     * Update
+     */
+    const onGroupBeforeUpdate =
+        createTopic<OnGroupBeforeUpdateTopicParams>("cms.onGroupBeforeUpdate");
+    const onGroupAfterUpdate = createTopic<OnGroupAfterUpdateTopicParams>("cms.onGroupAfterUpdate");
+    const onGroupUpdateError = createTopic<OnGroupUpdateErrorTopicParams>("cms.onGroupUpdateError");
+    /**
+     * Delete
+     */
+    const onGroupBeforeDelete =
+        createTopic<OnGroupBeforeDeleteTopicParams>("cms.onGroupBeforeDelete");
+    const onGroupAfterDelete = createTopic<OnGroupAfterDeleteTopicParams>("cms.onGroupAfterDelete");
+    const onGroupDeleteError = createTopic<OnGroupDeleteErrorTopicParams>("cms.onGroupDeleteError");
 
     /**
      * We need to assign some default behaviors.
      */
     assignBeforeGroupCreate({
-        onBeforeCreate,
+        onGroupBeforeCreate,
         plugins: context.plugins,
         storageOperations
     });
     assignBeforeGroupUpdate({
-        onBeforeUpdate,
+        onGroupBeforeUpdate,
         plugins: context.plugins
     });
     assignBeforeGroupDelete({
-        onBeforeDelete,
+        onGroupBeforeDelete,
         plugins: context.plugins,
         storageOperations
     });
 
     return {
-        onBeforeGroupCreate: onBeforeCreate,
-        onAfterGroupCreate: onAfterCreate,
-        onBeforeGroupUpdate: onBeforeUpdate,
-        onAfterGroupUpdate: onAfterUpdate,
-        onBeforeGroupDelete: onBeforeDelete,
-        onAfterGroupDelete: onAfterDelete,
+        /**
+         * Deprecated - will be removed in 5.36.0
+         */
+        onBeforeGroupCreate: onGroupBeforeCreate,
+        onAfterGroupCreate: onGroupAfterCreate,
+        onBeforeGroupUpdate: onGroupBeforeUpdate,
+        onAfterGroupUpdate: onGroupAfterUpdate,
+        onBeforeGroupDelete: onGroupBeforeDelete,
+        onAfterGroupDelete: onGroupAfterDelete,
+        /**
+         * Released in 5.34.0
+         */
+        onGroupBeforeCreate,
+        onGroupAfterCreate,
+        onGroupCreateError,
+        onGroupBeforeUpdate,
+        onGroupAfterUpdate,
+        onGroupUpdateError,
+        onGroupBeforeDelete,
+        onGroupAfterDelete,
+        onGroupDeleteError,
         clearGroupsCache,
         getGroup: async id => {
             const permission = await checkPermissions("r");
@@ -246,7 +279,7 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
                 webinyVersion: context.WEBINY_VERSION
             };
             try {
-                await onBeforeCreate.publish({
+                await onGroupBeforeCreate.publish({
                     group
                 });
 
@@ -256,12 +289,17 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
 
                 clearGroupsCache();
 
-                await onAfterCreate.publish({
+                await onGroupAfterCreate.publish({
                     group: result
                 });
 
                 return group;
             } catch (ex) {
+                await onGroupCreateError.publish({
+                    input,
+                    group,
+                    error: ex
+                });
                 throw new WebinyError(
                     ex.message || "Could not save data model group.",
                     ex.code || "ERROR_ON_CREATE",
@@ -303,7 +341,7 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
             };
 
             try {
-                await onBeforeUpdate.publish({
+                await onGroupBeforeUpdate.publish({
                     original,
                     group
                 });
@@ -313,13 +351,19 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
                 });
                 clearGroupsCache();
 
-                await onAfterUpdate.publish({
+                await onGroupAfterUpdate.publish({
                     original,
                     group: updatedGroup
                 });
 
                 return updatedGroup;
             } catch (ex) {
+                await onGroupUpdateError.publish({
+                    input,
+                    original,
+                    group,
+                    error: ex
+                });
                 throw new WebinyError(ex.message, ex.code || "UPDATE_ERROR", {
                     error: ex,
                     original,
@@ -336,17 +380,21 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
             checkOwnership(context, permission, group);
 
             try {
-                await onBeforeDelete.publish({
+                await onGroupBeforeDelete.publish({
                     group
                 });
 
                 await storageOperations.groups.delete({ group });
                 clearGroupsCache();
 
-                await onAfterDelete.publish({
+                await onGroupAfterDelete.publish({
                     group
                 });
             } catch (ex) {
+                await onGroupDeleteError.publish({
+                    group,
+                    error: ex
+                });
                 throw new WebinyError(ex.message, ex.code || "DELETE_ERROR", {
                     ...(ex.data || {}),
                     id

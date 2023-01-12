@@ -60,5 +60,11 @@ export const systemFields: Record<string, CmsModelField> = {
         type: "number",
         storageId: "version",
         fieldId: "version"
+    }),
+    status: createSystemField({
+        id: "status",
+        type: "string",
+        storageId: "status",
+        fieldId: "status"
     })
 };

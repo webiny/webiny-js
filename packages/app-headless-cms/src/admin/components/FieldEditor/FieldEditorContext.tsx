@@ -2,8 +2,9 @@ import React, { useCallback, useState } from "react";
 import dot from "dot-prop-immutable";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import {
-    CmsEditorField,
+    CmsModelField,
     CmsEditorFieldId,
+    CmsEditorFieldRendererPlugin,
     CmsEditorFieldsLayout,
     CmsEditorFieldTypePlugin,
     FieldLayoutPosition
@@ -12,7 +13,7 @@ import { plugins } from "@webiny/plugins";
 import * as utils from "./utils";
 import { FieldEditorProps } from "./FieldEditor";
 import { DragObjectWithType, DragSourceMonitor } from "react-dnd";
-import { useFieldEditor } from "~/admin/components/FieldEditor/useFieldEditor";
+import { useModelFieldEditor } from "~/admin/components/FieldEditor/useModelFieldEditor";
 import { generateAlphaNumericLowerCaseId } from "@webiny/utils";
 
 interface DropTarget {
@@ -30,8 +31,8 @@ export interface DragSource extends DragObjectWithType {
     pos?: Partial<Position>;
     type: "row" | "field" | "newField";
     fieldType?: string;
-    field?: CmsEditorField | null;
-    fields?: CmsEditorField[];
+    field?: CmsModelField | null;
+    fields?: CmsModelField[];
 }
 
 /**
@@ -42,21 +43,24 @@ interface GetFieldParams {
     fieldId?: string;
 }
 interface InsertFieldParams {
-    field: CmsEditorField;
+    field: CmsModelField;
     position: FieldLayoutPosition;
 }
 interface MoveFieldParams {
-    field: CmsEditorFieldId | CmsEditorField;
+    field: CmsEditorFieldId | CmsModelField;
     position: FieldLayoutPosition;
 }
 interface GetFieldsInLayoutCallable {
-    (): CmsEditorField[][];
+    (): CmsModelField[][];
 }
 interface GetFieldPluginCallable {
     (type: string): CmsEditorFieldTypePlugin | undefined;
 }
 interface GetFieldCallable {
-    (query: GetFieldParams): CmsEditorField | undefined;
+    (query: GetFieldParams): CmsModelField | undefined;
+}
+interface GetFieldRendererCallable {
+    (rendererName: string): CmsEditorFieldRendererPlugin | undefined;
 }
 interface OnFieldDropCallable {
     (source: Partial<DragSource>, target: DropTarget): void;
@@ -74,28 +78,29 @@ interface MoveRowCallable {
     (source: number, destination: number): void;
 }
 interface UpdateFieldCallable {
-    (field: Pick<CmsEditorField, "id">): void;
+    (field: CmsModelField): void;
 }
 interface DeleteFieldCallable {
-    (field: Pick<CmsEditorField, "id">): void;
+    (field: Pick<CmsModelField, "id">): void;
 }
-interface IsVisibleCallable {
+export interface IsVisibleCallable {
     (item: DragSource): boolean;
 }
 interface NoConflictCallable {
     (cb?: IsVisibleCallable): (item: DragSource) => boolean;
 }
-export interface FieldEditorContextValue {
-    fields: CmsEditorField[][];
+export interface FieldEditorContext {
+    fields: CmsModelField[][];
     noConflict: NoConflictCallable;
     layout: CmsEditorFieldsLayout;
     onChange?: (data: any) => void;
     getFieldsInLayout: GetFieldsInLayoutCallable;
     getFieldPlugin: GetFieldPluginCallable;
     getField: GetFieldCallable;
-    editField: (field: CmsEditorField | null) => void;
-    field: CmsEditorField | null;
-    parent?: CmsEditorField;
+    getFieldRendererPlugin: GetFieldRendererCallable;
+    editField: (field: CmsModelField | null) => void;
+    field: CmsModelField | null;
+    parent?: CmsModelField;
     depth: number;
     dropTarget: DropTarget;
     onFieldDrop: OnFieldDropCallable;
@@ -111,14 +116,7 @@ interface FieldEditorProviderProps extends FieldEditorProps {
     children: React.ReactElement;
 }
 
-export const FieldEditorContext = React.createContext<FieldEditorContextValue>(
-    /**
-     * Safe to cast.
-     */
-    {
-        field: null
-    } as unknown as FieldEditorContextValue
-);
+export const FieldEditorContext = React.createContext<FieldEditorContext | undefined>(undefined);
 /**
  * We try to generate the random id string but with the check that it does not exist already.
  * Chances that the same string exists are quite small, but let's check it anyway.
@@ -142,8 +140,8 @@ const generateFieldId = (layout: string[]): string => {
 
 interface State {
     layout: CmsEditorFieldsLayout;
-    fields: CmsEditorField[];
-    field: CmsEditorField | null;
+    fields: CmsModelField[];
+    field: CmsModelField | null;
     dropTarget: DropTarget;
 }
 export const FieldEditorProvider: React.FC<FieldEditorProviderProps> = ({
@@ -156,7 +154,7 @@ export const FieldEditorProvider: React.FC<FieldEditorProviderProps> = ({
     // We need to determine depth of this provider so we can render drop zones with correct z-indexes.
     let depth = 0;
     try {
-        const editor = useFieldEditor();
+        const editor = useModelFieldEditor();
         depth = editor.depth + 1;
     } catch {
         // There's no parent provider, so this is the top-level one.
@@ -176,7 +174,7 @@ export const FieldEditorProvider: React.FC<FieldEditorProviderProps> = ({
         onChange({ fields: state.fields, layout: state.layout });
     }, [state.fields, state.layout]);
 
-    const editField = useCallback((field: CmsEditorField | null) => {
+    const editField = useCallback((field: CmsModelField | null) => {
         setState(state => ({ ...state, field }));
     }, []);
 
@@ -231,14 +229,18 @@ export const FieldEditorProvider: React.FC<FieldEditorProviderProps> = ({
         if (!plugin) {
             return null;
         }
-        /**
-         * TODO @ts-refactor figure out better type for this.
-         */
-        editField(plugin.field.createField() as CmsEditorField);
-        setState(state => ({
-            ...state,
-            dropTarget
-        }));
+
+        const fieldData = plugin.field.createField() as CmsModelField;
+
+        if (plugin.field.canEditSettings !== false) {
+            editField(fieldData);
+            setState(state => ({
+                ...state,
+                dropTarget
+            }));
+        } else {
+            insertField({ field: fieldData, position: dropTarget });
+        }
         return null;
     }, []);
 
@@ -271,7 +273,7 @@ export const FieldEditorProvider: React.FC<FieldEditorProviderProps> = ({
             })
             .filter(row => {
                 return row.length > 0;
-            }) as CmsEditorField[][];
+            }) as CmsModelField[][];
     };
 
     /**
@@ -281,6 +283,12 @@ export const FieldEditorProvider: React.FC<FieldEditorProviderProps> = ({
         return plugins
             .byType<CmsEditorFieldTypePlugin>("cms-editor-field-type")
             .find(plugin => plugin.field.type === type);
+    };
+
+    const getFieldRendererPlugin: GetFieldRendererCallable = name => {
+        return plugins
+            .byType<CmsEditorFieldRendererPlugin>("cms-editor-field-renderer")
+            .find(plugin => plugin.renderer.rendererName === name);
     };
 
     /**
@@ -317,7 +325,7 @@ export const FieldEditorProvider: React.FC<FieldEditorProviderProps> = ({
 
         const fieldPlugin = getFieldPlugin(field.type);
         if (!fieldPlugin) {
-            throw new Error(`Invalid field "type".`);
+            throw new Error(`No plugin found for field type "${field.type}".`);
         }
 
         setState(prev => {
@@ -403,11 +411,12 @@ export const FieldEditorProvider: React.FC<FieldEditorProviderProps> = ({
         [fields.map(f => f.fieldId).join(".")]
     );
 
-    const value = {
+    const value: FieldEditorContext = {
         parent,
         depth,
         getFieldsInLayout,
         getFieldPlugin,
+        getFieldRendererPlugin,
         getField,
         editField,
         field: state.field,

@@ -1,6 +1,6 @@
 import { SecurityIdentity } from "@webiny/api-security/types";
 
-export const NOT_AUTHORIZED_RESPONSE = operation => ({
+export const NOT_AUTHORIZED_RESPONSE = (operation: string) => ({
     data: {
         pageBuilder: {
             [operation]: {

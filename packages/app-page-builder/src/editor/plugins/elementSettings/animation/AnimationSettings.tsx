@@ -15,6 +15,7 @@ import InputField from "../components/InputField";
 // Icon
 import { ReactComponent as TimerIcon } from "./icons/round-av_timer-24px.svg";
 import { useActiveElement } from "~/editor/hooks/useActiveElement";
+import { isLegacyRenderingEngine } from "~/utils";
 
 const classes = {
     grid: css({
@@ -51,21 +52,24 @@ const Settings: React.FC<SettingsPropsType & PbEditorPageElementSettingsRenderCo
         element,
         dataNamespace: DATA_NAMESPACE
     });
-    const animationName = get(element, DATA_NAMESPACE + ".name", "");
-    const animationDuration = get(element, DATA_NAMESPACE + ".duration", 0);
-    // Trigger animation manually on "animation" type change.
-    useEffect(() => {
-        if (animationName) {
-            const animationElement = document.querySelector(`[data-aos=${animationName}]`);
-            if (animationElement) {
-                animationElement.classList.remove("aos-animate");
-                setTimeout(
-                    () => animationElement.classList.add("aos-animate"),
-                    animationDuration || 250
-                );
+
+    if (isLegacyRenderingEngine) {
+        const animationName = get(element, DATA_NAMESPACE + ".name", "");
+        const animationDuration = get(element, DATA_NAMESPACE + ".duration", 0);
+        // Trigger animation manually on "animation" type change.
+        useEffect(() => {
+            if (animationName) {
+                const animationElement = document.querySelector(`[data-aos=${animationName}]`);
+                if (animationElement) {
+                    animationElement.classList.remove("aos-animate");
+                    setTimeout(
+                        () => animationElement.classList.add("aos-animate"),
+                        animationDuration || 250
+                    );
+                }
             }
-        }
-    }, [animationName, animationDuration]);
+        }, [animationName, animationDuration]);
+    }
 
     return (
         <Accordion title={"Animation"} defaultValue={defaultAccordionValue}>

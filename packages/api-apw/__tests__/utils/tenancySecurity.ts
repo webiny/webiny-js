@@ -63,7 +63,8 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config) => {
                 const base = identity || {
                     id: "12345678",
                     type: "admin",
-                    displayName: "John Doe"
+                    displayName: "John Doe",
+                    email: "testing@webiny.com"
                 };
                 return {
                     ...base,

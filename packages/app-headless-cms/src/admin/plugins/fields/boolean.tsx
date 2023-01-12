@@ -1,13 +1,14 @@
 import React from "react";
-import { ReactComponent as BooleanIcon } from "./icons/toggle_on-black-24px.svg";
-import { CmsEditorFieldTypePlugin } from "~/types";
+import { ReactComponent as BooleanIcon } from "@material-design-icons/svg/outlined/toggle_on.svg";
+import { CmsModelFieldTypePlugin } from "~/types";
 import { i18n } from "@webiny/app/i18n";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
+import { Bind } from "@webiny/form";
 
 const t = i18n.ns("app-headless-cms/admin/fields");
 
-const plugin: CmsEditorFieldTypePlugin = {
+const plugin: CmsModelFieldTypePlugin = {
     type: "cms-editor-field-type",
     name: "cms-editor-field-type-boolean",
     field: {
@@ -27,7 +28,7 @@ const plugin: CmsEditorFieldTypePlugin = {
                 }
             };
         },
-        renderSettings({ form: { Bind } }) {
+        renderSettings() {
             return (
                 <Grid>
                     <Cell span={12}>

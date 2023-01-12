@@ -9,14 +9,14 @@ env:
 jobs:
   validate-commits:
     name: Validate commit messages
-    runs-on: webiny-js-4-cores
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: webiny/action-conventional-commits@v1.1.0
 
   init:
     name: Init
-    runs-on: webiny-js-4-cores
+    runs-on: ubuntu-latest
     outputs:
       jest-packages: ${{ steps.list-jest-packages.outputs.jest-packages }}
       day: ${{ steps.get-day.outputs.day }}
@@ -77,7 +77,7 @@ jobs:
   code-analysis:
     needs: init
     name: Static code analysis
-    runs-on: webiny-js-4-cores
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-node@v3
         with:
@@ -112,7 +112,7 @@ jobs:
 
   code-analysis-typescript:
     name: Static code analysis (TypeScript)
-    runs-on: webiny-js-4-cores
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-node@v3
         with:
@@ -179,7 +179,7 @@ jobs:
     if: needs.init.outputs.is-fork-pr != 'true' # Do not run this job if a PR has been submitted from a fork.
     needs: init
     name: Publish to Verdaccio
-    runs-on: webiny-js-4-cores
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-node@v3
         with:
@@ -202,20 +202,11 @@ jobs:
           path: .webiny/cached-packages
           key: packages-cache-${{ needs.init.outputs.ts }}
 
-      - name: Git status
-        run: git status
-
       - name: Install dependencies
         run: yarn --immutable
 
-      - name: Git status
-        run: git status && git diff packages-v6/cli/src/bin.js
-
       - name: Build packages
         run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
-
-      - name: Git status
-        run: git status
 
       - name: Start Verdaccio local server
         run: npx pm2 start verdaccio -- -c .verdaccio.yaml
@@ -232,17 +223,8 @@ jobs:
       - name: Set git username
         run: git config --global user.name "webiny-bot"
 
-      - name: Git status
-        run: git status
-
-      - name: Version packages (no push, no changelog)
-        run: yarn lerna:version:verdaccio
-
-      - name: Git status
-        run: git status
-
-      - name: Release to Verdaccio
-        run: yarn lerna:publish:verdaccio
+      - name: Version and publish to Verdaccio
+        run: yarn release --type=verdaccio
 
       - name: Upload verdaccio files
         uses: actions/upload-artifact@v3
@@ -294,11 +276,11 @@ jobs:
 
       - name: Create a new Webiny project
         run: >
-          npx create-webiny-project@next test-project
-          --tag next --no-interactive
+          npx create-webiny-project@local-npm test-project
+          --tag local-npm --no-interactive
           --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"region":"eu-central-1"}'
 
-      - name: Build "api" project application
+      - name: Build "api" app
         working-directory: test-project
         run: yarn webiny ws run build --folder api --env dev

@@ -5,6 +5,7 @@ import {
     CmsModelFieldDefinition,
     CmsModelFieldToGraphQLPlugin
 } from "~/types";
+import { getBaseFieldType } from "~/utils/getBaseFieldType";
 
 interface RenderInputFieldsParams {
     model: CmsModel;
@@ -36,7 +37,7 @@ export const renderInputField = ({
     // want to be careful when accessing the field plugin here too. It is still possible to have a content model
     // that contains a field, for which we don't have a plugin registered on the backend. For example, user
     // could've just removed the plugin from the backend.
-    const plugin: CmsModelFieldToGraphQLPlugin = fieldTypePlugins[field.type];
+    const plugin: CmsModelFieldToGraphQLPlugin = fieldTypePlugins[getBaseFieldType(field)];
 
     if (!plugin) {
         // Let's not render the field if it does not exist in the field plugins.

@@ -26,6 +26,7 @@ import {
     createReadQuery,
     createRevisionsQuery
 } from "~/admin/graphql/contentEntries";
+import { getFetchPolicy } from "~/utils/getFetchPolicy";
 
 interface ContentEntryContextForm {
     submit: (ev: React.SyntheticEvent) => Promise<CmsEditorContentEntry | null>;
@@ -101,9 +102,11 @@ export const Provider: React.FC<ContentEntryContextProviderProps> = ({
 
     const revisionId = contentId ? decodeURIComponent(contentId) : null;
     let entryId: string | null = null;
+    let version: number | null = null;
     if (revisionId) {
         const result = parseIdentifier(revisionId);
-        entryId = result ? result.id : null;
+        entryId = result.id;
+        version = result.version;
     }
 
     const tabsRef = useRef<TabsImperativeApi>();
@@ -131,11 +134,21 @@ export const Provider: React.FC<ContentEntryContextProviderProps> = ({
         history.push(`/cms/content-entries/${contentModel.modelId}?new=true`);
     }, [contentModel.modelId]);
 
+    let variables: CmsEntryGetQueryVariables | undefined;
+    if (version === null && entryId) {
+        variables = {
+            entryId
+        };
+    } else {
+        variables = {
+            revision: revisionId as string
+        };
+    }
+
     const getEntry = useQuery<CmsEntryGetQueryResponse, CmsEntryGetQueryVariables>(READ_CONTENT, {
-        variables: {
-            revision: revisionId || ""
-        },
+        variables,
         skip: !revisionId,
+        fetchPolicy: getFetchPolicy(contentModel),
         onCompleted: data => {
             if (!data) {
                 return;
@@ -161,7 +174,7 @@ export const Provider: React.FC<ContentEntryContextProviderProps> = ({
     });
 
     const loading = isLoading || getEntry.loading || getRevisions.loading;
-    const entry: CmsEditorContentEntry = get(getEntry, "data.content.data") || {};
+    const entry = (get(getEntry, "data.content.data") as unknown as CmsEditorContentEntry) || {};
 
     const value: ContentEntryContext = {
         canCreate,

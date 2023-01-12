@@ -217,7 +217,11 @@ const ContentModelsDataList: React.FC<ContentModelsDataListProps> = ({
                                     {contentModel.name}
                                     <UIL.ListItemTextSecondary>
                                         {t`Last modified: {time}.`({
-                                            time: <TimeAgo datetime={contentModel.savedOn} />
+                                            time: contentModel.savedOn ? (
+                                                <TimeAgo datetime={contentModel.savedOn} />
+                                            ) : (
+                                                "N/A"
+                                            )
                                         })}
                                     </UIL.ListItemTextSecondary>
                                 </UIL.ListItemText>

@@ -79,7 +79,7 @@ class CmsTestEnvironment extends NodeEnvironment {
             if (!context.cms) {
                 return;
             }
-            context.cms.onBeforeEntryCreate.subscribe(async ({ model }) => {
+            context.cms.onEntryBeforeCreate.subscribe(async ({ model }) => {
                 const { index } = configurations.es({
                     model
                 });

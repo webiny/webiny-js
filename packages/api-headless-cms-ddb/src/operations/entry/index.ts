@@ -18,8 +18,6 @@ import {
     CmsEntryStorageOperationsGetRevisionsParams,
     CmsEntryStorageOperationsListParams,
     CmsEntryStorageOperationsPublishParams,
-    CmsEntryStorageOperationsRequestChangesParams,
-    CmsEntryStorageOperationsRequestReviewParams,
     CmsEntryStorageOperationsUnpublishParams,
     CmsEntryStorageOperationsUpdateParams,
     StorageOperationsCmsModel,
@@ -27,7 +25,6 @@ import {
     CmsStorageEntry
 } from "@webiny/api-headless-cms/types";
 import { Entity } from "dynamodb-toolbox";
-import { filterItems, buildModelFields, sortEntryItems, FilterItemFromStorage } from "./utils";
 import {
     createGSIPartitionKey,
     createGSISortKey,
@@ -48,6 +45,9 @@ import { PluginsContainer } from "@webiny/plugins";
 import { decodeCursor, encodeCursor } from "@webiny/utils/cursor";
 import { zeroPad } from "@webiny/utils/zeroPad";
 import { StorageTransformPlugin } from "@webiny/api-headless-cms";
+import { FilterItemFromStorage } from "./filtering/types";
+import { createFields } from "~/operations/entry/filtering/createFields";
+import { filter, sort } from "~/operations/entry/filtering";
 
 const createType = (): string => {
     return "cms.entry";
@@ -679,7 +679,7 @@ export const createEntriesStorageOperations = (
             limit: initialLimit = 10,
             where: initialWhere,
             after,
-            sort,
+            sort: sortBy,
             fields,
             search
         } = params;
@@ -695,9 +695,9 @@ export const createEntriesStorageOperations = (
                 gte: " "
             }
         };
-        let records = [];
+        let storageEntries: CmsStorageEntry[] = [];
         try {
-            records = await queryAll(queryAllParams);
+            storageEntries = await queryAll<CmsStorageEntry>(queryAllParams);
         } catch (ex) {
             throw new WebinyError(ex.message, "QUERY_ENTRIES_ERROR", {
                 error: ex,
@@ -705,7 +705,7 @@ export const createEntriesStorageOperations = (
                 options: queryAllParams.options
             });
         }
-        if (records.length === 0) {
+        if (storageEntries.length === 0) {
             return {
                 hasMoreItems: false,
                 totalCount: 0,
@@ -719,28 +719,46 @@ export const createEntriesStorageOperations = (
         delete where["published"];
         delete where["latest"];
         /**
-         * We need a object containing field, transformers and paths.
+         * We need an object containing field, transformers and paths.
          * Just build it here and pass on into other methods that require it to avoid mapping multiple times.
          */
-        const modelFields = buildModelFields({
+        const modelFields = createFields({
             plugins,
-            model
+            fields: model.fields
         });
+
+        const fromStorage = createStorageTransformCallable(model);
+        /**
+         * Let's transform records from storage ones to regular ones, so we do not need to do it later.
+         *
+         * This is always being done, but at least its in parallel.
+         */
+        const records = await Promise.all(
+            storageEntries.map(async storageEntry => {
+                const entry = convertFromStorageEntry({
+                    storageEntry,
+                    model
+                });
+
+                for (const field of model.fields) {
+                    entry.values[field.fieldId] = await fromStorage(
+                        field,
+                        entry.values[field.fieldId]
+                    );
+                }
+
+                return entry as CmsEntry;
+            })
+        );
         /**
          * Filter the read items via the code.
          * It will build the filters out of the where input and transform the values it is using.
          */
-        const filteredItems = await filterItems({
-            items: records.map(record => {
-                return convertFromStorageEntry({
-                    storageEntry: record,
-                    model
-                });
-            }),
+        const filteredItems = filter({
+            items: records,
             where,
             plugins,
             fields: modelFields,
-            fromStorage: createStorageTransformCallable(model),
             fullTextSearch: {
                 term: search,
                 fields: fields || []
@@ -753,9 +771,9 @@ export const createEntriesStorageOperations = (
          * Sorting is also done via the code.
          * It takes the sort input and sorts by it via the lodash sortBy method.
          */
-        const sortedItems = sortEntryItems({
+        const sortedItems = sort({
             items: filteredItems,
-            sort,
+            sort: sortBy,
             fields: modelFields
         });
 
@@ -785,148 +803,6 @@ export const createEntriesStorageOperations = (
             limit: 1
         });
         return items.shift() || null;
-    };
-
-    const requestChanges = async (
-        model: StorageOperationsCmsModel,
-        params: CmsEntryStorageOperationsRequestChangesParams
-    ) => {
-        const { entry, storageEntry: initialStorageEntry } = params;
-
-        const partitionKey = createPartitionKey({
-            id: entry.id,
-            locale: model.locale,
-            tenant: model.tenant
-        });
-
-        const storageEntry = convertToStorageEntry({
-            storageEntry: initialStorageEntry,
-            model
-        });
-
-        /**
-         * We need to:
-         *  - update the existing entry
-         *  - update latest version - if existing entry is the latest version
-         */
-        const items = [
-            entity.putBatch({
-                ...storageEntry,
-                TYPE: createType(),
-                PK: partitionKey,
-                SK: createRevisionSortKey(entry),
-                GSI1_PK: createGSIPartitionKey(model, "A"),
-                GSI1_SK: createGSISortKey(entry)
-            })
-        ];
-
-        /**
-         * We need the latest entry to see if something needs to be updated along side the request changes one.
-         */
-        const latestStorageEntry = await getLatestRevisionByEntryId(model, entry);
-
-        if (latestStorageEntry && latestStorageEntry.id === entry.id) {
-            items.push(
-                entity.putBatch({
-                    ...storageEntry,
-                    PK: partitionKey,
-                    SK: createLatestSortKey(),
-                    TYPE: createLatestType(),
-                    GSI1_PK: createGSIPartitionKey(model, "L"),
-                    GSI1_SK: createGSISortKey(entry)
-                })
-            );
-        }
-
-        try {
-            await batchWriteAll({
-                table: entity.table,
-                items
-            });
-            dataLoaders.clearAll({
-                model
-            });
-        } catch (ex) {
-            throw new WebinyError(
-                ex.message || "Could not execute the request changes batch.",
-                ex.code || "REQUEST_CHANGES_ERROR",
-                {
-                    entry
-                }
-            );
-        }
-        return entry;
-    };
-
-    const requestReview = async (
-        model: StorageOperationsCmsModel,
-        params: CmsEntryStorageOperationsRequestReviewParams
-    ) => {
-        const { entry, storageEntry: initialStorageEntry } = params;
-
-        const partitionKey = createPartitionKey({
-            id: entry.id,
-            locale: model.locale,
-            tenant: model.tenant
-        });
-
-        const storageEntry = convertToStorageEntry({
-            storageEntry: initialStorageEntry,
-            model
-        });
-        /**
-         * We need to:
-         *  - update existing entry
-         *  - update latest entry - if existing entry is the latest entry
-         */
-        const items = [
-            entity.putBatch({
-                ...storageEntry,
-                TYPE: createType(),
-                PK: partitionKey,
-                SK: createRevisionSortKey(entry),
-                GSI1_PK: createGSIPartitionKey(model, "A"),
-                GSI1_SK: createGSISortKey(entry)
-            })
-        ];
-
-        /**
-         * We need the latest entry to see if something needs to be updated along side the request review one.
-         */
-        const latestStorageEntry = await getLatestRevisionByEntryId(model, entry);
-
-        if (latestStorageEntry && latestStorageEntry.id === entry.id) {
-            items.push(
-                entity.putBatch({
-                    ...storageEntry,
-                    PK: partitionKey,
-                    SK: createLatestSortKey(),
-                    TYPE: createLatestType(),
-                    GSI1_PK: createGSIPartitionKey(model, "L"),
-                    GSI1_SK: createGSISortKey(entry)
-                })
-            );
-        }
-
-        try {
-            await batchWriteAll({
-                table: entity.table,
-                items
-            });
-            dataLoaders.clearAll({
-                model
-            });
-            return initialStorageEntry;
-        } catch (ex) {
-            throw new WebinyError(
-                ex.message || "Could not execute request review batch.",
-                ex.code || "REQUEST_REVIEW_ERROR",
-                {
-                    entry,
-                    storageEntry
-                }
-            );
-        }
     };
 
     const publish = async (
@@ -1119,8 +995,6 @@ export const createEntriesStorageOperations = (
         getLatestRevisionByEntryId,
         get,
         getRevisions,
-        requestChanges,
-        requestReview,
         publish,
         list,
         unpublish

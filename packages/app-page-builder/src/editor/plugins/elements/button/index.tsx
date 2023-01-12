@@ -10,6 +10,7 @@ import {
 } from "~/types";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 import ButtonSettings from "./ButtonSettings";
+import ButtonSettingsV2 from "./ButtonSettingsV2";
 import Button from "./Button";
 
 const buttonWrapper = css({
@@ -19,7 +20,7 @@ const buttonWrapper = css({
 
 const buttonElementPluginsFactory = (args: PbEditorElementPluginArgs = {}) => {
     const defaultSettings: string[] = [
-        "pb-editor-page-element-style-settings-button",
+        "pb-editor-page-element-style-settings-button-v2",
         "pb-editor-page-element-style-settings-action",
         "pb-editor-page-element-style-settings-horizontal-align-flex",
         "pb-editor-page-element-style-settings-margin",
@@ -58,6 +59,7 @@ const buttonElementPluginsFactory = (args: PbEditorElementPluginArgs = {}) => {
                     type: this.elementType,
                     elements: [],
                     data: {
+                        type: "default",
                         buttonText: "Click me",
                         settings: {
                             margin: createInitialPerDeviceSettingValue(
@@ -75,8 +77,8 @@ const buttonElementPluginsFactory = (args: PbEditorElementPluginArgs = {}) => {
 
                 return typeof args.create === "function" ? args.create(defaultValue) : defaultValue;
             },
-            render({ element }) {
-                return <Button element={element} />;
+            render(props) {
+                return <Button {...props} />;
             }
         } as PbEditorPageElementPlugin,
         {
@@ -84,6 +86,13 @@ const buttonElementPluginsFactory = (args: PbEditorElementPluginArgs = {}) => {
             type: "pb-editor-page-element-style-settings",
             render() {
                 return <ButtonSettings />;
+            }
+        } as PbEditorPageElementStyleSettingsPlugin,
+        {
+            name: "pb-editor-page-element-style-settings-button-v2",
+            type: "pb-editor-page-element-style-settings",
+            render() {
+                return <ButtonSettingsV2 />;
             }
         } as PbEditorPageElementStyleSettingsPlugin
     ];

@@ -11,6 +11,8 @@ import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePage
 import { isPerBreakpointStylesObject } from "@webiny/app-page-builder-elements/utils";
 import { useUI } from "~/editor/hooks/useUI";
 import { setDisplayModeMutation } from "~/editor/recoil/modules";
+import { isLegacyRenderingEngine } from "~/utils";
+import { CSSObject } from "@emotion/core";
 
 const classes = {
     wrapper: css({
@@ -85,6 +87,20 @@ const classes = {
     })
 };
 
+// This function ensures properties that have `undefined` as its
+// value are not assigned to the target object.
+function assignDefined(target: Record<string, any>, ...sources: Array<Record<string, any>>) {
+    for (const source of sources) {
+        for (const key of Object.keys(source)) {
+            const val = source[key];
+            if (val !== undefined) {
+                target[key] = val;
+            }
+        }
+    }
+    return target;
+}
+
 export const ResponsiveModeSelector: React.FC = () => {
     const [{ displayMode, pagePreviewDimension }, setUiValue] = useUI();
     const {
@@ -109,20 +125,20 @@ export const ResponsiveModeSelector: React.FC = () => {
     );
 
     const pageElements = usePageElements();
-    if (pageElements) {
+    if (!isLegacyRenderingEngine) {
         // By default, we want to only assign styles for the first breakpoint in line, which is "desktop".
         // We only care about tablet, mobile-landscape, and mobile-portrait if user selects one of those.
         useEffect(() => {
-            pageElements.setAssignStylesCallback(params => {
-                const whitelistedBreakpoints = [];
-                for (let i = 0; i < editorModes.length; i++) {
-                    const current = editorModes[i];
-                    whitelistedBreakpoints.push(current.config.displayMode);
-                    if (current.config.displayMode === displayMode) {
-                        break;
-                    }
+            const whitelistedBreakpoints: string[] = [];
+            for (let i = 0; i < editorModes.length; i++) {
+                const current = editorModes[i];
+                whitelistedBreakpoints.push(current.config.displayMode);
+                if (current.config.displayMode === displayMode) {
+                    break;
                 }
+            }
 
+            pageElements.setAssignStylesCallback(params => {
                 const { breakpoints, styles = {}, assignTo = {} } = params;
                 if (isPerBreakpointStylesObject({ breakpoints, styles })) {
                     for (const breakpointName in breakpoints) {
@@ -130,7 +146,8 @@ export const ResponsiveModeSelector: React.FC = () => {
                             styles[breakpointName] &&
                             whitelistedBreakpoints.includes(breakpointName)
                         ) {
-                            Object.assign(assignTo, styles[breakpointName]);
+                            // Filter out properties that have `undefined` set as its value.
+                            assignDefined(assignTo, styles[breakpointName] as CSSObject);
                         }
                     }
                 } else {
@@ -177,12 +194,12 @@ export const ResponsiveModeSelector: React.FC = () => {
             {responsiveBarContent}
             <div className={classes.dimensionIndicator}>
                 <span className="width">
-                    <Typography use={"subtitle2"}>{pagePreviewDimension.width}</Typography>
-                    <Typography use={"subtitle2"}>PX</Typography>
+                    <Typography use={"body2"}>{pagePreviewDimension.width}</Typography>
+                    <Typography use={"body2"}>PX</Typography>
                 </span>
                 <span className="height">
-                    <Typography use={"subtitle2"}>{"100"}</Typography>
-                    <Typography use={"subtitle2"}>%</Typography>
+                    <Typography use={"body2"}>{"100"}</Typography>
+                    <Typography use={"body2"}>%</Typography>
                 </span>
             </div>
         </div>

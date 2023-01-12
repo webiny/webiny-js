@@ -4,8 +4,6 @@ const t = i18n.ns("app-page-builder/admin/pages/statuses");
 const statuses: Record<string, string> = {
     draft: t`Draft`,
     published: t`Published`,
-    unpublished: t`Unpublished`,
-    changesRequested: t`Changes Requested`,
-    reviewRequested: t`Review Requested`
+    unpublished: t`Unpublished`
 };
 export default statuses;

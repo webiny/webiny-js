@@ -6,12 +6,14 @@
     { "path": "../app-admin" },
     { "path": "../app-headless-cms" },
     { "path": "../app-i18n" },
+    { "path": "../app-mailer" },
     { "path": "../app-page-builder" },
     { "path": "../app-security" },
     { "path": "../form" },
     { "path": "../plugins" },
     { "path": "../react-router" },
     { "path": "../ui" },
+    { "path": "../utils" },
     { "path": "../validation" }
   ],
   "compilerOptions": {
@@ -20,6 +22,7 @@
     "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
       "@webiny/app/*": ["../app/src/*"],
       "@webiny/app": ["../app/src"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
@@ -28,6 +31,8 @@
       "@webiny/app-headless-cms": ["../app-headless-cms/src"],
       "@webiny/app-i18n/*": ["../app-i18n/src/*"],
       "@webiny/app-i18n": ["../app-i18n/src"],
+      "@webiny/app-mailer/*": ["../app-mailer/src/*"],
+      "@webiny/app-mailer": ["../app-mailer/src"],
       "@webiny/app-page-builder/*": ["../app-page-builder/src/*"],
       "@webiny/app-page-builder": ["../app-page-builder/src"],
       "@webiny/app-security/*": ["../app-security/src/*"],
@@ -40,6 +45,8 @@
       "@webiny/react-router": ["../react-router/src"],
       "@webiny/ui/*": ["../ui/src/*"],
       "@webiny/ui": ["../ui/src"],
+      "@webiny/utils/*": ["../utils/src/*"],
+      "@webiny/utils": ["../utils/src"],
       "@webiny/validation/*": ["../validation/src/*"],
       "@webiny/validation": ["../validation/src"]
     },

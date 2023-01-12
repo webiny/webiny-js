@@ -1,9 +1,9 @@
 import * as React from "react";
 import { useBind } from "~/Form";
-import { BindComponent } from "~/types";
+import { BindComponentProps } from "~/types";
 
-export const Bind: BindComponent = ({ children, ...props }) => {
-    const bind = useBind(props);
+export function Bind<T = any>({ children, ...props }: BindComponentProps<T>) {
+    const bind = useBind<T>(props);
 
     if (React.isValidElement(children)) {
         if (!bind.disabled) {
@@ -13,4 +13,4 @@ export const Bind: BindComponent = ({ children, ...props }) => {
     }
 
     return typeof children === "function" ? children(bind) : null;
-};
+}

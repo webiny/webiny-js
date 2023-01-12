@@ -1,5 +1,4 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { css } from "emotion";
 import get from "lodash/get";
 import { useRouter } from "@webiny/react-router";
 import { Form } from "@webiny/form";
@@ -25,19 +24,9 @@ import {
 } from "../../viewsGraphql";
 import { CmsGroup } from "~/admin/views/contentModelGroups/graphql";
 import { CmsGroupOption } from "~/admin/views/contentModels/types";
+import { Dialog } from "~/admin/components/Dialog";
 
 const t = i18n.ns("app-headless-cms/admin/views/content-models/clone-content-model-dialog");
-
-const narrowDialog = css({
-    ".mdc-dialog__surface": {
-        width: 600,
-        minWidth: 600
-    }
-});
-
-const noPadding = css({
-    padding: "5px !important"
-});
 
 export interface Props {
     open: boolean;
@@ -167,12 +156,7 @@ const CloneContentModelDialog: React.FC<Props> = ({ open, onClose, contentModel,
     }, []);
 
     return (
-        <UID.Dialog
-            open={open}
-            onClose={onClose}
-            className={narrowDialog}
-            data-testid="cms-clone-content-model-modal"
-        >
+        <Dialog open={open} onClose={onClose} data-testid="cms-clone-content-model-modal">
             {(!groups || groupsLoading) && (
                 <CircularProgress label={"Please wait while we load required information."} />
             )}
@@ -201,7 +185,7 @@ const CloneContentModelDialog: React.FC<Props> = ({ open, onClose, contentModel,
                             {loading && <CircularProgress />}
                             <UID.DialogTitle>{t`Clone Content Model`}</UID.DialogTitle>
                             <UID.DialogContent>
-                                <Grid className={noPadding}>
+                                <Grid>
                                     <Cell span={12}>
                                         <Bind
                                             name={"name"}
@@ -276,7 +260,7 @@ const CloneContentModelDialog: React.FC<Props> = ({ open, onClose, contentModel,
                     )}
                 </Form>
             )}
-        </UID.Dialog>
+        </Dialog>
     );
 };
 

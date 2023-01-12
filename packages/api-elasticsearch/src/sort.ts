@@ -1,15 +1,11 @@
 import WebinyError from "@webiny/error";
-import { FieldSortOptions, SortType, SortOrder } from "./types";
-import { ElasticsearchFieldPlugin } from "./plugins/definition/ElasticsearchFieldPlugin";
+import { FieldSortOptions, SortType, SortOrder } from "~/types";
+import { ElasticsearchFieldPlugin } from "~/plugins";
 
 const sortRegExp = new RegExp(/^([a-zA-Z-0-9_@]+)_(ASC|DESC)$/);
 
-interface SortOption {
-    path: string;
-    order: "ASC" | "DESC" | "asc" | "desc";
-}
 interface CreateSortParams {
-    sort: string[] | SortOption[];
+    sort: string[];
     defaults?: {
         field?: string;
         order?: SortOrder;
@@ -17,7 +13,7 @@ interface CreateSortParams {
     };
     fieldPlugins: Record<string, ElasticsearchFieldPlugin>;
 }
-// TODO refactor so the sort input is of SortOption type
+
 export const createSort = (params: CreateSortParams): SortType => {
     const { sort, defaults, fieldPlugins } = params;
     if (!sort || sort.length === 0) {
@@ -35,8 +31,7 @@ export const createSort = (params: CreateSortParams): SortType => {
     /**
      * Cast as string because nothing else should be allowed yet.
      */
-    // @ts-refactor
-    return (sort as string[]).reduce((acc, value) => {
+    return sort.reduce((acc, value) => {
         if (typeof value !== "string") {
             throw new WebinyError(`Sort as object is not supported..`);
         }

@@ -3,13 +3,7 @@ import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
 import { mocks as changeRequestMock, richTextMock } from "./mocks/changeRequest";
 
 describe(`Delete "content review" and associated "change requests" and "comments"`, () => {
-    const options = {
-        path: "manage/en-US"
-    };
-
-    const gqlHandler = usePageBuilderHandler({
-        ...options
-    });
+    const gqlHandler = usePageBuilderHandler();
     const {
         createContentReviewMutation,
         getContentReviewQuery,
@@ -65,7 +59,7 @@ describe(`Delete "content review" and associated "change requests" and "comments
             id: createdContentReview.id
         });
         const contentReview = getContentReviewResponse.data.apw.getContentReview.data;
-        expect(contentReview.status).toEqual("underReview");
+        expect(contentReview.reviewStatus).toEqual("underReview");
 
         /**
          * Let's create a "change request" for every step of the publishing workflow.
@@ -128,7 +122,7 @@ describe(`Delete "content review" and associated "change requests" and "comments
             createdOn: expect.stringMatching(/^20/),
             id: expect.any(String),
             savedOn: expect.stringMatching(/^20/),
-            status: "underReview",
+            reviewStatus: "underReview",
             steps: [
                 {
                     id: expect.any(String),

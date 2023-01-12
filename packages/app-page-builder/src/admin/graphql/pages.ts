@@ -116,7 +116,12 @@ export const GET_PAGE = gql`
                 data {
                     ${DATA_FIELDS}
                     createdBy {
-                        id
+                        id,
+                        displayName
+                    }
+                    savedOn
+                    category {
+                        name
                     }
                     content
 

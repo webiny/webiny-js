@@ -2,9 +2,9 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
+    { "path": "../api" },
     { "path": "../api-authentication" },
-    { "path": "../api-cognito-authenticator" },
-    { "path": "../api" }
+    { "path": "../api-cognito-authenticator" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -12,12 +12,13 @@
     "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/api/*": ["../api/src/*"],
+      "@webiny/api": ["../api/src"],
       "@webiny/api-authentication/*": ["../api-authentication/src/*"],
       "@webiny/api-authentication": ["../api-authentication/src"],
       "@webiny/api-cognito-authenticator/*": ["../api-cognito-authenticator/src/*"],
-      "@webiny/api-cognito-authenticator": ["../api-cognito-authenticator/src"],
-      "@webiny/api/*": ["../api/src/*"],
-      "@webiny/api": ["../api/src"]
+      "@webiny/api-cognito-authenticator": ["../api-cognito-authenticator/src"]
     },
     "baseUrl": "."
   }

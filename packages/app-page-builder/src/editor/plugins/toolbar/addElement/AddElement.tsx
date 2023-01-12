@@ -1,8 +1,7 @@
-import React, { useCallback, useEffect, useState, useMemo } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
 import { css } from "emotion";
-import { List, ListItem, ListItemMeta } from "@webiny/ui/List";
-import { Icon } from "@webiny/ui/Icon";
+import { isEqual } from "lodash";
 import { Typography } from "@webiny/ui/Typography";
 import { ButtonFloating } from "@webiny/ui/Button";
 import * as Styled from "./StyledComponents";
@@ -21,32 +20,82 @@ import { ReactComponent as AddIcon } from "~/editor/assets/icons/add.svg";
 import { PbEditorPageElementGroupPlugin, PbEditorPageElementPlugin } from "~/types";
 import { useKeyHandler } from "~/editor/hooks/useKeyHandler";
 import { DropElementActionArgsType } from "~/editor/recoil/actions/dropElement/types";
+import Accordion from "~/editor/plugins/elementSettings/components/Accordion";
 
 const ADD_ELEMENT = "pb-editor-toolbar-add-element";
 
-// @ts-ignore
-const categoriesList = css({
-    backgroundColor: "var(--mdc-theme-surface)",
-    boxShadow: "inset 1px 0px 5px 0px var(--mdc-theme-background)",
-    borderTop: "1px solid var(--mdc-theme-background)",
-    ".mdc-list-item": {
-        width: 150,
-        fontWeight: "600 !important",
-        borderBottom: "1px solid var(--mdc-theme-background)",
-        "&.active": {
-            backgroundColor: "var(--mdc-theme-background)",
-            color: "var(--mdc-theme-primary)",
-            ".mdc-list-item__meta": {
-                color: "var(--mdc-theme-primary)"
-            }
-        }
+const accordionStyle = css`
+    & .icon-container svg {
+        width: 24px !important;
+        height: 24px !important;
     }
-});
+`;
+
+type ElementsListProps = {
+    groupPlugin: PbEditorPageElementGroupPlugin;
+    elements: PbEditorPageElementPlugin[];
+    renderDraggable: (element: any, plugin: any) => JSX.Element;
+    refresh: () => void;
+};
+
+const ElementsList: React.FC<ElementsListProps> = ({
+    groupPlugin,
+    elements,
+    renderDraggable,
+    refresh
+}) => {
+    const { theme } = usePageBuilder();
+
+    if (elements.length === 0) {
+        return groupPlugin.group.emptyView || null;
+    }
+
+    return (
+        <Styled.Elements>
+            {elements.map(plugin => {
+                const pluginToolbarTitle = plugin.toolbar ? plugin.toolbar.title : null;
+                const pluginToolbarPreview =
+                    plugin.toolbar && plugin.toolbar.preview
+                        ? plugin.toolbar.preview
+                        : () => {
+                              return "";
+                          };
+                return renderDraggable(
+                    <div data-role="draggable">
+                        <Styled.ElementTitle>
+                            {typeof pluginToolbarTitle === "function" ? (
+                                pluginToolbarTitle({ refresh })
+                            ) : (
+                                <Typography use="overline">{pluginToolbarTitle}</Typography>
+                            )}
+                        </Styled.ElementTitle>
+                        <Styled.ElementPreviewCanvas>
+                            {pluginToolbarPreview({ theme })}
+                        </Styled.ElementPreviewCanvas>
+                    </div>,
+                    plugin
+                );
+            })}
+        </Styled.Elements>
+    );
+};
 
 const AddElement: React.FC = () => {
     const handler = useEventActionHandler();
     const params = useRecoilValue(activePluginParamsByNameSelector(ADD_ELEMENT));
     const { removeKeyHandler, addKeyHandler } = useKeyHandler();
+    const elementPlugins = plugins.byType<PbEditorPageElementPlugin>("pb-editor-page-element");
+    const [elements, setElements] = useState(elementPlugins);
+
+    const refresh = useCallback(() => {
+        setElements(elementPlugins);
+    }, [elementPlugins]);
+
+    useEffect(() => {
+        if (!isEqual(elements, elementPlugins)) {
+            refresh();
+        }
+    }, [elementPlugins]);
 
     const dragStart = useCallback(() => {
         handler.trigger(new DragStartActionEvent());
@@ -65,26 +114,24 @@ const AddElement: React.FC = () => {
         handler.trigger(new DropElementActionEvent(args));
     }, []);
     const getGroups = useCallback((): PbEditorPageElementGroupPlugin[] => {
-        return plugins.byType<PbEditorPageElementGroupPlugin>("pb-editor-page-element-group");
+        const allGroups = plugins.byType<PbEditorPageElementGroupPlugin>(
+            "pb-editor-page-element-group"
+        );
+
+        // For backward compatibility with custom media plugins (if such were created by user)
+        const isMediaGroupEmpty =
+            plugins
+                .byType<PbEditorPageElementPlugin>("pb-editor-page-element")
+                .filter(el => el.toolbar && el.toolbar.group === "pb-editor-element-group-media")
+                .length === 0;
+        if (isMediaGroupEmpty) {
+            return allGroups.filter(group => group.name !== "pb-editor-element-group-media");
+        }
+
+        return allGroups;
     }, []);
 
     const pageElementGroupPlugins = getGroups();
-
-    const getGroupElements = useCallback(group => {
-        return plugins
-            .byType<PbEditorPageElementPlugin>("pb-editor-page-element")
-            .filter(el => el.toolbar && el.toolbar.group === group);
-    }, []);
-
-    const [group, setGroup] = useState<string>(
-        pageElementGroupPlugins.length > 0 ? pageElementGroupPlugins[0].name || "" : ""
-    );
-
-    const { theme } = usePageBuilder();
-
-    const refresh = useCallback(() => {
-        setGroup(group);
-    }, []);
 
     const enableDragOverlay = useCallback(() => {
         const el = document.querySelector(".pb-editor");
@@ -100,30 +147,6 @@ const AddElement: React.FC = () => {
             return;
         }
         el.classList.remove("pb-editor-dragging");
-    }, []);
-
-    const renderDraggable = useCallback((element, plugin) => {
-        const { elementType } = plugin;
-
-        return (
-            <Draggable
-                enabled={true}
-                key={plugin.name}
-                target={plugin.target}
-                beginDrag={props => {
-                    dragStart();
-                    setTimeout(deactivatePlugin, 20);
-                    return { type: elementType, target: props.target };
-                }}
-                endDrag={() => {
-                    dragEnd();
-                }}
-            >
-                {({ drag }) => (
-                    <div ref={drag}>{renderOverlay(element, null, "Drag to Add", plugin)}</div>
-                )}
-            </Draggable>
-        );
     }, []);
 
     const renderOverlay = useCallback(
@@ -150,22 +173,44 @@ const AddElement: React.FC = () => {
         [enableDragOverlay, disableDragOverlay]
     );
 
-    const renderClickable = useCallback(
+    const renderDraggable = useCallback(
         (element, plugin) => {
-            const item = renderOverlay(
-                element,
-                () => {
-                    dropElement({
-                        source: { type: plugin.elementType } as any,
-                        target: params as DropElementActionArgsType["target"]
-                    });
-                    deactivatePlugin();
-                },
-                "Click to Add",
-                plugin
-            );
+            const { elementType } = plugin;
 
-            return React.cloneElement(item, { key: plugin.name });
+            return (
+                <Draggable
+                    enabled={true}
+                    key={plugin.name}
+                    target={plugin.target}
+                    beginDrag={props => {
+                        dragStart();
+                        setTimeout(deactivatePlugin, 20);
+                        return { type: elementType, target: props.target };
+                    }}
+                    endDrag={() => {
+                        dragEnd();
+                    }}
+                >
+                    {({ drag }) => (
+                        <div ref={drag}>
+                            {renderOverlay(
+                                element,
+                                params
+                                    ? () => {
+                                          dropElement({
+                                              source: { type: plugin.elementType } as any,
+                                              target: params as DropElementActionArgsType["target"]
+                                          });
+                                          setTimeout(deactivatePlugin, 20);
+                                      }
+                                    : null,
+                                params ? "Click to Add" : "Drag to Add",
+                                plugin
+                            )}
+                        </div>
+                    )}
+                </Draggable>
+            );
         },
         [params, deactivatePlugin, dropElement, renderOverlay]
     );
@@ -179,68 +224,26 @@ const AddElement: React.FC = () => {
         return () => removeKeyHandler("escape");
     });
 
-    const emptyViewContent = useMemo((): React.ReactElement | null => {
-        const selectedPlugin = pageElementGroupPlugins.find(pl => pl.name === group);
-        if (!selectedPlugin) {
-            return null;
-        }
-        return selectedPlugin.group.emptyView || null;
-    }, [group]);
-
-    const groupElements = group ? getGroupElements(group) : [];
-
     return (
-        <Styled.Flex>
-            <List className={categoriesList}>
-                {pageElementGroupPlugins.map(plugin => (
-                    <ListItem
-                        onClick={() => setGroup(plugin.name || "")}
-                        key={plugin.name}
-                        className={plugin.name === group ? "active" : ""}
-                    >
-                        {plugin.group.title}
-
-                        {plugin.group.icon && (
-                            <ListItemMeta>
-                                <Icon icon={plugin.group.icon} />
-                            </ListItemMeta>
+        <>
+            {pageElementGroupPlugins.map(plugin => (
+                <Accordion
+                    key={plugin.name}
+                    title={plugin.group.title}
+                    icon={plugin.group.icon}
+                    className={accordionStyle}
+                >
+                    <ElementsList
+                        groupPlugin={plugin}
+                        elements={elements.filter(
+                            el => el.toolbar && el.toolbar.group === plugin.name
                         )}
-                    </ListItem>
-                ))}
-            </List>
-            <Styled.Elements>
-                {groupElements.length
-                    ? groupElements.map(plugin => {
-                          const pluginToolbarTitle = plugin.toolbar ? plugin.toolbar.title : null;
-                          const pluginToolbarPreview =
-                              plugin.toolbar && plugin.toolbar.preview
-                                  ? plugin.toolbar.preview
-                                  : () => {
-                                        return "";
-                                    };
-                          return (params ? renderClickable : renderDraggable)(
-                              <div data-role="draggable">
-                                  <Styled.ElementBox>
-                                      <Styled.ElementTitle>
-                                          {typeof pluginToolbarTitle === "function" ? (
-                                              pluginToolbarTitle({ refresh })
-                                          ) : (
-                                              <Typography use="overline">
-                                                  {pluginToolbarTitle}
-                                              </Typography>
-                                          )}
-                                      </Styled.ElementTitle>
-                                      <Styled.ElementPreviewCanvas>
-                                          {pluginToolbarPreview({ theme })}
-                                      </Styled.ElementPreviewCanvas>
-                                  </Styled.ElementBox>
-                              </div>,
-                              plugin
-                          );
-                      })
-                    : emptyViewContent}
-            </Styled.Elements>
-        </Styled.Flex>
+                        refresh={refresh}
+                        renderDraggable={renderDraggable}
+                    />
+                </Accordion>
+            ))}
+        </>
     );
 };
 

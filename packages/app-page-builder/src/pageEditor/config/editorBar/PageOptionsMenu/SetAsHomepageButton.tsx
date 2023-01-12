@@ -1,6 +1,5 @@
 import React, { useCallback } from "react";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { useRouter } from "@webiny/react-router";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { MenuItem } from "@webiny/ui/Menu";
 import { ListItemGraphic } from "@webiny/ui/List";
@@ -9,10 +8,11 @@ import { ReactComponent as HomeIcon } from "~/admin/assets/round-home-24px.svg";
 import { usePageBuilderSettings } from "~/admin/hooks/usePageBuilderSettings";
 import { useAdminPageBuilder } from "~/admin/hooks/useAdminPageBuilder";
 import { usePage } from "~/pageEditor/hooks/usePage";
+import { usePageViewNavigation } from "~/hooks/usePageViewNavigation";
 
 export const SetAsHomepageButton: React.FC = React.memo(() => {
     const [page] = usePage();
-    const { history } = useRouter();
+    const { navigateToPageHome } = usePageViewNavigation();
     const { showSnackbar } = useSnackbar();
     const pageBuilder = useAdminPageBuilder();
 
@@ -50,7 +50,8 @@ export const SetAsHomepageButton: React.FC = React.memo(() => {
             return showSnackbar(error.message);
         }
 
-        history.push(`/page-builder/pages?id=${page.id}`);
+        // TODO: @leopuleo use navigateToLatestFolder() for the rollout of the new ACO
+        navigateToPageHome(page.id);
 
         // Let's wait a bit, because we are also redirecting the user.
         setTimeout(() => showSnackbar("New homepage set successfully!"), 500);

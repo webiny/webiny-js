@@ -30,6 +30,7 @@ import {
     CmsEntryElasticsearchQueryModifierPlugin,
     CmsEntryElasticsearchSortModifierPlugin
 } from "~/plugins";
+import { createFilterPlugins } from "~/operations/entry/elasticsearch/filtering/plugins";
 
 export * from "./plugins";
 
@@ -114,6 +115,10 @@ export const createStorageOperations: StorageOperationsFactory = params => {
          */
         elasticsearchIndexPlugins(),
         /**
+         * Filter plugins used to apply filtering from where conditions to Elasticsearch query.
+         */
+        createFilterPlugins(),
+        /**
          * User defined custom plugins.
          * They are at the end because we can then override existing plugins.
          */
@@ -121,6 +126,7 @@ export const createStorageOperations: StorageOperationsFactory = params => {
     ]);
 
     return {
+        name: "dynamodb:elasticsearch",
         beforeInit: async context => {
             /**
              * Attach the elasticsearch into context if it is not already attached.
@@ -128,6 +134,10 @@ export const createStorageOperations: StorageOperationsFactory = params => {
             if (!context.elasticsearch) {
                 context.elasticsearch = elasticsearch;
             }
+            /**
+             * Pass the plugins to the parent context.
+             */
+            context.plugins.register([dynamoDbPlugins()]);
             /**
              * Collect all required plugins from parent context.
              */
@@ -167,32 +177,27 @@ export const createStorageOperations: StorageOperationsFactory = params => {
                     CmsEntryElasticsearchBodyModifierPlugin.type
                 );
             plugins.register(bodyModifierPlugins);
-
-            /**
-             * Pass the plugins to the parent context.
-             */
-            context.plugins.register([dynamoDbPlugins()]);
         },
         init: async context => {
             /**
              * We need to create indexes on before model create and on clone (create from).
              * Other apps create indexes on locale creation.
              */
-            context.cms.onBeforeModelCreate.subscribe(async ({ model }) => {
+            context.cms.onModelBeforeCreate.subscribe(async ({ model }) => {
                 await createElasticsearchIndex({
                     elasticsearch,
                     model,
                     plugins
                 });
             });
-            context.cms.onBeforeModelCreateFrom.subscribe(async ({ model }) => {
+            context.cms.onModelBeforeCreateFrom.subscribe(async ({ model }) => {
                 await createElasticsearchIndex({
                     elasticsearch,
                     model,
                     plugins
                 });
             });
-            context.cms.onAfterModelDelete.subscribe(async ({ model }) => {
+            context.cms.onModelAfterDelete.subscribe(async ({ model }) => {
                 await deleteElasticsearchIndex({
                     elasticsearch,
                     model

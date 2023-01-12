@@ -6,6 +6,8 @@ import productManage from "./snapshots/product.manage";
 import reviewManage from "./snapshots/review.manage";
 import { CmsModel, CmsModelFieldToGraphQLPlugin } from "~/types";
 import { createManageSDL } from "~/graphql/schema/createManageSDL";
+import { pageModel } from "./mocks/pageWithDynamicZonesModel";
+import pageManage from "./snapshots/page.manage";
 
 describe("MANAGE - ContentModel to SDL", () => {
     const fieldTypePlugins = createGraphQLFields().reduce<
@@ -36,6 +38,13 @@ describe("MANAGE - ContentModel to SDL", () => {
         const sdl = createManageSDL({ model, fieldTypePlugins });
         const prettyGql = prettier.format(sdl.trim(), { parser: "graphql" });
         const prettySnapshot = prettier.format(reviewManage.trim(), { parser: "graphql" });
+        expect(prettyGql).toBe(prettySnapshot);
+    });
+
+    test("Dynamic Zone SDL", async () => {
+        const sdl = createManageSDL({ model: pageModel as any, fieldTypePlugins });
+        const prettyGql = prettier.format(sdl.trim(), { parser: "graphql" });
+        const prettySnapshot = prettier.format(pageManage.trim(), { parser: "graphql" });
         expect(prettyGql).toBe(prettySnapshot);
     });
 });
