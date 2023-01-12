@@ -2,23 +2,38 @@ import { createTopic } from "@webiny/pubsub";
 import {
     ApwChangeRequestCrud,
     CreateApwParams,
-    OnAfterChangeRequestCreateTopicParams,
-    OnAfterChangeRequestDeleteTopicParams,
-    OnAfterChangeRequestUpdateTopicParams,
-    OnBeforeChangeRequestCreateTopicParams,
-    OnBeforeChangeRequestDeleteTopicParams,
-    OnBeforeChangeRequestUpdateTopicParams
+    OnChangeRequestAfterCreateTopicParams,
+    OnChangeRequestAfterDeleteTopicParams,
+    OnChangeRequestAfterUpdateTopicParams,
+    OnChangeRequestBeforeCreateTopicParams,
+    OnChangeRequestBeforeDeleteTopicParams,
+    OnChangeRequestBeforeUpdateTopicParams
 } from "~/types";
 
 export function createChangeRequestMethods({
     storageOperations
 }: CreateApwParams): ApwChangeRequestCrud {
-    const onBeforeChangeRequestCreate = createTopic<OnBeforeChangeRequestCreateTopicParams>();
-    const onAfterChangeRequestCreate = createTopic<OnAfterChangeRequestCreateTopicParams>();
-    const onBeforeChangeRequestUpdate = createTopic<OnBeforeChangeRequestUpdateTopicParams>();
-    const onAfterChangeRequestUpdate = createTopic<OnAfterChangeRequestUpdateTopicParams>();
-    const onBeforeChangeRequestDelete = createTopic<OnBeforeChangeRequestDeleteTopicParams>();
-    const onAfterChangeRequestDelete = createTopic<OnAfterChangeRequestDeleteTopicParams>();
+    // create
+    const onChangeRequestBeforeCreate = createTopic<OnChangeRequestBeforeCreateTopicParams>(
+        "apw.onChangeRequestBeforeCreate"
+    );
+    const onChangeRequestAfterCreate = createTopic<OnChangeRequestAfterCreateTopicParams>(
+        "apw.onChangeRequestAfterCreate"
+    );
+    // update
+    const onChangeRequestBeforeUpdate = createTopic<OnChangeRequestBeforeUpdateTopicParams>(
+        "apw.onChangeRequestBeforeUpdate"
+    );
+    const onChangeRequestAfterUpdate = createTopic<OnChangeRequestAfterUpdateTopicParams>(
+        "apw.onChangeRequestAfterUpdate"
+    );
+    // delete
+    const onChangeRequestBeforeDelete = createTopic<OnChangeRequestBeforeDeleteTopicParams>(
+        "apw.onChangeRequestBeforeDelete"
+    );
+    const onChangeRequestAfterDelete = createTopic<OnChangeRequestAfterDeleteTopicParams>(
+        "apw.onChangeRequestAfterDelete"
+    );
 
     return {
         async get(id) {
@@ -28,22 +43,22 @@ export function createChangeRequestMethods({
             return storageOperations.listChangeRequests(params);
         },
         async create(data) {
-            await onBeforeChangeRequestCreate.publish({ input: data });
+            await onChangeRequestBeforeCreate.publish({ input: data });
 
             const changeRequest = await storageOperations.createChangeRequest({ data });
 
-            await onAfterChangeRequestCreate.publish({ changeRequest });
+            await onChangeRequestAfterCreate.publish({ changeRequest });
 
             return changeRequest;
         },
         async update(id, data) {
             const original = await storageOperations.getChangeRequest({ id });
 
-            await onBeforeChangeRequestUpdate.publish({ original, input: { id, data } });
+            await onChangeRequestBeforeUpdate.publish({ original, input: { id, data } });
 
             const changeRequest = await storageOperations.updateChangeRequest({ id, data });
 
-            await onAfterChangeRequestUpdate.publish({
+            await onChangeRequestAfterUpdate.publish({
                 original,
                 input: { id, data },
                 changeRequest
@@ -54,22 +69,22 @@ export function createChangeRequestMethods({
         async delete(id: string) {
             const changeRequest = await storageOperations.getChangeRequest({ id });
 
-            await onBeforeChangeRequestDelete.publish({ changeRequest });
+            await onChangeRequestBeforeDelete.publish({ changeRequest });
 
             await storageOperations.deleteChangeRequest({ id });
 
-            await onAfterChangeRequestDelete.publish({ changeRequest });
+            await onChangeRequestAfterDelete.publish({ changeRequest });
 
             return true;
         },
         /**
          * Lifecycle events
          */
-        onBeforeChangeRequestCreate,
-        onAfterChangeRequestCreate,
-        onBeforeChangeRequestUpdate,
-        onAfterChangeRequestUpdate,
-        onBeforeChangeRequestDelete,
-        onAfterChangeRequestDelete
+        onChangeRequestBeforeCreate,
+        onChangeRequestAfterCreate,
+        onChangeRequestBeforeUpdate,
+        onChangeRequestAfterUpdate,
+        onChangeRequestBeforeDelete,
+        onChangeRequestAfterDelete
     };
 }

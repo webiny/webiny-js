@@ -8,7 +8,7 @@ import { Tooltip } from "@webiny/ui/Tooltip";
 import { useHotkeys } from "react-hotkeyz";
 import { FormName, formNameWrapper, NameInputWrapper, NameWrapper } from "./NameStyled";
 import { i18n } from "@webiny/app/i18n";
-import { useContentModelEditor } from "~/admin/components/ContentModelEditor/useContentModelEditor";
+import { useModelEditor } from "~/admin/hooks";
 
 const t = i18n.namespace("ContentModelEditor.Name");
 
@@ -19,7 +19,7 @@ declare global {
 }
 
 export const Name: React.FC = () => {
-    const { data, setData } = useContentModelEditor();
+    const { data, setData } = useModelEditor();
     const [localName, setLocalName] = useState<string>("");
     const [editingEnabled, setEditing] = useState<boolean>(false);
 

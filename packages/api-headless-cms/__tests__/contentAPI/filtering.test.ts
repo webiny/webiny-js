@@ -1056,7 +1056,6 @@ describe("filtering", () => {
     test("should filter entries by empty datetime field", async () => {
         const categoryManager = useCategoryManageHandler(manageOpts);
         const productManager = useProductManageHandler(manageOpts);
-        // const productReader = useProductReadHandler(readOpts);
 
         const group = await setupContentModelGroup(mainManager);
         const { category: categoryModel } = await setupContentModels(mainManager, group, [
@@ -1554,7 +1553,7 @@ describe("filtering", () => {
         const articleAnotherManager = useArticleManageHandler({
             ...manageOpts,
             identity: {
-                id: "87654321",
+                id: "id-87654321",
                 displayName: "Jane Doe",
                 type: "admin"
             }
@@ -1607,7 +1606,7 @@ describe("filtering", () => {
 
         const [listEq123Response] = await articleManager.listArticles({
             where: {
-                createdBy: "12345678"
+                createdBy: "id-12345678"
             }
         });
 
@@ -1627,7 +1626,7 @@ describe("filtering", () => {
 
         const [listEq4321Response] = await articleManager.listArticles({
             where: {
-                createdBy: "87654321"
+                createdBy: "id-87654321"
             }
         });
 
@@ -1647,7 +1646,7 @@ describe("filtering", () => {
 
         const [listNotEqResponse] = await articleManager.listArticles({
             where: {
-                createdBy_not: "12345678"
+                createdBy_not: "id-12345678"
             }
         });
 
@@ -1667,7 +1666,7 @@ describe("filtering", () => {
 
         const [listInResponse] = await articleManager.listArticles({
             where: {
-                createdBy_in: ["12345678"]
+                createdBy_in: ["id-12345678"]
             }
         });
 
@@ -1687,7 +1686,7 @@ describe("filtering", () => {
 
         const [listNotInResponse] = await articleManager.listArticles({
             where: {
-                createdBy_not_in: ["87654321"]
+                createdBy_not_in: ["id-87654321"]
             }
         });
 
@@ -1707,7 +1706,7 @@ describe("filtering", () => {
 
         const [listNotInAllResponse] = await articleManager.listArticles({
             where: {
-                createdBy_not_in: ["87654321", "12345678"]
+                createdBy_not_in: ["id-87654321", "id-12345678"]
             }
         });
 
@@ -1731,7 +1730,7 @@ describe("filtering", () => {
         const articleAnotherManager = useArticleManageHandler({
             ...manageOpts,
             identity: {
-                id: "87654321",
+                id: "id-87654321",
                 displayName: "Jane Doe",
                 type: "admin"
             }
@@ -1783,7 +1782,7 @@ describe("filtering", () => {
 
         const [listEq123Response] = await articleManager.listArticles({
             where: {
-                ownedBy: "12345678"
+                ownedBy: "id-12345678"
             }
         });
 
@@ -1803,7 +1802,7 @@ describe("filtering", () => {
 
         const [listEq4321Response] = await articleManager.listArticles({
             where: {
-                ownedBy: "87654321"
+                ownedBy: "id-87654321"
             }
         });
 
@@ -1823,7 +1822,7 @@ describe("filtering", () => {
 
         const [listNotEqResponse] = await articleManager.listArticles({
             where: {
-                ownedBy_not: "12345678"
+                ownedBy_not: "id-12345678"
             }
         });
 
@@ -1843,7 +1842,7 @@ describe("filtering", () => {
 
         const [listInResponse] = await articleManager.listArticles({
             where: {
-                ownedBy_in: ["12345678"]
+                ownedBy_in: ["id-12345678"]
             }
         });
 
@@ -1863,7 +1862,7 @@ describe("filtering", () => {
 
         const [listNotInResponse] = await articleManager.listArticles({
             where: {
-                ownedBy_not_in: ["87654321"]
+                ownedBy_not_in: ["id-87654321"]
             }
         });
 
@@ -1883,7 +1882,7 @@ describe("filtering", () => {
 
         const [listNotInAllResponse] = await articleManager.listArticles({
             where: {
-                ownedBy_not_in: ["87654321", "12345678"]
+                ownedBy_not_in: ["id-87654321", "id-12345678"]
             }
         });
 

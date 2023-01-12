@@ -49,7 +49,7 @@ const linkStyles = css({
             maxWidth: 180,
             display: "block"
         },
-        ".mdc-typography--subtitle2": {
+        ".mdc-typography--body2": {
             overflow: "hidden",
             whiteSpace: "nowrap",
             textOverflow: "ellipsis",
@@ -82,7 +82,7 @@ export const UserInfo = makeComposable("UserInfo", () => {
                     <h3>
                         <Typography use={"headline6"}>{displayName}</Typography>
                     </h3>
-                    <Typography use={"subtitle2"}>{id}</Typography>
+                    <Typography use={"body2"}>{id}</Typography>
                 </div>
             </ListItem>
         </div>

@@ -4,6 +4,8 @@ import { createPulumiApp, PulumiAppParamCallback } from "@webiny/pulumi";
 import { tagResources } from "~/utils";
 import { createPrivateAppBucket } from "../createAppBucket";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
+import * as pulumi from "@pulumi/pulumi";
+import { CoreOutput } from "../common/CoreOutput";
 
 export type ReactPulumiApp = ReturnType<typeof createReactPulumiApp>;
 
@@ -35,6 +37,9 @@ export const createReactPulumiApp = (projectAppParams: CreateReactPulumiAppParam
         config: projectAppParams,
         program: async app => {
             const { name } = projectAppParams;
+
+            // Register core output as a module available for all other modules
+            const core = app.addModule(CoreOutput);
 
             // Overrides must be applied via a handler, registered at the very start of the program.
             // By doing this, we're ensuring user's adjustments are not applied to late.
@@ -98,6 +103,33 @@ export const createReactPulumiApp = (projectAppParams: CreateReactPulumiAppParam
                 WbyAppName: name,
                 WbyProjectName: String(process.env["WEBINY_PROJECT_NAME"]),
                 WbyEnvironment: String(process.env["WEBINY_ENV"])
+            });
+
+            /**
+             * We need to store the appUrl to the admin settings item in the dynamodb
+             */
+            app.addResource(aws.dynamodb.TableItem, {
+                name: "adminSettings",
+                config: {
+                    tableName: core.primaryDynamodbTableName,
+                    hashKey: core.primaryDynamodbTableHashKey,
+                    rangeKey: pulumi
+                        .output(core.primaryDynamodbTableRangeKey)
+                        .apply(key => key || "SK"),
+                    item: pulumi.interpolate`{
+                          "PK": {"S": "ADMIN#SETTINGS"},
+                          "SK": {"S": "${app.params.run.variant || "default"}"},
+                          "data": {
+                            "M": {
+                              "appUrl": {
+                                "S": "${cloudfront.output.domainName.apply(
+                                    value => `https://${value}`
+                                )}"
+                              }
+                            }
+                          }
+                        }`
+                }
             });
 
             return {

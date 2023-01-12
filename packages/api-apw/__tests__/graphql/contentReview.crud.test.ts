@@ -1,20 +1,29 @@
 import { ApwContentReviewStepStatus } from "~/types";
 import { createSetupForPageContentReview } from "../utils/helpers";
 import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
+import { createTransport } from "@webiny/api-mailer";
+
+jest.mock("~/plugins/hooks/notifications/appUrl", () => {
+    return {
+        getAppUrl: async () => {
+            return {
+                appUrl: "https://webiny.local"
+            };
+        }
+    };
+});
 
 describe("Content Review crud test", () => {
-    const options = {
-        path: "manage/en-US"
+    const identityRoot = {
+        id: "root",
+        displayName: "root",
+        type: "admin",
+        email: "testing@webiny.com"
     };
 
-    const identityRoot = { id: "root", displayName: "root", type: "admin" };
-
-    const gqlHandler = usePageBuilderHandler({
-        ...options
-    });
+    const gqlHandler = usePageBuilderHandler();
 
     const rootGqlHandler = usePageBuilderHandler({
-        ...options,
         identity: identityRoot
     });
 
@@ -71,7 +80,7 @@ describe("Content Review crud test", () => {
                                 type: "admin"
                             },
                             title: expect.any(String),
-                            status: "underReview",
+                            reviewStatus: "underReview",
                             steps: workflow.steps.map((_, index) => ({
                                 status:
                                     index === 0
@@ -118,7 +127,7 @@ describe("Content Review crud test", () => {
                                 type: "admin"
                             },
                             title: expect.any(String),
-                            status: "underReview",
+                            reviewStatus: "underReview",
                             steps: workflow.steps.map((_, index) => ({
                                 status:
                                     index === 0
@@ -167,7 +176,7 @@ describe("Content Review crud test", () => {
                                     type: "admin"
                                 },
                                 title: expect.any(String),
-                                status: "underReview",
+                                reviewStatus: "underReview",
                                 steps: workflow.steps.map((_, index) => ({
                                     status:
                                         index === 0
@@ -252,11 +261,24 @@ describe("Content Review crud test", () => {
         /*
          Create a content review entry.
         */
-        await createContentReviewMutation({
+        const [createContentReviewResponse] = await createContentReviewMutation({
             data: {
                 content: {
                     id: page.id,
                     type: "page"
+                }
+            }
+        });
+
+        expect(createContentReviewResponse).toMatchObject({
+            data: {
+                apw: {
+                    createContentReview: {
+                        data: {
+                            id: expect.any(String)
+                        },
+                        error: null
+                    }
                 }
             }
         });
@@ -266,7 +288,7 @@ describe("Content Review crud test", () => {
          */
         const [listContentReviewsResponse] = await listContentReviewsQuery({
             where: {
-                status: "requiresMyAttention"
+                reviewStatus: "requiresMyAttention"
             }
         });
         expect(listContentReviewsResponse).toEqual({
@@ -284,7 +306,7 @@ describe("Content Review crud test", () => {
                                     type: "admin"
                                 },
                                 title: expect.any(String),
-                                status: "underReview",
+                                reviewStatus: "underReview",
                                 steps: workflow.steps.map((_, index) => ({
                                     status:
                                         index === 0
@@ -320,7 +342,7 @@ describe("Content Review crud test", () => {
          */
         const [listContentReviewsRootResponse] = await rootGqlHandler.listContentReviewsQuery({
             where: {
-                status: "requiresMyAttention"
+                reviewStatus: "requiresMyAttention"
             }
         });
         expect(listContentReviewsRootResponse).toEqual({
@@ -358,7 +380,7 @@ describe("Content Review crud test", () => {
                                     type: "admin"
                                 },
                                 title: expect.any(String),
-                                status: "underReview",
+                                reviewStatus: "underReview",
                                 steps: expect.arrayContaining([
                                     expect.objectContaining({
                                         status: expect.any(String),
@@ -387,5 +409,68 @@ describe("Content Review crud test", () => {
                 }
             }
         });
+    });
+
+    it("should send an e-mail to all reviewers after the content review was created", async () => {
+        const fn = jest.fn(() => {
+            return null;
+        });
+
+        const handler = usePageBuilderHandler({
+            identity: {
+                id: "mockIdentityId",
+                type: "admin",
+                displayName: "Mock Identity",
+                email: "mock@webiny.local"
+            },
+            plugins: [
+                createTransport(async () => {
+                    return {
+                        name: "test-dummy-transport",
+                        send: async () => {
+                            fn.apply(null);
+                            return {
+                                result: null,
+                                error: null
+                            };
+                        }
+                    };
+                })
+            ]
+        });
+
+        await handler.securityIdentity.login();
+        await gqlHandler.securityIdentity.login();
+        await rootGqlHandler.securityIdentity.login();
+
+        const { page } = await setup();
+        /*
+         Create a content review entry.
+        */
+        const [createContentReviewResponse] = await handler.createContentReviewMutation({
+            data: {
+                content: {
+                    id: page.id,
+                    type: "page"
+                }
+            }
+        });
+
+        expect(createContentReviewResponse).toMatchObject({
+            data: {
+                apw: {
+                    createContentReview: {
+                        data: {
+                            id: expect.any(String)
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+        /**
+         * Test expects the mock function to be called as it represents creating notification text and body.
+         */
+        expect(fn).toBeCalledTimes(1);
     });
 });

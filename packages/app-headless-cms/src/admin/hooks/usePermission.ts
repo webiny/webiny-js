@@ -26,6 +26,11 @@ export const usePermission = () => {
     const canRead = useCallback(
         (permissionName: string): boolean => {
             const permission = getPermission<CmsSecurityPermission>(permissionName);
+
+            if (hasFullAccess) {
+                return true;
+            }
+
             if (!permission) {
                 return false;
             }
@@ -36,7 +41,7 @@ export const usePermission = () => {
 
             return permission.rwd.includes("r");
         },
-        [identity]
+        [identity, hasFullAccess]
     );
 
     const canReadEntries = useCallback(
@@ -174,44 +179,6 @@ export const usePermission = () => {
         [identity, hasFullAccess]
     );
 
-    const canRequestReview = useCallback(
-        (permissionName: string): boolean => {
-            if (hasFullAccess) {
-                return true;
-            }
-            const permission = getPermission<CmsSecurityPermission>(permissionName);
-
-            if (!permission) {
-                return false;
-            }
-            if (typeof permission.pw === "string") {
-                return permission.pw.includes("r");
-            }
-
-            return false;
-        },
-        [identity, hasFullAccess]
-    );
-
-    const canRequestChange = useCallback(
-        (permissionName: string): boolean => {
-            if (hasFullAccess) {
-                return true;
-            }
-            const permission = getPermission<CmsSecurityPermission>(permissionName);
-
-            if (!permission) {
-                return false;
-            }
-            if (typeof permission.pw === "string") {
-                return permission.pw.includes("c");
-            }
-
-            return false;
-        },
-        [identity, hasFullAccess]
-    );
-
     const canReadContentModels = canRead("cms.contentModel");
     const canReadContentModelGroups = canRead("cms.contentModelGroup");
     const canCreateContentModels = canCreate("cms.contentModel");
@@ -227,8 +194,6 @@ export const usePermission = () => {
         canDelete,
         canPublish,
         canUnpublish,
-        canRequestReview,
-        canRequestChange,
         canReadContentModels,
         canReadContentModelGroups,
         canCreateContentModels,

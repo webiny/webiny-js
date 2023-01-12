@@ -1,18 +1,20 @@
 import WebinyError from "@webiny/error";
 import { SearchBody as esSearchBody } from "elastic-ts";
-import { decodeCursor } from "@webiny/api-elasticsearch/cursors";
+import {
+    applyWhere,
+    createLimit,
+    createSort,
+    decodeCursor,
+    ElasticsearchFieldPlugin,
+    getElasticsearchOperatorPluginsByLocale
+} from "@webiny/api-elasticsearch";
 import { ElasticsearchBoolQueryConfig } from "@webiny/api-elasticsearch/types";
 import { PageStorageOperationsListWhere } from "@webiny/api-page-builder/types";
-import { createSort } from "@webiny/api-elasticsearch/sort";
-import { createLimit } from "@webiny/api-elasticsearch/limit";
-import { ElasticsearchFieldPlugin } from "@webiny/api-elasticsearch/plugins/definition/ElasticsearchFieldPlugin";
 import { PageElasticsearchFieldPlugin } from "~/plugins/definitions/PageElasticsearchFieldPlugin";
 import { PageElasticsearchSortModifierPlugin } from "~/plugins/definitions/PageElasticsearchSortModifierPlugin";
 import { PageElasticsearchQueryModifierPlugin } from "~/plugins/definitions/PageElasticsearchQueryModifierPlugin";
 import { PageElasticsearchBodyModifierPlugin } from "~/plugins/definitions/PageElasticsearchBodyModifierPlugin";
-import { applyWhere } from "@webiny/api-elasticsearch/where";
 import { PluginsContainer } from "@webiny/plugins";
-import { getElasticsearchOperatorPluginsByLocale } from "@webiny/api-elasticsearch/operators";
 
 interface CreateElasticsearchQueryArgs {
     where: PageStorageOperationsListWhere;

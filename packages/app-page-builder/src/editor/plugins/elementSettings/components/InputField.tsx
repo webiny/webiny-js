@@ -91,7 +91,7 @@ const InputField: React.FC<InputBoxProps> = ({
         <React.Fragment>
             {label && (
                 <div className={labelStyle}>
-                    <Typography use={"subtitle2"}>{label}</Typography>
+                    <Typography use={"body2"}>{label}</Typography>
                 </div>
             )}
             <input

@@ -15,7 +15,7 @@ export class ElasticsearchQueryBuilderOperatorNotPlugin extends ElasticsearchQue
         const { value, path, basePath } = params;
 
         if (value === null) {
-            query.must.push({
+            query.filter.push({
                 exists: {
                     field: path
                 }
@@ -23,10 +23,22 @@ export class ElasticsearchQueryBuilderOperatorNotPlugin extends ElasticsearchQue
             return;
         }
 
-        const useBasePath = typeof value !== "string";
+        const typeOf = typeof value;
+
+        if (typeOf === "boolean") {
+            query.filter.push({
+                term: {
+                    [basePath]: !value
+                }
+            });
+            return;
+        }
+
+        const useBasePath = typeOf !== "string";
+        const valuePath = useBasePath ? basePath : path;
         query.must_not.push({
             term: {
-                [useBasePath ? basePath : path]: value
+                [valuePath]: value
             }
         });
     }

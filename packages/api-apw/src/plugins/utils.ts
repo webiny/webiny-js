@@ -1,5 +1,4 @@
 import get from "lodash/get";
-import { customAlphabet } from "nanoid";
 import { CmsModelField } from "@webiny/api-headless-cms/types";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import {
@@ -16,11 +15,9 @@ import {
     WorkflowScopeTypes
 } from "~/types";
 
-const ALPHANUMERIC = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-export const getNanoid = customAlphabet(ALPHANUMERIC, 10);
-
 export interface CreateModelFieldParams
     extends Omit<CmsModelField, "id" | "storageId" | "fieldId"> {
+    fieldId?: string;
     parent: string;
 }
 

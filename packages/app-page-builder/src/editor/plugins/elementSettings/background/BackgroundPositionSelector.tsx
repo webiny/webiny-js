@@ -53,7 +53,7 @@ interface BackgroundPositionSelectorProps {
 const BackgroundPositionSelector: React.FC<BackgroundPositionSelectorProps> = props => {
     return (
         <PositionWrapper>
-            <Typography style={{ width: "60%" }} use={"subtitle2"}>
+            <Typography style={{ width: "60%" }} use={"body2"}>
                 Position
             </Typography>
             <Ul className={classNames({ disabled: props.disabled })}>

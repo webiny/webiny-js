@@ -25,6 +25,10 @@ export const elasticsearchFields = [
         field: "version",
         path: "version"
     }),
+    new CmsEntryElasticsearchFieldPlugin({
+        field: "status",
+        path: "status"
+    }),
     /**
      * Always add the ALL fields plugin because of the keyword/path build.
      */

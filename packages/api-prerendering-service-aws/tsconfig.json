@@ -6,7 +6,8 @@
     { "path": "../error" },
     { "path": "../api" },
     { "path": "../handler-aws" },
-    { "path": "../handler-client" }
+    { "path": "../handler-client" },
+    { "path": "../utils" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -23,7 +24,9 @@
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
       "@webiny/handler-aws": ["../handler-aws/src"],
       "@webiny/handler-client/*": ["../handler-client/src/*"],
-      "@webiny/handler-client": ["../handler-client/src"]
+      "@webiny/handler-client": ["../handler-client/src"],
+      "@webiny/utils/*": ["../utils/src/*"],
+      "@webiny/utils": ["../utils/src"]
     },
     "baseUrl": "."
   }

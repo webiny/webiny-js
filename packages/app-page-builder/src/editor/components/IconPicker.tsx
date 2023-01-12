@@ -1,13 +1,13 @@
-import React, { CSSProperties, useCallback, useMemo, useState } from "react";
+import React, { CSSProperties, useCallback, useMemo, useState, useRef, useEffect } from "react";
 import { css } from "emotion";
 import { plugins } from "@webiny/plugins";
 import { Typography } from "@webiny/ui/Typography";
 import { Grid } from "react-virtualized";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { DelayedOnChange } from "./DelayedOnChange";
+import { DelayedOnChange } from "@webiny/ui/DelayedOnChange";
 import { Menu } from "@webiny/ui/Menu";
 import { Input } from "@webiny/ui/Input";
-import { PbIcon, PbIconsPlugin } from "../../types";
+import { PbIcon, PbIconsPlugin } from "~/types";
 import classNames from "classnames";
 import { COLORS } from "../plugins/elementSettings/components/StyledComponents";
 // Icons
@@ -168,6 +168,17 @@ const IconPicker: React.FC<IconPickerPropsType> = ({
     removeIcon = noop
 }) => {
     const [filter, setFilter] = useState<string>("");
+    const [mustRenderGrid, setMustRenderGrid] = useState(false);
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        setTimeout(() => {
+            if (mustRenderGrid && inputRef.current) {
+                inputRef.current.focus();
+            }
+        }, 50);
+    }, [mustRenderGrid]);
+
     // Icon "Grid" props
     const columnCount = useInSidebar ? 3 : 6;
     const columnWidth = useInSidebar ? 85 : 100;
@@ -266,7 +277,7 @@ const IconPicker: React.FC<IconPickerPropsType> = ({
                     <DelayedOnChange value={filter} onChange={onFilterChange}>
                         {({ value, onChange }) => (
                             <Input
-                                autoFocus
+                                inputRef={inputRef}
                                 className={searchInput}
                                 value={value}
                                 onChange={onChange}
@@ -295,13 +306,15 @@ const IconPicker: React.FC<IconPickerPropsType> = ({
         return (
             <div className={iconPickerWrapper}>
                 <Menu
+                    onOpen={() => setMustRenderGrid(true)}
+                    onClose={() => setMustRenderGrid(false)}
                     handle={
                         <div className={classNames("button", "menuHandler", handlerClassName)}>
                             <IconPickerIcon />
                         </div>
                     }
                 >
-                    {renderGrid}
+                    {mustRenderGrid && renderGrid}
                 </Menu>
                 <div
                     className={classNames("button", "iconContainer", {

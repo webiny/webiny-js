@@ -1,6 +1,6 @@
 import React from "react";
 import dotProp from "dot-prop-immutable";
-import { CmsEditorField, CmsEditorFieldRendererPlugin } from "~/types";
+import { CmsModelField, CmsEditorFieldRendererPlugin } from "~/types";
 import { i18n } from "@webiny/app/i18n";
 import { Cell, GridInner } from "@webiny/ui/Grid";
 import { imageWrapperStyles } from "./utils";
@@ -25,7 +25,7 @@ const FileUploadWrapper = styled("div")({
 interface FieldRendererProps {
     getBind: GetBindCallable;
     Label: React.FC;
-    field: CmsEditorField;
+    field: CmsModelField;
 }
 const FieldRenderer: React.FC<FieldRendererProps> = ({ getBind, Label, field }) => {
     const Bind = getBind();

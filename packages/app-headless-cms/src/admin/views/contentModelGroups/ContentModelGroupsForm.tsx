@@ -16,7 +16,7 @@ import {
     SimpleFormFooter,
     SimpleFormContent
 } from "@webiny/app-admin/components/SimpleForm";
-import IconPicker from "./IconPicker";
+import { IconPicker } from "~/admin/components/IconPicker";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import EmptyView from "@webiny/app-admin/components/EmptyView";
@@ -164,7 +164,7 @@ const ContentModelGroupsForm: React.FC<ContentModelGroupsFormProps> = ({ canCrea
         [id]
     );
 
-    const data: CmsGroup = getQuery.loading
+    const data: CmsGroup | null = getQuery.loading
         ? null
         : get(getQuery, "data.contentModelGroup.data", null);
 

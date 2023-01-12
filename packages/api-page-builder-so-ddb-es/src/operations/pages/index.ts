@@ -11,8 +11,6 @@ import {
     PageStorageOperationsListRevisionsParams,
     PageStorageOperationsListTagsParams,
     PageStorageOperationsPublishParams,
-    PageStorageOperationsRequestChangesParams,
-    PageStorageOperationsRequestReviewParams,
     PageStorageOperationsUnpublishParams,
     PageStorageOperationsUpdateParams
 } from "@webiny/api-page-builder/types";
@@ -26,8 +24,7 @@ import {
     ElasticsearchSearchResponse
 } from "@webiny/api-elasticsearch/types";
 import { configurations } from "~/configurations";
-import { encodeCursor } from "@webiny/api-elasticsearch/cursors";
-import { createLimit } from "@webiny/api-elasticsearch/limit";
+import { encodeCursor, createLimit } from "@webiny/api-elasticsearch";
 import { createElasticsearchQueryBody } from "./elasticsearchQueryBody";
 import { SearchLatestPagesPlugin } from "~/plugins/definitions/SearchLatestPagesPlugin";
 import { SearchPublishedPagesPlugin } from "~/plugins/definitions/SearchPublishedPagesPlugin";
@@ -649,144 +646,6 @@ export const createPageStorageOperations = (
         return page;
     };
 
-    const requestReview = async (
-        params: PageStorageOperationsRequestReviewParams
-    ): Promise<Page> => {
-        const { original, page, latestPage } = params;
-
-        const items = [
-            entity.putBatch({
-                ...page,
-                TYPE: createBasicType(),
-                PK: createPartitionKey(page),
-                SK: createSortKey(page)
-            })
-        ];
-        const esData = getESLatestPageData(plugins, page);
-        items.push(
-            entity.putBatch({
-                ...page,
-                TYPE: createLatestType(),
-                PK: createPartitionKey(page),
-                SK: createLatestSortKey()
-            })
-        );
-
-        try {
-            await batchWriteAll({
-                table: entity.table,
-                items
-            });
-        } catch (ex) {
-            throw new WebinyError(
-                ex.message || "Could not request review on page record.",
-                ex.code || "REQUEST_REVIEW_ERROR",
-                {
-                    original,
-                    page,
-                    latestPage
-                }
-            );
-        }
-        /**
-         * Just return if we do not need to update the Elasticsearch.
-         */
-        if (!esData) {
-            return page;
-        }
-
-        try {
-            await esEntity.put({
-                PK: createPartitionKey(page),
-                SK: createLatestSortKey(),
-                index: configurations.es(page).index,
-                data: esData
-            });
-        } catch (ex) {
-            throw new WebinyError(
-                ex.message || "Could not request review on page Elasticsearch record.",
-                ex.code || "REQUEST_REVIEW_ES_ERROR",
-                {
-                    original,
-                    page,
-                    latestPage
-                }
-            );
-        }
-
-        return page;
-    };
-
-    const requestChanges = async (
-        params: PageStorageOperationsRequestChangesParams
-    ): Promise<Page> => {
-        const { original, page, latestPage } = params;
-
-        const items = [
-            entity.putBatch({
-                ...page,
-                TYPE: createBasicType(),
-                PK: createPartitionKey(page),
-                SK: createSortKey(page)
-            })
-        ];
-        const esData = getESLatestPageData(plugins, page);
-        if (latestPage.id === page.id) {
-            items.push(
-                entity.putBatch({
-                    ...page,
-                    TYPE: createLatestType(),
-                    PK: createPartitionKey(page),
-                    SK: createLatestSortKey()
-                })
-            );
-        }
-
-        try {
-            await batchWriteAll({
-                table: entity.table,
-                items
-            });
-        } catch (ex) {
-            throw new WebinyError(
-                ex.message || "Could not request changes on page record.",
-                ex.code || "REQUEST_CHANGES_ERROR",
-                {
-                    original,
-                    page,
-                    latestPage
-                }
-            );
-        }
-        /**
-         * Just return if we do not need to update the Elasticsearch.
-         */
-        if (!esData) {
-            return page;
-        }
-
-        try {
-            await esEntity.put({
-                PK: createPartitionKey(page),
-                SK: createLatestSortKey(),
-                index: configurations.es(page).index,
-                data: esData
-            });
-        } catch (ex) {
-            throw new WebinyError(
-                ex.message || "Could not request changes on page Elasticsearch record.",
-                ex.code || "REQUEST_CHANGES_ES_ERROR",
-                {
-                    original,
-                    page,
-                    latestPage
-                }
-            );
-        }
-
-        return page;
-    };
-
     const get = async (params: PageStorageOperationsGetParams): Promise<Page | null> => {
         const { where } = params;
         const { pid, id, path, published } = where;
@@ -1072,8 +931,6 @@ export const createPageStorageOperations = (
         deleteAll: deleteAll,
         publish,
         unpublish,
-        requestReview,
-        requestChanges,
         get,
         list,
         listRevisions,

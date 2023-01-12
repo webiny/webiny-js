@@ -51,6 +51,22 @@ const bananaData: Fruit = {
     description: "fruit banana named cms webiny"
 };
 
+const orangeData: Fruit = {
+    name: "Orange",
+    isSomething: false,
+    rating: 109001,
+    numbers: [5, 6, 7.2, 10.18, 12.05],
+    email: "orange@doe.com",
+    url: "https://orange.test",
+    lowerCase: "orange",
+    upperCase: "ORANGE",
+    date: "2020-12-04",
+    dateTime: new Date("2020-12-04T12:12:21").toISOString(),
+    dateTimeZ: "2020-12-03T14:52:41+01:00",
+    time: "13:14:38",
+    description: "fruit orange named"
+};
+
 type CmsEntry<T = Record<string, any>> = T & {
     name: string;
     meta: {
@@ -86,12 +102,16 @@ describe("Content entries", () => {
         ...manageOpts
     });
 
-    const createAndPublishFruit = async (data: any): Promise<CmsEntry<Fruit>> => {
+    const createAndPublishFruit = async (data: any): Promise<CmsEntry<Required<Fruit>>> => {
         const [response] = await createFruit({
             data
         });
 
         const createdFruit = response.data.createFruit.data;
+
+        if (!response.data.createFruit.data) {
+            throw new Error("data missing");
+        }
 
         const [publish] = await publishFruit({
             revision: createdFruit.id
@@ -104,7 +124,8 @@ describe("Content entries", () => {
         return {
             apple: await createAndPublishFruit(appleData),
             strawberry: await createAndPublishFruit(strawberryData),
-            banana: await createAndPublishFruit(bananaData)
+            banana: await createAndPublishFruit(bananaData),
+            orange: await createAndPublishFruit(orangeData)
         };
     };
 
@@ -120,7 +141,7 @@ describe("Content entries", () => {
             () => listFruits({}).then(([data]) => data),
             ({ data }: any) => {
                 const list: any[] = data.listFruits?.data || [];
-                if (list.length !== 3) {
+                if (list.length !== 4) {
                     return false;
                 }
                 if (!expectancy) {
@@ -137,7 +158,7 @@ describe("Content entries", () => {
     };
 
     it("should get content entry by modelId and id", async () => {
-        const { apple, banana, strawberry } = await setupFruits();
+        const { apple, banana, strawberry, orange } = await setupFruits();
 
         const [secondBananaResponse] = await createFruitFrom({
             revision: banana.id
@@ -227,12 +248,13 @@ describe("Content entries", () => {
             {
                 id: strawberry.id,
                 status: "published"
+            },
+            {
+                id: orange.id,
+                status: "published"
             }
         ]);
 
-        // await new Promise(resolve => {
-        //     setTimeout(resolve, 5000);
-        // });
         /**
          * Exact entries queries.
          */
@@ -489,7 +511,7 @@ describe("Content entries", () => {
     });
 
     it("should search for latest entries in given models", async () => {
-        const { apple, banana, strawberry } = await setupFruits();
+        const { apple, banana, strawberry, orange } = await setupFruits();
 
         const [secondBananaResponse] = await createFruitFrom({
             revision: banana.id
@@ -524,6 +546,10 @@ describe("Content entries", () => {
             {
                 id: strawberry.id,
                 status: "published"
+            },
+            {
+                id: orange.id,
+                status: "published"
             }
         ]);
 
@@ -544,6 +570,17 @@ describe("Content entries", () => {
                                 id: banana.id,
                                 entryId: banana.entryId,
                                 title: banana.name
+                            }
+                        },
+                        {
+                            id: orange.id,
+                            entryId: orange.entryId,
+                            title: orange.name,
+                            status: orange.meta.status,
+                            published: {
+                                id: orange.id,
+                                entryId: orange.entryId,
+                                title: orange.name
                             }
                         },
                         {
@@ -583,19 +620,23 @@ describe("Content entries", () => {
     it.each(searchQueries)(
         `should search for latest entries containing "%s" in given models`,
         async (query, titles) => {
-            const { apple, banana, strawberry } = await setupFruits();
+            const { apple, banana, strawberry, orange } = await setupFruits();
 
             await waitFruits("should be second banana as draft", [
                 {
-                    id: apple.id as string,
+                    id: apple.id,
                     status: "published"
                 },
                 {
-                    id: banana.id as string,
+                    id: banana.id,
                     status: "published"
                 },
                 {
-                    id: strawberry.id as string,
+                    id: strawberry.id,
+                    status: "published"
+                },
+                {
+                    id: orange.id,
                     status: "published"
                 }
             ]);

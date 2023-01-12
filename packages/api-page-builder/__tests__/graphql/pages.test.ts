@@ -7,8 +7,19 @@ jest.setTimeout(100000);
 describe("CRUD Test", () => {
     const handler = useGqlHandler();
 
-    const { createCategory, createPage, deletePage, listPages, getPage, updatePage, until } =
-        handler;
+    const {
+        createBlockCategory,
+        createCategory,
+        createPage,
+        createPageBlock,
+        createPageElement,
+        deletePage,
+        listPages,
+        getPage,
+        updatePage,
+        updatePageBlock,
+        until
+    } = handler;
 
     test("create, read, update and delete pages", async () => {
         const [createPageUnknownResponse] = await createPage({ category: "unknown" });
@@ -370,6 +381,106 @@ describe("CRUD Test", () => {
                     }
                 }
             }
+        });
+    });
+
+    test("get page with resolved reference block", async () => {
+        // Create page block and add element inside of it
+        await createBlockCategory({
+            data: {
+                slug: "block-category",
+                name: "block-category-name",
+                icon: "block-category-icon",
+                description: "block-category-description"
+            }
+        });
+
+        const [createPageBlockResponse] = await createPageBlock({
+            data: {
+                name: "block-name",
+                blockCategory: "block-category",
+                preview: { src: "https://test.com/src.jpg" },
+                content: { data: {}, elements: [], type: "block" }
+            }
+        });
+
+        const blockData = createPageBlockResponse.data.pageBuilder.createPageBlock.data;
+
+        const [createPageElementResponse] = await createPageElement({
+            data: {
+                name: "element-name",
+                type: "element",
+                category: "element-category",
+                preview: { src: "https://test.com/element/src.jpg" },
+                content: { some: "element-content" }
+            }
+        });
+
+        const pageElementData = createPageElementResponse.data.pageBuilder.createPageElement.data;
+
+        await updatePageBlock({
+            id: blockData.id,
+            data: {
+                content: {
+                    ...blockData.content,
+                    elements: [...blockData.content.elements, pageElementData]
+                }
+            }
+        });
+
+        // Create page
+        await createCategory({
+            data: {
+                slug: "category-slug",
+                name: "category-name",
+                url: "/category-url/",
+                layout: "category-layout"
+            }
+        });
+
+        const [createPageResponse] = await createPage({
+            category: "category-slug"
+        });
+
+        const pageId = createPageResponse.data.pageBuilder.createPage.data.id;
+
+        // Add block to the page as reference (without elements)
+        await updatePage({
+            id: pageId,
+            data: {
+                content: {
+                    data: {},
+                    elements: [
+                        { data: { blockId: blockData.id }, elements: [], path: [], type: "block" }
+                    ],
+                    path: [],
+                    type: "document"
+                }
+            }
+        });
+
+        // Get page with resolved block (with elements)
+        const [getPageWithReferenceBlockResponse] = await getPage({ id: pageId });
+
+        const resolvedBlockData =
+            getPageWithReferenceBlockResponse.data.pageBuilder.getPage.data.content.elements[0];
+
+        expect(resolvedBlockData).toMatchObject({
+            data: { blockId: blockData.id },
+            elements: [
+                {
+                    id: pageElementData.id,
+                    category: "element-category",
+                    preview: { src: "https://test.com/element/src.jpg" },
+                    name: "element-name",
+                    content: { some: "element-content" },
+                    type: "element",
+                    createdOn: expect.stringMatching(/^20/),
+                    createdBy: defaultIdentity
+                }
+            ],
+            path: [],
+            type: "block"
         });
     });
 });

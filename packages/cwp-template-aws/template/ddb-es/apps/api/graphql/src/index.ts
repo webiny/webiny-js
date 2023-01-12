@@ -16,7 +16,10 @@ import prerenderingServicePlugins from "@webiny/api-prerendering-service-aws/cli
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
-import elasticsearchClientContext from "@webiny/api-elasticsearch";
+import elasticsearchClientContext, {
+    createGzipCompression,
+    createElasticsearchClient
+} from "@webiny/api-elasticsearch";
 import fileManagerPlugins from "@webiny/api-file-manager/plugins";
 import fileManagerDynamoDbElasticStorageOperation from "@webiny/api-file-manager-ddb-es";
 import logsPlugins from "@webiny/handler-logs";
@@ -25,10 +28,9 @@ import { createFormBuilder } from "@webiny/api-form-builder";
 import { createFormBuilderStorageOperations } from "@webiny/api-form-builder-so-ddb-es";
 import { createHeadlessCmsGraphQL, createHeadlessCmsContext } from "@webiny/api-headless-cms";
 import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb-es";
-import elasticsearchDataGzipCompression from "@webiny/api-elasticsearch/plugins/GzipCompression";
+import { createACO } from "@webiny/api-aco";
 import securityPlugins from "./security";
 import tenantManager from "@webiny/api-tenant-manager";
-import { createElasticsearchClient } from "@webiny/api-elasticsearch/client";
 /**
  * APW
  */
@@ -75,7 +77,7 @@ export const handler = createHandler({
             storageOperations: createPageBuilderStorageOperations({
                 documentClient,
                 elasticsearch: elasticsearchClient,
-                plugins: [elasticsearchDataGzipCompression()]
+                plugins: [createGzipCompression()]
             })
         }),
         createPageBuilderGraphQL(),
@@ -93,15 +95,16 @@ export const handler = createHandler({
             storageOperations: createHeadlessCmsStorageOperations({
                 documentClient,
                 elasticsearch: elasticsearchClient,
-                plugins: [elasticsearchDataGzipCompression()]
+                plugins: [createGzipCompression()]
             })
         }),
         createHeadlessCmsGraphQL(),
-        elasticsearchDataGzipCompression(),
+        createGzipCompression(),
         createApwGraphQL(),
         createApwPageBuilderContext({
             storageOperations: createApwSaStorageOperations({ documentClient })
         }),
+        createACO(),
         scaffoldsPlugins()
     ],
     http: { debug }

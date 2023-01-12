@@ -10,15 +10,19 @@ export interface BindComponentRenderPropValidation {
 }
 
 export interface BindComponentRenderPropOnChange<T = any> {
-    (value: T): Promise<void>;
+    (value: T): Promise<void> | void;
 }
 
-export interface FormAPI<T = Record<string, any>> {
+export interface FormAPI<T extends GenericFormData = GenericFormData> {
     data: T;
     submit: (event?: React.SyntheticEvent<any, any>) => Promise<void>;
     setValue: FormSetValue;
     validate: () => Promise<boolean>;
     validateInput: (name: string) => Promise<boolean | any>;
+}
+
+export interface UseBindHook<T = any> extends BindComponentRenderProp<T> {
+    disabled: boolean;
 }
 
 export interface BindComponentRenderProp<T = any, F = Record<string, any>> {
@@ -29,14 +33,14 @@ export interface BindComponentRenderProp<T = any, F = Record<string, any>> {
     validation: BindComponentRenderPropValidation;
 }
 
-export interface BindComponentProps {
+export interface BindComponentProps<T = any> {
     name: string;
     // Form field value can be anything, so we just let it be `any`.
     beforeChange?: (value: any, cb: (value: any) => void) => void;
     afterChange?: (value: any, form: FormAPI) => void;
     defaultValue?: any;
     validators?: Validator | Validator[];
-    children?: ((props: BindComponentRenderProp) => React.ReactElement) | React.ReactElement;
+    children?: ((props: BindComponentRenderProp<T>) => React.ReactElement) | React.ReactElement;
     validate?: Function;
 }
 
@@ -50,21 +54,17 @@ export interface FormSetValue<T = any> {
     (name: string, value: T): void;
 }
 
-/**
- * TODO @ts-refactor
- * Remove any so it is required to send the generic value.
- */
-export interface FormRenderPropParams<T = any> {
-    form: FormAPI;
+export interface FormRenderPropParams<T extends GenericFormData = GenericFormData> {
+    form: FormAPI<T>;
     Bind: BindComponent;
     data: T;
     submit: FormRenderPropParamsSubmit;
     setValue: FormSetValue;
 }
 
-export interface FormData {
+export type GenericFormData = {
     [key: string]: any;
-}
+};
 
 export interface Validation {
     isValid?: boolean;
@@ -72,21 +72,21 @@ export interface Validation {
     [key: string]: any;
 }
 
-export interface FormOnSubmit<T = FormData> {
-    (data: T, form?: FormAPI): void;
+export interface FormOnSubmit<T = GenericFormData> {
+    (data: T, form: FormAPI<T>): void;
 }
 
-export interface FormProps<T extends Record<string, any> = Record<string, any>> {
+export interface FormProps<T extends GenericFormData = GenericFormData> {
     invalidFields?: { [key: string]: any };
-    data?: FormData & T;
+    data?: Partial<T>;
     disabled?: boolean | Function;
     validateOnFirstSubmit?: boolean;
     submitOnEnter?: boolean;
-    onSubmit?: FormOnSubmit;
+    onSubmit?: FormOnSubmit<T>;
     onInvalid?: () => void;
-    onChange?: FormOnSubmit;
-    children(params: FormRenderPropParams): React.ReactElement;
-    ref: React.MutableRefObject<any>;
+    onChange?: FormOnSubmit<T>;
+    children(params: FormRenderPropParams<T>): React.ReactElement;
+    ref?: React.MutableRefObject<any>;
 }
 
 /**

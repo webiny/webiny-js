@@ -153,7 +153,15 @@ export interface AdminUsers {
     onUserAfterUpdate: Topic<AfterUpdateEvent>;
     onUserBeforeDelete: Topic<BeforeDeleteEvent>;
     onUserAfterDelete: Topic<AfterDeleteEvent>;
+    /**
+     * Deprecated in 5.34.0 - will be removed in 5.36.0
+     * @deprecated
+     */
     onBeforeInstall: Topic<InstallEvent>;
+    onSystemBeforeInstall: Topic<InstallEvent>;
+    /**
+     * Errors
+     */
     onUserCreateError: Topic<CreateErrorEvent>;
     onUserUpdateError: Topic<UpdateErrorEvent>;
     onUserDeleteError: Topic<DeleteErrorEvent>;
@@ -161,7 +169,12 @@ export interface AdminUsers {
      * This will be executed during Webiny installation.
      */
     onInstall: Topic<InstallEvent>;
+    /**
+     * Deprecated in 5.34.0 - will be removed in 5.36.0
+     * @deprecated
+     */
     onAfterInstall: Topic<InstallEvent>;
+    onSystemAfterInstall: Topic<InstallEvent>;
     onCleanup: Topic<ErrorEvent>;
     getStorageOperations(): AdminUsersStorageOperations;
     isEmailTaken(email: string): Promise<void>;

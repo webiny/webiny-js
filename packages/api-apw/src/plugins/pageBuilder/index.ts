@@ -7,6 +7,10 @@ import { updateContentReviewStatus } from "./updateContentReviewStatus";
 import { linkWorkflowToPage } from "./linkWorkflowToPage";
 import { PluginsContainer } from "@webiny/plugins";
 import { PageApwSettingsGetterPlugin } from "~/plugins/pageBuilder/PageApwSettingsGetterPlugin";
+import { createCommentNotification } from "./notifications/commentNotification";
+import { createContentUrlPlugin } from "./notifications/contentUrl";
+import { createChangeRequestNotification } from "./notifications/changeRequestNotification";
+import { createContentReviewNotification } from "./notifications/contentReviewNotification";
 
 export interface ApwPageBuilderPluginsParams {
     pageBuilder: PageBuilderContextObject;
@@ -18,7 +22,13 @@ export interface ApwPageBuilderPluginsParams {
 export const apwPageBuilderHooks = (params: ApwPageBuilderPluginsParams) => {
     const { pageBuilder, apw, security, plugins } = params;
 
-    plugins.register(new PageApwSettingsGetterPlugin());
+    plugins.register([
+        new PageApwSettingsGetterPlugin(),
+        createCommentNotification(),
+        createChangeRequestNotification(),
+        createContentUrlPlugin(),
+        createContentReviewNotification()
+    ]);
 
     triggerContentReview({
         apw,

@@ -17,7 +17,7 @@ on:
 jobs:
   analyze:
     name: Analyze
-    runs-on: webiny-js-4-cores
+    runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false

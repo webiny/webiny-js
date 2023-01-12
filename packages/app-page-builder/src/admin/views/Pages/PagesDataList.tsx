@@ -38,7 +38,7 @@ import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/fil
 import SearchUI from "@webiny/app-admin/components/SearchUI";
 import * as GQLCache from "~/admin/views/Pages/cache";
 import { ReactComponent as FileUploadIcon } from "~/editor/plugins/defaultBar/components/icons/file_upload.svg";
-import useImportPageDialog from "~/editor/plugins/defaultBar/components/ImportPageButton/useImportPageDialog";
+import useImportPageDialog from "~/editor/plugins/defaultBar/components/ImportButton/page/useImportPageDialog";
 import { useMultiSelect } from "~/admin/views/Pages/hooks/useMultiSelect";
 import { ExportPagesButton } from "~/editor/plugins/defaultBar/components/ExportPageButton";
 import { PbCategory } from "~/types";
@@ -239,12 +239,6 @@ const PagesDataList: React.FC<PagesDataListProps> = ({ onCreatePage, canCreate, 
                                         <option value={"draft"}>{t`Draft`}</option>
                                         <option value={"published"}>{t`Published`}</option>
                                         <option value={"unpublished"}>{t`Unpublished`}</option>
-                                        <option
-                                            value={"reviewRequested"}
-                                        >{t`Review requested`}</option>
-                                        <option
-                                            value={"changesRequested"}
-                                        >{t`Changes requested`}</option>
                                     </Select>
                                 </Bind>
                             </Cell>
@@ -366,7 +360,7 @@ const PagesDataList: React.FC<PagesDataListProps> = ({ onCreatePage, canCreate, 
                                         )}
                                     </ListItemText>
                                     <ListItemMeta className={rightAlign}>
-                                        <Typography use={"subtitle2"}>
+                                        <Typography use={"body2"}>
                                             {`${statusesLabels[page.status]} (v${page.version})`}
                                         </Typography>
                                     </ListItemMeta>

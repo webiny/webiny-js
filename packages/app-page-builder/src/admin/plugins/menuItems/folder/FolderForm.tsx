@@ -22,12 +22,7 @@ interface FolderFormProps {
 const FolderForm: React.FC<FolderFormProps> = ({ data, onSubmit, onCancel }) => {
     return (
         <Elevation z={4} css={menuFolderFormStyle}>
-            <Form
-                data={data}
-                onSubmit={data => {
-                    return onSubmit(data);
-                }}
-            >
+            <Form data={data} onSubmit={onSubmit}>
                 {({ submit, Bind }) => (
                     <>
                         <Grid>

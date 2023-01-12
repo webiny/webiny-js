@@ -1,6 +1,16 @@
 @import "./mixins/border";
 @import "./mixins/background";
 
+html {
+  scroll-behavior: smooth;
+}
+
+@media screen and (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
 .webiny-pb-page {
   min-height: 100vh;
   position: relative;
@@ -74,6 +84,8 @@
 
   justify-content: var(--desktop-justify-content);
   align-items: var(--desktop-align-items);
+
+  box-shadow: var(--box-shadow);
 }
 // Some styles need more specificity
 .webiny-pb-media-query--desktop .webiny-pb-base-page-element-style {

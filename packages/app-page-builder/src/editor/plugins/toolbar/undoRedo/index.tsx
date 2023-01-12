@@ -6,7 +6,6 @@ import { PbEditorToolbarBottomPlugin } from "~/types";
 import Action from "../Action";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import { useActiveElement } from "~/editor/hooks/useActiveElement";
-import { UpdateDocumentActionEvent } from "~/editor/recoil/actions";
 
 const osFamily = platform.os ? platform.os.family : null;
 const metaKey = osFamily === "OS X" ? "CMD" : "CTRL";
@@ -15,13 +14,12 @@ export const undo: PbEditorToolbarBottomPlugin = {
     name: "pb-editor-toolbar-undo",
     type: "pb-editor-toolbar-bottom",
     renderAction() {
-        const { undo, trigger } = useEventActionHandler();
+        const { undo } = useEventActionHandler();
         const [, setActiveElement] = useActiveElement();
 
-        const onClick = async () => {
+        const onClick = () => {
             undo();
             setActiveElement(null);
-            await trigger(new UpdateDocumentActionEvent({ history: false, debounce: true }));
         };
         return (
             <Action
@@ -38,13 +36,12 @@ export const redo: PbEditorToolbarBottomPlugin = {
     name: "pb-editor-toolbar-redo",
     type: "pb-editor-toolbar-bottom",
     renderAction() {
-        const { redo, trigger } = useEventActionHandler();
+        const { redo } = useEventActionHandler();
         const [, setActiveElement] = useActiveElement();
 
-        const onClick = async () => {
+        const onClick = () => {
             setActiveElement(null);
             redo();
-            await trigger(new UpdateDocumentActionEvent({ history: false, debounce: true }));
         };
 
         return (

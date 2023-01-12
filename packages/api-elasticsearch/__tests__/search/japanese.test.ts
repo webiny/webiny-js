@@ -1,5 +1,5 @@
 import { createElasticsearchClient } from "../helpers";
-import { japanese as japaneseIndexConfiguration } from "~/indexConfiguration/japanese";
+import { getJapaneseConfiguration } from "~/indexConfiguration";
 import { ElasticsearchQueryBuilderJapaneseOperatorContainsPlugin } from "~/plugins/operator/japanese/contains";
 import { ElasticsearchBoolQueryConfig } from "~/types";
 import { entries, searchTargets } from "./japanese.entries";
@@ -14,6 +14,8 @@ describe("Japanese search", () => {
     const indexName = `${prefix}search-japanese-index-test`;
 
     const searchPlugin = new ElasticsearchQueryBuilderJapaneseOperatorContainsPlugin();
+
+    const japaneseIndexConfiguration = getJapaneseConfiguration();
 
     const createIndex = async () => {
         try {
@@ -234,6 +236,7 @@ describe("Japanese search", () => {
             };
 
             searchPlugin.apply(query, {
+                name: "title",
                 basePath: "title",
                 path: "title",
                 value: search,

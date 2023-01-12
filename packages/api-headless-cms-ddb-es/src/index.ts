@@ -17,11 +17,22 @@ import { createSettingsEntity } from "~/definitions/settings";
 import { createElasticsearchIndex } from "~/elasticsearch/createElasticsearchIndex";
 import { PluginsContainer } from "@webiny/plugins";
 import { createGroupsStorageOperations } from "~/operations/group";
-import { getElasticsearchOperators } from "@webiny/api-elasticsearch/operators";
+import {
+    ElasticsearchQueryBuilderOperatorPlugin,
+    getElasticsearchOperators
+} from "@webiny/api-elasticsearch";
 import { elasticsearchFields as cmsEntryElasticsearchFields } from "~/operations/entry/elasticsearchFields";
 import { elasticsearchIndexPlugins } from "./elasticsearch/indices";
 import { deleteElasticsearchIndex } from "./elasticsearch/deleteElasticsearchIndex";
 import { CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
+import {
+    CmsEntryElasticsearchBodyModifierPlugin,
+    CmsEntryElasticsearchQueryModifierPlugin,
+    CmsEntryElasticsearchSortModifierPlugin
+} from "~/plugins";
+import { createFilterPlugins } from "~/operations/entry/elasticsearch/filtering/plugins";
+
+export * from "./plugins";
 
 export const createStorageOperations: StorageOperationsFactory = params => {
     const {
@@ -77,10 +88,6 @@ export const createStorageOperations: StorageOperationsFactory = params => {
 
     const plugins = new PluginsContainer([
         /**
-         * User defined custom plugins.
-         */
-        ...(userPlugins || []),
-        /**
          * Plugins of type CmsModelFieldToGraphQLPlugin.
          */
         /**
@@ -106,11 +113,31 @@ export const createStorageOperations: StorageOperationsFactory = params => {
         /**
          * Built-in Elasticsearch index templates.
          */
-        elasticsearchIndexPlugins()
+        elasticsearchIndexPlugins(),
+        /**
+         * Filter plugins used to apply filtering from where conditions to Elasticsearch query.
+         */
+        createFilterPlugins(),
+        /**
+         * User defined custom plugins.
+         * They are at the end because we can then override existing plugins.
+         */
+        ...(userPlugins || [])
     ]);
 
     return {
+        name: "dynamodb:elasticsearch",
         beforeInit: async context => {
+            /**
+             * Attach the elasticsearch into context if it is not already attached.
+             */
+            if (!context.elasticsearch) {
+                context.elasticsearch = elasticsearch;
+            }
+            /**
+             * Pass the plugins to the parent context.
+             */
+            context.plugins.register([dynamoDbPlugins()]);
             /**
              * Collect all required plugins from parent context.
              */
@@ -118,35 +145,70 @@ export const createStorageOperations: StorageOperationsFactory = params => {
                 "cms-model-field-to-graphql"
             );
             plugins.register(fieldPlugins);
-
             /**
-             * Pass the plugins to the parent context.
+             * We need to get all the operator plugins from the main plugin container.
              */
-            context.plugins.register([dynamoDbPlugins()]);
+            const elasticsearchOperatorPlugins =
+                context.plugins.byType<ElasticsearchQueryBuilderOperatorPlugin>(
+                    ElasticsearchQueryBuilderOperatorPlugin.type
+                );
+            plugins.register(elasticsearchOperatorPlugins);
+            /**
+             * We need to get all the query modifier plugins
+             */
+            const queryModifierPlugins =
+                context.plugins.byType<CmsEntryElasticsearchQueryModifierPlugin>(
+                    CmsEntryElasticsearchQueryModifierPlugin.type
+                );
+            plugins.register(queryModifierPlugins);
+            /**
+             * We need to get all the sort modifier plugins
+             */
+            const sortModifierPlugins =
+                context.plugins.byType<CmsEntryElasticsearchSortModifierPlugin>(
+                    CmsEntryElasticsearchSortModifierPlugin.type
+                );
+            plugins.register(sortModifierPlugins);
+            /**
+             * We need to get all the body modifier plugins
+             */
+            const bodyModifierPlugins =
+                context.plugins.byType<CmsEntryElasticsearchBodyModifierPlugin>(
+                    CmsEntryElasticsearchBodyModifierPlugin.type
+                );
+            plugins.register(bodyModifierPlugins);
         },
         init: async context => {
             /**
              * We need to create indexes on before model create and on clone (create from).
              * Other apps create indexes on locale creation.
              */
-            context.cms.onBeforeModelCreate.subscribe(async ({ model }) => {
+            context.cms.onModelBeforeCreate.subscribe(async ({ model }) => {
                 await createElasticsearchIndex({
                     elasticsearch,
                     model,
                     plugins
                 });
             });
-            context.cms.onBeforeModelCreateFrom.subscribe(async ({ model }) => {
+            context.cms.onModelBeforeCreateFrom.subscribe(async ({ model }) => {
                 await createElasticsearchIndex({
                     elasticsearch,
                     model,
                     plugins
                 });
             });
-            context.cms.onAfterModelDelete.subscribe(async ({ model }) => {
+            context.cms.onModelAfterDelete.subscribe(async ({ model }) => {
                 await deleteElasticsearchIndex({
                     elasticsearch,
                     model
+                });
+            });
+
+            context.cms.onModelInitialize.subscribe(async ({ model }) => {
+                await createElasticsearchIndex({
+                    elasticsearch,
+                    model,
+                    plugins
                 });
             });
         },

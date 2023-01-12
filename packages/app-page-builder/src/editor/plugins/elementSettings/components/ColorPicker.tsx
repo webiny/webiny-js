@@ -46,7 +46,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
     return (
         <Grid className={className}>
             <Cell span={4}>
-                <Typography use={"subtitle2"}>{label}</Typography>
+                <Typography use={"body2"}>{label}</Typography>
             </Cell>
             <Cell span={8}>
                 <ColorPickerCmp

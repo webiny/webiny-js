@@ -1,15 +1,15 @@
 import { PbContext } from "@webiny/api-page-builder/types";
 import {
-    PageExportRevisionType,
-    PageImportExportTask,
-    PageImportExportTaskStatus,
-    PageImportExportTaskStorageOperations,
-    PageImportExportTaskStorageOperationsListParams
+    ExportRevisionType,
+    ImportExportTask,
+    ImportExportTaskStatus,
+    ImportExportTaskStorageOperations,
+    ImportExportTaskStorageOperationsListParams
 } from "~/types";
 
 export interface ExportPagesParams {
     ids?: string[];
-    revisionType: PageExportRevisionType;
+    revisionType: ExportRevisionType;
     where?: {
         category?: string;
         status?: string;
@@ -26,61 +26,75 @@ export interface ImportPagesParams {
 }
 
 export type PagesImportExportCrud = {
-    exportPages(params: ExportPagesParams): Promise<{ task: PageImportExportTask }>;
-    importPages(params: ImportPagesParams): Promise<{ task: PageImportExportTask }>;
+    exportPages(params: ExportPagesParams): Promise<{ task: ImportExportTask }>;
+    importPages(params: ImportPagesParams): Promise<{ task: ImportExportTask }>;
 };
 
-type PageImportExportTaskCreateData = Omit<PageImportExportTask, "id" | "createdOn" | "createdBy">;
+export interface ExportBlocksParams {
+    ids?: string[];
+    sort?: string[];
+    where?: {
+        blockCategory?: string;
+    };
+}
 
-export type PageImportExportTaskCrud = {
+export interface ImportBlocksParams {
+    category: string;
+    zipFileUrl: string;
+}
+
+export type BlocksImportExportCrud = {
+    exportBlocks(params: ExportBlocksParams): Promise<{ task: ImportExportTask }>;
+    importBlocks(params: ImportBlocksParams): Promise<{ task: ImportExportTask }>;
+};
+
+type ImportExportTaskCreateData = Omit<ImportExportTask, "id" | "createdOn" | "createdBy">;
+
+export type ImportExportTaskCrud = {
     /**
      * To be used internally in our code.
      * @internal
      */
-    storageOperations: PageImportExportTaskStorageOperations;
+    storageOperations: ImportExportTaskStorageOperations;
 
-    getTask(id: string): Promise<PageImportExportTask | null>;
-    listTasks(
-        params?: PageImportExportTaskStorageOperationsListParams
-    ): Promise<PageImportExportTask[]>;
-    createTask(data: Partial<PageImportExportTaskCreateData>): Promise<PageImportExportTask>;
-    updateTask(
-        id: string,
-        data: Partial<PageImportExportTaskCreateData>
-    ): Promise<PageImportExportTask>;
+    getTask(id: string): Promise<ImportExportTask | null>;
+    listTasks(params?: ImportExportTaskStorageOperationsListParams): Promise<ImportExportTask[]>;
+    createTask(data: Partial<ImportExportTaskCreateData>): Promise<ImportExportTask>;
+    updateTask(id: string, data: Partial<ImportExportTaskCreateData>): Promise<ImportExportTask>;
     updateStats(
         id: string,
         data: {
-            prevStatus: PageImportExportTaskStatus;
-            nextStatus: PageImportExportTaskStatus;
+            prevStatus: ImportExportTaskStatus;
+            nextStatus: ImportExportTaskStatus;
         }
-    ): Promise<PageImportExportTask>;
-    deleteTask(id: string): Promise<PageImportExportTask>;
-    getSubTask(id: string, subtaskId: string): Promise<PageImportExportTask | null>;
+    ): Promise<ImportExportTask>;
+    deleteTask(id: string): Promise<ImportExportTask>;
+    getSubTask(id: string, subtaskId: string): Promise<ImportExportTask | null>;
     listSubTasks(
         id: string,
-        status: PageImportExportTaskStatus,
+        status: ImportExportTaskStatus,
         limit: number
-    ): Promise<PageImportExportTask[]>;
+    ): Promise<ImportExportTask[]>;
     createSubTask(
         id: string,
         subTaskId: string,
-        data: Partial<PageImportExportTaskCreateData>
-    ): Promise<PageImportExportTask>;
+        data: Partial<ImportExportTaskCreateData>
+    ): Promise<ImportExportTask>;
     updateSubTask(
         id: string,
         subTaskId: string,
-        data: Partial<PageImportExportTaskCreateData>
-    ): Promise<PageImportExportTask>;
+        data: Partial<ImportExportTaskCreateData>
+    ): Promise<ImportExportTask>;
 };
 
-export interface PbPageImportExportContext extends PbContext {
+export interface PbImportExportContext extends PbContext {
     pageBuilder: PbContext["pageBuilder"] & {
         pages: PagesImportExportCrud;
-        pageImportExportTask: PageImportExportTaskCrud;
+        blocks: BlocksImportExportCrud;
+        importExportTask: ImportExportTaskCrud;
     };
 }
 
-export interface PageImportExportPluginsParams {
-    storageOperations: PageImportExportTaskStorageOperations;
+export interface ImportExportPluginsParams {
+    storageOperations: ImportExportTaskStorageOperations;
 }

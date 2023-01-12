@@ -14,8 +14,8 @@ import { FieldEditor } from "../FieldEditor";
 import { PreviewTab } from "./PreviewTab";
 import Header from "./Header";
 import DragPreview from "../DragPreview";
-import { useContentModelEditor } from "./useContentModelEditor";
-import { CmsEditorField, CmsEditorFieldsLayout } from "~/types";
+import { useModelEditor } from "./useModelEditor";
+import { CmsModelField, CmsEditorFieldsLayout } from "~/types";
 
 const t = i18n.ns("app-headless-cms/admin/editor");
 
@@ -59,12 +59,12 @@ const formTabs = css({
 });
 
 interface OnChangeParams {
-    fields: CmsEditorField[];
+    fields: CmsModelField[];
     layout: CmsEditorFieldsLayout;
 }
 
 export const Editor: React.FC = () => {
-    const { data, setData, isPristine } = useContentModelEditor();
+    const { data, setData, isPristine } = useModelEditor();
 
     const tabsRef = useRef<TabsImperativeApi>();
     const [activeTabIndex, setActiveTabIndex] = useState<number>(0);

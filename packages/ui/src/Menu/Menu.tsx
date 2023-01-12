@@ -79,6 +79,7 @@ class Menu extends React.Component<MenuProps, MenuState> {
                 onClose={this.closeMenu}
                 onSelect={this.props.onSelect}
                 renderToPortal={true}
+                style={{ zIndex: 99 }} // Fixes Menu in Drawers
             >
                 {this.props.children}
             </BaseMenu>

@@ -1,23 +1,23 @@
 export * from "./graphql/types";
 
 // Entities.
-export enum PageExportRevisionType {
+export enum ExportRevisionType {
     PUBLISHED = "published",
     LATEST = "latest"
 }
 
-export enum PageImportExportTaskStatus {
+export enum ImportExportTaskStatus {
     PENDING = "pending",
     PROCESSING = "processing",
     COMPLETED = "completed",
     FAILED = "failed"
 }
 
-export interface PageImportExportTaskStats {
-    [PageImportExportTaskStatus.PENDING]: number;
-    [PageImportExportTaskStatus.PROCESSING]: number;
-    [PageImportExportTaskStatus.COMPLETED]: number;
-    [PageImportExportTaskStatus.FAILED]: number;
+export interface ImportExportTaskStats {
+    [ImportExportTaskStatus.PENDING]: number;
+    [ImportExportTaskStatus.PROCESSING]: number;
+    [ImportExportTaskStatus.COMPLETED]: number;
+    [ImportExportTaskStatus.FAILED]: number;
     total: number;
 }
 
@@ -27,12 +27,12 @@ interface CreatedBy {
     displayName: string | null;
 }
 
-export interface PageImportExportTask {
+export interface ImportExportTask {
     id: string;
     parent: string;
-    status: PageImportExportTaskStatus;
+    status: ImportExportTaskStatus;
     data: Record<string, any>;
-    stats: PageImportExportTaskStats;
+    stats: ImportExportTaskStats;
     error: Record<string, any>;
     input: Record<string, any>;
     createdOn: string;
@@ -54,9 +54,9 @@ export interface MetaResponse {
 
 /**
  * @category StorageOperations
- * @category PageImportExportTaskStorageOperations
+ * @category ImportExportTaskStorageOperations
  */
-export interface PageImportExportTaskStorageOperationsGetParams {
+export interface ImportExportTaskStorageOperationsGetParams {
     where: {
         id: string;
         tenant: string;
@@ -66,9 +66,9 @@ export interface PageImportExportTaskStorageOperationsGetParams {
 
 /**
  * @category StorageOperations
- * @category PageImportExportTaskStorageOperations
+ * @category ImportExportTaskStorageOperations
  */
-export interface PageImportExportTaskStorageOperationsListParams {
+export interface ImportExportTaskStorageOperationsListParams {
     where: {
         tenant: string;
         locale: string;
@@ -80,45 +80,42 @@ export interface PageImportExportTaskStorageOperationsListParams {
 
 /**
  * @category StorageOperations
- * @category PageImportExportTaskStorageOperations
+ * @category ImportExportTaskStorageOperations
  */
-export type PageImportExportTaskStorageOperationsListResponse = [
-    PageImportExportTask[],
-    MetaResponse
-];
+export type ImportExportTaskStorageOperationsListResponse = [ImportExportTask[], MetaResponse];
 
 /**
  * @category StorageOperations
- * @category PageImportExportTaskStorageOperations
+ * @category ImportExportTaskStorageOperations
  */
-export interface PageImportExportTaskStorageOperationsCreateParams {
+export interface ImportExportTaskStorageOperationsCreateParams {
     input: Record<string, any>;
-    task: PageImportExportTask;
+    task: ImportExportTask;
 }
 
 /**
  * @category StorageOperations
- * @category PageImportExportTaskStorageOperations
+ * @category ImportExportTaskStorageOperations
  */
-export interface PageImportExportTaskStorageOperationsUpdateParams {
+export interface ImportExportTaskStorageOperationsUpdateParams {
     input: Record<string, any>;
-    original: PageImportExportTask;
-    task: PageImportExportTask;
+    original: ImportExportTask;
+    task: ImportExportTask;
 }
 
 /**
  * @category StorageOperations
- * @category PageImportExportTaskStorageOperations
+ * @category ImportExportTaskStorageOperations
  */
-export interface PageImportExportTaskStorageOperationsDeleteParams {
-    task: PageImportExportTask;
+export interface ImportExportTaskStorageOperationsDeleteParams {
+    task: ImportExportTask;
 }
 
 /**
  * @category StorageOperations
- * @category PageImportExportTaskStorageOperations
+ * @category ImportExportTaskStorageOperations
  */
-export interface PageImportExportTaskStorageOperationsGetSubTaskParams {
+export interface ImportExportTaskStorageOperationsGetSubTaskParams {
     where: {
         id: string;
         parent: string;
@@ -129,14 +126,14 @@ export interface PageImportExportTaskStorageOperationsGetSubTaskParams {
 
 /**
  * @category StorageOperations
- * @category PageImportExportTaskStorageOperations
+ * @category ImportExportTaskStorageOperations
  */
-export interface PageImportExportTaskStorageOperationsListSubTaskParams {
+export interface ImportExportTaskStorageOperationsListSubTaskParams {
     where: {
         tenant: string;
         locale: string;
         parent: string;
-        status: PageImportExportTaskStatus;
+        status: ImportExportTaskStatus;
         createdBy?: string;
     };
     sort?: string[];
@@ -146,98 +143,90 @@ export interface PageImportExportTaskStorageOperationsListSubTaskParams {
 
 /**
  * @category StorageOperations
- * @category PageImportExportTaskStorageOperations
+ * @category ImportExportTaskStorageOperations
  */
-export type PageImportExportTaskStorageOperationsListSubTaskResponse = [
-    PageImportExportTask[],
+export type ImportExportTaskStorageOperationsListSubTaskResponse = [
+    ImportExportTask[],
     MetaResponse
 ];
 
 /**
  * @category StorageOperations
- * @category PageImportExportTaskStorageOperations
+ * @category ImportExportTaskStorageOperations
  */
-export interface PageImportExportTaskStorageOperationsCreateSubTaskParams {
+export interface ImportExportTaskStorageOperationsCreateSubTaskParams {
     input: Record<string, any>;
-    subTask: PageImportExportTask;
+    subTask: ImportExportTask;
 }
 
 /**
  * @category StorageOperations
- * @category PageImportExportTaskStorageOperations
+ * @category ImportExportTaskStorageOperations
  */
-export interface PageImportExportTaskStorageOperationsUpdateSubTaskParams {
+export interface ImportExportTaskStorageOperationsUpdateSubTaskParams {
     input: Record<string, any>;
-    original: PageImportExportTask;
-    subTask: PageImportExportTask;
+    original: ImportExportTask;
+    subTask: ImportExportTask;
 }
 
 /**
  * @category StorageOperations
- * @category PageImportExportTaskStorageOperations
+ * @category ImportExportTaskStorageOperations
  */
-export interface PageImportExportTaskStorageOperationsUpdateTaskStatsParams {
+export interface ImportExportTaskStorageOperationsUpdateTaskStatsParams {
     input: {
-        prevStatus: PageImportExportTaskStatus;
-        nextStatus: PageImportExportTaskStatus;
+        prevStatus: ImportExportTaskStatus;
+        nextStatus: ImportExportTaskStatus;
     };
-    original: PageImportExportTask;
+    original: ImportExportTask;
 }
 
 /**
  * @category StorageOperations
- * @category PageImportExportTaskStorageOperations
+ * @category ImportExportTaskStorageOperations
  */
-export interface PageImportExportTaskStorageOperations {
+export interface ImportExportTaskStorageOperations {
     /**
-     * Get a single page import export task item by given params.
+     * Get a single  import export task item by given params.
      */
-    getTask(
-        params: PageImportExportTaskStorageOperationsGetParams
-    ): Promise<PageImportExportTask | null>;
+    getTask(params: ImportExportTaskStorageOperationsGetParams): Promise<ImportExportTask | null>;
 
     /**
-     * Get all page import export tasks by given params.
+     * Get all  import export tasks by given params.
      */
     listTasks(
-        params: PageImportExportTaskStorageOperationsListParams
-    ): Promise<PageImportExportTaskStorageOperationsListResponse>;
+        params: ImportExportTaskStorageOperationsListParams
+    ): Promise<ImportExportTaskStorageOperationsListResponse>;
 
-    createTask(
-        params: PageImportExportTaskStorageOperationsCreateParams
-    ): Promise<PageImportExportTask>;
+    createTask(params: ImportExportTaskStorageOperationsCreateParams): Promise<ImportExportTask>;
 
-    updateTask(
-        params: PageImportExportTaskStorageOperationsUpdateParams
-    ): Promise<PageImportExportTask>;
+    updateTask(params: ImportExportTaskStorageOperationsUpdateParams): Promise<ImportExportTask>;
 
-    deleteTask(
-        params: PageImportExportTaskStorageOperationsDeleteParams
-    ): Promise<PageImportExportTask>;
+    deleteTask(params: ImportExportTaskStorageOperationsDeleteParams): Promise<ImportExportTask>;
 
     updateTaskStats(
-        params: PageImportExportTaskStorageOperationsUpdateTaskStatsParams
-    ): Promise<PageImportExportTask>;
+        params: ImportExportTaskStorageOperationsUpdateTaskStatsParams
+    ): Promise<ImportExportTask>;
 
     /**
-     * Get a single page import export sub-task item by given params.
+     * Get a single  import export sub-task item by given params.
      */
     getSubTask(
-        params: PageImportExportTaskStorageOperationsGetSubTaskParams
-    ): Promise<PageImportExportTask | null>;
+        params: ImportExportTaskStorageOperationsGetSubTaskParams
+    ): Promise<ImportExportTask | null>;
 
     /**
-     * Get all page import export sub-tasks by given params.
+     * Get all  import export sub-tasks by given params.
      */
     listSubTasks(
-        params: PageImportExportTaskStorageOperationsListSubTaskParams
-    ): Promise<PageImportExportTaskStorageOperationsListSubTaskResponse>;
+        params: ImportExportTaskStorageOperationsListSubTaskParams
+    ): Promise<ImportExportTaskStorageOperationsListSubTaskResponse>;
 
     createSubTask(
-        params: PageImportExportTaskStorageOperationsCreateSubTaskParams
-    ): Promise<PageImportExportTask>;
+        params: ImportExportTaskStorageOperationsCreateSubTaskParams
+    ): Promise<ImportExportTask>;
 
     updateSubTask(
-        params: PageImportExportTaskStorageOperationsUpdateSubTaskParams
-    ): Promise<PageImportExportTask>;
+        params: ImportExportTaskStorageOperationsUpdateSubTaskParams
+    ): Promise<ImportExportTask>;
 }

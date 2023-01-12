@@ -41,12 +41,19 @@ interface CmsModel extends Omit<CmsModelBase, "locale" | "tenant" | "webinyVersi
     tenant?: string;
 }
 
+interface CmsModelPluginOptions {
+    validateLayout?: boolean;
+}
+
 export class CmsModelPlugin extends Plugin {
     public static override readonly type: string = "cms-content-model";
     public readonly contentModel: CmsModel;
 
-    constructor(contentModel: CmsModelInput) {
+    private readonly options: CmsModelPluginOptions;
+
+    constructor(contentModel: CmsModelInput, options?: CmsModelPluginOptions) {
         super();
+        this.options = options || {};
         this.contentModel = this.buildModel(contentModel);
     }
 
@@ -195,6 +202,12 @@ export class CmsModelPlugin extends Plugin {
     }
 
     private validateLayout(model: CmsModel): void {
+        /**
+         * Only skip validation if option.validateLayout was set as false, explicitly.
+         */
+        if (this.options.validateLayout === false) {
+            return;
+        }
         for (const field of model.fields) {
             let total = 0;
             for (const row of model.layout) {
@@ -225,6 +238,9 @@ export class CmsModelPlugin extends Plugin {
     }
 }
 
-export const createCmsModel = (model: CmsModelInput): CmsModelPlugin => {
-    return new CmsModelPlugin(model);
+export const createCmsModel = (
+    model: CmsModelInput,
+    options?: CmsModelPluginOptions
+): CmsModelPlugin => {
+    return new CmsModelPlugin(model, options);
 };

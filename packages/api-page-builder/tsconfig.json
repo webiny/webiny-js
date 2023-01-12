@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
+    { "path": "../api-aco" },
     { "path": "../api-file-manager" },
     { "path": "../api-i18n" },
     { "path": "../api-prerendering-service" },
@@ -31,6 +32,8 @@
     "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
+      "@webiny/api-aco/*": ["../api-aco/src/*"],
+      "@webiny/api-aco": ["../api-aco/src"],
       "@webiny/api-file-manager/*": ["../api-file-manager/src/*"],
       "@webiny/api-file-manager": ["../api-file-manager/src"],
       "@webiny/api-i18n/*": ["../api-i18n/src/*"],

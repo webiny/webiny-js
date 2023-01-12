@@ -1,5 +1,4 @@
-import { Client } from "@elastic/elasticsearch";
-import { ApiResponse } from "@elastic/elasticsearch/lib/Transport";
+import { Client, ApiResponse } from "@elastic/elasticsearch";
 import { BoolQueryConfig as esBoolQueryConfig, Query as esQuery } from "elastic-ts";
 import { Context } from "@webiny/api/types";
 /**
@@ -40,7 +39,8 @@ export type ElasticsearchQueryOperator =
     | "gt"
     | "gte"
     | "lt"
-    | "lte";
+    | "lte"
+    | string;
 
 /**
  * Definition for arguments of the ElasticsearchQueryBuilderOperatorPlugin.apply method.
@@ -51,6 +51,10 @@ export type ElasticsearchQueryOperator =
  * @category Elasticsearch
  */
 export interface ElasticsearchQueryBuilderArgsPlugin {
+    /**
+     * Name of the field.
+     */
+    name: string;
     /**
      * A full path to the field. Including the ".keyword" if it is added.
      */
@@ -97,11 +101,32 @@ export interface ElasticsearchSearchResponse<T = any> {
 
 export interface ElasticsearchIndexRequestBodyMappingsDynamicTemplate {
     [key: string]: {
+        path_match?: string;
+        path_unmatch?: string;
         match_mapping_type?: string;
         match?: string;
         unmatch?: string;
         mapping?: {
-            type?: "text" | "date" | "binary" | "boolean" | "object" | "ip" | "geo" | string;
+            numeric_detection?: boolean;
+            date_detection?: boolean;
+            type?:
+                | "string"
+                | "date"
+                | "binary"
+                | "boolean"
+                | "object"
+                | "ip"
+                | "geo"
+                | "long"
+                | "integer"
+                | "short"
+                | "byte"
+                | "double"
+                | "float"
+                | "half_float"
+                | "scaled_float"
+                | "unsigned_long"
+                | string;
             search_analyzer?: string;
             analyzer?: string;
             fields?: {
@@ -186,6 +211,7 @@ export interface ElasticsearchIndexRequestBody {
         index?: Partial<ElasticsearchIndexRequestBodySettings>;
     };
     mappings: {
+        numeric_detection?: boolean;
         dynamic_templates?: ElasticsearchIndexRequestBodyMappingsDynamicTemplate[];
         properties?: {
             [key: string]: {

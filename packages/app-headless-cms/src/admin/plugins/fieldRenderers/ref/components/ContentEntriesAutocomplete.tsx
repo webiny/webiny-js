@@ -8,7 +8,7 @@ import { useNewRefEntry } from "../hooks/useNewRefEntry";
 import { useReference } from "./useReference";
 import { renderItem } from "./renderItem";
 import { createEntryUrl } from "./createEntryUrl";
-import { CmsEditorField } from "~/types";
+import { CmsModelField } from "~/types";
 import { BindComponentRenderProp } from "@webiny/form";
 import { OptionItem } from "./types";
 import { EntryStatus } from "./EntryStatus";
@@ -29,7 +29,7 @@ const getItemOption = (options: OptionItem[], id?: string | null): OptionItem | 
 
 interface ContentEntriesAutocompleteProps {
     bind: BindComponentRenderProp;
-    field: CmsEditorField;
+    field: CmsModelField;
 }
 const ContentEntriesAutocomplete: React.FC<ContentEntriesAutocompleteProps> = ({ bind, field }) => {
     const { options, setSearch, value, loading, onChange } = useReference({

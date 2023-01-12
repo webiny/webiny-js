@@ -9,8 +9,7 @@ import securityPlugins from "./security";
 import { createHeadlessCmsGraphQL, createHeadlessCmsContext } from "@webiny/api-headless-cms";
 import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb-es";
 import logsPlugins from "@webiny/handler-logs";
-import elasticsearchDataGzipCompression from "@webiny/api-elasticsearch/plugins/GzipCompression";
-import { createElasticsearchClient } from "@webiny/api-elasticsearch/client";
+import { createGzipCompression, createElasticsearchClient } from "@webiny/api-elasticsearch";
 /**
  * APW
  */
@@ -46,7 +45,7 @@ export const handler = createHandler({
             storageOperations: createHeadlessCmsStorageOperations({
                 documentClient,
                 elasticsearch,
-                plugins: [elasticsearchDataGzipCompression()]
+                plugins: [createGzipCompression()]
             })
         }),
         createHeadlessCmsGraphQL({ debug }),

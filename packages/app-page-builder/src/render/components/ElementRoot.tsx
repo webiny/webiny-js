@@ -8,22 +8,26 @@ import {
     PbEditorElement
 } from "~/types";
 import { usePageBuilder } from "~/hooks/usePageBuilder";
+import { makeComposable } from "@webiny/react-composition";
 
 type CombineClassNamesType = (...styles: string[]) => string;
 const combineClassNames: CombineClassNamesType = (...styles) => {
     return styles.filter(s => s !== "" && s !== "css-0").join(" ");
 };
 
-interface ElementRootChildrenFunctionParamsType {
+export interface ElementRootChildrenFunctionParamsType {
     getAllClasses: (...classes: string[]) => string;
     combineClassNames: (...classes: string[]) => string;
     elementStyle: CSSProperties;
     elementAttributes: { [key: string]: string };
     customClasses: string[];
 }
-type ElementRootChildrenFunction = (params: ElementRootChildrenFunctionParamsType) => ReactElement;
 
-interface ElementRootProps {
+export interface ElementRootChildrenFunction {
+    (params: ElementRootChildrenFunctionParamsType): ReactElement;
+}
+
+export interface ElementRootProps {
     element: PbElement | PbEditorElement;
     style?: CSSProperties;
     className?: string;
@@ -60,13 +64,15 @@ const ElementRootComponent: React.FC<ElementRootProps> = ({
         const attributePlugins = plugins.byType<PbRenderElementAttributesPlugin>(
             "pb-render-page-element-attributes"
         );
+        const customId = element.data.settings?.property?.id;
+
         return attributePlugins.reduce((accumulatedAttributes, plugin) => {
             return plugin.renderAttributes({
                 element: shallowElement,
-                attributes: accumulatedAttributes
+                attributes: { ...accumulatedAttributes, ...(customId && { id: customId }) }
             });
         }, {});
-    }, [shallowElement.id]);
+    }, [shallowElement.id, element.data.settings?.property?.id]);
 
     const {
         responsiveDisplayMode: { displayMode }
@@ -83,7 +89,7 @@ const ElementRootComponent: React.FC<ElementRootProps> = ({
         return null;
     }
 
-    const classNames = element.data.settings?.className || "";
+    const classNames = element.data.settings?.property?.className || "";
 
     const getAllClasses = (...extraClasses: string[]): string => {
         return [className, ...extraClasses, ...classNames.split(" ")]
@@ -108,4 +114,4 @@ const ElementRootComponent: React.FC<ElementRootProps> = ({
     );
 };
 
-export const ElementRoot = React.memo(ElementRootComponent);
+export const ElementRoot = makeComposable<ElementRootProps>("ElementRoot", ElementRootComponent);

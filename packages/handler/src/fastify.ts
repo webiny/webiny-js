@@ -4,12 +4,13 @@ import fastify, {
     preSerializationAsyncHookHandler
 } from "fastify";
 import { getWebinyVersionHeaders } from "@webiny/utils";
-import { ContextRoutes, DefinedContextRoutes, RouteMethodOptions, RouteTypes } from "~/types";
+import { ContextRoutes, DefinedContextRoutes, RouteMethodOptions, HTTPMethods } from "~/types";
 import { Context } from "~/Context";
 import WebinyError from "@webiny/error";
 import { RoutePlugin } from "./plugins/RoutePlugin";
 import { createHandlerClient } from "@webiny/handler-client";
-import fastifyCookies from "@fastify/cookie";
+import fastifyCookie from "@fastify/cookie";
+import fastifyCompress from "@fastify/compress";
 import { middleware } from "~/middleware";
 import { ContextPlugin } from "@webiny/api";
 import { BeforeHandlerPlugin } from "./plugins/BeforeHandlerPlugin";
@@ -30,7 +31,7 @@ const getDefaultHeaders = (routes: DefinedContextRoutes): Record<string, string>
      * If we are accepting all headers, just output that one.
      */
     const keys = Object.keys(routes);
-    const all = keys.every(key => routes[key as RouteTypes].length > 0);
+    const all = keys.every(key => routes[key as HTTPMethods].length > 0);
     if (all) {
         return {
             ...DEFAULT_HEADERS,
@@ -41,7 +42,7 @@ const getDefaultHeaders = (routes: DefinedContextRoutes): Record<string, string>
         ...DEFAULT_HEADERS,
         "Access-Control-Allow-Methods": keys
             .filter(key => {
-                const type = key as unknown as RouteTypes;
+                const type = key as unknown as HTTPMethods;
                 if (!routes[type] || Array.isArray(routes[type]) === false) {
                     return false;
                 }
@@ -63,24 +64,33 @@ export interface CreateHandlerParams {
 }
 
 export const createHandler = (params: CreateHandlerParams) => {
-    const definedRoutes: ContextRoutes["defined"] = {
+    const definedRoutes: DefinedContextRoutes = {
         POST: [],
         GET: [],
         OPTIONS: [],
         DELETE: [],
         PATCH: [],
         PUT: [],
-        HEAD: []
+        HEAD: [],
+        COPY: [],
+        LOCK: [],
+        MKCOL: [],
+        MOVE: [],
+        PROPFIND: [],
+        PROPPATCH: [],
+        SEARCH: [],
+        TRACE: [],
+        UNLOCK: []
     };
 
     const throwOnDefinedRoute = (
-        type: RouteTypes | "ALL",
+        type: HTTPMethods | "ALL",
         path: string,
         options?: RouteMethodOptions
     ): void => {
         if (type === "ALL") {
             const all = Object.keys(definedRoutes).some(key => {
-                const routes = definedRoutes[key as RouteTypes];
+                const routes = definedRoutes[key as HTTPMethods];
                 return routes.includes(path);
             });
             if (!all) {
@@ -109,8 +119,8 @@ export const createHandler = (params: CreateHandlerParams) => {
         );
     };
 
-    const addDefinedRoute = (inputType: RouteTypes, path: string): void => {
-        const type = (inputType as string).toUpperCase() as RouteTypes;
+    const addDefinedRoute = (inputType: HTTPMethods, path: string): void => {
+        const type = (inputType as string).toUpperCase() as HTTPMethods;
         if (!definedRoutes[type]) {
             return;
         } else if (definedRoutes[type].includes(path)) {
@@ -138,10 +148,30 @@ export const createHandler = (params: CreateHandlerParams) => {
         addDefinedRoute(method, route.path);
     });
     /**
-     *
+     * ############################
+     * Register the Fastify plugins.
      */
-    app.register(fastifyCookies, {
+    /**
+     * Package @fastify/cookie
+     *
+     * https://github.com/fastify/fastify-cookie
+     */
+    app.register(fastifyCookie, {
         parseOptions: {} // options for parsing cookies
+    });
+    /**
+     * Package @fastify/compress
+     *
+     * https://github.com/fastify/fastify-compress
+     */
+    app.register(fastifyCompress, {
+        global: true,
+        threshold: 1024,
+        onUnsupportedEncoding: (encoding, _, reply) => {
+            reply.code(406);
+            return `We do not support the ${encoding} encoding.`;
+        },
+        inflateIfDeflated: true
     });
     /**
      * Route helpers - mostly for users.

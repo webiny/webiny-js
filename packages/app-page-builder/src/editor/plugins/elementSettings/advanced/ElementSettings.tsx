@@ -1,10 +1,10 @@
 import React from "react";
 import { merge } from "dot-prop-immutable";
 import { renderPlugins } from "@webiny/app/plugins";
-import { Form, FormRenderPropParams } from "@webiny/form";
+import { plugins } from "@webiny/plugins";
+import { Form, FormOnSubmit, FormRenderPropParams } from "@webiny/form";
 import { PbEditorPageElementAdvancedSettingsPlugin } from "~/types";
 import { useUpdateElement } from "~/editor/hooks/useUpdateElement";
-import { FormData } from "@webiny/form/types";
 import { useActiveElement } from "~/editor/hooks/useActiveElement";
 import { makeComposable } from "@webiny/app-admin";
 
@@ -12,8 +12,21 @@ export const ElementSettings: React.FC = () => {
     const [element] = useActiveElement();
     const updateElement = useUpdateElement();
 
-    const onSubmit = (formData: FormData) => {
-        updateElement(merge(element, "data", formData));
+    const onSubmit: FormOnSubmit = async formData => {
+        const settingsPlugins = plugins
+            .byType<PbEditorPageElementAdvancedSettingsPlugin>(
+                "pb-editor-page-element-advanced-settings"
+            )
+            .filter(pl => pl.elementType === element?.type);
+
+        let modifiedFormData = formData;
+        for (const plugin of settingsPlugins) {
+            if (typeof plugin?.onSave === "function") {
+                modifiedFormData = await plugin.onSave(modifiedFormData);
+            }
+        }
+
+        updateElement(merge(element, "data", modifiedFormData));
     };
 
     if (!element) {

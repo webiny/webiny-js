@@ -6,8 +6,7 @@ import set from "lodash/set";
 import get from "lodash/get";
 import { plugins } from "@webiny/plugins";
 import { Tooltip } from "@webiny/ui/Tooltip";
-import { Form, FormAPI } from "@webiny/form";
-import { FormData } from "@webiny/form/types";
+import { Form, FormOnSubmit } from "@webiny/form";
 import {
     PbEditorPageElementSettingsRenderComponentProps,
     PbEditorElement,
@@ -106,7 +105,7 @@ const Settings: React.FC<PbEditorPageElementSettingsRenderComponentProps> = ({
     const handler = useEventActionHandler();
     const activeElementId = useRecoilValue(activeElementAtom);
     const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
-    const updateSettings = async (data: FormData, form: FormAPI) => {
+    const updateSettings: FormOnSubmit = async (data, form) => {
         const valid = await form.validate();
         if (!valid) {
             return null;
@@ -156,7 +155,7 @@ const Settings: React.FC<PbEditorPageElementSettingsRenderComponentProps> = ({
                 </Tooltip>
             }
         >
-            <Form
+            <Form<{ value: unknown }>
                 data={settings}
                 onChange={(data, form) => {
                     if (!form) {

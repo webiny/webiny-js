@@ -65,6 +65,9 @@ export default /* GraphQL */ `
         slug_not_in: [String]
         slug_contains: String
         slug_not_contains: String
+
+        AND: [CategoryListWhereInput!]
+        OR: [CategoryListWhereInput!]
     }
 
     enum CategoryListSorter {

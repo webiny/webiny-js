@@ -7,12 +7,15 @@ export default {
     renderStyle({ element, style }) {
         const { shadow } = get(element, "data.settings", {});
         if (!shadow) {
-            return style;
+            return {
+                ...style,
+                "--box-shadow": "none"
+            };
         }
 
         return {
             ...style,
-            boxShadow: [
+            "--box-shadow": [
                 (shadow.horizontal || 0) + "px",
                 (shadow.vertical || 0) + "px",
                 (shadow.blur || 0) + "px",

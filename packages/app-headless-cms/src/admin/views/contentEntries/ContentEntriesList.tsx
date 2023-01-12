@@ -16,6 +16,7 @@ import { ButtonIcon, ButtonSecondary } from "@webiny/ui/Button";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
 import { Select } from "@webiny/ui/Select";
+import { Tooltip } from "@webiny/ui/Tooltip";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
 import SearchUI from "@webiny/app-admin/components/SearchUI";
@@ -55,6 +56,11 @@ const InlineLoaderWrapper = styled("div")({
 
 const listItemMinHeight = css({
     minHeight: "66px !important"
+});
+
+const disabled = css({
+    color: "rgba(0, 0, 0, 0.54)",
+    cursor: "default"
 });
 
 const ContentEntriesList: React.FC = () => {
@@ -152,9 +158,22 @@ const ContentEntriesList: React.FC = () => {
                     <Typography use={"subtitle1"}>
                         <ModelId>
                             Model ID:{" "}
-                            <Link to={`/cms/content-models/${contentModel.modelId}`}>
-                                {contentModel.modelId}
-                            </Link>
+                            {contentModel.plugin ? (
+                                <Tooltip
+                                    content={t`Content model is registered via a plugin.`}
+                                    placement={"top"}
+                                >
+                                    <Link to="#" className={disabled}>
+                                        {contentModel.modelId}
+                                    </Link>
+                                </Tooltip>
+                            ) : (
+                                <Tooltip content={t`Edit content model`} placement={"top"}>
+                                    <Link to={`/cms/content-models/${contentModel.modelId}`}>
+                                        {contentModel.modelId}
+                                    </Link>
+                                </Tooltip>
+                            )}
                         </ModelId>
                     </Typography>
                 </span>
@@ -203,7 +222,7 @@ const ContentEntriesList: React.FC = () => {
                                 </UIList.ListItemText>
 
                                 <UIList.ListItemMeta className={rightAlign}>
-                                    <Typography use={"subtitle2"} data-testid="ul.list.subtitle">
+                                    <Typography use={"body2"} data-testid="ul.list.subtitle">
                                         {statusLabels[item.meta.status]} (v{item.meta.version})
                                     </Typography>
                                 </UIList.ListItemMeta>

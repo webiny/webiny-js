@@ -10,7 +10,7 @@ export default {
     renderAction() {
         return (
             <CloneAction>
-                <Action tooltip={"Clone element"} icon={<CloneIcon />} />
+                <Action tooltip={"Clone selected"} icon={<CloneIcon />} />
             </CloneAction>
         );
     }

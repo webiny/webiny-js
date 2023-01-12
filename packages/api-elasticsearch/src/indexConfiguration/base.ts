@@ -1,24 +1,26 @@
 import { ElasticsearchIndexRequestBody } from "~/types";
-import { dynamicTemplateDates } from "./common";
+import { getCommonMappings } from "./common";
 
-export const base: ElasticsearchIndexRequestBody = {
+const config: ElasticsearchIndexRequestBody = {
     mappings: {
-        dynamic_templates: dynamicTemplateDates.concat([
-            {
-                strings: {
-                    match_mapping_type: "string",
-                    mapping: {
-                        type: "text",
-                        fields: {
-                            keyword: {
-                                type: "keyword",
-                                ignore_above: 256
+        dynamic_templates: getCommonMappings(mappings => {
+            return mappings.concat([
+                {
+                    strings: {
+                        match_mapping_type: "string",
+                        mapping: {
+                            type: "text",
+                            fields: {
+                                keyword: {
+                                    type: "keyword",
+                                    ignore_above: 256
+                                }
                             }
                         }
                     }
                 }
-            }
-        ]),
+            ]);
+        }),
         properties: {
             rawValues: {
                 type: "object",
@@ -26,4 +28,14 @@ export const base: ElasticsearchIndexRequestBody = {
             }
         }
     }
+};
+
+interface Modifier {
+    (config: ElasticsearchIndexRequestBody): ElasticsearchIndexRequestBody;
+}
+export const getBaseConfiguration = (modifier?: Modifier) => {
+    if (!modifier) {
+        return config;
+    }
+    return modifier(config);
 };

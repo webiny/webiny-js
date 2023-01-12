@@ -12,7 +12,7 @@ env:
 jobs:
   init:
     name: Init
-    runs-on: webiny-js-4-cores
+    runs-on: ubuntu-latest
     outputs:
       jest-packages: ${{ steps.list-jest-packages.outputs.jest-packages }}
       ts: ${{ steps.get-timestamp.outputs.ts }}
@@ -41,7 +41,7 @@ jobs:
   build:
     needs: init
     name: Build
-    runs-on: webiny-js-4-cores
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-node@v3
         with:
@@ -78,7 +78,7 @@ jobs:
   code-analysis:
     needs: [init, build]
     name: Static code analysis
-    runs-on: webiny-js-4-cores
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-node@v3
         with:
@@ -113,7 +113,7 @@ jobs:
 
   code-analysis-typescript:
     name: Static code analysis (TypeScript)
-    runs-on: webiny-js-4-cores
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-node@v3
         with:
@@ -176,7 +176,7 @@ jobs:
 
   e2e-wby-cms-ddb-init:
     name: E2E (DDB) - Init
-    runs-on: webiny-js-4-cores
+    runs-on: ubuntu-latest
     outputs:
       cypress-folders: ${{ steps.list-cypress-folders.outputs.cypress-folders }}
       ts: ${{ steps.get-timestamp.outputs.ts }}
@@ -203,7 +203,7 @@ jobs:
   e2e-wby-cms-ddb-project-setup:
     name: E2E (DDB) - Project setup
     needs: e2e-wby-cms-ddb-init
-    runs-on: webiny-js-4-cores
+    runs-on: ubuntu-latest
     outputs:
       cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
     environment: next
@@ -268,13 +268,9 @@ jobs:
       - name: Set git username
         run: git config --global user.name "webiny-bot"
 
-      - name: Version packages (no push, no changelog)
+      - name: Version and publish to Verdaccio
         working-directory: v5
-        run: yarn lerna:version:verdaccio
-
-      - name: Release to Verdaccio
-        working-directory: v5
-        run: yarn lerna:publish:verdaccio
+        run: yarn release --type=verdaccio
 
       - name: Create verdaccio-files artifact
         uses: actions/upload-artifact@v3
@@ -297,8 +293,8 @@ jobs:
       - name: Create a new Webiny project
         working-directory: xyz
         run: >
-          npx create-webiny-project@next test-project
-          --tag next --no-interactive
+          npx create-webiny-project@local-npm test-project
+          --tag local-npm --no-interactive
           --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"region":"${{ env.AWS_REGION }}","storageOperations":"ddb"}'
 
@@ -367,7 +363,7 @@ jobs:
         os: [ubuntu-latest]
         node: [14]
         cypress-folder: ${{ fromJson(needs.e2e-wby-cms-ddb-init.outputs.cypress-folders) }}
-    runs-on: webiny-js-4-cores
+    runs-on: ubuntu-latest
     environment: next
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -420,7 +416,7 @@ jobs:
 
   e2e-wby-cms-ddb-es-init:
     name: E2E (DDB+ES) - Init
-    runs-on: webiny-js-4-cores
+    runs-on: ubuntu-latest
     outputs:
       cypress-folders: ${{ steps.list-cypress-folders.outputs.cypress-folders }}
       ts: ${{ steps.get-timestamp.outputs.ts }}
@@ -447,7 +443,7 @@ jobs:
   e2e-wby-cms-ddb-es-project-setup:
     name: E2E (DDB+ES) - Project setup
     needs: e2e-wby-cms-ddb-es-init
-    runs-on: webiny-js-4-cores
+    runs-on: ubuntu-latest
     outputs:
       cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
     environment: next
@@ -515,13 +511,9 @@ jobs:
       - name: Set git username
         run: git config --global user.name "webiny-bot"
 
-      - name: Version packages (no push, no changelog)
+      - name: Version and publish to Verdaccio
         working-directory: v5
-        run: yarn lerna:version:verdaccio
-
-      - name: Release to Verdaccio
-        working-directory: v5
-        run: yarn lerna:publish:verdaccio
+        run: yarn release --type=verdaccio
 
       - name: Create verdaccio-files artifact
         uses: actions/upload-artifact@v3
@@ -544,8 +536,8 @@ jobs:
       - name: Create a new Webiny project
         working-directory: xyz
         run: >
-          npx create-webiny-project@next test-project
-          --tag next --no-interactive
+          npx create-webiny-project@local-npm test-project
+          --tag local-npm --no-interactive
           --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"region":"${{ env.AWS_REGION }}","storageOperations":"ddb-es"}'
 
@@ -614,7 +606,7 @@ jobs:
         os: [ubuntu-latest]
         node: [14]
         cypress-folder: ${{ fromJson(needs.e2e-wby-cms-ddb-es-init.outputs.cypress-folders) }}
-    runs-on: webiny-js-4-cores
+    runs-on: ubuntu-latest
     environment: next
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -678,7 +670,7 @@ jobs:
         e2e-wby-cms-ddb-es-cypress-tests
       ]
     name: NPM release ("beta" tag)
-    runs-on: webiny-js-4-cores
+    runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -717,14 +709,5 @@ jobs:
       - name: Set git username
         run: git config --global user.name "webiny-bot"
 
-      - name: Create a release on GitHub
-        run: yarn lerna:version:beta
-
-      - name: Release packages to NPM
-        run: yarn lerna:publish:beta
-
-      - name: Update package versions in the sample project applications' packages
-        run: 'yarn webiny-versions && yarn prettier:fix && git add . && git commit --m "chore: update package versions (webiny-versions)" --no-verify && git push'
-
-      - name: Update and commit "yarn.lock" file
-        run: 'yarn && git add yarn.lock && git commit --m "chore: update yarn.lock" --no-verify && git push'
+      - name: Version and publish to NPM
+        run: yarn release --type=beta

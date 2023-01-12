@@ -9,6 +9,7 @@ import { ElementRoot } from "~/render/components/ElementRoot";
 import useUpdateHandlers from "../../plugins/elementSettings/useUpdateHandlers";
 import ReactMediumEditor from "../../components/MediumEditor";
 import { applyFallbackDisplayMode } from "../../plugins/elementSettings/elementSettingsUtils";
+import { useElementVariableValue } from "~/editor/hooks/useElementVariableValue";
 
 export const textClassName = "webiny-pb-base-page-element-style webiny-pb-page-element-text";
 const DATA_NAMESPACE = "data.text";
@@ -26,6 +27,7 @@ interface TextElementProps {
 }
 const PbText: React.FC<TextElementProps> = ({ elementId, mediumEditorOptions, rootClassName }) => {
     const element = useRecoilValue(elementWithChildrenByIdSelector(elementId));
+    const variableValue = useElementVariableValue(element);
     const [{ displayMode }] = useRecoilState(uiAtom);
     const [activeElementId, setActiveElementAtomValue] = useRecoilState(activeElementAtom);
     const { getUpdateValue } = useUpdateHandlers({
@@ -40,6 +42,11 @@ const PbText: React.FC<TextElementProps> = ({ elementId, mediumEditorOptions, ro
                 get(element, `${DATA_NAMESPACE}.${mode}`)
             ),
         [displayMode]
+    );
+
+    const initialText = useMemo(
+        () => variableValue || get(element, `${DATA_NAMESPACE}.data.text`),
+        [variableValue, element]
     );
 
     const value = get(element, `${DATA_NAMESPACE}.${displayMode}`, fallbackValue);
@@ -63,7 +70,6 @@ const PbText: React.FC<TextElementProps> = ({ elementId, mediumEditorOptions, ro
         return null;
     }
 
-    const textContent = get(element, `${DATA_NAMESPACE}.data.text`);
     const tag = get(value, "tag");
     const typography = get(value, "typography");
 
@@ -79,18 +85,15 @@ const PbText: React.FC<TextElementProps> = ({ elementId, mediumEditorOptions, ro
                     console.log(json);
                 }}
             />
-            {"do not show medium editor" === elementId ? (
-                <ReactMediumEditor
-                    elementId={elementId}
-                    tag={tag}
-                    value={textContent}
-                    onChange={onChange}
-                    options={mediumEditorOptions}
-                    onSelect={onSelect}
-                />
-            ) : (
-                <></>
-            )}
+            <ReactMediumEditor
+                elementId={elementId}
+                tag={tag}
+                value={initialText}
+                onChange={onChange}
+                options={mediumEditorOptions}
+                onSelect={onSelect}
+            />
+
         </ElementRoot>
     );
 };

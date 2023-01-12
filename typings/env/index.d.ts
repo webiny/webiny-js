@@ -38,8 +38,8 @@ declare namespace NodeJS {
         IMAGE_TRANSFORMER_FUNCTION?: string;
         S3_BUCKET?: string;
         ELASTIC_SEARCH_INDEX_PREFIX?: string;
-        EXPORT_PAGES_PROCESS_HANDLER?: string;
-        IMPORT_PAGES_CREATE_HANDLER?: string;
+        EXPORT_PROCESS_HANDLER?: string;
+        IMPORT_CREATE_HANDLER?: string;
         PUBLIC_URL?: string;
         WEBINY_HEADLESS_CMS_GRAPHQL_INPUT_REQUIRE_ARRAY_ITEM?: "false" | string;
         WEBINY_ELASTICSEARCH_INDEX_LOCALE?: "true" | string;
@@ -47,5 +47,26 @@ declare namespace NodeJS {
         STAGED_ROLLOUTS_VARIANT?: string;
         ELASTIC_SEARCH_ENDPOINT?: string;
         EVENT_BUS?: string;
+        /**
+         * Okta
+         */
+        OKTA_ISSUER?: string;
+        REACT_APP_OKTA_ISSUER?: string;
+        /**
+         * Auth0
+         */
+        AUTH0_DOMAIN?: string;
+        AUTH0_CLIENT_ID?: string;
+        REACT_APP_AUTH0_DOMAIN?: string;
+        REACT_APP_AUTH0_CLIENT_ID?: string;
+        /**
+         * api-mailer
+         */
+        WEBINY_MAILER_HOST?: string;
+        WEBINY_MAILER_USER?: string;
+        WEBINY_MAILER_PASSWORD?: string;
+        WEBINY_MAILER_REPLY_TO?: string;
+        WEBINY_MAILER_FROM?: string;
+        WEBINY_MAILER_PASSWORD_SECRET?: string;
     }
 }

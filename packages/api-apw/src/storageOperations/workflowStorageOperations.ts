@@ -56,7 +56,10 @@ export const createWorkflowStorageOperations = (
             const model = await getWorkflowModel();
             security.disableAuthorization();
             const [entries, meta] = await cms.listLatestEntries(model, {
-                ...params
+                ...params,
+                where: {
+                    ...(params.where || {})
+                }
             });
             security.enableAuthorization();
             return [entries.map(entry => getFieldValues(entry, baseFields)), meta];

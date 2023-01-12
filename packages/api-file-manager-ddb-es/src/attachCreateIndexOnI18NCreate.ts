@@ -9,7 +9,7 @@ export const attachCreateIndexOnI18NCreate = (): ContextPlugin<FileManagerContex
         if (!context.i18n || !context.i18n.locales) {
             return;
         }
-        context.i18n.locales.onBeforeCreate.subscribe(async ({ locale, tenant }) => {
+        context.i18n.locales.onLocaleBeforeCreate.subscribe(async ({ locale, tenant }) => {
             const client = context.elasticsearch as Client;
             if (!client) {
                 throw new WebinyError(

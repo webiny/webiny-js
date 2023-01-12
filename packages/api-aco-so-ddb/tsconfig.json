@@ -1,0 +1,35 @@
+{
+  "extends": "../../tsconfig.json",
+  "include": ["src", "__tests__/**/*.ts"],
+  "references": [
+    {
+      "path": "../api-aco"
+    },
+    {
+      "path": "../db-dynamodb"
+    },
+    {
+      "path": "../error"
+    },
+    {
+      "path": "../handler-db"
+    }
+  ],
+  "compilerOptions": {
+    "rootDirs": ["./src", "./__tests__"],
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {
+      "~/*": ["./src/*"],
+      "@webiny/api-aco/*": ["../api-aco/src/*"],
+      "@webiny/api-aco": ["../api-aco/src"],
+      "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
+      "@webiny/db-dynamodb": ["../db-dynamodb/src"],
+      "@webiny/error/*": ["../error/src/*"],
+      "@webiny/error": ["../error/src"],
+      "@webiny/handler-db/*": ["../handler-db/src/*"],
+      "@webiny/handler-db": ["../handler-db/src"]
+    },
+    "baseUrl": "."
+  }
+}

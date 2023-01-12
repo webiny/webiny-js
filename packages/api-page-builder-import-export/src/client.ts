@@ -1,7 +1,7 @@
-import { PbPageImportExportContext } from "~/graphql/types";
+import { PbImportExportContext } from "~/graphql/types";
 
 export interface InvokeHandlerClientParams<TParams> {
-    context: PbPageImportExportContext;
+    context: PbImportExportContext;
     name: string;
     payload: TParams;
     description: string;
