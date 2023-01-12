@@ -2,8 +2,8 @@ import { Plugin } from "@webiny/plugins";
 import { CmsEntryValues, CmsModelFieldWithParent } from "~/types";
 import { ConverterCollection } from "~/utils/converters/ConverterCollection";
 
-export interface ConvertParams {
-    field: CmsModelFieldWithParent;
+export interface ConvertParams<F = CmsModelFieldWithParent> {
+    field: F;
     value: any;
     converterCollection: ConverterCollection;
 }

@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-page-builder",
-  "version": "5.33.2",
+  "version": "5.33.5",
   "main": "index.js",
   "keywords": [
     "pb:base"

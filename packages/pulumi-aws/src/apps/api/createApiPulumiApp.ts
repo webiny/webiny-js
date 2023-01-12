@@ -31,6 +31,11 @@ export interface CreateApiPulumiAppParams {
      * or add additional ones into the mix.
      */
     pulumi?: (app: ApiPulumiApp) => void | Promise<void>;
+
+    /**
+     * Prefixes names of all Pulumi cloud infrastructure resource with given prefix.
+     */
+    pulumiResourceNamePrefix?: PulumiAppParam<string>;
 }
 
 export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = {}) => {
@@ -39,6 +44,17 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
         path: "apps/api",
         config: projectAppParams,
         program: async app => {
+            const pulumiResourceNamePrefix = app.getParam(
+                projectAppParams.pulumiResourceNamePrefix
+            );
+            if (pulumiResourceNamePrefix) {
+                app.onResource(resource => {
+                    if (!resource.name.startsWith(pulumiResourceNamePrefix)) {
+                        resource.name = `${pulumiResourceNamePrefix}${resource.name}`;
+                    }
+                });
+            }
+
             // Overrides must be applied via a handler, registered at the very start of the program.
             // By doing this, we're ensuring user's adjustments are not applied too late.
             if (projectAppParams.pulumi) {
@@ -47,6 +63,8 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 });
             }
 
+            const prod = app.params.run.env === "prod";
+
             // Enables logs forwarding.
             // https://www.webiny.com/docs/how-to-guides/use-watch-command#enabling-logs-forwarding
             const WEBINY_LOGS_FORWARD_URL = String(process.env.WEBINY_LOGS_FORWARD_URL);
@@ -54,10 +72,9 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
             // Register core output as a module available to all the other modules
             const core = app.addModule(CoreOutput);
 
-            // Register VPC config module to be available to other modules
-            app.addModule(VpcConfig, {
-                enabled: app.getParam(projectAppParams.vpc)
-            });
+            // Register VPC config module to be available to other modules.
+            const vpcEnabled = app.getParam(projectAppParams?.vpc) ?? prod;
+            app.addModule(VpcConfig, { enabled: vpcEnabled });
 
             const pageBuilder = app.addModule(ApiPageBuilder, {
                 env: {

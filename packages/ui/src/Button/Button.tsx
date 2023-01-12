@@ -59,7 +59,7 @@ export interface ButtonProps {
  * Shows a default button, used typically when action is not of high priority.
  */
 export const ButtonDefault: React.FC<ButtonProps> = props => {
-    const { disabled, onClick, children, small, ripple = true, className = "", style } = props;
+    const { disabled, onClick, children, small, ripple, className = "", style } = props;
 
     return (
         <RmwcButton.Button
@@ -86,7 +86,7 @@ export const ButtonPrimary: React.FC<ButtonProps> = props => {
         children,
         small = false,
         flat = false,
-        ripple = true,
+        ripple,
         style = {},
         className = null
     } = props;
@@ -116,7 +116,7 @@ export const ButtonSecondary: React.FC<ButtonProps> = props => {
         onClick,
         children,
         small = false,
-        ripple = true,
+        ripple,
         className = null,
         style = {}
     } = props;
@@ -159,7 +159,7 @@ export const ButtonFloating: React.FC<ButtonFloatingProps> = props => {
         icon,
         onClick,
         small = false,
-        ripple = true,
+        ripple,
         className = null,
         ...rest
     } = props;

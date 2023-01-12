@@ -1,6 +1,8 @@
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { createCarsMutation, createInitializeModelMutation } from "./deepNestedObject/mutation";
 import { createCarsModel } from "./deepNestedObject/model";
+import { ContextPlugin } from "@webiny/api";
+import { CmsContext } from "~/types";
 
 const LIST_CARS_QUERY = `
     query ListCarsQuery {
@@ -34,10 +36,33 @@ const GET_CAR_QUERY = `
     }
 `;
 
+interface Tracker {
+    setData: (input: any) => void;
+    data: any;
+}
+const onModelInitialize = (tracker: Tracker) => {
+    return new ContextPlugin<CmsContext>(async context => {
+        context.cms.onModelInitialize.subscribe(async ({ data }) => {
+            tracker.setData(data);
+        });
+    });
+};
+
 describe("Cars Model Deep Nested Object Fields", () => {
+    const tracker: Tracker = {
+        setData: function (input) {
+            this.data = input;
+        },
+        data: null
+    };
+
     const handler = useGraphQLHandler({
-        plugins: [...createCarsModel()],
+        plugins: [...createCarsModel(), onModelInitialize(tracker)],
         path: "manage/en-US"
+    });
+
+    beforeEach(async () => {
+        tracker.data = null;
     });
 
     it("should insert a large deeply nested record", async () => {
@@ -61,13 +86,24 @@ describe("Cars Model Deep Nested Object Fields", () => {
             });
         }
 
+        const trackerData = {
+            test: true,
+            failed: false
+        };
+
         const [initializeModelResult] = await handler.invoke({
             body: {
                 query: createInitializeModelMutation(),
                 variables: {
-                    modelId: "cars"
+                    modelId: "cars",
+                    data: trackerData
                 }
             }
+        });
+
+        expect(tracker).toEqual({
+            data: trackerData,
+            setData: expect.any(Function)
         });
 
         expect(initializeModelResult).toEqual({

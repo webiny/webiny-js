@@ -60,6 +60,7 @@ async function output(target, content) {
                 declarationDir: "./dist",
                 paths: {
                     "~/*": ["./src/*"],
+                    "~tests/*": ["./__tests__/*"],
                     ...dependencies.reduce((acc, dep) => {
                         const relPath = getRelativePath(wpObject.packageFolder, dep.packageFolder);
                         acc[`${dep.name}/*`] = [`${relPath}/src/*`];
@@ -88,7 +89,8 @@ async function output(target, content) {
                 outDir: "./dist",
                 declarationDir: "./dist",
                 paths: {
-                    "~/*": ["./src/*"]
+                    "~/*": ["./src/*"],
+                    "~tests/*": ["./__tests__/*"]
                 },
                 baseUrl: "."
             }

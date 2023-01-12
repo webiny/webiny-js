@@ -17,12 +17,55 @@ const contentEntryQueryData = {
         {
             title: "Hero Title #2",
             __typename: "Page_Content_Hero"
+        },
+        {
+            __typename: "Page_Content_Objecting",
+            nestedObject: {
+                objectNestedObject: [
+                    {
+                        nestedObjectNestedTitle: "Objective nested title #1"
+                    },
+                    {
+                        nestedObjectNestedTitle: "Objective nested title #2"
+                    }
+                ],
+                objectTitle: "Objective title #1"
+            }
         }
     ],
     header: {
         title: "Header #1",
         image: "https://d3bwcib4j08r73.cloudfront.net/files/webiny-serverless-cms.png",
         __typename: "Page_Header_ImageHeader"
+    },
+    objective: {
+        nestedObject: {
+            objectNestedObject: [
+                {
+                    nestedObjectNestedTitle: "Objective nested title #1"
+                },
+                {
+                    nestedObjectNestedTitle: "Objective nested title #2"
+                }
+            ],
+            objectTitle: "Objective title #1",
+            objectBody: [
+                {
+                    tag: "h1",
+                    content: "Rich Text"
+                },
+                {
+                    tag: "div",
+                    children: [
+                        {
+                            tag: "p",
+                            content: "Testing the rich text storage"
+                        }
+                    ]
+                }
+            ]
+        },
+        __typename: "Page_Objective_Objecting"
     }
 };
 
@@ -36,12 +79,57 @@ const contentEntryMutationData = {
         },
         {
             Hero: { title: "Hero Title #2" }
+        },
+        {
+            Objecting: {
+                nestedObject: {
+                    objectTitle: "Objective title #1",
+                    objectNestedObject: [
+                        {
+                            nestedObjectNestedTitle: "Objective nested title #1"
+                        },
+                        {
+                            nestedObjectNestedTitle: "Objective nested title #2"
+                        }
+                    ]
+                }
+            }
         }
     ],
     header: {
         ImageHeader: {
             title: "Header #1",
             image: "https://d3bwcib4j08r73.cloudfront.net/files/webiny-serverless-cms.png"
+        }
+    },
+    objective: {
+        Objecting: {
+            nestedObject: {
+                objectTitle: "Objective title #1",
+                objectBody: [
+                    {
+                        tag: "h1",
+                        content: "Rich Text"
+                    },
+                    {
+                        tag: "div",
+                        children: [
+                            {
+                                tag: "p",
+                                content: "Testing the rich text storage"
+                            }
+                        ]
+                    }
+                ],
+                objectNestedObject: [
+                    {
+                        nestedObjectNestedTitle: "Objective nested title #1"
+                    },
+                    {
+                        nestedObjectNestedTitle: "Objective nested title #2"
+                    }
+                ]
+            }
         }
     }
 };
@@ -54,7 +142,7 @@ describe("dynamicZone field", () => {
     const preview = usePageReadHandler(previewOpts);
 
     test("should create a page with dynamic zone fields", async () => {
-        await setupGroupAndModels({ manager: manage, models: [pageModel] });
+        await setupGroupAndModels({ manager: manage, models: [pageModel as any] });
 
         const [createPageResponse] = await manage.createPage({
             data: contentEntryMutationData
@@ -66,7 +154,8 @@ describe("dynamicZone field", () => {
                     data: {
                         id: expect.any(String),
                         content: contentEntryQueryData.content,
-                        header: contentEntryQueryData.header
+                        header: contentEntryQueryData.header,
+                        objective: contentEntryQueryData.objective
                     },
                     error: null
                 }
@@ -74,6 +163,36 @@ describe("dynamicZone field", () => {
         });
 
         const page = createPageResponse.data.createPage.data;
+
+        await manage.until(
+            () => manage.listPages().then(([data]) => data),
+            ({ data }: any) => {
+                return data.listPages.data.length === 1;
+            }
+        );
+
+        const [manageList] = await manage.listPages();
+
+        expect(manageList).toEqual({
+            data: {
+                listPages: {
+                    data: [
+                        {
+                            id: page.id,
+                            content: contentEntryQueryData.content,
+                            header: contentEntryQueryData.header,
+                            objective: contentEntryQueryData.objective
+                        }
+                    ],
+                    meta: {
+                        totalCount: 1,
+                        hasMoreItems: false,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
 
         // Test `manage` get
         const [manageGet] = await manage.getPage({
@@ -86,7 +205,8 @@ describe("dynamicZone field", () => {
                     data: {
                         id: page.id,
                         content: contentEntryQueryData.content,
-                        header: contentEntryQueryData.header
+                        header: contentEntryQueryData.header,
+                        objective: contentEntryQueryData.objective
                     },
                     error: null
                 }
@@ -121,7 +241,8 @@ describe("dynamicZone field", () => {
                     data: {
                         id: page.id,
                         content: contentEntryQueryData.content,
-                        header: contentEntryQueryData.header
+                        header: contentEntryQueryData.header,
+                        objective: contentEntryQueryData.objective
                     },
                     error: null
                 }

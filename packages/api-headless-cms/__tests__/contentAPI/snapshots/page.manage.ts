@@ -12,6 +12,7 @@ export default /* GraphQL */ `
         meta: PageMeta
         content: [Page_Content!]
         header: Page_Header
+        objective: Page_Objective
     }
 
     type PageMeta {
@@ -32,7 +33,7 @@ export default /* GraphQL */ `
         data: JSON
     }
 
-    union Page_Content = Page_Content_Hero | Page_Content_SimpleText
+    union Page_Content = Page_Content_Hero | Page_Content_SimpleText | Page_Content_Objecting
 
     type Page_Content_Hero {
         title: String
@@ -42,11 +43,46 @@ export default /* GraphQL */ `
         text: String
     }
 
+    type Page_Content_Objecting_NestedObject_ObjectNestedObject {
+        nestedObjectNestedTitle: String
+    }
+    input Page_Content_Objecting_NestedObject_ObjectNestedObjectWhereInput {
+        nestedObjectNestedTitle: String
+        nestedObjectNestedTitle_not: String
+        nestedObjectNestedTitle_in: [String]
+        nestedObjectNestedTitle_not_in: [String]
+        nestedObjectNestedTitle_contains: String
+        nestedObjectNestedTitle_not_contains: String
+    }
+
+    type Page_Content_Objecting_NestedObject {
+        objectTitle: String
+        objectNestedObject: [Page_Content_Objecting_NestedObject_ObjectNestedObject!]
+    }
+    input Page_Content_Objecting_NestedObjectWhereInput {
+        objectTitle: String
+        objectTitle_not: String
+        objectTitle_in: [String]
+        objectTitle_not_in: [String]
+        objectTitle_contains: String
+        objectTitle_not_contains: String
+
+        objectNestedObject: Page_Content_Objecting_NestedObject_ObjectNestedObjectWhereInput
+    }
+
+    type Page_Content_Objecting {
+        nestedObject: Page_Content_Objecting_NestedObject
+    }
+
     extend type Page_Content_Hero {
         _templateId: ID!
     }
 
     extend type Page_Content_SimpleText {
+        _templateId: ID!
+    }
+
+    extend type Page_Content_Objecting {
         _templateId: ID!
     }
 
@@ -69,6 +105,44 @@ export default /* GraphQL */ `
         _templateId: ID!
     }
 
+    union Page_Objective = Page_Objective_Objecting
+
+    type Page_Objective_Objecting_NestedObject_ObjectNestedObject {
+        nestedObjectNestedTitle: String
+    }
+    input Page_Objective_Objecting_NestedObject_ObjectNestedObjectWhereInput {
+        nestedObjectNestedTitle: String
+        nestedObjectNestedTitle_not: String
+        nestedObjectNestedTitle_in: [String]
+        nestedObjectNestedTitle_not_in: [String]
+        nestedObjectNestedTitle_contains: String
+        nestedObjectNestedTitle_not_contains: String
+    }
+
+    type Page_Objective_Objecting_NestedObject {
+        objectTitle: String
+        objectBody: JSON
+        objectNestedObject: [Page_Objective_Objecting_NestedObject_ObjectNestedObject!]
+    }
+    input Page_Objective_Objecting_NestedObjectWhereInput {
+        objectTitle: String
+        objectTitle_not: String
+        objectTitle_in: [String]
+        objectTitle_not_in: [String]
+        objectTitle_contains: String
+        objectTitle_not_contains: String
+
+        objectNestedObject: Page_Objective_Objecting_NestedObject_ObjectNestedObjectWhereInput
+    }
+
+    type Page_Objective_Objecting {
+        nestedObject: Page_Objective_Objecting_NestedObject
+    }
+
+    extend type Page_Objective_Objecting {
+        _templateId: ID!
+    }
+
     input Page_Content_HeroInput {
         title: String!
     }
@@ -77,9 +151,23 @@ export default /* GraphQL */ `
         text: String
     }
 
+    input Page_Content_Objecting_NestedObject_ObjectNestedObjectInput {
+        nestedObjectNestedTitle: String
+    }
+
+    input Page_Content_Objecting_NestedObjectInput {
+        objectTitle: String
+        objectNestedObject: [Page_Content_Objecting_NestedObject_ObjectNestedObjectInput!]
+    }
+
+    input Page_Content_ObjectingInput {
+        nestedObject: Page_Content_Objecting_NestedObjectInput
+    }
+
     input Page_ContentInput {
         Hero: Page_Content_HeroInput
         SimpleText: Page_Content_SimpleTextInput
+        Objecting: Page_Content_ObjectingInput
     }
 
     input Page_Header_TextHeaderInput {
@@ -96,9 +184,28 @@ export default /* GraphQL */ `
         ImageHeader: Page_Header_ImageHeaderInput
     }
 
+    input Page_Objective_Objecting_NestedObject_ObjectNestedObjectInput {
+        nestedObjectNestedTitle: String
+    }
+
+    input Page_Objective_Objecting_NestedObjectInput {
+        objectTitle: String
+        objectBody: JSON
+        objectNestedObject: [Page_Objective_Objecting_NestedObject_ObjectNestedObjectInput!]
+    }
+
+    input Page_Objective_ObjectingInput {
+        nestedObject: Page_Objective_Objecting_NestedObjectInput
+    }
+
+    input Page_ObjectiveInput {
+        Objecting: Page_Objective_ObjectingInput
+    }
+
     input PageInput {
         content: [Page_ContentInput]
         header: Page_HeaderInput
+        objective: Page_ObjectiveInput
     }
 
     input PageGetWhereInput {
