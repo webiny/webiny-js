@@ -1,4 +1,3 @@
-import React from "react";
 import kebabCase from "lodash/kebabCase";
 import IFrame from "./IFrame";
 import { createIFrame } from "@webiny/app-page-builder-elements/renderers/embeds/iframe";
