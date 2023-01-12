@@ -94,8 +94,7 @@ export default (args: PbEditorElementPluginArgs = {}): Plugin[] => {
             },
             render(props) {
                 return <Image {...props} />;
-            },
-            renderer: createImage()
+            }
         } as PbEditorPageElementPlugin,
         {
             name: "pb-editor-page-element-style-settings-image",
