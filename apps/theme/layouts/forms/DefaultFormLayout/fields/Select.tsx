@@ -13,8 +13,8 @@ interface SelectProps {
 
 const StyledSelect = styled.select`
     ${theme.styles.typography.paragraph1};
-    border: 1px solid ${theme.styles.colors.color4};
-    background-color: ${theme.styles.colors.color4};
+    border: 1px solid ${theme.styles.colors.color5};
+    background-color: ${theme.styles.colors.color5};
     width: 100%;
     padding: 10px;
     border-radius: ${theme.styles.borderRadius};

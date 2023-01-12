@@ -16,7 +16,7 @@ const Wrapper = styled.div`
     width: 100%;
     padding: 0 5px 5px 5px;
     box-sizing: border-box;
-    background-color: ${theme.styles.colors.color5};
+    background-color: ${theme.styles.colors.color6};
 `;
 
 /**

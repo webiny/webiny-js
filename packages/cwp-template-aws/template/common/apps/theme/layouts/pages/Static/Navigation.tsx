@@ -55,7 +55,7 @@ const NavigationUl = styled.ul`
         transition: background-color 0.2s;
 
         &:hover {
-            background-color: ${colors.color4};
+            background-color: ${colors.color5};
             border-radius: ${borderRadius};
         }
     }
