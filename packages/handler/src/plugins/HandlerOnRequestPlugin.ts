@@ -7,13 +7,13 @@ import { FastifyReply, FastifyRequest } from "fastify";
  *
  * This way users can prevent stopping of the request on our built-in OPTIONS request.
  */
-export type HandlerOnRequestPluginCallableResponse = false | undefined | null;
+export type HandlerOnRequestPluginCallableResponse = false | undefined | null | void;
 interface HandlerOnRequestPluginCallable {
     (request: FastifyRequest, reply: FastifyReply): Promise<HandlerOnRequestPluginCallableResponse>;
 }
 
 export class HandlerOnRequestPlugin extends Plugin {
-    public static override type: string = "handler.event.onRequest";
+    public static override type = "handler.event.onRequest";
 
     private readonly cb: HandlerOnRequestPluginCallable;
 

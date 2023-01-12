@@ -282,6 +282,20 @@ export const createHandler = (params: CreateHandlerParams) => {
         if (request.method !== "OPTIONS") {
             return;
         }
+
+        if (reply.sent) {
+            /**
+             * At this point throwing an exception will not do anything with the response. So just log it.
+             */
+            console.log(
+                JSON.stringify({
+                    message: `Output was already sent. Please check user defined the "HandlerOnRequestPlugin" for reply end.`,
+                    explanation:
+                        "This error can happen if users plugin ended the reply but did not return false as response."
+                })
+            );
+            return;
+        }
         const raw = reply.code(204).hijack().raw;
         const headers = { ...defaultHeaders, ...OPTIONS_HEADERS };
         for (const key in headers) {
