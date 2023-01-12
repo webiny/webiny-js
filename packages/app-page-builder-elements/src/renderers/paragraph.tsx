@@ -1,31 +1,15 @@
 import React from "react";
-import { usePageElements } from "~/hooks/usePageElements";
-import { ElementRenderer } from "~/types";
+import { createRenderer } from "~/createRenderer";
+import { useRenderer } from "~/hooks/useRenderer";
 
-declare global {
-    //eslint-disable-next-line
-    namespace JSX {
-        interface IntrinsicElements {
-            "pb-paragraph": any;
-        }
-    }
-}
+export type ParagraphRenderer = ReturnType<typeof createParagraph>;
 
-const defaultStyles = { display: "block" };
+export const createParagraph = () => {
+    return createRenderer(() => {
+        const { getElement } = useRenderer();
+        const element = getElement();
 
-const Paragraph: ElementRenderer = ({ element }) => {
-    const { getClassNames, getElementClassNames, combineClassNames } = usePageElements();
-    const classNames = combineClassNames(
-        getClassNames(defaultStyles),
-        getElementClassNames(element)
-    );
-
-    return (
-        <pb-paragraph
-            class={classNames}
-            dangerouslySetInnerHTML={{ __html: element.data.text.data.text }}
-        />
-    );
+        const __html = element.data.text.data.text;
+        return <p dangerouslySetInnerHTML={{ __html }} />;
+    });
 };
-
-export const createParagraph = () => Paragraph;

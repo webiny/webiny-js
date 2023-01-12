@@ -29,7 +29,8 @@ import useUpdateHandlers from "../../elementSettings/useUpdateHandlers";
 import TextAlignment from "./TextAlignment";
 import { applyFallbackDisplayMode } from "../elementSettingsUtils";
 import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
-import { Theme } from "@webiny/app-page-builder-elements/types";
+import startCase from "lodash/startCase";
+import { isLegacyRenderingEngine } from "~/utils";
 
 const classes = {
     grid: css({
@@ -63,23 +64,18 @@ interface TextSettingsPropsOptions {
     useCustomTag?: boolean;
     tags: string[];
 }
+
 interface TextSettingsProps extends PbEditorPageElementSettingsRenderComponentProps {
     options: TextSettingsPropsOptions;
 }
+
 const TextSettings: React.FC<TextSettingsProps> = ({ defaultAccordionValue, options }) => {
     const { displayMode } = useRecoilValue(uiAtom);
     const activeElementId = useRecoilValue(activeElementAtom);
 
-    let peTheme: Theme = {};
-    const pageElements = usePageElements();
-    if (pageElements) {
-        peTheme = pageElements.theme;
-    }
-
     const element = useRecoilValue(
         elementWithChildrenByIdSelector(activeElementId)
     ) as PbEditorElement;
-    const [{ theme }] = plugins.byType<PbThemePlugin>("pb-theme");
 
     const memoizedResponsiveModePlugin = useMemo(() => {
         return plugins
@@ -94,9 +90,22 @@ const TextSettings: React.FC<TextSettingsProps> = ({ defaultAccordionValue, opti
         }
     };
 
+    const pageElements = usePageElements();
+
+    const themePlugins = plugins.byType<PbThemePlugin>("pb-theme");
+
     const themeTypographyOptions = useMemo(() => {
+        if (!isLegacyRenderingEngine) {
+            const peThemeTypography = Object.keys(pageElements.theme.styles?.typography || {});
+            return peThemeTypography.map(key => (
+                <option value={key} key={key}>
+                    {startCase(key)}
+                </option>
+            ));
+        }
+
+        const [{ theme }] = themePlugins;
         const { types = [] } = theme.elements[element.type];
-        const peThemeTypography = Object.keys(peTheme.styles?.typography || {});
 
         return [
             /**
@@ -108,14 +117,9 @@ const TextSettings: React.FC<TextSettingsProps> = ({ defaultAccordionValue, opti
                 <option value={el.className} key={el.label}>
                     {el.label}
                 </option>
-            )),
-            ...peThemeTypography.map(el => (
-                <option value={el} key={el}>
-                    {el}
-                </option>
             ))
         ];
-    }, [theme, element]);
+    }, [themePlugins, element]);
 
     const { getUpdateValue, getUpdatePreview } = useUpdateHandlers({
         element,
@@ -215,7 +219,7 @@ const TextSettings: React.FC<TextSettingsProps> = ({ defaultAccordionValue, opti
                         {themeTypographyOptions}
                     </SelectField>
                 </Wrapper>
-                {themeTypographyOptions.length === 0 && (
+                {isLegacyRenderingEngine && themeTypographyOptions.length === 0 && (
                     <Grid className={classes.warningMessageGrid}>
                         <Cell span={12}>
                             <Typography use={"caption"}>

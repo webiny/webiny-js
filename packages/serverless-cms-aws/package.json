@@ -40,6 +40,7 @@
     "@webiny/api-tenancy-so-ddb": "^5.33.5",
     "@webiny/cli-plugin-deploy-pulumi": "^5.33.5",
     "@webiny/db-dynamodb": "^5.33.5",
+    "@webiny/feature-flags": "^5.33.5",
     "@webiny/handler-aws": "^5.33.5",
     "@webiny/handler-db": "^5.33.5",
     "@webiny/handler-logs": "^5.33.5",

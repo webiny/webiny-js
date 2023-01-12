@@ -4,26 +4,23 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "@apollo/react-components": "^3.1.5",
     "@apollo/react-hooks": "^3.1.5",
+    "@emotion/core": "^10.0.17",
+    "@emotion/styled": "^10.0.17",
     "@webiny/app-form-builder": "^5.33.5",
     "@webiny/app-page-builder": "^5.33.5",
+    "@webiny/app-page-builder-elements": "^5.33.5",
+    "@webiny/app-theme": "^5.33.5",
+    "@webiny/app-website": "^5.33.5",
     "@webiny/form": "^5.33.5",
     "@webiny/react-rich-text-renderer": "^5.33.5",
     "@webiny/react-router": "^5.33.5",
     "@webiny/validation": "^5.33.5",
-    "classnames": "^2.2.6",
-    "emotion": "^10.0.17",
     "graphql": "^15.7.2",
-    "graphql-tag": "^2.12.6",
-    "invariant": "^2.2.4",
-    "lodash": "^4.4.2",
     "react": "17.0.2",
-    "react-hamburger-menu": "^1.1.1",
-    "react-helmet": "^6.1.0"
+    "react-hamburger-menu": "^1.1.1"
   },
   "devDependencies": {
-    "@types/invariant": "^2.2.35",
     "@types/lodash": "^4.14.178",
     "@types/react-hamburger-menu": "^0.0.4"
   }

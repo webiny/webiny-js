@@ -1,30 +1,24 @@
 import React from "react";
-import Text from "~/editor/components/Text";
-import { CoreOptions } from "medium-editor";
-import { PbEditorTextElementProps } from "~/types";
-import { getMediumEditorOptions } from "../utils/textUtils";
+import { MediumEditorOptions, PbEditorElement } from "~/types";
+import PeParagraph from "./PeParagraph";
+import PbParagraph from "./PbParagraph";
+import { isLegacyRenderingEngine } from "~/utils";
+import { Element } from "@webiny/app-page-builder-elements/types";
 
 export const textClassName = "webiny-pb-base-page-element-style webiny-pb-page-element-text";
 
-const DEFAULT_EDITOR_OPTIONS: CoreOptions = {
-    toolbar: {
-        buttons: ["bold", "italic", "underline", "anchor"]
-    },
-    anchor: {
-        targetCheckbox: true,
-        targetCheckboxText: "Open in a new tab"
+interface ParagraphProps {
+    element: PbEditorElement;
+    mediumEditorOptions?: MediumEditorOptions;
+}
+
+const Paragraph: React.FC<ParagraphProps> = props => {
+    if (isLegacyRenderingEngine) {
+        return <PbParagraph {...props} elementId={props.element.id} />;
     }
+
+    const { element, ...rest } = props;
+    return <PeParagraph element={element as Element} {...rest} />;
 };
 
-const Paragraph: React.FC<PbEditorTextElementProps> = ({ elementId, mediumEditorOptions }) => {
-    return (
-        <Text
-            elementId={elementId}
-            mediumEditorOptions={getMediumEditorOptions(
-                DEFAULT_EDITOR_OPTIONS,
-                mediumEditorOptions
-            )}
-        />
-    );
-};
-export default React.memo(Paragraph);
+export default Paragraph;

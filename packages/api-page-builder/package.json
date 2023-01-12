@@ -26,6 +26,7 @@
     "@webiny/api-upgrade": "^5.33.5",
     "@webiny/db-dynamodb": "^5.33.5",
     "@webiny/error": "^5.33.5",
+    "@webiny/feature-flags": "^5.33.5",
     "@webiny/handler": "^5.33.5",
     "@webiny/handler-aws": "^5.33.5",
     "@webiny/handler-db": "^5.33.5",

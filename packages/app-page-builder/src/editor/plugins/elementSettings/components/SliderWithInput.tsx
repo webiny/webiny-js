@@ -49,7 +49,7 @@ const SliderWithInput: React.FC<SliderWithInputPropsType> = ({
             </Cell>
             <Cell align={"middle"} span={4}>
                 <InputField
-                    placeholder={placeholder || "px"}
+                    placeholder={placeholder || "ms"}
                     value={value}
                     onChange={updateValue}
                 />

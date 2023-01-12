@@ -16,6 +16,7 @@ export interface FbErrorResponse {
     code?: string | null;
     data?: Record<string, any>;
 }
+
 export interface FbMetaResponse {
     totalCount: number;
     cursor: string;
@@ -159,6 +160,7 @@ export interface FbFormModel {
     createdBy: FbCreatedBy;
     triggers: Record<string, any>;
 }
+
 export interface FbFormRenderModel extends Omit<FbFormModel, "fields"> {
     fields: FormRenderFbFormModelField[];
 }
@@ -226,6 +228,12 @@ export type FbEditorFieldGroup = Plugin & {
     };
 };
 
+export type FbFormLayout = {
+    name: string;
+    title: string;
+    component: FormLayoutComponent;
+};
+
 export type FbFormLayoutPlugin = Plugin & {
     type: "form-layout";
     layout: {
@@ -267,7 +275,7 @@ export type FormRenderPropsType<T = Record<string, any>> = {
     formData: FbFormModel;
 };
 
-export type FormLayoutComponent = (props: FormRenderPropsType) => React.ReactNode;
+export type FormLayoutComponent = React.ComponentType<FormRenderPropsType>;
 
 export interface FormComponentPropsType {
     preview?: boolean;
@@ -335,11 +343,13 @@ export interface FbFieldOptionsInput {
     label: string;
     value: string;
 }
+
 export interface FbFieldValidationInput {
     name: string;
     message: string;
     settings: Record<string, string>;
 }
+
 export interface FbFormFieldInput {
     _id: string;
     fieldId: string;
@@ -352,24 +362,29 @@ export interface FbFormFieldInput {
     validation: FbFieldValidationInput[];
     settings: Record<string, string>;
 }
+
 export interface FbFormSettingsLayoutInput {
     renderer: string;
 }
+
 export interface FbTermsOfServiceMessageInput {
     enabled: boolean;
     message: Record<string, string>;
     errorMessage: string;
 }
+
 export interface FbFormReCaptchaSettingsInput {
     enabled: boolean;
     siteKey: string;
     secretKey: string;
 }
+
 export interface FbReCaptchaInput {
     enabled: boolean;
     errorMessage: Record<string, string>;
     settings: FbFormReCaptchaSettingsInput;
 }
+
 export interface FbFormSettingsInput {
     layout: FbFormSettingsLayoutInput;
     submitButtonLabel: string;
@@ -377,6 +392,7 @@ export interface FbFormSettingsInput {
     termsOfServiceMessage: FbTermsOfServiceMessageInput;
     reCaptcha: FbReCaptchaInput;
 }
+
 export interface FbUpdateFormInput {
     name?: string;
     fields?: FbFormFieldInput[];

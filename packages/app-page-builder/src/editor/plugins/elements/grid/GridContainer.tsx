@@ -4,7 +4,7 @@ import kebabCase from "lodash/kebabCase";
 import styled from "@emotion/styled";
 import { PbEditorElement } from "~/types";
 import { ElementRoot } from "~/render/components/ElementRoot";
-import Grid from "./Grid";
+import Grid from "./PbGrid";
 import ElementAnimation from "~/render/components/ElementAnimation";
 import { elementWithChildrenByIdSelector, uiAtom } from "~/editor/recoil/modules";
 

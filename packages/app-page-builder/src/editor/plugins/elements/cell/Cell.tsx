@@ -1,29 +1,22 @@
 import React from "react";
-import styled from "@emotion/styled";
-import DropZone from "../../../components/DropZone";
-import Element from "../../../components/Element";
-import { DragObjectWithTypeWithTarget } from "../../../components/Droppable";
+import { PbEditorElement } from "~/types";
+import CellContainer from "./CellContainer";
+import { isLegacyRenderingEngine } from "~/utils";
+import PeCell from "~/editor/plugins/elements/cell/PeCell";
+import { Element } from "@webiny/app-page-builder-elements/types";
 
-const CellStyle = styled("div")({
-    position: "relative"
-});
-interface CellPropsType {
-    id: string;
-    dropElement: (source: DragObjectWithTypeWithTarget, index: number) => void;
-    type: string;
-    index: number;
-    isLast?: boolean;
+interface CellProps {
+    element: PbEditorElement;
+    isActive: boolean;
 }
-const Cell: React.FC<CellPropsType> = ({ id, dropElement, index, isLast = false, type }) => {
-    return (
-        <CellStyle>
-            <DropZone.Above type={type} onDrop={source => dropElement(source, index)} />
-            <Element id={id} />
-            {isLast && (
-                <DropZone.Below type={type} onDrop={source => dropElement(source, index + 1)} />
-            )}
-        </CellStyle>
-    );
+
+const Cell: React.FC<CellProps> = props => {
+    if (isLegacyRenderingEngine) {
+        return <CellContainer {...props} elementId={props.element.id} />;
+    }
+
+    const { element, ...rest } = props;
+    return <PeCell element={element as Element} {...rest} />;
 };
 
-export default React.memo(Cell);
+export default Cell;

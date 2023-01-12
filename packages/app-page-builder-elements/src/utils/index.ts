@@ -1,15 +1,19 @@
 // Provides a way to check whether the `PageElementsProvider` React component was mounted or not,
 // in a non-React context. In React contexts, it's strongly recommended the value of `usePageElements`
 // React hook is checked instead (a `null` value means the provider React component wasn't mounted).
+import { type CSSObject } from "@emotion/core";
+
 import {
+    AssignAttributesCallback,
     AssignStylesCallback,
-    Breakpoint,
+    AttributesObject,
+    ElementAttributesCallback,
+    RendererProps,
     ElementStylesCallback,
-    StylesCallback,
-    StylesObjects,
-    ThemeStylesCallback
+    StylesCallback
 } from "~/types";
-import { CSSObject } from "@emotion/css";
+
+import { StylesObject, ThemeBreakpoints } from "@webiny/theme/types";
 
 let usingPageElementsFlag = false;
 
@@ -21,13 +25,21 @@ export const setUsingPageElements = (value: boolean) => {
     usingPageElementsFlag = value;
 };
 
+export const assignAttributes: AssignAttributesCallback = (params: {
+    attributes: AttributesObject;
+    assignTo?: AttributesObject;
+}) => {
+    const { attributes = {}, assignTo = {} } = params;
+    Object.assign(assignTo, attributes);
+};
+
 // Detect if we're working with a per-breakpoint object, or just a set of regular CSS properties.
 export const isPerBreakpointStylesObject = ({
     breakpoints,
     styles
 }: {
-    breakpoints: Record<string, Breakpoint>;
-    styles: StylesObjects;
+    breakpoints: ThemeBreakpoints;
+    styles: StylesObject;
 }): boolean => {
     for (const breakpointName in breakpoints) {
         if (styles[breakpointName]) {
@@ -37,24 +49,24 @@ export const isPerBreakpointStylesObject = ({
     return false;
 };
 
-export const assignStyles: AssignStylesCallback = (args: {
-    breakpoints: Record<string, Breakpoint>;
-    styles: StylesObjects;
+export const assignStyles: AssignStylesCallback = (params: {
+    breakpoints: ThemeBreakpoints;
+    styles: StylesObject;
     assignTo?: CSSObject;
 }) => {
-    const { breakpoints, styles = {}, assignTo = {} } = args;
+    const { breakpoints, styles = {}, assignTo = {} } = params;
     if (isPerBreakpointStylesObject({ breakpoints, styles })) {
         for (const breakpointName in breakpoints) {
             const breakpoint = breakpoints[breakpointName];
             if (styles && styles[breakpointName]) {
-                if (!assignTo[breakpoint.mediaQuery]) {
-                    assignTo[breakpoint.mediaQuery] = {};
+                if (!assignTo[breakpoint]) {
+                    assignTo[breakpoint] = {};
                 }
                 /**
                  * We must cast because it breaks on TS 4.7.4.
                  * Object is not undefined, so it is safe.
                  */
-                Object.assign(assignTo[breakpoint.mediaQuery] as CSSObject, styles[breakpointName]);
+                Object.assign(assignTo[breakpoint] as CSSObject, styles[breakpointName]);
             }
         }
     } else {
@@ -64,6 +76,32 @@ export const assignStyles: AssignStylesCallback = (args: {
     return assignTo;
 };
 
+export const defaultElementAttributesCallback: ElementAttributesCallback = ({
+    element,
+    modifiers,
+    renderers,
+    theme
+}) => {
+    const attributes: Record<string, any> = {};
+
+    for (const modifierName in modifiers.attributes) {
+        const modifier = modifiers.attributes[modifierName];
+
+        const attributesValues = modifier({
+            element,
+            theme,
+            renderers,
+            modifiers
+        });
+
+        assignAttributes({
+            assignTo: attributes,
+            attributes: attributesValues || {}
+        });
+    }
+
+    return attributes;
+};
 export const defaultElementStylesCallback: ElementStylesCallback = ({
     element,
     modifiers,
@@ -84,6 +122,7 @@ export const defaultElementStylesCallback: ElementStylesCallback = ({
         });
 
         const assign = customAssignStylesCallback || assignStyles;
+
         assign({
             breakpoints: theme.breakpoints || {},
             assignTo: styles,
@@ -91,17 +130,17 @@ export const defaultElementStylesCallback: ElementStylesCallback = ({
         });
     }
 
-    return [styles];
+    return styles;
 };
 
-export const defaultThemeStylesCallback: ThemeStylesCallback = ({
+export const defaultStylesCallback: StylesCallback = ({
     theme,
-    getStyles,
+    styles,
     assignStyles: customAssignStylesCallback
 }) => {
-    let themeStyles = {};
+    let returnStyles = {};
     try {
-        themeStyles = getStyles(theme);
+        returnStyles = typeof styles === "function" ? styles(theme) : styles;
     } catch (e) {
         // Do nothing.
         console.warn("Could not load theme styles:");
@@ -109,12 +148,20 @@ export const defaultThemeStylesCallback: ThemeStylesCallback = ({
     }
 
     const assign = customAssignStylesCallback || assignStyles;
-    const styles = assign({
+    return assign({
         breakpoints: theme.breakpoints || {},
-        styles: themeStyles
+        styles: returnStyles
     });
-
-    return [styles];
 };
 
-export const defaultStylesCallback: StylesCallback = ({ styles }) => [styles];
+export const elementDataPropsAreEqual = (prevProps: RendererProps, nextProps: RendererProps) => {
+    const prevElementDataHash = JSON.stringify(prevProps.element.data);
+    const nextElementDataHash = JSON.stringify(nextProps.element.data);
+    if (prevElementDataHash !== nextElementDataHash) {
+        return false;
+    }
+
+    const prevRendererMetaHash = JSON.stringify(prevProps.meta);
+    const nextRendererMetaHash = JSON.stringify(nextProps.meta);
+    return prevRendererMetaHash === nextRendererMetaHash;
+};

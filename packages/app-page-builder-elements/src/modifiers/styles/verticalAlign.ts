@@ -11,10 +11,20 @@ const verticalAlign: ElementStylesModifier = ({ element, theme }) => {
             return returnStyles;
         }
 
+        // Blocks are flex-displayed, with the flex-direction set to "column".
+        if (element.type === "block") {
+            return {
+                ...returnStyles,
+                [breakpointName]: {
+                    justifyContent: verticalAlign[breakpointName]
+                }
+            };
+        }
+
+        // For all other elements, we assume flex-direction is using the default setting, which is "row".
         return {
             ...returnStyles,
             [breakpointName]: {
-                display: "flex",
                 alignItems: verticalAlign[breakpointName]
             }
         };

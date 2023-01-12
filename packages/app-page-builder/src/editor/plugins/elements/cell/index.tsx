@@ -1,6 +1,6 @@
 import React from "react";
 import kebabCase from "lodash/kebabCase";
-import CellContainer from "./CellContainer";
+import Cell from "./Cell";
 import {
     DisplayMode,
     PbEditorPageElementPlugin,
@@ -110,7 +110,7 @@ const cellPlugin = (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPl
             return result;
         },
         render(props) {
-            return <CellContainer {...props} elementId={props.element.id} />;
+            return <Cell {...props} />;
         }
     };
 

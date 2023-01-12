@@ -8,7 +8,8 @@ import {
     PbEditorPageElementPluginToolbar,
     PbEditorTextElementPluginsArgs
 } from "~/types";
-import List, { className } from "./List";
+import { className } from "./PbList";
+import List from "./List";
 import { createInitialTextValue } from "../utils/textUtils";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 
@@ -95,8 +96,8 @@ export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementP
 
             return typeof args.create === "function" ? args.create(defaultValue) : defaultValue;
         },
-        render({ element }) {
-            return <List elementId={element.id} mediumEditorOptions={args.mediumEditorOptions} />;
+        render(props) {
+            return <List {...props} mediumEditorOptions={args.mediumEditorOptions} />;
         }
     };
 };

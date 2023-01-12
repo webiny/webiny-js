@@ -12,6 +12,7 @@
     { "path": "../api-upgrade/tsconfig.build.json" },
     { "path": "../db-dynamodb/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
+    { "path": "../feature-flags/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },
     { "path": "../handler-aws/tsconfig.build.json" },
     { "path": "../handler-db/tsconfig.build.json" },
