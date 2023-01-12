@@ -7,10 +7,9 @@ import { ImagesListComponent } from "../types";
 // @ts-ignore
 import Columned from "react-columned";
 import Lightbox from "react-images";
+import styled from "@emotion/styled";
 
-const COLUMNED_PROPS = {
-    columns: { 320: 1, 480: 2, 800: 3, 1366: 4 }
-};
+const COLUMNS = { 320: 1, 480: 2, 800: 3, 1366: 4 };
 
 interface State {
     open: boolean;
@@ -58,15 +57,26 @@ const useLightbox = () => {
     };
 };
 
+const NoImagesToDisplay = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px;
+    width: 100%;
+    border: 1px dashed var(--mdc-theme-secondary);
+    color: var(--mdc-theme-text-secondary-on-background);
+    pointer-events: none;
+`;
+
 export const createDefaultImagesListComponent = (): ImagesListComponent =>
     function DefaultImagesListComponent(props) {
         const { opened, open, close, next, prev, currentIndex } = useLightbox();
 
         const { images } = props;
-        if (Array.isArray(images)) {
+        if (Array.isArray(images) && images.length > 0) {
             return (
                 <>
-                    <Columned columns={COLUMNED_PROPS.columns}>
+                    <Columned columns={COLUMNS}>
                         {images.map((item, i) => (
                             <img
                                 onClick={() => open(i)}
@@ -89,5 +99,5 @@ export const createDefaultImagesListComponent = (): ImagesListComponent =>
             );
         }
 
-        return <div style={{minHeight: 200}}>No images to display.</div>;
+        return <NoImagesToDisplay>No images to display.</NoImagesToDisplay>;
     };
