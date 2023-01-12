@@ -29,7 +29,6 @@ const LegacyContentContainer = styled.div(({ theme }: ContentContainerParams) =>
     const backgroundColor = theme?.colors?.background;
     return {
         backgroundColor,
-        overflow: "hidden",
         position: "relative",
         margin: "0 auto",
         ".webiny-pb-page-document, pb-document": {
