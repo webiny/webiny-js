@@ -9640,13 +9640,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/retry@npm:0.12.1":
-  version: 0.12.1
-  resolution: "@types/retry@npm:0.12.1"
-  checksum: 5f46b2556053655f78262bb33040dc58417c900457cc63ff37d6c35349814471453ef511af0cec76a540c601296cd2b22f64bab1ab649c0dacc0223765ba876c
-  languageName: node
-  linkType: hard
-
 "@types/retry@npm:^0.12.0":
   version: 0.12.2
   resolution: "@types/retry@npm:0.12.2"
@@ -10669,7 +10662,7 @@ __metadata:
     "@webiny/project-utils": ^5.33.5
     aws-lambda: ^1.0.7
     aws-sdk: ^2.971.0
-    p-retry: ^5.1.2
+    p-retry: ^4.6.2
     typescript: 4.7.4
   languageName: unknown
   linkType: soft
@@ -31697,23 +31690,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"p-retry@npm:^4.5.0":
+"p-retry@npm:^4.5.0, p-retry@npm:^4.6.2":
   version: 4.6.2
   resolution: "p-retry@npm:4.6.2"
   dependencies:
     "@types/retry": 0.12.0
     retry: ^0.13.1
   checksum: 45c270bfddaffb4a895cea16cb760dcc72bdecb6cb45fef1971fa6ea2e91ddeafddefe01e444ac73e33b1b3d5d29fb0dd18a7effb294262437221ddc03ce0f2e
-  languageName: node
-  linkType: hard
-
-"p-retry@npm:^5.1.2":
-  version: 5.1.2
-  resolution: "p-retry@npm:5.1.2"
-  dependencies:
-    "@types/retry": 0.12.1
-    retry: ^0.13.1
-  checksum: f063c08b1adc3cf7c01de01eb2dbda841970229f9f229c5167ebf4e2080d8a38b1f4e6eccefac74bca97cfaf4436d0a0eeb0b551175b26bc8b3116195f61bba8
   languageName: node
   linkType: hard
 
