@@ -6,3 +6,4 @@ export * from "~/plugins/RoutePlugin";
 export * from "~/plugins/BeforeHandlerPlugin";
 export * from "~/plugins/HandlerErrorPlugin";
 export * from "~/plugins/HandlerResultPlugin";
+export * from "~/plugins/HandlerOnRequestPlugin";
