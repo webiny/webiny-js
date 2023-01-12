@@ -1,35 +1,23 @@
-import * as React from "react";
-import { usePageBuilder } from "~/hooks/usePageBuilder";
-import { plugins } from "@webiny/plugins";
-import { PbEditorElement, PbPageElementImagesListComponentPlugin } from "~/types";
-import { makeComposable } from "@webiny/react-composition";
+import React from "react";
+import { MediumEditorOptions, PbEditorElement } from "~/types";
+import PeImagesList from "./PeImagesList";
+import PbImagesList from "./PbImagesList";
+import { isLegacyRenderingEngine } from "~/utils";
+import { Element } from "@webiny/app-page-builder-elements/types";
 
 interface ImagesListProps {
     element: PbEditorElement;
+    mediumEditorOptions?: MediumEditorOptions;
 }
-const ImagesList: React.FC<ImagesListProps> = ({ element }) => {
-    const { theme } = usePageBuilder();
-    const { component, images } = element.data;
-    const components = plugins.byType<PbPageElementImagesListComponentPlugin>(
-        "pb-page-element-images-list-component"
-    );
-    const imageList = components.find(cmp => cmp.componentName === component);
 
-    if (!imageList) {
-        return <div>Selected image gallery component not found!</div>;
+const ImagesList: React.FC<ImagesListProps> = props => {
+    if (isLegacyRenderingEngine) {
+        return <PbImagesList {...props} element={props.element} />;
     }
 
-    const { component: ListComponent } = imageList;
-    if (!ListComponent) {
-        return <div>You must select a component to render your image gallery!</div>;
-    }
-
-    return <ListComponent data={images} theme={theme} />;
+    console.log('dobeo props', Object.keys(props))
+    const { element, ...rest } = props;
+    return <PeImagesList element={element as Element} {...rest} />;
 };
 
-export default makeComposable(
-    "ImagesList",
-    React.memo(({ element }: { element: PbEditorElement }) => {
-        return <ImagesList element={element} />;
-    })
-);
+export default ImagesList;
