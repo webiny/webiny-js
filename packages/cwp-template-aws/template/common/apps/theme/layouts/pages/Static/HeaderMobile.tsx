@@ -103,7 +103,7 @@ const HeaderMobileWrapper = styled.div`
             -webkit-font-smoothing: antialiased;
             animation: slide-out 0.5s forwards;
             animation-timing-function: ease-in-out;
-            background: ${colors.color4};
+            background: ${colors.color5};
             color: ${colors.color1};
             font-family: ${fonts.font1};
             height: 100%;
