@@ -139,7 +139,7 @@ const ValidatorItem = ({ validator, value, onChange }: ValidatorItemProps) => {
 
     const description = [<span key={"msg"}>This message will be displayed to the user.</span>];
     const variables = validator.getVariables();
-    console.log(variables);
+
     if (variables.length) {
         description.push(<span key={"vars"}>&nbsp;Available variables:&nbsp;</span>);
         for (let i = 0; i < variables.length; i++) {
