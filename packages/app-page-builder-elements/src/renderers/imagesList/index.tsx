@@ -30,7 +30,7 @@ export interface CreateImagesListParams {
 export const createImagesList = (params: CreateImagesListParams) => {
     const { imagesListComponents } = params;
 
-    return createRenderer<Props>((props) => {
+    return createRenderer<Props>(props => {
         const { getElement } = useRenderer();
 
         const element = getElement<ImagesListElementData>();

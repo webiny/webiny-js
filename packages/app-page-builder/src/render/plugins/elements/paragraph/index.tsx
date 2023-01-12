@@ -1,4 +1,3 @@
-import React from "react";
 import kebabCase from "lodash/kebabCase";
 import Paragraph from "./Paragraph";
 import { PbRenderElementPluginArgs, PbRenderElementPlugin } from "~/types";

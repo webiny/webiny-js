@@ -26,7 +26,7 @@ interface Props {
     element: Element;
 }
 
-const PeButton: React.FC<Props> = (props) => {
+const PeButton: React.FC<Props> = props => {
     const { element } = props;
     const variableValue = useElementVariableValue(element);
     if (variableValue) {

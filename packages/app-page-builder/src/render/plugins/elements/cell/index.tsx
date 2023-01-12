@@ -1,4 +1,3 @@
-import React from "react";
 import Cell from "./Cell";
 import { PbRenderElementPlugin } from "~/types";
 import { createCell } from "@webiny/app-page-builder-elements/renderers/cell";

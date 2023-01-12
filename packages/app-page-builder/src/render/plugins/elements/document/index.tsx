@@ -1,4 +1,3 @@
-import React from "react";
 import Document from "./Document";
 import { PbRenderElementPlugin } from "~/types";
 import { createDocument } from "@webiny/app-page-builder-elements/renderers/document";

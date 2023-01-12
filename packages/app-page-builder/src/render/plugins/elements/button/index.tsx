@@ -1,4 +1,3 @@
-import React from "react";
 import kebabCase from "lodash/kebabCase";
 import Button from "./Button";
 import {
@@ -11,7 +10,7 @@ import { plugins } from "@webiny/plugins";
 import { isLegacyRenderingEngine } from "~/utils";
 
 // @ts-ignore Resolve once we deprecate legacy rendering engine.
-let render: PbRenderElementPlugin["render"] = isLegacyRenderingEngine
+const render: PbRenderElementPlugin["render"] = isLegacyRenderingEngine
     ? Button
     : createButton({
           clickHandlers: () => {
