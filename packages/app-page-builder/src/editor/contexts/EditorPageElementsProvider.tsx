@@ -1,10 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { PageElementsProvider as PbPageElementsProvider } from "@webiny/app-page-builder-elements/contexts/PageElements";
 
 // Attributes modifiers.
 import { createId } from "@webiny/app-page-builder-elements/modifiers/attributes/id";
 import { createClassName } from "@webiny/app-page-builder-elements/modifiers/attributes/className";
-// import { createAnimation } from "@webiny/app-page-builder-elements/modifiers/attributes/animation";
+import { createAnimation } from "@webiny/app-page-builder-elements/modifiers/attributes/animation";
 
 // Styles modifiers.
 import { createBackground } from "@webiny/app-page-builder-elements/modifiers/styles/background";
@@ -40,10 +40,17 @@ export const EditorPageElementsProvider: React.FC = ({ children }) => {
     const modifiers = {
         attributes: {
             id: createId(),
-            className: createClassName()
-
-            // TODO: fix animation preview in editor.
-            // animation: createAnimation()
+            className: createClassName(),
+            animation: createAnimation({
+                initOn: new Promise<void>(resolve => {
+                    const interval = setInterval(() => {
+                        if (document.querySelector("pb-document")) {
+                            clearInterval(interval);
+                            resolve();
+                        }
+                    }, 333);
+                })
+            })
         },
         styles: {
             background: createBackground(),
