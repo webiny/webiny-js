@@ -69,6 +69,7 @@ module.exports = (params, context) => {
                 await pulumi.run({
                     command: "preview",
                     args: {
+                        diff: true,
                         debug: inputs.debug
                         // Preview command does not accept "--secrets-provider" argument.
                         // secretsProvider: PULUMI_SECRETS_PROVIDER
