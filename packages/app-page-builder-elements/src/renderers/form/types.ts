@@ -64,7 +64,7 @@ export interface FormData {
     triggers: Record<string, any>;
 }
 
-export type RenderFormComponentDataField = FormDataField & {
+export type FormRenderComponentDataField = FormDataField & {
     validators: ((value: string) => Promise<boolean>)[];
 };
 
@@ -77,7 +77,7 @@ export interface ErrorResponse {
 export type FormLayoutComponentProps<T = any> = {
     getFieldById: Function;
     getFieldByFieldId: Function;
-    getFields: () => RenderFormComponentDataField[][];
+    getFields: () => FormRenderComponentDataField[][];
     getDefaultValues: () => { [key: string]: any };
     ReCaptcha: ReCaptchaComponent;
     reCaptchaEnabled: boolean;

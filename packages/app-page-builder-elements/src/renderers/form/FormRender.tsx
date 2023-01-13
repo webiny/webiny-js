@@ -12,7 +12,7 @@ import {
     FormLayoutComponent as FormLayoutComponentType,
     FormData,
     FormDataField,
-    RenderFormComponentDataField,
+    FormRenderComponentDataField,
     FormSubmission,
     FormSubmissionResponse,
     FormLayoutComponentProps,
@@ -97,7 +97,7 @@ const FormRender: React.FC<FormRenderProps> = props => {
         return fields.find(field => field.fieldId === id) || null;
     };
 
-    const getFields = (): RenderFormComponentDataField[][] => {
+    const getFields = (): FormRenderComponentDataField[][] => {
         const fieldLayout = structuredClone(layout) as FormDataFieldsLayout;
 
         return fieldLayout.map(row => {
@@ -105,7 +105,7 @@ const FormRender: React.FC<FormRenderProps> = props => {
                 /**
                  * We can cast safely because we are adding validators
                  */
-                const field = getFieldById(id) as RenderFormComponentDataField;
+                const field = getFieldById(id) as FormRenderComponentDataField;
                 field.validators = (field.validation || []).reduce((collection, item) => {
                     const fieldValidator = fieldValidators?.find(
                         current => current.name === item.name
