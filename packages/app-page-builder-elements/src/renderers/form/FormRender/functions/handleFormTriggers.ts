@@ -1,4 +1,4 @@
-import { FormRenderProps } from "./../../RenderForm";
+import { FormRenderProps } from "../../FormRender";
 import { CreateFormParamsTrigger, FormSubmissionFieldValues } from "../../types";
 
 interface HandleFormTriggersParams {

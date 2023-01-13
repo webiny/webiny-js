@@ -1,4 +1,4 @@
-import { FormRenderProps } from "~/renderers/form/RenderForm";
+import { FormRenderProps } from "~/renderers/form/FormRender";
 
 export default async (props: FormRenderProps): Promise<void> => {
     const { formData, createFormParams } = props;
