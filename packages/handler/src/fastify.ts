@@ -308,7 +308,6 @@ export const createHandler = (params: CreateHandlerParams) => {
                 "Cache-Control": "no-store"
             })
             .send({
-                ...error,
                 message: error.message,
                 code: error.code,
                 data: error.data
