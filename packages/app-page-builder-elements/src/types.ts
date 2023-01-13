@@ -1,3 +1,5 @@
+export * from "@webiny/theme/types";
+
 import React, { HTMLAttributes } from "react";
 import { type CSSObject } from "@emotion/core";
 import { Theme, StylesObject, ThemeBreakpoints } from "@webiny/theme/types";
