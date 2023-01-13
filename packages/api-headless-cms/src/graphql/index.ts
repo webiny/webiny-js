@@ -1,45 +1,42 @@
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { createSystemSchemaPlugin } from "./system";
 import { graphQLHandlerFactory, GraphQLHandlerFactoryParams } from "./graphQLHandlerFactory";
-import { CmsContext } from "~/types";
+import { CmsGraphQLSchemaPlugin } from "~/plugins";
 
-const createBaseSchema = (): GraphQLSchemaPlugin<CmsContext> => {
-    return {
-        name: "cms.graphql.schema.base",
-        type: "graphql-schema",
-        schema: {
-            typeDefs: /* GraphQL */ `
-                type CmsError {
-                    code: String
-                    message: String
-                    data: JSON
-                    stack: String
-                }
+const createBaseSchema = (): CmsGraphQLSchemaPlugin => {
+    const plugin = new CmsGraphQLSchemaPlugin({
+        typeDefs: /* GraphQL */ `
+            type CmsError {
+                code: String
+                message: String
+                data: JSON
+                stack: String
+            }
 
-                type CmsCursors {
-                    next: String
-                    previous: String
-                }
+            type CmsCursors {
+                next: String
+                previous: String
+            }
 
-                type CmsListMeta {
-                    cursor: String
-                    hasMoreItems: Boolean
-                    totalCount: Int
-                }
+            type CmsListMeta {
+                cursor: String
+                hasMoreItems: Boolean
+                totalCount: Int
+            }
 
-                type CmsDeleteResponse {
-                    data: Boolean
-                    error: CmsError
-                }
+            type CmsDeleteResponse {
+                data: Boolean
+                error: CmsError
+            }
 
-                type CmsBooleanResponse {
-                    data: Boolean
-                    error: CmsError
-                }
-            `,
-            resolvers: {}
-        }
-    };
+            type CmsBooleanResponse {
+                data: Boolean
+                error: CmsError
+            }
+        `,
+        resolvers: {}
+    });
+    plugin.name = "cms.graphql.schema.base";
+    return plugin;
 };
 
 export type CreateGraphQLParams = GraphQLHandlerFactoryParams;

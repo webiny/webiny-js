@@ -7,12 +7,12 @@ import { PluginCollection } from "@webiny/plugins/types";
 import debugPlugins from "@webiny/handler-graphql/debugPlugins";
 import processRequestBody from "@webiny/handler-graphql/processRequestBody";
 import { buildSchemaPlugins } from "./buildSchemaPlugins";
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
 import { GraphQLRequestBody } from "@webiny/handler-graphql/types";
 import { RoutePlugin } from "@webiny/handler";
 import WebinyError from "@webiny/error";
 // @ts-ignore `code-frame` has no types
 import codeFrame from "code-frame";
+import { CmsGraphQLSchemaPlugin } from "~/plugins";
 
 interface SchemaCache {
     key: string;
@@ -44,7 +44,9 @@ const generateSchema = async (args: GetSchemaParams): Promise<GraphQLSchema> => 
     const resolvers: any = [];
 
     // Get schema definitions from plugins
-    const schemaPlugins = context.plugins.byType<GraphQLSchemaPlugin>(GraphQLSchemaPlugin.type);
+    const schemaPlugins = context.plugins.byType<CmsGraphQLSchemaPlugin>(
+        CmsGraphQLSchemaPlugin.type
+    );
     for (const pl of schemaPlugins) {
         typeDefs.push(pl.schema.typeDefs);
         resolvers.push(pl.schema.resolvers);
