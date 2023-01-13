@@ -40,6 +40,7 @@ describe("custom error handler", () => {
         });
 
         const expected = JSON.stringify({
+            message: "Testing custom error handler output",
             code: "CUSTOM_ERROR_HANDLER_CODE",
             data: {
                 stringValue: "123",
@@ -50,8 +51,7 @@ describe("custom error handler", () => {
                     testing: true,
                     errorMessage: "not ok"
                 }
-            },
-            message: "Testing custom error handler output"
+            }
         });
 
         expect(result).toMatchObject({
