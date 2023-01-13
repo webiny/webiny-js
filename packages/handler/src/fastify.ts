@@ -17,6 +17,7 @@ import { ContextPlugin } from "@webiny/api";
 import { BeforeHandlerPlugin } from "./plugins/BeforeHandlerPlugin";
 import { HandlerResultPlugin } from "./plugins/HandlerResultPlugin";
 import { HandlerErrorPlugin } from "./plugins/HandlerErrorPlugin";
+import { ModifyFastifyPlugin } from "~/plugins/ModifyFastifyPlugin";
 
 const DEFAULT_HEADERS: Record<string, string> = {
     "Cache-Control": "no-store",
@@ -62,7 +63,6 @@ const OPTIONS_HEADERS: Record<string, string> = {
 export interface CreateHandlerParams {
     plugins: PluginCollection;
     options?: ServerOptions;
-    modify?: (app: FastifyInstance) => void;
 }
 
 export const createHandler = (params: CreateHandlerParams) => {
@@ -136,12 +136,6 @@ export const createHandler = (params: CreateHandlerParams) => {
     const app = fastify({
         ...(params.options || {})
     });
-    /**
-     * With this method we give users possibility to do what ever they want on our fastify instance.
-     */
-    if (params.modify) {
-        params.modify(app);
-    }
     /**
      * We need to register routes in our system so we can output headers later on and dissallow overriding routes.
      */
@@ -352,6 +346,14 @@ export const createHandler = (params: CreateHandlerParams) => {
             })
             .status(500);
     });
+
+    /**
+     * With these plugins we give users possibility to do anything they want on our fastify instance.
+     */
+    const modifyPlugins = app.webiny.plugins.byType<ModifyFastifyPlugin>(ModifyFastifyPlugin.type);
+    for (const plugin of modifyPlugins) {
+        plugin.modify(app);
+    }
 
     return app;
 };
