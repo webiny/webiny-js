@@ -1,4 +1,4 @@
-import { NumberScalar } from "../src/builtInTypes";
+import { NumberScalar } from "~/builtInTypes";
 
 describe("NumberScalar", () => {
     const correctInputValues = [
