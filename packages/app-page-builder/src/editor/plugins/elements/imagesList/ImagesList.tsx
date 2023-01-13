@@ -15,7 +15,6 @@ const ImagesList: React.FC<ImagesListProps> = props => {
         return <PbImagesList {...props} element={props.element} />;
     }
 
-    console.log("dobeo props", Object.keys(props));
     const { element, ...rest } = props;
     return <PeImagesList element={element as Element} {...rest} />;
 };
