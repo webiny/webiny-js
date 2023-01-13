@@ -4,7 +4,6 @@
 // @ts-ignore
 import mdbid from "mdbid";
 import fetch from "node-fetch";
-import pick from "lodash/pick";
 import WebinyError from "@webiny/error";
 import * as utils from "~/plugins/crud/utils";
 import * as models from "~/plugins/crud/forms.models";
@@ -202,12 +201,7 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
                 context.plugins.byType<FbFormFieldValidatorPlugin>("fb-form-field-validator");
             const { fields } = form;
 
-            const data = pick(
-                rawData,
-                fields.map(field => field.fieldId)
-            );
-
-            if (Object.keys(data).length === 0) {
+            if (Object.keys(rawData).length === 0) {
                 throw new Error("Form data cannot be empty.");
             }
 
@@ -228,7 +222,7 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
                         let isInvalid = true;
                         try {
                             const result = await validatorPlugin.validator.validate(
-                                data[field.fieldId],
+                                rawData[field.fieldId],
                                 validator
                             );
                             isInvalid = result === false;
@@ -255,7 +249,7 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
              */
             const formFormId = form.formId || form.id.split("#").pop();
             const submissionModel = new models.FormSubmissionCreateDataModel().populate({
-                data,
+                data: rawData,
                 meta,
                 form: {
                     id: form.id,
@@ -331,7 +325,7 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
                                 addLog: (log: Record<string, any>) => {
                                     submission.logs.push(log);
                                 },
-                                data,
+                                data: rawData,
                                 // meta,
                                 trigger: form.triggers[plugin.trigger]
                             });

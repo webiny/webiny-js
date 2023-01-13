@@ -137,7 +137,7 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
         return { ...values, ...overrides };
     };
 
-    const submit = async (data: FbFormSubmissionData): Promise<FormSubmitResponseType> => {
+    const submit = async (data: FbFormSubmissionData["data"]): Promise<FormSubmitResponseType> => {
         if (reCaptchaEnabled(formData) && !reCaptchaResponseToken.current) {
             return {
                 data: null,
@@ -158,6 +158,28 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
                     message: settings.termsOfServiceMessage.errorMessage
                 }
             };
+        }
+
+        for (const FieldId in data) {
+            const fieldData = getFieldByFieldId(FieldId);
+
+            if (fieldData?.options && fieldData?.type === "checkbox") {
+                const optionLabels = fieldData.options
+                    .filter(option => data[FieldId].includes(option.value))
+                    ?.map(option => option.label);
+
+                if (optionLabels?.length > 0) {
+                    data[`${FieldId}_label`] = optionLabels;
+                }
+            } else if (fieldData?.options && fieldData?.options?.length > 0) {
+                const optionLabel = fieldData.options.find(
+                    option => option.value === data[FieldId]
+                )?.label;
+
+                if (optionLabel) {
+                    data[`${FieldId}_label`] = optionLabel;
+                }
+            }
         }
 
         const formSubmission = await createFormSubmission({

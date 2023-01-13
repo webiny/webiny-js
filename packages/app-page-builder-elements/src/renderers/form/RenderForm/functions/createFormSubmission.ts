@@ -11,7 +11,7 @@ interface CreateFormSubmissionParams {
 
 export default async ({
     props,
-    formSubmissionFieldValues: rawFormSubmissionFieldValues,
+    formSubmissionFieldValues,
     reCaptchaResponseToken
 }: CreateFormSubmissionParams): Promise<FormSubmissionResponse> => {
     const { formData, createFormParams } = props;
@@ -25,18 +25,10 @@ export default async ({
         };
     }
 
-    const formSubmissionData: Record<string, string> = {};
-
-    formData!.fields.forEach(field => {
-        if (field.fieldId in rawFormSubmissionFieldValues) {
-            formSubmissionData[field.fieldId] = rawFormSubmissionFieldValues[field.fieldId];
-        }
-    });
-
     const variables = {
         revision: formData!.id,
         reCaptchaResponseToken,
-        data: formSubmissionData,
+        data: formSubmissionFieldValues,
         meta: { ip: await getClientIp() }
     };
 

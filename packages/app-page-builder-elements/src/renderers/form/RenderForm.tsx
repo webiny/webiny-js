@@ -174,6 +174,28 @@ const FormRender: React.FC<FormRenderProps> = props => {
             };
         }
 
+        for (const FieldId in formSubmissionFieldValues) {
+            const fieldData = getFieldByFieldId(FieldId);
+
+            if (fieldData?.options && fieldData?.type === "checkbox") {
+                const optionLabels = fieldData.options
+                    .filter(option => formSubmissionFieldValues[FieldId].includes(option.value))
+                    ?.map(option => option.label);
+
+                if (optionLabels?.length > 0) {
+                    formSubmissionFieldValues[`${FieldId}_label`] = optionLabels;
+                }
+            } else if (fieldData?.options && fieldData?.options?.length > 0) {
+                const optionLabel = fieldData.options.find(
+                    option => option.value === formSubmissionFieldValues[FieldId]
+                )?.label;
+
+                if (optionLabel) {
+                    formSubmissionFieldValues[`${FieldId}_label`] = optionLabel;
+                }
+            }
+        }
+
         const formSubmission = await createFormSubmission({
             props,
             formSubmissionFieldValues,

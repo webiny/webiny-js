@@ -18,7 +18,7 @@ interface CreateFormSubmissionParams {
 export default async ({
     client,
     props: { data: form, preview },
-    data: rawData,
+    data,
     reCaptchaResponseToken
 }: CreateFormSubmissionParams): Promise<FormSubmitResponseType> => {
     if (preview) {
@@ -29,7 +29,6 @@ export default async ({
         };
     }
 
-    const data: Record<string, string> = {};
     if (!form) {
         return {
             error: {
@@ -40,12 +39,6 @@ export default async ({
             preview: false
         };
     }
-
-    form.fields.forEach(field => {
-        if (field.fieldId in rawData) {
-            data[field.fieldId] = rawData[field.fieldId];
-        }
-    });
 
     let response: any = await client.mutate<
         CreateFormSubmissionMutationResponse,
