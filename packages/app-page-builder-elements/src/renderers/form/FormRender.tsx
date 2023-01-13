@@ -1,12 +1,12 @@
-import React, { useEffect, useRef } from "react";
-import { createReCaptchaComponent, createTermsOfServiceComponent } from "./RenderForm/components";
+import React, { useEffect, useMemo, useRef } from "react";
+import { createReCaptchaComponent, createTermsOfServiceComponent } from "./FormRender/components";
 import {
     createFormSubmission,
     handleFormTriggers,
     reCaptchaEnabled,
     termsOfServiceEnabled,
     onFormMounted
-} from "./RenderForm/functions";
+} from "./FormRender/functions";
 
 import {
     FormLayoutComponent as FormLayoutComponentType,
@@ -19,7 +19,8 @@ import {
     CreateFormParams,
     FormDataFieldsLayout,
     FormSubmissionFieldValues,
-    CreateFormParamsFormLayoutComponent
+    CreateFormParamsFormLayoutComponent,
+    CreateFormParamsValidator
 } from "./types";
 
 declare global {
@@ -40,7 +41,7 @@ interface FieldValidator {
 
 export interface FormRenderProps {
     createFormParams: CreateFormParams;
-    formData: FormData | null;
+    formData: FormData;
     loading: boolean;
 }
 
@@ -48,16 +49,25 @@ const FormRender: React.FC<FormRenderProps> = props => {
     const { formData, createFormParams } = props;
     const { preview = false, formLayoutComponents = [] } = createFormParams;
 
+    const fieldValidators = useMemo<CreateFormParamsValidator[]>(() => {
+        let validators: CreateFormParamsValidator[] = [];
+        if (createFormParams.fieldValidators) {
+            if (typeof createFormParams.fieldValidators === "function") {
+                validators = createFormParams.fieldValidators();
+            } else {
+                validators = createFormParams.fieldValidators;
+            }
+        }
+
+        return validators;
+    }, []);
+
     const reCaptchaResponseToken = useRef("");
     const termsOfServiceAccepted = useRef(false);
 
     useEffect((): void => {
         formData && onFormMounted(props);
     }, [formData?.id]);
-
-    if (!formData) {
-        return <span>Loading...</span>;
-    }
 
     let formLayoutComponentsList: CreateFormParamsFormLayoutComponent[];
     if (typeof formLayoutComponents === "function") {
@@ -89,7 +99,6 @@ const FormRender: React.FC<FormRenderProps> = props => {
 
     const getFields = (): RenderFormComponentDataField[][] => {
         const fieldLayout = structuredClone(layout) as FormDataFieldsLayout;
-        const validatorPlugins = createFormParams.fieldValidators;
 
         return fieldLayout.map(row => {
             return row.map(id => {
@@ -98,21 +107,18 @@ const FormRender: React.FC<FormRenderProps> = props => {
                  */
                 const field = getFieldById(id) as RenderFormComponentDataField;
                 field.validators = (field.validation || []).reduce((collection, item) => {
-                    const validatorPlugin = validatorPlugins?.find(
-                        plugin => plugin.validator.name === item.name
+                    const fieldValidator = fieldValidators?.find(
+                        current => current.name === item.name
                     );
 
-                    if (
-                        !validatorPlugin ||
-                        typeof validatorPlugin.validator.validate !== "function"
-                    ) {
+                    if (!fieldValidator || typeof fieldValidator.validate !== "function") {
                         return collection;
                     }
 
                     const validator: FieldValidator = async (value: string): Promise<boolean> => {
                         let isInvalid;
                         try {
-                            const result = await validatorPlugin.validator.validate(value, item);
+                            const result = await fieldValidator.validate(value, item);
                             isInvalid = result === false;
                         } catch (e) {
                             isInvalid = true;
@@ -152,6 +158,7 @@ const FormRender: React.FC<FormRenderProps> = props => {
     const submit = async (
         formSubmissionFieldValues: FormSubmissionFieldValues
     ): Promise<FormSubmissionResponse> => {
+        console.log("ideeee");
         if (reCaptchaEnabled(formData) && !reCaptchaResponseToken.current) {
             return {
                 data: null,
@@ -204,7 +211,9 @@ const FormRender: React.FC<FormRenderProps> = props => {
         submit,
         formData,
         ReCaptcha,
-        TermsOfService
+        reCaptchaEnabled: reCaptchaEnabled(formData),
+        TermsOfService,
+        termsOfServiceEnabled: termsOfServiceEnabled(formData)
     };
 
     return (
