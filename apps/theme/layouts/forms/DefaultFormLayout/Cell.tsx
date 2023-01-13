@@ -7,7 +7,7 @@ export const Cell = styled.div`
   padding: 15px;
 
   ${theme.breakpoints.desktop} {
-    &:first-child {
+    &:first-of-type {
       padding-left: 0;
     }
 
