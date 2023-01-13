@@ -1,6 +1,5 @@
 import { PluginCollection } from "@webiny/plugins/types";
 import fastify, {
-    FastifyInstance,
     FastifyServerOptions as ServerOptions,
     preSerializationAsyncHookHandler
 } from "fastify";

@@ -6,7 +6,7 @@ interface ModifyFastifyPluginCallable {
 }
 
 export class ModifyFastifyPlugin extends Plugin {
-    public static override type: string = "handler.fastify.modify";
+    public static override type = "handler.fastify.modify";
 
     private readonly cb: ModifyFastifyPluginCallable;
 
