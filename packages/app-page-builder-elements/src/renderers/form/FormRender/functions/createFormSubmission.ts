@@ -1,7 +1,7 @@
 import { FormSubmissionFieldValues, FormSubmissionResponse } from "../../types";
 
 import getClientIp from "./getClientIp";
-import { FormRenderProps } from "~/renderers/form/RenderForm";
+import { FormRenderProps } from "~/renderers/form/FormRender";
 
 interface CreateFormSubmissionParams {
     props: FormRenderProps;
