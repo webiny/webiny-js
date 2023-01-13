@@ -204,7 +204,9 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
         submit,
         formData,
         ReCaptcha,
-        TermsOfService
+        reCaptchaEnabled: reCaptchaEnabled(formData),
+        TermsOfService,
+        termsOfServiceEnabled: termsOfServiceEnabled(formData)
     };
 
     return (
