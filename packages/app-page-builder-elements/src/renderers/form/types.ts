@@ -176,7 +176,7 @@ export interface CreateFormParams {
         | (() => CreateFormParamsFormLayoutComponent[]);
     fieldValidators?: CreateFormParamsValidator[] | (() => CreateFormParamsValidator[]);
     triggers?: CreateFormParamsTrigger[] | (() => CreateFormParamsTrigger[]);
-    renderFormNotSelected?: React.VFC
-    renderFormLoading?: React.VFC
-    renderFormNotFound?: React.VFC
+    renderFormNotSelected?: React.VFC;
+    renderFormLoading?: React.VFC;
+    renderFormNotFound?: React.VFC;
 }

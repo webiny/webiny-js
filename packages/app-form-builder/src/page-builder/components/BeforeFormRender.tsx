@@ -3,7 +3,7 @@ import { usePageElements } from "@webiny/app-page-builder-elements";
 import styled from "@emotion/styled";
 
 export const BeforeFormRender: React.VFC<{ message: React.ReactNode; border?: boolean }> =
-    React.memo(({ message, border }) => {
+    React.memo(function BeforeFormRender({ message, border }) {
         const { theme } = usePageElements();
         const Before = styled.div`
             display: flex;
