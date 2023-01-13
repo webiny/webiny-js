@@ -322,10 +322,10 @@ export const createHandler = (params: CreateHandlerParams) => {
         console.log("@webiny/handler");
         console.log(
             JSON.stringify({
-                ...(error || {}),
-                message: error?.message,
-                code: error?.code,
-                data: error?.data
+                ...error,
+                message: error.message,
+                code: error.code,
+                data: error.data
             })
         );
         const handler = middleware(
@@ -338,7 +338,11 @@ export const createHandler = (params: CreateHandlerParams) => {
         await handler(app.webiny, error);
 
         return reply
-            .send(JSON.stringify(error))
+            .send({
+                message: error.message,
+                code: error.code,
+                data: error.data
+            })
             .headers({
                 "Cache-Control": "no-store"
             })
