@@ -5,6 +5,7 @@ import { PageElementsProvider as PbPageElementsProvider } from "@webiny/app-page
 import { createId } from "@webiny/app-page-builder-elements/modifiers/attributes/id";
 import { createClassName } from "@webiny/app-page-builder-elements/modifiers/attributes/className";
 import { createAnimation } from "@webiny/app-page-builder-elements/modifiers/attributes/animation";
+import { initializeAos } from "@webiny/app-page-builder-elements/modifiers/attributes/animation/initializeAos";
 
 // Styles modifiers.
 import { createBackground } from "@webiny/app-page-builder-elements/modifiers/styles/background";
@@ -41,16 +42,7 @@ export const EditorPageElementsProvider: React.FC = ({ children }) => {
         attributes: {
             id: createId(),
             className: createClassName(),
-            animation: createAnimation({
-                initOn: new Promise<void>(resolve => {
-                    const interval = setInterval(() => {
-                        if (document.querySelector("pb-document")) {
-                            clearInterval(interval);
-                            resolve();
-                        }
-                    }, 333);
-                })
-            })
+            animation: createAnimation({ initializeAos })
         },
         styles: {
             background: createBackground(),
