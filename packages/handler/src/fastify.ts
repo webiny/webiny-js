@@ -16,6 +16,7 @@ import { ContextPlugin } from "@webiny/api";
 import { BeforeHandlerPlugin } from "./plugins/BeforeHandlerPlugin";
 import { HandlerResultPlugin } from "./plugins/HandlerResultPlugin";
 import { HandlerErrorPlugin } from "./plugins/HandlerErrorPlugin";
+import { ModifyFastifyPlugin } from "~/plugins/ModifyFastifyPlugin";
 
 const DEFAULT_HEADERS: Record<string, string> = {
     "Cache-Control": "no-store",
@@ -300,15 +301,31 @@ export const createHandler = (params: CreateHandlerParams) => {
 
     app.addHook("preSerialization", preSerialization);
 
-    app.addHook("onError", async (_, reply, error) => {
+    app.setErrorHandler<WebinyError>(async (error, request, reply) => {
+        return reply
+            .status(500)
+            .headers({
+                "Cache-Control": "no-store"
+            })
+            .send({
+                message: error.message,
+                code: error.code,
+                data: error.data
+            });
+    });
+
+    app.addHook("onError", async (_, reply, error: any) => {
         const plugins = app.webiny.plugins.byType<HandlerErrorPlugin>(HandlerErrorPlugin.type);
-        // Log error to cloud, as these can be extremely annoying to debug!
+        /**
+         * Log error to cloud, as these can be extremely annoying to debug!
+         */
         console.log("@webiny/handler");
         console.log(
             JSON.stringify({
-                ...(error || {}),
-                message: error?.message,
-                code: error?.code
+                ...error,
+                message: error.message,
+                code: error.code,
+                data: error.data
             })
         );
         const handler = middleware(
@@ -321,11 +338,24 @@ export const createHandler = (params: CreateHandlerParams) => {
         await handler(app.webiny, error);
 
         return reply
+            .send({
+                message: error.message,
+                code: error.code,
+                data: error.data
+            })
             .headers({
                 "Cache-Control": "no-store"
             })
             .status(500);
     });
+
+    /**
+     * With these plugins we give users possibility to do anything they want on our fastify instance.
+     */
+    const modifyPlugins = app.webiny.plugins.byType<ModifyFastifyPlugin>(ModifyFastifyPlugin.type);
+    for (const plugin of modifyPlugins) {
+        plugin.modify(app);
+    }
 
     return app;
 };

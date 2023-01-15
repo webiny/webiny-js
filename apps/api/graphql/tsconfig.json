@@ -110,8 +110,8 @@
       "~/*": ["./src/*"],
       "@webiny/api-aco/*": ["../../../packages/api-aco/src/*"],
       "@webiny/api-aco": ["../../../packages/api-aco/src"],
-      "@webiny/api-aco-so-ddb/*": ["../../../packages/api-aco/src/*"],
-      "@webiny/api-aco-so-ddb": ["../../../packages/api-aco/src"],
+      "@webiny/api-aco-so-ddb/*": ["../../../packages/api-aco-so-ddb/src/*"],
+      "@webiny/api-aco-so-ddb": ["../../../packages/api-aco-so-ddb/src"],
       "@webiny/api-admin-users-cognito/*": ["../../../packages/api-admin-users-cognito/src/*"],
       "@webiny/api-admin-users-cognito": ["../../../packages/api-admin-users-cognito/src"],
       "@webiny/api-admin-users-cognito-so-ddb/*": [
