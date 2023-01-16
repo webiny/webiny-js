@@ -21,7 +21,7 @@ export interface Folder {
     name: string;
     slug: string;
     type: string;
-    parentId?: string;
+    parentId?: string | null;
     createdOn: string;
     createdBy: CreatedBy;
     tenant: string;
