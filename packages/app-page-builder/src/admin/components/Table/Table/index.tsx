@@ -44,6 +44,7 @@ interface Entry {
     version?: number;
     category?: string;
     original: PbPageDataLink | FolderItem;
+    selectable: boolean;
 }
 
 export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
@@ -65,7 +66,8 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
                 status: item.status,
                 version: item.version,
                 category: item.category.name,
-                original: item
+                original: item,
+                selectable: true
             }));
     }, [pages]);
 
@@ -77,7 +79,8 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
                 title: item.name,
                 createdBy: item.createdBy.displayName || "-",
                 savedOn: item.createdOn,
-                original: item
+                original: item,
+                selectable: false
             }));
     }, [folders]);
 
