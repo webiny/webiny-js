@@ -52,7 +52,7 @@ export const ElementControlsOverlay: React.FC<Props> = props => {
             elementRendererMeta={meta}
             onClick={() => {
                 updateEditorElement(element => ({ ...element, isHighlighted: false }));
-                setActiveElementId(element.id)
+                setActiveElementId(element.id);
             }}
             onMouseEnter={(e: MouseEvent) => {
                 if (isActive || isHighlighted) {
@@ -69,6 +69,20 @@ export const ElementControlsOverlay: React.FC<Props> = props => {
                 e.stopPropagation();
                 updateEditorElement(element => ({ ...element, isHighlighted: false }));
             }}
+            onDragEnter={(e: MouseEvent) => {
+                e.stopPropagation();
+                updateEditorElement(element => ({ ...element, dragEntered: true }));
+            }}
+            onDragLeave={(e: MouseEvent) => {
+                e.stopPropagation();
+                updateEditorElement(element => ({ ...element, dragEntered: false }));
+            }}
+            onDrop={() => {
+                // TODO: figure out why calling this update without the `setTimeout` hack doesn't work. 🤷‍
+                setTimeout(() =>
+                    updateEditorElement(element => ({ ...element, dragEntered: false }))
+                );
+            }}
             dropRef={innerRef}
             {...rest}
         >
@@ -78,7 +92,17 @@ export const ElementControlsOverlay: React.FC<Props> = props => {
 };
 
 const PbElementControlsOverlay = styled(
-    ({ className, onClick, onMouseEnter, onMouseLeave, dropRef, children }) => {
+    ({
+        className,
+        onClick,
+        onMouseEnter,
+        onMouseLeave,
+        onDragEnter,
+        onDragLeave,
+        onDrop,
+        dropRef,
+        children
+    }) => {
         return (
             <pb-element-controls-overlay
                 // @ts-ignore Not supported by `React.HTMLProps<HTMLDivElement>`.
@@ -86,6 +110,9 @@ const PbElementControlsOverlay = styled(
                 onClick={onClick}
                 onMouseEnter={onMouseEnter}
                 onMouseLeave={onMouseLeave}
+                onDragEnter={onDragEnter}
+                onDragLeave={onDragLeave}
+                onDrop={onDrop}
                 ref={dropRef}
             >
                 {children}
