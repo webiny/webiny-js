@@ -8,7 +8,6 @@
 
 import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import * as React from "react";
-import { createPortal } from "react-dom";
 
 type DropDownContextType = {
     registerItem: (ref: React.RefObject<HTMLButtonElement>) => void;
@@ -56,7 +55,7 @@ function DropDownItems({
     onClose
 }: {
     children: React.ReactNode;
-    dropDownRef: React.Ref<HTMLDivElement>;
+    dropDownRef?: React.Ref<HTMLDivElement>;
     onClose: () => void;
 }) {
     const [items, setItems] = useState<React.RefObject<HTMLButtonElement>[]>();
@@ -119,7 +118,7 @@ function DropDownItems({
 
     return (
         <DropDownContext.Provider value={contextValue}>
-            <div className="lexical-dropdown" ref={dropDownRef} onKeyDown={handleKeyDown}>
+            <div className="lexical-dropdown" ref={dropDownRef ?? null} onKeyDown={handleKeyDown}>
                 {children}
             </div>
         </DropDownContext.Provider>
@@ -143,7 +142,6 @@ export function DropDown({
     children: ReactNode;
     stopCloseOnClickSelf?: boolean;
 }): JSX.Element {
-    const dropDownRef = useRef<HTMLDivElement>(null);
     const buttonRef = useRef<HTMLButtonElement>(null);
     const [showDropDown, setShowDropDown] = useState(false);
 
@@ -156,31 +154,12 @@ export function DropDown({
 
     useEffect(() => {
         const button = buttonRef.current;
-        const dropDown = dropDownRef.current;
-
-        if (showDropDown && button !== null && dropDown !== null) {
-            const { top, left } = button.getBoundingClientRect();
-            dropDown.style.top = `${top + 40}px`;
-            dropDown.style.left = `${Math.min(
-                left,
-                window.innerWidth - dropDown.offsetWidth - 20
-            )}px`;
-        }
-    }, [dropDownRef, buttonRef, showDropDown]);
-
-    useEffect(() => {
-        const button = buttonRef.current;
         if (button === null || !showDropDown) {
             return;
         }
 
         const handle = (event: MouseEvent) => {
             const target = event.target;
-            if (stopCloseOnClickSelf) {
-                if (dropDownRef.current && dropDownRef.current.contains(target as Node)) {
-                    return;
-                }
-            }
             if (!button.contains(target as Node)) {
                 setShowDropDown(false);
             }
@@ -190,29 +169,25 @@ export function DropDown({
         return () => {
             document.removeEventListener("click", handle);
         };
-    }, [dropDownRef, buttonRef, showDropDown, stopCloseOnClickSelf]);
+    }, [buttonRef, showDropDown, stopCloseOnClickSelf]);
 
     return (
-        <>
-            <button
-                disabled={disabled}
-                aria-label={buttonAriaLabel || buttonLabel}
-                className={buttonClassName}
-                onClick={() => setShowDropDown(!showDropDown)}
-                ref={buttonRef}
-            >
-                {buttonIconClassName && <span className={buttonIconClassName} />}
-                {buttonLabel && <span className="text dropdown-button-text">{buttonLabel}</span>}
-                <i className="chevron-down" />
-            </button>
-
-            {showDropDown &&
-                createPortal(
-                    <DropDownItems dropDownRef={dropDownRef} onClose={handleClose}>
-                        {children}
-                    </DropDownItems>,
-                    document.body
-                )}
-        </>
+        <button
+            style={{ position: "relative" }}
+            disabled={disabled}
+            aria-label={buttonAriaLabel || buttonLabel}
+            className={buttonClassName}
+            onClick={() => setShowDropDown(!showDropDown)}
+            ref={buttonRef}
+        >
+            {buttonIconClassName && <span className={buttonIconClassName} />}
+            {buttonLabel && <span className="text dropdown-button-text">{buttonLabel}</span>}
+            <i className="chevron-down" />
+            {showDropDown && (
+                <div className={"lexical-dropdown-container"}>
+                    <DropDownItems onClose={handleClose}>{children}</DropDownItems>
+                </div>
+            )}
+        </button>
     );
 }

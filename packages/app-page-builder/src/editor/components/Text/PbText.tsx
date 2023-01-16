@@ -10,6 +10,7 @@ import useUpdateHandlers from "../../plugins/elementSettings/useUpdateHandlers";
 import ReactMediumEditor from "../../components/MediumEditor";
 import { applyFallbackDisplayMode } from "../../plugins/elementSettings/elementSettingsUtils";
 import { useElementVariableValue } from "~/editor/hooks/useElementVariableValue";
+import { showLexicalEditor } from "~/utils/showLexicalEditor";
 
 export const textClassName = "webiny-pb-base-page-element-style webiny-pb-page-element-text";
 const DATA_NAMESPACE = "data.text";
@@ -25,6 +26,7 @@ interface TextElementProps {
     mediumEditorOptions?: CoreOptions;
     rootClassName?: string;
 }
+
 const PbText: React.FC<TextElementProps> = ({ elementId, mediumEditorOptions, rootClassName }) => {
     const element = useRecoilValue(elementWithChildrenByIdSelector(elementId));
     const variableValue = useElementVariableValue(element);
@@ -78,22 +80,24 @@ const PbText: React.FC<TextElementProps> = ({ elementId, mediumEditorOptions, ro
             element={element}
             className={classNames(textClassName, rootClassName, typography)}
         >
-            <RichTextLexicalEditor
-                tag={tag}
-                value={null}
-                onChange={json => {
-                    console.log(json);
-                }}
-            />
-            <ReactMediumEditor
-                elementId={elementId}
-                tag={tag}
-                value={initialText}
-                onChange={onChange}
-                options={mediumEditorOptions}
-                onSelect={onSelect}
-            />
-
+            {showLexicalEditor() ? (
+                <RichTextLexicalEditor
+                    tag={tag}
+                    value={null}
+                    onChange={json => {
+                        console.log(json);
+                    }}
+                />
+            ) : (
+                <ReactMediumEditor
+                    elementId={elementId}
+                    tag={tag}
+                    value={initialText}
+                    onChange={onChange}
+                    options={mediumEditorOptions}
+                    onSelect={onSelect}
+                />
+            )}
         </ElementRoot>
     );
 };

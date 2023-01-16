@@ -14,6 +14,7 @@ import { AdminPageBuilderContextProvider } from "~/admin/contexts/AdminPageBuild
 import { DefaultOnPagePublish } from "~/admin/plugins/pageDetails/pageRevisions/DefaultOnPagePublish";
 import { DefaultOnPageDelete } from "~/admin/plugins/pageDetails/pageRevisions/DefaultOnPageDelete";
 import { EditorProps, EditorRenderer } from "./admin/components/Editor";
+import { showLexicalEditor } from "~/utils/showLexicalEditor";
 
 export type { EditorProps };
 export { EditorRenderer };
@@ -104,8 +105,12 @@ export const PageBuilder: React.FC = () => {
         <Fragment>
             <PageBuilderProviderPlugin />
             <EditorRendererPlugin />
-            <HeadingToolbarPreset />
-            <ParagraphToolbarPreset />
+            {showLexicalEditor() && (
+                <>
+                    <HeadingToolbarPreset />
+                    <ParagraphToolbarPreset />
+                </>
+            )}
             <Plugins>
                 <PageBuilderMenu />
                 <WebsiteSettings />

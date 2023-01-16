@@ -5,7 +5,7 @@
   position: absolute;
   top: 0;
   left: 0;
-  z-index: 1000;
+  z-index: 3;
   opacity: 0;
   background-color: #fff;
   box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.3);
@@ -453,6 +453,11 @@ i.chevron-down {
   background-color: #eee;
   margin: 0 4px;
 }
+.lexical-dropdown-container {
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+}
 
 .lexical-dropdown {
   z-index: 10;
@@ -463,6 +468,9 @@ i.chevron-down {
   border-radius: 8px;
   min-height: 40px;
   background-color: #fff;
+  max-height: 250px;
+  overflow: hidden;
+  overflow-y: auto;
 }
 
 .lexical-dropdown .item {
