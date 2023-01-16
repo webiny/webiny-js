@@ -62,3 +62,5 @@ export const FormBuilder: React.FC = () => {
         </Plugins>
     );
 };
+
+export * from "./plugins";

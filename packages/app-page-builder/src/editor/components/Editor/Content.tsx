@@ -15,18 +15,23 @@ import {
 import { usePageBuilder } from "~/hooks/usePageBuilder";
 import Element from "../Element";
 import { EditorContent } from "~/editor";
+import { isLegacyRenderingEngine } from "~/utils";
+import { Element as PeElement } from "@webiny/app-page-builder-elements";
+import { Element as ElementType } from "@webiny/app-page-builder-elements/types";
 
 const BREADCRUMB_HEIGHT = 33;
+
 interface ContentContainerParams {
     theme: PbTheme | null;
 }
-const ContentContainer = styled("div")(({ theme }: ContentContainerParams) => {
+
+const LegacyContentContainer = styled.div(({ theme }: ContentContainerParams) => {
     const backgroundColor = theme?.colors?.background;
     return {
         backgroundColor,
         position: "relative",
         margin: "0 auto",
-        ".webiny-pb-page-document": {
+        ".webiny-pb-page-document, pb-document": {
             overflowY: "visible", // cuts off the block selector tooltip
             overflowX: "visible",
             // We need this extra spacing so that editor content won't get cutoff
@@ -34,6 +39,27 @@ const ContentContainer = styled("div")(({ theme }: ContentContainerParams) => {
         }
     };
 });
+
+// TODO: For now, these dimensions are hardcoded.
+// TODO: At some point in future, we might want to expose these.
+const ContentContainer = styled(LegacyContentContainer)`
+    &.webiny-pb-editor-device--desktop {
+        max-width: 100%;
+    }
+
+    &.webiny-pb-editor-device--tablet {
+        max-width: 768px;
+    }
+
+    &.webiny-pb-editor-device--mobile-landscape {
+        max-width: 568px;
+    }
+
+    &.webiny-pb-editor-device--mobile-portrait {
+        max-width: 320px;
+    }
+`;
+
 const contentContainerWrapper = css({
     margin: "95px 65px 50px 85px",
     padding: 0,
@@ -43,6 +69,7 @@ const contentContainerWrapper = css({
     boxSizing: "border-box",
     zIndex: 1
 });
+
 const BaseContainer = styled("div")({
     width: "100%",
     left: 52,
@@ -55,48 +82,68 @@ const Content: React.FC = () => {
     const [{ displayMode }, setUiAtomValue] = useRecoilState(uiAtom);
     const pagePreviewRef = useRef<HTMLDivElement>(null);
 
-    const setPagePreviewDimension = useCallback(
-        pagePreviewDimension => {
-            setUiAtomValue(prev => setPagePreviewDimensionMutation(prev, pagePreviewDimension));
-        },
-        [uiAtom]
-    );
+    if (isLegacyRenderingEngine) {
+        const setPagePreviewDimension = useCallback(
+            pagePreviewDimension => {
+                setUiAtomValue(prev => setPagePreviewDimensionMutation(prev, pagePreviewDimension));
+            },
+            [uiAtom]
+        );
 
-    const resizeObserver = useMemo(() => {
-        return new ResizeObserver((entries: ResizeObserverEntry[]) => {
-            for (const entry of entries) {
-                const { width, height } = entry.contentRect;
-                setPagePreviewDimension({ width, height });
+        const resizeObserver = useMemo(() => {
+            return new ResizeObserver((entries: ResizeObserverEntry[]) => {
+                for (const entry of entries) {
+                    const { width, height } = entry.contentRect;
+                    setPagePreviewDimension({ width, height });
+                }
+            });
+        }, []);
+
+        // Set resize observer
+        useEffect(() => {
+            if (pagePreviewRef.current) {
+                // Add resize observer
+                resizeObserver.observe(pagePreviewRef.current);
             }
-        });
-    }, []);
 
-    // Set resize observer
-    useEffect(() => {
-        if (pagePreviewRef.current) {
-            // Add resize observer
-            resizeObserver.observe(pagePreviewRef.current);
-        }
+            // Cleanup
+            return () => {
+                resizeObserver.disconnect();
+            };
+        }, []);
 
-        // Cleanup
-        return () => {
-            resizeObserver.disconnect();
-        };
-    }, []);
-
-    const { theme } = usePageBuilder();
+        const { theme } = usePageBuilder();
+        return (
+            <Elevation className={contentContainerWrapper} z={0}>
+                <LegacyContentContainer
+                    theme={theme as any}
+                    className={`mdc-elevation--z1 webiny-pb-editor-device--${kebabCase(
+                        displayMode
+                    )} webiny-pb-media-query--${kebabCase(displayMode)}`}
+                >
+                    <EditorContent />
+                    <BaseContainer
+                        ref={pagePreviewRef}
+                        className={"webiny-pb-editor-content-preview"}
+                    >
+                        <Element id={rootElement.id} />
+                    </BaseContainer>
+                </LegacyContentContainer>
+            </Elevation>
+        );
+    }
 
     return (
         <Elevation className={contentContainerWrapper} z={0}>
             <ContentContainer
-                theme={theme as any}
                 className={`mdc-elevation--z1 webiny-pb-editor-device--${kebabCase(
                     displayMode
                 )} webiny-pb-media-query--${kebabCase(displayMode)}`}
+                style={{ minHeight: "calc(100vh - 230px)" }}
             >
                 <EditorContent />
                 <BaseContainer ref={pagePreviewRef} className={"webiny-pb-editor-content-preview"}>
-                    <Element id={rootElement.id} />
+                    <PeElement element={rootElement as ElementType} />
                 </BaseContainer>
             </ContentContainer>
         </Elevation>

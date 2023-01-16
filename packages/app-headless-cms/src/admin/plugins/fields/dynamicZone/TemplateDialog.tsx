@@ -74,7 +74,14 @@ export const TemplateDialog = (props: TemplateDialogProps) => {
 
     const nameOnBlur = (form: FormAPI<CmsDynamicZoneTemplate>) => () => {
         if (!form.data.gqlTypeName) {
-            form.setValue("gqlTypeName", getGraphQLTypeName(form.data.name));
+            /**
+             * There is a possibility that name is undefined, so let's check for it.
+             */
+            const name = form.data.name;
+            if (!name) {
+                return;
+            }
+            form.setValue("gqlTypeName", getGraphQLTypeName(name));
         }
     };
 

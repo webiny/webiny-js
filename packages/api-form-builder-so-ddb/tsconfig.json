@@ -15,6 +15,7 @@
     "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
       "@webiny/api-form-builder/*": ["../api-form-builder/src/*"],
       "@webiny/api-form-builder": ["../api-form-builder/src"],
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],

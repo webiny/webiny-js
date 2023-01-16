@@ -12,7 +12,10 @@ import {
     ButtonContainer,
     SimpleButton
 } from "../../../elementSettings/components/StyledComponents";
-import { PbEditorElementPluginArgs } from "../../../../../types";
+import { PbEditorElementPluginArgs } from "~/types";
+import { EmbedPluginConfigRenderCallable } from "~/editor/plugins/elements/utils/oembed/createEmbedPlugin";
+import { isLegacyRenderingEngine } from "~/utils";
+import { PeVimeo } from "./PeVimeo";
 
 const PreviewBox = styled("div")({
     textAlign: "center",
@@ -22,6 +25,14 @@ const PreviewBox = styled("div")({
         width: 50
     }
 });
+
+let render: EmbedPluginConfigRenderCallable;
+if (!isLegacyRenderingEngine) {
+    render = props => (
+        // @ts-ignore Sync `elements` property type.
+        <PeVimeo {...props} />
+    );
+}
 
 export default (args: PbEditorElementPluginArgs = {}) => {
     const elementType = kebabCase(args.elementType || "vimeo");
@@ -55,7 +66,8 @@ export default (args: PbEditorElementPluginArgs = {}) => {
             },
             renderElementPreview() {
                 return <div>Vimeo video</div>;
-            }
+            },
+            render
         }),
         createEmbedSettingsPlugin({
             type: elementType,

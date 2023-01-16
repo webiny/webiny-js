@@ -2,7 +2,6 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
-    { "path": "../app" },
     { "path": "../app-admin" },
     { "path": "../app-security" },
     { "path": "../form" },
@@ -15,8 +14,7 @@
     "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
-      "@webiny/app/*": ["../app/src/*"],
-      "@webiny/app": ["../app/src"],
+      "~tests/*": ["./__tests__/*"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
       "@webiny/app-admin": ["../app-admin/src"],
       "@webiny/app-security/*": ["../app-security/src/*"],

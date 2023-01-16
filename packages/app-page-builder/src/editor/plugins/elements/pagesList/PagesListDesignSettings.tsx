@@ -18,8 +18,15 @@ interface PagesListDesignSettingsProps {
     Bind: BindComponent;
     submit: (event: React.MouseEvent) => void;
 }
+
 const PagesListDesignSettings: React.FC<PagesListDesignSettingsProps> = ({ Bind, submit }) => {
-    const components = plugins.byType<PbPageElementPagesListComponentPlugin>(
+    let components: Array<{
+        name?: string;
+        title: string;
+        componentName: string;
+    }> = [];
+
+    components = plugins.byType<PbPageElementPagesListComponentPlugin>(
         "pb-page-element-pages-list-component"
     );
 
@@ -72,5 +79,4 @@ const PagesListDesignSettings: React.FC<PagesListDesignSettingsProps> = ({ Bind,
         </Accordion>
     );
 };
-
 export default PagesListDesignSettings;

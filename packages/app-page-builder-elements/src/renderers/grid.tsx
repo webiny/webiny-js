@@ -1,43 +1,27 @@
-import React, { useMemo } from "react";
-import { usePageElements } from "~/hooks/usePageElements";
-import { Element } from "~/components/Element";
-import { ElementRenderer } from "~/types";
+import React from "react";
+import { Elements } from "~/components/Elements";
+import { createRenderer } from "~/createRenderer";
+import { useRenderer } from "~/hooks/useRenderer";
 
-declare global {
-    // eslint-disable-next-line
-    namespace JSX {
-        interface IntrinsicElements {
-            "pb-grid": any;
-            "pb-grid-column": any;
+export type GridRenderer = ReturnType<typeof createGrid>;
+
+export const createGrid = () => {
+    return createRenderer(
+        () => {
+            const { getElement } = useRenderer();
+
+            const element = getElement();
+            return <Elements element={element} />;
+        },
+        {
+            baseStyles: {
+                boxSizing: "border-box",
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "flex-start",
+                alignItems: "flex-start",
+                width: "100%"
+            }
         }
-    }
-}
-
-const defaultStyles = { display: "block" };
-
-const Grid: ElementRenderer = ({ element }) => {
-    const { getClassNames, getElementClassNames, combineClassNames } = usePageElements();
-    const classNames = combineClassNames(
-        getClassNames(defaultStyles),
-        getElementClassNames(element)
-    );
-
-    const cellsWidths: number[] = useMemo(() => {
-        if (!element.data.settings || !element.data.settings.grid) {
-            return [];
-        }
-        return element.data.settings.grid.cellsType.split("-").map(Number);
-    }, []);
-
-    return (
-        <pb-grid class={classNames}>
-            {cellsWidths.map((width, index) => (
-                <pb-grid-column key={width + index} style={{ width: `${(width / 12) * 100}%` }}>
-                    <Element element={element.elements[index]} />
-                </pb-grid-column>
-            ))}
-        </pb-grid>
     );
 };
-
-export const createGrid = () => Grid;

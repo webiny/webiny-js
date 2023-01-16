@@ -1614,6 +1614,7 @@ export interface OnModelDeleteErrorTopicParams {
  */
 export interface OnModelInitializeParams {
     model: CmsModel;
+    data: Record<string, any>;
 }
 
 /**
@@ -1666,7 +1667,7 @@ export interface CmsModelContext {
      *
      * Primary idea behind this is creating the index, for the code models, in the ES.
      */
-    initializeModel: (modelId: string) => Promise<boolean>;
+    initializeModel: (modelId: string, data: Record<string, any>) => Promise<boolean>;
     /**
      * Get an instance of CmsModelManager for given content modelId.
      *

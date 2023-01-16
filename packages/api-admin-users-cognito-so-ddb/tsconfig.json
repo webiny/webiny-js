@@ -12,6 +12,7 @@
     "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
       "@webiny/api-admin-users-cognito/*": ["../api-admin-users-cognito/src/*"],
       "@webiny/api-admin-users-cognito": ["../api-admin-users-cognito/src"],
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],

@@ -1,4 +1,4 @@
-import { TimeScalar } from "../src/builtInTypes";
+import { TimeScalar } from "~/builtInTypes";
 
 describe("TimeScalar", () => {
     const correctTime = [

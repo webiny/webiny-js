@@ -47,5 +47,11 @@ export default {
         api: "apps/api",
         admin: "apps/admin",
         website: "apps/website"
+    },
+    featureFlags: {
+        // Enforces usage of legacy PB page elements rendering engine.
+        // To migrate to the latest one, please read:
+        // https://www.webiny.com/docs/page-builder-rendering-upgrade
+        pbLegacyRenderingEngine: false
     }
 };

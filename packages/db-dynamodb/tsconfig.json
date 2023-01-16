@@ -2,9 +2,9 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
+    { "path": "../api" },
     { "path": "../db" },
     { "path": "../error" },
-    { "path": "../api" },
     { "path": "../handler-db" },
     { "path": "../plugins" }
   ],
@@ -14,12 +14,13 @@
     "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/api/*": ["../api/src/*"],
+      "@webiny/api": ["../api/src"],
       "@webiny/db/*": ["../db/src/*"],
       "@webiny/db": ["../db/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
-      "@webiny/api/*": ["../api/src/*"],
-      "@webiny/api": ["../api/src"],
       "@webiny/handler-db/*": ["../handler-db/src/*"],
       "@webiny/handler-db": ["../handler-db/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],

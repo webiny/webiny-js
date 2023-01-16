@@ -37,6 +37,8 @@ const isDifferent = (value: any, compare: any): boolean => {
 };
 
 export const ContentEntryForm: React.FC<ContentEntryFormProps> = ({ onForm, ...props }) => {
+    const formElementRef = useRef<HTMLDivElement>(null);
+    const { model } = useModel();
     const {
         loading,
         data: initialData,
@@ -44,7 +46,6 @@ export const ContentEntryForm: React.FC<ContentEntryFormProps> = ({ onForm, ...p
         onSubmit,
         invalidFields
     } = useContentEntryForm(props);
-    const { model } = useModel();
 
     const [isDirty, setIsDirty] = React.useState<boolean>(false);
     /**
@@ -67,6 +68,14 @@ export const ContentEntryForm: React.FC<ContentEntryFormProps> = ({ onForm, ...p
         }
         onForm(ref.current);
     }, []);
+
+    useEffect(() => {
+        if (!formElementRef.current) {
+            return;
+        }
+
+        formElementRef.current.scrollTo(0, 0);
+    }, [initialData.id, formElementRef.current]);
 
     const formRenderer = plugins
         .byType<CmsContentFormRendererPlugin>("cms-content-form-renderer")
@@ -136,7 +145,7 @@ export const ContentEntryForm: React.FC<ContentEntryFormProps> = ({ onForm, ...p
                                 "There are some unsaved changes! Are you sure you want to navigate away and discard all changes?"
                             }
                         />
-                        <FormWrapper data-testid={"cms-content-form"}>
+                        <FormWrapper data-testid={"cms-content-form"} ref={formElementRef}>
                             {loading && <CircularProgress />}
                             {formRenderer ? (
                                 renderCustomLayout(formProps)

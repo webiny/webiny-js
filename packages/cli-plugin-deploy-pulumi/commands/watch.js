@@ -57,17 +57,22 @@ module.exports = async (inputs, context) => {
         // If exists - read default inputs from "webiny.application.ts" file.
         inputs = merge({}, get(projectApplication, "config.cli.watch"), inputs);
 
-        // We don't do anything here. We assume the workspace has already been created
-        // upon running the `webiny deploy` command. We rely on that.
-        // TODO: maybe we can improve this in the future, depending on the feedback.
-        // if (projectApplication.type === "v5-workspaces") {
-        // await createProjectApplicationWorkspace({
-        //     projectApplication,
-        //     env: inputs.env,
-        //     context,
-        //     inputs
-        // });
-        // }
+        if (projectApplication.type === "v5-workspaces") {
+            // We don't do anything here. We assume the workspace has already been created
+            // upon running the `webiny deploy` command. We rely on that.
+            // TODO: maybe we can improve this in the future, depending on the feedback.
+            // await createProjectApplicationWorkspace({
+            //     projectApplication,
+            //     env: inputs.env,
+            //     context,
+            //     inputs
+            // });
+
+            // Check if there are any plugins that need to be registered.
+            if (projectApplication.config.plugins) {
+                context.plugins.register(projectApplication.config.plugins);
+            }
+        }
 
         // Load env vars specified via .env files located in project application folder.
         await loadEnvVariables(inputs, context);

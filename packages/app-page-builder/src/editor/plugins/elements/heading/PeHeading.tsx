@@ -1,20 +1,11 @@
 import React from "react";
-import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
 import Text from "~/editor/components/Text";
-import { getMediumEditorOptions } from "../utils/textUtils";
 import { CoreOptions } from "medium-editor";
-import { MediumEditorOptions, PbEditorElement } from "~/types";
+import { createRenderer, useRenderer } from "@webiny/app-page-builder-elements";
+import { useElementVariableValue } from "~/editor/hooks/useElementVariableValue";
+import { useActiveElementId } from "~/editor/hooks/useActiveElementId";
 
-declare global {
-    //eslint-disable-next-line
-    namespace JSX {
-        interface IntrinsicElements {
-            "pb-heading": any;
-        }
-    }
-}
-
-const DEFAULT_EDITOR_OPTIONS: CoreOptions = {
+const mediumEditorOptions: CoreOptions = {
     toolbar: {
         buttons: ["bold", "italic", "underline", "anchor"]
     },
@@ -24,44 +15,25 @@ const DEFAULT_EDITOR_OPTIONS: CoreOptions = {
     }
 };
 
-const defaultStyles = { display: "block" };
+const PeHeading = createRenderer(() => {
+    const { getElement } = useRenderer();
+    const element = getElement();
+    const variableValue = useElementVariableValue(element);
 
-interface PeHeadingProps {
-    isActive?: boolean;
-    element: PbEditorElement;
-    mediumEditorOptions?: MediumEditorOptions;
-}
-const PeHeading: React.FC<PeHeadingProps> = props => {
-    const { element, mediumEditorOptions } = props;
-    const elementDataText = element.data.text || {};
-    const tag = elementDataText.desktop?.tag || "h1";
+    const [activeElementId] = useActiveElementId();
+    const isActive = activeElementId === element.id;
 
-    const { getClassNames, getElementClassNames, combineClassNames } = usePageElements();
-    const classNames = combineClassNames(
-        getClassNames(defaultStyles),
-        // TODO @ts-refactor figure out correct type
-        getElementClassNames(element as any)
-    );
+    const tag = element.data?.text?.desktop?.tag || "h1";
 
-    return (
-        <pb-heading>
-            {props.isActive ? (
-                <Text
-                    tag={[tag, { className: classNames }]}
-                    elementId={element.id}
-                    mediumEditorOptions={getMediumEditorOptions(
-                        DEFAULT_EDITOR_OPTIONS,
-                        mediumEditorOptions
-                    )}
-                />
-            ) : (
-                React.createElement(tag, {
-                    dangerouslySetInnerHTML: { __html: elementDataText.data?.text },
-                    className: classNames
-                })
-            )}
-        </pb-heading>
-    );
-};
+    if (isActive) {
+        return <Text tag={tag} elementId={element.id} mediumEditorOptions={mediumEditorOptions} />;
+    }
+
+    const __html = variableValue || element.data.text.data.text;
+
+    return React.createElement(tag, {
+        dangerouslySetInnerHTML: { __html }
+    });
+});
 
 export default PeHeading;

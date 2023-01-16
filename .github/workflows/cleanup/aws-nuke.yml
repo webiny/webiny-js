@@ -35,6 +35,5 @@ resource-types:
     - DynamoDBTable
     - CloudWatchEventsRule
     - CloudWatchEventsTarget
-    - CloudWatchEventBuses
+    - CloudWatchEventsBuses
     - SQSQueue
-    - EventBus

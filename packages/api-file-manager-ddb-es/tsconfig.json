@@ -2,18 +2,18 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
+    { "path": "../api" },
     { "path": "../api-elasticsearch" },
     { "path": "../api-file-manager" },
     { "path": "../api-upgrade" },
     { "path": "../db-dynamodb" },
     { "path": "../error" },
-    { "path": "../api" },
-    { "path": "../handler" },
     { "path": "../handler-db" },
-    { "path": "../handler-aws" },
     { "path": "../plugins" },
     { "path": "../api-dynamodb-to-elasticsearch" },
-    { "path": "../api-i18n" }
+    { "path": "../api-i18n" },
+    { "path": "../handler" },
+    { "path": "../handler-aws" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -21,6 +21,9 @@
     "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/api/*": ["../api/src/*"],
+      "@webiny/api": ["../api/src"],
       "@webiny/api-elasticsearch/*": ["../api-elasticsearch/src/*"],
       "@webiny/api-elasticsearch": ["../api-elasticsearch/src"],
       "@webiny/api-file-manager/*": ["../api-file-manager/src/*"],
@@ -31,12 +34,6 @@
       "@webiny/db-dynamodb": ["../db-dynamodb/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
-      "@webiny/handler-aws/*": ["../handler-aws/src/*"],
-      "@webiny/handler-aws": ["../handler-aws/src"],
-      "@webiny/api/*": ["../api/src/*"],
-      "@webiny/api": ["../api/src"],
-      "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"],
       "@webiny/handler-db/*": ["../handler-db/src/*"],
       "@webiny/handler-db": ["../handler-db/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
@@ -44,7 +41,11 @@
       "@webiny/api-dynamodb-to-elasticsearch/*": ["../api-dynamodb-to-elasticsearch/src/*"],
       "@webiny/api-dynamodb-to-elasticsearch": ["../api-dynamodb-to-elasticsearch/src"],
       "@webiny/api-i18n/*": ["../api-i18n/src/*"],
-      "@webiny/api-i18n": ["../api-i18n/src"]
+      "@webiny/api-i18n": ["../api-i18n/src"],
+      "@webiny/handler/*": ["../handler/src/*"],
+      "@webiny/handler": ["../handler/src"],
+      "@webiny/handler-aws/*": ["../handler-aws/src/*"],
+      "@webiny/handler-aws": ["../handler-aws/src"]
     },
     "baseUrl": "."
   }

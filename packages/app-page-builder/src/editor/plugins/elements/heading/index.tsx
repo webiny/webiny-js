@@ -77,15 +77,7 @@ export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementP
                         padding: createInitialPerDeviceSettingValue(
                             { all: "0px" },
                             DisplayMode.DESKTOP
-                        ),
-                        /**
-                         * Figure out better way for types.
-                         * TODO @ts-refactor
-                         */
-                        horizontalAlign: createInitialPerDeviceSettingValue(
-                            "center",
-                            DisplayMode.DESKTOP
-                        ) as unknown as "left" | "center" | "right" | "justify"
+                        )
                     }
                 },
                 ...options
