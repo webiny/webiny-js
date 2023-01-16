@@ -3,7 +3,7 @@ import styled from "@emotion/styled";
 import { ReactComponent as Asterisk } from "@material-symbols/svg-400/outlined/emergency.svg";
 import { breakpoints } from "../../../../../theme";
 
-const Wrapper = styled.div`
+export const FieldLabelStyled = styled.label`
     width: 100%;
     display: inline-block;
     margin: 0 0 5px 1px;
@@ -27,9 +27,9 @@ interface FieldLabelProps {
 
 export const FieldLabel: React.FC<FieldLabelProps> = props => {
     return (
-        <Wrapper>
+        <FieldLabelStyled>
             {props.children}
             {props.required && <Asterisk />}
-        </Wrapper>
+        </FieldLabelStyled>
     );
 };
