@@ -57,7 +57,11 @@ export const RadioField: React.FC<RadioProps> = ({ field }) => {
 
     return (
         <Field>
-            <FieldLabel>{field.label}</FieldLabel>
+            <FieldLabel
+                required={field?.validation?.some(validation => validation.name === "required")}
+            >
+                {field.label}
+            </FieldLabel>
 
             {(field.options || []).map(option => (
                 <RadioGroup key={option.value}>

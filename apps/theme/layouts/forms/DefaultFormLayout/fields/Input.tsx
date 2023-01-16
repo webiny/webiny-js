@@ -47,7 +47,11 @@ export const InputField: React.FC<InputProps> = ({ field, type }) => {
 
     return (
         <Field>
-            <FieldLabel>{field.label}</FieldLabel>
+            <FieldLabel
+                required={field?.validation?.some(validation => validation.name === "required")}
+            >
+                {field.label}
+            </FieldLabel>
             <StyledInput
                 onBlur={onBlur}
                 onChange={e => onChange(e.target.value)}

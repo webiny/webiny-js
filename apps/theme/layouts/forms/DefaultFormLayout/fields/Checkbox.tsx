@@ -84,7 +84,11 @@ export const CheckboxField: React.FC<CheckboxProps> = ({ field }) => {
 
     return (
         <Field>
-            <FieldLabel>{field.label}</FieldLabel>
+            <FieldLabel
+                required={field?.validation?.some(validation => validation.name === "required")}
+            >
+                {field.label}
+            </FieldLabel>
 
             {(field.options || []).map(option => (
                 <CheckboxGroup key={option.value}>

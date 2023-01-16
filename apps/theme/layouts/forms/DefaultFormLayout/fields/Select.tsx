@@ -42,7 +42,11 @@ export const SelectField: React.FC<SelectProps> = ({ field }) => {
 
     return (
         <Field>
-            <FieldLabel>{field.label}</FieldLabel>
+            <FieldLabel
+                required={field?.validation?.some(validation => validation.name === "required")}
+            >
+                {field.label}
+            </FieldLabel>
 
             <StyledSelect
                 value={value || ""}
