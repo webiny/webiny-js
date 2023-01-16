@@ -12760,6 +12760,7 @@ __metadata:
     "@emotion/core": ^10.0.17
     "@emotion/styled": ^10.0.17
     "@svgr/webpack": ^6.1.1
+    "@types/json2csv": ^4.5.1
     "@types/react": 17.0.39
     "@types/react-google-recaptcha": ^1.1.2
     "@webiny/app": 0.0.0
@@ -12785,6 +12786,7 @@ __metadata:
     emotion: ^10.0.17
     graphql: ^15.7.2
     graphql-tag: ^2.12.6
+    json2csv: ^4.5.2
     lodash: ^4.17.10
     prop-types: ^15.7.2
     react: 17.0.2
