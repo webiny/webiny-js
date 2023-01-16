@@ -11594,12 +11594,12 @@ __metadata:
     graphql: ^15.7.2
     jest: ^28.1.0
     jest-dynalite: ^3.6.1
-    joi: ^17.6.0
     lodash: ^4.17.21
     nodemailer: ^6.7.6
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
     typescript: 4.7.4
+    zod: ^3.20.2
   languageName: unknown
   linkType: soft
 
@@ -42027,5 +42027,12 @@ __metadata:
     compress-commons: ^4.1.0
     readable-stream: ^3.6.0
   checksum: 4a73da856738b0634700b52f4ab3fe0bf0a532bea6820ad962d0bda0163d2d5525df4859f89a7238e204a378384e12551985049790c1894c3ac191866e85887f
+  languageName: node
+  linkType: hard
+
+"zod@npm:^3.20.2":
+  version: 3.20.2
+  resolution: "zod@npm:3.20.2"
+  checksum: 04172f7e9350372684ccd298d4716908edc9113751295b6c4e1b3ea84e2af8997e504b33ba36f4741417bb2a5dc90bfd40501f6b0e7389df10e42a63d6d8366c
   languageName: node
   linkType: hard

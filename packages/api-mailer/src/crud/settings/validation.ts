@@ -1,29 +1,25 @@
-import joi, { EmailOptions } from "joi";
-import { TransportSettings } from "~/types";
+import zod from "zod";
 
-const options: EmailOptions = {
-    tlds: false
-};
+const password = zod.string().describe("Password");
 
-const password = joi.string().label("Password");
 const common = {
-    from: joi.string().email(options).required().label("Mail from"),
-    port: joi.number().label("Port").default(25),
-    replyTo: joi.string().email(options).optional().label("Mail reply-to"),
-    host: joi.string().required().label("Hostname"),
-    user: joi.string().required().label("User")
+    from: zod.string().email().describe("Mail from"),
+    port: zod.number().describe("Port").default(25),
+    replyTo: zod.string().email().optional().describe("Mail reply-to"),
+    host: zod.string().describe("Hostname"),
+    user: zod.string().describe("User")
 };
 
-export const createValidation = joi
-    .object<TransportSettings>({
+export const createValidation = zod
+    .object({
         ...common,
-        password: password.required()
+        password
     })
     .required();
 
-export const updateValidation = joi
-    .object<TransportSettings>({
+export const updateValidation = zod
+    .object({
         ...common,
-        password
+        password: password.optional()
     })
     .required();
