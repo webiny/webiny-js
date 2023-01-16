@@ -51,7 +51,10 @@ export const ElementControlsOverlay: React.FC<Props> = props => {
             element={element}
             elementRendererMeta={meta}
             className={isActive ? "active" : ""}
-            onClick={() => setActiveElementId(element.id)}
+            onClick={() => {
+                updateEditorElement(element => ({ ...element, isHighlighted: false }));
+                setActiveElementId(element.id)
+            }}
             onMouseEnter={(e: MouseEvent) => {
                 if (isActive || isHighlighted) {
                     return;
