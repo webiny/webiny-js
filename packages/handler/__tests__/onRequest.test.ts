@@ -95,14 +95,15 @@ describe("fastify onRequest event", () => {
          * This way we can check if the log, which should not be sent, was sent.
          */
         let logged = false;
-        const target = JSON.stringify({
-            message: `Output was already sent. Please check user defined the "HandlerOnRequestPlugin" for reply end.`,
-            explanation:
-                "This error can happen if users plugin ended the reply but did not return false as response."
-        });
+
         console.log = values => {
-            if (values === target) {
-                logged = true;
+            if (typeof values === "string") {
+                try {
+                    const obj = JSON.parse(values);
+                    if (obj?.message && obj?.explanation) {
+                        logged = true;
+                    }
+                } catch {}
             }
             log(values);
         };
