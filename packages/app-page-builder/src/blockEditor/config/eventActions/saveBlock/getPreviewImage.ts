@@ -40,7 +40,10 @@ export async function getPreviewImage(
     editor && editor.classList.add("pb-editor-no-highlight");
 
     const dataUrl = await domToImage.toPng(node, {
-        width: 1000
+        width: 1000,
+        filter: (element: Element) => {
+            return element.tagName !== "PB-ELEMENT-CONTROLS-OVERLAY";
+        }
     });
 
     editor && editor.classList.remove("pb-editor-no-highlight");
