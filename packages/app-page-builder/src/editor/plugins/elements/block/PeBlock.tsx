@@ -1,7 +1,7 @@
 import React from "react";
 import { createRenderer, useRenderer, Elements } from "@webiny/app-page-builder-elements";
 import { Element } from "@webiny/app-page-builder-elements/types";
-import { useRecoilValue } from "recoil";
+import { SetterOrUpdater, useRecoilValue } from "recoil";
 import { elementWithChildrenByIdSelector } from "~/editor/recoil/modules";
 import { IconButton } from "@webiny/ui/Button";
 import { ReactComponent as AddCircleOutline } from "~/editor/assets/icons/baseline-add_circle-24px.svg";
@@ -9,6 +9,8 @@ import { TogglePluginActionEvent } from "~/editor/recoil/actions";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import styled from "@emotion/styled";
 import { useActiveElementId } from "~/editor/hooks/useActiveElementId";
+import { useElementById } from "~/editor/hooks/useElementById";
+import { PbEditorElement } from "~/types";
 
 const EmptyCell = styled.div<{ isActive: boolean }>`
     height: 100%;
@@ -37,6 +39,13 @@ const PeBlock = createRenderer(
         const [activeElementId] = useActiveElementId();
         const isActive = activeElementId === element.id;
 
+        const [editorElement] = useElementById(element.id) as [
+            PbEditorElement,
+            SetterOrUpdater<PbEditorElement>
+        ];
+
+        const dragEntered = editorElement.dragEntered;
+
         const elementWithChildren = useRecoilValue(
             elementWithChildrenByIdSelector(element.id)
         ) as Element;
@@ -58,7 +67,7 @@ const PeBlock = createRenderer(
 
         const { id, path, type } = element;
         return (
-            <EmptyCell isActive={isActive}>
+            <EmptyCell isActive={isActive || dragEntered}>
                 <IconButton icon={<AddCircleOutline />} onClick={onAddClick} />
             </EmptyCell>
         );
