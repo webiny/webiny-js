@@ -86,7 +86,7 @@ interface ConvertStorageEntryParams {
     entry: CmsStorageEntry;
     model: StorageOperationsCmsModel;
 }
-const convertToStorageEntry = (params: ConvertStorageEntryParams): CmsStorageEntry => {
+const convertEntryKeysToStorage = (params: ConvertStorageEntryParams): CmsStorageEntry => {
     const { model, entry } = params;
 
     const values = model.convertValueKeyToStorage({
@@ -99,7 +99,7 @@ const convertToStorageEntry = (params: ConvertStorageEntryParams): CmsStorageEnt
     };
 };
 
-const convertFromStorageEntry = (params: ConvertStorageEntryParams): CmsStorageEntry => {
+const convertEntryKeysFromStorage = (params: ConvertStorageEntryParams): CmsStorageEntry => {
     const { model, entry } = params;
 
     const values = model.convertValueKeyFromStorage({
@@ -140,11 +140,11 @@ export const createEntriesStorageOperations = (
         const isPublished = initialEntry.status === "published";
         const locked = isPublished ? true : initialEntry.locked;
 
-        const entry = convertToStorageEntry({
+        const entry = convertEntryKeysToStorage({
             model,
             entry: initialEntry
         });
-        const storageEntry = convertToStorageEntry({
+        const storageEntry = convertEntryKeysToStorage({
             model,
             entry: initialStorageEntry
         });
@@ -279,11 +279,11 @@ export const createEntriesStorageOperations = (
     ) => {
         const { entry: initialEntry, storageEntry: initialStorageEntry } = params;
 
-        const entry = convertToStorageEntry({
+        const entry = convertEntryKeysToStorage({
             model,
             entry: initialEntry
         });
-        const storageEntry = convertToStorageEntry({
+        const storageEntry = convertEntryKeysToStorage({
             model,
             entry: initialStorageEntry
         });
@@ -380,11 +380,11 @@ export const createEntriesStorageOperations = (
     ) => {
         const { entry: initialEntry, storageEntry: initialStorageEntry } = params;
 
-        const entry = convertToStorageEntry({
+        const entry = convertEntryKeysToStorage({
             model,
             entry: initialEntry
         });
-        const storageEntry = convertToStorageEntry({
+        const storageEntry = convertEntryKeysToStorage({
             model,
             entry: initialStorageEntry
         });
@@ -851,7 +851,7 @@ export const createEntriesStorageOperations = (
             model,
             entries: hits.map(item => item._source)
         }).map(item => {
-            return convertFromStorageEntry({
+            return convertEntryKeysFromStorage({
                 model,
                 entry: item
             });
@@ -894,11 +894,11 @@ export const createEntriesStorageOperations = (
     ) => {
         const { entry: initialEntry, storageEntry: initialStorageEntry } = params;
 
-        const entry = convertToStorageEntry({
+        const entry = convertEntryKeysToStorage({
             model,
             entry: initialEntry
         });
-        const storageEntry = convertToStorageEntry({
+        const storageEntry = convertEntryKeysToStorage({
             model,
             entry: initialStorageEntry
         });
@@ -1122,11 +1122,11 @@ export const createEntriesStorageOperations = (
     ) => {
         const { entry: initialEntry, storageEntry: initialStorageEntry } = params;
 
-        const entry = convertToStorageEntry({
+        const entry = convertEntryKeysToStorage({
             model,
             entry: initialEntry
         });
-        const storageEntry = convertToStorageEntry({
+        const storageEntry = convertEntryKeysToStorage({
             model,
             entry: initialStorageEntry
         });
@@ -1244,7 +1244,7 @@ export const createEntriesStorageOperations = (
         if (!entry) {
             return null;
         }
-        return convertFromStorageEntry({
+        return convertEntryKeysFromStorage({
             model,
             entry
         });
@@ -1260,7 +1260,7 @@ export const createEntriesStorageOperations = (
         if (!entry) {
             return null;
         }
-        return convertFromStorageEntry({
+        return convertEntryKeysFromStorage({
             model,
             entry
         });
@@ -1277,7 +1277,7 @@ export const createEntriesStorageOperations = (
         if (!entry) {
             return null;
         }
-        return convertFromStorageEntry({
+        return convertEntryKeysFromStorage({
             model,
             entry
         });
@@ -1293,7 +1293,7 @@ export const createEntriesStorageOperations = (
         });
 
         return entries.map(entry => {
-            return convertFromStorageEntry({
+            return convertEntryKeysFromStorage({
                 model,
                 entry
             });
@@ -1309,7 +1309,7 @@ export const createEntriesStorageOperations = (
             ids: params.ids
         });
         return entries.map(entry => {
-            return convertFromStorageEntry({
+            return convertEntryKeysFromStorage({
                 model,
                 entry
             });
@@ -1325,7 +1325,7 @@ export const createEntriesStorageOperations = (
             ids: params.ids
         });
         return entries.map(entry => {
-            return convertFromStorageEntry({
+            return convertEntryKeysFromStorage({
                 model,
                 entry
             });
@@ -1342,7 +1342,7 @@ export const createEntriesStorageOperations = (
         });
 
         return entries.map(entry => {
-            return convertFromStorageEntry({
+            return convertEntryKeysFromStorage({
                 model,
                 entry
             });
@@ -1389,7 +1389,7 @@ export const createEntriesStorageOperations = (
             if (!entry) {
                 return null;
             }
-            return convertFromStorageEntry({
+            return convertEntryKeysFromStorage({
                 entry,
                 model
             });

@@ -13,6 +13,7 @@ import { createInitialPerDeviceSettingValue } from "../../../elementSettings/ele
 const PreviewBox = styled("div")({
     textAlign: "center",
     height: 50,
+
     svg: {
         height: 50,
         width: 50,

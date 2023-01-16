@@ -84,29 +84,25 @@ export function applyTenantRouter(
         }
     });
 
-    const originLambda = app.addHandler(() => {
-        const awsUsEast1 = new aws.Provider("us-east-1", { region: "us-east-1" });
+    const awsUsEast1 = new aws.Provider("us-east-1", { region: "us-east-1" });
 
-        return new aws.lambda.Function(
-            `${PREFIX}-origin-request`,
-            {
-                publish: true,
-                runtime: "nodejs14.x",
-                handler: "index.handler",
-                role: role.output.arn,
-                timeout: 5,
-                memorySize: 128,
-                code: dynamoDbTable.apply(dynamoDbTable => {
-                    return createFunctionArchive({
-                        region,
-                        dynamoDbTable
-                    });
-                })
-            },
-            {
-                provider: awsUsEast1
-            }
-        );
+    const originLambda = app.addResource(aws.lambda.Function, {
+        name: `${PREFIX}-origin-request`,
+        config: {
+            publish: true,
+            runtime: "nodejs14.x",
+            handler: "index.handler",
+            role: role.output.arn,
+            timeout: 5,
+            memorySize: 128,
+            code: dynamoDbTable.apply(dynamoDbTable => {
+                return createFunctionArchive({
+                    region,
+                    dynamoDbTable
+                });
+            })
+        },
+        opts: { provider: awsUsEast1 }
     });
 
     cloudfront.config.defaultCacheBehavior(value => {
@@ -124,7 +120,7 @@ export function applyTenantRouter(
                 {
                     eventType: "origin-request",
                     includeBody: false,
-                    lambdaArn: originLambda.qualifiedArn
+                    lambdaArn: originLambda.output.qualifiedArn
                 }
             ]
         };

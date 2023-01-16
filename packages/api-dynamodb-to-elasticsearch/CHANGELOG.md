@@ -3,6 +3,58 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.33.5](https://github.com/webiny/webiny-js/compare/v5.33.5-beta.0...v5.33.5) (2022-12-23)
+
+**Note:** Version bump only for package @webiny/api-dynamodb-to-elasticsearch
+
+
+
+
+
+## [5.33.5-beta.0](https://github.com/webiny/webiny-js/compare/v5.33.4...v5.33.5-beta.0) (2022-12-22)
+
+
+### Bug Fixes
+
+* **api-dynamodb-to-elasticsearch:** retries for bulk insert ([#2842](https://github.com/webiny/webiny-js/issues/2842)) ([b4bf399](https://github.com/webiny/webiny-js/commit/b4bf39918747326d83a9597667bd2731c2a1a3aa))
+* **api-headless-cms:** initialize model data param ([#2888](https://github.com/webiny/webiny-js/issues/2888)) ([7ea275c](https://github.com/webiny/webiny-js/commit/7ea275c45a2faf64fb249f335b5e1e76de429cc7))
+
+
+
+
+
+## [5.33.4](https://github.com/webiny/webiny-js/compare/v5.33.4-beta.0...v5.33.4) (2022-12-15)
+
+**Note:** Version bump only for package @webiny/api-dynamodb-to-elasticsearch
+
+
+
+
+
+## [5.33.4-beta.0](https://github.com/webiny/webiny-js/compare/v5.33.3...v5.33.4-beta.0) (2022-12-15)
+
+**Note:** Version bump only for package @webiny/api-dynamodb-to-elasticsearch
+
+
+
+
+
+## [5.33.3](https://github.com/webiny/webiny-js/compare/v5.33.3-beta.0...v5.33.3) (2022-11-28)
+
+**Note:** Version bump only for package @webiny/api-dynamodb-to-elasticsearch
+
+
+
+
+
+## [5.33.3-beta.0](https://github.com/webiny/webiny-js/compare/v5.33.2...v5.33.3-beta.0) (2022-11-28)
+
+**Note:** Version bump only for package @webiny/api-dynamodb-to-elasticsearch
+
+
+
+
+
 ## [5.33.2](https://github.com/webiny/webiny-js/compare/v5.33.2-beta.2...v5.33.2) (2022-11-17)
 
 **Note:** Version bump only for package @webiny/api-dynamodb-to-elasticsearch

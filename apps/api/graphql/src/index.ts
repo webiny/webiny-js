@@ -32,9 +32,10 @@ import { createStorageOperations as createApwSaStorageOperations } from "@webiny
 import {
     createFoldersGraphQL,
     createFoldersContext,
-    createFoldersSubscriptions
-} from "@webiny/api-folders";
-import { createStorageOperations as createFoldersStorageOperations } from "@webiny/api-folders-so-ddb";
+    createFoldersSubscriptions,
+    createACO
+} from "@webiny/api-aco";
+import { createStorageOperations as createFoldersStorageOperations } from "@webiny/api-aco-so-ddb";
 
 // Imports plugins created via scaffolding utilities.
 import scaffoldsPlugins from "./plugins/scaffolds";
@@ -99,6 +100,7 @@ export const handler = createHandler({
         }),
         createFoldersGraphQL(),
         createFoldersSubscriptions(),
+        createACO(),
         scaffoldsPlugins()
     ],
     http: { debug }

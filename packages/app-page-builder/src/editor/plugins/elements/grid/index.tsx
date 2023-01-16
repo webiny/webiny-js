@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "@emotion/styled";
 import kebabCase from "lodash/kebabCase";
-import GridContainer from "./GridContainer";
+import Grid from "./Grid";
 import { ReactComponent as GridIcon } from "../../../assets/icons/view_quilt.svg";
 import { createElement } from "../../../helpers";
 import { PbEditorPageElementPlugin, DisplayMode, PbEditorElementPluginArgs } from "~/types";
@@ -137,8 +137,8 @@ export default (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin
 
             return typeof args.create === "function" ? args.create(defaultValue) : defaultValue;
         },
-        render({ element }) {
-            return <GridContainer element={element} />;
+        render(props) {
+            return <Grid {...props} />;
         }
     };
 };

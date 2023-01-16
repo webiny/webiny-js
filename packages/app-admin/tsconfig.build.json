@@ -8,8 +8,8 @@
     { "path": "../app-wcp/tsconfig.build.json" },
     { "path": "../form/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" },
-    { "path": "../react-router/tsconfig.build.json" },
     { "path": "../react-composition/tsconfig.build.json" },
+    { "path": "../react-router/tsconfig.build.json" },
     { "path": "../ui/tsconfig.build.json" },
     { "path": "../ui-composer/tsconfig.build.json" },
     { "path": "../validation/tsconfig.build.json" }
@@ -18,7 +18,7 @@
     "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist",
-    "paths": { "~/*": ["./src/*"] },
+    "paths": { "~/*": ["./src/*"], "~tests/*": ["./__tests__/*"] },
     "baseUrl": "."
   }
 }

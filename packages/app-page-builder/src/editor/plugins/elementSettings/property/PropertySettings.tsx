@@ -1,11 +1,14 @@
 import React, { useCallback, useMemo } from "react";
 import { css } from "emotion";
 import { useRecoilValue } from "recoil";
+import merge from "lodash/merge";
+import set from "lodash/set";
 import get from "lodash/get";
 import { plugins } from "@webiny/plugins";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { Switch } from "@webiny/ui/Switch";
-import { DelayedOnChange } from "@webiny/ui/DelayedOnChange";
+import { Form, FormOnSubmit } from "@webiny/form";
+import { Validator } from "@webiny/validation/types";
 import {
     PbEditorElement,
     PbEditorPageElementSettingsRenderComponentProps,
@@ -15,8 +18,10 @@ import {
     activeElementAtom,
     elementWithChildrenByIdSelector,
     uiAtom
-} from "../../../recoil/modules";
-import { applyFallbackDisplayMode } from "../elementSettingsUtils";
+} from "~/editor/recoil/modules";
+import { UpdateElementActionEvent } from "~/editor/recoil/actions";
+import { applyFallbackDisplayMode } from "~/editor/plugins/elementSettings/elementSettingsUtils";
+import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 // Components
 import Accordion from "../../elementSettings/components/Accordion";
 import Wrapper from "../../elementSettings/components/Wrapper";
@@ -41,6 +46,32 @@ const classes = {
 };
 
 const DATA_NAMESPACE = "data.settings.property";
+
+const validateId: Validator = (value: string | undefined) => {
+    if (!value) {
+        return true;
+    }
+
+    if (/^[a-zA-Z0-9_-]*$/.test(value)) {
+        return true;
+    }
+
+    throw Error(
+        'Element ID can only contain letters, numbers and chars ("-", "_") without any spaces.'
+    );
+};
+
+const validateClassName: Validator = (value: string | undefined) => {
+    if (!value) {
+        return true;
+    }
+
+    if (/^[a-zA-Z0-9_ -]*$/.test(value)) {
+        return true;
+    }
+
+    throw Error('Class name can only contain letters, numbers and chars ("-", "_", " ").');
+};
 
 interface UseVisibilitySettingResult {
     element: PbEditorElement;
@@ -72,11 +103,30 @@ const PropertySettings: React.FC<
 > = ({ defaultAccordionValue }) => {
     const { displayMode } = useRecoilValue(uiAtom);
     const activeElementId = useRecoilValue(activeElementAtom);
-    const { element, updateVisibility } = useVisibilitySetting(activeElementId as string);
-    const { getUpdateValue } = useUpdateHandlers({
-        element,
-        dataNamespace: DATA_NAMESPACE
-    });
+    const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
+    const handler = useEventActionHandler();
+
+    const updateSettings: FormOnSubmit = async (data, form) => {
+        const valid = await form.validate();
+        if (!valid) {
+            return null;
+        }
+
+        const newElement: PbEditorElement = merge(
+            {},
+            element,
+            set({}, `${DATA_NAMESPACE}.visibility.${displayMode}`, { hidden: data.hidden }),
+            set({}, `${DATA_NAMESPACE}.id`, data.id),
+            set({}, `${DATA_NAMESPACE}.className`, data.className)
+        );
+
+        return handler.trigger(
+            new UpdateElementActionEvent({
+                element: newElement,
+                history: true
+            })
+        );
+    };
 
     const memoizedResponsiveModePlugin = useMemo(() => {
         return plugins
@@ -91,19 +141,22 @@ const PropertySettings: React.FC<
         }
     };
 
-    const fallbackValue = useMemo(
-        () =>
-            applyFallbackDisplayMode(displayMode, mode =>
-                get(element, `${DATA_NAMESPACE}.visibility.${mode}`)
-            ),
-        [displayMode]
-    );
+    const settings = React.useMemo(() => {
+        const visibilityFallbackValue = applyFallbackDisplayMode(displayMode, mode =>
+            get(element, `${DATA_NAMESPACE}.visibility.${mode}`)
+        );
+        const visibility = get(
+            element,
+            `${DATA_NAMESPACE}.visibility.${displayMode}`,
+            visibilityFallbackValue || { hidden: false }
+        );
 
-    const visibility = get(
-        element,
-        `${DATA_NAMESPACE}.visibility.${displayMode}`,
-        fallbackValue || { hidden: false }
-    );
+        return {
+            className: get(element, `${DATA_NAMESPACE}.className`, ""),
+            id: get(element, `${DATA_NAMESPACE}.id`, ""),
+            hidden: visibility.hidden
+        };
+    }, [displayMode, element]);
 
     return (
         <Accordion
@@ -115,34 +168,58 @@ const PropertySettings: React.FC<
                 </Tooltip>
             }
         >
-            <ContentWrapper direction={"column"}>
-                <Wrapper
-                    containerClassName={classes.grid}
-                    label={"Hide element"}
-                    leftCellSpan={8}
-                    rightCellSpan={4}
-                    leftCellClassName={classes.leftCellStyle}
-                    rightCellClassName={classes.rightCellStyle}
-                >
-                    <Switch value={visibility.hidden} onChange={updateVisibility} />
-                </Wrapper>
-                <Wrapper label={"Element ID"} containerClassName={classes.grid}>
-                    <DelayedOnChange
-                        value={get(element, DATA_NAMESPACE + ".id", 0)}
-                        onChange={getUpdateValue("id")}
-                    >
-                        {({ value, onChange }) => <InputField value={value} onChange={onChange} />}
-                    </DelayedOnChange>
-                </Wrapper>
-                <Wrapper label={"CSS class"} containerClassName={classes.grid}>
-                    <DelayedOnChange
-                        value={get(element, DATA_NAMESPACE + ".className", 0)}
-                        onChange={getUpdateValue("className")}
-                    >
-                        {({ value, onChange }) => <InputField value={value} onChange={onChange} />}
-                    </DelayedOnChange>
-                </Wrapper>
-            </ContentWrapper>
+            <Form
+                data={settings}
+                onChange={(data, form) => {
+                    if (!form) {
+                        return;
+                    }
+                    return updateSettings(data, form);
+                }}
+            >
+                {({ Bind }) => {
+                    return (
+                        <ContentWrapper direction={"column"}>
+                            <Wrapper
+                                containerClassName={classes.grid}
+                                label={"Hide element"}
+                                leftCellSpan={8}
+                                rightCellSpan={4}
+                                leftCellClassName={classes.leftCellStyle}
+                                rightCellClassName={classes.rightCellStyle}
+                            >
+                                <Bind name={"hidden"}>
+                                    {({ value, onChange }) => (
+                                        <Switch value={value} onChange={onChange} />
+                                    )}
+                                </Bind>
+                            </Wrapper>
+                            <Wrapper label={"Element ID"} containerClassName={classes.grid}>
+                                <Bind name={"id"} validators={validateId}>
+                                    {({ value, onChange, validation }) => (
+                                        <InputField
+                                            value={value}
+                                            onChange={onChange}
+                                            validation={validation}
+                                        />
+                                    )}
+                                </Bind>
+                            </Wrapper>
+                            <Wrapper label={"CSS class"} containerClassName={classes.grid}>
+                                <Bind name={"className"} validators={validateClassName}>
+                                    {({ value, onChange, validation }) => (
+                                        <InputField
+                                            value={value}
+                                            onChange={onChange}
+                                            validation={validation}
+                                        />
+                                    )}
+                                </Bind>
+                            </Wrapper>
+                        </ContentWrapper>
+                    );
+                }}
+            </Form>
         </Accordion>
     );
 };

@@ -28,8 +28,14 @@ export const usePageViewNavigation = () => {
     /**
      * Navigate to page-builder home list.
      */
-    const navigateToPageHome = () => {
-        return history.push(PAGE_BUILDER_LIST_LINK);
+    const navigateToPageHome = (id?: string) => {
+        // TODO: @leopuleo remove the reference to id after the rollout of the new ACO
+        const searchParams = new URLSearchParams({ ...(id && { id }) }).toString();
+
+        return history.push({
+            pathname: PAGE_BUILDER_LIST_LINK,
+            search: searchParams
+        });
     };
 
     /**

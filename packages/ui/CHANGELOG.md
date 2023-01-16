@@ -3,6 +3,60 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.33.5](https://github.com/webiny/webiny-js/compare/v5.33.5-beta.0...v5.33.5) (2022-12-23)
+
+**Note:** Version bump only for package @webiny/ui
+
+
+
+
+
+## [5.33.5-beta.0](https://github.com/webiny/webiny-js/compare/v5.33.4...v5.33.5-beta.0) (2022-12-22)
+
+**Note:** Version bump only for package @webiny/ui
+
+
+
+
+
+## [5.33.4](https://github.com/webiny/webiny-js/compare/v5.33.4-beta.0...v5.33.4) (2022-12-15)
+
+**Note:** Version bump only for package @webiny/ui
+
+
+
+
+
+## [5.33.4-beta.0](https://github.com/webiny/webiny-js/compare/v5.33.3...v5.33.4-beta.0) (2022-12-15)
+
+**Note:** Version bump only for package @webiny/ui
+
+
+
+
+
+## [5.33.3](https://github.com/webiny/webiny-js/compare/v5.33.3-beta.0...v5.33.3) (2022-11-28)
+
+**Note:** Version bump only for package @webiny/ui
+
+
+
+
+
+## [5.33.3-beta.0](https://github.com/webiny/webiny-js/compare/v5.33.2...v5.33.3-beta.0) (2022-11-28)
+
+
+### Bug Fixes
+
+* **ui:** allow Accordion to have a single AccordionItem ([31a6ec2](https://github.com/webiny/webiny-js/commit/31a6ec2be95fa4e59abd1a3aee2f38b1a07fabde))
+* **ui:** enforce accordion item height ([5b91b08](https://github.com/webiny/webiny-js/commit/5b91b086f019b4718f19537b33caa829ae57a1f0))
+* **ui:** refactor Input to functional component ([3c5aee3](https://github.com/webiny/webiny-js/commit/3c5aee345e08048227bcbbd83c7d3bd8056f98dc))
+* **ui:** remove Button ripple prop default value ([6c8a412](https://github.com/webiny/webiny-js/commit/6c8a412487d02daffdb91be2027ca39990a27a84))
+
+
+
+
+
 ## [5.33.2](https://github.com/webiny/webiny-js/compare/v5.33.2-beta.2...v5.33.2) (2022-11-17)
 
 **Note:** Version bump only for package @webiny/ui

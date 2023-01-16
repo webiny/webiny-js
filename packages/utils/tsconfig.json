@@ -8,6 +8,7 @@
     "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"]
     },

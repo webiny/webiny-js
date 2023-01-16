@@ -3,6 +3,18 @@ import { defaultIdentity } from "../tenancySecurity";
 
 jest.setTimeout(100000);
 
+const emptySlugError = {
+    code: "GET_BLOCK_CATEGORY_EMPTY_SLUG",
+    data: null,
+    message: "Block category slug cannot be empty!"
+};
+
+const cannotDeletePageBlockError = {
+    code: "BLOCK_CATEGORY_HAS_LINKED_BLOCKS",
+    data: null,
+    message: "Cannot delete block category because some page blocks are linked to it."
+};
+
 describe("Block Categories CRUD Test", () => {
     const {
         createBlockCategory,
@@ -173,26 +185,24 @@ describe("Block Categories CRUD Test", () => {
             }
         });
 
-        const emptySlugError: ErrorOptions = {
-            code: "VALIDATION_FAILED_INVALID_FIELDS",
-            message: "Validation failed.",
-            data: {
-                invalidFields: {
-                    slug: {
-                        code: "VALIDATION_FAILED_INVALID_FIELD",
-                        data: null,
-                        message: "Value is required."
-                    }
-                }
-            }
-        };
-
         expect(emptySlugErrorResponse).toEqual({
             data: {
                 pageBuilder: {
                     createBlockCategory: {
                         data: null,
-                        error: emptySlugError
+                        error: {
+                            code: "VALIDATION_FAILED_INVALID_FIELDS",
+                            message: "Validation failed.",
+                            data: {
+                                invalidFields: {
+                                    slug: {
+                                        code: "VALIDATION_FAILED_INVALID_FIELD",
+                                        data: null,
+                                        message: "Value is required."
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -207,27 +217,25 @@ describe("Block Categories CRUD Test", () => {
             }
         });
 
-        const invalidSlugError: ErrorOptions = {
-            code: "VALIDATION_FAILED_INVALID_FIELDS",
-            message: "Validation failed.",
-            data: {
-                invalidFields: {
-                    slug: {
-                        code: "VALIDATION_FAILED_INVALID_FIELD",
-                        data: null,
-                        message:
-                            "Slug must consist of only 'a-z', '0-9' and '-' and be max 100 characters long (for example: 'some-slug' or 'some-slug-2')"
-                    }
-                }
-            }
-        };
-
         expect(invalidSlugErrorResponse).toEqual({
             data: {
                 pageBuilder: {
                     createBlockCategory: {
                         data: null,
-                        error: invalidSlugError
+                        error: {
+                            code: "VALIDATION_FAILED_INVALID_FIELDS",
+                            message: "Validation failed.",
+                            data: {
+                                invalidFields: {
+                                    slug: {
+                                        code: "VALIDATION_FAILED_INVALID_FIELD",
+                                        data: null,
+                                        message:
+                                            "Slug must consist of only 'a-z', '0-9' and '-' and be max 100 characters long (for example: 'some-slug' or 'some-slug-2')"
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -237,18 +245,12 @@ describe("Block Categories CRUD Test", () => {
     test("cannot get a block category by empty slug", async () => {
         const [errorResponse] = await getBlockCategory({ slug: `` });
 
-        const error: ErrorOptions = {
-            code: "GET_BLOCK_CATEGORY_ERROR",
-            data: null,
-            message: "Could not load block category by empty slug."
-        };
-
         expect(errorResponse).toEqual({
             data: {
                 pageBuilder: {
                     getBlockCategory: {
                         data: null,
-                        error
+                        error: emptySlugError
                     }
                 }
             }
@@ -266,18 +268,12 @@ describe("Block Categories CRUD Test", () => {
             }
         });
 
-        const error: ErrorOptions = {
-            code: "GET_BLOCK_CATEGORY_ERROR",
-            data: null,
-            message: "Could not load block category by empty slug."
-        };
-
         expect(errorResponse).toEqual({
             data: {
                 pageBuilder: {
                     updateBlockCategory: {
                         data: null,
-                        error
+                        error: emptySlugError
                     }
                 }
             }
@@ -328,12 +324,6 @@ describe("Block Categories CRUD Test", () => {
             }
         );
 
-        const error: ErrorOptions = {
-            code: "CANNOT_DELETE_BLOCK_CATEGORY_PAGE_BLOCK_EXISTING",
-            data: null,
-            message: "Cannot delete block category because some page blocks are linked to it."
-        };
-
         const [deleteBlockCategoryResult] = await deleteBlockCategory({ slug: "delete-block-cat" });
 
         expect(deleteBlockCategoryResult).toEqual({
@@ -341,7 +331,7 @@ describe("Block Categories CRUD Test", () => {
                 pageBuilder: {
                     deleteBlockCategory: {
                         data: null,
-                        error
+                        error: cannotDeletePageBlockError
                     }
                 }
             }
@@ -358,7 +348,7 @@ describe("Block Categories CRUD Test", () => {
                 pageBuilder: {
                     deleteBlockCategory: {
                         data: null,
-                        error
+                        error: cannotDeletePageBlockError
                     }
                 }
             }
@@ -375,7 +365,7 @@ describe("Block Categories CRUD Test", () => {
                 pageBuilder: {
                     deleteBlockCategory: {
                         data: null,
-                        error
+                        error: cannotDeletePageBlockError
                     }
                 }
             }

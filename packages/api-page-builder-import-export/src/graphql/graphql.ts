@@ -1,5 +1,6 @@
+import blocks from "./graphql/blocks.gql";
 import pages from "./graphql/pages.gql";
-import pageImportExportTask from "./graphql/pageImportExportTasks.gql";
+import importExportTask from "./graphql/importExportTasks.gql";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 
-export default [pages, pageImportExportTask] as GraphQLSchemaPlugin[];
+export default [blocks, pages, importExportTask] as GraphQLSchemaPlugin[];

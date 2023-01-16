@@ -3,6 +3,62 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.33.5](https://github.com/webiny/webiny-js/compare/v5.33.5-beta.0...v5.33.5) (2022-12-23)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+## [5.33.5-beta.0](https://github.com/webiny/webiny-js/compare/v5.33.4...v5.33.5-beta.0) (2022-12-22)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+## [5.33.4](https://github.com/webiny/webiny-js/compare/v5.33.4-beta.0...v5.33.4) (2022-12-15)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+## [5.33.4-beta.0](https://github.com/webiny/webiny-js/compare/v5.33.3...v5.33.4-beta.0) (2022-12-15)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+## [5.33.3](https://github.com/webiny/webiny-js/compare/v5.33.3-beta.0...v5.33.3) (2022-11-28)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+## [5.33.3-beta.0](https://github.com/webiny/webiny-js/compare/v5.33.2...v5.33.3-beta.0) (2022-11-28)
+
+
+### Bug Fixes
+
+* **app-headless-cms:** add accordion object field renderer ([#2807](https://github.com/webiny/webiny-js/issues/2807)) ([c809057](https://github.com/webiny/webiny-js/commit/c809057d2993165d9d9bbbd830bbf678f41eb563))
+* **app-headless-cms:** add missing return statement ([54db9fa](https://github.com/webiny/webiny-js/commit/54db9fa04bf8d60e830fd6e6f3ca8bb8137fe086))
+* **app-headless-cms:** remove autoFocus prop ([04e3f76](https://github.com/webiny/webiny-js/commit/04e3f76efccc523c2074d8c240f1cff021e54671))
+* **app-headless-cms:** scroll content entry form to top on entry change ([b967b99](https://github.com/webiny/webiny-js/commit/b967b992288924b02c2b854e602fe5aa17cc0e74))
+* **app-headless-cms:** show field renderer name in model form ([4e5868d](https://github.com/webiny/webiny-js/commit/4e5868dcaafef9d71ae5ba142fd44be9cb3f07e0))
+* **app-headless-cms:** skip TimeAgo component rendering on programmatic models ([d484405](https://github.com/webiny/webiny-js/commit/d4844055e5cc3ca289c48c2cbd506a6192095f25))
+
+
+
+
+
 ## [5.33.2](https://github.com/webiny/webiny-js/compare/v5.33.2-beta.2...v5.33.2) (2022-11-17)
 
 **Note:** Version bump only for package @webiny/app-headless-cms

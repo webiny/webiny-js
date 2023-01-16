@@ -1,64 +1,188 @@
 import React from "react";
 import { usePageElements } from "~/hooks/usePageElements";
-import { ElementRenderer } from "~/types";
+import { LinkComponent } from "~/types";
+import styled, { CSSObject } from "@emotion/styled";
+import { ClassNames } from "@emotion/core";
+import { DefaultLinkComponent } from "~/renderers/components";
+import { createRenderer } from "~/createRenderer";
+import { useRenderer } from "~/hooks/useRenderer";
 
-declare global {
-    // eslint-disable-next-line
-    namespace JSX {
-        interface IntrinsicElements {
-            "pb-button": any;
-            "pb-button-icon": any;
-            "pb-button-text": any;
-        }
-    }
+const ICON_POSITION_FLEX_DIRECTION: Record<string, CSSObject> = {
+    right: { flexDirection: "row-reverse" },
+    bottom: { flexDirection: "column-reverse" },
+    top: { flexDirection: "column" },
+    left: { flexDirection: "row" }
+};
+
+const ICON_POSITION_MARGIN: Record<string, CSSObject> = {
+    right: { marginLeft: 5 },
+    bottom: { marginTop: 5 },
+    top: { marginBottom: 5 },
+    left: { marginRight: 5 }
+};
+
+export interface ButtonClickHandler {
+    id: string;
+    name: string;
+    handler: (params: { variables: Record<string, any> }) => void | Promise<void>;
+    variables?: Array<{
+        name: string;
+        label: string;
+        defaultValue: any;
+    }>;
 }
 
 export interface CreateButtonParams {
-    LinkComponent?: React.ComponentType<{ href: string; newTab: boolean }>;
+    linkComponent?: LinkComponent;
+    clickHandlers?: Array<ButtonClickHandler> | (() => Array<ButtonClickHandler>);
 }
 
-interface DefaultLinkComponentProps {
-    href: string;
-    newTab?: boolean;
-}
-const DefaultLinkComponent: React.FC<DefaultLinkComponentProps> = ({ href, newTab, children }) => {
-    return (
-        <a href={href} target={newTab ? "_blank" : "_self"} rel={"noreferrer"}>
-            {children}
-        </a>
-    );
+const ButtonBody: React.FC<{ className?: string; onClick?: () => void }> = ({
+    className,
+    children,
+    onClick
+}) => (
+    <ClassNames>
+        {({ cx }) => (
+            <div className={cx("button-body", className)} onClick={onClick}>
+                {children}
+            </div>
+        )}
+    </ClassNames>
+);
+
+const ButtonIcon: React.FC<{ className?: string; svg: string }> = ({ className, svg }) => (
+    <ClassNames>
+        {({ cx }) => (
+            <div
+                className={cx("button-icon", className)}
+                dangerouslySetInnerHTML={{ __html: svg }}
+            />
+        )}
+    </ClassNames>
+);
+
+const ButtonText: React.FC<{ text: string }> = ({ text }) => {
+    return <div className={"button-text"}>{text}</div>;
 };
 
-export const createButton = (args: CreateButtonParams = {}): ElementRenderer => {
-    const LinkComponent = args?.LinkComponent || DefaultLinkComponent;
+export type ButtonRenderer = ReturnType<typeof createButton>;
 
-    // TODO @ts-refactor fix "Component definition is missing display name"
-    // eslint-disable-next-line
-    return ({ element }) => {
-        const { buttonText, link, type, icon } = element.data;
+export interface ButtonElementData {
+    buttonText: string;
+    link: {
+        newTab: boolean;
+        href: string;
+    };
+    icon: { position: string; color: string; svg: string; width: string };
+    action: {
+        actionType: "link" | "scrollToElement" | "onClickHandler";
+        newTab: boolean;
+        href: string;
+        clickHandler?: string;
+        variables?: Record<string, any>;
+    };
+}
 
-        const { getElementClassNames, getThemeClassNames, combineClassNames } = usePageElements();
+export interface Props {
+    buttonText?: string;
+    action?: ButtonElementData["action"];
+}
 
-        const themeClassNames = getThemeClassNames(theme => {
-            if (!theme.styles || !theme.styles.buttons) {
-                return {};
+export const createButton = (params: CreateButtonParams = {}) => {
+    const LinkComponent = params?.linkComponent || DefaultLinkComponent;
+
+    return createRenderer<Props>(
+        props => {
+            const { getStyles } = usePageElements();
+            const { getElement } = useRenderer();
+            const element = getElement<ButtonElementData>();
+            const { link, icon } = element.data;
+
+            const buttonText = props.buttonText || element.data.buttonText;
+            const action = props.action || element.data.action;
+
+            let buttonInnerContent = <ButtonText text={buttonText} />;
+
+            let StyledButtonBody = ButtonBody,
+                StyledButtonIcon;
+
+            if (icon && icon.svg) {
+                const { position = "left", color } = icon;
+
+                StyledButtonBody = styled(StyledButtonBody)({
+                    display: "flex",
+                    ...ICON_POSITION_FLEX_DIRECTION[position]
+                });
+
+                StyledButtonIcon = styled(ButtonIcon)(
+                    {
+                        width: icon.width,
+                        ...ICON_POSITION_MARGIN[position]
+                    },
+                    getStyles(theme => {
+                        const themeColor = theme.styles.colors?.[color];
+                        return {
+                            color: themeColor || color
+                        };
+                    })
+                );
+
+                buttonInnerContent = (
+                    <>
+                        <StyledButtonIcon svg={icon.svg} />
+                        {buttonInnerContent}
+                    </>
+                );
             }
 
-            const value = theme.styles.buttons[type];
+            const linkActions = ["link", "scrollToElement"];
+            if (link?.href || linkActions.includes(action?.actionType)) {
+                const href = link?.href || action?.href;
+                const newTab = link?.newTab || action?.newTab;
 
-            return value;
-        });
-        const elementClassNames = getElementClassNames(element);
+                return (
+                    <LinkComponent href={href} target={newTab ? "_blank" : "_self"}>
+                        <StyledButtonBody>{buttonInnerContent}</StyledButtonBody>
+                    </LinkComponent>
+                );
+            }
 
-        const classNames = combineClassNames(themeClassNames, elementClassNames);
+            let clickHandler: ButtonClickHandler["handler"] | undefined;
+            if (action?.clickHandler) {
+                let clickHandlers: Array<ButtonClickHandler> = [];
+                if (params?.clickHandlers) {
+                    if (typeof params.clickHandlers === "function") {
+                        clickHandlers = params.clickHandlers();
+                    } else {
+                        clickHandlers = params.clickHandlers;
+                    }
+                }
 
-        return (
-            <pb-button class={classNames}>
-                <LinkComponent {...link}>
-                    {icon && <pb-button-icon dangerouslySetInnerHTML={{ __html: icon.svg }} />}
-                    <pb-button-text>{buttonText}</pb-button-text>
-                </LinkComponent>
-            </pb-button>
-        );
-    };
+                clickHandler = clickHandlers?.find(
+                    item => item.id === action?.clickHandler
+                )?.handler;
+            }
+
+            return (
+                <StyledButtonBody
+                    onClick={() => clickHandler?.({ variables: element.data.action.variables! })}
+                >
+                    {buttonInnerContent}
+                </StyledButtonBody>
+            );
+        },
+        {
+            themeStyles({ theme, element }) {
+                const { type } = element.data;
+                return theme.styles.elements?.button[type];
+            },
+            propsAreEqual: (prevProps: Props, nextProps: Props) => {
+                return (
+                    prevProps.buttonText === nextProps.buttonText &&
+                    prevProps.action === nextProps.action
+                );
+            }
+        }
+    );
 };

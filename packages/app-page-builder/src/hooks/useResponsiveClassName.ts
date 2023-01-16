@@ -8,6 +8,8 @@ interface UseResponsiveClassName {
     pageElementRef: (node: HTMLElement | null) => void;
     responsiveClassName: string;
 }
+
+// @deprecation-warning pb-legacy-rendering-engine
 const useResponsiveClassName = (): UseResponsiveClassName => {
     const {
         responsiveDisplayMode: { displayMode, setDisplayMode }

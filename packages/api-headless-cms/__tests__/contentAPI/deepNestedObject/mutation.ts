@@ -280,8 +280,8 @@ export const createCarsMutation = () => {
 
 export const createInitializeModelMutation = () => {
     return `
-        mutation InitializeModelMutation($modelId: ID!) {
-            initializeModel(modelId: $modelId) {
+        mutation InitializeModelMutation($modelId: ID!, $data: JSON) {
+            initializeModel(modelId: $modelId, data: $data) {
                 data
                 error {
                     message

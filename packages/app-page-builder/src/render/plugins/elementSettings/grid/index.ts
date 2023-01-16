@@ -23,6 +23,13 @@ export default {
             if (flexDirection === "column" || flexDirection === "column-reverse") {
                 style[`--${kebabCase(displayMode)}-cell-width`] = "100%";
             }
+            // For backward compatibility
+            if (
+                (displayMode === "mobile-landscape" || displayMode === "mobile-portrait") &&
+                flexDirection === "unset"
+            ) {
+                style[`--${kebabCase(displayMode)}-cell-width`] = "100%";
+            }
         });
 
         return style;

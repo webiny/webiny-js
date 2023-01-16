@@ -1,5 +1,5 @@
 import { ElementStylesModifier } from "~/types";
-import { CSSObject } from "@emotion/css";
+import { type CSSObject } from "@emotion/core";
 
 const text: ElementStylesModifier = ({ element, theme }) => {
     const { text } = element.data || {};
@@ -16,15 +16,21 @@ const text: ElementStylesModifier = ({ element, theme }) => {
         const values = text[breakpointName];
 
         let breakpointStyles: CSSObject = {};
-        if (theme.styles && theme.styles.typography) {
-            breakpointStyles = {
-                ...theme.styles.typography[values.typography]
-            };
+
+        const typographyStyles = theme?.styles?.typography?.[values.typography];
+        if (typographyStyles) {
+            breakpointStyles = { ...typographyStyles };
         }
 
         if (values.color) {
-            breakpointStyles.color = values.color;
+            let color = values.color;
+            if (theme.styles.colors?.[color]) {
+                color = theme.styles.colors?.[color];
+            }
+
+            breakpointStyles.color = color;
         }
+
         if (values.alignment) {
             breakpointStyles.textAlign = values.alignment;
         }
