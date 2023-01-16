@@ -6,7 +6,7 @@ import mdbid from "mdbid";
 import WebinyError from "@webiny/error";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { createTopic } from "@webiny/pubsub";
-import joi from "joi";
+import zod from "zod";
 
 import {
     FoldersConfig,
@@ -25,17 +25,13 @@ import {
     OnLinkBeforeUpdateTopicParams
 } from "~/types";
 
-const requiredString = joi.string().required();
-
-const createSchema = joi.object({
-    id: requiredString,
-    folderId: requiredString,
-    tenant: requiredString,
-    locale: requiredString
+const createSchema = zod.object({
+    id: zod.string(),
+    folderId: zod.string()
 });
 
-const updateSchema = joi.object({
-    folderId: requiredString
+const updateSchema = zod.object({
+    folderId: zod.string()
 });
 
 export const createLinksContext = async ({
@@ -123,7 +119,7 @@ export const createLinksContext = async ({
         },
 
         async createLink(input: LinkInput): Promise<Link> {
-            await createSchema.validate(input);
+            const data = await createSchema.parseAsync(input);
 
             const tenant = getTenantId();
             const locale = getLocaleCode();
@@ -131,8 +127,8 @@ export const createLinksContext = async ({
             const existing = await storageOperations.getLink({
                 tenant,
                 locale,
-                folderId: input.folderId,
-                id: input.id
+                folderId: data.folderId,
+                id: data.id
             });
 
             if (existing) {
@@ -143,9 +139,9 @@ export const createLinksContext = async ({
 
             const link: Link = {
                 linkId: mdbid(),
+                ...data,
                 tenant,
                 locale,
-                ...input,
                 webinyVersion: process.env.WEBINY_VERSION as string,
                 createdOn: new Date().toISOString(),
                 createdBy: {
@@ -183,11 +179,11 @@ export const createLinksContext = async ({
                 throw new NotFoundError(`Link "${id}" was not found!`);
             }
 
-            await updateSchema.validate(input);
+            const data = await updateSchema.parseAsync(input);
 
             const link: Link = {
                 ...original,
-                ...input
+                ...data
             };
 
             try {

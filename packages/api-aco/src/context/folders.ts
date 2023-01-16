@@ -6,12 +6,13 @@ import mdbid from "mdbid";
 import WebinyError from "@webiny/error";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { createTopic } from "@webiny/pubsub";
-import joi from "joi";
+import zod from "zod";
 
 import {
     Folder,
     FolderInput,
     FoldersConfig,
+    FolderUpdateInput,
     GetFolderParams,
     IFolders,
     ListFoldersParams,
@@ -23,19 +24,17 @@ import {
     OnFolderBeforeUpdateTopicParams
 } from "~/types";
 
-const requiredString = joi.string().required();
-
-const createSchema = joi.object({
-    name: requiredString.min(3),
-    slug: requiredString.min(3),
-    type: requiredString,
-    tenant: requiredString,
-    locale: requiredString
+const createSchema = zod.object({
+    name: zod.string().min(3),
+    slug: zod.string().min(3),
+    type: zod.string(),
+    parentId: zod.string().optional().nullable()
 });
 
-const updateSchema = joi.object({
-    name: requiredString.min(3),
-    slug: requiredString.min(3)
+const updateSchema = zod.object({
+    name: zod.string().min(3).optional(),
+    slug: zod.string().min(3).optional(),
+    parentId: zod.string().optional().nullable()
 });
 
 export const createFoldersContext = async ({
@@ -113,18 +112,18 @@ export const createFoldersContext = async ({
         },
 
         async createFolder(input: FolderInput): Promise<Folder> {
-            await createSchema.validate(input);
+            const data = await createSchema.parseAsync(input);
 
             const tenant = getTenantId();
             const locale = getLocaleCode();
-            const { type, slug, parentId } = input;
+            const { type, slug, parentId } = data;
 
             const existing = await storageOperations.getFolder({
                 tenant,
                 locale,
                 type,
                 slug,
-                parentId
+                parentId: parentId || undefined
             });
 
             if (existing) {
@@ -137,10 +136,11 @@ export const createFoldersContext = async ({
             const identity = getIdentity();
 
             const folder: Folder = {
+                ...data,
+                parentId: parentId || undefined,
                 id: mdbid(),
                 tenant,
                 locale,
-                ...input,
                 webinyVersion: process.env.WEBINY_VERSION as string,
                 createdOn: new Date().toISOString(),
                 createdBy: {
@@ -163,17 +163,19 @@ export const createFoldersContext = async ({
                 throw WebinyError.from(error, {
                     message: "Could not create folder.",
                     code: "CREATE_FOLDER_ERROR",
-                    data: { ...input }
+                    data: {
+                        ...data
+                    }
                 });
             }
         },
 
-        async updateFolder(id: string, input: Record<string, any>): Promise<Folder> {
-            await updateSchema.validate(input);
+        async updateFolder(id: string, input: FolderUpdateInput): Promise<Folder> {
+            const data = await updateSchema.parseAsync(input);
 
             const tenant = getTenantId();
             const locale = getLocaleCode();
-            const { slug, parentId } = input;
+            const { slug, parentId } = data;
 
             const original = await storageOperations.getFolder({ tenant, locale, id });
 
@@ -199,7 +201,8 @@ export const createFoldersContext = async ({
 
             const folder: Folder = {
                 ...original,
-                ...input
+                ...data,
+                parentId: parentId || undefined
             };
             try {
                 await onFolderBeforeUpdate.publish({
