@@ -1,9 +1,11 @@
 import { createSetupForPageContentReview } from "../utils/helpers";
-import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
+import { useGraphQlHandler } from "~tests/utils/useGraphQlHandler";
 import { mocks as changeRequestMock, richTextMock } from "./mocks/changeRequest";
 
 describe(`Delete "content review" and associated "change requests" and "comments"`, () => {
-    const gqlHandler = usePageBuilderHandler();
+    const gqlHandler = useGraphQlHandler({
+        path: "/graphql"
+    });
     const {
         createContentReviewMutation,
         getContentReviewQuery,

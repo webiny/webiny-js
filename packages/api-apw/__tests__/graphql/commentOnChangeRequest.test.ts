@@ -1,6 +1,6 @@
 import { mocks as changeRequestMock } from "./mocks/changeRequest";
 import { createPageContentReviewSetup } from "../utils/helpers";
-import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
+import { useGraphQlHandler } from "~tests/utils/useGraphQlHandler";
 
 const richTextMock = [
     {
@@ -41,7 +41,9 @@ const expectedComment = expect.objectContaining({
 });
 
 describe("Comment on a change request test", () => {
-    const gqlHandler = usePageBuilderHandler();
+    const gqlHandler = useGraphQlHandler({
+        path: "/graphql"
+    });
 
     const {
         createChangeRequestMutation,

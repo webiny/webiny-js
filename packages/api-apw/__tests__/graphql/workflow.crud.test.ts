@@ -1,5 +1,5 @@
 import { ApwWorkflowApplications, ApwWorkflowStepTypes } from "~/types";
-import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
+import { useGraphQlHandler } from "~tests/utils/useGraphQlHandler";
 import mocks from "./mocks/workflows";
 
 describe("Workflow crud test", () => {
@@ -12,7 +12,9 @@ describe("Workflow crud test", () => {
         securityIdentity,
         reviewer: reviewerGQL,
         until
-    } = usePageBuilderHandler();
+    } = useGraphQlHandler({
+        path: "/graphql"
+    });
 
     const login = async () => {
         await securityIdentity.login();
@@ -384,7 +386,8 @@ describe("Workflow crud test", () => {
      * List and get are always available.
      */
     it("should not be possible to access create, update and delete workflow methods", async () => {
-        const noAccessHandler = usePageBuilderHandler({
+        const noAccessHandler = useGraphQlHandler({
+            path: "/graphql",
             permissions: []
         });
         const reviewer = await setupReviewer();
@@ -493,7 +496,8 @@ describe("Workflow crud test", () => {
      * With this test we need to make sure that even the person with no apw permissions can access the list and get workflow methods.
      */
     it("should be possible to access get and list methods", async () => {
-        const noAccessHandler = usePageBuilderHandler({
+        const noAccessHandler = useGraphQlHandler({
+            path: "/graphql",
             permissions: []
         });
         const reviewer = await setupReviewer();

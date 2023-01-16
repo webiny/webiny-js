@@ -67,6 +67,15 @@ import {
 } from "./graphql/changeRequest";
 import { contextCommon, contextSecurity } from "./context";
 import { createDummyTransport, createTransport } from "@webiny/api-mailer";
+import { CREATE_CONTENT_MODEL_GROUP_MUTATION } from "~tests/utils/graphql/cms.group";
+import { CREATE_CONTENT_MODEL_MUTATION } from "~tests/utils/graphql/cms.model";
+import { CmsModel } from "@webiny/api-headless-cms/types";
+import {
+    contentEntryCreateFromMutationFactory,
+    contentEntryCreateMutationFactory,
+    contentEntryGetQueryFactory,
+    contentEntryUpdateMutationFactory
+} from "~tests/utils/graphql/cms.entry";
 
 export interface GQLHandlerCallableParams {
     setupTenancyAndSecurityGraphQL?: boolean;
@@ -74,6 +83,7 @@ export interface GQLHandlerCallableParams {
     identity?: SecurityIdentity;
     plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     storageOperationPlugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
+    path: `/cms/manage/${string}` | `/cms/preview/${string}` | `/cms/read/${string}` | "/graphql";
 }
 
 export interface InvokeParams {
@@ -85,6 +95,20 @@ export interface InvokeParams {
     headers?: Record<string, string>;
 }
 
+const validateIsCmsPath = (params: GQLHandlerCallableParams): void => {
+    if (params.path.match("^/cms/") !== null) {
+        return;
+    }
+    throw new Error(`Path is not a CMS path: ${params.path}`);
+};
+
+const validateIsCoreGraphQlPath = (params: GQLHandlerCallableParams): void => {
+    if (params.path.match("^/graphql$") !== null) {
+        return;
+    }
+    throw new Error(`Path is not a Core GraphQL path: ${params.path}`);
+};
+
 const documentClient = new DocumentClient({
     convertEmptyValues: true,
     endpoint: process.env.MOCK_DYNAMODB_ENDPOINT || "http://localhost:8001",
@@ -94,7 +118,7 @@ const documentClient = new DocumentClient({
     secretAccessKey: "test"
 });
 
-export const createPageBuilderGQLHandler = (params: GQLHandlerCallableParams) => {
+export const createGraphQlHandler = (params: GQLHandlerCallableParams) => {
     const ops = getStorageOperations({
         plugins: params.storageOperationPlugins || [],
         documentClient
@@ -134,7 +158,8 @@ export const createPageBuilderGQLHandler = (params: GQLHandlerCallableParams) =>
             new CmsParametersPlugin(async context => {
                 const locale = context.i18n.getContentLocale()?.code || "en-US";
                 return {
-                    type: "read",
+                    // @ts-ignore
+                    type: context.request?.params?.type || "read",
                     locale
                 };
             }),
@@ -172,7 +197,7 @@ export const createPageBuilderGQLHandler = (params: GQLHandlerCallableParams) =>
     const invoke = async ({ httpMethod = "POST", body, headers = {}, ...rest }: InvokeParams) => {
         const response = await handler(
             {
-                path: "/graphql",
+                path: params.path,
                 httpMethod,
                 headers: {
                     ["x-tenant"]: "root",
@@ -207,6 +232,7 @@ export const createPageBuilderGQLHandler = (params: GQLHandlerCallableParams) =>
     };
 
     return {
+        params,
         until,
         sleep,
         handler,
@@ -218,105 +244,194 @@ export const createPageBuilderGQLHandler = (params: GQLHandlerCallableParams) =>
         },
         // Workflow
         async getWorkflowQuery(variables: Record<string, any>) {
+            validateIsCoreGraphQlPath(params);
             return invoke({ body: { query: GET_WORKFLOW_QUERY, variables } });
         },
         async listWorkflowsQuery(variables: Record<string, any> = {}) {
+            validateIsCoreGraphQlPath(params);
             return invoke({ body: { query: LIST_WORKFLOWS_QUERY, variables } });
         },
         async createWorkflowMutation(variables: Record<string, any>) {
+            validateIsCoreGraphQlPath(params);
             return invoke({ body: { query: CREATE_WORKFLOW_MUTATION, variables } });
         },
         async updateWorkflowMutation(variables: Record<string, any>) {
+            validateIsCoreGraphQlPath(params);
             return invoke({ body: { query: UPDATE_WORKFLOW_MUTATION, variables } });
         },
         async deleteWorkflowMutation(variables: Record<string, any>) {
+            validateIsCoreGraphQlPath(params);
             return invoke({ body: { query: DELETE_WORKFLOW_MUTATION, variables } });
         },
         // Comment
         async getCommentQuery(variables: Record<string, any>) {
+            validateIsCoreGraphQlPath(params);
             return invoke({ body: { query: GET_COMMENT_QUERY, variables } });
         },
         async listCommentsQuery(variables: Record<string, any>) {
+            validateIsCoreGraphQlPath(params);
             return invoke({ body: { query: LIST_COMMENTS_QUERY, variables } });
         },
         async createCommentMutation(variables: Record<string, any>) {
+            validateIsCoreGraphQlPath(params);
             return invoke({ body: { query: CREATE_COMMENT_MUTATION, variables } });
         },
         async updateCommentMutation(variables: Record<string, any>) {
+            validateIsCoreGraphQlPath(params);
             return invoke({ body: { query: UPDATE_COMMENT_MUTATION, variables } });
         },
         async deleteCommentMutation(variables: Record<string, any>) {
+            validateIsCoreGraphQlPath(params);
             return invoke({ body: { query: DELETE_COMMENT_MUTATION, variables } });
         },
         // Change Requested
         async getChangeRequestQuery(variables: Record<string, any>) {
+            validateIsCoreGraphQlPath(params);
             return invoke({ body: { query: GET_CHANGE_REQUEST_QUERY, variables } });
         },
         async listChangeRequestsQuery(variables: Record<string, any>) {
+            validateIsCoreGraphQlPath(params);
             return invoke({ body: { query: LIST_CHANGES_REQUESTED_QUERY, variables } });
         },
         async createChangeRequestMutation(variables: Record<string, any>) {
+            validateIsCoreGraphQlPath(params);
             return invoke({ body: { query: CREATE_CHANGE_REQUEST_MUTATION, variables } });
         },
         async updateChangeRequestMutation(variables: Record<string, any>) {
+            validateIsCoreGraphQlPath(params);
             return invoke({ body: { query: UPDATE_CHANGE_REQUEST_MUTATION, variables } });
         },
         async deleteChangeRequestMutation(variables: Record<string, any>) {
+            validateIsCoreGraphQlPath(params);
             return invoke({ body: { query: DELETE_CHANGE_REQUEST_MUTATION, variables } });
         },
         // Categories
         async getCategory(variables: Record<string, any>) {
+            validateIsCoreGraphQlPath(params);
             return invoke({ body: { query: GET_CATEGORY, variables } });
         },
         async createCategory(variables: Record<string, any>) {
+            validateIsCoreGraphQlPath(params);
             return invoke({ body: { query: CREATE_CATEGORY, variables } });
         },
         // Pages
         async createPage(variables: Record<string, any>) {
+            validateIsCoreGraphQlPath(params);
             return invoke({ body: { query: CREATE_PAGE, variables } });
         },
         async updatePage(variables: Record<string, any>) {
+            validateIsCoreGraphQlPath(params);
             return invoke({ body: { query: UPDATE_PAGE, variables } });
         },
         async publishPage(variables: Record<string, any>) {
+            validateIsCoreGraphQlPath(params);
             return invoke({ body: { query: PUBLISH_PAGE, variables } });
         },
         async getPageQuery(variables: Record<string, any>) {
+            validateIsCoreGraphQlPath(params);
             return invoke({ body: { query: GET_PAGE, variables } });
         },
         async deletePageMutation(variables: Record<string, any>) {
+            validateIsCoreGraphQlPath(params);
             return invoke({ body: { query: DELETE_PAGE, variables } });
         },
         // Content Review
         async isReviewRequiredQuery(variables: Record<string, any>) {
+            validateIsCoreGraphQlPath(params);
             return invoke({ body: { query: IS_REVIEW_REQUIRED_QUERY, variables } });
         },
         async getContentReviewQuery(variables: Record<string, any>) {
+            validateIsCoreGraphQlPath(params);
             return invoke({ body: { query: GET_CONTENT_REVIEW_QUERY, variables } });
         },
         async listContentReviewsQuery(variables: Record<string, any>) {
+            validateIsCoreGraphQlPath(params);
             return invoke({ body: { query: LIST_CONTENT_REVIEWS_QUERY, variables } });
         },
         async createContentReviewMutation(variables: Record<string, any>) {
+            validateIsCoreGraphQlPath(params);
             return invoke({ body: { query: CREATE_CONTENT_REVIEW_MUTATION, variables } });
         },
         async deleteContentReviewMutation(variables: Record<string, any>) {
+            validateIsCoreGraphQlPath(params);
             return invoke({ body: { query: DELETE_CONTENT_REVIEW_MUTATION, variables } });
         },
         async provideSignOffMutation(variables: Record<string, any>) {
+            validateIsCoreGraphQlPath(params);
             return invoke({ body: { query: PROVIDE_SIGN_OFF_MUTATION, variables } });
         },
         async retractSignOffMutation(variables: Record<string, any>) {
+            validateIsCoreGraphQlPath(params);
             return invoke({ body: { query: RETRACT_SIGN_OFF_MUTATION, variables } });
         },
         async publishContentMutation(variables: Record<string, any>) {
+            validateIsCoreGraphQlPath(params);
             return invoke({ body: { query: PUBLISH_CONTENT_MUTATION, variables } });
         },
         async unpublishContentMutation(variables: Record<string, any>) {
+            validateIsCoreGraphQlPath(params);
             return invoke({ body: { query: UNPUBLISH_CONTENT_MUTATION, variables } });
         },
         async deleteScheduledActionMutation(variables: Record<string, any>) {
+            validateIsCoreGraphQlPath(params);
             return invoke({ body: { query: DELETE_SCHEDULED_ACTION_MUTATION, variables } });
+        },
+        /**
+         * Headless CMS
+         */
+        async createContentModelGroupMutation(variables: Record<string, any>) {
+            validateIsCmsPath(params);
+            return invoke({
+                body: {
+                    query: CREATE_CONTENT_MODEL_GROUP_MUTATION,
+                    variables
+                }
+            });
+        },
+        async createContentModelMutation(variables: Record<string, any>) {
+            validateIsCmsPath(params);
+            return invoke({
+                body: {
+                    query: CREATE_CONTENT_MODEL_MUTATION,
+                    variables
+                }
+            });
+        },
+        async createContentEntryMutation(model: CmsModel, variables: Record<string, any>) {
+            validateIsCmsPath(params);
+            return invoke({
+                body: {
+                    query: contentEntryCreateMutationFactory(model),
+                    variables
+                }
+            });
+        },
+        async updateContentEntryMutation(model: CmsModel, variables: Record<string, any>) {
+            validateIsCmsPath(params);
+            return invoke({
+                body: {
+                    query: contentEntryUpdateMutationFactory(model),
+                    variables
+                }
+            });
+        },
+        async createContentEntryFromMutation(model: CmsModel, variables: Record<string, any>) {
+            validateIsCmsPath(params);
+            return invoke({
+                body: {
+                    query: contentEntryCreateFromMutationFactory(model),
+                    variables
+                }
+            });
+        },
+        async getContentEntryQuery(model: CmsModel, variables: Record<string, any>) {
+            validateIsCmsPath(params);
+            return invoke({
+                body: {
+                    query: contentEntryGetQueryFactory(model),
+                    variables
+                }
+            });
         }
     };
 };
