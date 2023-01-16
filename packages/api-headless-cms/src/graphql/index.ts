@@ -1,9 +1,11 @@
 import { createSystemSchemaPlugin } from "./system";
 import { graphQLHandlerFactory, GraphQLHandlerFactoryParams } from "./graphQLHandlerFactory";
 import { CmsGraphQLSchemaPlugin } from "~/plugins";
+import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
+import { CmsContext } from "~/types";
 
-const createBaseSchema = (): CmsGraphQLSchemaPlugin => {
-    const plugin = new CmsGraphQLSchemaPlugin({
+const createBaseSchema = (): GraphQLSchemaPlugin<CmsContext>[] => {
+    const cmsPlugin = new CmsGraphQLSchemaPlugin({
         typeDefs: /* GraphQL */ `
             type CmsError {
                 code: String
@@ -35,8 +37,16 @@ const createBaseSchema = (): CmsGraphQLSchemaPlugin => {
         `,
         resolvers: {}
     });
-    plugin.name = "cms.graphql.schema.base";
-    return plugin;
+    cmsPlugin.name = "graphql.cms.schema.base";
+    const corePlugin = new GraphQLSchemaPlugin({
+        typeDefs: cmsPlugin.schema.typeDefs,
+        resolvers: cmsPlugin.schema.resolvers
+    });
+    corePlugin.name = "graphql.cms.core.schema.base";
+    /**
+     * Due to splitting of CMS and Core schema plugins, we must have both defined for CMS to work.
+     */
+    return [cmsPlugin, corePlugin];
 };
 
 export type CreateGraphQLParams = GraphQLHandlerFactoryParams;

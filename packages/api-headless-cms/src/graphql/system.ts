@@ -1,11 +1,10 @@
-import { ErrorResponse, Response } from "@webiny/handler-graphql";
+import { ErrorResponse, GraphQLSchemaPlugin, Response } from "@webiny/handler-graphql";
 import { CmsContext } from "~/types";
 import { ContextPlugin } from "@webiny/api";
-import { CmsGraphQLSchemaPlugin } from "~/plugins";
 
 const emptyResolver = () => ({});
 
-const plugin = new CmsGraphQLSchemaPlugin({
+const plugin = new GraphQLSchemaPlugin({
     typeDefs: /* GraphQL */ `
         extend type Query {
             cms: CmsQuery

@@ -52,9 +52,8 @@ export const createGraphQLSchema = (context: Context) => {
         }
     ];
 
-    const gqlPlugins = context.plugins.byType<GraphQLSchemaPlugin>("graphql-schema");
-    for (let i = 0; i < gqlPlugins.length; i++) {
-        const plugin = gqlPlugins[i];
+    const plugins = context.plugins.byType<GraphQLSchemaPlugin>("graphql-schema");
+    for (const plugin of plugins) {
         /**
          * TODO @ts-refactor
          * Figure out correct types on typeDefs and resolvers
