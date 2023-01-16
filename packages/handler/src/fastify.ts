@@ -289,9 +289,9 @@ export const createHandler = (params: CreateHandlerParams) => {
              */
             console.log(
                 JSON.stringify({
-                    message: `Output was already sent. Please check user defined the "HandlerOnRequestPlugin" for reply end.`,
+                    message: `Output was already sent. Please check custom plugins of type "HandlerOnRequestPlugin".`,
                     explanation:
-                        "This error can happen if users plugin ended the reply but did not return false as response."
+                        "This error can happen if the user plugin ended the reply, but did not return false as response."
                 })
             );
             return;

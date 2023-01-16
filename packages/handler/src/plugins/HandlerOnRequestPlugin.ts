@@ -21,9 +21,7 @@ export class HandlerOnRequestPlugin extends Plugin {
         super();
         this.cb = cb;
     }
-    /**
-     *
-     */
+
     public async exec(
         request: FastifyRequest,
         reply: FastifyReply
