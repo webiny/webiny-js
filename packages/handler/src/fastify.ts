@@ -17,6 +17,7 @@ import { BeforeHandlerPlugin } from "./plugins/BeforeHandlerPlugin";
 import { HandlerResultPlugin } from "./plugins/HandlerResultPlugin";
 import { HandlerErrorPlugin } from "./plugins/HandlerErrorPlugin";
 import { ModifyFastifyPlugin } from "~/plugins/ModifyFastifyPlugin";
+import { HandlerOnRequestPlugin } from "~/plugins/HandlerOnRequestPlugin";
 
 const DEFAULT_HEADERS: Record<string, string> = {
     "Cache-Control": "no-store",
@@ -257,9 +258,43 @@ export const createHandler = (params: CreateHandlerParams) => {
      * Also, if it is an options request, we skip everything after this hook and output options headers.
      */
     app.addHook("onRequest", async (request, reply) => {
+        /**
+         * Our default headers are always set. Users can override them.
+         */
         const defaultHeaders = getDefaultHeaders(definedRoutes);
         reply.headers(defaultHeaders);
+        /**
+         * Users can define their own custom handlers for the onRequest event - so let's run them first.
+         */
+        const plugins = app.webiny.plugins.byType<HandlerOnRequestPlugin>(
+            HandlerOnRequestPlugin.type
+        );
+        for (const plugin of plugins) {
+            const result = await plugin.exec(request, reply);
+            if (result === false) {
+                return;
+            }
+        }
+        /**
+         * When we receive the OPTIONS request, we end it before it goes any further as there is no need for anything to run after this - at least for our use cases.
+         *
+         * Users can prevent this by creating their own HandlerOnRequestPlugin and returning false as the result of the callable.
+         */
         if (request.method !== "OPTIONS") {
+            return;
+        }
+
+        if (reply.sent) {
+            /**
+             * At this point throwing an exception will not do anything with the response. So just log it.
+             */
+            console.log(
+                JSON.stringify({
+                    message: `Output was already sent. Please check custom plugins of type "HandlerOnRequestPlugin".`,
+                    explanation:
+                        "This error can happen if the user plugin ended the reply, but did not return false as response."
+                })
+            );
             return;
         }
         const raw = reply.code(204).hijack().raw;
