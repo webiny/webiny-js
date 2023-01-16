@@ -40,6 +40,7 @@ import * as GQLCache from "~/admin/views/Pages/cache";
 import { ReactComponent as FileUploadIcon } from "~/editor/plugins/defaultBar/components/icons/file_upload.svg";
 import useImportPageDialog from "~/editor/plugins/defaultBar/components/ImportButton/page/useImportPageDialog";
 import { useMultiSelect } from "~/admin/views/Pages/hooks/useMultiSelect";
+import { OptionsMenu } from "~/admin/components/OptionsMenu";
 import { ExportPagesButton } from "~/editor/plugins/defaultBar/components/ExportPageButton";
 import { PbCategory } from "~/types";
 
@@ -58,13 +59,13 @@ const InlineLoaderWrapper = styled("div")({
     height: 40,
     backgroundColor: "var(--mdc-theme-surface)"
 });
-const Actions = styled("div")({
-    display: "flex",
-    justifyContent: "flex-end",
-    "& button:not(:first-of-type)": {
-        marginLeft: 16
-    }
-});
+
+const DataListActionsWrapper = styled.div`
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+`;
+
 interface Sorter {
     label: string;
     sort: string;
@@ -270,14 +271,21 @@ const PagesDataList: React.FC<PagesDataListProps> = ({ onCreatePage, canCreate, 
             return null;
         }
         return (
-            <Actions>
-                <ButtonSecondary data-testid="import-page-button" onClick={onImportPage}>
-                    <ButtonIcon icon={<FileUploadIcon />} /> {t`Import Page`}
-                </ButtonSecondary>
+            <DataListActionsWrapper>
                 <ButtonSecondary data-testid="new-record-button" onClick={onCreatePage}>
                     <ButtonIcon icon={<AddIcon />} /> {t`New Page`}
                 </ButtonSecondary>
-            </Actions>
+                <OptionsMenu
+                    items={[
+                        {
+                            label: "Import Pages",
+                            icon: <FileUploadIcon />,
+                            onClick: onImportPage,
+                            "data-testid": "import-page-button"
+                        }
+                    ]}
+                />
+            </DataListActionsWrapper>
         );
     }, [canCreate, showImportPageDialog]);
 
