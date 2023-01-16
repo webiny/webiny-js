@@ -17,7 +17,10 @@ const EmptyCell = styled.div<{ isActive: boolean }>`
     display: flex;
     justify-content: center;
     width: 100%;
-    border: 1px dashed var(--mdc-theme-secondary);
+    border: ${props =>
+        props.isActive
+            ? "1px dashed var(--mdc-theme-primary)"
+            : "1px dashed var(--mdc-theme-secondary)"};
     align-items: center;
 
     button {
