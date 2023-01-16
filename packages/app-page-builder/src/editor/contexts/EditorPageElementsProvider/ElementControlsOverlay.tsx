@@ -50,7 +50,6 @@ export const ElementControlsOverlay: React.FC<Props> = props => {
             isHighlighted={isHighlighted}
             element={element}
             elementRendererMeta={meta}
-            className={isActive ? "active" : ""}
             onClick={() => {
                 updateEditorElement(element => ({ ...element, isHighlighted: false }));
                 setActiveElementId(element.id)
