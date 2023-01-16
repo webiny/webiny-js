@@ -32,6 +32,7 @@ import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18
 import { ReactComponent as DownloadFileIcon } from "~/editor/plugins/defaultBar/components/icons/file_download.svg";
 import { ReactComponent as UploadFileIcon } from "~/editor/plugins/defaultBar/components/icons/file_upload.svg";
 import { Icon } from "~/admin/utils/createBlockCategoryPlugin";
+import { OptionsMenu } from "~/admin/components/OptionsMenu";
 
 import { PbBlockCategory, PbPageBlock } from "~/types";
 import { LIST_PAGE_BLOCKS_AND_CATEGORIES, LIST_PAGE_BLOCKS, CREATE_PAGE_BLOCK } from "./graphql";
@@ -58,10 +59,7 @@ const noRecordsWrapper = css`
 const DataListActionsWrapper = styled.div`
     display: flex;
     justify-content: flex-end;
-
-    & button {
-        margin-left: 8px;
-    }
+    align-items: center;
 `;
 
 enum Operation {
@@ -256,17 +254,26 @@ const BlocksByCategoriesDataList = ({ canCreate }: PageBuilderBlocksByCategories
                 data={categoryList}
                 actions={
                     <DataListActionsWrapper>
-                        <ButtonSecondary onClick={handleImportClick}>
-                            <ButtonIcon icon={<UploadFileIcon />} /> {t`Import`}
-                        </ButtonSecondary>
-                        <ButtonSecondary onClick={handleExportClick}>
-                            <ButtonIcon icon={<DownloadFileIcon />} /> {t`Export`}
-                        </ButtonSecondary>
                         {canCreate ? (
                             <ButtonSecondary onClick={handleNewBlockClick}>
                                 <ButtonIcon icon={<AddIcon />} /> {t`New Block`}
                             </ButtonSecondary>
                         ) : null}
+                        <OptionsMenu
+                            data-testid="pb-blocks-list-options-menu"
+                            items={[
+                                {
+                                    label: "Import blocks",
+                                    icon: <UploadFileIcon />,
+                                    onClick: handleImportClick
+                                },
+                                {
+                                    label: "Export blocks",
+                                    icon: <DownloadFileIcon />,
+                                    onClick: handleExportClick
+                                }
+                            ]}
+                        />
                     </DataListActionsWrapper>
                 }
                 search={
