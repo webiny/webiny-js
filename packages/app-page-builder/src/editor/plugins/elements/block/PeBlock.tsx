@@ -65,7 +65,14 @@ const PeBlock = createRenderer(
 
         const childrenElements = elementWithChildren?.elements;
         if (Array.isArray(childrenElements) && childrenElements.length > 0) {
-            return <Elements element={elementWithChildren} />;
+            return (
+                <>
+                    <Elements element={elementWithChildren} />
+                    {element.data.blockId && (
+                        <ps-tag data-key={"pb-page-block"} data-value={element.data.blockId} />
+                    )}
+                </>
+            );
         }
 
         const { id, path, type } = element;
