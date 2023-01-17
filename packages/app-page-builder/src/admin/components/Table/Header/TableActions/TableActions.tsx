@@ -3,8 +3,9 @@ import useExportPageRevisionSelectorDialog from "~/editor/plugins/defaultBar/com
 import useExportPageDialog from "~/editor/plugins/defaultBar/components/ExportPageButton/useExportPageDialog";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { IconButton } from "@webiny/ui/Button";
-import { ReactComponent as Download } from "@material-design-icons/svg/outlined/download.svg";
+import { ReactComponent as Download } from "@material-design-icons/svg/outlined/file_download.svg";
 import { i18n } from "@webiny/app/i18n";
+import styled from "@emotion/styled";
 
 const t = i18n.ns("app-page-builder/admin/views/pages/table/header/buttons/export");
 
@@ -12,11 +13,13 @@ export interface TableActionsProps {
     selected: string[];
 }
 
+const Container = styled("div")`
+    margin-right: 8px;
+`;
+
 export const TableActions = ({ selected }: TableActionsProps): ReactElement => {
     const { showExportPageRevisionSelectorDialog } = useExportPageRevisionSelectorDialog();
     const { showExportPageInitializeDialog } = useExportPageDialog();
-
-    console.log("selected", selected);
 
     const renderExportPagesTooltip = (selected: string[]) => {
         const count = selected.length;
@@ -30,23 +33,25 @@ export const TableActions = ({ selected }: TableActionsProps): ReactElement => {
     };
 
     return (
-        <Tooltip content={renderExportPagesTooltip(selected)} placement={"bottom"}>
-            <IconButton
-                data-testid={"export-page-button"}
-                icon={<Download />}
-                onClick={() => {
-                    showExportPageRevisionSelectorDialog({
-                        onAccept: () =>
-                            showExportPageInitializeDialog({
-                                ids: selected,
-                                where: {},
-                                sort: "createdOn_DESC",
-                                search: { query: "" }
-                            }),
-                        selected
-                    });
-                }}
-            />
-        </Tooltip>
+        <Container>
+            <Tooltip content={renderExportPagesTooltip(selected)} placement={"bottom"}>
+                <IconButton
+                    data-testid={"export-page-button"}
+                    icon={<Download />}
+                    onClick={() => {
+                        showExportPageRevisionSelectorDialog({
+                            onAccept: () =>
+                                showExportPageInitializeDialog({
+                                    ids: selected,
+                                    where: {},
+                                    sort: "createdOn_DESC",
+                                    search: { query: "" }
+                                }),
+                            selected
+                        });
+                    }}
+                />
+            </Tooltip>
+        </Container>
     );
 };

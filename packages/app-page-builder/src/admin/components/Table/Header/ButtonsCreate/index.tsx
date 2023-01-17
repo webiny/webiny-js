@@ -5,17 +5,20 @@ import { ButtonIcon, ButtonPrimary, ButtonSecondary } from "@webiny/ui/Button";
 import { ReactComponent as Add } from "@material-design-icons/svg/filled/add.svg";
 
 import { Container } from "./styled";
+import { TableActions } from "~/admin/components/Table/Header/TableActions";
 
 const t = i18n.ns("app-page-builder/admin/views/pages/table/header/buttons/create");
 
 interface Props {
     onCreatePage: (event?: React.SyntheticEvent) => void;
     onCreateFolder: (event?: React.SyntheticEvent) => void;
+    selected: string[];
 }
 
-export const ButtonsCreate = ({ onCreateFolder, onCreatePage }: Props): ReactElement => {
+export const ButtonsCreate = ({ onCreateFolder, onCreatePage, selected }: Props): ReactElement => {
     return (
         <Container>
+            <TableActions selected={selected} />
             <ButtonSecondary data-testid="new-folder-button" onClick={onCreateFolder} small={true}>
                 <ButtonIcon icon={<Add />} />
                 {t`New Folder`}

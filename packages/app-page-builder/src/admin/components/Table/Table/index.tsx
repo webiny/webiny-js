@@ -32,6 +32,7 @@ interface Props {
     folders: FolderItem[];
     loading?: boolean;
     openPreviewDrawer: () => void;
+    onSelectRow: (rows: Entry[] | []) => void;
 }
 
 interface Entry {
@@ -48,7 +49,7 @@ interface Entry {
 }
 
 export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
-    const { folders, pages, loading, openPreviewDrawer } = props;
+    const { folders, pages, loading, openPreviewDrawer, onSelectRow } = props;
 
     const [data, setData] = useState<Entry[]>([]);
     const [selectedFolder, setSelectedFolder] = useState<FolderItem>();
@@ -172,7 +173,7 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
                 data={data}
                 loadingInitial={loading}
                 stickyRows={1}
-                onSelectRow={rows => console.log(rows)}
+                onSelectRow={onSelectRow}
             />
             {selectedFolder && (
                 <>

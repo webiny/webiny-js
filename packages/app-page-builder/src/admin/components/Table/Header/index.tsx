@@ -2,7 +2,6 @@ import React, { ReactElement } from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 
 import { ButtonsCreate } from "~/admin/components/Table/Header/ButtonsCreate";
-import { TableActions } from "~/admin/components/Table/Header/TableActions";
 import { Title } from "~/admin/components/Table/Header/Title";
 
 import { Container } from "./styled";
@@ -30,10 +29,10 @@ export const Header = ({
                 </Cell>
                 {canCreate && (
                     <Cell span={8}>
-                        <TableActions selected={selected} />
                         <ButtonsCreate
                             onCreateFolder={onCreateFolder}
                             onCreatePage={onCreatePage}
+                            selected={selected}
                         />
                     </Cell>
                 )}

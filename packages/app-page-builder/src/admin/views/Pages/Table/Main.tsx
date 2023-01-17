@@ -84,6 +84,8 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
     const [tableHeight, setTableHeight] = useState(0);
     const tableRef = useRef<HTMLDivElement>(null);
 
+    const [selected, setSelected] = useState<string[]>([]);
+
     useEffect(() => {
         setTableHeight(tableRef?.current?.clientHeight || 0);
 
@@ -158,7 +160,7 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
                     canCreate={canCreate}
                     onCreatePage={openCategoryDialog}
                     onCreateFolder={openFoldersDialog}
-                    selected={[]}
+                    selected={selected}
                 />
                 <Wrapper>
                     {pages.length === 0 && subFolders.length === 0 && !isLoading ? (
@@ -185,6 +187,11 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
                                     pages={pages}
                                     loading={isLoading}
                                     openPreviewDrawer={openPreviewDrawer}
+                                    onSelectRow={rows => {
+                                        //@ts-ignore
+                                        const ids = rows.map(row => row.original.pid);
+                                        setSelected(ids);
+                                    }}
                                 />
                                 <LoadMoreButton
                                     show={!isLoading && meta.hasMoreItems}
