@@ -6,7 +6,9 @@ import { isLegacyRenderingEngine } from "~/utils";
 import React from "react";
 
 // @ts-ignore Resolve once we deprecate legacy rendering engine.
-const render: PbRenderElementPlugin["render"] = isLegacyRenderingEngine ? props => <Image {...props} /> : createImage();
+const render: PbRenderElementPlugin["render"] = isLegacyRenderingEngine
+    ? props => <Image {...props} />
+    : createImage();
 
 export default (args: PbRenderElementPluginArgs = {}): PbRenderElementPlugin => {
     const elementType = kebabCase(args.elementType || "image");

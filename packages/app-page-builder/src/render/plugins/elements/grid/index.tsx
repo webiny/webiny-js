@@ -5,7 +5,9 @@ import { isLegacyRenderingEngine } from "~/utils";
 import React from "react";
 
 // @ts-ignore Resolve once we deprecate legacy rendering engine.
-const render: PbRenderElementPlugin["render"] = isLegacyRenderingEngine ? props => <Grid {...props} /> : createGrid();
+const render: PbRenderElementPlugin["render"] = isLegacyRenderingEngine
+    ? props => <Grid {...props} />
+    : createGrid();
 
 export default (): PbRenderElementPlugin => {
     return {

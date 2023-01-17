@@ -6,7 +6,9 @@ import { isLegacyRenderingEngine } from "~/utils";
 import React from "react";
 
 // @ts-ignore Resolve once we deprecate legacy rendering engine.
-const render: PbRenderElementPlugin["render"] = isLegacyRenderingEngine ? props => <Heading {...props} /> : createHeading();
+const render: PbRenderElementPlugin["render"] = isLegacyRenderingEngine
+    ? props => <Heading {...props} />
+    : createHeading();
 
 export default (args: PbRenderElementPluginArgs = {}): PbRenderElementPlugin => {
     const elementType = args.elementType || "heading";

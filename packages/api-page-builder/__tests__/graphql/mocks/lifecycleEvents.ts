@@ -174,24 +174,24 @@ export const assignBlockCategoryLifecycleEvents = () => {
 
 export const assignPageBlockLifecycleEvents = () => {
     return new ContextPlugin<PbContext>(async context => {
-        context.pageBuilder.onBeforePageBlockCreate.subscribe(async params => {
+        context.pageBuilder.onPageBlockBeforeCreate.subscribe(async params => {
             tracker.track("pageBlock:beforeCreate", params);
         });
-        context.pageBuilder.onAfterPageBlockCreate.subscribe(async params => {
+        context.pageBuilder.onPageBlockAfterCreate.subscribe(async params => {
             tracker.track("pageBlock:afterCreate", params);
         });
 
-        context.pageBuilder.onBeforePageBlockUpdate.subscribe(async params => {
+        context.pageBuilder.onPageBlockBeforeUpdate.subscribe(async params => {
             tracker.track("pageBlock:beforeUpdate", params);
         });
-        context.pageBuilder.onAfterPageBlockUpdate.subscribe(async params => {
+        context.pageBuilder.onPageBlockAfterUpdate.subscribe(async params => {
             tracker.track("pageBlock:afterUpdate", params);
         });
 
-        context.pageBuilder.onBeforePageBlockDelete.subscribe(async params => {
+        context.pageBuilder.onPageBlockBeforeDelete.subscribe(async params => {
             tracker.track("pageBlock:beforeDelete", params);
         });
-        context.pageBuilder.onAfterPageBlockDelete.subscribe(async params => {
+        context.pageBuilder.onPageBlockAfterDelete.subscribe(async params => {
             tracker.track("pageBlock:afterDelete", params);
         });
     });
