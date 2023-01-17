@@ -74,9 +74,10 @@ export const saveBlockAction: BlockEventActionCallable<SaveBlockActionArgsType> 
     // We need to grab the first block from the "document" element.
     const createdImage = await getPreviewImage(element.elements[0], meta, state.block?.preview?.id);
 
-    let preview: Pick<File, "id" | "src"> | null = null
+    let preview: Pick<File, "id" | "src" | "meta"> | null = null;
     if (createdImage) {
-        preview = { id: createdImage.id, src: createdImage.src };
+        const { id, src, meta } = createdImage;
+        preview = { id, src, meta };
     }
 
     const data: BlockType = {
