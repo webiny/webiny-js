@@ -14,9 +14,9 @@ const Grid: React.FC<GridPropsType> = ({ element }) => {
                 element={element}
                 className={"webiny-pb-base-page-element-style webiny-pb-layout-grid"}
             >
-                {element.elements.map(element => (
-                    <Element key={element.id} element={element} />
-                ))}
+                {element.elements.map((element, index) => {
+                    return <Element key={index} element={element} />;
+                })}
             </ElementRoot>
         </ElementAnimation>
     );

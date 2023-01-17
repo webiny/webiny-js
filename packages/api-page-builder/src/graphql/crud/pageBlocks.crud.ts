@@ -26,8 +26,7 @@ import {
     PageBlock,
     PageBlocksCrud,
     PageBlockStorageOperationsListParams,
-    PbContext,
-    Page
+    PbContext
 } from "~/types";
 import checkBasePermissions from "./utils/checkBasePermissions";
 import checkOwnPermissions from "./utils/checkOwnPermissions";
@@ -313,10 +312,13 @@ export const createPageBlocksCrud = (params: CreatePageBlocksCrudParams): PageBl
                 );
             }
         },
-        async resolvePageBlocks(this: PageBuilderContextObject, page: Page) {
+        async resolvePageBlocks(
+            this: PageBuilderContextObject,
+            content: Record<string, any> | null
+        ) {
             const blocks = [];
 
-            for (const pageBlock of page.content?.elements) {
+            for (const pageBlock of content?.elements) {
                 const blockId = pageBlock.data?.blockId;
                 // If block has blockId, then it is a reference block, and we need to get elements for it.
                 if (!blockId) {
@@ -331,7 +333,7 @@ export const createPageBlocksCrud = (params: CreatePageBlocksCrudParams): PageBl
                         id: blockId
                     }
                 });
-                // We check if the block has variable values set on the page, and use them
+                // We check if the block has variable values set on the page/template, and use them
                 // in priority over the ones set inline in the block editor.
                 const blockDataVariables = blockData?.content?.data?.variables || [];
                 const variables = blockDataVariables.map((blockDataVariable: any) => {
@@ -350,7 +352,7 @@ export const createPageBlocksCrud = (params: CreatePageBlocksCrudParams): PageBl
                     cloneDeep({
                         ...pageBlock,
                         data: {
-                            blockId,
+                            ...pageBlock?.data,
                             ...blockData?.content?.data,
                             variables
                         },

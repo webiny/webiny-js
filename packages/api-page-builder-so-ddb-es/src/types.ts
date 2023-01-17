@@ -22,7 +22,8 @@ export enum ENTITIES {
     PAGES = "PbPages",
     PAGES_ES = "PbPagesEs",
     BLOCK_CATEGORIES = "PbBlockCategories",
-    PAGE_BLOCKS = "PbPageBlocks"
+    PAGE_BLOCKS = "PbPageBlocks",
+    PAGE_TEMPLATES = "PbPageTemplates"
 }
 
 export interface TableModifier {
@@ -41,7 +42,8 @@ export interface PageBuilderStorageOperations extends BasePageBuilderStorageOper
         | "pages"
         | "pagesEs"
         | "blockCategories"
-        | "pageBlocks",
+        | "pageBlocks"
+        | "pageTemplates",
         Entity<any>
     >;
 }

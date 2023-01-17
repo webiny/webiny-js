@@ -84,8 +84,8 @@ const Block: React.FC<BlockProps> = ({ element }) => {
                                         ...customClasses
                                     )}
                                 >
-                                    {element.elements.map(element => (
-                                        <Element key={element.id} element={element} />
+                                    {element.elements.map((element, index) => (
+                                        <Element key={index} element={element} />
                                     ))}
                                 </div>
                             </div>

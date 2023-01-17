@@ -27,9 +27,11 @@ export const EditorPluginsLoader: React.FC<EditorPluginsLoaderProps> = ({ childr
         globalState
     );
 
-    const isEditorRoute = ["/page-builder/editor", "/page-builder/block-editor"].some(path =>
-        location.pathname.startsWith(path)
-    );
+    const isEditorRoute = [
+        "/page-builder/editor",
+        "/page-builder/block-editor",
+        "/page-builder/template-editor"
+    ].some(path => location.pathname.startsWith(path));
 
     const loadPlugins = async () => {
         const pbPlugins = plugins.byType<PbPluginsLoader>("pb-plugins-loader");
@@ -50,6 +52,17 @@ export const EditorPluginsLoader: React.FC<EditorPluginsLoaderProps> = ({ childr
 
         // If we are on pages list route, import plugins required to render the page content.
         if (location.pathname.startsWith("/page-builder/pages") && !loaded.render) {
+            const renderPlugins = await loadRenderPlugins();
+
+            // "skipExisting" will ensure existing plugins (with the same name) are not overridden.
+            plugins.register(renderPlugins, { skipExisting: true });
+
+            globalState.render = true;
+            setLoaded({ render: true });
+        }
+
+        // If we are on page templates list route, import plugins required to render the template content.
+        if (location.pathname.startsWith("/page-builder/page-templates") && !loaded.render) {
             const renderPlugins = await loadRenderPlugins();
 
             // "skipExisting" will ensure existing plugins (with the same name) are not overridden.
@@ -88,7 +101,14 @@ export const EditorPluginsLoader: React.FC<EditorPluginsLoaderProps> = ({ childr
         return children as unknown as React.ReactElement;
     }
     /**
-     * This condition is for editing of the selected page.
+     * This condition is for the list of page templates.
+     * Page template can be selected at this point.
+     */
+    if (location.pathname.startsWith("/page-builder/page-templates") && loaded.render) {
+        return children as unknown as React.ReactElement;
+    }
+    /**
+     * This condition is for editing of the selected page/template.
      */
     if (isEditorRoute && loaded.editor) {
         return children as unknown as React.ReactElement;

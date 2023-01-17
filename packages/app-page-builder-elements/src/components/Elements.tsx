@@ -31,7 +31,10 @@ export const Elements: React.FC<ElementsProps> = props => {
     const elements = props.element.elements;
 
     let parentBlockElement: ElementType;
-    if (props.element.data.blockId) {
+    if (
+        props.element.data.blockId ||
+        (props.element.type === "block" && currentRendererMeta.parentElement.data.templateId)
+    ) {
         parentBlockElement = props.element;
     } else {
         parentBlockElement = currentRendererMeta.parentBlockElement;

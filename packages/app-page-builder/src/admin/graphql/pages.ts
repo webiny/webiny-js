@@ -67,6 +67,19 @@ export const CREATE_PAGE = gql`
     }
 `;
 
+export const UPDATE_PAGE = gql`
+    mutation PbUpdatePage($id: ID!, $data: PbUpdatePageInput!) {
+        pageBuilder {
+            updatePage(id: $id, data: $data) {
+                data {
+                    ${LIST_PAGES_DATA_FIELDS}
+                }
+                ${error}
+            }
+        }
+    }
+`;
+
 export const LIST_PAGES = gql`
     query PbListPages(
         $where: PbListPagesWhereInput

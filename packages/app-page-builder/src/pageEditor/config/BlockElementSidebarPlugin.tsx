@@ -8,6 +8,7 @@ import { ButtonPrimary } from "@webiny/ui/Button";
 import UnlinkBlockAction from "~/pageEditor/plugins/elementSettings/UnlinkBlockAction";
 import { ReactComponent as InfoIcon } from "@webiny/app-admin/assets/icons/info.svg";
 import { useElementSidebar } from "~/editor/hooks/useElementSidebar";
+import { useTemplateMode } from "~/pageEditor/hooks/useTemplateMode";
 import { updateSidebarActiveTabIndexMutation } from "~/editor/recoil/modules";
 import { RootElement } from "~/editor/components/Editor/Sidebar/ElementSettingsTabContent";
 import { PageBuilderSecurityPermission } from "~/types";
@@ -77,6 +78,7 @@ export const BlockElementSidebarPlugin = createComponentPlugin(EditorSidebarTab,
         const [element] = useActiveElement();
         const [sidebar, setSidebar] = useElementSidebar();
         const { identity, getPermission } = useSecurity();
+        const [isTemplateMode] = useTemplateMode();
 
         const unlinkPermission = useMemo((): boolean => {
             const permission = getPermission<PageBuilderSecurityPermission>("pb.block");
@@ -97,6 +99,10 @@ export const BlockElementSidebarPlugin = createComponentPlugin(EditorSidebarTab,
                 setSidebar(prev => updateSidebarActiveTabIndexMutation(prev, 0));
             }
         }, [element?.id]);
+
+        if (isTemplateMode) {
+            return isStyleTab ? null : <>{children}</>;
+        }
 
         return (
             <Tab {...props}>

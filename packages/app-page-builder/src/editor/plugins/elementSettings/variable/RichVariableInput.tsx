@@ -1,10 +1,11 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import { CoreOptions } from "medium-editor";
 import { ReactComponent as ExpandIcon } from "@material-design-icons/svg/filled/fullscreen.svg";
 import { Dialog, DialogActions, DialogContent } from "@webiny/ui/Dialog";
 import { ButtonPrimary, IconButton } from "@webiny/ui/Button";
 import ReactMediumEditor from "~/editor/components/MediumEditor";
+import { useActiveElement } from "~/editor/hooks/useActiveElement";
 import { useVariable } from "~/hooks/useVariable";
 
 const InputWrapper = styled("div")`
@@ -75,9 +76,14 @@ interface RichVariableInputProps {
 }
 
 const RichVariableInput: React.FC<RichVariableInputProps> = ({ variableId }) => {
+    const [element] = useActiveElement();
     const { value, onChange, onBlur } = useVariable(variableId);
     const [initialValue, setInitialValue] = useState(value);
     const [isOpen, setIsOpen] = useState(false);
+
+    useEffect(() => {
+        setInitialValue(value);
+    }, [element?.id]);
 
     const onOpen = useCallback(() => {
         setIsOpen(true);
