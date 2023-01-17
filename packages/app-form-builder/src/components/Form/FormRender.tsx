@@ -28,10 +28,9 @@ declare global {
     // eslint-disable-next-line
     namespace JSX {
         interface IntrinsicElements {
-            // @ts-ignore
             "ps-tag": {
-                class?: string;
-                id?: string;
+                "data-key": string;
+                "data-value": string;
             };
         }
     }
