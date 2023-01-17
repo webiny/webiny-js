@@ -8,10 +8,11 @@ import {
 import { createButton } from "@webiny/app-page-builder-elements/renderers/button";
 import { plugins } from "@webiny/plugins";
 import { isLegacyRenderingEngine } from "~/utils";
+import React from "react";
 
 // @ts-ignore Resolve once we deprecate legacy rendering engine.
 const render: PbRenderElementPlugin["render"] = isLegacyRenderingEngine
-    ? Button
+    ? props => <Button {...props} />
     : createButton({
           clickHandlers: () => {
               const registeredPlugins = plugins.byType<PbButtonElementClickHandlerPlugin>(
