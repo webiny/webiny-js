@@ -25,6 +25,7 @@ declare global {
 interface BlockProps {
     element: PbElement;
 }
+
 const Block: React.FC<BlockProps> = ({ element }) => {
     const {
         responsiveDisplayMode: { displayMode }
@@ -32,7 +33,9 @@ const Block: React.FC<BlockProps> = ({ element }) => {
 
     return (
         <>
-            <ps-tag data-key={"pb-page-block"} data-value={element.id} />
+            {element.data.blockId && (
+                <ps-tag data-key={"pb-page-block"} data-value={element.data.blockId} />
+            )}
             <ElementAnimation>
                 <ElementRoot element={element}>
                     {({ elementStyle, elementAttributes, customClasses, combineClassNames }) => {
