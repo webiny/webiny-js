@@ -12759,6 +12759,7 @@ __metadata:
     "@editorjs/editorjs": ^2.20.1
     "@emotion/core": ^10.0.17
     "@emotion/styled": ^10.0.17
+    "@material-design-icons/svg": ^0.14.2
     "@svgr/webpack": ^6.1.1
     "@types/json2csv": ^4.5.1
     "@types/react": 17.0.39
