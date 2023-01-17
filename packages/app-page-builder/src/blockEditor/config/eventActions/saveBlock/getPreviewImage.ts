@@ -28,7 +28,7 @@ function getDataURLImageDimensions(dataURL: string): Promise<ImageDimensionsType
 
 function takePageScreenshot(element: PbElement) {
     const node = isLegacyRenderingEngine
-        ? document.querySelector(element.id)
+        ? document.getElementById(element.id)
         : document.querySelector("pb-document");
 
     if (!node) {
