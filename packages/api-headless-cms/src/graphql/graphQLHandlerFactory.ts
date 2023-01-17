@@ -68,41 +68,35 @@ const getSchema = async (params: GetSchemaParams): Promise<GraphQLSchema> => {
     const id = `${tenantId}#${type}#${locale.code}`;
 
     const cacheKey = await generateCacheKey(params);
-    if (!schemaList.has(id)) {
-        try {
-            const schema = await generateSchema(params);
-            schemaList.set(id, {
-                key: cacheKey,
-                schema
-            });
-            return schema;
-        } catch (err) {
-            const [location] = err.locations;
-
+    const cachedSchema = schemaList.get(id);
+    if (cachedSchema?.key === cacheKey) {
+        return cachedSchema.schema;
+    }
+    try {
+        const schema = await generateSchema(params);
+        schemaList.set(id, {
+            key: cacheKey,
+            schema
+        });
+        return schema;
+    } catch (err) {
+        if (!Array.isArray(err.locations)) {
             throw new WebinyError({
-                code: "INVALID_GRAPHQL_SCHEMA",
-                message: err.message,
-                data: {
-                    invalidSegment: codeFrame(err.source.body, location.line, location.column, {
-                        frameSize: 15
-                    })
-                }
+                ...err
             });
         }
+        const [location] = err.locations;
+
+        throw new WebinyError({
+            code: "INVALID_GRAPHQL_SCHEMA",
+            message: err.message,
+            data: {
+                invalidSegment: codeFrame(err.source.body, location.line, location.column, {
+                    frameSize: 15
+                })
+            }
+        });
     }
-    /**
-     * Safe to cast because check was done few lines up.
-     */
-    const cache = schemaList.get(id) as SchemaCache;
-    if (cache.key === cacheKey) {
-        return cache.schema;
-    }
-    const schema = await generateSchema(params);
-    schemaList.set(id, {
-        key: cacheKey,
-        schema
-    });
-    return schema;
 };
 
 const checkEndpointAccess = async (context: CmsContext): Promise<void> => {
