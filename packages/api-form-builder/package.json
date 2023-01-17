@@ -37,7 +37,6 @@
     "commodo-fields-object": "^1.0.6",
     "got": "^9.6.0",
     "json2csv": "^4.5.2",
-    "lodash": "^4.17.11",
     "mdbid": "^1.0.0",
     "node-fetch": "^2.6.1",
     "slugify": "^1.2.9"
