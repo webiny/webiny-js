@@ -3,10 +3,11 @@ import Paragraph from "./Paragraph";
 import { PbRenderElementPluginArgs, PbRenderElementPlugin } from "~/types";
 import { createParagraph } from "@webiny/app-page-builder-elements/renderers/paragraph";
 import { isLegacyRenderingEngine } from "~/utils";
+import React from "react";
 
 // @ts-ignore Resolve once we deprecate legacy rendering engine.
 const render: PbRenderElementPlugin["render"] = isLegacyRenderingEngine
-    ? Paragraph
+    ? props => <Paragraph {...props} />
     : createParagraph();
 
 export default (args: PbRenderElementPluginArgs = {}): PbRenderElementPlugin => {
