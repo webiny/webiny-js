@@ -152,7 +152,7 @@ const cmsRoutes = new RoutePlugin<CmsContext>(({ onPost, onOptions, context }) =
                 locale: context.cms.getLocale(),
                 type: context.cms.type as ApiEndpoint
             });
-            const body: GraphQLRequestBody | GraphQLRequestBody[] = request.body as any;
+            const body = request.body as GraphQLRequestBody | GraphQLRequestBody[];
             const result = await processRequestBody(body, schema, context);
             return reply.code(200).send(result);
         } catch (ex) {
