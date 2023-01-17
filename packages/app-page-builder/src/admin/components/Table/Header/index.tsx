@@ -2,6 +2,7 @@ import React, { ReactElement } from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 
 import { ButtonsCreate } from "~/admin/components/Table/Header/ButtonsCreate";
+import { TableActions } from "~/admin/components/Table/Header/TableActions";
 import { Title } from "~/admin/components/Table/Header/Title";
 
 import { Container } from "./styled";
@@ -11,9 +12,16 @@ interface Props {
     canCreate: boolean;
     onCreatePage: (event?: React.SyntheticEvent) => void;
     onCreateFolder: (event?: React.SyntheticEvent) => void;
+    selected: string[];
 }
 
-export const Header = ({ canCreate, onCreatePage, onCreateFolder, title }: Props): ReactElement => {
+export const Header = ({
+    canCreate,
+    onCreatePage,
+    onCreateFolder,
+    title,
+    selected
+}: Props): ReactElement => {
     return (
         <Container>
             <Grid align={"right"} style={{ padding: 0 }}>
@@ -22,6 +30,7 @@ export const Header = ({ canCreate, onCreatePage, onCreateFolder, title }: Props
                 </Cell>
                 {canCreate && (
                     <Cell span={8}>
+                        <TableActions selected={selected} />
                         <ButtonsCreate
                             onCreateFolder={onCreateFolder}
                             onCreatePage={onCreatePage}

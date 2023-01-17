@@ -158,6 +158,7 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
                     canCreate={canCreate}
                     onCreatePage={openCategoryDialog}
                     onCreateFolder={openFoldersDialog}
+                    selected={[]}
                 />
                 <Wrapper>
                     {pages.length === 0 && subFolders.length === 0 && !isLoading ? (

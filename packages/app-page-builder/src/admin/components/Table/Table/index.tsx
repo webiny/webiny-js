@@ -167,7 +167,13 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
 
     return (
         <div ref={ref}>
-            <DataTable columns={columns} data={data} loadingInitial={loading} stickyRows={1} />
+            <DataTable
+                columns={columns}
+                data={data}
+                loadingInitial={loading}
+                stickyRows={1}
+                onSelectRow={rows => console.log(rows)}
+            />
             {selectedFolder && (
                 <>
                     <FolderDialogUpdate
