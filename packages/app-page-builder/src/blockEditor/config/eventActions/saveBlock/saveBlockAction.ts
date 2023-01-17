@@ -7,7 +7,7 @@ import { BlockWithContent } from "~/blockEditor/state";
 import { UPDATE_PAGE_BLOCK } from "~/admin/views/PageBlocks/graphql";
 import { getPreviewImage } from "./getPreviewImage";
 import { removeElementId } from "~/editor/helpers";
-import { PbElement, PbBlockVariable, PbBlockEditorCreateVariablePlugin } from "~/types";
+import { File, PbElement, PbBlockVariable, PbBlockEditorCreateVariablePlugin } from "~/types";
 
 export const findElementByVariableId = (elements: PbElement[], variableId: string): any => {
     for (const element of elements) {
@@ -74,6 +74,11 @@ export const saveBlockAction: BlockEventActionCallable<SaveBlockActionArgsType> 
     // We need to grab the first block from the "document" element.
     const createdImage = await getPreviewImage(element.elements[0], meta, state.block?.preview?.id);
 
+    let preview: Pick<File, "id" | "src"> | null = null
+    if (createdImage) {
+        preview = { id: createdImage.id, src: createdImage.src };
+    }
+
     const data: BlockType = {
         name: state.block.name,
         blockCategory: state.block.blockCategory,
@@ -93,7 +98,7 @@ export const saveBlockAction: BlockEventActionCallable<SaveBlockActionArgsType> 
                 id: state.block.id,
                 data: {
                     ...data,
-                    preview: createdImage
+                    preview
                 }
             }
         });
