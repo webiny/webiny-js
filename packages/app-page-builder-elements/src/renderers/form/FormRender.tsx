@@ -23,18 +23,6 @@ import {
     CreateFormParamsValidator
 } from "./types";
 
-declare global {
-    // eslint-disable-next-line
-    namespace JSX {
-        interface IntrinsicElements {
-            "ps-tag": {
-                "data-key": string;
-                "data-value": string;
-            };
-        }
-    }
-}
-
 interface FieldValidator {
     (value: string): Promise<boolean>;
 }

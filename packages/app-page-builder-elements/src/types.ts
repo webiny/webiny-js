@@ -145,3 +145,15 @@ export type ElementStylesModifier = (args: {
 }) => StylesObject | null;
 
 export type LinkComponent = React.ComponentType<React.HTMLProps<HTMLAnchorElement>>;
+
+declare global {
+    // eslint-disable-next-line
+    namespace JSX {
+        interface IntrinsicElements {
+            "ps-tag": {
+                "data-key": string;
+                "data-value": string;
+            };
+        }
+    }
+}
