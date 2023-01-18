@@ -11,3 +11,10 @@ export const Container = styled("div")`
     z-index: 3;
     border-bottom: 1px solid rgba(0, 0, 0, 0.12);
 `;
+
+export const WrapperActions = styled("div")`
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+`;

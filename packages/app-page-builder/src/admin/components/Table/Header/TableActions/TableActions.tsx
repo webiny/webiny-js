@@ -1,21 +1,20 @@
 import React, { ReactElement } from "react";
-import useExportPageRevisionSelectorDialog from "~/editor/plugins/defaultBar/components/ExportPageButton/useExportPageRevisionSelectorDialog";
-import useExportPageDialog from "~/editor/plugins/defaultBar/components/ExportPageButton/useExportPageDialog";
-import { Tooltip } from "@webiny/ui/Tooltip";
-import { IconButton } from "@webiny/ui/Button";
+
 import { ReactComponent as Download } from "@material-design-icons/svg/outlined/file_download.svg";
 import { i18n } from "@webiny/app/i18n";
-import styled from "@emotion/styled";
+import { Tooltip } from "@webiny/ui/Tooltip";
+import { IconButton } from "@webiny/ui/Button";
 
-const t = i18n.ns("app-page-builder/admin/views/pages/table/header/buttons/export");
+import useExportPageRevisionSelectorDialog from "~/editor/plugins/defaultBar/components/ExportPageButton/useExportPageRevisionSelectorDialog";
+import useExportPageDialog from "~/editor/plugins/defaultBar/components/ExportPageButton/useExportPageDialog";
+
+import { Container } from "./styled";
+
+const t = i18n.ns("app-page-builder/admin/views/pages/table/header/buttons/table-actions");
 
 export interface TableActionsProps {
     selected: string[];
 }
-
-const Container = styled("div")`
-    margin-right: 8px;
-`;
 
 export const TableActions = ({ selected }: TableActionsProps): ReactElement => {
     const { showExportPageRevisionSelectorDialog } = useExportPageRevisionSelectorDialog();
@@ -42,10 +41,7 @@ export const TableActions = ({ selected }: TableActionsProps): ReactElement => {
                         showExportPageRevisionSelectorDialog({
                             onAccept: () =>
                                 showExportPageInitializeDialog({
-                                    ids: selected,
-                                    where: {},
-                                    sort: "createdOn_DESC",
-                                    search: { query: "" }
+                                    ids: selected
                                 }),
                             selected
                         });
