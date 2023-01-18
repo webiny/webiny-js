@@ -1,3 +1,6 @@
+import { createZodError } from "~/createZodError";
+import { ZodError } from "zod";
+
 export interface ErrorOptions<TData = any> {
     message?: string;
     code?: string;
@@ -10,7 +13,11 @@ export default class WError<TData = any> extends Error {
 
     constructor(message: string, code?: string, data?: TData);
     constructor(options: ErrorOptions<TData>);
-    constructor(messageOrOptions: string | ErrorOptions<TData>, code?: string, data?: TData) {
+    constructor(
+        messageOrOptions: string | ErrorOptions<TData> | ZodError,
+        code?: string,
+        data?: TData
+    ) {
         // TODO in TS 4.6 we can move that into if statements
         super(typeof messageOrOptions === "string" ? messageOrOptions : messageOrOptions.message);
 
@@ -18,6 +25,11 @@ export default class WError<TData = any> extends Error {
             // super(messageOrOptions); - use after TS 4.6
             this.code = code || null;
             this.data = data || null;
+        } else if (messageOrOptions instanceof ZodError) {
+            const result = createZodError(messageOrOptions);
+            this.data = result.data;
+            this.code = result.code;
+            this.message = result.message;
         } else {
             // super(messageOrOptions.message); - use after TS 4.6
             this.code = messageOrOptions.code || null;
@@ -25,7 +37,13 @@ export default class WError<TData = any> extends Error {
         }
     }
 
-    public static from<TData = any>(err: Partial<WError>, options: ErrorOptions<TData> = {}) {
+    public static from<TData = any>(
+        err: Partial<WError> | ZodError,
+        options: ErrorOptions<TData> = {}
+    ) {
+        if (err instanceof ZodError) {
+            return new WError(err);
+        }
         return new WError({
             message: err.message || options.message,
             code: err.code || options.code,

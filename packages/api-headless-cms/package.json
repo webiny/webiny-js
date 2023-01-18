@@ -47,7 +47,8 @@
     "p-reduce": "^2.1.0",
     "pluralize": "^8.0.0",
     "semver": "^6.3.0",
-    "slugify": "^1.4.0"
+    "slugify": "^1.4.0",
+    "zod": "^3.20.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.19.3",
