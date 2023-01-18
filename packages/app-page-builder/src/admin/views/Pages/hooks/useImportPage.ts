@@ -10,11 +10,13 @@ interface UseImportPageParams {
     setLoadingLabel: () => void;
     clearLoadingLabel: () => void;
     closeDialog: () => void;
+    folderId?: string;
 }
 const useImportPage = ({
     setLoadingLabel,
     clearLoadingLabel,
-    closeDialog
+    closeDialog,
+    folderId
 }: UseImportPageParams) => {
     const [importPage] = useMutation(IMPORT_PAGES);
     const { showSnackbar } = useSnackbar();
@@ -27,7 +29,8 @@ const useImportPage = ({
             const res = await importPage({
                 variables: {
                     category,
-                    zipFileUrl
+                    zipFileUrl,
+                    folderId
                 }
             });
 

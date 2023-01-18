@@ -1,6 +1,7 @@
 import React, { ReactElement } from "react";
 
-import { ReactComponent as Download } from "@material-design-icons/svg/outlined/file_download.svg";
+import { ReactComponent as ExportIcon } from "@material-design-icons/svg/outlined/file_download.svg";
+import { ReactComponent as ImportIcon } from "@material-design-icons/svg/outlined/file_upload.svg";
 import { i18n } from "@webiny/app/i18n";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { IconButton } from "@webiny/ui/Button";
@@ -14,9 +15,10 @@ const t = i18n.ns("app-page-builder/admin/views/pages/table/header/buttons/table
 
 export interface TableActionsProps {
     selected: string[];
+    onImportPage: (event?: React.SyntheticEvent) => void;
 }
 
-export const TableActions = ({ selected }: TableActionsProps): ReactElement => {
+export const TableActions = ({ selected, onImportPage }: TableActionsProps): ReactElement => {
     const { showExportPageRevisionSelectorDialog } = useExportPageRevisionSelectorDialog();
     const { showExportPageInitializeDialog } = useExportPageDialog();
 
@@ -33,10 +35,12 @@ export const TableActions = ({ selected }: TableActionsProps): ReactElement => {
 
     return (
         <Container>
+            <Tooltip content={t`Import page`} placement={"bottom"}>
+                <IconButton icon={<ImportIcon />} onClick={onImportPage} />
+            </Tooltip>
             <Tooltip content={renderExportPagesTooltip(selected)} placement={"bottom"}>
                 <IconButton
-                    data-testid={"export-page-button"}
-                    icon={<Download />}
+                    icon={<ExportIcon />}
                     onClick={() => {
                         showExportPageRevisionSelectorDialog({
                             onAccept: () =>

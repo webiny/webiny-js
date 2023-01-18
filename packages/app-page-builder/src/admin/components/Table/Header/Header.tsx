@@ -11,6 +11,7 @@ export interface HeaderProps {
     title?: string;
     canCreate: boolean;
     onCreatePage: (event?: React.SyntheticEvent) => void;
+    onImportPage: (event?: React.SyntheticEvent) => void;
     onCreateFolder: (event?: React.SyntheticEvent) => void;
     selected: string[];
 }
@@ -18,6 +19,7 @@ export interface HeaderProps {
 export const Header = ({
     canCreate,
     onCreatePage,
+    onImportPage,
     onCreateFolder,
     title,
     selected
@@ -30,7 +32,7 @@ export const Header = ({
                 </Cell>
                 <Cell span={8}>
                     <WrapperActions>
-                        <TableActions selected={selected} />
+                        <TableActions selected={selected} onImportPage={onImportPage} />
                         {canCreate && (
                             <ButtonsCreate
                                 onCreateFolder={onCreateFolder}

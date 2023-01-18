@@ -15911,6 +15911,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "api-page-builder-import-process@workspace:apps/api/pageBuilder/import/process"
   dependencies:
+    "@webiny/api-aco": 0.0.0
+    "@webiny/api-aco-so-ddb": 0.0.0
     "@webiny/api-file-manager": 0.0.0
     "@webiny/api-file-manager-ddb": 0.0.0
     "@webiny/api-file-manager-s3": 0.0.0
