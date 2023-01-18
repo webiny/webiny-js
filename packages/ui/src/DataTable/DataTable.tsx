@@ -115,12 +115,14 @@ const defineColumns = <T,>(
                               />
                           ),
                       cell: info => {
+                          if (!info.row.getCanSelect()) {
+                              return <></>;
+                          }
                           return (
                               <Checkbox
                                   indeterminate={info.row.getIsSomeSelected()}
                                   value={info.row.getIsSelected()}
                                   onChange={info.row.getToggleSelectedHandler()}
-                                  disabled={!info.row.getCanSelect()}
                               />
                           );
                       },
