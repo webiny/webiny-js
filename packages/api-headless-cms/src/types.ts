@@ -2471,7 +2471,7 @@ export interface CmsEntryStorageOperationsListParams {
     sort?: CmsEntryListSort;
     search?: string;
     fields?: string[];
-    limit?: number;
+    limit: number;
     after?: string | null;
 }
 
