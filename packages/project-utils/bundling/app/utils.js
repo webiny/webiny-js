@@ -30,7 +30,7 @@ module.exports.applyDefaults = () => {
     }
 
     if (!("REACT_APP_WEBINY_VERSION" in process.env)) {
-        process.env.REACT_APP_WEBINY_VERSION = version;
+        process.env.REACT_APP_WEBINY_VERSION = process.env.WEBINY_VERSION || version;
     }
 
     // This variable is for backwards compatibility with projects created prior to 5.29.0 release.
