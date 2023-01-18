@@ -78,7 +78,7 @@ const Upgrade: React.FC<UpgradeProps> = ({ onInstalled }) => {
                             This upgrade will do the following:
                             <ul>
                                 <li>
-                                    - migrate existing page blocks to be available in the new Blocks
+                                    migrate existing page blocks to be available in the new Blocks
                                     Manager
                                 </li>
                             </ul>

@@ -1,3 +1,5 @@
+export * from "@webiny/theme";
+
 export * from "./createRenderer";
 
 export * from "./hooks/usePage";

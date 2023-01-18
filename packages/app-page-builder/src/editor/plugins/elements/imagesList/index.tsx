@@ -75,8 +75,8 @@ export default (args: PbEditorElementPluginArgs = {}) => {
 
                 return typeof args.create === "function" ? args.create(defaultValue) : defaultValue;
             },
-            render({ element }) {
-                return <ImagesList element={element} />;
+            render(props) {
+                return <ImagesList {...props} />;
             }
         } as PbEditorPageElementPlugin,
         {
