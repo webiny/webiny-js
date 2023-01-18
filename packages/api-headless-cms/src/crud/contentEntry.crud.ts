@@ -587,7 +587,8 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 plugins
             });
 
-            const { where: initialWhere } = params;
+            const { where: initialWhere, limit: initialLimit } = params;
+            const limit = initialLimit && initialLimit > 0 ? initialLimit : 50;
             /**
              * We always assign tenant and locale because we do not allow one model to have content through multiple tenants.
              */
@@ -639,6 +640,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 const { hasMoreItems, totalCount, cursor, items } =
                     await storageOperations.entries.list(model, {
                         ...params,
+                        limit,
                         where,
                         fields
                     });
