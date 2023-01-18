@@ -132,10 +132,6 @@ class Release {
             throw Error("GH_TOKEN environment variable is not set.");
         }
 
-        if (!process.env.NPM_TOKEN) {
-            throw Error("NPM_TOKEN environment variable is not set.");
-        }
-
         if (!this.version) {
             throw Error(
                 `Versioning is not configured! Use "setVersion" to configure lerna versioning.`
