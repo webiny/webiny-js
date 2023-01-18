@@ -11279,6 +11279,7 @@ __metadata:
     "@webiny/api-file-manager-ddb": 0.0.0
     "@webiny/api-i18n": 0.0.0
     "@webiny/api-i18n-ddb": 0.0.0
+    "@webiny/api-mailer": 0.0.0
     "@webiny/api-security": 0.0.0
     "@webiny/api-security-so-ddb": 0.0.0
     "@webiny/api-tenancy": 0.0.0
@@ -12720,6 +12721,7 @@ __metadata:
     "@editorjs/editorjs": ^2.20.1
     "@emotion/core": ^10.0.17
     "@emotion/styled": ^10.0.17
+    "@material-design-icons/svg": ^0.14.2
     "@svgr/webpack": ^6.1.1
     "@types/react": 17.0.39
     "@types/react-google-recaptcha": ^1.1.2
