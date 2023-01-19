@@ -30,7 +30,7 @@ export const createHandler = <DetailType extends string, Detail>(
 ): HandlerCallable<DetailType, Detail> => {
     return (payload, context) => {
         const app = createBaseHandler({
-            plugins: params.plugins,
+            ...params,
             options: {
                 logger: params.debug === true,
                 ...(params.options || {})

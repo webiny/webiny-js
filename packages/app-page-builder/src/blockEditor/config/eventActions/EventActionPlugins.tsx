@@ -18,9 +18,17 @@ const EventActionHandlers = () => {
 
         const offUpdateBlockAction = eventActionHandler.on(
             UpdateDocumentActionEvent,
-            async state => {
+            async (state, _, args) => {
                 setDirty(true);
-                return { state, actions: [] };
+                return {
+                    state: {
+                        block: {
+                            ...state.block,
+                            ...(args?.document || {})
+                        }
+                    },
+                    actions: []
+                };
             }
         );
 

@@ -75,6 +75,11 @@ const getSchema = async (params: GetSchemaParams): Promise<GraphQLSchema> => {
             });
             return schema;
         } catch (err) {
+            if (!Array.isArray(err.locations)) {
+                throw new WebinyError({
+                    ...err
+                });
+            }
             const [location] = err.locations;
 
             throw new WebinyError({

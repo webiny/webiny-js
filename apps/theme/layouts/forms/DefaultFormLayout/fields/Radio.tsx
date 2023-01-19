@@ -21,7 +21,7 @@ const RadioGroup = styled.div`
 const RadioButton = styled.input`
     margin-left: 0;
     line-height: 100%;
-    background-color: ${theme.styles.colors.color4};
+    background-color: ${theme.styles.colors.color5};
     min-width: 25px;
     width: 25px;
     height: 25px;

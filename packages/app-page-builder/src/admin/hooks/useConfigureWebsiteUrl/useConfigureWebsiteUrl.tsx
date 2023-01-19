@@ -44,18 +44,18 @@ export const ConfigureWebsiteUrlMessage: React.FC<ConfigureWebsiteUrlMessageProp
             <br />
             {isLocalHost ? (
                 <span>
-                    {t`Either start the server by running`}{" "}
-                    <code>cd apps/website/code && yarn start</code>{" "}
+                    {t`Either start the Website application locally by running`}{" "}
+                    <code>yarn webiny watch website --env YOUR_ENV</code>{" "}
                 </span>
             ) : (
                 <span>
                     {t`Either deploy the website by running`}{" "}
-                    <code>yarn webiny deploy apps/website</code>{" "}
+                    <code>yarn webiny deploy website --env YOUR_ENV</code>{" "}
                 </span>
             )}
             <br />
             {t`or update the website URL by going into the`}{" "}
-            <Link to={PAGE_BUILDER_SETTINGS_LINK}>{t`page builder settings.`}</Link>
+            <Link to={PAGE_BUILDER_SETTINGS_LINK}>{t`settings.`}</Link>
         </span>
     );
 };

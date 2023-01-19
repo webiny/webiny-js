@@ -4,7 +4,8 @@ import { PageElementsProvider as PbPageElementsProvider } from "@webiny/app-page
 // Attributes modifiers.
 import { createId } from "@webiny/app-page-builder-elements/modifiers/attributes/id";
 import { createClassName } from "@webiny/app-page-builder-elements/modifiers/attributes/className";
-// import { createAnimation } from "@webiny/app-page-builder-elements/modifiers/attributes/animation";
+import { createAnimation } from "@webiny/app-page-builder-elements/modifiers/attributes/animation";
+import { initializeAos } from "@webiny/app-page-builder-elements/modifiers/attributes/animation/initializeAos";
 
 // Styles modifiers.
 import { createBackground } from "@webiny/app-page-builder-elements/modifiers/styles/background";
@@ -40,10 +41,8 @@ export const EditorPageElementsProvider: React.FC = ({ children }) => {
     const modifiers = {
         attributes: {
             id: createId(),
-            className: createClassName()
-
-            // TODO: fix animation preview in editor.
-            // animation: createAnimation()
+            className: createClassName(),
+            animation: createAnimation({ initializeAos })
         },
         styles: {
             background: createBackground(),
