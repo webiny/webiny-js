@@ -16,6 +16,7 @@ export interface Payload {
     task: ImportExportTask;
     type: string;
     identity: SecurityIdentity;
+    folderId?: string;
 }
 export interface Response {
     data: string | null;

@@ -231,7 +231,7 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                 }
 
                 extend type PbMutation {
-                    createPage(from: ID, category: String): PbPageResponse
+                    createPage(from: ID, category: String, folderId: String): PbPageResponse
 
                     # Update page by given ID.
                     updatePage(id: ID!, data: PbUpdatePageInput!): PbPageResponse
@@ -418,9 +418,13 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                     }
                 },
                 PbMutation: {
-                    createPage: async (_, args: { from?: string; category?: string }, context) => {
+                    createPage: async (
+                        _,
+                        args: { from?: string; category?: string; folderId?: string },
+                        context
+                    ) => {
                         return resolve(() => {
-                            const { from, category } = args;
+                            const { from, category, folderId } = args;
                             if (!from && !category) {
                                 throw new WebinyError(
                                     `Cannot create page - you must provide either "from" or "category" input.`
@@ -428,12 +432,12 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                             }
 
                             if (from) {
-                                return context.pageBuilder.createPageFrom(from);
+                                return context.pageBuilder.createPageFrom(from, folderId);
                             }
                             /**
                              * We can safely cast because we check for category existence in the beginning of the fn
                              */
-                            return context.pageBuilder.createPage(category as string);
+                            return context.pageBuilder.createPage(category as string, folderId);
                         });
                     },
                     deletePage: async (_, args: any, context) => {

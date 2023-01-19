@@ -47,7 +47,7 @@ export const pagesHandler = async (
 
         log(`Fetched sub task => ${subTask.id}`);
 
-        const { pageKey, category, zipFileKey, input } = subTask.data;
+        const { pageKey, category, zipFileKey, input, folderId } = subTask.data;
         const { fileUploadsData } = input;
 
         log(`Processing page key "${pageKey}"`);
@@ -72,7 +72,7 @@ export const pagesHandler = async (
         });
 
         // Create a page
-        let pbPage = await context.pageBuilder.createPage(category);
+        let pbPage = await context.pageBuilder.createPage(category, folderId);
 
         // Update page with data
         pbPage = await context.pageBuilder.updatePage(pbPage.id, {

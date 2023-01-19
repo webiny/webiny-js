@@ -15,6 +15,7 @@ export interface Payload {
     subTaskIndex: number;
     type: string;
     identity: SecurityIdentity;
+    folderId?: string;
 }
 
 export interface Response {

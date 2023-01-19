@@ -114,7 +114,8 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
     const { createPageMutation } = useCreatePage({
         setLoadingLabel: () => setLoadingLabel(LoadingLabel.CREATING_PAGE),
         clearLoadingLabel: () => setLoadingLabel(null),
-        closeDialog: closeCategoryDialog
+        closeDialog: closeCategoryDialog,
+        folderId
     });
 
     const { showDialog: importPageMutation } = useImportPage({

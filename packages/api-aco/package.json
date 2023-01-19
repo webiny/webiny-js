@@ -28,6 +28,7 @@
     "@babel/preset-typescript": "^7.18.6",
     "@babel/runtime": "^7.19.0",
     "@webiny/api-i18n-ddb": "0.0.0",
+    "@webiny/api-page-builder": "0.0.0",
     "@webiny/api-security-so-ddb": "0.0.0",
     "@webiny/api-tenancy-so-ddb": "0.0.0",
     "@webiny/api-wcp": "0.0.0",

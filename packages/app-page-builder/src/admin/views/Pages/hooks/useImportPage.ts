@@ -23,7 +23,7 @@ const useImportPage = ({
     const { showImportPageDialog } = useImportPageDialog();
     const { showImportPageLoadingDialog } = useImportPageLoadingDialog();
 
-    const importPageMutation = useCallback(async ({ slug: category }, zipFileUrl) => {
+    const importPageMutation = useCallback(async ({ slug: category }, zipFileUrl, folderId) => {
         try {
             setLoadingLabel();
             const res = await importPage({
@@ -49,11 +49,14 @@ const useImportPage = ({
         }
     }, []);
 
-    const showDialog = useCallback(category => {
-        showImportPageDialog(async url => {
-            await importPageMutation(category, url);
-        });
-    }, []);
+    const showDialog = useCallback(
+        category => {
+            showImportPageDialog(async url => {
+                await importPageMutation(category, url, folderId);
+            });
+        },
+        [folderId]
+    );
 
     return {
         importPageMutation,
