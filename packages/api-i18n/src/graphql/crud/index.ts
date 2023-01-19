@@ -35,15 +35,21 @@ export const createCrudContext = () => {
             SystemStorageOperationsProviderPlugin.type
         );
 
+        const getTenant = () => {
+            return context.tenancy.getCurrentTenant();
+        };
+
         context.i18n = {
             ...(context.i18n || ({} as any)),
             locales: createLocalesCrud({
                 context,
-                storageOperations: localeStorageOperations
+                storageOperations: localeStorageOperations,
+                getTenant
             }),
             system: createSystemCrud({
                 context,
-                storageOperations: systemStorageOperations
+                storageOperations: systemStorageOperations,
+                getTenant
             })
         };
     });
