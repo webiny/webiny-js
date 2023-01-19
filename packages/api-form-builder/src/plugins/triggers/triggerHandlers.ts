@@ -2,6 +2,14 @@ import got from "got";
 import { SmtpTransportConfig, createSmtpTransport } from "@webiny/api-mailer";
 import { FbFormTriggerHandlerPlugin } from "~/types";
 
+const MAILER_CONFIG: SmtpTransportConfig = {
+    host: process.env.WEBINY_MAILER_HOST,
+    auth: {
+        user: process.env.WEBINY_MAILER_USER,
+        pass: process.env.WEBINY_MAILER_PASSWORD
+    }
+};
+
 const plugins: FbFormTriggerHandlerPlugin[] = [
     {
         type: "form-trigger-handler",
@@ -43,23 +51,15 @@ const plugins: FbFormTriggerHandlerPlugin[] = [
     },
     {
         type: "form-trigger-handler",
-        name: "form-trigger-handler-email",
-        trigger: "email",
+        name: "form-trigger-handler-email-notification",
+        trigger: "email-notification",
         async handle({ trigger, data, form, addLog }) {
             const email = trigger && trigger.email;
             if (!email) {
                 return;
             }
 
-            const config: SmtpTransportConfig = {
-                host: process.env.WEBINY_MAILER_HOST,
-                auth: {
-                    user: process.env.WEBINY_MAILER_USER,
-                    pass: process.env.WEBINY_MAILER_PASSWORD
-                }
-            };
-
-            const mailer = createSmtpTransport(config);
+            const mailer = createSmtpTransport(MAILER_CONFIG);
 
             let fieldsString = "";
             for (const field in data) {
@@ -82,7 +82,7 @@ const plugins: FbFormTriggerHandlerPlugin[] = [
 
                 addLog({
                     type: "success",
-                    message: `Successfully sent an email to ${trigger.email}`,
+                    message: `Successfully sent a notification email to ${trigger.email}`,
                     data: {
                         response: response.result
                     }
@@ -90,7 +90,42 @@ const plugins: FbFormTriggerHandlerPlugin[] = [
             } catch (e) {
                 addLog({
                     type: "warning",
-                    message: `Failed to send an email to ${trigger.email}: ${e.message}`
+                    message: `Failed to send a notification email to ${trigger.email}: ${e.message}`
+                });
+            }
+        }
+    },
+    {
+        type: "form-trigger-handler",
+        name: "form-trigger-handler-email-thanks",
+        trigger: "email-thanks",
+        async handle({ trigger, data, addLog }) {
+            const triggerData = trigger && trigger.subject && trigger.content;
+            if (!triggerData || !data.email) {
+                return;
+            }
+
+            const mailer = createSmtpTransport(MAILER_CONFIG);
+
+            try {
+                const response = await mailer.send({
+                    bcc: [data.email],
+                    subject: trigger.subject,
+                    text: "",
+                    html: `<pre style="font-family: 'Open Sans', sans-serif;">${trigger.content}</pre>`
+                });
+
+                addLog({
+                    type: "success",
+                    message: `Successfully sent a thanks email to ${data.email}`,
+                    data: {
+                        response: response.result
+                    }
+                });
+            } catch (e) {
+                addLog({
+                    type: "warning",
+                    message: `Failed to send a thanks email to ${data.email}: ${e.message}`
                 });
             }
         }
