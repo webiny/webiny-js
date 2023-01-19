@@ -11,7 +11,14 @@ export const createBlock = () => {
             const { getElement } = useRenderer();
 
             const element = getElement();
-            return <Elements element={element} />;
+            return (
+                <>
+                    <Elements element={element} />
+                    {element.data.blockId && (
+                        <ps-tag data-key={"pb-page-block"} data-value={element.data.blockId} />
+                    )}
+                </>
+            );
         },
         {
             baseStyles: {

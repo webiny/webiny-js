@@ -185,16 +185,15 @@ export const createSettingsCrud = async (
 
             const model = await getModel();
 
-            const result = createValidation.validate(input);
+            const result = createValidation.safeParse(input);
 
-            const error = result.error;
-            if (error) {
+            if (!result.success) {
                 throw new WebinyError("Validation failed!", "VALIDATION_ERROR", {
-                    errors: error.details
+                    errors: result.error.errors
                 });
             }
 
-            const { password, ...settings } = result.value;
+            const { password, ...settings } = result.data;
 
             if (!settings.port) {
                 settings.port = 25;
@@ -249,12 +248,11 @@ export const createSettingsCrud = async (
 
             const model = await getModel();
 
-            const result = updateValidation.validate(input);
+            const result = updateValidation.safeParse(input);
 
-            const error = result.error;
-            if (error) {
+            if (!result.success) {
                 throw new WebinyError("Validation failed!", "VALIDATION_ERROR", {
-                    errors: error.details
+                    errors: result.error.errors
                 });
             }
             let original = initialOriginal;
@@ -268,7 +266,7 @@ export const createSettingsCrud = async (
                 }
             }
 
-            const { password, ...settings } = result.value;
+            const { password, ...settings } = result.data;
 
             if (!settings.port) {
                 settings.port = original.port || 25;

@@ -268,7 +268,10 @@ describe("Comment on a change request test", () => {
         /**
          * List all comments.
          */
-        let [listCommentsResponse] = await listCommentsQuery({ sort: ["createdOn_DESC"] });
+        let [listCommentsResponse] = await listCommentsQuery({
+            sort: ["createdOn_DESC"],
+            limit: 10
+        });
         expect(listCommentsResponse).toEqual({
             data: {
                 apw: {

@@ -5,7 +5,7 @@ import theme from "../../../../../theme";
 const Wrapper = styled.div<{ isInvalid: boolean }>`
   margin-left: 2px;
   margin-top: 5px;
-  ${theme.styles.typography.paragraph1};
+  ${theme.styles.typography.paragraph2};
   color: ${props => (props.isInvalid ? theme.styles.colors.color1 : theme.styles.colors.color2)};
 
   ${theme.breakpoints["mobile-landscape"]} {

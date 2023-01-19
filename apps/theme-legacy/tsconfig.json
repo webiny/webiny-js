@@ -1,7 +1,0 @@
-{
-  "extends": "../../tsconfig",
-  "include": ["."],
-  "compilerOptions": {
-    "composite": false
-  }
-}

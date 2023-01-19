@@ -1,5 +1,5 @@
 import { ExecutionResult, graphql, GraphQLSchema } from "graphql";
-import { GraphQLAfterQueryPlugin, GraphQLBeforeQueryPlugin, GraphQLRequestBody } from "./types";
+import { GraphQLAfterQueryPlugin, GraphQLBeforeQueryPlugin, GraphQLRequestBody } from "~/types";
 import { Context } from "@webiny/api/types";
 
 const processRequestBody = async (

@@ -3,7 +3,7 @@ import { makeExecutableSchema } from "@graphql-tools/schema";
 import { GraphQLScalarPlugin, GraphQLSchemaPlugin } from "./types";
 import { Context } from "@webiny/api/types";
 import {
-    RefInput,
+    RefInputScalar,
     NumberScalar,
     AnyScalar,
     DateScalar,
@@ -37,13 +37,13 @@ export const createGraphQLSchema = (context: Context) => {
 
     const resolvers = [
         {
-            ...scalars.reduce((acc, s) => {
+            ...scalars.reduce<Record<string, GraphQLScalarType>>((acc, s) => {
                 acc[s.name] = s;
                 return acc;
-            }, {} as Record<string, GraphQLScalarType>),
+            }, {}),
             JSON: JsonScalar,
             Long: LongScalar,
-            RefInput,
+            RefInput: RefInputScalar,
             Number: NumberScalar,
             Any: AnyScalar,
             DateTime: DateTimeScalar,

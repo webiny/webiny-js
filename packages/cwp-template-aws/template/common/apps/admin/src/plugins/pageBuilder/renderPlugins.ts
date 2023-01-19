@@ -13,6 +13,7 @@ import button from "@webiny/app-page-builder/render/plugins/elements/button";
 import codesandbox from "@webiny/app-page-builder/render/plugins/elements/embeds/codesandbox";
 import soundcloud from "@webiny/app-page-builder/render/plugins/elements/embeds/soundcloud";
 import youtube from "@webiny/app-page-builder/render/plugins/elements/embeds/youtube";
+import iframe from "@webiny/app-page-builder/render/plugins/elements/iframe";
 import vimeo from "@webiny/app-page-builder/render/plugins/elements/embeds/vimeo";
 import twitter from "@webiny/app-page-builder/render/plugins/elements/embeds/twitter";
 import pinterest from "@webiny/app-page-builder/render/plugins/elements/embeds/pinterest";
@@ -52,6 +53,7 @@ export default [
     codesandbox(),
     soundcloud(),
     youtube(),
+    iframe(),
     vimeo(),
     twitter(),
     pinterest(),

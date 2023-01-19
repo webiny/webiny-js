@@ -16,7 +16,7 @@ export const CheckboxGroup = styled.div`
 
 export const CheckboxButton = styled.input`
     margin-left: 0;
-    background-color: ${theme.styles.colors.color4};
+    background-color: ${theme.styles.colors.color5};
     min-width: 25px;
     width: 25px;
     height: 25px;
