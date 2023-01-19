@@ -1,15 +1,16 @@
 import zod from "zod";
 import { toSlug } from "~/utils/toSlug";
 
-const name = zod.string().max(100);
-const description = zod.string().max(255).optional();
-const icon = zod.string().min(1).max(255);
+const str = zod.string().trim();
+
+const name = str.max(100);
+const description = str.max(255).optional();
+const icon = str.min(1).max(255);
 
 export const createGroupCreateValidation = () => {
     return zod.object({
         name: name.min(1),
-        slug: zod
-            .string()
+        slug: str
             .max(100)
             .optional()
             .transform(value => {
