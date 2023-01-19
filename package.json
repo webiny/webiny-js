@@ -12,7 +12,6 @@
       "apps/api/apw/*",
       "apps/api/fileManager/*",
       "apps/api/graphql",
-      "apps/api/headlessCMS",
       "apps/api/pageBuilder/updateSettings",
       "apps/api/pageBuilder/import/*",
       "apps/api/pageBuilder/export/*"

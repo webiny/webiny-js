@@ -1,4 +1,3 @@
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
 import { CmsModelFieldToGraphQLPlugin, CmsFieldTypePlugins, CmsContext } from "~/types";
 import { createManageSDL } from "./createManageSDL";
 import { createReadSDL } from "./createReadSDL";
@@ -7,10 +6,11 @@ import { createReadResolvers } from "./createReadResolvers";
 import { createPreviewResolvers } from "./createPreviewResolvers";
 import { getSchemaFromFieldPlugins } from "~/utils/getSchemaFromFieldPlugins";
 import { filterModelsDeletedFields } from "~/utils/filterModelFields";
+import { CmsGraphQLSchemaPlugin } from "~/plugins";
 
 export const generateSchemaPlugins = async (
     context: CmsContext
-): Promise<GraphQLSchemaPlugin<CmsContext>[]> => {
+): Promise<CmsGraphQLSchemaPlugin[]> => {
     const { plugins, cms } = context;
 
     /**
@@ -46,9 +46,9 @@ export const generateSchemaPlugins = async (
         type
     });
 
-    const newPlugins: GraphQLSchemaPlugin<CmsContext>[] = [];
+    const newPlugins: CmsGraphQLSchemaPlugin[] = [];
     for (const schema of schemas) {
-        newPlugins.push(new GraphQLSchemaPlugin(schema));
+        newPlugins.push(new CmsGraphQLSchemaPlugin(schema));
     }
 
     models
@@ -57,7 +57,7 @@ export const generateSchemaPlugins = async (
             switch (type) {
                 case "manage":
                     newPlugins.push(
-                        new GraphQLSchemaPlugin({
+                        new CmsGraphQLSchemaPlugin({
                             typeDefs: createManageSDL({ model, fieldTypePlugins }),
                             resolvers: createManageResolvers({
                                 models,
@@ -72,7 +72,7 @@ export const generateSchemaPlugins = async (
                 case "preview":
                 case "read":
                     newPlugins.push(
-                        new GraphQLSchemaPlugin({
+                        new CmsGraphQLSchemaPlugin({
                             typeDefs: createReadSDL({ model, fieldTypePlugins }),
                             resolvers: cms.READ
                                 ? createReadResolvers({

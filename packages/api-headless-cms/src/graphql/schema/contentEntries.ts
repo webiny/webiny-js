@@ -1,9 +1,9 @@
+import WebinyError from "@webiny/error";
 import { Response } from "@webiny/handler-graphql";
 import { CmsEntry, CmsContext, CmsModel, CmsEntryListWhere } from "~/types";
 import { NotAuthorizedResponse } from "@webiny/api-security";
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
 import { getEntryTitle } from "~/utils/getEntryTitle";
-import WebinyError from "@webiny/error";
+import { CmsGraphQLSchemaPlugin } from "~/plugins";
 
 interface EntriesByModel {
     [key: string]: string[];
@@ -186,17 +186,15 @@ const getContentEntry = async (
     });
 };
 
-export const createContentEntriesSchema = (
-    context: CmsContext
-): GraphQLSchemaPlugin<CmsContext> => {
+export const createContentEntriesSchema = (context: CmsContext): CmsGraphQLSchemaPlugin => {
     if (!context.cms.MANAGE) {
-        return new GraphQLSchemaPlugin({
+        return new CmsGraphQLSchemaPlugin({
             typeDefs: "",
             resolvers: {}
         });
     }
 
-    return new GraphQLSchemaPlugin<CmsContext>({
+    return new CmsGraphQLSchemaPlugin({
         typeDefs: /* GraphQL */ `
             type CmsModelMeta {
                 modelId: String
