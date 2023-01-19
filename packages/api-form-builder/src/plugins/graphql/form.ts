@@ -549,6 +549,12 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                         for (let i = 0; i < submissions.length; i++) {
                             const submissionData = submissions[i].data;
                             const row: Record<string, string> = {};
+
+                            row["Date submitted"] = new Date(submissions[i].createdOn)
+                                .toISOString()
+                                .split(".")[0]
+                                .replace("T", " ");
+
                             Object.keys(fields).map(fieldId => {
                                 if (fieldId in submissionData) {
                                     row[fields[fieldId]] = submissionData[fieldId];
@@ -562,7 +568,9 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                         /**
                          * Save CSV file and return its URL to the client.
                          */
-                        const csv = await parseAsync(rows, { fields: Object.values(fields) });
+                        const csv = await parseAsync(rows, {
+                            fields: ["Date submitted", ...Object.values(fields)]
+                        });
                         const buffer = Buffer.from(csv);
                         const { key } = await fileManager.storage.upload({
                             buffer,
