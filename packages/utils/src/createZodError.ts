@@ -1,3 +1,4 @@
+import WebinyError from "@webiny/error";
 import { ZodError } from "zod/lib/ZodError";
 
 interface OutputError {
@@ -31,16 +32,10 @@ const createValidationErrorData = (error: ZodError) => {
     };
 };
 
-interface ErrorOutput {
-    message: string;
-    code: string;
-    data: any;
-}
-
-export const createZodError = (error: ZodError): ErrorOutput => {
-    return {
+export const createZodError = (error: ZodError) => {
+    return new WebinyError({
         message: `Validation failed.`,
         code: "VALIDATION_FAILED_INVALID_FIELDS",
         data: createValidationErrorData(error)
-    };
+    });
 };

@@ -38,6 +38,7 @@ import {
     createGroupCreateValidation,
     createGroupUpdateValidation
 } from "~/crud/contentModelGroup/validation";
+import { createZodError } from "@webiny/utils";
 
 export interface CreateModelGroupsCrudParams {
     getTenant: () => Tenant;
@@ -238,7 +239,7 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
             const result = await createGroupCreateValidation().safeParseAsync(input);
 
             if (!result.success) {
-                throw WebinyError.from(result.error);
+                throw createZodError(result.error);
             }
             const data = result.data;
 
@@ -302,7 +303,7 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
             const result = await createGroupUpdateValidation().safeParseAsync(input);
 
             if (!result.success) {
-                throw WebinyError.from(result.error);
+                throw createZodError(result.error);
             }
             const data = result.data;
 
