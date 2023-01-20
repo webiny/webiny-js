@@ -19,6 +19,7 @@ const fieldSystemFields: string[] = [
 const str = zod.string().trim();
 const shortString = str.max(255);
 const optionalShortString = shortString.optional();
+const optionalNullishShortString = optionalShortString.nullish();
 
 const fieldSchema = zod.object({
     id: shortString,
@@ -101,12 +102,13 @@ export const createModelCreateValidation = () => {
     return zod.object({
         name: shortString,
         modelId: optionalShortString,
-        description: optionalShortString,
+        description: optionalNullishShortString,
         group: shortString,
         fields: zod.array(fieldSchema).default([]),
         layout: zod.array(zod.array(shortString)).default([]),
         tags: zod.array(shortString).optional(),
-        titleFieldId: optionalShortString
+        titleFieldId: optionalShortString,
+        descriptionFieldId: optionalShortString
     });
 };
 
@@ -114,7 +116,7 @@ export const createModelCreateFromValidation = () => {
     return zod.object({
         name: shortString,
         modelId: optionalShortString,
-        description: optionalShortString,
+        description: optionalNullishShortString,
         group: shortString,
         locale: optionalShortString
     });
@@ -123,7 +125,7 @@ export const createModelCreateFromValidation = () => {
 export const createModelUpdateValidation = () => {
     return zod.object({
         name: optionalShortString,
-        description: optionalShortString,
+        description: optionalNullishShortString,
         group: optionalShortString,
         fields: zod.array(fieldSchema),
         layout: zod.array(zod.array(shortString)),

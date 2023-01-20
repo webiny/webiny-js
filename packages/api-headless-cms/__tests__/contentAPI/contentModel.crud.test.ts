@@ -134,6 +134,7 @@ describe("content model test", () => {
                         name: "Test Content model",
                         description: "",
                         titleFieldId: "id",
+                        descriptionFieldId: null,
                         modelId: "testContentModel",
                         createdBy: helpers.identity,
                         createdOn: expect.stringMatching(/^20/),
@@ -507,6 +508,7 @@ describe("content model test", () => {
                         createdOn: expect.stringMatching(/^20/),
                         description: null,
                         titleFieldId: textField.fieldId,
+                        descriptionFieldId: null,
                         fields: [
                             {
                                 ...textField,
@@ -964,5 +966,113 @@ describe("content model test", () => {
             description: null
         });
         expect(response.data.getContentModel.error).toEqual(null);
+    });
+
+    it("should assign description field", async () => {
+        const { createContentModelMutation, getContentModelQuery, updateContentModelMutation } =
+            useGraphQLHandler(manageHandlerOpts);
+        const field = {
+            id: "testId",
+            fieldId: "testFieldId",
+            type: "long-text",
+            label: "Test Field"
+        };
+
+        const [createResponseWithInitialLongText] = await createContentModelMutation({
+            data: {
+                name: "Test Content model",
+                modelId: "test-content-model",
+                group: contentModelGroup.id,
+                fields: [field],
+                layout: [["testId"]]
+            }
+        });
+
+        expect(createResponseWithInitialLongText).toMatchObject({
+            data: {
+                createContentModel: {
+                    data: {
+                        modelId: "testContentModel",
+                        fields: [field],
+                        descriptionFieldId: "testFieldId"
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [responseAfterCreate] = await getContentModelQuery({
+            modelId: "testContentModel"
+        });
+        expect(responseAfterCreate).toMatchObject({
+            data: {
+                getContentModel: {
+                    data: {
+                        modelId: "testContentModel",
+                        fields: [field],
+                        descriptionFieldId: field.fieldId
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [createResponseWithNoFields] = await createContentModelMutation({
+            data: {
+                name: "Test Content model",
+                modelId: "test-content-model-2",
+                group: contentModelGroup.id,
+                fields: [],
+                layout: []
+            }
+        });
+        expect(createResponseWithNoFields).toMatchObject({
+            data: {
+                createContentModel: {
+                    data: {
+                        modelId: "testContentModel2",
+                        fields: [],
+                        descriptionFieldId: null
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [updateResponseWithFields] = await updateContentModelMutation({
+            modelId: "testContentModel2",
+            data: {
+                fields: [field],
+                layout: [[field.id]]
+            }
+        });
+        expect(updateResponseWithFields).toMatchObject({
+            data: {
+                updateContentModel: {
+                    data: {
+                        modelId: "testContentModel2",
+                        fields: [field],
+                        descriptionFieldId: field.fieldId
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [responseAfterUpdate] = await getContentModelQuery({
+            modelId: "testContentModel2"
+        });
+        expect(responseAfterUpdate).toMatchObject({
+            data: {
+                getContentModel: {
+                    data: {
+                        modelId: "testContentModel2",
+                        fields: [field],
+                        descriptionFieldId: field.fieldId
+                    },
+                    error: null
+                }
+            }
+        });
     });
 });

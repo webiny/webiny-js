@@ -9,6 +9,7 @@ const DATA_FIELD = /* GraphQL*/ `
         }
         layout
         titleFieldId
+        descriptionFieldId
         fields {
             id
             label

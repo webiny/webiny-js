@@ -348,10 +348,10 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
 
             const identity = getIdentity();
             const model: CmsModel = {
-                name: data.name,
-                description: data.description || "",
+                ...data,
                 modelId: data.modelId || "",
                 titleFieldId: "id",
+                description: data.description || "",
                 locale: getLocale().code,
                 tenant: getTenant().id,
                 group: {
@@ -365,10 +365,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 },
                 createdOn: new Date().toISOString(),
                 savedOn: new Date().toISOString(),
-                fields: data.fields,
                 lockedFields: [],
-                layout: data.layout || [],
-                tags: [...(data.tags || [])],
                 webinyVersion: context.WEBINY_VERSION
             };
 

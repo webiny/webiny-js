@@ -78,6 +78,9 @@ export const createModelEntity = (params: CreateModelEntityParams): Entity<any> 
             titleFieldId: {
                 type: "string"
             },
+            descriptionFieldId: {
+                type: "string"
+            },
             tenant: {
                 type: "string",
                 required: true

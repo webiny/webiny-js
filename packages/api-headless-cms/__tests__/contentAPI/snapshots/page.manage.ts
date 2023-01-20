@@ -1,3 +1,5 @@
+import { metaDataComment, revisionsComment } from "./snippets";
+
 export default /* GraphQL */ `
     """
     Page
@@ -21,15 +23,11 @@ export default /* GraphQL */ `
         locked: Boolean
         publishedOn: DateTime
         status: String
-        """
-        CAUTION: this field is resolved by making an extra query to DB.
-        RECOMMENDATION: Use it only with "get" queries (avoid in "list")
-        """
+        ${revisionsComment}
         revisions: [Page]
         title: String
-        """
-        Custom meta data stored in the root of the entry object.
-        """
+        description: String
+        ${metaDataComment}
         data: JSON
     }
 

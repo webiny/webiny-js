@@ -443,7 +443,7 @@ export interface CmsModel {
     /**
      * Description for the content model.
      */
-    description: string;
+    description: string | null;
     /**
      * Date created
      */
@@ -484,6 +484,11 @@ export interface CmsModel {
      * It is picked as first available text field. Or user can select own field.
      */
     titleFieldId: string;
+    /**
+     * The field which is displayed as the description one.
+     * Only way this is null or undefined is that there are no long-text fields to be set as description.
+     */
+    descriptionFieldId?: string | null;
     /**
      * The version of Webiny which this record was stored with.
      */
@@ -1221,7 +1226,7 @@ export interface CmsModelCreateInput {
     /**
      * Description of the content model.
      */
-    description?: string;
+    description?: string | null;
     /**
      * Group where to put the content model in.
      */
@@ -1250,6 +1255,10 @@ export interface CmsModelCreateInput {
      * It is picked as first available text field. Or user can select own field.
      */
     titleFieldId?: string;
+    /**
+     *
+     */
+    descriptionFieldId?: string | null;
 }
 
 /**
@@ -1348,7 +1357,7 @@ export interface CmsModelUpdateInput {
     /**
      * A new description of the content model.
      */
-    description?: string;
+    description?: string | null;
     /**
      * A list of content model fields to define the entry values.
      */
@@ -1369,6 +1378,10 @@ export interface CmsModelUpdateInput {
      * It is picked as first available text field. Or user can select own field.
      */
     titleFieldId?: string;
+    /**
+     *
+     */
+    descriptionFieldId?: string | null;
 }
 
 /**
