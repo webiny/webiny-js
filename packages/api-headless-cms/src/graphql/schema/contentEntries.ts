@@ -4,6 +4,7 @@ import { CmsEntry, CmsContext, CmsModel, CmsEntryListWhere } from "~/types";
 import { NotAuthorizedResponse } from "@webiny/api-security";
 import { getEntryTitle } from "~/utils/getEntryTitle";
 import { CmsGraphQLSchemaPlugin } from "~/plugins";
+import { getEntryDescription } from "~/utils/getEntryDescription";
 
 interface EntriesByModel {
     [key: string]: string[];
@@ -118,7 +119,8 @@ const getContentEntries = async (params: GetContentEntriesParams): Promise<Respo
                             name: model.name
                         },
                         status: item.status,
-                        title: getEntryTitle(model, item)
+                        title: getEntryTitle(model, item),
+                        description: getEntryDescription(model, item)
                     };
                 })
             );
@@ -182,7 +184,8 @@ const getContentEntry = async (
             name: model.name
         },
         status: entry.status,
-        title: getEntryTitle(model, entry)
+        title: getEntryTitle(model, entry),
+        description: getEntryDescription(model, entry)
     });
 };
 
@@ -274,7 +277,8 @@ export const createContentEntriesSchema = (context: CmsContext): CmsGraphQLSchem
                         return {
                             id: entry.id,
                             entryId: entry.entryId,
-                            title: getEntryTitle(model, entry)
+                            title: getEntryTitle(model, entry),
+                            description: getEntryDescription(model, entry)
                         };
                     } catch (ex) {
                         return null;
@@ -309,6 +313,7 @@ export const createContentEntriesSchema = (context: CmsContext): CmsGraphQLSchem
                                     },
                                     status: entry.status,
                                     title: getEntryTitle(model, entry),
+                                    description: getEntryDescription(model, entry),
                                     // We need `savedOn` to sort entries from latest to oldest
                                     savedOn: entry.savedOn
                                 };

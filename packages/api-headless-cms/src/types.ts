@@ -485,6 +485,11 @@ export interface CmsModel {
      */
     titleFieldId: string;
     /**
+     * The field which is displayed as the description one.
+     * Only way this is null or undefined is that there are no long-text fields to be set as description.
+     */
+    descriptionFieldId?: string | null;
+    /**
      * The version of Webiny which this record was stored with.
      */
     webinyVersion: string;

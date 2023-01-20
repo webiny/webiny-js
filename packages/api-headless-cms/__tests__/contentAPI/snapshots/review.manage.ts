@@ -27,6 +27,7 @@ export default /* GraphQL */ `
         ${revisionsComment}
         revisions: [Review]
         title: String
+        description: String
         ${metaDataComment}
         data: JSON
     }

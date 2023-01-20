@@ -15,6 +15,7 @@ import { createFieldResolversFactory } from "./createFieldResolvers";
 import { createManageTypeName, createTypeName } from "~/utils/createTypeName";
 import { pluralizedTypeName } from "~/utils/pluralizedTypeName";
 import { getEntryTitle } from "~/utils/getEntryTitle";
+import { getEntryDescription } from "~/utils/getEntryDescription";
 
 interface CreateManageResolversParams {
     models: CmsModel[];
@@ -80,6 +81,9 @@ export const createManageResolvers: CreateManageResolvers = ({
         [`${mTypeName}Meta`]: {
             title(entry: CmsEntry) {
                 return getEntryTitle(model, entry);
+            },
+            description: (entry: CmsEntry) => {
+                return getEntryDescription(model, entry);
             },
             status(entry: CmsEntry) {
                 return entry.status;
