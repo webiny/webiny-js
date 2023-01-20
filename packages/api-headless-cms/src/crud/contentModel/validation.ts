@@ -17,7 +17,6 @@ const fieldSystemFields: string[] = [
 ];
 
 const str = zod.string().trim();
-
 const shortString = str.max(255);
 const optionalShortString = shortString.optional();
 
@@ -29,29 +28,23 @@ const fieldSchema = zod.object({
         .transform(() => {
             return "";
         }),
-    fieldId: shortString.max(100).superRefine((value, ctx) => {
-        if (!value.charAt(0).match(/^[a-zA-Z]/)) {
-            return ctx.addIssue({
-                code: zod.ZodIssueCode.invalid_string,
-                message: `Provided ${value} is not valid - must not start with a number.`,
-                validation: "regex",
-                path: ["fieldId"]
-            });
-        } else if (value.match(/^([a-zA-Z0-9]+)$/) === null) {
-            return ctx.addIssue({
-                code: zod.ZodIssueCode.invalid_string,
-                message: `Provided ${value} is not valid - must be alphanumeric string.`,
-                validation: "regex",
-                path: ["fieldId"]
-            });
-        } else if (fieldSystemFields.includes(value)) {
-            return ctx.addIssue({
-                code: zod.ZodIssueCode.custom,
-                message: `Provided ${value} is not valid - "${value}" is an auto-generated field.`,
-                path: ["fieldId"]
-            });
-        }
-    }),
+    fieldId: shortString
+        .max(100)
+        .regex(/^!?[a-zA-Z]/, {
+            message: `Provided value is not valid - must not start with a number.`
+        })
+        .regex(/^(^[a-zA-Z0-9]+)$/, {
+            message: `Provided value is not valid - must be alphanumeric string.`
+        })
+        .superRefine((value, ctx) => {
+            if (fieldSystemFields.includes(value)) {
+                return ctx.addIssue({
+                    code: zod.ZodIssueCode.custom,
+                    message: `Provided ${value} is not valid - "${value}" is an auto-generated field.`,
+                    path: ["fieldId"]
+                });
+            }
+        }),
     label: shortString,
     helpText: optionalShortString.optional().nullish().default(null),
     placeholderText: optionalShortString.optional().nullable().default(null),

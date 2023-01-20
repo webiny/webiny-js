@@ -11416,7 +11416,6 @@ __metadata:
     "@babel/core": ^7.19.3
     "@babel/preset-env": ^7.19.4
     "@babel/runtime": ^7.19.0
-    "@commodo/fields": beta
     "@graphql-tools/schema": ^7.1.2
     "@webiny/api": 0.0.0
     "@webiny/api-file-manager": 0.0.0
@@ -11441,7 +11440,6 @@ __metadata:
     "@webiny/validation": 0.0.0
     apollo-graphql: ^0.9.5
     code-frame: ^5.0.0
-    commodo-fields-object: ^1.0.6
     dataloader: ^2.0.0
     dot-prop: ^6.0.1
     get-yarn-workspaces: ^1.0.2
