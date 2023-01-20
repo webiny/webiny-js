@@ -367,8 +367,18 @@ describe('Form Builder "Form" Test', () => {
         const csvFile = path.join(__dirname, data.key);
         const json = await csv({ output: "csv" }).fromFile(csvFile);
         expect(json.length).toBe(2);
-        expect(json[0].sort()).toEqual(Object.values(formSubmissionDataB.data).sort());
-        expect(json[1].sort()).toEqual(Object.values(formSubmissionDataA.data).sort());
+        expect(json[0].sort()).toEqual(
+            Object.values({
+                ...formSubmissionDataB.data,
+                "Date submitted": expect.any(String)
+            }).sort()
+        );
+        expect(json[1].sort()).toEqual(
+            Object.values({
+                ...formSubmissionDataA.data,
+                "Date submitted": expect.any(String)
+            }).sort()
+        );
         fs.unlinkSync(csvFile);
     });
 
