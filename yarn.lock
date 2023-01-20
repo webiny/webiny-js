@@ -4033,12 +4033,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@deploysentinel/cypress-debugger@npm:^0.7.3":
-  version: 0.7.3
-  resolution: "@deploysentinel/cypress-debugger@npm:0.7.3"
+"@deploysentinel/cypress-debugger@npm:^0.7.4":
+  version: 0.7.4
+  resolution: "@deploysentinel/cypress-debugger@npm:0.7.4"
   dependencies:
     "@cypress/commit-info": ^2.2.0
-    "@deploysentinel/cypress-runner": ^3.1.0
+    "@deploysentinel/cypress-runner": ^3.2.0
+    "@deploysentinel/debugger-core": ^0.3.1
     ansi-styles: ^6.1.0
     axios: ^0.27.2
     axios-retry: ^3.3.1
@@ -4049,6 +4050,7 @@ __metadata:
     fflate: ^0.7.4
     lodash: ^4.17.21
     minimatch: ^5.1.1
+    semver: ^7.3.8
     strip-ansi: ^6.0.1
     utf-8-validate: ^5.0.10
   dependenciesMeta:
@@ -4058,13 +4060,13 @@ __metadata:
       optional: true
   bin:
     ds: bin/cli
-  checksum: c47f499be4cf483e5565b2d25b2fd03f8f32f05447d3c897066943d69478caaffabf5460367c61271c7c9f0dd0145c4943e8e35431c3096c857bdf24a5a3546a
+  checksum: da0575f5529e1fb583ac6de660c203cb22a2c2b29abaaf1daec059586191712f8c9e6f83e9058591adad686c75ca513e5526207ae46216ac584f28b7be3f48ce
   languageName: node
   linkType: hard
 
-"@deploysentinel/cypress-runner@npm:^3.1.0":
-  version: 3.1.0
-  resolution: "@deploysentinel/cypress-runner@npm:3.1.0"
+"@deploysentinel/cypress-runner@npm:^3.2.0":
+  version: 3.2.0
+  resolution: "@deploysentinel/cypress-runner@npm:3.2.0"
   dependencies:
     acorn: ^8.8.0
     debug: ^4.3.2
@@ -4078,9 +4080,27 @@ __metadata:
     slash: 3.0.0
     source-map-support: ^0.5.21
     tmp: ^0.2.1
-  bin:
-    ds: bin/ds
-  checksum: 4857ec9507f4ec14e8a86650c63c4905d2b8171f9d43c48fb2cf864f54fedf00b19c83510727cb7d5e082636b9e0aeeab7ec869fbdb9fe719c5187301c144404
+  checksum: 0c45d42dcc6d5d5dbee0fe39700ef878978116f46d1cc10f0e12126f5eb7505a109f16c59acf6a74cab4fc9625a2fe55bd2a0e41d824480383d1c020dd0f7ef3
+  languageName: node
+  linkType: hard
+
+"@deploysentinel/debugger-core@npm:^0.3.1":
+  version: 0.3.1
+  resolution: "@deploysentinel/debugger-core@npm:0.3.1"
+  dependencies:
+    axios: ^0.27.2
+    axios-retry: ^3.3.1
+    bluebird: ^3.7.2
+    check-more-types: 2.24.0
+    compare-versions: ^5.0.1
+    debug: ^4.3.4
+    execa: 1.0.0
+    fast-safe-stringify: ^2.1.1
+    fflate: ^0.7.4
+    lazy-ass: 1.6.0
+    lodash: ^4.17.21
+    ramda: 0.26.1
+  checksum: 3e23641cb599d98a3d4bb250216b8269c1fb9f2a1eab7957569b6fbc1965ece0d128a837dfe775b679ccf2460fdb7189918a451a5b3ac4d73193c34f6a704cf6
   languageName: node
   linkType: hard
 
@@ -19293,6 +19313,13 @@ __metadata:
   version: 4.1.4
   resolution: "compare-versions@npm:4.1.4"
   checksum: c1617544b79c2f36a1d543c50efd0da1a994040294c8923218080bc0df46da83ca414e3378282e93cab073744995124946417d130d8987e8efb5d1a73c0c4ba6
+  languageName: node
+  linkType: hard
+
+"compare-versions@npm:^5.0.1":
+  version: 5.0.3
+  resolution: "compare-versions@npm:5.0.3"
+  checksum: f66a4bb6ef8ff32031cc92c04dea4bbead039e72a7f6c7df7ef05f5a42ddca9202f8875b7449add54181e73b89f039662a8760c8db0ab036c4e8f653a7cd29c1
   languageName: node
   linkType: hard
 
@@ -36933,7 +36960,7 @@ __metadata:
     "@babel/core": ^7.19.3
     "@commitlint/cli": ^11.0.0
     "@commitlint/config-conventional": ^11.0.0
-    "@deploysentinel/cypress-debugger": ^0.7.3
+    "@deploysentinel/cypress-debugger": ^0.7.4
     "@octokit/rest": ^19.0.5
     "@testing-library/cypress": ^8.0.2
     "@types/fs-extra": ^8.0.1
