@@ -574,6 +574,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
             const model: CmsModel = {
                 ...original,
                 ...data,
+                description: data.description || "",
                 group,
                 tenant: original.tenant || getTenant().id,
                 locale: original.locale || getLocale().code,
