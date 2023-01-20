@@ -48,6 +48,13 @@ const PageBuilderMenu: React.FC = () => {
                             path="/page-builder/pages"
                         />
                     </HasPermission>
+                    <HasPermission name={"pb.block"}>
+                        <Menu
+                            name="pageBuilder.pages.pageTemplates"
+                            label={"Templates"}
+                            path="/page-builder/page-templates"
+                        />
+                    </HasPermission>
                     <HasPermission name={"pb.menu"}>
                         <Menu
                             name="pageBuilder.pages.menus"

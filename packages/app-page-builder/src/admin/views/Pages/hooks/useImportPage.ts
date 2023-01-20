@@ -7,13 +7,13 @@ import useImportPageDialog from "~/editor/plugins/defaultBar/components/ImportBu
 import useImportPageLoadingDialog from "~/editor/plugins/defaultBar/components/ImportButton/page/useImportPageLoadingDialog";
 
 interface UseImportPageParams {
-    setLoadingLabel: () => void;
-    clearLoadingLabel: () => void;
+    setLoadingStatus: () => void;
+    clearLoadingStatus: () => void;
     closeDialog: () => void;
 }
 const useImportPage = ({
-    setLoadingLabel,
-    clearLoadingLabel,
+    setLoadingStatus,
+    clearLoadingStatus,
     closeDialog
 }: UseImportPageParams) => {
     const [importPage] = useMutation(IMPORT_PAGES);
@@ -23,7 +23,7 @@ const useImportPage = ({
 
     const importPageMutation = useCallback(async ({ slug: category }, zipFileUrl) => {
         try {
-            setLoadingLabel();
+            setLoadingStatus();
             const res = await importPage({
                 variables: {
                     category,
@@ -31,7 +31,7 @@ const useImportPage = ({
                 }
             });
 
-            clearLoadingLabel();
+            clearLoadingStatus();
             closeDialog();
 
             const { error, data } = get(res, "data.pageBuilder.importPages", {});

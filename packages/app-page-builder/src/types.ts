@@ -855,6 +855,16 @@ export interface PbPageBlock {
     createdBy: PbIdentity;
 }
 
+export interface PbPageTemplate {
+    id: string;
+    title: string;
+    description: string;
+    content: any;
+    createdOn: string;
+    savedOn: string;
+    createdBy: PbIdentity;
+}
+
 /**
  * TODO: have types for both API and app in the same package?
  * GraphQL response types

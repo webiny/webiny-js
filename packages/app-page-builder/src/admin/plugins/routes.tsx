@@ -12,9 +12,11 @@ import PagesOld from "../views/Pages/Pages";
 import Pages from "~/admin/views/Pages/Table";
 import BlockCategories from "../views/BlockCategories/BlockCategories";
 import PageBlocks from "../views/PageBlocks/PageBlocks";
+import PageTemplates from "~/admin/views/PageTemplates/PageTemplates";
 
 import { PageEditor } from "~/pageEditor/Editor";
 import { BlockEditor } from "~/blockEditor/Editor";
+import { TemplateEditor } from "~/templateEditor/Editor";
 
 const ROLE_PB_CATEGORY = "pb.category";
 const ROLE_PB_MENUS = "pb.menu";
@@ -111,6 +113,48 @@ const plugins: RoutePlugin[] = [
                             <EditorPluginsLoader location={location}>
                                 <Helmet title={"Page Builder - Edit page"} />
                                 <PageEditor />
+                            </EditorPluginsLoader>
+                        </SecureRoute>
+                    );
+                }}
+            />
+        )
+    },
+    {
+        name: "route-pb-page-templates",
+        type: "route",
+        route: (
+            <Route
+                exact
+                path="/page-builder/page-templates"
+                render={({ location }) => {
+                    return (
+                        <SecureRoute permission={ROLE_PB_BLOCK}>
+                            <EditorPluginsLoader location={location}>
+                                <AdminLayout>
+                                    <Helmet title={"Page Builder - Page Templates"} />
+                                    <PageTemplates />
+                                </AdminLayout>
+                            </EditorPluginsLoader>
+                        </SecureRoute>
+                    );
+                }}
+            />
+        )
+    },
+    {
+        name: "route-pb-template-editor",
+        type: "route",
+        route: (
+            <Route
+                exact
+                path="/page-builder/template-editor/:id"
+                render={({ location }) => {
+                    return (
+                        <SecureRoute permission={ROLE_PB_BLOCK}>
+                            <EditorPluginsLoader location={location}>
+                                <Helmet title={"Page Builder - Edit template"} />
+                                <TemplateEditor />
                             </EditorPluginsLoader>
                         </SecureRoute>
                     );
