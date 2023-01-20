@@ -349,9 +349,9 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
             const identity = getIdentity();
             const model: CmsModel = {
                 ...data,
-                description: data.description || "",
                 modelId: data.modelId || "",
                 titleFieldId: "id",
+                description: data.description || "",
                 locale: getLocale().code,
                 tenant: getTenant().id,
                 group: {
@@ -574,7 +574,6 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
             const model: CmsModel = {
                 ...original,
                 ...data,
-                description: data.description || "",
                 group,
                 tenant: original.tenant || getTenant().id,
                 locale: original.locale || getLocale().code,

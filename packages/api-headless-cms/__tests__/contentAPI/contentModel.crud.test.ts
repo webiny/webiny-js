@@ -134,6 +134,7 @@ describe("content model test", () => {
                         name: "Test Content model",
                         description: "",
                         titleFieldId: "id",
+                        descriptionFieldId: null,
                         modelId: "testContentModel",
                         createdBy: helpers.identity,
                         createdOn: expect.stringMatching(/^20/),
@@ -507,6 +508,7 @@ describe("content model test", () => {
                         createdOn: expect.stringMatching(/^20/),
                         description: null,
                         titleFieldId: textField.fieldId,
+                        descriptionFieldId: null,
                         fields: [
                             {
                                 ...textField,

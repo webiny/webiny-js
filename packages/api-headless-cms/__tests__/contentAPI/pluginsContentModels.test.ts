@@ -33,9 +33,15 @@ const contentModelPlugin = new CmsModelPlugin({
             fieldId: "price",
             type: "number",
             label: "Price"
+        },
+        {
+            id: "descr",
+            fieldId: "descr",
+            label: "Description",
+            type: "long-text"
         }
     ],
-    layout: [["name"], ["sku", "price"]],
+    layout: [["name"], ["sku", "price"], ["descr"]],
     titleFieldId: "name",
     description: ""
 });
@@ -250,11 +256,100 @@ describe("content model plugins", () => {
             plugins: [contentModelPlugin]
         });
 
-        await getContentModelQuery({ modelId: "product" }).then(([response]) =>
-            expect(response).toEqual({
-                data: {
-                    getContentModel: {
-                        data: {
+        const [getContentModelResponse] = await getContentModelQuery({ modelId: "product" });
+        expect(getContentModelResponse).toEqual({
+            data: {
+                getContentModel: {
+                    data: {
+                        createdBy: null,
+                        createdOn: null,
+                        description: "",
+                        fields: [
+                            {
+                                storageId: "text@name",
+                                fieldId: "name",
+                                helpText: null,
+                                id: "name",
+                                label: "Product Name",
+                                listValidation: null,
+                                multipleValues: null,
+                                placeholderText: null,
+                                predefinedValues: null,
+                                renderer: null,
+                                settings: null,
+                                type: "text",
+                                validation: null
+                            },
+                            {
+                                storageId: "text@sku",
+                                fieldId: "sku",
+                                helpText: null,
+                                id: "sku",
+                                label: "SKU",
+                                listValidation: null,
+                                multipleValues: null,
+                                placeholderText: null,
+                                predefinedValues: null,
+                                renderer: null,
+                                settings: null,
+                                type: "text",
+                                validation: null
+                            },
+                            {
+                                storageId: "number@price",
+                                fieldId: "price",
+                                helpText: null,
+                                id: "price",
+                                label: "Price",
+                                listValidation: null,
+                                multipleValues: null,
+                                placeholderText: null,
+                                predefinedValues: null,
+                                renderer: null,
+                                settings: null,
+                                type: "number",
+                                validation: null
+                            },
+                            {
+                                storageId: "long-text@descr",
+                                fieldId: "descr",
+                                helpText: null,
+                                id: "descr",
+                                label: "Description",
+                                listValidation: null,
+                                multipleValues: null,
+                                placeholderText: null,
+                                predefinedValues: null,
+                                renderer: null,
+                                settings: null,
+                                type: "long-text",
+                                validation: null
+                            }
+                        ],
+                        group: {
+                            id: "ecommerce",
+                            name: "E-Commerce"
+                        },
+                        layout: [["name"], ["sku", "price"], ["descr"]],
+                        modelId: "product",
+                        name: "Product",
+                        plugin: true,
+                        savedOn: null,
+                        titleFieldId: "name",
+                        descriptionFieldId: "descr"
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [listContentModelsResponse] = await listContentModelsQuery();
+
+        expect(listContentModelsResponse).toEqual({
+            data: {
+                listContentModels: {
+                    data: [
+                        {
                             createdBy: null,
                             createdOn: null,
                             description: "",
@@ -303,98 +398,40 @@ describe("content model plugins", () => {
                                     settings: null,
                                     type: "number",
                                     validation: null
+                                },
+                                {
+                                    storageId: "long-text@descr",
+                                    fieldId: "descr",
+                                    helpText: null,
+                                    id: "descr",
+                                    label: "Description",
+                                    listValidation: null,
+                                    multipleValues: null,
+                                    placeholderText: null,
+                                    predefinedValues: null,
+                                    renderer: null,
+                                    settings: null,
+                                    type: "long-text",
+                                    validation: null
                                 }
                             ],
                             group: {
                                 id: "ecommerce",
                                 name: "E-Commerce"
                             },
-                            layout: [["name"], ["sku", "price"]],
+                            layout: [["name"], ["sku", "price"], ["descr"]],
                             modelId: "product",
                             name: "Product",
                             plugin: true,
                             savedOn: null,
-                            titleFieldId: "name"
-                        },
-                        error: null
-                    }
+                            titleFieldId: "name",
+                            descriptionFieldId: "descr"
+                        }
+                    ],
+                    error: null
                 }
-            })
-        );
-
-        await listContentModelsQuery().then(([response]) =>
-            expect(response).toEqual({
-                data: {
-                    listContentModels: {
-                        data: [
-                            {
-                                createdBy: null,
-                                createdOn: null,
-                                description: "",
-                                fields: [
-                                    {
-                                        storageId: "text@name",
-                                        fieldId: "name",
-                                        helpText: null,
-                                        id: "name",
-                                        label: "Product Name",
-                                        listValidation: null,
-                                        multipleValues: null,
-                                        placeholderText: null,
-                                        predefinedValues: null,
-                                        renderer: null,
-                                        settings: null,
-                                        type: "text",
-                                        validation: null
-                                    },
-                                    {
-                                        storageId: "text@sku",
-                                        fieldId: "sku",
-                                        helpText: null,
-                                        id: "sku",
-                                        label: "SKU",
-                                        listValidation: null,
-                                        multipleValues: null,
-                                        placeholderText: null,
-                                        predefinedValues: null,
-                                        renderer: null,
-                                        settings: null,
-                                        type: "text",
-                                        validation: null
-                                    },
-                                    {
-                                        storageId: "number@price",
-                                        fieldId: "price",
-                                        helpText: null,
-                                        id: "price",
-                                        label: "Price",
-                                        listValidation: null,
-                                        multipleValues: null,
-                                        placeholderText: null,
-                                        predefinedValues: null,
-                                        renderer: null,
-                                        settings: null,
-                                        type: "number",
-                                        validation: null
-                                    }
-                                ],
-                                group: {
-                                    id: "ecommerce",
-                                    name: "E-Commerce"
-                                },
-                                layout: [["name"], ["sku", "price"]],
-                                modelId: "product",
-                                name: "Product",
-                                plugin: true,
-                                savedOn: null,
-                                titleFieldId: "name"
-                            }
-                        ],
-                        error: null
-                    }
-                }
-            })
-        );
+            }
+        });
     });
 
     test("must be able to perform basic CRUD operations with content models registered via plugin", async () => {
