@@ -1226,7 +1226,7 @@ export interface CmsModelCreateInput {
     /**
      * Description of the content model.
      */
-    description?: string;
+    description?: string | null;
     /**
      * Group where to put the content model in.
      */
@@ -1255,6 +1255,10 @@ export interface CmsModelCreateInput {
      * It is picked as first available text field. Or user can select own field.
      */
     titleFieldId?: string;
+    /**
+     *
+     */
+    descriptionFieldId?: string | null;
 }
 
 /**
@@ -1353,7 +1357,7 @@ export interface CmsModelUpdateInput {
     /**
      * A new description of the content model.
      */
-    description?: string;
+    description?: string | null;
     /**
      * A list of content model fields to define the entry values.
      */
@@ -1374,6 +1378,10 @@ export interface CmsModelUpdateInput {
      * It is picked as first available text field. Or user can select own field.
      */
     titleFieldId?: string;
+    /**
+     *
+     */
+    descriptionFieldId?: string | null;
 }
 
 /**
