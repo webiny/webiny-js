@@ -76,6 +76,12 @@ const isFieldAllowedToBeTitle = (field: CmsModelField, parent?: CmsModelField) =
     }
     return true;
 };
+const isFieldAllowedToBeDescription = (field: CmsModelField, parent?: CmsModelField) => {
+    if (field.multipleValues || parent) {
+        return false;
+    }
+    return field.type === "long-text";
+};
 
 export interface FieldProps {
     field: CmsModelField;
@@ -125,6 +131,18 @@ const Field: React.FC<FieldProps> = props => {
         showSnackbar(t`Title field set successfully.`);
     }, [field.fieldId, setData]);
 
+    const setAsDescription = useCallback(async (): Promise<void> => {
+        const response = await setData(data => {
+            return { ...data, descriptionFieldId: field.fieldId };
+        });
+
+        if (response && response.error) {
+            return showSnackbar(response.error.message);
+        }
+
+        showSnackbar(t`Description field set successfully.`);
+    }, [field.fieldId, setData]);
+
     const fieldPlugin = getFieldPlugin(field.type);
     const editorFieldOptionPlugins =
         plugins.byType<CmsEditorFieldOptionPlugin>("cms-editor-field-option");
@@ -136,11 +154,13 @@ const Field: React.FC<FieldProps> = props => {
     const rendererPlugin = getFieldRendererPlugin(field.renderer.name);
     const canEdit = fieldPlugin.field.canEditSettings !== false;
     const isTitleField = data && field.fieldId === data.titleFieldId && !parent;
+    const isDescriptionField = data && field.fieldId === data.descriptionFieldId && !parent;
 
     const info = [
         rendererPlugin?.renderer.name,
         field.multipleValues ? "multiple values" : null,
-        isTitleField ? "entry title" : null
+        isTitleField ? "entry title" : null,
+        isDescriptionField ? "entry description" : null
     ]
         .filter(Boolean)
         .join(", ");
@@ -179,6 +199,15 @@ const Field: React.FC<FieldProps> = props => {
                                 <Icon icon={<TitleIcon />} />
                             </ListItemGraphic>
                             {t`Use as title`}
+                        </MenuItem>
+                        <MenuItem
+                            disabled={!isFieldAllowedToBeDescription(field, parent)}
+                            onClick={setAsDescription}
+                        >
+                            <ListItemGraphic>
+                                <Icon icon={<TitleIcon />} />
+                            </ListItemGraphic>
+                            {t`Use as description`}
                         </MenuItem>
                         <MenuItem onClick={onDelete}>
                             <ListItemGraphic>
