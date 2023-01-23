@@ -34,7 +34,26 @@ const assign = (plugins: any, options: any, target: Record<string, any>): void =
     }
 };
 
+type Class<T> = new (plugin: Plugin) => T;
+
+export class PluginDecorator<T extends Plugin = Plugin> {
+    protected plugin: T;
+
+    constructor(plugin: T) {
+        this.plugin = plugin;
+    }
+
+    get type() {
+        return this.plugin.type;
+    }
+
+    get name() {
+        return this.plugin.name;
+    }
+}
+
 export class PluginsContainer {
+    private pluginDecorators: Record<string, Class<PluginDecorator>> = {};
     private plugins: Record<string, Plugin> = {};
     private _byTypeCache: Record<string, Plugin[]> = {};
 
@@ -49,7 +68,7 @@ export class PluginsContainer {
         /**
          * We can safely cast name as string, we know it is so.
          */
-        return this.plugins[name as string] as T;
+        return this.decorate(this.plugins[name as string]) as T;
     }
 
     public byType<T extends Plugin>(type: T["type"]): T[] {
@@ -76,11 +95,11 @@ export class PluginsContainer {
                 `There is a requirement for plugin of type "${type}" to be only one registered.`
             );
         }
-        return list[0];
+        return this.decorate(list[0]) as T;
     }
 
     public all<T extends Plugin>(): T[] {
-        return Object.values(this.plugins) as T[];
+        return Object.values(this.plugins).map(pl => this.decorate(pl)) as T[];
     }
 
     public register(...args: any): void {
@@ -96,7 +115,25 @@ export class PluginsContainer {
         delete this.plugins[name];
     }
 
+    public registerDecorator<T>(type: string, decorator: Class<T>) {
+        // @ts-ignore
+        this.pluginDecorators[type] = decorator;
+
+        delete this._byTypeCache[type];
+    }
+
     private findByType<T extends Plugin>(type: T["type"]): T[] {
-        return (Object.values(this.plugins) as T[]).filter(pl => pl.type === type) as T[];
+        return (Object.values(this.plugins) as T[])
+            .filter(pl => pl.type === type)
+            .map(pl => this.decorate(pl)) as T[];
+    }
+
+    private decorate(plugin: Plugin) {
+        const Decorator = this.pluginDecorators[plugin.type];
+        if (!Decorator) {
+            return plugin;
+        }
+
+        return new Decorator(plugin);
     }
 }
