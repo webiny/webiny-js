@@ -1,7 +1,7 @@
 import { TenancyContext } from "@webiny/api-tenancy/types";
 import { Context as BaseContext } from "@webiny/handler/types";
 import { I18NContext } from "@webiny/api-i18n/types";
-import { PbContext } from "@webiny/api-page-builder/graphql/types";
+import { PbContext } from "@webiny/api-page-builder/types";
 import { SecurityContext, SecurityIdentity } from "@webiny/api-security/types";
 import { Topic } from "@webiny/pubsub/types";
 
