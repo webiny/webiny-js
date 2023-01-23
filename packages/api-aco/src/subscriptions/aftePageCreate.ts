@@ -6,7 +6,7 @@ export const afterPageCreate = () => {
     return new ContextPlugin<ACOContext>(async context => {
         context.pageBuilder.onPageAfterCreate.subscribe(async ({ page, folderId = "ROOT" }) => {
             try {
-                console.log("context", JSON.stringify(context));
+                console.log("context", context);
                 await context.folders.createLink({ id: page.pid, folderId });
             } catch (error) {
                 /**
