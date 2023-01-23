@@ -282,7 +282,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
         async processPageContent(page) {
             return processPageContent(page, pageElementProcessors);
         },
-        async createPage(this: PageBuilderContextObject, slug, folderId): Promise<any> {
+        async createPage(this: PageBuilderContextObject, slug, meta): Promise<any> {
             await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
 
             const category = await this.getCategory(slug);
@@ -348,7 +348,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
             try {
                 await onPageBeforeCreate.publish({
                     page,
-                    folderId
+                    meta
                 });
 
                 const result = await storageOperations.pages.create({
@@ -359,7 +359,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                 });
                 await onPageAfterCreate.publish({
                     page: result,
-                    folderId
+                    meta
                 });
 
                 return {

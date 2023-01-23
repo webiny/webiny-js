@@ -1,12 +1,14 @@
 import { ContextPlugin } from "@webiny/api";
 import WebinyError from "@webiny/error";
+import get from "lodash.get";
+
 import { ACOContext } from "~/types";
 
 export const afterPageCreate = () => {
     return new ContextPlugin<ACOContext>(async context => {
-        context.pageBuilder.onPageAfterCreate.subscribe(async ({ page, folderId = "ROOT" }) => {
+        context.pageBuilder.onPageAfterCreate.subscribe(async ({ page, meta }) => {
             try {
-                console.log("context", context);
+                const folderId = get(meta, "location.folderId", "ROOT");
                 await context.folders.createLink({ id: page.pid, folderId });
             } catch (error) {
                 /**

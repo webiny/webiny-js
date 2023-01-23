@@ -55,9 +55,9 @@ export const LIST_PAGES_DATA_FIELDS = `
 `;
 
 export const CREATE_PAGE = gql`
-    mutation PbCreatePage($from: ID, $category: String, $folderId: String) {
+    mutation PbCreatePage($from: ID, $category: String, $meta: JSON) {
         pageBuilder {
-            createPage(from: $from, category: $category, folderId: $folderId) {
+            createPage(from: $from, category: $category, meta: $meta) {
                 data {
                     ${LIST_PAGES_DATA_FIELDS}
                 }

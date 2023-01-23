@@ -26,7 +26,14 @@ const useCreatePage = ({
             try {
                 setLoadingLabel();
                 const res = await create({
-                    variables: { category, folderId },
+                    variables: {
+                        category,
+                        meta: {
+                            location: {
+                                folderId
+                            }
+                        }
+                    },
                     update(cache, { data }) {
                         if (data.pageBuilder.createPage.error) {
                             return;

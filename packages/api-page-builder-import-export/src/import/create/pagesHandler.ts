@@ -14,7 +14,7 @@ export const pagesHandler = async (
     const log = console.log;
 
     const { pageBuilder } = context;
-    const { task, type, category, zipFileUrl, identity, folderId } = payload;
+    const { task, type, category, zipFileUrl, identity, meta } = payload;
     try {
         log("RUNNING Import Pages Create");
         if (!zipFileUrl) {
@@ -42,7 +42,7 @@ export const pagesHandler = async (
                         pageKey: pagesDirMap.key,
                         category,
                         zipFileUrl,
-                        folderId,
+                        meta,
                         input: {
                             fileUploadsData: pagesDirMap
                         }

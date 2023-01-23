@@ -30,7 +30,11 @@ const useImportPage = ({
                 variables: {
                     category,
                     zipFileUrl,
-                    folderId
+                    meta: {
+                        location: {
+                            folderId
+                        }
+                    }
                 }
             });
 

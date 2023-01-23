@@ -22,13 +22,13 @@ export const IMPORT_PAGES = gql`
     mutation PbImportPage(
         $category: String!,
         $zipFileUrl: String,
-        $folderId: String
+        $meta: JSON
     ) {
         pageBuilder {
             importPages(
                 category: $category,
                 zipFileUrl: $zipFileUrl,
-                folderId: $folderId
+                meta: $meta
             ) {
                 data {
                     task {
