@@ -9,6 +9,7 @@
   "private": true,
   "dependencies": {
     "@lexical/code": "0.6.0",
+    "@lexical/headless": "^0.7.6",
     "@lexical/html": "0.6.2",
     "@lexical/react": "^0.6.0",
     "@lexical/selection": "0.6.0",

@@ -1,6 +1,7 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import { usePageElements } from "~/hooks/usePageElements";
 import { ElementRenderer } from "~/types";
+import { editorStateJSONStringToHtml } from "@webiny/lexical-editor";
 
 declare global {
     //eslint-disable-next-line
@@ -18,20 +19,22 @@ const defaultStyles = {
 const Heading: ElementRenderer = ({ element }) => {
     const { getClassNames, getElementClassNames, combineClassNames } = usePageElements();
     const tag = element.data.text.desktop.tag || "h1";
+    const [elementHtml, setElementHtml] = useState("");
 
     const classNames = combineClassNames(
         getClassNames(defaultStyles),
         getElementClassNames(element)
     );
 
+    useEffect(() => {
+        editorStateJSONStringToHtml(element.data.text.data.text || "", (html) => {
+            setElementHtml(html);
+        });
+    }, []);
+
     return (
         <pb-heading>
-            {React.createElement(tag, {
-                dangerouslySetInnerHTML: {
-                    __html: element.data.text.data.text
-                },
-                className: classNames
-            })}
+            <RenderLexicalContent value={element.data.text.data.text || ""} />
         </pb-heading>
     );
 };

@@ -1,6 +1,6 @@
 // hooks
 export { useRichTextEditor } from "~/hooks/useRichTextEditor";
-// UI elements
+// ui
 export { Divider } from "~/ui/Divider";
 export { DropDownItem } from "~/ui/DropDown";
 export { DropDown } from "~/ui/DropDown";
@@ -25,6 +25,9 @@ export { HeadingToolbarPreset } from "./components/ToolbarPresets/HeadingToolbar
 export { RichTextEditor } from "~/components/Editor/RichTextEditor";
 export { HeadingEditor } from "~/components/Editor/HeadingEditor";
 export { ParagraphEditor } from "~/components/Editor/ParagraphEditor";
+// Render lexical content
+export { RenderLexicalContent } from "~/components/RenderLexicalContent";
+export { editorStateJSONStringToHtml } from "~/utils/editorStateJSONStringToHtml";
 // plugins
 export { LinkPlugin } from "@lexical/react/LexicalLinkPlugin";
 export { FloatingLinkEditorPlugin } from "~/plugins/FloatingLinkEditorPlugin/FloatingLinkEditorPlugin";

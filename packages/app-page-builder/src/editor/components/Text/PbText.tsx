@@ -83,10 +83,8 @@ const PbText: React.FC<TextElementProps> = ({ elementId, mediumEditorOptions, ro
             {showLexicalEditor() ? (
                 <RichTextLexicalEditor
                     tag={tag}
-                    value={null}
-                    onChange={json => {
-                        console.log(json);
-                    }}
+                    value={initialText}
+                    onChange={onChange}
                 />
             ) : (
                 <ReactMediumEditor

@@ -4,7 +4,7 @@ import { EditorStateJSONString } from "@webiny/lexical-editor/types";
 
 interface LexicalEditorProps {
     tag: string | [string, Record<string, any>];
-    value: EditorStateJSONString | null;
+    value: EditorStateJSONString;
     onChange?: (json: EditorStateJSONString) => void;
 }
 

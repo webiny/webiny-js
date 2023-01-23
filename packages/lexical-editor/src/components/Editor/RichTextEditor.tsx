@@ -15,12 +15,13 @@ import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
 import { makeComposable } from "@webiny/react-composition";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { RichTextEditorProvider } from "~/context/RichTextEditorContext";
+import {isJSONObjectString} from "~/utils/isJSONObjectString";
 
 export interface RichTextEditorProps {
     toolbar: React.ReactNode;
     tag: string;
     onChange?: (json: EditorStateJSONString) => void;
-    value: EditorStateJSONString | undefined | null;
+    value: EditorStateJSONString;
     placeholder?: string;
     nodes?: Klass<LexicalNode>[];
     /**
@@ -50,7 +51,7 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
     };
 
     const initialConfig = {
-        editorState: value ?? getEmptyEditorStateJSONString(),
+        editorState: isJSONObjectString(value) ? value : getEmptyEditorStateJSONString(),
         namespace: "webiny",
         onError: (error: Error) => {
             throw error;

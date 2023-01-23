@@ -1,5 +1,5 @@
 let featureFlags: Record<string, any> = {
-    pbLexicalEditor: false
+    pbLexicalEditor: true
 };
 
 // In API applications.

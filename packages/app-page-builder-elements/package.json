@@ -30,6 +30,7 @@
     "@types/react": "17.0.39",
     "@types/resize-observer-browser": "^0.1.4",
     "@webiny/cli": "^5.33.2",
+    "@webiny/lexical-editor": "^5.33.2",
     "@webiny/project-utils": "^5.33.2",
     "babel-plugin-emotion": "^9.2.8",
     "babel-plugin-lodash": "^3.3.4",

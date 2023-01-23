@@ -1,6 +1,7 @@
 import React from "react";
 import { usePageElements } from "~/hooks/usePageElements";
 import { ElementRenderer } from "~/types";
+import { RenderLexicalContent } from "@webiny/lexical-editor";
 
 declare global {
     //eslint-disable-next-line
@@ -21,10 +22,7 @@ const Paragraph: ElementRenderer = ({ element }) => {
     );
 
     return (
-        <pb-paragraph
-            class={classNames}
-            dangerouslySetInnerHTML={{ __html: element.data.text.data.text }}
-        />
+        <RenderLexicalContent value={element.data.text.data.text || ""} />
     );
 };
 

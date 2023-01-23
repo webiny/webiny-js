@@ -6010,6 +6010,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@lexical/headless@npm:^0.7.6":
+  version: 0.7.6
+  resolution: "@lexical/headless@npm:0.7.6"
+  peerDependencies:
+    lexical: 0.7.6
+  checksum: 9dd9cacba2a45a2e9b0fce5e8ccda1642f7c7c1f04ecf96b2393c1534004f55c04dcce819d88fd61c47204f78b3864fa67ffb4611c94806548b307c622498352
+  languageName: node
+  linkType: hard
+
 "@lexical/history@npm:0.6.0":
   version: 0.6.0
   resolution: "@lexical/history@npm:0.6.0"
@@ -13026,6 +13035,7 @@ __metadata:
     "@types/react": 17.0.39
     "@types/resize-observer-browser": ^0.1.4
     "@webiny/cli": ^5.33.2
+    "@webiny/lexical-editor": ^5.33.2
     "@webiny/project-utils": ^5.33.2
     babel-plugin-emotion: ^9.2.8
     babel-plugin-lodash: ^3.3.4
@@ -14148,6 +14158,7 @@ __metadata:
   resolution: "@webiny/lexical-editor@workspace:packages/lexical-editor"
   dependencies:
     "@lexical/code": 0.6.0
+    "@lexical/headless": ^0.7.6
     "@lexical/html": 0.6.2
     "@lexical/link": ^0.6.0
     "@lexical/react": ^0.6.0
