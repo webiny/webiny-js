@@ -6,6 +6,7 @@ import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { Dialog, DialogContent, DialogTitle, DialogCancel, DialogActions } from "@webiny/ui/Dialog";
 import { i18n } from "@webiny/app/i18n";
+import { useSnackbar } from "@webiny/app-admin";
 import { ReactComponent as ObjectIcon } from "@material-design-icons/svg/outlined/data_object.svg";
 import { ReactComponent as TableIcon } from "@material-design-icons/svg/outlined/table_rows.svg";
 import { FbFormModelField, FbFormSubmissionData } from "~/types";
@@ -28,6 +29,7 @@ const dialogStyle = css`
     }
 
     .webiny-ui-dialog__content {
+        min-width: 400px;
         margin-top: 0;
         padding: 25px;
         div {
@@ -62,6 +64,8 @@ const renderFieldValueLabel = (field: FbFormModelField, value: string): string =
 };
 
 const FormSubmissionDialog: React.FC<FormSubmissionDialogProps> = ({ formSubmission, onClose }) => {
+    const { showSnackbar } = useSnackbar();
+
     return (
         <Dialog open={!!formSubmission} onClose={onClose} className={dialogStyle}>
             {formSubmission && (
@@ -76,6 +80,7 @@ const FormSubmissionDialog: React.FC<FormSubmissionDialogProps> = ({ formSubmiss
                                         navigator.clipboard.writeText(
                                             JSON.stringify(formSubmission.data)
                                         );
+                                        showSnackbar("JSON data copied to clipboard.");
                                     }}
                                 />
                             </Tooltip>
@@ -84,6 +89,7 @@ const FormSubmissionDialog: React.FC<FormSubmissionDialogProps> = ({ formSubmiss
                                     icon={<TableIcon />}
                                     onClick={() => {
                                         navigator.clipboard.writeText(parse(formSubmission.data));
+                                        showSnackbar("CSV data copied to clipboard.");
                                     }}
                                 />
                             </Tooltip>
