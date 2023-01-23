@@ -463,7 +463,7 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                             );
 
                             const duplicatedPageData = {
-                                title: `(Copy) ${page.title}`,
+                                title: `${page.title} (Copy)`,
                                 path: `${page.path}-copy`,
                                 content: page.content,
                                 settings: page.settings

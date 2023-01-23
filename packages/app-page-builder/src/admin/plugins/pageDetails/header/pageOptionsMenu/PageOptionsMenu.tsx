@@ -92,7 +92,7 @@ const PageOptionsMenu: React.FC<PageOptionsMenuProps> = props => {
                     }
 
                     GQLCache.addPageToListCache(cache, data.pageBuilder.duplicatePage.data);
-                    showSnackbar(`Duplicated "${page.title}".`);
+                    showSnackbar(`The page "${page.title}" was duplicated successfully.`);
                     history.push(
                         `/page-builder/pages?id=${encodeURIComponent(
                             data.pageBuilder.duplicatePage.data.id
