@@ -36,11 +36,7 @@ export const TextareaField: React.FC<TextareaProps> = ({ field }) => {
 
     return (
         <Field>
-            <FieldLabel
-                required={field?.validation?.some(validation => validation.name === "required")}
-            >
-                {field.label}
-            </FieldLabel>
+            <FieldLabel field={field} />
 
             <StyledTextarea
                 onChange={e => onChange(e.target.value)}

@@ -1,6 +1,6 @@
 import * as React from "react";
 import styled from "@emotion/styled";
-import { ReactComponent as Asterisk } from "@material-symbols/svg-400/outlined/emergency.svg";
+import { FormRenderFbFormModelField } from "@webiny/app-form-builder/types";
 import theme from "../../../../../theme";
 
 export const FieldLabelStyled = styled.label`
@@ -12,24 +12,23 @@ export const FieldLabelStyled = styled.label`
         text-align: left !important;
     }
 
-    svg {
-        width: 10px;
-        height: 10px;
-        fill var(--mdc-theme-primary, #fa5723);
+    .asterisk {
         margin-left: 5px;
-        margin-bottom: 5px;
+        color: ${theme.styles.colors.color1};
     }
 `;
 
 interface FieldLabelProps {
-    required?: boolean | null;
+    field: FormRenderFbFormModelField;
 }
 
-export const FieldLabel: React.FC<FieldLabelProps> = props => {
+export const FieldLabel: React.FC<FieldLabelProps> = ({ field }) => {
     return (
         <FieldLabelStyled>
-            {props.children}
-            {props.required && <Asterisk />}
+            {field.label}
+            {field.validation?.some(validation => validation.name === "required") && (
+                <span className="asterisk">*</span>
+            )}
         </FieldLabelStyled>
     );
 };

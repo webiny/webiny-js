@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback } from "react";
 import styled from "@emotion/styled";
 import { IconButton } from "@webiny/ui/Button";
 import { Typography } from "@webiny/ui/Typography";
@@ -57,11 +57,9 @@ const Field: React.FC<FieldProps> = props => {
     const { getFieldPlugin, updateField } = useFormEditor();
     const fieldPlugin = getFieldPlugin({ name: field.name });
 
-    const isRequired = useMemo(() => {
-        return field?.validation?.some(validation => validation.name === "required");
-    }, [field]);
+    const isRequired = field.validation?.some(validation => validation.name === "required");
 
-    const handleRequiredStatusChange = useCallback(() => {
+    const toggleRequiredValidator = useCallback(() => {
         if (isRequired) {
             updateField({
                 ...field,
@@ -91,7 +89,7 @@ const Field: React.FC<FieldProps> = props => {
             <Actions>
                 <div className="switch-wrapper">
                     <Typography use={"body2"}>Required</Typography>
-                    <Switch value={isRequired} onChange={handleRequiredStatusChange} />
+                    <Switch value={isRequired} onChange={toggleRequiredValidator} />
                 </div>
                 <StyledDivider />
                 <IconButton icon={<EditIcon />} onClick={() => onEdit(field)} />
