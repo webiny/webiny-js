@@ -1,5 +1,5 @@
 import React from "react";
-import { Admin as BaseAdmin, Provider } from "@webiny/app-admin-core";
+import { App, Provider } from "@webiny/app-core";
 import { WcpProvider } from "@webiny/app-wcp";
 import { ApolloClientFactory, createApolloProvider } from "./providers/ApolloProvider";
 import { Base } from "./Base";
@@ -23,7 +23,7 @@ export const Admin: React.FC<AdminProps> = ({ children, createApolloClient }) =>
     return (
         <ApolloProvider>
             <WcpProvider loader={<CircularProgress label={"Loading..."} />}>
-                <BaseAdmin>
+                <App>
                     <Provider hoc={TelemetryProvider} />
                     <Provider hoc={UiStateProvider} />
                     <Provider hoc={SearchProvider} />
@@ -31,7 +31,7 @@ export const Admin: React.FC<AdminProps> = ({ children, createApolloClient }) =>
                     <Provider hoc={NavigationProvider} />
                     <Base />
                     {children}
-                </BaseAdmin>
+                </App>
             </WcpProvider>
         </ApolloProvider>
     );

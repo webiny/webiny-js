@@ -1,5 +1,5 @@
 import React, { Fragment, Children, createContext, useContext, useEffect, memo } from "react";
-import { useAdmin } from "~/admin";
+import { useApp } from "~/App";
 
 export const PluginsContext = createContext<boolean>(false);
 PluginsContext.displayName = "PluginsContext";
@@ -18,7 +18,7 @@ const PluginsProviderComponent: React.FC<PluginsProviderComponentProps> = ({ chi
 export const PluginsProvider = memo(PluginsProviderComponent);
 
 export const Plugins: React.FC = ({ children }) => {
-    const { addPlugin } = useAdmin();
+    const { addPlugin } = useApp();
     const hasParentPlugin = useContext(PluginsContext);
 
     useEffect(() => {

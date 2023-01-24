@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Compose, makeComposable } from "@webiny/app-admin-core";
+import { Compose, makeComposable } from "@webiny/app-core";
 
 export const Logo = makeComposable("Logo", () => {
     return <LogoRenderer />;

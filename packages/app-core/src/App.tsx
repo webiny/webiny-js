@@ -9,9 +9,9 @@ import React, {
 } from "react";
 import { BrowserRouter, RouteProps } from "@webiny/react-router";
 import { compose, HigherOrderComponent, CompositionProvider } from "@webiny/react-composition";
-import { Routes as SortRoutes } from "./components/utils/Routes";
-import { DebounceRender } from "./components/utils/DebounceRender";
-import { PluginsProvider } from "./components/core/Plugins";
+import { Routes as SortRoutes } from "./utils/Routes";
+import { DebounceRender } from "./utils/DebounceRender";
+import { PluginsProvider } from "./core/Plugins";
 
 interface State {
     routes: Record<string, ReactElement<RouteProps>>;
@@ -19,37 +19,31 @@ interface State {
     providers: HigherOrderComponent[];
 }
 
-interface AdminContext extends State {
+interface AppContext extends State {
     addRoute(route: JSX.Element): void;
     addProvider(hoc: HigherOrderComponent): void;
     addPlugin(plugin: React.ReactNode): void;
 }
 
-const AdminContext = createContext<AdminContext>({
-    routes: {},
-    plugins: [],
-    providers: [],
-    addPlugin: () => {
-        return void 0;
-    },
-    addProvider: () => {
-        return void 0;
-    },
-    addRoute: () => {
-        return void 0;
-    }
-});
-AdminContext.displayName = "AdminContext";
+const AppContext = createContext<AppContext | undefined>(undefined);
 
-export const useAdmin = () => {
-    return useContext(AdminContext);
+AppContext.displayName = "AppContext";
+
+export const useApp = () => {
+    const appContext = useContext(AppContext);
+    if (!appContext) {
+        throw Error(
+            `AppContext provider was not found. Are you using the "useApp()" hook in the right place?`
+        );
+    }
+    return appContext;
 };
 
-export interface AdminProps {
+export interface AppProps {
     children?: React.ReactNode | React.ReactNode[];
 }
 
-export const Admin = ({ children }: AdminProps) => {
+export const App = ({ children }: AppProps) => {
     const [state, setState] = useState<State>({
         routes: {},
         plugins: [],
@@ -87,7 +81,7 @@ export const Admin = ({ children }: AdminProps) => {
         });
     }, []);
 
-    const adminContext = useMemo(
+    const appContext = useMemo(
         () => ({
             ...state,
             addRoute,
@@ -97,9 +91,9 @@ export const Admin = ({ children }: AdminProps) => {
         [state]
     );
 
-    const AdminRouter = useMemo(
+    const AppRouter = useMemo(
         () =>
-            function AdminRouter() {
+            function AppRouter() {
                 const routes = Object.values(state.routes);
                 return <SortRoutes key={routes.length} routes={routes} />;
             },
@@ -114,20 +108,20 @@ export const Admin = ({ children }: AdminProps) => {
     Providers.displayName = "Providers";
 
     return (
-        <AdminContext.Provider value={adminContext}>
+        <AppContext.Provider value={appContext}>
             <CompositionProvider>
                 {children}
                 <BrowserRouter>
                     <Providers>
                         <PluginsProvider>{state.plugins}</PluginsProvider>
                         <DebounceRender>
-                            <AdminRouter />
+                            <AppRouter />
                         </DebounceRender>
                     </Providers>
                 </BrowserRouter>
             </CompositionProvider>
-        </AdminContext.Provider>
+        </AppContext.Provider>
     );
 };
 
-Admin.displayName = "Admin";
+App.displayName = "App";
