@@ -57,9 +57,10 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
             CAUTION: this field is resolved by making an extra query to DB.
             RECOMMENDATION: Use it only with "get" queries (avoid in "list")
             """
-            revisions: [${mTypeName}]
+            revisions: [${mTypeName}!]
             title: String
             description: String
+            image: String
             """
             Custom meta data stored in the root of the entry object.
             """

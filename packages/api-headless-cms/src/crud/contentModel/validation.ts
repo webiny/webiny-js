@@ -108,7 +108,8 @@ export const createModelCreateValidation = () => {
         layout: zod.array(zod.array(shortString)).default([]),
         tags: zod.array(shortString).optional(),
         titleFieldId: optionalShortString,
-        descriptionFieldId: optionalShortString
+        descriptionFieldId: optionalShortString,
+        imageFieldId: optionalShortString
     });
 };
 
@@ -130,6 +131,8 @@ export const createModelUpdateValidation = () => {
         fields: zod.array(fieldSchema),
         layout: zod.array(zod.array(shortString)),
         titleFieldId: optionalShortString,
+        descriptionFieldId: optionalShortString,
+        imageFieldId: optionalShortString,
         tags: zod.array(shortString).optional()
     });
 };

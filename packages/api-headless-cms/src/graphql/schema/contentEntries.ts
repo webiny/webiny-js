@@ -5,6 +5,7 @@ import { NotAuthorizedResponse } from "@webiny/api-security";
 import { getEntryTitle } from "~/utils/getEntryTitle";
 import { CmsGraphQLSchemaPlugin } from "~/plugins";
 import { getEntryDescription } from "~/utils/getEntryDescription";
+import { getEntryImage } from "~/utils/getEntryImage";
 
 interface EntriesByModel {
     [key: string]: string[];
@@ -120,7 +121,8 @@ const getContentEntries = async (params: GetContentEntriesParams): Promise<Respo
                         },
                         status: item.status,
                         title: getEntryTitle(model, item),
-                        description: getEntryDescription(model, item)
+                        description: getEntryDescription(model, item),
+                        image: getEntryImage(model, item)
                     };
                 })
             );
@@ -185,7 +187,8 @@ const getContentEntry = async (
         },
         status: entry.status,
         title: getEntryTitle(model, entry),
-        description: getEntryDescription(model, entry)
+        description: getEntryDescription(model, entry),
+        image: getEntryImage(model, entry)
     });
 };
 
@@ -200,27 +203,31 @@ export const createContentEntriesSchema = (context: CmsContext): CmsGraphQLSchem
     return new CmsGraphQLSchemaPlugin({
         typeDefs: /* GraphQL */ `
             type CmsModelMeta {
-                modelId: String
-                name: String
+                modelId: String!
+                name: String!
             }
 
             type CmsPublishedContentEntry {
                 id: ID!
                 entryId: String!
                 title: String
+                description: String
+                image: String
             }
 
             type CmsContentEntry {
                 id: ID!
                 entryId: String!
-                model: CmsModelMeta
+                model: CmsModelMeta!
                 status: String
                 title: String
+                description: String
+                image: String
                 published: CmsPublishedContentEntry
             }
 
             type CmsContentEntriesResponse {
-                data: [CmsContentEntry]
+                data: [CmsContentEntry!]
                 error: CmsError
             }
 
@@ -241,20 +248,20 @@ export const createContentEntriesSchema = (context: CmsContext): CmsGraphQLSchem
                     query: String
                     fields: [String!]
                     limit: Int
-                ): CmsContentEntriesResponse
+                ): CmsContentEntriesResponse!
 
                 # Get content entry meta data
-                getContentEntry(entry: CmsModelEntryInput!): CmsContentEntryResponse
+                getContentEntry(entry: CmsModelEntryInput!): CmsContentEntryResponse!
 
-                getLatestContentEntry(entry: CmsModelEntryInput!): CmsContentEntryResponse
-                getPublishedContentEntry(entry: CmsModelEntryInput!): CmsContentEntryResponse
+                getLatestContentEntry(entry: CmsModelEntryInput!): CmsContentEntryResponse!
+                getPublishedContentEntry(entry: CmsModelEntryInput!): CmsContentEntryResponse!
 
                 # Get content entries meta data
-                getContentEntries(entries: [CmsModelEntryInput!]!): CmsContentEntriesResponse
-                getLatestContentEntries(entries: [CmsModelEntryInput!]!): CmsContentEntriesResponse
+                getContentEntries(entries: [CmsModelEntryInput!]!): CmsContentEntriesResponse!
+                getLatestContentEntries(entries: [CmsModelEntryInput!]!): CmsContentEntriesResponse!
                 getPublishedContentEntries(
                     entries: [CmsModelEntryInput!]!
-                ): CmsContentEntriesResponse
+                ): CmsContentEntriesResponse!
             }
         `,
         resolvers: {
@@ -278,7 +285,8 @@ export const createContentEntriesSchema = (context: CmsContext): CmsGraphQLSchem
                             id: entry.id,
                             entryId: entry.entryId,
                             title: getEntryTitle(model, entry),
-                            description: getEntryDescription(model, entry)
+                            description: getEntryDescription(model, entry),
+                            image: getEntryImage(model, entry)
                         };
                     } catch (ex) {
                         return null;
@@ -314,6 +322,7 @@ export const createContentEntriesSchema = (context: CmsContext): CmsGraphQLSchem
                                     status: entry.status,
                                     title: getEntryTitle(model, entry),
                                     description: getEntryDescription(model, entry),
+                                    image: getEntryImage(model, entry),
                                     // We need `savedOn` to sort entries from latest to oldest
                                     savedOn: entry.savedOn
                                 };

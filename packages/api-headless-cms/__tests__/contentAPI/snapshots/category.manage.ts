@@ -23,9 +23,10 @@ export default /* GraphQL */ `
         publishedOn: DateTime
         status: String
         ${revisionsComment}
-        revisions: [Category]
+        revisions: [Category!]
         title: String
         description: String
+        image: String
         ${metaDataComment}
         data: JSON
     }
