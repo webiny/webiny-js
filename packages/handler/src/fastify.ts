@@ -32,8 +32,8 @@ const getDefaultHeaders = (routes: DefinedContextRoutes): Record<string, string>
     /**
      * If we are accepting all headers, just output that one.
      */
-    const keys = Object.keys(routes);
-    const all = keys.every(key => routes[key as HTTPMethods].length > 0);
+    const keys = Object.keys(routes) as HTTPMethods[];
+    const all = keys.every(key => routes[key].length > 0);
     if (all) {
         return {
             ...DEFAULT_HEADERS,
@@ -43,8 +43,7 @@ const getDefaultHeaders = (routes: DefinedContextRoutes): Record<string, string>
     return {
         ...DEFAULT_HEADERS,
         "Access-Control-Allow-Methods": keys
-            .filter(key => {
-                const type = key as unknown as HTTPMethods;
+            .filter(type => {
                 if (!routes[type] || Array.isArray(routes[type]) === false) {
                     return false;
                 }
@@ -121,8 +120,7 @@ export const createHandler = (params: CreateHandlerParams) => {
         );
     };
 
-    const addDefinedRoute = (inputType: HTTPMethods, path: string): void => {
-        const type = (inputType as string).toUpperCase() as HTTPMethods;
+    const addDefinedRoute = (type: HTTPMethods, path: string): void => {
         if (!definedRoutes[type]) {
             return;
         } else if (definedRoutes[type].includes(path)) {
@@ -230,7 +228,7 @@ export const createHandler = (params: CreateHandlerParams) => {
         routes
     });
     /**
-     * We are attaching our custom context to webiny variable on the fastify app so it is accessible everywhere
+     * We are attaching our custom context to webiny variable on the fastify app, so it is accessible everywhere.
      */
     app.decorate("webiny", context);
 
