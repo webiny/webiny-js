@@ -146,7 +146,6 @@ const FormRender: React.FC<FormRenderProps> = props => {
     const submit = async (
         formSubmissionFieldValues: FormSubmissionFieldValues
     ): Promise<FormSubmissionResponse> => {
-        console.log("ideeee");
         if (reCaptchaEnabled(formData) && !reCaptchaResponseToken.current) {
             return {
                 data: null,
