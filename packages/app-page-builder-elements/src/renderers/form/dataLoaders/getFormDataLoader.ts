@@ -7,6 +7,7 @@ const GET_PUBLISHED_FORM = /* GraphQL */ `
             getPublishedForm(revision: $revision, parent: $parent) {
                 data {
                     id
+                    formId
                     fields {
                         _id
                         fieldId
