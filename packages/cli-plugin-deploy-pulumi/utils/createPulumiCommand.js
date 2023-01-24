@@ -23,6 +23,23 @@ const createPulumiCommand = ({
 
             return plugin[name](inputs, context);
         } else {
+            // Before proceeding, let's detect if multiple project applications were passed.
+            const folders = inputs.folder.split(",");
+            if (folders.length > 1) {
+                for (let i = 0; i < folders.length; i++) {
+                    const folder = folders[i];
+                    await createPulumiCommand({ name, command, createProjectApplicationWorkspace })(
+                        {
+                            ...inputs,
+                            folder
+                        },
+                        context
+                    );
+                }
+
+                return;
+            }
+
             // Detect if an app alias was provided.
             const project = getProject();
             if (project.config.appAliases) {
