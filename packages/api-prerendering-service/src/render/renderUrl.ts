@@ -184,7 +184,7 @@ export const defaultRenderUrlFunction = async (
                 const { operationName, query, variables } = operations[i];
 
                 // TODO: Should be handled via a plugin.
-                const operationsAllowedToCached = ["PbGetPublishedPage"];
+                const operationsAllowedToCached = ["PbGetPublishedPage", "FbGetPublishedForm"];
                 if (operationsAllowedToCached.includes(operationName)) {
                     gqlCache.push({
                         query,
