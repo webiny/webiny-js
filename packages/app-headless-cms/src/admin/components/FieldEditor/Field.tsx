@@ -9,7 +9,7 @@ import { ReactComponent as TitleIcon } from "~/admin/icons/title-24px.svg";
 import { ReactComponent as MoreVerticalIcon } from "~/admin/icons/more_vert.svg";
 import { Menu, MenuItem } from "@webiny/ui/Menu";
 import { plugins } from "@webiny/plugins";
-import { CmsModelField, CmsEditorFieldOptionPlugin } from "~/types";
+import { CmsModelField, CmsEditorFieldOptionPlugin, CmsModel } from "~/types";
 import { ListItemGraphic } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
 import { i18n } from "@webiny/app/i18n";
@@ -68,19 +68,36 @@ const FieldExtra = styled.div`
 
 const allowedTitleFieldTypes: string[] = ["text", "number"];
 
-const isFieldAllowedToBeTitle = (field: CmsModelField, parent?: CmsModelField) => {
+const isFieldAllowedToBeTitle = (model: CmsModel, field: CmsModelField, parent?: CmsModelField) => {
     if (field.multipleValues || parent) {
         return false;
     } else if (allowedTitleFieldTypes.includes(field.type) === false) {
         return false;
+    } else if (model.titleFieldId === field.fieldId) {
+        return false;
     }
     return true;
 };
-const isFieldAllowedToBeDescription = (field: CmsModelField, parent?: CmsModelField) => {
+const isFieldAllowedToBeDescription = (
+    model: CmsModel,
+    field: CmsModelField,
+    parent?: CmsModelField
+) => {
     if (field.multipleValues || parent) {
+        return false;
+    } else if (model.descriptionFieldId === field.fieldId) {
         return false;
     }
     return field.type === "long-text";
+};
+
+const isFieldAllowedToBeImage = (model: CmsModel, field: CmsModelField, parent?: CmsModelField) => {
+    if (field.multipleValues || parent) {
+        return false;
+    } else if (model.imageFieldId === field.fieldId) {
+        return false;
+    }
+    return field.type === "file" && field.settings?.imagesOnly;
 };
 
 export interface FieldProps {
@@ -92,7 +109,7 @@ export interface FieldProps {
 const Field: React.FC<FieldProps> = props => {
     const { field, onEdit, parent } = props;
     const { showSnackbar } = useSnackbar();
-    const { setData, data } = useModelEditor();
+    const { setData: setModel, data: model } = useModelEditor();
     const { getFieldPlugin, getFieldRendererPlugin } = useModelFieldEditor();
 
     const { showConfirmation } = useConfirmationDialog({
@@ -106,7 +123,7 @@ const Field: React.FC<FieldProps> = props => {
             </>
         )
     });
-    const lockedFields = data ? data.lockedFields || [] : [];
+    const lockedFields = model?.lockedFields || [];
     const isLocked = lockedFields.some(lockedField => lockedField.fieldId === field.storageId);
 
     const onDelete = useCallback(() => {
@@ -120,7 +137,7 @@ const Field: React.FC<FieldProps> = props => {
     }, [field.fieldId, lockedFields]);
 
     const setAsTitle = useCallback(async (): Promise<void> => {
-        const response = await setData(data => {
+        const response = await setModel(data => {
             return { ...data, titleFieldId: field.fieldId };
         });
 
@@ -129,10 +146,10 @@ const Field: React.FC<FieldProps> = props => {
         }
 
         showSnackbar(t`Title field set successfully.`);
-    }, [field.fieldId, setData]);
+    }, [field.fieldId, setModel]);
 
     const setAsDescription = useCallback(async (): Promise<void> => {
-        const response = await setData(data => {
+        const response = await setModel(data => {
             return { ...data, descriptionFieldId: field.fieldId };
         });
 
@@ -141,7 +158,19 @@ const Field: React.FC<FieldProps> = props => {
         }
 
         showSnackbar(t`Description field set successfully.`);
-    }, [field.fieldId, setData]);
+    }, [field.fieldId, setModel]);
+
+    const setAsImage = useCallback(async (): Promise<void> => {
+        const response = await setModel(data => {
+            return { ...data, imageFieldId: field.fieldId };
+        });
+
+        if (response && response.error) {
+            return showSnackbar(response.error.message);
+        }
+
+        showSnackbar(t`Image field set successfully.`);
+    }, [field.fieldId, setModel]);
 
     const fieldPlugin = getFieldPlugin(field.type);
     const editorFieldOptionPlugins =
@@ -153,14 +182,16 @@ const Field: React.FC<FieldProps> = props => {
 
     const rendererPlugin = getFieldRendererPlugin(field.renderer.name);
     const canEdit = fieldPlugin.field.canEditSettings !== false;
-    const isTitleField = data && field.fieldId === data.titleFieldId && !parent;
-    const isDescriptionField = data && field.fieldId === data.descriptionFieldId && !parent;
+    const isTitleField = field.fieldId === model?.titleFieldId && !parent;
+    const isDescriptionField = field.fieldId === model?.descriptionFieldId && !parent;
+    const isImageField = field.fieldId === model?.imageFieldId && !parent;
 
     const info = [
         rendererPlugin?.renderer.name,
         field.multipleValues ? "multiple values" : null,
         isTitleField ? "entry title" : null,
-        isDescriptionField ? "entry description" : null
+        isDescriptionField ? "entry description" : null,
+        isImageField ? "entry image" : null
     ]
         .filter(Boolean)
         .join(", ");
@@ -192,7 +223,7 @@ const Field: React.FC<FieldProps> = props => {
                         )}
                         {/* We only allow this action for top-level fields. */}
                         <MenuItem
-                            disabled={!isFieldAllowedToBeTitle(field, parent)}
+                            disabled={!isFieldAllowedToBeTitle(model, field, parent)}
                             onClick={setAsTitle}
                         >
                             <ListItemGraphic>
@@ -201,7 +232,7 @@ const Field: React.FC<FieldProps> = props => {
                             {t`Use as title`}
                         </MenuItem>
                         <MenuItem
-                            disabled={!isFieldAllowedToBeDescription(field, parent)}
+                            disabled={!isFieldAllowedToBeDescription(model, field, parent)}
                             onClick={setAsDescription}
                         >
                             <ListItemGraphic>
@@ -209,6 +240,16 @@ const Field: React.FC<FieldProps> = props => {
                             </ListItemGraphic>
                             {t`Use as description`}
                         </MenuItem>
+                        <MenuItem
+                            disabled={!isFieldAllowedToBeImage(model, field, parent)}
+                            onClick={setAsImage}
+                        >
+                            <ListItemGraphic>
+                                <Icon icon={<TitleIcon />} />
+                            </ListItemGraphic>
+                            {t`Use as image`}
+                        </MenuItem>
+
                         <MenuItem onClick={onDelete}>
                             <ListItemGraphic>
                                 <Icon icon={<DeleteIcon />} />
@@ -219,7 +260,8 @@ const Field: React.FC<FieldProps> = props => {
                 </Actions>
             </FieldContainer>
             <FieldExtra>
-                {fieldPlugin.field.render && fieldPlugin.field.render({ field, data, setData })}
+                {fieldPlugin.field.render &&
+                    fieldPlugin.field.render({ field, data: model, setData: setModel })}
             </FieldExtra>
         </Fragment>
     );

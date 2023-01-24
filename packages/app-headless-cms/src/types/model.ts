@@ -75,6 +75,7 @@ export interface CmsModel {
     modelId: string;
     titleFieldId: string;
     descriptionFieldId: string;
+    imageFieldId: string;
     settings: {
         [key: string]: any;
     };

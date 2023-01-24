@@ -51,6 +51,7 @@ export const MODEL_FIELDS = `
     savedOn
     titleFieldId
     descriptionFieldId
+    imageFieldId
     lockedFields
     layout
     tags
