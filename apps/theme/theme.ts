@@ -11,12 +11,12 @@ export const breakpoints = {
 
 // Colors.
 export const colors = {
-    color1: "#fa5723", // primary
-    color2: "#00ccb0", // secondary
-    color3: "#0a0a0a", // text primary
-    color5: "#eaecec", // background
-    color6: "#ffffff", // white background
-    color4: "#616161" // text secondary
+    color1: "#fa5723", // Primary.
+    color2: "#00ccb0", // Secondary.
+    color3: "#0a0a0a", // Text primary.
+    color4: "#616161", // Text secondary.
+    color5: "#eaecec", // Background.
+    color6: "#ffffff" // White background.
 };
 
 // Fonts.
