@@ -16,6 +16,7 @@ import { createManageTypeName, createTypeName } from "~/utils/createTypeName";
 import { pluralizedTypeName } from "~/utils/pluralizedTypeName";
 import { getEntryTitle } from "~/utils/getEntryTitle";
 import { getEntryDescription } from "~/utils/getEntryDescription";
+import { getEntryImage } from "~/utils/getEntryImage";
 
 interface CreateManageResolversParams {
     models: CmsModel[];
@@ -84,6 +85,9 @@ export const createManageResolvers: CreateManageResolvers = ({
             },
             description: (entry: CmsEntry) => {
                 return getEntryDescription(model, entry);
+            },
+            image: (entry: CmsEntry) => {
+                return getEntryImage(model, entry);
             },
             status(entry: CmsEntry) {
                 return entry.status;

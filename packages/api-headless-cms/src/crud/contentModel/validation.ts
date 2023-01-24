@@ -108,8 +108,8 @@ export const createModelCreateValidation = () => {
         layout: zod.array(zod.array(shortString)).default([]),
         tags: zod.array(shortString).optional(),
         titleFieldId: optionalShortString,
-        descriptionFieldId: optionalShortString,
-        imageFieldId: optionalShortString
+        descriptionFieldId: optionalShortString.nullish(),
+        imageFieldId: optionalShortString.nullish()
     });
 };
 
@@ -131,8 +131,8 @@ export const createModelUpdateValidation = () => {
         fields: zod.array(fieldSchema),
         layout: zod.array(zod.array(shortString)),
         titleFieldId: optionalShortString,
-        descriptionFieldId: optionalShortString,
-        imageFieldId: optionalShortString,
+        descriptionFieldId: optionalShortString.nullish(),
+        imageFieldId: optionalShortString.nullish(),
         tags: zod.array(shortString).optional()
     });
 };
