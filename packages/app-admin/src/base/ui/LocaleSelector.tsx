@@ -1,5 +1,5 @@
 import React from "react";
-import { makeComposable } from "@webiny/app-core";
+import { makeComposable } from "@webiny/app";
 
 export const LocaleSelector = makeComposable("LocaleSelector", () => {
     return <LocaleSelectorRenderer />;

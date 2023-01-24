@@ -8,7 +8,7 @@ import React, {
     useContext
 } from "react";
 import { nanoid } from "nanoid";
-import { makeComposable, Plugins } from "@webiny/app-core";
+import { makeComposable, Plugins } from "@webiny/app";
 import { MenuData, MenuProps, AddMenu as Menu, Tags, MenuUpdater, createEmptyMenu } from "~/index";
 import { plugins } from "@webiny/plugins";
 import { AdminMenuPlugin } from "~/types";

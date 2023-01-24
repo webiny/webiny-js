@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { makeComposable } from "@webiny/app-core";
+import { makeComposable } from "@webiny/app";
 
 export interface SearchOptionData {
     route: string;

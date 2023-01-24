@@ -1,6 +1,6 @@
 import React from "react";
 import { HigherOrderComponent } from "@webiny/react-composition";
-import { Provider } from "~/core/Provider";
+import { Provider } from "./Provider";
 
 /**
  * Creates a component, which, when mounted, will register an admin app provider.
