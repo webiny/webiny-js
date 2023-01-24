@@ -8,20 +8,6 @@ import ElementAnimation from "~/render/components/ElementAnimation";
 import { Interpolation } from "@emotion/core";
 import { PageBuilderContext } from "~/contexts/PageBuilder";
 
-// TODO: move to a declaration file
-declare global {
-    // eslint-disable-next-line
-    namespace JSX {
-        interface IntrinsicElements {
-            // @ts-ignore
-            "ps-tag": {
-                key?: string;
-                value?: string;
-            };
-        }
-    }
-}
-
 interface BlockProps {
     element: PbElement;
 }

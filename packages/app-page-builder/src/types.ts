@@ -960,3 +960,16 @@ export interface PageBuilderSecurityPermission extends SecurityPermission {
 export type Loading<T extends string> = { [P in T]?: boolean };
 
 export type LoadingActions = "INIT" | "LIST" | "LIST_MORE";
+
+// TODO: move to a declaration file
+declare global {
+    // eslint-disable-next-line
+    namespace JSX {
+        interface IntrinsicElements {
+            "ps-tag": {
+                "data-key": string;
+                "data-value": string;
+            };
+        }
+    }
+}
