@@ -48,6 +48,7 @@ import {
     createModelUpdateValidation
 } from "~/crud/contentModel/validation";
 import { createZodError } from "@webiny/utils";
+import { assignModelDefaultFields } from "~/crud/contentModel/defaultFields";
 
 /**
  * Given a model, return an array of tags ensuring the `type` tag is set.
@@ -336,8 +337,14 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
             if (!result.success) {
                 throw createZodError(result.error);
             }
+            /**
+             * We need to extract the defaultFields because it is not for the CmsModel object.
+             */
+            const { defaultFields, ...data } = result.data;
 
-            const data = result.data;
+            if (defaultFields) {
+                assignModelDefaultFields(data);
+            }
 
             context.security.disableAuthorization();
             const group = await context.cms.getGroup(data.group);

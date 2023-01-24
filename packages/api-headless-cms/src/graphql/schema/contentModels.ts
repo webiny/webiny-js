@@ -152,6 +152,7 @@ export const createModelsSchema = (context: CmsContext): CmsGraphQLSchemaPlugin 
                 descriptionFieldId: String
                 imageFieldId: String
                 tags: [String!]
+                defaultFields: Boolean
             }
 
             input CmsContentModelCreateFromInput {
