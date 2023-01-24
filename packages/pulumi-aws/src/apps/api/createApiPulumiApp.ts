@@ -5,7 +5,6 @@ import {
     ApiCloudfront,
     ApiFileManager,
     ApiGraphql,
-    ApiHeadlessCMS,
     ApiPageBuilder,
     CoreOutput,
     VpcConfig
@@ -107,30 +106,6 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 }
             });
 
-            const headlessCms = app.addModule(ApiHeadlessCMS, {
-                env: {
-                    COGNITO_REGION: String(process.env.AWS_REGION),
-                    COGNITO_USER_POOL_ID: core.cognitoUserPoolId,
-                    DB_TABLE: core.primaryDynamodbTableName,
-                    DB_TABLE_ELASTICSEARCH: core.elasticsearchDynamodbTableName,
-                    ELASTIC_SEARCH_ENDPOINT: core.elasticsearchDomainEndpoint,
-
-                    // Not required. Useful for testing purposes / ephemeral environments.
-                    // https://www.webiny.com/docs/key-topics/ci-cd/testing/slow-ephemeral-environments
-                    ELASTIC_SEARCH_INDEX_PREFIX: process.env.ELASTIC_SEARCH_INDEX_PREFIX,
-
-                    S3_BUCKET: core.fileManagerBucketId,
-                    // TODO: move to okta plugin
-                    OKTA_ISSUER: process.env["OKTA_ISSUER"],
-                    WEBINY_LOGS_FORWARD_URL,
-                    /**
-                     * APW
-                     */
-                    APW_SCHEDULER_SCHEDULE_ACTION_HANDLER:
-                        apwScheduler.scheduleAction.lambda.output.arn
-                }
-            });
-
             const graphql = app.addModule(ApiGraphql, {
                 env: {
                     COGNITO_REGION: String(process.env.AWS_REGION),
@@ -179,12 +154,12 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 "cms-post": {
                     path: "/cms/{key+}",
                     method: "POST",
-                    function: headlessCms.functions.graphql.output.arn
+                    function: graphql.functions.graphql.output.arn
                 },
                 "cms-options": {
                     path: "/cms/{key+}",
                     method: "OPTIONS",
-                    function: headlessCms.functions.graphql.output.arn
+                    function: graphql.functions.graphql.output.arn
                 }
             });
 
@@ -218,7 +193,6 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
             return {
                 fileManager,
                 graphql,
-                headlessCms,
                 apiGateway,
                 cloudfront,
                 apwScheduler

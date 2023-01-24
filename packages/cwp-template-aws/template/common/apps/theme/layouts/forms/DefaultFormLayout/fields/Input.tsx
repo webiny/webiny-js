@@ -14,8 +14,8 @@ interface InputProps {
 }
 
 const StyledInput = styled.input`
-    border: 1px solid ${colors.color4};
-    background-color: ${colors.color4};
+    border: 1px solid ${colors.color5};
+    background-color: ${colors.color5};
     width: 100%;
     padding: 10px;
     border-radius: ${borderRadius};

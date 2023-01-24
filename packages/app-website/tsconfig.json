@@ -6,6 +6,7 @@
     { "path": "../app-page-builder" },
     { "path": "../app-page-builder-elements" },
     { "path": "../app-theme" },
+    { "path": "../app-theme-manager" },
     { "path": "../plugins" },
     { "path": "../react-router" }
   ],
@@ -24,6 +25,8 @@
       "@webiny/app-page-builder-elements": ["../app-page-builder-elements/src"],
       "@webiny/app-theme/*": ["../app-theme/src/*"],
       "@webiny/app-theme": ["../app-theme/src"],
+      "@webiny/app-theme-manager/*": ["../app-theme-manager/src/*"],
+      "@webiny/app-theme-manager": ["../app-theme-manager/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/react-router/*": ["../react-router/src/*"],

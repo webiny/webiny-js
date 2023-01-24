@@ -1,10 +1,10 @@
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
 import { CmsContext } from "~/types";
 import { createModelsSchema } from "./schema/contentModels";
 import { createContentEntriesSchema } from "./schema/contentEntries";
 import { createGroupsSchema } from "./schema/contentModelGroups";
 import { createBaseContentSchema } from "./schema/baseContentSchema";
 import { generateSchemaPlugins } from "./schema/schemaPlugins";
+import { CmsGraphQLSchemaPlugin } from "~/plugins";
 
 /**
  * This factory is called whenever we need to generate graphql-schema plugins using the current context.
@@ -12,7 +12,7 @@ import { generateSchemaPlugins } from "./schema/schemaPlugins";
 
 export const buildSchemaPlugins = async (
     context: CmsContext
-): Promise<GraphQLSchemaPlugin<CmsContext>[]> => {
+): Promise<CmsGraphQLSchemaPlugin[]> => {
     return [
         // Base GQL types and scalars
         createBaseContentSchema(context),
