@@ -4,7 +4,7 @@ import { fetchData } from "./fetchData";
 const GET_PUBLISHED_FORM = /* GraphQL */ `
     query GetPublishedForm($revision: ID, $parent: ID) {
         formBuilder {
-            getPublishedForm(revision: $revision, parent: $parent) {
+            FbGetPublishedForm(revision: $revision, parent: $parent) {
                 data {
                     id
                     formId
