@@ -11,7 +11,6 @@ import {
 } from "lexical";
 import { DropDown, DropDownItem } from "../../ui/DropDown";
 
-
 /**
  * Toolbar action. Allow user to change font size for selected text.
  */
