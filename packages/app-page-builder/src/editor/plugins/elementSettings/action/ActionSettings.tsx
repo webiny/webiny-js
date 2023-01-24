@@ -11,7 +11,8 @@ import {
     PbElement,
     PbButtonElementClickHandlerPlugin,
     PbEditorElement,
-    PbEditorPageElementSettingsRenderComponentProps
+    PbEditorPageElementSettingsRenderComponentProps,
+    PbButtonElementClickHandlerVariable
 } from "~/types";
 import { plugins } from "@webiny/plugins";
 import { getElementsPropertiesValues } from "~/render/utils";
@@ -42,6 +43,7 @@ const classes = {
 interface ActionSettingsPropsType extends PbEditorPageElementSettingsRenderComponentProps {
     element: PbEditorElement;
 }
+
 const ActionSettingsComponent: React.FC<ActionSettingsPropsType> = ({
     element,
     defaultAccordionValue
@@ -71,13 +73,18 @@ const ActionSettingsComponent: React.FC<ActionSettingsPropsType> = ({
         updateElement(newElement);
     };
 
-    const clickHandlers = useMemo(
+    const clickHandlers: Array<{
+        title: string;
+        name?: string;
+        variables?: PbButtonElementClickHandlerVariable[];
+    }> = useMemo(
         () =>
             plugins.byType<PbButtonElementClickHandlerPlugin>(
                 "pb-page-element-button-click-handler"
             ),
         []
     );
+
     const selectedHandler = useMemo(() => {
         return clickHandlers.find(handler => clickHandler === handler.name);
     }, [clickHandler]);
@@ -134,7 +141,7 @@ const ActionSettingsComponent: React.FC<ActionSettingsPropsType> = ({
                                                 <SelectField
                                                     value={value}
                                                     onChange={onChange}
-                                                    placeholder={"No handlers found."}
+                                                    placeholder={"Select handler..."}
                                                 >
                                                     {clickHandlers.map(item => (
                                                         <option key={item.name} value={item.name}>
@@ -214,42 +221,38 @@ const ActionSettingsComponent: React.FC<ActionSettingsPropsType> = ({
                                     </Bind>
                                 </>
                             )}
-                            {actionType !== "onClickHandler" &&
-                                actionType !== "scrollToElement" && (
-                                    <>
-                                        <Wrapper
-                                            label={"URL"}
-                                            containerClassName={classes.gridClass}
+                            {actionType !== "onClickHandler" && actionType !== "scrollToElement" && (
+                                <>
+                                    <Wrapper label={"URL"} containerClassName={classes.gridClass}>
+                                        <Bind
+                                            name={"href"}
+                                            validators={validation.create(
+                                                "url:allowRelative:allowHref"
+                                            )}
                                         >
-                                            <Bind
-                                                name={"href"}
-                                                validators={validation.create(
-                                                    "url:allowRelative:allowHref"
+                                            <DelayedOnChange>
+                                                {props => (
+                                                    <InputField
+                                                        {...props}
+                                                        value={props.value || ""}
+                                                        onChange={props.onChange}
+                                                        placeholder={"https://webiny.com/blog"}
+                                                    />
                                                 )}
-                                            >
-                                                <DelayedOnChange>
-                                                    {props => (
-                                                        <InputField
-                                                            {...props}
-                                                            value={props.value || ""}
-                                                            onChange={props.onChange}
-                                                            placeholder={"https://webiny.com/blog"}
-                                                        />
-                                                    )}
-                                                </DelayedOnChange>
-                                            </Bind>
-                                        </Wrapper>
-                                        <Wrapper
-                                            label={"New tab"}
-                                            containerClassName={classes.gridClass}
-                                            rightCellClassName={classes.gridCellClass}
-                                        >
-                                            <Bind name={"newTab"}>
-                                                <Switch />
-                                            </Bind>
-                                        </Wrapper>
-                                    </>
-                                )}
+                                            </DelayedOnChange>
+                                        </Bind>
+                                    </Wrapper>
+                                    <Wrapper
+                                        label={"New tab"}
+                                        containerClassName={classes.gridClass}
+                                        rightCellClassName={classes.gridCellClass}
+                                    >
+                                        <Bind name={"newTab"}>
+                                            <Switch />
+                                        </Bind>
+                                    </Wrapper>
+                                </>
+                            )}
                         </>
                     );
                 }}
@@ -257,5 +260,4 @@ const ActionSettingsComponent: React.FC<ActionSettingsPropsType> = ({
         </Accordion>
     );
 };
-
 export default withActiveElement()(ActionSettingsComponent);

@@ -64,7 +64,7 @@ const attachRequiredProperties = (event: APIGatewayEvent): void => {
 export const createHandler = (params: CreateHandlerParams): HandlerCallable => {
     return (event, context) => {
         const app = createBaseHandler({
-            plugins: params.plugins,
+            ...params,
             options: {
                 logger: params.http?.debug === true,
                 ...(params.options || {})

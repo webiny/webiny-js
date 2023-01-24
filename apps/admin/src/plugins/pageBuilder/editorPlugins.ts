@@ -87,8 +87,8 @@ export default [
     ...gridPresets,
     // Element groups
     basicGroup,
-    formGroup,
     layoutGroup,
+    formGroup,
     mediaGroup,
     embedsGroup,
     socialGroup,

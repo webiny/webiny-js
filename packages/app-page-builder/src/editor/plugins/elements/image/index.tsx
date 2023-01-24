@@ -13,7 +13,7 @@ import {
     DisplayMode,
     PbEditorElementPluginArgs,
     PbEditorElement
-} from "../../../../types";
+} from "~/types";
 import { Plugin } from "@webiny/plugins/types";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 
@@ -91,8 +91,8 @@ export default (args: PbEditorElementPluginArgs = {}): Plugin[] => {
 
                 return typeof args.create === "function" ? args.create(defaultValue) : defaultValue;
             },
-            render({ element }) {
-                return <Image element={element} />;
+            render(props) {
+                return <Image {...props} />;
             }
         } as PbEditorPageElementPlugin,
         {

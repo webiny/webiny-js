@@ -208,8 +208,8 @@ jobs:
       cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
     environment: next
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.DEPLOY_WEBINY_PROJECT_AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.DEPLOY_WEBINY_PROJECT_AWS_SECRET_ACCESS_KEY }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       CYPRESS_DEPLOYSENTINEL_KEY: ${{ secrets.CYPRESS_DEPLOYSENTINEL_KEY }}
@@ -448,8 +448,8 @@ jobs:
       cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
     environment: next
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.DEPLOY_WEBINY_PROJECT_AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.DEPLOY_WEBINY_PROJECT_AWS_SECRET_ACCESS_KEY }}
       AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}_
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
@@ -711,3 +711,40 @@ jobs:
 
       - name: Version and publish to NPM
         run: yarn release --type=beta
+
+  npm-release-latest:
+    needs: npm-release-beta
+    name: NPM release ("latest" tag)
+    runs-on: ubuntu-latest
+    environment: release
+    env:
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 14
+
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Install dependencies
+        run: yarn --immutable
+
+      - name: Build packages
+        run: yarn build
+
+      - name: Create ".npmrc" file in the project root
+        run: echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
+
+      - name: Set git email
+        run: git config --global user.email "webiny-bot@webiny.com"
+
+      - name: Set git username
+        run: git config --global user.name "webiny-bot"
+
+      - name: Version and Publish
+        run: yarn release --type=latest

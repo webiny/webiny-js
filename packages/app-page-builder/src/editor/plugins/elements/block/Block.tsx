@@ -1,41 +1,21 @@
 import React from "react";
-import BlockContainer from "./BlockContainer";
-import ElementAnimation from "../../../../render/components/ElementAnimation";
-import styled from "@emotion/styled";
 import { PbEditorElement } from "~/types";
-import { ElementRoot } from "~/render/components/ElementRoot";
+import PbBlock from "./PbBlock";
+import PeBlock from "./PeBlock";
+import { isLegacyRenderingEngine } from "~/utils";
+import { Element } from "@webiny/app-page-builder-elements/types";
 
-const BlockStyle = styled("div")({
-    position: "relative",
-    color: "#666",
-    boxSizing: "border-box"
-});
-interface BlockType {
+interface BlockProps {
     element: PbEditorElement;
 }
-const Block: React.FC<BlockType> = ({ element }) => {
-    const { id } = element;
 
-    return (
-        <BlockStyle id={id} style={{ position: "relative" }}>
-            <ElementAnimation>
-                <ElementRoot element={element}>
-                    {({ elementStyle, elementAttributes, customClasses, combineClassNames }) => (
-                        <BlockContainer
-                            elementId={id}
-                            elementStyle={elementStyle}
-                            elementAttributes={elementAttributes}
-                            customClasses={[
-                                "webiny-pb-layout-block webiny-pb-base-page-element-style",
-                                ...customClasses
-                            ]}
-                            combineClassNames={combineClassNames}
-                        />
-                    )}
-                </ElementRoot>
-            </ElementAnimation>
-        </BlockStyle>
-    );
+const Block: React.FC<BlockProps> = props => {
+    if (isLegacyRenderingEngine) {
+        return <PbBlock {...props} />;
+    }
+
+    const { element, ...rest } = props;
+    return <PeBlock element={element as Element} {...rest} />;
 };
 
-export default React.memo(Block);
+export default Block;

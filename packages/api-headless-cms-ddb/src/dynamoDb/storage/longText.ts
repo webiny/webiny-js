@@ -77,6 +77,12 @@ export const createLongTextStorageTransformPlugin = () => {
             }
         },
         toStorage: async ({ value: initialValue }) => {
+            /**
+             * There is a possibility that we are trying to compress already compressed value.
+             */
+            if (initialValue && initialValue.hasOwnProperty("compression") === true) {
+                return initialValue as any;
+            }
             const isArray = Array.isArray(initialValue);
             const value = isArray ? JSON.stringify(initialValue) : initialValue;
             const compressedValue = await gzip(value);

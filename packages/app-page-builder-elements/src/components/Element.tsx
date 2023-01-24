@@ -1,10 +1,11 @@
 import React from "react";
-import { Element as ElementType } from "~/types";
+import { Element as ElementType, RendererMeta } from "~/types";
 import { usePageElements } from "~/hooks/usePageElements";
 import ErrorBoundary from "./ErrorBoundary";
 
 export interface Props {
     element: ElementType;
+    meta?: RendererMeta;
 }
 
 export const Element: React.FC<Props> = props => {

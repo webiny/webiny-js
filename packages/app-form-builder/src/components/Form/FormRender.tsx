@@ -1,6 +1,6 @@
 import { plugins } from "@webiny/plugins";
-import { cloneDeep, get } from "lodash";
-import React, { useEffect, useRef, useMemo } from "react";
+import { cloneDeep } from "lodash";
+import React, { useEffect, useRef } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
 import { createReCaptchaComponent, createTermsOfServiceComponent } from "./components";
 import {
@@ -17,21 +17,20 @@ import {
     FormSubmitResponseType,
     FbFormSubmissionData,
     FbFormFieldValidatorPlugin,
-    FbFormLayoutPlugin,
     FbFormModelField,
     FormRenderFbFormModelField,
-    FbFormModel
+    FbFormModel,
+    FbFormLayout
 } from "~/types";
-import { PbThemePlugin } from "@webiny/app-page-builder/types";
+import { FbFormLayoutPlugin } from "~/plugins";
 
 declare global {
     // eslint-disable-next-line
     namespace JSX {
         interface IntrinsicElements {
-            // @ts-ignore
             "ps-tag": {
-                class?: string;
-                id?: string;
+                "data-key": string;
+                "data-value": string;
             };
         }
     }
@@ -42,11 +41,6 @@ interface FieldValidator {
 }
 
 const FormRender: React.FC<FbFormRenderComponentProps> = props => {
-    const theme = useMemo(
-        () => Object.assign({}, ...plugins.byType<PbThemePlugin>("pb-theme").map(pl => pl.theme)),
-        []
-    );
-
     const client = useApolloClient();
     const data = props.data || ({} as FbFormModel);
 
@@ -176,21 +170,11 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
         return formSubmission;
     };
 
-    const layouts = React.useMemo(() => {
-        const layoutsList: FbFormLayoutPlugin["layout"][] = [
-            ...(get(theme, "formBuilder.layouts") || []),
-            ...plugins.byType<FbFormLayoutPlugin>("form-layout").map(pl => pl.layout)
-        ];
-        return layoutsList.reduce((acc, item) => {
-            if (!acc.find(l => l.name === item.name)) {
-                acc.push(item);
-            }
-            return acc;
-        }, [] as FbFormLayoutPlugin["layout"][]);
+    const layouts: Array<FbFormLayout> = React.useMemo(() => {
+        return plugins.byType<FbFormLayoutPlugin>(FbFormLayoutPlugin.type).map(pl => pl.layout);
     }, []);
 
     // Get form layout, defined in theme.
-    // TODO @ts-refactor find a better type
     let LayoutRenderComponent: any = layouts.find(item => item.name === settings.layout.renderer);
 
     if (!LayoutRenderComponent) {
@@ -219,7 +203,9 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
         submit,
         formData,
         ReCaptcha,
-        TermsOfService
+        reCaptchaEnabled: reCaptchaEnabled(formData),
+        TermsOfService,
+        termsOfServiceEnabled: termsOfServiceEnabled(formData)
     };
 
     return (

@@ -2,18 +2,10 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
-    {
-      "path": "../api-aco"
-    },
-    {
-      "path": "../db-dynamodb"
-    },
-    {
-      "path": "../error"
-    },
-    {
-      "path": "../handler-db"
-    }
+    { "path": "../api-aco" },
+    { "path": "../db-dynamodb" },
+    { "path": "../error" },
+    { "path": "../handler-db" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -21,6 +13,7 @@
     "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
       "@webiny/api-aco/*": ["../api-aco/src/*"],
       "@webiny/api-aco": ["../api-aco/src"],
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],

@@ -1,31 +1,33 @@
 import React from "react";
 import { Elements } from "~/components/Elements";
-import { usePageElements } from "~/hooks/usePageElements";
-import { ElementRenderer } from "~/types";
+import { createRenderer } from "~/createRenderer";
+import { useRenderer } from "~/hooks/useRenderer";
 
-declare global {
-    //eslint-disable-next-line
-    namespace JSX {
-        interface IntrinsicElements {
-            "pb-block": any;
-            "pb-block-inner": any;
+export type BlockRenderer = ReturnType<typeof createBlock>;
+
+export const createBlock = () => {
+    return createRenderer(
+        () => {
+            const { getElement } = useRenderer();
+
+            const element = getElement();
+            return (
+                <>
+                    <Elements element={element} />
+                    {element.data.blockId && (
+                        <ps-tag data-key={"pb-page-block"} data-value={element.data.blockId} />
+                    )}
+                </>
+            );
+        },
+        {
+            baseStyles: {
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "flex-start",
+                alignItems: "flex-start",
+                boxSizing: "border-box"
+            }
         }
-    }
-}
-
-const defaultStyles = { display: "block", boxSizing: "border-box" };
-
-const Block: ElementRenderer = ({ element }) => {
-    const { getClassNames, getElementClassNames } = usePageElements();
-    const classNames = getClassNames(defaultStyles);
-
-    return (
-        <pb-block class={classNames}>
-            <pb-block-inner class={getElementClassNames(element)}>
-                <Elements element={element} />
-            </pb-block-inner>
-        </pb-block>
     );
 };
-
-export const createBlock = () => Block;

@@ -729,21 +729,21 @@ export interface ListPageBlocksParams {
 /**
  * @category Lifecycle events
  */
-export interface OnBeforePageBlockCreateTopicParams {
+export interface OnPageBlockBeforeCreateTopicParams {
     pageBlock: PageBlock;
 }
 
 /**
  * @category Lifecycle events
  */
-export interface OnAfterPageBlockCreateTopicParams {
+export interface OnPageBlockAfterCreateTopicParams {
     pageBlock: PageBlock;
 }
 
 /**
  * @category Lifecycle events
  */
-export interface OnBeforePageBlockUpdateTopicParams {
+export interface OnPageBlockBeforeUpdateTopicParams {
     original: PageBlock;
     pageBlock: PageBlock;
 }
@@ -751,7 +751,7 @@ export interface OnBeforePageBlockUpdateTopicParams {
 /**
  * @category Lifecycle events
  */
-export interface OnAfterPageBlockUpdateTopicParams {
+export interface OnPageBlockAfterUpdateTopicParams {
     original: PageBlock;
     pageBlock: PageBlock;
 }
@@ -759,14 +759,14 @@ export interface OnAfterPageBlockUpdateTopicParams {
 /**
  * @category Lifecycle events
  */
-export interface OnBeforePageBlockDeleteTopicParams {
+export interface OnPageBlockBeforeDeleteTopicParams {
     pageBlock: PageBlock;
 }
 
 /**
  * @category Lifecycle events
  */
-export interface OnAfterPageBlockDeleteTopicParams {
+export interface OnPageBlockAfterDeleteTopicParams {
     pageBlock: PageBlock;
 }
 
@@ -791,12 +791,12 @@ export interface PageBlocksCrud {
     /**
      * Lifecycle events
      */
-    onBeforePageBlockCreate: Topic<OnBeforePageBlockCreateTopicParams>;
-    onAfterPageBlockCreate: Topic<OnAfterPageBlockCreateTopicParams>;
-    onBeforePageBlockUpdate: Topic<OnBeforePageBlockUpdateTopicParams>;
-    onAfterPageBlockUpdate: Topic<OnAfterPageBlockUpdateTopicParams>;
-    onBeforePageBlockDelete: Topic<OnBeforePageBlockDeleteTopicParams>;
-    onAfterPageBlockDelete: Topic<OnAfterPageBlockDeleteTopicParams>;
+    onPageBlockBeforeCreate: Topic<OnPageBlockBeforeCreateTopicParams>;
+    onPageBlockAfterCreate: Topic<OnPageBlockAfterCreateTopicParams>;
+    onPageBlockBeforeUpdate: Topic<OnPageBlockBeforeUpdateTopicParams>;
+    onPageBlockAfterUpdate: Topic<OnPageBlockAfterUpdateTopicParams>;
+    onPageBlockBeforeDelete: Topic<OnPageBlockBeforeDeleteTopicParams>;
+    onPageBlockAfterDelete: Topic<OnPageBlockAfterDeleteTopicParams>;
 }
 
 export interface PageBuilderContextObject

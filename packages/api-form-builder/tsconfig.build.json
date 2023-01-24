@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
   "references": [
+    { "path": "../api/tsconfig.build.json" },
     { "path": "../api-file-manager/tsconfig.build.json" },
     { "path": "../api-i18n/tsconfig.build.json" },
     { "path": "../api-i18n-ddb/tsconfig.build.json" },
@@ -9,7 +10,6 @@
     { "path": "../api-tenancy/tsconfig.build.json" },
     { "path": "../api-upgrade/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
-    { "path": "../api/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },
     { "path": "../handler-aws/tsconfig.build.json" },
     { "path": "../handler-graphql/tsconfig.build.json" },
@@ -27,7 +27,7 @@
     "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist",
-    "paths": { "~/*": ["./src/*"] },
+    "paths": { "~/*": ["./src/*"], "~tests/*": ["./__tests__/*"] },
     "baseUrl": "."
   }
 }

@@ -46,11 +46,6 @@ const PbText: React.FC<TextElementProps> = ({ elementId, mediumEditorOptions, ro
         [displayMode]
     );
 
-    const initialText = useMemo(
-        () => variableValue || get(element, `${DATA_NAMESPACE}.data.text`),
-        [variableValue, element]
-    );
-
     const value = get(element, `${DATA_NAMESPACE}.${displayMode}`, fallbackValue);
 
     const onChange = useCallback(
@@ -74,6 +69,11 @@ const PbText: React.FC<TextElementProps> = ({ elementId, mediumEditorOptions, ro
 
     const tag = get(value, "tag");
     const typography = get(value, "typography");
+
+    const initialText = useMemo(
+        () => variableValue || get(element, `${DATA_NAMESPACE}.data.text`),
+        [variableValue, tag]
+    );
 
     return (
         <ElementRoot

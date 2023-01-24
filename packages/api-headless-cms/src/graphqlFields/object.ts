@@ -93,6 +93,14 @@ export const createObjectField = (): CmsModelFieldToGraphQLPlugin => {
         fieldType: "object",
         isSortable: false,
         isSearchable: false,
+        validateChildFields: params => {
+            const { field, originalField, validate } = params;
+
+            validate({
+                fields: field.settings?.fields || [],
+                originalFields: originalField?.settings?.fields || []
+            });
+        },
         read: {
             createTypeField({ field, model, fieldTypePlugins }) {
                 const result = createTypeFromFields({

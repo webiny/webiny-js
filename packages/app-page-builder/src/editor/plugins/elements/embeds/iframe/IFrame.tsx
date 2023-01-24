@@ -1,39 +1,21 @@
 import React from "react";
-import styled from "@emotion/styled";
-import { ReactComponent as IFrameIcon } from "./iframe-icon.svg";
 import { PbEditorElement } from "~/types";
-import { useDisplayMode } from "~/editor/hooks/useDisplayMode";
+import PeIframe from "./PeIFrame";
+import PbIframe from "./PbIFrame";
+import { isLegacyRenderingEngine } from "~/utils";
+import { Element } from "@webiny/app-page-builder-elements/types";
 
-const PreviewBox = styled("div")({
-    textAlign: "center",
-    height: 50,
-    svg: {
-        height: 50,
-        width: 50,
-        color: "var(--mdc-theme-text-secondary-on-background)"
-    }
-});
-
-interface IFrameProps {
+interface IframeProps {
     element: PbEditorElement;
 }
 
-const Iframe: React.FC<IFrameProps> = ({ element }) => {
-    const { displayMode } = useDisplayMode();
-
-    const elementHeight = element.data?.settings?.height?.[displayMode]?.value || "380px";
-
-    if (!element?.data?.iframe?.url) {
-        return (
-            <PreviewBox>
-                <IFrameIcon />
-            </PreviewBox>
-        );
+const Iframe: React.FC<IframeProps> = props => {
+    if (isLegacyRenderingEngine) {
+        return <PbIframe {...props} />;
     }
 
-    return (
-        <iframe src={element.data.iframe.url} style={{ height: elementHeight, width: "100%" }} />
-    );
+    const { element, ...rest } = props;
+    return <PeIframe element={element as Element} {...rest} />;
 };
 
 export default Iframe;

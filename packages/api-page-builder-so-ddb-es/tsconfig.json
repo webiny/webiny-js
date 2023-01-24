@@ -9,8 +9,8 @@
     { "path": "../error" },
     { "path": "../handler-db" },
     { "path": "../plugins" },
-    { "path": "../api" },
     { "path": "../utils" },
+    { "path": "../api" },
     { "path": "../api-dynamodb-to-elasticsearch" },
     { "path": "../api-security" },
     { "path": "../api-tenancy" },
@@ -23,6 +23,7 @@
     "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
       "@webiny/api-elasticsearch/*": ["../api-elasticsearch/src/*"],
       "@webiny/api-elasticsearch": ["../api-elasticsearch/src"],
       "@webiny/api-page-builder/*": ["../api-page-builder/src/*"],
@@ -39,6 +40,8 @@
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"],
+      "@webiny/api/*": ["../api/src/*"],
+      "@webiny/api": ["../api/src"],
       "@webiny/api-dynamodb-to-elasticsearch/*": ["../api-dynamodb-to-elasticsearch/src/*"],
       "@webiny/api-dynamodb-to-elasticsearch": ["../api-dynamodb-to-elasticsearch/src"],
       "@webiny/api-security/*": ["../api-security/src/*"],
@@ -48,9 +51,7 @@
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
       "@webiny/handler-aws": ["../handler-aws/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
-      "@webiny/handler-graphql": ["../handler-graphql/src"],
-      "@webiny/api/*": ["../api/src/*"],
-      "@webiny/api": ["../api/src"]
+      "@webiny/handler-graphql": ["../handler-graphql/src"]
     },
     "baseUrl": "."
   }

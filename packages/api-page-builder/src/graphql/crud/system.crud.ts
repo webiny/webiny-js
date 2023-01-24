@@ -2,8 +2,10 @@ import WebinyError from "@webiny/error";
 import { NotAuthorizedError } from "@webiny/api-security";
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
 import { getApplicablePlugin } from "@webiny/api-upgrade";
-import { preparePageData } from "./install/welcome-to-webiny-page-data";
+import { preparePageData } from "./install/welcomeToWebinyPageData";
+import { preparePageDataLegacy } from "./install/welcomeToWebinyPageDataLegacy";
 import { notFoundPageData } from "./install/notFoundPageData";
+import { notFoundPageDataLegacy } from "./install/notFoundPageDataLegacy";
 import savePageAssets from "./install/utils/savePageAssets";
 import {
     Category,
@@ -17,12 +19,14 @@ import {
     SystemCrud
 } from "~/types";
 import { createTopic } from "@webiny/pubsub";
+import { featureFlags } from "@webiny/feature-flags";
 
 export interface CreateSystemCrudParams {
     context: PbContext;
     storageOperations: PageBuilderStorageOperations;
     getTenantId: () => string;
 }
+
 export const createSystemCrud = (params: CreateSystemCrudParams): SystemCrud => {
     const { context, storageOperations, getTenantId } = params;
     const onSystemBeforeInstall = createTopic<OnSystemBeforeInstallTopicParams>(
@@ -156,10 +160,22 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCrud => 
                 // 5. Create sample pages.
                 const fmSettings = await fileManager.settings.getSettings();
 
-                const welcomeToWebinyPageContent = preparePageData({
-                    srcPrefix: fmSettings ? fmSettings.srcPrefix : "",
-                    fileIdToFileMap: fileIdToFileMap
-                });
+                let welcomeToWebinyPageContent, notFoundPageContent;
+                if (featureFlags.pbLegacyRenderingEngine === true) {
+                    welcomeToWebinyPageContent = preparePageDataLegacy({
+                        srcPrefix: fmSettings ? fmSettings.srcPrefix : "",
+                        fileIdToFileMap: fileIdToFileMap
+                    });
+
+                    notFoundPageContent = notFoundPageDataLegacy;
+                } else {
+                    welcomeToWebinyPageContent = preparePageData({
+                        srcPrefix: fmSettings ? fmSettings.srcPrefix : "",
+                        fileIdToFileMap: fileIdToFileMap
+                    });
+
+                    notFoundPageContent = notFoundPageData;
+                }
 
                 const initialPagesData: Page[] = [
                     /**
@@ -169,7 +185,7 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCrud => 
                     {
                         title: "Not Found",
                         path: "/not-found",
-                        content: notFoundPageData,
+                        content: notFoundPageContent,
                         settings: {}
                     },
                     /**
