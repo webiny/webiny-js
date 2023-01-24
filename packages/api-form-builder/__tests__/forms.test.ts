@@ -370,13 +370,13 @@ describe('Form Builder "Form" Test', () => {
         expect(json[0].sort()).toEqual(
             Object.values({
                 ...formSubmissionDataB.data,
-                "Date submitted": expect.any(String)
+                "Date submitted (UTC)": expect.any(String)
             }).sort()
         );
         expect(json[1].sort()).toEqual(
             Object.values({
                 ...formSubmissionDataA.data,
-                "Date submitted": expect.any(String)
+                "Date submitted (UTC)": expect.any(String)
             }).sort()
         );
         fs.unlinkSync(csvFile);

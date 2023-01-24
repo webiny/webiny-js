@@ -1,4 +1,5 @@
 import { parseAsync } from "json2csv";
+import { format } from "date-fns";
 import {
     ErrorResponse,
     ListResponse,
@@ -550,10 +551,10 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                             const submissionData = submissions[i].data;
                             const row: Record<string, string> = {};
 
-                            row["Date submitted"] = new Date(submissions[i].createdOn)
-                                .toISOString()
-                                .split(".")[0]
-                                .replace("T", " ");
+                            row["Date submitted (UTC)"] = format(
+                                new Date(submissions[i].createdOn),
+                                "yyyy-MM-dd HH:mm:ss"
+                            );
 
                             Object.keys(fields).map(fieldId => {
                                 if (fieldId in submissionData) {
@@ -569,7 +570,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                          * Save CSV file and return its URL to the client.
                          */
                         const csv = await parseAsync(rows, {
-                            fields: ["Date submitted", ...Object.values(fields)]
+                            fields: ["Date submitted (UTC)", ...Object.values(fields)]
                         });
                         const buffer = Buffer.from(csv);
                         const { key } = await fileManager.storage.upload({
