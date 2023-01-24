@@ -1,11 +1,11 @@
 {
   "name": "@webiny/lexical-editor",
   "version": "0.0.0",
-  "description": "Core framework of the Webiny admin app.",
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
   },
+  "license": "MIT",
   "private": true,
   "dependencies": {
     "@lexical/code": "0.6.0",
