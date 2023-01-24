@@ -13511,7 +13511,7 @@ __metadata:
     "@webiny/cli": 0.0.0
     "@webiny/feature-flags": 0.0.0
     "@webiny/form": 0.0.0
-    "@webiny/lexical-editor": 5.33.2
+    "@webiny/lexical-editor": 0.0.0
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
     "@webiny/react-composition": 0.0.0
@@ -14778,7 +14778,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/lexical-editor@5.33.2, @webiny/lexical-editor@workspace:packages/lexical-editor":
+"@webiny/lexical-editor@0.0.0, @webiny/lexical-editor@workspace:packages/lexical-editor":
   version: 0.0.0-use.local
   resolution: "@webiny/lexical-editor@workspace:packages/lexical-editor"
   dependencies:
