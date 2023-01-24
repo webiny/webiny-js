@@ -129,6 +129,10 @@ export class PluginsContainer {
     }
 
     private decorate(plugin: Plugin) {
+        if (!plugin) {
+            return undefined;
+        }
+
         const Decorator = this.pluginDecorators[plugin.type];
         if (!Decorator) {
             return plugin;
