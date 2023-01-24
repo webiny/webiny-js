@@ -297,13 +297,12 @@ export const createHandler = (params: CreateHandlerParams) => {
             );
             return;
         }
-        const raw = reply.code(204).hijack().raw;
-        const headers = { ...defaultHeaders, ...OPTIONS_HEADERS };
-        for (const key in headers) {
-            raw.setHeader(key, headers[key]);
-        }
 
-        raw.end("");
+        reply
+            .headers({ ...defaultHeaders, ...OPTIONS_HEADERS })
+            .code(204)
+            .send("")
+            .hijack();
     });
 
     app.addHook("preParsing", async request => {
@@ -363,6 +362,18 @@ export const createHandler = (params: CreateHandlerParams) => {
                 data: error.data
             })
         );
+
+        reply
+            .status(500)
+            .headers({
+                "Cache-Control": "no-store"
+            })
+            .send({
+                message: error.message,
+                code: error.code,
+                data: error.data
+            });
+
         const handler = middleware(
             plugins.map(pl => {
                 return (context: Context, error: Error, next: Function) => {
@@ -372,16 +383,7 @@ export const createHandler = (params: CreateHandlerParams) => {
         );
         await handler(app.webiny, error);
 
-        return reply
-            .send({
-                message: error.message,
-                code: error.code,
-                data: error.data
-            })
-            .headers({
-                "Cache-Control": "no-store"
-            })
-            .status(500);
+        return reply;
     });
 
     /**
