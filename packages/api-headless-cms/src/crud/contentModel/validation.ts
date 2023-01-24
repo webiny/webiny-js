@@ -109,7 +109,8 @@ export const createModelCreateValidation = () => {
         tags: zod.array(shortString).optional(),
         titleFieldId: optionalShortString,
         descriptionFieldId: optionalShortString.nullish(),
-        imageFieldId: optionalShortString.nullish()
+        imageFieldId: optionalShortString.nullish(),
+        defaultFields: zod.boolean().nullish()
     });
 };
 
