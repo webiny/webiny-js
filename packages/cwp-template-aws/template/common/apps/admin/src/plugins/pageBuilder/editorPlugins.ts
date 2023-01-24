@@ -57,7 +57,7 @@ import property from "@webiny/app-page-builder/editor/plugins/elementSettings/pr
 import responsiveEditorMode from "@webiny/app-page-builder/editor/plugins/responsiveMode";
 // Page settings
 import pageSettingsPlugins from "@webiny/app-page-builder/editor/plugins/pageSettings";
-// default ToolbarPresets for grid
+// default presets for grid
 import { gridPresets } from "@webiny/app-page-builder/editor/plugins/gridPresets";
 
 export default [
@@ -83,7 +83,7 @@ export default [
     iframe(),
     codesandbox(),
     pagesList(),
-    // grid ToolbarPresets
+    // grid presets
     ...gridPresets,
     // Element groups
     basicGroup,
