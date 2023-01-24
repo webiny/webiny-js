@@ -49,6 +49,21 @@ const Actions = styled("div")({
     }
 });
 
+/**
+ * TODO @sven to give correct values
+ */
+const FieldTypeName = styled("div")({
+    display: "flex",
+    flexDirection: "column",
+    textTransform: "uppercase",
+    color: "grey",
+    flex: "1",
+    textAlign: "right",
+    fontSize: "14px",
+    paddingRight: "10px",
+    paddingTop: "4px"
+});
+
 const menuStyles = css({
     width: 220,
     right: -105,
@@ -98,6 +113,29 @@ const isFieldAllowedToBeImage = (model: CmsModel, field: CmsModelField, parent?:
         return false;
     }
     return field.type === "file" && field.settings?.imagesOnly;
+};
+
+const getFieldTypeName = (
+    model: CmsModel,
+    field: CmsModelField,
+    parent?: CmsModelField
+): string | null => {
+    if (parent) {
+        return null;
+    }
+    const isTitleField = field.fieldId === model?.titleFieldId && !parent;
+    const isDescriptionField = field.fieldId === model?.descriptionFieldId && !parent;
+    const isImageField = field.fieldId === model?.imageFieldId && !parent;
+
+    return (
+        [
+            isTitleField ? "entry title" : null,
+            isDescriptionField ? "entry description" : null,
+            isImageField ? "entry image" : null
+        ]
+            .filter(Boolean)
+            .join("") || null
+    );
 };
 
 export interface FieldProps {
@@ -182,17 +220,10 @@ const Field: React.FC<FieldProps> = props => {
 
     const rendererPlugin = getFieldRendererPlugin(field.renderer.name);
     const canEdit = fieldPlugin.field.canEditSettings !== false;
-    const isTitleField = field.fieldId === model?.titleFieldId && !parent;
-    const isDescriptionField = field.fieldId === model?.descriptionFieldId && !parent;
-    const isImageField = field.fieldId === model?.imageFieldId && !parent;
 
-    const info = [
-        rendererPlugin?.renderer.name,
-        field.multipleValues ? "multiple values" : null,
-        isTitleField ? "entry title" : null,
-        isDescriptionField ? "entry description" : null,
-        isImageField ? "entry image" : null
-    ]
+    const fieldTypeName = getFieldTypeName(model, field, parent);
+
+    const info = [rendererPlugin?.renderer.name, field.multipleValues ? "multiple values" : null]
         .filter(Boolean)
         .join(", ");
 
@@ -206,6 +237,7 @@ const Field: React.FC<FieldProps> = props => {
                         <LowerCase>({info})</LowerCase>
                     </Typography>
                 </Info>
+                {fieldTypeName && <FieldTypeName>{fieldTypeName}</FieldTypeName>}
                 <Actions>
                     {canEdit ? (
                         <IconButton
