@@ -1,5 +1,5 @@
 import React, { Fragment, useCallback, useEffect, useState } from "react";
-import { makeComposable } from "@webiny/app-core";
+import { makeComposable } from "@webiny/app";
 
 export interface UserMenuItemData {
     label?: string;

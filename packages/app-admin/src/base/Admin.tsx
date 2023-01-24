@@ -1,5 +1,5 @@
 import React from "react";
-import { App, Provider } from "@webiny/app-core";
+import { App, Provider } from "@webiny/app";
 import { WcpProvider } from "@webiny/app-wcp";
 import { ApolloClientFactory, createApolloProvider } from "./providers/ApolloProvider";
 import { Base } from "./Base";

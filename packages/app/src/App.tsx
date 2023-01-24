@@ -9,8 +9,8 @@ import React, {
 } from "react";
 import { BrowserRouter, RouteProps } from "@webiny/react-router";
 import { compose, HigherOrderComponent, CompositionProvider } from "@webiny/react-composition";
-import { Routes as SortRoutes } from "./utils/Routes";
-import { DebounceRender } from "./utils/DebounceRender";
+import { Routes as SortRoutes } from "./core/Routes";
+import { DebounceRender } from "./core/DebounceRender";
 import { PluginsProvider } from "./core/Plugins";
 
 interface State {
