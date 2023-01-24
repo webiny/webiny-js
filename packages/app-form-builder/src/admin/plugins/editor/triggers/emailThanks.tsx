@@ -14,17 +14,16 @@ const plugin: FbEditorTrigger = {
     name: "form-editor-trigger-email-thanks",
     trigger: {
         id: "email-thanks",
-        title: "Email - Thank you email",
-        description: "Send an email notification to the user that submitted the form.",
+        title: "E-mail - Thank You E-mail",
+        description: "Send an e-mail notification to the user that submitted the form.",
         icon: <EmailIcon />,
         renderSettings({ Bind, submit, form }) {
-            console.log(form.fields);
             const hasEmailField = form.fields.some(field => field.name === "email");
 
             if (!hasEmailField) {
                 return (
-                    <Alert title={t`Email field required`} type={"danger"}>
-                        {t`In order to use this trigger you need to add an email field to your form`}
+                    <Alert title={t`E-mail field required`} type={"danger"}>
+                        {t`In order to use this trigger you need to add an e-mail field to your form.`}
                     </Alert>
                 );
             }
@@ -38,7 +37,7 @@ const plugin: FbEditorTrigger = {
                     </Cell>
                     <Cell span={12}>
                         <Bind name={"content"}>
-                            <Input rows={5} label={t`Email content`} />
+                            <Input rows={5} label={t`E-mail content`} />
                         </Bind>
                     </Cell>
                     <Cell>

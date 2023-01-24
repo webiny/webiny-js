@@ -14,8 +14,8 @@ const plugin: FbEditorTrigger = {
     name: "form-editor-trigger-email-notification",
     trigger: {
         id: "email-notification",
-        title: "Email - Submission Notification",
-        description: "Send an email notification with form submission details.",
+        title: "E-mail - Submission Notification",
+        description: "Send an e-mail notification with form submission details.",
         icon: <EmailIcon />,
         renderSettings({ Bind, submit }) {
             return (
@@ -23,8 +23,8 @@ const plugin: FbEditorTrigger = {
                     <Cell span={12}>
                         <Bind name={"email"} validators={validation.create("email")}>
                             <Input
-                                label={t`Email address`}
-                                description={t`Email address to which the submission details will be sent to.`}
+                                label={t`E-mail address`}
+                                description={t`E-mail address to which the submission details will be sent to.`}
                             />
                         </Bind>
                     </Cell>
