@@ -336,7 +336,8 @@ describe("content model plugins", () => {
                         plugin: true,
                         savedOn: null,
                         titleFieldId: "name",
-                        descriptionFieldId: "descr"
+                        descriptionFieldId: "descr",
+                        imageFieldId: null
                     },
                     error: null
                 }
@@ -425,7 +426,8 @@ describe("content model plugins", () => {
                             plugin: true,
                             savedOn: null,
                             titleFieldId: "name",
-                            descriptionFieldId: "descr"
+                            descriptionFieldId: "descr",
+                            imageFieldId: null
                         }
                     ],
                     error: null

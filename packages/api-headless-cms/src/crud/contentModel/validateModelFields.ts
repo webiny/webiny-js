@@ -13,121 +13,9 @@ import { PluginsContainer } from "@webiny/plugins";
 import { createFieldStorageId } from "./createFieldStorageId";
 import { GraphQLError } from "graphql";
 import { getBaseFieldType } from "~/utils/getBaseFieldType";
-
-const defaultTitleFieldId = "id";
-
-const allowedTitleFieldTypes = ["text", "number"];
-
-const getContentModelTitleFieldId = (fields: CmsModelField[], titleFieldId?: string): string => {
-    /**
-     * If there are no fields defined, we will return the default field
-     */
-    if (fields.length === 0) {
-        return defaultTitleFieldId;
-    }
-    /**
-     * if there is no title field defined either in input data or existing content model data
-     * we will take first text field that has no multiple values enabled
-     * or if initial titleFieldId is the default one also try to find first available text field
-     */
-    if (!titleFieldId || titleFieldId === defaultTitleFieldId) {
-        const titleField = fields.find(field => {
-            return getBaseFieldType(field) === "text" && !field.multipleValues;
-        });
-        return titleField?.fieldId || defaultTitleFieldId;
-    }
-    /**
-     * check existing titleFieldId for existence in the model
-     * for correct type
-     * and that it is not multiple values field
-     */
-    const target = fields.find(f => f.fieldId === titleFieldId);
-    if (!target) {
-        throw new WebinyError(
-            `Field selected for the title field does not exist in the model.`,
-            "VALIDATION_ERROR",
-            {
-                fieldId: titleFieldId,
-                fields
-            }
-        );
-    }
-
-    if (allowedTitleFieldTypes.includes(target.type) === false) {
-        throw new WebinyError(
-            `Only ${allowedTitleFieldTypes.join(
-                ", "
-            )} and id fields can be used as an entry title.`,
-            "ENTRY_TITLE_FIELD_TYPE",
-            {
-                storageId: target.storageId,
-                fieldId: target.fieldId,
-                type: target.type
-            }
-        );
-    }
-
-    if (target.multipleValues) {
-        throw new WebinyError(
-            `Fields that accept multiple values cannot be used as the entry title.`,
-            "ENTRY_TITLE_FIELD_TYPE",
-            {
-                storageId: target.storageId,
-                fieldId: target.fieldId,
-                type: target.type
-            }
-        );
-    }
-
-    return target.fieldId;
-};
-
-const getContentModelDescriptionFieldId = (
-    fields: CmsModelField[],
-    descriptionFieldId?: string | null
-): string | null | undefined => {
-    /**
-     * If there are no fields defined, we will just set as null.
-     */
-    if (fields.length === 0) {
-        return null;
-    }
-    /**
-     * If description field is not defined, let us find possible one.
-     */
-    if (!descriptionFieldId) {
-        const descriptionField = fields.find(field => {
-            return getBaseFieldType(field) === "long-text" && !field.multipleValues;
-        });
-        return descriptionField?.fieldId;
-    }
-    const target = fields.find(
-        field => field.fieldId === descriptionFieldId && field.type === "long-text"
-    );
-    if (!target) {
-        throw new WebinyError(
-            `Field selected for the description field does not exist in the model.`,
-            "VALIDATION_ERROR",
-            {
-                fieldId: descriptionFieldId,
-                fields
-            }
-        );
-    }
-    if (target.multipleValues) {
-        throw new WebinyError(
-            `Fields that accept multiple values cannot be used as the entry title.`,
-            "ENTRY_TITLE_FIELD_TYPE",
-            {
-                storageId: target.storageId,
-                fieldId: target.fieldId,
-                type: target.type
-            }
-        );
-    }
-
-    return target.fieldId;
-};
+import { getContentModelTitleFieldId } from "./fields/titleField";
+import { getContentModelDescriptionFieldId } from "./fields/descriptionField";
+import { getContentModelImageFieldId } from "./fields/imageField";
 
 const extractInvalidField = (model: CmsModel, err: GraphQLError) => {
     const sdl = err.source?.body || "";
@@ -309,7 +197,7 @@ interface ValidateModelFieldsParams {
 }
 export const validateModelFields = (params: ValidateModelFieldsParams) => {
     const { model, original, plugins } = params;
-    const { titleFieldId, descriptionFieldId } = model;
+    const { titleFieldId, descriptionFieldId, imageFieldId } = model;
 
     /**
      * There should be fields/locked fields in either model or data to be updated.
@@ -352,6 +240,7 @@ export const validateModelFields = (params: ValidateModelFieldsParams) => {
 
     model.titleFieldId = getContentModelTitleFieldId(fields, titleFieldId);
     model.descriptionFieldId = getContentModelDescriptionFieldId(fields, descriptionFieldId);
+    model.imageFieldId = getContentModelImageFieldId(fields, imageFieldId);
 
     const cmsLockedFieldPlugins =
         plugins.byType<CmsModelLockedFieldPlugin>("cms-model-locked-field");

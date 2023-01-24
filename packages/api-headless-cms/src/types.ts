@@ -117,6 +117,10 @@ export interface CmsModelFieldSettings {
      */
     fields?: CmsModelField[];
     /**
+     * Is the file field images only one?
+     */
+    imagesOnly?: boolean;
+    /**
      * Object field has child fields - so it needs to have a layout.
      */
     layout?: string[][];
@@ -489,6 +493,11 @@ export interface CmsModel {
      * Only way this is null or undefined is that there are no long-text fields to be set as description.
      */
     descriptionFieldId?: string | null;
+    /**
+     * The field which is displayed as the image.
+     * Only way this is null or undefined is that there are no file fields, with images only set, to be set as image.
+     */
+    imageFieldId?: string | null;
     /**
      * The version of Webiny which this record was stored with.
      */
