@@ -95,7 +95,7 @@ export class PluginsContainer {
                 `There is a requirement for plugin of type "${type}" to be only one registered.`
             );
         }
-        return this.decorate(list[0]) as T;
+        return list[0] as T;
     }
 
     public all<T extends Plugin>(): T[] {
