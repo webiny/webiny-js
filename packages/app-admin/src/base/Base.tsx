@@ -1,5 +1,5 @@
 import React, { memo } from "react";
-import { Plugins } from "@webiny/app-admin-core";
+import { Plugins } from "@webiny/app-core";
 import { AddMenu, AddRoute, Dashboard, FileManagerFileTypePlugin, Layout, NotFound } from "~/index";
 import { plugins } from "@webiny/plugins";
 import { ReactComponent as DocsIcon } from "~/assets/icons/icon-documentation.svg";

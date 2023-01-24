@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { HigherOrderComponent, useAdmin } from "~/index";
+import { HigherOrderComponent, useApp } from "~/index";
 
 export interface ProviderProps {
     hoc: HigherOrderComponent;
@@ -9,7 +9,7 @@ export interface ProviderProps {
  * Register a new React context provider.
  */
 export const Provider: React.FC<ProviderProps> = ({ hoc }) => {
-    const { addProvider } = useAdmin();
+    const { addProvider } = useApp();
 
     useEffect(() => {
         return addProvider(hoc);

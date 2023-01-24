@@ -1,5 +1,5 @@
 import React from "react";
-import { makeComposable } from "@webiny/app-admin-core";
+import { makeComposable } from "@webiny/app-core";
 
 export const NotFound = makeComposable("NotFound", () => {
     return <NotFoundRenderer />;

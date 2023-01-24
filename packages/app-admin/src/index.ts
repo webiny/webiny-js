@@ -1,5 +1,5 @@
-export * from "@webiny/app-admin-core";
-export type { HigherOrderComponent, ProviderProps, ComposeProps } from "@webiny/app-admin-core";
+export * from "@webiny/app-core";
+export type { HigherOrderComponent, ProviderProps, ComposeProps } from "@webiny/app-core";
 // UI components
 export * from "./base/ui/Tags";
 export * from "./base/ui/Menu";

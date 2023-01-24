@@ -21,7 +21,7 @@
     "@types/mime": "^2.0.3",
     "@types/react": "17.0.39",
     "@webiny/app": "0.0.0",
-    "@webiny/app-admin-core": "0.0.0",
+    "@webiny/app-core": "0.0.0",
     "@webiny/app-security": "0.0.0",
     "@webiny/app-wcp": "0.0.0",
     "@webiny/form": "0.0.0",

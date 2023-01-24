@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
-  "references": [{ "path": "../app" }, { "path": "../app-admin-core" }, { "path": "../plugins" }],
+  "references": [{ "path": "../app" }, { "path": "../app-core" }, { "path": "../plugins" }],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",
@@ -11,8 +11,8 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/app/*": ["../app/src/*"],
       "@webiny/app": ["../app/src"],
-      "@webiny/app-admin-core/*": ["../app-admin-core/src/*"],
-      "@webiny/app-admin-core": ["../app-admin-core/src"],
+      "@webiny/app-core/*": ["../app-core/src/*"],
+      "@webiny/app-core": ["../app-core/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"]
     },

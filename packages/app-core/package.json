@@ -1,8 +1,8 @@
 {
-  "name": "@webiny/app-admin-core",
+  "name": "@webiny/app-core",
   "version": "0.0.0",
   "main": "index.js",
-  "description": "Core framework of the Webiny admin app.",
+  "description": "Core framework of the Webiny React apps.",
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
