@@ -9704,7 +9704,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/lodash@npm:*, @types/lodash@npm:^4.14.178":
+"@types/lodash@npm:*":
   version: 4.14.186
   resolution: "@types/lodash@npm:4.14.186"
   checksum: ee0c1368a8100bb6efb88335107473a41928fc307ff1ef4ff1278868ccddba9c04c68c36d1ffe3a0392ef4a956e1955f7de3203ec09df4f1655dd1b88485c549
@@ -39472,7 +39472,6 @@ __metadata:
     "@apollo/react-hooks": ^3.1.5
     "@emotion/core": ^10.0.17
     "@emotion/styled": ^10.0.17
-    "@types/lodash": ^4.14.178
     "@types/react-hamburger-menu": ^0.0.4
     "@webiny/app-form-builder": 0.0.0
     "@webiny/app-page-builder": 0.0.0

@@ -2,18 +2,6 @@ import * as React from "react";
 import gql from "graphql-tag";
 import { useQuery } from "@apollo/react-hooks";
 
-declare global {
-    // eslint-disable-next-line
-    namespace JSX {
-        interface IntrinsicElements {
-            "ps-tag": {
-                "data-key": string;
-                "data-value": string;
-            };
-        }
-    }
-}
-
 export interface PublishedMenuData {
     title: string;
     slug: string;
