@@ -17,7 +17,7 @@ export type GetFormDataLoaderResult = FormData;
 
 export type GetFormDataLoader = (params: {
     variables: GetFormDataLoaderVariables;
-}) => Promise<GetFormDataLoaderResult>;
+}) => GetFormDataLoaderResult | Promise<GetFormDataLoaderResult>;
 
 export const createGetFormDataLoader = (
     params: CreateGetFormDataLoaderParams
