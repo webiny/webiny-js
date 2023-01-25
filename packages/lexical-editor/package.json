@@ -8,13 +8,13 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "@webiny/react-composition": "0.0.0",
     "@lexical/code": "0.6.0",
     "@lexical/html": "0.6.2",
     "@lexical/react": "^0.6.0",
     "@lexical/rich-text": "0.7.6",
     "@lexical/selection": "0.6.0",
     "@lexical/utils": "0.6.0",
+    "@webiny/react-composition": "0.0.0",
     "lexical": "^0.6.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
