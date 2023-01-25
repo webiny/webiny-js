@@ -1,7 +1,7 @@
 import React from "react";
+import { AddRoute, App, createProviderPlugin, Plugins } from "@webiny/app";
 import { ApolloProvider } from "@apollo/react-hooks";
 import { CacheProvider } from "@emotion/core";
-import { BrowserRouter, Routes, Route } from "@webiny/react-router";
 import { PageBuilderProvider } from "@webiny/app-page-builder/contexts/PageBuilder";
 import { Page } from "./Page";
 import { createApolloClient, createEmotionCache } from "~/utils";
@@ -13,26 +13,48 @@ interface Props {
     themes?: ThemeSource[];
 }
 
-export const Website: React.FC<Props> = props => {
+const PageBuilderProviderPlugin = createProviderPlugin(PreviousProvider => {
+    return function PageBuilderProviderHOC({ children }) {
+        return (
+            <PageBuilderProvider>
+                <PreviousProvider>{children}</PreviousProvider>
+            </PageBuilderProvider>
+        );
+    };
+});
+
+const createThemeLoaderPlugin = (themes: ThemeSource[]) => {
+    return createProviderPlugin(PreviousProvider => {
+        return function PageBuilderProviderHOC({ children }) {
+            if (themes.length > 0) {
+                return (
+                    <ThemeLoader themes={themes}>
+                        <PreviousProvider>{children}</PreviousProvider>
+                    </ThemeLoader>
+                );
+            }
+
+            return <PreviousProvider>{children}</PreviousProvider>;
+        };
+    });
+};
+
+export const Website: React.FC<Props> = ({ children, ...props }) => {
     const apolloClient = props.apolloClient || createApolloClient();
     const emotionCache = createEmotionCache();
-
-    let content = (
-        <Routes>
-            <Route path={"*"} component={Page} />
-        </Routes>
-    );
-
-    if (props.themes) {
-        content = <ThemeLoader themes={props.themes}>{content}</ThemeLoader>;
-    }
+    const ThemeLoaderPlugin = createThemeLoaderPlugin(props.themes || []);
 
     return (
         <CacheProvider value={emotionCache}>
             <ApolloProvider client={apolloClient}>
-                <BrowserRouter basename={process.env.PUBLIC_URL}>
-                    <PageBuilderProvider>{content}</PageBuilderProvider>
-                </BrowserRouter>
+                <App debounceRender={0}>
+                    <PageBuilderProviderPlugin />
+                    <ThemeLoaderPlugin />
+                    <Plugins>
+                        <AddRoute path={"*"} element={<Page />} />
+                    </Plugins>
+                    {children}
+                </App>
             </ApolloProvider>
         </CacheProvider>
     );

@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import { useQuery } from "@apollo/react-hooks";
-import Render from "./Render";
+import { PageRenderer } from "./PageRenderer";
 import {
     GET_SETTINGS,
     GET_PUBLISHED_PAGE,
@@ -75,5 +75,5 @@ export const Page: React.FC = () => {
         getSettingsQuery.data?.pageBuilder?.getSettings?.data || ({} as SettingsQueryResponseData);
 
     // Let's render the page.
-    return <Render page={page} error={error} settings={settings} />;
+    return <PageRenderer page={page} error={error} settings={settings} />;
 };
