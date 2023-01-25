@@ -24,7 +24,7 @@ const createPulumiCommand = ({
             return plugin[name](inputs, context);
         } else {
             // Before proceeding, let's detect if multiple project applications were passed.
-            const folders = inputs.folder.split(",");
+            const folders = inputs.folder.split(",").map(current => current.trim());
             if (folders.length > 1) {
                 for (let i = 0; i < folders.length; i++) {
                     const folder = folders[i];
