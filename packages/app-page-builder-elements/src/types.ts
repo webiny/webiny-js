@@ -122,12 +122,6 @@ export interface PageProviderProps {
     layoutProps?: Record<string, any>;
 }
 
-export type PageContextValue = {
-    page: Page;
-    layout?: React.ComponentType<{ children: React.ReactNode }>;
-    layoutProps: Record<string, any>;
-};
-
 export type Renderer<T = {}, TElementData = Record<string, any>> = React.ComponentType<
     RendererProps<TElementData> & T
 >;
