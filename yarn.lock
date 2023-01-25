@@ -6065,6 +6065,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@lexical/hashtag@npm:0.6.0":
+  version: 0.6.0
+  resolution: "@lexical/hashtag@npm:0.6.0"
+  dependencies:
+    "@lexical/utils": 0.6.0
+  peerDependencies:
+    lexical: 0.6.0
+  checksum: f6cc2ecc9eb67476b6a66b79a94bd4a106d86f1fa2fcc3bdc96e49472cceaa3d471d94c0c274e80b6c01f23d18d980fda20adc8e778443efeaaddae94ca0b194
+  languageName: node
+  linkType: hard
+
 "@lexical/hashtag@npm:0.6.5":
   version: 0.6.5
   resolution: "@lexical/hashtag@npm:0.6.5"
@@ -6084,17 +6095,6 @@ __metadata:
   peerDependencies:
     lexical: 0.6.5
   checksum: df0755eabe9f1847482e4f8fb01cfdb6173cb24d3d4bc918e8913067c3e555303ccbdfaa6f9261037736a4fae46c217e39bb154782ca4e0ae63253933db47484
-  languageName: node
-  linkType: hard
-
-"@lexical/html@npm:0.6.2":
-  version: 0.6.2
-  resolution: "@lexical/html@npm:0.6.2"
-  dependencies:
-    "@lexical/selection": 0.6.2
-  peerDependencies:
-    lexical: 0.6.2
-  checksum: 78a76aa443a84096ac68140e6d70c9a57def734edc40a4bfebf5e16d5fff699cc3ceb6b9d0eac38002b7e9bbdeb7b741b029bea90fc3fac77273aba40f98ae7b
   languageName: node
   linkType: hard
 
@@ -6142,6 +6142,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@lexical/mark@npm:0.6.0":
+  version: 0.6.0
+  resolution: "@lexical/mark@npm:0.6.0"
+  dependencies:
+    "@lexical/utils": 0.6.0
+  peerDependencies:
+    lexical: 0.6.0
+  checksum: c2043e638eb0e138027a83f569ad6624a84fba882f142df625c9f479d98fc19d89373232467db262ca9df237048dff76101f3baef51101a48bb055360eb47769
+  languageName: node
+  linkType: hard
+
 "@lexical/mark@npm:0.6.5":
   version: 0.6.5
   resolution: "@lexical/mark@npm:0.6.5"
@@ -6175,6 +6186,15 @@ __metadata:
   peerDependencies:
     lexical: 0.6.5
   checksum: 533c660493453ee0975ffa4f8bba54e7bec469ba4eefba3832b1dac21ca51db3fd3be48cce096099a7b2f50787c2867b185b4b9a0aa838f1f637c67fc7002edd
+  languageName: node
+  linkType: hard
+
+"@lexical/overflow@npm:0.6.0":
+  version: 0.6.0
+  resolution: "@lexical/overflow@npm:0.6.0"
+  peerDependencies:
+    lexical: 0.6.0
+  checksum: 099a52686872079c3d6f53879aaa6d3e01278737bf06e93a98b14a84b8256c82255f44af45956be6ccb60ee95c13c5588fe5e894be16968ddef09765e47a258b
   languageName: node
   linkType: hard
 
@@ -6229,6 +6249,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@lexical/rich-text@npm:0.6.0":
+  version: 0.6.0
+  resolution: "@lexical/rich-text@npm:0.6.0"
+  peerDependencies:
+    "@lexical/clipboard": 0.6.0
+    "@lexical/selection": 0.6.0
+    "@lexical/utils": 0.6.0
+    lexical: 0.6.0
+  checksum: 08845ed453ba7b4c755aedb359cc88178372ea130f857c299e8f0a296ebac60fa762051be4a55583855bd4d60043fef256a7e892f31322e294b8f4be8730c6f3
+  languageName: node
+  linkType: hard
+
 "@lexical/rich-text@npm:0.6.5":
   version: 0.6.5
   resolution: "@lexical/rich-text@npm:0.6.5"
@@ -6241,33 +6273,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lexical/rich-text@npm:0.7.6":
-  version: 0.7.6
-  resolution: "@lexical/rich-text@npm:0.7.6"
-  peerDependencies:
-    "@lexical/clipboard": 0.7.6
-    "@lexical/selection": 0.7.6
-    "@lexical/utils": 0.7.6
-    lexical: 0.7.6
-  checksum: 53ddbd4e2a068cc026d3821efab873fb2e47aa5142e8b1c34659c64a40d35c27a5853b0d452371f548d8c6f242743d566c768a5dd7f394e10e09024334a727a1
-  languageName: node
-  linkType: hard
-
 "@lexical/selection@npm:0.6.0":
   version: 0.6.0
   resolution: "@lexical/selection@npm:0.6.0"
   peerDependencies:
     lexical: 0.6.0
   checksum: 457a36be17128e73f01102a2e034914106fa9ac9035a8f50e666d11f95b7c5d108b946d93e671737444384fa05def5599f5605ae3d5300d925c6ac364e77adbd
-  languageName: node
-  linkType: hard
-
-"@lexical/selection@npm:0.6.2":
-  version: 0.6.2
-  resolution: "@lexical/selection@npm:0.6.2"
-  peerDependencies:
-    lexical: 0.6.2
-  checksum: 31466e20692b9a10d4564268002c59a8fc8b3c1ae8314ef712437b25637bb8db50df1baf7d3b2a7bb6e970c41c118871b3650c2ecdc59fcb731cf4066ceaaac4
   languageName: node
   linkType: hard
 
@@ -14783,10 +14794,13 @@ __metadata:
   resolution: "@webiny/lexical-editor@workspace:packages/lexical-editor"
   dependencies:
     "@lexical/code": 0.6.0
-    "@lexical/html": 0.6.2
+    "@lexical/hashtag": 0.6.0
     "@lexical/link": ^0.6.0
+    "@lexical/list": 0.6.0
+    "@lexical/mark": 0.6.0
+    "@lexical/overflow": 0.6.0
     "@lexical/react": ^0.6.0
-    "@lexical/rich-text": 0.7.6
+    "@lexical/rich-text": 0.6.0
     "@lexical/selection": 0.6.0
     "@lexical/utils": 0.6.0
     "@webiny/cli": ^5.33.1
