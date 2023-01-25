@@ -142,6 +142,7 @@ export type FbFormDetailsSubmissionsPlugin = Plugin & {
 
 export interface FbFormModel {
     id: FieldIdType;
+    formId: string;
     version: number;
     parent: string;
     layout: FbFormModelFieldsLayout;
