@@ -14,25 +14,24 @@ import { DropDown, DropDownItem } from "../../ui/DropDown";
 /**
  * Toolbar action. Allow user to change font size for selected text.
  */
-
-const FONT_SIZE_OPTIONS: [string, string][] = [
-    ["8px", "8px"],
-    ["9px", "9px"],
-    ["10px", "10px"],
-    ["11px", "11px"],
-    ["12px", "12px"],
-    ["14px", "14px"],
-    ["15px", "15px"],
-    ["16px", "16px"],
-    ["18px", "18px"],
-    ["21px", "21px"],
-    ["24px", "24px"],
-    ["30px", "30px"],
-    ["36px", "36px"],
-    ["48px", "48px"],
-    ["60px", "60px"],
-    ["72px", "72px"],
-    ["96px", "96px"]
+const FONT_SIZE_OPTIONS: string[] = [
+    "8px",
+    "9px",
+    "10px",
+    "11px",
+    "12px",
+    "14px",
+    "15px",
+    "16px",
+    "18px",
+    "21px",
+    "24px",
+    "30px",
+    "36px",
+    "48px",
+    "60px",
+    "72px",
+    "96px"
 ];
 
 function dropDownActiveClass(active: boolean) {
@@ -50,6 +49,7 @@ interface FontSizeDropDownProps {
 
 function FontSizeDropDown(props: FontSizeDropDownProps): JSX.Element {
     const { editor, value, disabled = false } = props;
+
     const handleClick = useCallback(
         (option: string) => {
             editor.update(() => {
@@ -71,13 +71,13 @@ function FontSizeDropDown(props: FontSizeDropDownProps): JSX.Element {
             buttonLabel={value}
             buttonAriaLabel={"Formatting options for font size"}
         >
-            {FONT_SIZE_OPTIONS.map(([option, text]) => (
+            {FONT_SIZE_OPTIONS.map(option => (
                 <DropDownItem
                     className={`item fontsize-item ${dropDownActiveClass(value === option)}`}
                     onClick={() => handleClick(option)}
                     key={option}
                 >
-                    <span className="text">{text}</span>
+                    <span className="text">{option}</span>
                 </DropDownItem>
             ))}
         </DropDown>
