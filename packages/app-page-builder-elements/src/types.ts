@@ -23,7 +23,7 @@ export interface Element<TElementData = Record<string, any>> {
 
 export interface PageElementsProviderProps {
     theme: Theme;
-    renderers: Record<string, Renderer>;
+    renderers: Record<string, Renderer> | (() => Record<string, Renderer>);
     modifiers: {
         styles: Record<string, ElementStylesModifier>;
         attributes: Record<string, ElementAttributesModifier>;
@@ -34,6 +34,7 @@ export interface PageElementsProviderProps {
 
 export type AttributesObject = React.ComponentProps<any>;
 
+export type GetRenderers = () => Record<string, Renderer>;
 export type GetElementAttributes = (element: Element) => AttributesObject;
 export type GetElementStyles = (element: Element) => CSSObject;
 export type GetStyles = (styles: StylesObject | ((theme: Theme) => StylesObject)) => CSSObject;
@@ -78,6 +79,7 @@ export type SetElementStylesCallback = (callback: ElementStylesCallback) => void
 export type SetStylesCallback = (callback: StylesCallback) => void;
 
 export interface PageElementsContextValue extends PageElementsProviderProps {
+    getRenderers: GetRenderers;
     getElementAttributes: GetElementAttributes;
     getElementStyles: GetElementStyles;
     getStyles: GetStyles;
