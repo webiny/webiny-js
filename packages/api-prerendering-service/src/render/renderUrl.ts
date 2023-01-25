@@ -161,8 +161,6 @@ export const defaultRenderUrlFunction = async (
     const skipResources = ["image", "stylesheet"];
     await browserPage.setRequestInterception(true);
 
-    const gqlCache: GraphQLCache[] = [];
-
     browserPage.on("request", request => {
         if (skipResources.includes(request.resourceType())) {
             request.abort();
@@ -170,6 +168,8 @@ export const defaultRenderUrlFunction = async (
             request.continue();
         }
     });
+
+    const gqlCache: GraphQLCache[] = [];
 
     // TODO: should be a plugin.
     browserPage.on("response", async response => {
@@ -181,15 +181,19 @@ export const defaultRenderUrlFunction = async (
             const operations = Array.isArray(postData) ? postData : [postData];
 
             for (let i = 0; i < operations.length; i++) {
-                const { operationName, query, variables } = operations[i];
+                const { query, variables } = operations[i];
 
-                // TODO: Should be handled via a plugin.
-                const operationsAllowedToCached = ["PbGetPublishedPage", "FbGetPublishedForm"];
-                if (operationsAllowedToCached.includes(operationName)) {
+                // For now, we're doing a basic @ps(cache: true) match to determine if the
+                // cache was set true. In the future, if we start introducing additional
+                // parameters here, we should probably make this parsing smarter.
+                const mustCache = query.match(/@ps\((cache: true)\)/);
+
+                if (mustCache) {
+                    const data = Array.isArray(responses) ? responses[i].data : responses.data;
                     gqlCache.push({
                         query,
                         variables,
-                        data: responses[i].data
+                        data
                     });
                 }
             }
