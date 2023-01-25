@@ -1,27 +1,5 @@
 import { fetchData } from "./fetchData";
-
-export const CREATE_FORM_SUBMISSION = /* GraphQL */ `
-    mutation CreateFormSubmission(
-        $revision: ID!
-        $data: JSON!
-        $meta: JSON!
-        $reCaptchaResponseToken: String
-    ) {
-        formBuilder {
-            createFormSubmission(
-                revision: $revision
-                data: $data
-                meta: $meta
-                reCaptchaResponseToken: $reCaptchaResponseToken
-            ) {
-                error {
-                    message
-                    data
-                }
-            }
-        }
-    }
-`;
+import { CREATE_FORM_SUBMISSION } from "./graphql";
 
 export interface CreateSubmitFormDataLoaderParams {
     apiUrl: string;

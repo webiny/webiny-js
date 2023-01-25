@@ -1,62 +1,6 @@
 import { FormData } from "./../types";
 import { fetchData } from "./fetchData";
-
-const GET_PUBLISHED_FORM = /* GraphQL */ `
-    query FbGetPublishedForm($revision: ID, $parent: ID) {
-        formBuilder {
-            getPublishedForm(revision: $revision, parent: $parent) {
-                data {
-                    id
-                    formId
-                    fields {
-                        _id
-                        fieldId
-                        type
-                        label
-                        placeholderText
-                        helpText
-                        options {
-                            label
-                            value
-                        }
-                        validation {
-                            name
-                            settings
-                            message
-                        }
-                        settings
-                    }
-                    layout
-                    triggers
-                    settings {
-                        reCaptcha {
-                            enabled
-                            errorMessage
-                            settings {
-                                enabled
-                                siteKey
-                                secretKey
-                            }
-                        }
-                        layout {
-                            renderer
-                        }
-                        successMessage
-                        submitButtonLabel
-                        termsOfServiceMessage {
-                            enabled
-                            message
-                            errorMessage
-                        }
-                    }
-                }
-                error {
-                    message
-                }
-            }
-        }
-    }
-`;
+import { GET_PUBLISHED_FORM } from "./graphql";
 
 export interface CreateGetFormDataLoaderParams {
     apiUrl: string;
