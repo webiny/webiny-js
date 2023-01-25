@@ -7,11 +7,12 @@ import {
     PbPageDataSettingsSocial
 } from "@webiny/app-page-builder/types";
 import { makeComposable } from "@webiny/app";
-import { Page } from "@webiny/app-page-builder-elements";
-import { Layout } from "./Layout";
 import { SettingsQueryResponseData } from "./graphql";
 import { ErrorPage } from "./ErrorPage";
 import { WebsiteScripts } from "./WebsiteScripts";
+import { MainContent } from "./MainContent";
+import { Layout } from "./Layout";
+import { PageProvider } from "@webiny/app-page-builder-elements";
 
 interface Head {
     favicon?: {
@@ -60,7 +61,7 @@ export const PageRenderer = makeComposable<PageRendererProps>(
             }
         };
 
-        const content = (
+        return (
             <>
                 <Helmet>
                     {/* Read favicon from settings. */}
@@ -106,14 +107,11 @@ export const PageRenderer = makeComposable<PageRendererProps>(
                     headerTags={settings?.htmlTags?.header}
                     footerTags={settings?.htmlTags?.footer}
                 />
-                <Page page={page} layout={Layout} layoutProps={{ settings }} />
-            </>
-        );
-
-        return (
-            <>
-                <ps-tag data-key={"pb-page"} data-value={page.id} />
-                {content}
+                <PageProvider page={page} layoutProps={{ settings }}>
+                    <Layout>
+                        <MainContent page={page} />
+                    </Layout>
+                </PageProvider>
             </>
         );
     }
