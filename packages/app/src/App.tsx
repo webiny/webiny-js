@@ -40,10 +40,11 @@ export const useApp = () => {
 };
 
 export interface AppProps {
+    debounceRender?: number;
     children?: React.ReactNode | React.ReactNode[];
 }
 
-export const App = ({ children }: AppProps) => {
+export const App = ({ debounceRender = 50, children }: AppProps) => {
     const [state, setState] = useState<State>({
         routes: {},
         plugins: [],
@@ -114,7 +115,7 @@ export const App = ({ children }: AppProps) => {
                 <BrowserRouter>
                     <Providers>
                         <PluginsProvider>{state.plugins}</PluginsProvider>
-                        <DebounceRender>
+                        <DebounceRender wait={debounceRender}>
                             <AppRouter />
                         </DebounceRender>
                     </Providers>
