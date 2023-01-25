@@ -8,6 +8,7 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
+    "@webiny/react-composition": "0.0.0",
     "@lexical/code": "0.6.0",
     "@lexical/html": "0.6.2",
     "@lexical/react": "^0.6.0",

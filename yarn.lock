@@ -14791,6 +14791,7 @@ __metadata:
     "@lexical/utils": 0.6.0
     "@webiny/cli": ^5.33.1
     "@webiny/project-utils": ^5.33.1
+    "@webiny/react-composition": 0.0.0
     lexical: ^0.6.0
     react: ^17.0.2
     react-dom: ^17.0.2
