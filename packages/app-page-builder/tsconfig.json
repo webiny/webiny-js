@@ -34,6 +34,7 @@
       "@webiny/app-aco": ["../app-aco/src"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
       "@webiny/app-admin": ["../app-admin/src"],
+      "@webiny/lexical-editor/*": ["../lexical-editor/src"],
       "@webiny/lexical-editor": ["../lexical-editor/src"],
       "@webiny/app-i18n/*": ["../app-i18n/src/*"],
       "@webiny/app-i18n": ["../app-i18n/src"],
