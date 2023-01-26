@@ -4,4 +4,14 @@
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
-Enables Webiny Page Builder in the Admin area and on your site. 
+
+## About
+
+This package provides a web text editor with rich text editing features. It's built on top of the Lexical framework.
+
+
+To find more about the Lexical framework go to their website [lexical.dev](https://lexical.dev/)
+
+## Where is it used?
+
+Currently, this packaged is used in [@webiny/app-pagebuilder](../app-page-builder).
