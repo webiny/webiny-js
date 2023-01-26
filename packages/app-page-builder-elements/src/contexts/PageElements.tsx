@@ -10,7 +10,8 @@ import {
     AssignStylesCallback,
     SetElementStylesCallback,
     SetStylesCallback,
-    SetAssignStylesCallback
+    SetAssignStylesCallback,
+    GetRenderers
 } from "~/types";
 import {
     setUsingPageElements,
@@ -94,6 +95,10 @@ export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
         [customStylesCallback, customAssignStylesCallback]
     );
 
+    const getRenderers = useCallback<GetRenderers>(() => {
+        return typeof renderers === "function" ? renderers() : renderers;
+    }, []);
+
     // Provides a way to check whether the `PageElementsProvider` React component was mounted or not,
     // in a non-React context. In React contexts, it's strongly recommended the value of `usePageElements`
     // React hook is checked instead (a `null` value means the provider React component wasn't mounted).
@@ -103,6 +108,7 @@ export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
         theme,
         renderers,
         modifiers,
+        getRenderers,
         getElementAttributes,
         getElementStyles,
         getStyles,

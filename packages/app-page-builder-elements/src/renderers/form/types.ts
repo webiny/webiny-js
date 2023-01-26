@@ -47,7 +47,6 @@ export interface FormData {
     id: string;
     formId: string;
     version: number;
-    parent: string;
     layout: FormDataFieldsLayout;
     fields: FormDataField[];
     published: boolean;
