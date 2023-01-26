@@ -2,11 +2,12 @@ import { FormData } from "./../types";
 import { fetchData } from "./fetchData";
 
 const GET_PUBLISHED_FORM = /* GraphQL */ `
-    query GetPublishedForm($revision: ID, $parent: ID) {
+    query FbGetPublishedForm($revision: ID, $parent: ID) {
         formBuilder {
             getPublishedForm(revision: $revision, parent: $parent) {
                 data {
                     id
+                    formId
                     fields {
                         _id
                         fieldId
