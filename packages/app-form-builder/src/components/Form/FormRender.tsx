@@ -210,7 +210,7 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
 
     return (
         <>
-            <ps-tag data-key="fb-form" data-value={data.parent} />
+            <ps-tag data-key="fb-form" data-value={data.formId} />
             <LayoutRenderComponent {...layoutProps} />
         </>
     );
