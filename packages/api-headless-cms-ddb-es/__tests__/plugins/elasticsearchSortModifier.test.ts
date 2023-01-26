@@ -69,12 +69,12 @@ describe("Elasticsearch sort modifier plugin", () => {
             }
         ];
 
-        plugin.modifySort({
+        const result = plugin.modifySort({
             sort,
             model
         });
 
-        expect(sort).toEqual({
+        expect(result).toEqual({
             _script: {
                 type: "number",
                 script: {
