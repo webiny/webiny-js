@@ -1,6 +1,4 @@
-let featureFlags: Record<string, any> = {
-    pbLexicalEditor: false
-};
+let featureFlags: Record<string, any> = {};
 
 // In API applications.
 if (process.env.WEBINY_FEATURE_FLAGS) {
