@@ -236,6 +236,9 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                     # Update page by given ID.
                     updatePage(id: ID!, data: PbUpdatePageInput!): PbPageResponse
 
+                    # Duplicate page by given ID.
+                    duplicatePage(id: ID!): PbPageResponse
+
                     # Publish page
                     publishPage(id: ID!): PbPageResponse
 
@@ -450,6 +453,31 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                             const { data } = args;
                             return context.pageBuilder.updatePage(args.id, data);
                         });
+                    },
+
+                    duplicatePage: async (_, args: any, context) => {
+                        try {
+                            const page = await context.pageBuilder.getPage(args.id);
+                            const { id: duplicatedPageId } = await context.pageBuilder.createPage(
+                                page.category
+                            );
+
+                            const duplicatedPageData = {
+                                title: `${page.title} (Copy)`,
+                                path: `${page.path}-copy`,
+                                content: page.content,
+                                settings: page.settings
+                            };
+
+                            return new Response(
+                                await context.pageBuilder.updatePage(
+                                    duplicatedPageId,
+                                    duplicatedPageData
+                                )
+                            );
+                        } catch (e) {
+                            return new ErrorResponse(e);
+                        }
                     },
 
                     publishPage: async (_, args: any, context) => {
