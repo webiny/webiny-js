@@ -7,7 +7,7 @@ export interface ModifySortParams {
 }
 
 export interface ModifySortCallable<T extends ModifySortParams> {
-    (params: T): void;
+    (params: T): Sort;
 }
 
 export abstract class ElasticsearchSortModifierPlugin<
@@ -20,7 +20,7 @@ export abstract class ElasticsearchSortModifierPlugin<
         this.callable = callable;
     }
 
-    public modifySort(params: T): void {
+    public modifySort(params: T): Sort {
         if (typeof this.callable !== "function") {
             throw new WebinyError(
                 `Missing modification for the sort.`,
@@ -30,6 +30,6 @@ export abstract class ElasticsearchSortModifierPlugin<
                 }
             );
         }
-        this.callable(params);
+        return this.callable(params);
     }
 }

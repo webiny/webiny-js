@@ -127,8 +127,8 @@ class CmsTestEnvironment extends NodeEnvironment {
                             onBeforeEntryCreate,
                             createCmsEntryElasticsearchSortModifierPlugin({
                                 modifySort: ({ sort }) => {
-                                    if (!sort.customSorter) {
-                                        return;
+                                    if (typeof sort !== "object" || !sort.customSorter) {
+                                        return sort;
                                     }
                                     const order = sort.customSorter.order;
                                     delete sort.customSorter;
@@ -137,6 +137,7 @@ class CmsTestEnvironment extends NodeEnvironment {
                                         order,
                                         unmapped_type: "date"
                                     };
+                                    return sort;
                                 },
                                 model: "fruit"
                             })
