@@ -6,7 +6,6 @@ import {
     createProviderPlugin,
     createComponentPlugin
 } from "@webiny/app-admin";
-import { HeadingToolbarPreset, ParagraphToolbarPreset } from "@webiny/lexical-editor";
 import { PageBuilderProvider as ContextProvider } from "./contexts/PageBuilder";
 import { ReactComponent as PagesIcon } from "./admin/assets/table_chart-24px.svg";
 import { WebsiteSettings } from "./modules/WebsiteSettings/WebsiteSettings";
@@ -14,7 +13,6 @@ import { AdminPageBuilderContextProvider } from "~/admin/contexts/AdminPageBuild
 import { DefaultOnPagePublish } from "~/admin/plugins/pageDetails/pageRevisions/DefaultOnPagePublish";
 import { DefaultOnPageDelete } from "~/admin/plugins/pageDetails/pageRevisions/DefaultOnPageDelete";
 import { EditorProps, EditorRenderer } from "./admin/components/Editor";
-import { showLexicalEditor } from "~/utils/showLexicalEditor";
 
 export type { EditorProps };
 export { EditorRenderer };
@@ -105,12 +103,6 @@ export const PageBuilder: React.FC = () => {
         <Fragment>
             <PageBuilderProviderPlugin />
             <EditorRendererPlugin />
-            {showLexicalEditor() && (
-                <>
-                    <HeadingToolbarPreset />
-                    <ParagraphToolbarPreset />
-                </>
-            )}
             <Plugins>
                 <PageBuilderMenu />
                 <WebsiteSettings />

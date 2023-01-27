@@ -10,16 +10,10 @@ import useUpdateHandlers from "../../plugins/elementSettings/useUpdateHandlers";
 import ReactMediumEditor from "../../components/MediumEditor";
 import { applyFallbackDisplayMode } from "../../plugins/elementSettings/elementSettingsUtils";
 import { useElementVariableValue } from "~/editor/hooks/useElementVariableValue";
-import { showLexicalEditor } from "~/utils/showLexicalEditor";
+import { makeComposable } from "@webiny/app-admin";
 
 export const textClassName = "webiny-pb-base-page-element-style webiny-pb-page-element-text";
 const DATA_NAMESPACE = "data.text";
-
-const RichTextLexicalEditor = React.lazy(() =>
-    import("../../LexicalEditor").then(m => ({
-        default: m.LexicalEditor
-    }))
-);
 
 interface TextElementProps {
     elementId: string;
@@ -27,68 +21,61 @@ interface TextElementProps {
     rootClassName?: string;
 }
 
-const PbText: React.FC<TextElementProps> = ({ elementId, mediumEditorOptions, rootClassName }) => {
-    const element = useRecoilValue(elementWithChildrenByIdSelector(elementId));
-    const variableValue = useElementVariableValue(element);
-    const [{ displayMode }] = useRecoilState(uiAtom);
-    const [activeElementId, setActiveElementAtomValue] = useRecoilState(activeElementAtom);
-    const { getUpdateValue } = useUpdateHandlers({
-        element: element as PbEditorElement,
-        dataNamespace: DATA_NAMESPACE,
-        debounce: false
-    });
+const PbText = makeComposable<TextElementProps>(
+    "PbText",
+    ({ elementId, mediumEditorOptions, rootClassName }) => {
+        const element = useRecoilValue(elementWithChildrenByIdSelector(elementId));
+        const variableValue = useElementVariableValue(element);
+        const [{ displayMode }] = useRecoilState(uiAtom);
+        const [activeElementId, setActiveElementAtomValue] = useRecoilState(activeElementAtom);
+        const { getUpdateValue } = useUpdateHandlers({
+            element: element as PbEditorElement,
+            dataNamespace: DATA_NAMESPACE,
+            debounce: false
+        });
 
-    const fallbackValue = useMemo(
-        () =>
-            applyFallbackDisplayMode(displayMode, mode =>
-                get(element, `${DATA_NAMESPACE}.${mode}`)
-            ),
-        [displayMode]
-    );
+        const fallbackValue = useMemo(
+            () =>
+                applyFallbackDisplayMode(displayMode, mode =>
+                    get(element, `${DATA_NAMESPACE}.${mode}`)
+                ),
+            [displayMode]
+        );
 
-    const value = get(element, `${DATA_NAMESPACE}.${displayMode}`, fallbackValue);
+        const value = get(element, `${DATA_NAMESPACE}.${displayMode}`, fallbackValue);
 
-    const onChange = useCallback(
-        value => {
-            getUpdateValue(DATA_NAMESPACE)(value);
-        },
-        [getUpdateValue]
-    );
+        const onChange = useCallback(
+            value => {
+                getUpdateValue(DATA_NAMESPACE)(value);
+            },
+            [getUpdateValue]
+        );
 
-    const onSelect = useCallback(() => {
-        // Mark element active on editor element selection
-        if (elementId && activeElementId !== elementId) {
-            setActiveElementAtomValue(elementId);
+        const onSelect = useCallback(() => {
+            // Mark element active on editor element selection
+            if (elementId && activeElementId !== elementId) {
+                setActiveElementAtomValue(elementId);
+            }
+        }, [activeElementId, elementId]);
+
+        // required due to re-rendering when set content atom and still nothing in elements atom
+        if (!element) {
+            return null;
         }
-    }, [activeElementId, elementId]);
 
-    // required due to re-rendering when set content atom and still nothing in elements atom
-    if (!element) {
-        return null;
-    }
+        const tag = get(value, "tag");
+        const typography = get(value, "typography");
 
-    const tag = get(value, "tag");
-    const typography = get(value, "typography");
+        const initialText = useMemo(
+            () => variableValue || get(element, `${DATA_NAMESPACE}.data.text`),
+            [variableValue, tag]
+        );
 
-    const initialText = useMemo(
-        () => variableValue || get(element, `${DATA_NAMESPACE}.data.text`),
-        [variableValue, tag]
-    );
-
-    return (
-        <ElementRoot
-            element={element}
-            className={classNames(textClassName, rootClassName, typography)}
-        >
-            {showLexicalEditor() ? (
-                <RichTextLexicalEditor
-                    tag={tag}
-                    value={null}
-                    onChange={json => {
-                        console.log(json);
-                    }}
-                />
-            ) : (
+        return (
+            <ElementRoot
+                element={element}
+                className={classNames(textClassName, rootClassName, typography)}
+            >
                 <ReactMediumEditor
                     elementId={elementId}
                     tag={tag}
@@ -97,9 +84,9 @@ const PbText: React.FC<TextElementProps> = ({ elementId, mediumEditorOptions, ro
                     options={mediumEditorOptions}
                     onSelect={onSelect}
                 />
-            )}
-        </ElementRoot>
-    );
-};
+            </ElementRoot>
+        );
+    }
+);
 
 export default React.memo(PbText);

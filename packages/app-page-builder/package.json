@@ -36,7 +36,6 @@
     "@webiny/app-theme": "0.0.0",
     "@webiny/feature-flags": "0.0.0",
     "@webiny/form": "0.0.0",
-    "@webiny/lexical-editor": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/react-composition": "0.0.0",
     "@webiny/react-router": "0.0.0",
