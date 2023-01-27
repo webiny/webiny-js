@@ -92,12 +92,23 @@ export const createFieldResolversFactory = (factoryParams: CreateFieldResolversF
             // TODO @ts-refactor figure out types for parameters
             // @ts-ignore
             fieldResolvers[fieldId] = async (parent, args, context: CmsContext, info) => {
+                /**
+                 * This is required because due to ref field can be requested without the populated data.
+                 * At that point there is no .values  no fieldId property on the parent
+                 */
+                const value =
+                    parent?.values?.[fieldId] === undefined
+                        ? parent?.[fieldId]
+                        : parent?.values?.[fieldId];
+                if (!value) {
+                    return value;
+                }
                 // Get transformed value (eg. data decompression)
                 const transformedValue = await entryFieldFromStorageTransform({
                     context,
                     model,
                     field,
-                    value: isRoot ? parent.values[fieldId] : parent[fieldId]
+                    value: isRoot ? parent.values?.[fieldId] : parent[fieldId]
                 });
 
                 set(isRoot ? parent.values : parent, fieldId, transformedValue);
