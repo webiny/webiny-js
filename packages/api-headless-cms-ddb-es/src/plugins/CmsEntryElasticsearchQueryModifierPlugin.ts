@@ -28,3 +28,9 @@ export class CmsEntryElasticsearchQueryModifierPlugin extends ElasticsearchQuery
         this.modelId = config.modelId;
     }
 }
+
+export const createCmsEntryElasticsearchQueryModifierPlugin = (
+    config: CmsEntryElasticsearchQueryModifierPluginConfig
+) => {
+    return new CmsEntryElasticsearchQueryModifierPlugin(config);
+};

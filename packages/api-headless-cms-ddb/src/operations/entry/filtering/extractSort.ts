@@ -1,5 +1,8 @@
 import WebinyError from "@webiny/error";
 import { Field } from "./types";
+import { PluginsContainer } from "@webiny/plugins";
+import { CmsEntryFieldSortingPlugin } from "~/plugins";
+import { CmsModel } from "@webiny/api-headless-cms/types";
 
 interface Result {
     valuePath: string;
@@ -9,12 +12,14 @@ interface Result {
 }
 
 interface Params {
+    model: CmsModel;
     sortBy: string;
     fields: Record<string, Field>;
+    plugins: PluginsContainer;
 }
 
 export const extractSort = (params: Params): Result => {
-    const { sortBy, fields } = params;
+    const { model, sortBy, fields, plugins } = params;
     const result = sortBy.split("_");
     if (result.length !== 2) {
         throw new WebinyError(
@@ -25,7 +30,7 @@ export const extractSort = (params: Params): Result => {
             }
         );
     }
-    const [fieldId, order] = result;
+    const [fieldId, order] = result as [string, "ASC" | "DESC"];
 
     const field = Object.values(fields).find(field => {
         /**
@@ -37,7 +42,29 @@ export const extractSort = (params: Params): Result => {
         return field.fieldId === fieldId;
     });
 
-    if (!field) {
+    const plugin = plugins
+        .byType<CmsEntryFieldSortingPlugin>(CmsEntryFieldSortingPlugin.type)
+        .reverse()
+        .find(plugin => {
+            return plugin.canUse({
+                model,
+                field,
+                fieldId,
+                order,
+                sortBy
+            });
+        });
+
+    if (plugin) {
+        return plugin.createSort({
+            model,
+            fieldId,
+            order,
+            sortBy,
+            field,
+            fields
+        });
+    } else if (!field) {
         throw new WebinyError(
             "Sorting field does not exist in the content model.",
             "SORTING_FIELD_ERROR",

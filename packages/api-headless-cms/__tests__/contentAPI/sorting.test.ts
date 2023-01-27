@@ -3,6 +3,7 @@ import { useFruitManageHandler } from "../testHelpers/useFruitManageHandler";
 import { setupContentModelGroup, setupContentModels } from "../testHelpers/setup";
 import { useFruitReadHandler } from "../testHelpers/useFruitReadHandler";
 import { Fruit } from "./mocks/contentModels";
+import { createCmsGraphQLSchemaSorterPlugin } from "~/plugins";
 
 const appleData: Fruit = {
     name: "A’p ` pl ' e",
@@ -126,7 +127,9 @@ describe("sorting + cursor", () => {
         // If this `until` resolves successfully, we know entry is accessible via the "read" API
         await until(
             () => listFruits({}).then(([data]: any) => data),
-            ({ data }: any) => data.listFruits.data.length === 4,
+            ({ data }: any) => {
+                return data.listFruits.data.length === 4;
+            },
             {
                 name: `list all fruits - ${name}`,
                 tries: 10
@@ -234,6 +237,78 @@ describe("sorting + cursor", () => {
                         totalCount: 4,
                         cursor: null
                     },
+                    error: null
+                }
+            }
+        });
+    });
+
+    test("should sort via custom sort", async () => {
+        const { apple, graham, banana, strawberry } = await setupFruits();
+
+        const handler = useFruitReadHandler({
+            ...readOpts,
+            plugins: [
+                createCmsGraphQLSchemaSorterPlugin(params => {
+                    const { model, sorters } = params;
+                    if (model.modelId !== "fruit") {
+                        return sorters;
+                    }
+                    return [...sorters, "customSorter_ASC", "customSorter_DESC"];
+                })
+            ]
+        });
+        const { listFruits } = handler;
+
+        await waitFruits("should filter fruits by date and sort asc", handler);
+
+        const [resultAsc] = await listFruits({
+            sort: ["customSorter_ASC"]
+        });
+
+        expect(resultAsc).toMatchObject({
+            data: {
+                listFruits: {
+                    data: [
+                        {
+                            id: apple.id
+                        },
+                        {
+                            id: strawberry.id
+                        },
+                        {
+                            id: banana.id
+                        },
+                        {
+                            id: graham.id
+                        }
+                    ],
+                    error: null
+                }
+            }
+        });
+
+        const [resultDesc] = await listFruits({
+            sort: ["customSorter_DESC"]
+        });
+
+        expect(resultDesc).toMatchObject({
+            data: {
+                listFruits: {
+                    data: [
+                        {
+                            id: graham.id
+                        },
+                        {
+                            id: banana.id
+                        },
+                        {
+                            id: strawberry.id
+                        },
+                        {
+                            id: apple.id
+                        }
+                    ],
                     error: null
                 }
             }

@@ -772,6 +772,8 @@ export const createEntriesStorageOperations = (
          * It takes the sort input and sorts by it via the lodash sortBy method.
          */
         const sortedItems = sort({
+            model,
+            plugins,
             items: filteredItems,
             sort: sortBy,
             fields: modelFields

@@ -18,7 +18,10 @@ const {
 /**
  * For this to work it must load plugins that have already been built
  */
-const { createStorageOperations } = require("../../dist/index");
+const {
+    createStorageOperations,
+    createCmsEntryElasticsearchBodyModifierPlugin
+} = require("../../dist/index");
 const { configurations } = require("../../dist/configurations");
 const { base: baseIndexConfigurationPlugin } = require("../../dist/elasticsearch/indices/base");
 const { createHandler: createDynamoDBHandler } = require("@webiny/handler-aws/dynamodb");
@@ -121,7 +124,24 @@ class CmsTestEnvironment extends NodeEnvironment {
                         plugins: testPlugins.concat([
                             createGzipCompression(),
                             //onBeforeEntryList,
-                            onBeforeEntryCreate
+                            onBeforeEntryCreate,
+                            createCmsEntryElasticsearchBodyModifierPlugin({
+                                modifyBody: ({ body }) => {
+                                    if (!body.sort.customSorter) {
+                                        return;
+                                    }
+                                    const order = body.sort.customSorter.order;
+                                    delete body.sort.customSorter;
+
+                                    body.sort = {
+                                        createdOn: {
+                                            order,
+                                            unmapped_type: "date"
+                                        }
+                                    };
+                                },
+                                model: "fruit"
+                            })
                         ])
                     });
                 },
