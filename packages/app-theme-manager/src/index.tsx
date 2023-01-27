@@ -3,7 +3,7 @@ import { ThemesModule } from "./modules/themes";
 import { ThemeSource } from "~/types";
 export type { ThemeSource } from "~/types";
 export { AddTheme } from "./components/AddTheme";
-export { ThemeLoader } from "./components/ThemeLoader";
+export { WebsiteThemeLoader } from "./website/WebsiteThemeLoader";
 export { useThemeManager } from "./hooks/useThemeManager";
 export { useTenantThemes } from "./hooks/useTenantThemes";
 
