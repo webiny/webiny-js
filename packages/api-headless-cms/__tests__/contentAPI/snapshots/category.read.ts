@@ -13,6 +13,10 @@ export default /* GraphQL */ `
         slug: String
     }
 
+    extend type Category {
+        modelId: String!
+    }
+
     input CategoryGetWhereInput {
         id: ID
         entryId: String

@@ -43,6 +43,11 @@ export const createReadResolvers: CreateReadResolvers = ({ models, model, fieldT
             [`get${typeName}`]: resolveGet({ model }),
             [`list${pluralizedTypeName(typeName)}`]: resolveList({ model })
         },
+        [rTypeName]: {
+            modelId: () => {
+                return model.modelId;
+            }
+        },
         ...fieldResolvers
     };
 };

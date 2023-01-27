@@ -10,9 +10,13 @@ export default /* GraphQL */ `
         createdBy: CmsCreatedBy!
         ownedBy: CmsOwnedBy!
         text: String
-        product: Product
+        product(populate: Boolean = true): Product
         rating: Number
-        author: Author
+        author(populate: Boolean = true): Author
+    }
+
+    extend type Review {
+        modelId: String!
     }
 
     input ReviewGetWhereInput {
