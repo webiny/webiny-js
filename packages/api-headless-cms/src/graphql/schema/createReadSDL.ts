@@ -44,17 +44,26 @@ export const createReadSDL: CreateReadSDL = ({ model, fieldTypePlugins }): strin
         return "";
     }
 
+    const hasModelIdField = model.fields.some(f => f.fieldId === "modelId");
+
     return `
         """${model.description || ""}"""
         type ${rTypeName} {
             id: ID!
             entryId: String!
-            modelId: String!
             createdOn: DateTime!
             savedOn: DateTime!
             createdBy: CmsCreatedBy!
             ownedBy: CmsOwnedBy!
             ${fieldsRender.map(f => f.fields).join("\n")}
+        }
+        
+        ${
+            hasModelIdField
+                ? ""
+                : `extend type ${rTypeName} {
+                modelId: String!
+            }`
         }
         
         ${fieldsRender

@@ -100,8 +100,8 @@ export const createFieldResolversFactory = (factoryParams: CreateFieldResolversF
                     parent?.values?.[fieldId] === undefined
                         ? parent?.[fieldId]
                         : parent?.values?.[fieldId];
-                if (!value) {
-                    return value;
+                if (value === undefined) {
+                    return undefined;
                 }
                 // Get transformed value (eg. data decompression)
                 const transformedValue = await entryFieldFromStorageTransform({

@@ -5,7 +5,6 @@ export default /* GraphQL */ `
     type Product {
         id: ID!
         entryId: String!
-        modelId: String!
         createdOn: DateTime!
         savedOn: DateTime!
         createdBy: CmsCreatedBy!
@@ -22,6 +21,10 @@ export default /* GraphQL */ `
         richText: JSON
         variant: Product_Variant
         fieldsObject: Product_FieldsObject
+    }
+
+    extend type Product {
+        modelId: String!
     }
 
     type Product_Variant_Options {

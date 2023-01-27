@@ -5,7 +5,6 @@ export default /* GraphQL */ `
     type Review {
         id: ID!
         entryId: String!
-        modelId: String!
         createdOn: DateTime!
         savedOn: DateTime!
         createdBy: CmsCreatedBy!
@@ -14,6 +13,10 @@ export default /* GraphQL */ `
         product(populate: Boolean = true): Product
         rating: Number
         author(populate: Boolean = true): Author
+    }
+
+    extend type Review {
+        modelId: String!
     }
 
     input ReviewGetWhereInput {
