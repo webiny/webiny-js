@@ -9,7 +9,7 @@ import { RichTextEditor } from "~/components/Editor/RichTextEditor";
 interface HeadingEditorProps {
     value: EditorStateJSONString | null;
     onChange?: (editorState: EditorStateJSONString) => void;
-    tag?: "h1" | "h2" | "h3" | "h4" | "h5";
+    tag?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
     placeholder?: string;
 }
 
