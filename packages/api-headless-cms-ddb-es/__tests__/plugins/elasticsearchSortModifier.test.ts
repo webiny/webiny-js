@@ -8,14 +8,12 @@ describe("Elasticsearch sort modifier plugin", () => {
     it("should transform existing sort - add new sort", async () => {
         const plugin = new CmsEntryElasticsearchSortModifierPlugin({
             modifySort: ({ sort }) => {
-                if (typeof sort === "string") {
-                    return sort;
+                if (typeof sort !== "object") {
+                    return;
                 }
-                return {
-                    ...sort,
-                    ["newField"]: {
-                        order: "asc"
-                    }
+                // @ts-ignore
+                sort["newField"] = {
+                    order: "asc"
                 };
             }
         });
@@ -26,16 +24,16 @@ describe("Elasticsearch sort modifier plugin", () => {
             }
         };
 
-        const result = plugin.modifySort({
+        plugin.modifySort({
             sort,
             model
         });
 
-        expect(result).toEqual({
-            ["newField"]: {
+        expect(sort).toEqual({
+            ["field.keyword"]: {
                 order: "asc"
             },
-            ["field.keyword"]: {
+            ["newField"]: {
                 order: "asc"
             }
         });
@@ -44,37 +42,38 @@ describe("Elasticsearch sort modifier plugin", () => {
     it("should transform existing sort - replace existing sort", async () => {
         const plugin = new CmsEntryElasticsearchSortModifierPlugin({
             modifySort: ({ sort }) => {
-                if (typeof sort === "string") {
-                    return sort;
+                if (typeof sort !== "object") {
+                    return;
                 }
 
-                return {
-                    _script: {
-                        type: "number",
-                        script: {
-                            lang: "painless",
-                            source: "source"
-                        },
-                        order: "asc"
-                    }
+                for (const key in sort) {
+                    // @ts-ignore
+                    delete sort[key];
+                }
+                // @ts-ignore
+                sort["_script"] = {
+                    type: "number",
+                    script: {
+                        lang: "painless",
+                        source: "source"
+                    },
+                    order: "asc"
                 };
             }
         });
 
-        const sort: Sort = [
-            {
-                ["field.keyword"]: {
-                    order: "asc"
-                }
+        const sort: Sort = {
+            ["field.keyword"]: {
+                order: "asc"
             }
-        ];
+        };
 
-        const result = plugin.modifySort({
+        plugin.modifySort({
             sort,
             model
         });
 
-        expect(result).toEqual({
+        expect(sort).toEqual({
             _script: {
                 type: "number",
                 script: {

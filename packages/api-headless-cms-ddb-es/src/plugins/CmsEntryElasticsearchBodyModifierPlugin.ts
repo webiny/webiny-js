@@ -31,3 +31,9 @@ export class CmsEntryElasticsearchBodyModifierPlugin extends ElasticsearchBodyMo
         this.modelId = config.modelId;
     }
 }
+
+export const createCmsEntryElasticsearchBodyModifierPlugin = (
+    config: CmsEntryElasticsearchBodyModifierPluginConfig
+) => {
+    return new CmsEntryElasticsearchBodyModifierPlugin(config);
+};

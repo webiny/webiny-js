@@ -20,7 +20,7 @@ const {
  */
 const {
     createStorageOperations,
-    createCmsEntryElasticsearchSortModifierPlugin
+    createCmsEntryElasticsearchBodyModifierPlugin
 } = require("../../dist/index");
 const { configurations } = require("../../dist/configurations");
 const { base: baseIndexConfigurationPlugin } = require("../../dist/elasticsearch/indices/base");
@@ -125,19 +125,20 @@ class CmsTestEnvironment extends NodeEnvironment {
                             createGzipCompression(),
                             //onBeforeEntryList,
                             onBeforeEntryCreate,
-                            createCmsEntryElasticsearchSortModifierPlugin({
-                                modifySort: ({ sort }) => {
-                                    if (typeof sort !== "object" || !sort.customSorter) {
-                                        return sort;
+                            createCmsEntryElasticsearchBodyModifierPlugin({
+                                modifyBody: ({ body }) => {
+                                    if (!body.sort.customSorter) {
+                                        return;
                                     }
-                                    const order = sort.customSorter.order;
-                                    delete sort.customSorter;
+                                    const order = body.sort.customSorter.order;
+                                    delete body.sort.customSorter;
 
-                                    sort["createdOn"] = {
-                                        order,
-                                        unmapped_type: "date"
+                                    body.sort = {
+                                        createdOn: {
+                                            order,
+                                            unmapped_type: "date"
+                                        }
                                     };
-                                    return sort;
                                 },
                                 model: "fruit"
                             })

@@ -91,19 +91,19 @@ export const createElasticsearchBody = ({ plugins, model, params }: Params): Sea
         pl.modifyQuery({ query, model, where });
     }
 
-    const createdSort = createElasticsearchSort({
+    const sort = createElasticsearchSort({
         plugins,
         sort: initialSort,
         modelFields,
         model
     });
 
-    const sort = sortModifierPlugins.reduce((result, plugin) => {
-        return plugin.modifySort({
-            sort: result,
+    for (const pl of sortModifierPlugins) {
+        pl.modifySort({
+            sort,
             model
         });
-    }, createdSort);
+    }
 
     const boolQuery: BoolQueryConfig = {
         must: query.must.length > 0 ? query.must : undefined,
