@@ -49,6 +49,7 @@ export const createReadSDL: CreateReadSDL = ({ model, fieldTypePlugins }): strin
         type ${rTypeName} {
             id: ID!
             entryId: String!
+            modelId: String!
             createdOn: DateTime!
             savedOn: DateTime!
             createdBy: CmsCreatedBy!

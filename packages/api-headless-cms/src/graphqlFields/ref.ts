@@ -90,7 +90,11 @@ export const createRefField = (): CmsModelFieldToGraphQLPlugin => {
                         : "";
 
                 return {
-                    fields: field.fieldId + `: ${field.multipleValues ? `[${gqlType}]` : gqlType}`,
+                    fields:
+                        field.fieldId +
+                        `(populate: Boolean = true): ${
+                            field.multipleValues ? `[${gqlType}!]` : gqlType
+                        }`,
                     typeDefs
                 };
             },
@@ -107,7 +111,7 @@ export const createRefField = (): CmsModelFieldToGraphQLPlugin => {
                     modelIdToTypeName.set(item.modelId, createReadTypeName(item.modelId));
                 }
 
-                return async (parent, _, context: CmsContext) => {
+                return async (parent, args, context: CmsContext) => {
                     const { cms } = context;
 
                     // Get field value for this entry
@@ -115,6 +119,9 @@ export const createRefField = (): CmsModelFieldToGraphQLPlugin => {
 
                     if (!initialValue) {
                         return null;
+                    }
+                    if (args.populate === false) {
+                        return initialValue;
                     }
 
                     if (field.multipleValues) {
