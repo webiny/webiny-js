@@ -20,7 +20,6 @@
     "@webiny/app-page-builder": "0.0.0",
     "@webiny/app-page-builder-elements": "0.0.0",
     "@webiny/app-theme": "0.0.0",
-    "@webiny/app-theme-manager": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/react-router": "0.0.0",
     "apollo-client": "^2.6.10",

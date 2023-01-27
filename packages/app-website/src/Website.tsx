@@ -5,12 +5,9 @@ import { CacheProvider } from "@emotion/core";
 import { PageBuilderProvider } from "@webiny/app-page-builder/contexts/PageBuilder";
 import { Page } from "./Page";
 import { createApolloClient, createEmotionCache } from "~/utils";
-import { ThemeLoader } from "@webiny/app-theme-manager/components/ThemeLoader";
-import { ThemeSource } from "@webiny/app-theme-manager/types";
 
 interface Props {
     apolloClient?: ReturnType<typeof createApolloClient>;
-    themes?: ThemeSource[];
 }
 
 const PageBuilderProviderPlugin = createProviderPlugin(PreviousProvider => {
@@ -23,37 +20,22 @@ const PageBuilderProviderPlugin = createProviderPlugin(PreviousProvider => {
     };
 });
 
-const createThemeLoaderPlugin = (themes: ThemeSource[]) => {
-    return createProviderPlugin(PreviousProvider => {
-        return function PageBuilderProviderHOC({ children }) {
-            if (themes.length > 0) {
-                return (
-                    <ThemeLoader themes={themes}>
-                        <PreviousProvider>{children}</PreviousProvider>
-                    </ThemeLoader>
-                );
-            }
-
-            return <PreviousProvider>{children}</PreviousProvider>;
-        };
-    });
-};
-
 export const Website: React.FC<Props> = ({ children, ...props }) => {
     const apolloClient = props.apolloClient || createApolloClient();
     const emotionCache = createEmotionCache();
-    const ThemeLoaderPlugin = createThemeLoaderPlugin(props.themes || []);
+
+    // In development, debounce render by 1ms, to avoid router warnings about missing routes.
+    const debounceMs = Number(process.env.NODE_ENV !== "production");
 
     return (
         <CacheProvider value={emotionCache}>
             <ApolloProvider client={apolloClient}>
-                <App debounceRender={0}>
-                    <PageBuilderProviderPlugin />
-                    <ThemeLoaderPlugin />
+                <App debounceRender={debounceMs}>
                     <Plugins>
                         <AddRoute path={"*"} element={<Page />} />
                     </Plugins>
                     {children}
+                    <PageBuilderProviderPlugin />
                 </App>
             </ApolloProvider>
         </CacheProvider>

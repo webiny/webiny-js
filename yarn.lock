@@ -13407,7 +13407,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/app-theme-manager@0.0.0, @webiny/app-theme-manager@workspace:packages/app-theme-manager":
+"@webiny/app-theme-manager@workspace:packages/app-theme-manager":
   version: 0.0.0-use.local
   resolution: "@webiny/app-theme-manager@workspace:packages/app-theme-manager"
   dependencies:
@@ -13421,6 +13421,7 @@ __metadata:
     "@emotion/core": ^10.0.27
     "@emotion/styled": ^10.0.27
     "@types/react": 17.0.39
+    "@webiny/app": 0.0.0
     "@webiny/app-admin": 0.0.0
     "@webiny/app-page-builder": 0.0.0
     "@webiny/app-tenant-manager": 0.0.0
@@ -13546,7 +13547,6 @@ __metadata:
     "@webiny/app-page-builder": 0.0.0
     "@webiny/app-page-builder-elements": 0.0.0
     "@webiny/app-theme": 0.0.0
-    "@webiny/app-theme-manager": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
