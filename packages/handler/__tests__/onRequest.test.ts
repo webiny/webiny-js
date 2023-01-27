@@ -2,6 +2,8 @@ import { createHandler } from "~/fastify";
 import { createRoute } from "~/plugins/RoutePlugin";
 import { createHandlerOnRequest } from "~/plugins/HandlerOnRequestPlugin";
 
+jest.setTimeout(5000);
+
 const createOptionsRoute = () => {
     return createRoute(({ onOptions }) => {
         onOptions("/webiny-test", async (request, reply) => {
@@ -102,6 +104,7 @@ describe("fastify onRequest event", () => {
                     const obj = JSON.parse(values);
                     if (obj?.message && obj?.explanation) {
                         logged = true;
+                        return;
                     }
                 } catch {}
             }
