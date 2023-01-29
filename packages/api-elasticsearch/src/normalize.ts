@@ -4,8 +4,9 @@
  */
 
 const specialCharacters = [
+    "\\\\",
     "\\+",
-    "\\-",
+    // "\\-",
     "\\=",
     "\\&\\&",
     "\\|\\|",
@@ -24,13 +25,12 @@ const specialCharacters = [
     "\\*",
     "\\?",
     "\\:",
-    "\\\\",
     "\\/",
     "\\#"
 ];
 
 export const normalizeValue = (value: string) => {
-    let result = value;
+    let result = value.replaceAll("-", " ");
     for (const character of specialCharacters) {
         result = result.replace(new RegExp(character, "g"), `\\${character}`);
     }
