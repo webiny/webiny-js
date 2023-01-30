@@ -711,11 +711,16 @@ jobs:
 
       - name: Version and publish to NPM
         run: yarn release --type=beta
+
   npm-release-latest:
     needs: npm-release-beta
     name: NPM release ("latest" tag)
     runs-on: ubuntu-latest
     environment: release
+    env:
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
       - uses: actions/setup-node@v3
         with:

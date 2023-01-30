@@ -1,7 +1,7 @@
 import { GraphQLScalarPlugin } from "@webiny/handler-graphql/types";
 import { CmsContext } from "~/types";
 import {
-    RefInput,
+    RefInputScalar,
     NumberScalar,
     AnyScalar,
     DateTimeScalar,
@@ -11,15 +11,15 @@ import {
     JsonScalar,
     DateTimeZScalar
 } from "@webiny/handler-graphql/builtInTypes";
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
 import { GraphQLScalarType } from "graphql";
+import { CmsGraphQLSchemaPlugin } from "~/plugins";
 
-export const createBaseContentSchema = (context: CmsContext): GraphQLSchemaPlugin => {
+export const createBaseContentSchema = (context: CmsContext): CmsGraphQLSchemaPlugin => {
     const scalars = context.plugins
         .byType<GraphQLScalarPlugin>("graphql-scalar")
         .map(item => item.scalar);
 
-    return new GraphQLSchemaPlugin({
+    return new CmsGraphQLSchemaPlugin({
         typeDefs: /* GraphQL */ `
             ${scalars.map(scalar => `scalar ${scalar.name}`).join(" ")}
             scalar JSON
@@ -56,13 +56,13 @@ export const createBaseContentSchema = (context: CmsContext): GraphQLSchemaPlugi
             }
         `,
         resolvers: {
-            ...scalars.reduce((acc, s) => {
+            ...scalars.reduce<Record<string, GraphQLScalarType>>((acc, s) => {
                 acc[s.name] = s;
                 return acc;
-            }, {} as Record<string, GraphQLScalarType>),
+            }, {}),
             JSON: JsonScalar,
             Long: LongScalar,
-            RefInput,
+            RefInput: RefInputScalar,
             Number: NumberScalar,
             Any: AnyScalar,
             DateTime: DateTimeScalar,

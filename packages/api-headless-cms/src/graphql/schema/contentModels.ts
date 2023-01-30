@@ -1,10 +1,10 @@
 import { ErrorResponse, NotFoundError, Response } from "@webiny/handler-graphql";
 import { CmsContext, CmsModel } from "~/types";
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
 import { Resolvers } from "@webiny/handler-graphql/types";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";
+import { CmsGraphQLSchemaPlugin } from "~/plugins";
 
-export const createModelsSchema = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
+export const createModelsSchema = (context: CmsContext): CmsGraphQLSchemaPlugin => {
     const resolvers: Resolvers<CmsContext> = {
         Query: {
             getContentModel: async (_: unknown, args: any, context) => {
@@ -196,7 +196,7 @@ export const createModelsSchema = (context: CmsContext): GraphQLSchemaPlugin<Cms
         `;
     }
 
-    return new GraphQLSchemaPlugin<CmsContext>({
+    return new CmsGraphQLSchemaPlugin({
         typeDefs: /* GraphQL */ `
             type CmsFieldValidation {
                 name: String!

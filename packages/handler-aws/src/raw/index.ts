@@ -32,7 +32,7 @@ export const createHandler = <Payload = any, Response = APIGatewayProxyResult>(
 ): HandlerCallable<Payload, Response> => {
     return (payload, context) => {
         const app = createBaseHandler({
-            plugins: params.plugins,
+            ...params,
             options: {
                 logger: params.http?.debug === true,
                 ...(params.options || {})

@@ -399,7 +399,20 @@ export interface LockedField {
     type: string;
     [key: string]: any;
 }
-
+/**
+ * @category Database model
+ * @category CmsModel
+ */
+export interface CmsModelGroup {
+    /**
+     * Generated ID of the group
+     */
+    id: string;
+    /**
+     * Name of the group
+     */
+    name: string;
+}
 /**
  * Cms Model defining an entry.
  *
@@ -426,16 +439,7 @@ export interface CmsModel {
     /**
      * Cms Group reference object.
      */
-    group: {
-        /**
-         * Generated ID of the group
-         */
-        id: string;
-        /**
-         * Name of the group
-         */
-        name: string;
-    };
+    group: CmsModelGroup;
     /**
      * Description for the content model.
      */
@@ -1291,11 +1295,11 @@ export interface CmsModelFieldInput {
     /**
      * Text to display below the field to help user what to write in the field.
      */
-    helpText?: string;
+    helpText?: string | null;
     /**
      * Text to display in the field.
      */
-    placeholderText?: string;
+    placeholderText?: string | null;
     /**
      * Fields can be tagged to give them contextual meaning.
      */
@@ -2471,7 +2475,7 @@ export interface CmsEntryStorageOperationsListParams {
     sort?: CmsEntryListSort;
     search?: string;
     fields?: string[];
-    limit?: number;
+    limit: number;
     after?: string | null;
 }
 

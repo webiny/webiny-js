@@ -1,7 +1,7 @@
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
+import { CmsGraphQLSchemaPlugin } from "~/plugins";
 
-const graphqlSchemaPlugin = new GraphQLSchemaPlugin({
+const graphqlSchemaPlugin = new CmsGraphQLSchemaPlugin({
     typeDefs: /* GraphQL */ `
         type BrokenType {
             # types without fields are invalid
