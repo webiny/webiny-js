@@ -51,7 +51,14 @@ const fieldSchema = zod.object({
     placeholderText: optionalShortString.optional().nullable().default(null),
     type: shortString,
     tags: zod.array(shortString).optional().default([]),
-    multipleValues: zod.boolean().optional().default(false),
+    multipleValues: zod
+        .boolean()
+        .optional()
+        .nullish()
+        .transform(value => {
+            return !!value;
+        })
+        .default(false),
     predefinedValues: zod
         .object({
             enabled: zod.boolean(),
@@ -80,7 +87,15 @@ const fieldSchema = zod.object({
             zod.object({
                 name: shortString,
                 message: shortString,
-                settings: zod.object({}).passthrough().optional().default({})
+                settings: zod
+                    .object({})
+                    .passthrough()
+                    .optional()
+                    .nullish()
+                    .transform(value => {
+                        return value || {};
+                    })
+                    .default({})
             })
         )
         .optional()
@@ -90,12 +105,28 @@ const fieldSchema = zod.object({
             zod.object({
                 name: shortString,
                 message: shortString,
-                settings: zod.object({}).passthrough().optional().default({})
+                settings: zod
+                    .object({})
+                    .passthrough()
+                    .optional()
+                    .nullish()
+                    .transform(value => {
+                        return value || {};
+                    })
+                    .default({})
             })
         )
         .optional()
         .default([]),
-    settings: zod.object({}).passthrough().optional().default({})
+    settings: zod
+        .object({})
+        .passthrough()
+        .optional()
+        .nullish()
+        .transform(value => {
+            return value || {};
+        })
+        .default({})
 });
 
 export const createModelCreateValidation = () => {
@@ -107,7 +138,7 @@ export const createModelCreateValidation = () => {
         fields: zod.array(fieldSchema).default([]),
         layout: zod.array(zod.array(shortString)).default([]),
         tags: zod.array(shortString).optional(),
-        titleFieldId: optionalShortString,
+        titleFieldId: optionalShortString.nullish(),
         descriptionFieldId: optionalShortString.nullish(),
         imageFieldId: optionalShortString.nullish(),
         defaultFields: zod.boolean().nullish()
@@ -131,7 +162,7 @@ export const createModelUpdateValidation = () => {
         group: optionalShortString,
         fields: zod.array(fieldSchema),
         layout: zod.array(zod.array(shortString)),
-        titleFieldId: optionalShortString,
+        titleFieldId: optionalShortString.nullish(),
         descriptionFieldId: optionalShortString.nullish(),
         imageFieldId: optionalShortString.nullish(),
         tags: zod.array(shortString).optional()

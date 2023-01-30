@@ -196,6 +196,10 @@ export interface CmsModelFieldTypePlugin extends Plugin {
         };
         render?(params: any): React.ReactElement;
         tags?: string[];
+        /**
+         * Render additional information in the Admin UI Model edit view
+         */
+        renderInfo?: (params: { field: CmsModelField; model: CmsModel }) => React.ReactElement;
     };
 }
 

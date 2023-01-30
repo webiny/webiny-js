@@ -1,4 +1,4 @@
-import React, { Fragment, useCallback } from "react";
+import React, { Fragment, useCallback, useMemo } from "react";
 import { css } from "emotion";
 import styled from "@emotion/styled";
 import { IconButton } from "@webiny/ui/Button";
@@ -56,7 +56,7 @@ const FieldTypeName = styled("div")({
     display: "flex",
     flexDirection: "column",
     textTransform: "uppercase",
-    color: "grey",
+    color: "#938F99",
     flex: "1",
     textAlign: "right",
     fontSize: "14px",
@@ -164,12 +164,39 @@ const Field: React.FC<FieldProps> = props => {
     const lockedFields = model?.lockedFields || [];
     const isLocked = lockedFields.some(lockedField => lockedField.fieldId === field.storageId);
 
-    const onDelete = useCallback(() => {
+    const removeFieldFromSelected = useCallback(async () => {
+        if (model.titleFieldId === field.fieldId) {
+            await setModel(data => {
+                return {
+                    ...data,
+                    titleFieldId: null
+                };
+            });
+        } else if (model.descriptionFieldId === field.fieldId) {
+            await setModel(data => {
+                return {
+                    ...data,
+                    descriptionFieldId: null
+                };
+            });
+        } else if (model.imageFieldId === field.fieldId) {
+            await setModel(data => {
+                return {
+                    ...data,
+                    imageFieldId: null
+                };
+            });
+        }
+    }, [field.id, setModel, model]);
+
+    const onDelete = useCallback(async () => {
         if (!isLocked) {
+            await removeFieldFromSelected();
             props.onDelete(field);
             return;
         }
-        showConfirmation(() => {
+        showConfirmation(async () => {
+            await removeFieldFromSelected();
             props.onDelete(field);
         });
     }, [field.fieldId, lockedFields]);
@@ -221,7 +248,21 @@ const Field: React.FC<FieldProps> = props => {
     const rendererPlugin = getFieldRendererPlugin(field.renderer.name);
     const canEdit = fieldPlugin.field.canEditSettings !== false;
 
-    const fieldTypeName = getFieldTypeName(model, field, parent);
+    const defaultInformationRenderer = useMemo(() => {
+        const fieldTypeName = getFieldTypeName(model, field, parent);
+        const fn = () => {
+            if (!fieldTypeName) {
+                return null;
+            }
+            return <FieldTypeName>{fieldTypeName}</FieldTypeName>;
+        };
+
+        fn.displayName = "FieldTypeRenderer";
+
+        return fn;
+    }, [field.id]);
+
+    const fieldInformationRenderer = fieldPlugin.field?.renderInfo;
 
     const info = [rendererPlugin?.renderer.name, field.multipleValues ? "multiple values" : null]
         .filter(Boolean)
@@ -237,7 +278,9 @@ const Field: React.FC<FieldProps> = props => {
                         <LowerCase>({info})</LowerCase>
                     </Typography>
                 </Info>
-                {fieldTypeName && <FieldTypeName>{fieldTypeName}</FieldTypeName>}
+                {fieldInformationRenderer
+                    ? fieldInformationRenderer({ model, field })
+                    : defaultInformationRenderer()}
                 <Actions>
                     {canEdit ? (
                         <IconButton
