@@ -3,7 +3,7 @@
   "include": ["src"],
   "references": [
     {
-      "path": "../../../packages/api-aco/tsconfig.build.json"
+      "path": "../../../packages/api-aco-old/tsconfig.build.json"
     },
     {
       "path": "../../../packages/api-aco-so-ddb/tsconfig.build.json"
@@ -110,8 +110,6 @@
       "~/*": ["./src/*"],
       "@webiny/api-aco/*": ["../../../packages/api-aco/src/*"],
       "@webiny/api-aco": ["../../../packages/api-aco/src"],
-      "@webiny/api-aco-so-ddb/*": ["../../../packages/api-aco-so-ddb/src/*"],
-      "@webiny/api-aco-so-ddb": ["../../../packages/api-aco-so-ddb/src"],
       "@webiny/api-admin-users-cognito/*": ["../../../packages/api-admin-users-cognito/src/*"],
       "@webiny/api-admin-users-cognito": ["../../../packages/api-admin-users-cognito/src"],
       "@webiny/api-admin-users-cognito-so-ddb/*": [
