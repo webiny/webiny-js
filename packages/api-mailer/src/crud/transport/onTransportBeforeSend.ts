@@ -14,7 +14,7 @@ const schema = zod.object({
     cc: zod.array(requiredEmail).optional(),
     bcc: zod.array(requiredEmail).optional(),
     replyTo: zod.string().email().optional(),
-    text: requiredString,
+    text: zod.string().optional(),
     html: zod.string().optional()
 });
 

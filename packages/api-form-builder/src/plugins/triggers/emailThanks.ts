@@ -17,13 +17,12 @@ const plugin = new ContextPlugin<MailerContext>(async context => {
                 const response = await context.mailer.sendMail({
                     to: [data.email],
                     subject: trigger.subject,
-                    text: "",
                     html: `<pre style="font-family: 'Open Sans', sans-serif;">${trigger.content}</pre>`
                 });
 
                 addLog({
                     type: "success",
-                    message: `Successfully sent a thanks e-mail to ${data.email}`,
+                    message: `Successfully sent a thank you e-mail to ${data.email}.`,
                     data: {
                         response: response.result
                     }
@@ -31,7 +30,7 @@ const plugin = new ContextPlugin<MailerContext>(async context => {
             } catch (e) {
                 addLog({
                     type: "warning",
-                    message: `Failed to send a thanks e-mail to ${data.email}: ${e.message}`
+                    message: `Failed to send a thank you e-mail to ${data.email}: ${e.message}`
                 });
             }
         }

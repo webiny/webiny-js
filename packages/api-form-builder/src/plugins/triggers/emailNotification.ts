@@ -34,7 +34,7 @@ const plugin = new ContextPlugin<MailerContext>(async context => {
 
                 addLog({
                     type: "success",
-                    message: `Successfully sent a notification e-mail to ${trigger.email}`,
+                    message: `Successfully sent a notification e-mail to ${trigger.email}.`,
                     data: {
                         response: response.result
                     }
