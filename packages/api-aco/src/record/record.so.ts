@@ -5,7 +5,7 @@ import { SEARCH_RECORD_MODEL_ID } from "~/record/record.model";
 import { baseFields, CreateAcoStorageOperationsParams } from "~/plugins/operations";
 import { getFieldValues } from "~/utils/getFieldValues";
 
-import { AcoSearchRecordStorageOperations as BaseAcoSearchRecordStorageOperations } from "~/types";
+import { AcoSearchRecordStorageOperations as BaseAcoSearchRecordStorageOperations } from "~/record/record.types";
 
 interface AcoSearchRecordStorageOperations extends BaseAcoSearchRecordStorageOperations {
     getRecordModel(): Promise<CmsModel>;
