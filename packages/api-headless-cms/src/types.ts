@@ -1260,14 +1260,11 @@ export interface CmsModelCreateInput {
      */
     tags?: string[];
     /**
-     * The field that is being displayed as entry title.
-     * It is picked as first available text field. Or user can select own field.
+     * Fields fieldId which are picked to represent the CMS entry.
      */
-    titleFieldId?: string;
-    /**
-     *
-     */
+    titleFieldId?: string | null;
     descriptionFieldId?: string | null;
+    imageFieldId?: string | null;
 }
 
 /**
@@ -1383,14 +1380,11 @@ export interface CmsModelUpdateInput {
      */
     layout: string[][];
     /**
-     * The field that is being displayed as entry title.
-     * It is picked as first available text field. Or user can select own field.
+     * Fields fieldId which are picked to represent the CMS entry.
      */
-    titleFieldId?: string;
-    /**
-     *
-     */
+    titleFieldId?: string | null;
     descriptionFieldId?: string | null;
+    imageFieldId?: string | null;
 }
 
 /**

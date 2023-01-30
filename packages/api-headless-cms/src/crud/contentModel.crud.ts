@@ -581,6 +581,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
             const model: CmsModel = {
                 ...original,
                 ...data,
+                titleFieldId: data.titleFieldId || "",
                 group,
                 tenant: original.tenant || getTenant().id,
                 locale: original.locale || getLocale().code,
