@@ -250,12 +250,16 @@ const Field: React.FC<FieldProps> = props => {
 
     const defaultInformationRenderer = useMemo(() => {
         const fieldTypeName = getFieldTypeName(model, field, parent);
-        return () => {
+        const fn = () => {
             if (!fieldTypeName) {
                 return null;
             }
             return <FieldTypeName>{fieldTypeName}</FieldTypeName>;
         };
+
+        fn.displayName = "FieldTypeRenderer";
+
+        return fn;
     }, [field.id]);
 
     const fieldInformationRenderer = fieldPlugin.field?.renderInfo;
