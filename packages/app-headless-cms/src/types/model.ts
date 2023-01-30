@@ -73,9 +73,9 @@ export interface CmsModel {
     lockedFields: CmsModelField[];
     name: string;
     modelId: string;
-    titleFieldId: string;
-    descriptionFieldId: string;
-    imageFieldId: string;
+    titleFieldId: string | null;
+    descriptionFieldId: string | null;
+    imageFieldId: string | null;
     settings: {
         [key: string]: any;
     };
