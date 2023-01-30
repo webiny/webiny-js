@@ -675,6 +675,7 @@ jobs:
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+      BETA_VERSION: ${{ secrets.BETA_VERSION }}
     steps:
       - uses: actions/setup-node@v3
         with:
@@ -721,6 +722,7 @@ jobs:
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+      LATEST_VERSION: ${{ secrets.LATEST_VERSION }}
     steps:
       - uses: actions/setup-node@v3
         with:
