@@ -5,6 +5,7 @@ export default `
     type Page {
         id: ID!
         entryId: String!
+        modelId: String!
         createdOn: DateTime!
         savedOn: DateTime!
         createdBy: CmsCreatedBy!
@@ -12,10 +13,6 @@ export default `
         content: [Page_Content!]
         header: Page_Header
         objective: Page_Objective
-    }
-    
-    extend type Page {
-        modelId: String!
     }
 
     union Page_Content = Page_Content_Hero | Page_Content_SimpleText | Page_Content_Objecting
