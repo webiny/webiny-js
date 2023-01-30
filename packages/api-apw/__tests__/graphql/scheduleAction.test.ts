@@ -1,8 +1,10 @@
-import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
+import { useGraphQlHandler } from "~tests/utils/useGraphQlHandler";
 import { createSetupForPageContentReview } from "../utils/helpers";
 
 describe(`Schedule action in a content review process`, function () {
-    const gqlHandler = usePageBuilderHandler();
+    const gqlHandler = useGraphQlHandler({
+        path: "/graphql"
+    });
     const {
         getContentReviewQuery,
         createContentReviewMutation,

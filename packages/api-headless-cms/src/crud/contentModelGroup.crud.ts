@@ -1,10 +1,4 @@
 /**
- * Package @commodo/fields does not have types.
- */
-// @ts-ignore
-import { withFields, string } from "@commodo/fields";
-import { validation } from "@webiny/validation";
-/**
  * Package mdbid does not have types.
  */
 // @ts-ignore
@@ -16,7 +10,6 @@ import {
     CmsGroup,
     CmsContext,
     HeadlessCmsStorageOperations,
-    CmsGroupCreateInput,
     OnGroupBeforeCreateTopicParams,
     OnGroupAfterCreateTopicParams,
     OnGroupBeforeUpdateTopicParams,
@@ -41,20 +34,11 @@ import DataLoader from "dataloader";
 import { checkPermissions as baseCheckPermissions } from "~/utils/permissions";
 import { checkOwnership, validateOwnership } from "~/utils/ownership";
 import { validateGroupAccess } from "~/utils/access";
-import { toSlug } from "~/utils/toSlug";
-
-const CreateContentModelGroupModel = withFields({
-    name: string({ validation: validation.create("required,maxLength:100") }),
-    slug: string({ validation: validation.create("maxLength:100") }),
-    description: string({ validation: validation.create("maxLength:255") }),
-    icon: string({ validation: validation.create("required,maxLength:255") })
-})();
-
-const UpdateContentModelGroupModel = withFields({
-    name: string({ validation: validation.create("maxLength:100") }),
-    description: string({ validation: validation.create("maxLength:255") }),
-    icon: string({ validation: validation.create("maxLength:255") })
-})();
+import {
+    createGroupCreateValidation,
+    createGroupUpdateValidation
+} from "~/crud/contentModelGroup/validation";
+import { createZodError } from "@webiny/utils";
 
 export interface CreateModelGroupsCrudParams {
     getTenant: () => Tenant;
@@ -249,23 +233,21 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
                 return validateGroupAccess(context, permission, group);
             });
         },
-        createGroup: async inputData => {
+        createGroup: async input => {
             await checkPermissions("w");
 
-            const createdData = new CreateContentModelGroupModel().populate({
-                ...inputData,
-                slug: inputData.slug ? toSlug(inputData.slug) : "",
-                description: inputData.description || ""
-            });
-            await createdData.validate();
-            const input: CmsGroupCreateInput & { slug: string; description: string } =
-                await createdData.toJSON();
+            const result = await createGroupCreateValidation().safeParseAsync(input);
+
+            if (!result.success) {
+                throw createZodError(result.error);
+            }
+            const data = result.data;
 
             const identity = getIdentity();
 
             const id = mdbid();
             const group: CmsGroup = {
-                ...input,
+                ...data,
                 id,
                 tenant: getTenant().id,
                 locale: getLocale().code,
@@ -311,30 +293,30 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
                 );
             }
         },
-        updateGroup: async (id, inputData) => {
+        updateGroup: async (id, input) => {
             const permission = await checkPermissions("w");
 
             const original = await groupsGet(id);
 
             checkOwnership(context, permission, original);
 
-            const input = new UpdateContentModelGroupModel().populate(inputData);
-            await input.validate();
+            const result = await createGroupUpdateValidation().safeParseAsync(input);
 
-            const updatedDataJson: Partial<CmsGroup> = await input.toJSON({
-                onlyDirty: true
-            });
+            if (!result.success) {
+                throw createZodError(result.error);
+            }
+            const data = result.data;
 
             /**
              * No need to continue if no values were changed
              */
-            if (Object.keys(updatedDataJson).length === 0) {
+            if (Object.keys(data).length === 0) {
                 return original;
             }
 
             const group: CmsGroup = {
                 ...original,
-                ...updatedDataJson,
+                ...data,
                 locale: getLocale().code,
                 tenant: getTenant().id,
                 savedOn: new Date().toISOString()

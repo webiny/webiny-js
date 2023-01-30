@@ -1,33 +1,21 @@
 /**
  * This test will check if the user, which has access to a single model, can do valid actions.
  */
-
 import { CmsModel } from "@webiny/api-headless-cms/types";
-import { useContentHeadlessCmsHandler } from "../utils/useContentHeadlessCmsHandler";
 import { accessTestGroup, accessTestModel } from "./mocks/access/plugins";
 import { permissions } from "./mocks/access/permissions";
 import mocks from "./mocks/workflows";
 import { ApwWorkflowApplications } from "~/types";
+import { useGraphQlHandler } from "~tests/utils/useGraphQlHandler";
 
 const model = accessTestModel.contentModel as CmsModel;
 
 describe("access", () => {
-    const options = {
-        path: "manage/en-US"
-    };
-
     const {
         securityIdentity,
         reviewer: reviewerGQL,
-        createWorkflowMutation
-    } = useContentHeadlessCmsHandler({
-        ...options,
-        plugins: [accessTestGroup, accessTestModel]
-    });
-
-    const {
-        // content entry
-        createContentEntryMutation,
+        // workflow
+        createWorkflowMutation,
         // content review
         createContentReviewMutation,
         getContentReviewQuery,
@@ -40,11 +28,19 @@ describe("access", () => {
         // change request
         createChangeRequestMutation,
         updateChangeRequestMutation,
-        deleteChangeRequestMutation,
+        deleteChangeRequestMutation
+    } = useGraphQlHandler({
+        path: "/graphql",
+        plugins: [accessTestGroup, accessTestModel]
+    });
+
+    const {
+        // content entry
+        createContentEntryMutation,
         // utils
         until
-    } = useContentHeadlessCmsHandler({
-        ...options,
+    } = useGraphQlHandler({
+        path: "/cms/manage/en-US",
         identity: {
             id: "someUserId",
             displayName: "User",

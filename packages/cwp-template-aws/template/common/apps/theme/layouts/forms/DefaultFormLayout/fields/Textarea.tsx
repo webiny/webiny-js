@@ -2,7 +2,8 @@ import * as React from "react";
 import { useBind } from "@webiny/form";
 import { FormRenderFbFormModelField } from "@webiny/app-form-builder/types";
 import { Field } from "./components/Field";
-import { FieldMessage } from "./components/FieldMessage";
+import { FieldErrorMessage } from "./components/FieldErrorMessage";
+import { FieldHelperMessage } from "./components/FieldHelperMessage";
 import { FieldLabel } from "./components/FieldLabel";
 import styled from "@emotion/styled";
 import { colors, borderRadius, typography } from "../../../../theme";
@@ -12,8 +13,8 @@ interface TextareaProps {
 }
 
 const StyledTextarea = styled.textarea`
-    border: 1px solid ${colors.color4};
-    background-color: ${colors.color4};
+    border: 1px solid ${colors.color5};
+    background-color: ${colors.color5};
     width: 100%;
     padding: 10px;
     border-radius: ${borderRadius};
@@ -37,7 +38,7 @@ export const TextareaField: React.FC<TextareaProps> = ({ field }) => {
     return (
         <Field>
             <FieldLabel>{field.label}</FieldLabel>
-
+            {field.helpText && <FieldHelperMessage>{field.helpText}</FieldHelperMessage>}
             <StyledTextarea
                 onChange={e => onChange(e.target.value)}
                 value={value || ""}
@@ -46,11 +47,7 @@ export const TextareaField: React.FC<TextareaProps> = ({ field }) => {
                 name={field.fieldId}
                 id={field.fieldId}
             />
-            <FieldMessage
-                isValid={validation.isValid}
-                errorMessage={validation.message}
-                helperMessage={field.helpText}
-            />
+            <FieldErrorMessage isValid={validation.isValid} message={validation.message} />
         </Field>
     );
 };

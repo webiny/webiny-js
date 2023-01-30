@@ -67,6 +67,19 @@ export const CREATE_PAGE = gql`
     }
 `;
 
+export const DUPLICATE_PAGE = gql`
+    mutation PbDuplicatePage($id: ID!) {
+        pageBuilder {
+            duplicatePage(id: $id) {
+                data {
+                    ${LIST_PAGES_DATA_FIELDS}
+                }
+                ${error}
+            }
+        }
+    }
+`;
+
 export const LIST_PAGES = gql`
     query PbListPages(
         $where: PbListPagesWhereInput

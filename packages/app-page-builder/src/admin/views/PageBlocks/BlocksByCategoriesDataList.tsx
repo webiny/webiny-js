@@ -32,6 +32,7 @@ import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18
 import { ReactComponent as DownloadFileIcon } from "~/editor/plugins/defaultBar/components/icons/file_download.svg";
 import { ReactComponent as UploadFileIcon } from "~/editor/plugins/defaultBar/components/icons/file_upload.svg";
 import { Icon } from "~/admin/utils/createBlockCategoryPlugin";
+import { OptionsMenu } from "~/admin/components/OptionsMenu";
 
 import { PbBlockCategory, PbPageBlock } from "~/types";
 import { LIST_PAGE_BLOCKS_AND_CATEGORIES, LIST_PAGE_BLOCKS, CREATE_PAGE_BLOCK } from "./graphql";
@@ -58,10 +59,7 @@ const noRecordsWrapper = css`
 const DataListActionsWrapper = styled.div`
     display: flex;
     justify-content: flex-end;
-
-    & button {
-        margin-left: 8px;
-    }
+    align-items: center;
 `;
 
 enum Operation {
@@ -73,6 +71,7 @@ interface Sorter {
     label: string;
     sort: string;
 }
+
 const SORTERS: Sorter[] = [
     {
         label: t`Newest to oldest`,
@@ -171,31 +170,109 @@ const BlocksByCategoriesDataList = ({ canCreate }: PageBuilderBlocksByCategories
                     // Create base block content, and make sure all elements have an `id` property.
                     content: addElementId({
                         type: "block",
-                        // `data` object is required, even if empty.
-                        data: {},
+                        data: {
+                            settings: {
+                                width: {
+                                    desktop: {
+                                        value: "100%"
+                                    }
+                                },
+                                margin: {
+                                    desktop: {
+                                        top: "0px",
+                                        right: "0px",
+                                        bottom: "0px",
+                                        left: "0px",
+                                        advanced: true
+                                    }
+                                },
+                                padding: {
+                                    desktop: {
+                                        all: "10px"
+                                    }
+                                },
+                                horizontalAlignFlex: {
+                                    desktop: "center"
+                                },
+                                verticalAlign: {
+                                    desktop: "flex-start"
+                                }
+                            }
+                        },
                         elements: [
                             {
+                                id: "nbLftfYqrg",
                                 type: "grid",
                                 data: {
                                     settings: {
+                                        width: {
+                                            desktop: {
+                                                value: "1100px"
+                                            }
+                                        },
+                                        margin: {
+                                            desktop: {
+                                                top: "0px",
+                                                right: "0px",
+                                                bottom: "0px",
+                                                left: "0px",
+                                                advanced: true
+                                            }
+                                        },
+                                        padding: {
+                                            desktop: {
+                                                all: "10px"
+                                            }
+                                        },
                                         grid: {
                                             cellsType: "12"
+                                        },
+                                        gridSettings: {
+                                            desktop: {
+                                                flexDirection: "row"
+                                            },
+                                            "mobile-landscape": {
+                                                flexDirection: "column"
+                                            }
+                                        },
+                                        horizontalAlignFlex: {
+                                            desktop: "flex-start"
+                                        },
+                                        verticalAlign: {
+                                            desktop: "flex-start"
                                         }
                                     }
                                 },
                                 elements: [
                                     {
+                                        id: "FoKq0fZfr4",
                                         type: "cell",
                                         data: {
                                             settings: {
+                                                margin: {
+                                                    desktop: {
+                                                        top: "0px",
+                                                        right: "0px",
+                                                        bottom: "0px",
+                                                        left: "0px",
+                                                        advanced: true
+                                                    }
+                                                },
+                                                padding: {
+                                                    desktop: {
+                                                        all: "0px"
+                                                    }
+                                                },
                                                 grid: {
                                                     size: 12
                                                 }
                                             }
                                         },
-                                        elements: []
+                                        elements: [],
+                                        path: ["sUK8viY2oz", "eM2Z1d9gfH", "nbLftfYqrg"]
                                     }
-                                ]
+                                ],
+                                path: ["sUK8viY2oz", "eM2Z1d9gfH"]
                             }
                         ]
                     }),
@@ -256,17 +333,26 @@ const BlocksByCategoriesDataList = ({ canCreate }: PageBuilderBlocksByCategories
                 data={categoryList}
                 actions={
                     <DataListActionsWrapper>
-                        <ButtonSecondary onClick={handleImportClick}>
-                            <ButtonIcon icon={<UploadFileIcon />} /> {t`Import`}
-                        </ButtonSecondary>
-                        <ButtonSecondary onClick={handleExportClick}>
-                            <ButtonIcon icon={<DownloadFileIcon />} /> {t`Export`}
-                        </ButtonSecondary>
                         {canCreate ? (
                             <ButtonSecondary onClick={handleNewBlockClick}>
                                 <ButtonIcon icon={<AddIcon />} /> {t`New Block`}
                             </ButtonSecondary>
                         ) : null}
+                        <OptionsMenu
+                            data-testid="pb-blocks-list-options-menu"
+                            items={[
+                                {
+                                    label: "Import blocks",
+                                    icon: <UploadFileIcon />,
+                                    onClick: handleImportClick
+                                },
+                                {
+                                    label: "Export blocks",
+                                    icon: <DownloadFileIcon />,
+                                    onClick: handleExportClick
+                                }
+                            ]}
+                        />
                     </DataListActionsWrapper>
                 }
                 search={

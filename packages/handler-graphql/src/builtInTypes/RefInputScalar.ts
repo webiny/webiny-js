@@ -8,7 +8,7 @@ const isMongoId = (value: any): string => {
     throw new Error("Must be a valid Mongo ID!");
 };
 
-export const RefInput = new GraphQLScalarType({
+export const RefInputScalar = new GraphQLScalarType({
     name: "RefInput",
     description:
         "A custom input type to be used with references. Supports plain ID and `{ id: ID }` Object literal.",

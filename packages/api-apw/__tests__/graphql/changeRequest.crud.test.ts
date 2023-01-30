@@ -1,6 +1,6 @@
 import { createPageContentReviewSetup } from "../utils/helpers";
 import { mocks as changeRequestMock } from "./mocks/changeRequest";
-import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
+import { useGraphQlHandler } from "~tests/utils/useGraphQlHandler";
 import { createTransport } from "@webiny/api-mailer";
 
 const updatedRichText = [
@@ -39,7 +39,9 @@ jest.mock("~/plugins/hooks/notifications/appUrl", () => {
 });
 
 describe("ChangeRequest crud test", () => {
-    const gqlHandler = usePageBuilderHandler();
+    const gqlHandler = useGraphQlHandler({
+        path: "/graphql"
+    });
 
     const {
         getChangeRequestQuery,
@@ -309,7 +311,8 @@ describe("ChangeRequest crud test", () => {
             return null;
         });
 
-        const handler = usePageBuilderHandler({
+        const handler = useGraphQlHandler({
+            path: "/graphql",
             identity: {
                 id: "mockIdentityId",
                 type: "admin",

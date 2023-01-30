@@ -3,7 +3,8 @@ import { FormRenderFbFormModelField } from "@webiny/app-form-builder/types";
 import { useBind } from "@webiny/form";
 import styled from "@emotion/styled";
 import { Field } from "./components/Field";
-import { FieldMessage } from "./components/FieldMessage";
+import { FieldErrorMessage } from "./components/FieldErrorMessage";
+import { FieldHelperMessage } from "./components/FieldHelperMessage";
 import { FieldLabel } from "./components/FieldLabel";
 import theme from "../../../../theme";
 
@@ -13,8 +14,8 @@ interface SelectProps {
 
 const StyledSelect = styled.select`
     ${theme.styles.typography.paragraph1};
-    border: 1px solid ${theme.styles.colors.color4};
-    background-color: ${theme.styles.colors.color4};
+    border: 1px solid ${theme.styles.colors.color5};
+    background-color: ${theme.styles.colors.color5};
     width: 100%;
     padding: 10px;
     border-radius: ${theme.styles.borderRadius};
@@ -43,7 +44,7 @@ export const SelectField: React.FC<SelectProps> = ({ field }) => {
     return (
         <Field>
             <FieldLabel>{field.label}</FieldLabel>
-
+            {field.helpText && <FieldHelperMessage>{field.helpText}</FieldHelperMessage>}
             <StyledSelect
                 value={value || ""}
                 onChange={e => onChange(e.target.value)}
@@ -59,11 +60,7 @@ export const SelectField: React.FC<SelectProps> = ({ field }) => {
                     </option>
                 ))}
             </StyledSelect>
-            <FieldMessage
-                isValid={validation.isValid}
-                errorMessage={validation.message}
-                helperMessage={field.helpText}
-            />
+            <FieldErrorMessage isValid={validation.isValid} message={validation.message} />
         </Field>
     );
 };

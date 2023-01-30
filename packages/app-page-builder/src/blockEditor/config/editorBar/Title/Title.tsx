@@ -22,7 +22,7 @@ const Title: React.FC = () => {
     const { showSnackbar } = useSnackbar();
     const [editTitle, setEdit] = useState<boolean>(false);
     const [stateTitle, setTitle] = useState<string | null>(null);
-    let title = stateTitle === null ? block.name : stateTitle;
+    const title = stateTitle === null ? block.name : stateTitle;
 
     const updateBlock = (data: Partial<BlockAtomType>) => {
         handler.trigger(
@@ -38,17 +38,22 @@ const Title: React.FC = () => {
 
     const enableEdit = useCallback(() => setEdit(true), []);
 
-    const onBlur = useCallback(() => {
-        if (title === "") {
-            title = "Untitled";
-            setTitle(title);
-        }
-        setEdit(false);
-        updateBlock({ name: title });
-    }, [title]);
+    const onBlur = useCallback(
+        (e: SyntheticEvent<HTMLInputElement>) => {
+            let title = e.currentTarget.value;
+
+            if (title === "") {
+                title = "Untitled";
+                setTitle(title);
+            }
+            setEdit(false);
+            updateBlock({ name: title });
+        },
+        [updateBlock]
+    );
 
     const onKeyDown = useCallback(
-        (e: SyntheticEvent) => {
+        (e: SyntheticEvent<HTMLInputElement>) => {
             // @ts-ignore
             switch (e.key) {
                 case "Escape":
@@ -57,21 +62,23 @@ const Title: React.FC = () => {
                     setTitle(block.name || "");
                     break;
                 case "Enter":
+                    let title = e.currentTarget.value;
                     if (title === "") {
                         title = "Untitled";
                         setTitle(title);
                     }
 
+                    updateBlock({ name: title });
+
                     e.preventDefault();
                     setEdit(false);
 
-                    updateBlock({ name: title });
                     break;
                 default:
                     return;
             }
         },
-        [title, block.name]
+        [block.name]
     );
 
     // Disable autoFocus because for some reason, blur event would automatically be triggered when clicking

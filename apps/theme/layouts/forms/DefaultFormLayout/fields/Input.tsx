@@ -3,7 +3,8 @@ import { FormRenderFbFormModelField } from "@webiny/app-form-builder/types";
 import { useBind } from "@webiny/form";
 import styled from "@emotion/styled";
 
-import { FieldMessage } from "./components/FieldMessage";
+import { FieldErrorMessage } from "./components/FieldErrorMessage";
+import { FieldHelperMessage } from "./components/FieldHelperMessage";
 import { FieldLabel } from "./components/FieldLabel";
 import { Field } from "./components/Field";
 import theme from "../../../../theme";
@@ -14,8 +15,8 @@ interface InputProps {
 }
 
 const StyledInput = styled.input`
-    border: 1px solid ${theme.styles.colors.color4};
-    background-color: ${theme.styles.colors.color4};
+    border: 1px solid ${theme.styles.colors.color5};
+    background-color: ${theme.styles.colors.color5};
     width: 100%;
     padding: 10px;
     border-radius: ${theme.styles.borderRadius};
@@ -48,6 +49,7 @@ export const InputField: React.FC<InputProps> = ({ field, type }) => {
     return (
         <Field>
             <FieldLabel>{field.label}</FieldLabel>
+            {field.helpText && <FieldHelperMessage>{field.helpText}</FieldHelperMessage>}
             <StyledInput
                 onBlur={onBlur}
                 onChange={e => onChange(e.target.value)}
@@ -57,11 +59,7 @@ export const InputField: React.FC<InputProps> = ({ field, type }) => {
                 name={field.fieldId}
                 id={field.fieldId}
             />
-            <FieldMessage
-                isValid={validation.isValid}
-                errorMessage={validation.message}
-                helperMessage={field.helpText}
-            />
+            <FieldErrorMessage isValid={validation.isValid} message={validation.message} />
         </Field>
     );
 };

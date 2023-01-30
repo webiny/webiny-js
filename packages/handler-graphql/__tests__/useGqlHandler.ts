@@ -1,5 +1,5 @@
 import { createHandler } from "@webiny/handler-aws/gateway";
-import graphqlServerPlugins from "../src";
+import graphqlServerPlugins from "~/index";
 import { PluginCollection } from "@webiny/plugins/types";
 
 interface Params {

@@ -251,7 +251,11 @@ describe("Cms Group crud test", () => {
                     error: {
                         message: `Validation failed.`,
                         code: "VALIDATION_FAILED_INVALID_FIELDS",
-                        data: expect.any(Object)
+                        data: {
+                            invalidFields: {
+                                name: expect.any(Object)
+                            }
+                        }
                     }
                 }
             }
@@ -273,7 +277,11 @@ describe("Cms Group crud test", () => {
                     error: {
                         message: `Validation failed.`,
                         code: "VALIDATION_FAILED_INVALID_FIELDS",
-                        data: expect.any(Object)
+                        data: {
+                            invalidFields: {
+                                icon: expect.any(Object)
+                            }
+                        }
                     }
                 }
             }
@@ -295,7 +303,12 @@ describe("Cms Group crud test", () => {
                     error: {
                         message: `Validation failed.`,
                         code: "VALIDATION_FAILED_INVALID_FIELDS",
-                        data: expect.any(Object)
+                        data: {
+                            invalidFields: {
+                                name: expect.any(Object),
+                                icon: expect.any(Object)
+                            }
+                        }
                     }
                 }
             }

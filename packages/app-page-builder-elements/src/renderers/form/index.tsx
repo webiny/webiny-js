@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { CreateFormParams, FormData } from "./types";
-import RenderForm from "./RenderForm";
+import FormRender from "./FormRender";
 import { createRenderer } from "~/createRenderer";
 import { useRenderer } from "~/hooks/useRenderer";
 import { GetFormDataLoaderVariables } from "./dataLoaders";
@@ -21,8 +21,8 @@ export const createForm = (params: CreateFormParams) => {
 
     return createRenderer(() => {
         const { getElement } = useRenderer();
-        const [formData, setFormFormData] = useState<FormData | null>(null);
-        const [loading, setLoading] = useState<boolean>(true);
+        const [formData, setFormData] = useState<FormData | null>(null);
+        const [loading, setLoading] = useState<boolean>(false);
 
         const element = getElement<FormElementData>();
 
@@ -44,11 +44,11 @@ export const createForm = (params: CreateFormParams) => {
             if (variables.parent || variables.revision) {
                 const cached = cache.current[variablesHash];
                 if (cached) {
-                    setFormFormData(cached);
+                    setFormData(cached);
                 } else {
                     setLoading(true);
                     dataLoaders.getForm({ variables }).then(formData => {
-                        setFormFormData(formData);
+                        setFormData(formData);
                         cache.current[variablesHash] = formData;
                         setLoading(false);
                     });
@@ -56,6 +56,29 @@ export const createForm = (params: CreateFormParams) => {
             }
         }, [variablesHash]);
 
-        return <RenderForm createFormParams={params} loading={loading} formData={formData!} />;
+        if (!(variables.parent || variables.revision)) {
+            if (params.renderFormNotSelected) {
+                return params.renderFormNotSelected({});
+            }
+
+            return <>Please select a form.</>;
+        }
+
+        if (loading) {
+            if (params.renderFormLoading) {
+                return params.renderFormLoading({});
+            }
+            return <>Loading selected form...</>;
+        }
+
+        if (!formData) {
+            if (params.renderFormNotFound) {
+                return params.renderFormNotFound({});
+            }
+
+            return <>Form not found.</>;
+        }
+
+        return <FormRender createFormParams={params} loading={loading} formData={formData} />;
     });
 };
