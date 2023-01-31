@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { EditorStateJSONString } from "../../types";
+import { EditorStateJSONString } from "~/types";
 import { Placeholder } from "~/ui/Placeholder";
 import { getEmptyEditorStateJSONString } from "~/utils/getEmptyEditorStateJSONString";
 import { WebinyNodes } from "~/nodes/webinyNodes";

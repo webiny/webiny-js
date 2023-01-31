@@ -1,11 +1,13 @@
 import React from "react";
 import { createComponentPlugin } from "@webiny/app-admin";
-import { HeadingToolbarPreset, ParagraphToolbarPreset } from "@webiny/lexical-editor";
-import PbText from "@webiny/app-page-builder/editor/components/Text/PbText";
-import { PbText as LexicalPbText } from "./PbText";
+import { ParagraphToolbarPreset, HeadingToolbarPreset } from "@webiny/lexical-editor";
+import PeText from "@webiny/app-page-builder/editor/components/Text/PeText";
+import { PeText as LexicalPeText } from "./PeText";
 
-const PbTextPlugin = createComponentPlugin(PbText, () => {
-    return LexicalPbText;
+const PbTextPlugin = createComponentPlugin(PeText, () => {
+    return function PbTextPlugin({ elementId }): JSX.Element {
+        return <LexicalPeText elementId={elementId} />;
+    };
 });
 
 export const LexicalEditorPlugin = () => {
