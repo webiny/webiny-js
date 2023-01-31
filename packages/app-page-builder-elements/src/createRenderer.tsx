@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo, useState } from "react";
 import { usePageElements } from "~/hooks/usePageElements";
 import { Renderer, Element } from "~/types";
 import { Theme, StylesObject } from "@webiny/theme/types";
@@ -14,6 +14,7 @@ export type CreateRendererOptions<TRenderComponentProps> = Partial<{
     propsAreEqual: (prevProps: TRenderComponentProps, nextProps: TRenderComponentProps) => boolean;
     themeStyles: StylesObject | ((params: GetStylesParams) => StylesObject);
     baseStyles: StylesObject | ((params: GetStylesParams) => StylesObject);
+    loader: (params: { element: Element }) => Promise<any>;
 }>;
 
 const DEFAULT_RENDERER_STYLES: StylesObject = {
@@ -22,6 +23,15 @@ const DEFAULT_RENDERER_STYLES: StylesObject = {
     width: "100%",
     boxSizing: "border-box"
 };
+
+type LoaderResult = { data: any; error: any };
+type LoaderResultCacheKey = `__pe_loader_cache_${string}`;
+
+declare global {
+    interface Window {
+        [loaderResultCacheKey: LoaderResultCacheKey]: LoaderResult;
+    }
+}
 
 export function createRenderer<TRenderComponentProps = {}>(
     RendererComponent: React.ComponentType<TRenderComponentProps>,
@@ -38,6 +48,18 @@ export function createRenderer<TRenderComponentProps = {}>(
         } = usePageElements();
 
         const { element, meta, ...componentProps } = props;
+
+        const loaderResultCacheKey = useMemo<LoaderResultCacheKey>(() => {
+            return `__pe_loader_cache_${element.id}`;
+        }, [element.id]);
+
+        const [loader, setLoader] = useState(window[loaderResultCacheKey]);
+
+        if (loader) {
+            if (loader.data) {
+            }
+        }
+
         const attributes = getElementAttributes(element);
 
         const styles: CSSObject[] = [DEFAULT_RENDERER_STYLES];
