@@ -10,7 +10,9 @@ export const CoreVpc = createAppModule({
         const vpc = app.addResource(aws.ec2.Vpc, {
             name: "webiny",
             config: {
-                cidrBlock: "10.0.0.0/16"
+                cidrBlock: "10.0.0.0/16",
+                enableDnsSupport: true,
+                enableDnsHostnames: true
             }
         });
 
@@ -137,16 +139,34 @@ export const CoreVpc = createAppModule({
             vpcSecurityGroupIds: [vpc.output.defaultSecurityGroupId]
         });
 
+        new aws.ec2.VpcEndpoint("s3", {
+            vpcId: vpc.output.id,
+            serviceName: "com.amazonaws.eu-central-1.s3",
+            routeTableIds: [privateSubnetRouteTable.output.id]
+        });
+
         new aws.ec2.VpcEndpoint("dynamoDb", {
             vpcId: vpc.output.id,
             serviceName: "com.amazonaws.eu-central-1.dynamodb",
             routeTableIds: [privateSubnetRouteTable.output.id]
         });
 
-        new aws.ec2.VpcEndpoint("s3", {
+        new aws.ec2.VpcEndpoint("sqs", {
             vpcId: vpc.output.id,
-            serviceName: "com.amazonaws.eu-central-1.s3",
-            routeTableIds: [privateSubnetRouteTable.output.id]
+            serviceName: "com.amazonaws.eu-central-1.sqs",
+            vpcEndpointType: "Interface",
+            privateDnsEnabled: true,
+            securityGroupIds: [vpc.output.defaultSecurityGroupId],
+            subnetIds: [privateSubnet1.output.id, privateSubnet2.output.id]
+        });
+
+        new aws.ec2.VpcEndpoint("event-bridge", {
+            vpcId: vpc.output.id,
+            serviceName: "com.amazonaws.eu-central-1.events",
+            vpcEndpointType: "Interface",
+            privateDnsEnabled: true,
+            securityGroupIds: [vpc.output.defaultSecurityGroupId],
+            subnetIds: [privateSubnet1.output.id, privateSubnet2.output.id]
         });
 
         return {
