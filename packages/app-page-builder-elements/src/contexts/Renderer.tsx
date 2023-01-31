@@ -8,15 +8,17 @@ export const RendererProvider: React.FC<RendererProviderProps> = ({
     children,
     element,
     attributes,
+    loader,
     meta
 }) => {
     const getElement = () => element;
     const getAttributes = () => attributes;
+    const getLoaderData = () => loader.result;
 
     const pageElements = usePageElements();
 
     // @ts-ignore Resolve the `getElement` issue.
-    const value: RendererContextValue = { ...pageElements, getElement, getAttributes, meta };
+    const value: RendererContextValue = { ...pageElements, getElement, getAttributes, getLoaderData, meta };
 
     return <RendererContext.Provider value={value}>{children}</RendererContext.Provider>;
 };

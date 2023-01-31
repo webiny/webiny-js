@@ -1,6 +1,6 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { usePageElements } from "~/hooks/usePageElements";
-import { Renderer, Element } from "~/types";
+import { Renderer, Element, RendererLoader, RendererLoaderResult } from "~/types";
 import { Theme, StylesObject } from "@webiny/theme/types";
 import { RendererProvider } from "~/contexts/Renderer";
 import { CSSObject, ClassNames } from "@emotion/core";
@@ -24,15 +24,6 @@ const DEFAULT_RENDERER_STYLES: StylesObject = {
     boxSizing: "border-box"
 };
 
-type LoaderResult = { data: any; error: any };
-type LoaderResultCacheKey = `__pe_loader_cache_${string}`;
-
-declare global {
-    interface Window {
-        [loaderResultCacheKey: LoaderResultCacheKey]: LoaderResult;
-    }
-}
-
 export function createRenderer<TRenderComponentProps = {}>(
     RendererComponent: React.ComponentType<TRenderComponentProps>,
     options: CreateRendererOptions<TRenderComponentProps> = {}
@@ -49,16 +40,47 @@ export function createRenderer<TRenderComponentProps = {}>(
 
         const { element, meta, ...componentProps } = props;
 
-        const loaderResultCacheKey = useMemo<LoaderResultCacheKey>(() => {
-            return `__pe_loader_cache_${element.id}`;
-        }, [element.id]);
-
-        const [loader, setLoader] = useState(window[loaderResultCacheKey]);
-
-        if (loader) {
-            if (loader.data) {
+        const loaderCachedResult = useMemo<RendererLoaderResult>(() => {
+            if (!options.loader) {
+                return null;
             }
-        }
+
+            const cachedResultElement = document.querySelector(
+                `pe-loader-result[data-key="${element.id}"]`
+            );
+
+            if (!cachedResultElement) {
+                return null;
+            }
+
+            const cachedResultElementValue = cachedResultElement.getAttribute("data-value");
+            if (!cachedResultElementValue) {
+                return null;
+            }
+
+            return JSON.parse(cachedResultElementValue);
+        }, []);
+
+        const [loader, setLoader] = useState<RendererLoader>(
+            loaderCachedResult
+                ? {
+                      result: loaderCachedResult,
+                      loading: false
+                  }
+                : { result: { data: null, error: null }, loading: false }
+        );
+
+        useEffect(() => {
+            if (!options.loader || loaderCachedResult) {
+                return;
+            }
+
+            options
+                .loader({ element })
+                .then(data => setLoader({ ...loader, result: { data, error: null } }))
+                .catch(error => setLoader({ ...loader, result: { data: null, error } }))
+                .finally(() => setLoader({ ...loader, loading: false }));
+        }, []);
 
         const attributes = getElementAttributes(element);
 
@@ -105,6 +127,7 @@ export function createRenderer<TRenderComponentProps = {}>(
 
                     return (
                         <RendererProvider
+                            loader={loader}
                             element={element}
                             attributes={{ ...attributes, className: o }}
                             meta={{ ...meta, calculatedStyles: styles }}

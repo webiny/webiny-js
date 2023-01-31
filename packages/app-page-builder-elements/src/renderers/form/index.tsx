@@ -19,90 +19,109 @@ export interface FormElementData {
 export const createForm = (params: CreateFormParams) => {
     const { dataLoaders } = params;
 
-    return createRenderer(() => {
-        const { getElement } = useRenderer();
+    return createRenderer(
+        () => {
+            const { getElement, getLoaderData } = useRenderer();
 
-        const element = getElement<FormElementData>();
+            const element = getElement<FormElementData>();
+            const loaderData = getLoaderData<FormData>();
 
-        const form = element.data.settings?.form;
-        const variables: GetFormDataLoaderVariables = {};
-        if (form) {
-            if (form.revision === "latest") {
-                variables.parent = form.parent;
-            } else {
-                variables.revision = form.revision;
-            }
-        }
-
-        const variablesHash = JSON.stringify(variables);
-
-        // We want to trigger form data load immediately, and not within a `useEffect` hook.
-        // This enables us to render the actual form in the initial component render, and not
-        // in a subsequent one.
-        const getFormDataLoad = useMemo(() => {
-            return dataLoaders.getForm({ variables });
-        }, [variablesHash]);
-
-        const preloadedFormData = useMemo(() => {
-            return "formId" in getFormDataLoad ? getFormDataLoad : null;
-        }, [getFormDataLoad]);
-
-        // The `preloadedFormData` initial state assignment will occur in the initial component render.
-        const [formData, setFormData] = useState<FormData | null>(preloadedFormData);
-        const [loading, setLoading] = useState<boolean>(!preloadedFormData);
-
-        // Let's cache the data retrieved by the data loader and make the UX a bit smoother.
-        const cache = useRef<Record<string, FormData>>({});
-
-        useEffect(() => {
-            if (preloadedFormData) {
-                return;
-            }
-
-            const hasRequiredVariables = variables.parent || variables.revision;
-            if (!hasRequiredVariables) {
-                return;
-            }
-
-            const cached = cache.current[variablesHash];
-            if (cached) {
-                setFormData(cached);
-            } else {
-                // If
-                if ("then" in getFormDataLoad) {
-                    setLoading(true);
-                    getFormDataLoad.then(formData => {
-                        setFormData(formData);
-                        cache.current[variablesHash] = formData;
-                        setLoading(false);
-                    });
+            const form = element.data.settings?.form;
+            const variables: GetFormDataLoaderVariables = {};
+            if (form) {
+                if (form.revision === "latest") {
+                    variables.parent = form.parent;
+                } else {
+                    variables.revision = form.revision;
                 }
             }
-        }, [variablesHash]);
 
-        if (!(variables.parent || variables.revision)) {
-            if (params.renderFormNotSelected) {
-                return params.renderFormNotSelected({});
+            const variablesHash = JSON.stringify(variables);
+
+            // We want to trigger form data load immediately, and not within a `useEffect` hook.
+            // This enables us to render the actual form in the initial component render, and not
+            // in a subsequent one.
+            const getFormDataLoad = useMemo(() => {
+                return dataLoaders.getForm({ variables });
+            }, [variablesHash]);
+
+            const preloadedFormData = useMemo(() => {
+                return "formId" in getFormDataLoad ? getFormDataLoad : null;
+            }, [getFormDataLoad]);
+
+            // The `preloadedFormData` initial state assignment will occur in the initial component render.
+            const [formData, setFormData] = useState<FormData | null>(preloadedFormData);
+            const [loading, setLoading] = useState<boolean>(!preloadedFormData);
+
+            // Let's cache the data retrieved by the data loader and make the UX a bit smoother.
+            const cache = useRef<Record<string, FormData>>({});
+
+            useEffect(() => {
+                if (preloadedFormData) {
+                    return;
+                }
+
+                const hasRequiredVariables = variables.parent || variables.revision;
+                if (!hasRequiredVariables) {
+                    return;
+                }
+
+                const cached = cache.current[variablesHash];
+                if (cached) {
+                    setFormData(cached);
+                } else {
+                    // If
+                    if ("then" in getFormDataLoad) {
+                        setLoading(true);
+                        getFormDataLoad.then(formData => {
+                            setFormData(formData);
+                            cache.current[variablesHash] = formData;
+                            setLoading(false);
+                        });
+                    }
+                }
+            }, [variablesHash]);
+
+            if (!(variables.parent || variables.revision)) {
+                if (params.renderFormNotSelected) {
+                    return params.renderFormNotSelected({});
+                }
+
+                return <>Please select a form.</>;
             }
 
-            return <>Please select a form.</>;
-        }
-
-        if (loading) {
-            if (params.renderFormLoading) {
-                return params.renderFormLoading({});
-            }
-            return <>Loading selected form...</>;
-        }
-
-        if (!formData) {
-            if (params.renderFormNotFound) {
-                return params.renderFormNotFound({});
+            if (loading) {
+                if (params.renderFormLoading) {
+                    return params.renderFormLoading({});
+                }
+                return <>Loading selected form...</>;
             }
 
-            return <>Form not found.</>;
-        }
+            if (!loaderData) {
+                if (params.renderFormNotFound) {
+                    return params.renderFormNotFound({});
+                }
 
-        return <FormRender createFormParams={params} loading={loading} formData={formData} />;
-    });
+                return <>Form not found.</>;
+            }
+
+            return <FormRender createFormParams={params} loading={loading} formData={formData} />;
+        },
+        {
+            loader: ({ element }) => {
+                const form = element.data.settings?.form;
+
+                const variables: GetFormDataLoaderVariables = {};
+                if (form) {
+                    if (form.revision === "latest") {
+                        variables.parent = form.parent;
+                    } else {
+                        variables.revision = form.revision;
+                    }
+                }
+
+                return dataLoaders.getForm({ variables });
+            }
+        }
+    );
 };
