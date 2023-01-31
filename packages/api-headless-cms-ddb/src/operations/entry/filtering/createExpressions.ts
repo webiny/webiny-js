@@ -85,7 +85,7 @@ export const createExpressions = (params: Params): Expression => {
         };
 
         for (const key in where) {
-            if (where.hasOwnProperty(key) === false) {
+            if (where.hasOwnProperty && where.hasOwnProperty(key) === false) {
                 continue;
             }
 
