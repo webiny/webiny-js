@@ -11,9 +11,9 @@ export const searchRecordSchema = new GraphQLSchemaPlugin<AcoContext>({
             id: ID!
             originalId: ID!
             type: String!
-            title: String
+            location: SearchLocationType!
+            title: String!
             content: String
-            location: SearchLocationType
             data: JSON
             savedOn: DateTime
             createdOn: DateTime
@@ -21,19 +21,19 @@ export const searchRecordSchema = new GraphQLSchemaPlugin<AcoContext>({
         }
 
         type SearchLocationType {
-            folderId: ID
+            folderId: ID!
         }
 
         input SearchLocationInput {
-            folderId: ID
+            folderId: ID!
         }
 
         input SearchRecordCreateInput {
             originalId: String!
             type: String!
-            title: String
+            title: String!
             content: String
-            location: SearchLocationInput
+            location: SearchLocationInput!
             data: JSON
         }
 
@@ -46,7 +46,18 @@ export const searchRecordSchema = new GraphQLSchemaPlugin<AcoContext>({
 
         input SearchRecordListWhereInput {
             type: String!
-            location: SearchLocationInput
+            location: SearchLocationInput!
+        }
+
+        enum SearchRecordListSort {
+            id_ASC
+            id_DESC
+            savedOn_ASC
+            savedOn_DESC
+            createdOn_ASC
+            createdOn_DESC
+            title_ASC
+            title_DESC
         }
 
         type SearchRecordResponse {
@@ -57,11 +68,18 @@ export const searchRecordSchema = new GraphQLSchemaPlugin<AcoContext>({
         type SearchRecordListResponse {
             data: [SearchRecord]
             error: AcoError
+            meta: AcoMeta
         }
 
         extend type SearchQuery {
             getRecord(id: ID!): SearchRecordResponse
-            listRecords(where: SearchRecordListWhereInput!): SearchRecordListResponse
+            listRecords(
+                where: SearchRecordListWhereInput
+                search: String
+                limit: Int
+                after: String
+                sort: [SearchRecordListSort]
+            ): SearchRecordListResponse
         }
 
         extend type SearchMutation {

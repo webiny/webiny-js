@@ -19,11 +19,11 @@ export interface ListSearchRecordsWhere {
     location?: {
         folderId: string;
     };
-    search?: string;
 }
 
 export interface ListSearchRecordsParams {
-    where: ListSearchRecordsWhere;
+    where?: ListSearchRecordsWhere;
+    search?: string;
     sort?: string[];
     limit?: number;
     after?: string | null;
