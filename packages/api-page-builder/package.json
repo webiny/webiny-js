@@ -17,7 +17,6 @@
     "@babel/runtime": "^7.19.0",
     "@commodo/fields": "beta",
     "@webiny/api": "0.0.0",
-    "@webiny/api-aco": "0.0.0",
     "@webiny/api-file-manager": "0.0.0",
     "@webiny/api-i18n": "0.0.0",
     "@webiny/api-prerendering-service": "0.0.0",
