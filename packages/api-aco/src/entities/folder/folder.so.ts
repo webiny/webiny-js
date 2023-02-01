@@ -78,7 +78,7 @@ export const createFolderOperations = (
                 type,
                 slug,
                 parentId,
-                ...(id && { id_not: id })
+                id_not: id
             },
             limit: 1
         });
@@ -144,7 +144,7 @@ export const createFolderOperations = (
                 params: {
                     type: original.type,
                     slug: slug || original.slug,
-                    parentId: parentId || original.parentId
+                    parentId: parentId !== undefined ? parentId : original.parentId // parentId can be `null`
                 }
             });
 
