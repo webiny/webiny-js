@@ -105,18 +105,3 @@ export const createApwPageBuilderContext = (params: CreateApwContextParams) => {
         context.plugins.register(extendPbPageSettingsSchema());
     });
 };
-
-export const createApwHeadlessCmsContext = (params: CreateApwContextParams) => {
-    return new ContextPlugin<ApwContext>(async context => {
-        if (!context.wcp.canUseFeature("advancedPublishingWorkflow")) {
-            return;
-        } else if (isInstallationPending(context)) {
-            return;
-        }
-
-        await setupApwContext(params).apply(context);
-        await setupApwHeadlessCms().apply(context);
-        await attachApwHooks().apply(context);
-        await createCustomAuth(params).apply(context);
-    });
-};

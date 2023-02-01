@@ -1,7 +1,7 @@
 import React from "react";
 import { validation } from "@webiny/validation";
 import { RichTextRenderer } from "@webiny/react-rich-text-renderer";
-import { FieldMessage } from "./fields/components/FieldMessage";
+import { FieldErrorMessage } from "./fields/components/FieldErrorMessage";
 import { useBind } from "@webiny/form";
 import { Field } from "./fields/components/Field";
 import { Row } from "./Row";
@@ -53,7 +53,7 @@ export const renderCheckbox: TermsOfServiceChildrenFunction = ({
                             <RichTextRenderer data={message} />
                         </RteFieldLabel>
                     </CheckboxGroup>
-                    <FieldMessage isValid={bind.validation.isValid} errorMessage={errorMessage} />
+                    <FieldErrorMessage isValid={bind.validation.isValid} message={errorMessage} />
                 </Field>
             </Cell>
         </Row>

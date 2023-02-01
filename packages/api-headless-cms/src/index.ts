@@ -32,7 +32,7 @@ export const createHeadlessCmsGraphQL = (params: CreateHeadlessCmsGraphQLParams 
         /**
          * At this point we can create, or not create, CMS GraphQL Schema.
          */
-        baseCreateGraphQL(params)
+        ...baseCreateGraphQL(params)
     ];
 };
 

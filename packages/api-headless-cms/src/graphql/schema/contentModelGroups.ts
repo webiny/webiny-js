@@ -1,11 +1,10 @@
 import { ErrorResponse, NotFoundError, Response } from "@webiny/handler-graphql";
-
 import { CmsContext } from "~/types";
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
 import { Resolvers } from "@webiny/handler-graphql/types";
 import { CmsGroupPlugin } from "~/plugins/CmsGroupPlugin";
+import { CmsGraphQLSchemaPlugin } from "~/plugins";
 
-export const createGroupsSchema = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
+export const createGroupsSchema = (context: CmsContext): CmsGraphQLSchemaPlugin => {
     let manageSchema = "";
     if (context.cms.MANAGE) {
         manageSchema = /* GraphQL */ `
@@ -131,7 +130,7 @@ export const createGroupsSchema = (context: CmsContext): GraphQLSchemaPlugin<Cms
         };
     }
 
-    return new GraphQLSchemaPlugin<CmsContext>({
+    return new CmsGraphQLSchemaPlugin({
         typeDefs: /* GraphQL */ `
             type CmsContentModelGroup {
                 id: ID!

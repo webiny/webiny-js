@@ -7,12 +7,12 @@ import { PluginCollection } from "@webiny/plugins/types";
 import debugPlugins from "@webiny/handler-graphql/debugPlugins";
 import processRequestBody from "@webiny/handler-graphql/processRequestBody";
 import { buildSchemaPlugins } from "./buildSchemaPlugins";
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
 import { GraphQLRequestBody } from "@webiny/handler-graphql/types";
 import { RoutePlugin } from "@webiny/handler";
 import WebinyError from "@webiny/error";
 // @ts-ignore `code-frame` has no types
 import codeFrame from "code-frame";
+import { CmsGraphQLSchemaPlugin } from "~/plugins";
 
 interface SchemaCache {
     key: string;
@@ -44,7 +44,9 @@ const generateSchema = async (args: GetSchemaParams): Promise<GraphQLSchema> => 
     const resolvers: any = [];
 
     // Get schema definitions from plugins
-    const schemaPlugins = context.plugins.byType<GraphQLSchemaPlugin>(GraphQLSchemaPlugin.type);
+    const schemaPlugins = context.plugins.byType<CmsGraphQLSchemaPlugin>(
+        CmsGraphQLSchemaPlugin.type
+    );
     for (const pl of schemaPlugins) {
         typeDefs.push(pl.schema.typeDefs);
         resolvers.push(pl.schema.resolvers);
@@ -66,41 +68,35 @@ const getSchema = async (params: GetSchemaParams): Promise<GraphQLSchema> => {
     const id = `${tenantId}#${type}#${locale.code}`;
 
     const cacheKey = await generateCacheKey(params);
-    if (!schemaList.has(id)) {
-        try {
-            const schema = await generateSchema(params);
-            schemaList.set(id, {
-                key: cacheKey,
-                schema
-            });
-            return schema;
-        } catch (err) {
-            const [location] = err.locations;
-
+    const cachedSchema = schemaList.get(id);
+    if (cachedSchema?.key === cacheKey) {
+        return cachedSchema.schema;
+    }
+    try {
+        const schema = await generateSchema(params);
+        schemaList.set(id, {
+            key: cacheKey,
+            schema
+        });
+        return schema;
+    } catch (err) {
+        if (!Array.isArray(err.locations)) {
             throw new WebinyError({
-                code: "INVALID_GRAPHQL_SCHEMA",
-                message: err.message,
-                data: {
-                    invalidSegment: codeFrame(err.source.body, location.line, location.column, {
-                        frameSize: 15
-                    })
-                }
+                ...err
             });
         }
+        const [location] = err.locations;
+
+        throw new WebinyError({
+            code: "INVALID_GRAPHQL_SCHEMA",
+            message: err.message,
+            data: {
+                invalidSegment: codeFrame(err.source.body, location.line, location.column, {
+                    frameSize: 15
+                })
+            }
+        });
     }
-    /**
-     * Safe to cast because check was done few lines up.
-     */
-    const cache = schemaList.get(id) as SchemaCache;
-    if (cache.key === cacheKey) {
-        return cache.schema;
-    }
-    const schema = await generateSchema(params);
-    schemaList.set(id, {
-        key: cacheKey,
-        schema
-    });
-    return schema;
 };
 
 const checkEndpointAccess = async (context: CmsContext): Promise<void> => {
@@ -156,7 +152,7 @@ const cmsRoutes = new RoutePlugin<CmsContext>(({ onPost, onOptions, context }) =
                 locale: context.cms.getLocale(),
                 type: context.cms.type as ApiEndpoint
             });
-            const body: GraphQLRequestBody | GraphQLRequestBody[] = request.body as any;
+            const body = request.body as GraphQLRequestBody | GraphQLRequestBody[];
             const result = await processRequestBody(body, schema, context);
             return reply.code(200).send(result);
         } catch (ex) {

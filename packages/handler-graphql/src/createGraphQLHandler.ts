@@ -3,17 +3,18 @@ import { GraphQLSchema } from "graphql";
 import { RoutePlugin } from "@webiny/handler";
 import WebinyError from "@webiny/error";
 import { PluginCollection } from "@webiny/plugins/types";
-import { HandlerGraphQLOptions } from "./types";
+import { GraphQLRequestBody, HandlerGraphQLOptions } from "./types";
 import { createGraphQLSchema } from "./createGraphQLSchema";
 import debugPlugins from "./debugPlugins";
 import processRequestBody from "./processRequestBody";
 
 const DEFAULT_CACHE_MAX_AGE = 30758400; // 1 year
 
-/**
- * TODO Until we figure out how to better convert incoming body, we will leave it as any.
- */
-const createRequestBody = (body: any): any => {
+const createRequestBody = (body: unknown): GraphQLRequestBody | GraphQLRequestBody[] => {
+    /**
+     * We are trusting that the body payload is correct.
+     * The `processRequestBody` will fail if it is not.
+     */
     return typeof body === "string" ? JSON.parse(body) : body;
 };
 

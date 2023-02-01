@@ -21,7 +21,7 @@ export interface Folder {
     name: string;
     slug: string;
     type: string;
-    parentId?: string;
+    parentId?: string | null;
     createdOn: string;
     createdBy: CreatedBy;
     tenant: string;
@@ -30,6 +30,7 @@ export interface Folder {
 }
 
 export type FolderInput = Pick<Folder, "name" | "slug" | "type" | "parentId">;
+export type FolderUpdateInput = Pick<Folder, "name" | "slug" | "parentId">;
 
 export interface GetFolderParams {
     id: string;
@@ -60,7 +61,7 @@ export interface StorageOperationsGetFolderParams {
     id?: string;
     slug?: string;
     type?: string;
-    parentId?: string;
+    parentId?: string | null;
     tenant: string;
     locale: string;
 }

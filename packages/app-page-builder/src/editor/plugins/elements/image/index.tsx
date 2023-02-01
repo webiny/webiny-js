@@ -13,10 +13,9 @@ import {
     DisplayMode,
     PbEditorElementPluginArgs,
     PbEditorElement
-} from "../../../../types";
+} from "~/types";
 import { Plugin } from "@webiny/plugins/types";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
-import { createImage } from "@webiny/app-page-builder-elements/renderers/image";
 
 const PreviewBox = styled("div")({
     textAlign: "center",
@@ -94,8 +93,7 @@ export default (args: PbEditorElementPluginArgs = {}): Plugin[] => {
             },
             render(props) {
                 return <Image {...props} />;
-            },
-            renderer: createImage()
+            }
         } as PbEditorPageElementPlugin,
         {
             name: "pb-editor-page-element-style-settings-image",
