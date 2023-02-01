@@ -47,7 +47,12 @@ export const folderSchema = new GraphQLSchemaPlugin<AcoContext>({
 
         extend type AcoQuery {
             getFolder(id: ID!): FolderResponse
-            listFolders(where: FoldersListWhereInput!): FoldersListResponse
+            listFolders(
+                where: FoldersListWhereInput!
+                limit: Int
+                after: String
+                sort: [AcoListSort]
+            ): FoldersListResponse
         }
 
         extend type AcoMutation {

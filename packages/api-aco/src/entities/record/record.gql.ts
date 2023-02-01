@@ -77,7 +77,7 @@ export const searchRecordSchema = new GraphQLSchemaPlugin<AcoContext>({
                 search: String
                 limit: Int
                 after: String
-                sort: [SearchRecordListSort]
+                sort: [AcoListSort]
             ): SearchRecordListResponse
         }
 

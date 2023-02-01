@@ -2,8 +2,8 @@ import { CmsGroupPlugin } from "@webiny/api-headless-cms";
 import { CmsContext } from "@webiny/api-headless-cms/types";
 import WebinyError from "@webiny/error";
 
-import { createFolderModelDefinition } from "~/folder/folder.model";
-import { createSearchModelDefinition } from "~/record/record.model";
+import { createFolderModelDefinition } from "~/entities/folder/folder.model";
+import { createSearchModelDefinition } from "~/entities/record/record.model";
 import { modelFactory } from "~/utils/modelFactory";
 import { isInstallationPending } from "~/utils/isInstallationPending";
 

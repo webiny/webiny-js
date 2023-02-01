@@ -9,7 +9,7 @@ import {
     OnSearchRecordBeforeCreateTopicParams,
     OnSearchRecordBeforeDeleteTopicParams,
     OnSearchRecordBeforeUpdateTopicParams
-} from "~/record/record.types";
+} from "./record.types";
 
 export const createSearchRecordCrudMethods = ({
     storageOperations

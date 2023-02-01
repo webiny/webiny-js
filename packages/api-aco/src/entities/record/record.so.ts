@@ -1,11 +1,11 @@
 import { CmsModel } from "@webiny/api-headless-cms/types";
 import WebinyError from "@webiny/error";
 
-import { SEARCH_RECORD_MODEL_ID } from "~/record/record.model";
+import { SEARCH_RECORD_MODEL_ID } from "./record.model";
 import { baseFields, CreateAcoStorageOperationsParams } from "~/plugins/operations";
 import { getFieldValues } from "~/utils/getFieldValues";
 
-import { AcoSearchRecordStorageOperations as BaseAcoSearchRecordStorageOperations } from "~/record/record.types";
+import { AcoSearchRecordStorageOperations as BaseAcoSearchRecordStorageOperations } from "./record.types";
 
 interface AcoSearchRecordStorageOperations extends BaseAcoSearchRecordStorageOperations {
     getRecordModel(): Promise<CmsModel>;
@@ -32,7 +32,17 @@ export const createSearchRecordOperations = (
         const model = await getRecordModel();
         security.disableAuthorization();
 
-        const entry = await cms.getEntryById(model, id);
+        /**
+         * The record "id" is generated on creation.
+         * Still, we need to get/update/delete records by the original entry id.
+         */
+        const entry = await cms.getEntry(model, { where: { originalId: id, latest: true } });
+
+        if (!entry) {
+            throw new WebinyError("Could not load record.", "GET_ENTRY_ERROR", {
+                id
+            });
+        }
 
         security.enableAuthorization();
         return getFieldValues(entry, baseFields);
@@ -75,7 +85,7 @@ export const createSearchRecordOperations = (
                 ...data
             };
 
-            const entry = await cms.updateEntry(model, id, input);
+            const entry = await cms.updateEntry(model, original.id, input);
             security.enableAuthorization();
             return getFieldValues(entry, baseFields);
         },
@@ -83,7 +93,9 @@ export const createSearchRecordOperations = (
             const model = await getRecordModel();
             security.disableAuthorization();
 
-            await cms.deleteEntry(model, id);
+            const entry = await getRecord({ id });
+
+            await cms.deleteEntry(model, entry.id);
 
             security.enableAuthorization();
             return true;

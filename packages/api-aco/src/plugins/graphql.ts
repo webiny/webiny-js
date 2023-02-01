@@ -1,8 +1,8 @@
 import { ContextPlugin } from "@webiny/api";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
 
-import { folderSchema } from "~/folder/folder.gql";
-import { searchRecordSchema } from "~/record/record.gql";
+import { folderSchema } from "~/entities/folder/folder.gql";
+import { searchRecordSchema } from "~/entities/record/record.gql";
 
 import { AcoContext } from "~/types";
 
@@ -48,6 +48,17 @@ const baseSchema = new GraphQLSchemaPlugin({
         type AcoBooleanResponse {
             data: Boolean
             error: AcoError
+        }
+
+        enum AcoListSort {
+            id_ASC
+            id_DESC
+            savedOn_ASC
+            savedOn_DESC
+            createdOn_ASC
+            createdOn_DESC
+            title_ASC
+            title_DESC
         }
 
         extend type Query {

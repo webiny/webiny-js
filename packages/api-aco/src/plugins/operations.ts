@@ -1,8 +1,8 @@
 import { CmsContext, HeadlessCms } from "@webiny/api-headless-cms/types";
 import { Security } from "@webiny/api-security/types";
 
-import { createFolderOperations } from "~/folder/folder.so";
-import { createSearchRecordOperations } from "~/record/record.so";
+import { createFolderOperations } from "~/entities/folder/folder.so";
+import { createSearchRecordOperations } from "~/entities/record/record.so";
 import { createAcoModels } from "~/plugins/models";
 
 import { AcoStorageOperations } from "~/types";

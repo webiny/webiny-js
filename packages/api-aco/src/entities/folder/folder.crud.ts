@@ -9,7 +9,7 @@ import {
     OnFolderBeforeCreateTopicParams,
     OnFolderBeforeDeleteTopicParams,
     OnFolderBeforeUpdateTopicParams
-} from "~/folder/folder.types";
+} from "./folder.types";
 
 export const createFolderCrudMethods = ({ storageOperations }: CreateAcoParams): AcoFolderCrud => {
     // create

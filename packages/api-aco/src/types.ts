@@ -1,10 +1,14 @@
 import { Tenant, TenancyContext } from "@webiny/api-tenancy/types";
 import { Context as BaseContext } from "@webiny/handler/types";
 import { I18NContext, I18NLocale } from "@webiny/api-i18n/types";
+import { PbContext } from "@webiny/api-page-builder/graphql/types";
 import { SecurityContext, SecurityIdentity } from "@webiny/api-security/types";
 import { CmsContext } from "@webiny/api-headless-cms/types";
-import { AcoSearchRecordCrud, AcoSearchRecordStorageOperations } from "~/record/record.types";
-import { AcoFolderCrud, AcoFolderStorageOperations } from "~/folder/folder.types";
+import {
+    AcoSearchRecordCrud,
+    AcoSearchRecordStorageOperations
+} from "~/entities/record/record.types";
+import { AcoFolderCrud, AcoFolderStorageOperations } from "~/entities/folder/folder.types";
 
 export interface User {
     id: string;
@@ -55,6 +59,7 @@ export interface AcoContext
         I18NContext,
         TenancyContext,
         SecurityContext,
-        CmsContext {
+        CmsContext,
+        PbContext {
     aco: AdvancedContentOrganisation;
 }
