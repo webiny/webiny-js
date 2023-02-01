@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { CmsModelField } from "~/types";
 import { useQuery } from "~/admin/hooks";
 import { CmsReferenceContentEntry } from "~/admin/plugins/fieldRenderers/ref/components/types";
 import {

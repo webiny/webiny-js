@@ -23,12 +23,14 @@ const Content = styled("div")({
 });
 
 export const ReferencesDialog: React.FC<CmsEditorFieldRendererProps> = props => {
-    const { contentModel, field } = props;
+    const { contentModel } = props;
 
     const [entries, setEntries] = useState<CmsReferenceContentEntry[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
 
-    const onCloseClick = () => {};
+    const onCloseClick = () => {
+        return false;
+    };
     return (
         <Dialog>
             <Container>

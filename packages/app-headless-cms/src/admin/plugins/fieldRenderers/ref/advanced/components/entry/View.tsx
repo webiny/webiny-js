@@ -1,4 +1,5 @@
 import styled from "@emotion/styled";
+import { css } from "emotion";
 import React from "react";
 import { CmsReferenceContentEntry } from "~/admin/plugins/fieldRenderers/ref/components/types";
 import { ReactComponent as ViewIcon } from "./assets/view.svg";
@@ -12,14 +13,19 @@ const Container = styled("div")({
     marginLeft: "auto"
 });
 
-const Text = styled("div")({
+const Text = styled("div")({});
+
+const urlStyle = css({
     fontWeight: 500,
     fontSize: 14,
     lineHeight: "20px",
     letterSpacing: "0.1px",
-    textTransform: "uppercase",
-    marginLeft: "10px"
+    textTransform: "uppercase"
 });
+
+const createEntryUrl = (entry: CmsReferenceContentEntry) => {
+    return `/cms/content-entries/${entry.model.modelId}?id=${entry.id}`;
+};
 
 interface Props {
     entry: CmsReferenceContentEntry;
@@ -27,7 +33,9 @@ interface Props {
 export const View: React.FC<Props> = ({ entry }) => {
     return (
         <Container>
-            <ViewIcon /> <Text>View</Text>
+            <a className={urlStyle} href={createEntryUrl(entry)} target="_blank" rel="noreferrer">
+                <ViewIcon /> <Text>View</Text>
+            </a>
         </Container>
     );
 };

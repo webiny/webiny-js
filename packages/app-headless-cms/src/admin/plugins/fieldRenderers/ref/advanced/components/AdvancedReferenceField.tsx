@@ -9,19 +9,24 @@ interface Props extends CmsEditorFieldRendererProps {
     bind: BindComponentRenderProp;
 }
 export const AdvancedReferenceField: React.FC<Props> = props => {
-    const { field, contentModel, getBind, bind } = props;
+    const { bind } = props;
 
     const [dialog, setDialog] = useState<boolean>(false);
 
-    const onNewRecord = () => {};
-    const onExistingRecord = () => {};
+    const onNewRecord = () => {
+        setDialog(true);
+        return false;
+    };
+    const onExistingRecord = () => {
+        setDialog(true);
+        return false;
+    };
 
     const ref = useReference({
         value: bind.value
     });
 
-    console.log(ref);
-    const { loading, entry, error } = ref;
+    const { entry } = ref;
 
     return (
         <>

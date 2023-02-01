@@ -1,5 +1,4 @@
 import React from "react";
-import { CmsEditorFieldRendererProps } from "~/types";
 import styled from "@emotion/styled";
 
 const Container = styled("div")({

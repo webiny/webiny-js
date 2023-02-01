@@ -32,7 +32,6 @@ import {
     UpdateCmsEntryInput,
     CreateCmsEntryInput,
     CmsModelField,
-    CreatedBy,
     StorageOperationsCmsModel,
     HeadlessCms,
     CmsEntryStatus,
