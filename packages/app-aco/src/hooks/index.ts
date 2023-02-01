@@ -1,2 +1,2 @@
 export * from "./useFolders";
-export * from "./useLinks";
+export * from "./useSearchRecords";

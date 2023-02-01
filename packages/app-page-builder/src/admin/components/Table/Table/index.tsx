@@ -74,9 +74,9 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
             items.map(item => ({
                 id: item.id,
                 type: "FOLDER",
-                title: item.name,
+                title: item.title,
                 createdBy: item.createdBy.displayName || "-",
-                savedOn: item.createdOn,
+                savedOn: item.savedOn,
                 original: item
             }));
     }, [folders]);

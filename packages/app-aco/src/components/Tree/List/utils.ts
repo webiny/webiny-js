@@ -14,21 +14,22 @@ export const createTreeData = (
     focusedNodeId?: string
 ): NodeModel<DndItemData>[] => {
     return folders.map(item => {
-        const { id, parentId, name, slug, type, createdOn, createdBy } = item;
+        const { id, parentId, title, slug, type, createdOn, createdBy, savedOn } = item;
 
         return {
             id,
             parent: parentId || ROOT_ID,
-            text: name,
+            text: title,
             droppable: true,
             data: {
                 id,
-                name,
+                title,
                 slug,
                 parentId,
                 type,
                 createdOn,
                 createdBy,
+                savedOn,
                 isFocused: focusedNodeId === id
             }
         };

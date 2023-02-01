@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 import debounce from "lodash/debounce";
 import useDeepCompareEffect from "use-deep-compare-effect";
-import { FolderDialogCreate, useFolders, useLinks } from "@webiny/app-aco";
+import { FolderDialogCreate, useFolders, useSearchRecords } from "@webiny/app-aco";
 import { useHistory, useLocation } from "@webiny/react-router";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
@@ -54,13 +54,13 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
 
     const { folders = [], loading: foldersLoading } = useFolders(FOLDER_TYPE);
     const {
-        links,
+        records,
         loading: linksLoading,
         meta,
-        listLinks
-    } = useLinks(folderId || FOLDER_ID_DEFAULT);
+        listRecords
+    } = useSearchRecords(folderId || FOLDER_ID_DEFAULT);
 
-    const { pages, loading: pagesLoading } = useGetPages(links, folderId);
+    const { pages, loading: pagesLoading } = useGetPages(records, folderId);
 
     const [subFolders, setSubFolders] = useState<FolderItem[]>([]);
     const [folderName, setFolderName] = useState<string>();
@@ -97,7 +97,7 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
         const currentFolder = folders.find(folder => folder.id === folderId);
 
         setSubFolders(subFolders);
-        setFolderName(currentFolder?.name || defaultFolderName);
+        setFolderName(currentFolder?.title || defaultFolderName);
     }, [{ ...folders }, folderId]);
 
     const { createPageMutation } = useCreatePage({
@@ -108,7 +108,7 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
 
     const loadMoreLinks = async ({ hasMoreItems, cursor }: ListMeta) => {
         if (hasMoreItems && cursor) {
-            await listLinks(cursor);
+            await listRecords(cursor);
         }
     };
 
@@ -181,7 +181,7 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
                                 <Table
                                     ref={tableRef}
                                     folders={subFolders}
-                                    pages={pages}
+                                    pages={[]}
                                     loading={isLoading}
                                     openPreviewDrawer={openPreviewDrawer}
                                 />

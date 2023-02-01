@@ -150,8 +150,7 @@ export const createFolderOperations = (
 
             const input = {
                 ...original,
-                ...data,
-                parentId: parentId || undefined
+                ...data
             };
 
             const entry = await cms.updateEntry(model, id, input);

@@ -1,4 +1,4 @@
-import { LinkItem } from "@webiny/app-aco/types";
+import { SearchRecordItem } from "@webiny/app-aco/types";
 import { GetPageQueryResponse, GetPageQueryVariables } from "~/pageEditor/graphql";
 import { GET_PAGE } from "~/admin/graphql/pages";
 import { useApolloClient } from "@apollo/react-hooks";
@@ -8,7 +8,7 @@ import { FOLDER_ID_DEFAULT } from "~/admin/constants/folders";
 import { useSnackbar } from "@webiny/app-admin";
 import { i18n } from "@webiny/app/i18n";
 import { useAdminPageBuilder } from "~/admin/hooks/useAdminPageBuilder";
-import { useLinks } from "@webiny/app-aco";
+import { useSearchRecords } from "@webiny/app-aco";
 
 const t = i18n.ns("app-headless-cms/app-page-builder/pages-table/get-pages");
 
@@ -18,16 +18,16 @@ const defaultLoading: Record<LoadingActions, boolean> = {
     LIST_MORE: false
 };
 
-const useGetPages = (links: LinkItem[], folderId = FOLDER_ID_DEFAULT) => {
+const useGetPages = (links: SearchRecordItem[], folderId = FOLDER_ID_DEFAULT) => {
     const client = useApolloClient();
     const { showSnackbar } = useSnackbar();
     const pageBuilder = useAdminPageBuilder();
-    const { deleteLink } = useLinks(folderId);
+    const { deleteRecord } = useSearchRecords(folderId);
     const [pages, setPages] = useState<PbPageDataLink[]>([]);
     const [loading, setLoading] = useState<Loading<LoadingActions>>(defaultLoading);
     const [times, setTimes] = useState<number>(0);
 
-    const getPagesByLinks = (links: LinkItem[]): void => {
+    const getPagesByLinks = (links: SearchRecordItem[]): void => {
         if (links.length === 0) {
             // No need to fetch pages, just returning an empty array
             setPages([]);
@@ -119,7 +119,7 @@ const useGetPages = (links: LinkItem[], folderId = FOLDER_ID_DEFAULT) => {
 
             if (index > -1) {
                 // Delete the link bound to the deleted page
-                deleteLink(pages[index].link);
+                deleteRecord(pages[index].link);
                 // Remove the page from tha state
                 pages.splice(index, 1);
             }

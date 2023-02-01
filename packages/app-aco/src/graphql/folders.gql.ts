@@ -11,10 +11,11 @@ const ERROR_FIELD = /* GraphQL */ `
 const DATA_FIELD = /* GraphQL */ `
     {
         id
-        name
+        title
         slug
         parentId
         type
+        savedOn
         createdOn
         createdBy {
             id
@@ -25,7 +26,7 @@ const DATA_FIELD = /* GraphQL */ `
 
 export const CREATE_FOLDER = gql`
     mutation CreateFolder($data: FolderCreateInput!) {
-        folders {
+        aco {
             createFolder(data: $data) {
                 data ${DATA_FIELD}
                 error ${ERROR_FIELD}
@@ -36,7 +37,7 @@ export const CREATE_FOLDER = gql`
 
 export const LIST_FOLDERS = gql`
     query ListFolders ($type: String!) {
-        folders {
+        aco {
             listFolders(where: { type: $type }) {
                 data ${DATA_FIELD}
                 error ${ERROR_FIELD}
@@ -47,7 +48,7 @@ export const LIST_FOLDERS = gql`
 
 export const GET_FOLDER = gql`
     query GetFolder ($id: ID!) {
-        folders {
+        aco {
             getFolder(id: $id) {
                 data ${DATA_FIELD}
                 error ${ERROR_FIELD}
@@ -58,7 +59,7 @@ export const GET_FOLDER = gql`
 
 export const UPDATE_FOLDER = gql`
     mutation UpdateFolder($id: ID!, $data: FolderUpdateInput!) {
-        folders {
+        aco {
             updateFolder(id: $id, data: $data) {
                 data ${DATA_FIELD}
                 error ${ERROR_FIELD}
@@ -69,7 +70,7 @@ export const UPDATE_FOLDER = gql`
 
 export const DELETE_FOLDER = gql`
     mutation DeleteFolder($id: ID!) {
-        folders {
+        aco {
             deleteFolder(id: $id) {
                 data
                 error ${ERROR_FIELD}

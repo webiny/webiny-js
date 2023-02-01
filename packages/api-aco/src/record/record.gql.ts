@@ -45,7 +45,6 @@ export const searchRecordSchema = new GraphQLSchemaPlugin<AcoContext>({
         }
 
         input SearchRecordListWhereInput {
-            type: String!
             location: SearchLocationInput!
         }
 

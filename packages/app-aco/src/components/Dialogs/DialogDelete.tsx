@@ -30,8 +30,8 @@ export const FolderDialogDelete = ({ folder, open, onClose }: Props) => {
     }, [open]);
 
     const folderDisplayName = useMemo(
-        () => (folder.name.length > 20 ? folder.name.slice(0, 20).concat("...") : folder.name),
-        [folder.name]
+        () => (folder.title.length > 20 ? folder.title.slice(0, 20).concat("...") : folder.title),
+        [folder.title]
     );
 
     const onSubmit = async () => {
