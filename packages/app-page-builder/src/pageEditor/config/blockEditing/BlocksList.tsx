@@ -66,7 +66,9 @@ const BlocksList: React.FC<BlocksListProps> = props => {
     const prevProps = useRef<BlocksListProps | null>(null);
 
     useEffect(() => {
-        rightPanelElement.current = document.querySelector(".webiny-split-view__right-panel");
+        rightPanelElement.current = document.querySelector(
+            ".webiny-split-view__right-panel-wrapper"
+        );
         setTimestamp(new Date().getTime());
     }, []);
 
