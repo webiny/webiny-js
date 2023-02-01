@@ -491,7 +491,7 @@ export interface PbEditorPageElementPluginToolbar {
     // Element group this element belongs to.
     group?: string;
     // A function to render an element preview in the toolbar.
-    preview?: (params?: { theme: PbTheme | Theme }) => ReactNode; // @deprecation-warning pb-legacy-rendering-engine
+    preview?: (params?: { theme: PbTheme | Theme | undefined }) => ReactNode; // @deprecation-warning pb-legacy-rendering-engine
 }
 
 export type PbEditorPageElementPluginSettings = string[] | Record<string, any>;
