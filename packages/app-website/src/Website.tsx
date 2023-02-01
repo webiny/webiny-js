@@ -38,7 +38,7 @@ export const Website: React.FC<WebsiteProps> = ({
                 <App
                     debounceRender={debounceMs}
                     routes={[...routes, { path: "*", element: <Page /> }]}
-                    providers={[...providers, PageBuilderProviderHOC]}
+                    providers={[PageBuilderProviderHOC, ...providers]}
                 >
                     {children}
                 </App>
