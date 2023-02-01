@@ -121,7 +121,7 @@ export interface ListSearchRecordsResponse {
 }
 
 export interface ListSearchRecordsQueryVariables {
-    folderId: string;
+    location: Location;
     limit?: number;
     after?: string | null;
 }

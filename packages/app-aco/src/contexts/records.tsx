@@ -33,7 +33,7 @@ interface SearchRecordsContext {
     records: SearchRecordItem[];
     loading: Loading<LoadingActions>;
     meta: Meta<ListMeta>;
-    listRecords: (type: string, limit?: number, after?: string) => Promise<SearchRecordItem[]>;
+    listRecords: (folderId: string, limit?: number, after?: string) => Promise<SearchRecordItem[]>;
     getRecord: (id: string, folderId: string) => Promise<SearchRecordItem>;
     createRecord: (link: Omit<SearchRecordItem, "id">) => Promise<SearchRecordItem>;
     updateRecord: (link: SearchRecordItem, contextFolderId: string) => Promise<SearchRecordItem>;
@@ -80,7 +80,7 @@ export const SearchRecordsProvider = ({ children }: Props) => {
                 () =>
                     client.query<ListSearchRecordsResponse, ListSearchRecordsQueryVariables>({
                         query: LIST_RECORDS,
-                        variables: { folderId, limit, after }
+                        variables: { location: { folderId }, limit, after }
                     })
             );
 
