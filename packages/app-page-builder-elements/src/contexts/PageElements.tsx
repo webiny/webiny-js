@@ -76,7 +76,7 @@ export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
                 afterRenderer
             });
         },
-        [customElementStylesCallback, customAssignStylesCallback]
+        [theme, customElementStylesCallback, customAssignStylesCallback]
     );
 
     const getStyles = useCallback<GetStyles>(
@@ -92,7 +92,7 @@ export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
                 afterRenderer
             });
         },
-        [customStylesCallback, customAssignStylesCallback]
+        [theme, customStylesCallback, customAssignStylesCallback]
     );
 
     const getRenderers = useCallback<GetRenderers>(() => {
