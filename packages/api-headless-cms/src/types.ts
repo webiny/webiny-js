@@ -1455,6 +1455,10 @@ export interface CmsEntry<T = CmsEntryValues> {
      */
     ownedBy: CreatedBy;
     /**
+     * ModifiedBy object reference. Last person who modified the entry.
+     */
+    modifiedBy: CreatedBy | null;
+    /**
      * A string of Date.toISOString() type.
      * Populated on creation.
      */

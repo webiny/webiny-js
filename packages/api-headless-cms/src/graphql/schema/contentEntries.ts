@@ -1,11 +1,12 @@
 import WebinyError from "@webiny/error";
 import { Response } from "@webiny/handler-graphql";
-import { CmsEntry, CmsContext, CmsModel, CmsEntryListWhere } from "~/types";
+import { CmsEntry, CmsContext, CmsModel, CmsEntryListWhere, CreatedBy } from "~/types";
 import { NotAuthorizedResponse } from "@webiny/api-security";
 import { getEntryTitle } from "~/utils/getEntryTitle";
 import { CmsGraphQLSchemaPlugin } from "~/plugins";
 import { getEntryDescription } from "~/utils/getEntryDescription";
 import { getEntryImage } from "~/utils/getEntryImage";
+import { entryFieldFromStorageTransform } from "~/utils/entryStorage";
 
 interface EntriesByModel {
     [key: string]: string[];
@@ -13,6 +14,12 @@ interface EntriesByModel {
 
 type GetContentEntryType = "latest" | "published" | "exact";
 
+const createDate = (date: string): Date => {
+    try {
+        return new Date(date);
+    } catch {}
+    return new Date();
+};
 interface CmsEntryRecord {
     id: string;
     entryId: string;
@@ -22,7 +29,36 @@ interface CmsEntryRecord {
     };
     status: string;
     title: string;
+    description?: string | null;
+    image?: string | null;
+    createdBy: CreatedBy;
+    modifiedBy: CreatedBy | null;
+    /**
+     * We can use the number since it is an internal field.
+     * Created via Date.parse() method.
+     */
+    createdOn: Date;
+    savedOn: Date;
 }
+
+const createCmsEntryRecord = (model: CmsModel, entry: CmsEntry): CmsEntryRecord => {
+    return {
+        id: entry.id,
+        entryId: entry.entryId,
+        model: {
+            modelId: model.modelId,
+            name: model.name
+        },
+        status: entry.status,
+        title: getEntryTitle(model, entry),
+        description: getEntryDescription(model, entry),
+        image: getEntryImage(model, entry),
+        createdBy: entry.createdBy,
+        modifiedBy: entry.modifiedBy,
+        createdOn: createDate(entry.createdOn),
+        savedOn: createDate(entry.savedOn)
+    };
+};
 
 interface FetchMethod {
     (model: CmsModel, ids: string[]): Promise<CmsEntry[]>;
@@ -107,26 +143,15 @@ const getContentEntries = async (params: GetContentEntriesParams): Promise<Respo
     const results = await Promise.all(getters);
 
     const entries = results
-        .reduce((collection, items) => {
+        .reduce<CmsEntryRecord[]>((collection, items) => {
             return collection.concat(
                 items.map(item => {
                     const model = modelsMap[item.modelId];
 
-                    return {
-                        id: item.id,
-                        entryId: item.entryId,
-                        model: {
-                            modelId: model.modelId,
-                            name: model.name
-                        },
-                        status: item.status,
-                        title: getEntryTitle(model, item),
-                        description: getEntryDescription(model, item),
-                        image: getEntryImage(model, item)
-                    };
+                    return createCmsEntryRecord(model, item);
                 })
             );
-        }, [] as CmsEntryRecord[])
+        }, [])
         .filter(Boolean);
 
     return new Response(entries);
@@ -144,7 +169,7 @@ interface GetContentEntryParams {
 }
 const getContentEntry = async (
     params: GetContentEntryParams
-): Promise<Response | NotAuthorizedResponse> => {
+): Promise<Response<CmsEntryRecord | null> | NotAuthorizedResponse> => {
     const { args, context, type } = params;
     if (!getContentEntriesMethods[type]) {
         throw new WebinyError(
@@ -178,18 +203,7 @@ const getContentEntry = async (
         return new Response(null);
     }
 
-    return new Response({
-        id: entry.id,
-        entryId: entry.entryId,
-        model: {
-            modelId: model.modelId,
-            name: model.name
-        },
-        status: entry.status,
-        title: getEntryTitle(model, entry),
-        description: getEntryDescription(model, entry),
-        image: getEntryImage(model, entry)
-    });
+    return new Response(createCmsEntryRecord(model, entry));
 };
 
 export const createContentEntriesSchema = (context: CmsContext): CmsGraphQLSchemaPlugin => {
@@ -219,11 +233,15 @@ export const createContentEntriesSchema = (context: CmsContext): CmsGraphQLSchem
                 id: ID!
                 entryId: String!
                 model: CmsModelMeta!
-                status: String
-                title: String
+                status: String!
+                title: String!
                 description: String
                 image: String
+                createdBy: CmsCreatedBy!
+                modifiedBy: CmsCreatedBy
                 published: CmsPublishedContentEntry
+                createdOn: DateTime!
+                savedOn: DateTime!
             }
 
             type CmsContentEntriesResponse {
@@ -281,16 +299,33 @@ export const createContentEntriesSchema = (context: CmsContext): CmsGraphQLSchem
                         if (!entry) {
                             return null;
                         }
-                        return {
-                            id: entry.id,
-                            entryId: entry.entryId,
-                            title: getEntryTitle(model, entry),
-                            description: getEntryDescription(model, entry),
-                            image: getEntryImage(model, entry)
-                        };
+                        return createCmsEntryRecord(model, entry);
                     } catch (ex) {
                         return null;
                     }
+                },
+                description: async (parent, _, context) => {
+                    const models = await context.cms.listModels();
+                    const model = models.find(({ modelId }) => {
+                        return parent.model.modelId === modelId;
+                    });
+                    if (!model) {
+                        return null;
+                    }
+                    const field = model.fields.find(f => f.fieldId === model.descriptionFieldId);
+                    if (!field) {
+                        return null;
+                    }
+                    const value = parent[field.fieldId];
+                    if (!value) {
+                        return null;
+                    }
+                    return entryFieldFromStorageTransform({
+                        context,
+                        model,
+                        field,
+                        value
+                    });
                 }
             },
             Query: {
@@ -312,20 +347,7 @@ export const createContentEntriesSchema = (context: CmsContext): CmsGraphQLSchem
                             });
 
                             return items.map((entry: CmsEntry) => {
-                                return {
-                                    id: entry.id,
-                                    entryId: entry.entryId,
-                                    model: {
-                                        modelId: model.modelId,
-                                        name: model.name
-                                    },
-                                    status: entry.status,
-                                    title: getEntryTitle(model, entry),
-                                    description: getEntryDescription(model, entry),
-                                    image: getEntryImage(model, entry),
-                                    // We need `savedOn` to sort entries from latest to oldest
-                                    savedOn: entry.savedOn
-                                };
+                                return createCmsEntryRecord(model, entry);
                             });
                         });
 
@@ -335,7 +357,7 @@ export const createContentEntriesSchema = (context: CmsContext): CmsGraphQLSchem
 
                     return new Response(
                         entries
-                            .sort((a, b) => Date.parse(b.savedOn) - Date.parse(a.savedOn))
+                            .sort((a, b) => b.savedOn.getTime() - a.savedOn.getTime())
                             .slice(0, limit)
                     );
                 },
