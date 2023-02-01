@@ -90,12 +90,12 @@ export interface PageElementsContextValue extends PageElementsProviderProps {
 
 type GetElement = <TElementData = Record<string, any>>() => Element<TElementData>;
 type GetAttributes = () => HTMLAttributes<HTMLElement>;
-type GetLoaderData = <TLoaderData = Record<string, any>>() => TLoaderData
+type GetLoader = <TLoaderData = Record<string, any>>() => { data: TLoaderData; loading: boolean };
 
 export interface RendererContextValue extends PageElementsContextValue {
     getElement: GetElement;
     getAttributes: GetAttributes;
-    getLoaderData: GetLoaderData
+    getLoader: GetLoader;
     beforeRenderer: React.VFC | null;
     afterRenderer: React.VFC | null;
     meta: RendererProviderMeta;
@@ -118,7 +118,7 @@ export interface RendererLoaderResult {
 }
 
 export interface RendererLoader {
-    result: RendererLoaderResult,
+    result: RendererLoaderResult;
     loading: boolean;
 }
 

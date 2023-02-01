@@ -21,12 +21,13 @@ export const createForm = (params: CreateFormParams) => {
 
     return createRenderer(
         () => {
-            const { getElement, getLoaderData } = useRenderer();
+            const { getElement, getLoader } = useRenderer();
 
             const element = getElement<FormElementData>();
-            const loaderData = getLoaderData<FormData>();
+            const { data: formData, loading } = getLoader<FormData>();
 
             const form = element.data.settings?.form;
+
             const variables: GetFormDataLoaderVariables = {};
             if (form) {
                 if (form.revision === "latest") {
@@ -35,52 +36,6 @@ export const createForm = (params: CreateFormParams) => {
                     variables.revision = form.revision;
                 }
             }
-
-            const variablesHash = JSON.stringify(variables);
-
-            // We want to trigger form data load immediately, and not within a `useEffect` hook.
-            // This enables us to render the actual form in the initial component render, and not
-            // in a subsequent one.
-            const getFormDataLoad = useMemo(() => {
-                return dataLoaders.getForm({ variables });
-            }, [variablesHash]);
-
-            const preloadedFormData = useMemo(() => {
-                return "formId" in getFormDataLoad ? getFormDataLoad : null;
-            }, [getFormDataLoad]);
-
-            // The `preloadedFormData` initial state assignment will occur in the initial component render.
-            const [formData, setFormData] = useState<FormData | null>(preloadedFormData);
-            const [loading, setLoading] = useState<boolean>(!preloadedFormData);
-
-            // Let's cache the data retrieved by the data loader and make the UX a bit smoother.
-            const cache = useRef<Record<string, FormData>>({});
-
-            useEffect(() => {
-                if (preloadedFormData) {
-                    return;
-                }
-
-                const hasRequiredVariables = variables.parent || variables.revision;
-                if (!hasRequiredVariables) {
-                    return;
-                }
-
-                const cached = cache.current[variablesHash];
-                if (cached) {
-                    setFormData(cached);
-                } else {
-                    // If
-                    if ("then" in getFormDataLoad) {
-                        setLoading(true);
-                        getFormDataLoad.then(formData => {
-                            setFormData(formData);
-                            cache.current[variablesHash] = formData;
-                            setLoading(false);
-                        });
-                    }
-                }
-            }, [variablesHash]);
 
             if (!(variables.parent || variables.revision)) {
                 if (params.renderFormNotSelected) {
@@ -97,7 +52,7 @@ export const createForm = (params: CreateFormParams) => {
                 return <>Loading selected form...</>;
             }
 
-            if (!loaderData) {
+            if (!formData) {
                 if (params.renderFormNotFound) {
                     return params.renderFormNotFound({});
                 }
@@ -110,17 +65,20 @@ export const createForm = (params: CreateFormParams) => {
         {
             loader: ({ element }) => {
                 const form = element.data.settings?.form;
-
-                const variables: GetFormDataLoaderVariables = {};
-                if (form) {
-                    if (form.revision === "latest") {
-                        variables.parent = form.parent;
-                    } else {
-                        variables.revision = form.revision;
-                    }
+                if (!form) {
+                    return null;
                 }
 
-                return dataLoaders.getForm({ variables });
+                const { parent, revision } = form;
+                if (!parent && !revision) {
+                    return null;
+                }
+
+                if (form.revision === "latest") {
+                    return dataLoaders.getForm({ variables: { parent: form.parent } });
+                }
+
+                return dataLoaders.getForm({ variables: { revision: form.revision } });
             }
         }
     );
