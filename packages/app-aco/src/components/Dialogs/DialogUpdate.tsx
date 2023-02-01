@@ -39,16 +39,10 @@ export const FolderDialogUpdate: React.FC<Props> = ({ folder, onClose, open }) =
 
     const onSubmit: FormOnSubmit<SubmitData> = async data => {
         try {
-            console.log("data", data);
-
-            const parentId = data.parent?.id || null;
-
-            console.log("parentId", parentId);
-
             await updateFolder({
                 ...folder,
                 ...data,
-                parentId
+                parentId: data.parent?.id || null
             });
             setDialogOpen(false);
             showSnackbar(t`Folder updated successfully!`);
@@ -120,7 +114,6 @@ export const FolderDialogUpdate: React.FC<Props> = ({ folder, onClose, open }) =
                                                                 }))}
                                                             label={t`Parent`}
                                                             onChange={(value, selection) => {
-                                                                console.log("selection", selection);
                                                                 onBindChange({
                                                                     id: value,
                                                                     name: selection?.name
