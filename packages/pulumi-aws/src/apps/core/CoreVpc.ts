@@ -10,9 +10,7 @@ export const CoreVpc = createAppModule({
         const vpc = app.addResource(aws.ec2.Vpc, {
             name: "webiny",
             config: {
-                cidrBlock: "10.0.0.0/16",
-                enableDnsSupport: true,
-                enableDnsHostnames: true
+                cidrBlock: "10.0.0.0/16"
             }
         });
 
@@ -53,28 +51,28 @@ export const CoreVpc = createAppModule({
         });
 
         // Create Internet gateway.
-        // const internetGateway = app.addResource(aws.ec2.InternetGateway, {
-        //     name: "internet-gateway",
-        //     config: {
-        //         vpcId: vpc.output.id
-        //     }
-        // });
+        const internetGateway = app.addResource(aws.ec2.InternetGateway, {
+            name: "internet-gateway",
+            config: {
+                vpcId: vpc.output.id
+            }
+        });
 
         // Create NAT gateway.
-        // const elasticIpAllocation = app.addResource(aws.ec2.Eip, {
-        //     name: "nat-gateway-elastic-ip",
-        //     config: {
-        //         vpc: true
-        //     }
-        // });
+        const elasticIpAllocation = app.addResource(aws.ec2.Eip, {
+            name: "nat-gateway-elastic-ip",
+            config: {
+                vpc: true
+            }
+        });
 
-        // const natGateway = app.addResource(aws.ec2.NatGateway, {
-        //     name: "nat-gateway",
-        //     config: {
-        //         allocationId: elasticIpAllocation.output.id,
-        //         subnetId: publicSubnet.output.id
-        //     }
-        // });
+        const natGateway = app.addResource(aws.ec2.NatGateway, {
+            name: "nat-gateway",
+            config: {
+                allocationId: elasticIpAllocation.output.id,
+                subnetId: publicSubnet.output.id
+            }
+        });
 
         // Create a route table for both subnets.
         const publicSubnetRouteTable = app.addResource(aws.ec2.RouteTable, {
@@ -82,10 +80,10 @@ export const CoreVpc = createAppModule({
             config: {
                 vpcId: vpc.output.id,
                 routes: [
-                    // {
-                    //     cidrBlock: "0.0.0.0/0",
-                    //     gatewayId: internetGateway.output.id
-                    // }
+                    {
+                        cidrBlock: "0.0.0.0/0",
+                        gatewayId: internetGateway.output.id
+                    }
                 ]
             }
         });
@@ -95,10 +93,10 @@ export const CoreVpc = createAppModule({
             config: {
                 vpcId: vpc.output.id,
                 routes: [
-                    // {
-                    //     cidrBlock: "0.0.0.0/0",
-                    //     natGatewayId: natGateway.output.id
-                    // }
+                    {
+                        cidrBlock: "0.0.0.0/0",
+                        natGatewayId: natGateway.output.id
+                    }
                 ]
             }
         });
@@ -137,36 +135,6 @@ export const CoreVpc = createAppModule({
             vpcPublicSubnetIds: subnets.public.map(subNet => subNet.output.id),
             vpcPrivateSubnetIds: subnets.private.map(subNet => subNet.output.id),
             vpcSecurityGroupIds: [vpc.output.defaultSecurityGroupId]
-        });
-
-        new aws.ec2.VpcEndpoint("s3", {
-            vpcId: vpc.output.id,
-            serviceName: "com.amazonaws.eu-central-1.s3",
-            routeTableIds: [privateSubnetRouteTable.output.id]
-        });
-
-        new aws.ec2.VpcEndpoint("dynamoDb", {
-            vpcId: vpc.output.id,
-            serviceName: "com.amazonaws.eu-central-1.dynamodb",
-            routeTableIds: [privateSubnetRouteTable.output.id]
-        });
-
-        new aws.ec2.VpcEndpoint("sqs", {
-            vpcId: vpc.output.id,
-            serviceName: "com.amazonaws.eu-central-1.sqs",
-            vpcEndpointType: "Interface",
-            privateDnsEnabled: true,
-            securityGroupIds: [vpc.output.defaultSecurityGroupId],
-            subnetIds: [privateSubnet1.output.id, privateSubnet2.output.id]
-        });
-
-        new aws.ec2.VpcEndpoint("event-bridge", {
-            vpcId: vpc.output.id,
-            serviceName: "com.amazonaws.eu-central-1.events",
-            vpcEndpointType: "Interface",
-            privateDnsEnabled: true,
-            securityGroupIds: [vpc.output.defaultSecurityGroupId],
-            subnetIds: [privateSubnet1.output.id, privateSubnet2.output.id]
         });
 
         return {
