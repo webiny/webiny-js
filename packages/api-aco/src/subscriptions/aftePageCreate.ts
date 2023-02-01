@@ -20,7 +20,7 @@ export const afterPageCreate = () => {
 
                 throw WebinyError.from(error, {
                     message: "Error while creating page link.",
-                    code: "AFTER_PAGE_CREATE"
+                    code: "ACO_AFTER_PAGE_CREATE"
                 });
             }
         });
