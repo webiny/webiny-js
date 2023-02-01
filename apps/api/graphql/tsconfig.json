@@ -3,10 +3,7 @@
   "include": ["src"],
   "references": [
     {
-      "path": "../../../packages/api-aco-old/tsconfig.build.json"
-    },
-    {
-      "path": "../../../packages/api-aco-so-ddb/tsconfig.build.json"
+      "path": "../../../packages/api-aco/tsconfig.build.json"
     },
     {
       "path": "../../../packages/api-admin-users-cognito/tsconfig.build.json"
