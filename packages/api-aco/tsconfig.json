@@ -35,8 +35,6 @@
       "@webiny/api-headless-cms": ["../api-headless-cms/src"],
       "@webiny/api-i18n/*": ["../api-i18n/src/*"],
       "@webiny/api-i18n": ["../api-i18n/src"],
-      "@webiny/api-page-builder/*": ["../api-page-builder/src/*"],
-      "@webiny/api-page-builder": ["../api-page-builder/src"],
       "@webiny/api-security/*": ["../api-security/src/*"],
       "@webiny/api-security": ["../api-security/src"],
       "@webiny/api-tenancy/*": ["../api-tenancy/src/*"],
