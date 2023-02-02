@@ -217,7 +217,7 @@ jobs:
       - name: Set git username
         run: git config --global user.name "webiny-bot"
 
-      - name: Version and publish to NPM
+      - name: Version and publish "beta" tag to NPM
         run: yarn release --type=beta
 
   npm-release-latest:
@@ -240,6 +240,16 @@ jobs:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
 
+      - uses: actions/cache@v3
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
+      - uses: actions/cache@v3
+        with:
+          path: .webiny/cached-packages
+          key: packages-cache-${{ needs.init.outputs.ts }}
+
       - name: Install dependencies
         run: yarn --immutable
 
@@ -255,5 +265,5 @@ jobs:
       - name: Set git username
         run: git config --global user.name "webiny-bot"
 
-      - name: Version and Publish
+      - name: Version and publish "latest" tag to NPM
         run: yarn release --type=latest
