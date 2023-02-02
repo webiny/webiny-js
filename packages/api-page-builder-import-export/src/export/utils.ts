@@ -1,11 +1,12 @@
 import S3 from "aws-sdk/clients/s3";
-import { Page, PageBlock } from "@webiny/api-page-builder/types";
+import { Page, PageBlock, PageTemplate } from "@webiny/api-page-builder/types";
 import { FileManagerContext, File } from "@webiny/api-file-manager/types";
 import get from "lodash/get";
 import Zipper from "./zipper";
 
 export const EXPORT_PAGES_FOLDER_KEY = "WEBINY_PB_EXPORT_PAGES";
 export const EXPORT_BLOCKS_FOLDER_KEY = "WEBINY_PB_EXPORT_BLOCK";
+export const EXPORT_TEMPLATES_FOLDER_KEY = "WEBINY_PB_EXPORT_TEMPLATE";
 
 export interface ExportedPageData {
     page: Pick<Page, "content" | "title" | "version" | "status" | "settings" | "path">;
@@ -101,6 +102,49 @@ export async function exportBlock(
             dataBuffer: blockDataBuffer
         },
         archiveFileKey: exportBlocksDataKey
+    });
+
+    return zipper.process();
+}
+
+export interface ExportedTemplateData {
+    template: Pick<PageTemplate, "title" | "description" | "content">;
+    files: File[];
+}
+
+export async function exportTemplate(
+    template: PageTemplate,
+    exportTemplatesDataKey: string,
+    fileManager: FileManagerContext["fileManager"]
+): Promise<S3.ManagedUpload.SendData> {
+    // Extract all files
+    const files = extractFilesFromData(template.content || {});
+    const fileIds = files.map(imageFile => imageFile.id);
+    // Get file data for all images
+    const imageFilesData = [];
+    if (fileIds.length > 0) {
+        const [filesData] = await fileManager.files.listFiles({ ids: fileIds });
+        imageFilesData.push(...filesData);
+    }
+
+    // Extract the template data in a json file and upload it to S3
+    const templateData = {
+        template: {
+            title: template.title,
+            description: template.description,
+            content: template.content
+        },
+        files: imageFilesData
+    };
+    const templateDataBuffer = Buffer.from(JSON.stringify(templateData));
+
+    const zipper = new Zipper({
+        exportInfo: {
+            files: imageFilesData,
+            name: template.title,
+            dataBuffer: templateDataBuffer
+        },
+        archiveFileKey: exportTemplatesDataKey
     });
 
     return zipper.process();

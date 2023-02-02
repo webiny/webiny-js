@@ -19,7 +19,7 @@ const PAGE_BUILDER_SETTINGS_ACCESS = `${PAGE_BUILDER}.settings`;
 const FULL_ACCESS = "full";
 const NO_ACCESS = "no";
 const CUSTOM_ACCESS = "custom";
-const ENTITIES = ["category", "menu", "page", "blockCategory", "block"];
+const ENTITIES = ["category", "menu", "page", "template", "blockCategory", "block"];
 
 interface PwOptions {
     id: string;
@@ -86,6 +86,11 @@ export const PageBuilderPermissions: React.FC<PageBuilderPermissionsProps> = ({
                         }
                     }
 
+                    // For templates, we can also manage unlink template functionality
+                    if (entity === "template") {
+                        permission.unlink = formData.templateUnlink;
+                    }
+
                     // For blocks, we can also manage unlink block functionality
                     if (entity === "block") {
                         permission.unlink = formData.blockUnlink;
@@ -147,6 +152,11 @@ export const PageBuilderPermissions: React.FC<PageBuilderPermissionsProps> = ({
                 // For pages, we can also manage publishing workflow.
                 if (entity === "page") {
                     data[`${entity}PW`] = entityPermission.pw ? [...entityPermission.pw] : [];
+                }
+
+                // For templates, we can also manage unlink template functionality
+                if (entity === "template") {
+                    data.templateUnlink = entityPermission.unlink || false;
                 }
 
                 // For blocks, we can also manage unlink block functionality
@@ -233,6 +243,24 @@ export const PageBuilderPermissions: React.FC<PageBuilderPermissionsProps> = ({
                                                 ))
                                             }
                                         </CheckboxGroup>
+                                    </Bind>
+                                </Cell>
+                            </CustomSection>
+                            <CustomSection
+                                data={data}
+                                Bind={Bind}
+                                setValue={setValue}
+                                entity={"template"}
+                                title={"Templates"}
+                            >
+                                <Cell span={12}>
+                                    <Bind name={"templateUnlink"}>
+                                        <Checkbox
+                                            disabled={
+                                                !["full", "own"].includes(data.templateAccessScope)
+                                            }
+                                            label="User is allowed to unlink a template"
+                                        />
                                     </Bind>
                                 </Cell>
                             </CustomSection>

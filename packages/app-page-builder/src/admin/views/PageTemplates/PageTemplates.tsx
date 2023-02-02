@@ -30,7 +30,7 @@ const PageTemplates: React.FC = () => {
     const { showConfirmation } = useConfirmationDialog();
 
     const pbPageBlockPermission = useMemo((): PageBuilderSecurityPermission | null => {
-        return getPermission("pb.block");
+        return getPermission("pb.template");
     }, [identity]);
 
     const canCreate = useMemo((): boolean => {

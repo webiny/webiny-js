@@ -35,7 +35,9 @@ import WebinyError from "@webiny/error";
 import { createTopic } from "@webiny/pubsub";
 
 const CreateDataModel = withFields({
-    title: string({ validation: validation.create("required,maxLength:100") })
+    title: string({ validation: validation.create("required,maxLength:100") }),
+    description: string({ validation: validation.create("maxLength:100") }),
+    content: object()
 })();
 
 const UpdateDataModel = withFields({
@@ -44,7 +46,7 @@ const UpdateDataModel = withFields({
     content: object()
 })();
 
-const PERMISSION_NAME = "pb.block";
+const PERMISSION_NAME = "pb.template";
 
 export interface CreatePageTemplatesCrudParams {
     context: PbContext;

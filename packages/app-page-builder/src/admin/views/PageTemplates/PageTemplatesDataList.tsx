@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo, useState } from "react";
+import styled from "@emotion/styled";
 import { i18n } from "@webiny/app/i18n";
 import { useRouter } from "@webiny/react-router";
 import { useQuery } from "@apollo/react-hooks";
@@ -18,8 +19,10 @@ import {
     ListActions,
     ListItemMeta,
     ListItemText,
-    ListItemTextSecondary
+    ListItemTextSecondary,
+    ListSelectBox
 } from "@webiny/ui/List";
+import { Checkbox } from "@webiny/ui/Checkbox";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 import SearchUI from "@webiny/app-admin/components/SearchUI";
@@ -30,12 +33,22 @@ import { ReactComponent as FilterIcon } from "@material-design-icons/svg/round/f
 import { ReactComponent as EditIcon } from "@material-design-icons/svg/round/edit.svg";
 import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/round/delete.svg";
 import { CreatableItem } from "./PageTemplates";
+import { useMultiSelect } from "~/admin/views/Pages/hooks/useMultiSelect";
+import { ExportTemplatesButton } from "~/editor/plugins/defaultBar/components/ExportTemplateButton";
+import { ReactComponent as FileUploadIcon } from "~/editor/plugins/defaultBar/components/icons/file_upload.svg";
+import useImportTemplate from "~/admin/views/PageTemplates/hooks/useImportTemplate";
+import { OptionsMenu } from "~/admin/components/OptionsMenu";
 
 import { PbPageTemplate } from "~/types";
 import { LIST_PAGE_TEMPLATES } from "./graphql";
 
 const t = i18n.ns("app-page-builder/admin/views/page-templates/page-templates-details");
 
+const DataListActionsWrapper = styled.div`
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+`;
 interface Sorter {
     label: string;
     sort: string;
@@ -80,6 +93,10 @@ const PageTemplatesDataList = ({
     const [sort, setSort] = useState<string>(SORTERS[0].sort);
     const { history } = useRouter();
     const listQuery = useQuery(LIST_PAGE_TEMPLATES) || {};
+    const query = new URLSearchParams(location.search);
+    const search = {
+        query: query.get("search") || undefined
+    };
 
     const pageTemplatesData: PbPageTemplate[] =
         listQuery?.data?.pageBuilder?.listPageTemplates?.data || [];
@@ -131,22 +148,46 @@ const PageTemplatesDataList = ({
         [sort]
     );
 
+    const { showImportDialog } = useImportTemplate();
+
+    const listActions = useMemo(() => {
+        if (!canCreate) {
+            return null;
+        }
+        return (
+            <DataListActionsWrapper>
+                <ButtonSecondary data-testid="new-record-button" onClick={onCreate}>
+                    <ButtonIcon icon={<AddIcon />} /> {t`New Template`}
+                </ButtonSecondary>
+                <OptionsMenu
+                    items={[
+                        {
+                            label: "Import Templates",
+                            icon: <FileUploadIcon />,
+                            onClick: showImportDialog,
+                            "data-testid": "import-template-button"
+                        }
+                    ]}
+                />
+            </DataListActionsWrapper>
+        );
+    }, [canCreate, showImportDialog]);
+
     const filteredTemplatesData: PbPageTemplate[] =
         filter === "" ? pageTemplatesData : pageTemplatesData.filter(filterData);
     const templatesList: PbPageTemplate[] = sortData(filteredTemplatesData);
+
+    const multiSelectProps = useMultiSelect({
+        useRouter: false,
+        getValue: (item: any) => item.id
+    });
 
     return (
         <DataList
             title={t`Templates`}
             loading={Boolean(loading)}
             data={templatesList}
-            actions={
-                canCreate ? (
-                    <ButtonSecondary onClick={onCreate}>
-                        <ButtonIcon icon={<AddIcon />} /> {t`New Template`}
-                    </ButtonSecondary>
-                ) : null
-            }
+            actions={listActions}
             modalOverlay={templatesDataListModalOverlay}
             modalOverlayAction={
                 <DataListModalOverlayAction
@@ -154,6 +195,18 @@ const PageTemplatesDataList = ({
                     data-testid={"default-data-list.filter"}
                 />
             }
+            multiSelectActions={
+                <ExportTemplatesButton
+                    getMultiSelected={multiSelectProps.getMultiSelected}
+                    sort={sort}
+                    search={{
+                        query: search ? search.query || "" : ""
+                    }}
+                />
+            }
+            multiSelectAll={multiSelectProps.multiSelectAll}
+            isAllMultiSelected={multiSelectProps.isAllMultiSelected}
+            isNoneMultiSelected={multiSelectProps.isNoneMultiSelected}
             search={
                 <SearchUI
                     value={filter}
@@ -178,6 +231,12 @@ const PageTemplatesDataList = ({
                                     key={template.id}
                                     selected={template.id === selectedTemplate}
                                 >
+                                    <ListSelectBox>
+                                        <Checkbox
+                                            onChange={() => multiSelectProps.multiSelect(template)}
+                                            value={multiSelectProps.isMultiSelected(template)}
+                                        />
+                                    </ListSelectBox>
                                     <ListItemText
                                         onClick={() =>
                                             history.push(

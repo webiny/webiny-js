@@ -22,6 +22,7 @@ const ROLE_PB_CATEGORY = "pb.category";
 const ROLE_PB_MENUS = "pb.menu";
 const ROLE_PB_PAGES = "pb.page";
 const ROLE_PB_BLOCK = "pb.block";
+const ROLE_PB_TEMPLATE = "pb.template";
 
 const plugins: RoutePlugin[] = [
     {
@@ -129,7 +130,7 @@ const plugins: RoutePlugin[] = [
                 path="/page-builder/page-templates"
                 render={({ location }) => {
                     return (
-                        <SecureRoute permission={ROLE_PB_BLOCK}>
+                        <SecureRoute permission={ROLE_PB_TEMPLATE}>
                             <EditorPluginsLoader location={location}>
                                 <AdminLayout>
                                     <Helmet title={"Page Builder - Page Templates"} />
@@ -151,7 +152,7 @@ const plugins: RoutePlugin[] = [
                 path="/page-builder/template-editor/:id"
                 render={({ location }) => {
                     return (
-                        <SecureRoute permission={ROLE_PB_BLOCK}>
+                        <SecureRoute permission={ROLE_PB_TEMPLATE}>
                             <EditorPluginsLoader location={location}>
                                 <Helmet title={"Page Builder - Edit template"} />
                                 <TemplateEditor />

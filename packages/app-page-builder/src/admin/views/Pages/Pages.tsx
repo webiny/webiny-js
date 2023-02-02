@@ -37,9 +37,8 @@ const Pages: React.FC = () => {
     });
 
     const onCreatePage = useCallback(async (template?: PbPageTemplate) => {
+        setIsLoading(true);
         try {
-            closeTemplatesDialog();
-
             const res = await create({
                 variables: { category: "static" }, // hardcoded for now
                 update(cache, { data }) {
@@ -78,6 +77,7 @@ const Pages: React.FC = () => {
         } catch (e) {
             showSnackbar(e.message);
         }
+        setIsLoading(false);
     }, []);
 
     const { identity, getPermission } = useSecurity();
@@ -105,7 +105,11 @@ const Pages: React.FC = () => {
                 {isLoading && <CircularProgress label={"Importing page..."} />}
             </CategoriesDialog>
             {showTemplatesDialog && (
-                <PageTemplatesDialog onClose={closeTemplatesDialog} onSelect={onCreatePage} />
+                <PageTemplatesDialog
+                    onClose={closeTemplatesDialog}
+                    onSelect={onCreatePage}
+                    isLoading={isLoading}
+                />
             )}
             <SplitView>
                 <LeftPanel>

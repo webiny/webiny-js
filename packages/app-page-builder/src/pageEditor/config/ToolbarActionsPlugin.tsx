@@ -1,8 +1,9 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { css } from "emotion";
 import { useRecoilState, useRecoilValue } from "recoil";
 
 import { createComponentPlugin } from "@webiny/app-admin";
+import { useSecurity } from "@webiny/app-security";
 import { plugins } from "@webiny/plugins";
 import { IconButton, ButtonPrimary } from "@webiny/ui/Button";
 import { Dialog, DialogCancel, DialogTitle, DialogActions, DialogContent } from "@webiny/ui/Dialog";
@@ -15,7 +16,12 @@ import { useTemplateMode } from "~/pageEditor/hooks/useTemplateMode";
 import { useUpdateElement } from "~/editor/hooks/useUpdateElement";
 import { templateModeAtom } from "~/pageEditor/state";
 import { rootElementAtom, elementByIdSelector } from "~/editor/recoil/modules";
-import { PbEditorElement, PbEditorToolbarBottomPlugin, PbEditorToolbarTopPlugin } from "~/types";
+import {
+    PbEditorElement,
+    PbEditorToolbarBottomPlugin,
+    PbEditorToolbarTopPlugin,
+    PageBuilderSecurityPermission
+} from "~/types";
 
 const unlinkTemplateDialog = css`
     & .mdc-dialog__surface {
@@ -60,6 +66,15 @@ export const ToolbarActionsPlugin = createComponentPlugin(ToolbarActions, Toolba
         const rootElement = useRecoilValue(elementByIdSelector(rootElementId)) as PbEditorElement;
         const updateElement = useUpdateElement();
         const [, setIsTemplateMode] = useRecoilState(templateModeAtom);
+        const { identity, getPermission } = useSecurity();
+
+        const unlinkPermission = useMemo((): boolean => {
+            const permission = getPermission<PageBuilderSecurityPermission>("pb.template");
+            if (permission?.name === "*" || permission?.name === "pb.*") {
+                return true;
+            }
+            return permission?.unlink || false;
+        }, [identity]);
 
         const onOpen = useCallback(() => {
             setIsModalShown(true);
@@ -106,9 +121,11 @@ export const ToolbarActionsPlugin = createComponentPlugin(ToolbarActions, Toolba
                         </div>
                     </DialogContent>
                     <DialogActions>
-                        <div className="button-wrapper ">
+                        <div className="button-wrapper">
                             <DialogCancel onClick={onClose}>Cancel</DialogCancel>
-                            <ButtonPrimary onClick={onUnlink}>Unlink template</ButtonPrimary>
+                            <ButtonPrimary disabled={!unlinkPermission} onClick={onUnlink}>
+                                {unlinkPermission ? "Unlink template" : "No permissions"}
+                            </ButtonPrimary>
                         </div>
                     </DialogActions>
                 </Dialog>

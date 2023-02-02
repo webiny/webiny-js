@@ -1,4 +1,5 @@
 import React, { useCallback, useState, useEffect, useMemo } from "react";
+import { css } from "emotion";
 import styled from "@emotion/styled";
 import classNames from "classnames";
 import { useQuery } from "@apollo/react-hooks";
@@ -26,6 +27,12 @@ import {
 } from "./PageTemplatesDialogStyled";
 import * as Styled from "~/pageEditor/config/blockEditing/StyledComponents";
 import { PbPageTemplate } from "~/types";
+
+const leftPanelStyle = css`
+    height: calc(100vh - 64px);
+    display: flex;
+    flex-direction: column;
+`;
 
 const DetailsContainer = styled.div`
     height: calc(100% - 10px);
@@ -59,25 +66,40 @@ const HeaderTitle = styled.div`
 `;
 
 const PageTemplateTitle = styled.div`
-    white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis;
+
+    span {
+        display: block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
 `;
 
 const HeaderActions = styled.div`
     justify-content: flex-end;
-    margin-right: -15px;
     margin-left: 10px;
     display: flex;
     align-items: center;
 `;
 
 const ModalTitleStyled = styled.div`
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     color: var(--mdc-theme-text-primary-on-background);
 `;
 
 const SearchInputWrapper = styled.div`
     padding: 15px;
+`;
+
+const BlankTemplateButtonWrapper = styled.div`
+    display: flex;
+    justify-content: center;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    border-top: 1px solid var(--mdc-theme-on-background);
 `;
 
 const ModalTitle = () => {
@@ -91,9 +113,10 @@ const ModalTitle = () => {
 type PageTemplatesDialogProps = {
     onClose: () => void;
     onSelect: (template?: PbPageTemplate) => Promise<void>;
+    isLoading: boolean;
 };
 
-const PageTemplatesDialog = ({ onClose, onSelect }: PageTemplatesDialogProps) => {
+const PageTemplatesDialog = ({ onClose, onSelect, isLoading }: PageTemplatesDialogProps) => {
     const [search, setSearch] = useState<string>("");
     const [activeTemplate, setActiveTemplate] = useState<PbPageTemplate | null>();
     const listQuery = useQuery(LIST_PAGE_TEMPLATES) || {};
@@ -129,7 +152,7 @@ const PageTemplatesDialog = ({ onClose, onSelect }: PageTemplatesDialogProps) =>
     return (
         <OverlayLayout barLeft={<ModalTitle />} onExited={onClose}>
             <SplitView>
-                <LeftPanel span={3}>
+                <LeftPanel span={3} className={leftPanelStyle}>
                     <SearchInputWrapper>
                         <Styled.Input>
                             <Icon className={Styled.searchIcon} icon={<SearchIcon />} />
@@ -141,7 +164,7 @@ const PageTemplatesDialog = ({ onClose, onSelect }: PageTemplatesDialogProps) =>
                                     <input
                                         autoFocus
                                         type={"text"}
-                                        placeholder="SEARCH TEMPLATES"
+                                        placeholder="Search templates..."
                                         value={value}
                                         onChange={ev => onChange(ev.target.value)}
                                     />
@@ -150,40 +173,29 @@ const PageTemplatesDialog = ({ onClose, onSelect }: PageTemplatesDialogProps) =>
                         </Styled.Input>
                     </SearchInputWrapper>
                     <ScrollList className={listStyle}>
-                        <>
-                            {!search && (
-                                <ListItem onClick={() => onSelect()} className={listItem}>
-                                    <TitleContent>
-                                        <ListItemTitle>Blank page</ListItemTitle>
-                                        <Typography use={"body2"}>
-                                            Start building your page off a blank template.
-                                        </Typography>
-                                    </TitleContent>
-                                </ListItem>
-                            )}
-                        </>
-                        <>
-                            {filteredPageTemplates.map(template => (
-                                <ListItem
-                                    key={template.id}
-                                    className={classNames(
-                                        listItem,
-                                        activeTemplate?.id === template.id && activeListItem
-                                    )}
-                                    onClick={() => {
-                                        setActiveTemplate(template);
-                                    }}
-                                >
-                                    <TitleContent>
-                                        <ListItemTitle>{template.title}</ListItemTitle>
-                                        <Typography use={"body2"}>
-                                            {template.description}
-                                        </Typography>
-                                    </TitleContent>
-                                </ListItem>
-                            ))}
-                        </>
+                        {filteredPageTemplates.map(template => (
+                            <ListItem
+                                key={template.id}
+                                className={classNames(
+                                    listItem,
+                                    activeTemplate?.id === template.id && activeListItem
+                                )}
+                                onClick={() => {
+                                    setActiveTemplate(template);
+                                }}
+                            >
+                                <TitleContent>
+                                    <ListItemTitle>{template.title}</ListItemTitle>
+                                    <Typography use={"body2"}>{template.description}</Typography>
+                                </TitleContent>
+                            </ListItem>
+                        ))}
                     </ScrollList>
+                    <BlankTemplateButtonWrapper>
+                        <ButtonSecondary disabled={isLoading} onClick={() => onSelect()}>
+                            Use a blank page template
+                        </ButtonSecondary>
+                    </BlankTemplateButtonWrapper>
                 </LeftPanel>
                 <RightPanel span={9}>
                     {activeTemplate && (
@@ -198,9 +210,13 @@ const PageTemplatesDialog = ({ onClose, onSelect }: PageTemplatesDialogProps) =>
                                                         <Typography use="headline5">
                                                             {activeTemplate.title}
                                                         </Typography>
+                                                        <Typography use="body2">
+                                                            {activeTemplate.description}
+                                                        </Typography>
                                                     </PageTemplateTitle>
                                                     <HeaderActions>
                                                         <ButtonSecondary
+                                                            disabled={isLoading}
                                                             onClick={() =>
                                                                 handleCreatePageFromTemplate(
                                                                     activeTemplate
