@@ -6,7 +6,7 @@ import { useBind } from "@webiny/form";
 import { Field } from "./fields/components/Field";
 import { Row } from "./Row";
 import { Cell } from "./Cell";
-import { FieldLabel } from "./fields/components/FieldLabel";
+import { FieldLabelStyled } from "./fields/components/FieldLabel";
 import { CheckboxButton, CheckboxGroup } from "./fields/Checkbox";
 import {
     TermsOfServiceComponent,
@@ -19,7 +19,7 @@ interface Props {
     component: TermsOfServiceComponent;
 }
 
-const RteFieldLabel = styled(FieldLabel)`
+const RteFieldLabel = styled(FieldLabelStyled)`
     .rte-block-paragraph {
         ${theme.styles.typography.paragraph1};
         margin: 0;
