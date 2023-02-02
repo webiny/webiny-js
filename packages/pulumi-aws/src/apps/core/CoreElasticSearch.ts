@@ -153,7 +153,8 @@ export const ElasticSearch = createAppModule({
                         }
                     ]
                 }
-            }
+            },
+            meta: { isLambdaFunctionRole: true }
         });
 
         const policy = getDynamoDbToElasticLambdaPolicy(app, domain.output);
