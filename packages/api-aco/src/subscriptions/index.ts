@@ -1,7 +1,12 @@
 import { ContextPlugin } from "@webiny/api";
-import { afterFolderDelete } from "./afterFolderDelete";
+import { afterPageCreate } from "~/subscriptions/aftePageCreate";
+import { afterFolderDelete } from "~/subscriptions/afterFolderDelete";
 import { ACOContext } from "~/types";
 
-export const subscriptions = (): ContextPlugin<ACOContext>[] => {
-    return [afterFolderDelete()];
+export const graphQLSubscriptions = (): ContextPlugin<ACOContext>[] => {
+    return [afterFolderDelete(), afterPageCreate()];
+};
+
+export const importExportSubscriptions = (): ContextPlugin<ACOContext>[] => {
+    return [afterPageCreate()];
 };

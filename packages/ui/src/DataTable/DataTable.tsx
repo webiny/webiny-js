@@ -40,6 +40,13 @@ export type Columns<T> = {
     [P in keyof T]?: Column<T>;
 };
 
+export type DefaultData = {
+    /*
+     * Define if a specific row can be selected.
+     */
+    selectable?: boolean;
+};
+
 interface Props<T> {
     /*
      * Columns definition.
@@ -107,13 +114,18 @@ const defineColumns = <T,>(
                                   onChange={e => table.toggleAllPageRowsSelected(e)}
                               />
                           ),
-                      cell: ({ row }) => (
-                          <Checkbox
-                              indeterminate={row.getIsSomeSelected()}
-                              value={row.getIsSelected()}
-                              onChange={row.getToggleSelectedHandler()}
-                          />
-                      ),
+                      cell: info => {
+                          if (!info.row.getCanSelect()) {
+                              return <></>;
+                          }
+                          return (
+                              <Checkbox
+                                  indeterminate={info.row.getIsSomeSelected()}
+                                  value={info.row.getIsSelected()}
+                                  onChange={info.row.getToggleSelectedHandler()}
+                              />
+                          );
+                      },
                       meta: {
                           hasFormControl: true,
                           className: "datatable-select-column"
@@ -146,11 +158,11 @@ const defineData = <T,>(
     }, [data, loadingInitial]);
 };
 
-export const DataTable = <T,>({
-    columns,
+export const DataTable = <T extends Object & DefaultData>({
     data,
-    loadingInitial,
+    columns,
     onSelectRow,
+    loadingInitial,
     stickyColumns,
     stickyRows
 }: Props<T>) => {
@@ -163,7 +175,7 @@ export const DataTable = <T,>({
         state: {
             rowSelection
         },
-        enableRowSelection: !!onSelectRow,
+        enableRowSelection: row => row.original.selectable || false,
         onRowSelectionChange: setRowSelection
     });
 

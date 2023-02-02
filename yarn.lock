@@ -10815,6 +10815,7 @@ __metadata:
     "@webiny/api": 0.0.0
     "@webiny/api-i18n": 0.0.0
     "@webiny/api-i18n-ddb": 0.0.0
+    "@webiny/api-page-builder": 0.0.0
     "@webiny/api-security": 0.0.0
     "@webiny/api-security-so-ddb": 0.0.0
     "@webiny/api-tenancy": 0.0.0
@@ -10828,6 +10829,7 @@ __metadata:
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
     "@webiny/pubsub": 0.0.0
+    lodash.get: ^4.4.2
     mdbid: ^1.0.0
     rimraf: ^3.0.2
     ttypescript: ^1.5.13
@@ -11781,7 +11783,6 @@ __metadata:
     "@types/node-fetch": ^2.6.1
     "@types/rimraf": ^3.0.2
     "@webiny/api": 0.0.0
-    "@webiny/api-aco": 0.0.0
     "@webiny/api-file-manager": 0.0.0
     "@webiny/api-file-manager-ddb": 0.0.0
     "@webiny/api-i18n": 0.0.0
@@ -15917,6 +15918,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "api-page-builder-import-process@workspace:apps/api/pageBuilder/import/process"
   dependencies:
+    "@webiny/api-aco": 0.0.0
+    "@webiny/api-aco-so-ddb": 0.0.0
     "@webiny/api-file-manager": 0.0.0
     "@webiny/api-file-manager-ddb": 0.0.0
     "@webiny/api-file-manager-s3": 0.0.0

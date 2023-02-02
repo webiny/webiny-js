@@ -32,7 +32,7 @@ import { createStorageOperations as createApwSaStorageOperations } from "@webiny
 import {
     createFoldersGraphQL,
     createFoldersContext,
-    createFoldersSubscriptions,
+    createFoldersGraphQLSubscriptions,
     createACO
 } from "@webiny/api-aco";
 import { createStorageOperations as createFoldersStorageOperations } from "@webiny/api-aco-so-ddb";
@@ -99,7 +99,7 @@ export const handler = createHandler({
             })
         }),
         createFoldersGraphQL(),
-        createFoldersSubscriptions(),
+        createFoldersGraphQLSubscriptions(),
         createACO(),
         scaffoldsPlugins()
     ],
