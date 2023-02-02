@@ -5,16 +5,22 @@ import { renderSortEnum } from "~/utils/renderSortEnum";
 import { renderFields } from "~/utils/renderFields";
 import { renderGetFilterFields } from "~/utils/renderGetFilterFields";
 import { pluralizedTypeName } from "~/utils/pluralizedTypeName";
+import { CmsGraphQLSchemaSorterPlugin } from "~/plugins";
 
 interface CreateReadSDLParams {
     model: CmsModel;
     fieldTypePlugins: CmsFieldTypePlugins;
+    sorterPlugins: CmsGraphQLSchemaSorterPlugin[];
 }
 interface CreateReadSDL {
     (params: CreateReadSDLParams): string;
 }
 
-export const createReadSDL: CreateReadSDL = ({ model, fieldTypePlugins }): string => {
+export const createReadSDL: CreateReadSDL = ({
+    model,
+    fieldTypePlugins,
+    sorterPlugins
+}): string => {
     const typeName = createTypeName(model.modelId);
     const rTypeName = createReadTypeName(typeName);
 
@@ -28,7 +34,8 @@ export const createReadSDL: CreateReadSDL = ({ model, fieldTypePlugins }): strin
 
     const sortEnumRender = renderSortEnum({
         model,
-        fieldTypePlugins
+        fieldTypePlugins,
+        sorterPlugins
     });
     const getFilterFieldsRender = renderGetFilterFields({
         model,
@@ -44,11 +51,14 @@ export const createReadSDL: CreateReadSDL = ({ model, fieldTypePlugins }): strin
         return "";
     }
 
+    const hasModelIdField = model.fields.some(f => f.fieldId === "modelId");
+
     return `
         """${model.description || ""}"""
         type ${rTypeName} {
             id: ID!
             entryId: String!
+            ${hasModelIdField ? "" : "modelId: String!"}
             createdOn: DateTime!
             savedOn: DateTime!
             createdBy: CmsCreatedBy!

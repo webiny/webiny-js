@@ -32,8 +32,8 @@ const getDefaultHeaders = (routes: DefinedContextRoutes): Record<string, string>
     /**
      * If we are accepting all headers, just output that one.
      */
-    const keys = Object.keys(routes);
-    const all = keys.every(key => routes[key as HTTPMethods].length > 0);
+    const keys = Object.keys(routes) as HTTPMethods[];
+    const all = keys.every(key => routes[key].length > 0);
     if (all) {
         return {
             ...DEFAULT_HEADERS,
@@ -43,8 +43,7 @@ const getDefaultHeaders = (routes: DefinedContextRoutes): Record<string, string>
     return {
         ...DEFAULT_HEADERS,
         "Access-Control-Allow-Methods": keys
-            .filter(key => {
-                const type = key as unknown as HTTPMethods;
+            .filter(type => {
                 if (!routes[type] || Array.isArray(routes[type]) === false) {
                     return false;
                 }
@@ -121,8 +120,7 @@ export const createHandler = (params: CreateHandlerParams) => {
         );
     };
 
-    const addDefinedRoute = (inputType: HTTPMethods, path: string): void => {
-        const type = (inputType as string).toUpperCase() as HTTPMethods;
+    const addDefinedRoute = (type: HTTPMethods, path: string): void => {
         if (!definedRoutes[type]) {
             return;
         } else if (definedRoutes[type].includes(path)) {
@@ -230,7 +228,7 @@ export const createHandler = (params: CreateHandlerParams) => {
         routes
     });
     /**
-     * We are attaching our custom context to webiny variable on the fastify app so it is accessible everywhere
+     * We are attaching our custom context to webiny variable on the fastify app, so it is accessible everywhere.
      */
     app.decorate("webiny", context);
 
@@ -297,13 +295,12 @@ export const createHandler = (params: CreateHandlerParams) => {
             );
             return;
         }
-        const raw = reply.code(204).hijack().raw;
-        const headers = { ...defaultHeaders, ...OPTIONS_HEADERS };
-        for (const key in headers) {
-            raw.setHeader(key, headers[key]);
-        }
 
-        raw.end("");
+        reply
+            .headers({ ...defaultHeaders, ...OPTIONS_HEADERS })
+            .code(204)
+            .send("")
+            .hijack();
     });
 
     app.addHook("preParsing", async request => {
@@ -363,6 +360,18 @@ export const createHandler = (params: CreateHandlerParams) => {
                 data: error.data
             })
         );
+
+        reply
+            .status(500)
+            .headers({
+                "Cache-Control": "no-store"
+            })
+            .send({
+                message: error.message,
+                code: error.code,
+                data: error.data
+            });
+
         const handler = middleware(
             plugins.map(pl => {
                 return (context: Context, error: Error, next: Function) => {
@@ -372,16 +381,7 @@ export const createHandler = (params: CreateHandlerParams) => {
         );
         await handler(app.webiny, error);
 
-        return reply
-            .send({
-                message: error.message,
-                code: error.code,
-                data: error.data
-            })
-            .headers({
-                "Cache-Control": "no-store"
-            })
-            .status(500);
+        return reply;
     });
 
     /**

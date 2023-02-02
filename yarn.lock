@@ -9667,7 +9667,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/lodash.debounce@npm:^4.0.6":
+"@types/lodash.debounce@npm:^4.0.7":
   version: 4.0.7
   resolution: "@types/lodash.debounce@npm:4.0.7"
   dependencies:
@@ -9685,7 +9685,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/lodash@npm:*, @types/lodash@npm:^4.14.178":
+"@types/lodash@npm:*":
   version: 4.14.186
   resolution: "@types/lodash@npm:4.14.186"
   checksum: ee0c1368a8100bb6efb88335107473a41928fc307ff1ef4ff1278868ccddba9c04c68c36d1ffe3a0392ef4a956e1955f7de3203ec09df4f1655dd1b88485c549
@@ -12393,35 +12393,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/app-admin-core@0.0.0, @webiny/app-admin-core@workspace:packages/app-admin-core":
-  version: 0.0.0-use.local
-  resolution: "@webiny/app-admin-core@workspace:packages/app-admin-core"
-  dependencies:
-    "@babel/cli": ^7.19.3
-    "@babel/core": ^7.19.3
-    "@babel/plugin-proposal-class-properties": ^7.18.6
-    "@babel/preset-env": ^7.19.4
-    "@babel/preset-react": ^7.0.0
-    "@babel/preset-typescript": ^7.18.6
-    "@babel/runtime": ^7.19.0
-    "@types/lodash.debounce": ^4.0.6
-    "@types/react": 17.0.39
-    "@webiny/app": 0.0.0
-    "@webiny/cli": 0.0.0
-    "@webiny/plugins": 0.0.0
-    "@webiny/project-utils": 0.0.0
-    "@webiny/react-composition": 0.0.0
-    "@webiny/react-router": 0.0.0
-    babel-plugin-named-asset-import: ^1.0.0-next.3e165448
-    lodash.debounce: ^4.0.8
-    react: 17.0.2
-    react-dom: 17.0.2
-    rimraf: ^3.0.2
-    ttypescript: ^1.5.12
-    typescript: 4.7.4
-  languageName: unknown
-  linkType: soft
-
 "@webiny/app-admin-okta@workspace:packages/app-admin-okta":
   version: 0.0.0-use.local
   resolution: "@webiny/app-admin-okta@workspace:packages/app-admin-okta"
@@ -12569,7 +12540,6 @@ __metadata:
     "@types/react": 17.0.39
     "@types/store": ^2.0.2
     "@webiny/app": 0.0.0
-    "@webiny/app-admin-core": 0.0.0
     "@webiny/app-security": 0.0.0
     "@webiny/app-wcp": 0.0.0
     "@webiny/cli": 0.0.0
@@ -12637,7 +12607,6 @@ __metadata:
     "@webiny/app-admin": 0.0.0
     "@webiny/app-headless-cms": 0.0.0
     "@webiny/app-i18n": 0.0.0
-    "@webiny/app-mailer": 0.0.0
     "@webiny/app-page-builder": 0.0.0
     "@webiny/app-security": 0.0.0
     "@webiny/cli": 0.0.0
@@ -13284,7 +13253,6 @@ __metadata:
     "@babel/preset-react": ^7.16.0
     "@babel/preset-typescript": ^7.18.6
     "@webiny/app": 0.0.0
-    "@webiny/app-admin-core": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
@@ -13321,6 +13289,7 @@ __metadata:
     "@webiny/app-headless-cms": 0.0.0
     "@webiny/app-i18n": 0.0.0
     "@webiny/app-i18n-content": 0.0.0
+    "@webiny/app-mailer": 0.0.0
     "@webiny/app-page-builder": 0.0.0
     "@webiny/app-security": 0.0.0
     "@webiny/app-security-access-management": 0.0.0
@@ -13419,7 +13388,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/app-theme-manager@0.0.0, @webiny/app-theme-manager@workspace:packages/app-theme-manager":
+"@webiny/app-theme-manager@workspace:packages/app-theme-manager":
   version: 0.0.0-use.local
   resolution: "@webiny/app-theme-manager@workspace:packages/app-theme-manager"
   dependencies:
@@ -13433,6 +13402,7 @@ __metadata:
     "@emotion/core": ^10.0.27
     "@emotion/styled": ^10.0.27
     "@types/react": 17.0.39
+    "@webiny/app": 0.0.0
     "@webiny/app-admin": 0.0.0
     "@webiny/app-page-builder": 0.0.0
     "@webiny/app-tenant-manager": 0.0.0
@@ -13558,7 +13528,6 @@ __metadata:
     "@webiny/app-page-builder": 0.0.0
     "@webiny/app-page-builder-elements": 0.0.0
     "@webiny/app-theme": 0.0.0
-    "@webiny/app-theme-manager": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
@@ -13589,6 +13558,7 @@ __metadata:
     "@babel/preset-typescript": ^7.18.6
     "@babel/runtime": ^7.19.0
     "@emotion/styled": ^10.0.17
+    "@types/lodash.debounce": ^4.0.7
     "@types/react": 17.0.39
     "@types/warning": ^3.0.0
     "@types/web": ^0.0.61
@@ -13597,6 +13567,7 @@ __metadata:
     "@webiny/i18n-react": 0.0.0
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
+    "@webiny/react-composition": 0.0.0
     "@webiny/react-router": 0.0.0
     "@webiny/ui": 0.0.0
     apollo-cache: ^1.3.5
@@ -13612,6 +13583,7 @@ __metadata:
     graphql: ^15.7.2
     invariant: ^2.2.4
     lodash: ^4.17.4
+    lodash.debounce: ^4.0.8
     nanoid: ^3.1.30
     react: 17.0.2
     react-dom: 17.0.2
@@ -14611,6 +14583,7 @@ __metadata:
     "@webiny/project-utils": 0.0.0
     "@webiny/react-composition": 0.0.0
     nanoid: ^3.3.4
+    prettier: ^2.8.3
     react: 17.0.2
   languageName: unknown
   linkType: soft
@@ -34291,6 +34264,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"prettier@npm:^2.8.3":
+  version: 2.8.3
+  resolution: "prettier@npm:2.8.3"
+  bin:
+    prettier: bin-prettier.js
+  checksum: 92f2ceb522d454370e02082aa74ad27388672f7cee8975028b59517c069fe643bdc73e322675c8faf2ff173d7a626d1a6389f26b474000308e793aa25fff46e5
+  languageName: node
+  linkType: hard
+
 "pretty-bytes@npm:^5.6.0":
   version: 5.6.0
   resolution: "pretty-bytes@npm:5.6.0"
@@ -39424,7 +39406,6 @@ __metadata:
     "@apollo/react-hooks": ^3.1.5
     "@emotion/core": ^10.0.17
     "@emotion/styled": ^10.0.17
-    "@types/lodash": ^4.14.178
     "@types/react-hamburger-menu": ^0.0.4
     "@webiny/app-form-builder": 0.0.0
     "@webiny/app-page-builder": 0.0.0

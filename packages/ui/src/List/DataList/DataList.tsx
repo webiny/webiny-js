@@ -97,7 +97,7 @@ const ListHeader = styled.div`
 
 const ListSubHeader = styled.div`
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: center;
     padding: 10px;
     border-bottom: 1px solid var(--mdc-theme-on-background);

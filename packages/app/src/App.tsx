@@ -7,53 +7,56 @@ import React, {
     FunctionComponentElement,
     ReactElement
 } from "react";
-import { BrowserRouter, RouteProps } from "@webiny/react-router";
+import { BrowserRouter, RouteProps, Route } from "@webiny/react-router";
 import { compose, HigherOrderComponent, CompositionProvider } from "@webiny/react-composition";
-import { Routes as SortRoutes } from "./components/utils/Routes";
-import { DebounceRender } from "./components/utils/DebounceRender";
-import { PluginsProvider } from "./components/core/Plugins";
+import { Routes as SortRoutes } from "./core/Routes";
+import { DebounceRender } from "./core/DebounceRender";
+import { PluginsProvider } from "./core/Plugins";
+
+type RoutesByPath = {
+    [key: string]: ReactElement<RouteProps>;
+};
 
 interface State {
-    routes: Record<string, ReactElement<RouteProps>>;
+    routes: RoutesByPath;
     plugins: JSX.Element[];
     providers: HigherOrderComponent[];
 }
 
-interface AdminContext extends State {
+interface AppContext extends State {
     addRoute(route: JSX.Element): void;
     addProvider(hoc: HigherOrderComponent): void;
     addPlugin(plugin: React.ReactNode): void;
 }
 
-const AdminContext = createContext<AdminContext>({
-    routes: {},
-    plugins: [],
-    providers: [],
-    addPlugin: () => {
-        return void 0;
-    },
-    addProvider: () => {
-        return void 0;
-    },
-    addRoute: () => {
-        return void 0;
-    }
-});
-AdminContext.displayName = "AdminContext";
+const AppContext = createContext<AppContext | undefined>(undefined);
 
-export const useAdmin = () => {
-    return useContext(AdminContext);
+AppContext.displayName = "AppContext";
+
+export const useApp = () => {
+    const appContext = useContext(AppContext);
+    if (!appContext) {
+        throw Error(
+            `AppContext provider was not found. Are you using the "useApp()" hook in the right place?`
+        );
+    }
+    return appContext;
 };
 
-export interface AdminProps {
+export interface AppProps {
+    debounceRender?: number;
+    routes?: Array<RouteProps>;
+    providers?: Array<HigherOrderComponent>;
     children?: React.ReactNode | React.ReactNode[];
 }
 
-export const Admin = ({ children }: AdminProps) => {
+export const App = ({ debounceRender = 50, routes = [], providers = [], children }: AppProps) => {
     const [state, setState] = useState<State>({
-        routes: {},
+        routes: routes.reduce<RoutesByPath>((acc, item) => {
+            return { ...acc, [item.path as string]: <Route {...item} /> };
+        }, {}),
         plugins: [],
-        providers: []
+        providers
     });
 
     const addRoute = useCallback((route: FunctionComponentElement<RouteProps>) => {
@@ -87,7 +90,7 @@ export const Admin = ({ children }: AdminProps) => {
         });
     }, []);
 
-    const adminContext = useMemo(
+    const appContext = useMemo(
         () => ({
             ...state,
             addRoute,
@@ -97,37 +100,36 @@ export const Admin = ({ children }: AdminProps) => {
         [state]
     );
 
-    const AdminRouter = useMemo(
-        () =>
-            function AdminRouter() {
-                const routes = Object.values(state.routes);
-                return <SortRoutes key={routes.length} routes={routes} />;
-            },
-        [state.routes]
-    );
+    const AppRouter = useMemo(() => {
+        return function AppRouter() {
+            const routes = Object.values(state.routes);
+            return <SortRoutes key={routes.length} routes={routes} />;
+        };
+    }, [state.routes]);
 
-    const Providers = useMemo(
-        () => compose(...(state.providers || []))(DebounceRender),
-        [state.providers]
-    );
+    const Providers = useMemo(() => {
+        return compose(...(state.providers || []))(({ children }: any) => (
+            <DebounceRender wait={debounceRender}>{children}</DebounceRender>
+        ));
+    }, [state.providers.length]);
 
     Providers.displayName = "Providers";
 
     return (
-        <AdminContext.Provider value={adminContext}>
+        <AppContext.Provider value={appContext}>
             <CompositionProvider>
                 {children}
                 <BrowserRouter>
                     <Providers>
                         <PluginsProvider>{state.plugins}</PluginsProvider>
-                        <DebounceRender>
-                            <AdminRouter />
+                        <DebounceRender wait={debounceRender}>
+                            <AppRouter />
                         </DebounceRender>
                     </Providers>
                 </BrowserRouter>
             </CompositionProvider>
-        </AdminContext.Provider>
+        </AppContext.Provider>
     );
 };
 
-Admin.displayName = "Admin";
+App.displayName = "App";

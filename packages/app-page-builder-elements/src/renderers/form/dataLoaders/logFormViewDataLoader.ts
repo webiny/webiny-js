@@ -1,16 +1,5 @@
 import { fetchData } from "./fetchData";
-
-export const LOG_FORM_VIEW = /* GraphQL */ `
-    mutation SaveFormView($revision: ID!) {
-        formBuilder {
-            saveFormView(revision: $revision) {
-                error {
-                    message
-                }
-            }
-        }
-    }
-`;
+import { LOG_FORM_VIEW } from "./graphql";
 
 export interface CreateLogFormViewDataLoaderParams {
     apiUrl: string;
