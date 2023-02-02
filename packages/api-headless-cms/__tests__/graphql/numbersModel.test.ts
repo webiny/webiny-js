@@ -3,8 +3,7 @@ import { createModel } from "./helpers";
 import {
     createNumbersEntryMutation,
     createNumbersModel,
-    getNumbersEntryQuery,
-    listNumbersEntryQuery
+    getNumbersEntryQuery
 } from "./mocks/numbersModel";
 
 // eslint-disable-next-line
@@ -79,16 +78,6 @@ describe("numbers model", () => {
                 }
             }
         });
-
-        await handler.until(
-            () => handler.invoke(listNumbersEntryQuery()).then(([data]) => data),
-            ({ data }: any) => {
-                return data.listNumbers.data.length === 1;
-            },
-            {
-                name: "list numbers"
-            }
-        );
 
         const revision = createResponse.data.createNumbers.data.id;
         const [getResponse] = await handler.invoke(getNumbersEntryQuery(revision));

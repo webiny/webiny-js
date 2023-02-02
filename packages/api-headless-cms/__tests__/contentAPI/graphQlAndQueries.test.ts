@@ -69,7 +69,7 @@ describe(`graphql "and" queries`, () => {
     const manager = useCategoryManageHandler({
         path: "manage/en-US"
     });
-    const { createCategory, listCategories, until } = manager;
+    const { createCategory, listCategories } = manager;
 
     const { createProduct, listProducts } = useProductManageHandler({
         path: "manage/en-US"
@@ -106,19 +106,6 @@ describe(`graphql "and" queries`, () => {
 
     beforeEach(async () => {
         await createProducts();
-
-        await until(
-            () => listProducts().then(([data]) => data),
-            ({ data }: any) => {
-                return data.listProducts.data.length === 4;
-            },
-            {
-                name: "list all products",
-                tries: 20,
-                debounce: 2000,
-                wait: 2000
-            }
-        );
     });
 
     it(`should filter via root level "AND" condition and return category records`, async () => {
