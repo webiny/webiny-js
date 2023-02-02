@@ -10,7 +10,8 @@ export type CorePulumiApp = ReturnType<typeof createCorePulumiApp>;
 export type CorePulumiAppAdvancedVpcParams = Partial<{
     useVpcEndpoints: boolean;
     useExistingVpc: {
-        elasticSearchDomainVpcConfig: aws.types.input.elasticsearch.DomainVpcOptions;
+        elasticSearchDomainVpcConfig?: aws.types.input.elasticsearch.DomainVpcOptions;
+        lambdaFunctionsVpcConfig: aws.types.input.lambda.FunctionVpcConfig;
     };
 }>;
 
@@ -43,22 +44,43 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
                     );
                 }
 
-                if (!useExistingVpc.elasticSearchDomainVpcConfig) {
-                    throw new Error(
-                        "Cannot specify `useExistingVpc` parameter because the `elasticSearchDomainVpcConfig` parameter wasn't provided."
-                    );
-                }
-
                 if (elasticSearch) {
+                    if (!useExistingVpc.elasticSearchDomainVpcConfig) {
+                        throw new Error(
+                            "Cannot specify `useExistingVpc` parameter because the `elasticSearchDomainVpcConfig` parameter wasn't provided."
+                        );
+                    }
+
                     onResource(resource => {
                         if (isResourceOfType(resource, aws.elasticsearch.Domain)) {
                             resource.config.vpcOptions(
                                 useExistingVpc!.elasticSearchDomainVpcConfig
                             );
                         }
+
+                        if (isResourceOfType(resource, aws.lambda.Function)) {
+                            resource.config.vpcConfig(useExistingVpc!.lambdaFunctionsVpcConfig);
+                        }
+
+                        if (isResourceOfType(resource, aws.iam.Role)) {
+                            if (resource.meta.isLambdaFunctionRole) {
+                                new aws.iam.RolePolicyAttachment(
+                                    `${resource.name}-vpc-access-execution-role`,
+                                    {
+                                        role: resource.output.name,
+                                        policyArn:
+                                            aws.iam.ManagedPolicy.AWSLambdaVPCAccessExecutionRole
+                                    }
+                                );
+                            }
+                        }
                     });
                 }
-            } else if (useVpcEndpoints) {
+
+                return pulumi?.(...args);
+            }
+
+            if (useVpcEndpoints) {
                 // 2. Now we deal with "non-existing VPC" setup.
                 onResource(resource => {
                     if (isResourceOfType(resource, aws.ec2.Vpc)) {
