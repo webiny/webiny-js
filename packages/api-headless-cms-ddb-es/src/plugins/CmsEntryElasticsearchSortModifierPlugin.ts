@@ -27,3 +27,9 @@ export class CmsEntryElasticsearchSortModifierPlugin extends ElasticsearchSortMo
         this.modelId = config.modelId;
     }
 }
+
+export const createCmsEntryElasticsearchSortModifierPlugin = (
+    config: CmsEntryElasticsearchSortModifierPluginConfig
+) => {
+    return new CmsEntryElasticsearchSortModifierPlugin(config);
+};

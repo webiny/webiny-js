@@ -11,12 +11,12 @@ export const breakpoints = {
 
 // Colors.
 export const colors = {
-    color1: "#fa5723", // primary
-    color2: "#00ccb0", // secondary
-    color3: "#0a0a0a", // text primary
-    color4: "#eaecec", // background
-    color5: "#ffffff", // white background
-    color6: "#616161" // text secondary
+    color1: "#fa5723", // Primary.
+    color2: "#00ccb0", // Secondary.
+    color3: "#0a0a0a", // Text primary.
+    color4: "#616161", // Text secondary.
+    color5: "#eaecec", // Background.
+    color6: "#ffffff" // White background.
 };
 
 // Fonts.
@@ -39,7 +39,7 @@ const paragraphs = {
     fontFamily: fonts.font1,
     color: colors.color3,
     fontWeight: 400,
-    lineHeight: "1.5rem",
+    lineHeight: 1.35,
     WebkitFontSmoothing: "antialiased"
 };
 
@@ -110,9 +110,9 @@ const theme = createTheme({
                 }
             },
             button: {
-                default: buttons({ background: colors.color4, color: colors.color3 }),
-                primary: buttons({ background: colors.color1, color: colors.color5 }),
-                secondary: buttons({ background: colors.color2, color: colors.color5 }),
+                default: buttons({ background: colors.color5, color: colors.color3 }),
+                primary: buttons({ background: colors.color1, color: colors.color6 }),
+                secondary: buttons({ background: colors.color2, color: colors.color6 }),
                 outlinePrimary: buttons({
                     border: `2px solid ${colors.color1}`,
                     color: colors.color1

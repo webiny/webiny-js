@@ -45,7 +45,7 @@ export const Footer: React.FC = () => {
 };
 
 const FooterWrapper = styled.footer`
-    background-color: ${colors.color4};
+    background-color: ${colors.color5};
     height: 100px;
 `;
 
@@ -79,7 +79,7 @@ const FooterLogo = styled.div`
 
     .copy {
         ${typography.paragraph2}
-        color: ${colors.color6}
+        color: ${colors.color4}
     }
 `;
 
@@ -98,7 +98,7 @@ const FooterSocial = styled.div`
             margin-left: 10px;
             opacity: 0.6;
             transition: opacity 0.3s;
-            color: ${colors.color6};
+            color: ${colors.color4};
 
             &:hover {
                 opacity: 1;

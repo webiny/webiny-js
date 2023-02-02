@@ -13,6 +13,7 @@ import { PluginsContainer } from "@webiny/plugins";
 import { createFieldStorageId } from "./createFieldStorageId";
 import { GraphQLError } from "graphql";
 import { getBaseFieldType } from "~/utils/getBaseFieldType";
+import { CmsGraphQLSchemaSorterPlugin } from "~/plugins";
 
 const defaultTitleFieldId = "id";
 
@@ -276,6 +277,9 @@ export const validateModelFields = (params: ValidateModelFieldsParams) => {
     const fieldTypePlugins = plugins.byType<CmsModelFieldToGraphQLPlugin>(
         "cms-model-field-to-graphql"
     );
+    const sorterPlugins = plugins.byType<CmsGraphQLSchemaSorterPlugin>(
+        CmsGraphQLSchemaSorterPlugin.type
+    );
 
     validateFields({
         fields,
@@ -293,7 +297,8 @@ export const validateModelFields = (params: ValidateModelFieldsParams) => {
             fieldTypePlugins: fieldTypePlugins.reduce(
                 (acc, pl) => ({ ...acc, [pl.fieldType]: pl }),
                 {}
-            )
+            ),
+            sorterPlugins
         });
 
         try {

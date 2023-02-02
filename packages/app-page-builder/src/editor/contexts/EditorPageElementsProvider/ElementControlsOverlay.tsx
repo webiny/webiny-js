@@ -5,6 +5,9 @@ import { CSSObject } from "@emotion/core";
 import { useActiveElementId } from "~/editor/hooks/useActiveElementId";
 import { useRenderer } from "@webiny/app-page-builder-elements";
 import { useUI } from "~/editor/hooks/useUI";
+import { useElementById } from "~/editor/hooks/useElementById";
+import { PbEditorElement } from "~/types";
+import { SetterOrUpdater } from "recoil";
 
 const ACTIVE_COLOR = "var(--mdc-theme-primary)";
 const HOVER_COLOR = "var(--mdc-theme-secondary)";
@@ -30,7 +33,13 @@ export const ElementControlsOverlay: React.FC<Props> = props => {
     const { getElement, meta } = useRenderer();
     const element = getElement();
 
+    const [editorElement, updateEditorElement] = useElementById(element.id) as [
+        PbEditorElement,
+        SetterOrUpdater<PbEditorElement>
+    ];
+
     const isActive = activeElementId === element.id;
+    const isHighlighted = editorElement.isHighlighted;
 
     const { children, innerRef, ...rest } = props;
 
@@ -38,25 +47,41 @@ export const ElementControlsOverlay: React.FC<Props> = props => {
         <PbElementControlsOverlay
             isDragging={isDragging}
             isActive={isActive}
+            isHighlighted={isHighlighted}
             element={element}
             elementRendererMeta={meta}
-            className={isActive ? "active" : ""}
-            onClick={() => setActiveElementId(element.id)}
+            onClick={() => {
+                updateEditorElement(element => ({ ...element, isHighlighted: false }));
+                setActiveElementId(element.id);
+            }}
             onMouseEnter={(e: MouseEvent) => {
-                if (isActive) {
+                if (isActive || isHighlighted) {
                     return;
                 }
+
                 e.stopPropagation();
-                const target = e.target as HTMLDivElement;
-                target.classList.add("hover");
+                updateEditorElement(element => ({ ...element, isHighlighted: true }));
             }}
             onMouseLeave={(e: MouseEvent) => {
-                if (isActive) {
+                if (isActive || !isHighlighted) {
                     return;
                 }
                 e.stopPropagation();
-                const target = e.target as HTMLDivElement;
-                target.classList.remove("hover");
+                updateEditorElement(element => ({ ...element, isHighlighted: false }));
+            }}
+            onDragEnter={(e: MouseEvent) => {
+                e.stopPropagation();
+                updateEditorElement(element => ({ ...element, dragEntered: true }));
+            }}
+            onDragLeave={(e: MouseEvent) => {
+                e.stopPropagation();
+                updateEditorElement(element => ({ ...element, dragEntered: false }));
+            }}
+            onDrop={() => {
+                // TODO: figure out why calling this update without the `setTimeout` hack doesn't work. 🤷‍
+                setTimeout(() =>
+                    updateEditorElement(element => ({ ...element, dragEntered: false }))
+                );
             }}
             dropRef={innerRef}
             {...rest}
@@ -67,7 +92,17 @@ export const ElementControlsOverlay: React.FC<Props> = props => {
 };
 
 const PbElementControlsOverlay = styled(
-    ({ className, onClick, onMouseEnter, onMouseLeave, dropRef, children }) => {
+    ({
+        className,
+        onClick,
+        onMouseEnter,
+        onMouseLeave,
+        onDragEnter,
+        onDragLeave,
+        onDrop,
+        dropRef,
+        children
+    }) => {
         return (
             <pb-element-controls-overlay
                 // @ts-ignore Not supported by `React.HTMLProps<HTMLDivElement>`.
@@ -75,6 +110,9 @@ const PbElementControlsOverlay = styled(
                 onClick={onClick}
                 onMouseEnter={onMouseEnter}
                 onMouseLeave={onMouseLeave}
+                onDragEnter={onDragEnter}
+                onDragLeave={onDragLeave}
+                onDrop={onDrop}
                 ref={dropRef}
             >
                 {children}
@@ -85,8 +123,9 @@ const PbElementControlsOverlay = styled(
     element: Element;
     elementRendererMeta: RendererMeta;
     isActive: boolean;
+    isHighlighted: boolean;
     isDragging: boolean;
-}>(({ element, elementRendererMeta, isActive, isDragging }) => {
+}>(({ element, elementRendererMeta, isActive, isHighlighted, isDragging }) => {
     // By default, the element controls overlay takes the size of the actual element.
     // But, if margins were set, they won't be taken into consideration. The shown
     // overlay is smaller than the actual space the page element takes. That's why,
@@ -124,8 +163,9 @@ const PbElementControlsOverlay = styled(
         }
     );
 
-    const hoverStyles: CSSObject = {
-        "&.hover": {
+    const hoverStyles: CSSObject = {};
+    if (isHighlighted) {
+        Object.assign(hoverStyles, {
             boxShadow: "inset 0px 0px 0px 2px " + HOVER_COLOR,
             "&::after": {
                 backgroundColor: HOVER_COLOR,
@@ -139,8 +179,8 @@ const PbElementControlsOverlay = styled(
                 textAlign: "center",
                 lineHeight: "14px"
             }
-        }
-    };
+        });
+    }
 
     const activeStyles: CSSObject = {};
     if (isActive) {

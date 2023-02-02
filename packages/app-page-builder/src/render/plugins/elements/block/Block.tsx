@@ -6,33 +6,22 @@ import { ElementRoot } from "~/render/components/ElementRoot";
 import { PbElement } from "~/types";
 import ElementAnimation from "~/render/components/ElementAnimation";
 import { Interpolation } from "@emotion/core";
-import { PageBuilderContext } from "~/contexts/PageBuilder";
-
-// TODO: move to a declaration file
-declare global {
-    // eslint-disable-next-line
-    namespace JSX {
-        interface IntrinsicElements {
-            // @ts-ignore
-            "ps-tag": {
-                key?: string;
-                value?: string;
-            };
-        }
-    }
-}
+import { usePageBuilder } from "~/hooks/usePageBuilder";
 
 interface BlockProps {
     element: PbElement;
 }
+
 const Block: React.FC<BlockProps> = ({ element }) => {
     const {
         responsiveDisplayMode: { displayMode }
-    } = React.useContext(PageBuilderContext);
+    } = usePageBuilder();
 
     return (
         <>
-            <ps-tag data-key={"pb-page-block"} data-value={element.id} />
+            {element.data.blockId && (
+                <ps-tag data-key={"pb-page-block"} data-value={element.data.blockId} />
+            )}
             <ElementAnimation>
                 <ElementRoot element={element}>
                     {({ elementStyle, elementAttributes, customClasses, combineClassNames }) => {
@@ -84,8 +73,8 @@ const Block: React.FC<BlockProps> = ({ element }) => {
                                         ...customClasses
                                     )}
                                 >
-                                    {element.elements.map(element => (
-                                        <Element key={element.id} element={element} />
+                                    {element.elements.map((element, index) => (
+                                        <Element key={element.id || index} element={element} />
                                     ))}
                                 </div>
                             </div>

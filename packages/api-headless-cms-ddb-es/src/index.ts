@@ -21,7 +21,6 @@ import {
     ElasticsearchQueryBuilderOperatorPlugin,
     getElasticsearchOperators
 } from "@webiny/api-elasticsearch";
-import { elasticsearchFields as cmsEntryElasticsearchFields } from "~/operations/entry/elasticsearchFields";
 import { elasticsearchIndexPlugins } from "./elasticsearch/indices";
 import { deleteElasticsearchIndex } from "./elasticsearch/deleteElasticsearchIndex";
 import { CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
@@ -90,10 +89,6 @@ export const createStorageOperations: StorageOperationsFactory = params => {
         /**
          * Plugins of type CmsModelFieldToGraphQLPlugin.
          */
-        /**
-         * Elasticsearch field definitions for the entry record.
-         */
-        cmsEntryElasticsearchFields,
         /**
          * DynamoDB filter plugins for the where conditions.
          */

@@ -5,12 +5,13 @@ export default /* GraphQL */ `
     type Product {
         id: ID!
         entryId: String!
+        modelId: String!
         createdOn: DateTime!
         savedOn: DateTime!
         createdBy: CmsCreatedBy!
         ownedBy: CmsOwnedBy!
         title: String
-        category: Category
+        category(populate: Boolean = true): Category
         price: Number
         inStock: Boolean
         itemsInStock: Number
@@ -26,8 +27,8 @@ export default /* GraphQL */ `
     type Product_Variant_Options {
         name: String
         price: Number
-        category: Category
-        categories: [Category]
+        category(populate: Boolean = true): Category
+        categories(populate: Boolean = true): [Category!]
         longText: [String]
     }
     input Product_Variant_OptionsWhereInput {
@@ -62,7 +63,7 @@ export default /* GraphQL */ `
     type Product_Variant {
         name: String
         price: Number
-        category: Category
+        category(populate: Boolean = true): Category
         options: [Product_Variant_Options!]
     }
     input Product_VariantWhereInput {

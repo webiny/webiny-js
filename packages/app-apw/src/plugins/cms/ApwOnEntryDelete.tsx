@@ -52,7 +52,6 @@ export const ApwOnEntryDelete: React.FC = () => {
             );
             const error = dotPropImmutable.get(data, "apw.isReviewRequired.error", null);
             if (error) {
-                // showSnackbar(error.message);
                 return next({ ...params, error });
             } else if (contentReviewId) {
                 const response = await new Promise<

@@ -1,7 +1,13 @@
 import { useContext } from "react";
 import { PageContext } from "~/contexts/Page";
-import { PageContextValue } from "~/types";
 
-export function usePage(): PageContextValue {
-    return useContext(PageContext);
+export function usePage() {
+    const context = useContext(PageContext);
+    if (!context) {
+        throw Error(
+            `PageContext was not found! Are you using the "usePage()" hook in the right place?`
+        );
+    }
+
+    return context;
 }

@@ -1,7 +1,7 @@
 import * as pulumi from "@pulumi/pulumi";
 import { PulumiApp } from "@webiny/pulumi";
 
-type EnvVariables = Record<string, string>;
+type EnvVariables = Record<string, string | pulumi.Output<string>>;
 
 const variablesRegistry: EnvVariables = {};
 

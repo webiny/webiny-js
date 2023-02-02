@@ -4033,26 +4033,54 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@deploysentinel/cypress-debugger@npm:^0.2.5":
-  version: 0.2.19
-  resolution: "@deploysentinel/cypress-debugger@npm:0.2.19"
+"@deploysentinel/cypress-debugger@npm:^0.7.3":
+  version: 0.7.3
+  resolution: "@deploysentinel/cypress-debugger@npm:0.7.3"
   dependencies:
     "@cypress/commit-info": ^2.2.0
+    "@deploysentinel/cypress-runner": ^3.1.0
     ansi-styles: ^6.1.0
     axios: ^0.27.2
-    axios-retry: ^3.2.5
-    bufferutil: ^4.0.6
-    chrome-remote-interface: ^0.31.2
-    fast-xml-parser: ^4.0.7
+    axios-retry: ^3.3.1
+    bufferutil: ^4.0.7
+    chrome-remote-interface: ^0.31.3
+    fast-safe-stringify: ^2.1.1
+    fast-xml-parser: ^4.0.12
+    fflate: ^0.7.4
     lodash: ^4.17.21
-    minimatch: ^5.0.1
-    utf-8-validate: ^5.0.9
+    minimatch: ^5.1.1
+    strip-ansi: ^6.0.1
+    utf-8-validate: ^5.0.10
   dependenciesMeta:
     bufferutil:
       optional: true
     utf-8-validate:
       optional: true
-  checksum: 7cb2b13fca2d9bc66748c702ca2cc96d4ec35d57b39c37d16000d310f056807c8b4f1a15fd06ca46b4b2da37199f16c814d95fabb8f6c3a3d46159a6d922d522
+  bin:
+    ds: bin/cli
+  checksum: c47f499be4cf483e5565b2d25b2fd03f8f32f05447d3c897066943d69478caaffabf5460367c61271c7c9f0dd0145c4943e8e35431c3096c857bdf24a5a3546a
+  languageName: node
+  linkType: hard
+
+"@deploysentinel/cypress-runner@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "@deploysentinel/cypress-runner@npm:3.1.0"
+  dependencies:
+    acorn: ^8.8.0
+    debug: ^4.3.2
+    escodegen: ^2.0.0
+    estraverse: ^5.3.0
+    http-proxy: ^1.18.1
+    js-yaml: ^4.1.0
+    lodash: ^4.17.21
+    npm-which: ^3.0.1
+    semver: ^7.3.8
+    slash: 3.0.0
+    source-map-support: ^0.5.21
+    tmp: ^0.2.1
+  bin:
+    ds: bin/ds
+  checksum: 4857ec9507f4ec14e8a86650c63c4905d2b8171f9d43c48fb2cf864f54fedf00b19c83510727cb7d5e082636b9e0aeeab7ec869fbdb9fe719c5187301c144404
   languageName: node
   linkType: hard
 
@@ -9658,7 +9686,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/lodash.debounce@npm:^4.0.6":
+"@types/lodash.debounce@npm:^4.0.7":
   version: 4.0.7
   resolution: "@types/lodash.debounce@npm:4.0.7"
   dependencies:
@@ -9676,7 +9704,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/lodash@npm:*, @types/lodash@npm:^4.14.178":
+"@types/lodash@npm:*":
   version: 4.14.186
   resolution: "@types/lodash@npm:4.14.186"
   checksum: ee0c1368a8100bb6efb88335107473a41928fc307ff1ef4ff1278868ccddba9c04c68c36d1ffe3a0392ef4a956e1955f7de3203ec09df4f1655dd1b88485c549
@@ -12384,35 +12412,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/app-admin-core@0.0.0, @webiny/app-admin-core@workspace:packages/app-admin-core":
-  version: 0.0.0-use.local
-  resolution: "@webiny/app-admin-core@workspace:packages/app-admin-core"
-  dependencies:
-    "@babel/cli": ^7.19.3
-    "@babel/core": ^7.19.3
-    "@babel/plugin-proposal-class-properties": ^7.18.6
-    "@babel/preset-env": ^7.19.4
-    "@babel/preset-react": ^7.0.0
-    "@babel/preset-typescript": ^7.18.6
-    "@babel/runtime": ^7.19.0
-    "@types/lodash.debounce": ^4.0.6
-    "@types/react": 17.0.39
-    "@webiny/app": 0.0.0
-    "@webiny/cli": 0.0.0
-    "@webiny/plugins": 0.0.0
-    "@webiny/project-utils": 0.0.0
-    "@webiny/react-composition": 0.0.0
-    "@webiny/react-router": 0.0.0
-    babel-plugin-named-asset-import: ^1.0.0-next.3e165448
-    lodash.debounce: ^4.0.8
-    react: 17.0.2
-    react-dom: 17.0.2
-    rimraf: ^3.0.2
-    ttypescript: ^1.5.12
-    typescript: 4.7.4
-  languageName: unknown
-  linkType: soft
-
 "@webiny/app-admin-okta@workspace:packages/app-admin-okta":
   version: 0.0.0-use.local
   resolution: "@webiny/app-admin-okta@workspace:packages/app-admin-okta"
@@ -12560,7 +12559,6 @@ __metadata:
     "@types/react": 17.0.39
     "@types/store": ^2.0.2
     "@webiny/app": 0.0.0
-    "@webiny/app-admin-core": 0.0.0
     "@webiny/app-security": 0.0.0
     "@webiny/app-wcp": 0.0.0
     "@webiny/cli": 0.0.0
@@ -12628,7 +12626,6 @@ __metadata:
     "@webiny/app-admin": 0.0.0
     "@webiny/app-headless-cms": 0.0.0
     "@webiny/app-i18n": 0.0.0
-    "@webiny/app-mailer": 0.0.0
     "@webiny/app-page-builder": 0.0.0
     "@webiny/app-security": 0.0.0
     "@webiny/cli": 0.0.0
@@ -13092,13 +13089,19 @@ __metadata:
     "@editorjs/editorjs": ^2.20.1
     aos: ^2.3.4
     react: ^17.0.2
+    react-columned: ^1.1.3
     react-google-recaptcha: ^2.3.4
+    react-images: ^0.5.19
   peerDependenciesMeta:
     "@editorjs/editorjs":
       optional: true
     aos:
       optional: true
+    react-columned:
+      optional: true
     react-google-recaptcha:
+      optional: true
+    react-images:
       optional: true
   languageName: unknown
   linkType: soft
@@ -13269,7 +13272,6 @@ __metadata:
     "@babel/preset-react": ^7.16.0
     "@babel/preset-typescript": ^7.18.6
     "@webiny/app": 0.0.0
-    "@webiny/app-admin-core": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
@@ -13306,6 +13308,7 @@ __metadata:
     "@webiny/app-headless-cms": 0.0.0
     "@webiny/app-i18n": 0.0.0
     "@webiny/app-i18n-content": 0.0.0
+    "@webiny/app-mailer": 0.0.0
     "@webiny/app-page-builder": 0.0.0
     "@webiny/app-security": 0.0.0
     "@webiny/app-security-access-management": 0.0.0
@@ -13418,6 +13421,7 @@ __metadata:
     "@emotion/core": ^10.0.27
     "@emotion/styled": ^10.0.27
     "@types/react": 17.0.39
+    "@webiny/app": 0.0.0
     "@webiny/app-admin": 0.0.0
     "@webiny/app-page-builder": 0.0.0
     "@webiny/app-tenant-manager": 0.0.0
@@ -13573,6 +13577,7 @@ __metadata:
     "@babel/preset-typescript": ^7.18.6
     "@babel/runtime": ^7.19.0
     "@emotion/styled": ^10.0.17
+    "@types/lodash.debounce": ^4.0.7
     "@types/react": 17.0.39
     "@types/warning": ^3.0.0
     "@types/web": ^0.0.61
@@ -13581,6 +13586,7 @@ __metadata:
     "@webiny/i18n-react": 0.0.0
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
+    "@webiny/react-composition": 0.0.0
     "@webiny/react-router": 0.0.0
     "@webiny/ui": 0.0.0
     apollo-cache: ^1.3.5
@@ -13596,6 +13602,7 @@ __metadata:
     graphql: ^15.7.2
     invariant: ^2.2.4
     lodash: ^4.17.4
+    lodash.debounce: ^4.0.8
     nanoid: ^3.1.30
     react: 17.0.2
     react-dom: 17.0.2
@@ -14224,6 +14231,7 @@ __metadata:
     jest: ^28.1.0
     jest-mock-console: ^1.0.0
     rimraf: ^3.0.2
+    ttypescript: ^1.5.15
     typescript: 4.7.4
   languageName: unknown
   linkType: soft
@@ -14593,6 +14601,7 @@ __metadata:
     "@webiny/project-utils": 0.0.0
     "@webiny/react-composition": 0.0.0
     nanoid: ^3.3.4
+    prettier: ^2.8.3
     react: 17.0.2
   languageName: unknown
   linkType: soft
@@ -16748,7 +16757,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios-retry@npm:^3.2.5":
+"axios-retry@npm:^3.3.1":
   version: 3.3.1
   resolution: "axios-retry@npm:3.3.1"
   dependencies:
@@ -18005,13 +18014,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bufferutil@npm:^4.0.1, bufferutil@npm:^4.0.6":
+"bufferutil@npm:^4.0.1":
   version: 4.0.6
   resolution: "bufferutil@npm:4.0.6"
   dependencies:
     node-gyp: latest
     node-gyp-build: ^4.3.0
   checksum: dd107560947445280af7820c3d0534127b911577d85d537e1d7e0aa30fd634853cef8a994d6e8aed3d81388ab1a20257de776164afe6a6af8e78f5f17968ebd6
+  languageName: node
+  linkType: hard
+
+"bufferutil@npm:^4.0.7":
+  version: 4.0.7
+  resolution: "bufferutil@npm:4.0.7"
+  dependencies:
+    node-gyp: latest
+    node-gyp-build: ^4.3.0
+  checksum: f75aa87e3d1b99b87a95f60a855e63f70af07b57fb8443e75a2ddfef2e47788d130fdd46e3a78fd7e0c10176082b26dfbed970c5b8632e1cc299cafa0e93ce45
   languageName: node
   linkType: hard
 
@@ -18649,7 +18668,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chrome-remote-interface@npm:^0.31.2":
+"chrome-remote-interface@npm:^0.31.3":
   version: 0.31.3
   resolution: "chrome-remote-interface@npm:0.31.3"
   dependencies:
@@ -23523,6 +23542,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fast-safe-stringify@npm:^2.1.1":
+  version: 2.1.1
+  resolution: "fast-safe-stringify@npm:2.1.1"
+  checksum: a851cbddc451745662f8f00ddb622d6766f9bd97642dabfd9a405fb0d646d69fc0b9a1243cbf67f5f18a39f40f6fa821737651ff1bceeba06c9992ca2dc5bd3d
+  languageName: node
+  linkType: hard
+
 "fast-text-encoding@npm:^1.0.6":
   version: 1.0.6
   resolution: "fast-text-encoding@npm:1.0.6"
@@ -23546,14 +23572,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-xml-parser@npm:^4.0.7":
-  version: 4.0.11
-  resolution: "fast-xml-parser@npm:4.0.11"
+"fast-xml-parser@npm:^4.0.12":
+  version: 4.0.13
+  resolution: "fast-xml-parser@npm:4.0.13"
   dependencies:
     strnum: ^1.0.5
   bin:
     fxparser: src/cli/cli.js
-  checksum: d8a08e4d5597e0fc00a86735195872eeb03008913e298830941516f3766e16ee555e2d431acc92e1dda887938edc445252ec5b59494aab60a8389888bd13719c
+  checksum: 55c8b483f609258ada626898ff394d3bc983f56f868941d89c0ec22395e89364ce2d3068c1e15695019a520c21fa1166fc576a6d7339e99c9ffdc657402e777f
   languageName: node
   linkType: hard
 
@@ -23703,6 +23729,13 @@ __metadata:
   version: 2.3.3
   resolution: "fecha@npm:2.3.3"
   checksum: c6e2373d2163e3650fa610ee07c0b7460f5dc516f1e50befefb3e1a079d0b90d4a862e352d76fbb180ca510d79898db58e304509564c8a37352cb1e5b582a705
+  languageName: node
+  linkType: hard
+
+"fflate@npm:^0.7.4":
+  version: 0.7.4
+  resolution: "fflate@npm:0.7.4"
+  checksum: b812ab26047432db70ff4c73eb45ad53bd0774575b4818b9c61c2921e89ec65d1259f06ec1618f2ac55e6a2f2e29b6dc09173d213b46580bc69efae5344bf8f1
   languageName: node
   linkType: hard
 
@@ -30718,6 +30751,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"minimatch@npm:^5.1.1":
+  version: 5.1.4
+  resolution: "minimatch@npm:5.1.4"
+  dependencies:
+    brace-expansion: ^2.0.1
+  checksum: 0de6d7d154e70d12487b30a7bfcb74bd15fd1f1ec007a2516699ba76e63f78ca2e5016c200b242ed75123aff8dcccf49947f71b629fb1b1f221c8e76a13ed8de
+  languageName: node
+  linkType: hard
+
 "minimatch@npm:~3.0.2":
   version: 3.0.8
   resolution: "minimatch@npm:3.0.8"
@@ -34270,6 +34312,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"prettier@npm:^2.8.3":
+  version: 2.8.3
+  resolution: "prettier@npm:2.8.3"
+  bin:
+    prettier: bin-prettier.js
+  checksum: 92f2ceb522d454370e02082aa74ad27388672f7cee8975028b59517c069fe643bdc73e322675c8faf2ff173d7a626d1a6389f26b474000308e793aa25fff46e5
+  languageName: node
+  linkType: hard
+
 "pretty-bytes@npm:^5.6.0":
   version: 5.6.0
   resolution: "pretty-bytes@npm:5.6.0"
@@ -36940,7 +36991,7 @@ __metadata:
     "@babel/core": ^7.19.3
     "@commitlint/cli": ^11.0.0
     "@commitlint/config-conventional": ^11.0.0
-    "@deploysentinel/cypress-debugger": ^0.2.5
+    "@deploysentinel/cypress-debugger": ^0.7.3
     "@octokit/rest": ^19.0.5
     "@testing-library/cypress": ^8.0.2
     "@types/fs-extra": ^8.0.1
@@ -37469,7 +37520,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:7.x, semver@npm:^7.2, semver@npm:^7.3.2, semver@npm:^7.3.4, semver@npm:^7.3.5, semver@npm:^7.3.7":
+"semver@npm:7.x, semver@npm:^7.2, semver@npm:^7.3.2, semver@npm:^7.3.4, semver@npm:^7.3.5, semver@npm:^7.3.7, semver@npm:^7.3.8":
   version: 7.3.8
   resolution: "semver@npm:7.3.8"
   dependencies:
@@ -37872,6 +37923,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"slash@npm:3.0.0, slash@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "slash@npm:3.0.0"
+  checksum: 94a93fff615f25a999ad4b83c9d5e257a7280c90a32a7cb8b4a87996e4babf322e469c42b7f649fd5796edd8687652f3fb452a86dc97a816f01113183393f11c
+  languageName: node
+  linkType: hard
+
 "slash@npm:^1.0.0":
   version: 1.0.0
   resolution: "slash@npm:1.0.0"
@@ -37883,13 +37941,6 @@ __metadata:
   version: 2.0.0
   resolution: "slash@npm:2.0.0"
   checksum: 512d4350735375bd11647233cb0e2f93beca6f53441015eea241fe784d8068281c3987fbaa93e7ef1c38df68d9c60013045c92837423c69115297d6169aa85e6
-  languageName: node
-  linkType: hard
-
-"slash@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "slash@npm:3.0.0"
-  checksum: 94a93fff615f25a999ad4b83c9d5e257a7280c90a32a7cb8b4a87996e4babf322e469c42b7f649fd5796edd8687652f3fb452a86dc97a816f01113183393f11c
   languageName: node
   linkType: hard
 
@@ -39403,7 +39454,6 @@ __metadata:
     "@apollo/react-hooks": ^3.1.5
     "@emotion/core": ^10.0.17
     "@emotion/styled": ^10.0.17
-    "@types/lodash": ^4.14.178
     "@types/react-hamburger-menu": ^0.0.4
     "@webiny/app-form-builder": 0.0.0
     "@webiny/app-page-builder": 0.0.0
@@ -39592,7 +39642,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tmp@npm:~0.2.1":
+"tmp@npm:^0.2.1, tmp@npm:~0.2.1":
   version: 0.2.1
   resolution: "tmp@npm:0.2.1"
   dependencies:
@@ -40018,6 +40068,21 @@ __metadata:
     ttsc: bin/tsc
     ttsserver: bin/tsserver
   checksum: bd97f058520ebd6183446b2100bfc714c400455e2195c3711d00c3407521d99098a4a204f16200c14a115cd78a5005d4a790bf7fb73a1b21a513573291a9c1d0
+  languageName: node
+  linkType: hard
+
+"ttypescript@npm:^1.5.15":
+  version: 1.5.15
+  resolution: "ttypescript@npm:1.5.15"
+  dependencies:
+    resolve: ">=1.9.0"
+  peerDependencies:
+    ts-node: ">=8.0.2"
+    typescript: ">=3.2.2"
+  bin:
+    ttsc: bin/tsc
+    ttsserver: bin/tsserver
+  checksum: 0328578050f08f9d12e6732a9fe71e93cc693ed5e825aefb7f4ba142d4d3d6912caa59a723f775de89cd066c8e609665fd5a7ccfa3b69fb3456c7f24d695db90
   languageName: node
   linkType: hard
 
@@ -40635,7 +40700,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"utf-8-validate@npm:^5.0.2, utf-8-validate@npm:^5.0.9":
+"utf-8-validate@npm:^5.0.10":
+  version: 5.0.10
+  resolution: "utf-8-validate@npm:5.0.10"
+  dependencies:
+    node-gyp: latest
+    node-gyp-build: ^4.3.0
+  checksum: 5579350a023c66a2326752b6c8804cc7b39dcd251bb088241da38db994b8d78352e388dcc24ad398ab98385ba3c5ffcadb6b5b14b2637e43f767869055e46ba6
+  languageName: node
+  linkType: hard
+
+"utf-8-validate@npm:^5.0.2":
   version: 5.0.9
   resolution: "utf-8-validate@npm:5.0.9"
   dependencies:
