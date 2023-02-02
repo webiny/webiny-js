@@ -24,6 +24,7 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
 
     return baseCreateCorePulumiApp({
         ...projectAppParams,
+        // If using existing VPC, we ensure `vpc` param is set to `false`.
         vpc: usingAdvancedVpcParams && vpc.useExistingVpc ? false : Boolean(vpc),
         pulumi(...args) {
             // Not using advanced VPC params? Then immediately exit.
