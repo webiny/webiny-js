@@ -16,6 +16,7 @@ import { getBaseFieldType } from "~/utils/getBaseFieldType";
 import { getContentModelTitleFieldId } from "./fields/titleField";
 import { getContentModelDescriptionFieldId } from "./fields/descriptionField";
 import { getContentModelImageFieldId } from "./fields/imageField";
+import { CmsGraphQLSchemaSorterPlugin } from "~/plugins";
 
 const extractInvalidField = (model: CmsModel, err: GraphQLError) => {
     const sdl = err.source?.body || "";
@@ -211,6 +212,9 @@ export const validateModelFields = (params: ValidateModelFieldsParams) => {
     const fieldTypePlugins = plugins.byType<CmsModelFieldToGraphQLPlugin>(
         "cms-model-field-to-graphql"
     );
+    const sorterPlugins = plugins.byType<CmsGraphQLSchemaSorterPlugin>(
+        CmsGraphQLSchemaSorterPlugin.type
+    );
 
     validateFields({
         fields,
@@ -228,7 +232,8 @@ export const validateModelFields = (params: ValidateModelFieldsParams) => {
             fieldTypePlugins: fieldTypePlugins.reduce(
                 (acc, pl) => ({ ...acc, [pl.fieldType]: pl }),
                 {}
-            )
+            ),
+            sorterPlugins
         });
 
         try {

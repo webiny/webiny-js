@@ -27,6 +27,13 @@ const documentClient = new DocumentClient({
 
 const debug = process.env.DEBUG === "true";
 
+import {
+    createFoldersContext,
+    createACO,
+    createFoldersImportExportSubscriptions
+} from "@webiny/api-aco";
+import { createStorageOperations as createFoldersStorageOperations } from "@webiny/api-aco-so-ddb";
+
 export const handler = createHandler({
     plugins: [
         dynamoDbPlugins(),
@@ -55,7 +62,14 @@ export const handler = createHandler({
             handlers: {
                 process: String(process.env.AWS_LAMBDA_FUNCTION_NAME)
             }
-        })
+        }),
+        createFoldersContext({
+            storageOperations: createFoldersStorageOperations({
+                documentClient
+            })
+        }),
+        createACO(),
+        createFoldersImportExportSubscriptions()
     ],
     http: { debug }
 });

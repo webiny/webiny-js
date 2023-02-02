@@ -2,7 +2,7 @@ import { ContextPlugin } from "@webiny/api";
 import WebinyError from "@webiny/error";
 
 import { createContext } from "./context";
-import { subscriptions } from "./subscriptions";
+import { graphQLSubscriptions, importExportSubscriptions } from "./subscriptions";
 import { graphqlPlugins } from "./graphql";
 
 import { SecurityIdentity } from "@webiny/api-security/types";
@@ -49,4 +49,6 @@ export const createFoldersContext = ({ storageOperations }: FoldersConfig) => {
 
 export const createFoldersGraphQL = () => graphqlPlugins;
 
-export const createFoldersSubscriptions = () => subscriptions();
+export const createFoldersGraphQLSubscriptions = () => graphQLSubscriptions();
+
+export const createFoldersImportExportSubscriptions = () => importExportSubscriptions();

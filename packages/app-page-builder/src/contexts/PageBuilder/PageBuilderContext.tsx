@@ -5,6 +5,7 @@ import { isLegacyRenderingEngine } from "~/utils";
 import { Theme } from "@webiny/app-theme/types";
 import { ThemePlugin } from "@webiny/app-theme";
 import { PageElementsProvider } from "./PageElementsProvider";
+import { useCallback, useEffect, useState } from "react";
 
 export interface ResponsiveDisplayMode {
     displayMode: DisplayMode;
@@ -16,8 +17,9 @@ export interface ExportPageData {
     setRevisionType: Function;
 }
 
-export interface PageBuilderContextValue {
-    theme: Theme | PbTheme;
+export interface PageBuilderContext {
+    theme: Theme | PbTheme | undefined;
+    loadThemeFromPlugins(): void;
     defaults?: {
         pages?: {
             notFound?: React.ComponentType<any>;
@@ -31,33 +33,31 @@ export interface PageBuilderProviderProps {
     children?: React.ReactChild | React.ReactChild[];
 }
 
-export const PageBuilderContext = React.createContext<PageBuilderContextValue>({
-    /**
-     * Initial value. It will never be null
-     */
-    theme: null as unknown as PbTheme,
-    defaults: {
-        pages: {
-            notFound: undefined
-        }
-    },
-    responsiveDisplayMode: {
-        displayMode: DisplayMode.DESKTOP,
-        setDisplayMode: () => {
-            return void 0;
-        }
-    },
-    exportPageData: {
-        revisionType: "",
-        setRevisionType: () => {
-            return void 0;
-        }
-    }
-});
+export const PageBuilderContext = React.createContext<PageBuilderContext | undefined>(undefined);
 
 export const PageBuilderProvider: React.FC<PageBuilderProviderProps> = ({ children }) => {
     const [displayMode, setDisplayMode] = React.useState(DisplayMode.DESKTOP);
     const [revisionType, setRevisionType] = React.useState("published");
+    const [theme, setTheme] = useState<PageBuilderContext["theme"]>(undefined);
+
+    const loadThemeFromPlugins = useCallback(() => {
+        let themePlugin;
+        if (isLegacyRenderingEngine) {
+            const [firstThemePlugin] = plugins.byType<PbThemePluginType>("pb-theme");
+            themePlugin = firstThemePlugin;
+        } else {
+            const [firstThemePlugin] = plugins.byType<ThemePlugin>(ThemePlugin.type);
+            themePlugin = firstThemePlugin;
+        }
+
+        if (themePlugin) {
+            setTheme(themePlugin.theme as Theme);
+        }
+    }, []);
+
+    useEffect(() => {
+        loadThemeFromPlugins();
+    }, []);
 
     let childrenToRender = children;
     if (!isLegacyRenderingEngine) {
@@ -68,23 +68,8 @@ export const PageBuilderProvider: React.FC<PageBuilderProviderProps> = ({ childr
     return (
         <PageBuilderContext.Provider
             value={{
-                get theme() {
-                    let themePlugin;
-                    if (isLegacyRenderingEngine) {
-                        const [firstThemePlugin] = plugins.byType<PbThemePluginType>("pb-theme");
-                        themePlugin = firstThemePlugin;
-                    } else {
-                        const [firstThemePlugin] = plugins.byType<ThemePlugin>(ThemePlugin.type);
-                        themePlugin = firstThemePlugin;
-                    }
-
-                    if (!themePlugin) {
-                        throw new Error(
-                            "Theme plugin does not exist. Make sure that at least one plugin is loaded."
-                        );
-                    }
-                    return themePlugin.theme;
-                },
+                theme,
+                loadThemeFromPlugins,
                 responsiveDisplayMode: {
                     displayMode,
                     setDisplayMode
@@ -99,11 +84,3 @@ export const PageBuilderProvider: React.FC<PageBuilderProviderProps> = ({ childr
         </PageBuilderContext.Provider>
     );
 };
-
-export const PageBuilderConsumer: React.FC = ({ children }) => (
-    <PageBuilderContext.Consumer>
-        {props =>
-            React.cloneElement(children as unknown as React.ReactElement, { pageBuilder: props })
-        }
-    </PageBuilderContext.Consumer>
-);

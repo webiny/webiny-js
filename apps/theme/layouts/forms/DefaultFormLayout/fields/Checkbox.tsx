@@ -85,7 +85,7 @@ export const CheckboxField: React.FC<CheckboxProps> = ({ field }) => {
 
     return (
         <Field>
-            <FieldLabel>{field.label}</FieldLabel>
+            <FieldLabel field={field} />
             {field.helpText && <FieldHelperMessage>{field.helpText}</FieldHelperMessage>}
             {(field.options || []).map(option => (
                 <CheckboxGroup key={option.value}>
