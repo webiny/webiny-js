@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { CreateFormParams, FormData } from "./types";
 import FormRender from "./FormRender";
 import { createRenderer } from "~/createRenderer";
@@ -21,8 +21,6 @@ export const createForm = (params: CreateFormParams) => {
 
     return createRenderer(() => {
         const { getElement } = useRenderer();
-        const [formData, setFormData] = useState<FormData | null>(null);
-        const [loading, setLoading] = useState<boolean>(false);
 
         const element = getElement<FormElementData>();
 
@@ -36,18 +34,44 @@ export const createForm = (params: CreateFormParams) => {
             }
         }
 
-        // Let's cache the data retrieved by the data loader and make the UX a bit smoother.
-        const cache = useRef<Record<string, FormData>>({});
         const variablesHash = JSON.stringify(variables);
 
+        // We want to trigger form data load immediately, and not within a `useEffect` hook.
+        // This enables us to render the actual form in the initial component render, and not
+        // in a subsequent one.
+        const getFormDataLoad = useMemo(() => {
+            return dataLoaders.getForm({ variables });
+        }, [variablesHash]);
+
+        const preloadedFormData = useMemo(() => {
+            return "formId" in getFormDataLoad ? getFormDataLoad : null;
+        }, [getFormDataLoad]);
+
+        // The `preloadedFormData` initial state assignment will occur in the initial component render.
+        const [formData, setFormData] = useState<FormData | null>(preloadedFormData);
+        const [loading, setLoading] = useState<boolean>(!preloadedFormData);
+
+        // Let's cache the data retrieved by the data loader and make the UX a bit smoother.
+        const cache = useRef<Record<string, FormData>>({});
+
         useEffect(() => {
-            if (variables.parent || variables.revision) {
-                const cached = cache.current[variablesHash];
-                if (cached) {
-                    setFormData(cached);
-                } else {
+            if (preloadedFormData) {
+                return;
+            }
+
+            const hasRequiredVariables = variables.parent || variables.revision;
+            if (!hasRequiredVariables) {
+                return;
+            }
+
+            const cached = cache.current[variablesHash];
+            if (cached) {
+                setFormData(cached);
+            } else {
+                // If
+                if ("then" in getFormDataLoad) {
                     setLoading(true);
-                    dataLoaders.getForm({ variables }).then(formData => {
+                    getFormDataLoad.then(formData => {
                         setFormData(formData);
                         cache.current[variablesHash] = formData;
                         setLoading(false);

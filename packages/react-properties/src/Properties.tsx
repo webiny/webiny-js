@@ -139,12 +139,44 @@ interface PropertyProps {
     before?: string;
     replace?: string;
     remove?: boolean;
+    parent?: string;
+    root?: boolean;
 }
 
 const PropertyContext = createContext<Property | undefined>(undefined);
 
 export function useParentProperty() {
     return useContext(PropertyContext);
+}
+
+interface AncestorMatch {
+    [key: string]: string | boolean | number | null | undefined;
+}
+
+export function useAncestor(params: AncestorMatch) {
+    const property = useParentProperty();
+    const { properties } = useProperties();
+
+    const matchOrGetAncestor = (
+        property: Property,
+        params: AncestorMatch
+    ): Property | undefined => {
+        const matchedProps = properties
+            .filter(prop => prop.parent === property.id)
+            .filter(prop => prop.name in params && prop.value === params[prop.name]);
+
+        if (matchedProps.length === Object.keys(params).length) {
+            return property;
+        }
+
+        const newParent = property.parent
+            ? properties.find(prop => prop.id === property.parent)
+            : undefined;
+
+        return newParent ? matchOrGetAncestor(newParent, params) : undefined;
+    };
+
+    return property ? matchOrGetAncestor(property, params) : undefined;
 }
 
 export const Property: React.FC<PropertyProps> = ({
@@ -156,10 +188,12 @@ export const Property: React.FC<PropertyProps> = ({
     before = undefined,
     replace = undefined,
     remove = false,
-    array = false
+    array = false,
+    root = false,
+    parent = undefined
 }) => {
     const uniqueId = useMemo(() => id || getUniqueId(), []);
-    const parent = useParentProperty();
+    const parentProperty = useParentProperty();
     const properties = useProperties();
 
     if (!properties) {
@@ -167,7 +201,8 @@ export const Property: React.FC<PropertyProps> = ({
     }
 
     const { addProperty, removeProperty, replaceProperty } = properties;
-    const property = { id: uniqueId, name, value, parent: parent ? parent.id : "", array };
+    const parentId = parent ? parent : root ? "" : parentProperty?.id || "";
+    const property = { id: uniqueId, name, value, parent: parentId, array };
 
     useEffect(() => {
         if (remove) {

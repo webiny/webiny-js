@@ -19,6 +19,8 @@ export const createGraphQLSchema = (context: Context) => {
         .byType<GraphQLScalarPlugin>("graphql-scalar")
         .map(item => item.scalar);
 
+    // TODO: once the API packages more closed, we'll have the opportunity
+    // TODO: to maybe import the @ps directive from `api-prerendering-service` package.
     const typeDefs = [
         gql`
             type Query
@@ -32,6 +34,11 @@ export const createGraphQLSchema = (context: Context) => {
             scalar Date
             scalar DateTime
             scalar Time
+
+            # This directive doesn't do anything on the GraphQL resolution level. It just serves
+            # as a way to tell the Prerendering Service whether the GraphQL query needs to be
+            # cached or not.
+            directive @ps(cache: Boolean) on QUERY
         `
     ];
 

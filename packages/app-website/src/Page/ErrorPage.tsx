@@ -1,6 +1,7 @@
 import React from "react";
 import { Helmet } from "react-helmet";
 import styled from "@emotion/styled";
+import { makeComposable } from "@webiny/app";
 
 const Wrapper = styled.div({
     padding: 50,
@@ -47,7 +48,7 @@ const DEFAULT_ERROR_INFO = {
     message: <>The link is either broken or the page has been removed.</>
 };
 
-export const ErrorPage: React.FC<ErrorPageProps> = (props: ErrorPageProps) => {
+export const ErrorPage = makeComposable<ErrorPageProps>("ErrorPage", props => {
     let errorInfo = DEFAULT_ERROR_INFO;
     if (props?.error?.code === "PB_NOT_INSTALLED") {
         errorInfo = getPbNotInstalledErrorMessage();
@@ -65,4 +66,4 @@ export const ErrorPage: React.FC<ErrorPageProps> = (props: ErrorPageProps) => {
             <div>{message}</div>
         </Wrapper>
     );
-};
+});

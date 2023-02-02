@@ -9,16 +9,18 @@ import {
 import WebinyError from "@webiny/error";
 import { NotAuthorizedError } from "@webiny/api-security";
 import { createTopic } from "@webiny/pubsub";
+import { Tenant } from "@webiny/api-tenancy/types";
 
 interface CreateSystemCrudParams {
     context: I18NContext;
     storageOperations: I18NSystemStorageOperations;
+    getTenant: () => Tenant;
 }
 export const createSystemCrud = (params: CreateSystemCrudParams): SystemCRUD => {
-    const { context, storageOperations } = params;
+    const { context, storageOperations, getTenant } = params;
 
     const getTenantId = (): string => {
-        return context.tenancy.getCurrentTenant().id;
+        return getTenant().id;
     };
 
     const onSystemBeforeInstall = createTopic<OnSystemBeforeInstallTopicParams>(
@@ -50,7 +52,7 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCRUD => 
 
             const system: I18NSystem = {
                 ...(original || {}),
-                tenant: original && original.tenant ? original.tenant : getTenantId(),
+                tenant: original?.tenant || getTenantId(),
                 version
             };
             if (original) {

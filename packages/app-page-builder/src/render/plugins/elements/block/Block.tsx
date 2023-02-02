@@ -6,21 +6,7 @@ import { ElementRoot } from "~/render/components/ElementRoot";
 import { PbElement } from "~/types";
 import ElementAnimation from "~/render/components/ElementAnimation";
 import { Interpolation } from "@emotion/core";
-import { PageBuilderContext } from "~/contexts/PageBuilder";
-
-// TODO: move to a declaration file
-declare global {
-    // eslint-disable-next-line
-    namespace JSX {
-        interface IntrinsicElements {
-            // @ts-ignore
-            "ps-tag": {
-                key?: string;
-                value?: string;
-            };
-        }
-    }
-}
+import { usePageBuilder } from "~/hooks/usePageBuilder";
 
 interface BlockProps {
     element: PbElement;
@@ -29,7 +15,7 @@ interface BlockProps {
 const Block: React.FC<BlockProps> = ({ element }) => {
     const {
         responsiveDisplayMode: { displayMode }
-    } = React.useContext(PageBuilderContext);
+    } = usePageBuilder();
 
     return (
         <>

@@ -102,6 +102,8 @@ const extractReadArticle = (item: any, category?: any): Record<string, any> => {
             ? [
                   {
                       id: category.id,
+                      entryId: category.entryId,
+                      modelId: "category",
                       title: category.title
                   }
               ]
@@ -109,6 +111,8 @@ const extractReadArticle = (item: any, category?: any): Record<string, any> => {
         category: category
             ? {
                   id: category.id,
+                  entryId: category.entryId,
+                  modelId: "category",
                   title: category.title
               }
             : null
@@ -687,11 +691,15 @@ describe("entry references", () => {
                 ...techArticle,
                 category: {
                     id: techCategory3.id,
+                    entryId: techCategory3.entryId,
+                    modelId: "category",
                     title: techCategory3.title
                 },
                 categories: [
                     {
                         id: techCategory3.id,
+                        entryId: techCategory3.entryId,
+                        modelId: "category",
                         title: techCategory3.title
                     }
                 ],
@@ -701,11 +709,15 @@ describe("entry references", () => {
                 ...techArticle2,
                 category: {
                     id: techCategory3.id,
+                    entryId: techCategory3.entryId,
+                    modelId: "category",
                     title: techCategory3.title
                 },
                 categories: [
                     {
                         id: techCategory3.id,
+                        entryId: techCategory3.entryId,
+                        modelId: "category",
                         title: techCategory3.title
                     }
                 ],
@@ -715,11 +727,15 @@ describe("entry references", () => {
                 ...techArticle3,
                 category: {
                     id: techCategory3.id,
+                    entryId: techCategory3.entryId,
+                    modelId: "category",
                     title: techCategory3.title
                 },
                 categories: [
                     {
                         id: techCategory3.id,
+                        entryId: techCategory3.entryId,
+                        modelId: "category",
                         title: techCategory3.title
                     }
                 ],
@@ -871,11 +887,15 @@ describe("entry references", () => {
                             ...foodArticle,
                             category: {
                                 id: foodCategory.id,
+                                entryId: foodCategory.entryId,
+                                modelId: "category",
                                 title: foodCategory.title
                             },
                             categories: [
                                 {
                                     id: foodCategory.id,
+                                    entryId: foodCategory.entryId,
+                                    modelId: "category",
                                     title: foodCategory.title
                                 }
                             ],
@@ -912,11 +932,15 @@ describe("entry references", () => {
                             ...foodArticle,
                             category: {
                                 id: foodCategory.id,
+                                entryId: foodCategory.entryId,
+                                modelId: "category",
                                 title: foodCategory.title
                             },
                             categories: [
                                 {
                                     id: foodCategory.id,
+                                    entryId: foodCategory.entryId,
+                                    modelId: "category",
                                     title: foodCategory.title
                                 }
                             ],
@@ -950,11 +974,15 @@ describe("entry references", () => {
                             ...foodArticle,
                             category: {
                                 id: foodCategory.id,
+                                entryId: foodCategory.entryId,
+                                modelId: "category",
                                 title: foodCategory.title
                             },
                             categories: [
                                 {
                                     id: foodCategory.id,
+                                    entryId: foodCategory.entryId,
+                                    modelId: "category",
                                     title: foodCategory.title
                                 }
                             ],
@@ -1036,6 +1064,95 @@ describe("entry references", () => {
                         cursor: null
                     },
                     error: null
+                }
+            }
+        });
+    });
+
+    it("should not populate referenced field", async () => {
+        const group = await setupContentModelGroup(mainManager);
+        await setupContentModels(mainManager, group, ["category", "article"]);
+
+        const categoryManager = useCategoryManageHandler(manageOpts);
+        const articleManager = useArticleManageHandler(manageOpts);
+        const articleRead = useArticleReadHandler(readOpts);
+
+        const techCategory = await createCategoryItem({
+            manager: categoryManager,
+            data: {
+                title: "Tech category",
+                slug: "tech-category"
+            },
+            publish: true
+        });
+
+        const techArticle = await createArticleItem({
+            manager: articleManager,
+            data: {
+                title: "Tech article",
+                body: null,
+                category: {
+                    id: techCategory.id,
+                    modelId: "category"
+                },
+                categories: [
+                    {
+                        id: techCategory.id,
+                        modelId: "category"
+                    }
+                ]
+            },
+            publish: true
+        });
+
+        /**
+         * Make sure we have all articles published.
+         */
+        await until(
+            () => articleManager.listArticles().then(([data]) => data),
+            ({ data }: any) => {
+                const entries = data.listArticles.data || [];
+                if (entries.length !== 1) {
+                    return false;
+                }
+                return entries.every((entry: any) => {
+                    return !!entry.meta.publishedOn;
+                });
+            },
+            { name: "list all published articles", tries: 10 }
+        );
+
+        const [result] = await articleRead.listArticlesWithoutReferences();
+
+        expect(result).toMatchObject({
+            data: {
+                listArticles: {
+                    data: [
+                        {
+                            id: techArticle.id,
+                            title: techArticle.title,
+                            category: {
+                                id: techCategory.id,
+                                entryId: techCategory.entryId,
+                                modelId: "category",
+                                title: null
+                            },
+                            categories: [
+                                {
+                                    id: techCategory.id,
+                                    entryId: techCategory.entryId,
+                                    modelId: "category",
+                                    title: null
+                                }
+                            ]
+                        }
+                    ],
+                    error: null,
+                    meta: {
+                        cursor: null,
+                        hasMoreItems: false,
+                        totalCount: 1
+                    }
                 }
             }
         });

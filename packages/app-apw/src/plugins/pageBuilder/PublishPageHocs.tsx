@@ -96,18 +96,6 @@ export const PublishPageButtonHoc: HigherOrderComponent = OriginalRenderer => {
     };
 };
 
-export const PageRequestReviewHoc: HigherOrderComponent = () => {
-    return function PageReview() {
-        return null;
-    };
-};
-
-export const PageRequestChangesHoc: HigherOrderComponent = () => {
-    return function PageReview() {
-        return null;
-    };
-};
-
 export const PageRevisionListItemGraphicHoc: HigherOrderComponent<
     PageRevisionListItemGraphicProps
 > = OriginalRenderer => {
