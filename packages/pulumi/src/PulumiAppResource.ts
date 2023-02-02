@@ -35,6 +35,6 @@ export interface PulumiAppResource<T extends PulumiAppResourceConstructor> {
     type: T;
     readonly config: PulumiAppResourceConfigProxy<PulumiAppResourceArgs<T>>;
     readonly opts: pulumi.CustomResourceOptions;
-    readonly meta: Record<string, any>
+    readonly meta: Record<string, any>;
     readonly output: pulumi.Output<pulumi.Unwrap<PulumiAppResourceType<T>>>;
 }

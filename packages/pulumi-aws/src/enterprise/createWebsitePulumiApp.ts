@@ -13,7 +13,8 @@ export type WebsitePulumiAppAdvancedVpcParams = Partial<{
     };
 }>;
 
-export interface CreateWebsitePulumiAppParams extends Omit<BaseCreateWebsitePulumiAppParams, "vpc"> {
+export interface CreateWebsitePulumiAppParams
+    extends Omit<BaseCreateWebsitePulumiAppParams, "vpc"> {
     vpc?: boolean | WebsitePulumiAppAdvancedVpcParams;
 }
 
@@ -31,7 +32,7 @@ export function createWebsitePulumiApp(projectAppParams: CreateWebsitePulumiAppP
                 return pulumi?.(...args);
             }
 
-            const [{ onResource, addResource }] = args;
+            const [{ onResource }] = args;
             const { useExistingVpc } = vpc;
 
             // 1. We first deal with "existing VPC" setup.
@@ -57,7 +58,6 @@ export function createWebsitePulumiApp(projectAppParams: CreateWebsitePulumiAppP
                                 }
                             );
                         }
-
                     }
                 });
             }

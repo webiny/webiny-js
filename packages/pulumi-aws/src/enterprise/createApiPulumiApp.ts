@@ -31,7 +31,7 @@ export function createApiPulumiApp(projectAppParams: CreateApiPulumiAppParams = 
                 return pulumi?.(...args);
             }
 
-            const [{ onResource, addResource }] = args;
+            const [{ onResource }] = args;
             const { useExistingVpc } = vpc;
 
             // 1. We first deal with "existing VPC" setup.
@@ -57,7 +57,6 @@ export function createApiPulumiApp(projectAppParams: CreateApiPulumiAppParams = 
                                 }
                             );
                         }
-
                     }
                 });
             }

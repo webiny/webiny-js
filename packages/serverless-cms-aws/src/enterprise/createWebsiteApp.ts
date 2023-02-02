@@ -1,4 +1,7 @@
-import { createWebsitePulumiApp, CreateWebsitePulumiAppParams } from "@webiny/pulumi-aws/enterprise";
+import {
+    createWebsitePulumiApp,
+    CreateWebsitePulumiAppParams
+} from "@webiny/pulumi-aws/enterprise";
 import { PluginCollection } from "@webiny/plugins/types";
 import { generateCommonHandlers, renderWebsite } from "~/website/plugins";
 import { uploadAppToS3 } from "~/react/plugins";
