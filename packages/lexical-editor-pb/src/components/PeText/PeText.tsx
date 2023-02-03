@@ -1,7 +1,7 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import get from "lodash/get";
 import { makeComposable } from "@webiny/app-admin";
-import { LexicalEditor } from "./LexicalEditor";
+import { LexicalEditor } from "../../LexicalEditor";
 import { useRecoilState, useRecoilValue } from "recoil";
 import {
     activeElementAtom,
@@ -10,6 +10,9 @@ import {
 } from "@webiny/app-page-builder/editor/recoil/modules";
 import { applyFallbackDisplayMode } from "@webiny/app-page-builder/editor/plugins/elementSettings/elementSettingsUtils";
 import { CoreOptions } from "medium-editor";
+import useUpdateHandlers from "@webiny/app-page-builder/editor/plugins/elementSettings/useUpdateHandlers";
+import { PbEditorElement } from "@webiny/app-page-builder/types";
+import { DelayedOnChange } from "@webiny/ui/DelayedOnChange";
 
 const DATA_NAMESPACE = "data.text";
 
@@ -25,6 +28,10 @@ export const PeText = makeComposable<TextElementProps>(
         const element = useRecoilValue(elementWithChildrenByIdSelector(elementId));
         const [{ displayMode }] = useRecoilState(uiAtom);
         const [activeElementId, setActiveElementAtomValue] = useRecoilState(activeElementAtom);
+        const { getUpdateValue } = useUpdateHandlers({
+            element: element as PbEditorElement,
+            dataNamespace: DATA_NAMESPACE
+        });
 
         const fallbackValue = useMemo(
             () =>
@@ -40,6 +47,13 @@ export const PeText = makeComposable<TextElementProps>(
             }
         }, [activeElementId, elementId]);
 
+        const onChange = useCallback(
+            value => {
+                getUpdateValue(DATA_NAMESPACE)(value);
+            },
+            [getUpdateValue]
+        );
+
         const value = get(element, `${DATA_NAMESPACE}.${displayMode}`, fallbackValue);
 
         // required due to re-rendering when set content atom and still nothing in elements atom
@@ -47,16 +61,15 @@ export const PeText = makeComposable<TextElementProps>(
             return null;
         }
 
+        const textContent = get(element, `${DATA_NAMESPACE}.data.text`);
         const tag = customTag || get(value, "tag");
 
         return (
-            <LexicalEditor
-                tag={tag}
-                value={null}
-                onChange={json => {
-                    console.log(json);
-                }}
-            />
+            <DelayedOnChange value={textContent} onChange={onChange}>
+                {({ value, onChange }) => (
+                    <LexicalEditor tag={tag} value={value} onChange={onChange} />
+                )}
+            </DelayedOnChange>
         );
     }
 );

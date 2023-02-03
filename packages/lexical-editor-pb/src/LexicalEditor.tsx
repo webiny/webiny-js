@@ -1,6 +1,7 @@
 import React from "react";
 import { HeadingEditor, ParagraphEditor } from "@webiny/lexical-editor";
 import { EditorStateJSONString } from "@webiny/lexical-editor/types";
+import { isHeadingTag } from "~/utils/isHeadingTag";
 
 interface LexicalEditorProps {
     tag: string | [string, Record<string, any>];
@@ -8,17 +9,7 @@ interface LexicalEditorProps {
     onChange?: (json: EditorStateJSONString) => void;
 }
 
-/*
- * @description Implementation of the lexical editor.
- * @feature-flag: 1.0
- * @version: version 1.0
- * */
 export const LexicalEditor: React.FC<LexicalEditorProps> = ({ tag, value, onChange }) => {
-    const isHeadingTag = (tagValue: string | [string, Record<string, any>]): boolean => {
-        const tagName = Array.isArray(tagValue) ? tagValue[0] : tagValue;
-        return tagName.toLowerCase().includes("h");
-    };
-
     return (
         <>
             {isHeadingTag(tag) ? (

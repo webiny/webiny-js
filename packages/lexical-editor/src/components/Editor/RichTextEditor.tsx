@@ -15,6 +15,7 @@ import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
 import { makeComposable } from "@webiny/react-composition";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { RichTextEditorProvider } from "~/context/RichTextEditorContext";
+import { isValidJSON } from "~/utils/isValidJSON";
 
 export interface RichTextEditorProps {
     toolbar: React.ReactNode;
@@ -50,7 +51,7 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
     };
 
     const initialConfig = {
-        editorState: value ?? getEmptyEditorStateJSONString(),
+        editorState: isValidJSON(value) ? value : getEmptyEditorStateJSONString(),
         namespace: "webiny",
         onError: (error: Error) => {
             throw error;

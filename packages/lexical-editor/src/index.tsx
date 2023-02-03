@@ -1,3 +1,5 @@
+// render
+export { RenderLexicalContent } from "~/components/RenderLexicalContent";
 // hooks
 export { useRichTextEditor } from "~/hooks/useRichTextEditor";
 // UI elements

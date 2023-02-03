@@ -4,7 +4,9 @@
   "references": [
     { "path": "../app-admin/tsconfig.build.json" },
     { "path": "../app-page-builder/tsconfig.build.json" },
-    { "path": "../lexical-editor/tsconfig.build.json" }
+    { "path": "../lexical-editor/tsconfig.build.json" },
+    { "path": "../ui/tsconfig.build.json" },
+    { "path": "../feature-flags/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
