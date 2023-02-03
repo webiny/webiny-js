@@ -5,4 +5,4 @@ export {
     FolderDialogDelete
 } from "./components";
 export { ACOProvider } from "./contexts";
-export { useFolders, useSearchRecords } from "./hooks";
+export { useFolders, useRecords } from "./hooks";

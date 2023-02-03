@@ -42,9 +42,9 @@ export const CREATE_RECORD = gql`
 `;
 
 export const LIST_RECORDS = gql`
-    query ListRecords ($location: SearchLocationInput!, $limit: Int, $after: String) {
+    query ListRecords ($type: String!, $location: SearchLocationInput!, $limit: Int, $after: String) {
         search {
-            listRecords(where: { location: $location }, limit: $limit, after: $after) {
+            listRecords(where: { type: $type, location: $location }, limit: $limit, after: $after) {
                 data ${DATA_FIELD}
                 meta ${LIST_META_FIELD}
                 error ${ERROR_FIELD}

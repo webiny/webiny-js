@@ -45,18 +45,8 @@ export const searchRecordSchema = new GraphQLSchemaPlugin<AcoContext>({
         }
 
         input SearchRecordListWhereInput {
-            location: SearchLocationInput!
-        }
-
-        enum SearchRecordListSort {
-            id_ASC
-            id_DESC
-            savedOn_ASC
-            savedOn_DESC
-            createdOn_ASC
-            createdOn_DESC
-            title_ASC
-            title_DESC
+            type: String!
+            location: SearchLocationInput
         }
 
         type SearchRecordResponse {

@@ -4,11 +4,11 @@ import { GET_PAGE } from "~/admin/graphql/pages";
 import { useApolloClient } from "@apollo/react-hooks";
 import { PbPageDataLink, Loading, PbPageData, LoadingActions } from "~/types";
 import { useEffect, useState } from "react";
-import { FOLDER_ID_DEFAULT } from "~/admin/constants/folders";
+import { FOLDER_ID_DEFAULT, FOLDER_TYPE } from "~/admin/constants/folders";
 import { useSnackbar } from "@webiny/app-admin";
 import { i18n } from "@webiny/app/i18n";
 import { useAdminPageBuilder } from "~/admin/hooks/useAdminPageBuilder";
-import { useSearchRecords } from "@webiny/app-aco";
+import { useRecords } from "@webiny/app-aco";
 
 const t = i18n.ns("app-headless-cms/app-page-builder/pages-table/get-pages");
 
@@ -22,7 +22,7 @@ const useGetPages = (links: SearchRecordItem[], folderId = FOLDER_ID_DEFAULT) =>
     const client = useApolloClient();
     const { showSnackbar } = useSnackbar();
     const pageBuilder = useAdminPageBuilder();
-    const { deleteRecord } = useSearchRecords(folderId);
+    const { deleteRecord } = useRecords(FOLDER_TYPE, folderId);
     const [pages, setPages] = useState<PbPageDataLink[]>([]);
     const [loading, setLoading] = useState<Loading<LoadingActions>>(defaultLoading);
     const [times, setTimes] = useState<number>(0);

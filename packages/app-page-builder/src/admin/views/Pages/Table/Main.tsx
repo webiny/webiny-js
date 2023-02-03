@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 import debounce from "lodash/debounce";
 import useDeepCompareEffect from "use-deep-compare-effect";
-import { FolderDialogCreate, useFolders, useSearchRecords } from "@webiny/app-aco";
+import { FolderDialogCreate, useFolders, useRecords } from "@webiny/app-aco";
 import { useHistory, useLocation } from "@webiny/react-router";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
@@ -65,7 +65,7 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
         loading: linksLoading,
         meta,
         listRecords
-    } = useSearchRecords(folderId || FOLDER_ID_DEFAULT);
+    } = useRecords(FOLDER_TYPE, folderId || FOLDER_ID_DEFAULT);
 
     const { pages, loading: pagesLoading } = useGetPages(records, folderId);
 

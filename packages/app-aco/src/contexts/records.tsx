@@ -33,7 +33,12 @@ interface SearchRecordsContext {
     records: SearchRecordItem[];
     loading: Loading<LoadingActions>;
     meta: Meta<ListMeta>;
-    listRecords: (folderId: string, limit?: number, after?: string) => Promise<SearchRecordItem[]>;
+    listRecords: (
+        type: string,
+        folderId: string,
+        limit?: number,
+        after?: string
+    ) => Promise<SearchRecordItem[]>;
     getRecord: (id: string, folderId: string) => Promise<SearchRecordItem>;
     createRecord: (link: Omit<SearchRecordItem, "id">) => Promise<SearchRecordItem>;
     updateRecord: (link: SearchRecordItem, contextFolderId: string) => Promise<SearchRecordItem>;
@@ -68,7 +73,7 @@ export const SearchRecordsProvider = ({ children }: Props) => {
         records,
         loading,
         meta,
-        async listRecords(folderId: string, limit = 10, after?: string) {
+        async listRecords(type: string, folderId: string, limit = 10, after?: string) {
             if (!folderId) {
                 throw new Error("`folderId` is mandatory");
             }
@@ -80,7 +85,7 @@ export const SearchRecordsProvider = ({ children }: Props) => {
                 () =>
                     client.query<ListSearchRecordsResponse, ListSearchRecordsQueryVariables>({
                         query: LIST_RECORDS,
-                        variables: { location: { folderId }, limit, after }
+                        variables: { type, location: { folderId }, limit, after }
                     })
             );
 

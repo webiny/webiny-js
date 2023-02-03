@@ -1,2 +1,2 @@
 export * from "./useFolders";
-export * from "./useSearchRecords";
+export * from "./useRecords";

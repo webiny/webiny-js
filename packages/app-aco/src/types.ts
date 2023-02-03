@@ -121,6 +121,7 @@ export interface ListSearchRecordsResponse {
 }
 
 export interface ListSearchRecordsQueryVariables {
+    type: string;
     location: Location;
     limit?: number;
     after?: string | null;

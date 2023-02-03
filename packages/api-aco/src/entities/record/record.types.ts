@@ -15,7 +15,7 @@ export interface SearchRecord extends AcoBaseFields {
 }
 
 export interface ListSearchRecordsWhere {
-    type?: string;
+    type: string;
     location?: {
         folderId: string;
     };
