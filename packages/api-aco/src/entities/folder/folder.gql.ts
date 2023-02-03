@@ -33,6 +33,7 @@ export const folderSchema = new GraphQLSchemaPlugin<AcoContext>({
 
         input FoldersListWhereInput {
             type: String!
+            parentId: String
         }
 
         type FolderResponse {

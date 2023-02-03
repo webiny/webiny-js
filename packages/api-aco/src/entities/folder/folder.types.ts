@@ -10,6 +10,7 @@ export interface Folder extends AcoBaseFields {
 
 export interface ListFoldersWhere {
     type: string;
+    parentId?: string | null;
 }
 
 export interface ListFoldersParams {
