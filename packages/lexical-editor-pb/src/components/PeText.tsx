@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useMemo } from "react";
 import get from "lodash/get";
 import { makeComposable } from "@webiny/app-admin";
-import { LexicalEditor } from "../../LexicalEditor";
 import { useRecoilState, useRecoilValue } from "recoil";
 import {
     activeElementAtom,
@@ -13,6 +12,7 @@ import { CoreOptions } from "medium-editor";
 import useUpdateHandlers from "@webiny/app-page-builder/editor/plugins/elementSettings/useUpdateHandlers";
 import { PbEditorElement } from "@webiny/app-page-builder/types";
 import { DelayedOnChange } from "@webiny/ui/DelayedOnChange";
+import { LexicalEditor } from "~/LexicalEditor";
 
 const DATA_NAMESPACE = "data.text";
 
