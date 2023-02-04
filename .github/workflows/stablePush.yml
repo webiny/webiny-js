@@ -74,7 +74,7 @@ jobs:
           key: packages-cache-${{ needs.init.outputs.ts }}
 
   npm-release-beta:
-    needs: [code-analysis]
+    needs: [build]
     name: NPM release ("beta" tag)
     runs-on: ubuntu-latest
     env:
