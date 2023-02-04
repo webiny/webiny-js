@@ -30,12 +30,10 @@ jobs:
 
       - name: Get timestamp
         id: get-timestamp
-        # run: echo "ts=$(node --eval "console.log(new Date().getTime())")" >> $GITHUB_OUTPUT
         run: echo "ts=$(node --eval "console.log(new Date().getTime())")" >> $GITHUB_OUTPUT
 
       - name: List packages with Jest tests
         id: list-jest-packages
-        # run: echo "jest-packages=$(node scripts/listPackagesWithTests.js)" >> $GITHUB_OUTPUT
         run: echo "jest-packages=$(node scripts/listPackagesWithTests.js)" >> $GITHUB_OUTPUT
 
   build:
@@ -74,105 +72,6 @@ jobs:
         with:
           path: .webiny/cached-packages
           key: packages-cache-${{ needs.init.outputs.ts }}
-
-  code-analysis:
-    needs: [init, build]
-    name: Static code analysis
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 14
-
-      - uses: actions/checkout@v3
-
-      - uses: actions/cache@v3
-        with:
-          path: .yarn/cache
-          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-
-      - uses: actions/cache@v3
-        with:
-          path: .webiny/cached-packages
-          key: packages-cache-${{ needs.init.outputs.ts }}
-
-      - name: Install dependencies
-        run: yarn --immutable
-
-      - name: Check code formatting
-        run: yarn prettier:check
-
-      - name: Check dependencies
-        run: yarn adio
-
-      - name: Check TS configs
-        run: yarn check-ts-configs
-
-      - name: ESLint
-        run: yarn eslint
-
-  #  code-analysis-typescript:
-  #    name: Static code analysis (TypeScript)
-  #    runs-on: ubuntu-latest
-  #    steps:
-  #      - uses: actions/setup-node@v3
-  #        with:
-  #          node-version: 14
-  #
-  #      - uses: actions/checkout@v3
-  #
-  #      - uses: actions/cache@v3
-  #        with:
-  #          path: .yarn/cache
-  #          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-  #
-  #      - name: Install dependencies
-  #        run: yarn --immutable
-  #
-  #      - name: Build packages (full)
-  #        run: node scripts/buildWithCache.js
-  #
-  #  jest-tests:
-  #    needs: [init, build]
-  #    name: ${{ matrix.package }} (${{ matrix.os }}, Node v${{ matrix.node }})
-  #    strategy:
-  #      fail-fast: false
-  #      matrix:
-  #        os: [ubuntu-latest]
-  #        node: [14]
-  #        package: ${{ fromJson(needs.init.outputs.jest-packages) }}
-  #    runs-on: ${{ matrix.os }}
-  #    env:
-  #      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  #      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  #      AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
-  #      ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
-  #      ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.init.outputs.ts }}_
-  #    steps:
-  #      - uses: actions/setup-node@v3
-  #        with:
-  #          node-version: ${{ matrix.node }}
-  #
-  #      - uses: actions/checkout@v3
-  #
-  #      - uses: actions/cache@v3
-  #        with:
-  #          path: .yarn/cache
-  #          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-  #
-  #      - name: Install dependencies
-  #        run: yarn --immutable
-  #
-  #      - uses: actions/cache@v3
-  #        with:
-  #          path: .webiny/cached-packages
-  #          key: packages-cache-${{ needs.init.outputs.ts }}
-  #
-  #      - name: Build packages
-  #        run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
-  #
-  #      - name: Run tests
-  #        run: yarn test ${{ matrix.package }}
 
   npm-release-beta:
     needs: [code-analysis]
