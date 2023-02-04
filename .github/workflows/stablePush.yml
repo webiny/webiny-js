@@ -67,7 +67,7 @@ jobs:
           key: packages-cache-${{ needs.init.outputs.ts }}
 
   npm-release-beta:
-    needs: [build]
+    needs: [init, build]
     name: NPM release ("beta" tag)
     runs-on: ubuntu-latest
     env:
@@ -113,7 +113,7 @@ jobs:
         run: yarn release --type=beta
 
   npm-release-latest:
-    needs: npm-release-beta
+    needs: [init, npm-release-beta]
     name: NPM release ("latest" tag)
     runs-on: ubuntu-latest
     environment: release
