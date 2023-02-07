@@ -15,7 +15,6 @@ interface RenderLexicalContent {
     value: EditorStateJSONString;
 }
 export const RenderLexicalContent: React.FC<RenderLexicalContent> = ({ nodes, value }) => {
-    console.log("RenderLexicalContent", value);
     const initialConfig = {
         editorState: isValidJSON(value) ? value : getEmptyEditorStateJSONString(),
         namespace: "webiny",

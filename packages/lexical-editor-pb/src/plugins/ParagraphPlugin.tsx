@@ -4,7 +4,7 @@ import { useActiveElementId } from "@webiny/app-page-builder/editor/hooks/useAct
 import { Element } from "@webiny/app-page-builder-elements/types";
 import { isLegacyRenderingEngine } from "@webiny/app-page-builder/utils";
 import Paragraph from "@webiny/app-page-builder/editor/plugins/elements/paragraph/Paragraph";
-import { RenderPeText } from "~/components/RenderPeText";
+import { PeTextRenderer } from "~/components/PeTextRenderer";
 
 export const ParagraphPlugin = createComponentPlugin(Paragraph, Original => {
     return function HeadingPlugin({ element, ...rest }): JSX.Element {
@@ -13,6 +13,7 @@ export const ParagraphPlugin = createComponentPlugin(Paragraph, Original => {
         if (isActive || isLegacyRenderingEngine) {
             return <Original element={element} {...rest} />;
         }
-        return <RenderPeText element={element as Element} {...rest} />;
+
+        return <PeTextRenderer element={element as Element} {...rest} />;
     };
 });

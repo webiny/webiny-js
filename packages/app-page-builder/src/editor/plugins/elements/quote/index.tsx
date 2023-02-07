@@ -12,12 +12,19 @@ import {
 import { createInitialTextValue } from "../utils/textUtils";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 
+/*
+ * @TODO: Remove the Quote component
+ * Quote component will be deprecated in the next version and will not be available in the sidebar.
+ * For now only existing to support legacy content for the quote, in the future Lexical editor will be used.
+ * For more check @webiny/lexical-editor and @webiny/lexical-editor-pb packages.
+ */
 export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementPlugin => {
     const defaultText = "Block Quote";
     const elementType = kebabCase(args.elementType || "quote");
     const defaultToolbar = {
         title: "Quote",
-        group: "pb-editor-element-group-basic",
+        // exclude Quote component from the sidebar
+        group: "",
         preview() {
             return (
                 <div className={className}>

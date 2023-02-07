@@ -16,9 +16,16 @@ import { createInitialPerDeviceSettingValue } from "../../elementSettings/elemen
 export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementPlugin => {
     const elementType = kebabCase(args.elementType || "list");
 
+    /*
+     * @TODO: Remove the list component
+     * List component will be deprecated in the next version and will not be available in the sidebar.
+     * For now only existing to support legacy content for the list, in the future Lexical editor will be used.
+     * For more check @webiny/lexical-editor and @webiny/lexical-editor-pb packages.
+     */
     const defaultToolbar: PbEditorPageElementPluginToolbar = {
         title: "List",
-        group: "pb-editor-element-group-basic",
+        // exclude List component from the sidebar
+        group: "",
         preview() {
             return (
                 <div className={className}>
