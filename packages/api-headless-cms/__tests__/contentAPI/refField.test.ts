@@ -141,7 +141,6 @@ describe("refField", () => {
         const author = await createAuthor();
 
         const {
-            until,
             createReview,
             getReview: manageGetReview,
             listReviews: manageListReviews,
@@ -223,13 +222,6 @@ describe("refField", () => {
             }
         });
 
-        // If this `until` resolves successfully, we know entry is accessible via the "read" API
-        await until(
-            () => manageListReviews().then(([data]) => data),
-            ({ data }: any) => data.listReviews.data[0].meta.publishedOn === publishedOn,
-            { name: "manage list reviews" }
-        );
-
         const [manageListResponse] = await manageListReviews();
 
         expect(manageListResponse).toEqual({
@@ -287,18 +279,6 @@ describe("refField", () => {
         const { getReview: readGetReview } = useReviewReadHandler({
             ...readOpts
         });
-
-        // If this `until` resolves successfully, we know entry is accessible via the "read" API
-        await until(
-            () =>
-                readGetReview({
-                    where: {
-                        id: review.id
-                    }
-                }).then(([data]) => data),
-            ({ data }: any) => data.getReview.data.id === review.id,
-            { name: "get created review" }
-        );
 
         const [response] = await readGetReview({
             where: {

@@ -1,3 +1,6 @@
+/**
+ * We need the "until" because we are using storage operations directly.
+ */
 import { useFruitManageHandler } from "../testHelpers/useFruitManageHandler";
 // @ts-ignore
 import mdbid from "mdbid";
@@ -83,9 +86,6 @@ describe("entry pagination", () => {
                 entry: fruit
             });
         }
-    });
-
-    it("should paginate through entries", async () => {
         await until(
             () =>
                 manager
@@ -103,6 +103,9 @@ describe("entry pagination", () => {
                 wait: 2000
             }
         );
+    });
+
+    it("should paginate through entries", async () => {
         /**
          * List items from 0-37
          */
