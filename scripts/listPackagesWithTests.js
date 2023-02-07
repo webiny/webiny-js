@@ -62,9 +62,9 @@ const CUSTOM_HANDLERS = {
             //     // "packages/api-apw/* --keyword=cms:ddb-es --keyword=apw:base"
         ];
     },
-    // Split "api-aco" tests.
+    // Setup "api-aco" tests.
     "api-aco": () => {
-        return ["packages/api-aco/*"];
+        return ["packages/api-aco/* --keyword=cms:ddb --keyword=aco:base"];
     }
 };
 
