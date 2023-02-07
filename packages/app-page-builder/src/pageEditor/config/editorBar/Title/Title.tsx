@@ -31,6 +31,7 @@ interface PageInfo {
     pageCategory?: string;
     pageCategoryUrl?: string;
 }
+
 const extractPageInfo = (page: PageAtomType): PageInfo => {
     const { title, version, locked, category } = page;
     return {
@@ -75,7 +76,7 @@ const Title: React.FC = () => {
     }, [title]);
 
     const onKeyDown = useCallback(
-        (e: SyntheticEvent) => {
+        (e: SyntheticEvent<HTMLInputElement>) => {
             // @ts-ignore
             switch (e.key) {
                 case "Escape":
@@ -84,7 +85,8 @@ const Title: React.FC = () => {
                     setTitle(pageTitle);
                     break;
                 case "Enter":
-                    if (title === "") {
+                    let title = e.currentTarget.value;
+                    if (!title) {
                         title = "Untitled";
                         setTitle(title);
                     }
@@ -92,7 +94,7 @@ const Title: React.FC = () => {
                     e.preventDefault();
                     setEdit(false);
 
-                    updatePage({ title });
+                    updatePage({ title: title });
                     break;
                 default:
                     return;
