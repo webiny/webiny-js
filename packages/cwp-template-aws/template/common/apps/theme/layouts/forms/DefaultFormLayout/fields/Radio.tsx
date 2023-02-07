@@ -58,7 +58,7 @@ export const RadioField: React.FC<RadioProps> = ({ field }) => {
 
     return (
         <Field>
-            <FieldLabel>{field.label}</FieldLabel>
+            <FieldLabel field={field} />
             {field.helpText && <FieldHelperMessage>{field.helpText}</FieldHelperMessage>}
             {(field.options || []).map(option => (
                 <RadioGroup key={option.value}>

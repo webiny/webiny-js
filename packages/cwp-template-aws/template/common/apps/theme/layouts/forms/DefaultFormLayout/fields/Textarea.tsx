@@ -37,7 +37,7 @@ export const TextareaField: React.FC<TextareaProps> = ({ field }) => {
 
     return (
         <Field>
-            <FieldLabel>{field.label}</FieldLabel>
+            <FieldLabel field={field} />
             {field.helpText && <FieldHelperMessage>{field.helpText}</FieldHelperMessage>}
             <StyledTextarea
                 onChange={e => onChange(e.target.value)}

@@ -5,6 +5,7 @@
     { "path": "../i18n" },
     { "path": "../i18n-react" },
     { "path": "../plugins" },
+    { "path": "../react-composition" },
     { "path": "../react-router" },
     { "path": "../ui" }
   ],
@@ -21,6 +22,8 @@
       "@webiny/i18n-react": ["../i18n-react/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
+      "@webiny/react-composition/*": ["../react-composition/src/*"],
+      "@webiny/react-composition": ["../react-composition/src"],
       "@webiny/react-router/*": ["../react-router/src/*"],
       "@webiny/react-router": ["../react-router/src"],
       "@webiny/ui/*": ["../ui/src/*"],

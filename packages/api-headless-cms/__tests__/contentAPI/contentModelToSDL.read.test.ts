@@ -40,7 +40,7 @@ describe("READ - ContentModel to SDL", () => {
     test("Category SDL", async () => {
         const model = getModel("category");
 
-        const sdl = createReadSDL({ model, fieldTypePlugins });
+        const sdl = createReadSDL({ model, fieldTypePlugins, sorterPlugins: [] });
         const prettyGql = prettier.format(sdl.trim(), { parser: "graphql" });
         const prettySnapshot = prettier.format(categorySDL.trim(), { parser: "graphql" });
         expect(prettyGql).toBe(prettySnapshot);
@@ -49,7 +49,7 @@ describe("READ - ContentModel to SDL", () => {
     test("Product SDL", async () => {
         const model = getModel("product");
 
-        const sdl = createReadSDL({ model, fieldTypePlugins });
+        const sdl = createReadSDL({ model, fieldTypePlugins, sorterPlugins: [] });
         const prettyGql = prettier.format(sdl.trim(), { parser: "graphql" });
         const prettySnapshot = prettier.format(productSDL.trim(), { parser: "graphql" });
         expect(prettyGql).toBe(prettySnapshot);
@@ -58,14 +58,14 @@ describe("READ - ContentModel to SDL", () => {
     test("Review SDL", async () => {
         const model = getModel("review");
 
-        const sdl = createReadSDL({ model, fieldTypePlugins });
+        const sdl = createReadSDL({ model, fieldTypePlugins, sorterPlugins: [] });
         const prettyGql = prettier.format(sdl.trim(), { parser: "graphql" });
         const prettySnapshot = prettier.format(reviewSDL.trim(), { parser: "graphql" });
         expect(prettyGql).toBe(prettySnapshot);
     });
 
     test("Dynamic Zone SDL", async () => {
-        const sdl = createReadSDL({ model: pageModel as any, fieldTypePlugins });
+        const sdl = createReadSDL({ model: pageModel as any, fieldTypePlugins, sorterPlugins: [] });
         const prettyGql = prettier.format(sdl.trim(), { parser: "graphql" });
         const prettySnapshot = prettier.format(pageSDL.trim(), { parser: "graphql" });
         expect(prettyGql).toBe(prettySnapshot);

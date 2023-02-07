@@ -43,7 +43,7 @@ export const SelectField: React.FC<SelectProps> = ({ field }) => {
 
     return (
         <Field>
-            <FieldLabel>{field.label}</FieldLabel>
+            <FieldLabel field={field} />
             {field.helpText && <FieldHelperMessage>{field.helpText}</FieldHelperMessage>}
             <StyledSelect
                 value={value || ""}

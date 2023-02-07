@@ -5,6 +5,7 @@ export default `
     type Page {
         id: ID!
         entryId: String!
+        modelId: String!
         createdOn: DateTime!
         savedOn: DateTime!
         createdBy: CmsCreatedBy!

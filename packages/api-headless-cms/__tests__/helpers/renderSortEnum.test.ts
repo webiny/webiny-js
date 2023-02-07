@@ -3,6 +3,11 @@ import { renderSortEnum } from "~/utils/renderSortEnum";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { CmsFieldTypePlugins, CmsModel, CmsModelFieldToGraphQLPlugin } from "~/types";
 import { filterModelsDeletedFields } from "~/utils/filterModelFields";
+import { createCmsGraphQLSchemaSorterPlugin } from "~/plugins";
+
+const sortPlugin = createCmsGraphQLSchemaSorterPlugin(({ sorters }) => {
+    return [...sorters, "testSorter_ASC", "testSorter_DESC"];
+});
 
 describe("Render GraphQL sort enum", () => {
     const { plugins } = useGraphQLHandler();
@@ -22,7 +27,8 @@ describe("Render GraphQL sort enum", () => {
 
         const result = renderSortEnum({
             model,
-            fieldTypePlugins
+            fieldTypePlugins,
+            sorterPlugins: [sortPlugin]
         });
 
         expect(result).toEqual(
@@ -46,7 +52,9 @@ describe("Render GraphQL sort enum", () => {
                 "color_ASC",
                 "color_DESC",
                 "availableSizes_ASC",
-                "availableSizes_DESC"
+                "availableSizes_DESC",
+                "testSorter_ASC",
+                "testSorter_DESC"
             ].join("\n")
         );
     });
@@ -59,7 +67,8 @@ describe("Render GraphQL sort enum", () => {
 
         const result = renderSortEnum({
             model,
-            fieldTypePlugins
+            fieldTypePlugins,
+            sorterPlugins: [sortPlugin]
         });
 
         expect(result).toEqual(
@@ -83,7 +92,9 @@ describe("Render GraphQL sort enum", () => {
                 "color_ASC",
                 "color_DESC",
                 "availableSizes_ASC",
-                "availableSizes_DESC"
+                "availableSizes_DESC",
+                "testSorter_ASC",
+                "testSorter_DESC"
             ].join("\n")
         );
     });

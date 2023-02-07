@@ -9,7 +9,7 @@ export const MainContainer = styled("div")`
 export const Wrapper = styled("div")`
     width: 100%;
     position: absolute;
-    top: 52px;
+    top: 64px;
     bottom: 0;
     left: 0;
     background: var(--mdc-theme-surface);

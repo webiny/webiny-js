@@ -6,7 +6,10 @@ class LatestRelease extends Release {
     constructor(logger) {
         super(logger);
         this.setTag(this.defaultTag);
-        this.setVersion("--conventional-graduate");
+
+        const VERSION = process.env.LATEST_VERSION || "--conventional-graduate";
+
+        this.setVersion(VERSION);
         this.setCreateGithubRelease(true);
     }
 
