@@ -62,6 +62,12 @@ const Pages: React.FC = () => {
                                     templateId: template.id
                                 },
                                 elements: []
+                            },
+                            settings: {
+                                general: {
+                                    ...res.data.pageBuilder.createPage.data.settings.general,
+                                    layout: template.layout
+                                }
                             }
                         }
                     }

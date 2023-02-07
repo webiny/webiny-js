@@ -859,6 +859,7 @@ export interface PbPageTemplate {
     id: string;
     title: string;
     description: string;
+    layout: string;
     content: any;
     createdOn: string;
     savedOn: string;

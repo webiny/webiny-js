@@ -31,6 +31,9 @@ export const createPageTemplateEntity = (params: Params): Entity<any> => {
             description: {
                 type: "string"
             },
+            layout: {
+                type: "string"
+            },
             content: {
                 type: "map"
             },

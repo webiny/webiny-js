@@ -9,6 +9,7 @@ export interface TemplateAtomType {
     id: string;
     title?: string;
     description?: string;
+    layout?: string;
     savedOn?: string;
     createdBy: {
         id: string | null;

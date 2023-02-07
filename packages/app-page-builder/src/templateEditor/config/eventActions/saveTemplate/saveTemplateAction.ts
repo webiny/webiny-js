@@ -64,7 +64,7 @@ const syncTemplateVariables = (content: PbElement) => {
     return { ...content, data: { ...content.data, templateVariables } };
 };
 
-type TemplateType = Pick<TemplateWithContent, "title" | "description" | "content">;
+type TemplateType = Pick<TemplateWithContent, "title" | "description" | "content" | "layout">;
 
 const triggerOnFinish = (args?: SaveTemplateActionArgsType): void => {
     if (!args || !args.onFinish || typeof args.onFinish !== "function") {
@@ -92,6 +92,7 @@ export const saveTemplateAction: TemplateEventActionCallable<SaveTemplateActionA
     const data: TemplateType = {
         title: state.template.title,
         description: state.template?.description || "",
+        layout: state.template?.layout || "",
         content: syncTemplateVariables({ ...content, elements })
     };
 

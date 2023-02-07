@@ -9,6 +9,7 @@ export const createPageTemplateGraphQL = new GraphQLSchemaPlugin<PbContext>({
             id: ID
             title: String
             description: String
+            layout: String
             content: JSON
             createdOn: DateTime
             savedOn: DateTime
@@ -18,12 +19,14 @@ export const createPageTemplateGraphQL = new GraphQLSchemaPlugin<PbContext>({
         input PbCreatePageTemplateInput {
             title: String!
             description: String
+            layout: String
             content: JSON
         }
 
         input PbUpdatePageTemplateInput {
             title: String
             description: String
+            layout: String
             content: JSON
         }
 

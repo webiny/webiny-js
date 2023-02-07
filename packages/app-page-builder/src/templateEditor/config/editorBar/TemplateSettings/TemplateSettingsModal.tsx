@@ -4,8 +4,10 @@ import { css } from "emotion";
 import { useRecoilState } from "recoil";
 
 import { Form } from "@webiny/form";
+import { plugins } from "@webiny/plugins";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { Grid, Cell } from "@webiny/ui/Grid";
+import { Select } from "@webiny/ui/Select";
 import { SimpleFormContent } from "@webiny/app-admin/components/SimpleForm";
 import { validation } from "@webiny/validation";
 import { Dialog, DialogCancel, DialogTitle, DialogActions, DialogContent } from "@webiny/ui/Dialog";
@@ -16,6 +18,7 @@ import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import { UpdateDocumentActionEvent } from "~/editor/recoil/actions";
 import { TemplateAtomType } from "~/templateEditor/state";
 import { Input } from "@webiny/ui/Input";
+import { PbPageLayoutPlugin } from "~/types";
 
 const ButtonWrapper = styled.div`
     display: flex;
@@ -38,6 +41,11 @@ const TemplateSettingsModal: React.FC = () => {
         setState(false);
     }, []);
 
+    const layouts = React.useMemo(() => {
+        const layoutPlugins = plugins.byType<PbPageLayoutPlugin>("pb-page-layout");
+        return (layoutPlugins || []).map(pl => pl.layout);
+    }, []);
+
     const updateTemplate = (data: Partial<TemplateAtomType>) => {
         handler.trigger(
             new UpdateDocumentActionEvent({
@@ -48,7 +56,11 @@ const TemplateSettingsModal: React.FC = () => {
     };
 
     const onSubmit = useCallback(formData => {
-        updateTemplate({ title: formData.title, description: formData.description });
+        updateTemplate({
+            title: formData.title,
+            description: formData.description,
+            layout: formData.layout
+        });
         onClose();
     }, []);
 
@@ -75,6 +87,20 @@ const TemplateSettingsModal: React.FC = () => {
                                     <Cell span={12}>
                                         <Bind name="description">
                                             <Input label="Description" />
+                                        </Bind>
+                                    </Cell>
+                                    <Cell span={12}>
+                                        <Bind
+                                            name="layout"
+                                            defaultValue={layouts.length ? layouts[0].name : ""}
+                                        >
+                                            <Select label="Layout">
+                                                {layouts.map(({ name, title }) => (
+                                                    <option key={name} value={name}>
+                                                        {title}
+                                                    </option>
+                                                ))}
+                                            </Select>
                                         </Bind>
                                     </Cell>
                                 </Grid>

@@ -60,6 +60,17 @@ export const CREATE_PAGE = gql`
             createPage(from: $from, category: $category) {
                 data {
                     ${LIST_PAGES_DATA_FIELDS}
+                    settings {
+                        general {
+                            snippet
+                            tags
+                            layout
+                            image {
+                                id
+                                src
+                            }
+                        }
+                    }
                 }
                 ${error}
             }

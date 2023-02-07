@@ -28,8 +28,12 @@ const EditorContent = createComponentPlugin(BaseEditorContent, PrevContent => {
         return (
             <>
                 <PrevContent />
-                {!isTemplateMode && <AddBlock />}
-                <AddContent />
+                {!isTemplateMode && (
+                    <>
+                        <AddBlock />
+                        <AddContent />
+                    </>
+                )}
             </>
         );
     };

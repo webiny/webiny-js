@@ -29,12 +29,14 @@ import { createTopic } from "@webiny/pubsub";
 const createSchema = zod.object({
     title: zod.string().max(100),
     description: zod.string().max(100).optional(),
+    layout: zod.string().max(100).optional(),
     content: zod.any()
 });
 
 const updateSchema = zod.object({
     title: zod.string().max(100).optional(),
     description: zod.string().max(100).optional(),
+    layout: zod.string().max(100).optional(),
     content: zod.any()
 });
 

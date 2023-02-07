@@ -5,6 +5,7 @@ const PAGE_TEMPLATE_BASE_FIELDS = `
     id
     title
     description
+    layout
     content
     createdOn
     savedOn
@@ -121,6 +122,7 @@ export interface UpdatePageTemplateMutationVariables {
     data: {
         title?: string;
         description?: string;
+        layout?: string;
         content?: string;
     };
 }
