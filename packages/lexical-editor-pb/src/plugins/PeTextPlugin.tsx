@@ -15,7 +15,6 @@ import { isHeadingTag } from "~/utils/isHeadingTag";
 const DATA_NAMESPACE = "data.text";
 export const PeTextPlugin = createComponentPlugin(PeText, Original => {
     return function PbTextPlugin({ elementId, tag: customTag, mediumEditorOptions }): JSX.Element {
-        console.log("PbTextPlugin: ", elementId);
         const element = useRecoilValue(elementWithChildrenByIdSelector(elementId));
         const [{ displayMode }] = useRecoilState(uiAtom);
         const fallbackValue = useMemo(
