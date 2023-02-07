@@ -15,26 +15,12 @@ import { createInitialPerDeviceSettingValue } from "../../elementSettings/elemen
 /*
  * @TODO: Remove the Quote component
  * Quote component will be deprecated in the next version and will not be available in the sidebar.
- * For now only existing to support legacy content for the quote, in the future Lexical editor will be used.
+ * Now component exist to support legacy content for the quote, in the future Lexical editor will be used.
  * For more check @webiny/lexical-editor and @webiny/lexical-editor-pb packages.
  */
 export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementPlugin => {
     const defaultText = "Block Quote";
     const elementType = kebabCase(args.elementType || "quote");
-    const defaultToolbar = {
-        title: "Quote",
-        // exclude Quote component from the sidebar
-        group: "",
-        preview() {
-            return (
-                <div className={className}>
-                    <blockquote>
-                        <q>{defaultText}</q>
-                    </blockquote>
-                </div>
-            );
-        }
-    };
     const defaultSettings = [
         "pb-editor-page-element-style-settings-text",
         "pb-editor-page-element-style-settings-background",
@@ -50,12 +36,6 @@ export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementP
         name: `pb-editor-page-element-${elementType}`,
         type: "pb-editor-page-element",
         elementType: elementType,
-        /**
-         * TODO @ts-refactor @ashutosh
-         * Completely different types between method result and variable
-         */
-        // @ts-ignore
-        toolbar: typeof args.toolbar === "function" ? args.toolbar(defaultToolbar) : defaultToolbar,
         settings:
             typeof args.settings === "function" ? args.settings(defaultSettings) : defaultSettings,
         target: ["cell", "block"],
