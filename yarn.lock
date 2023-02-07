@@ -10285,6 +10285,7 @@ __metadata:
     "@webiny/api": 0.0.0
     "@webiny/api-admin-settings": 0.0.0
     "@webiny/api-headless-cms": 0.0.0
+    "@webiny/api-headless-cms-ddb": 0.0.0
     "@webiny/api-i18n": 0.0.0
     "@webiny/api-i18n-ddb": 0.0.0
     "@webiny/api-security": 0.0.0
