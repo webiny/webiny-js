@@ -6,24 +6,24 @@ describe("`folder` CRUD", () => {
 
     it("should be able to create, read, update and delete `folders`", async () => {
         // Let's create some folders.
-        const [responseA] = await aco.folder.create({ data: folderMocks.folderA });
+        const [responseA] = await aco.createFolder({ data: folderMocks.folderA });
         const folderA = responseA.data.aco.createFolder.data;
         expect(folderA).toEqual({ id: folderA.id, parentId: null, ...folderMocks.folderA });
 
-        const [responseB] = await aco.folder.create({ data: folderMocks.folderB });
+        const [responseB] = await aco.createFolder({ data: folderMocks.folderB });
         const folderB = responseB.data.aco.createFolder.data;
         expect(folderB).toEqual({ id: folderB.id, ...folderMocks.folderB });
 
-        const [responseC] = await aco.folder.create({ data: folderMocks.folderC });
+        const [responseC] = await aco.createFolder({ data: folderMocks.folderC });
         const folderC = responseC.data.aco.createFolder.data;
         expect(folderC).toEqual({ id: folderC.id, parentId: null, ...folderMocks.folderC });
 
-        const [responseD] = await aco.folder.create({ data: folderMocks.folderD });
+        const [responseD] = await aco.createFolder({ data: folderMocks.folderD });
         const folderD = responseD.data.aco.createFolder.data;
         expect(folderD).toEqual({ id: folderD.id, ...folderMocks.folderD });
 
         // Let's check whether both of the folder exists, listing them by `type`.
-        const [listResponse] = await aco.folder.list({ where: { type: "page" } });
+        const [listResponse] = await aco.listFolders({ where: { type: "page" } });
         expect(listResponse.data.aco.listFolders).toEqual(
             expect.objectContaining({
                 data: expect.arrayContaining([
@@ -50,7 +50,7 @@ describe("`folder` CRUD", () => {
             })
         );
 
-        const [listFoldersResponse] = await aco.folder.list({ where: { type: "cms" } });
+        const [listFoldersResponse] = await aco.listFolders({ where: { type: "cms" } });
         expect(listFoldersResponse.data.aco.listFolders).toEqual(
             expect.objectContaining({
                 data: expect.arrayContaining([
@@ -72,7 +72,7 @@ describe("`folder` CRUD", () => {
             parentId: "parent-folder-a-updated"
         };
 
-        const [updateB] = await aco.folder.update({
+        const [updateB] = await aco.updateFolder({
             id: folderB.id,
             data: update
         });
@@ -92,7 +92,7 @@ describe("`folder` CRUD", () => {
         });
 
         // Let's delete "folder-b"
-        const [deleteB] = await aco.folder.delete({
+        const [deleteB] = await aco.deleteFolder({
             id: folderB.id
         });
 
@@ -108,7 +108,7 @@ describe("`folder` CRUD", () => {
         });
 
         // Should not find "folder-b"
-        const [getB] = await aco.folder.get({ id: folderB.id });
+        const [getB] = await aco.getFolder({ id: folderB.id });
 
         expect(getB).toMatchObject({
             data: {
@@ -125,7 +125,7 @@ describe("`folder` CRUD", () => {
         });
 
         // Should find "folder-a" by id
-        const [getA] = await aco.folder.get({ id: folderA.id });
+        const [getA] = await aco.getFolder({ id: folderA.id });
 
         expect(getA).toEqual({
             data: {
@@ -144,11 +144,11 @@ describe("`folder` CRUD", () => {
 
     it("should NOT delete folder in case has child folders", async () => {
         // Let's create a parent folders.
-        const [parentResponse] = await aco.folder.create({ data: folderMocks.folderA });
+        const [parentResponse] = await aco.createFolder({ data: folderMocks.folderA });
         const parentFolder = parentResponse.data.aco.createFolder.data;
 
         // Let's create some children folders.
-        const [childResponse1] = await aco.folder.create({
+        const [childResponse1] = await aco.createFolder({
             data: { ...folderMocks.folderB, parentId: parentFolder.id }
         });
         const childFolder1 = childResponse1.data.aco.createFolder.data;
@@ -157,7 +157,7 @@ describe("`folder` CRUD", () => {
             parentId: parentFolder.id
         });
 
-        const [childResponse2] = await aco.folder.create({
+        const [childResponse2] = await aco.createFolder({
             data: { ...folderMocks.folderC, parentId: parentFolder.id }
         });
         const childFolder2 = childResponse2.data.aco.createFolder.data;
@@ -167,7 +167,7 @@ describe("`folder` CRUD", () => {
         });
 
         // Let's delete parent folder.
-        const [deleteParent] = await aco.folder.delete({
+        const [deleteParent] = await aco.deleteFolder({
             id: parentFolder.id
         });
 
@@ -189,10 +189,10 @@ describe("`folder` CRUD", () => {
 
     it("should not allow creating a `folder` with same `slug`", async () => {
         // Creating a folder
-        await aco.folder.create({ data: folderMocks.folderA });
+        await aco.createFolder({ data: folderMocks.folderA });
 
         // Creating a folder with same "slug" should not be allowed
-        const [response] = await aco.folder.create({ data: folderMocks.folderA });
+        const [response] = await aco.createFolder({ data: folderMocks.folderA });
 
         expect(response).toEqual({
             data: {
@@ -217,10 +217,10 @@ describe("`folder` CRUD", () => {
 
     it("should allow creating a `folder` with same `slug` but different `parentId`", async () => {
         // Creating a folder
-        await aco.folder.create({ data: folderMocks.folderA });
+        await aco.createFolder({ data: folderMocks.folderA });
 
         // Creating a folder with same "slug" should not be allowed
-        const [response] = await aco.folder.create({
+        const [response] = await aco.createFolder({
             data: { ...folderMocks.folderA, parentId: "parent-folder-a" }
         });
 
@@ -234,7 +234,7 @@ describe("`folder` CRUD", () => {
 
     it("should not allow updating a non-existing `folder`", async () => {
         const id = "any-id";
-        const [result] = await aco.folder.update({
+        const [result] = await aco.updateFolder({
             id,
             data: {
                 title: "Any name"
@@ -253,15 +253,15 @@ describe("`folder` CRUD", () => {
 
     it("should not allow updating in case a folder with same `slug` at the same level (a.k.a. `parentId`) already exists.", async () => {
         // Creating "Folder A"
-        const [responseA] = await aco.folder.create({ data: folderMocks.folderA });
+        const [responseA] = await aco.createFolder({ data: folderMocks.folderA });
         const folderA = responseA.data.aco.createFolder.data;
 
         // Creating "Folder B"
-        const [responseB] = await aco.folder.create({ data: folderMocks.folderB });
+        const [responseB] = await aco.createFolder({ data: folderMocks.folderB });
         const folderB = responseB.data.aco.createFolder.data;
 
         // Updating "Folder B" with same "slug" of "Folder A" should not be allowed
-        const [update] = await aco.folder.update({
+        const [update] = await aco.updateFolder({
             id: folderB.id,
             data: { slug: folderA.slug, parentId: null }
         });

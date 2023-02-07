@@ -118,20 +118,20 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         return [JSON.parse(response.body), response];
     };
 
-    const folder = {
-        async create(variables = {}) {
+    const aco = {
+        async createFolder(variables = {}) {
             return invoke({ body: { query: CREATE_FOLDER, variables } });
         },
-        async update(variables = {}) {
+        async updateFolder(variables = {}) {
             return invoke({ body: { query: UPDATE_FOLDER, variables } });
         },
-        async delete(variables = {}) {
+        async deleteFolder(variables = {}) {
             return invoke({ body: { query: DELETE_FOLDER, variables } });
         },
-        async list(variables = {}) {
+        async listFolders(variables = {}) {
             return invoke({ body: { query: LIST_FOLDERS, variables } });
         },
-        async get(variables = {}) {
+        async getFolder(variables = {}) {
             return invoke({ body: { query: GET_FOLDER, variables } });
         }
     };
@@ -158,9 +158,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         params,
         handler,
         invoke,
-        aco: {
-            folder
-        },
+        aco,
         search
     };
 };
