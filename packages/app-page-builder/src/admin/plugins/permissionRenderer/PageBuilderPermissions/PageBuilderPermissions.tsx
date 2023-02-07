@@ -86,19 +86,19 @@ export const PageBuilderPermissions: React.FC<PageBuilderPermissionsProps> = ({
                         }
                     }
 
-                    // For templates, we can also manage unlink template functionality
-                    if (entity === "template") {
-                        permission.unlink = formData.templateUnlink;
-                    }
-
-                    // For blocks, we can also manage unlink block functionality
-                    if (entity === "block") {
-                        permission.unlink = formData.blockUnlink;
-                    }
-
                     newValue.push(permission);
                 }
             });
+
+            // Unlink template functionality
+            if (formData.templateUnlink) {
+                newValue.push({ name: `${PAGE_BUILDER}.template.unlink` });
+            }
+
+            // Unlink block functionality
+            if (formData.blockUnlink) {
+                newValue.push({ name: `${PAGE_BUILDER}.block.unlink` });
+            }
 
             // Settings.
             if (formData.settingsAccessLevel === FULL_ACCESS) {
@@ -130,7 +130,9 @@ export const PageBuilderPermissions: React.FC<PageBuilderPermissionsProps> = ({
         // We're dealing with custom permissions. Let's first prepare data for "categories", "menus", and "pages".
         const formData = {
             accessLevel: CUSTOM_ACCESS,
-            settingsAccessLevel: NO_ACCESS
+            settingsAccessLevel: NO_ACCESS,
+            templateUnlink: false,
+            blockUnlink: false
         };
 
         ENTITIES.forEach(entity => {
@@ -153,20 +155,22 @@ export const PageBuilderPermissions: React.FC<PageBuilderPermissionsProps> = ({
                 if (entity === "page") {
                     data[`${entity}PW`] = entityPermission.pw ? [...entityPermission.pw] : [];
                 }
-
-                // For templates, we can also manage unlink template functionality
-                if (entity === "template") {
-                    data.templateUnlink = entityPermission.unlink || false;
-                }
-
-                // For blocks, we can also manage unlink block functionality
-                if (entity === "block") {
-                    data.blockUnlink = entityPermission.unlink || false;
-                }
             }
 
             Object.assign(formData, data);
         });
+
+        // Set form data for unlink template functionality
+        const hasUnlinkTemplateAccess = permissions.find(
+            item => item.name === `${PAGE_BUILDER}.template.unlink`
+        );
+        formData.templateUnlink = hasUnlinkTemplateAccess;
+
+        //  Set form data for unlink block functionality
+        const hasUnlinkBlockAccess = permissions.find(
+            item => item.name === `${PAGE_BUILDER}.block.unlink`
+        );
+        formData.blockUnlink = hasUnlinkBlockAccess;
 
         // Finally, let's prepare data for Page Builder settings.
         const hasSettingsAccess = permissions.find(
@@ -255,12 +259,7 @@ export const PageBuilderPermissions: React.FC<PageBuilderPermissionsProps> = ({
                             >
                                 <Cell span={12}>
                                     <Bind name={"templateUnlink"}>
-                                        <Checkbox
-                                            disabled={
-                                                !["full", "own"].includes(data.templateAccessScope)
-                                            }
-                                            label="User is allowed to unlink a template"
-                                        />
+                                        <Checkbox label="User is allowed to unlink a template" />
                                     </Bind>
                                 </Cell>
                             </CustomSection>
@@ -280,12 +279,7 @@ export const PageBuilderPermissions: React.FC<PageBuilderPermissionsProps> = ({
                             >
                                 <Cell span={12}>
                                     <Bind name={"blockUnlink"}>
-                                        <Checkbox
-                                            disabled={
-                                                !["full", "own"].includes(data.blockAccessScope)
-                                            }
-                                            label="User is allowed to unlink a block"
-                                        />
+                                        <Checkbox label="User is allowed to unlink a block" />
                                     </Bind>
                                 </Cell>
                             </CustomSection>

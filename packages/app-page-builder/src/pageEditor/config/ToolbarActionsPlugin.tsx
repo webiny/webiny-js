@@ -69,11 +69,11 @@ export const ToolbarActionsPlugin = createComponentPlugin(ToolbarActions, Toolba
         const { identity, getPermission } = useSecurity();
 
         const unlinkPermission = useMemo((): boolean => {
-            const permission = getPermission<PageBuilderSecurityPermission>("pb.template");
+            const permission = getPermission<PageBuilderSecurityPermission>("pb.template.unlink");
             if (permission?.name === "*" || permission?.name === "pb.*") {
                 return true;
             }
-            return permission?.unlink || false;
+            return Boolean(permission);
         }, [identity]);
 
         const onOpen = useCallback(() => {

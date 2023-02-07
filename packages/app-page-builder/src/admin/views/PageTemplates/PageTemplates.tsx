@@ -29,45 +29,45 @@ const PageTemplates: React.FC = () => {
     const { showSnackbar } = useSnackbar();
     const { showConfirmation } = useConfirmationDialog();
 
-    const pbPageBlockPermission = useMemo((): PageBuilderSecurityPermission | null => {
+    const pbPageTemplatePermission = useMemo((): PageBuilderSecurityPermission | null => {
         return getPermission("pb.template");
     }, [identity]);
 
     const canCreate = useMemo((): boolean => {
-        if (!pbPageBlockPermission) {
+        if (!pbPageTemplatePermission) {
             return false;
         }
-        if (typeof pbPageBlockPermission.rwd === "string") {
-            return pbPageBlockPermission.rwd.includes("w");
+        if (typeof pbPageTemplatePermission.rwd === "string") {
+            return pbPageTemplatePermission.rwd.includes("w");
         }
         return true;
     }, []);
 
     const canEdit = useCallback((item: CreatableItem): boolean => {
-        if (!pbPageBlockPermission) {
+        if (!pbPageTemplatePermission) {
             return false;
         }
-        if (pbPageBlockPermission.own) {
+        if (pbPageTemplatePermission.own) {
             const identityId = identity ? identity.id || identity.login : null;
             return item.createdBy?.id === identityId;
         }
-        if (typeof pbPageBlockPermission.rwd === "string") {
-            return pbPageBlockPermission.rwd.includes("w");
+        if (typeof pbPageTemplatePermission.rwd === "string") {
+            return pbPageTemplatePermission.rwd.includes("w");
         }
 
         return true;
     }, []);
 
     const canDelete = useCallback((item: CreatableItem): boolean => {
-        if (!pbPageBlockPermission) {
+        if (!pbPageTemplatePermission) {
             return false;
         }
-        if (pbPageBlockPermission.own) {
+        if (pbPageTemplatePermission.own) {
             const identityId = identity ? identity.id || identity.login : null;
             return item.createdBy?.id === identityId;
         }
-        if (typeof pbPageBlockPermission.rwd === "string") {
-            return pbPageBlockPermission.rwd.includes("d");
+        if (typeof pbPageTemplatePermission.rwd === "string") {
+            return pbPageTemplatePermission.rwd.includes("d");
         }
 
         return true;

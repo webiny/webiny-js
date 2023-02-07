@@ -81,11 +81,11 @@ export const BlockElementSidebarPlugin = createComponentPlugin(EditorSidebarTab,
         const [isTemplateMode] = useTemplateMode();
 
         const unlinkPermission = useMemo((): boolean => {
-            const permission = getPermission<PageBuilderSecurityPermission>("pb.block");
+            const permission = getPermission<PageBuilderSecurityPermission>("pb.block.unlink");
             if (permission?.name === "*" || permission?.name === "pb.*") {
                 return true;
             }
-            return permission?.unlink || false;
+            return Boolean(permission);
         }, [identity]);
 
         const isReferenceBlock =
