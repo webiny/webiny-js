@@ -5,10 +5,8 @@ import {
     PbEditorElement,
     PbEditorPageElementPlugin,
     PbEditorPageElementPluginSettings,
-    PbEditorPageElementPluginToolbar,
     PbEditorTextElementPluginsArgs
 } from "~/types";
-import { className } from "./PbList";
 import List from "./List";
 import { createInitialTextValue } from "../utils/textUtils";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";

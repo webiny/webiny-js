@@ -1,7 +1,6 @@
 import React from "react";
 import kebabCase from "lodash/kebabCase";
 import Quote from "./Quote";
-import { className } from "./PbQuote";
 
 import {
     DisplayMode,

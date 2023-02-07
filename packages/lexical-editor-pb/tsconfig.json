@@ -6,7 +6,9 @@
     { "path": "../app-page-builder" },
     { "path": "../lexical-editor" },
     { "path": "../ui" },
-    { "path": "../feature-flags" }
+    { "path": "../feature-flags" },
+    { "path": "../app-page-builder-elements" },
+    { "path": "../react-composition" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -24,7 +26,11 @@
       "@webiny/ui": ["../ui/src/*"],
       "@webiny/ui": ["../ui/src"],
       "@webiny/feature-flags": ["../feature-flags/src/*"],
-      "@webiny/feature-flags": ["../feature-flags/src"]
+      "@webiny/feature-flags": ["../feature-flags/src"],
+      "@webiny/app-page-builder-elements": ["../app-page-builder-elements/src/*"],
+      "@webiny/app-page-builder-elements": ["../app-page-builder-elements/src"],
+      "@webiny/react-composition": ["../react-composition/src/*"],
+      "@webiny/react-composition": ["../react-composition/src"]
     },
     "baseUrl": "."
   }
