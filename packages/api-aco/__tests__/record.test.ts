@@ -136,9 +136,9 @@ describe("`search` CRUD", () => {
         );
 
         // Let's update the "page-b" title.
-        const updatedTitle = "folder-1-updated";
+        const updatedTitle = "Title updated";
         const [updateB] = await search.updateRecord({
-            id: recordB.id,
+            id: recordMocks.recordB.originalId,
             data: {
                 title: updatedTitle
             }
@@ -160,7 +160,7 @@ describe("`search` CRUD", () => {
 
         // Let's delete "page-b".
         const [deleteB] = await search.deleteRecord({
-            id: recordB.id
+            id: recordMocks.recordB.originalId
         });
 
         expect(deleteB).toEqual({
@@ -175,7 +175,7 @@ describe("`search` CRUD", () => {
         });
 
         // Should not find "page-b".
-        const [getB] = await search.getRecord({ id: recordB.id });
+        const [getB] = await search.getRecord({ id: recordMocks.recordB.originalId });
 
         expect(getB).toMatchObject({
             data: {
@@ -191,8 +191,8 @@ describe("`search` CRUD", () => {
             }
         });
 
-        // Should find "page-a" by id.
-        const [getA] = await search.getRecord({ id: recordA.id });
+        // Should find "page-a" by originalId.
+        const [getA] = await search.getRecord({ id: recordMocks.recordA.originalId });
 
         expect(getA).toEqual({
             data: {
