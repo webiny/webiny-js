@@ -4,9 +4,10 @@ import { Header } from "./Header";
 import { Search } from "./Search";
 import { Loading } from "./Loading";
 import { Entry } from "./Entry";
-import { Dialog } from "~/admin/components/Dialog";
+import { Dialog, DialogActions, DialogContent, DialogTitle } from "~/admin/components/Dialog";
 import { CmsEditorFieldRendererProps } from "~/types";
 import { CmsReferenceContentEntry } from "~/admin/plugins/fieldRenderers/ref/components/types";
+import { ButtonDefault, ButtonPrimary } from "@webiny/ui/Button";
 
 const Container = styled("div")({
     width: "100%",
@@ -22,27 +23,33 @@ const Content = styled("div")({
     minHeight: "100px"
 });
 
-export const ReferencesDialog: React.FC<CmsEditorFieldRendererProps> = props => {
-    const { contentModel } = props;
+interface Props extends CmsEditorFieldRendererProps {
+    onDialogClose: () => void;
+}
+export const ReferencesDialog: React.FC<Props> = props => {
+    const { contentModel, onDialogClose } = props;
 
     const [entries, setEntries] = useState<CmsReferenceContentEntry[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
 
-    const onCloseClick = () => {
-        return false;
-    };
     return (
-        <Dialog>
-            <Container>
-                <Header model={contentModel} onCloseClick={onCloseClick} />
-                <Search model={contentModel} setEntries={setEntries} setLoading={setLoading} />
-                <Content>
-                    {loading && <Loading />}
-                    {entries.map(entry => {
-                        return <Entry key={`entry-${entry.id}`} entry={entry} />;
-                    })}
-                </Content>
-            </Container>
+        <Dialog open={true} onClose={onDialogClose}>
+            <DialogTitle>Select an existing record</DialogTitle>
+            <DialogContent>
+                <Container>
+                    <Search model={contentModel} setEntries={setEntries} setLoading={setLoading} />
+                    <Content>
+                        {loading && <Loading />}
+                        {entries.map(entry => {
+                            return <Entry key={`entry-${entry.id}`} entry={entry} />;
+                        })}
+                    </Content>
+                </Container>
+            </DialogContent>
+            <DialogActions>
+                <ButtonDefault onClick={onDialogClose}>Cancel</ButtonDefault>
+                <ButtonPrimary onClick={onDialogClose}>Save Field</ButtonPrimary>
+            </DialogActions>
         </Dialog>
     );
 };

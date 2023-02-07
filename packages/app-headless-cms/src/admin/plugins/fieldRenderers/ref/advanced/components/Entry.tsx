@@ -10,6 +10,7 @@ import { CreatedBy } from "./entry/CreatedBy";
 import { ModifiedBy } from "./entry/ModifiedBy";
 import { View } from "./entry/View";
 import { Select } from "./entry/Select";
+import { Remove } from "./entry/Remove";
 
 const Container = styled("div")({
     width: "100%",
@@ -22,14 +23,16 @@ const Container = styled("div")({
 const ContentContainer = styled("div")({
     width: "100%",
     display: "flex",
-    flexDirection: "row"
+    flexDirection: "row",
+    borderBottom: "1px solid var(--mdc-theme-background)"
 });
 
 const Content = styled("div")({
     display: "flex",
     flexDirection: "column",
     paddingLeft: "16px",
-    paddingTop: "18px"
+    paddingTop: "18px",
+    paddingBottom: "10px"
 });
 
 const FooterContainer = styled("div")({
@@ -40,8 +43,10 @@ const FooterContainer = styled("div")({
 
 interface Props {
     entry?: CmsReferenceContentEntry | null;
+    onSelect?: () => void;
+    onRemove?: () => void;
 }
-export const Entry: React.FC<Props> = ({ entry }) => {
+export const Entry: React.FC<Props> = ({ entry, onSelect, onRemove }) => {
     if (!entry) {
         return null;
     }
@@ -50,7 +55,7 @@ export const Entry: React.FC<Props> = ({ entry }) => {
             <ContentContainer>
                 <Image title={entry.title} src={entry.image} />
                 <Content>
-                    <ModelName name={"modelName"} />
+                    <ModelName name={entry.model.name} />
                     <Title title={entry.title} />
                     <Description description={entry.description} />
                 </Content>
@@ -60,7 +65,8 @@ export const Entry: React.FC<Props> = ({ entry }) => {
                 <CreatedBy createdBy={entry.createdBy} createdOn={entry.createdOn} />
                 <ModifiedBy modifiedBy={entry.modifiedBy} savedOn={entry.savedOn} />
                 <View entry={entry} />
-                <Select entry={entry} />
+                {onSelect && <Select entry={entry} onSelect={onSelect} />}
+                {onRemove && <Remove entry={entry} onRemove={onRemove} />}
             </FooterContainer>
         </Container>
     );

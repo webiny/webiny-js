@@ -1,7 +1,8 @@
 import styled from "@emotion/styled";
 import React, { useCallback, useState } from "react";
 import { CmsReferenceContentEntry } from "~/admin/plugins/fieldRenderers/ref/components/types";
-import { ReactComponent as SelectedIcon } from "./assets/selected.svg";
+import { ReactComponent as RemoveIcon } from "./assets/remove.svg";
+import { useConfirmationDialog } from "@webiny/app-admin";
 
 const Container = styled("div")({
     width: "140px",
@@ -23,11 +24,8 @@ const SelectButton = styled("button")({
 interface IconProps {
     selected?: boolean;
 }
-const Icon = styled("div")(({ selected }: IconProps) => {
+const Icon = styled("div")(() => {
     return {
-        backgroundColor: selected ? "var(--mdc-theme-primary)" : "transparent",
-        border: "1px solid var(--mdc-theme-primary)",
-        borderRadius: "3px",
         width: "16px",
         height: "16px",
         display: "flex",
@@ -49,18 +47,28 @@ const Text = styled("span")({
 
 interface Props {
     entry: CmsReferenceContentEntry;
-    onSelect: (id: string, select: boolean) => void;
+    onRemove: () => void;
 }
-export const Select: React.FC<Props> = ({ entry, onSelect }) => {
-    const [selected, setSelected] = useState(false);
-    const onIconClick = useCallback(() => {
-        onSelect(entry.id, !selected);
-    }, [entry, selected]);
+export const Remove: React.FC<Props> = ({ entry, onRemove }) => {
+    const { showConfirmation } = useConfirmationDialog({
+        title: "Remove referenced entry",
+        message: `Are you sure you want to remove the referenced entry "${entry.title}"?`,
+        acceptLabel: "Yes, I'm sure!"
+    });
+
+    const onRemoveClick = useCallback(() => {
+        showConfirmation(() => {
+            onRemove();
+        });
+    }, [entry]);
+
     return (
         <Container>
-            <SelectButton onClick={onIconClick}>
-                <Icon selected={selected}>{selected && <SelectedIcon />}</Icon>
-                <Text>{selected ? "Selected" : "Select"}</Text>
+            <SelectButton onClick={onRemoveClick}>
+                <Icon>
+                    <RemoveIcon />
+                </Icon>
+                <Text>Remove</Text>
             </SelectButton>
         </Container>
     );

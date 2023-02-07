@@ -14,14 +14,15 @@ const Container = styled("div")({
 interface Props {
     title: string;
     src?: string | null;
+    width?: number;
 }
-export const Image: React.FC<Props> = ({ title, src }) => {
+export const Image: React.FC<Props> = ({ title, src, width = 166 }) => {
     if (!src) {
-        return <div>default</div>;
+        return <Container />;
     }
     return (
         <Container>
-            <img src={src} alt={title} />
+            <img src={`${src}?width=${width}`} alt={title} />
         </Container>
     );
 };

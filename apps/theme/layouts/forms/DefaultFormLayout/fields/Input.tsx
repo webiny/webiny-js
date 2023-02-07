@@ -48,7 +48,7 @@ export const InputField: React.FC<InputProps> = ({ field, type }) => {
 
     return (
         <Field>
-            <FieldLabel>{field.label}</FieldLabel>
+            <FieldLabel field={field}>{field.label}</FieldLabel>
             {field.helpText && <FieldHelperMessage>{field.helpText}</FieldHelperMessage>}
             <StyledInput
                 onBlur={onBlur}

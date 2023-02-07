@@ -26,6 +26,10 @@ export const GET_SELECTED_CONTENT_ENTRY = gql`
                 status
                 createdOn
                 savedOn
+                model {
+                    name
+                    modelId
+                }
                 createdBy {
                     id
                     displayName

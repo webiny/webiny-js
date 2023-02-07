@@ -25,7 +25,7 @@ export type CmsModelField<T = unknown> = T & {
         type?: string;
         fields?: CmsModelField<any>[];
         layout?: string[][];
-        models?: Pick<CmsModel, "modelId" | "name">[];
+        models?: Pick<CmsModel, "modelId">[];
         templates?: CmsDynamicZoneTemplate[];
         imagesOnly?: boolean;
         [key: string]: any;

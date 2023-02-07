@@ -5,7 +5,6 @@ import { CmsReferenceContentEntry } from "~/admin/plugins/fieldRenderers/ref/com
 import { ReactComponent as ViewIcon } from "./assets/view.svg";
 
 const Container = styled("div")({
-    color: "#FA5723",
     width: "110px",
     display: "flex",
     flexDirection: "row",
@@ -13,14 +12,20 @@ const Container = styled("div")({
     marginLeft: "auto"
 });
 
-const Text = styled("div")({});
-
-const urlStyle = css({
+const ViewTag = styled("a")({
+    display: "flex",
+    width: "auto",
     fontWeight: 500,
-    fontSize: 14,
+    fontSize: "14px",
     lineHeight: "20px",
     letterSpacing: "0.1px",
-    textTransform: "uppercase"
+    textTransform: "uppercase",
+    alignItems: "center",
+    justifyContent: "center",
+    color: "var(--mdc-theme-primary)",
+    " > svg": {
+        marginRight: "10px"
+    }
 });
 
 const createEntryUrl = (entry: CmsReferenceContentEntry) => {
@@ -33,9 +38,9 @@ interface Props {
 export const View: React.FC<Props> = ({ entry }) => {
     return (
         <Container>
-            <a className={urlStyle} href={createEntryUrl(entry)} target="_blank" rel="noreferrer">
-                <ViewIcon /> <Text>View</Text>
-            </a>
+            <ViewTag href={createEntryUrl(entry)} target="_blank">
+                <ViewIcon /> <span>View</span>
+            </ViewTag>
         </Container>
     );
 };
