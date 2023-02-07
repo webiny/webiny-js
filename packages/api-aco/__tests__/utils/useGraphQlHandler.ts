@@ -17,7 +17,15 @@ import {
     GET_FOLDER,
     LIST_FOLDERS,
     UPDATE_FOLDER
-} from "../graphql/folder.gql";
+} from "~tests/graphql/folder.gql";
+import {
+    CREATE_RECORD,
+    DELETE_RECORD,
+    GET_RECORD,
+    LIST_RECORDS,
+    UPDATE_RECORD
+} from "~tests/graphql/record.gql";
+
 import { createACO } from "~/index";
 
 export interface UseGQLHandlerParams {
@@ -128,12 +136,31 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         }
     };
 
+    const search = {
+        async createRecord(variables = {}) {
+            return invoke({ body: { query: CREATE_RECORD, variables } });
+        },
+        async updateRecord(variables = {}) {
+            return invoke({ body: { query: UPDATE_RECORD, variables } });
+        },
+        async deleteRecord(variables = {}) {
+            return invoke({ body: { query: DELETE_RECORD, variables } });
+        },
+        async listRecords(variables = {}) {
+            return invoke({ body: { query: LIST_RECORDS, variables } });
+        },
+        async getRecord(variables = {}) {
+            return invoke({ body: { query: GET_RECORD, variables } });
+        }
+    };
+
     return {
         params,
         handler,
         invoke,
         aco: {
             folder
-        }
+        },
+        search
     };
 };
