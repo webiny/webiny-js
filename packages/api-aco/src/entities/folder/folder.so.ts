@@ -127,7 +127,10 @@ export const createFolderOperations = (
                 }
             });
 
-            const entry = await cms.createEntry(model, data);
+            const entry = await cms.createEntry(model, {
+                ...data,
+                parentId: data.parentId || null
+            });
 
             security.enableAuthorization();
             return getFieldValues(entry, baseFields);

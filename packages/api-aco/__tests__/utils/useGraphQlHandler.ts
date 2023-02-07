@@ -1,15 +1,15 @@
-//import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import i18nContext from "@webiny/api-i18n/graphql/context";
-import { createHandler } from "@webiny/handler-aws/gateway";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
+import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
-import { SecurityIdentity } from "@webiny/api-security/types";
-import { Plugin, PluginCollection } from "@webiny/plugins/types";
-/**
- * Unfortunately at we need to import the api-i18n-ddb package manually
- */
+import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
+import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
+import { createHandler } from "@webiny/handler-aws/gateway";
+import createGraphQLHandler from "@webiny/handler-graphql";
+import { Plugin, PluginCollection } from "@webiny/plugins/types";
+
 import { createTenancyAndSecurity } from "./tenancySecurity";
-import graphQLHandlerPlugins from "@webiny/handler-graphql";
 
 import {
     CREATE_FOLDER,
@@ -17,14 +17,13 @@ import {
     GET_FOLDER,
     LIST_FOLDERS,
     UPDATE_FOLDER
-} from "./graphql/folder.gql";
+} from "../graphql/folder.gql";
 import { createACO } from "~/index";
 
-export interface CreateGQLHandlerParams {
-    permissions?: PermissionsArg[];
+export interface UseGQLHandlerParams {
+    permissions?: SecurityPermission[];
     identity?: SecurityIdentity;
     plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
-    storageOperationPlugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
 }
 
 interface InvokeParams {
@@ -42,73 +41,47 @@ const defaultIdentity: SecurityIdentity = {
     displayName: "John Doe"
 };
 
-export interface PermissionsArg {
-    name: string;
-    locales?: string[];
-    rwd?: string;
-    pw?: string | null;
-    own?: boolean;
-}
+const documentClient = new DocumentClient({
+    convertEmptyValues: true,
+    endpoint: process.env.MOCK_DYNAMODB_ENDPOINT || "http://localhost:8001",
+    sslEnabled: false,
+    region: "local",
+    accessKeyId: "test",
+    secretAccessKey: "test"
+});
 
-// const documentClient = new DocumentClient({
-//     convertEmptyValues: true,
-//     endpoint: process.env.MOCK_DYNAMODB_ENDPOINT || "http://localhost:8001",
-//     sslEnabled: false,
-//     region: "local",
-//     accessKeyId: "test",
-//     secretAccessKey: "test"
-// });
-
-export const createGraphQlHandler = (params: CreateGQLHandlerParams = {}) => {
+export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
     const { permissions, identity, plugins = [] } = params;
 
-    // const ops = getStorageOperations({
-    //     plugins: params.storageOperationPlugins || [],
-    //     documentClient
-    // });
-    //
-    // const tenant = {
-    //     id: "root",
-    //     name: "Root",
-    //     parent: null
-    // };
-    //
-    // /**
-    //  * We're using ddb-only storageOperations here because current jest setup doesn't allow
-    //  * usage of more than one storageOperations at a time with the help of --keyword flag.
-    //  */
-    // const headlessCmsApp = createHeadlessCmsContext({
-    //     storageOperations: createHeadlessCmsStorageOperations({
-    //         documentClient
-    //     })
-    // });
-
-    // const handler = createHandler({
-    //     plugins: [
-    //         ...ops.plugins,
-    //         ...createTenancyAndSecurity({ permissions, identity: identity || defaultIdentity }),
-    //         apiKeyAuthentication({ identityType: "api-key" }),
-    //         apiKeyAuthorization({ identityType: "api-key" }),
-    //         i18nContext(),
-    //         i18nDynamoDbStorageOperations(),
-    //         mockLocalesPlugins(),
-    //         ...headlessCmsApp,
-    //         createACO(),
-    //         plugins
-    //     ],
-    //     http: {
-    //         debug: false
-    //     }
-    // });
+    // @ts-ignore
+    if (typeof __getCreateStorageOperations !== "function") {
+        throw new Error(`There is no global "__getCreateStorageOperations" function.`);
+    }
+    // @ts-ignore
+    const { createStorageOperations, getPlugins } = __getCreateStorageOperations();
+    if (typeof createStorageOperations !== "function") {
+        throw new Error(
+            `A product of "__getCreateStorageOperations" must be a function to initialize storage operations.`
+        );
+    }
+    if (typeof getPlugins === "function") {
+        plugins.push(...getPlugins());
+    }
 
     const handler = createHandler({
         plugins: [
             plugins,
-            graphQLHandlerPlugins(),
+            createGraphQLHandler(),
             ...createTenancyAndSecurity({ permissions, identity: identity || defaultIdentity }),
             i18nContext(),
             i18nDynamoDbStorageOperations(),
             mockLocalesPlugins(),
+            createHeadlessCmsContext({
+                storageOperations: createHeadlessCmsStorageOperations({
+                    documentClient
+                })
+            }),
+            createHeadlessCmsGraphQL(),
             createACO()
         ],
         http: {
