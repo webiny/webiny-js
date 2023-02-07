@@ -91,7 +91,7 @@ export const saveTemplateAction: TemplateEventActionCallable<SaveTemplateActionA
 
     const data: TemplateType = {
         title: state.template.title,
-        description: state.template.description,
+        description: state.template?.description || "",
         content: syncTemplateVariables({ ...content, elements })
     };
 

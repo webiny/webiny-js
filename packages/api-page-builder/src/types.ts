@@ -895,14 +895,16 @@ export interface PageBlockStorageOperations {
 export interface PageTemplate {
     id: string;
     title: string;
-    description: string;
-    content: any;
+    description?: string;
+    content?: any;
     createdOn: string;
     savedOn: string;
     createdBy: CreatedBy;
     tenant: string;
     locale: string;
 }
+
+export type PageTemplateInput = Pick<PageTemplate, "title" | "description" | "content">;
 
 /**
  * @category StorageOperations

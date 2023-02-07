@@ -3,27 +3,19 @@
  */
 // @ts-ignore
 import mdbid from "mdbid";
-/**
- * Package @commodo/fields does not have types.
- */
-// @ts-ignore
-import { withFields, string } from "@commodo/fields";
-/**
- * Package commodo-fields-object does not have types.
- */
-// @ts-ignore
-import { object } from "commodo-fields-object";
-import { validation } from "@webiny/validation";
+import zod from "zod";
+
 import {
-    OnAfterPageTemplateCreateTopicParams,
-    OnAfterPageTemplateDeleteTopicParams,
-    OnAfterPageTemplateUpdateTopicParams,
-    OnBeforePageTemplateCreateTopicParams,
-    OnBeforePageTemplateDeleteTopicParams,
-    OnBeforePageTemplateUpdateTopicParams,
+    OnPageTemplateAfterCreateTopicParams,
+    OnPageTemplateAfterDeleteTopicParams,
+    OnPageTemplateAfterUpdateTopicParams,
+    OnPageTemplateBeforeCreateTopicParams,
+    OnPageTemplateBeforeDeleteTopicParams,
+    OnPageTemplateBeforeUpdateTopicParams,
     PageBuilderContextObject,
     PageBuilderStorageOperations,
     PageTemplate,
+    PageTemplateInput,
     PageTemplatesCrud,
     PageTemplateStorageOperationsListParams,
     PbContext
@@ -34,17 +26,17 @@ import { NotFoundError } from "@webiny/handler-graphql";
 import WebinyError from "@webiny/error";
 import { createTopic } from "@webiny/pubsub";
 
-const CreateDataModel = withFields({
-    title: string({ validation: validation.create("required,maxLength:100") }),
-    description: string({ validation: validation.create("maxLength:100") }),
-    content: object()
-})();
+const createSchema = zod.object({
+    title: zod.string().max(100),
+    description: zod.string().max(100).optional(),
+    content: zod.any()
+});
 
-const UpdateDataModel = withFields({
-    title: string({ validation: validation.create("maxLength:100") }),
-    description: string({ validation: validation.create("maxLength:100") }),
-    content: object()
-})();
+const updateSchema = zod.object({
+    title: zod.string().max(100).optional(),
+    description: zod.string().max(100).optional(),
+    content: zod.any()
+});
 
 const PERMISSION_NAME = "pb.template";
 
@@ -59,23 +51,23 @@ export const createPageTemplatesCrud = (
 ): PageTemplatesCrud => {
     const { context, storageOperations, getLocaleCode, getTenantId } = params;
 
-    const onBeforePageTemplateCreate = createTopic<OnBeforePageTemplateCreateTopicParams>();
-    const onAfterPageTemplateCreate = createTopic<OnAfterPageTemplateCreateTopicParams>();
-    const onBeforePageTemplateUpdate = createTopic<OnBeforePageTemplateUpdateTopicParams>();
-    const onAfterPageTemplateUpdate = createTopic<OnAfterPageTemplateUpdateTopicParams>();
-    const onBeforePageTemplateDelete = createTopic<OnBeforePageTemplateDeleteTopicParams>();
-    const onAfterPageTemplateDelete = createTopic<OnAfterPageTemplateDeleteTopicParams>();
+    const onPageTemplateBeforeCreate = createTopic<OnPageTemplateBeforeCreateTopicParams>();
+    const onPageTemplateAfterCreate = createTopic<OnPageTemplateAfterCreateTopicParams>();
+    const onPageTemplateBeforeUpdate = createTopic<OnPageTemplateBeforeUpdateTopicParams>();
+    const onPageTemplateAfterUpdate = createTopic<OnPageTemplateAfterUpdateTopicParams>();
+    const onPageTemplateBeforeDelete = createTopic<OnPageTemplateBeforeDeleteTopicParams>();
+    const onPageTemplateAfterDelete = createTopic<OnPageTemplateAfterDeleteTopicParams>();
 
     return {
         /**
          * Lifecycle events
          */
-        onBeforePageTemplateCreate,
-        onAfterPageTemplateCreate,
-        onBeforePageTemplateUpdate,
-        onAfterPageTemplateUpdate,
-        onBeforePageTemplateDelete,
-        onAfterPageTemplateDelete,
+        onPageTemplateBeforeCreate,
+        onPageTemplateAfterCreate,
+        onPageTemplateBeforeUpdate,
+        onPageTemplateAfterUpdate,
+        onPageTemplateBeforeDelete,
+        onPageTemplateAfterDelete,
 
         async getPageTemplate(id) {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
@@ -156,16 +148,13 @@ export const createPageTemplatesCrud = (
             }
         },
 
-        async createPageTemplate(this: PageBuilderContextObject, input) {
+        async createPageTemplate(this: PageBuilderContextObject, input: PageTemplateInput) {
             await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
-
-            const createDataModel = new CreateDataModel().populate(input);
-            await createDataModel.validate();
 
             const id: string = mdbid();
             const identity = context.security.getIdentity();
 
-            const data: PageTemplate = await createDataModel.toJSON();
+            const data = await createSchema.parseAsync(input);
 
             const pageTemplate: PageTemplate = {
                 ...data,
@@ -182,14 +171,14 @@ export const createPageTemplatesCrud = (
             };
 
             try {
-                await onBeforePageTemplateCreate.publish({
+                await onPageTemplateBeforeCreate.publish({
                     pageTemplate
                 });
                 const result = await storageOperations.pageTemplates.create({
                     input: data,
                     pageTemplate
                 });
-                await onAfterPageTemplateCreate.publish({
+                await onPageTemplateAfterCreate.publish({
                     pageTemplate
                 });
                 return result;
@@ -217,10 +206,7 @@ export const createPageTemplatesCrud = (
             const identity = context.security.getIdentity();
             checkOwnPermissions(identity, permission, original);
 
-            const updateDataModel = new UpdateDataModel().populate(input);
-            await updateDataModel.validate();
-
-            const data = await updateDataModel.toJSON({ onlyDirty: true });
+            const data = await updateSchema.parseAsync(input);
 
             const pageTemplate: PageTemplate = {
                 ...original,
@@ -229,7 +215,7 @@ export const createPageTemplatesCrud = (
             };
 
             try {
-                await onBeforePageTemplateUpdate.publish({
+                await onPageTemplateBeforeUpdate.publish({
                     original,
                     pageTemplate
                 });
@@ -238,7 +224,7 @@ export const createPageTemplatesCrud = (
                     original,
                     pageTemplate
                 });
-                await onAfterPageTemplateUpdate.publish({
+                await onPageTemplateAfterUpdate.publish({
                     original,
                     pageTemplate: result
                 });
@@ -270,13 +256,13 @@ export const createPageTemplatesCrud = (
             checkOwnPermissions(identity, permission, pageTemplate);
 
             try {
-                await onBeforePageTemplateDelete.publish({
+                await onPageTemplateBeforeDelete.publish({
                     pageTemplate
                 });
                 const result = await storageOperations.pageTemplates.delete({
                     pageTemplate
                 });
-                await onAfterPageTemplateDelete.publish({
+                await onPageTemplateAfterDelete.publish({
                     pageTemplate: result
                 });
                 return result;

@@ -31,10 +31,15 @@ export const Elements: React.FC<ElementsProps> = props => {
     const elements = props.element.elements;
 
     let parentBlockElement: ElementType;
-    if (
-        props.element.data.blockId ||
-        (props.element.type === "block" && currentRendererMeta.parentElement.data.templateId)
-    ) {
+
+    // We need to disable interactions with elements of reference blocks and template blocks
+    // Reference block is defined by blockId in data
+    const isReferenceBlock = props.element.data.blockId;
+    // Template block is defined by templateId in its parent (document)
+    const isTemplateBlock =
+        props.element.type === "block" && currentRendererMeta.parentElement.data.templateId;
+
+    if (isReferenceBlock || isTemplateBlock) {
         parentBlockElement = props.element;
     } else {
         parentBlockElement = currentRendererMeta.parentBlockElement;

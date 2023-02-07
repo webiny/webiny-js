@@ -119,8 +119,9 @@ export interface UpdatePageTemplateMutationResponse {
 export interface UpdatePageTemplateMutationVariables {
     id: string;
     data: {
-        name: string;
-        templateCategory: string;
+        title?: string;
+        description?: string;
+        content?: string;
     };
 }
 export const UPDATE_PAGE_TEMPLATE = gql`

@@ -806,21 +806,21 @@ export interface ListPageTemplatesParams {
 /**
  * @category Lifecycle events
  */
-export interface OnBeforePageTemplateCreateTopicParams {
+export interface OnPageTemplateBeforeCreateTopicParams {
     pageTemplate: PageTemplate;
 }
 
 /**
  * @category Lifecycle events
  */
-export interface OnAfterPageTemplateCreateTopicParams {
+export interface OnPageTemplateAfterCreateTopicParams {
     pageTemplate: PageTemplate;
 }
 
 /**
  * @category Lifecycle events
  */
-export interface OnBeforePageTemplateUpdateTopicParams {
+export interface OnPageTemplateBeforeUpdateTopicParams {
     original: PageTemplate;
     pageTemplate: PageTemplate;
 }
@@ -828,7 +828,7 @@ export interface OnBeforePageTemplateUpdateTopicParams {
 /**
  * @category Lifecycle events
  */
-export interface OnAfterPageTemplateUpdateTopicParams {
+export interface OnPageTemplateAfterUpdateTopicParams {
     original: PageTemplate;
     pageTemplate: PageTemplate;
 }
@@ -836,14 +836,14 @@ export interface OnAfterPageTemplateUpdateTopicParams {
 /**
  * @category Lifecycle events
  */
-export interface OnBeforePageTemplateDeleteTopicParams {
+export interface OnPageTemplateBeforeDeleteTopicParams {
     pageTemplate: PageTemplate;
 }
 
 /**
  * @category Lifecycle events
  */
-export interface OnAfterPageTemplateDeleteTopicParams {
+export interface OnPageTemplateAfterDeleteTopicParams {
     pageTemplate: PageTemplate;
 }
 
@@ -861,12 +861,12 @@ export interface PageTemplatesCrud {
     /**
      * Lifecycle events
      */
-    onBeforePageTemplateCreate: Topic<OnBeforePageTemplateCreateTopicParams>;
-    onAfterPageTemplateCreate: Topic<OnAfterPageTemplateCreateTopicParams>;
-    onBeforePageTemplateUpdate: Topic<OnBeforePageTemplateUpdateTopicParams>;
-    onAfterPageTemplateUpdate: Topic<OnAfterPageTemplateUpdateTopicParams>;
-    onBeforePageTemplateDelete: Topic<OnBeforePageTemplateDeleteTopicParams>;
-    onAfterPageTemplateDelete: Topic<OnAfterPageTemplateDeleteTopicParams>;
+    onPageTemplateBeforeCreate: Topic<OnPageTemplateBeforeCreateTopicParams>;
+    onPageTemplateAfterCreate: Topic<OnPageTemplateAfterCreateTopicParams>;
+    onPageTemplateBeforeUpdate: Topic<OnPageTemplateBeforeUpdateTopicParams>;
+    onPageTemplateAfterUpdate: Topic<OnPageTemplateAfterUpdateTopicParams>;
+    onPageTemplateBeforeDelete: Topic<OnPageTemplateBeforeDeleteTopicParams>;
+    onPageTemplateAfterDelete: Topic<OnPageTemplateAfterDeleteTopicParams>;
 }
 
 export interface PageBuilderContextObject

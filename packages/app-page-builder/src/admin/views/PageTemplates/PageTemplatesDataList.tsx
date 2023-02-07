@@ -20,6 +20,7 @@ import {
     ListItemMeta,
     ListItemText,
     ListItemTextSecondary,
+    ListTextOverline,
     ListSelectBox
 } from "@webiny/ui/List";
 import { Checkbox } from "@webiny/ui/Checkbox";
@@ -245,6 +246,7 @@ const PageTemplatesDataList = ({
                                         }
                                     >
                                         {template.title}
+                                        <ListTextOverline>{template.description}</ListTextOverline>
                                         {template.createdBy && (
                                             <ListItemTextSecondary>
                                                 {`Created by:

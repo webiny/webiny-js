@@ -109,12 +109,12 @@ export const ToolbarActionsPlugin = createComponentPlugin(ToolbarActions, Toolba
                     <DialogTitle>Unlink Template</DialogTitle>
                     <DialogContent>
                         <p>
-                            This page is created from a template - to change it you need to unlink
+                            This page was created from a template. To change it, you need to unlink
                             it first.
                         </p>
                         <p>
-                            By unlinking it, any changes made to the template will no longer
-                            automatically reflect to this page.
+                            By unlinking it, any changes made to the template will no longer be
+                            reflected on this page.
                         </p>
                         <div className="info-wrapper">
                             <InfoIcon /> Click here to learn more about how page templates work
