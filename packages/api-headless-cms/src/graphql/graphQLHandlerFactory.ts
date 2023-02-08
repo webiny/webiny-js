@@ -24,6 +24,14 @@ interface GetSchemaParams {
     locale: I18NLocale;
 }
 
+const createRequestBody = (body: unknown): GraphQLRequestBody | GraphQLRequestBody[] => {
+    /**
+     * We are trusting that the body payload is correct.
+     * The `processRequestBody` will fail if it is not.
+     */
+    return typeof body === "string" ? JSON.parse(body) : body;
+};
+
 const schemaList = new Map<string, SchemaCache>();
 
 const generateCacheKey = async (args: GetSchemaParams): Promise<string> => {
@@ -66,46 +74,40 @@ const getSchema = async (params: GetSchemaParams): Promise<GraphQLSchema> => {
     const id = `${tenantId}#${type}#${locale.code}`;
 
     const cacheKey = await generateCacheKey(params);
-    if (!schemaList.has(id)) {
-        try {
-            const schema = await generateSchema(params);
-            schemaList.set(id, {
-                key: cacheKey,
-                schema
-            });
-            return schema;
-        } catch (err) {
-            if (!Array.isArray(err.locations)) {
-                throw new WebinyError({
-                    ...err
-                });
-            }
-            const [location] = err.locations;
-
+    const cachedSchema = schemaList.get(id);
+    if (cachedSchema?.key === cacheKey) {
+        return cachedSchema.schema;
+    }
+    try {
+        const schema = await generateSchema(params);
+        schemaList.set(id, {
+            key: cacheKey,
+            schema
+        });
+        return schema;
+    } catch (err) {
+        if (!Array.isArray(err.locations)) {
             throw new WebinyError({
-                code: "INVALID_GRAPHQL_SCHEMA",
                 message: err.message,
+                code: err.code || "INVALID_GRAPHQL_SCHEMA_LOCATIONS",
                 data: {
-                    invalidSegment: codeFrame(err.source.body, location.line, location.column, {
-                        frameSize: 15
-                    })
+                    ...(err.data || {}),
+                    locations: err.locations
                 }
             });
         }
+        const [location] = err.locations;
+
+        throw new WebinyError({
+            code: "INVALID_GRAPHQL_SCHEMA",
+            message: err.message,
+            data: {
+                invalidSegment: codeFrame(err.source.body, location.line, location.column, {
+                    frameSize: 15
+                })
+            }
+        });
     }
-    /**
-     * Safe to cast because check was done few lines up.
-     */
-    const cache = schemaList.get(id) as SchemaCache;
-    if (cache.key === cacheKey) {
-        return cache.schema;
-    }
-    const schema = await generateSchema(params);
-    schemaList.set(id, {
-        key: cacheKey,
-        schema
-    });
-    return schema;
 };
 
 const checkEndpointAccess = async (context: CmsContext): Promise<void> => {
@@ -122,7 +124,7 @@ const checkEndpointAccess = async (context: CmsContext): Promise<void> => {
 const formatErrorPayload = (error: Error): string => {
     if (error instanceof WebinyError) {
         return JSON.stringify({
-            type: "WebinyError",
+            type: "CmsGraphQLWebinyError",
             message: error.message,
             code: error.code,
             data: error.data
@@ -157,17 +159,35 @@ const cmsRoutes = new RoutePlugin<CmsContext>(({ onPost, onOptions, context }) =
             });
         }
 
+        let schema: GraphQLSchema;
         try {
-            const schema = await getSchema({
+            schema = await getSchema({
                 context,
                 locale: context.cms.getLocale(),
                 type: context.cms.type as ApiEndpoint
             });
-            const body: GraphQLRequestBody | GraphQLRequestBody[] = request.body as any;
+        } catch (ex) {
+            console.log(`Error while generating the schema.`);
+            console.log(formatErrorPayload(ex));
+            throw ex;
+        }
+
+        let body: GraphQLRequestBody | GraphQLRequestBody[] = [];
+        try {
+            body = createRequestBody(request.body);
+        } catch (ex) {
+            console.log(`Error while creating the body request.`);
+            console.log(formatErrorPayload(ex));
+            throw ex;
+        }
+
+        try {
             const result = await processRequestBody(body, schema, context);
             return reply.code(200).send(result);
         } catch (ex) {
-            return reply.code(500).send(formatErrorPayload(ex));
+            console.log(`Error while processing the body request.`);
+            console.log(formatErrorPayload(ex));
+            throw ex;
         }
     });
 

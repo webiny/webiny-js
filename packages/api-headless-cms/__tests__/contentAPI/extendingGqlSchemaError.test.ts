@@ -21,7 +21,6 @@ describe("invalid schema error formatting", () => {
         });
 
         expect(response).toEqual({
-            type: "WebinyError",
             message: 'Syntax Error: Expected Name, found "}".',
             code: "INVALID_GRAPHQL_SCHEMA",
             data: {
