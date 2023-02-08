@@ -21,7 +21,7 @@ const createRequestBody = (body: unknown): GraphQLRequestBody | GraphQLRequestBo
 const formatErrorPayload = (error: Error): string => {
     if (error instanceof WebinyError) {
         return JSON.stringify({
-            type: "WebinyError",
+            type: "CoreGraphQLWebinyError",
             message: error.message,
             code: error.code,
             data: error.data
@@ -61,9 +61,22 @@ export default (options: HandlerGraphQLOptions = {}): PluginCollection => {
                     return reply.code(500).send(formatErrorPayload(ex));
                 }
             }
-            const body = createRequestBody(request.body);
-            const result = await processRequestBody(body, schema, context);
-            return reply.status(200).send(result);
+            let body: GraphQLRequestBody | GraphQLRequestBody[];
+            try {
+                body = createRequestBody(request.body);
+            } catch (ex) {
+                console.log(`Error while creating the body request.`);
+                console.log(formatErrorPayload(ex));
+                throw ex;
+            }
+            try {
+                const result = await processRequestBody(body, schema, context);
+                return reply.status(200).send(result);
+            } catch (ex) {
+                console.log(`Error while processing the body request.`);
+                console.log(formatErrorPayload(ex));
+                throw ex;
+            }
         });
     });
 
