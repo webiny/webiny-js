@@ -172,9 +172,11 @@ const cmsRoutes = new RoutePlugin<CmsContext>(({ onPost, onOptions, context }) =
     });
 
     onOptions("/cms/:type(^manage|preview|read$)/:locale", async (_, reply) => {
-        return reply.hijack().send({});
+        return reply.status(204).send({}).hijack();
     });
 });
+
+cmsRoutes.name = "headless-cms.graphql.route.default";
 
 export const graphQLHandlerFactory = ({ debug }: GraphQLHandlerFactoryParams): PluginCollection => {
     return [
