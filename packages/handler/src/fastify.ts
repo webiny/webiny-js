@@ -103,13 +103,17 @@ export const createHandler = (params: CreateHandlerParams) => {
         options?: RouteMethodOptions
     ): void => {
         if (type === "ALL") {
-            const all = Object.keys(definedRoutes).some(key => {
+            const all = Object.keys(definedRoutes).find(key => {
                 const routes = definedRoutes[key as HTTPMethods];
                 return routes.includes(path);
             });
             if (!all) {
                 return;
             }
+            console.log(
+                `Error while registering onAll route. One of the routes is already defined.`
+            );
+            console.log(JSON.stringify(all));
             throw new WebinyError(
                 `You cannot override a route with onAll() method, please remove unnecessary route from the system.`,
                 "OVERRIDE_ROUTE_ERROR",
@@ -123,6 +127,7 @@ export const createHandler = (params: CreateHandlerParams) => {
         } else if (options?.override === true) {
             return;
         }
+        console.log(`Error while trying to override route: [${type}] ${path}`);
         throw new WebinyError(
             `When you are trying to override existing route, you must send "override" parameter when adding that route.`,
             "OVERRIDE_ROUTE_ERROR",
@@ -224,22 +229,30 @@ export const createHandler = (params: CreateHandlerParams) => {
             app.head(path, handler);
         }
     };
-    const context = new Context({
-        plugins: [
+    let context: Context;
+    try {
+        context = new Context({
+            plugins: [
+                /**
+                 * We must have handlerClient by default.
+                 * And it must be one of the first context plugins applied.
+                 */
+                createHandlerClient(),
+                ...(params.plugins || [])
+            ],
             /**
-             * We must have handlerClient by default.
-             * And it must be one of the first context plugins applied.
+             * Inserted via webpack on build time.
              */
-            createHandlerClient(),
-            ...(params.plugins || [])
-        ],
-        /**
-         * Inserted via webpack on build time.
-         */
-        WEBINY_VERSION: process.env.WEBINY_VERSION as string,
-        server: app,
-        routes
-    });
+            WEBINY_VERSION: process.env.WEBINY_VERSION as string,
+            server: app,
+            routes
+        });
+    } catch (ex) {
+        console.log(`Error while constructing the Context.`);
+        console.log(stringifyError(ex));
+        throw ex;
+    }
+
     /**
      * We are attaching our custom context to webiny variable on the fastify app, so it is accessible everywhere.
      */
@@ -270,7 +283,7 @@ export const createHandler = (params: CreateHandlerParams) => {
         console.log(
             `Error while running the "RoutePlugin" ${
                 routePluginName ? `(${routePluginName})` : ""
-            } plugin in the beggining of the "createHandler" callable.`
+            } plugin in the beginning of the "createHandler" callable.`
         );
         console.log(stringifyError(ex));
         throw ex;
