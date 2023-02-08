@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { usePageElements } from "~/hooks/usePageElements";
-import { Renderer, Element, RendererLoader, RendererLoaderResult } from "~/types";
+import { Renderer, Element, RendererLoader } from "~/types";
 import { Theme, StylesObject } from "@webiny/theme/types";
 import { RendererProvider } from "~/contexts/Renderer";
 import { CSSObject, ClassNames } from "@emotion/core";
@@ -24,6 +24,36 @@ const DEFAULT_RENDERER_STYLES: StylesObject = {
     boxSizing: "border-box"
 };
 
+function useLoaderCachedData<TRenderComponentProps>(
+    options: CreateRendererOptions<TRenderComponentProps> = {},
+    element: Element
+) {
+    if (!options.loader) {
+        return null;
+    }
+
+    return useMemo<null | Awaited<ReturnType<typeof options.loader>>>(() => {
+        const cachedResultElement = document.querySelector(
+            `pe-loader-result[data-key="${element.id}"]`
+        );
+
+        if (!cachedResultElement) {
+            return null;
+        }
+
+        const cachedResultElementValue = cachedResultElement.getAttribute("data-value");
+        if (!cachedResultElementValue) {
+            return null;
+        }
+
+        try {
+            return JSON.parse(cachedResultElementValue);
+        } catch {
+            return null;
+        }
+    }, []);
+}
+
 export function createRenderer<TRenderComponentProps = {}>(
     RendererComponent: React.ComponentType<TRenderComponentProps>,
     options: CreateRendererOptions<TRenderComponentProps> = {}
@@ -40,46 +70,26 @@ export function createRenderer<TRenderComponentProps = {}>(
 
         const { element, meta, ...componentProps } = props;
 
-        const loaderCachedResult = useMemo<RendererLoaderResult>(() => {
-            if (!options.loader) {
-                return null;
-            }
-
-            const cachedResultElement = document.querySelector(
-                `pe-loader-result[data-key="${element.id}"]`
-            );
-
-            if (!cachedResultElement) {
-                return null;
-            }
-
-            const cachedResultElementValue = cachedResultElement.getAttribute("data-value");
-            if (!cachedResultElementValue) {
-                return null;
-            }
-
-            return JSON.parse(cachedResultElementValue);
-        }, []);
+        const loaderCachedData = useLoaderCachedData(options, element);
 
         const [loader, setLoader] = useState<RendererLoader>(
-            loaderCachedResult
+            loaderCachedData
                 ? {
-                      result: loaderCachedResult,
-                      loading: false
+                      data: loaderCachedData,
+                      loading: false,
+                      cacheHit: true
                   }
-                : { result: { data: null, error: null }, loading: false }
+                : { data: null, loading: false, cacheHit: false }
         );
 
         useEffect(() => {
-            if (!options.loader || loaderCachedResult) {
+            if (!options.loader || loaderCachedData) {
                 return;
             }
 
             options
                 .loader({ element })
-                .then(data => setLoader({ ...loader, result: { data, error: null } }))
-                .catch(error => setLoader({ ...loader, result: { data: null, error } }))
-                .finally(() => setLoader({ ...loader, loading: false }));
+                .then(data => setLoader({ ...loader, data, loading: false }));
         }, []);
 
         const attributes = getElementAttributes(element);

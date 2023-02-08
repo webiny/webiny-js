@@ -112,14 +112,10 @@ export interface RendererProviderProps {
     meta: RendererProviderMeta;
 }
 
-export interface RendererLoaderResult {
-    data: any;
-    error: any;
-}
-
-export interface RendererLoader {
-    result: RendererLoaderResult;
+export interface RendererLoader<TData = Record<string, any>> {
+    data: null | TData;
     loading: boolean;
+    cacheHit: boolean;
 }
 
 export type RendererMeta = Record<string, any>;

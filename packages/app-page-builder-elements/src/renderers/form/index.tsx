@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React from "react";
 import { CreateFormParams, FormData } from "./types";
 import FormRender from "./FormRender";
 import { createRenderer } from "~/createRenderer";
@@ -21,23 +21,14 @@ export const createForm = (params: CreateFormParams) => {
 
     return createRenderer(
         () => {
-            const { getElement, getLoader } = useRenderer();
+            const { getLoader } = useRenderer();
 
-            const element = getElement<FormElementData>();
-            const { data: formData, loading } = getLoader<FormData>();
+            const {
+                data: [formData, variables],
+                loading
+            } = getLoader<[FormData, GetFormDataLoaderVariables]>();
 
-            const form = element.data.settings?.form;
-
-            const variables: GetFormDataLoaderVariables = {};
-            if (form) {
-                if (form.revision === "latest") {
-                    variables.parent = form.parent;
-                } else {
-                    variables.revision = form.revision;
-                }
-            }
-
-            if (!(variables.parent || variables.revision)) {
+            if (!variables.parent && !variables.revision) {
                 if (params.renderFormNotSelected) {
                     return params.renderFormNotSelected({});
                 }
@@ -63,22 +54,26 @@ export const createForm = (params: CreateFormParams) => {
             return <FormRender createFormParams={params} loading={loading} formData={formData} />;
         },
         {
-            loader: ({ element }) => {
+            loader: async ({ element }) => {
                 const form = element.data.settings?.form;
                 if (!form) {
-                    return null;
+                    return [null, {}];
                 }
 
                 const { parent, revision } = form;
                 if (!parent && !revision) {
-                    return null;
+                    return [null, {}];
                 }
 
-                if (form.revision === "latest") {
-                    return dataLoaders.getForm({ variables: { parent: form.parent } });
+                if (revision === "latest") {
+                    const variables = { parent };
+                    const result = await dataLoaders.getForm({ variables });
+                    return [result, variables];
                 }
 
-                return dataLoaders.getForm({ variables: { revision: form.revision } });
+                const variables = { revision };
+                const result = await dataLoaders.getForm({ variables });
+                return [result, variables];
             }
         }
     );
