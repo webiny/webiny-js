@@ -9,6 +9,7 @@ import { Scrollbar } from "@webiny/ui/Scrollbar";
 
 import CategoriesDialog from "~/admin/views/Categories/CategoriesDialog";
 import useCreatePage from "~/admin/views/Pages/hooks/useCreatePage";
+import useImportPage from "~/admin/views/Pages/hooks/useImportPage";
 import { useCanCreatePage } from "~/admin/views/Pages/hooks/useCanCreate";
 import useGetPages from "~/admin/views/Pages/hooks/useGetPages";
 
@@ -31,7 +32,13 @@ interface Props {
 }
 
 enum LoadingLabel {
-    CREATING_PAGE = "Creating page..."
+    CREATING_PAGE = "Creating page...",
+    IMPORTING_PAGE = "Importing page..."
+}
+
+enum Operation {
+    CREATE = "create",
+    IMPORT = "import"
 }
 
 const getCurrentFolderList = (
@@ -84,6 +91,10 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
     const [tableHeight, setTableHeight] = useState(0);
     const tableRef = useRef<HTMLDivElement>(null);
 
+    const [selected, setSelected] = useState<string[]>([]);
+
+    const [operation, setOperation] = useState<string>(Operation.CREATE);
+
     useEffect(() => {
         setTableHeight(tableRef?.current?.clientHeight || 0);
 
@@ -103,8 +114,29 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
     const { createPageMutation } = useCreatePage({
         setLoadingLabel: () => setLoadingLabel(LoadingLabel.CREATING_PAGE),
         clearLoadingLabel: () => setLoadingLabel(null),
-        closeDialog: closeCategoryDialog
+        closeDialog: closeCategoryDialog,
+        folderId
     });
+
+    const { showDialog: importPageMutation } = useImportPage({
+        setLoadingLabel: () => setLoadingLabel(LoadingLabel.IMPORTING_PAGE),
+        clearLoadingLabel: () => setLoadingLabel(null),
+        closeDialog: closeCategoryDialog,
+        folderId
+    });
+
+    const handleOnCreatePage = useCallback(() => {
+        setOperation(Operation.CREATE);
+        openCategoryDialog();
+    }, []);
+
+    const handleOnImportPage = useCallback(() => {
+        setOperation(Operation.IMPORT);
+        openCategoryDialog();
+    }, []);
+
+    const onCategorySelect =
+        operation === Operation.CREATE ? createPageMutation : importPageMutation;
 
     const loadMoreLinks = async ({ hasMoreItems, cursor }: ListMeta) => {
         if (hasMoreItems && cursor) {
@@ -156,14 +188,16 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
                 <Header
                     title={!isLoading ? folderName : undefined}
                     canCreate={canCreate}
-                    onCreatePage={openCategoryDialog}
+                    onCreatePage={handleOnCreatePage}
+                    onImportPage={handleOnImportPage}
                     onCreateFolder={openFoldersDialog}
+                    selected={selected}
                 />
                 <Wrapper>
                     {pages.length === 0 && subFolders.length === 0 && !isLoading ? (
                         <Empty
                             canCreate={canCreate}
-                            onCreatePage={openCategoryDialog}
+                            onCreatePage={handleOnCreatePage}
                             onCreateFolder={openFoldersDialog}
                         />
                     ) : (
@@ -172,7 +206,7 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
                                 open={showPreviewDrawer}
                                 onClose={() => closePreviewDrawer()}
                                 canCreate={canCreate}
-                                onCreatePage={openCategoryDialog}
+                                onCreatePage={handleOnCreatePage}
                             />
                             <Scrollbar
                                 data-testid="default-data-list"
@@ -184,6 +218,11 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
                                     pages={pages}
                                     loading={isLoading}
                                     openPreviewDrawer={openPreviewDrawer}
+                                    onSelectRow={rows => {
+                                        //@ts-ignore
+                                        const ids = rows.map(row => row.original.pid);
+                                        setSelected(ids);
+                                    }}
                                 />
                                 <LoadMoreButton
                                     show={!isLoading && meta.hasMoreItems}
@@ -207,7 +246,7 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
             <CategoriesDialog
                 open={showCategoriesDialog}
                 onClose={closeCategoryDialog}
-                onSelect={createPageMutation}
+                onSelect={onCategorySelect}
             >
                 {loadingLabel && <CircularProgress label={loadingLabel} />}
             </CategoriesDialog>

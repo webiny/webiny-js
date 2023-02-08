@@ -2,7 +2,8 @@ import React from "react";
 import { FormRenderFbFormModelField } from "@webiny/app-form-builder/types";
 import { useBind } from "@webiny/form";
 import { Field } from "./components/Field";
-import { FieldMessage } from "./components/FieldMessage";
+import { FieldErrorMessage } from "./components/FieldErrorMessage";
+import { FieldHelperMessage } from "./components/FieldHelperMessage";
 import { FieldLabel } from "./components/FieldLabel";
 import styled from "@emotion/styled";
 import theme from "../../../../theme";
@@ -84,8 +85,8 @@ export const CheckboxField: React.FC<CheckboxProps> = ({ field }) => {
 
     return (
         <Field>
-            <FieldLabel>{field.label}</FieldLabel>
-
+            <FieldLabel field={field} />
+            {field.helpText && <FieldHelperMessage>{field.helpText}</FieldHelperMessage>}
             {(field.options || []).map(option => (
                 <CheckboxGroup key={option.value}>
                     <CheckboxButton
@@ -98,11 +99,7 @@ export const CheckboxField: React.FC<CheckboxProps> = ({ field }) => {
                     <label htmlFor={"checkbox-" + fieldId + option.value}>{option.label}</label>
                 </CheckboxGroup>
             ))}
-            <FieldMessage
-                isValid={validation.isValid}
-                errorMessage={validation.message}
-                helperMessage={field.helpText}
-            />
+            <FieldErrorMessage isValid={validation.isValid} message={validation.message} />
         </Field>
     );
 };

@@ -32,7 +32,7 @@ export const GET_PUBLISHED_PAGE = () => {
         .join("\n");
 
     return gql`
-        query PbGetPublishedPage($id: ID, $path: String, $returnNotFoundPage: Boolean, $preview: Boolean) {
+        query PbGetPublishedPage($id: ID, $path: String, $returnNotFoundPage: Boolean, $preview: Boolean) @ps(cache: true) {
             pageBuilder {
                 getPublishedPage(id: $id, path: $path, returnNotFoundPage: $returnNotFoundPage, preview: $preview) {
                     data {

@@ -276,8 +276,7 @@ describe("content model test", () => {
             updateContentModelMutation,
             deleteContentModelMutation
         } = useGraphQLHandler(manageHandlerOpts);
-        const { createCategory, until, listCategories } =
-            useCategoryManageHandler(manageHandlerOpts);
+        const { createCategory } = useCategoryManageHandler(manageHandlerOpts);
         const category = models.find(m => m.modelId === "category");
         if (!category) {
             throw new Error("Could not find model `category`.");
@@ -308,13 +307,6 @@ describe("content model test", () => {
                 slug: "title"
             }
         });
-
-        // If this `until` resolves successfully, we know entry is accessible via the "read" API
-        await until(
-            () => listCategories().then(([data]) => data),
-            ({ data }: any) => data.listCategories.data.length > 0,
-            { name: "list categories to check that categories are available" }
-        );
 
         const [response] = await deleteContentModelMutation({
             modelId: model.modelId

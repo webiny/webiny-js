@@ -4,6 +4,7 @@
   "references": [
     { "path": "../api" },
     { "path": "../api-i18n" },
+    { "path": "../api-page-builder" },
     { "path": "../api-security" },
     { "path": "../api-tenancy" },
     { "path": "../error" },
@@ -28,6 +29,8 @@
       "@webiny/api": ["../api/src"],
       "@webiny/api-i18n/*": ["../api-i18n/src/*"],
       "@webiny/api-i18n": ["../api-i18n/src"],
+      "@webiny/api-page-builder/*": ["../api-page-builder/src/*"],
+      "@webiny/api-page-builder": ["../api-page-builder/src"],
       "@webiny/api-security/*": ["../api-security/src/*"],
       "@webiny/api-security": ["../api-security/src"],
       "@webiny/api-tenancy/*": ["../api-tenancy/src/*"],

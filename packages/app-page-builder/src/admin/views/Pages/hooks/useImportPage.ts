@@ -10,24 +10,31 @@ interface UseImportPageParams {
     setLoadingStatus: () => void;
     clearLoadingStatus: () => void;
     closeDialog: () => void;
+    folderId?: string;
 }
 const useImportPage = ({
-    setLoadingStatus,
-    clearLoadingStatus,
-    closeDialog
+    setLoadingLabel,
+    clearLoadingLabel,
+    closeDialog,
+    folderId
 }: UseImportPageParams) => {
     const [importPage] = useMutation(IMPORT_PAGES);
     const { showSnackbar } = useSnackbar();
     const { showImportPageDialog } = useImportPageDialog();
     const { showImportPageLoadingDialog } = useImportPageLoadingDialog();
 
-    const importPageMutation = useCallback(async ({ slug: category }, zipFileUrl) => {
+    const importPageMutation = useCallback(async ({ slug: category }, zipFileUrl, folderId) => {
         try {
             setLoadingStatus();
             const res = await importPage({
                 variables: {
                     category,
-                    zipFileUrl
+                    zipFileUrl,
+                    meta: {
+                        location: {
+                            folderId
+                        }
+                    }
                 }
             });
 
@@ -46,11 +53,14 @@ const useImportPage = ({
         }
     }, []);
 
-    const showDialog = useCallback(category => {
-        showImportPageDialog(async url => {
-            await importPageMutation(category, url);
-        });
-    }, []);
+    const showDialog = useCallback(
+        category => {
+            showImportPageDialog(async url => {
+                await importPageMutation(category, url, folderId);
+            });
+        },
+        [folderId]
+    );
 
     return {
         importPageMutation,

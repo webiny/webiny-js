@@ -399,7 +399,20 @@ export interface LockedField {
     type: string;
     [key: string]: any;
 }
-
+/**
+ * @category Database model
+ * @category CmsModel
+ */
+export interface CmsModelGroup {
+    /**
+     * Generated ID of the group
+     */
+    id: string;
+    /**
+     * Name of the group
+     */
+    name: string;
+}
 /**
  * Cms Model defining an entry.
  *
@@ -426,16 +439,7 @@ export interface CmsModel {
     /**
      * Cms Group reference object.
      */
-    group: {
-        /**
-         * Generated ID of the group
-         */
-        id: string;
-        /**
-         * Name of the group
-         */
-        name: string;
-    };
+    group: CmsModelGroup;
     /**
      * Description for the content model.
      */
@@ -1291,11 +1295,11 @@ export interface CmsModelFieldInput {
     /**
      * Text to display below the field to help user what to write in the field.
      */
-    helpText?: string;
+    helpText?: string | null;
     /**
      * Text to display in the field.
      */
-    placeholderText?: string;
+    placeholderText?: string | null;
     /**
      * Fields can be tagged to give them contextual meaning.
      */
@@ -1898,6 +1902,9 @@ export interface CmsEntryMeta {
     totalCount: number;
 }
 
+/**
+ * Create
+ */
 export interface OnEntryBeforeCreateTopicParams {
     input: CreateCmsEntryInput;
     entry: CmsEntry;
@@ -1917,6 +1924,9 @@ export interface OnEntryCreateErrorTopicParams {
     model: CmsModel;
 }
 
+/**
+ * Revision Create
+ */
 export interface OnEntryRevisionBeforeCreateTopicParams {
     input: CreateFromCmsEntryInput;
     entry: CmsEntry;
@@ -1940,6 +1950,9 @@ export interface OnEntryCreateRevisionErrorTopicParams {
     model: CmsModel;
 }
 
+/**
+ * Update
+ */
 export interface OnEntryBeforeUpdateTopicParams {
     input: UpdateCmsEntryInput;
     original: CmsEntry;
@@ -1961,6 +1974,10 @@ export interface OnEntryUpdateErrorTopicParams {
     model: CmsModel;
 }
 
+/**
+ * Publish
+ */
+
 export interface OnEntryBeforePublishTopicParams {
     entry: CmsEntry;
     model: StorageOperationsCmsModel;
@@ -1977,6 +1994,30 @@ export interface OnEntryPublishErrorTopicParams {
     entry: CmsEntry;
     model: StorageOperationsCmsModel;
 }
+
+/**
+ * Republish
+ */
+export interface OnEntryBeforeRepublishTopicParams {
+    entry: CmsEntry;
+    model: StorageOperationsCmsModel;
+}
+
+export interface OnEntryAfterRepublishTopicParams {
+    entry: CmsEntry;
+    model: StorageOperationsCmsModel;
+    storageEntry: CmsEntry;
+}
+
+export interface OnEntryRepublishErrorTopicParams {
+    error: Error;
+    entry: CmsEntry;
+    model: StorageOperationsCmsModel;
+}
+
+/**
+ * Unpublish
+ */
 
 export interface OnEntryBeforeUnpublishTopicParams {
     entry: CmsEntry;
@@ -2245,6 +2286,10 @@ export interface CmsEntryContext {
     onEntryBeforePublish: Topic<OnEntryBeforePublishTopicParams>;
     onEntryAfterPublish: Topic<OnEntryAfterPublishTopicParams>;
     onEntryPublishError: Topic<OnEntryPublishErrorTopicParams>;
+
+    onEntryBeforeRepublish: Topic<OnEntryBeforeRepublishTopicParams>;
+    onEntryAfterRepublish: Topic<OnEntryAfterRepublishTopicParams>;
+    onEntryRepublishError: Topic<OnEntryRepublishErrorTopicParams>;
 
     onEntryBeforeUnpublish: Topic<OnEntryBeforeUnpublishTopicParams>;
     onEntryAfterUnpublish: Topic<OnEntryAfterUnpublishTopicParams>;

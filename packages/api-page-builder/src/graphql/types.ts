@@ -22,7 +22,6 @@ import {
 } from "~/types";
 import { PrerenderingServiceClientContext } from "@webiny/api-prerendering-service/client/types";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
-import { ACOContext } from "@webiny/api-aco/types";
 
 // CRUD types.
 export interface ListPagesParams {
@@ -69,12 +68,14 @@ export interface GetPagesOptions {
  */
 export interface OnPageBeforeCreateTopicParams<TPage extends Page = Page> {
     page: TPage;
+    meta?: Record<string, any>;
 }
 /**
  * @category Lifecycle events
  */
 export interface OnPageAfterCreateTopicParams<TPage extends Page = Page> {
     page: TPage;
+    meta?: Record<string, any>;
 }
 /**
  * @category Lifecycle events
@@ -201,8 +202,14 @@ export interface PagesCrud {
     }): Promise<TPage>;
     getPublishedPageByPath<TPage extends Page = Page>(args: { path: string }): Promise<TPage>;
     listPageRevisions<TPage extends Page = Page>(id: string): Promise<TPage[]>;
-    createPage<TPage extends Page = Page>(category: string): Promise<TPage>;
-    createPageFrom<TPage extends Page = Page>(page: string): Promise<TPage>;
+    createPage<TPage extends Page = Page>(
+        category: string,
+        meta?: Record<string, any>
+    ): Promise<TPage>;
+    createPageFrom<TPage extends Page = Page>(
+        page: string,
+        meta?: Record<string, any>
+    ): Promise<TPage>;
     updatePage<TPage extends Page = Page>(id: string, data: PbUpdatePageInput): Promise<TPage>;
     deletePage<TPage extends Page = Page>(id: string): Promise<[TPage, TPage]>;
     publishPage<TPage extends Page = Page>(id: string): Promise<TPage>;
@@ -897,8 +904,7 @@ export interface PbContext
         SecurityContext,
         TenancyContext,
         FileManagerContext,
-        PrerenderingServiceClientContext,
-        ACOContext {
+        PrerenderingServiceClientContext {
     pageBuilder: PageBuilderContextObject;
 }
 

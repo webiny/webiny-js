@@ -1,3 +1,5 @@
+import DataLoader from "dataloader";
+import WebinyError from "@webiny/error";
 import {
     CmsContext,
     CmsModel,
@@ -13,24 +15,16 @@ import {
     OnModelInitializeParams,
     OnModelBeforeCreateFromTopicParams,
     OnModelAfterCreateFromTopicParams,
-    CmsModelCreateInput,
     CmsModelUpdateInput,
-    CmsModelCreateFromInput,
     OnModelCreateErrorTopicParams,
     OnModelCreateFromErrorParams,
     OnModelUpdateErrorTopicParams,
-    OnModelDeleteErrorTopicParams
+    OnModelDeleteErrorTopicParams,
+    CmsModelGroup
 } from "~/types";
-import DataLoader from "dataloader";
+
 import { NotFoundError } from "@webiny/handler-graphql";
 import { contentModelManagerFactory } from "./contentModel/contentModelManagerFactory";
-import {
-    CreateContentModelModel,
-    CreateContentModelModelFrom,
-    UpdateContentModelModel
-} from "./contentModel/models";
-import { createFieldModels } from "./contentModel/createFieldModels";
-import WebinyError from "@webiny/error";
 import { Tenant } from "@webiny/api-tenancy/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { SecurityIdentity } from "@webiny/api-security/types";
@@ -48,6 +42,12 @@ import { filterAsync } from "~/utils/filterAsync";
 import { checkOwnership, validateOwnership } from "~/utils/ownership";
 import { checkModelAccess, validateModelAccess } from "~/utils/access";
 import { validateModelFields } from "~/crud/contentModel/validateModelFields";
+import {
+    createModelCreateFromValidation,
+    createModelCreateValidation,
+    createModelUpdateValidation
+} from "~/crud/contentModel/validation";
+import { createZodError } from "@webiny/utils";
 
 /**
  * Given a model, return an array of tags ensuring the `type` tag is set.
@@ -329,27 +329,28 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         clearModelsCache,
         getModel,
         listModels,
-        async createModel(inputData) {
+        async createModel(input) {
             await checkModelPermissions("w");
 
-            const createdData = new CreateContentModelModel().populate(inputData);
-            await createdData.validate();
-            const input: CmsModelCreateInput = await createdData.toJSON();
-
-            context.security.disableAuthorization();
-            const group = await context.cms.getGroup(input.group);
-            context.security.enableAuthorization();
-            if (!group) {
-                throw new NotFoundError(`There is no group "${input.group}".`);
+            const result = await createModelCreateValidation().safeParseAsync(input);
+            if (!result.success) {
+                throw createZodError(result.error);
             }
 
-            const fields = await createFieldModels(input.fields);
+            const data = result.data;
+
+            context.security.disableAuthorization();
+            const group = await context.cms.getGroup(data.group);
+            context.security.enableAuthorization();
+            if (!group) {
+                throw new NotFoundError(`There is no group "${data.group}".`);
+            }
 
             const identity = getIdentity();
             const model: CmsModel = {
-                name: input.name,
-                description: input.description || "",
-                modelId: input.modelId || "",
+                name: data.name,
+                description: data.description || "",
+                modelId: data.modelId || "",
                 titleFieldId: "id",
                 locale: getLocale().code,
                 tenant: getTenant().id,
@@ -364,10 +365,10 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 },
                 createdOn: new Date().toISOString(),
                 savedOn: new Date().toISOString(),
-                fields,
+                fields: data.fields,
                 lockedFields: [],
-                layout: input.layout || [],
-                tags: [...(input.tags || [])],
+                layout: data.layout || [],
+                tags: [...(data.tags || [])],
                 webinyVersion: context.WEBINY_VERSION
             };
 
@@ -375,7 +376,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
 
             try {
                 await onModelBeforeCreate.publish({
-                    input,
+                    input: data,
                     model
                 });
 
@@ -388,14 +389,14 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 await updateManager(context, model);
 
                 await onModelAfterCreate.publish({
-                    input,
+                    input: data,
                     model: createdModel
                 });
 
                 return createdModel;
             } catch (ex) {
                 await onModelCreateError.publish({
-                    input,
+                    input: data,
                     model,
                     error: ex
                 });
@@ -448,38 +449,40 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 throw ex;
             }
         },
-        async createModelFrom(modelId, data) {
+        async createModelFrom(modelId, userInput) {
             await checkModelPermissions("w");
             /**
              * Get a model record; this will also perform ownership validation.
              */
             const original = await getModel(modelId);
 
-            const createdData = new CreateContentModelModelFrom().populate({
-                name: data.name,
-                modelId: data.modelId,
-                description: data.description || original.description,
-                group: data.group,
-                locale: data.locale
+            const result = await createModelCreateFromValidation().safeParseAsync({
+                name: userInput.name,
+                modelId: userInput.modelId,
+                description: userInput.description || original.description,
+                group: userInput.group,
+                locale: userInput.locale
             });
+            if (!result.success) {
+                throw createZodError(result.error);
+            }
 
-            await createdData.validate();
-            const input: CmsModelCreateFromInput = await createdData.toJSON();
+            const data = result.data;
 
-            const locale = await context.i18n.getLocale(input.locale || original.locale);
+            const locale = await context.i18n.getLocale(data.locale || original.locale);
             if (!locale) {
-                throw new NotFoundError(`There is no locale "${input.locale}".`);
+                throw new NotFoundError(`There is no locale "${data.locale}".`);
             }
             /**
              * Use storage operations directly because we cannot get group from different locale via context methods.
              */
             const group = await context.cms.storageOperations.groups.get({
-                id: input.group,
+                id: data.group,
                 tenant: original.tenant,
                 locale: locale.code
             });
             if (!group) {
-                throw new NotFoundError(`There is no group "${input.group}".`);
+                throw new NotFoundError(`There is no group "${data.group}".`);
             }
 
             const identity = getIdentity();
@@ -490,9 +493,9 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                     id: group.id,
                     name: group.name
                 },
-                name: input.name,
-                modelId: input.modelId || "",
-                description: input.description || "",
+                name: data.name,
+                modelId: data.modelId || "",
+                description: data.description || "",
                 createdBy: {
                     id: identity.id,
                     displayName: identity.displayName,
@@ -506,7 +509,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
 
             try {
                 await onModelBeforeCreateFrom.publish({
-                    input,
+                    input: data,
                     model,
                     original
                 });
@@ -520,7 +523,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 await updateManager(context, model);
 
                 await onModelAfterCreateFrom.publish({
-                    input,
+                    input: data,
                     original,
                     model: createdModel
                 });
@@ -528,7 +531,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 return createdModel;
             } catch (ex) {
                 await onModelCreateFromError.publish({
-                    input,
+                    input: data,
                     original,
                     model,
                     error: ex
@@ -536,47 +539,48 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 throw ex;
             }
         },
-        async updateModel(modelId, inputData) {
+        async updateModel(modelId, input) {
             await checkModelPermissions("w");
 
             // Get a model record; this will also perform ownership validation.
             const original = await getModel(modelId);
 
-            const updatedData = new UpdateContentModelModel().populate(inputData);
-            await updatedData.validate();
+            const result = await createModelUpdateValidation().safeParseAsync(input);
+            if (!result.success) {
+                throw createZodError(result.error);
+            }
 
-            const input: CmsModelUpdateInput = await updatedData.toJSON({ onlyDirty: true });
-            if (Object.keys(input).length === 0) {
+            const data = result.data;
+
+            if (Object.keys(data).length === 0) {
                 /**
                  * We need to return the original if nothing is to be updated.
                  */
                 return original;
             }
-            let group: CmsModel["group"] = {
+            let group: CmsModelGroup = {
                 id: original.group.id,
                 name: original.group.name
             };
-            if (input.group) {
+            if (data.group) {
                 context.security.disableAuthorization();
-                const groupData = await context.cms.getGroup(input.group);
+                const groupData = await context.cms.getGroup(data.group);
                 context.security.enableAuthorization();
                 if (!groupData) {
-                    throw new NotFoundError(`There is no group "${input.group}".`);
+                    throw new NotFoundError(`There is no group "${data.group}".`);
                 }
                 group = {
                     id: groupData.id,
                     name: groupData.name
                 };
             }
-            const fields = await createFieldModels(inputData.fields);
             const model: CmsModel = {
                 ...original,
-                ...input,
+                ...data,
                 group,
                 tenant: original.tenant || getTenant().id,
                 locale: original.locale || getLocale().code,
                 webinyVersion: context.WEBINY_VERSION,
-                fields,
                 savedOn: new Date().toISOString()
             };
 
@@ -584,7 +588,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
 
             try {
                 await onModelBeforeUpdate.publish({
-                    input,
+                    input: data,
                     original,
                     model
                 });
@@ -596,7 +600,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 await updateManager(context, resultModel);
 
                 await onModelAfterUpdate.publish({
-                    input,
+                    input: data,
                     original,
                     model: resultModel
                 });
@@ -604,7 +608,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 return resultModel;
             } catch (ex) {
                 await onModelUpdateError.publish({
-                    input,
+                    input: data,
                     model,
                     original,
                     error: ex

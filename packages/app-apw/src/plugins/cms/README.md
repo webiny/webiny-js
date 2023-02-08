@@ -50,8 +50,8 @@ We will briefly discuss each of those files here:
   HOCs) that are responsible for rendering a different UI in the `@webiny/app-page-builder` based on application state.
   For instance, consider [`PublishPageButtonHoc`](../pageBuilder/PublishPageHocs.tsx), which renders a different UI if a
   page is __under review__. This functionality is made possible
-  by [`Compose`](/packages/app-admin-core/src/components/core/Compose.tsx)
-  and [`makeComposable`](/packages/app-admin-core/src/makeComposable.tsx) helpers.
+  by [`Compose`](/packages/app-core/src/components/core/Compose.tsx)
+  and [`makeComposable`](/packages/app-core/src/makeComposable.tsx) helpers.
 
   > Please feel free to check out Webiny docs to learn more about [the compose component](https://www.webiny.com/docs/admin-area/basics/framework#the-compose-component).
 

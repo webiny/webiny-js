@@ -16,6 +16,11 @@ import { createEntriesStorageOperations } from "./operations/entry";
 import { CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
 
 import { createFilterCreatePlugins } from "~/operations/entry/filtering/plugins";
+import {
+    CmsEntryFieldFilterPathPlugin,
+    CmsEntryFieldFilterPlugin,
+    CmsEntryFieldSortingPlugin
+} from "~/plugins";
 
 export * from "./plugins";
 
@@ -85,6 +90,20 @@ export const createStorageOperations: StorageOperationsFactory = params => {
             );
             plugins.register(fieldPlugins);
 
+            const filterPathPlugins = context.plugins.byType<CmsEntryFieldFilterPathPlugin>(
+                CmsEntryFieldFilterPathPlugin.type
+            );
+            plugins.register(filterPathPlugins);
+
+            const filterPlugins = context.plugins.byType<CmsEntryFieldFilterPlugin>(
+                CmsEntryFieldFilterPlugin.type
+            );
+            plugins.register(filterPlugins);
+
+            const sortingPlugins = context.plugins.byType<CmsEntryFieldSortingPlugin>(
+                CmsEntryFieldSortingPlugin.type
+            );
+            plugins.register(sortingPlugins);
             /**
              * Pass the plugins to the parent context.
              */

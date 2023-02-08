@@ -16,6 +16,7 @@ export interface Payload {
     subTaskIndex: number;
     type: string;
     identity: SecurityIdentity;
+    meta?: Record<string, any>;
 }
 
 export interface Response {

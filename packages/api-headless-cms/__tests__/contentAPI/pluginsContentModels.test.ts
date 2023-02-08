@@ -1,5 +1,4 @@
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
-import { until } from "./../testHelpers/helpers";
 import { CmsGroup, CmsModel } from "~/types";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";
 
@@ -433,14 +432,6 @@ describe("content model plugins", () => {
             products.push(createResponse.data.createProduct.data);
         }
 
-        await until(
-            () => invoke({ body: { query: LIST_PRODUCTS } }),
-            ([response]: any) => response.data.listProducts.data.length === 3,
-            {
-                name: "list after create products"
-            }
-        );
-
         for (const product of products) {
             const [getProductResponse] = await invoke({
                 body: {
@@ -524,18 +515,6 @@ describe("content model plugins", () => {
                 }
             });
         }
-
-        await until(
-            () => invoke({ body: { query: LIST_PRODUCTS } }),
-            ([response]: any) => {
-                return response.data.listProducts.data.every(
-                    (p: any) => p.meta.status === "published"
-                );
-            },
-            {
-                name: "list products after published"
-            }
-        );
 
         // The list should contain three products, all published.
         const [listProductsAfterPublishResponse] = await invoke({

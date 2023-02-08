@@ -17,6 +17,7 @@ export interface Payload {
     task: ImportExportTask;
     type: string;
     identity: SecurityIdentity;
+    meta?: Record<string, any>;
 }
 export interface Response {
     data: string | null;

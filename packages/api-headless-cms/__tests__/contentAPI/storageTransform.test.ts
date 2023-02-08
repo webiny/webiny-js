@@ -89,17 +89,6 @@ describe("storage transform for complex entries", () => {
             data: product
         });
 
-        await productManager.until(
-            () => productManager.listProducts().then(([data]) => data),
-            ({ data }: any) => {
-                if (data.listProducts.data.length !== 1) {
-                    return false;
-                }
-                return data.listProducts.data[0].price === product.price;
-            },
-            { name: "list all products" }
-        );
-
         expect(createResult).toEqual({
             data: {
                 createProduct: {

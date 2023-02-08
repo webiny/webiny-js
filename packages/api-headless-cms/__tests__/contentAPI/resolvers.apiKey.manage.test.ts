@@ -108,17 +108,11 @@ describe("MANAGE - resolvers - api key", () => {
                 rwd: "rwd"
             }
         ]);
-        const {
-            until,
-            createCategory,
-            updateCategory,
-            getCategory,
-            listCategories,
-            deleteCategory
-        } = useCategoryManageHandler({
-            ...manageOpts,
-            identity
-        });
+        const { createCategory, updateCategory, getCategory, listCategories, deleteCategory } =
+            useCategoryManageHandler({
+                ...manageOpts,
+                identity
+            });
 
         const { listCategories: listCategoriesRead } = useCategoryReadHandler({
             ...readOpts,
@@ -177,13 +171,6 @@ describe("MANAGE - resolvers - api key", () => {
         });
 
         const category = createResponse.data.createCategory.data;
-
-        // If this `until` resolves successfully, we know entry is accessible via the "read" API
-        await until(
-            () => listCategories({}, headers).then(([data]) => data),
-            ({ data }: any) => data.listCategories.data[0].id === category.id,
-            { name: "create category" }
-        );
 
         const [getResponse] = await getCategory(
             {
@@ -288,11 +275,7 @@ describe("MANAGE - resolvers - api key", () => {
         const updatedCategory = updateResponse.data.updateCategory.data;
 
         // If this `until` resolves successfully, we know entry is accessible via the "read" API
-        const listResponse = await until(
-            () => listCategories({}, headers).then(([data]) => data),
-            ({ data }: any) => data.listCategories.data[0].slug === updatedCategory.slug,
-            { name: `waiting for green-vegetables slug on list categories` }
-        );
+        const [listResponse] = await listCategories({}, headers);
 
         expect(listResponse).toEqual({
             data: {
@@ -357,16 +340,6 @@ describe("MANAGE - resolvers - api key", () => {
                 }
             }
         });
-        /**
-         * There should be no categories in the manage API.
-         */
-        await until(
-            () => listCategories({}, headers).then(([data]) => data),
-            ({ data }: any) => {
-                return data.listCategories.data.length === 0;
-            },
-            { name: "after delete list categories" }
-        );
 
         const [listAfterDelete] = await listCategories({}, headers);
 
@@ -383,14 +356,6 @@ describe("MANAGE - resolvers - api key", () => {
                 }
             }
         });
-        /**
-         * There should be no categories in the read API.
-         */
-        await until(
-            () => listCategoriesRead({}, headers).then(([data]) => data),
-            ({ data }: any) => data.listCategories.data.length === 0,
-            { name: "after delete list read categories" }
-        );
 
         const [listReadAfterDelete] = await listCategoriesRead({}, headers);
 

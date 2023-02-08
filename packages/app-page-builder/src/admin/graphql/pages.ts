@@ -55,9 +55,22 @@ export const LIST_PAGES_DATA_FIELDS = `
 `;
 
 export const CREATE_PAGE = gql`
-    mutation PbCreatePage($from: ID, $category: String) {
+    mutation PbCreatePage($from: ID, $category: String, $meta: JSON) {
         pageBuilder {
-            createPage(from: $from, category: $category) {
+            createPage(from: $from, category: $category, meta: $meta) {
+                data {
+                    ${LIST_PAGES_DATA_FIELDS}
+                }
+                ${error}
+            }
+        }
+    }
+`;
+
+export const DUPLICATE_PAGE = gql`
+    mutation PbDuplicatePage($id: ID!) {
+        pageBuilder {
+            duplicatePage(id: $id) {
                 data {
                     ${LIST_PAGES_DATA_FIELDS}
                     settings {
