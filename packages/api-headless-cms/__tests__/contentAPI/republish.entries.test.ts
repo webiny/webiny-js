@@ -5,7 +5,6 @@ import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandle
 import { useCategoryReadHandler } from "../testHelpers/useCategoryReadHandler";
 // @ts-ignore
 import mdbid from "mdbid";
-import { useProductReadHandler } from "../testHelpers/useProductReadHandler";
 import { useProductManageHandler } from "../testHelpers/useProductManageHandler";
 import { PluginsContainer } from "@webiny/plugins";
 import { createGraphQLFields } from "~/graphqlFields";
@@ -26,7 +25,6 @@ describe("Republish entries", () => {
         createContentModelMutation,
         updateContentModelMutation,
         createContentModelGroupMutation,
-        until,
         plugins
     } = useGraphQLHandler(manageOpts);
 
@@ -194,23 +192,6 @@ describe("Republish entries", () => {
         } = categories;
 
         /**
-         * Wait for the categories to be published
-         */
-        await until(
-            () => listCategories(),
-            ([response]: any) => {
-                return response.data.listCategories.data.length === 3;
-                // if (!result) {
-                //     console.log("after publishing categories not passing");
-                //     console.log(JSON.stringify(response.data));
-                // }
-                // return result;
-            },
-            {
-                name: "after publishing categories"
-            }
-        );
-        /**
          * Now we republish all categories and expect they did not change.
          */
         const [appleRepublishResponse] = await republishCategory({
@@ -261,31 +242,6 @@ describe("Republish entries", () => {
         });
         orangePublished.savedOn = orangeRepublishResponse.data.republishCategory.data.savedOn;
 
-        const times = [applePublished.savedOn, bananaPublished.savedOn, orangePublished.savedOn];
-        /**
-         * Wait for the categories to be published
-         */
-        await until(
-            () =>
-                listCategories({
-                    sort: ["createdOn_ASC"]
-                }),
-            ([response]: any) => {
-                const items = response.data.listCategories.data;
-                if (items.length !== 3) {
-                    return false;
-                }
-                for (const key in times) {
-                    if (items[key].savedOn !== times[key]) {
-                        return false;
-                    }
-                }
-                return true;
-            },
-            {
-                name: "after republishing categories"
-            }
-        );
         const [response] = await listCategories({
             sort: ["createdOn_ASC"]
         });
@@ -366,7 +322,6 @@ describe("Republish entries", () => {
 
         const { applePublished, bananaPublished } = await createPublishedCategories();
 
-        const { listProducts: listReadProducts } = useProductReadHandler(readOpts);
         const { publishProduct, republishProduct } = useProductManageHandler(manageOpts);
 
         const { storageOperations } = useCategoryManageHandler(manageOpts);
@@ -440,31 +395,6 @@ describe("Republish entries", () => {
             }
         });
 
-        /**
-         * Wait for the products to be published
-         */
-        await until(
-            () =>
-                listReadProducts({
-                    sort: ["createdOn_ASC"]
-                }),
-            ([response]: any) => {
-                const items = response.data.listProducts.data as any[];
-                if (items.length !== 2) {
-                    return false;
-                }
-
-                const targets: string[] = [galaRecord.id, goldenRecord.id];
-
-                return items.every(item => {
-                    return targets.includes(item.id);
-                });
-            },
-            {
-                name: "after publishing product"
-            }
-        );
-
         const [republishGalaResponse] = await republishProduct({
             revision: galaRecord.id
         });
@@ -491,31 +421,7 @@ describe("Republish entries", () => {
                 }
             }
         });
-        const galaSavedOn = republishGalaResponse.data.republishProduct.data.savedOn;
-        const goldenSavedOn = republishGoldenResponse.data.republishProduct.data.savedOn;
-        /**
-         * Wait for the products to be published
-         */
-        await until(
-            () =>
-                listReadProducts({
-                    sort: ["createdOn_ASC"]
-                }),
-            ([response]: any) => {
-                const items: any[] = response.data.listProducts.data;
-                if (items.length !== 2) {
-                    return false;
-                }
-                const requiredIdList: string[] = [galaRecord.id, goldenRecord.id];
-                const requiredTimes: string[] = [galaSavedOn, goldenSavedOn];
-                return items.every(item => {
-                    return requiredIdList.includes(item.id) && requiredTimes.includes(item.savedOn);
-                });
-            },
-            {
-                name: "after re-publishing product"
-            }
-        );
+
         /**
          * And now we need to go directly into storage and check that values on the product records are ok.
          * We must call both latest and published.
@@ -524,6 +430,7 @@ describe("Republish entries", () => {
             where: {
                 latest: true
             },
+            limit: 10000,
             sort: ["createdOn_ASC"]
         });
 
@@ -596,6 +503,7 @@ describe("Republish entries", () => {
             where: {
                 published: true
             },
+            limit: 10000,
             sort: ["createdOn_ASC"]
         });
 

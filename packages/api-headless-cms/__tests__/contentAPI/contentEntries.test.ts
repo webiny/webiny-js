@@ -75,11 +75,6 @@ type CmsEntry<T = Record<string, any>> = T & {
     };
 };
 
-interface FruitExpectancy {
-    id: string;
-    status: string;
-}
-
 describe("Content entries", () => {
     const manageOpts = { path: "manage/en-US" };
 
@@ -88,8 +83,6 @@ describe("Content entries", () => {
     const {
         createFruit,
         publishFruit,
-        listFruits,
-        until,
         getContentEntries,
         getLatestContentEntries,
         getPublishedContentEntries,
@@ -135,30 +128,8 @@ describe("Content entries", () => {
         return createFruits();
     };
 
-    const waitFruits = async (name: string, expectancy?: FruitExpectancy[]) => {
-        // If this `until` resolves successfully, we know entry is accessible via the "read" API
-        await until(
-            () => listFruits({}).then(([data]) => data),
-            ({ data }: any) => {
-                const list: any[] = data.listFruits?.data || [];
-                if (list.length !== 4) {
-                    return false;
-                }
-                if (!expectancy) {
-                    return true;
-                }
-                return expectancy.every(item => {
-                    return list.some(ls => {
-                        return ls.id === item.id && ls.meta.status === item.status;
-                    });
-                });
-            },
-            { name: `list all fruits - ${name}` }
-        );
-    };
-
     it("should get content entry by modelId and id", async () => {
-        const { apple, banana, strawberry, orange } = await setupFruits();
+        const { apple, banana, strawberry } = await setupFruits();
 
         const [secondBananaResponse] = await createFruitFrom({
             revision: banana.id
@@ -235,25 +206,6 @@ describe("Content entries", () => {
                 }
             }
         });
-
-        await waitFruits("should filter fruits by date and sort asc", [
-            {
-                id: apple.id,
-                status: "published"
-            },
-            {
-                id: thirdBanana.id,
-                status: "draft"
-            },
-            {
-                id: strawberry.id,
-                status: "published"
-            },
-            {
-                id: orange.id,
-                status: "published"
-            }
-        ]);
 
         /**
          * Exact entries queries.
@@ -534,25 +486,6 @@ describe("Content entries", () => {
 
         const secondBanana = secondBananaResponse.data.createFruitFrom.data;
 
-        await waitFruits("should be second banana as draft", [
-            {
-                id: apple.id,
-                status: "published"
-            },
-            {
-                id: secondBanana.id,
-                status: "draft"
-            },
-            {
-                id: strawberry.id,
-                status: "published"
-            },
-            {
-                id: orange.id,
-                status: "published"
-            }
-        ]);
-
         const [response] = await searchContentEntries({
             modelsIds: ["fruit"]
         });
@@ -620,26 +553,7 @@ describe("Content entries", () => {
     it.each(searchQueries)(
         `should search for latest entries containing "%s" in given models`,
         async (query, titles) => {
-            const { apple, banana, strawberry, orange } = await setupFruits();
-
-            await waitFruits("should be second banana as draft", [
-                {
-                    id: apple.id,
-                    status: "published"
-                },
-                {
-                    id: banana.id,
-                    status: "published"
-                },
-                {
-                    id: strawberry.id,
-                    status: "published"
-                },
-                {
-                    id: orange.id,
-                    status: "published"
-                }
-            ]);
+            await setupFruits();
 
             const [response] = await searchContentEntries({
                 modelsIds: ["fruit"],

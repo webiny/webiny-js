@@ -42,7 +42,10 @@ import {
     OnEntryPublishErrorTopicParams,
     OnEntryUnpublishErrorTopicParams,
     OnEntryDeleteErrorTopicParams,
-    OnEntryRevisionDeleteErrorTopicParams
+    OnEntryRevisionDeleteErrorTopicParams,
+    OnEntryBeforeRepublishTopicParams,
+    OnEntryAfterRepublishTopicParams,
+    OnEntryRepublishErrorTopicParams
 } from "~/types";
 import { validateModelEntryData } from "./contentEntry/entryDataValidation";
 import WebinyError from "@webiny/error";
@@ -285,10 +288,24 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         "cms.onEntryBeforePublish"
     );
     const onEntryAfterPublish =
-        createTopic<OnEntryAfterPublishTopicParams>("cms.onEntryAfterPublic");
+        createTopic<OnEntryAfterPublishTopicParams>("cms.onEntryAfterPublish");
 
     const onEntryPublishError =
         createTopic<OnEntryPublishErrorTopicParams>("cms.onEntryPublishError");
+
+    /**
+     * Republish
+     */
+    const onEntryBeforeRepublish = createTopic<OnEntryBeforeRepublishTopicParams>(
+        "cms.onEntryBeforeRepublish"
+    );
+    const onEntryAfterRepublish = createTopic<OnEntryAfterRepublishTopicParams>(
+        "cms.onEntryAfterRepublish"
+    );
+
+    const onEntryRepublishError = createTopic<OnEntryRepublishErrorTopicParams>(
+        "cms.onEntryRepublishError"
+    );
 
     /**
      * Unpublish
@@ -462,6 +479,12 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         onEntryBeforePublish,
         onEntryAfterPublish,
         onEntryPublishError,
+        /**
+         * Republish
+         */
+        onEntryBeforeRepublish,
+        onEntryAfterRepublish,
+        onEntryRepublishError,
         /**
          * Unpublish
          */
@@ -1127,11 +1150,28 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
              * Then we move onto publishing it again.
              */
             try {
-                return await storageOperations.entries.publish(model, {
+                await onEntryBeforeRepublish.publish({
+                    entry,
+                    model
+                });
+
+                const result = await storageOperations.entries.publish(model, {
                     entry,
                     storageEntry
                 });
+
+                await onEntryAfterRepublish.publish({
+                    entry,
+                    model,
+                    storageEntry
+                });
+                return result;
             } catch (ex) {
+                await onEntryRepublishError.publish({
+                    entry,
+                    model,
+                    error: ex
+                });
                 throw new WebinyError(
                     "Could not publish existing entry while re-publishing.",
                     "REPUBLISH_PUBLISH_ERROR",

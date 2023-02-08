@@ -145,7 +145,7 @@ describe("latest entries", function () {
     });
 
     it("should load all the latest categories in the article ref field", async () => {
-        const { createArticle, publishArticle, until } = useArticleManageHandler(manageOpts);
+        const { createArticle, publishArticle } = useArticleManageHandler(manageOpts);
         const { listArticles: previewListArticles } = useArticleReadHandler(previewOpts);
         const { listArticles } = useArticleReadHandler(readOpts);
         const title = "Test article";
@@ -226,24 +226,6 @@ describe("latest entries", function () {
         const updatedFruitCategory = await updateCategoryEntry(fruitCategory, {
             title: "Fruit 2"
         });
-
-        /**
-         * Need to wait propagation of the updated fruit category on the preview API.
-         */
-        await until(
-            () => previewListArticles().then(([data]) => data),
-            ({ data }: any) => {
-                const targetArticle = data?.listArticles?.data[0];
-                if (targetArticle.savedOn !== article.savedOn) {
-                    return false;
-                }
-                const categories: any[] = targetArticle.categories || [];
-                return categories.some(category => {
-                    return category.id === updatedFruitCategory.id;
-                });
-            },
-            { name: "list all articles", tries: 10 }
-        );
 
         const [listResponse] = await previewListArticles();
 
@@ -345,19 +327,6 @@ describe("latest entries", function () {
             }
         });
         const publishedFruitCategory = publishFruitResponse?.data?.publishCategory?.data;
-        /**
-         * Need to wait propagation of the updated fruit category on the read API.
-         */
-        await until(
-            () => listArticles().then(([data]) => data),
-            ({ data }: any) => {
-                const categories: any[] = data?.listArticles?.data[0]?.categories || [];
-                return categories.some(category => {
-                    return category.id === publishedFruitCategory.id;
-                });
-            },
-            { name: "list all articles after published fruit category", tries: 5 }
-        );
 
         const [listReadResponse] = await listArticles();
 
