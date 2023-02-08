@@ -54,6 +54,18 @@ const getDefaultHeaders = (routes: DefinedContextRoutes): Record<string, string>
     };
 };
 
+const stringifyError = (error: Error) => {
+    const { name, message, code, stack, data } = error as any;
+    return JSON.stringify({
+        ...error,
+        name: name || "Missing the error name",
+        message: message || "Missing the error message",
+        code: code || "Missing the error code",
+        data,
+        stack: process.env.DEBUG === "true" ? stack : "turn on the debug flag to see the stack"
+    });
+};
+
 const OPTIONS_HEADERS: Record<string, string> = {
     "Access-Control-Max-Age": "86400",
     "Cache-Control": "public, max-age=86400"
@@ -283,7 +295,7 @@ export const createHandler = (params: CreateHandlerParams) => {
                     name ? `(${name})` : ""
                 } plugin in the onRequest hook.`
             );
-            console.log(JSON.stringify(ex));
+            console.log(stringifyError(ex));
             throw ex;
         }
         /**
@@ -331,7 +343,7 @@ export const createHandler = (params: CreateHandlerParams) => {
                     name ? `(${name})` : ""
                 } plugin in the preParsing hook.`
             );
-            console.log(JSON.stringify(ex));
+            console.log(stringifyError(ex));
             throw ex;
         }
     });
@@ -352,7 +364,7 @@ export const createHandler = (params: CreateHandlerParams) => {
                     name ? `(${name})` : ""
                 } plugin in the preHandler hook.`
             );
-            console.log(JSON.stringify(ex));
+            console.log(stringifyError(ex));
             throw ex;
         }
     });
@@ -374,7 +386,7 @@ export const createHandler = (params: CreateHandlerParams) => {
                     name ? `(${name})` : ""
                 } plugin in the preSerialization hook.`
             );
-            console.log(JSON.stringify(ex));
+            console.log(stringifyError(ex));
             throw ex;
         }
         return payload;
@@ -389,6 +401,9 @@ export const createHandler = (params: CreateHandlerParams) => {
                 "Cache-Control": "no-store"
             })
             .send(
+                /**
+                 * When we are sending the error in the response, we cannot send the whole error object, as it might contain some sensitive data.
+                 */
                 JSON.stringify({
                     message: error.message,
                     code: error.code,
@@ -403,14 +418,7 @@ export const createHandler = (params: CreateHandlerParams) => {
          * Log error to cloud, as these can be extremely annoying to debug!
          */
         console.log("@webiny/handler");
-        console.log(
-            JSON.stringify({
-                ...error,
-                message: error.message,
-                code: error.code,
-                data: error.data
-            })
-        );
+        console.log(stringifyError(error));
 
         reply
             .status(500)
@@ -418,6 +426,9 @@ export const createHandler = (params: CreateHandlerParams) => {
                 "Cache-Control": "no-store"
             })
             .send(
+                /**
+                 * When we are sending the error in the response, we cannot send the whole error object, as it might contain some sensitive data.
+                 */
                 JSON.stringify({
                     message: error.message,
                     code: error.code,
@@ -441,11 +452,20 @@ export const createHandler = (params: CreateHandlerParams) => {
      * With these plugins we give users possibility to do anything they want on our fastify instance.
      */
     const modifyPlugins = app.webiny.plugins.byType<ModifyFastifyPlugin>(ModifyFastifyPlugin.type);
+
+    let name: string | undefined;
     try {
         for (const plugin of modifyPlugins) {
+            name = plugin.name;
             plugin.modify(app);
         }
     } catch (ex) {
+        console.log(
+            `Error while running the "ModifyFastifyPlugin" ${
+                name ? `(${name})` : ""
+            } plugin in the end of the "createHandler" callable.`
+        );
+        console.log(stringifyError(ex));
         throw ex;
     }
 
