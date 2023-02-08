@@ -27,11 +27,13 @@ import {
 } from "~tests/graphql/record.gql";
 
 import { createACO } from "~/index";
+import { createStorageOperations } from "~tests/utils/storageOperations";
 
 export interface UseGQLHandlerParams {
     permissions?: SecurityPermission[];
     identity?: SecurityIdentity;
     plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
+    storageOperationPlugins?: any[];
 }
 
 interface InvokeParams {
@@ -59,26 +61,15 @@ const documentClient = new DocumentClient({
 });
 
 export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
-    const { permissions, identity, plugins = [] } = params;
+    const { permissions, identity, plugins = [], storageOperationPlugins } = params;
 
-    // @ts-ignore
-    if (typeof __getCreateStorageOperations !== "function") {
-        throw new Error(`There is no global "__getCreateStorageOperations" function.`);
-    }
-    // @ts-ignore
-    const { createStorageOperations, getPlugins } = __getCreateStorageOperations();
-    if (typeof createStorageOperations !== "function") {
-        throw new Error(
-            `A product of "__getCreateStorageOperations" must be a function to initialize storage operations.`
-        );
-    }
-    if (typeof getPlugins === "function") {
-        plugins.push(...getPlugins());
-    }
+    const ops = createStorageOperations({
+        plugins: storageOperationPlugins || []
+    });
 
     const handler = createHandler({
         plugins: [
-            plugins,
+            ...ops.plugins,
             createGraphQLHandler(),
             ...createTenancyAndSecurity({ permissions, identity: identity || defaultIdentity }),
             i18nContext(),
@@ -90,7 +81,8 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
                 })
             }),
             createHeadlessCmsGraphQL(),
-            createACO()
+            createACO(),
+            plugins
         ],
         http: {
             debug: false
