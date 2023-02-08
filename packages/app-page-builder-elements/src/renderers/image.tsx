@@ -53,7 +53,7 @@ export const ImageRendererComponent: React.FC<ImageRendererComponentProps> = ({
             return `${src}?width=${item} ${item}w`;
         }).join(", ");
 
-        content = <PbImg alt={title} title={title} srcSet={srcSet} onClick={onClick} />;
+        content = <PbImg alt={title} title={title} src={src} srcSet={srcSet} onClick={onClick} />;
     } else {
         content = renderEmpty || null;
     }
