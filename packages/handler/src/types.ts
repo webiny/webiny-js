@@ -46,6 +46,10 @@ export interface Context extends ClientContext {
      */
     request: FastifyRequest;
     /**
+     * Current reply. Must be set only once!
+     */
+    reply: FastifyReply;
+    /**
      * @internal
      */
     routes: ContextRoutes;

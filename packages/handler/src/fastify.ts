@@ -303,8 +303,9 @@ export const createHandler = (params: CreateHandlerParams) => {
             .hijack();
     });
 
-    app.addHook("preParsing", async request => {
+    app.addHook("preParsing", async (request, reply) => {
         app.webiny.request = request;
+        app.webiny.reply = reply;
         const plugins = app.webiny.plugins.byType<ContextPlugin>(ContextPlugin.type);
         for (const plugin of plugins) {
             await plugin.apply(app.webiny);
