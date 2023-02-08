@@ -267,11 +267,24 @@ export const createHandler = (params: CreateHandlerParams) => {
         const plugins = app.webiny.plugins.byType<HandlerOnRequestPlugin>(
             HandlerOnRequestPlugin.type
         );
-        for (const plugin of plugins) {
-            const result = await plugin.exec(request, reply);
-            if (result === false) {
-                return;
+
+        let name: string | undefined;
+        try {
+            for (const plugin of plugins) {
+                name = plugin.name;
+                const result = await plugin.exec(request, reply);
+                if (result === false) {
+                    return;
+                }
             }
+        } catch (ex) {
+            console.log(
+                `Error while running the "HandlerOnRequestPlugin" ${
+                    name ? `(${name})` : ""
+                } plugin in the onRequest hook.`
+            );
+            console.log(JSON.stringify(ex));
+            throw ex;
         }
         /**
          * When we receive the OPTIONS request, we end it before it goes any further as there is no need for anything to run after this - at least for our use cases.
@@ -306,8 +319,20 @@ export const createHandler = (params: CreateHandlerParams) => {
     app.addHook("preParsing", async request => {
         app.webiny.request = request;
         const plugins = app.webiny.plugins.byType<ContextPlugin>(ContextPlugin.type);
-        for (const plugin of plugins) {
-            await plugin.apply(app.webiny);
+        let name: string | undefined;
+        try {
+            for (const plugin of plugins) {
+                name = plugin.name;
+                await plugin.apply(app.webiny);
+            }
+        } catch (ex) {
+            console.log(
+                `Error while running the "ContextPlugin" ${
+                    name ? `(${name})` : ""
+                } plugin in the preParsing hook.`
+            );
+            console.log(JSON.stringify(ex));
+            throw ex;
         }
     });
     /**
@@ -315,8 +340,20 @@ export const createHandler = (params: CreateHandlerParams) => {
      */
     app.addHook("preHandler", async () => {
         const plugins = app.webiny.plugins.byType<BeforeHandlerPlugin>(BeforeHandlerPlugin.type);
-        for (const plugin of plugins) {
-            await plugin.apply(app.webiny);
+        let name: string | undefined;
+        try {
+            for (const plugin of plugins) {
+                name = plugin.name;
+                await plugin.apply(app.webiny);
+            }
+        } catch (ex) {
+            console.log(
+                `Error while running the "BeforeHandlerPlugin" ${
+                    name ? `(${name})` : ""
+                } plugin in the preHandler hook.`
+            );
+            console.log(JSON.stringify(ex));
+            throw ex;
         }
     });
 
@@ -325,8 +362,20 @@ export const createHandler = (params: CreateHandlerParams) => {
      */
     const preSerialization: preSerializationAsyncHookHandler<any> = async (_, __, payload) => {
         const plugins = app.webiny.plugins.byType<HandlerResultPlugin>(HandlerResultPlugin.type);
-        for (const plugin of plugins) {
-            await plugin.handle(app.webiny, payload);
+        let name: string | undefined;
+        try {
+            for (const plugin of plugins) {
+                name = plugin.name;
+                await plugin.handle(app.webiny, payload);
+            }
+        } catch (ex) {
+            console.log(
+                `Error while running the "HandlerResultPlugin" ${
+                    name ? `(${name})` : ""
+                } plugin in the preSerialization hook.`
+            );
+            console.log(JSON.stringify(ex));
+            throw ex;
         }
         return payload;
     };
@@ -339,11 +388,13 @@ export const createHandler = (params: CreateHandlerParams) => {
             .headers({
                 "Cache-Control": "no-store"
             })
-            .send({
-                message: error.message,
-                code: error.code,
-                data: error.data
-            });
+            .send(
+                JSON.stringify({
+                    message: error.message,
+                    code: error.code,
+                    data: error.data
+                })
+            );
     });
 
     app.addHook("onError", async (_, reply, error: any) => {
@@ -366,11 +417,13 @@ export const createHandler = (params: CreateHandlerParams) => {
             .headers({
                 "Cache-Control": "no-store"
             })
-            .send({
-                message: error.message,
-                code: error.code,
-                data: error.data
-            });
+            .send(
+                JSON.stringify({
+                    message: error.message,
+                    code: error.code,
+                    data: error.data
+                })
+            );
 
         const handler = middleware(
             plugins.map(pl => {
@@ -388,8 +441,12 @@ export const createHandler = (params: CreateHandlerParams) => {
      * With these plugins we give users possibility to do anything they want on our fastify instance.
      */
     const modifyPlugins = app.webiny.plugins.byType<ModifyFastifyPlugin>(ModifyFastifyPlugin.type);
-    for (const plugin of modifyPlugins) {
-        plugin.modify(app);
+    try {
+        for (const plugin of modifyPlugins) {
+            plugin.modify(app);
+        }
+    } catch (ex) {
+        throw ex;
     }
 
     return app;
