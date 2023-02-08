@@ -18,20 +18,22 @@ const createRequestBody = (body: unknown): GraphQLRequestBody | GraphQLRequestBo
     return typeof body === "string" ? JSON.parse(body) : body;
 };
 
-const formatErrorPayload = (error: Error) => {
+const formatErrorPayload = (error: Error): string => {
     if (error instanceof WebinyError) {
-        return {
+        return JSON.stringify({
+            type: "WebinyError",
             message: error.message,
             code: error.code,
             data: error.data
-        };
+        });
     }
 
-    return {
+    return JSON.stringify({
+        type: "Error",
         name: error.name,
         message: error.message,
         stack: error.stack
-    };
+    });
 };
 
 export default (options: HandlerGraphQLOptions = {}): PluginCollection => {
@@ -48,7 +50,8 @@ export default (options: HandlerGraphQLOptions = {}): PluginCollection => {
                 .headers({
                     "Cache-Control": `public, max-age=${DEFAULT_CACHE_MAX_AGE}`
                 })
-                .send({});
+                .send({})
+                .hijack();
         });
         onPost(path, async (request, reply) => {
             if (!schema) {
