@@ -4,11 +4,11 @@
   "references": [
     { "path": "../app-admin" },
     { "path": "../app-page-builder" },
-    { "path": "../lexical-editor" },
-    { "path": "../ui" },
-    { "path": "../feature-flags" },
     { "path": "../app-page-builder-elements" },
-    { "path": "../react-composition" }
+    { "path": "../feature-flags" },
+    { "path": "../lexical-editor" },
+    { "path": "../react-composition" },
+    { "path": "../ui" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -21,16 +21,16 @@
       "@webiny/app-admin": ["../app-admin/src"],
       "@webiny/app-page-builder/*": ["../app-page-builder/src/*"],
       "@webiny/app-page-builder": ["../app-page-builder/src"],
+      "@webiny/app-page-builder-elements/*": ["../app-page-builder-elements/src/*"],
+      "@webiny/app-page-builder-elements": ["../app-page-builder-elements/src"],
+      "@webiny/feature-flags/*": ["../feature-flags/src/*"],
+      "@webiny/feature-flags": ["../feature-flags/src"],
       "@webiny/lexical-editor/*": ["../lexical-editor/src/*"],
       "@webiny/lexical-editor": ["../lexical-editor/src"],
-      "@webiny/ui": ["../ui/src/*"],
-      "@webiny/ui": ["../ui/src"],
-      "@webiny/feature-flags": ["../feature-flags/src/*"],
-      "@webiny/feature-flags": ["../feature-flags/src"],
-      "@webiny/app-page-builder-elements": ["../app-page-builder-elements/src/*"],
-      "@webiny/app-page-builder-elements": ["../app-page-builder-elements/src"],
-      "@webiny/react-composition": ["../react-composition/src/*"],
-      "@webiny/react-composition": ["../react-composition/src"]
+      "@webiny/react-composition/*": ["../react-composition/src/*"],
+      "@webiny/react-composition": ["../react-composition/src"],
+      "@webiny/ui/*": ["../ui/src/*"],
+      "@webiny/ui": ["../ui/src"]
     },
     "baseUrl": "."
   }
