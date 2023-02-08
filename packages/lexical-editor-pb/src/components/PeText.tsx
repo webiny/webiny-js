@@ -1,18 +1,15 @@
 import React, { useCallback, useEffect, useMemo } from "react";
 import get from "lodash/get";
 import { makeComposable } from "@webiny/app-admin";
-import { useRecoilState, useRecoilValue } from "recoil";
-import {
-    activeElementAtom,
-    elementWithChildrenByIdSelector,
-    uiAtom
-} from "@webiny/app-page-builder/editor/recoil/modules";
 import { applyFallbackDisplayMode } from "@webiny/app-page-builder/editor/plugins/elementSettings/elementSettingsUtils";
 import { CoreOptions } from "medium-editor";
 import useUpdateHandlers from "@webiny/app-page-builder/editor/plugins/elementSettings/useUpdateHandlers";
 import { PbEditorElement } from "@webiny/app-page-builder/types";
 import { DelayedOnChange } from "@webiny/ui/DelayedOnChange";
 import { LexicalEditor } from "~/LexicalEditor";
+import { useElementById } from "@webiny/app-page-builder/editor/hooks/useElementById";
+import { useDisplayMode } from "@webiny/app-page-builder/editor/hooks/useDisplayMode";
+import { useActiveElement } from "@webiny/app-page-builder/editor/hooks/useActiveElement";
 
 const DATA_NAMESPACE = "data.text";
 
@@ -25,9 +22,10 @@ interface TextElementProps {
 export const PeText = makeComposable<TextElementProps>(
     "PeText",
     ({ elementId, tag: customTag }) => {
-        const element = useRecoilValue(elementWithChildrenByIdSelector(elementId));
-        const [{ displayMode }] = useRecoilState(uiAtom);
-        const [activeElementId, setActiveElementAtomValue] = useRecoilState(activeElementAtom);
+        const [element] = useElementById(elementId);
+        const { displayMode } = useDisplayMode();
+        const [activeElement, setActiveElement] = useActiveElement();
+
         const { getUpdateValue } = useUpdateHandlers({
             element: element as PbEditorElement,
             dataNamespace: DATA_NAMESPACE
@@ -42,10 +40,10 @@ export const PeText = makeComposable<TextElementProps>(
         );
 
         useEffect(() => {
-            if (elementId && activeElementId !== elementId) {
-                setActiveElementAtomValue(elementId);
+            if (elementId && elementId !== activeElement?.id) {
+                setActiveElement(elementId);
             }
-        }, [activeElementId, elementId]);
+        }, [activeElement?.id, elementId]);
 
         const onChange = useCallback(
             value => {
