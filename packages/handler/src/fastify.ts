@@ -58,11 +58,12 @@ const stringifyError = (error: Error) => {
     const { name, message, code, stack, data } = error as any;
     return JSON.stringify({
         ...error,
-        name: name || "Missing the error name",
-        message: message || "Missing the error message",
-        code: code || "Missing the error code",
+        constructorName: error.constructor?.name || "UnknownError",
+        name: name || "No error name",
+        message: message || "No error message",
+        code: code || "NO_CODE",
         data,
-        stack: process.env.DEBUG === "true" ? stack : "turn on the debug flag to see the stack"
+        stack: process.env.DEBUG === "true" ? stack : "Turn on the debug flag to see the stack."
     });
 };
 
@@ -256,11 +257,23 @@ export const createHandler = (params: CreateHandlerParams) => {
     /**
      * Add routes to the system.
      */
-    for (const plugin of routePlugins) {
-        plugin.cb({
-            ...app.webiny.routes,
-            context: app.webiny
-        });
+    let routePluginName: string | undefined;
+    try {
+        for (const plugin of routePlugins) {
+            routePluginName = plugin.name;
+            plugin.cb({
+                ...app.webiny.routes,
+                context: app.webiny
+            });
+        }
+    } catch (ex) {
+        console.log(
+            `Error while running the "RoutePlugin" ${
+                routePluginName ? `(${routePluginName})` : ""
+            } plugin in the beggining of the "createHandler" callable.`
+        );
+        console.log(stringifyError(ex));
+        throw ex;
     }
 
     /**
@@ -453,16 +466,16 @@ export const createHandler = (params: CreateHandlerParams) => {
      */
     const modifyPlugins = app.webiny.plugins.byType<ModifyFastifyPlugin>(ModifyFastifyPlugin.type);
 
-    let name: string | undefined;
+    let modifyFastifyPluginName: string | undefined;
     try {
         for (const plugin of modifyPlugins) {
-            name = plugin.name;
+            modifyFastifyPluginName = plugin.name;
             plugin.modify(app);
         }
     } catch (ex) {
         console.log(
             `Error while running the "ModifyFastifyPlugin" ${
-                name ? `(${name})` : ""
+                modifyFastifyPluginName ? `(${modifyFastifyPluginName})` : ""
             } plugin in the end of the "createHandler" callable.`
         );
         console.log(stringifyError(ex));
