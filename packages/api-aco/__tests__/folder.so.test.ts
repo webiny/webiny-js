@@ -215,6 +215,126 @@ describe("`folder` CRUD", () => {
         });
     });
 
+    it("should not allow creating a `folder` with `title` too short (min. 3 chars)", async () => {
+        const [response] = await aco.createFolder({
+            data: {
+                ...folderMocks.folderA,
+                title: "a"
+            }
+        });
+
+        expect(response).toEqual({
+            data: {
+                aco: {
+                    createFolder: {
+                        data: null,
+                        error: {
+                            code: "VALIDATION_FAILED",
+                            message: "Validation failed.",
+                            data: [
+                                {
+                                    error: "Value is too short.",
+                                    fieldId: "title",
+                                    storageId: "title"
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        });
+    });
+
+    it("should not allow creating a `folder` with `slug` too short (min. 3 chars)", async () => {
+        const [response] = await aco.createFolder({
+            data: {
+                ...folderMocks.folderA,
+                slug: "a"
+            }
+        });
+
+        expect(response).toEqual({
+            data: {
+                aco: {
+                    createFolder: {
+                        data: null,
+                        error: {
+                            code: "VALIDATION_FAILED",
+                            message: "Validation failed.",
+                            data: [
+                                {
+                                    error: "Value is too short.",
+                                    fieldId: "slug",
+                                    storageId: "slug"
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        });
+    });
+
+    it("should not allow creating a `folder` with `slug` too long (max. 100 chars)", async () => {
+        const [response] = await aco.createFolder({
+            data: {
+                ...folderMocks.folderA,
+                slug: "GpfyMLeacJyRzF5SmXhK9ytFf0UVtkzB0IORUwiPbqnXLyXBZX88tfy92vsnOEF87IVW0DnYDQLLlCl09hN3tcdKGAaO0oLh2bJrE"
+            }
+        });
+
+        expect(response).toEqual({
+            data: {
+                aco: {
+                    createFolder: {
+                        data: null,
+                        error: {
+                            code: "VALIDATION_FAILED",
+                            message: "Validation failed.",
+                            data: [
+                                {
+                                    error: "Value is too long.",
+                                    fieldId: "slug",
+                                    storageId: "slug"
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        });
+    });
+
+    it("should not allow creating a `folder` with `slug` with wrong pattern", async () => {
+        const [response] = await aco.createFolder({
+            data: {
+                ...folderMocks.folderA,
+                slug: "wrong pattern"
+            }
+        });
+
+        expect(response).toEqual({
+            data: {
+                aco: {
+                    createFolder: {
+                        data: null,
+                        error: {
+                            code: "VALIDATION_FAILED",
+                            message: "Validation failed.",
+                            data: [
+                                {
+                                    error: "Value must consist of only 'a-z', '0-9' and '-'.",
+                                    fieldId: "slug",
+                                    storageId: "slug"
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        });
+    });
+
     it("should allow creating a `folder` with same `slug` but different `parentId`", async () => {
         // Creating a folder
         await aco.createFolder({ data: folderMocks.folderA });
