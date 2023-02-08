@@ -31,8 +31,8 @@ const Pages: React.FC = () => {
     const closeTemplatesDialog = useCallback(() => setTemplatesDialog(false), []);
 
     const { showDialog } = useImportPage({
-        setLoadingStatus: () => setIsLoading(true),
-        clearLoadingStatus: () => setIsLoading(false),
+        setLoadingLabel: () => setIsLoading(true),
+        clearLoadingLabel: () => setIsLoading(false),
         closeDialog: closeCategoriesDialog
     });
 
