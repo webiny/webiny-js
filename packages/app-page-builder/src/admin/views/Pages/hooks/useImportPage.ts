@@ -13,8 +13,8 @@ interface UseImportPageParams {
     folderId?: string;
 }
 const useImportPage = ({
-    setLoadingLabel,
-    clearLoadingLabel,
+    setLoadingStatus,
+    clearLoadingStatus,
     closeDialog,
     folderId
 }: UseImportPageParams) => {
