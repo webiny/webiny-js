@@ -107,7 +107,7 @@ export const TemplateEditor: React.FC = () => {
                 const error = errorData?.message;
 
                 if (error) {
-                    history.push(`/page-builder/pages`);
+                    history.push(`/page-builder/page-templates`);
                     showSnackbar(error);
                     return;
                 }

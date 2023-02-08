@@ -54,3 +54,10 @@ export interface StorageOperationsFactoryParams {
 export interface StorageOperationsFactory {
     (params: StorageOperationsFactoryParams): PageBuilderStorageOperations;
 }
+
+export interface DataContainer<T> {
+    PK: string;
+    SK: string;
+    TYPE: string;
+    data: T;
+}

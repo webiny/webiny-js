@@ -17,6 +17,7 @@ import { createListResponse } from "@webiny/db-dynamodb/utils/listResponse";
 import { PageTemplateDynamoDbFieldPlugin } from "~/plugins/definitions/PageTemplateDynamoDbFieldPlugin";
 import { PluginsContainer } from "@webiny/plugins";
 import { createPartitionKey, createSortKey } from "./keys";
+import { DataContainer } from "~/types";
 
 const createType = (): string => {
     return "pb.pageTemplate";
@@ -62,10 +63,10 @@ export const createPageTemplateStorageOperations = ({
             }
         };
 
-        let items: PageTemplate[] = [];
+        let items: DataContainer<PageTemplate>[] = [];
 
         try {
-            items = await queryAll<PageTemplate>(queryAllParams);
+            items = await queryAll<DataContainer<PageTemplate>>(queryAllParams);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not list page templates by given parameters.",
@@ -81,21 +82,21 @@ export const createPageTemplateStorageOperations = ({
             PageTemplateDynamoDbFieldPlugin.type
         );
 
-        const filteredItems = filterItems<PageTemplate>({
+        const filteredItems = filterItems<DataContainer<PageTemplate>>({
             plugins,
             where: restWhere,
             items,
             fields
         });
 
-        const sortedItems = sortItems<PageTemplate>({
+        const sortedItems = sortItems<DataContainer<PageTemplate>>({
             items: filteredItems,
             sort,
             fields
         });
 
         return createListResponse({
-            items: sortedItems,
+            items: sortedItems.map(item => item?.data).filter(Boolean),
             limit: limit || 100000,
             totalCount: filteredItems.length,
             after: null
@@ -115,7 +116,7 @@ export const createPageTemplateStorageOperations = ({
 
         try {
             await entity.put({
-                ...pageTemplate,
+                data: pageTemplate,
                 TYPE: createType(),
                 ...keys
             });
@@ -148,7 +149,7 @@ export const createPageTemplateStorageOperations = ({
 
         try {
             await entity.put({
-                ...pageTemplate,
+                data: pageTemplate,
                 TYPE: createType(),
                 ...keys
             });
@@ -183,7 +184,7 @@ export const createPageTemplateStorageOperations = ({
 
         try {
             await entity.delete({
-                ...pageTemplate,
+                data: pageTemplate,
                 ...keys
             });
             /**

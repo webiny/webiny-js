@@ -1,9 +1,9 @@
 import DataLoader from "dataloader";
 import { batchReadAll } from "@webiny/db-dynamodb/utils/batchRead";
 import { PageTemplate } from "@webiny/api-page-builder/types";
-import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import { Entity } from "dynamodb-toolbox";
 import { createPartitionKey, createSortKey } from "./keys";
+import { DataContainer } from "~/types";
 
 interface Params {
     entity: Entity<any>;
@@ -46,7 +46,7 @@ export class PageTemplateDataLoader {
                         });
                     });
 
-                    const records = await batchReadAll<PageTemplate>({
+                    const records = await batchReadAll<DataContainer<PageTemplate>>({
                         table: this.entity.table,
                         items: batched
                     });
@@ -55,8 +55,8 @@ export class PageTemplateDataLoader {
                         if (!result) {
                             return collection;
                         }
-                        const key = cacheKeyFn(result);
-                        collection[key] = cleanupItem(this.entity, result) as PageTemplate;
+                        const key = cacheKeyFn(result.data);
+                        collection[key] = result.data as PageTemplate;
                         return collection;
                     }, {} as Record<string, PageTemplate>);
                     return items.map(item => {

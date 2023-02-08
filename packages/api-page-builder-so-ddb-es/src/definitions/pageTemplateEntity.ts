@@ -22,35 +22,8 @@ export const createPageTemplateEntity = (params: Params): Entity<any> => {
             TYPE: {
                 type: "string"
             },
-            id: {
-                type: "string"
-            },
-            title: {
-                type: "string"
-            },
-            description: {
-                type: "string"
-            },
-            layout: {
-                type: "string"
-            },
-            content: {
+            data: {
                 type: "map"
-            },
-            createdOn: {
-                type: "string"
-            },
-            savedOn: {
-                type: "string"
-            },
-            createdBy: {
-                type: "map"
-            },
-            tenant: {
-                type: "string"
-            },
-            locale: {
-                type: "string"
             },
             ...(attributes || {})
         }
