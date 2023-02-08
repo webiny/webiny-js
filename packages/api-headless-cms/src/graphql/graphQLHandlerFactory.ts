@@ -119,20 +119,22 @@ const checkEndpointAccess = async (context: CmsContext): Promise<void> => {
     }
 };
 
-const formatErrorPayload = (error: Error) => {
+const formatErrorPayload = (error: Error): string => {
     if (error instanceof WebinyError) {
-        return {
+        return JSON.stringify({
+            type: "WebinyError",
             message: error.message,
             code: error.code,
             data: error.data
-        };
+        });
     }
 
-    return {
+    return JSON.stringify({
+        type: "Error",
         name: error.name,
         message: error.message,
         stack: error.stack
-    };
+    });
 };
 
 export interface GraphQLHandlerFactoryParams {
