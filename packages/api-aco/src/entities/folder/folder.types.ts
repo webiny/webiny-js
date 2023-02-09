@@ -1,4 +1,4 @@
-import { AcoBaseFields, BaseAcoCrud, ListMeta } from "~/types";
+import { AcoBaseFields, ListMeta } from "~/types";
 import { Topic } from "@webiny/pubsub/types";
 
 export interface Folder extends AcoBaseFields {
@@ -79,8 +79,12 @@ export interface OnFolderAfterDeleteTopicParams {
     folder: Folder;
 }
 
-export interface AcoFolderCrud extends BaseAcoCrud<Folder, CreateFolderParams, UpdateFolderParams> {
+export interface AcoFolderCrud {
+    get(id: string): Promise<Folder>;
     list(params: ListFoldersParams): Promise<[Folder[], ListMeta]>;
+    create(data: CreateFolderParams): Promise<Folder>;
+    update(id: string, data: UpdateFolderParams): Promise<Folder>;
+    delete(id: string): Promise<Boolean>;
     onFolderBeforeCreate: Topic<OnFolderBeforeCreateTopicParams>;
     onFolderAfterCreate: Topic<OnFolderAfterCreateTopicParams>;
     onFolderBeforeUpdate: Topic<OnFolderBeforeUpdateTopicParams>;

@@ -1,17 +1,22 @@
-import { AcoBaseFields, BaseAcoCrud, ListMeta } from "~/types";
+import { AcoBaseFields, ListMeta } from "~/types";
 import { Topic } from "@webiny/pubsub/types";
+
+export type GenericSearchData = {
+    [key: string]: any;
+};
 
 export interface Location {
     folderId: string;
 }
 
-export interface SearchRecord extends AcoBaseFields {
+export interface SearchRecord<TData extends GenericSearchData = GenericSearchData>
+    extends AcoBaseFields {
     originalId: string;
     type: string;
     title?: string;
     content?: string;
     location?: Location;
-    data?: Record<string, any>;
+    data?: TData;
 }
 
 export interface ListSearchRecordsWhere {
@@ -29,8 +34,8 @@ export interface ListSearchRecordsParams {
     after?: string | null;
 }
 
-export type CreateSearchRecordParams = Pick<
-    SearchRecord,
+export type CreateSearchRecordParams<TData> = Pick<
+    SearchRecord<TData>,
     "originalId" | "title" | "content" | "type" | "location" | "data"
 >;
 
@@ -51,8 +56,10 @@ export interface StorageOperationsGetSearchRecordParams {
 
 export type StorageOperationsListSearchRecordsParams = ListSearchRecordsParams;
 
-export interface StorageOperationsCreateSearchRecordParams {
-    data: CreateSearchRecordParams;
+export interface StorageOperationsCreateSearchRecordParams<
+    TData extends GenericSearchData = GenericSearchData
+> {
+    data: CreateSearchRecordParams<TData>;
 }
 export interface StorageOperationsUpdateSearchRecordParams {
     id: string;
@@ -60,8 +67,10 @@ export interface StorageOperationsUpdateSearchRecordParams {
 }
 export type StorageOperationsDeleteSearchRecordParams = DeleteSearchRecordParams;
 
-export interface OnSearchRecordBeforeCreateTopicParams {
-    input: CreateSearchRecordParams;
+export interface OnSearchRecordBeforeCreateTopicParams<
+    TData extends GenericSearchData = GenericSearchData
+> {
+    input: CreateSearchRecordParams<TData>;
 }
 
 export interface OnSearchRecordAfterCreateTopicParams {
@@ -87,9 +96,12 @@ export interface OnSearchRecordAfterDeleteTopicParams {
     record: SearchRecord;
 }
 
-export interface AcoSearchRecordCrud
-    extends BaseAcoCrud<SearchRecord, CreateSearchRecordParams, UpdateSearchRecordParams> {
+export interface AcoSearchRecordCrud {
+    get(id: string): Promise<SearchRecord>;
     list(params: ListSearchRecordsParams): Promise<[SearchRecord[], ListMeta]>;
+    create<TData>(data: CreateSearchRecordParams<TData>): Promise<SearchRecord>;
+    update(id: string, data: UpdateSearchRecordParams): Promise<SearchRecord>;
+    delete(id: string): Promise<Boolean>;
     onSearchRecordBeforeCreate: Topic<OnSearchRecordBeforeCreateTopicParams>;
     onSearchRecordAfterCreate: Topic<OnSearchRecordAfterCreateTopicParams>;
     onSearchRecordBeforeUpdate: Topic<OnSearchRecordBeforeUpdateTopicParams>;
