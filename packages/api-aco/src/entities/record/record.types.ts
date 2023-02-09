@@ -38,7 +38,7 @@ export interface UpdateSearchRecordParams {
     title?: string;
     content?: string;
     location?: Location;
-    data?: JSON;
+    data?: Record<string, any>;
 }
 
 export interface DeleteSearchRecordParams {
