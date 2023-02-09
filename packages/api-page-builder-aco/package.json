@@ -1,0 +1,39 @@
+{
+  "name": "@webiny/api-page-builder-aco",
+  "version": "0.0.0",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git",
+    "directory": "packages/api-page-builder-aco"
+  },
+  "description": "Connect Page Builder to ACO",
+  "author": "Webiny Ltd.",
+  "license": "MIT",
+  "scripts": {
+    "build": "yarn webiny run build",
+    "watch": "yarn webiny run watch"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.19.3",
+    "@babel/core": "^7.19.3",
+    "@babel/preset-env": "^7.19.4",
+    "@babel/preset-typescript": "^7.18.6",
+    "@babel/runtime": "^7.19.0",
+    "rimraf": "^3.0.2",
+    "ttypescript": "^1.5.13",
+    "typescript": "^4.7.4"
+  },
+  "dependencies": {
+    "@webiny/api": "0.0.0",
+    "@webiny/api-aco": "0.0.0",
+    "@webiny/api-page-builder": "0.0.0",
+    "@webiny/error": "0.0.0",
+    "@webiny/handler": "0.0.0",
+    "@webiny/pubsub": "0.0.0"
+  }
+}
