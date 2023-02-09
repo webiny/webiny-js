@@ -1,7 +1,7 @@
 import { FieldFactory } from "./types";
 
-const createFieldFactory: FieldFactory = field => {
-    return () => {
+const createFieldFactory: FieldFactory = base => {
+    return field => {
         return {
             id: "textFieldId",
             label: "Text field",
@@ -9,6 +9,7 @@ const createFieldFactory: FieldFactory = field => {
             storageId: "text@textFieldId",
             fieldId: "textField",
             multipleValues: false,
+            ...base,
             ...field
         };
     };

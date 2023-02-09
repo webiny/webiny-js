@@ -23,12 +23,6 @@ export type CreateHeadlessCmsGraphQLParams = CreateGraphQLParams;
 export const createHeadlessCmsGraphQL = (params: CreateHeadlessCmsGraphQLParams = {}) => {
     return [
         /**
-         * PathParameter plugins are used to determine the type of the cms endpoint
-         */
-        createPathParameterPlugin(),
-        createHeaderParameterPlugin(),
-        createContextParameterPlugin(),
-        /**
          * At this point we can create, or not create, CMS GraphQL Schema.
          */
         baseCreateGraphQL(params)
@@ -38,6 +32,12 @@ export const createHeadlessCmsGraphQL = (params: CreateHeadlessCmsGraphQLParams 
 export type ContentContextParams = CrudParams;
 export const createHeadlessCmsContext = (params: ContentContextParams) => {
     return [
+        /**
+         * PathParameter plugins are used to determine the type of the cms endpoint
+         */
+        createPathParameterPlugin(),
+        createHeaderParameterPlugin(),
+        createContextParameterPlugin(),
         /**
          * Context for all Lambdas - everything is loaded now.
          */

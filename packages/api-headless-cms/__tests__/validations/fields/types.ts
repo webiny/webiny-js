@@ -4,7 +4,7 @@ export interface CmsModelField extends BaseCmsModelField {
     multipleValues: boolean;
 }
 export interface FieldFactoryResponse {
-    (): CmsModelField;
+    (properties?: Partial<CmsModelField>): CmsModelField;
 }
 
 export interface FieldFactory {

@@ -1,4 +1,5 @@
 import {
+    CmsContext,
     CmsModel,
     CmsModelField,
     CmsModelFieldToGraphQLPlugin,
@@ -14,6 +15,8 @@ import { createFieldStorageId } from "./createFieldStorageId";
 import { GraphQLError } from "graphql";
 import { getBaseFieldType } from "~/utils/getBaseFieldType";
 import { CmsGraphQLSchemaSorterPlugin } from "~/plugins";
+import { buildSchemaPlugins } from "~/graphql/buildSchemaPlugins";
+import { createExecutableSchema } from "~/graphql/createExecutableSchema";
 
 const defaultTitleFieldId = "id";
 
@@ -136,7 +139,7 @@ const createValidateChildFields = (
     plugins: CmsModelFieldToGraphQLPlugin[]
 ): CmsModelFieldToGraphQLPluginValidateChildFieldsValidate => {
     return ({ fields, originalFields }) => {
-        if (fields.length === 0) {
+        if (fields.length === 0 && originalFields.length === 0) {
             return;
         }
         validateFields({
@@ -160,8 +163,6 @@ const validateFields = (params: ValidateFieldsParams) => {
     const idList: string[] = [];
     const fieldIdList: string[] = [];
     const storageIdList: string[] = [];
-
-    const validateChildFields = createValidateChildFields(plugins);
 
     for (const field of fields) {
         const baseType = getBaseFieldType(field);
@@ -261,6 +262,7 @@ const validateFields = (params: ValidateFieldsParams) => {
         if (!plugin.validateChildFields) {
             continue;
         }
+        const validateChildFields = createValidateChildFields(plugins);
         plugin.validateChildFields({
             field,
             originalField,
@@ -268,15 +270,38 @@ const validateFields = (params: ValidateFieldsParams) => {
         });
     }
 };
+interface CreateGraphQLSchemaParams {
+    context: CmsContext;
+    model: CmsModel;
+}
+const createGraphQLSchema = async (params: CreateGraphQLSchemaParams): Promise<any> => {
+    const { context, model } = params;
+
+    context.security.disableAuthorization();
+    const models = (await context.cms.listModels()).filter(
+        m => !m.isPrivate && m.modelId !== model.modelId
+    );
+    context.security.enableAuthorization();
+
+    const plugins = await buildSchemaPlugins({
+        context,
+        models: models.concat([model])
+    });
+
+    return createExecutableSchema({
+        plugins
+    });
+};
 
 interface ValidateModelFieldsParams {
     model: CmsModel;
     original?: CmsModel;
-    plugins: PluginsContainer;
+    context: CmsContext;
 }
-export const validateModelFields = (params: ValidateModelFieldsParams) => {
-    const { model, original, plugins } = params;
+export const validateModelFields = async (params: ValidateModelFieldsParams): Promise<void> => {
+    const { model, original, context } = params;
     const { titleFieldId } = model;
+    const { plugins } = context;
 
     /**
      * There should be fields/locked fields in either model or data to be updated.
@@ -290,9 +315,6 @@ export const validateModelFields = (params: ValidateModelFieldsParams) => {
     const fieldTypePlugins = plugins.byType<CmsModelFieldToGraphQLPlugin>(
         "cms-model-field-to-graphql"
     );
-    const sorterPlugins = plugins.byType<CmsGraphQLSchemaSorterPlugin>(
-        CmsGraphQLSchemaSorterPlugin.type
-    );
 
     validateFields({
         fields,
@@ -302,6 +324,9 @@ export const validateModelFields = (params: ValidateModelFieldsParams) => {
     });
 
     if (fields.length) {
+        const sorterPlugins = plugins.byType<CmsGraphQLSchemaSorterPlugin>(
+            CmsGraphQLSchemaSorterPlugin.type
+        );
         /**
          * Make sure that this model can be safely converted to a GraphQL SDL
          */
@@ -316,6 +341,17 @@ export const validateModelFields = (params: ValidateModelFieldsParams) => {
 
         try {
             gql(schema);
+        } catch (err) {
+            throw new WebinyError(extractInvalidField(model, err));
+        }
+        /**
+         *
+         */
+        try {
+            await createGraphQLSchema({
+                context,
+                model
+            });
         } catch (err) {
             throw new WebinyError(extractInvalidField(model, err));
         }

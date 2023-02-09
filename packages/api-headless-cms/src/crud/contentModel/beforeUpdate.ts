@@ -1,17 +1,16 @@
 import { Topic } from "@webiny/pubsub/types";
-import { OnModelBeforeUpdateTopicParams, HeadlessCmsStorageOperations } from "~/types";
+import { OnModelBeforeUpdateTopicParams, HeadlessCmsStorageOperations, CmsContext } from "~/types";
 import { PluginsContainer } from "@webiny/plugins";
 import { validateModel } from "./validateModel";
 import { validateLayout } from "./validateLayout";
 
 interface AssignBeforeModelUpdateParams {
     onModelBeforeUpdate: Topic<OnModelBeforeUpdateTopicParams>;
-    storageOperations: HeadlessCmsStorageOperations;
-    plugins: PluginsContainer;
+    context: CmsContext;
 }
 
 export const assignModelBeforeUpdate = (params: AssignBeforeModelUpdateParams) => {
-    const { onModelBeforeUpdate, plugins } = params;
+    const { onModelBeforeUpdate, context } = params;
 
     onModelBeforeUpdate.subscribe(async ({ model, original }) => {
         /**
@@ -24,7 +23,7 @@ export const assignModelBeforeUpdate = (params: AssignBeforeModelUpdateParams) =
         await validateModel({
             model,
             original,
-            plugins
+            context
         });
     });
 };

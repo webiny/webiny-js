@@ -1,7 +1,7 @@
 import { FieldFactory } from "~tests/validations/fields/types";
 
-const createFieldFactory: FieldFactory = field => {
-    return () => {
+const createFieldFactory: FieldFactory = base => {
+    return field => {
         return {
             id: "numberFieldId",
             label: "Number field",
@@ -9,6 +9,7 @@ const createFieldFactory: FieldFactory = field => {
             storageId: "number@numberFieldId",
             fieldId: "numberField",
             multipleValues: false,
+            ...base,
             ...field
         };
     };

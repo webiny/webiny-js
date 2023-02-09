@@ -2,8 +2,8 @@ import { FieldFactory } from "./types";
 import { createTextField } from "./text";
 import { createNumberField } from "./number";
 
-const createFieldFactory: FieldFactory = field => {
-    return () => {
+const createFieldFactory: FieldFactory = base => {
+    return field => {
         const textField = createTextField();
         const numberField = createNumberField();
         return {
@@ -17,6 +17,7 @@ const createFieldFactory: FieldFactory = field => {
                 fields: [textField, numberField],
                 layout: [[textField.id], [numberField.id]]
             },
+            ...base,
             ...field
         };
     };

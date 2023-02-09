@@ -1,7 +1,6 @@
 import { validateModelFields } from "~/crud/contentModel/validateModelFields";
 import { PluginsContainer } from "@webiny/plugins";
-import { createGraphQLFields } from "~/graphqlFields";
-import { CmsModel } from "~/types";
+import { CmsContext, CmsModel } from "~/types";
 import WebinyError from "@webiny/error";
 import {
     createTextField,
@@ -14,10 +13,7 @@ import {
 import { CmsModelField } from "./fields/types";
 import { createNumberField } from "~tests/validations/fields/number";
 import { createObjectField } from "~tests/validations/fields/object";
-
-const createPluginsContainer = () => {
-    return new PluginsContainer([createGraphQLFields()]);
-};
+import { useHandler } from "~tests/testHelpers/useHandler";
 
 const createModel = (model: Partial<CmsModel> = {}): CmsModel => {
     return {
@@ -39,7 +35,7 @@ const createModel = (model: Partial<CmsModel> = {}): CmsModel => {
 };
 
 describe("Validate model fields", () => {
-    let plugins: PluginsContainer;
+    let context: CmsContext;
     /**
      * Text
      */
@@ -55,7 +51,15 @@ describe("Validate model fields", () => {
     let numberField: CmsModelField;
 
     beforeEach(async () => {
-        plugins = createPluginsContainer();
+        const { handler, tenant } = useHandler({});
+        context = await handler({
+            path: "/cms/manage/en-US",
+            headers: {
+                "x-webiny-cms-endpoint": "manage",
+                "x-webiny-cms-locale": "en-US",
+                "x-tenant": tenant.id
+            }
+        });
         // text
         textField = createTextField();
         textFieldWithoutFieldId = createTextFieldWithoutFieldId();
@@ -68,26 +72,39 @@ describe("Validate model fields", () => {
     });
 
     it("should pass validation because there are no fields defined", async () => {
-        expect(() => {
-            validateModelFields({
-                model: createModel(),
-                plugins
+        let error: Error | undefined = undefined;
+
+        try {
+            await validateModelFields({
+                context,
+                model: createModel()
             });
-        }).not.toThrowError();
+        } catch (ex) {
+            error = ex;
+        }
+        expect(error).toEqual(undefined);
     });
 
     it("should pass validation because everything is ok - new model", async () => {
-        expect(() => {
-            validateModelFields({
-                model: createModel(),
-                plugins
+        let error: Error | undefined = undefined;
+
+        try {
+            await validateModelFields({
+                context,
+                model: createModel()
             });
-        }).not.toThrowError();
+        } catch (ex) {
+            error = ex;
+        }
+
+        expect(error).toEqual(undefined);
     });
 
     it("should pass validation because everything is ok - updating model", async () => {
-        expect(() => {
-            validateModelFields({
+        let error: Error | undefined = undefined;
+        try {
+            await validateModelFields({
+                context,
                 model: createModel({
                     fields: [textField],
                     layout: [[textField.id]]
@@ -95,22 +112,31 @@ describe("Validate model fields", () => {
                 original: createModel({
                     fields: [textField, numberField],
                     layout: [[textField.id], [numberField.id]]
-                }),
-                plugins
+                })
             });
-        }).not.toThrowError();
+        } catch (ex) {
+            error = ex;
+        }
+        expect(error).toEqual(undefined);
     });
 
     it("should throw an error if any of the fields type does not have the plugin equivalent", async () => {
-        expect(() => {
-            validateModelFields({
+        let error: Error | undefined = undefined;
+        try {
+            context.plugins = new PluginsContainer();
+            const result = await validateModelFields({
+                context,
                 model: createModel({
                     fields: [textField],
                     layout: [[textField.id]]
-                }),
-                plugins: new PluginsContainer()
+                })
             });
-        }).toThrowError(
+            console.log(result);
+        } catch (ex) {
+            error = ex;
+        }
+
+        expect(error).toEqual(
             new Error(
                 `Cannot update content model because of the unknown "${textField.type}" field.`
             )
@@ -118,15 +144,20 @@ describe("Validate model fields", () => {
     });
 
     it("should throw an error if any of the fields does not have a valid fieldId", async () => {
-        expect(() => {
-            validateModelFields({
+        let error: Error | undefined = undefined;
+        try {
+            await validateModelFields({
+                context,
                 model: createModel({
                     fields: [textFieldWithoutFieldId],
                     layout: [[textFieldWithoutFieldId.id]]
-                }),
-                plugins
+                })
             });
-        }).toThrowError(
+        } catch (ex) {
+            error = ex;
+        }
+
+        expect(error).toEqual(
             new WebinyError(`Field does not have an "fieldId" defined.`, "MISSING_FIELD_ID", {
                 field: textFieldWithoutFieldId
             })
@@ -134,15 +165,21 @@ describe("Validate model fields", () => {
     });
 
     it("should throw an error when having two fields with the same id", async () => {
-        expect(() => {
-            validateModelFields({
+        let error: Error | undefined = undefined;
+
+        try {
+            await validateModelFields({
+                context,
                 model: createModel({
                     fields: [textField, textFieldWithDuplicatedId],
                     layout: [[textField.id], [textFieldWithDuplicatedId.id]]
-                }),
-                plugins
+                })
             });
-        }).toThrowError(
+        } catch (ex) {
+            error = ex;
+        }
+
+        expect(error).toEqual(
             new WebinyError(
                 `Cannot update content model because field "${
                     textFieldWithDuplicatedId.storageId || textFieldWithDuplicatedId.fieldId
@@ -152,15 +189,19 @@ describe("Validate model fields", () => {
     });
 
     it("should throw an error when having two fields with the same fieldId", async () => {
-        expect(() => {
-            validateModelFields({
+        let error: Error | undefined = undefined;
+        try {
+            await validateModelFields({
+                context,
                 model: createModel({
                     fields: [textField, textFieldWithDuplicatedFieldId],
                     layout: [[textField.id], [textFieldWithDuplicatedFieldId.id]]
-                }),
-                plugins
+                })
             });
-        }).toThrowError(
+        } catch (ex) {
+            error = ex;
+        }
+        expect(error).toEqual(
             new WebinyError(
                 `Cannot update content model because field "${textFieldWithDuplicatedFieldId.storageId}" has fieldId "${textFieldWithDuplicatedFieldId.fieldId}", which is already used.`
             )
@@ -168,15 +209,19 @@ describe("Validate model fields", () => {
     });
 
     it("should throw an error when having two fields with the same storageId", async () => {
-        expect(() => {
-            validateModelFields({
+        let error: Error | undefined = undefined;
+        try {
+            await validateModelFields({
+                context,
                 model: createModel({
                     fields: [textField, textFieldWithDuplicatedStorageId],
                     layout: [[textField.id], [textFieldWithDuplicatedStorageId.id]]
-                }),
-                plugins
+                })
             });
-        }).toThrowError(
+        } catch (ex) {
+            error = ex;
+        }
+        expect(error).toEqual(
             new WebinyError(
                 `Cannot update content model because field "${textFieldWithDuplicatedStorageId.label}" has storageId "${textFieldWithDuplicatedStorageId.storageId}", which is already used.`
             )
@@ -184,7 +229,8 @@ describe("Validate model fields", () => {
     });
 
     it("should assign fieldId to the storageId on locked field", async () => {
-        validateModelFields({
+        await validateModelFields({
+            context,
             model: createModel({
                 fields: [textField, textFieldWithoutStorageId],
                 layout: [[textField.id], [textFieldWithoutStorageId.id]],
@@ -195,8 +241,7 @@ describe("Validate model fields", () => {
                         type: textFieldWithoutStorageId.type
                     }
                 ]
-            }),
-            plugins
+            })
         });
 
         expect(textFieldWithoutStorageId.storageId).toEqual(textFieldWithoutStorageId.fieldId);
@@ -207,7 +252,8 @@ describe("Validate model fields", () => {
             ...textField,
             storageId: null
         };
-        validateModelFields({
+        await validateModelFields({
+            context,
             model: createModel({
                 fields: [field],
                 layout: [[field.id]]
@@ -215,8 +261,7 @@ describe("Validate model fields", () => {
             original: createModel({
                 fields: [textField],
                 layout: [[textField.id]]
-            }),
-            plugins
+            })
         });
 
         expect(field.storageId).toEqual(textField.storageId);
@@ -227,27 +272,119 @@ describe("Validate model fields", () => {
             ...textField,
             storageId: null
         };
-        validateModelFields({
+        await validateModelFields({
+            context,
             model: createModel({
                 fields: [field],
                 layout: [[field.id]]
-            }),
-            plugins
+            })
         });
 
         expect(field.storageId).toEqual(`text@${field.id}`);
     });
 
-    it("should validate children if the field has children", async () => {
+    it("should validate children if the field has children - no error", async () => {
         const field = createObjectField();
-        expect(() => {
-            validateModelFields({
+        let error: Error | undefined = undefined;
+
+        try {
+            await validateModelFields({
+                context,
                 model: createModel({
                     fields: [field],
                     layout: [[field.id]]
-                }),
-                plugins
+                })
             });
-        }).not.toThrowError();
+        } catch (ex) {
+            error = ex;
+        }
+
+        expect(error).toEqual(undefined);
+    });
+
+    it("should validate children if the field has children - error", async () => {
+        const field = createObjectField({
+            settings: {
+                fields: [textField, textFieldWithDuplicatedFieldId],
+                layout: [[textField.id], [textFieldWithDuplicatedFieldId.id]]
+            }
+        });
+        let error: Error | undefined = undefined;
+
+        try {
+            await validateModelFields({
+                context,
+                model: createModel({
+                    fields: [field],
+                    layout: [[field.id]]
+                })
+            });
+        } catch (ex) {
+            error = ex;
+        }
+
+        expect(error).toEqual(
+            new WebinyError(
+                `Cannot update content model because field "${textFieldWithDuplicatedFieldId.storageId}" has fieldId "${textFieldWithDuplicatedFieldId.fieldId}", which is already used.`
+            )
+        );
+    });
+
+    it("should throw an error if schema cannot be generated for a model - field exists in built-in type", async () => {
+        const field = createTextField({
+            fieldId: "status"
+        });
+
+        let error: Error | undefined;
+        try {
+            await validateModelFields({
+                context,
+                model: createModel({
+                    fields: [field],
+                    layout: [[field.id]]
+                })
+            });
+        } catch (ex) {
+            error = ex;
+        }
+
+        expect(error).toEqual(
+            new WebinyError({
+                message: `Model "testingModel" was not saved!\nSee more details in the browser console.`,
+                code: "INVALID_MODEL_DEFINITION"
+            })
+        );
+    });
+
+    it("should throw an error if schema cannot be generated for a model - faulty object field", async () => {
+        const field = createObjectField({
+            settings: {
+                fields: [],
+                layout: []
+            }
+        });
+        let error: Error | undefined;
+        try {
+            await validateModelFields({
+                context,
+                model: createModel({
+                    fields: [field],
+                    layout: [[field.id]]
+                })
+            });
+        } catch (ex) {
+            error = ex;
+        }
+
+        expect(error).toEqual(
+            new WebinyError({
+                message: `Model "testingModel" was not saved!\nPlease review the definition of "objectField" field.`,
+                code: "INVALID_MODEL_DEFINITION",
+                data: {
+                    modelId: "testingModel",
+                    invalidField: "objectField"
+                }
+            })
+        );
     });
 });
