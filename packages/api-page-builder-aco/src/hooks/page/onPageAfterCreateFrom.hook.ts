@@ -1,7 +1,7 @@
 import { ContextPlugin } from "@webiny/api";
 import WebinyError from "@webiny/error";
 import { PB_PAGE_TYPE } from "~/contants";
-import { Context } from "~/types";
+import { Context, PbPageRecordData } from "~/types";
 
 export const onPageAfterCreateFromHook = () => {
     return new ContextPlugin<Context>(async ({ pageBuilder, aco }) => {
@@ -22,7 +22,7 @@ export const onPageAfterCreateFromHook = () => {
 
                 const originalRecord = await aco.search.get(original.pid);
 
-                await aco.search.create({
+                await aco.search.create<PbPageRecordData>({
                     originalId: pid,
                     title: title,
                     type: PB_PAGE_TYPE,
