@@ -1,6 +1,6 @@
 import { ContextPlugin } from "@webiny/api";
 import WebinyError from "@webiny/error";
-import { Context } from "~/types";
+import { Context, PbPageRecordData } from "~/types";
 
 export const onPageAfterUpdateHook = () => {
     return new ContextPlugin<Context>(async ({ pageBuilder, aco }) => {
@@ -19,7 +19,7 @@ export const onPageAfterUpdateHook = () => {
                     locked
                 } = page;
 
-                await aco.search.update(pid, {
+                await aco.search.update<PbPageRecordData>(pid, {
                     title: title,
                     content: content?.content,
                     data: {

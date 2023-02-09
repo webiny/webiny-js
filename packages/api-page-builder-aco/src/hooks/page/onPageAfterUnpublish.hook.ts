@@ -1,20 +1,22 @@
 import { ContextPlugin } from "@webiny/api";
 import WebinyError from "@webiny/error";
-import { Context } from "~/types";
+import { Context, PbPageRecordData } from "~/types";
 
 export const onPageAfterUnpublishHook = () => {
     return new ContextPlugin<Context>(async ({ pageBuilder, aco }) => {
         try {
             pageBuilder.onPageAfterUnpublish.subscribe(async ({ page }) => {
-                const { pid, status, savedOn } = page;
+                const { id, pid, createdOn, createdBy, savedOn, status, version, locked } = page;
 
-                const existing = await aco.search.get(pid);
-
-                await aco.search.update(pid, {
+                await aco.search.update<PbPageRecordData>(pid, {
                     data: {
-                        ...existing.data,
+                        id,
+                        createdBy,
+                        createdOn,
+                        savedOn,
                         status,
-                        savedOn
+                        version,
+                        locked
                     }
                 });
             });
