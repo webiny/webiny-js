@@ -31,7 +31,7 @@ import {
 } from "./graphql/contentEntry";
 import { createHandlerCore, CreateHandlerCoreParams } from "~tests/testHelpers/plugins";
 
-export type GraphQLHandlerParams = CreateHandlerCoreParams
+export type GraphQLHandlerParams = CreateHandlerCoreParams;
 
 export interface InvokeParams {
     httpMethod?: "POST" | "GET" | "OPTIONS";

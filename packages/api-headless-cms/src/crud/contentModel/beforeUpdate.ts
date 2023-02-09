@@ -1,6 +1,5 @@
 import { Topic } from "@webiny/pubsub/types";
-import { OnModelBeforeUpdateTopicParams, HeadlessCmsStorageOperations, CmsContext } from "~/types";
-import { PluginsContainer } from "@webiny/plugins";
+import { OnModelBeforeUpdateTopicParams, CmsContext } from "~/types";
 import { validateModel } from "./validateModel";
 import { validateLayout } from "./validateLayout";
 

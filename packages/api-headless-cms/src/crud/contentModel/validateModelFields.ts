@@ -10,7 +10,6 @@ import {
 import WebinyError from "@webiny/error";
 import { createManageSDL } from "~/graphql/schema/createManageSDL";
 import gql from "graphql-tag";
-import { PluginsContainer } from "@webiny/plugins";
 import { createFieldStorageId } from "./createFieldStorageId";
 import { GraphQLError } from "graphql";
 import { getBaseFieldType } from "~/utils/getBaseFieldType";

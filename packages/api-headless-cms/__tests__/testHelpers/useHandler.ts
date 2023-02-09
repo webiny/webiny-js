@@ -10,7 +10,7 @@ interface CmsHandlerEvent {
     };
 }
 
-type Params = CreateHandlerCoreParams
+type Params = CreateHandlerCoreParams;
 export const useHandler = (params: Params) => {
     const core = createHandlerCore(params);
 

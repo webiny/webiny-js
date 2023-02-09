@@ -1,5 +1,4 @@
 import { GraphQLSchema } from "graphql";
-import { makeExecutableSchema } from "@graphql-tools/schema";
 import { ApiEndpoint, CmsContext } from "~/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { NotAuthorizedError } from "@webiny/api-security";
