@@ -14,6 +14,7 @@ import save from "./save";
 import link from "./link";
 import action from "./action";
 import grid from "./grid";
+import cell from "./cell";
 
 export default [
     advanced,
@@ -31,5 +32,6 @@ export default [
     save,
     link,
     action,
-    grid
+    grid,
+    cell
 ];

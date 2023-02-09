@@ -29,9 +29,10 @@ export const GridSettings: React.FC<PbEditorPageElementSettingsRenderComponentPr
         elementWithChildrenByIdSelector(activeElementId)
     ) as unknown as PbEditorElement;
     const updateElement = useUpdateElement();
-    const propName = `${DATA_NAMESPACE}.${displayMode}.flexDirection`;
+    const flexDirectionPropName = `${DATA_NAMESPACE}.${displayMode}.flexDirection`;
+    const verticalAlignPropName = `data.settings.verticalAlign.${displayMode}`;
 
-    const fallbackValue = useMemo(() => {
+    const flexDirectionFallbackValue = useMemo(() => {
         const value = applyFallbackDisplayMode(displayMode, mode =>
             get(element, `${DATA_NAMESPACE}.${mode}.flexDirection`)
         );
@@ -46,14 +47,40 @@ export const GridSettings: React.FC<PbEditorPageElementSettingsRenderComponentPr
         return value;
     }, [displayMode]);
 
-    const flexDirection = get(element, propName, fallbackValue || "row");
+    const flexDirection = get(element, flexDirectionPropName, flexDirectionFallbackValue || "row");
 
     const columnWrap = useMemo(() => {
         return flexDirection === "row" ? "row" : "column";
     }, [flexDirection]);
 
-    const onClick = (type: any) => {
-        const newElement = merge({}, element, set({}, propName, type));
+    const onFlexDirectionChange = (type: any) => {
+        const newElement = merge({}, element, set({}, flexDirectionPropName, type));
+        updateElement(newElement);
+    };
+
+    const verticalAlignFallbackValue = useMemo(
+        () =>
+            applyFallbackDisplayMode(displayMode, mode =>
+                get(element, `data.settings.verticalAlign.${mode}`)
+            ),
+        [displayMode]
+    );
+
+    const cellSizing =
+        get(
+            element,
+            `data.settings.verticalAlign.${displayMode}`,
+            verticalAlignFallbackValue || "flex-start"
+        ) === "stretch"
+            ? "full-height"
+            : "auto";
+
+    const onCellSizingChange = (value: string) => {
+        const newElement = merge(
+            {},
+            element,
+            set({}, verticalAlignPropName, value === "auto" ? "flex-start" : "stretch")
+        );
         updateElement(newElement);
     };
 
@@ -77,7 +104,7 @@ export const GridSettings: React.FC<PbEditorPageElementSettingsRenderComponentPr
                     <SelectField
                         disabled={false}
                         value={columnWrap}
-                        onChange={value => onClick(value)}
+                        onChange={value => onFlexDirectionChange(value)}
                     >
                         <option value="row">No wrap</option>
                         <option value="column">Wrap</option>
@@ -91,11 +118,22 @@ export const GridSettings: React.FC<PbEditorPageElementSettingsRenderComponentPr
                 >
                     <SelectField
                         value={flexDirection}
-                        onChange={value => onClick(value)}
+                        onChange={value => onFlexDirectionChange(value)}
                         disabled={flexDirection === "row"}
                     >
                         <option value="column">Regular</option>
                         <option value="column-reverse">Reverse</option>
+                    </SelectField>
+                </Wrapper>
+                <Wrapper
+                    label={"Cell sizing"}
+                    leftCellSpan={5}
+                    rightCellSpan={7}
+                    containerClassName={classes.simpleGrid}
+                >
+                    <SelectField value={cellSizing} onChange={value => onCellSizingChange(value)}>
+                        <option value="auto">Auto</option>
+                        <option value="full-height">Full Height</option>
                     </SelectField>
                 </Wrapper>
             </ContentWrapper>

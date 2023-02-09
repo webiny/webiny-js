@@ -29,7 +29,9 @@ const cellPlugin = (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPl
         "pb-editor-page-element-style-settings-border",
         "pb-editor-page-element-style-settings-shadow",
         "pb-editor-page-element-style-settings-padding",
-        "pb-editor-page-element-style-settings-margin"
+        "pb-editor-page-element-style-settings-margin",
+        "pb-editor-page-element-style-settings-horizontal-align-flex",
+        "pb-editor-page-element-style-settings-cell"
     ];
 
     const elementType = kebabCase(args.elementType || "cell");
@@ -67,7 +69,11 @@ const cellPlugin = (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPl
                         ),
                         grid: {
                             size: lodashGet(options, "data.settings.grid.size", 1)
-                        }
+                        },
+                        horizontalAlignFlex: createInitialPerDeviceSettingValue(
+                            "flex-start",
+                            DisplayMode.DESKTOP
+                        )
                     }
                 }
             };

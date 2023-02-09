@@ -21,6 +21,20 @@ const verticalAlign: ElementStylesModifier = ({ element, theme }) => {
             };
         }
 
+        // Cells of grid need auto height for stretch to work
+        if (element.type === "grid") {
+            const value = verticalAlign[breakpointName];
+            if (value === "stretch") {
+                return {
+                    ...returnStyles,
+                    [breakpointName]: {
+                        ["> pb-cell"]: { height: "auto" },
+                        alignItems: verticalAlign[breakpointName]
+                    }
+                };
+            }
+        }
+
         // For all other elements, we assume flex-direction is using the default setting, which is "row".
         return {
             ...returnStyles,

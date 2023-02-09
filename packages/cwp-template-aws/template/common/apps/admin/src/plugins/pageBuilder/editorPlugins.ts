@@ -51,6 +51,7 @@ import save from "@webiny/app-page-builder/editor/plugins/elementSettings/save";
 import link from "@webiny/app-page-builder/editor/plugins/elementSettings/link";
 import action from "@webiny/app-page-builder/editor/plugins/elementSettings/action";
 import gridSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/grid";
+import cellSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/cell";
 import textSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/text";
 import property from "@webiny/app-page-builder/editor/plugins/elementSettings/property";
 // Responsive editor mode
@@ -116,6 +117,7 @@ export default [
     link,
     action,
     gridSettings,
+    cellSettings,
     textSettings,
     property,
     // Responsive editor mode
