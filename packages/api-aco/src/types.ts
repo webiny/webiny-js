@@ -29,16 +29,6 @@ export interface AcoBaseFields {
     savedOn: string;
 }
 
-export interface BaseAcoCrud<TEntry, TCreateEntryParams, TUpdateEntryParams> {
-    get(id: string): Promise<TEntry>;
-
-    create(data: TCreateEntryParams): Promise<TEntry>;
-
-    update(id: string, data: TUpdateEntryParams): Promise<TEntry>;
-
-    delete(id: string): Promise<Boolean>;
-}
-
 export interface AdvancedContentOrganisation {
     folder: AcoFolderCrud;
     search: AcoSearchRecordCrud;
