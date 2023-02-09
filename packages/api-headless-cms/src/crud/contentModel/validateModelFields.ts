@@ -157,8 +157,8 @@ interface ValidateFieldsParams {
 const validateFields = (params: ValidateFieldsParams) => {
     const { plugins, fields, originalFields, lockedFields } = params;
 
+    const idList: string[] = [];
     const fieldIdList: string[] = [];
-
     const storageIdList: string[] = [];
 
     const validateChildFields = createValidateChildFields(plugins);
@@ -172,6 +172,19 @@ const validateFields = (params: ValidateFieldsParams) => {
                 `Cannot update content model because of the unknown "${baseType}" field.`
             );
         }
+        /**
+         * Check the field's id against existing ones.
+         * There cannot be two fields with the same id.
+         */
+        if (idList.includes(field.id)) {
+            throw new WebinyError(
+                `Cannot update content model because field "${
+                    field.storageId || field.fieldId
+                }" has id "${field.id}", which is already used.`
+            );
+        }
+        idList.push(field.id);
+
         const originalField = originalFields.find(f => f.id === field.id);
         /**
          * Field MUST have an fieldId defined.
@@ -195,7 +208,7 @@ const validateFields = (params: ValidateFieldsParams) => {
          * https://discuss.elastic.co/t/illegal-characters-in-elasticsearch-field-names/17196/2
          */
         const isLocked = lockedFields.some(lockedField => {
-            return lockedField.fieldId === field.storageId;
+            return lockedField.fieldId === field.storageId || lockedField.fieldId === field.fieldId;
         });
         if (!field.storageId) {
             /**
