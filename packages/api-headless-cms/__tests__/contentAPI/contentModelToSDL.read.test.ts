@@ -19,7 +19,7 @@ import { pageModel } from "./mocks/pageWithDynamicZonesModel";
 const getModel = (modelId: string): CmsModel => {
     const model = contentModels.find(c => c.modelId === modelId);
     if (!model) {
-        throw new Error(`Could not find model "category".`);
+        throw new Error(`Could not find model "${modelId}".`);
     }
     return model;
 };
