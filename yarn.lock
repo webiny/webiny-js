@@ -12626,7 +12626,6 @@ __metadata:
     "@webiny/app-admin": 0.0.0
     "@webiny/app-headless-cms": 0.0.0
     "@webiny/app-i18n": 0.0.0
-    "@webiny/app-mailer": 0.0.0
     "@webiny/app-page-builder": 0.0.0
     "@webiny/app-security": 0.0.0
     "@webiny/cli": 0.0.0
@@ -12766,6 +12765,7 @@ __metadata:
     "@webiny/app-page-builder-elements": 0.0.0
     "@webiny/app-plugin-admin-welcome-screen": 0.0.0
     "@webiny/app-security": 0.0.0
+    "@webiny/app-tenancy": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/feature-flags": 0.0.0
     "@webiny/form": 0.0.0
@@ -13309,6 +13309,7 @@ __metadata:
     "@webiny/app-headless-cms": 0.0.0
     "@webiny/app-i18n": 0.0.0
     "@webiny/app-i18n-content": 0.0.0
+    "@webiny/app-mailer": 0.0.0
     "@webiny/app-page-builder": 0.0.0
     "@webiny/app-security": 0.0.0
     "@webiny/app-security-access-management": 0.0.0

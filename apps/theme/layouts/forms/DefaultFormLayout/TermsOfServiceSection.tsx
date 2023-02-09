@@ -21,7 +21,7 @@ interface Props {
 
 const RteFieldLabel = styled(FieldLabel)`
     .rte-block-paragraph {
-        ${theme.styles.typography.paragraph1};
+        ${theme.styles.typography["paragraph1"]};
         margin: 0;
     }
 `;

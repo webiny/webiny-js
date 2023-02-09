@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { Element, RendererMeta } from "@webiny/app-page-builder-elements/types";
 import styled from "@emotion/styled";
 import { CSSObject } from "@emotion/core";
@@ -8,6 +8,8 @@ import { useUI } from "~/editor/hooks/useUI";
 import { useElementById } from "~/editor/hooks/useElementById";
 import { PbEditorElement } from "~/types";
 import { SetterOrUpdater } from "recoil";
+import Draggable from "~/editor/components/Draggable";
+import { disableDraggingMutation, enableDraggingMutation } from "~/editor/recoil/modules";
 
 const ACTIVE_COLOR = "var(--mdc-theme-primary)";
 const HOVER_COLOR = "var(--mdc-theme-secondary)";
@@ -23,11 +25,18 @@ declare global {
 
 interface Props {
     children?: React.ReactNode;
-    innerRef?: React.Ref<any>;
+    dropRef?: React.Ref<any>;
 }
 
+// Until the need for custom targets arises, we're hard-coding the available
+// targets (types of elements onto which another element can be dropped).
+const DEFAULT_TARGETS = ["cell", "block"];
+
+// We're doing the same with the list of non-draggable elements.
+const NON_DRAGGABLE_ELEMENTS = ["cell", "block"];
+
 export const ElementControlsOverlay: React.FC<Props> = props => {
-    const [{ isDragging }] = useUI();
+    const [{ isDragging }, setUi] = useUI();
     const [activeElementId, setActiveElementId] = useActiveElementId();
 
     const { getElement, meta } = useRenderer();
@@ -41,53 +50,78 @@ export const ElementControlsOverlay: React.FC<Props> = props => {
     const isActive = activeElementId === element.id;
     const isHighlighted = editorElement.isHighlighted;
 
-    const { children, innerRef, ...rest } = props;
+    const { children, dropRef, ...rest } = props;
+
+    const beginDrag = useCallback(() => {
+        const data = { id: element.id, type: element.type };
+        setTimeout(() => {
+            setUi(enableDraggingMutation);
+        });
+
+        return { ...data, target: DEFAULT_TARGETS };
+    }, [element.id]);
+
+    const endDrag = useCallback(() => {
+        setUi(disableDraggingMutation);
+    }, [element.id]);
+
+    const isDraggable = !NON_DRAGGABLE_ELEMENTS.includes(element.type);
 
     return (
-        <PbElementControlsOverlay
-            isDragging={isDragging}
-            isActive={isActive}
-            isHighlighted={isHighlighted}
-            element={element}
-            elementRendererMeta={meta}
-            onClick={() => {
-                updateEditorElement(element => ({ ...element, isHighlighted: false }));
-                setActiveElementId(element.id);
-            }}
-            onMouseEnter={(e: MouseEvent) => {
-                if (isActive || isHighlighted) {
-                    return;
-                }
-
-                e.stopPropagation();
-                updateEditorElement(element => ({ ...element, isHighlighted: true }));
-            }}
-            onMouseLeave={(e: MouseEvent) => {
-                if (isActive || !isHighlighted) {
-                    return;
-                }
-                e.stopPropagation();
-                updateEditorElement(element => ({ ...element, isHighlighted: false }));
-            }}
-            onDragEnter={(e: MouseEvent) => {
-                e.stopPropagation();
-                updateEditorElement(element => ({ ...element, dragEntered: true }));
-            }}
-            onDragLeave={(e: MouseEvent) => {
-                e.stopPropagation();
-                updateEditorElement(element => ({ ...element, dragEntered: false }));
-            }}
-            onDrop={() => {
-                // TODO: figure out why calling this update without the `setTimeout` hack doesn't work. 🤷‍
-                setTimeout(() =>
-                    updateEditorElement(element => ({ ...element, dragEntered: false }))
-                );
-            }}
-            dropRef={innerRef}
-            {...rest}
+        <Draggable
+            enabled={isDraggable}
+            target={DEFAULT_TARGETS}
+            beginDrag={beginDrag}
+            endDrag={endDrag}
         >
-            {children}
-        </PbElementControlsOverlay>
+            {({ drag: dragRef }) => (
+                <PbElementControlsOverlay
+                    isDragging={isDragging}
+                    isActive={isActive}
+                    isHighlighted={isHighlighted}
+                    element={element}
+                    elementRendererMeta={meta}
+                    onClick={() => {
+                        updateEditorElement(element => ({ ...element, isHighlighted: false }));
+                        setActiveElementId(element.id);
+                    }}
+                    onMouseEnter={(e: MouseEvent) => {
+                        if (isActive || isHighlighted) {
+                            return;
+                        }
+
+                        e.stopPropagation();
+                        updateEditorElement(element => ({ ...element, isHighlighted: true }));
+                    }}
+                    onMouseLeave={(e: MouseEvent) => {
+                        if (isActive || !isHighlighted) {
+                            return;
+                        }
+                        e.stopPropagation();
+                        updateEditorElement(element => ({ ...element, isHighlighted: false }));
+                    }}
+                    onDragEnter={(e: MouseEvent) => {
+                        e.stopPropagation();
+                        updateEditorElement(element => ({ ...element, dragEntered: true }));
+                    }}
+                    onDragLeave={(e: MouseEvent) => {
+                        e.stopPropagation();
+                        updateEditorElement(element => ({ ...element, dragEntered: false }));
+                    }}
+                    onDrop={() => {
+                        // TODO: figure out why calling this update without the `setTimeout` hack doesn't work. 🤷‍
+                        setTimeout(() =>
+                            updateEditorElement(element => ({ ...element, dragEntered: false }))
+                        );
+                    }}
+                    dropRef={dropRef}
+                    dragRef={dragRef}
+                    {...rest}
+                >
+                    {children}
+                </PbElementControlsOverlay>
+            )}
+        </Draggable>
     );
 };
 
@@ -101,6 +135,7 @@ const PbElementControlsOverlay = styled(
         onDragLeave,
         onDrop,
         dropRef,
+        dragRef,
         children
     }) => {
         return (
@@ -113,7 +148,15 @@ const PbElementControlsOverlay = styled(
                 onDragEnter={onDragEnter}
                 onDragLeave={onDragLeave}
                 onDrop={onDrop}
-                ref={dropRef}
+                ref={element => {
+                    if (dropRef) {
+                        dropRef(element);
+                    }
+
+                    if (dragRef) {
+                        dragRef(element);
+                    }
+                }}
             >
                 {children}
             </pb-element-controls-overlay>

@@ -5,19 +5,19 @@ import styled from "@emotion/styled";
 import { Field } from "./components/Field";
 import { FieldMessage } from "./components/FieldMessage";
 import { FieldLabel } from "./components/FieldLabel";
-import { typography, borderRadius, colors } from "../../../../theme";
+import theme from "../../../../theme";
 
 interface SelectProps {
     field: FormRenderFbFormModelField;
 }
 
 const StyledSelect = styled.select`
-    ${typography.paragraph1};
-    border: 1px solid ${colors.color5};
-    background-color: ${colors.color5};
+    ${theme.styles.typography["paragraph1"]};
+    border: 1px solid ${theme.styles.colors["color5"]};
+    background-color: ${theme.styles.colors["color5"]};
     width: 100%;
     padding: 10px;
-    border-radius: ${borderRadius};
+    border-radius: ${theme.styles.borderRadius};
     box-sizing: border-box;
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
     height: 40px;
@@ -28,7 +28,7 @@ const StyledSelect = styled.select`
     background-position: center right;
 
     &:focus {
-        border-color: ${colors.color2};
+        border-color: ${theme.styles.colors["color2"]};
         box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
         outline: none;
     }

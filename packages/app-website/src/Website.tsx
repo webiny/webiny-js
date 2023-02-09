@@ -1,16 +1,16 @@
 import React from "react";
-import { AddRoute, App, createProviderPlugin, Plugins } from "@webiny/app";
+import { App, AppProps, HigherOrderComponent } from "@webiny/app";
 import { ApolloProvider } from "@apollo/react-hooks";
 import { CacheProvider } from "@emotion/core";
 import { PageBuilderProvider } from "@webiny/app-page-builder/contexts/PageBuilder";
 import { Page } from "./Page";
 import { createApolloClient, createEmotionCache } from "~/utils";
 
-interface Props {
+export interface WebsiteProps extends AppProps {
     apolloClient?: ReturnType<typeof createApolloClient>;
 }
 
-const PageBuilderProviderPlugin = createProviderPlugin(PreviousProvider => {
+const PageBuilderProviderHOC: HigherOrderComponent = PreviousProvider => {
     return function PageBuilderProviderHOC({ children }) {
         return (
             <PageBuilderProvider>
@@ -18,9 +18,14 @@ const PageBuilderProviderPlugin = createProviderPlugin(PreviousProvider => {
             </PageBuilderProvider>
         );
     };
-});
+};
 
-export const Website: React.FC<Props> = ({ children, ...props }) => {
+export const Website: React.FC<WebsiteProps> = ({
+    children,
+    routes = [],
+    providers = [],
+    ...props
+}) => {
     const apolloClient = props.apolloClient || createApolloClient();
     const emotionCache = createEmotionCache();
 
@@ -30,12 +35,12 @@ export const Website: React.FC<Props> = ({ children, ...props }) => {
     return (
         <CacheProvider value={emotionCache}>
             <ApolloProvider client={apolloClient}>
-                <App debounceRender={debounceMs}>
-                    <Plugins>
-                        <AddRoute path={"*"} element={<Page />} />
-                    </Plugins>
+                <App
+                    debounceRender={debounceMs}
+                    routes={[...routes, { path: "*", element: <Page /> }]}
+                    providers={[PageBuilderProviderHOC, ...providers]}
+                >
                     {children}
-                    <PageBuilderProviderPlugin />
                 </App>
             </ApolloProvider>
         </CacheProvider>

@@ -17,6 +17,7 @@ export type {
 
 export * from "@webiny/app-theme";
 export * from "./Website";
+export type { WebsiteProps } from "./Website";
 export * from "./Page";
 export * from "./Page/PageRenderer";
 export * from "./Page/Layout";

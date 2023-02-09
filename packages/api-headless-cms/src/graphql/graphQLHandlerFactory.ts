@@ -119,20 +119,22 @@ const checkEndpointAccess = async (context: CmsContext): Promise<void> => {
     }
 };
 
-const formatErrorPayload = (error: Error) => {
+const formatErrorPayload = (error: Error): string => {
     if (error instanceof WebinyError) {
-        return {
+        return JSON.stringify({
+            type: "WebinyError",
             message: error.message,
             code: error.code,
             data: error.data
-        };
+        });
     }
 
-    return {
+    return JSON.stringify({
+        type: "Error",
         name: error.name,
         message: error.message,
         stack: error.stack
-    };
+    });
 };
 
 export interface GraphQLHandlerFactoryParams {
@@ -170,9 +172,11 @@ const cmsRoutes = new RoutePlugin<CmsContext>(({ onPost, onOptions, context }) =
     });
 
     onOptions("/cms/:type(^manage|preview|read$)/:locale", async (_, reply) => {
-        return reply.hijack().send({});
+        return reply.status(204).send({}).hijack();
     });
 });
+
+cmsRoutes.name = "headless-cms.graphql.route.default";
 
 export const graphQLHandlerFactory = ({ debug }: GraphQLHandlerFactoryParams): PluginCollection => {
     return [

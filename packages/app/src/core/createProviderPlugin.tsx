@@ -12,3 +12,7 @@ export function createProviderPlugin(hoc: HigherOrderComponent): React.FC {
         return <Provider hoc={hoc} />;
     };
 }
+
+export const createProvider = (hoc: HigherOrderComponent): HigherOrderComponent => {
+    return hoc;
+};

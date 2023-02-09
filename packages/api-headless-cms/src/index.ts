@@ -1,7 +1,6 @@
 import { createGraphQL as baseCreateGraphQL, CreateGraphQLParams } from "~/graphql";
 import { createUpgrades } from "~/upgrades";
 import { createDefaultModelManager } from "~/modelManager";
-import { createCrud, CrudParams } from "~/crud";
 import { createGraphQLFields } from "~/graphqlFields";
 import { createValidators } from "~/validators";
 import { createDefaultStorageTransform } from "~/storage/default";
@@ -12,7 +11,7 @@ import {
     createHeaderParameterPlugin,
     createPathParameterPlugin
 } from "~/parameters";
-import { createContextPlugin } from "~/context";
+import { createContextPlugin, CrudParams } from "~/context";
 import {
     entryFieldFromStorageTransform,
     entryFromStorageTransform,
@@ -42,12 +41,8 @@ export const createHeadlessCmsContext = (params: ContentContextParams) => {
         /**
          * Context for all Lambdas - everything is loaded now.
          */
-        createContextPlugin(),
+        createContextPlugin(params),
         createDefaultModelManager(),
-        /**
-         *
-         */
-        createCrud(params),
         createGraphQLFields(),
         createFieldConverters(),
         createValidators(),
