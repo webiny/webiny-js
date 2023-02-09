@@ -39,11 +39,11 @@ export type CreateSearchRecordParams<TData> = Pick<
     "originalId" | "title" | "content" | "type" | "location" | "data"
 >;
 
-export interface UpdateSearchRecordParams {
+export interface UpdateSearchRecordParams<TData extends GenericSearchData> {
     title?: string;
     content?: string;
     location?: Location;
-    data?: Record<string, any>;
+    data?: TData;
 }
 
 export interface DeleteSearchRecordParams {
@@ -61,9 +61,11 @@ export interface StorageOperationsCreateSearchRecordParams<
 > {
     data: CreateSearchRecordParams<TData>;
 }
-export interface StorageOperationsUpdateSearchRecordParams {
+export interface StorageOperationsUpdateSearchRecordParams<
+    TData extends GenericSearchData = GenericSearchData
+> {
     id: string;
-    data: UpdateSearchRecordParams;
+    data: UpdateSearchRecordParams<TData>;
 }
 export type StorageOperationsDeleteSearchRecordParams = DeleteSearchRecordParams;
 
@@ -73,34 +75,44 @@ export interface OnSearchRecordBeforeCreateTopicParams<
     input: CreateSearchRecordParams<TData>;
 }
 
-export interface OnSearchRecordAfterCreateTopicParams {
-    record: SearchRecord;
+export interface OnSearchRecordAfterCreateTopicParams<
+    TData extends GenericSearchData = GenericSearchData
+> {
+    record: SearchRecord<TData>;
 }
 
-export interface OnSearchRecordBeforeUpdateTopicParams {
-    original: SearchRecord;
+export interface OnSearchRecordBeforeUpdateTopicParams<
+    TData extends GenericSearchData = GenericSearchData
+> {
+    original: SearchRecord<TData>;
     input: Record<string, any>;
 }
 
-export interface OnSearchRecordAfterUpdateTopicParams {
-    original: SearchRecord;
-    record: SearchRecord;
+export interface OnSearchRecordAfterUpdateTopicParams<
+    TData extends GenericSearchData = GenericSearchData
+> {
+    original: SearchRecord<TData>;
+    record: SearchRecord<TData>;
     input: Record<string, any>;
 }
 
-export interface OnSearchRecordBeforeDeleteTopicParams {
-    record: SearchRecord;
+export interface OnSearchRecordBeforeDeleteTopicParams<
+    TData extends GenericSearchData = GenericSearchData
+> {
+    record: SearchRecord<TData>;
 }
 
-export interface OnSearchRecordAfterDeleteTopicParams {
-    record: SearchRecord;
+export interface OnSearchRecordAfterDeleteTopicParams<
+    TData extends GenericSearchData = GenericSearchData
+> {
+    record: SearchRecord<TData>;
 }
 
 export interface AcoSearchRecordCrud {
-    get(id: string): Promise<SearchRecord>;
-    list(params: ListSearchRecordsParams): Promise<[SearchRecord[], ListMeta]>;
-    create<TData>(data: CreateSearchRecordParams<TData>): Promise<SearchRecord>;
-    update(id: string, data: UpdateSearchRecordParams): Promise<SearchRecord>;
+    get<TData>(id: string): Promise<SearchRecord<TData>>;
+    list<TData>(params: ListSearchRecordsParams): Promise<[SearchRecord<TData>[], ListMeta]>;
+    create<TData>(data: CreateSearchRecordParams<TData>): Promise<SearchRecord<TData>>;
+    update<TData>(id: string, data: UpdateSearchRecordParams<TData>): Promise<SearchRecord<TData>>;
     delete(id: string): Promise<Boolean>;
     onSearchRecordBeforeCreate: Topic<OnSearchRecordBeforeCreateTopicParams>;
     onSearchRecordAfterCreate: Topic<OnSearchRecordAfterCreateTopicParams>;
@@ -110,11 +122,17 @@ export interface AcoSearchRecordCrud {
     onSearchRecordAfterDelete: Topic<OnSearchRecordAfterDeleteTopicParams>;
 }
 export interface AcoSearchRecordStorageOperations {
-    getRecord(params: StorageOperationsGetSearchRecordParams): Promise<SearchRecord>;
-    listRecords(
+    getRecord<TData extends GenericSearchData = GenericSearchData>(
+        params: StorageOperationsGetSearchRecordParams
+    ): Promise<SearchRecord<TData>>;
+    listRecords<TData extends GenericSearchData = GenericSearchData>(
         params: StorageOperationsListSearchRecordsParams
-    ): Promise<[SearchRecord[], ListMeta]>;
-    createRecord(params: StorageOperationsCreateSearchRecordParams): Promise<SearchRecord>;
-    updateRecord(params: StorageOperationsUpdateSearchRecordParams): Promise<SearchRecord>;
+    ): Promise<[SearchRecord<TData>[], ListMeta]>;
+    createRecord<TData extends GenericSearchData = GenericSearchData>(
+        params: StorageOperationsCreateSearchRecordParams<TData>
+    ): Promise<SearchRecord<TData>>;
+    updateRecord<TData extends GenericSearchData = GenericSearchData>(
+        params: StorageOperationsUpdateSearchRecordParams<TData>
+    ): Promise<SearchRecord<TData>>;
     deleteRecord(params: StorageOperationsDeleteSearchRecordParams): Promise<boolean>;
 }
