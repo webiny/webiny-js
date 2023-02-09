@@ -45,12 +45,6 @@ export interface DeleteSearchRecordParams {
     id: string;
 }
 
-export interface DeleteSearchRecordsParams {
-    tenant: string;
-    locale: string;
-    locations: Location[];
-}
-
 export interface StorageOperationsGetSearchRecordParams {
     id: string;
 }
@@ -65,7 +59,6 @@ export interface StorageOperationsUpdateSearchRecordParams {
     data: UpdateSearchRecordParams;
 }
 export type StorageOperationsDeleteSearchRecordParams = DeleteSearchRecordParams;
-export type StorageOperationsDeleteSearchRecordsParams = DeleteSearchRecordsParams;
 
 export interface OnSearchRecordBeforeCreateTopicParams {
     input: CreateSearchRecordParams;
@@ -94,14 +87,6 @@ export interface OnSearchRecordAfterDeleteTopicParams {
     record: SearchRecord;
 }
 
-export interface OnSearchRecordBeforeDeleteBatchTopicParams {
-    locations: Location[];
-}
-
-export interface OnSearchRecordAfterDeleteBatchTopicParams {
-    locations: Location[];
-}
-
 export interface AcoSearchRecordCrud
     extends BaseAcoCrud<SearchRecord, CreateSearchRecordParams, UpdateSearchRecordParams> {
     list(params: ListSearchRecordsParams): Promise<[SearchRecord[], ListMeta]>;
@@ -120,5 +105,4 @@ export interface AcoSearchRecordStorageOperations {
     createRecord(params: StorageOperationsCreateSearchRecordParams): Promise<SearchRecord>;
     updateRecord(params: StorageOperationsUpdateSearchRecordParams): Promise<SearchRecord>;
     deleteRecord(params: StorageOperationsDeleteSearchRecordParams): Promise<boolean>;
-    //deleteRecords(params: StorageOperationsDeleteSearchRecordsParams): Promise<boolean>;
 }
