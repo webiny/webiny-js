@@ -3,11 +3,20 @@ import WebinyError from "@webiny/error";
 import { Context } from "~/types";
 
 export const onPageAfterUnpublishHook = () => {
-    return new ContextPlugin<Context>(async ({ pageBuilder }) => {
+    return new ContextPlugin<Context>(async ({ pageBuilder, aco }) => {
         try {
-            pageBuilder.onPageAfterUnpublish.subscribe(async ({ page, latestPage }) => {
-                console.log("page", page);
-                console.log("latestPage", latestPage);
+            pageBuilder.onPageAfterUnpublish.subscribe(async ({ page }) => {
+                const { pid, status, savedOn } = page;
+
+                const existing = await aco.search.get(pid);
+
+                await aco.search.update(pid, {
+                    data: {
+                        ...existing.data,
+                        status,
+                        savedOn
+                    }
+                });
             });
         } catch (error) {
             throw WebinyError.from(error, {
