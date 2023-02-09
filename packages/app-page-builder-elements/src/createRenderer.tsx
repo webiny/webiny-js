@@ -5,6 +5,8 @@ import { Theme, StylesObject } from "@webiny/theme/types";
 import { RendererProvider } from "~/contexts/Renderer";
 import { CSSObject, ClassNames } from "@emotion/core";
 
+type GetElement = <TElementData = Record<string, any>>() => Element<TElementData>;
+
 interface GetStylesParams {
     theme: Theme;
     element: Element;
@@ -14,7 +16,7 @@ export type CreateRendererOptions<TRenderComponentProps> = Partial<{
     propsAreEqual: (prevProps: TRenderComponentProps, nextProps: TRenderComponentProps) => boolean;
     themeStyles: StylesObject | ((params: GetStylesParams) => StylesObject);
     baseStyles: StylesObject | ((params: GetStylesParams) => StylesObject);
-    loader: (params: { element: Element }) => Promise<any>;
+    loader: (params: { getElement: GetElement }) => Promise<any>;
 }>;
 
 const DEFAULT_RENDERER_STYLES: StylesObject = {
@@ -33,9 +35,9 @@ function useLoaderCachedData<TRenderComponentProps>(
     }
 
     return useMemo<null | Awaited<ReturnType<typeof options.loader>>>(() => {
-        const cachedResultElement = document.querySelector(
-            `pe-loader-result[data-key="${element.id}"]`
-        );
+        const selector = `pe-loader-data-cache[data-key="${element.id}"]`;
+        console.log("selector", selector);
+        const cachedResultElement = document.querySelector(selector);
 
         if (!cachedResultElement) {
             return null;
@@ -84,17 +86,22 @@ export function createRenderer<TRenderComponentProps = {}>(
                       loading: false,
                       cacheHit: true
                   }
-                : { data: null, loading: false, cacheHit: false }
+                : { data: null, loading: Boolean(options.loader), cacheHit: false }
         );
 
         useEffect(() => {
             if (!options.loader || loaderCachedData) {
                 return;
             }
+            `pe-loader-data-cache[data-key="${element.id}"]`;
+            options.loader({ getElement: () => element }).then(data => {
+                const html = `<pe-loader-data-cache data-key="${
+                    element.id
+                }" data-value='${JSON.stringify(data)}'></pe-loader-data-cache>`;
+                document.body.insertAdjacentHTML("beforeend", html);
 
-            options
-                .loader({ element })
-                .then(data => setLoader({ ...loader, data, loading: false }));
+                setLoader({ ...loader, data, loading: false });
+            });
         }, []);
 
         const attributes = getElementAttributes(element);

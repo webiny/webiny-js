@@ -23,24 +23,22 @@ export const createForm = (params: CreateFormParams) => {
         () => {
             const { getLoader } = useRenderer();
 
-            const {
-                data: [formData, variables],
-                loading
-            } = getLoader<[FormData, GetFormDataLoaderVariables]>();
-
-            if (!variables.parent && !variables.revision) {
-                if (params.renderFormNotSelected) {
-                    return params.renderFormNotSelected({});
-                }
-
-                return <>Please select a form.</>;
-            }
+            const { data, loading } = getLoader<[FormData, GetFormDataLoaderVariables]>();
 
             if (loading) {
                 if (params.renderFormLoading) {
                     return params.renderFormLoading({});
                 }
                 return <>Loading selected form...</>;
+            }
+
+            const [formData, variables] = data;
+            if (!variables.parent && !variables.revision) {
+                if (params.renderFormNotSelected) {
+                    return params.renderFormNotSelected({});
+                }
+
+                return <>Please select a form.</>;
             }
 
             if (!formData) {
@@ -54,7 +52,8 @@ export const createForm = (params: CreateFormParams) => {
             return <FormRender createFormParams={params} loading={loading} formData={formData} />;
         },
         {
-            loader: async ({ element }) => {
+            loader: async ({ getElement }) => {
+                const element = getElement<FormElementData>();
                 const form = element.data.settings?.form;
                 if (!form) {
                     return [null, {}];

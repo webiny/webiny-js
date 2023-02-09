@@ -59,9 +59,11 @@ import responsiveEditorMode from "@webiny/app-page-builder/editor/plugins/respon
 import pageSettingsPlugins from "@webiny/app-page-builder/editor/plugins/pageSettings";
 // default presets for grid
 import { gridPresets } from "@webiny/app-page-builder/editor/plugins/gridPresets";
+import spaceX from "theme/pageElements/spaceX/admin";
 
 export default [
     // Elements
+    spaceX,
     document(),
     grid(),
     block(),

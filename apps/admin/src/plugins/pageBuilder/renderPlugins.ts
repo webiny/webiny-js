@@ -19,6 +19,7 @@ import twitter from "@webiny/app-page-builder/render/plugins/elements/embeds/twi
 import pinterest from "@webiny/app-page-builder/render/plugins/elements/embeds/pinterest";
 import pagesList from "@webiny/app-page-builder/render/plugins/elements/pagesList";
 import imagesList from "@webiny/app-page-builder/render/plugins/elements/imagesList";
+import spaceX from "theme/pageElements/spaceX/website";
 // Page settings
 import pageSettings from "@webiny/app-page-builder/render/plugins/pageSettings";
 // Element settings
@@ -39,6 +40,7 @@ import responsiveMode from "@webiny/app-page-builder/render/plugins/responsiveMo
 
 export default [
     // Elements
+    spaceX,
     document(),
     grid(),
     block(),
