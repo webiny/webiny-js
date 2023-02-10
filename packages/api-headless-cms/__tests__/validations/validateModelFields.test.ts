@@ -1,6 +1,6 @@
 import { validateModelFields } from "~/crud/contentModel/validateModelFields";
 import { PluginsContainer } from "@webiny/plugins";
-import { CmsContext, CmsModel } from "~/types";
+import { CmsContext } from "~/types";
 import WebinyError from "@webiny/error";
 import {
     createTextField,
@@ -14,25 +14,7 @@ import { CmsModelField } from "./fields/types";
 import { createNumberField } from "~tests/validations/fields/number";
 import { createObjectField } from "~tests/validations/fields/object";
 import { useHandler } from "~tests/testHelpers/useHandler";
-
-const createModel = (model: Partial<CmsModel> = {}): CmsModel => {
-    return {
-        modelId: "testingModel",
-        name: "Testing Model",
-        description: "Testing model description",
-        fields: [],
-        layout: [],
-        titleFieldId: "id",
-        tenant: "root",
-        locale: "en-US",
-        group: {
-            id: "group",
-            name: "Group"
-        },
-        webinyVersion: "x.x.x",
-        ...model
-    };
-};
+import { createTestModel as createModel } from "./models/test";
 
 describe("Validate model fields", () => {
     let context: CmsContext;
@@ -350,8 +332,19 @@ describe("Validate model fields", () => {
 
         expect(error).toEqual(
             new WebinyError({
-                message: `Model "testingModel" was not saved!\nSee more details in the browser console.`,
-                code: "INVALID_MODEL_DEFINITION"
+                message:
+                    "Cannot generate GraphQL schema when testing with the given model. Please check the response for more details.",
+                code: "INVALID_MODEL_DEFINITION",
+                data: {
+                    modelId: "test",
+                    error: {
+                        stack: expect.any(String),
+                        message: `Field "TestListWhereInput.status" can only be defined once.
+Field "TestListWhereInput.status_not" can only be defined once.
+Field "TestListWhereInput.status_in" can only be defined once.
+Field "TestListWhereInput.status_not_in" can only be defined once.`
+                    }
+                }
             })
         );
     });
@@ -378,10 +371,10 @@ describe("Validate model fields", () => {
 
         expect(error).toEqual(
             new WebinyError({
-                message: `Model "testingModel" was not saved!\nPlease review the definition of "objectField" field.`,
+                message: `Model "test" was not saved!\nPlease review the definition of "objectField" field.`,
                 code: "INVALID_MODEL_DEFINITION",
                 data: {
-                    modelId: "testingModel",
+                    modelId: "test",
                     invalidField: "objectField"
                 }
             })

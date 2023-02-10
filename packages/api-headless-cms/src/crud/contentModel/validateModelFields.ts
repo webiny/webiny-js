@@ -352,7 +352,15 @@ export const validateModelFields = async (params: ValidateModelFieldsParams): Pr
                 model
             });
         } catch (err) {
-            throw new WebinyError(extractInvalidField(model, err));
+            throw new WebinyError({
+                message:
+                    "Cannot generate GraphQL schema when testing with the given model. Please check the response for more details.",
+                code: "GRAPHQL_SCHEMA_ERROR",
+                data: {
+                    model: model.modelId,
+                    error: err
+                }
+            });
         }
     }
 
