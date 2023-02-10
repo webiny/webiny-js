@@ -14,7 +14,10 @@ import {
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
 import { GraphQLScalarType } from "graphql";
 
-export const createBaseContentSchema = (context: CmsContext): GraphQLSchemaPlugin => {
+interface Params {
+    context: CmsContext;
+}
+export const createBaseContentSchema = ({ context }: Params): GraphQLSchemaPlugin => {
     const scalars = context.plugins
         .byType<GraphQLScalarPlugin>("graphql-scalar")
         .map(item => item.scalar);

@@ -5,7 +5,10 @@ import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSche
 import { Resolvers } from "@webiny/handler-graphql/types";
 import { CmsGroupPlugin } from "~/plugins/CmsGroupPlugin";
 
-export const createGroupsSchema = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
+interface Params {
+    context: CmsContext;
+}
+export const createGroupsSchema = ({ context }: Params): GraphQLSchemaPlugin<CmsContext> => {
     let manageSchema = "";
     if (context.cms.MANAGE) {
         manageSchema = /* GraphQL */ `
