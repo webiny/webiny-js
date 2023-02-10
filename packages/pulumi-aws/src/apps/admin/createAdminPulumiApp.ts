@@ -17,6 +17,13 @@ export interface CreateAdminPulumiAppParams {
      * Prefixes names of all Pulumi cloud infrastructure resource with given prefix.
      */
     pulumiResourceNamePrefix?: PulumiAppParam<string>;
+
+    /**
+     * Treats provided environments as production environments, which
+     * are deployed in production deployment mode.
+     * https://www.webiny.com/docs/architecture/deployment-modes/production
+     */
+    productionEnvironments?: PulumiAppParam<string[]>;
 }
 
 export const createAdminPulumiApp = (projectAppParams: CreateAdminPulumiAppParams) => {
