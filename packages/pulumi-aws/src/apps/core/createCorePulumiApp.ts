@@ -49,7 +49,7 @@ export interface CreateCorePulumiAppParams {
      * are deployed in production deployment mode.
      * https://www.webiny.com/docs/architecture/deployment-modes/production
      */
-    productionEnvironments: PulumiAppParam<string[]>;
+    productionEnvironments?: PulumiAppParam<string[]>;
 }
 
 export interface CoreAppLegacyConfig {

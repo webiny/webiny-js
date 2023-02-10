@@ -44,7 +44,7 @@ export interface CreateWebsitePulumiAppParams {
      * are deployed in production deployment mode.
      * https://www.webiny.com/docs/architecture/deployment-modes/production
      */
-    productionEnvironments: PulumiAppParam<string[]>;
+    productionEnvironments?: PulumiAppParam<string[]>;
 }
 
 export const createWebsitePulumiApp = (projectAppParams: CreateWebsitePulumiAppParams = {}) => {
