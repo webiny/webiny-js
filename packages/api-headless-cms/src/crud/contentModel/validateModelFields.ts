@@ -292,6 +292,16 @@ const createGraphQLSchema = async (params: CreateGraphQLSchemaParams): Promise<a
     });
 };
 
+const extractErrorObject = (error: any) => {
+    return ["message", "code", "data", "stack"].reduce<Record<string, any>>((output, key) => {
+        if (!error[key]) {
+            return output;
+        }
+        output[key] = error[key];
+        return output;
+    }, {});
+};
+
 interface ValidateModelFieldsParams {
     model: CmsModel;
     original?: CmsModel;
@@ -357,8 +367,8 @@ export const validateModelFields = async (params: ValidateModelFieldsParams): Pr
                     "Cannot generate GraphQL schema when testing with the given model. Please check the response for more details.",
                 code: "GRAPHQL_SCHEMA_ERROR",
                 data: {
-                    model: model.modelId,
-                    error: err
+                    modelId: model.modelId,
+                    error: extractErrorObject(err)
                 }
             });
         }
