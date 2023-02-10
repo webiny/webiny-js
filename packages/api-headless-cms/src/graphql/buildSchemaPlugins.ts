@@ -5,7 +5,6 @@ import { createContentEntriesSchema } from "./schema/contentEntries";
 import { createGroupsSchema } from "./schema/contentModelGroups";
 import { createBaseContentSchema } from "./schema/baseContentSchema";
 import { generateSchemaPlugins } from "./schema/schemaPlugins";
-import { createBaseSchema } from "~/graphql/schema/baseSchema";
 
 /**
  * This factory is called whenever we need to generate graphql-schema plugins using the current context.
@@ -19,7 +18,6 @@ export const buildSchemaPlugins = async (
 ): Promise<GraphQLSchemaPlugin<CmsContext>[]> => {
     return [
         // Base GQL types and scalars
-        createBaseSchema(),
         createBaseContentSchema(params),
         createModelsSchema(params),
         createContentEntriesSchema(params),

@@ -5,14 +5,12 @@ import { NotAuthorizedError } from "@webiny/api-security";
 import { PluginCollection } from "@webiny/plugins/types";
 import debugPlugins from "@webiny/handler-graphql/debugPlugins";
 import processRequestBody from "@webiny/handler-graphql/processRequestBody";
-import { buildSchemaPlugins } from "./buildSchemaPlugins";
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
 import { GraphQLRequestBody } from "@webiny/handler-graphql/types";
 import { RoutePlugin } from "@webiny/handler";
 import WebinyError from "@webiny/error";
 // @ts-ignore `code-frame` has no types
 import codeFrame from "code-frame";
-import { createExecutableSchema } from "~/graphql/createExecutableSchema";
+import { generateSchema } from "~/graphql/generateSchema";
 
 interface SchemaCache {
     key: string;
@@ -40,30 +38,6 @@ const generateCacheKey = async (args: GetSchemaParams): Promise<string> => {
     return [locale.code, type, lastModelChange.toISOString()].join("#");
 };
 
-const generateSchema = async (args: GetSchemaParams): Promise<GraphQLSchema> => {
-    const { context } = args;
-
-    // Load model data
-    context.security.disableAuthorization();
-    const models = (await context.cms.listModels()).filter(model => model.isPrivate !== true);
-    context.security.enableAuthorization();
-
-    let generatedSchemaPlugins: GraphQLSchemaPlugin<CmsContext>[] = [];
-    try {
-        generatedSchemaPlugins = await buildSchemaPlugins({ context, models });
-    } catch (ex) {
-        console.log(`Error while building schema plugins.`);
-        throw ex;
-    }
-
-    context.plugins.register(generatedSchemaPlugins);
-
-    const schemaPlugins = context.plugins.byType<GraphQLSchemaPlugin>(GraphQLSchemaPlugin.type);
-    return createExecutableSchema({
-        plugins: schemaPlugins
-    });
-};
-
 /**
  * Gets an existing schema or rewrites existing one or creates a completely new one
  * depending on the schemaId created from type and locale parameters
@@ -78,8 +52,15 @@ const getSchema = async (params: GetSchemaParams): Promise<GraphQLSchema> => {
     if (cachedSchema?.key === cacheKey) {
         return cachedSchema.schema;
     }
+    // Load model data
+    context.security.disableAuthorization();
+    const models = (await context.cms.listModels()).filter(model => model.isPrivate !== true);
+    context.security.enableAuthorization();
     try {
-        const schema = await generateSchema(params);
+        const schema = await generateSchema({
+            ...params,
+            models
+        });
         schemaList.set(id, {
             key: cacheKey,
             schema

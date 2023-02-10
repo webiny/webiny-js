@@ -1,8 +1,8 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
 import { CmsContext } from "~/types";
 
-export const createBaseSchema = (): GraphQLSchemaPlugin<CmsContext> => {
-    const plugin = new GraphQLSchemaPlugin({
+export const createBaseSchema = (): GraphQLSchemaPlugin<CmsContext>[] => {
+    const cmsPlugin = new GraphQLSchemaPlugin({
         typeDefs: /* GraphQL */ `
             type CmsError {
                 code: String
@@ -34,6 +34,14 @@ export const createBaseSchema = (): GraphQLSchemaPlugin<CmsContext> => {
         `,
         resolvers: {}
     });
-    plugin.name = "cms.graphql.schema.base";
-    return plugin;
+    cmsPlugin.name = "graphql.cms.schema.base";
+    const corePlugin = new GraphQLSchemaPlugin({
+        typeDefs: cmsPlugin.schema.typeDefs,
+        resolvers: cmsPlugin.schema.resolvers
+    });
+    corePlugin.name = "graphql.cms.core.schema.base";
+    /**
+     * Due to splitting of CMS and Core schema plugins, we must have both defined for CMS to work.
+     */
+    return [cmsPlugin, corePlugin];
 };

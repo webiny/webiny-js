@@ -16,6 +16,7 @@ import { getBaseFieldType } from "~/utils/getBaseFieldType";
 import { CmsGraphQLSchemaSorterPlugin } from "~/plugins";
 import { buildSchemaPlugins } from "~/graphql/buildSchemaPlugins";
 import { createExecutableSchema } from "~/graphql/createExecutableSchema";
+import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
 
 const defaultTitleFieldId = "id";
 
@@ -276,16 +277,15 @@ interface CreateGraphQLSchemaParams {
 const createGraphQLSchema = async (params: CreateGraphQLSchemaParams): Promise<any> => {
     const { context, model } = params;
 
-    context.security.disableAuthorization();
-    const models = (await context.cms.listModels()).filter(
-        m => !m.isPrivate && m.modelId !== model.modelId
-    );
-    context.security.enableAuthorization();
-
-    const plugins = await buildSchemaPlugins({
+    const modelPlugins = await buildSchemaPlugins({
         context,
-        models: models.concat([model])
+        models: [model]
     });
+
+    const plugins = context.plugins.byType<GraphQLSchemaPlugin<CmsContext>>(
+        GraphQLSchemaPlugin.type
+    );
+    plugins.push(...modelPlugins);
 
     return createExecutableSchema({
         plugins
