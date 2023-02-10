@@ -4,8 +4,8 @@ import { Context, PbPageRecordData } from "~/types";
 
 export const onPageAfterUnpublishHook = () => {
     return new ContextPlugin<Context>(async ({ pageBuilder, aco }) => {
-        try {
-            pageBuilder.onPageAfterUnpublish.subscribe(async ({ page }) => {
+        pageBuilder.onPageAfterUnpublish.subscribe(async ({ page }) => {
+            try {
                 const { id, pid, createdOn, createdBy, savedOn, status, version, locked } = page;
 
                 await aco.search.update<PbPageRecordData>(pid, {
@@ -19,12 +19,12 @@ export const onPageAfterUnpublishHook = () => {
                         locked
                     }
                 });
-            });
-        } catch (error) {
-            throw WebinyError.from(error, {
-                message: "Error while executing onPageAfterUnpublishHook hook",
-                code: "ACO_AFTER_PAGE_UNPUBLISH_HOOK"
-            });
-        }
+            } catch (error) {
+                throw WebinyError.from(error, {
+                    message: "Error while executing onPageAfterUnpublishHook hook",
+                    code: "ACO_AFTER_PAGE_UNPUBLISH_HOOK"
+                });
+            }
+        });
     });
 };

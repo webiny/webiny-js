@@ -5,8 +5,8 @@ import { Context, PbPageRecordData } from "~/types";
 
 export const onPageAfterCreateHook = () => {
     return new ContextPlugin<Context>(async ({ pageBuilder, aco }) => {
-        try {
-            pageBuilder.onPageAfterCreate.subscribe(async ({ page, meta }) => {
+        pageBuilder.onPageAfterCreate.subscribe(async ({ page, meta }) => {
+            try {
                 const {
                     id,
                     pid,
@@ -36,12 +36,12 @@ export const onPageAfterCreateHook = () => {
                         locked
                     }
                 });
-            });
-        } catch (error) {
-            throw WebinyError.from(error, {
-                message: "Error while executing onPageAfterCreateHook hook",
-                code: "ACO_AFTER_PAGE_CREATE_HOOK"
-            });
-        }
+            } catch (error) {
+                throw WebinyError.from(error, {
+                    message: "Error while executing onPageAfterCreateHook hook",
+                    code: "ACO_AFTER_PAGE_CREATE_HOOK"
+                });
+            }
+        });
     });
 };

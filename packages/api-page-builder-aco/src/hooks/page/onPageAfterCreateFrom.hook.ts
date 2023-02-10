@@ -20,7 +20,7 @@ export const onPageAfterCreateFromHook = () => {
                     locked
                 } = page;
 
-                const originalRecord = await aco.search.get(original.pid);
+                const originalRecord = await aco.search.get<PbPageRecordData>(original.pid);
 
                 await aco.search.create<PbPageRecordData>({
                     originalId: pid,
