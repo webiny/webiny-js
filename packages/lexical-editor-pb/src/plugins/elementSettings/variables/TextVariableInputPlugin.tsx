@@ -82,9 +82,7 @@ export const TextVariableInputPlugin = createComponentPlugin(TextVariableInput, 
         }, [onUpdate]);
 
         const changeHandler = (json: string) => {
-            console.log("Heading on change", { variableId, json: JSON.parse(json) });
             onChange(json);
-            // onUpdate();
         };
 
         return (

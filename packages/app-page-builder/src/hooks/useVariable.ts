@@ -15,7 +15,6 @@ export function useVariable(variableId: string) {
             if (element) {
                 const newVariables = element?.data?.variables?.map((variable: PbBlockVariable) => {
                     if (variable?.id === variableId) {
-                        console.log("SAME VARIABLE", variable);
                         return {
                             ...variable,
                             value
@@ -23,14 +22,6 @@ export function useVariable(variableId: string) {
                     }
 
                     return variable;
-                });
-
-                console.log("Update element", {
-                    ...element,
-                    data: {
-                        ...element.data,
-                        variables: newVariables
-                    }
                 });
 
                 updateElement(
@@ -45,8 +36,6 @@ export function useVariable(variableId: string) {
                         history
                     }
                 );
-            } else {
-                console.log("NO ELEMENT");
             }
         },
         [element, variableId, updateElement]
