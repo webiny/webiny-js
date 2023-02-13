@@ -25,13 +25,20 @@ const verticalAlign: ElementStylesModifier = ({ element, theme }) => {
         if (element.type === "grid") {
             const value = verticalAlign[breakpointName];
             if (value === "stretch") {
-                return {
+                const newStyles: { [key: string]: any } = {
                     ...returnStyles,
                     [breakpointName]: {
                         ["> pb-cell"]: { height: "auto" },
                         alignItems: verticalAlign[breakpointName]
                     }
                 };
+
+                // For correct display when the Grid "Column wrap" is set to “wrap”
+                if (element.data.settings?.gridSettings[breakpointName]?.flexDirection !== "row") {
+                    newStyles[breakpointName].flexFlow = "row wrap";
+                }
+
+                return newStyles;
             }
         }
 

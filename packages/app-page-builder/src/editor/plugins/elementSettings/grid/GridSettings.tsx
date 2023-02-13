@@ -127,13 +127,13 @@ export const GridSettings: React.FC<PbEditorPageElementSettingsRenderComponentPr
                 </Wrapper>
                 <Wrapper
                     label={"Cell sizing"}
-                    leftCellSpan={5}
-                    rightCellSpan={7}
+                    leftCellSpan={4}
+                    rightCellSpan={8}
                     containerClassName={classes.simpleGrid}
                 >
                     <SelectField value={cellSizing} onChange={value => onCellSizingChange(value)}>
-                        <option value="auto">Auto</option>
-                        <option value="full-height">Full Height</option>
+                        <option value="auto">Match content size</option>
+                        <option value="full-height">Match grid height</option>
                     </SelectField>
                 </Wrapper>
             </ContentWrapper>

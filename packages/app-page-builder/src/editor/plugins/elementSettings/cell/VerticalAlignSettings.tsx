@@ -81,7 +81,7 @@ const VerticalAlignSettings: React.FC<PbEditorPageElementSettingsRenderComponent
             ),
         [displayMode, element]
     );
-    const align = get(element, propName, fallbackValue || AlignTypesEnum.center);
+    const align = get(element, propName, fallbackValue || AlignTypesEnum.start);
 
     const onClick = (type: AlignTypesEnum) => {
         const newElement = merge({}, element, set({}, propName, type));
@@ -116,7 +116,7 @@ const VerticalAlignSettings: React.FC<PbEditorPageElementSettingsRenderComponent
             ) : (
                 <Typography use={"body2"}>
                     To align the cell vertically either set the “Cell Sizing” property on the Grid
-                    element to “full height”, or use the “Vertical Align” settings on the Grid
+                    element to “Match grid height”, or use the “Vertical Align” settings on the Grid
                     element to align the content vertically.
                 </Typography>
             )}
