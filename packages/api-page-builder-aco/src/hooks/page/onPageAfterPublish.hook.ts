@@ -1,24 +1,19 @@
 import { ContextPlugin } from "@webiny/api";
 import WebinyError from "@webiny/error";
-import { Context, PbPageRecordData } from "~/types";
+
+import { updatePageRecordPayload } from "~/utils/createRecordPayload";
+
+import { PbAcoContext, PbPageRecordData } from "~/types";
 
 export const onPageAfterPublishHook = () => {
-    return new ContextPlugin<Context>(async ({ pageBuilder, aco }) => {
+    return new ContextPlugin<PbAcoContext>(async ({ pageBuilder, aco }) => {
+        /**
+         * Intercept page publish event and update the related search record.
+         */
         pageBuilder.onPageAfterPublish.subscribe(async ({ page }) => {
             try {
-                const { id, pid, createdOn, createdBy, savedOn, status, version, locked } = page;
-
-                await aco.search.update<PbPageRecordData>(pid, {
-                    data: {
-                        id,
-                        createdBy,
-                        createdOn,
-                        savedOn,
-                        status,
-                        version,
-                        locked
-                    }
-                });
+                const payload = updatePageRecordPayload(page);
+                await aco.search.update<PbPageRecordData>(page.pid, payload);
             } catch (error) {
                 throw WebinyError.from(error, {
                     message: "Error while executing onPageAfterPublishHook hook",

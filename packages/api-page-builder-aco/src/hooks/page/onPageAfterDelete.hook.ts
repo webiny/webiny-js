@@ -1,9 +1,13 @@
 import { ContextPlugin } from "@webiny/api";
 import WebinyError from "@webiny/error";
-import { Context } from "~/types";
+
+import { PbAcoContext } from "~/types";
 
 export const onPageAfterDeleteHook = () => {
-    return new ContextPlugin<Context>(async ({ pageBuilder, aco }) => {
+    return new ContextPlugin<PbAcoContext>(async ({ pageBuilder, aco }) => {
+        /**
+         * Intercept page deletion and delete the related search record.
+         */
         pageBuilder.onPageAfterDelete.subscribe(async ({ page }) => {
             try {
                 await aco.search.delete(page.pid);

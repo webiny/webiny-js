@@ -1,37 +1,23 @@
 import { ContextPlugin } from "@webiny/api";
 import WebinyError from "@webiny/error";
-import { Context, PbPageRecordData } from "~/types";
+
+import { updatePageRecordPayload } from "~/utils/createRecordPayload";
+
+import { PbAcoContext, PbPageRecordData } from "~/types";
 
 export const onPageAfterUpdateHook = () => {
-    return new ContextPlugin<Context>(async ({ pageBuilder, aco }) => {
-        pageBuilder.onPageAfterUpdate.subscribe(async ({ page }) => {
+    return new ContextPlugin<PbAcoContext>(async ({ pageBuilder, aco, pageBuilderAco }) => {
+        /**
+         * Intercept page update event and update the related search record.
+         */
+        pageBuilder.onPageAfterUpdate.subscribe(async ({ page, meta }) => {
             try {
-                const {
-                    id,
-                    pid,
-                    title,
-                    content,
-                    createdOn,
-                    createdBy,
-                    savedOn,
-                    status,
-                    version,
-                    locked
-                } = page;
+                const processedPage = await pageBuilderAco.processPageContent(page);
 
-                await aco.search.update<PbPageRecordData>(pid, {
-                    title: title,
-                    content: content?.content,
-                    data: {
-                        id,
-                        createdBy,
-                        createdOn,
-                        savedOn,
-                        status,
-                        version,
-                        locked
-                    }
-                });
+                console.log("processedPage page", processedPage);
+
+                const payload = updatePageRecordPayload(page, meta?.location?.folderId);
+                await aco.search.update<PbPageRecordData>(page.pid, payload);
             } catch (error) {
                 throw WebinyError.from(error, {
                     message: "Error while executing onPageAfterUpdateHook hook",

@@ -7,9 +7,9 @@ import { onPageAfterPublishHook } from "~/hooks/page/onPageAfterPublish.hook";
 import { onPageAfterUnpublishHook } from "~/hooks/page/onPageAfterUnpublish.hook";
 import { onPageAfterUpdateHook } from "~/hooks/page/onPageAfterUpdate.hook";
 
-import { Context } from "~/types";
+import { PbAcoContext } from "~/types";
 
-export const createPageHooks = (): ContextPlugin<Context>[] => {
+export const createPageHooks = (): ContextPlugin<PbAcoContext>[] => {
     return [
         onPageAfterCreateHook(),
         onPageAfterCreateFromHook(),

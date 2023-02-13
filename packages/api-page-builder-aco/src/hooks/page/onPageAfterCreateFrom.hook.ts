@@ -1,43 +1,22 @@
 import { ContextPlugin } from "@webiny/api";
 import WebinyError from "@webiny/error";
-import { PB_PAGE_TYPE } from "~/contants";
-import { Context, PbPageRecordData } from "~/types";
+
+import { updatePageRecordPayload } from "~/utils/createRecordPayload";
+
+import { PbAcoContext, PbPageRecordData } from "~/types";
 
 export const onPageAfterCreateFromHook = () => {
-    return new ContextPlugin<Context>(async ({ pageBuilder, aco }) => {
+    return new ContextPlugin<PbAcoContext>(async ({ pageBuilder, aco }) => {
         try {
+            /**
+             * Intercept page revision creation and update the related record.
+             * Here we perform an update since all the page revisions are related to the same search record entry.
+             */
             pageBuilder.onPageAfterCreateFrom.subscribe(async ({ original, page }) => {
-                const {
-                    id,
-                    pid,
-                    title,
-                    content,
-                    createdOn,
-                    createdBy,
-                    savedOn,
-                    status,
-                    version,
-                    locked
-                } = page;
-
                 const originalRecord = await aco.search.get<PbPageRecordData>(original.pid);
 
-                await aco.search.create<PbPageRecordData>({
-                    originalId: pid,
-                    title: title,
-                    type: PB_PAGE_TYPE,
-                    content: content?.content,
-                    location: originalRecord.location,
-                    data: {
-                        id,
-                        createdBy,
-                        createdOn,
-                        savedOn,
-                        status,
-                        version,
-                        locked
-                    }
-                });
+                const payload = updatePageRecordPayload(page, originalRecord.location?.folderId);
+                await aco.search.update<PbPageRecordData>(page.pid, payload);
             });
         } catch (error) {
             throw WebinyError.from(error, {
