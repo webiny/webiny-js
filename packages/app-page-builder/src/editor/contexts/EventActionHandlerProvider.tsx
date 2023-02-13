@@ -362,6 +362,7 @@ export const EventActionHandlerProvider = makeComposable<
             },
             trigger: async ev => {
                 const results = await triggerEventAction(ev, {} as unknown as PbState, []);
+                console.log("triggerEventAction", results.state);
                 saveCallablesResults({ state: results.state || {} });
                 return results.state || {};
             },
@@ -481,6 +482,7 @@ export const EventActionHandlerProvider = makeComposable<
                 getCallableState({ ...initialState, ...results.state }),
                 initiator.concat([name])
             );
+
             results.state = {
                 ...(results.state || {}),
                 ...(r.state || {})

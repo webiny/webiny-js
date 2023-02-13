@@ -5,6 +5,7 @@ import { WebinyNodes } from "~/nodes/webinyNodes";
 import { $generateHtmlFromNodes } from "@lexical/html";
 import { getEmptyEditorStateJSONString } from "~/utils/getEmptyEditorStateJSONString";
 import { theme } from "~/themes/webinyLexicalTheme";
+import { isValidLexicalData } from "~/utils/isValidLexicalData";
 
 interface UseLexicalNodesToHtmlGenerator {
     html: string;
@@ -28,10 +29,12 @@ export const useLexicalNodesToHtmlGenerator = (
         theme
     };
 
+    const editorData =
+        editorStateData && isValidLexicalData(editorStateData)
+            ? editorStateData
+            : getEmptyEditorStateJSONString();
     const editor = createHeadlessEditor(config);
-    const newEditorState = editor.parseEditorState(
-        editorStateData || getEmptyEditorStateJSONString()
-    );
+    const newEditorState = editor.parseEditorState(editorData);
     editor.setEditorState(newEditorState);
 
     useEffect(() => {

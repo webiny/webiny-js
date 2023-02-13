@@ -10,7 +10,9 @@ export default {
     getVariableValue(element) {
         const variables = useElementVariables(element);
         const value = variables?.length > 0 ? variables[0].value : null;
-        console.log("paragraph getVariableValue", value);
+        if (variables) {
+            console.log("paragraph getVariableValue", variables);
+        }
         return value;
     },
     renderVariableInput(variableId: string) {

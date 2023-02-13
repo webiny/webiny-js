@@ -80,7 +80,7 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
                     contentEditable={
                         <div className="editor-scroller">
                             <div className="editor" ref={onRef}>
-                                <ContentEditable />
+                                <ContentEditable style={{ outline: 0 }} />
                             </div>
                         </div>
                     }

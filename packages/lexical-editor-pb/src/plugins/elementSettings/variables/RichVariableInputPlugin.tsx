@@ -83,7 +83,6 @@ export const RichVariableInputPlugin = createComponentPlugin(RichVariableInput, 
 
         const changeHandler = (json: string) => {
             onChange(json);
-            onUpdate();
         };
 
         return (

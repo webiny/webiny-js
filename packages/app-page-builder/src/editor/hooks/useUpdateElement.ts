@@ -14,6 +14,7 @@ export const useUpdateElement = () => {
 
     return useCallback(
         (element: PbEditorElement, options: UpdateOptions = { history: true }) => {
+            console.log("useUpdateElement", element);
             handler.trigger(
                 new UpdateElementActionEvent({
                     element,
