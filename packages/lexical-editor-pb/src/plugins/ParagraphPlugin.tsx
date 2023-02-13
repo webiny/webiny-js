@@ -13,7 +13,6 @@ export const ParagraphPlugin = createComponentPlugin(Paragraph, Original => {
         if (isActive || isLegacyRenderingEngine) {
             return <Original element={element} {...rest} />;
         }
-
         return <PeTextRenderer element={element as Element} {...rest} />;
     };
 });

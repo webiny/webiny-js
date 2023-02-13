@@ -1,12 +1,12 @@
 import React, { useCallback, useState } from "react";
+import { createComponentPlugin } from "@webiny/react-composition";
+import RichVariableInput from "@webiny/app-page-builder/editor/plugins/elementSettings/variable/RichVariableInput";
 import styled from "@emotion/styled";
-import { CoreOptions } from "medium-editor";
 import { ReactComponent as ExpandIcon } from "@material-design-icons/svg/filled/fullscreen.svg";
 import { Dialog, DialogActions, DialogContent } from "@webiny/ui/Dialog";
 import { ButtonPrimary, IconButton } from "@webiny/ui/Button";
-import ReactMediumEditor from "~/editor/components/MediumEditor";
-import { useVariable } from "~/hooks/useVariable";
-import { makeComposable } from "@webiny/react-composition";
+import { useVariable } from "@webiny/app-page-builder/hooks/useVariable";
+import { LexicalEditor } from "~/LexicalEditor";
 
 const InputWrapper = styled("div")`
     display: grid;
@@ -61,23 +61,8 @@ const ButtonPrimaryStyled = styled(ButtonPrimary)`
     margin-left: 8px;
 `;
 
-const DEFAULT_EDITOR_OPTIONS: CoreOptions = {
-    toolbar: {
-        buttons: ["bold", "italic", "underline", "anchor"]
-    },
-    anchor: {
-        targetCheckbox: true,
-        targetCheckboxText: "Open in a new tab"
-    }
-};
-
-interface RichVariableInputProps {
-    variableId: string;
-}
-
-const RichVariableInput = makeComposable<RichVariableInputProps>(
-    "RichVariableInput",
-    ({ variableId }) => {
+export const RichVariableInputPlugin = createComponentPlugin(RichVariableInput, () => {
+    return function RichVariableInputPlugin({ variableId }): JSX.Element {
         const { value, onChange, onBlur } = useVariable(variableId);
         const [initialValue, setInitialValue] = useState(value);
         const [isOpen, setIsOpen] = useState(false);
@@ -96,28 +81,24 @@ const RichVariableInput = makeComposable<RichVariableInputProps>(
             setIsOpen(false);
         }, [onUpdate]);
 
+        const changeHandler = (json: string) => {
+            onChange(json);
+            onUpdate();
+        };
+
         return (
             <InputWrapper>
                 <IconButton icon={<ExpandIcon />} onClick={onOpen} />
                 <EditorWrapper className="webiny-pb-page-element-text">
-                    <ReactMediumEditor
-                        tag="p"
-                        value={initialValue}
-                        onChange={onUpdate}
-                        onSelect={onChange}
-                        options={DEFAULT_EDITOR_OPTIONS}
-                    />
+                    <LexicalEditor tag={"p"} value={initialValue} onChange={changeHandler} />
                 </EditorWrapper>
                 <Dialog open={isOpen} onClose={onClose}>
                     <DialogContent>
                         <ModalEditorWrapper className="webiny-pb-page-element-text">
-                            <ReactMediumEditor
-                                tag="p"
+                            <LexicalEditor
+                                tag={"p"}
                                 value={initialValue}
-                                onChange={onChange}
-                                onSelect={onChange}
-                                options={DEFAULT_EDITOR_OPTIONS}
-                                autoFocus={isOpen}
+                                onChange={changeHandler}
                             />
                         </ModalEditorWrapper>
                     </DialogContent>
@@ -127,7 +108,5 @@ const RichVariableInput = makeComposable<RichVariableInputProps>(
                 </Dialog>
             </InputWrapper>
         );
-    }
-);
-
-export default RichVariableInput;
+    };
+});

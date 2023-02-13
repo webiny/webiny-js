@@ -9,7 +9,9 @@ export default {
     elementType: "paragraph",
     getVariableValue(element) {
         const variables = useElementVariables(element);
-        return variables?.length > 0 ? variables[0].value : null;
+        const value = variables?.length > 0 ? variables[0].value : null;
+        console.log("paragraph getVariableValue", value);
+        return value;
     },
     renderVariableInput(variableId: string) {
         return <RichVariableInput variableId={variableId} />;

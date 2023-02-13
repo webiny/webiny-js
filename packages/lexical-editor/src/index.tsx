@@ -38,5 +38,6 @@ export { AddRichTextEditorPlugin } from "~/components/AddRichTextEditorPlugin";
 export { AddRichTextEditorNodeType } from "~/components/AddRichTextEditorNodeType";
 // utils
 export { getEmptyEditorStateJSONString } from "~/utils/getEmptyEditorStateJSONString";
+export { isValidLexicalData } from "~/utils/isValidLexicalData";
 // types
 export * as types from "./types";

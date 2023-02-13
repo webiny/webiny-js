@@ -8,7 +8,7 @@ import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
 import { getEmptyEditorStateJSONString } from "~/utils/getEmptyEditorStateJSONString";
 import { WebinyNodes } from "~/nodes/webinyNodes";
 import { theme } from "~/themes/webinyLexicalTheme";
-import { isValidJSON } from "~/utils/isValidJSON";
+import { isValidLexicalData } from "~/utils/isValidLexicalData";
 
 interface RenderLexicalContent {
     nodes?: Klass<LexicalNode>[];
@@ -16,7 +16,7 @@ interface RenderLexicalContent {
 }
 export const RenderLexicalContent: React.FC<RenderLexicalContent> = ({ nodes, value }) => {
     const initialConfig = {
-        editorState: isValidJSON(value) ? value : getEmptyEditorStateJSONString(),
+        editorState: isValidLexicalData(value) ? value : getEmptyEditorStateJSONString(),
         namespace: "webiny",
         onError: (error: Error) => {
             throw error;

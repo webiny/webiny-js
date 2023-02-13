@@ -6087,6 +6087,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@lexical/headless@npm:0.6.0":
+  version: 0.6.0
+  resolution: "@lexical/headless@npm:0.6.0"
+  peerDependencies:
+    lexical: 0.6.0
+  checksum: fbb271662cc7f6e156fcd419ce8988200db884c914446f8d4045e5a5b88118ab6294e3d88befdf6007a3fb9e242870d8e2e22f03c2c9c4cd54cff8ec9db8b457
+  languageName: node
+  linkType: hard
+
 "@lexical/history@npm:0.6.5":
   version: 0.6.5
   resolution: "@lexical/history@npm:0.6.5"
@@ -6095,6 +6104,17 @@ __metadata:
   peerDependencies:
     lexical: 0.6.5
   checksum: df0755eabe9f1847482e4f8fb01cfdb6173cb24d3d4bc918e8913067c3e555303ccbdfaa6f9261037736a4fae46c217e39bb154782ca4e0ae63253933db47484
+  languageName: node
+  linkType: hard
+
+"@lexical/html@npm:0.6.0":
+  version: 0.6.0
+  resolution: "@lexical/html@npm:0.6.0"
+  dependencies:
+    "@lexical/selection": 0.6.0
+  peerDependencies:
+    lexical: 0.6.0
+  checksum: 7f15e585f1d64ef9e7d8e66fd69232f24100ae665235f0da64451f0915edc2ccfcd0898029abb2c2feb0f29736bca6f35a97b468377393e098ffeed932e59ef7
   languageName: node
   linkType: hard
 
@@ -14801,6 +14821,7 @@ __metadata:
     "@webiny/project-utils": 0.0.0
     "@webiny/react-composition": 0.0.0
     "@webiny/ui": 0.0.0
+    lexical: 0.6.0
     lodash: ^4.17.10
     medium-editor: ^5.23.3
     react: ^17.0.2
@@ -14815,6 +14836,8 @@ __metadata:
   dependencies:
     "@lexical/code": 0.6.0
     "@lexical/hashtag": 0.6.0
+    "@lexical/headless": 0.6.0
+    "@lexical/html": 0.6.0
     "@lexical/link": ^0.6.0
     "@lexical/list": 0.6.0
     "@lexical/mark": 0.6.0
@@ -14826,7 +14849,7 @@ __metadata:
     "@webiny/cli": ^5.33.1
     "@webiny/project-utils": ^5.33.1
     "@webiny/react-composition": 0.0.0
-    lexical: ^0.6.0
+    lexical: ^0.8.0
     react: ^17.0.2
     react-dom: ^17.0.2
   languageName: unknown
@@ -29785,10 +29808,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lexical@npm:^0.6.0":
-  version: 0.6.5
-  resolution: "lexical@npm:0.6.5"
-  checksum: a57f7eb742eb3836a87acd5dcee1d5b5117e818e39809eeaaaad7ab5c51006bd413fb2a81f74e8270c3a6523f5ede81e58cfc2b39dbb14b2034d98e07a4aae69
+"lexical@npm:0.6.0":
+  version: 0.6.0
+  resolution: "lexical@npm:0.6.0"
+  checksum: cac65609c231d9494b5f183fd50fc579d0df8af9c0075ef9e293d2fff21af8b84f66d97bebb7714edddd365d4f4d019a151d24838ffdce422d53815c7b1a0519
+  languageName: node
+  linkType: hard
+
+"lexical@npm:^0.8.0":
+  version: 0.8.0
+  resolution: "lexical@npm:0.8.0"
+  checksum: 292e066feb0924f91047678999d8a483b3f88f3c496baec51c223c74a2fec4f0030751e941f84eea3b249b6fa738ca650bb4f9ec7118dfb80b598505df6a6f53
   languageName: node
   linkType: hard
 
