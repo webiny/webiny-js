@@ -1,3 +1,11 @@
+function getNoUnusedVars() {
+    if ("ESLINT_NO_UNUSED_VARS" in process.env) {
+        return parseInt(process.env["ESLINT_NO_UNUSED_VARS"]);
+    }
+
+    return 1;
+}
+
 module.exports = {
     extends: [
         "plugin:@typescript-eslint/recommended",
@@ -25,7 +33,7 @@ module.exports = {
         "@typescript-eslint/ban-ts-ignore": "off",
         "@typescript-eslint/ban-types": "off",
         "@typescript-eslint/no-use-before-define": 0,
-        "@typescript-eslint/no-unused-vars": process.env.CI ? 1 : 0,
+        "@typescript-eslint/no-unused-vars": getNoUnusedVars(),
         "@typescript-eslint/no-var-requires": 0,
         "@typescript-eslint/no-explicit-any": 0,
         // Temporarily disable this rule
