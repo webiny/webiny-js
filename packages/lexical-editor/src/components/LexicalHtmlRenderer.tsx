@@ -4,11 +4,11 @@ import { useLexicalNodesToHtmlGenerator } from "~/hooks/useLexicalNodesToHtmlGen
 
 interface LexicalHtmlRendererProps {
     tag?: string;
-    editorState: EditorStateJSONString | null;
+    value: EditorStateJSONString | null;
 }
 
-export const LexicalHtmlRenderer: React.FC<LexicalHtmlRendererProps> = ({ tag, editorState }) => {
-    const { html } = useLexicalNodesToHtmlGenerator(editorState);
+export const LexicalHtmlRenderer: React.FC<LexicalHtmlRendererProps> = ({ tag, value }) => {
+    const { html } = useLexicalNodesToHtmlGenerator(value);
     return createElement(tag || "div", {
         dangerouslySetInnerHTML: { __html: html }
     });

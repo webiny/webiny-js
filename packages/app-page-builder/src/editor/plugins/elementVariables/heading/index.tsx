@@ -16,6 +16,7 @@ export default {
     },
     setElementValue(element, variables) {
         const newText = variables?.length > 0 ? variables[0].value : null;
+
         if (newText && element?.data?.text?.data) {
             element.data.text.data.text = newText;
         }

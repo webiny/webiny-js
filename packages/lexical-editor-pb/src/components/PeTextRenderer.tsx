@@ -11,5 +11,5 @@ export const PeTextRenderer = createRenderer(() => {
     const element = getElement();
     const variableValue = useElementVariableValue(element);
     const __html = variableValue || element.data.text.data.text;
-    return <LexicalHtmlRenderer editorState={__html} />;
+    return <LexicalHtmlRenderer value={__html} />;
 });

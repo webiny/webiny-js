@@ -481,7 +481,6 @@ export const EventActionHandlerProvider = makeComposable<
                 getCallableState({ ...initialState, ...results.state }),
                 initiator.concat([name])
             );
-
             results.state = {
                 ...(results.state || {}),
                 ...(r.state || {})

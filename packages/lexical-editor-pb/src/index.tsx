@@ -5,6 +5,7 @@ import { HeadingPlugin } from "~/plugins/HeadingPlugin";
 import { ParagraphPlugin } from "~/plugins/ParagraphPlugin";
 import { RichVariableInputPlugin } from "~/plugins/elementSettings/variables/RichVariableInputPlugin";
 import { TextVariableInputPlugin } from "~/plugins/elementSettings/variables/TextVariableInputPlugin";
+import { PbTextPlugin } from "~/plugins/PbTextPlugin";
 
 export const LexicalEditorPlugin = () => {
     return (
@@ -13,6 +14,7 @@ export const LexicalEditorPlugin = () => {
             <ParagraphToolbarPreset />
             {/* Components */}
             <PeTextPlugin />
+            <PbTextPlugin />
             {/* Block editor variables */}
             <RichVariableInputPlugin />
             <TextVariableInputPlugin />
