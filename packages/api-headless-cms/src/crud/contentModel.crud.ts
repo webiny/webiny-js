@@ -41,7 +41,6 @@ import { checkPermissions } from "~/utils/permissions";
 import { filterAsync } from "~/utils/filterAsync";
 import { checkOwnership, validateOwnership } from "~/utils/ownership";
 import { checkModelAccess, validateModelAccess } from "~/utils/access";
-import { validateModelFields } from "~/crud/contentModel/validateModelFields";
 import {
     createModelCreateFromValidation,
     createModelCreateValidation,
