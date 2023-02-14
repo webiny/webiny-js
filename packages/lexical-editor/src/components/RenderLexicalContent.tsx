@@ -35,7 +35,8 @@ export const RenderLexicalContent: React.FC<RenderLexicalContent> = ({ nodes, va
                     </div>
                 }
                 ErrorBoundary={LexicalErrorBoundary}
-             placeholder={null}/>
+                placeholder={null}
+            />
         </LexicalComposer>
     );
 };
