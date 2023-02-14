@@ -15,7 +15,6 @@ import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
 import { makeComposable } from "@webiny/react-composition";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { RichTextEditorProvider } from "~/context/RichTextEditorContext";
-import { isValidJSON } from "~/utils/isValidJSON";
 import { isValidLexicalData } from "~/utils/isValidLexicalData";
 
 export interface RichTextEditorProps {
