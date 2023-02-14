@@ -193,13 +193,15 @@ export const createContentEntriesSchema = ({
     context
 }: Params): CmsGraphQLSchemaPlugin<CmsContext> => {
     if (!context.cms.MANAGE) {
-        return new CmsGraphQLSchemaPlugin({
+        const plugin = new CmsGraphQLSchemaPlugin({
             typeDefs: "",
             resolvers: {}
         });
+        plugin.name = `headless-cms.graphql.schema.${context.cms.type}.empty`;
+        return plugin;
     }
 
-    return new CmsGraphQLSchemaPlugin({
+    const plugin = new CmsGraphQLSchemaPlugin({
         typeDefs: /* GraphQL */ `
             type CmsModelMeta {
                 modelId: String
@@ -375,4 +377,8 @@ export const createContentEntriesSchema = ({
             }
         }
     });
+
+    plugin.name = `headless-cms.graphql.schema.${context.cms.type}.content-entries`;
+
+    return plugin;
 };

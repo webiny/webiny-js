@@ -1,8 +1,8 @@
 import { CmsContext, CmsModel } from "~/types";
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
 import { buildSchemaPlugins } from "~/graphql/buildSchemaPlugins";
 import { createExecutableSchema } from "~/graphql/createExecutableSchema";
 import { GraphQLSchema } from "graphql/type";
+import { CmsGraphQLSchemaPlugin } from "~/plugins";
 
 interface GenerateSchemaParams {
     context: CmsContext;
@@ -11,7 +11,7 @@ interface GenerateSchemaParams {
 export const generateSchema = async (params: GenerateSchemaParams): Promise<GraphQLSchema> => {
     const { context, models } = params;
 
-    let generatedSchemaPlugins: GraphQLSchemaPlugin<CmsContext>[] = [];
+    let generatedSchemaPlugins: CmsGraphQLSchemaPlugin[] = [];
     try {
         generatedSchemaPlugins = await buildSchemaPlugins({ context, models });
     } catch (ex) {
@@ -21,7 +21,9 @@ export const generateSchema = async (params: GenerateSchemaParams): Promise<Grap
 
     context.plugins.register(generatedSchemaPlugins);
 
-    const schemaPlugins = context.plugins.byType<GraphQLSchemaPlugin>(GraphQLSchemaPlugin.type);
+    const schemaPlugins = context.plugins.byType<CmsGraphQLSchemaPlugin>(
+        CmsGraphQLSchemaPlugin.type
+    );
     return createExecutableSchema({
         plugins: schemaPlugins
     });

@@ -36,6 +36,7 @@ describe("access", () => {
 
     const {
         // content entry
+        introspect,
         createContentEntryMutation,
         // utils
         until
