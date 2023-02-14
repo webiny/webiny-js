@@ -4,7 +4,7 @@ import { createReadSDL } from "./createReadSDL";
 import { createManageResolvers } from "./createManageResolvers";
 import { createReadResolvers } from "./createReadResolvers";
 import { createPreviewResolvers } from "./createPreviewResolvers";
-import { getSchemaFromFieldPlugins } from "~/utils/getSchemaFromFieldPlugins";
+import { createGraphQLSchemaPluginFromFieldPlugins } from "~/utils/getSchemaFromFieldPlugins";
 import { CmsGraphQLSchemaSorterPlugin } from "~/plugins";
 import { CmsGraphQLSchemaPlugin } from "~/plugins";
 
@@ -39,16 +39,21 @@ export const generateSchemaPlugins = async (
         CmsGraphQLSchemaSorterPlugin.type
     );
 
-    const schemas = getSchemaFromFieldPlugins({
+    // const schemas = getSchemaFromFieldPlugins({
+    //     models,
+    //     fieldTypePlugins,
+    //     type
+    // });
+
+    // const newPlugins: CmsGraphQLSchemaPlugin[] = [];
+    // for (const schema of schemas) {
+    //     newPlugins.push(new CmsGraphQLSchemaPlugin(schema));
+    // }
+    const schemaPlugins = createGraphQLSchemaPluginFromFieldPlugins({
         models,
         fieldTypePlugins,
         type
     });
-
-    const newPlugins: CmsGraphQLSchemaPlugin[] = [];
-    for (const schema of schemas) {
-        newPlugins.push(new CmsGraphQLSchemaPlugin(schema));
-    }
 
     models
         .filter(model => model.fields.length > 0)
@@ -66,7 +71,7 @@ export const generateSchemaPlugins = async (
                             })
                         });
                         plugin.name = `headless-cms.graphql.schema.manage.${model.modelId}`;
-                        newPlugins.push(plugin);
+                        schemaPlugins.push(plugin);
                     }
 
                     break;
@@ -90,7 +95,7 @@ export const generateSchemaPlugins = async (
                                   })
                         });
                         plugin.name = `headless-cms.graphql.schema.${type}.${model.modelId}`;
-                        newPlugins.push(plugin);
+                        schemaPlugins.push(plugin);
                     }
                     break;
                 default:
@@ -98,5 +103,5 @@ export const generateSchemaPlugins = async (
             }
         });
 
-    return newPlugins.filter(pl => !!pl.schema.typeDefs);
+    return schemaPlugins.filter(pl => !!pl.schema.typeDefs);
 };

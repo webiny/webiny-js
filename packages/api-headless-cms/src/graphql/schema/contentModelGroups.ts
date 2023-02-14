@@ -133,7 +133,7 @@ export const createGroupsSchema = ({ context }: Params): CmsGraphQLSchemaPlugin 
         };
     }
 
-    return new CmsGraphQLSchemaPlugin({
+    const plugin = new CmsGraphQLSchemaPlugin({
         typeDefs: /* GraphQL */ `
             type CmsContentModelGroup {
                 id: ID!
@@ -154,4 +154,8 @@ export const createGroupsSchema = ({ context }: Params): CmsGraphQLSchemaPlugin 
         `,
         resolvers
     });
+
+    plugin.name = `headless-cms.graphql.schema.${context.cms.type}.content-model-groups`;
+
+    return plugin;
 };
