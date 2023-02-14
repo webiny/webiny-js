@@ -12,9 +12,15 @@ const border: ElementStylesModifier = ({ element, theme }) => {
         }
 
         const values = border[breakpointName];
+
+        let borderColor = values.color;
+        if (theme.styles.colors?.[borderColor]) {
+            borderColor = theme.styles.colors?.[borderColor];
+        }
+
         const styles = {
             borderStyle: values.style,
-            borderColor: values.color
+            borderColor
         };
 
         const { width } = values;

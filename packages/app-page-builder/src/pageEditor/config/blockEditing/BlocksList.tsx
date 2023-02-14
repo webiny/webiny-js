@@ -17,6 +17,7 @@ interface GetRowHeightParams {
     index: number;
     blocks: PbEditorBlockPlugin[];
 }
+
 const getRowHeight = (params: GetRowHeightParams): number => {
     const { index, blocks } = params;
     let height = get(blocks[index], "image.meta.height", 50);

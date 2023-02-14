@@ -3,8 +3,12 @@ import { CmsContext, CmsModel } from "~/types";
 import { Resolvers } from "@webiny/handler-graphql/types";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";
 import { CmsGraphQLSchemaPlugin } from "~/plugins";
+import { toSlug } from "~/utils/toSlug";
 
-export const createModelsSchema = (context: CmsContext): CmsGraphQLSchemaPlugin => {
+interface Params {
+    context: CmsContext;
+}
+export const createModelsSchema = ({ context }: Params): CmsGraphQLSchemaPlugin => {
     const resolvers: Resolvers<CmsContext> = {
         Query: {
             getContentModel: async (_: unknown, args: any, context) => {
@@ -38,6 +42,18 @@ export const createModelsSchema = (context: CmsContext): CmsGraphQLSchemaPlugin 
             }
         },
         CmsContentModel: {
+            group: async (model: CmsModel) => {
+                context.security.disableAuthorization();
+                const groups = await context.cms.listGroups();
+                context.security.enableAuthorization();
+
+                const group = groups.find(group => group.id === model.group.id);
+                return {
+                    ...model.group,
+                    slug: toSlug(model.group.name),
+                    ...(group || {})
+                };
+            },
             tags(model: CmsModel) {
                 // Make sure `tags` always contain a `type` tag, to differentiate between models.
                 const hasType = (model.tags || []).find(tag => tag.startsWith("type:"));

@@ -37,6 +37,11 @@ export function createRenderer<TRenderComponentProps = {}>(
             afterRenderer
         } = usePageElements();
 
+        // We can't render anything if `theme` is not available.
+        if (!theme) {
+            return null;
+        }
+
         const { element, meta, ...componentProps } = props;
         const attributes = getElementAttributes(element);
 

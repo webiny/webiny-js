@@ -186,7 +186,12 @@ const getContentEntry = async (
     });
 };
 
-export const createContentEntriesSchema = (context: CmsContext): CmsGraphQLSchemaPlugin => {
+interface Params {
+    context: CmsContext;
+}
+export const createContentEntriesSchema = ({
+    context
+}: Params): CmsGraphQLSchemaPlugin<CmsContext> => {
     if (!context.cms.MANAGE) {
         return new CmsGraphQLSchemaPlugin({
             typeDefs: "",

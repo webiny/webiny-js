@@ -1,17 +1,18 @@
 import WebinyError from "@webiny/error";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";
-import { CmsModel } from "~/types";
-import { PluginsContainer } from "@webiny/plugins";
+import { CmsContext, CmsModel } from "~/types";
 import { validateModelFields } from "~/crud/contentModel/validateModelFields";
 
 interface ValidateModelParams {
     model: CmsModel;
     original?: CmsModel;
-    plugins: PluginsContainer;
+    context: CmsContext;
 }
 
-export const validateModel = (params: ValidateModelParams) => {
-    const { model, plugins } = params;
+export const validateModel = async (params: ValidateModelParams): Promise<void> => {
+    const { model, context } = params;
+
+    const { plugins } = context;
 
     const modelPlugin = plugins
         .byType<CmsModelPlugin>(CmsModelPlugin.type)
@@ -27,5 +28,5 @@ export const validateModel = (params: ValidateModelParams) => {
         );
     }
 
-    validateModelFields(params);
+    await validateModelFields(params);
 };

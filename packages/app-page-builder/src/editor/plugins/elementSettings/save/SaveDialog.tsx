@@ -30,7 +30,9 @@ const narrowDialog = css({
 });
 
 const PreviewBox = styled("div")({
-    width: 500,
+    width: "100%",
+    padding: "25px",
+    boxSizing: "border-box",
     minHeight: 250,
     border: "1px solid var(--mdc-theme-on-background)",
     backgroundColor: "#fff", // this must always be white
