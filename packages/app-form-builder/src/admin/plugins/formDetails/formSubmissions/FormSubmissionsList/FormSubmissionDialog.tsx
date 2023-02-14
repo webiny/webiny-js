@@ -22,6 +22,10 @@ const dialogStyle = css`
             top: 10px;
             right: 10px;
 
+            &:focus-visible {
+                outline: none;
+            }
+
             svg {
                 fill: white;
             }
@@ -72,13 +76,13 @@ const FormSubmissionDialog: React.FC<FormSubmissionDialogProps> = ({ formSubmiss
                 <>
                     <DialogTitle>
                         {t`Form Submission`}
-                        <div className="title-actions">
+                        <div className="title-actions" tabIndex={0}>
                             <Tooltip content="Copy as JSON" placement={"top"}>
                                 <IconButton
                                     icon={<ObjectIcon />}
                                     onClick={() => {
                                         navigator.clipboard.writeText(
-                                            JSON.stringify(formSubmission.data)
+                                            JSON.stringify(formSubmission.data, null, 2)
                                         );
                                         showSnackbar("JSON data copied to clipboard.");
                                     }}
