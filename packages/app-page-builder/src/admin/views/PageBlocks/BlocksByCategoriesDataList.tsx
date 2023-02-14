@@ -4,7 +4,6 @@ import styled from "@emotion/styled";
 import { i18n } from "@webiny/app/i18n";
 import { useRouter } from "@webiny/react-router";
 import { useQuery, useApolloClient } from "@apollo/react-hooks";
-import orderBy from "lodash/orderBy";
 import isEmpty from "lodash/isEmpty";
 import get from "lodash/get";
 
@@ -40,6 +39,7 @@ import { LIST_PAGE_BLOCKS_AND_CATEGORIES, LIST_PAGE_BLOCKS, CREATE_PAGE_BLOCK } 
 import { addElementId } from "~/editor/helpers";
 import useImportBlock from "~/admin/views/PageBlocks/hooks/useImportBlock";
 import useExportBlockDialog from "~/editor/plugins/defaultBar/components/ExportBlockButton/useExportBlockDialog";
+import useCategoriesListData from "./hooks/useCategoriesListData";
 
 const t = i18n.ns("app-page-builder/admin/page-blocks/by-categories-data-list");
 
@@ -114,40 +114,12 @@ const BlocksByCategoriesDataList = ({
         listQuery?.data?.pageBuilder?.listBlockCategories?.data || [];
     const pageBlocksData: PbPageBlock[] = listQuery?.data?.pageBuilder?.listPageBlocks?.data || [];
 
-    const filterBlocksData = useCallback(
-        ({ name }) => {
-            return name.toLowerCase().includes(filter);
-        },
-        [filter]
+    const [blocksList, blockCategoriesList] = useCategoriesListData(
+        pageBlocksData,
+        blockCategoriesData,
+        sort,
+        filter
     );
-
-    const filteredBlocksData: PbPageBlock[] =
-        filter === "" ? pageBlocksData : pageBlocksData.filter(filterBlocksData);
-
-    const filterBlockCategoriesData = useCallback(
-        ({ slug }) => {
-            return (
-                filteredBlocksData.filter(pageBlock => pageBlock.blockCategory === slug).length > 0
-            );
-        },
-        [filteredBlocksData]
-    );
-
-    const filteredBlockCategoriesData: PbBlockCategory[] =
-        filter === "" ? blockCategoriesData : blockCategoriesData.filter(filterBlockCategoriesData);
-
-    const sortData = useCallback(
-        categories => {
-            if (!sort) {
-                return categories;
-            }
-            const [field, order] = sort.split("_");
-            return orderBy(categories, field, order.toLowerCase() as "asc" | "desc");
-        },
-        [sort]
-    );
-
-    const categoryList: PbBlockCategory[] = sortData(filteredBlockCategoriesData);
 
     const selectedBlocksCategory = new URLSearchParams(location.search).get("category");
     const loading = [listQuery].find(item => item.loading);
@@ -348,7 +320,7 @@ const BlocksByCategoriesDataList = ({
             <DataList
                 title={t`Blocks`}
                 loading={Boolean(loading)}
-                data={categoryList}
+                data={blockCategoriesList}
                 actions={
                     <DataListActionsWrapper>
                         {canCreate ? (
@@ -397,7 +369,7 @@ const BlocksByCategoriesDataList = ({
                 {({ data }: { data: PbBlockCategory[] }) => (
                     <ScrollList data-testid="default-data-list">
                         {data.map(item => {
-                            const numberOfBlocks = filteredBlocksData.filter(
+                            const numberOfBlocks = blocksList.filter(
                                 pageBlock => pageBlock.blockCategory === item.slug
                             ).length;
                             return (
@@ -435,7 +407,7 @@ const BlocksByCategoriesDataList = ({
                 </DialogTitle>
                 <DialogContent>
                     <React.Fragment>
-                        {isEmpty(categoryList) ? (
+                        {isEmpty(blockCategoriesList) ? (
                             <div className={noRecordsWrapper}>
                                 <Typography use="overline">
                                     There are no block categories
@@ -443,7 +415,7 @@ const BlocksByCategoriesDataList = ({
                             </div>
                         ) : (
                             <List twoLine>
-                                {categoryList.map(item => (
+                                {blockCategoriesList.map(item => (
                                     <ListItem key={item.slug} onClick={() => onSelect(item.slug)}>
                                         <ListItemGraphic>
                                             <Icon category={item} />
