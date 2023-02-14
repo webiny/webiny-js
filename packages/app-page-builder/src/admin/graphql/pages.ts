@@ -73,6 +73,30 @@ export const DUPLICATE_PAGE = gql`
             duplicatePage(id: $id) {
                 data {
                     ${LIST_PAGES_DATA_FIELDS}
+                    settings {
+                        general {
+                            snippet
+                            tags
+                            layout
+                            image {
+                                id
+                                src
+                            }
+                        }
+                    }
+                }
+                ${error}
+            }
+        }
+    }
+`;
+
+export const UPDATE_PAGE = gql`
+    mutation PbUpdatePage($id: ID!, $data: PbUpdatePageInput!) {
+        pageBuilder {
+            updatePage(id: $id, data: $data) {
+                data {
+                    ${LIST_PAGES_DATA_FIELDS}
                 }
                 ${error}
             }

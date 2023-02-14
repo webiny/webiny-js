@@ -42,6 +42,10 @@ import { createPageBlockEntity } from "~/definitions/pageBlockEntity";
 import { createPageBlockDynamoDbFields } from "~/operations/pageBlock/fields";
 import { createPageBlockStorageOperations } from "~/operations/pageBlock";
 
+import { createPageTemplateEntity } from "~/definitions/pageTemplateEntity";
+import { createPageTemplateDynamoDbFields } from "~/operations/pageTemplate/fields";
+import { createPageTemplateStorageOperations } from "~/operations/pageTemplate";
+
 export const createStorageOperations: StorageOperationsFactory = params => {
     const {
         documentClient,
@@ -105,7 +109,11 @@ export const createStorageOperations: StorageOperationsFactory = params => {
         /**
          * Page Block fields required for filtering/sorting.
          */
-        createPageBlockDynamoDbFields()
+        createPageBlockDynamoDbFields(),
+        /**
+         * Page Template fields required for filtering/sorting.
+         */
+        createPageTemplateDynamoDbFields()
     ]);
 
     const entities = {
@@ -153,6 +161,11 @@ export const createStorageOperations: StorageOperationsFactory = params => {
             entityName: ENTITIES.PAGE_BLOCKS,
             table: tableInstance,
             attributes: attributes ? attributes[ENTITIES.PAGE_BLOCKS] : {}
+        }),
+        pageTemplates: createPageTemplateEntity({
+            entityName: ENTITIES.PAGE_TEMPLATES,
+            table: tableInstance,
+            attributes: attributes ? attributes[ENTITIES.PAGE_TEMPLATES] : {}
         })
     };
 
@@ -200,6 +213,10 @@ export const createStorageOperations: StorageOperationsFactory = params => {
         }),
         pageBlocks: createPageBlockStorageOperations({
             entity: entities.pageBlocks,
+            plugins
+        }),
+        pageTemplates: createPageTemplateStorageOperations({
+            entity: entities.pageTemplates,
             plugins
         })
     };

@@ -6,6 +6,7 @@ import { BlockEditingPlugin } from "./blockEditing";
 import { BlockElementPlugin } from "./BlockElementPlugin";
 import { BlockElementSidebarPlugin } from "./BlockElementSidebarPlugin";
 import { ElementSettingsTabContentPlugin } from "./ElementSettingsTabContentPlugin";
+import { ToolbarActionsPlugin } from "./ToolbarActionsPlugin";
 
 export const PageEditorConfig = React.memo(() => {
     return (
@@ -19,6 +20,7 @@ export const PageEditorConfig = React.memo(() => {
             <ElementSettingsTabContentPlugin />
             <ImageContainerPlugin />
             <ImagesListPlugin />
+            <ToolbarActionsPlugin />
         </>
     );
 });
