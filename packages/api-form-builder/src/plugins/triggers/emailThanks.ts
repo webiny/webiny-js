@@ -13,11 +13,17 @@ const plugin = new ContextPlugin<MailerContext>(async context => {
                 return;
             }
 
+            // Replace "{fields.valueName}" with values from form
+            const contentWithVariables = (trigger.content as string).replace(
+                /{fields\.(.*?)}/g,
+                (_, valueName) => data[valueName] || ""
+            );
+
             try {
                 const response = await context.mailer.sendMail({
                     to: [data.email],
                     subject: trigger.subject,
-                    html: `<pre style="font-family: 'Open Sans', sans-serif;">${trigger.content}</pre>`
+                    html: `<pre style="font-family: 'Open Sans', sans-serif;">${contentWithVariables}</pre>`
                 });
 
                 addLog({

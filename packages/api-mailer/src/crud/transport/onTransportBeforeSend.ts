@@ -7,16 +7,18 @@ import { SafeParseReturnType } from "zod/lib/types";
 const requiredString = zod.string();
 const requiredEmail = requiredString.email();
 
-const schema = zod.object({
-    to: zod.array(requiredEmail).optional(),
-    from: zod.string().email().optional(),
-    subject: requiredString.max(1024),
-    cc: zod.array(requiredEmail).optional(),
-    bcc: zod.array(requiredEmail).optional(),
-    replyTo: zod.string().email().optional(),
-    text: zod.string().optional(),
-    html: zod.string().optional()
-});
+const schema = zod
+    .object({
+        to: zod.array(requiredEmail).optional(),
+        from: zod.string().email().optional(),
+        subject: requiredString.max(1024),
+        cc: zod.array(requiredEmail).optional(),
+        bcc: zod.array(requiredEmail).optional(),
+        replyTo: zod.string().email().optional(),
+        text: zod.string().optional(),
+        html: zod.string().optional()
+    })
+    .refine(data => data.text || data.html, "Either text or html is required.");
 
 type SchemaType = zod.infer<typeof schema>;
 
