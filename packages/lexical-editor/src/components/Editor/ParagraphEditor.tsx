@@ -9,7 +9,8 @@ import { RichTextEditor } from "~/components/Editor/RichTextEditor";
 import { EditorStateJSONString } from "~/types";
 
 interface ParagraphLexicalEditorProps {
-    value: EditorStateJSONString | null;
+    initValue: EditorStateJSONString | null;
+    value?: EditorStateJSONString | null;
     onChange?: (json: EditorStateJSONString) => void;
     tag?: "p";
     placeholder?: string;

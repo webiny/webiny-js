@@ -7,7 +7,11 @@ import { HeadingToolbar } from "~/components/Toolbar/HeadingToolbar";
 import { RichTextEditor } from "~/components/Editor/RichTextEditor";
 
 interface HeadingEditorProps {
-    value: EditorStateJSONString | null;
+    initValue: EditorStateJSONString | null;
+    /*
+     * Use "value" prop to update the state of the editor after initialization.
+     */
+    value?: EditorStateJSONString | null;
     onChange?: (editorState: EditorStateJSONString) => void;
     tag?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
     placeholder?: string;

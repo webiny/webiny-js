@@ -16,12 +16,14 @@ import { makeComposable } from "@webiny/react-composition";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { RichTextEditorProvider } from "~/context/RichTextEditorContext";
 import { isValidLexicalData } from "~/utils/isValidLexicalData";
+import { LexicalUpdateStatePlugin } from "~/plugins/LexicalUpdateStatePlugin";
 
 export interface RichTextEditorProps {
     toolbar: React.ReactNode;
     tag: string;
     onChange?: (json: EditorStateJSONString) => void;
-    value: EditorStateJSONString | undefined | null;
+    initValue: EditorStateJSONString | null;
+    value?: EditorStateJSONString | null;
     placeholder?: string;
     nodes?: Klass<LexicalNode>[];
     /**
@@ -33,6 +35,7 @@ export interface RichTextEditorProps {
 const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
     toolbar,
     onChange,
+    initValue,
     value,
     nodes,
     placeholder,
@@ -51,7 +54,7 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
     };
 
     const initialConfig = {
-        editorState: isValidLexicalData(value) ? value : getEmptyEditorStateJSONString(),
+        editorState: isValidLexicalData(initValue) ? initValue : getEmptyEditorStateJSONString(),
         namespace: "webiny",
         onError: (error: Error) => {
             throw error;
@@ -73,6 +76,7 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
         <LexicalComposer initialConfig={initialConfig}>
             <div ref={scrollRef}>
                 <OnChangePlugin onChange={handleOnChange} />
+                {value && <LexicalUpdateStatePlugin value={value} />}
                 <AutoFocusPlugin />
                 <ClearEditorPlugin />
                 {children}
@@ -87,6 +91,7 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
                     placeholder={placeholderElem}
                     ErrorBoundary={LexicalErrorBoundary}
                 />
+
                 {floatingAnchorElem && toolbar}
             </div>
         </LexicalComposer>

@@ -6,15 +6,25 @@ import { isParagraphTag } from "~/utils/isParagraphTag";
 
 interface LexicalEditorProps {
     tag: string | [string, Record<string, any>];
-    value: EditorStateJSONString | null;
+    initValue: EditorStateJSONString | null;
+    value?: EditorStateJSONString | null;
     onChange?: (json: EditorStateJSONString) => void;
 }
 
-export const LexicalEditor: React.FC<LexicalEditorProps> = ({ tag, value, onChange }) => {
+export const LexicalEditor: React.FC<LexicalEditorProps> = ({
+    tag,
+    initValue,
+    value,
+    onChange
+}) => {
     return (
         <>
-            {isHeadingTag(tag) && <HeadingEditor value={value} onChange={onChange} />}
-            {isParagraphTag(tag) ? <ParagraphEditor value={value} onChange={onChange} /> : null}
+            {isHeadingTag(tag) && (
+                <HeadingEditor initValue={initValue} value={value} onChange={onChange} />
+            )}
+            {isParagraphTag(tag) ? (
+                <ParagraphEditor initValue={initValue} value={value} onChange={onChange} />
+            ) : null}
         </>
     );
 };

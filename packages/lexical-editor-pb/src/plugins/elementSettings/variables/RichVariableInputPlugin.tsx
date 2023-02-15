@@ -89,13 +89,19 @@ export const RichVariableInputPlugin = createComponentPlugin(RichVariableInput, 
             <InputWrapper>
                 <IconButton icon={<ExpandIcon />} onClick={onOpen} />
                 <EditorWrapper className="webiny-pb-page-element-text">
-                    <LexicalEditor tag={"p"} value={initialValue} onChange={changeHandler} />
+                    <LexicalEditor
+                        tag={"h1"}
+                        initValue={initialValue}
+                        value={initialValue}
+                        onChange={changeHandler}
+                    />
                 </EditorWrapper>
                 <Dialog open={isOpen} onClose={onClose}>
                     <DialogContent>
                         <ModalEditorWrapper className="webiny-pb-page-element-text">
                             <LexicalEditor
-                                tag={"p"}
+                                tag={"h1"}
+                                initValue={initialValue}
                                 value={initialValue}
                                 onChange={changeHandler}
                             />
