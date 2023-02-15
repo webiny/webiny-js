@@ -1,28 +1,29 @@
-import { Page } from "@webiny/api-page-builder/types";
-
 import { PB_PAGE_TYPE, ROOT_FOLDER } from "~/contants";
 
-import { PbPageRecordData } from "~/types";
 import {
     CreateSearchRecordParams,
     UpdateSearchRecordParams
 } from "@webiny/api-aco/entities/record/record.types";
+import { Page } from "@webiny/api-page-builder/types";
+import { PbAcoContext, PbPageRecordData } from "~/types";
 
-export const createPageRecordPayload = (
+export const createPageRecordPayload = async (
+    context: PbAcoContext,
     page: Page,
-    folderId = ROOT_FOLDER
-): CreateSearchRecordParams<PbPageRecordData> => {
-    const { id, pid, title, content, createdOn, createdBy, savedOn, status, version, locked } =
-        page;
+    meta?: Record<string, any>
+): Promise<CreateSearchRecordParams<PbPageRecordData>> => {
+    const { id, pid, title, createdOn, createdBy, savedOn, status, version, locked } = page;
+    const content = await context.pageBuilderAco.processPageSearchContent(page);
+    const location = {
+        folderId: meta?.location?.folderId || ROOT_FOLDER
+    };
 
     return {
         originalId: pid,
         type: PB_PAGE_TYPE,
-        title: title,
-        content: content?.content,
-        location: {
-            folderId
-        },
+        title,
+        content,
+        location,
         data: {
             id,
             createdBy,
@@ -35,18 +36,17 @@ export const createPageRecordPayload = (
     };
 };
 
-export const updatePageRecordPayload = (
+export const updatePageRecordPayload = async (
+    context: PbAcoContext,
     page: Page,
-    folderId = ROOT_FOLDER
-): UpdateSearchRecordParams<PbPageRecordData> => {
-    const { id, title, content, createdOn, createdBy, savedOn, status, version, locked } = page;
+    meta?: Record<string, any>
+): Promise<UpdateSearchRecordParams<PbPageRecordData>> => {
+    const { id, title, createdOn, createdBy, savedOn, status, version, locked } = page;
+    const content = await context.pageBuilderAco.processPageSearchContent(page);
 
     return {
-        title: title,
-        content: content?.content,
-        location: {
-            folderId
-        },
+        title,
+        content,
         data: {
             id,
             createdBy,
@@ -55,6 +55,7 @@ export const updatePageRecordPayload = (
             status,
             version,
             locked
-        }
+        },
+        ...(meta && { ...meta })
     };
 };

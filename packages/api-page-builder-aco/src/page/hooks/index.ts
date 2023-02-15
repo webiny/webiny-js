@@ -1,0 +1,21 @@
+import { ContextPlugin } from "@webiny/api";
+
+import { onPageAfterCreateHook } from "~/page/hooks/onPageAfterCreate.hook";
+import { onPageAfterCreateFromHook } from "~/page/hooks/onPageAfterCreateFrom.hook";
+import { onPageAfterDeleteHook } from "~/page/hooks/onPageAfterDelete.hook";
+import { onPageAfterPublishHook } from "~/page/hooks/onPageAfterPublish.hook";
+import { onPageAfterUnpublishHook } from "~/page/hooks/onPageAfterUnpublish.hook";
+import { onPageAfterUpdateHook } from "~/page/hooks/onPageAfterUpdate.hook";
+
+import { PbAcoContext } from "~/types";
+
+export const createPageHooks = (): ContextPlugin<PbAcoContext>[] => {
+    return [
+        onPageAfterCreateHook(),
+        onPageAfterCreateFromHook(),
+        onPageAfterDeleteHook(),
+        onPageAfterPublishHook(),
+        onPageAfterUnpublishHook(),
+        onPageAfterUpdateHook()
+    ];
+};

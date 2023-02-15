@@ -6,14 +6,14 @@ import { updatePageRecordPayload } from "~/utils/createRecordPayload";
 import { PbAcoContext, PbPageRecordData } from "~/types";
 
 export const onPageAfterUpdateHook = () => {
-    return new ContextPlugin<PbAcoContext>(async ({ pageBuilder, aco }) => {
+    return new ContextPlugin<PbAcoContext>(async context => {
         /**
          * Intercept page update event and update the related search record.
          */
-        pageBuilder.onPageAfterUpdate.subscribe(async ({ page, meta }) => {
+        context.pageBuilder.onPageAfterUpdate.subscribe(async ({ page, meta }) => {
             try {
-                const payload = updatePageRecordPayload(page, meta?.location?.folderId);
-                await aco.search.update<PbPageRecordData>(page.pid, payload);
+                const payload = await updatePageRecordPayload(context, page, meta);
+                await context.aco.search.update<PbPageRecordData>(page.pid, payload);
             } catch (error) {
                 throw WebinyError.from(error, {
                     message: "Error while executing onPageAfterUpdateHook hook",
