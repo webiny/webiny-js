@@ -3,7 +3,7 @@ import { PB_PAGE_TYPE, ROOT_FOLDER } from "~/contants";
 import {
     CreateSearchRecordParams,
     UpdateSearchRecordParams
-} from "@webiny/api-aco/entities/record/record.types";
+} from "@webiny/api-aco/record/record.types";
 import { Page } from "@webiny/api-page-builder/types";
 import { PbAcoContext, PbPageRecordData } from "~/types";
 
