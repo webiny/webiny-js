@@ -1,8 +1,8 @@
 import { ContextPlugin } from "@webiny/api";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
 
-import { folderSchema } from "~/entities/folder/folder.gql";
-import { searchRecordSchema } from "~/entities/record/record.gql";
+import { folderSchema } from "~/folder/folder.gql";
+import { searchRecordSchema } from "~/record/record.gql";
 
 import { AcoContext } from "~/types";
 

@@ -3,8 +3,8 @@ import { I18NLocale } from "@webiny/api-i18n/types";
 import { Tenant } from "@webiny/api-tenancy/types";
 import WebinyError from "@webiny/error";
 
-import { createAcoCrud } from "~/plugins/crud";
-import { createStorageOperations } from "~/plugins/operations";
+import { createAcoCrud } from "~/createAcoCrud";
+import { createAcoStorageOperations } from "~/createAcoStorageOperations";
 import { isInstallationPending } from "~/utils/isInstallationPending";
 
 import { AcoContext } from "~/types";
@@ -39,7 +39,7 @@ const setupAcoContext = () =>
             getLocale,
             getIdentity,
             getTenant,
-            storageOperations: createStorageOperations({
+            storageOperations: createAcoStorageOperations({
                 /**
                  * TODO: We need to figure out a way to pass "cms" from outside (e.g. apps/api/graphql)
                  */

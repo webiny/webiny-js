@@ -2,7 +2,7 @@ import { CmsModel } from "@webiny/api-headless-cms/types";
 import WebinyError from "@webiny/error";
 
 import { FOLDER_MODEL_ID } from "./folder.model";
-import { baseFields, CreateAcoStorageOperationsParams } from "~/plugins/operations";
+import { baseFields, CreateAcoStorageOperationsParams } from "~/createAcoStorageOperations";
 import { getFieldValues } from "~/utils/getFieldValues";
 
 import { AcoFolderStorageOperations as BaseAcoFolderStorageOperations } from "./folder.types";

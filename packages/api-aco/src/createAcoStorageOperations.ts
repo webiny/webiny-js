@@ -1,9 +1,9 @@
 import { CmsContext, HeadlessCms } from "@webiny/api-headless-cms/types";
 import { Security } from "@webiny/api-security/types";
 
-import { createFolderOperations } from "~/entities/folder/folder.so";
-import { createSearchRecordOperations } from "~/entities/record/record.so";
-import { createAcoModels } from "~/plugins/models";
+import { createFolderOperations } from "~/folder/folder.so";
+import { createSearchRecordOperations } from "~/record/record.so";
+import { createAcoModels } from "~/createAcoModels";
 
 import { AcoStorageOperations } from "~/types";
 
@@ -15,7 +15,7 @@ export interface CreateAcoStorageOperationsParams {
 
 export const baseFields = ["id", "entryId", "createdBy", "createdOn", "savedOn"];
 
-export const createStorageOperations = (
+export const createAcoStorageOperations = (
     params: CreateAcoStorageOperationsParams
 ): AcoStorageOperations => {
     const context = params.getCmsContext();

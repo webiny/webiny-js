@@ -2,7 +2,7 @@ import { CmsModel } from "@webiny/api-headless-cms/types";
 import WebinyError from "@webiny/error";
 
 import { SEARCH_RECORD_MODEL_ID } from "./record.model";
-import { baseFields, CreateAcoStorageOperationsParams } from "~/plugins/operations";
+import { baseFields, CreateAcoStorageOperationsParams } from "~/createAcoStorageOperations";
 import { getFieldValues } from "~/utils/getFieldValues";
 
 import { AcoSearchRecordStorageOperations as BaseAcoSearchRecordStorageOperations } from "./record.types";

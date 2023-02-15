@@ -1,5 +1,5 @@
-import { createFolderCrudMethods } from "~/entities/folder/folder.crud";
-import { createSearchRecordCrudMethods } from "~/entities/record/record.crud";
+import { createFolderCrudMethods } from "~/folder/folder.crud";
+import { createSearchRecordCrudMethods } from "~/record/record.crud";
 
 import { AdvancedContentOrganisation, CreateAcoParams } from "~/types";
 
