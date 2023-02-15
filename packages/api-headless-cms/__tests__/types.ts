@@ -1,4 +1,4 @@
-import { CmsModel as BaseCmsModel } from "~/types";
+import { CmsGroup as BaseCmsGroup, CmsModel as BaseCmsModel } from "~/types";
 import { useCategoryManageHandler } from "./testHelpers/useCategoryManageHandler";
 import { useProductManageHandler } from "./testHelpers/useProductManageHandler";
 
@@ -13,6 +13,7 @@ export type CmsModel = Omit<
     | "savedOn"
     | "isPrivate"
 >;
+export type CmsGroup = Omit<BaseCmsGroup, "tenant" | "locale" | "webinyVersion">;
 /**
  * Managers / Readers
  */
