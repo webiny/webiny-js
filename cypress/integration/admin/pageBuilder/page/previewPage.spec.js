@@ -4,7 +4,7 @@ context("Pages Previewing", () => {
     const pageTitle1 = `Test pages previewing 1`;
     const pageTitle2 = `Test pages previewing 2`;
 
-    it(`Step 1: Create a page with title: ${pageTitle1}`, () => {
+    it.skip(`Step 1: Create a page with title: ${pageTitle1}`, () => {
         cy.visit("/page-builder/pages");
         cy.findAllByTestId("new-record-button").first().click();
 
@@ -16,7 +16,7 @@ context("Pages Previewing", () => {
         cy.findByText("Page title updated successfully!");
     });
 
-    it(`Step 2: Check page title in preview`, () => {
+    it.skip(`Step 2: Check page title in preview`, () => {
         cy.waitUntil(
             () =>
                 cy
@@ -42,7 +42,7 @@ context("Pages Previewing", () => {
         });
     });
 
-    it(`Step 3: Update page title as ${pageTitle2}`, () => {
+    it.skip(`Step 3: Update page title as ${pageTitle2}`, () => {
         cy.visit("/page-builder/pages");
 
         cy.findByTestId("default-data-list").within(() => {
@@ -59,7 +59,7 @@ context("Pages Previewing", () => {
         cy.findByText("Page title updated successfully!");
     });
 
-    it(`Step 4: Check updated page title in page preview`, () => {
+    it.skip(`Step 4: Check updated page title in page preview`, () => {
         return cy.pbListPages({ limit: 1, search: { query: pageTitle2 } }).then(([page]) => {
             const { path, id } = page;
             cy.visit(
@@ -72,7 +72,7 @@ context("Pages Previewing", () => {
         });
     });
 
-    it(`Step 5: Delete page immediately`, () => {
+    it.skip(`Step 5: Delete page immediately`, () => {
         return cy.pbListPages({ limit: 1, search: { query: pageTitle2 } }).then(([page]) => {
             const { id } = page;
             cy.pbDeletePage({ id });

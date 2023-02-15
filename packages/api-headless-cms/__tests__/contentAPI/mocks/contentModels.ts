@@ -1,7 +1,9 @@
-import contentModelGroup from "./contentModelGroup";
+import { createContentModelGroup } from "./contentModelGroup";
 import { CmsModel } from "~/types";
 
 const { version: webinyVersion } = require("@webiny/cli/package.json");
+
+const contentModelGroup = createContentModelGroup();
 
 export interface Fruit {
     id?: string;

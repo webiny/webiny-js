@@ -4,7 +4,10 @@ import { Resolvers } from "@webiny/handler-graphql/types";
 import { CmsGroupPlugin } from "~/plugins/CmsGroupPlugin";
 import { CmsGraphQLSchemaPlugin } from "~/plugins";
 
-export const createGroupsSchema = (context: CmsContext): CmsGraphQLSchemaPlugin => {
+interface Params {
+    context: CmsContext;
+}
+export const createGroupsSchema = ({ context }: Params): CmsGraphQLSchemaPlugin => {
     let manageSchema = "";
     if (context.cms.MANAGE) {
         manageSchema = /* GraphQL */ `
@@ -130,7 +133,7 @@ export const createGroupsSchema = (context: CmsContext): CmsGraphQLSchemaPlugin 
         };
     }
 
-    return new CmsGraphQLSchemaPlugin({
+    const plugin = new CmsGraphQLSchemaPlugin({
         typeDefs: /* GraphQL */ `
             type CmsContentModelGroup {
                 id: ID!
@@ -151,4 +154,8 @@ export const createGroupsSchema = (context: CmsContext): CmsGraphQLSchemaPlugin 
         `,
         resolvers
     });
+
+    plugin.name = `headless-cms.graphql.schema.${context.cms.type}.content-model-groups`;
+
+    return plugin;
 };

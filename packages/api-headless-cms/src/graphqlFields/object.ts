@@ -51,7 +51,7 @@ const createChildTypeDefs = (params: AttachTypeDefinitionsParams): string => {
         .filter(Boolean)
         .join("\n");
     return `input ${typeName}WhereInput {
-        ${filters}
+        ${filters || "_empty: String"}
     }`;
 };
 

@@ -47,7 +47,8 @@
     "rimraf": "^3.0.2",
     "stream": "^0.0.2",
     "uniqid": "^5.2.0",
-    "zip-local": "^0.3.4"
+    "zip-local": "^0.3.4",
+    "zod": "^3.20.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.19.3",

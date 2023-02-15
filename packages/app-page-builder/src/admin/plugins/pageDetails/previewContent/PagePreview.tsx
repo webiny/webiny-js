@@ -6,7 +6,7 @@ import { Typography } from "@webiny/ui/Typography";
 import { Select } from "@webiny/ui/Select";
 import { Page } from "@webiny/app-page-builder-elements/components/Page";
 import { Zoom } from "./Zoom";
-import { PbPageData } from "~/types";
+import { PbPageData, PbPageTemplate } from "~/types";
 import useResponsiveClassName from "~/hooks/useResponsiveClassName";
 import RenderElement from "~/render/components/Element";
 import { isLegacyRenderingEngine } from "~/utils";
@@ -83,8 +83,8 @@ const SelectPageZoom: React.ComponentType<PagePreviewInnerProps> = ({ zoom, setZ
 );
 
 interface PagePreviewProps {
-    page: PbPageData;
-    getPageQuery: Function;
+    page: PbPageData | PbPageTemplate;
+    getPageQuery?: Function;
 }
 
 const PagePreview: React.FC<PagePreviewProps> = ({ page }) => {
@@ -114,7 +114,7 @@ const PagePreview: React.FC<PagePreviewProps> = ({ page }) => {
                     className={pageInnerWrapper}
                     style={{ "--webiny-pb-page-preview-scale": zoom } as CSSProperties}
                 >
-                    <Page page={page} />
+                    <Page page={page as PbPageData} />
                     <SelectPageZoom zoom={zoom} setZoom={setZoom} />
                 </div>
             )}

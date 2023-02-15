@@ -689,6 +689,7 @@ export interface PageBuilderStorageOperations {
     pages: PageStorageOperations;
     blockCategories: BlockCategoryStorageOperations;
     pageBlocks: PageBlockStorageOperations;
+    pageTemplates: PageTemplateStorageOperations;
 
     beforeInit?: (context: PbContext) => Promise<void>;
     init?: (context: PbContext) => Promise<void>;
@@ -886,4 +887,103 @@ export interface PageBlockStorageOperations {
     create(params: PageBlockStorageOperationsCreateParams): Promise<PageBlock>;
     update(params: PageBlockStorageOperationsUpdateParams): Promise<PageBlock>;
     delete(params: PageBlockStorageOperationsDeleteParams): Promise<PageBlock>;
+}
+
+/**
+ * @category RecordModel
+ */
+export interface PageTemplate {
+    id: string;
+    title: string;
+    description?: string;
+    layout?: string;
+    content?: any;
+    createdOn: string;
+    savedOn: string;
+    createdBy: CreatedBy;
+    tenant: string;
+    locale: string;
+}
+
+export type PageTemplateInput = Pick<PageTemplate, "title" | "description" | "content">;
+
+/**
+ * @category StorageOperations
+ * @category PageTemplateStorageOperations
+ */
+export interface PageTemplateStorageOperationsGetParams {
+    where: {
+        id: string;
+        tenant: string;
+        locale: string;
+    };
+}
+
+/**
+ * @category StorageOperations
+ * @category PageTemplateStorageOperations
+ */
+export interface PageTemplateStorageOperationsListParams {
+    where: {
+        tenant: string;
+        locale: string;
+        createdBy?: string;
+    };
+    sort?: string[];
+    limit?: number;
+    after?: string | null;
+}
+
+/**
+ * @category StorageOperations
+ * @category PageTemplateStorageOperations
+ */
+export type PageTemplateStorageOperationsListResponse = [PageTemplate[], MetaResponse];
+
+/**
+ * @category StorageOperations
+ * @category PageTemplateStorageOperations
+ */
+export interface PageTemplateStorageOperationsCreateParams {
+    input: Record<string, any>;
+    pageTemplate: PageTemplate;
+}
+
+/**
+ * @category StorageOperations
+ * @category PageTemplateStorageOperations
+ */
+export interface PageTemplateStorageOperationsUpdateParams {
+    input: Record<string, any>;
+    original: PageTemplate;
+    pageTemplate: PageTemplate;
+}
+
+/**
+ * @category StorageOperations
+ * @category PageTemplateStorageOperations
+ */
+export interface PageTemplateStorageOperationsDeleteParams {
+    pageTemplate: PageTemplate;
+}
+
+/**
+ * @category StorageOperations
+ * @category PageTemplateStorageOperations
+ */
+export interface PageTemplateStorageOperations {
+    /**
+     * Get a single page block item by given params.
+     */
+    get(params: PageTemplateStorageOperationsGetParams): Promise<PageTemplate | null>;
+    /**
+     * Get all page block items by given params.
+     */
+    list(
+        params: PageTemplateStorageOperationsListParams
+    ): Promise<PageTemplateStorageOperationsListResponse>;
+
+    create(params: PageTemplateStorageOperationsCreateParams): Promise<PageTemplate>;
+    update(params: PageTemplateStorageOperationsUpdateParams): Promise<PageTemplate>;
+    delete(params: PageTemplateStorageOperationsDeleteParams): Promise<PageTemplate>;
 }

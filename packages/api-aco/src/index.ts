@@ -1,9 +1,9 @@
 import { createAdminSettingsContext } from "@webiny/api-admin-settings";
 
-import { createAcoContext } from "~/plugins/context";
-import { createAcoFields } from "~/plugins/fields";
-import { createAcoGraphQL } from "~/plugins/graphql";
-import { createAcoHooks } from "~/plugins/hooks";
+import { createAcoContext } from "~/createAcoContext";
+import { createAcoFields } from "~/createAcoFields";
+import { createAcoGraphQL } from "~/createAcoGraphQL";
+import { createAcoHooks } from "~/createAcoHooks";
 
 export const createACO = () => {
     return [

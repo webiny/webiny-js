@@ -11309,6 +11309,7 @@ __metadata:
     typescript: 4.7.4
     uniqid: ^5.2.0
     zip-local: ^0.3.4
+    zod: ^3.20.2
   languageName: unknown
   linkType: soft
 
@@ -12232,6 +12233,7 @@ __metadata:
     "@webiny/app-page-builder-elements": 0.0.0
     "@webiny/app-plugin-admin-welcome-screen": 0.0.0
     "@webiny/app-security": 0.0.0
+    "@webiny/app-tenancy": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/feature-flags": 0.0.0
     "@webiny/form": 0.0.0

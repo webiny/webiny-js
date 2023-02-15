@@ -21,17 +21,7 @@ export async function processPageSearchContent(
     const content = await decompressContent(page);
 
     if (content) {
-        const blocks = await context.pageBuilder.resolvePageBlocks({
-            ...page,
-            content
-        });
-
-        const pageWithBlockContent = {
-            ...page,
-            content: { ...page.content, elements: blocks }
-        };
-
-        for (const block of pageWithBlockContent.content.elements) {
+        for (const block of content.elements) {
             await traverse(block, async element => {
                 for (const processor of processors) {
                     const processed = await processor({ page, block, element });

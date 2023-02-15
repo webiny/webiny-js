@@ -3,7 +3,6 @@ import { FbErrorResponse, FbFormModel } from "~/types";
 
 export const FIELDS_FIELDS = `
         _id
-        formId
         fieldId
         type
         label
