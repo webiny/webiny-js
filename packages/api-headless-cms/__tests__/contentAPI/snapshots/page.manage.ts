@@ -203,6 +203,7 @@ export default /* GraphQL */ `
     }
 
     input PageInput {
+        id: ID
         content: [Page_ContentInput]
         header: Page_HeaderInput
         objective: Page_ObjectiveInput
