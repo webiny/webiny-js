@@ -14,8 +14,6 @@ import {
 
 interface State {
     loading: boolean;
-    page: number;
-    cursors: Record<number, string | null>;
     exportInProgress: boolean;
     submissions: FbFormSubmissionData[];
     sort: string[];
@@ -27,10 +25,6 @@ interface Reducer {
 export const useSubmissions = (form: Pick<FbFormModel, "id">) => {
     const [state, setState] = useReducer<Reducer>((prev, next) => ({ ...prev, ...next }), {
         loading: false,
-        page: 0,
-        cursors: {
-            0: null
-        },
         exportInProgress: false,
         submissions: [],
         sort: ["createdOn_DESC"]
@@ -48,26 +42,21 @@ export const useSubmissions = (form: Pick<FbFormModel, "id">) => {
             ListFormSubmissionsQueryVariables
         >({
             query: LIST_FORM_SUBMISSIONS,
-            variables: { form: form.id, sort: state.sort, after: state.cursors[state.page] },
+            variables: { form: form.id, sort: state.sort },
             fetchPolicy
         });
 
-        const { data, meta } = res.formBuilder.listFormSubmissions;
+        const { data } = res.formBuilder.listFormSubmissions;
 
         setState({
             loading: false,
-            submissions: data,
-            cursors: {
-                ...state.cursors,
-                // Store cursor to load next page
-                [state.page + 1]: meta.hasMoreItems ? meta.cursor : null
-            }
+            submissions: data
         });
     };
 
     useEffect((): void => {
         loadSubmissions();
-    }, [form.id, state.page, state.sort]);
+    }, [form.id, state.sort]);
 
     const [exportFormSubmission] = useMutation<
         ExportFormSubmissionsMutationResponse,
@@ -96,29 +85,12 @@ export const useSubmissions = (form: Pick<FbFormModel, "id">) => {
         window.open(csvFile.src, "_blank");
     }, [form]);
 
-    const hasPreviousPage = state.page > 0;
-    const hasNextPage = typeof state.cursors[state.page + 1] === "string";
-
     return {
         loading: state.loading,
         refresh: () => loadSubmissions("network-only"),
         submissions: state.submissions,
         setSorter: (sort: string[]) => {
             setState({ sort });
-        },
-        hasPreviousPage,
-        hasNextPage,
-        nextPage: () => {
-            if (!hasNextPage) {
-                return;
-            }
-            setState({ page: state.page + 1 });
-        },
-        previousPage: () => {
-            if (!hasPreviousPage) {
-                return;
-            }
-            setState({ page: state.page - 1 });
         },
         exportSubmissions,
         exportInProgress: state.exportInProgress

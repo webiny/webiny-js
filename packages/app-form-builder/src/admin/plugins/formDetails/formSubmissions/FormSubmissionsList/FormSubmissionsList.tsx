@@ -57,18 +57,8 @@ interface FormSubmissionsListProps {
 const { DataList, ListItem, ListItemMeta, ListItemText, ListTextOverline } = ListComponents;
 
 export const FormSubmissionsList: React.FC<FormSubmissionsListProps> = ({ form }) => {
-    const {
-        loading,
-        refresh,
-        submissions,
-        setSorter,
-        nextPage,
-        previousPage,
-        hasPreviousPage,
-        hasNextPage,
-        exportSubmissions,
-        exportInProgress
-    } = useSubmissions(form);
+    const { loading, refresh, submissions, setSorter, exportSubmissions, exportInProgress } =
+        useSubmissions(form);
 
     const [selectedFormSubmission, selectFormSubmission] = useState<FbFormSubmissionData | null>(
         null
@@ -82,12 +72,6 @@ export const FormSubmissionsList: React.FC<FormSubmissionsListProps> = ({ form }
                     refresh={refresh}
                     data={submissions}
                     setSorters={setSorter}
-                    pagination={{
-                        hasNextPage,
-                        hasPreviousPage,
-                        setNextPage: nextPage,
-                        setPreviousPage: previousPage
-                    }}
                     multiSelectAll={undefined}
                     multiSelectActions={
                         <Tooltip content={t`Export all form submissions`} placement={"bottom"}>

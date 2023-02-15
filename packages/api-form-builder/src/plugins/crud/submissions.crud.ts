@@ -116,7 +116,7 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
              */
             const form = await this.getForm(formId);
 
-            const { sort: initialSort, after = null, limit = 10 } = options;
+            const { sort: initialSort, after = null, limit } = options;
 
             const formFormId = form.formId || form.id.split("#").pop();
 
