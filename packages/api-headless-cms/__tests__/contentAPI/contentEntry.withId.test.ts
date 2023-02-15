@@ -5,6 +5,7 @@
 import { setupContentModelGroup, setupContentModels } from "~tests/testHelpers/setup";
 import { useCategoryManageHandler } from "~tests/testHelpers/useCategoryManageHandler";
 import { useCategoryReadHandler } from "~tests/testHelpers/useCategoryReadHandler";
+import { useProductManageHandler } from "~tests/testHelpers/useProductManageHandler";
 interface Category {
     id: string;
     title: string;
@@ -20,16 +21,19 @@ const createCategory = (input?: Partial<Category>): Category => {
 };
 
 describe("Content entry with user defined ID", () => {
-    const handler = useCategoryManageHandler({
+    const categoryManageHandler = useCategoryManageHandler({
         path: "manage/en-US"
     });
-    const readHandler = useCategoryReadHandler({
+    const productManageHandler = useProductManageHandler({
+        path: "manage/en-US"
+    });
+    const categoryReadHandler = useCategoryReadHandler({
         path: "read/en-US"
     });
 
     beforeEach(async () => {
-        const group = await setupContentModelGroup(handler);
-        await setupContentModels(handler, group, ["category"]);
+        const group = await setupContentModelGroup(categoryManageHandler);
+        await setupContentModels(categoryManageHandler, group, ["category", "product"]);
     });
 
     it("should create, update, publish, unpublish and delete an entry with the given user defined ID", async () => {
@@ -38,7 +42,7 @@ describe("Content entry with user defined ID", () => {
         /**
          * Create entry and check that it really is created.
          */
-        const [createResponse] = await handler.createCategory({
+        const [createResponse] = await categoryManageHandler.createCategory({
             data: category
         });
 
@@ -56,9 +60,9 @@ describe("Content entry with user defined ID", () => {
             }
         });
 
-        await handler.until(
+        await categoryManageHandler.until(
             () => {
-                return handler.listCategories().then(([data]) => data);
+                return categoryManageHandler.listCategories().then(([data]) => data);
             },
             ({ data }) => {
                 const entry = data.listCategories.data[0];
@@ -69,7 +73,7 @@ describe("Content entry with user defined ID", () => {
             }
         );
 
-        const [getAfterCreateResponse] = await handler.getCategory({
+        const [getAfterCreateResponse] = await categoryManageHandler.getCategory({
             revision: id
         });
         expect(getAfterCreateResponse).toMatchObject({
@@ -93,7 +97,7 @@ describe("Content entry with user defined ID", () => {
          * Update entry and check that it really is updated.
          */
         const updatedTitle = "Updated category with defined ID";
-        const [updateResponse] = await handler.updateCategory({
+        const [updateResponse] = await categoryManageHandler.updateCategory({
             revision: id,
             data: {
                 title: updatedTitle,
@@ -118,9 +122,9 @@ describe("Content entry with user defined ID", () => {
             }
         });
 
-        await handler.until(
+        await categoryManageHandler.until(
             () => {
-                return handler.listCategories().then(([data]) => data);
+                return categoryManageHandler.listCategories().then(([data]) => data);
             },
             ({ data }) => {
                 const entry = data.listCategories.data[0];
@@ -134,7 +138,7 @@ describe("Content entry with user defined ID", () => {
             }
         );
 
-        const [getAfterUpdateResponse] = await handler.getCategory({
+        const [getAfterUpdateResponse] = await categoryManageHandler.getCategory({
             revision: id
         });
         expect(getAfterUpdateResponse).toMatchObject({
@@ -158,7 +162,7 @@ describe("Content entry with user defined ID", () => {
         /**
          * Publish entry and check that it really is published.
          */
-        const [publishResponse] = await handler.publishCategory({
+        const [publishResponse] = await categoryManageHandler.publishCategory({
             revision: id
         });
         expect(publishResponse).toMatchObject({
@@ -179,9 +183,9 @@ describe("Content entry with user defined ID", () => {
             }
         });
 
-        await handler.until(
+        await categoryManageHandler.until(
             () => {
-                return handler.listCategories().then(([data]) => data);
+                return categoryManageHandler.listCategories().then(([data]) => data);
             },
             ({ data }) => {
                 const entry = data.listCategories.data[0];
@@ -196,9 +200,9 @@ describe("Content entry with user defined ID", () => {
                 name: "list categories after published"
             }
         );
-        await handler.until(
+        await categoryManageHandler.until(
             () => {
-                return readHandler.listCategories().then(([data]) => data);
+                return categoryReadHandler.listCategories().then(([data]) => data);
             },
             ({ data }) => {
                 const entry = data.listCategories.data[0];
@@ -212,7 +216,7 @@ describe("Content entry with user defined ID", () => {
             }
         );
 
-        const [getAfterPublishResponse] = await handler.getCategory({
+        const [getAfterPublishResponse] = await categoryManageHandler.getCategory({
             revision: id
         });
         expect(getAfterPublishResponse).toMatchObject({
@@ -235,7 +239,7 @@ describe("Content entry with user defined ID", () => {
         /**
          * After publishing, we should not be able to update the entry.
          */
-        const [updateAfterPublishResponse] = await handler.updateCategory({
+        const [updateAfterPublishResponse] = await categoryManageHandler.updateCategory({
             revision: id,
             data: {
                 title: "This should not work",
@@ -258,7 +262,7 @@ describe("Content entry with user defined ID", () => {
         /**
          * Unpublish the entry and check that it really is unpublished.
          */
-        const [unpublishResponse] = await handler.unpublishCategory({
+        const [unpublishResponse] = await categoryManageHandler.unpublishCategory({
             revision: id
         });
         expect(unpublishResponse).toMatchObject({
@@ -279,9 +283,9 @@ describe("Content entry with user defined ID", () => {
             }
         });
 
-        await handler.until(
+        await categoryManageHandler.until(
             () => {
-                return handler.listCategories().then(([data]) => data);
+                return categoryManageHandler.listCategories().then(([data]) => data);
             },
             ({ data }) => {
                 const entry = data.listCategories.data[0];
@@ -296,9 +300,9 @@ describe("Content entry with user defined ID", () => {
                 name: "list categories after unpublished"
             }
         );
-        await handler.until(
+        await categoryManageHandler.until(
             () => {
-                return readHandler.listCategories().then(([data]) => data);
+                return categoryReadHandler.listCategories().then(([data]) => data);
             },
             ({ data }) => {
                 return data.listCategories.data.length === 0;
@@ -308,7 +312,7 @@ describe("Content entry with user defined ID", () => {
             }
         );
 
-        const [getAfterUnpublishResponse] = await handler.getCategory({
+        const [getAfterUnpublishResponse] = await categoryManageHandler.getCategory({
             revision: id
         });
         expect(getAfterUnpublishResponse).toMatchObject({
@@ -331,7 +335,7 @@ describe("Content entry with user defined ID", () => {
         /**
          * After unpublishing, we should not be able to update the entry.
          */
-        const [updateAfterUnpublishResponse] = await handler.updateCategory({
+        const [updateAfterUnpublishResponse] = await categoryManageHandler.updateCategory({
             revision: id,
             data: {
                 title: "This should not work",
@@ -403,7 +407,7 @@ describe("Content entry with user defined ID", () => {
                 id
             });
 
-            const [response] = await handler.createCategory({
+            const [response] = await categoryManageHandler.createCategory({
                 data: {
                     ...category
                 }
@@ -425,4 +429,87 @@ describe("Content entry with user defined ID", () => {
             });
         }
     );
+
+    it("should allow an entry with custom ID to be referenced in a new entry", async () => {
+        const category = createCategory();
+        await categoryManageHandler.createCategory({
+            data: {
+                ...category
+            }
+        });
+        const id = `${category.id}#0001`;
+        await categoryManageHandler.until(
+            () => {
+                return categoryManageHandler.listCategories().then(([data]) => data);
+            },
+            ({ data }) => {
+                const entry = data.listCategories.data[0];
+                return entry.id === id;
+            },
+            {
+                name: "list categories after create"
+            }
+        );
+        const productCategory = {
+            id,
+            modelId: "category"
+        };
+        const product = {
+            title: "Server",
+            price: 37591,
+            inStock: false,
+            availableOn: "2021-01-01",
+            color: "red",
+            availableSizes: ["l", "m", "s"],
+            image: "server.jpg",
+            category: productCategory,
+            variant: {
+                category: productCategory,
+                options: [
+                    {
+                        category: productCategory,
+                        categories: [productCategory]
+                    }
+                ]
+            }
+        };
+        const [createProductResponse] = await productManageHandler.createProduct({
+            data: product
+        });
+        expect(createProductResponse).toMatchObject({
+            data: {
+                createProduct: {
+                    data: {
+                        ...product,
+                        category: {
+                            ...product.category,
+                            entryId: category.id
+                        },
+                        variant: {
+                            category: {
+                                ...product.category,
+                                entryId: category.id
+                            },
+                            options: [
+                                {
+                                    category: {
+                                        ...product.category,
+                                        entryId: category.id
+                                    },
+                                    categories: [
+                                        {
+                                            ...product.category,
+                                            entryId: category.id
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        id: expect.stringMatching(/^([a-zA-Z0-9]+)#0001$/)
+                    },
+                    error: null
+                }
+            }
+        });
+    });
 });
