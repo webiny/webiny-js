@@ -139,6 +139,10 @@ const FormRender: React.FC<FormRenderProps> = props => {
             ) {
                 values[fieldId] = field.settings.defaultValue;
             }
+
+            if (field.settings.otherOption) {
+                values[`${fieldId}Other`] = "";
+            }
         });
         return { ...values, ...overrides };
     };

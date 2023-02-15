@@ -5,6 +5,7 @@ import { Field } from "./components/Field";
 import { FieldErrorMessage } from "./components/FieldErrorMessage";
 import { FieldHelperMessage } from "./components/FieldHelperMessage";
 import { FieldLabel } from "./components/FieldLabel";
+import { StyledInput } from "./Input";
 import styled from "@emotion/styled";
 import theme from "../../../../theme";
 
@@ -40,6 +41,12 @@ export const CheckboxButton = styled.input`
     }
 `;
 
+const OtherInput = styled(StyledInput)`
+    padding-top: 5px;
+    padding-bottom: 5px;
+    margin-left: 16px;
+`;
+
 interface Option {
     value: string;
     label: string;
@@ -71,6 +78,11 @@ const checked = ({ option, value }: CheckedParams) => {
     return Array.isArray(value) && value.includes(option.value);
 };
 
+const otherOption: Option = {
+    label: "Other:",
+    value: "other"
+};
+
 interface CheckboxProps {
     field: FormRenderFbFormModelField;
 }
@@ -81,6 +93,9 @@ export const CheckboxField: React.FC<CheckboxProps> = ({ field }) => {
     const { validation, value, onChange } = useBind({
         name: field.fieldId,
         validators: field.validators
+    });
+    const { value: otherOptionValue, onChange: otherOptionOnChange } = useBind({
+        name: `${field.fieldId}Other`
     });
 
     return (
@@ -99,6 +114,26 @@ export const CheckboxField: React.FC<CheckboxProps> = ({ field }) => {
                     <label htmlFor={"checkbox-" + fieldId + option.value}>{option.label}</label>
                 </CheckboxGroup>
             ))}
+            {field.settings.otherOption && (
+                <CheckboxGroup>
+                    <CheckboxButton
+                        name={fieldId}
+                        type="checkbox"
+                        id={"checkbox-" + fieldId + otherOption.value}
+                        checked={checked({ option: otherOption, value })}
+                        onChange={() => change({ option: otherOption, value, onChange })}
+                    />
+                    <label htmlFor={"checkbox-" + fieldId + otherOption.value}>
+                        {otherOption.label}
+                    </label>
+                    <OtherInput
+                        name={`${fieldId}Other`}
+                        id={`${fieldId}Other`}
+                        onChange={e => otherOptionOnChange(e.target.value)}
+                        value={otherOptionValue}
+                    />
+                </CheckboxGroup>
+            )}
             <FieldErrorMessage isValid={validation.isValid} message={validation.message} />
         </Field>
     );

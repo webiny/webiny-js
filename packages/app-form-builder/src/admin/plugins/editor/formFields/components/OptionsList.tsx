@@ -9,6 +9,9 @@ import { OptionsListItem, AddOptionInput, EditFieldOptionDialog } from "./Option
 // @ts-ignore
 import { sortableContainer, sortableElement, sortableHandle } from "react-sortable-hoc";
 import { Icon } from "@webiny/ui/Icon";
+import { Typography } from "@webiny/ui/Typography";
+import { Switch } from "@webiny/ui/Switch";
+import { Grid, Cell } from "@webiny/ui/Grid";
 import { ReactComponent as HandleIcon } from "../../../../icons/round-drag_indicator-24px.svg";
 import { validation } from "@webiny/validation";
 import { BindComponent, FormRenderPropParams } from "@webiny/form/types";
@@ -32,6 +35,19 @@ const OptionListItem = styled("li")({
         border: "none"
     }
 });
+
+const switchWrapper = css`
+    align-self: end;
+    padding-bottom: 12px;
+
+    .switch-label {
+        margin-right: 12px;
+
+        strong {
+            font-weight: 600;
+        }
+    }
+`;
 
 const sortableList = css({
     zIndex: 20
@@ -108,6 +124,7 @@ const SortableItem: React.FC<SortableItemProps> = sortableElement(
 interface OptionsListProps {
     form: FormRenderPropParams;
     multiple?: boolean;
+    otherOptionSwitch?: boolean;
 }
 interface OptionsListBindParams {
     validation: any;
@@ -115,7 +132,7 @@ interface OptionsListBindParams {
     onChange: (values: FieldOption[]) => void;
 }
 
-const OptionsList: React.FC<OptionsListProps> = ({ form, multiple }) => {
+const OptionsList: React.FC<OptionsListProps> = ({ form, multiple, otherOptionSwitch }) => {
     const { Bind } = form;
 
     const [editOption, setEditOption] = useState<SetEditOptionParams>({
@@ -148,22 +165,34 @@ const OptionsList: React.FC<OptionsListProps> = ({ form, multiple }) => {
                 return (
                     <>
                         <div>Options</div>
-                        <div>
-                            <AddOptionInput
-                                options={optionsValue}
-                                validation={optionsValidation}
-                                onAdd={label => {
-                                    const newValue = Array.isArray(optionsValue)
-                                        ? [...optionsValue]
-                                        : [];
-                                    newValue.push({
-                                        value: camelCase(label),
-                                        label
-                                    });
-                                    setOptionsValue(newValue);
-                                }}
-                            />
-                        </div>
+                        <Grid>
+                            <Cell span={otherOptionSwitch ? 9 : 12}>
+                                <AddOptionInput
+                                    options={optionsValue}
+                                    validation={optionsValidation}
+                                    onAdd={label => {
+                                        const newValue = Array.isArray(optionsValue)
+                                            ? [...optionsValue]
+                                            : [];
+                                        newValue.push({
+                                            value: camelCase(label),
+                                            label
+                                        });
+                                        setOptionsValue(newValue);
+                                    }}
+                                />
+                            </Cell>
+                            {otherOptionSwitch && (
+                                <Cell span={3} className={switchWrapper}>
+                                    <Typography use={"headline6"} className="switch-label">
+                                        Allow &quot;<strong>Other</strong>&quot;
+                                    </Typography>
+                                    <Bind name={"settings.otherOption"}>
+                                        <Switch />
+                                    </Bind>
+                                </Cell>
+                            )}
+                        </Grid>
 
                         <div style={{ position: "relative" }}>
                             {Array.isArray(optionsValue) && optionsValue.length > 0 ? (

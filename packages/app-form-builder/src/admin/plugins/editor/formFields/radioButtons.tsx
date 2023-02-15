@@ -21,7 +21,8 @@ const plugin: FbBuilderFieldPlugin = {
                 name: this.name,
                 validation: [],
                 settings: {
-                    defaultValue: []
+                    defaultValue: [],
+                    otherOption: false
                 }
             };
         },
@@ -29,7 +30,7 @@ const plugin: FbBuilderFieldPlugin = {
             return (
                 <Grid>
                     <Cell span={12}>
-                        <OptionsList form={form} />
+                        <OptionsList form={form} otherOptionSwitch />
                     </Cell>
                 </Grid>
             );

@@ -14,7 +14,7 @@ interface InputProps {
     type?: string;
 }
 
-const StyledInput = styled.input`
+export const StyledInput = styled.input`
     border: 1px solid ${theme.styles.colors["color5"]};
     background-color: ${theme.styles.colors["color5"]};
     width: 100%;

@@ -5,6 +5,7 @@ import { Field } from "./components/Field";
 import { FieldErrorMessage } from "./components/FieldErrorMessage";
 import { FieldHelperMessage } from "./components/FieldHelperMessage";
 import { FieldLabel } from "./components/FieldLabel";
+import { StyledInput } from "./Input";
 import styled from "@emotion/styled";
 import theme from "../../../../theme";
 
@@ -48,10 +49,19 @@ const RadioButton = styled.input`
     }
 `;
 
+const OtherInput = styled(StyledInput)`
+    padding-top: 5px;
+    padding-bottom: 5px;
+    margin-left: 16px;
+`;
+
 export const RadioField: React.FC<RadioProps> = ({ field }) => {
     const { validation, value, onChange } = useBind({
         name: field.fieldId,
         validators: field.validators
+    });
+    const { value: otherOptionValue, onChange: otherOptionOnChange } = useBind({
+        name: `${field.fieldId}Other`
     });
 
     const fieldId = field.fieldId;
@@ -75,6 +85,25 @@ export const RadioField: React.FC<RadioProps> = ({ field }) => {
                     </RadioGroup>
                 );
             })}
+            {field.settings["otherOption"] && (
+                <RadioGroup>
+                    <RadioButton
+                        name={fieldId}
+                        type="radio"
+                        id={"radio-" + fieldId + "other"}
+                        value="other"
+                        checked={value === "other"}
+                        onChange={() => onChange("other")}
+                    />
+                    <label htmlFor={"radio-" + fieldId + "other"}>Other:</label>
+                    <OtherInput
+                        name={`${fieldId}Other`}
+                        id={`${fieldId}Other`}
+                        value={otherOptionValue}
+                        onChange={e => otherOptionOnChange(e.target.value)}
+                    />
+                </RadioGroup>
+            )}
             <FieldErrorMessage isValid={validation.isValid} message={validation.message} />
         </Field>
     );
