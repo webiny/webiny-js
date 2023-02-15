@@ -4,6 +4,7 @@ import { ElementRoot, ElementRootChildrenFunction, DropZone } from "~/editor";
 import { useActiveElementId } from "~/editor/hooks/useActiveElementId";
 import { useCurrentBlockElement } from "~/editor/hooks/useCurrentBlockElement";
 import { useCurrentElement } from "~/editor/hooks/useCurrentElement";
+import { useTemplateMode } from "~/pageEditor/hooks/useTemplateMode";
 
 /**
  * Hook into `ElementRoot`, which is a component that renders _every_ element of the page content.
@@ -13,6 +14,7 @@ const DisableInteractionsPlugin = createComponentPlugin(ElementRoot, Original =>
     return function ElementRoot({ children, ...props }) {
         const [, setActiveElementId] = useActiveElementId();
         const { element } = useCurrentElement();
+        const [isTemplateMode] = useTemplateMode();
 
         const onClick = useCallback(() => {
             setActiveElementId(element.id);
@@ -22,7 +24,7 @@ const DisableInteractionsPlugin = createComponentPlugin(ElementRoot, Original =>
             return <Original {...props}>{children}</Original>;
         }
 
-        if (!props.element.data?.blockId) {
+        if (!props.element.data?.blockId && !isTemplateMode) {
             return <Original {...props}>{children}</Original>;
         }
 
@@ -50,12 +52,13 @@ const plugins = [DropZone.Below, DropZone.Above].map(Component => {
     return createComponentPlugin(Component, Original => {
         return function BlockDropZone({ children, ...props }) {
             const { block } = useCurrentBlockElement();
+            const [isTemplateMode] = useTemplateMode();
 
             if (!block) {
                 return <Original {...props}>{children}</Original>;
             }
 
-            if (block.data?.blockId) {
+            if (block.data?.blockId || isTemplateMode) {
                 props.isVisible = () => {
                     return false;
                 };

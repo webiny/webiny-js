@@ -22,6 +22,8 @@ export interface ImageElementData {
 
 export interface ImageRendererComponentProps extends Props, CreateImageParams {}
 
+const SUPPORTED_IMAGE_RESIZE_WIDTHS = [100, 300, 500, 750, 1000, 1500, 2500];
+
 export const ImageRendererComponent: React.FC<ImageRendererComponentProps> = ({
     onClick,
     renderEmpty,
@@ -46,7 +48,12 @@ export const ImageRendererComponent: React.FC<ImageRendererComponentProps> = ({
 
         const { title } = element.data.image;
         const { src } = value || element.data?.image?.file;
-        content = <PbImg alt={title} title={title} src={src} onClick={onClick} />;
+
+        const srcSet = SUPPORTED_IMAGE_RESIZE_WIDTHS.map(item => {
+            return `${src}?width=${item} ${item}w`;
+        }).join(", ");
+
+        content = <PbImg alt={title} title={title} src={src} srcSet={srcSet} onClick={onClick} />;
     } else {
         content = renderEmpty || null;
     }

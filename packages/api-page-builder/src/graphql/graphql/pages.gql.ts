@@ -279,17 +279,19 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                             return page.content;
                         }
 
-                        // Map block references
-                        const blocks = await context.pageBuilder.resolvePageBlocks(page);
-                        const pageWithNewContent = {
-                            ...page,
-                            content: { ...page.content, elements: blocks }
-                        };
+                        let blocks = {};
+
+                        if (page.content.data.templateId) {
+                            blocks = await context.pageBuilder.resolvePageTemplate(page.content);
+                        } else {
+                            blocks = await context.pageBuilder.resolvePageBlocks(page.content);
+                        }
 
                         // Run element processors on the full page content for potential transformations.
-                        const processedPage = await context.pageBuilder.processPageContent(
-                            pageWithNewContent
-                        );
+                        const processedPage = await context.pageBuilder.processPageContent({
+                            ...page,
+                            content: { ...page.content, elements: blocks }
+                        });
 
                         return processedPage.content;
                     }

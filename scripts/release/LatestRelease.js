@@ -1,4 +1,5 @@
 const { Release } = require("./Release");
+const semver = require("semver");
 
 class LatestRelease extends Release {
     defaultTag = "latest";
@@ -7,9 +8,22 @@ class LatestRelease extends Release {
         super(logger);
         this.setTag(this.defaultTag);
 
-        const VERSION = process.env.LATEST_VERSION || "--conventional-graduate";
+        this.setVersion(mostRecentVersion => {
+            // Check if specific version is enforced via an ENV variable.
+            const envVersion = process.env.LATEST_VERSION;
+            if (envVersion && semver.valid(envVersion)) {
+                return envVersion;
+            }
 
-        this.setVersion(VERSION);
+            // If most recent version is a prerelease version, coerce it to a non-prerelease version.
+            const currentVersion = semver.parse(mostRecentVersion);
+            if (currentVersion.prerelease.length > 0) {
+                return semver.coerce(mostRecentVersion);
+            }
+
+            // Determine version using conventional commits specs.
+            return "--conventional-commits";
+        });
         this.setCreateGithubRelease(true);
     }
 

@@ -31,16 +31,19 @@ export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
     afterRenderer = null
 }) => {
     // Attributes-related callbacks.
-    const getElementAttributes = useCallback<GetElementAttributes>(element => {
-        return defaultElementAttributesCallback({
-            element,
-            theme,
-            renderers,
-            modifiers,
-            beforeRenderer,
-            afterRenderer
-        });
-    }, []);
+    const getElementAttributes = useCallback<GetElementAttributes>(
+        element => {
+            return defaultElementAttributesCallback({
+                element,
+                theme,
+                renderers,
+                modifiers,
+                beforeRenderer,
+                afterRenderer
+            });
+        },
+        [theme]
+    );
 
     // Styles-related callbacks.
     const [customAssignStylesCallback, setCustomAssignStylesCallback] =

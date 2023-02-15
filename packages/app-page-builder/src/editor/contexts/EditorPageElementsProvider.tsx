@@ -22,6 +22,10 @@ import { createVerticalAlign } from "@webiny/app-page-builder-elements/modifiers
 import { createVisibility } from "@webiny/app-page-builder-elements/modifiers/styles/visibility";
 import { createWidth } from "@webiny/app-page-builder-elements/modifiers/styles/width";
 
+// Additional editor styles modifiers.
+import { createAnimationZIndexFix } from "./EditorPageElementsProvider/modifiers/styles/animationZIndexFix";
+
+// Other.
 import { usePageBuilder } from "~/hooks/usePageBuilder";
 import { Theme } from "@webiny/app-theme/types";
 import { plugins } from "@webiny/plugins";
@@ -45,6 +49,7 @@ export const EditorPageElementsProvider: React.FC = ({ children }) => {
             animation: createAnimation({ initializeAos })
         },
         styles: {
+            animationZIndexFix: createAnimationZIndexFix(),
             background: createBackground(),
             border: createBorder(),
             gridFlexWrap: createGridFlexWrap(),

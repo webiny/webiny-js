@@ -3,6 +3,7 @@ import { SecurityIdentity } from "@webiny/api-security/types";
 import { createRawEventHandler } from "@webiny/handler-aws";
 import { blocksHandler } from "~/import/process/blocksHandler";
 import { pagesHandler } from "~/import/process/pagesHandler";
+import { templatesHandler } from "~/import/process/templatesHandler";
 
 export interface Configuration {
     handlers: {
@@ -26,10 +27,16 @@ export interface Response {
 export default (configuration: Configuration) => {
     return createRawEventHandler<Payload, PbImportExportContext, Response>(
         async ({ payload, context }) => {
-            if (payload.type === "block") {
-                return await blocksHandler(configuration, payload, context);
-            } else {
-                return await pagesHandler(configuration, payload, context);
+            switch (payload.type) {
+                case "block": {
+                    return await blocksHandler(configuration, payload, context);
+                }
+                case "template": {
+                    return await templatesHandler(configuration, payload, context);
+                }
+                default: {
+                    return await pagesHandler(configuration, payload, context);
+                }
             }
         }
     );

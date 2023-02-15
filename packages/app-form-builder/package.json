@@ -27,6 +27,7 @@
     "@webiny/app-page-builder-elements": "0.0.0",
     "@webiny/app-plugin-admin-welcome-screen": "0.0.0",
     "@webiny/app-security": "0.0.0",
+    "@webiny/app-tenancy": "0.0.0",
     "@webiny/feature-flags": "0.0.0",
     "@webiny/form": "0.0.0",
     "@webiny/plugins": "0.0.0",

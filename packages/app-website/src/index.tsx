@@ -2,6 +2,8 @@ export {
     makeComposable,
     createComponentPlugin,
     createProviderPlugin,
+    createProvider,
+    Plugin,
     RoutePlugin,
     useApp,
     AddRoute
