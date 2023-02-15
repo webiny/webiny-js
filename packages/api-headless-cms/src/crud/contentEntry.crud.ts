@@ -203,7 +203,7 @@ const createEntryId = (input: CreateCmsEntryInput): EntryIdResult => {
     if (input.id) {
         if (input.id.match(/^([a-zA-Z0-9])([a-zA-Z0-9\-]+)([a-zA-Z0-9])$/) === null) {
             throw new WebinyError(
-                "The provided ID is not valid. It must be a string which can A-Z, a-z, 0-9 and -. It cannot start or end with a -.",
+                "The provided ID is not valid. It must be a string which can A-Z, a-z, 0-9, - and it cannot start or end with a -.",
                 "INVALID_ID",
                 {
                     id: input.id

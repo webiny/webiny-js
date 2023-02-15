@@ -5,6 +5,19 @@
 import { setupContentModelGroup, setupContentModels } from "~tests/testHelpers/setup";
 import { useCategoryManageHandler } from "~tests/testHelpers/useCategoryManageHandler";
 import { useCategoryReadHandler } from "~tests/testHelpers/useCategoryReadHandler";
+interface Category {
+    id: string;
+    title: string;
+    slug: string;
+}
+const createCategory = (input?: Partial<Category>): Category => {
+    return {
+        id: "61b48412-d616-4f36-babd-4c6a67d7bd03",
+        title: "Category with defined ID",
+        slug: "category-with-defined-id",
+        ...input
+    };
+};
 
 describe("Content entry with user defined ID", () => {
     const handler = useCategoryManageHandler({
@@ -20,11 +33,7 @@ describe("Content entry with user defined ID", () => {
     });
 
     it("should create, update, publish, unpublish and delete an entry with the given user defined ID", async () => {
-        const category = {
-            id: "61b48412-d616-4f36-babd-4c6a67d7bd03",
-            title: "Category with defined ID",
-            slug: "category-with-defined-id"
-        };
+        const category = createCategory();
 
         /**
          * Create entry and check that it really is created.
@@ -342,4 +351,78 @@ describe("Content entry with user defined ID", () => {
             }
         });
     });
+
+    const malformedIds: [string][] = [
+        ["-malformed-id"],
+        ["malformed-id-"],
+        ["-malformed-id-"],
+        ["malformed-id-č"],
+        ["malformed-id-ć"],
+        ["malformed-id-š"],
+        ["malformed-id-đ"],
+        ["malformed-id-ž"],
+        ["malformed-id-Č"],
+        ["malformed-id-Ć"],
+        ["malformed-id-Š"],
+        ["malformed-id-Đ"],
+        ["malformed-id-Ž"],
+        ["malformed-id-!"],
+        ["malformed-id-@"],
+        ["malformed-id-#"],
+        ["malformed-id-$"],
+        ["malformed-id-%"],
+        ["malformed-id-^"],
+        ["malformed-id-&"],
+        ["malformed-id-*"],
+        ["malformed-id-("],
+        ["malformed-id-)"],
+        ["malformed-id-+"],
+        ["malformed-id-="],
+        ["malformed-id-{"],
+        ["malformed-id-}"],
+        ["malformed-id-["],
+        ["malformed-id-]"],
+        ["malformed-id-:"],
+        ["malformed-id-;"],
+        ["malformed-id-<"],
+        ["malformed-id->"],
+        ["malformed-id-,"],
+        ["malformed-id-."],
+        ["malformed-id-?"],
+        ["malformed-id-|"],
+        ["malformed-id-`"],
+        ["malformed-id-~"],
+        ["malformed-id- "],
+        ["malfo rmed id"]
+    ];
+
+    it.each(malformedIds)(
+        "should not allow to create an entry with malformed ID - %s",
+        async id => {
+            const category = createCategory({
+                id
+            });
+
+            const [response] = await handler.createCategory({
+                data: {
+                    ...category
+                }
+            });
+            expect(response).toEqual({
+                data: {
+                    createCategory: {
+                        data: null,
+                        error: {
+                            code: "INVALID_ID",
+                            data: {
+                                id
+                            },
+                            message:
+                                "The provided ID is not valid. It must be a string which can A-Z, a-z, 0-9, - and it cannot start or end with a -."
+                        }
+                    }
+                }
+            });
+        }
+    );
 });
