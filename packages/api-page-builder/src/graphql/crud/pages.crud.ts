@@ -469,7 +469,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
             }
         },
 
-        async updatePage(id, input): Promise<any> {
+        async updatePage(id, input, meta): Promise<any> {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "w"
             });
@@ -512,7 +512,8 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                 await onPageBeforeUpdate.publish({
                     original,
                     page,
-                    input
+                    input,
+                    meta
                 });
 
                 const result = await storageOperations.pages.update({
@@ -524,7 +525,8 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                 await onPageAfterUpdate.publish({
                     original,
                     page: result,
-                    input
+                    input,
+                    meta
                 });
 
                 /**

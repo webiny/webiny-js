@@ -83,6 +83,7 @@ export interface OnPageBeforeUpdateTopicParams<TPage extends Page = Page> {
     original: TPage;
     page: TPage;
     input: Record<string, any>;
+    meta?: Record<string, any>;
 }
 /**
  * @category Lifecycle events
@@ -91,6 +92,7 @@ export interface OnPageAfterUpdateTopicParams<TPage extends Page = Page> {
     original: TPage;
     page: TPage;
     input: Record<string, any>;
+    meta?: Record<string, any>;
 }
 /**
  * @category Lifecycle events
@@ -209,7 +211,11 @@ export interface PagesCrud {
         page: string,
         meta?: Record<string, any>
     ): Promise<TPage>;
-    updatePage<TPage extends Page = Page>(id: string, data: PbUpdatePageInput): Promise<TPage>;
+    updatePage<TPage extends Page = Page>(
+        id: string,
+        data: PbUpdatePageInput,
+        meta?: Record<string, any>
+    ): Promise<TPage>;
     deletePage<TPage extends Page = Page>(id: string): Promise<[TPage, TPage]>;
     publishPage<TPage extends Page = Page>(id: string): Promise<TPage>;
     unpublishPage<TPage extends Page = Page>(id: string): Promise<TPage>;
