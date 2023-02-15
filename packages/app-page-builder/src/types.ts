@@ -9,7 +9,7 @@ import { GenericFormData, FormOnSubmit, FormSetValue, FormAPI } from "@webiny/fo
 import { CoreOptions } from "medium-editor";
 import { MenuTreeItem } from "~/admin/views/Menus/types";
 import { SecurityPermission } from "@webiny/app-security/types";
-import { LinkItem } from "@webiny/app-aco/types";
+import { SearchRecordItem } from "@webiny/app-aco/types";
 import { PagesListComponent } from "@webiny/app-page-builder-elements/renderers/pagesList/types";
 import { Theme } from "@webiny/app-theme/types";
 
@@ -364,7 +364,7 @@ export interface PbPageRevision {
 }
 
 export interface PbPageDataLink extends PbPageData {
-    link: LinkItem;
+    link: SearchRecordItem;
 }
 
 export interface PbRenderElementPluginRenderParams {

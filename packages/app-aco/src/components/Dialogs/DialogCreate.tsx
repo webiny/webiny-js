@@ -63,10 +63,10 @@ export const FolderDialogCreate: React.FC<Props> = ({ type, onClose, open, paren
                                 <Grid>
                                     <Cell span={12}>
                                         <Bind
-                                            name={"name"}
+                                            name={"title"}
                                             validators={[validation.create("required,minLength:3")]}
                                         >
-                                            <Input label={t`Name`} />
+                                            <Input label={t`Title`} />
                                         </Bind>
                                     </Cell>
                                     <Cell span={12}>
@@ -82,7 +82,13 @@ export const FolderDialogCreate: React.FC<Props> = ({ type, onClose, open, paren
                                     {typeof parentId === "undefined" && (
                                         <Cell span={12}>
                                             <Bind name="parentId">
-                                                <AutoComplete options={folders} label={t`Parent`} />
+                                                <AutoComplete
+                                                    options={folders.map(({ id, title }) => ({
+                                                        id,
+                                                        name: title
+                                                    }))}
+                                                    label={t`Parent`}
+                                                />
                                             </Bind>
                                         </Cell>
                                     )}

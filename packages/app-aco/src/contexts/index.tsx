@@ -2,15 +2,15 @@ import React from "react";
 
 import { createProviderPlugin } from "@webiny/app-admin";
 import { FoldersProvider as FoldersContextProvider } from "./folders";
-import { LinksProvider as LinksContextProvider } from "./links";
+import { SearchRecordsProvider as SearchRecordsContextProvider } from "./records";
 
 export const ACOProvider = createProviderPlugin(Component => {
     return function FoldersProvider({ children }) {
         return (
             <FoldersContextProvider>
-                <LinksContextProvider>
+                <SearchRecordsContextProvider>
                     <Component>{children}</Component>
-                </LinksContextProvider>
+                </SearchRecordsContextProvider>
             </FoldersContextProvider>
         );
     };
