@@ -114,7 +114,7 @@ const BlocksByCategoriesDataList = ({
         listQuery?.data?.pageBuilder?.listBlockCategories?.data || [];
     const pageBlocksData: PbPageBlock[] = listQuery?.data?.pageBuilder?.listPageBlocks?.data || [];
 
-    const [blocksList, blockCategoriesList] = useCategoriesListData(
+    const [blocksList, filteredBlockCategoriesList] = useCategoriesListData(
         pageBlocksData,
         blockCategoriesData,
         sort,
@@ -320,7 +320,7 @@ const BlocksByCategoriesDataList = ({
             <DataList
                 title={t`Blocks`}
                 loading={Boolean(loading)}
-                data={blockCategoriesList}
+                data={filteredBlockCategoriesList}
                 actions={
                     <DataListActionsWrapper>
                         {canCreate ? (
@@ -407,7 +407,7 @@ const BlocksByCategoriesDataList = ({
                 </DialogTitle>
                 <DialogContent>
                     <React.Fragment>
-                        {isEmpty(blockCategoriesList) ? (
+                        {isEmpty(blockCategoriesData) ? (
                             <div className={noRecordsWrapper}>
                                 <Typography use="overline">
                                     There are no block categories
@@ -415,7 +415,7 @@ const BlocksByCategoriesDataList = ({
                             </div>
                         ) : (
                             <List twoLine>
-                                {blockCategoriesList.map(item => (
+                                {blockCategoriesData.map(item => (
                                     <ListItem key={item.slug} onClick={() => onSelect(item.slug)}>
                                         <ListItemGraphic>
                                             <Icon category={item} />
