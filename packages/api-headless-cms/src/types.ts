@@ -2040,6 +2040,7 @@ export interface EntryBeforeListTopicParams {
  * @category CmsEntry
  */
 export interface CreateCmsEntryInput {
+    id?: string;
     [key: string]: any;
 }
 
