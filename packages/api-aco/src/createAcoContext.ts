@@ -4,6 +4,7 @@ import { Tenant } from "@webiny/api-tenancy/types";
 import WebinyError from "@webiny/error";
 
 import { createAcoCrud } from "~/createAcoCrud";
+import { createAcoHooks } from "~/createAcoHooks";
 import { createAcoStorageOperations } from "~/createAcoStorageOperations";
 import { isInstallationPending } from "~/utils/isInstallationPending";
 
@@ -60,5 +61,6 @@ export const createAcoContext = () => {
         }
 
         await setupAcoContext().apply(context);
+        await createAcoHooks().apply(context);
     });
 };
