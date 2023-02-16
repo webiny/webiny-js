@@ -9,21 +9,28 @@ interface LexicalEditorProps {
     initValue: EditorStateJSONString | null;
     value?: EditorStateJSONString | null;
     onChange?: (json: EditorStateJSONString) => void;
+    onBlur?: (editorState: EditorStateJSONString) => void;
 }
 
 export const LexicalEditor: React.FC<LexicalEditorProps> = ({
     tag,
     initValue,
     value,
-    onChange
+    onChange,
+    ...rest
 }) => {
     return (
         <>
             {isHeadingTag(tag) && (
-                <HeadingEditor initValue={initValue} value={value} onChange={onChange} />
+                <HeadingEditor initValue={initValue} value={value} onChange={onChange} {...rest} />
             )}
             {isParagraphTag(tag) ? (
-                <ParagraphEditor initValue={initValue} value={value} onChange={onChange} />
+                <ParagraphEditor
+                    initValue={initValue}
+                    value={value}
+                    onChange={onChange}
+                    {...rest}
+                />
             ) : null}
         </>
     );

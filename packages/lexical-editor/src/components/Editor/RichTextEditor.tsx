@@ -17,6 +17,7 @@ import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { RichTextEditorProvider } from "~/context/RichTextEditorContext";
 import { isValidLexicalData } from "~/utils/isValidLexicalData";
 import { LexicalUpdateStatePlugin } from "~/plugins/LexicalUpdateStatePlugin";
+import { BlurEventPlugin } from "~/plugins/BlurEventPlugin/BlurEventPlugin";
 
 export interface RichTextEditorProps {
     toolbar: React.ReactNode;
@@ -30,6 +31,7 @@ export interface RichTextEditorProps {
      * @description Lexical plugins
      */
     children?: React.ReactNode | React.ReactNode[];
+    onBlur?: (editorState: EditorStateJSONString) => void;
 }
 
 const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
@@ -39,7 +41,8 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
     value,
     nodes,
     placeholder,
-    children
+    children,
+    onBlur
 }: RichTextEditorProps) => {
     const placeholderElem = <Placeholder>{placeholder || "Enter text..."}</Placeholder>;
     const scrollRef = useRef(null);
@@ -75,10 +78,14 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
     return (
         <LexicalComposer initialConfig={initialConfig}>
             <div ref={scrollRef}>
+                {/* data */}
                 <OnChangePlugin onChange={handleOnChange} />
                 {value && <LexicalUpdateStatePlugin value={value} />}
-                <AutoFocusPlugin />
                 <ClearEditorPlugin />
+                {/* Events */}
+                {onBlur && <BlurEventPlugin onBlur={onBlur} />}
+                <AutoFocusPlugin />
+                {/* External plugins and components */}
                 {children}
                 <RichTextPlugin
                     contentEditable={
@@ -91,7 +98,7 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
                     placeholder={placeholderElem}
                     ErrorBoundary={LexicalErrorBoundary}
                 />
-
+                {/* Toolbar */}
                 {floatingAnchorElem && toolbar}
             </div>
         </LexicalComposer>

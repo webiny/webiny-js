@@ -11,7 +11,6 @@ interface LexicalUpdateStatePlugin {
 
 /*
  * Updates the lexical state if new value is provided to the lexical editor trough props
- * - Helps if you bind two editors, and they need to share the same value in real-time.
  */
 export const LexicalUpdateStatePlugin: FC<LexicalUpdateStatePlugin> = ({
     value

@@ -14,6 +14,7 @@ interface ParagraphLexicalEditorProps {
     onChange?: (json: EditorStateJSONString) => void;
     tag?: "p";
     placeholder?: string;
+    onBlur?: (editorState: EditorStateJSONString) => void;
 }
 
 const ParagraphEditor: React.FC<ParagraphLexicalEditorProps> = ({ placeholder, tag, ...rest }) => {

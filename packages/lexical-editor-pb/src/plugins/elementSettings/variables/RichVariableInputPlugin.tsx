@@ -65,50 +65,78 @@ export const RichVariableInputPlugin = createComponentPlugin(RichVariableInput, 
     return function RichVariableInputPlugin({ variableId }): JSX.Element {
         const { value, onChange, onBlur } = useVariable(variableId);
         const [initialValue, setInitialValue] = useState(value);
+        const [updateValue, setUpdateValue] = useState(value);
+        const [inputValue, setInputValue] = useState(value);
+        const [popupEditorValue, setPopupEditorValue] = useState(value);
         const [isOpen, setIsOpen] = useState(false);
-
-        const onOpen = useCallback(() => {
-            setIsOpen(true);
-        }, []);
 
         const onUpdate = useCallback(() => {
             onBlur();
             setInitialValue(value);
         }, [value, onBlur]);
 
-        const onClose = useCallback(() => {
-            onUpdate();
-            setIsOpen(false);
-        }, [onUpdate]);
+        const inputChangeHandler = (editorState: string) => {
+            setUpdateValue(editorState);
+            onChange(editorState);
+        };
 
-        const changeHandler = (json: string) => {
-            onChange(json);
+        const onInputBlur = () => {
+            saveData();
+        };
+
+        const saveData = () => {
+            onChange(updateValue);
+            setPopupEditorValue(updateValue);
+            setInputValue(updateValue);
+            setInitialValue(updateValue);
+            onUpdate();
+        };
+
+        const onPopupOpen = () => {
+            setIsOpen(true);
+            setInputValue(updateValue);
+            setPopupEditorValue(updateValue);
+        };
+
+        const onPopupClose = () => {
+            setPopupEditorValue(inputValue);
+            setUpdateValue(inputValue);
+            onChange(inputValue);
+            setIsOpen(false);
+        };
+
+        const onPopupSave = () => {
+            saveData();
+            setIsOpen(false);
         };
 
         return (
             <InputWrapper>
-                <IconButton icon={<ExpandIcon />} onClick={onOpen} />
+                <IconButton icon={<ExpandIcon />} onClick={() => onPopupOpen()} />
                 <EditorWrapper className="webiny-pb-page-element-text">
                     <LexicalEditor
-                        tag={"h1"}
+                        tag={"p"}
                         initValue={initialValue}
-                        value={initialValue}
-                        onChange={changeHandler}
+                        value={inputValue}
+                        onChange={value => inputChangeHandler(value)}
+                        onBlur={() => onInputBlur()}
                     />
                 </EditorWrapper>
-                <Dialog open={isOpen} onClose={onClose}>
+                <Dialog open={isOpen} onClose={onPopupClose}>
                     <DialogContent>
                         <ModalEditorWrapper className="webiny-pb-page-element-text">
                             <LexicalEditor
-                                tag={"h1"}
+                                tag={"p"}
                                 initValue={initialValue}
-                                value={initialValue}
-                                onChange={changeHandler}
+                                value={popupEditorValue}
+                                onChange={inputChangeHandler}
                             />
                         </ModalEditorWrapper>
                     </DialogContent>
                     <DialogActions>
-                        <ButtonPrimaryStyled onClick={onClose}>Save</ButtonPrimaryStyled>
+                        <ButtonPrimaryStyled className={"save-btn"} onClick={onPopupSave}>
+                            Save
+                        </ButtonPrimaryStyled>
                     </DialogActions>
                 </Dialog>
             </InputWrapper>

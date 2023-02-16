@@ -15,6 +15,7 @@ interface HeadingEditorProps {
     onChange?: (editorState: EditorStateJSONString) => void;
     tag?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
     placeholder?: string;
+    onBlur?: (editorState: EditorStateJSONString) => void;
 }
 
 export const HeadingEditor: React.FC<HeadingEditorProps> = ({ tag, placeholder, ...rest }) => {
