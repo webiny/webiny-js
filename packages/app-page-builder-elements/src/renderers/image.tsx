@@ -58,11 +58,11 @@ export const ImageRendererComponent: React.FC<ImageRendererComponentProps> = ({
         if (imageWidth && imageWidth.endsWith("px")) {
             const imageWidthInt = parseInt(imageWidth);
             for (let i = 0; i < SUPPORTED_IMAGE_RESIZE_WIDTHS.length; i++) {
-                const resizeWidth = SUPPORTED_IMAGE_RESIZE_WIDTHS[i];
-                if (imageWidthInt > resizeWidth) {
-                    srcSetWidths.push(resizeWidth);
+                const supportedResizeWidth = SUPPORTED_IMAGE_RESIZE_WIDTHS[i];
+                if (imageWidthInt > supportedResizeWidth) {
+                    srcSetWidths.push(supportedResizeWidth);
                 } else {
-                    srcSetWidths.push(resizeWidth);
+                    srcSetWidths.push(supportedResizeWidth);
                     break;
                 }
             }
