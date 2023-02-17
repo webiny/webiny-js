@@ -49,9 +49,33 @@ export const ImageRendererComponent: React.FC<ImageRendererComponentProps> = ({
         const { title } = element.data.image;
         const { src } = value || element.data?.image?.file;
 
-        const srcSet = SUPPORTED_IMAGE_RESIZE_WIDTHS.map(item => {
-            return `${src}?width=${item} ${item}w`;
-        }).join(", ");
+        let supportedImageResizeWidths: number[] = [];
+
+        // If an image width in pixels was set, let's filter
+        // out non-optimal image resize widths that are wider.
+        // We only use supported widths that are lower than the
+        // provided one, and the one above it.
+        const imageWidth = element.data.image.width;
+        if (imageWidth && imageWidth.endsWith("px")) {
+            const imageWidthInt = parseInt(imageWidth);
+            for (let i = 0; i < SUPPORTED_IMAGE_RESIZE_WIDTHS.length; i++) {
+                const resizeWidth = SUPPORTED_IMAGE_RESIZE_WIDTHS[i];
+                if (imageWidthInt > resizeWidth) {
+                    supportedImageResizeWidths.push(resizeWidth);
+                } else {
+                    supportedImageResizeWidths.push(resizeWidth);
+                    break;
+                }
+            }
+        } else {
+            supportedImageResizeWidths = SUPPORTED_IMAGE_RESIZE_WIDTHS;
+        }
+
+        const srcSet = supportedImageResizeWidths
+            .map(item => {
+                return `${src}?width=${item} ${item}w`;
+            })
+            .join(", ");
 
         content = <PbImg alt={title} title={title} src={src} srcSet={srcSet} onClick={onClick} />;
     } else {
