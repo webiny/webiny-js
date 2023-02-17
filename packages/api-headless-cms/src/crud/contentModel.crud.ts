@@ -568,6 +568,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 ...original,
                 ...data,
                 group,
+                description: data.description || original.description,
                 tenant: original.tenant || getTenant().id,
                 locale: original.locale || getLocale().code,
                 webinyVersion: context.WEBINY_VERSION,
