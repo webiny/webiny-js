@@ -20,7 +20,7 @@ export class CmsEntryElasticsearchFullTextSearchPlugin extends Plugin {
     private readonly params: CmsEntryElasticsearchFullTextSearchPluginParams;
 
     public get models() {
-        return this.params.models || [];
+        return this.params.models;
     }
 
     public constructor(params: CmsEntryElasticsearchFullTextSearchPluginParams) {

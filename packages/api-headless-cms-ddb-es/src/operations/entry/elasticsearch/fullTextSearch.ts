@@ -7,6 +7,9 @@ import {
     createCmsEntryElasticsearchFullTextSearchPlugin
 } from "~/plugins";
 
+/**
+ * Our default plugin is working with the AND operator for the multiple words query string.
+ */
 const defaultPlugin = createCmsEntryElasticsearchFullTextSearchPlugin({
     apply: params => {
         const { query, term, fields, createFieldPath } = params;
@@ -29,6 +32,9 @@ interface GetPluginParams {
 }
 const getPlugin = (params: GetPluginParams): CmsEntryElasticsearchFullTextSearchPlugin => {
     const { container, model } = params;
+    /**
+     * We need to reverse the plugins, so we can take the last one first - possibility to override existing plugins.
+     */
     const plugins = container
         .byType<CmsEntryElasticsearchFullTextSearchPlugin>(
             CmsEntryElasticsearchFullTextSearchPlugin.type
@@ -40,9 +46,19 @@ const getPlugin = (params: GetPluginParams): CmsEntryElasticsearchFullTextSearch
      */
     let plugin: CmsEntryElasticsearchFullTextSearchPlugin | null = null;
     for (const pl of plugins) {
-        if (pl.models.includes(model.modelId)) {
+        const models = pl.models || [];
+        /**
+         * We take the first available plugin for the given model.
+         */
+        if (models.includes(model.modelId)) {
             return pl;
-        } else if (!plugin) {
+        }
+        /**
+         * Then we set the first possible plugin, which has no models defined, as the default one.
+         * It is important not to set the plugin which has models defined as they are specifically for the targeted model.
+         */
+        //
+        else if (!plugin && models.length === 0) {
             plugin = pl;
         }
     }
