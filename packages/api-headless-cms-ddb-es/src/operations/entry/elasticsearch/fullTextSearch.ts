@@ -12,13 +12,13 @@ import {
  */
 const defaultPlugin = createCmsEntryElasticsearchFullTextSearchPlugin({
     apply: params => {
-        const { query, term, fields, createFieldPath } = params;
+        const { query, term, fields, createFieldPath, prepareTerm } = params;
 
         query.must.push({
             query_string: {
                 allow_leading_wildcard: true,
                 fields: fields.map(createFieldPath),
-                query: normalizeValue(term),
+                query: `*${prepareTerm(term)}*`,
                 default_operator: "and"
             }
         });
@@ -89,6 +89,7 @@ export const applyFullTextSearch = (params: Params): void => {
         createFieldPath: field => `values.${field.storageId}`,
         fields,
         query,
-        term
+        term,
+        prepareTerm: normalizeValue
     });
 };

@@ -1,5 +1,5 @@
 import { FileManagerFilesStorageOperationsListParamsWhere } from "@webiny/api-file-manager/types";
-import { decodeCursor } from "@webiny/api-elasticsearch";
+import { decodeCursor, normalizeValue } from "@webiny/api-elasticsearch";
 import {
     ElasticsearchBoolQueryConfig,
     SearchBody as ElasticTsSearchBody
@@ -8,7 +8,6 @@ import {
     createLimit,
     createSort,
     applyWhere,
-    normalizeValue,
     getElasticsearchOperatorPluginsByLocale
 } from "@webiny/api-elasticsearch";
 import { FileElasticsearchFieldPlugin } from "~/plugins/FileElasticsearchFieldPlugin";
@@ -72,7 +71,7 @@ const createElasticsearchQuery = (
      * It produces something like "AND (name contains search value OR tags contains 'search words')"
      */
     if (where.search) {
-        const search = normalizeValue(where.search).replace(/^\*/, "").replace(/\*$/, "");
+        const search = normalizeValue(where.search);
 
         query.must.push({
             bool: {

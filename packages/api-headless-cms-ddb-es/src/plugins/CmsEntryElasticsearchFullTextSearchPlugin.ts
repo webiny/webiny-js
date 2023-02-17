@@ -8,6 +8,7 @@ export interface CmsEntryElasticsearchFullTextSearchPluginCbParams {
     term: string;
     fields: CmsModelField[];
     createFieldPath: (field: CmsModelField) => string;
+    prepareTerm: (term: string) => string;
 }
 export interface CmsEntryElasticsearchFullTextSearchPluginParams {
     models?: string[];

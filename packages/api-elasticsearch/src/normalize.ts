@@ -41,5 +41,5 @@ export const normalizeValue = (value: string) => {
         result = result.replace(new RegExp(character, "g"), `\\${character}`);
     }
 
-    return result ? `*${result}*` : "";
+    return result || "";
 };
