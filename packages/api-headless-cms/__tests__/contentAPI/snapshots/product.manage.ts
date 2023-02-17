@@ -140,6 +140,7 @@ export default /* GraphQL */ `
 
 
     input ProductInput {
+        id: ID
         title: String!
         category: RefFieldInput!
         price: Number!

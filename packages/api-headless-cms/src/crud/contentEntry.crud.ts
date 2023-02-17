@@ -198,10 +198,23 @@ interface EntryIdResult {
     id: string;
 }
 
-const createEntryId = (version: number): EntryIdResult => {
-    const entryId = mdbid();
+const createEntryId = (input: CreateCmsEntryInput): EntryIdResult => {
+    let entryId = mdbid();
+    if (input.id) {
+        if (input.id.match(/^([a-zA-Z0-9])([a-zA-Z0-9\-]+)([a-zA-Z0-9])$/) === null) {
+            throw new WebinyError(
+                "The provided ID is not valid. It must be a string which can A-Z, a-z, 0-9, - and it cannot start or end with a -.",
+                "INVALID_ID",
+                {
+                    id: input.id
+                }
+            );
+        }
+        entryId = input.id;
+    }
+    const version = 1;
     return {
-        entryId,
+        entryId: entryId,
         version,
         id: createIdentifier({
             id: entryId,
@@ -730,8 +743,11 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 displayName: identity.displayName,
                 type: identity.type
             };
-
-            const { id, entryId, version } = createEntryId(1);
+            /**
+             * There is a possibility that user sends an ID in the input, so we will use that one.
+             * There is no check if the ID is unique or not, that is up to the user.
+             */
+            const { id, entryId, version } = createEntryId(inputData);
 
             const entry: CmsEntry = {
                 webinyVersion: context.WEBINY_VERSION,
