@@ -6,8 +6,7 @@
     { "path": "../api-aco/tsconfig.build.json" },
     { "path": "../api-page-builder/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
-    { "path": "../handler/tsconfig.build.json" },
-    { "path": "../pubsub/tsconfig.build.json" }
+    { "path": "../handler/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
