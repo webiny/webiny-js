@@ -24,14 +24,14 @@ export async function processPageSearchContent(
         for (const block of content.elements) {
             await traverse(block, async element => {
                 for (const processor of processors) {
-                    const processed = await processor({ page, block, element });
+                    const processed = processor({ page, block, element });
                     result.push(processed);
                 }
             });
         }
     }
 
-    return result.filter(Boolean).join(" ");
+    return result.filter(Boolean).join(" ").trim();
 }
 
 async function traverse(element: PbPageElement, callback: ElementCallback) {

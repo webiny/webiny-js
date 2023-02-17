@@ -12,5 +12,6 @@ export const createPageHooks = (context: PbAcoContext) => {
     onPageAfterCreateFromHook(context);
     onPageAfterDeleteHook(context);
     onPageAfterPublishHook(context);
-    onPageAfterUnpublishHook(context), onPageAfterUpdateHook(context);
+    onPageAfterUnpublishHook(context);
+    onPageAfterUpdateHook(context);
 };

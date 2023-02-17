@@ -15,7 +15,7 @@ export type PbPageRecordData = Pick<
 >;
 
 export interface PageSearchProcessor {
-    (params: PageSearchProcessorParams): Promise<string> | string;
+    (params: PageSearchProcessorParams): string;
 }
 
 export interface PbAcoContext extends BaseContext, AcoContext, PbContext {

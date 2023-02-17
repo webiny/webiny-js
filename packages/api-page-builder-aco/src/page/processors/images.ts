@@ -1,14 +1,23 @@
-import { ContextPlugin } from "@webiny/handler";
 import get from "lodash/get";
 import { PbAcoContext } from "~/types";
 
-export const imagesProcessor = () => {
-    return new ContextPlugin<PbAcoContext>(context => {
-        context.pageBuilderAco.addPageSearchProcessor(({ element }) => {
-            if (element.type !== "images-list") {
-                return;
-            }
-            return get(element, "data.images");
-        });
+interface Image {
+    id: string;
+    src: string;
+    name: string;
+}
+
+export const imagesProcessor = (context: PbAcoContext) => {
+    context.pageBuilderAco.addPageSearchProcessor(({ element }) => {
+        if (element.type !== "images-list") {
+            return "";
+        }
+
+        const images: Image[] = get(element, "data.images", []);
+
+        return images
+            .filter(Boolean)
+            .map(image => image.name)
+            .join(" ");
     });
 };

@@ -3,6 +3,11 @@ import { imageProcessor } from "./image";
 import { imagesProcessor } from "./images";
 import { paragraphProcessor } from "./paragraph";
 
-export const createPageProcessors = () => {
-    return [buttonProcessor(), imageProcessor(), imagesProcessor(), paragraphProcessor()];
+import { PbAcoContext } from "~/types";
+
+export const createPageProcessors = (context: PbAcoContext) => {
+    buttonProcessor(context);
+    imageProcessor(context);
+    imagesProcessor(context);
+    paragraphProcessor(context);
 };

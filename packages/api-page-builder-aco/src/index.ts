@@ -19,13 +19,10 @@ const setupContext = (context: PbAcoContext) => {
     };
 };
 
-const createContext = () => {
-    return new ContextPlugin<PbAcoContext>(async context => {
-        await setupContext(context);
-        await createPageHooks(context);
+export const createAcoPageBuilderContext = () => {
+    return new ContextPlugin<PbAcoContext>(context => {
+        setupContext(context);
+        createPageHooks(context);
+        createPageProcessors(context);
     });
-};
-
-export const pageBuilderAcoPlugins = () => {
-    return [createContext(), createPageProcessors()];
 };
