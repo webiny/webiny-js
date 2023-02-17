@@ -19,6 +19,22 @@ const appleData: Fruit = {
     description: "fruit named apple cms"
 };
 
+const greenAppleData: Fruit = {
+    name: "Green-Apple",
+    isSomething: false,
+    rating: 400,
+    numbers: [5, 6, 7.2, 10.18, 12.05],
+    email: "john@doe.com",
+    url: "https://apple.test",
+    lowerCase: "greenapple",
+    upperCase: "GREENAPPLE",
+    date: "2020-12-15",
+    dateTime: new Date("2020-12-15T12:12:21").toISOString(),
+    dateTimeZ: "2020-12-15T14:52:41+01:00",
+    time: "11:39:58",
+    description: "fruit named green apple cms"
+};
+
 const strawberryData: Fruit = {
     name: "Strawberry",
     isSomething: true,
@@ -102,8 +118,8 @@ describe("Content entries", () => {
 
         const createdFruit = response.data.createFruit.data;
 
-        if (!response.data.createFruit.data) {
-            throw new Error("data missing");
+        if (response.data.createFruit.error) {
+            throw new Error(response.data.createFruit.error.message);
         }
 
         const [publish] = await publishFruit({
@@ -118,7 +134,8 @@ describe("Content entries", () => {
             apple: await createAndPublishFruit(appleData),
             strawberry: await createAndPublishFruit(strawberryData),
             banana: await createAndPublishFruit(bananaData),
-            orange: await createAndPublishFruit(orangeData)
+            orange: await createAndPublishFruit(orangeData),
+            greenApple: await createAndPublishFruit(greenAppleData)
         };
     };
 
@@ -463,7 +480,7 @@ describe("Content entries", () => {
     });
 
     it("should search for latest entries in given models", async () => {
-        const { apple, banana, strawberry, orange } = await setupFruits();
+        const { apple, banana, strawberry, orange, greenApple } = await setupFruits();
 
         const [secondBananaResponse] = await createFruitFrom({
             revision: banana.id
@@ -503,6 +520,17 @@ describe("Content entries", () => {
                                 id: banana.id,
                                 entryId: banana.entryId,
                                 title: banana.name
+                            }
+                        },
+                        {
+                            id: greenApple.id,
+                            entryId: greenApple.entryId,
+                            title: greenApple.name,
+                            status: greenApple.meta.status,
+                            published: {
+                                id: greenApple.id,
+                                entryId: greenApple.entryId,
+                                title: greenApple.name
                             }
                         },
                         {
@@ -547,7 +575,7 @@ describe("Content entries", () => {
 
     const searchQueries: [string, string[]][] = [
         ["webiny", ["Banana", "Strawberry"]],
-        ["cms", ["Banana", "Apple"]]
+        ["cms", ["Green-Apple", "Banana", "Apple"]]
     ];
 
     it.each(searchQueries)(
@@ -576,4 +604,27 @@ describe("Content entries", () => {
             });
         }
     );
+
+    it("should find an entry containing dash in the name", async () => {
+        const { greenApple } = await setupFruits();
+
+        const [response] = await searchContentEntries({
+            modelsIds: ["fruit"],
+            query: "green-apple"
+        });
+
+        expect(response).toMatchObject({
+            data: {
+                entries: {
+                    data: [
+                        {
+                            id: greenApple.id,
+                            title: greenApple.name
+                        }
+                    ],
+                    error: null
+                }
+            }
+        });
+    });
 });
