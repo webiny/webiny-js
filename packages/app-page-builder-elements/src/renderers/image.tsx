@@ -49,29 +49,30 @@ export const ImageRendererComponent: React.FC<ImageRendererComponentProps> = ({
         const { title } = element.data.image;
         const { src } = value || element.data?.image?.file;
 
-        let supportedImageResizeWidths: number[] = [];
+        // If a fixed image width in pixels was set, let's filter out unneeded
+        // image resize widths. For example, if 155px was set as the fixed image
+        // width, then we want the `srcset` attribute to only contain 100w and 300w.
+        let srcSetWidths: number[] = [];
 
-        // If an image width in pixels was set, let's filter
-        // out non-optimal image resize widths that are wider.
-        // We only use supported widths that are lower than the
-        // provided one, and the one above it.
         const imageWidth = element.data.image.width;
         if (imageWidth && imageWidth.endsWith("px")) {
             const imageWidthInt = parseInt(imageWidth);
             for (let i = 0; i < SUPPORTED_IMAGE_RESIZE_WIDTHS.length; i++) {
                 const resizeWidth = SUPPORTED_IMAGE_RESIZE_WIDTHS[i];
                 if (imageWidthInt > resizeWidth) {
-                    supportedImageResizeWidths.push(resizeWidth);
+                    srcSetWidths.push(resizeWidth);
                 } else {
-                    supportedImageResizeWidths.push(resizeWidth);
+                    srcSetWidths.push(resizeWidth);
                     break;
                 }
             }
         } else {
-            supportedImageResizeWidths = SUPPORTED_IMAGE_RESIZE_WIDTHS;
+            // If a fixed image width was not provided, we
+            // rely on all the supported image resize widths.
+            srcSetWidths = SUPPORTED_IMAGE_RESIZE_WIDTHS;
         }
 
-        const srcSet = supportedImageResizeWidths
+        const srcSet = srcSetWidths
             .map(item => {
                 return `${src}?width=${item} ${item}w`;
             })
