@@ -37,7 +37,11 @@ const plugin: FbEditorTrigger = {
                     </Cell>
                     <Cell span={12}>
                         <Bind name={"content"}>
-                            <Input rows={5} label={t`E-mail content`} />
+                            <Input
+                                rows={5}
+                                label={t`E-mail content`}
+                                description="You can use {fields.slug} (example {field.firstName}) in the email content, which will be replaced with actual values from the form before the email is sent."
+                            />
                         </Bind>
                     </Cell>
                     <Cell>
