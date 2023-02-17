@@ -1221,7 +1221,7 @@ export interface CmsModelCreateInput {
     /**
      * Description of the content model.
      */
-    description?: string;
+    description?: string | null;
     /**
      * Group where to put the content model in.
      */
@@ -1348,7 +1348,7 @@ export interface CmsModelUpdateInput {
     /**
      * A new description of the content model.
      */
-    description?: string;
+    description?: string | null;
     /**
      * A list of content model fields to define the entry values.
      */
