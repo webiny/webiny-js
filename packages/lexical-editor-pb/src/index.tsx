@@ -6,6 +6,7 @@ import { ParagraphPlugin } from "~/plugins/ParagraphPlugin";
 import { RichVariableInputPlugin } from "~/plugins/elementSettings/variables/RichVariableInputPlugin";
 import { TextVariableInputPlugin } from "~/plugins/elementSettings/variables/TextVariableInputPlugin";
 import { PbTextPlugin } from "~/plugins/PbTextPlugin";
+import { TextElementRendererPlugin } from "~/render/plugins/TextElementRendererPlugin";
 
 export const LexicalEditorPlugin = () => {
     return (
@@ -21,6 +22,8 @@ export const LexicalEditorPlugin = () => {
             {/* Render */}
             <HeadingPlugin />
             <ParagraphPlugin />
+            {/* Render public web site for legacy renderer component */}
+            <TextElementRendererPlugin />
         </>
     );
 };
