@@ -11090,10 +11090,13 @@ __metadata:
     "@webiny/api-aco": 0.0.0
     "@webiny/api-headless-cms": 0.0.0
     "@webiny/api-headless-cms-ddb": 0.0.0
+    "@webiny/api-i18n": 0.0.0
     "@webiny/api-i18n-ddb": 0.0.0
     "@webiny/api-page-builder": 0.0.0
     "@webiny/api-page-builder-so-ddb": 0.0.0
+    "@webiny/api-security": 0.0.0
     "@webiny/api-security-so-ddb": 0.0.0
+    "@webiny/api-tenancy": 0.0.0
     "@webiny/api-tenancy-so-ddb": 0.0.0
     "@webiny/error": 0.0.0
     "@webiny/handler": 0.0.0
