@@ -14,12 +14,10 @@ interface Params {
 }
 
 export const contentModelPluginFactory = (params: Params): CmsModelPlugin => {
-    const { group, locale, tenant, modelDefinition } = params;
+    const { group, modelDefinition } = params;
 
     return createCmsModel({
         group,
-        locale,
-        tenant,
         ...modelDefinition
     });
 };

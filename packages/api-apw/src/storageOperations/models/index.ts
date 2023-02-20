@@ -76,8 +76,6 @@ export const createApwModels = (context: CmsContext) => {
     for (const modelDefinition of modelDefinitions) {
         const cmsModelPlugin = contentModelPluginFactory({
             group: cmsGroupPlugin.contentModelGroup,
-            tenant: context.tenancy.getCurrentTenant().id,
-            locale: locale.code,
             modelDefinition
         });
         /**
