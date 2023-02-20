@@ -2,7 +2,7 @@ import React, { forwardRef, useMemo, useState } from "react";
 
 import { ReactComponent as More } from "@material-design-icons/svg/filled/more_vert.svg";
 import { FolderDialogUpdate } from "@webiny/app-aco";
-import { FolderItem } from "@webiny/app-aco/types";
+import { FolderItem, SearchRecordItem } from "@webiny/app-aco/types";
 import { IconButton } from "@webiny/ui/Button";
 import { Columns, DataTable } from "@webiny/ui/DataTable";
 import { Menu } from "@webiny/ui/Menu";
@@ -28,7 +28,7 @@ import { PbPageDataLink } from "~/types";
 import { FolderDialogDelete } from "@webiny/app-aco/components";
 
 interface Props {
-    pages: PbPageDataLink[];
+    records: SearchRecordItem[];
     folders: FolderItem[];
     loading?: boolean;
     openPreviewDrawer: () => void;
@@ -43,34 +43,35 @@ interface Entry {
     savedOn: string;
     status?: string;
     version?: number;
-    category?: string;
-    original: PbPageDataLink | FolderItem;
+    original: SearchRecordItem | FolderItem;
     selectable: boolean;
 }
 
 export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
-    const { folders, pages, loading, openPreviewDrawer, onSelectRow } = props;
+    const { folders, records, loading, openPreviewDrawer, onSelectRow } = props;
 
     const [data, setData] = useState<Entry[]>([]);
     const [selectedFolder, setSelectedFolder] = useState<FolderItem>();
     const [updateDialogOpen, setUpdateDialogOpen] = useState<boolean>(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
 
-    const createPagesData = useMemo(() => {
-        return (items: PbPageDataLink[]): Entry[] =>
-            items.map(item => ({
-                id: item.id,
-                type: "PAGE",
-                title: item.title,
-                createdBy: item.createdBy.displayName || "-",
-                savedOn: item.savedOn,
-                status: item.status,
-                version: item.version,
-                category: item.category.name,
-                original: item,
-                selectable: true
-            }));
-    }, [pages]);
+    const createRecordsData = useMemo(() => {
+        return (items: SearchRecordItem[]): Entry[] =>
+            items.map(item => {
+                console.log("item", item);
+                return {
+                    id: item.id,
+                    type: "PAGE",
+                    title: item.title || "-",
+                    createdBy: item.data.createdBy.displayName || "-",
+                    savedOn: item.data.savedOn || "-",
+                    status: item.data.status || "-",
+                    version: item.data.version || "-",
+                    original: item.data || {},
+                    selectable: true
+                };
+            });
+    }, [records]);
 
     const createFoldersData = useMemo(() => {
         return (items: FolderItem[]): Entry[] =>
@@ -87,11 +88,11 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
 
     useDeepCompareEffect(() => {
         const foldersData = createFoldersData(folders);
-        const pagesData = createPagesData(pages);
+        const pagesData = createRecordsData(records);
 
         const dataset = orderBy([...foldersData, ...pagesData], ["type", "name"], ["asc", "asc"]);
         setData(dataset);
-    }, [{ ...folders }, { ...pages }]);
+    }, [{ ...folders }, { ...records }]);
 
     const columns: Columns<Entry> = {
         title: {
@@ -110,10 +111,6 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
         savedOn: {
             header: "Last modified",
             cell: ({ savedOn }) => <TimeAgo datetime={savedOn} />
-        },
-        category: {
-            header: "Category",
-            cell: ({ category }) => category || "-"
         },
         status: {
             header: "Status",
@@ -138,10 +135,10 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
                 if (type === "PAGE") {
                     return (
                         <Menu handle={<IconButton icon={<More />} />}>
-                            <PageActionEdit page={original as PbPageDataLink} />
-                            <PageActionPreview page={original as PbPageDataLink} />
-                            <PageActionPublish page={original as PbPageDataLink} />
-                            <PageActionDelete page={original as PbPageDataLink} />
+                            <PageActionEdit page={original as SearchRecordItem} />
+                            <PageActionPreview page={original as SearchRecordItem} />
+                            <PageActionPublish page={original as SearchRecordItem} />
+                            <PageActionDelete page={original as SearchRecordItem} />
                         </Menu>
                     );
                 } else {

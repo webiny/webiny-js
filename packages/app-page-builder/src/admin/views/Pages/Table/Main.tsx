@@ -11,7 +11,6 @@ import CategoriesDialog from "~/admin/views/Categories/CategoriesDialog";
 import useCreatePage from "~/admin/views/Pages/hooks/useCreatePage";
 import useImportPage from "~/admin/views/Pages/hooks/useImportPage";
 import { useCanCreatePage } from "~/admin/views/Pages/hooks/useCanCreate";
-import useGetPages from "~/admin/views/Pages/hooks/useGetPages";
 
 import { Empty } from "~/admin/components/Table/Empty";
 import { Header } from "~/admin/components/Table/Header";
@@ -62,12 +61,12 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
     const { folders = [], loading: foldersLoading } = useFolders(FOLDER_TYPE);
     const {
         records,
-        loading: linksLoading,
+        loading: recordsLoading,
         meta,
         listRecords
     } = useRecords(FOLDER_TYPE, folderId || FOLDER_ID_DEFAULT);
 
-    const { pages, loading: pagesLoading } = useGetPages(records, folderId);
+    // const { pages, loading: pagesLoading } = useGetPages(records, folderId);
 
     const [subFolders, setSubFolders] = useState<FolderItem[]>([]);
     const [folderName, setFolderName] = useState<string>();
@@ -159,18 +158,13 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
 
     const isLoading = useMemo(() => {
         return (
-            pagesLoading.INIT ||
-            linksLoading.INIT ||
-            foldersLoading.INIT ||
-            pagesLoading.LIST ||
-            linksLoading.LIST ||
-            foldersLoading.LIST
+            recordsLoading.INIT || foldersLoading.INIT || recordsLoading.LIST || foldersLoading.LIST
         );
-    }, [foldersLoading, linksLoading, pagesLoading]);
+    }, [foldersLoading, recordsLoading]);
 
     const isLoadingMore = useMemo(() => {
-        return pagesLoading.LIST_MORE || linksLoading.LIST_MORE;
-    }, [linksLoading, pagesLoading]);
+        return recordsLoading.LIST_MORE;
+    }, [recordsLoading]);
 
     useEffect(() => {
         if (!showPreviewDrawer) {
@@ -194,7 +188,7 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
                     selected={selected}
                 />
                 <Wrapper>
-                    {pages.length === 0 && subFolders.length === 0 && !isLoading ? (
+                    {records.length === 0 && subFolders.length === 0 && !isLoading ? (
                         <Empty
                             canCreate={canCreate}
                             onCreatePage={handleOnCreatePage}
@@ -215,7 +209,7 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
                                 <Table
                                     ref={tableRef}
                                     folders={subFolders}
-                                    pages={[]}
+                                    records={records}
                                     loading={isLoading}
                                     openPreviewDrawer={openPreviewDrawer}
                                     onSelectRow={rows => {
@@ -238,7 +232,7 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
                 </Wrapper>
             </MainContainer>
             <FolderDialogCreate
-                type={"page"}
+                type={FOLDER_TYPE}
                 open={showFoldersDialog}
                 onClose={closeFoldersDialog}
                 parentId={folderId || null}
