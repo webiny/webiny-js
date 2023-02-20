@@ -14,6 +14,7 @@
     "@emotion/core": "^10.0.27",
     "@emotion/styled": "^10.0.27",
     "@types/react": "17.0.39",
+    "@webiny/app": "0.0.0",
     "@webiny/app-admin": "0.0.0",
     "@webiny/app-page-builder": "0.0.0",
     "@webiny/app-tenant-manager": "0.0.0",

@@ -1,3 +1,5 @@
+// This file is necessary only for backwards compatibility.
+// We'll remove this once the legacy rendering engine is removed.
 import React from "react";
 import { plugins } from "@webiny/plugins";
 import { Routes as ReactRouterRoutes } from "@webiny/react-router";

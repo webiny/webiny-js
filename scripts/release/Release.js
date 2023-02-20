@@ -10,6 +10,7 @@ const { Octokit } = require("@octokit/rest");
 class Release {
     tag = undefined;
     version = undefined;
+    mostRecentVersion = undefined;
     createGithubRelease = false;
 
     constructor(logger) {
@@ -53,13 +54,13 @@ class Release {
         {
             // Determine current version
             const tags = await this.__getTags();
-            const mostRecentVersion = this.__getMostRecentVersion(
+            this.mostRecentVersion = this.__getMostRecentVersion(
                 [tags["latest"], tags[this.tag === "latest" ? "beta" : this.tag]].filter(Boolean)
             );
 
-            this.logger.info("Most recent version is %s", mostRecentVersion);
+            this.logger.info("Most recent version is %s", this.mostRecentVersion);
             const lernaJSON = await loadJSON("example.lerna.json");
-            lernaJSON.version = mostRecentVersion;
+            lernaJSON.version = this.mostRecentVersion;
             await writeJSON("lerna.json", lernaJSON);
             this.logger.info("Lerna config was written to %s", "lerna.json");
         }
@@ -67,7 +68,7 @@ class Release {
         // Run `lerna` to version packages
         let version = this.version;
         if (typeof this.version === "function") {
-            version = await this.version();
+            version = await this.version(this.mostRecentVersion);
         }
 
         if (!Array.isArray(version)) {

@@ -1,27 +1,27 @@
 import React from "react";
 import { validation } from "@webiny/validation";
 import { RichTextRenderer } from "@webiny/react-rich-text-renderer";
-import { FieldMessage } from "./fields/components/FieldMessage";
+import { FieldErrorMessage } from "./fields/components/FieldErrorMessage";
 import { useBind } from "@webiny/form";
 import { Field } from "./fields/components/Field";
 import { Row } from "./Row";
 import { Cell } from "./Cell";
-import { FieldLabel } from "./fields/components/FieldLabel";
+import { FieldLabelStyled } from "./fields/components/FieldLabel";
 import { CheckboxButton, CheckboxGroup } from "./fields/Checkbox";
 import {
     TermsOfServiceComponent,
     TermsOfServiceChildrenFunction
 } from "@webiny/app-page-builder-elements/renderers/form/types";
 import styled from "@emotion/styled";
-import { typography } from "../../../theme";
+import theme from "../../../theme";
 
 interface Props {
     component: TermsOfServiceComponent;
 }
 
-const RteFieldLabel = styled(FieldLabel)`
+const RteFieldLabel = styled(FieldLabelStyled)`
     .rte-block-paragraph {
-        ${typography.paragraph1};
+        ${theme.styles.typography["paragraph1"]};
         margin: 0;
     }
 `;
@@ -53,7 +53,7 @@ export const renderCheckbox: TermsOfServiceChildrenFunction = ({
                             <RichTextRenderer data={message} />
                         </RteFieldLabel>
                     </CheckboxGroup>
-                    <FieldMessage isValid={bind.validation.isValid} errorMessage={errorMessage} />
+                    <FieldErrorMessage isValid={bind.validation.isValid} message={errorMessage} />
                 </Field>
             </Cell>
         </Row>

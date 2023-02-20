@@ -7,10 +7,8 @@ import { Typography } from "~/Typography";
 import { css } from "emotion";
 import noop from "lodash/noop";
 import isEmpty from "lodash/isEmpty";
-
 import { Checkbox } from "../../Checkbox";
-import { Menu, MenuItem } from "../../Menu";
-import { Grid, Cell } from "../../Grid";
+import { Menu, MenuItem } from "~/Menu";
 
 import {
     RefreshIcon,
@@ -86,20 +84,24 @@ const ListContainer = styled("div")({
     }
 });
 
-const listHeader = css({
-    borderBottom: "1px solid var(--mdc-theme-on-background)",
-    color: "var(--mdc-theme-text-primary-on-background)",
-    width: "100%"
-});
+const ListHeader = styled.div`
+    border-bottom: 1px solid var(--mdc-theme-on-background);
+    color: var(--mdc-theme-text-primary-on-background);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 24px;
+    max-height: 85px;
+    min-height: 85px;
+`;
 
-const listSubHeader = css({
-    width: "100%",
-    "&.mdc-layout-grid": {
-        borderBottom: "1px solid var(--mdc-theme-on-background)",
-        padding: "10px 24px 10px 12px",
-        color: "var(--mdc-theme-text-primary-on-background)"
-    }
-});
+const ListSubHeader = styled.div`
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid var(--mdc-theme-on-background);
+`;
 
 const ListHeaderItem = styled("div")({
     display: "inline-block",
@@ -108,15 +110,6 @@ const ListHeaderItem = styled("div")({
         opacity: 0.5,
         pointerEvents: "none"
     }
-});
-
-const listTitle = css({
-    display: "flex",
-    alignItems: "center"
-});
-
-const listActions = css({
-    textAlign: "right"
 });
 
 const scrollList = css({
@@ -356,13 +349,6 @@ const Pagination: React.FC<DataListProps> = props => {
     );
 };
 
-const Search: React.FC<DataListProps> = props => {
-    if (!props.search) {
-        return null;
-    }
-    return <Cell span={7}>{React.cloneElement(props.search, props)}</Cell>;
-};
-
 export const DataList: React.FC<DataListProps> = props => {
     let render: React.ReactNode | null = null;
 
@@ -377,40 +363,29 @@ export const DataList: React.FC<DataListProps> = props => {
 
     const showOptions = props.showOptions || {};
 
-    const listHeaderActionsCellSpan = props.actions ? 7 : 0;
-    const listHeaderTitleCellSpan = 12 - listHeaderActionsCellSpan;
-
     return (
         <DataListModalOverlayProvider>
             <ListContainer className={"webiny-data-list"} data-testid={"ui.list.data-list"}>
                 {(props.title || props.actions) && (
-                    <Grid className={listHeader}>
-                        <Cell span={listHeaderTitleCellSpan} className={listTitle}>
-                            <Typography use="headline5">{props.title}</Typography>
-                        </Cell>
-                        {props.actions && (
-                            <Cell span={listHeaderActionsCellSpan} className={listActions}>
-                                {props.actions}
-                            </Cell>
-                        )}
-                    </Grid>
+                    <ListHeader>
+                        <Typography use="headline5">{props.title}</Typography>
+                        {props.actions}
+                    </ListHeader>
                 )}
 
                 {Object.keys(showOptions).length > 0 && (
-                    <Grid className={listSubHeader}>
-                        <Search {...props} />
-                        <Cell span={props.search ? 5 : 12} style={{ justifySelf: "end" }}>
-                            <MultiSelectAll {...props} />
-                            {showOptions.refresh && <RefreshButton {...props} />}
-                            {showOptions.pagination && <Pagination {...props} />}
-                            {showOptions.sorters && <Sorters {...props} />}
-                            {showOptions.filters && <Filters {...props} />}
-                            {props.modalOverlayAction ? (
-                                <ListHeaderItem>{props.modalOverlayAction}</ListHeaderItem>
-                            ) : null}
-                            <MultiSelectActions {...props} />
-                        </Cell>
-                    </Grid>
+                    <ListSubHeader>
+                        {props.search ? React.cloneElement(props.search, props) : null}
+                        <MultiSelectAll {...props} />
+                        {showOptions.refresh && <RefreshButton {...props} />}
+                        {showOptions.pagination && <Pagination {...props} />}
+                        {showOptions.sorters && <Sorters {...props} />}
+                        {showOptions.filters && <Filters {...props} />}
+                        {props.modalOverlayAction ? (
+                            <ListHeaderItem>{props.modalOverlayAction}</ListHeaderItem>
+                        ) : null}
+                        <MultiSelectActions {...props} />
+                    </ListSubHeader>
                 )}
 
                 <div className={classNames(dataListContent, "webiny-data-list__content")}>

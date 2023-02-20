@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useCallback, useMemo } from "react";
 import { PageElementsProvider as PbPageElementsProvider } from "@webiny/app-page-builder-elements/contexts/PageElements";
 
 // Attributes modifiers.
 import { createId } from "@webiny/app-page-builder-elements/modifiers/attributes/id";
 import { createClassName } from "@webiny/app-page-builder-elements/modifiers/attributes/className";
 import { createAnimation } from "@webiny/app-page-builder-elements/modifiers/attributes/animation";
+import { initializeAos } from "@webiny/app-page-builder-elements/modifiers/attributes/animation/initializeAos";
 
 // Styles modifiers.
 import { createBackground } from "@webiny/app-page-builder-elements/modifiers/styles/background";
@@ -30,40 +31,45 @@ import { PbRenderElementPlugin } from "~/types";
 export const PageElementsProvider: React.FC = ({ children }) => {
     const pageBuilder = usePageBuilder();
 
-    const renderers = plugins
-        .byType<PbRenderElementPlugin>("pb-render-page-element")
-        .reduce((current, item) => {
-            return { ...current, [item.elementType]: item.renderer };
-        }, {});
+    const getRenderers = useCallback(() => {
+        return plugins
+            .byType<PbRenderElementPlugin>("pb-render-page-element")
+            .reduce((current, item) => {
+                return { ...current, [item.elementType]: item.render };
+            }, {});
+    }, []);
 
-    const modifiers = {
-        attributes: {
-            id: createId(),
-            className: createClassName(),
-            animation: createAnimation()
-        },
-        styles: {
-            background: createBackground(),
-            border: createBorder(),
-            gridFlexWrap: createGridFlexWrap(),
-            height: createHeight(),
-            horizontalAlign: createHorizontalAlign(),
-            margin: createMargin(),
-            text: createText(),
-            textAlign: createTextAlign(),
-            padding: createPadding(),
-            shadow: createShadow(),
-            verticalAlign: createVerticalAlign(),
-            visibility: createVisibility(),
-            width: createWidth()
-        }
-    };
+    const modifiers = useMemo(
+        () => ({
+            attributes: {
+                id: createId(),
+                className: createClassName(),
+                animation: createAnimation({ initializeAos })
+            },
+            styles: {
+                background: createBackground(),
+                border: createBorder(),
+                gridFlexWrap: createGridFlexWrap(),
+                height: createHeight(),
+                horizontalAlign: createHorizontalAlign(),
+                margin: createMargin(),
+                text: createText(),
+                textAlign: createTextAlign(),
+                padding: createPadding(),
+                shadow: createShadow(),
+                verticalAlign: createVerticalAlign(),
+                visibility: createVisibility(),
+                width: createWidth()
+            }
+        }),
+        []
+    );
 
     return (
         <PbPageElementsProvider
             // We can assign `Theme` here because we know at this point we're using the new elements rendering engine.
             theme={pageBuilder.theme as Theme}
-            renderers={renderers}
+            renderers={getRenderers}
             modifiers={modifiers}
         >
             {children}

@@ -19,4 +19,4 @@ export { ElementSettingsRenderer } from "./plugins/elementSettings/advanced/Elem
 export * from "../render/components/ElementRoot";
 export { default as DropZone } from "../editor/components/DropZone";
 export { default as ImageContainer } from "./plugins/elements/image/ImageContainer";
-export { default as ImagesList } from "./plugins/elements/imagesList/ImagesList";
+export { default as ImagesList } from "./plugins/elements/imagesList/PbImagesList";

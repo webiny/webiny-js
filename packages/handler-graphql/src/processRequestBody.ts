@@ -1,5 +1,5 @@
 import { ExecutionResult, graphql, GraphQLSchema } from "graphql";
-import { GraphQLAfterQueryPlugin, GraphQLBeforeQueryPlugin, GraphQLRequestBody } from "./types";
+import { GraphQLAfterQueryPlugin, GraphQLBeforeQueryPlugin, GraphQLRequestBody } from "~/types";
 import { Context } from "@webiny/api/types";
 
 const processRequestBody = async (
@@ -27,14 +27,13 @@ export default async (
     schema: GraphQLSchema,
     context: Context
 ): Promise<ExecutionResult[] | ExecutionResult> => {
-    if (Array.isArray(requestBody) === true) {
-        const result: ExecutionResult[] = [];
-        for (let i = 0; i < (requestBody as GraphQLRequestBody[]).length; i++) {
-            result.push(
-                await processRequestBody((requestBody as GraphQLRequestBody[])[i], schema, context)
-            );
+    if (Array.isArray(requestBody)) {
+        const results: ExecutionResult[] = [];
+        for (const body of requestBody) {
+            const result = await processRequestBody(body, schema, context);
+            results.push(result);
         }
-        return result;
+        return results;
     }
-    return await processRequestBody(requestBody as GraphQLRequestBody, schema, context);
+    return await processRequestBody(requestBody, schema, context);
 };

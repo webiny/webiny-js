@@ -2,6 +2,7 @@
   "extends": "../../../../../tsconfig.json",
   "include": ["src"],
   "references": [
+    { "path": "../../../../../packages/api-aco/tsconfig.build.json" },
     { "path": "../../../../../packages/api-file-manager/tsconfig.build.json" },
     { "path": "../../../../../packages/api-file-manager-ddb/tsconfig.build.json" },
     { "path": "../../../../../packages/api-file-manager-s3/tsconfig.build.json" },
@@ -24,6 +25,8 @@
   "compilerOptions": {
     "paths": {
       "~/*": ["./src/*"],
+      "@webiny/api-aco/*": ["../../../../../packages/api-aco/src/*"],
+      "@webiny/api-aco": ["../../../../../packages/api-aco/src"],
       "@webiny/api-file-manager/*": ["../../../../../packages/api-file-manager/src/*"],
       "@webiny/api-file-manager": ["../../../../../packages/api-file-manager/src"],
       "@webiny/api-file-manager-ddb/*": ["../../../../../packages/api-file-manager-ddb/src/*"],

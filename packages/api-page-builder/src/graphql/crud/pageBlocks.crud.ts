@@ -15,19 +15,18 @@ import { withFields, string } from "@commodo/fields";
 import { object } from "commodo-fields-object";
 import { validation } from "@webiny/validation";
 import {
-    OnAfterPageBlockCreateTopicParams,
-    OnAfterPageBlockDeleteTopicParams,
-    OnAfterPageBlockUpdateTopicParams,
-    OnBeforePageBlockCreateTopicParams,
-    OnBeforePageBlockDeleteTopicParams,
-    OnBeforePageBlockUpdateTopicParams,
+    OnPageBlockAfterCreateTopicParams,
+    OnPageBlockAfterDeleteTopicParams,
+    OnPageBlockAfterUpdateTopicParams,
+    OnPageBlockBeforeCreateTopicParams,
+    OnPageBlockBeforeDeleteTopicParams,
+    OnPageBlockBeforeUpdateTopicParams,
     PageBuilderContextObject,
     PageBuilderStorageOperations,
     PageBlock,
     PageBlocksCrud,
     PageBlockStorageOperationsListParams,
-    PbContext,
-    Page
+    PbContext
 } from "~/types";
 import checkBasePermissions from "./utils/checkBasePermissions";
 import checkOwnPermissions from "./utils/checkOwnPermissions";
@@ -61,23 +60,23 @@ export interface CreatePageBlocksCrudParams {
 export const createPageBlocksCrud = (params: CreatePageBlocksCrudParams): PageBlocksCrud => {
     const { context, storageOperations, getLocaleCode, getTenantId } = params;
 
-    const onBeforePageBlockCreate = createTopic<OnBeforePageBlockCreateTopicParams>();
-    const onAfterPageBlockCreate = createTopic<OnAfterPageBlockCreateTopicParams>();
-    const onBeforePageBlockUpdate = createTopic<OnBeforePageBlockUpdateTopicParams>();
-    const onAfterPageBlockUpdate = createTopic<OnAfterPageBlockUpdateTopicParams>();
-    const onBeforePageBlockDelete = createTopic<OnBeforePageBlockDeleteTopicParams>();
-    const onAfterPageBlockDelete = createTopic<OnAfterPageBlockDeleteTopicParams>();
+    const onPageBlockBeforeCreate = createTopic<OnPageBlockBeforeCreateTopicParams>();
+    const onPageBlockAfterCreate = createTopic<OnPageBlockAfterCreateTopicParams>();
+    const onPageBlockBeforeUpdate = createTopic<OnPageBlockBeforeUpdateTopicParams>();
+    const onPageBlockAfterUpdate = createTopic<OnPageBlockAfterUpdateTopicParams>();
+    const onPageBlockBeforeDelete = createTopic<OnPageBlockBeforeDeleteTopicParams>();
+    const onPageBlockAfterDelete = createTopic<OnPageBlockAfterDeleteTopicParams>();
 
     return {
         /**
          * Lifecycle events
          */
-        onBeforePageBlockCreate,
-        onAfterPageBlockCreate,
-        onBeforePageBlockUpdate,
-        onAfterPageBlockUpdate,
-        onBeforePageBlockDelete,
-        onAfterPageBlockDelete,
+        onPageBlockBeforeCreate,
+        onPageBlockAfterCreate,
+        onPageBlockBeforeUpdate,
+        onPageBlockAfterUpdate,
+        onPageBlockBeforeDelete,
+        onPageBlockAfterDelete,
 
         async getPageBlock(id) {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
@@ -196,14 +195,14 @@ export const createPageBlocksCrud = (params: CreatePageBlocksCrudParams): PageBl
             };
 
             try {
-                await onBeforePageBlockCreate.publish({
+                await onPageBlockBeforeCreate.publish({
                     pageBlock
                 });
                 const result = await storageOperations.pageBlocks.create({
                     input: data,
                     pageBlock
                 });
-                await onAfterPageBlockCreate.publish({
+                await onPageBlockAfterCreate.publish({
                     pageBlock
                 });
                 return result;
@@ -251,7 +250,7 @@ export const createPageBlocksCrud = (params: CreatePageBlocksCrudParams): PageBl
             };
 
             try {
-                await onBeforePageBlockUpdate.publish({
+                await onPageBlockBeforeUpdate.publish({
                     original,
                     pageBlock
                 });
@@ -260,7 +259,7 @@ export const createPageBlocksCrud = (params: CreatePageBlocksCrudParams): PageBl
                     original,
                     pageBlock
                 });
-                await onAfterPageBlockUpdate.publish({
+                await onPageBlockAfterUpdate.publish({
                     original,
                     pageBlock: result
                 });
@@ -292,13 +291,13 @@ export const createPageBlocksCrud = (params: CreatePageBlocksCrudParams): PageBl
             checkOwnPermissions(identity, permission, pageBlock);
 
             try {
-                await onBeforePageBlockDelete.publish({
+                await onPageBlockBeforeDelete.publish({
                     pageBlock
                 });
                 const result = await storageOperations.pageBlocks.delete({
                     pageBlock
                 });
-                await onAfterPageBlockDelete.publish({
+                await onPageBlockAfterDelete.publish({
                     pageBlock: result
                 });
                 return result;
@@ -313,10 +312,13 @@ export const createPageBlocksCrud = (params: CreatePageBlocksCrudParams): PageBl
                 );
             }
         },
-        async resolvePageBlocks(this: PageBuilderContextObject, page: Page) {
+        async resolvePageBlocks(
+            this: PageBuilderContextObject,
+            content: Record<string, any> | null
+        ) {
             const blocks = [];
 
-            for (const pageBlock of page.content?.elements) {
+            for (const pageBlock of content?.elements) {
                 const blockId = pageBlock.data?.blockId;
                 // If block has blockId, then it is a reference block, and we need to get elements for it.
                 if (!blockId) {
@@ -331,7 +333,7 @@ export const createPageBlocksCrud = (params: CreatePageBlocksCrudParams): PageBl
                         id: blockId
                     }
                 });
-                // We check if the block has variable values set on the page, and use them
+                // We check if the block has variable values set on the page/template, and use them
                 // in priority over the ones set inline in the block editor.
                 const blockDataVariables = blockData?.content?.data?.variables || [];
                 const variables = blockDataVariables.map((blockDataVariable: any) => {
@@ -350,7 +352,7 @@ export const createPageBlocksCrud = (params: CreatePageBlocksCrudParams): PageBl
                     cloneDeep({
                         ...pageBlock,
                         data: {
-                            blockId,
+                            ...pageBlock?.data,
                             ...blockData?.content?.data,
                             variables
                         },

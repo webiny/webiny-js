@@ -64,11 +64,11 @@ export const FolderDialogUpdate: React.FC<Props> = ({ folder, onClose, open }) =
                     <Form<SubmitData>
                         onSubmit={onSubmit}
                         data={{
-                            name: folder.name,
+                            title: folder.title,
                             slug: folder.slug,
                             parent: parentFolder && {
                                 id: parentFolder.id,
-                                name: parentFolder.name
+                                name: parentFolder.title
                             }
                         }}
                     >
@@ -82,12 +82,12 @@ export const FolderDialogUpdate: React.FC<Props> = ({ folder, onClose, open }) =
                                     <Grid>
                                         <Cell span={12}>
                                             <Bind
-                                                name={"name"}
+                                                name={"title"}
                                                 validators={[
                                                     validation.create("required,minLength:3")
                                                 ]}
                                             >
-                                                <Input label={t`Name`} />
+                                                <Input label={t`Title`} />
                                             </Bind>
                                         </Cell>
                                         <Cell span={12}>
@@ -108,17 +108,17 @@ export const FolderDialogUpdate: React.FC<Props> = ({ folder, onClose, open }) =
                                                             value={value}
                                                             options={folders
                                                                 .filter(el => el.id !== folder.id)
-                                                                .map(({ id, name }) => ({
+                                                                .map(({ id, title }) => ({
                                                                     id,
-                                                                    name
+                                                                    name: title
                                                                 }))}
                                                             label={t`Parent`}
-                                                            onChange={(value, selection) =>
+                                                            onChange={(value, selection) => {
                                                                 onBindChange({
                                                                     id: value,
                                                                     name: selection?.name
-                                                                })
-                                                            }
+                                                                });
+                                                            }}
                                                         />
                                                     );
                                                 }}

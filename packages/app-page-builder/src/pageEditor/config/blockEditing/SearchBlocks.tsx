@@ -112,10 +112,10 @@ const SearchBar = () => {
 
     const addBlockToContent = useCallback(
         plugin => {
-            const blockToAdd =
-                Object.keys(plugin.image).length === 0
-                    ? createBlockElements(plugin.name)
-                    : createBlockReference(plugin.name);
+            const blockToAdd = plugin.tags.includes("saved")
+                ? createBlockReference(plugin.name)
+                : createBlockElements(plugin.name);
+
             const element: any = {
                 ...content,
                 elements: [...content.elements, blockToAdd]

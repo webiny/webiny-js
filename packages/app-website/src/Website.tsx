@@ -1,29 +1,47 @@
 import React from "react";
+import { App, AppProps, HigherOrderComponent } from "@webiny/app";
 import { ApolloProvider } from "@apollo/react-hooks";
 import { CacheProvider } from "@emotion/core";
-import { BrowserRouter, Routes, Route } from "@webiny/react-router";
 import { PageBuilderProvider } from "@webiny/app-page-builder/contexts/PageBuilder";
 import { Page } from "./Page";
 import { createApolloClient, createEmotionCache } from "~/utils";
 
-interface Props {
+export interface WebsiteProps extends AppProps {
     apolloClient?: ReturnType<typeof createApolloClient>;
 }
 
-export const Website: React.FC<Props> = props => {
+const PageBuilderProviderHOC: HigherOrderComponent = PreviousProvider => {
+    return function PageBuilderProviderHOC({ children }) {
+        return (
+            <PageBuilderProvider>
+                <PreviousProvider>{children}</PreviousProvider>
+            </PageBuilderProvider>
+        );
+    };
+};
+
+export const Website: React.FC<WebsiteProps> = ({
+    children,
+    routes = [],
+    providers = [],
+    ...props
+}) => {
     const apolloClient = props.apolloClient || createApolloClient();
     const emotionCache = createEmotionCache();
+
+    // In development, debounce render by 1ms, to avoid router warnings about missing routes.
+    const debounceMs = Number(process.env.NODE_ENV !== "production");
 
     return (
         <CacheProvider value={emotionCache}>
             <ApolloProvider client={apolloClient}>
-                <BrowserRouter basename={process.env.PUBLIC_URL}>
-                    <PageBuilderProvider>
-                        <Routes>
-                            <Route path={"*"} component={Page} />
-                        </Routes>
-                    </PageBuilderProvider>
-                </BrowserRouter>
+                <App
+                    debounceRender={debounceMs}
+                    routes={[...routes, { path: "*", element: <Page /> }]}
+                    providers={[PageBuilderProviderHOC, ...providers]}
+                >
+                    {children}
+                </App>
             </ApolloProvider>
         </CacheProvider>
     );

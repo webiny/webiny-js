@@ -266,7 +266,7 @@ export const preparePageData = ({
                                                     typography: "heading1",
                                                     alignment: "center",
                                                     tag: "h1",
-                                                    color: "color5"
+                                                    color: "color6"
                                                 },
                                                 data: { text: "<b>Welcome to Webiny</b>" }
                                             },
@@ -348,7 +348,7 @@ export const preparePageData = ({
                                                     typography: "paragraph1",
                                                     alignment: "center",
                                                     tag: "div",
-                                                    color: "color5"
+                                                    color: "color6"
                                                 },
                                                 data: {
                                                     text: "Webiny makes it easy to build applications and websites on top of the serverless infrastructure by providing you with a ready-made CMS and a development framework.<br>"
@@ -473,7 +473,7 @@ export const preparePageData = ({
                                                     typography: "heading6",
                                                     alignment: "center",
                                                     tag: "h6",
-                                                    color: "color5"
+                                                    color: "color6"
                                                 },
                                                 data: { text: "Scalable" }
                                             },
@@ -494,7 +494,7 @@ export const preparePageData = ({
                                                     typography: "paragraph2",
                                                     alignment: "center",
                                                     tag: "div",
-                                                    color: "color5"
+                                                    color: "color6"
                                                 },
                                                 data: {
                                                     text: "Webiny apps can scale to handle the most demanding workloads.<br>"
@@ -562,7 +562,7 @@ export const preparePageData = ({
                                                     typography: "heading6",
                                                     alignment: "center",
                                                     tag: "h6",
-                                                    color: "color5"
+                                                    color: "color6"
                                                 },
                                                 data: { text: "No custom tooling required" }
                                             },
@@ -583,7 +583,7 @@ export const preparePageData = ({
                                                     typography: "paragraph2",
                                                     alignment: "center",
                                                     tag: "div",
-                                                    color: "color5"
+                                                    color: "color6"
                                                 },
                                                 data: {
                                                     text: "Webiny eliminates the need to build custom tooling to create serverless app<br>"
@@ -696,7 +696,7 @@ export const preparePageData = ({
                                                     typography: "heading6",
                                                     alignment: "center",
                                                     tag: "h6",
-                                                    color: "color5"
+                                                    color: "color6"
                                                 },
                                                 data: { text: "Cost effective" }
                                             },
@@ -717,7 +717,7 @@ export const preparePageData = ({
                                                     typography: "paragraph2",
                                                     alignment: "center",
                                                     tag: "div",
-                                                    color: "color5"
+                                                    color: "color6"
                                                 },
                                                 data: {
                                                     text: "Webiny apps run on serverless infrastructure which costs 80% less than VMs<br>"
@@ -786,7 +786,7 @@ export const preparePageData = ({
                                                     typography: "heading6",
                                                     alignment: "center",
                                                     tag: "h6",
-                                                    color: "color5"
+                                                    color: "color6"
                                                 },
                                                 data: { text: "Resolves serverless challenges" }
                                             },
@@ -807,7 +807,7 @@ export const preparePageData = ({
                                                     typography: "paragraph2",
                                                     alignment: "center",
                                                     tag: "div",
-                                                    color: "color5"
+                                                    color: "color6"
                                                 },
                                                 data: {
                                                     text: "Webiny removes all the challenges of building serverless applications<br>"

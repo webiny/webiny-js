@@ -1,3 +1,5 @@
+export * from "@webiny/theme/types";
+
 import React, { HTMLAttributes } from "react";
 import { type CSSObject } from "@emotion/core";
 import { Theme, StylesObject, ThemeBreakpoints } from "@webiny/theme/types";
@@ -21,7 +23,7 @@ export interface Element<TElementData = Record<string, any>> {
 
 export interface PageElementsProviderProps {
     theme: Theme;
-    renderers: Record<string, Renderer>;
+    renderers: Record<string, Renderer> | (() => Record<string, Renderer>);
     modifiers: {
         styles: Record<string, ElementStylesModifier>;
         attributes: Record<string, ElementAttributesModifier>;
@@ -32,6 +34,7 @@ export interface PageElementsProviderProps {
 
 export type AttributesObject = React.ComponentProps<any>;
 
+export type GetRenderers = () => Record<string, Renderer>;
 export type GetElementAttributes = (element: Element) => AttributesObject;
 export type GetElementStyles = (element: Element) => CSSObject;
 export type GetStyles = (styles: StylesObject | ((theme: Theme) => StylesObject)) => CSSObject;
@@ -76,6 +79,7 @@ export type SetElementStylesCallback = (callback: ElementStylesCallback) => void
 export type SetStylesCallback = (callback: StylesCallback) => void;
 
 export interface PageElementsContextValue extends PageElementsProviderProps {
+    getRenderers: GetRenderers;
     getElementAttributes: GetElementAttributes;
     getElementStyles: GetElementStyles;
     getStyles: GetStyles;
@@ -118,12 +122,6 @@ export interface PageProviderProps {
     layoutProps?: Record<string, any>;
 }
 
-export type PageContextValue = {
-    page: Page;
-    layout?: React.ComponentType<{ children: React.ReactNode }>;
-    layoutProps: Record<string, any>;
-};
-
 export type Renderer<T = {}, TElementData = Record<string, any>> = React.ComponentType<
     RendererProps<TElementData> & T
 >;
@@ -143,3 +141,15 @@ export type ElementStylesModifier = (args: {
 }) => StylesObject | null;
 
 export type LinkComponent = React.ComponentType<React.HTMLProps<HTMLAnchorElement>>;
+
+declare global {
+    // eslint-disable-next-line
+    namespace JSX {
+        interface IntrinsicElements {
+            "ps-tag": {
+                "data-key": string;
+                "data-value": string;
+            };
+        }
+    }
+}

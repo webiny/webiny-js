@@ -11,8 +11,8 @@ export default new ContextPlugin<PbContext>(context => {
 
         const variables = useElementVariables(block, element);
 
-        const label = variables.find(variable => variable.id.endsWith(".label"))?.value || null;
-        const url = variables.find(variable => variable.id.endsWith(".url"))?.value || null;
+        const label = variables?.find(variable => variable.id.endsWith(".label"))?.value || null;
+        const url = variables?.find(variable => variable.id.endsWith(".url"))?.value || null;
 
         if (label) {
             set(element, "data.buttonText", label);

@@ -25,6 +25,7 @@ import apolloLinks from "./apolloLinks";
 import { createViewCompositionProvider } from "@webiny/app-admin/base/providers/ViewCompositionProvider";
 import { AdvancedPublishingWorkflow } from "@webiny/app-apw";
 import { TenantManager } from "@webiny/app-tenant-manager";
+import { Module as MailerSettings } from "@webiny/app-mailer";
 
 export interface AdminProps extends Omit<BaseAdminProps, "createApolloClient"> {
     createApolloClient?: BaseAdminProps["createApolloClient"];
@@ -53,6 +54,7 @@ const App = (props: AdminProps) => {
             <HeadlessCMS createApolloClient={createApolloClient} />
             <AdvancedPublishingWorkflow />
             <TenantManager />
+            <MailerSettings />
             {props.children}
         </BaseAdmin>
     );

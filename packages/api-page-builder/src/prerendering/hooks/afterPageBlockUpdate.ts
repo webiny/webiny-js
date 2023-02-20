@@ -6,7 +6,7 @@ export default () => {
         /**
          * After a block has changed, rerender published pages.
          */
-        pageBuilder.onAfterPageBlockUpdate.subscribe(async ({ pageBlock }) => {
+        pageBuilder.onPageBlockAfterUpdate.subscribe(async ({ pageBlock }) => {
             await pageBuilder.prerendering.render({
                 tags: [{ tag: { key: "pb-page-block", value: pageBlock.id } }]
             });

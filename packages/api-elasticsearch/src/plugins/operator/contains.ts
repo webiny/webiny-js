@@ -18,7 +18,7 @@ export class ElasticsearchQueryBuilderOperatorContainsPlugin extends Elasticsear
             query_string: {
                 allow_leading_wildcard: true,
                 fields: [basePath],
-                query: normalizeValue(value),
+                query: `*${normalizeValue(value)}*`,
                 default_operator: "and"
             }
         });

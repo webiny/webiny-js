@@ -142,8 +142,8 @@ export type FbFormDetailsSubmissionsPlugin = Plugin & {
 
 export interface FbFormModel {
     id: FieldIdType;
+    formId: string;
     version: number;
-    parent: string;
     layout: FbFormModelFieldsLayout;
     fields: FbFormModelField[];
     published: boolean;
@@ -258,8 +258,6 @@ export type FbEditorTrigger = Plugin & {
     };
 };
 
-// ------------------------------------------------------------------------------------------------------------
-
 export type FormRenderFbFormModelField = FbFormModelField & {
     validators: ((value: string) => Promise<boolean>)[];
 };
@@ -270,7 +268,9 @@ export type FormRenderPropsType<T = Record<string, any>> = {
     getFields: () => FormRenderFbFormModelField[][];
     getDefaultValues: () => { [key: string]: any };
     ReCaptcha: ReCaptchaComponent;
+    reCaptchaEnabled: boolean;
     TermsOfService: TermsOfServiceComponent;
+    termsOfServiceEnabled: boolean;
     submit: (data: T) => Promise<FormSubmitResponseType>;
     formData: FbFormModel;
 };

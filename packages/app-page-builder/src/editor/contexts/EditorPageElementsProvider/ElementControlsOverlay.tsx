@@ -1,10 +1,15 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { Element, RendererMeta } from "@webiny/app-page-builder-elements/types";
 import styled from "@emotion/styled";
 import { CSSObject } from "@emotion/core";
 import { useActiveElementId } from "~/editor/hooks/useActiveElementId";
 import { useRenderer } from "@webiny/app-page-builder-elements";
 import { useUI } from "~/editor/hooks/useUI";
+import { useElementById } from "~/editor/hooks/useElementById";
+import { PbEditorElement } from "~/types";
+import { SetterOrUpdater } from "recoil";
+import Draggable from "~/editor/components/Draggable";
+import { disableDraggingMutation, enableDraggingMutation } from "~/editor/recoil/modules";
 
 const ACTIVE_COLOR = "var(--mdc-theme-primary)";
 const HOVER_COLOR = "var(--mdc-theme-secondary)";
@@ -20,54 +25,119 @@ declare global {
 
 interface Props {
     children?: React.ReactNode;
-    innerRef?: React.Ref<any>;
+    dropRef?: React.Ref<any>;
 }
 
+// Until the need for custom targets arises, we're hard-coding the available
+// targets (types of elements onto which another element can be dropped).
+const DEFAULT_TARGETS = ["cell", "block"];
+
+// We're doing the same with the list of non-draggable elements.
+const NON_DRAGGABLE_ELEMENTS = ["cell", "block"];
+
 export const ElementControlsOverlay: React.FC<Props> = props => {
-    const [{ isDragging }] = useUI();
+    const [{ isDragging }, setUi] = useUI();
     const [activeElementId, setActiveElementId] = useActiveElementId();
 
     const { getElement, meta } = useRenderer();
     const element = getElement();
 
-    const isActive = activeElementId === element.id;
+    const [editorElement, updateEditorElement] = useElementById(element.id) as [
+        PbEditorElement,
+        SetterOrUpdater<PbEditorElement>
+    ];
 
-    const { children, innerRef, ...rest } = props;
+    const isActive = activeElementId === element.id;
+    const isHighlighted = editorElement.isHighlighted;
+
+    const { children, dropRef, ...rest } = props;
+
+    const beginDrag = useCallback(() => {
+        const data = { id: element.id, type: element.type };
+        setTimeout(() => {
+            setUi(enableDraggingMutation);
+        });
+
+        return { ...data, target: DEFAULT_TARGETS };
+    }, [element.id]);
+
+    const endDrag = useCallback(() => {
+        setUi(disableDraggingMutation);
+    }, [element.id]);
+
+    const isDraggable = !NON_DRAGGABLE_ELEMENTS.includes(element.type);
 
     return (
-        <PbElementControlsOverlay
-            isDragging={isDragging}
-            isActive={isActive}
-            element={element}
-            elementRendererMeta={meta}
-            className={isActive ? "active" : ""}
-            onClick={() => setActiveElementId(element.id)}
-            onMouseEnter={(e: MouseEvent) => {
-                if (isActive) {
-                    return;
-                }
-                e.stopPropagation();
-                const target = e.target as HTMLDivElement;
-                target.classList.add("hover");
-            }}
-            onMouseLeave={(e: MouseEvent) => {
-                if (isActive) {
-                    return;
-                }
-                e.stopPropagation();
-                const target = e.target as HTMLDivElement;
-                target.classList.remove("hover");
-            }}
-            dropRef={innerRef}
-            {...rest}
+        <Draggable
+            enabled={isDraggable}
+            target={DEFAULT_TARGETS}
+            beginDrag={beginDrag}
+            endDrag={endDrag}
         >
-            {children}
-        </PbElementControlsOverlay>
+            {({ drag: dragRef }) => (
+                <PbElementControlsOverlay
+                    isDragging={isDragging}
+                    isActive={isActive}
+                    isHighlighted={isHighlighted}
+                    element={element}
+                    elementRendererMeta={meta}
+                    onClick={() => {
+                        updateEditorElement(element => ({ ...element, isHighlighted: false }));
+                        setActiveElementId(element.id);
+                    }}
+                    onMouseEnter={(e: MouseEvent) => {
+                        if (isActive || isHighlighted) {
+                            return;
+                        }
+
+                        e.stopPropagation();
+                        updateEditorElement(element => ({ ...element, isHighlighted: true }));
+                    }}
+                    onMouseLeave={(e: MouseEvent) => {
+                        if (isActive || !isHighlighted) {
+                            return;
+                        }
+                        e.stopPropagation();
+                        updateEditorElement(element => ({ ...element, isHighlighted: false }));
+                    }}
+                    onDragEnter={(e: MouseEvent) => {
+                        e.stopPropagation();
+                        updateEditorElement(element => ({ ...element, dragEntered: true }));
+                    }}
+                    onDragLeave={(e: MouseEvent) => {
+                        e.stopPropagation();
+                        updateEditorElement(element => ({ ...element, dragEntered: false }));
+                    }}
+                    onDrop={() => {
+                        // TODO: figure out why calling this update without the `setTimeout` hack doesn't work. 🤷‍
+                        setTimeout(() =>
+                            updateEditorElement(element => ({ ...element, dragEntered: false }))
+                        );
+                    }}
+                    dropRef={dropRef}
+                    dragRef={dragRef}
+                    {...rest}
+                >
+                    {children}
+                </PbElementControlsOverlay>
+            )}
+        </Draggable>
     );
 };
 
 const PbElementControlsOverlay = styled(
-    ({ className, onClick, onMouseEnter, onMouseLeave, dropRef, children }) => {
+    ({
+        className,
+        onClick,
+        onMouseEnter,
+        onMouseLeave,
+        onDragEnter,
+        onDragLeave,
+        onDrop,
+        dropRef,
+        dragRef,
+        children
+    }) => {
         return (
             <pb-element-controls-overlay
                 // @ts-ignore Not supported by `React.HTMLProps<HTMLDivElement>`.
@@ -75,7 +145,18 @@ const PbElementControlsOverlay = styled(
                 onClick={onClick}
                 onMouseEnter={onMouseEnter}
                 onMouseLeave={onMouseLeave}
-                ref={dropRef}
+                onDragEnter={onDragEnter}
+                onDragLeave={onDragLeave}
+                onDrop={onDrop}
+                ref={element => {
+                    if (dropRef) {
+                        dropRef(element);
+                    }
+
+                    if (dragRef) {
+                        dragRef(element);
+                    }
+                }}
             >
                 {children}
             </pb-element-controls-overlay>
@@ -85,8 +166,9 @@ const PbElementControlsOverlay = styled(
     element: Element;
     elementRendererMeta: RendererMeta;
     isActive: boolean;
+    isHighlighted: boolean;
     isDragging: boolean;
-}>(({ element, elementRendererMeta, isActive, isDragging }) => {
+}>(({ element, elementRendererMeta, isActive, isHighlighted, isDragging }) => {
     // By default, the element controls overlay takes the size of the actual element.
     // But, if margins were set, they won't be taken into consideration. The shown
     // overlay is smaller than the actual space the page element takes. That's why,
@@ -124,8 +206,9 @@ const PbElementControlsOverlay = styled(
         }
     );
 
-    const hoverStyles: CSSObject = {
-        "&.hover": {
+    const hoverStyles: CSSObject = {};
+    if (isHighlighted) {
+        Object.assign(hoverStyles, {
             boxShadow: "inset 0px 0px 0px 2px " + HOVER_COLOR,
             "&::after": {
                 backgroundColor: HOVER_COLOR,
@@ -139,8 +222,8 @@ const PbElementControlsOverlay = styled(
                 textAlign: "center",
                 lineHeight: "14px"
             }
-        }
-    };
+        });
+    }
 
     const activeStyles: CSSObject = {};
     if (isActive) {

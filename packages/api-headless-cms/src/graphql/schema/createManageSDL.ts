@@ -6,16 +6,22 @@ import { renderGetFilterFields } from "~/utils/renderGetFilterFields";
 import { renderInputFields } from "~/utils/renderInputFields";
 import { renderFields } from "~/utils/renderFields";
 import { pluralizedTypeName } from "~/utils/pluralizedTypeName";
+import { CmsGraphQLSchemaSorterPlugin } from "~/plugins";
 
 interface CreateManageSDLParams {
     model: CmsModel;
     fieldTypePlugins: CmsFieldTypePlugins;
+    sorterPlugins: CmsGraphQLSchemaSorterPlugin[];
 }
 interface CreateManageSDL {
     (params: CreateManageSDLParams): string;
 }
 
-export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): string => {
+export const createManageSDL: CreateManageSDL = ({
+    model,
+    fieldTypePlugins,
+    sorterPlugins
+}): string => {
     const typeName = createTypeName(model.modelId);
     const mTypeName = createManageTypeName(typeName);
 
@@ -25,7 +31,7 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
         fieldTypePlugins
     });
 
-    const sortEnumRender = renderSortEnum({ model, fieldTypePlugins });
+    const sortEnumRender = renderSortEnum({ model, fieldTypePlugins, sorterPlugins });
     const getFilterFieldsRender = renderGetFilterFields({ model, fieldTypePlugins });
     const inputFields = renderInputFields({ model, fieldTypePlugins });
     const fields = renderFields({ model, type: "manage", fieldTypePlugins });
@@ -78,6 +84,7 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
         ${
             inputFields &&
             `input ${mTypeName}Input {
+                id: ID
             ${inputFields.map(f => f.fields).join("\n")}
         }`
         }

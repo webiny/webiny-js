@@ -16,7 +16,7 @@ import { deleteFile } from "@webiny/api-page-builder/graphql/crud/install/utils/
 import { File as ImageFile, ImportExportTaskStatus } from "~/types";
 import { PbImportExportContext } from "~/graphql/types";
 import { s3Stream } from "~/export/s3Stream";
-import { ExportedPageData, ExportedBlockData } from "~/export/utils";
+import { ExportedPageData, ExportedBlockData, ExportedTemplateData } from "~/export/utils";
 import { PageSettings } from "@webiny/api-page-builder/types";
 
 interface FileItem extends File {
@@ -359,6 +359,73 @@ export async function importBlock({
     await deleteS3Folder(path.dirname(fileUploadsData.data));
 
     return block;
+}
+
+interface ImportTemplateParams {
+    key: string;
+    templateKey: string;
+    context: PbImportExportContext;
+    fileUploadsData: FileUploadsData;
+}
+
+export async function importTemplate({
+    templateKey,
+    context,
+    fileUploadsData
+}: ImportTemplateParams): Promise<ExportedTemplateData["template"]> {
+    const log = console.log;
+
+    // Making Directory for template in which we're going to extract the template data file.
+    const TEMPLATE_EXTRACT_DIR = path.join(INSTALL_EXTRACT_DIR, templateKey);
+    ensureDirSync(TEMPLATE_EXTRACT_DIR);
+
+    const templateDataFileKey = dotProp.get(fileUploadsData, `data`);
+    const TEMPLATE_DATA_FILE_PATH = path.join(
+        TEMPLATE_EXTRACT_DIR,
+        path.basename(templateDataFileKey)
+    );
+
+    log(`Downloading Template data file: ${templateDataFileKey} at "${TEMPLATE_DATA_FILE_PATH}"`);
+    // Download and save template data file in disk.
+    await new Promise((resolve, reject) => {
+        s3Stream
+            .readStream(templateDataFileKey)
+            .on("error", reject)
+            .pipe(createWriteStream(TEMPLATE_DATA_FILE_PATH))
+            .on("error", reject)
+            .on("finish", resolve);
+    });
+
+    // Load the template data file from disk.
+    log(`Load file ${templateDataFileKey}`);
+    const { template, files } = await loadJson<ExportedTemplateData>(TEMPLATE_DATA_FILE_PATH);
+
+    // Only update template data if there are files.
+    if (files && Array.isArray(files) && files.length > 0) {
+        // Upload template assets.
+        const { fileIdToKeyMap } = await uploadAssets({
+            context,
+            filesData: files,
+            fileUploadsData
+        });
+
+        const settings = await context.fileManager.settings.getSettings();
+
+        const { srcPrefix = "" } = settings || {};
+        updateFilesInData({
+            data: template.content || {},
+            fileIdToKeyMap,
+            srcPrefix
+        });
+    }
+
+    log("Removing Directory for template...");
+    await deleteFile(templateKey);
+
+    log(`Remove template contents from S3...`);
+    await deleteS3Folder(path.dirname(fileUploadsData.data));
+
+    return template;
 }
 
 interface UploadFilesFromZipParams {

@@ -68,7 +68,7 @@ describe("filtering", () => {
 
     const mainManager = useGraphQLHandler(manageOpts);
 
-    const { until, createFruit, publishFruit } = useFruitManageHandler({
+    const { createFruit, publishFruit } = useFruitManageHandler({
         ...manageOpts
     });
 
@@ -108,17 +108,6 @@ describe("filtering", () => {
         return createFruits();
     };
 
-    const waitFruits = async (name: string, { listFruits }: any) => {
-        // If this `until` resolves successfully, we know entry is accessible via the "read" API
-        await until(
-            () => listFruits({}).then(([data]: any) => data),
-            ({ data }: any) => {
-                return data.listFruits.data.length === 3;
-            },
-            { name: `list all fruits - ${name}` }
-        );
-    };
-
     test("should filter fruits by date and sort asc", async () => {
         const { apple, strawberry } = await setupFruits();
 
@@ -126,8 +115,6 @@ describe("filtering", () => {
             ...readOpts
         });
         const { listFruits } = handler;
-
-        await waitFruits("should filter fruits by date and sort asc", handler);
 
         const [response] = await listFruits({
             where: {
@@ -159,8 +146,6 @@ describe("filtering", () => {
         });
         const { listFruits } = handler;
 
-        await waitFruits("should filter fruits by date and sort desc", handler);
-
         const [response] = await listFruits({
             where: {
                 date_gte: "2020-12-15"
@@ -190,8 +175,6 @@ describe("filtering", () => {
             ...readOpts
         });
         const { listFruits } = handler;
-
-        await waitFruits("should filter fruits by dateTime and sort asc", handler);
 
         const [response] = await listFruits({
             where: {
@@ -224,8 +207,6 @@ describe("filtering", () => {
         });
         const { listFruits } = handler;
 
-        await waitFruits("should filter fruits by dateTimeZ and sort asc", handler);
-
         const [response] = await listFruits({
             where: {
                 dateTimeZ_gte: "2020-12-15T14:52:41+01:00",
@@ -256,11 +237,6 @@ describe("filtering", () => {
             ...readOpts
         });
         const { listFruits } = handler;
-
-        await waitFruits(
-            "should filter fruits by date, dateTime, dateTimeZ and sort desc",
-            handler
-        );
 
         const [response] = await listFruits({
             where: {
@@ -297,7 +273,6 @@ describe("filtering", () => {
         });
         const { listFruits } = handler;
 
-        await waitFruits("should filter fruits by time and sort desc", handler);
         const [response] = await listFruits({
             where: {
                 time_gte: "11:59:01",
@@ -329,8 +304,6 @@ describe("filtering", () => {
         });
         const { listFruits } = handler;
 
-        await waitFruits("should sort by time asc", handler);
-
         const [response] = await listFruits({
             sort: ["time_ASC"]
         });
@@ -358,8 +331,6 @@ describe("filtering", () => {
                 ...readOpts
             });
             const { listFruits } = handler;
-
-            await waitFruits("GraphQL filtering by a boolean attribute", handler);
 
             await listFruits({
                 where: {
@@ -430,8 +401,6 @@ describe("filtering", () => {
                 ...readOpts
             });
             const { listFruits } = handler;
-
-            await waitFruits("GraphQL filtering by a number attribute", handler);
 
             await listFruits({
                 where: {
@@ -713,16 +682,6 @@ describe("filtering", () => {
         const teslaProduct = publishTeslaResponse.data.publishProduct.data;
         const daciaProduct = publishDaciaResponse.data.publishProduct.data;
 
-        /**
-         * If this `until` resolves successfully, we know entry is accessible via the "read" API
-         */
-        await until(
-            () => productReader.listProducts({}).then(([data]) => data),
-            ({ data }: any) => {
-                return data.listProducts.data.length === 4;
-            },
-            { name: "list all products" }
-        );
         /*************************
          * MANAGERS
          **************************/
@@ -1157,17 +1116,6 @@ describe("filtering", () => {
         });
         const apple = createAppleResponse.data.createProduct.data;
 
-        /**
-         * Make sure that we have something in the list response
-         */
-        await until(
-            () => productManager.listProducts().then(([data]) => data),
-            ({ data }: any) => {
-                return data.listProducts.data.length === 3;
-            },
-            { name: "list products after create" }
-        );
-
         const [listNullResponse] = await productManager.listProducts({
             where: {
                 availableOn: null
@@ -1242,22 +1190,7 @@ describe("filtering", () => {
             revision: createAnimalResponse.data.createArticle.data.id
         });
         const animal = publishAnimalResponse.data.publishArticle.data;
-        /**
-         * Make sure we have both categories published.
-         */
-        await until(
-            () => articleManager.listArticles().then(([data]) => data),
-            ({ data }: any) => {
-                const entries: any[] = data?.listArticles?.data || [];
-                if (entries.length !== 2) {
-                    return false;
-                }
-                return entries.every(entry => {
-                    return !!entry.meta.publishedOn;
-                });
-            },
-            { name: "list all published entries" }
-        );
+
         /**
          * Make sure to get only the fruit entry via manage API.
          */
@@ -1587,22 +1520,6 @@ describe("filtering", () => {
             revision: createAnimalResponse.data.createArticle.data.id
         });
         const animal = publishAnimalResponse.data.publishArticle.data;
-        /**
-         * Make sure we have both categories published.
-         */
-        await until(
-            () => articleManager.listArticles().then(([data]) => data),
-            ({ data }: any) => {
-                const entries: any[] = data?.listArticles?.data || [];
-                if (entries.length < 2) {
-                    return false;
-                }
-                return entries.every(entry => {
-                    return !!entry.meta.publishedOn;
-                });
-            },
-            { name: "list all published entries" }
-        );
 
         const [listEq123Response] = await articleManager.listArticles({
             where: {
@@ -1763,22 +1680,6 @@ describe("filtering", () => {
             revision: createAnimalResponse.data.createArticle.data.id
         });
         const animal = publishAnimalResponse.data.publishArticle.data;
-        /**
-         * Make sure we have both categories published.
-         */
-        await until(
-            () => articleManager.listArticles().then(([data]) => data),
-            ({ data }: any) => {
-                const entries: any[] = data?.listArticles?.data || [];
-                if (entries.length !== 2) {
-                    return false;
-                }
-                return entries.every(entry => {
-                    return !!entry.meta.publishedOn;
-                });
-            },
-            { name: "list all published entries" }
-        );
 
         const [listEq123Response] = await articleManager.listArticles({
             where: {
@@ -1907,8 +1808,6 @@ describe("filtering", () => {
             ...readOpts
         });
         const { listFruits } = handler;
-
-        await waitFruits("should filter fruits by description", handler);
 
         const [fruitsContainsResponse] = await listFruits({
             where: {

@@ -16,7 +16,7 @@ const Wrapper = styled.div`
     width: 100%;
     padding: 0 5px 5px 5px;
     box-sizing: border-box;
-    background-color: ${theme.styles.colors["color5"]};
+    background-color: ${theme.styles.colors["color6"]};
 `;
 
 /**
@@ -31,7 +31,9 @@ const DefaultFormLayout: FormLayoutComponent = ({
     submit,
     formData,
     ReCaptcha,
-    TermsOfService
+    reCaptchaEnabled,
+    TermsOfService,
+    termsOfServiceEnabled
 }) => {
     // Is the form in loading (submitting) state?
     const [loading, setLoading] = useState(false);
@@ -59,7 +61,7 @@ const DefaultFormLayout: FormLayoutComponent = ({
     }
 
     return (
-        /* "onSubmit" callback gets triggered once all of the fields are valid. */
+        /* "onSubmit" callback gets triggered once all the fields are valid. */
         /* We also pass the default values for all fields via the getDefaultValues callback. */
         <Form onSubmit={submitForm} data={getDefaultValues()}>
             {({ submit }) => (
@@ -74,8 +76,8 @@ const DefaultFormLayout: FormLayoutComponent = ({
                         </Row>
                     ))}
 
-                    <TermsOfServiceSection component={TermsOfService} />
-                    <ReCaptchaSection component={ReCaptcha} />
+                    {termsOfServiceEnabled && <TermsOfServiceSection component={TermsOfService} />}
+                    {reCaptchaEnabled && <ReCaptchaSection component={ReCaptcha} />}
 
                     <SubmitButton onClick={submit} loading={loading}>
                         {formData.settings.submitButtonLabel || "Submit"}

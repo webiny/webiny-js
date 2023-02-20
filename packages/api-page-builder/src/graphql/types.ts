@@ -8,6 +8,7 @@ import { Context as BaseContext } from "@webiny/handler/types";
 
 import {
     PageBlock,
+    PageTemplate,
     BlockCategory,
     Category,
     DefaultSettings,
@@ -21,7 +22,6 @@ import {
 } from "~/types";
 import { PrerenderingServiceClientContext } from "@webiny/api-prerendering-service/client/types";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
-import { ACOContext } from "@webiny/api-aco/types";
 
 // CRUD types.
 export interface ListPagesParams {
@@ -68,12 +68,14 @@ export interface GetPagesOptions {
  */
 export interface OnPageBeforeCreateTopicParams<TPage extends Page = Page> {
     page: TPage;
+    meta?: Record<string, any>;
 }
 /**
  * @category Lifecycle events
  */
 export interface OnPageAfterCreateTopicParams<TPage extends Page = Page> {
     page: TPage;
+    meta?: Record<string, any>;
 }
 /**
  * @category Lifecycle events
@@ -200,8 +202,14 @@ export interface PagesCrud {
     }): Promise<TPage>;
     getPublishedPageByPath<TPage extends Page = Page>(args: { path: string }): Promise<TPage>;
     listPageRevisions<TPage extends Page = Page>(id: string): Promise<TPage[]>;
-    createPage<TPage extends Page = Page>(category: string): Promise<TPage>;
-    createPageFrom<TPage extends Page = Page>(page: string): Promise<TPage>;
+    createPage<TPage extends Page = Page>(
+        category: string,
+        meta?: Record<string, any>
+    ): Promise<TPage>;
+    createPageFrom<TPage extends Page = Page>(
+        page: string,
+        meta?: Record<string, any>
+    ): Promise<TPage>;
     updatePage<TPage extends Page = Page>(id: string, data: PbUpdatePageInput): Promise<TPage>;
     deletePage<TPage extends Page = Page>(id: string): Promise<[TPage, TPage]>;
     publishPage<TPage extends Page = Page>(id: string): Promise<TPage>;
@@ -729,21 +737,21 @@ export interface ListPageBlocksParams {
 /**
  * @category Lifecycle events
  */
-export interface OnBeforePageBlockCreateTopicParams {
+export interface OnPageBlockBeforeCreateTopicParams {
     pageBlock: PageBlock;
 }
 
 /**
  * @category Lifecycle events
  */
-export interface OnAfterPageBlockCreateTopicParams {
+export interface OnPageBlockAfterCreateTopicParams {
     pageBlock: PageBlock;
 }
 
 /**
  * @category Lifecycle events
  */
-export interface OnBeforePageBlockUpdateTopicParams {
+export interface OnPageBlockBeforeUpdateTopicParams {
     original: PageBlock;
     pageBlock: PageBlock;
 }
@@ -751,7 +759,7 @@ export interface OnBeforePageBlockUpdateTopicParams {
 /**
  * @category Lifecycle events
  */
-export interface OnAfterPageBlockUpdateTopicParams {
+export interface OnPageBlockAfterUpdateTopicParams {
     original: PageBlock;
     pageBlock: PageBlock;
 }
@@ -759,14 +767,14 @@ export interface OnAfterPageBlockUpdateTopicParams {
 /**
  * @category Lifecycle events
  */
-export interface OnBeforePageBlockDeleteTopicParams {
+export interface OnPageBlockBeforeDeleteTopicParams {
     pageBlock: PageBlock;
 }
 
 /**
  * @category Lifecycle events
  */
-export interface OnAfterPageBlockDeleteTopicParams {
+export interface OnPageBlockAfterDeleteTopicParams {
     pageBlock: PageBlock;
 }
 
@@ -786,17 +794,86 @@ export interface PageBlocksCrud {
     createPageBlock(data: PageBlockCreateInput): Promise<PageBlock>;
     updatePageBlock(id: string, data: PageBlockUpdateInput): Promise<PageBlock>;
     deletePageBlock(id: string): Promise<PageBlock>;
-    resolvePageBlocks(page: Page): Promise<any>;
+    resolvePageBlocks(content: Record<string, any> | null): Promise<any>;
 
     /**
      * Lifecycle events
      */
-    onBeforePageBlockCreate: Topic<OnBeforePageBlockCreateTopicParams>;
-    onAfterPageBlockCreate: Topic<OnAfterPageBlockCreateTopicParams>;
-    onBeforePageBlockUpdate: Topic<OnBeforePageBlockUpdateTopicParams>;
-    onAfterPageBlockUpdate: Topic<OnAfterPageBlockUpdateTopicParams>;
-    onBeforePageBlockDelete: Topic<OnBeforePageBlockDeleteTopicParams>;
-    onAfterPageBlockDelete: Topic<OnAfterPageBlockDeleteTopicParams>;
+    onPageBlockBeforeCreate: Topic<OnPageBlockBeforeCreateTopicParams>;
+    onPageBlockAfterCreate: Topic<OnPageBlockAfterCreateTopicParams>;
+    onPageBlockBeforeUpdate: Topic<OnPageBlockBeforeUpdateTopicParams>;
+    onPageBlockAfterUpdate: Topic<OnPageBlockAfterUpdateTopicParams>;
+    onPageBlockBeforeDelete: Topic<OnPageBlockBeforeDeleteTopicParams>;
+    onPageBlockAfterDelete: Topic<OnPageBlockAfterDeleteTopicParams>;
+}
+
+export interface ListPageTemplatesParams {
+    sort?: string[];
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnPageTemplateBeforeCreateTopicParams {
+    pageTemplate: PageTemplate;
+}
+
+/**
+ * @category Lifecycle events
+ */
+export interface OnPageTemplateAfterCreateTopicParams {
+    pageTemplate: PageTemplate;
+}
+
+/**
+ * @category Lifecycle events
+ */
+export interface OnPageTemplateBeforeUpdateTopicParams {
+    original: PageTemplate;
+    pageTemplate: PageTemplate;
+}
+
+/**
+ * @category Lifecycle events
+ */
+export interface OnPageTemplateAfterUpdateTopicParams {
+    original: PageTemplate;
+    pageTemplate: PageTemplate;
+}
+
+/**
+ * @category Lifecycle events
+ */
+export interface OnPageTemplateBeforeDeleteTopicParams {
+    pageTemplate: PageTemplate;
+}
+
+/**
+ * @category Lifecycle events
+ */
+export interface OnPageTemplateAfterDeleteTopicParams {
+    pageTemplate: PageTemplate;
+}
+
+/**
+ * @category PageTemplates
+ */
+export interface PageTemplatesCrud {
+    getPageTemplate(id: string): Promise<PageTemplate | null>;
+    listPageTemplates(params?: ListPageTemplatesParams): Promise<PageTemplate[]>;
+    createPageTemplate(data: Record<string, any>): Promise<PageTemplate>;
+    updatePageTemplate(id: string, data: Record<string, any>): Promise<PageTemplate>;
+    deletePageTemplate(id: string): Promise<PageTemplate>;
+    resolvePageTemplate(content: Record<string, any> | null): Promise<any>;
+
+    /**
+     * Lifecycle events
+     */
+    onPageTemplateBeforeCreate: Topic<OnPageTemplateBeforeCreateTopicParams>;
+    onPageTemplateAfterCreate: Topic<OnPageTemplateAfterCreateTopicParams>;
+    onPageTemplateBeforeUpdate: Topic<OnPageTemplateBeforeUpdateTopicParams>;
+    onPageTemplateAfterUpdate: Topic<OnPageTemplateAfterUpdateTopicParams>;
+    onPageTemplateBeforeDelete: Topic<OnPageTemplateBeforeDeleteTopicParams>;
+    onPageTemplateAfterDelete: Topic<OnPageTemplateAfterDeleteTopicParams>;
 }
 
 export interface PageBuilderContextObject
@@ -805,6 +882,7 @@ export interface PageBuilderContextObject
         CategoriesCrud,
         BlockCategoriesCrud,
         PageBlocksCrud,
+        PageTemplatesCrud,
         MenusCrud,
         SettingsCrud,
         SystemCrud {
@@ -826,8 +904,7 @@ export interface PbContext
         SecurityContext,
         TenancyContext,
         FileManagerContext,
-        PrerenderingServiceClientContext,
-        ACOContext {
+        PrerenderingServiceClientContext {
     pageBuilder: PageBuilderContextObject;
 }
 

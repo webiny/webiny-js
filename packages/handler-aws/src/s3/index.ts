@@ -22,7 +22,7 @@ export interface CreateHandlerParams extends BaseCreateHandlerParams {
 export const createHandler = (params: CreateHandlerParams): HandlerCallable => {
     return (payload, context) => {
         const app = createBaseHandler({
-            plugins: params.plugins,
+            ...params,
             options: {
                 logger: params.debug === true,
                 ...(params.options || {})

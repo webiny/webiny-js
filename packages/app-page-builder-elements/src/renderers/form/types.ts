@@ -4,7 +4,7 @@ import { GetFormDataLoader, LogFormViewDataLoader, SubmitFormDataLoader } from "
 export type FieldIdType = string;
 export type FormDataFieldsLayout = FieldIdType[][];
 
-export interface FbBuilderFieldValidator {
+export interface FormDataFieldValidator {
     name: string;
     message: string;
     settings: any;
@@ -18,7 +18,7 @@ export interface FormDataField {
     label?: string;
     helpText?: string;
     placeholderText?: string;
-    validation?: FbBuilderFieldValidator[];
+    validation?: FormDataFieldValidator[];
     options?: Array<{ value: string; label: string }>;
     settings: {
         defaultValue?: string | string[];
@@ -45,8 +45,8 @@ export interface FormDataRevision {
 
 export interface FormData {
     id: string;
+    formId: string;
     version: number;
-    parent: string;
     layout: FormDataFieldsLayout;
     fields: FormDataField[];
     published: boolean;
@@ -64,7 +64,7 @@ export interface FormData {
     triggers: Record<string, any>;
 }
 
-export type RenderFormComponentDataField = FormDataField & {
+export type FormRenderComponentDataField = FormDataField & {
     validators: ((value: string) => Promise<boolean>)[];
 };
 
@@ -77,10 +77,12 @@ export interface ErrorResponse {
 export type FormLayoutComponentProps<T = any> = {
     getFieldById: Function;
     getFieldByFieldId: Function;
-    getFields: () => RenderFormComponentDataField[][];
+    getFields: () => FormRenderComponentDataField[][];
     getDefaultValues: () => { [key: string]: any };
     ReCaptcha: ReCaptchaComponent;
+    reCaptchaEnabled: boolean;
     TermsOfService: TermsOfServiceComponent;
+    termsOfServiceEnabled: boolean;
     submit: (data: T) => Promise<FormSubmissionResponse>;
     formData: FormData;
 };
@@ -142,20 +144,6 @@ export interface FormSubmissionResponse {
     error: ErrorResponse | null;
 }
 
-export interface FbFormFieldValidator {
-    name: string;
-    message: any;
-    settings: any;
-}
-
-export type FbFormFieldValidatorPlugin = Plugin & {
-    type: "fb-form-field-validator";
-    validator: {
-        name: string;
-        validate: (value: string, validator: FbFormFieldValidator) => Promise<any>;
-    };
-};
-
 export interface CreateFormParamsFormLayoutComponent {
     id: string;
     name: string;
@@ -166,6 +154,12 @@ export interface CreateFormParamsTrigger {
     id: string;
     name: string;
     handle: any;
+}
+
+export interface CreateFormParamsValidator {
+    id: string;
+    name: string;
+    validate: (value: string, validator: FormDataFieldValidator) => Promise<any>;
 }
 
 export interface CreateFormParamsDataLoaders {
@@ -180,6 +174,9 @@ export interface CreateFormParams {
     formLayoutComponents:
         | CreateFormParamsFormLayoutComponent[]
         | (() => CreateFormParamsFormLayoutComponent[]);
-    fieldValidators?: any[];
+    fieldValidators?: CreateFormParamsValidator[] | (() => CreateFormParamsValidator[]);
     triggers?: CreateFormParamsTrigger[] | (() => CreateFormParamsTrigger[]);
+    renderFormNotSelected?: React.VFC;
+    renderFormLoading?: React.VFC;
+    renderFormNotFound?: React.VFC;
 }

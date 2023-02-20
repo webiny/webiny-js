@@ -27,6 +27,8 @@ const documentClient = new DocumentClient({
 
 const debug = process.env.DEBUG === "true";
 
+import { createACO } from "@webiny/api-aco";
+
 export const handler = createHandler({
     plugins: [
         dynamoDbPlugins(),
@@ -55,7 +57,8 @@ export const handler = createHandler({
             handlers: {
                 process: String(process.env.AWS_LAMBDA_FUNCTION_NAME)
             }
-        })
+        }),
+        createACO()
     ],
     http: { debug }
 });

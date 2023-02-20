@@ -3,7 +3,6 @@
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
     { "path": "../api" },
-    { "path": "../api-aco" },
     { "path": "../api-file-manager" },
     { "path": "../api-i18n" },
     { "path": "../api-prerendering-service" },
@@ -36,8 +35,6 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/api/*": ["../api/src/*"],
       "@webiny/api": ["../api/src"],
-      "@webiny/api-aco/*": ["../api-aco/src/*"],
-      "@webiny/api-aco": ["../api-aco/src"],
       "@webiny/api-file-manager/*": ["../api-file-manager/src/*"],
       "@webiny/api-file-manager": ["../api-file-manager/src"],
       "@webiny/api-i18n/*": ["../api-i18n/src/*"],

@@ -2,7 +2,7 @@ const yargs = require("yargs");
 const { ConsoleLogger } = require("../ConsoleLogger");
 const { getReleaseType } = require("./releaseTypes");
 
-(async () => {
+async function runRelease() {
     const { type, tag } = yargs.argv;
     if (!type) {
         throw Error(`Missing required "--type" option.`);
@@ -18,4 +18,13 @@ const { getReleaseType } = require("./releaseTypes");
     }
 
     await release.execute();
+}
+
+(async () => {
+    try {
+        await runRelease();
+    } catch (e) {
+        console.error(e);
+        process.exit(1);
+    }
 })();

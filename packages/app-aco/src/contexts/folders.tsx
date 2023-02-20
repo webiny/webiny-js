@@ -75,7 +75,7 @@ export const FoldersProvider = ({ children }: Props) => {
                     })
             );
 
-            const { data, error } = response.folders.listFolders;
+            const { data, error } = response.aco.listFolders;
 
             if (!data) {
                 throw new Error(error?.message || "Could not fetch folders");
@@ -108,7 +108,7 @@ export const FoldersProvider = ({ children }: Props) => {
                     })
             );
 
-            const { data, error } = response.folders.getFolder;
+            const { data, error } = response.aco.getFolder;
 
             if (!data) {
                 throw new Error(error?.message || `Could not fetch folder with id: ${id}`);
@@ -133,7 +133,7 @@ export const FoldersProvider = ({ children }: Props) => {
                 throw new Error("Network error while creating folder");
             }
 
-            const { data, error } = response.folders.createFolder;
+            const { data, error } = response.aco.createFolder;
 
             if (!data) {
                 throw new Error(error?.message || "Could not create folder");
@@ -145,7 +145,7 @@ export const FoldersProvider = ({ children }: Props) => {
         },
 
         async updateFolder(folder) {
-            const { id, type, name, slug, parentId } = folder;
+            const { id, type, title, slug, parentId } = folder;
 
             const { data: response } = await apolloFetchingHandler(
                 loadingHandler("UPDATE", setLoading),
@@ -155,7 +155,7 @@ export const FoldersProvider = ({ children }: Props) => {
                         variables: {
                             id,
                             data: {
-                                name,
+                                title,
                                 slug,
                                 parentId
                             }
@@ -167,7 +167,7 @@ export const FoldersProvider = ({ children }: Props) => {
                 throw new Error("Network error while updating folder");
             }
 
-            const { data, error } = response.folders.updateFolder;
+            const { data, error } = response.aco.updateFolder;
 
             if (!data) {
                 throw new Error(error?.message || "Could not update folder");
@@ -204,7 +204,7 @@ export const FoldersProvider = ({ children }: Props) => {
                 throw new Error("Network error while deleting folder");
             }
 
-            const { data, error } = response.folders.deleteFolder;
+            const { data, error } = response.aco.deleteFolder;
 
             if (!data) {
                 throw new Error(error?.message || "Could not delete folder");

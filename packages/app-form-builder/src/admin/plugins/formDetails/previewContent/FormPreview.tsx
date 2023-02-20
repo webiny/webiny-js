@@ -48,14 +48,26 @@ interface FormPreviewProps {
 }
 
 const FormPreview: React.FC<FormPreviewProps> = ({ revision }) => {
-    const { data, loading } = useQuery<GetFormQueryResponse, GetFormQueryVariables>(GET_FORM, {
-        variables: {
-            revision: revision.id
+    const { data, error, loading } = useQuery<GetFormQueryResponse, GetFormQueryVariables>(
+        GET_FORM,
+        {
+            variables: {
+                revision: revision.id
+            }
         }
-    });
+    );
 
     if (loading) {
         return <CircularProgress />;
+    }
+
+    if (error) {
+        console.error(error.message, error);
+        return (
+            <div className={pageInnerWrapper}>
+                Form data could not be loaded. Check browser console for errors.
+            </div>
+        );
     }
 
     return (

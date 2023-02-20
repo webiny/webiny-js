@@ -42,7 +42,10 @@ import {
     OnEntryPublishErrorTopicParams,
     OnEntryUnpublishErrorTopicParams,
     OnEntryDeleteErrorTopicParams,
-    OnEntryRevisionDeleteErrorTopicParams
+    OnEntryRevisionDeleteErrorTopicParams,
+    OnEntryBeforeRepublishTopicParams,
+    OnEntryAfterRepublishTopicParams,
+    OnEntryRepublishErrorTopicParams
 } from "~/types";
 import { validateModelEntryData } from "./contentEntry/entryDataValidation";
 import WebinyError from "@webiny/error";
@@ -198,10 +201,23 @@ interface EntryIdResult {
     id: string;
 }
 
-const createEntryId = (version: number): EntryIdResult => {
-    const entryId = mdbid();
+const createEntryId = (input: CreateCmsEntryInput): EntryIdResult => {
+    let entryId = mdbid();
+    if (input.id) {
+        if (input.id.match(/^([a-zA-Z0-9])([a-zA-Z0-9\-]+)([a-zA-Z0-9])$/) === null) {
+            throw new WebinyError(
+                "The provided ID is not valid. It must be a string which can A-Z, a-z, 0-9, - and it cannot start or end with a -.",
+                "INVALID_ID",
+                {
+                    id: input.id
+                }
+            );
+        }
+        entryId = input.id;
+    }
+    const version = 1;
     return {
-        entryId,
+        entryId: entryId,
         version,
         id: createIdentifier({
             id: entryId,
@@ -285,10 +301,24 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         "cms.onEntryBeforePublish"
     );
     const onEntryAfterPublish =
-        createTopic<OnEntryAfterPublishTopicParams>("cms.onEntryAfterPublic");
+        createTopic<OnEntryAfterPublishTopicParams>("cms.onEntryAfterPublish");
 
     const onEntryPublishError =
         createTopic<OnEntryPublishErrorTopicParams>("cms.onEntryPublishError");
+
+    /**
+     * Republish
+     */
+    const onEntryBeforeRepublish = createTopic<OnEntryBeforeRepublishTopicParams>(
+        "cms.onEntryBeforeRepublish"
+    );
+    const onEntryAfterRepublish = createTopic<OnEntryAfterRepublishTopicParams>(
+        "cms.onEntryAfterRepublish"
+    );
+
+    const onEntryRepublishError = createTopic<OnEntryRepublishErrorTopicParams>(
+        "cms.onEntryRepublishError"
+    );
 
     /**
      * Unpublish
@@ -463,6 +493,12 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         onEntryAfterPublish,
         onEntryPublishError,
         /**
+         * Republish
+         */
+        onEntryBeforeRepublish,
+        onEntryAfterRepublish,
+        onEntryRepublishError,
+        /**
          * Unpublish
          */
         onEntryBeforeUnpublish,
@@ -587,7 +623,8 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 plugins
             });
 
-            const { where: initialWhere } = params;
+            const { where: initialWhere, limit: initialLimit } = params;
+            const limit = initialLimit && initialLimit > 0 ? initialLimit : 50;
             /**
              * We always assign tenant and locale because we do not allow one model to have content through multiple tenants.
              */
@@ -639,6 +676,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 const { hasMoreItems, totalCount, cursor, items } =
                     await storageOperations.entries.list(model, {
                         ...params,
+                        limit,
                         where,
                         fields
                     });
@@ -730,8 +768,11 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 displayName: identity.displayName,
                 type: identity.type
             };
-
-            const { id, entryId, version } = createEntryId(1);
+            /**
+             * There is a possibility that user sends an ID in the input, so we will use that one.
+             * There is no check if the ID is unique or not, that is up to the user.
+             */
+            const { id, entryId, version } = createEntryId(inputData);
 
             const entry: CmsEntry = {
                 webinyVersion: context.WEBINY_VERSION,
@@ -1125,11 +1166,28 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
              * Then we move onto publishing it again.
              */
             try {
-                return await storageOperations.entries.publish(model, {
+                await onEntryBeforeRepublish.publish({
+                    entry,
+                    model
+                });
+
+                const result = await storageOperations.entries.publish(model, {
                     entry,
                     storageEntry
                 });
+
+                await onEntryAfterRepublish.publish({
+                    entry,
+                    model,
+                    storageEntry
+                });
+                return result;
             } catch (ex) {
+                await onEntryRepublishError.publish({
+                    entry,
+                    model,
+                    error: ex
+                });
                 throw new WebinyError(
                     "Could not publish existing entry while re-publishing.",
                     "REPUBLISH_PUBLISH_ERROR",

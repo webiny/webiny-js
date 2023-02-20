@@ -5,7 +5,6 @@ import {
     ApiCloudfront,
     ApiFileManager,
     ApiGraphql,
-    ApiHeadlessCMS,
     ApiPageBuilder,
     CoreOutput,
     VpcConfig
@@ -36,6 +35,13 @@ export interface CreateApiPulumiAppParams {
      * Prefixes names of all Pulumi cloud infrastructure resource with given prefix.
      */
     pulumiResourceNamePrefix?: PulumiAppParam<string>;
+
+    /**
+     * Treats provided environments as production environments, which
+     * are deployed in production deployment mode.
+     * https://www.webiny.com/docs/architecture/deployment-modes/production
+     */
+    productionEnvironments?: PulumiAppParam<string[]>;
 }
 
 export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = {}) => {
@@ -63,7 +69,8 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 });
             }
 
-            const prod = app.params.run.env === "prod";
+            const productionEnvironments = app.params.create.productionEnvironments || ["prod"];
+            const isProduction = productionEnvironments.includes(app.params.run.env);
 
             // Enables logs forwarding.
             // https://www.webiny.com/docs/how-to-guides/use-watch-command#enabling-logs-forwarding
@@ -73,7 +80,7 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
             const core = app.addModule(CoreOutput);
 
             // Register VPC config module to be available to other modules.
-            const vpcEnabled = app.getParam(projectAppParams?.vpc) ?? prod;
+            const vpcEnabled = app.getParam(projectAppParams?.vpc) ?? isProduction;
             app.addModule(VpcConfig, { enabled: vpcEnabled });
 
             const pageBuilder = app.addModule(ApiPageBuilder, {
@@ -104,30 +111,6 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                     DB_TABLE: core.primaryDynamodbTableName,
                     S3_BUCKET: core.fileManagerBucketId,
                     WEBINY_LOGS_FORWARD_URL
-                }
-            });
-
-            const headlessCms = app.addModule(ApiHeadlessCMS, {
-                env: {
-                    COGNITO_REGION: String(process.env.AWS_REGION),
-                    COGNITO_USER_POOL_ID: core.cognitoUserPoolId,
-                    DB_TABLE: core.primaryDynamodbTableName,
-                    DB_TABLE_ELASTICSEARCH: core.elasticsearchDynamodbTableName,
-                    ELASTIC_SEARCH_ENDPOINT: core.elasticsearchDomainEndpoint,
-
-                    // Not required. Useful for testing purposes / ephemeral environments.
-                    // https://www.webiny.com/docs/key-topics/ci-cd/testing/slow-ephemeral-environments
-                    ELASTIC_SEARCH_INDEX_PREFIX: process.env.ELASTIC_SEARCH_INDEX_PREFIX,
-
-                    S3_BUCKET: core.fileManagerBucketId,
-                    // TODO: move to okta plugin
-                    OKTA_ISSUER: process.env["OKTA_ISSUER"],
-                    WEBINY_LOGS_FORWARD_URL,
-                    /**
-                     * APW
-                     */
-                    APW_SCHEDULER_SCHEDULE_ACTION_HANDLER:
-                        apwScheduler.scheduleAction.lambda.output.arn
                 }
             });
 
@@ -179,12 +162,12 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 "cms-post": {
                     path: "/cms/{key+}",
                     method: "POST",
-                    function: headlessCms.functions.graphql.output.arn
+                    function: graphql.functions.graphql.output.arn
                 },
                 "cms-options": {
                     path: "/cms/{key+}",
                     method: "OPTIONS",
-                    function: headlessCms.functions.graphql.output.arn
+                    function: graphql.functions.graphql.output.arn
                 }
             });
 
@@ -218,7 +201,6 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
             return {
                 fileManager,
                 graphql,
-                headlessCms,
                 apiGateway,
                 cloudfront,
                 apwScheduler

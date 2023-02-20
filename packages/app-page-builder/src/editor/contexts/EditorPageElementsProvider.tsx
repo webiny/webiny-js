@@ -4,7 +4,8 @@ import { PageElementsProvider as PbPageElementsProvider } from "@webiny/app-page
 // Attributes modifiers.
 import { createId } from "@webiny/app-page-builder-elements/modifiers/attributes/id";
 import { createClassName } from "@webiny/app-page-builder-elements/modifiers/attributes/className";
-// import { createAnimation } from "@webiny/app-page-builder-elements/modifiers/attributes/animation";
+import { createAnimation } from "@webiny/app-page-builder-elements/modifiers/attributes/animation";
+import { initializeAos } from "@webiny/app-page-builder-elements/modifiers/attributes/animation/initializeAos";
 
 // Styles modifiers.
 import { createBackground } from "@webiny/app-page-builder-elements/modifiers/styles/background";
@@ -21,6 +22,10 @@ import { createVerticalAlign } from "@webiny/app-page-builder-elements/modifiers
 import { createVisibility } from "@webiny/app-page-builder-elements/modifiers/styles/visibility";
 import { createWidth } from "@webiny/app-page-builder-elements/modifiers/styles/width";
 
+// Additional editor styles modifiers.
+import { createAnimationZIndexFix } from "./EditorPageElementsProvider/modifiers/styles/animationZIndexFix";
+
+// Other.
 import { usePageBuilder } from "~/hooks/usePageBuilder";
 import { Theme } from "@webiny/app-theme/types";
 import { plugins } from "@webiny/plugins";
@@ -40,12 +45,11 @@ export const EditorPageElementsProvider: React.FC = ({ children }) => {
     const modifiers = {
         attributes: {
             id: createId(),
-            className: createClassName()
-
-            // TODO: fix animation preview in editor.
-            // animation: createAnimation()
+            className: createClassName(),
+            animation: createAnimation({ initializeAos })
         },
         styles: {
+            animationZIndexFix: createAnimationZIndexFix(),
             background: createBackground(),
             border: createBorder(),
             gridFlexWrap: createGridFlexWrap(),

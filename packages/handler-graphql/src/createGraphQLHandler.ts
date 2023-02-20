@@ -3,34 +3,37 @@ import { GraphQLSchema } from "graphql";
 import { RoutePlugin } from "@webiny/handler";
 import WebinyError from "@webiny/error";
 import { PluginCollection } from "@webiny/plugins/types";
-import { HandlerGraphQLOptions } from "./types";
+import { GraphQLRequestBody, HandlerGraphQLOptions } from "./types";
 import { createGraphQLSchema } from "./createGraphQLSchema";
 import debugPlugins from "./debugPlugins";
 import processRequestBody from "./processRequestBody";
 
 const DEFAULT_CACHE_MAX_AGE = 30758400; // 1 year
 
-/**
- * TODO Until we figure out how to better convert incoming body, we will leave it as any.
- */
-const createRequestBody = (body: any): any => {
+const createRequestBody = (body: unknown): GraphQLRequestBody | GraphQLRequestBody[] => {
+    /**
+     * We are trusting that the body payload is correct.
+     * The `processRequestBody` will fail if it is not.
+     */
     return typeof body === "string" ? JSON.parse(body) : body;
 };
 
-const formatErrorPayload = (error: Error) => {
+const formatErrorPayload = (error: Error): string => {
     if (error instanceof WebinyError) {
-        return {
+        return JSON.stringify({
+            type: "CoreGraphQLWebinyError",
             message: error.message,
             code: error.code,
             data: error.data
-        };
+        });
     }
 
-    return {
+    return JSON.stringify({
+        type: "Error",
         name: error.name,
         message: error.message,
         stack: error.stack
-    };
+    });
 };
 
 export default (options: HandlerGraphQLOptions = {}): PluginCollection => {
@@ -47,7 +50,8 @@ export default (options: HandlerGraphQLOptions = {}): PluginCollection => {
                 .headers({
                     "Cache-Control": `public, max-age=${DEFAULT_CACHE_MAX_AGE}`
                 })
-                .send({});
+                .send({})
+                .hijack();
         });
         onPost(path, async (request, reply) => {
             if (!schema) {
@@ -57,9 +61,22 @@ export default (options: HandlerGraphQLOptions = {}): PluginCollection => {
                     return reply.code(500).send(formatErrorPayload(ex));
                 }
             }
-            const body = createRequestBody(request.body);
-            const result = await processRequestBody(body, schema, context);
-            return reply.status(200).send(result);
+            let body: GraphQLRequestBody | GraphQLRequestBody[];
+            try {
+                body = createRequestBody(request.body);
+            } catch (ex) {
+                console.log(`Error while creating the body request.`);
+                console.log(formatErrorPayload(ex));
+                throw ex;
+            }
+            try {
+                const result = await processRequestBody(body, schema, context);
+                return reply.status(200).send(result);
+            } catch (ex) {
+                console.log(`Error while processing the body request.`);
+                console.log(formatErrorPayload(ex));
+                throw ex;
+            }
         });
     });
 
