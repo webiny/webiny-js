@@ -129,15 +129,18 @@ export const Input: React.FC<InputProps> = props => {
 
     const { isValid: validationIsValid, message: validationMessage } = validation || {};
 
-    const inputOnKeyDown = useCallback(e => {
-        if (typeof onEnter === "function" && e.key === "Enter") {
-            onEnter();
-        }
+    const inputOnKeyDown = useCallback(
+        e => {
+            if (typeof onEnter === "function" && e.key === "Enter") {
+                onEnter();
+            }
 
-        if (typeof rest.onKeyDown === "function") {
-            return rest.onKeyDown(e);
-        }
-    }, []);
+            if (typeof rest.onKeyDown === "function") {
+                return rest.onKeyDown(e);
+            }
+        },
+        [rest.onKeyDown]
+    );
 
     return (
         <React.Fragment>
