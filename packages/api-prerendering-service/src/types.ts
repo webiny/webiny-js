@@ -134,6 +134,10 @@ export interface PrerenderingServiceRenderStorageOperations {
     ) => Promise<TagPathLink[]>;
 }
 
+export interface PrerenderingServiceTenantStorageOperations {
+    getTenantIds: () => Promise<string[]>;
+}
+
 export interface PrerenderingServiceSettingsStorageOperations {
     getSettings(): Promise<PrerenderingSettings>;
     saveSettings(params: PrerenderingServiceSaveSettingsParams): Promise<PrerenderingSettings>;
@@ -155,7 +159,8 @@ export interface PrerenderingServiceQueueJobStorageOperations {
 export interface PrerenderingServiceStorageOperations
     extends PrerenderingServiceRenderStorageOperations,
         PrerenderingServiceQueueJobStorageOperations,
-        PrerenderingServiceSettingsStorageOperations {
+        PrerenderingServiceSettingsStorageOperations,
+        PrerenderingServiceTenantStorageOperations {
     //
 }
 

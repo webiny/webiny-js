@@ -13,7 +13,7 @@
     "directory": "dist"
   },
   "dependencies": {
-    "@aws-sdk/client-cloudwatch-events": "^3.54.1",
+    "@aws-sdk/client-cloudwatch-events": "3.54.1",
     "@pulumi/aws": "^5.8.0",
     "@pulumi/pulumi": "^3.34.0",
     "@webiny/api-apw": "0.0.0",
