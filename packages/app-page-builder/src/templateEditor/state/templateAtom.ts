@@ -1,13 +1,15 @@
 import { atom } from "recoil";
 import { PbEditorElement } from "~/types";
 
-export interface TemplateWithContent extends TemplateAtomType {
+export interface PageTemplateWithContent extends PageTemplate {
     content: PbEditorElement;
 }
 
-export interface TemplateAtomType {
+export interface PageTemplate {
     id: string;
     title?: string;
+    slug?: string;
+    tags?: string[];
     description?: string;
     layout?: string;
     savedOn?: string;
@@ -16,7 +18,7 @@ export interface TemplateAtomType {
     };
 }
 
-export const templateAtom = atom<TemplateAtomType>({
+export const templateAtom = atom<PageTemplate>({
     key: "templateAtom",
     default: {
         id: "",

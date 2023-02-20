@@ -23,7 +23,7 @@ export const createStateInitializer = (
 
             set(pageAtom, pageData);
             set(revisionsAtom, revisions);
-            set(templateModeAtom, !!page?.content?.data?.templateId);
+            set(templateModeAtom, !!page?.content?.data?.template);
         }
     });
 };

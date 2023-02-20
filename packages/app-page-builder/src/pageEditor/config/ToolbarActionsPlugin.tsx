@@ -25,7 +25,7 @@ import {
 
 const unlinkTemplateDialog = css`
     & .mdc-dialog__surface {
-        width: 400px;
+        width: 500px;
     }
 
     & .webiny-ui-dialog__title {
@@ -45,12 +45,6 @@ const unlinkTemplateDialog = css`
             width: 18px;
             margin-right: 5px;
         }
-    }
-
-    & .button-wrapper {
-        display: flex;
-        justify-content: space-between;
-        width: 100%;
     }
 `;
 
@@ -85,10 +79,9 @@ export const ToolbarActionsPlugin = createComponentPlugin(ToolbarActions, Toolba
         }, []);
 
         const onUnlink = useCallback(() => {
-            // we need to drop templateId and templateVariables properties when unlinking,
-            // so they are separated from all other element data
+            // we need to drop the `template` property when unlinking.
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const { templateId, templateVariables, ...newPageData } = rootElement.data;
+            const { template, ...newPageData } = rootElement.data;
 
             setIsTemplateMode(false);
             updateElement({ ...rootElement, data: newPageData }, { history: false });
@@ -121,12 +114,10 @@ export const ToolbarActionsPlugin = createComponentPlugin(ToolbarActions, Toolba
                         </div>
                     </DialogContent>
                     <DialogActions>
-                        <div className="button-wrapper">
-                            <DialogCancel onClick={onClose}>Cancel</DialogCancel>
-                            <ButtonPrimary disabled={!unlinkPermission} onClick={onUnlink}>
-                                {unlinkPermission ? "Unlink template" : "No permissions"}
-                            </ButtonPrimary>
-                        </div>
+                        <DialogCancel onClick={onClose}>Cancel</DialogCancel>
+                        <ButtonPrimary disabled={!unlinkPermission} onClick={onUnlink}>
+                            {unlinkPermission ? "Unlink template" : "No permissions"}
+                        </ButtonPrimary>
                     </DialogActions>
                 </Dialog>
             </>
