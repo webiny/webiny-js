@@ -5,7 +5,6 @@
     { "path": "../app-admin/tsconfig.build.json" },
     { "path": "../app-page-builder/tsconfig.build.json" },
     { "path": "../app-page-builder-elements/tsconfig.build.json" },
-    { "path": "../feature-flags/tsconfig.build.json" },
     { "path": "../lexical-editor/tsconfig.build.json" },
     { "path": "../react-composition/tsconfig.build.json" },
     { "path": "../ui/tsconfig.build.json" }

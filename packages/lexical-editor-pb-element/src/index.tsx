@@ -22,7 +22,7 @@ export const LexicalEditorPlugin = () => {
             {/* Render */}
             <HeadingPlugin />
             <ParagraphPlugin />
-            {/* Render public web site for legacy renderer component */}
+            {/* Render public website for legacy renderer component */}
             <TextElementRendererPlugin />
         </>
     );

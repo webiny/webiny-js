@@ -1,6 +1,10 @@
 import React, { useCallback, useState } from "react";
 import { createComponentPlugin } from "@webiny/react-composition";
 import RichVariableInput from "@webiny/app-page-builder/editor/plugins/elementSettings/variable/RichVariableInput";
+// TODO: remove this reference
+// @emotion/react package is dependency for @emotion/styled but not used anywhere, if it's not included adio will trow error msg
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import * as emotion from "@emotion/react";
 import styled from "@emotion/styled";
 import { ReactComponent as ExpandIcon } from "@material-design-icons/svg/filled/fullscreen.svg";
 import { Dialog, DialogActions, DialogContent } from "@webiny/ui/Dialog";
