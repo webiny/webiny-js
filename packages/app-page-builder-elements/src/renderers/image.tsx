@@ -49,9 +49,34 @@ export const ImageRendererComponent: React.FC<ImageRendererComponentProps> = ({
         const { title } = element.data.image;
         const { src } = value || element.data?.image?.file;
 
-        const srcSet = SUPPORTED_IMAGE_RESIZE_WIDTHS.map(item => {
-            return `${src}?width=${item} ${item}w`;
-        }).join(", ");
+        // If a fixed image width in pixels was set, let's filter out unneeded
+        // image resize widths. For example, if 155px was set as the fixed image
+        // width, then we want the `srcset` attribute to only contain 100w and 300w.
+        let srcSetWidths: number[] = [];
+
+        const imageWidth = element.data.image.width;
+        if (imageWidth && imageWidth.endsWith("px")) {
+            const imageWidthInt = parseInt(imageWidth);
+            for (let i = 0; i < SUPPORTED_IMAGE_RESIZE_WIDTHS.length; i++) {
+                const supportedResizeWidth = SUPPORTED_IMAGE_RESIZE_WIDTHS[i];
+                if (imageWidthInt > supportedResizeWidth) {
+                    srcSetWidths.push(supportedResizeWidth);
+                } else {
+                    srcSetWidths.push(supportedResizeWidth);
+                    break;
+                }
+            }
+        } else {
+            // If a fixed image width was not provided, we
+            // rely on all the supported image resize widths.
+            srcSetWidths = SUPPORTED_IMAGE_RESIZE_WIDTHS;
+        }
+
+        const srcSet = srcSetWidths
+            .map(item => {
+                return `${src}?width=${item} ${item}w`;
+            })
+            .join(", ");
 
         content = <PbImg alt={title} title={title} src={src} srcSet={srcSet} onClick={onClick} />;
     } else {

@@ -5,7 +5,10 @@ import { Resolvers } from "@webiny/handler-graphql/types";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";
 import { toSlug } from "~/utils/toSlug";
 
-export const createModelsSchema = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
+interface Params {
+    context: CmsContext;
+}
+export const createModelsSchema = ({ context }: Params): GraphQLSchemaPlugin<CmsContext> => {
     const resolvers: Resolvers<CmsContext> = {
         Query: {
             getContentModel: async (_: unknown, args: any, context) => {
