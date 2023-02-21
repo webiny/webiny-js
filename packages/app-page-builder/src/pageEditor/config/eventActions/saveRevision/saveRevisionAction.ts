@@ -24,8 +24,8 @@ const triggerOnFinish = (args?: SaveRevisionActionArgsType): void => {
     }
     args.onFinish();
 };
-// TODO @ts-refactor not worth it
-let debouncedSave: any = null;
+
+let debouncedSave: ReturnType<typeof lodashDebounce> | null = null;
 
 const syncTemplateVariables = (content: PbElement) => {
     const templateVariables = [];
@@ -39,7 +39,9 @@ const syncTemplateVariables = (content: PbElement) => {
         }
     }
 
-    return { ...content, data: { ...content.data, templateVariables }, elements: [] };
+    const template = { ...content.data.template, variables: templateVariables };
+
+    return { ...content, data: { ...content.data, template }, elements: [] };
 };
 
 const removeTemplateBlockIds = (content: PbElement) => {
@@ -77,7 +79,7 @@ export const saveRevisionAction: PageEventActionCallable<SaveRevisionActionArgsT
 
     let updatedContent = (await state.getElementTree()) as PbElement;
 
-    if (updatedContent.data.templateId) {
+    if (updatedContent.data.template) {
         updatedContent = syncTemplateVariables(updatedContent);
     } else {
         updatedContent = removeTemplateBlockIds(updatedContent);

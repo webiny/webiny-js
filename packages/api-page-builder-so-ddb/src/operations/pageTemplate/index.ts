@@ -9,14 +9,14 @@ import {
     PageTemplateStorageOperationsUpdateParams
 } from "@webiny/api-page-builder/types";
 import { Entity } from "dynamodb-toolbox";
-import { queryAll, QueryAllParams } from "@webiny/db-dynamodb/utils/query";
+import { queryAll, QueryAllParams, queryOne } from "@webiny/db-dynamodb/utils/query";
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
 import { filterItems } from "@webiny/db-dynamodb/utils/filter";
 import { PageTemplateDataLoader } from "./dataLoader";
 import { createListResponse } from "@webiny/db-dynamodb/utils/listResponse";
 import { PageTemplateDynamoDbFieldPlugin } from "~/plugins/definitions/PageTemplateDynamoDbFieldPlugin";
 import { PluginsContainer } from "@webiny/plugins";
-import { createPartitionKey, createSortKey } from "./keys";
+import { createGSI1PK, createPrimaryPK } from "./keys";
 import { DataContainer } from "~/types";
 
 const createType = (): string => {
@@ -39,7 +39,24 @@ export const createPageTemplateStorageOperations = ({
         const { where } = params;
 
         try {
-            return await dataLoader.getOne(where);
+            if (where.id) {
+                return await dataLoader.getOne({
+                    id: where.id,
+                    tenant: where.tenant,
+                    locale: where.locale
+                });
+            }
+
+            const result = await queryOne<{ data: PageTemplate }>({
+                entity,
+                partitionKey: createGSI1PK(where),
+                options: {
+                    index: "GSI1",
+                    eq: where.slug
+                }
+            });
+
+            return result?.data || null;
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not load page template by given parameters.",
@@ -57,8 +74,9 @@ export const createPageTemplateStorageOperations = ({
         const { tenant, locale, ...restWhere } = where;
         const queryAllParams: QueryAllParams = {
             entity,
-            partitionKey: createPartitionKey({ tenant, locale }),
+            partitionKey: createGSI1PK({ tenant, locale }),
             options: {
+                index: "GSI1",
                 gt: " "
             }
         };
@@ -107,11 +125,10 @@ export const createPageTemplateStorageOperations = ({
         const { pageTemplate } = params;
 
         const keys = {
-            PK: createPartitionKey({
-                tenant: pageTemplate.tenant,
-                locale: pageTemplate.locale
-            }),
-            SK: createSortKey(pageTemplate)
+            PK: createPrimaryPK(pageTemplate),
+            SK: "A",
+            GSI1_PK: createGSI1PK(pageTemplate),
+            GSI1_SK: pageTemplate.slug
         };
 
         try {
@@ -140,11 +157,10 @@ export const createPageTemplateStorageOperations = ({
     const update = async (params: PageTemplateStorageOperationsUpdateParams) => {
         const { original, pageTemplate } = params;
         const keys = {
-            PK: createPartitionKey({
-                tenant: original.tenant,
-                locale: original.locale
-            }),
-            SK: createSortKey(pageTemplate)
+            PK: createPrimaryPK(pageTemplate),
+            SK: "A",
+            GSI1_PK: createGSI1PK(pageTemplate),
+            GSI1_SK: pageTemplate.slug
         };
 
         try {
@@ -175,11 +191,8 @@ export const createPageTemplateStorageOperations = ({
     const deletePageTemplate = async (params: PageTemplateStorageOperationsDeleteParams) => {
         const { pageTemplate } = params;
         const keys = {
-            PK: createPartitionKey({
-                tenant: pageTemplate.tenant,
-                locale: pageTemplate.locale
-            }),
-            SK: createSortKey(pageTemplate)
+            PK: createPrimaryPK(pageTemplate),
+            SK: "A"
         };
 
         try {
