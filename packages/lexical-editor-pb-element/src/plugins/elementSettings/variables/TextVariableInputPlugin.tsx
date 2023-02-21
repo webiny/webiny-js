@@ -61,6 +61,8 @@ const ButtonPrimaryStyled = styled(ButtonPrimary)`
     margin-left: 8px;
 `;
 
+// Same changes?
+
 export const TextVariableInputPlugin = createComponentPlugin(TextVariableInput, () => {
     return function TextVariableInputPlugin({ variableId }): JSX.Element {
         const { value, onChange, onBlur } = useVariable(variableId);

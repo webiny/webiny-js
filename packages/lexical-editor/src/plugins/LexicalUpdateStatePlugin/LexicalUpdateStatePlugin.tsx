@@ -18,6 +18,11 @@ export const LexicalUpdateStatePlugin: FC<LexicalUpdateStatePlugin> = ({
     const [editor] = useLexicalComposerContext();
     useEffect(() => {
         if (value && editor) {
+            const editorState = editor.getEditorState();
+            if (JSON.stringify(editorState.toJSON()) === value) {
+                return;
+            }
+
             const initialEditorState = editor.parseEditorState(
                 isValidLexicalData(value) ? value : getEmptyEditorStateJSONString()
             );

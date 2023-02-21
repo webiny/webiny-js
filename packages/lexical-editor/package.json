@@ -6,7 +6,6 @@
     "url": "https://github.com/webiny/webiny-js.git"
   },
   "license": "MIT",
-  "private": true,
   "dependencies": {
     "@lexical/code": "0.8.0",
     "@lexical/hashtag": "0.8.0",

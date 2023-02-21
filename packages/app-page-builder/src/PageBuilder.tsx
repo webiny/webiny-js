@@ -6,6 +6,7 @@ import {
     createProviderPlugin,
     createComponentPlugin
 } from "@webiny/app-admin";
+import { LexicalEditorPlugin } from "@webiny/lexical-editor-pb-element";
 import { PageBuilderProvider as ContextProvider } from "./contexts/PageBuilder";
 import { ReactComponent as PagesIcon } from "./admin/assets/table_chart-24px.svg";
 import { WebsiteSettings } from "./modules/WebsiteSettings/WebsiteSettings";
@@ -103,6 +104,7 @@ export const PageBuilder: React.FC = () => {
         <Fragment>
             <PageBuilderProviderPlugin />
             <EditorRendererPlugin />
+            <LexicalEditorPlugin />
             <Plugins>
                 <PageBuilderMenu />
                 <WebsiteSettings />

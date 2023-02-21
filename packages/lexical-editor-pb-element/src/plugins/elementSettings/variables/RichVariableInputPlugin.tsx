@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 import { createComponentPlugin } from "@webiny/react-composition";
 import RichVariableInput from "@webiny/app-page-builder/editor/plugins/elementSettings/variable/RichVariableInput";
 // TODO: remove this reference
@@ -10,9 +10,10 @@ import { ReactComponent as ExpandIcon } from "@material-design-icons/svg/filled/
 import { Dialog, DialogActions, DialogContent } from "@webiny/ui/Dialog";
 import { ButtonPrimary, IconButton } from "@webiny/ui/Button";
 import { useVariable } from "@webiny/app-page-builder/hooks/useVariable";
+import { EditorStateJSONString } from "@webiny/lexical-editor/types";
 import { LexicalEditor } from "~/LexicalEditor";
 
-const InputWrapper = styled("div")`
+const InputWrapper = styled.div`
     display: grid;
     align-items: flex-end;
     margin-top: -32px;
@@ -25,7 +26,7 @@ const InputWrapper = styled("div")`
     }
 `;
 
-const EditorWrapper = styled("div")`
+const EditorWrapper = styled.div`
     padding: 20px 16px;
     margin-top: 8px;
     background-color: rgba(212, 212, 212, 0.5);
@@ -33,17 +34,9 @@ const EditorWrapper = styled("div")`
     max-height: 250px;
     overflow-y: auto;
     line-height: normal;
-
-    &:has(p[data-medium-focused]) {
-        background-color: rgba(212, 212, 212, 0.7);
-    }
-
-    & .medium-editor-placeholder:after {
-        color: var(--mdc-theme-text-secondary-on-background);
-    }
 `;
 
-const ModalEditorWrapper = styled("div")`
+const ModalEditorWrapper = styled.div`
     padding: 20px 16px;
     background-color: rgba(212, 212, 212, 0.5);
     border-bottom: 1px solid;
@@ -51,94 +44,66 @@ const ModalEditorWrapper = styled("div")`
     height: 400px;
     overflow-y: auto;
     line-height: normal;
-
-    &:has(p[data-medium-focused]) {
-        background-color: rgba(212, 212, 212, 0.7);
-    }
-
-    & .medium-editor-placeholder:after {
-        color: var(--mdc-theme-text-secondary-on-background);
-    }
 `;
 
 const ButtonPrimaryStyled = styled(ButtonPrimary)`
     margin-left: 8px;
 `;
 
+type LexicalValue = EditorStateJSONString;
+
 export const RichVariableInputPlugin = createComponentPlugin(RichVariableInput, () => {
-    return function RichVariableInputPlugin({ variableId }): JSX.Element {
-        const { value, onChange, onBlur } = useVariable(variableId);
+    return function RichVariableInputPlugin({ variableId }) {
+        const { value, onChange } = useVariable<LexicalValue>(variableId);
         const [initialValue, setInitialValue] = useState(value);
-        const [updateValue, setUpdateValue] = useState(value);
-        const [inputValue, setInputValue] = useState(value);
-        const [popupEditorValue, setPopupEditorValue] = useState(value);
-        const [isOpen, setIsOpen] = useState(false);
+        // We need a separate piece of state for dialog input, to support "cancel edit" functionality
+        const [dialogEditorValue, setDialogEditorValue] = useState(value);
+        const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-        const onUpdate = useCallback(() => {
-            onBlur();
-            setInitialValue(value);
-        }, [value, onBlur]);
-
-        const inputChangeHandler = (editorState: string) => {
-            setUpdateValue(editorState);
-            onChange(editorState);
+        const saveData = (data: LexicalValue) => {
+            // Update variable value, and trigger page save
+            onChange(data, true);
+            // Set a new initial value for all inputs
+            setInitialValue(data);
         };
 
-        const onInputBlur = () => {
-            saveData();
+        const onDialogOpen = () => {
+            setDialogEditorValue(initialValue);
+            setIsDialogOpen(true);
         };
 
-        const saveData = () => {
-            onChange(updateValue);
-            setPopupEditorValue(updateValue);
-            setInputValue(updateValue);
-            setInitialValue(updateValue);
-            onUpdate();
+        const onDialogClose = () => {
+            setIsDialogOpen(false);
         };
 
-        const onPopupOpen = () => {
-            setIsOpen(true);
-            setInputValue(updateValue);
-            setPopupEditorValue(updateValue);
-        };
-
-        const onPopupClose = () => {
-            setPopupEditorValue(inputValue);
-            setUpdateValue(inputValue);
-            onChange(inputValue);
-            setIsOpen(false);
-        };
-
-        const onPopupSave = () => {
-            saveData();
-            setIsOpen(false);
+        const onDialogSave = () => {
+            saveData(dialogEditorValue);
+            setIsDialogOpen(false);
         };
 
         return (
             <InputWrapper>
-                <IconButton icon={<ExpandIcon />} onClick={() => onPopupOpen()} />
+                <IconButton icon={<ExpandIcon />} onClick={onDialogOpen} />
                 <EditorWrapper className="webiny-pb-page-element-text">
                     <LexicalEditor
                         tag={"p"}
                         initValue={initialValue}
-                        value={inputValue}
-                        onChange={value => inputChangeHandler(value)}
-                        onBlur={() => onInputBlur()}
+                        onChange={onChange}
+                        onBlur={saveData}
                     />
                 </EditorWrapper>
-                <Dialog open={isOpen} onClose={onPopupClose}>
+                <Dialog open={isDialogOpen} onClose={onDialogClose}>
                     <DialogContent>
                         <ModalEditorWrapper className="webiny-pb-page-element-text">
                             <LexicalEditor
                                 tag={"p"}
-                                initValue={initialValue}
-                                value={popupEditorValue}
-                                onChange={inputChangeHandler}
+                                initValue={dialogEditorValue}
+                                onChange={setDialogEditorValue}
                             />
                         </ModalEditorWrapper>
                     </DialogContent>
                     <DialogActions>
-                        <ButtonPrimaryStyled className={"save-btn"} onClick={onPopupSave}>
+                        <ButtonPrimaryStyled className={"save-btn"} onClick={onDialogSave}>
                             Save
                         </ButtonPrimaryStyled>
                     </DialogActions>

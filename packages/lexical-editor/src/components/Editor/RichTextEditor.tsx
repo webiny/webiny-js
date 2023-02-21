@@ -80,7 +80,7 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
             <div ref={scrollRef}>
                 {/* data */}
                 <OnChangePlugin onChange={handleOnChange} />
-                {value && <LexicalUpdateStatePlugin value={value} />}
+                {initValue && <LexicalUpdateStatePlugin value={initValue} />}
                 <ClearEditorPlugin />
                 {/* Events */}
                 {onBlur && <BlurEventPlugin onBlur={onBlur} />}

@@ -7,6 +7,7 @@ import { EditorStateJSONString } from "@webiny/lexical-editor/types";
 
 const DATA_NAMESPACE = "data.text";
 
+// TODO: leave comment here why this plugin even exists
 export const TextElementRendererPlugin = createComponentPlugin(TextElement, Original => {
     return function TextElementRendererPlugin({ element, rootClassName }): JSX.Element {
         const textContent = get(element, `${DATA_NAMESPACE}.data.text`);
