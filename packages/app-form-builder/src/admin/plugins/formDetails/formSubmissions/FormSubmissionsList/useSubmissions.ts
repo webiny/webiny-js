@@ -1,21 +1,19 @@
-import { useApolloClient, useMutation } from "@apollo/react-hooks";
-import { useCallback, useEffect, useReducer } from "react";
+import { useMutation, useQuery } from "@apollo/react-hooks";
+import { useCallback, useReducer } from "react";
+import debounce from "lodash/debounce";
+import get from "lodash/get";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { FetchPolicy } from "apollo-client";
-import { FbFormModel, FbFormSubmissionData } from "~/types";
+import { FbFormModel } from "~/types";
 import {
     ExportFormSubmissionsMutationResponse,
     ExportFormSubmissionsMutationVariables,
     EXPORT_FORM_SUBMISSIONS,
-    ListFormSubmissionsQueryResponse,
-    ListFormSubmissionsQueryVariables,
     LIST_FORM_SUBMISSIONS
 } from "~/admin/graphql";
 
 interface State {
     loading: boolean;
     exportInProgress: boolean;
-    submissions: FbFormSubmissionData[];
     sort: string[];
 }
 interface Reducer {
@@ -26,37 +24,45 @@ export const useSubmissions = (form: Pick<FbFormModel, "id">) => {
     const [state, setState] = useReducer<Reducer>((prev, next) => ({ ...prev, ...next }), {
         loading: false,
         exportInProgress: false,
-        submissions: [],
         sort: ["createdOn_DESC"]
     });
 
-    const client = useApolloClient();
-
     const { showSnackbar } = useSnackbar();
 
-    const loadSubmissions = async (fetchPolicy: FetchPolicy = "cache-first") => {
-        setState({ loading: true });
+    const listQuery = useQuery(LIST_FORM_SUBMISSIONS, {
+        variables: { form: form.id, sort: state.sort }
+    });
 
-        const { data: res } = await client.query<
-            ListFormSubmissionsQueryResponse,
-            ListFormSubmissionsQueryVariables
-        >({
-            query: LIST_FORM_SUBMISSIONS,
-            variables: { form: form.id, sort: state.sort },
-            fetchPolicy
-        });
+    const loadMoreOnScroll = useCallback(
+        debounce(scrollFrame => {
+            if (scrollFrame.top > 0.9) {
+                const meta = get(listQuery, "data.formBuilder.listFormSubmissions.meta", {});
+                if (meta.cursor) {
+                    setState({ loading: true });
+                    listQuery.fetchMore({
+                        variables: { after: meta.cursor },
+                        updateQuery: (prev: any, { fetchMoreResult }: any) => {
+                            if (!fetchMoreResult) {
+                                return prev;
+                            }
 
-        const { data } = res.formBuilder.listFormSubmissions;
+                            const next = { ...fetchMoreResult };
 
-        setState({
-            loading: false,
-            submissions: data
-        });
-    };
-
-    useEffect((): void => {
-        loadSubmissions();
-    }, [form.id, state.sort]);
+                            next.formBuilder.listFormSubmissions.data = [
+                                ...prev.formBuilder.listFormSubmissions.data,
+                                ...fetchMoreResult.formBuilder.listFormSubmissions.data
+                            ];
+                            setState({
+                                loading: false
+                            });
+                            return next;
+                        }
+                    });
+                }
+            }
+        }, 500),
+        [listQuery]
+    );
 
     const [exportFormSubmission] = useMutation<
         ExportFormSubmissionsMutationResponse,
@@ -86,9 +92,16 @@ export const useSubmissions = (form: Pick<FbFormModel, "id">) => {
     }, [form]);
 
     return {
-        loading: state.loading,
-        refresh: () => loadSubmissions("network-only"),
-        submissions: state.submissions,
+        loading: [listQuery].find(item => item.loading),
+        fetchMoreLoading: state.loading,
+        refresh: () => {
+            if (!listQuery.refetch) {
+                return;
+            }
+            listQuery.refetch();
+        },
+        loadMoreOnScroll,
+        submissions: get(listQuery, "data.formBuilder.listFormSubmissions.data", []),
         setSorter: (sort: string[]) => {
             setState({ sort });
         },
