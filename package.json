@@ -213,6 +213,7 @@
   },
   "resolutions": {
     "@types/react": "17.0.39",
+    "@babel/types": "7.19.4",
     "@types/jsdom": "link:./typings/void",
     "@typescript/lib-dom": "npm:@types/web@*",
     "@types/webpack": "^5.28.0",
