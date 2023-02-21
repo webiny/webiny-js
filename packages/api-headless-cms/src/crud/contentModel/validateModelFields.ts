@@ -242,7 +242,7 @@ interface ValidateModelFieldsParams {
     original?: CmsModel;
     context: CmsContext;
 }
-export const validateModelFields = (params: ValidateModelFieldsParams) => {
+export const validateModelFields = async (params: ValidateModelFieldsParams): Promise<void> => {
     const { model, original, context } = params;
     const { titleFieldId, descriptionFieldId, imageFieldId } = model;
     const { plugins } = context;

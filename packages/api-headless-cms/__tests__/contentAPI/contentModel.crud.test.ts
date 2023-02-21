@@ -1053,8 +1053,7 @@ describe("content model test", () => {
             }
         });
     });
-    
-    
+
     it("should assign description field", async () => {
         const { createContentModelMutation, getContentModelQuery, updateContentModelMutation } =
             useGraphQLHandler(manageHandlerOpts);
@@ -1064,7 +1063,7 @@ describe("content model test", () => {
             type: "long-text",
             label: "Test Field"
         };
-        
+
         const [createResponseWithInitialLongText] = await createContentModelMutation({
             data: {
                 name: "Test Content model",
@@ -1074,7 +1073,7 @@ describe("content model test", () => {
                 layout: [["testId"]]
             }
         });
-        
+
         expect(createResponseWithInitialLongText).toMatchObject({
             data: {
                 createContentModel: {
@@ -1087,7 +1086,7 @@ describe("content model test", () => {
                 }
             }
         });
-        
+
         const [responseAfterCreate] = await getContentModelQuery({
             modelId: "testContentModel"
         });
@@ -1103,7 +1102,7 @@ describe("content model test", () => {
                 }
             }
         });
-        
+
         const [createResponseWithNoFields] = await createContentModelMutation({
             data: {
                 name: "Test Content model",
@@ -1125,7 +1124,7 @@ describe("content model test", () => {
                 }
             }
         });
-        
+
         const [updateResponseWithFields] = await updateContentModelMutation({
             modelId: "testContentModel2",
             data: {
@@ -1145,7 +1144,7 @@ describe("content model test", () => {
                 }
             }
         });
-        
+
         const [responseAfterUpdate] = await getContentModelQuery({
             modelId: "testContentModel2"
         });
@@ -1162,7 +1161,7 @@ describe("content model test", () => {
             }
         });
     });
-    
+
     it("should assign image field", async () => {
         const { createContentModelMutation, getContentModelQuery, updateContentModelMutation } =
             useGraphQLHandler(manageHandlerOpts);
@@ -1175,7 +1174,7 @@ describe("content model test", () => {
                 imagesOnly: true
             }
         };
-        
+
         const [createResponseWithInitialFile] = await createContentModelMutation({
             data: {
                 name: "Test Content model",
@@ -1185,7 +1184,7 @@ describe("content model test", () => {
                 layout: [["testId"]]
             }
         });
-        
+
         expect(createResponseWithInitialFile).toMatchObject({
             data: {
                 createContentModel: {
@@ -1198,7 +1197,7 @@ describe("content model test", () => {
                 }
             }
         });
-        
+
         const [responseAfterCreate] = await getContentModelQuery({
             modelId: "testContentModel"
         });
@@ -1214,7 +1213,7 @@ describe("content model test", () => {
                 }
             }
         });
-        
+
         const [createResponseWithNoFields] = await createContentModelMutation({
             data: {
                 name: "Test Content model",
@@ -1236,7 +1235,7 @@ describe("content model test", () => {
                 }
             }
         });
-        
+
         const [updateResponseWithFields] = await updateContentModelMutation({
             modelId: "testContentModel2",
             data: {
@@ -1256,7 +1255,7 @@ describe("content model test", () => {
                 }
             }
         });
-        
+
         const [responseAfterUpdate] = await getContentModelQuery({
             modelId: "testContentModel2"
         });

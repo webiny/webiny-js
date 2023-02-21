@@ -115,22 +115,22 @@ const getContentEntries = async (
                     items.map(item => {
                         const model = modelsMap[item.modelId];
 
-                    return {
-                        id: item.id,
-                        entryId: item.entryId,
-                        model: {
-                            modelId: model.modelId,
-                            name: model.name
-                        },
-                        status: item.status,
-                        title: getEntryTitle(model, item),
-                        description: getEntryDescription(model, item),
-                        image: getEntryImage(model, item)
-                    };
-                })
-            );
-        }, [] as CmsEntryRecord[])
-        .filter(Boolean);
+                        return {
+                            id: item.id,
+                            entryId: item.entryId,
+                            model: {
+                                modelId: model.modelId,
+                                name: model.name
+                            },
+                            status: item.status,
+                            title: getEntryTitle(model, item),
+                            description: getEntryDescription(model, item),
+                            image: getEntryImage(model, item)
+                        };
+                    })
+                );
+            }, [] as CmsEntryRecord[])
+            .filter(Boolean);
 
         return new Response(entries);
     } catch (ex) {
