@@ -7,6 +7,7 @@ import { CmsGraphQLSchemaPlugin } from "~/plugins";
 import { getEntryDescription } from "~/utils/getEntryDescription";
 import { getEntryImage } from "~/utils/getEntryImage";
 import { entryFieldFromStorageTransform } from "~/utils/entryStorage";
+import { Resolvers } from "@webiny/handler-graphql/types";
 
 interface EntriesByModel {
     [key: string]: string[];
@@ -205,6 +206,34 @@ const getContentEntry = async (
 
     return new Response(createCmsEntryRecord(model, entry));
 };
+/**
+ * As we support description field, we need to transform the value from storage.
+ */
+const createResolveDescription = (): Resolvers<CmsContext> => {
+    return async (parent, _, context) => {
+        const models = await context.cms.listModels();
+        const model = models.find(({ modelId }) => {
+            return parent.model.modelId === modelId;
+        });
+        if (!model) {
+            return null;
+        }
+        const field = model.fields.find(f => f.fieldId === model.descriptionFieldId);
+        if (!field) {
+            return null;
+        }
+        const value = parent[field.fieldId];
+        if (!value) {
+            return null;
+        }
+        return entryFieldFromStorageTransform({
+            context,
+            model,
+            field,
+            value
+        });
+    };
+};
 
 export const createContentEntriesSchema = (context: CmsContext): CmsGraphQLSchemaPlugin => {
     if (!context.cms.MANAGE) {
@@ -304,29 +333,10 @@ export const createContentEntriesSchema = (context: CmsContext): CmsGraphQLSchem
                         return null;
                     }
                 },
-                description: async (parent, _, context) => {
-                    const models = await context.cms.listModels();
-                    const model = models.find(({ modelId }) => {
-                        return parent.model.modelId === modelId;
-                    });
-                    if (!model) {
-                        return null;
-                    }
-                    const field = model.fields.find(f => f.fieldId === model.descriptionFieldId);
-                    if (!field) {
-                        return null;
-                    }
-                    const value = parent[field.fieldId];
-                    if (!value) {
-                        return null;
-                    }
-                    return entryFieldFromStorageTransform({
-                        context,
-                        model,
-                        field,
-                        value
-                    });
-                }
+                description: createResolveDescription()
+            },
+            CmsPublishedContentEntry: {
+                description: createResolveDescription()
             },
             Query: {
                 async searchContentEntries(_, args: any, context) {

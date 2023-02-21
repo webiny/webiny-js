@@ -1,6 +1,9 @@
 import React from "react";
 import styled from "@emotion/styled";
-import { CmsReferenceContentEntry } from "~/admin/plugins/fieldRenderers/ref/components/types";
+import {
+    CmsReferenceContentEntry,
+    CmsReferenceValue
+} from "~/admin/plugins/fieldRenderers/ref/components/types";
 import { Image } from "./entry/Image";
 import { ModelName } from "./entry/ModelName";
 import { Title } from "./entry/Title";
@@ -43,10 +46,11 @@ const FooterContainer = styled("div")({
 
 interface Props {
     entry?: CmsReferenceContentEntry | null;
-    onSelect?: () => void;
+    onChange?: (value: CmsReferenceValue | null) => void;
     onRemove?: () => void;
+    selected?: boolean;
 }
-export const Entry: React.FC<Props> = ({ entry, onSelect, onRemove }) => {
+export const Entry: React.FC<Props> = ({ entry, onChange, onRemove, selected }) => {
     if (!entry) {
         return null;
     }
@@ -65,7 +69,7 @@ export const Entry: React.FC<Props> = ({ entry, onSelect, onRemove }) => {
                 <CreatedBy createdBy={entry.createdBy} createdOn={entry.createdOn} />
                 <ModifiedBy modifiedBy={entry.modifiedBy} savedOn={entry.savedOn} />
                 <View entry={entry} />
-                {onSelect && <Select entry={entry} onSelect={onSelect} />}
+                {onChange && <Select entry={entry} onChange={onChange} selected={selected} />}
                 {onRemove && <Remove entry={entry} onRemove={onRemove} />}
             </FooterContainer>
         </Container>

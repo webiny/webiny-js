@@ -13,7 +13,7 @@ interface Props {
 export const ModifiedBy: React.FC<Props> = ({ modifiedBy, savedOn }) => {
     return (
         <Box icon={null} name={"Modified By"}>
-            {modifiedBy?.displayName && (
+            {modifiedBy?.displayName && savedOn && (
                 <>
                     {modifiedBy?.displayName}, <TimeAgo datetime={savedOn} />
                 </>

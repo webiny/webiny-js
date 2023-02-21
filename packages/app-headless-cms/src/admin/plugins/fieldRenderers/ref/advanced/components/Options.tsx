@@ -49,7 +49,7 @@ const LinkExistingRecordButton = styled("button")({
 interface Props {
     models: CmsModel[];
     onNewRecord: (modelId: string) => void;
-    onLinkExistingRecord: () => void;
+    onLinkExistingRecord: (modelId: string) => void;
 }
 export const Options: React.FC<Props> = ({ models, onNewRecord, onLinkExistingRecord }) => {
     const hasMultipleModels = models.length > 1;
@@ -58,6 +58,13 @@ export const Options: React.FC<Props> = ({ models, onNewRecord, onLinkExistingRe
             return;
         }
         onNewRecord(models[0].modelId);
+    }, [models]);
+
+    const onSingleExistingRecord = useCallback(() => {
+        if (models.length === 0 || hasMultipleModels) {
+            return;
+        }
+        onLinkExistingRecord(models[0].modelId);
     }, [models]);
     return (
         <Container>
@@ -71,7 +78,7 @@ export const Options: React.FC<Props> = ({ models, onNewRecord, onLinkExistingRe
                 <OptionsModelList onClick={onNewRecord} models={models} />
             </NewRecord>
             <LinkExistingRecord>
-                <LinkExistingRecordButton onClick={onLinkExistingRecord}>
+                <LinkExistingRecordButton onClick={onSingleExistingRecord}>
                     (+) link existing record
                 </LinkExistingRecordButton>
                 <OptionsModelList onClick={onLinkExistingRecord} models={models} />

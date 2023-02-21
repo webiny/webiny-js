@@ -1,6 +1,9 @@
 import styled from "@emotion/styled";
 import React, { useCallback, useState } from "react";
-import { CmsReferenceContentEntry } from "~/admin/plugins/fieldRenderers/ref/components/types";
+import {
+    CmsReferenceContentEntry,
+    CmsReferenceValue
+} from "~/admin/plugins/fieldRenderers/ref/components/types";
 import { ReactComponent as SelectedIcon } from "./assets/selected.svg";
 
 const Container = styled("div")({
@@ -49,13 +52,20 @@ const Text = styled("span")({
 
 interface Props {
     entry: CmsReferenceContentEntry;
-    onSelect: (id: string, select: boolean) => void;
+    selected?: boolean;
+    onChange: (value: CmsReferenceValue | null) => void;
 }
-export const Select: React.FC<Props> = ({ entry, onSelect }) => {
-    const [selected, setSelected] = useState(false);
+export const Select: React.FC<Props> = ({ entry, selected, onChange }) => {
     const onIconClick = useCallback(() => {
-        onSelect(entry.id, !selected);
-    }, [entry, selected]);
+        if (selected) {
+            onChange(null);
+            return;
+        }
+        onChange({
+            id: entry.id,
+            modelId: entry.model.modelId
+        });
+    }, [entry, selected, onChange]);
     return (
         <Container>
             <SelectButton onClick={onIconClick}>

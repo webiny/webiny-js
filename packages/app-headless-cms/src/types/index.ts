@@ -473,7 +473,8 @@ export interface CmsMetaResponse {
 /***
  * ###### FORM ########
  */
-export interface BindComponentRenderProp extends BaseBindComponentRenderProp {
+export interface BindComponentRenderProp<T = any, F = Record<string, any>>
+    extends BaseBindComponentRenderProp<T, F> {
     parentName: string;
     appendValue: (value: any, index?: number) => void;
     prependValue: (value: any) => void;

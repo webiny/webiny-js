@@ -4,9 +4,12 @@ import { CmsModel } from "~/types";
 
 const Container = styled("div")({
     width: "100%",
+    boxSizing: "border-box",
     padding: "20px",
     display: "flex",
-    flexDirection: "row"
+    flexDirection: "row",
+    backgroundColor: "var(--mdc-theme-secondary)",
+    color: "#FFF"
 });
 
 const Content = styled("div")({
@@ -15,12 +18,19 @@ const Content = styled("div")({
     flexDirection: "column"
 });
 
-const Title = styled("div")({
-    display: "block"
+const Title = styled("h2")({
+    display: "block",
+    fontSize: "24px",
+    lineHeight: "34px"
 });
 
-const Model = styled("div")({
-    display: "block"
+const Model = styled("h3")({
+    display: "block",
+    fontSize: "14px",
+    fontWeight: "normal",
+    " > strong": {
+        fontWeight: "bold"
+    }
 });
 
 const CloseContainer = styled("div")({});
@@ -39,10 +49,9 @@ const Close: React.FC<CloseProps> = ({ onClick }) => {
 
 interface Props {
     model: CmsModel;
-
-    onCloseClick: () => void;
+    onClose: () => void;
 }
-export const Header: React.FC<Props> = ({ model, onCloseClick }) => {
+export const DialogHeader: React.FC<Props> = ({ model, onClose }) => {
     return (
         <Container>
             <Content>
@@ -51,7 +60,7 @@ export const Header: React.FC<Props> = ({ model, onCloseClick }) => {
                     Content model: <strong>{model.name}</strong>
                 </Model>
             </Content>
-            <Close onClick={onCloseClick} />
+            <Close onClick={onClose} />
         </Container>
     );
 };

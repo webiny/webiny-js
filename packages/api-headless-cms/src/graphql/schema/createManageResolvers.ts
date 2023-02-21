@@ -15,8 +15,8 @@ import { createFieldResolversFactory } from "./createFieldResolvers";
 import { createManageTypeName, createTypeName } from "~/utils/createTypeName";
 import { pluralizedTypeName } from "~/utils/pluralizedTypeName";
 import { getEntryTitle } from "~/utils/getEntryTitle";
-import { getEntryDescription } from "~/utils/getEntryDescription";
 import { getEntryImage } from "~/utils/getEntryImage";
+import { entryFieldFromStorageTransform } from "~/utils/entryStorage";
 
 interface CreateManageResolversParams {
     models: CmsModel[];
@@ -83,8 +83,21 @@ export const createManageResolvers: CreateManageResolvers = ({
             title(entry: CmsEntry) {
                 return getEntryTitle(model, entry);
             },
-            description: (entry: CmsEntry) => {
-                return getEntryDescription(model, entry);
+            description: (entry: CmsEntry, _: any, context: CmsContext) => {
+                if (!model.descriptionFieldId) {
+                    return "";
+                }
+                const field = model.fields.find(f => f.fieldId === model.descriptionFieldId);
+                if (!field) {
+                    return "";
+                }
+
+                return entryFieldFromStorageTransform({
+                    context,
+                    model,
+                    field,
+                    value: entry.values[field.fieldId]
+                });
             },
             image: (entry: CmsEntry) => {
                 return getEntryImage(model, entry);

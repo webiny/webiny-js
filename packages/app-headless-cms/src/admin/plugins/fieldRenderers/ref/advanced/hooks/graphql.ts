@@ -2,6 +2,9 @@ import gql from "graphql-tag";
 import { CmsErrorResponse } from "~/types";
 import { CmsReferenceContentEntry } from "~/admin/plugins/fieldRenderers/ref/components/types";
 
+/**
+ * Single entry via ID and modelId
+ */
 export interface CmsGetSelectedEntryVariables {
     entry: {
         id: string;

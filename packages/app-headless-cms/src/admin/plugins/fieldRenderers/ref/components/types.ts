@@ -33,3 +33,8 @@ export interface CmsReferenceContentEntry {
     createdOn: Date;
     savedOn: Date;
 }
+
+export interface CmsReferenceValue {
+    id: string;
+    modelId: string;
+}

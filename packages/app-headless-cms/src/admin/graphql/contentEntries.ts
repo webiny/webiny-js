@@ -21,6 +21,8 @@ const ERROR_FIELD = /* GraphQL */ `
 
 const CONTENT_META_FIELDS = /* GraphQL */ `
     title
+    description
+    image
     publishedOn
     version
     locked
@@ -134,6 +136,17 @@ export const createListQuery = (model: CmsEditorContentModel) => {
                 data {
                     id
                     savedOn
+                    createdOn
+                    createdBy {
+                        id
+                        type
+                        displayName
+                    }
+                    ownedBy {
+                        id
+                        type
+                        displayName
+                    }
                     meta {
                         ${CONTENT_META_FIELDS}
                     }
