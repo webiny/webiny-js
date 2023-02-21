@@ -33,14 +33,18 @@ const icon = css({
     color: "var(--mdc-theme-text-primary-on-background)"
 });
 
-const footer = css({
-    borderTop: "1px solid var(--mdc-theme-on-background)",
-    color: "var(--mdc-theme-text-primary-on-background)",
-    textAlign: "right",
-    "&.mdc-layout-grid": {
-        padding: 25 // "25px 50px"
+const footer = css`
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    border-top: 1px solid var(--mdc-theme-on-background);
+    padding: 24px;
+    box-sizing: border-box;
+    min-height: 52px;
+    button:last-of-type {
+        margin-left: 8px;
     }
-});
+`;
 
 interface SimpleFormProps {
     children: React.ReactNode;
@@ -87,11 +91,7 @@ interface SimpleFormFooterProps {
     className?: string;
 }
 export const SimpleFormFooter: React.FC<SimpleFormFooterProps> = props => {
-    return (
-        <Grid className={classNames(footer, props.className)}>
-            <Cell span={12}>{props.children}</Cell>
-        </Grid>
-    );
+    return <div className={classNames(footer, props.className)}>{props.children}</div>;
 };
 
 export const SimpleFormContent: React.FC = props => {

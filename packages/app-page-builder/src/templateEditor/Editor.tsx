@@ -29,7 +29,7 @@ import {
     PbPageTemplate
 } from "~/types";
 import createBlockCategoryPlugin from "~/admin/utils/createBlockCategoryPlugin";
-import { TemplateWithContent } from "~/templateEditor/state";
+import { PageTemplateWithContent } from "~/templateEditor/state";
 import { createStateInitializer } from "./createStateInitializer";
 import { TemplateEditorConfig } from "./config/TemplateEditorConfig";
 import elementVariableRendererPlugins from "~/blockEditor/plugins/elementVariables";
@@ -49,7 +49,7 @@ export const TemplateEditor: React.FC = () => {
     const client = useApolloClient();
     const { history, params } = useRouter();
     const { showSnackbar } = useSnackbar();
-    const [template, setTemplate] = useState<TemplateWithContent>();
+    const [template, setTemplate] = useState<PageTemplateWithContent>();
 
     const templateId = decodeURIComponent(params["id"]);
 
@@ -142,7 +142,7 @@ export const TemplateEditor: React.FC = () => {
             <LoadData>
                 <PbEditor
                     stateInitializerFactory={createStateInitializer(
-                        template as TemplateWithContent
+                        template as PageTemplateWithContent
                     )}
                 />
             </LoadData>

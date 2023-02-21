@@ -5,7 +5,7 @@ import { Tooltip } from "@webiny/ui/Tooltip";
 import { createComponentPlugin } from "@webiny/app-admin";
 import { TemplateTitle, templateTitleWrapper, TitleInputWrapper, TitleWrapper } from "./Styled";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
-import { TemplateAtomType } from "~/templateEditor/state";
+import { PageTemplate } from "~/templateEditor/state";
 import { UpdateDocumentActionEvent } from "~/editor/recoil/actions";
 import { EditorBar } from "~/editor";
 import { useTemplate } from "~/templateEditor/hooks/useTemplate";
@@ -30,7 +30,7 @@ const Title: React.FC = () => {
         }
     }, [template.title]);
 
-    const updateTemplate = (data: Partial<TemplateAtomType>) => {
+    const updateTemplate = (data: Partial<PageTemplate>) => {
         handler.trigger(
             new UpdateDocumentActionEvent({
                 history: false,
