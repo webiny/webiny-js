@@ -53,9 +53,14 @@ const OtherInput = styled(StyledInput)`
     padding-top: 5px;
     padding-bottom: 5px;
     margin-left: 16px;
+
+    &:disabled {
+        visibility: hidden;
+    }
 `;
 
 export const RadioField: React.FC<RadioProps> = ({ field }) => {
+    const otherInputRef = React.useRef<HTMLInputElement>(null);
     const { validation, value, onChange } = useBind({
         name: field.fieldId,
         validators: field.validators
@@ -93,12 +98,20 @@ export const RadioField: React.FC<RadioProps> = ({ field }) => {
                         id={"radio-" + fieldId + "other"}
                         value="other"
                         checked={value === "other"}
-                        onChange={() => onChange("other")}
+                        onChange={e => {
+                            onChange("other");
+                            if (e.target.checked && otherInputRef.current) {
+                                otherInputRef.current.disabled = false;
+                                otherInputRef.current.focus();
+                            }
+                        }}
                     />
-                    <label htmlFor={"radio-" + fieldId + "other"}>Other:</label>
+                    <label htmlFor={"radio-" + fieldId + "other"}>Other</label>
                     <OtherInput
                         name={`${fieldId}Other`}
                         id={`${fieldId}Other`}
+                        ref={otherInputRef}
+                        disabled={value !== "other"}
                         value={otherOptionValue}
                         onChange={e => otherOptionOnChange(e.target.value)}
                     />

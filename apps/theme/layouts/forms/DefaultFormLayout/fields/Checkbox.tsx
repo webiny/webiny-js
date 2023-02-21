@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { FormRenderFbFormModelField } from "@webiny/app-form-builder/types";
 import { useBind } from "@webiny/form";
 import { Field } from "./components/Field";
@@ -45,6 +45,10 @@ const OtherInput = styled(StyledInput)`
     padding-top: 5px;
     padding-bottom: 5px;
     margin-left: 16px;
+
+    &:disabled {
+        visibility: hidden;
+    }
 `;
 
 interface Option {
@@ -79,7 +83,7 @@ const checked = ({ option, value }: CheckedParams) => {
 };
 
 const otherOption: Option = {
-    label: "Other:",
+    label: "Other",
     value: "other"
 };
 
@@ -88,6 +92,7 @@ interface CheckboxProps {
 }
 
 export const CheckboxField: React.FC<CheckboxProps> = ({ field }) => {
+    const otherInputRef = useRef<HTMLInputElement>(null);
     const fieldId = field.fieldId;
 
     const { validation, value, onChange } = useBind({
@@ -121,7 +126,13 @@ export const CheckboxField: React.FC<CheckboxProps> = ({ field }) => {
                         type="checkbox"
                         id={"checkbox-" + fieldId + otherOption.value}
                         checked={checked({ option: otherOption, value })}
-                        onChange={() => change({ option: otherOption, value, onChange })}
+                        onChange={e => {
+                            change({ option: otherOption, value, onChange });
+                            if (e.target.checked && otherInputRef.current) {
+                                otherInputRef.current.disabled = false;
+                                otherInputRef.current.focus();
+                            }
+                        }}
                     />
                     <label htmlFor={"checkbox-" + fieldId + otherOption.value}>
                         {otherOption.label}
@@ -129,6 +140,8 @@ export const CheckboxField: React.FC<CheckboxProps> = ({ field }) => {
                     <OtherInput
                         name={`${fieldId}Other`}
                         id={`${fieldId}Other`}
+                        ref={otherInputRef}
+                        disabled={!checked({ option: otherOption, value })}
                         onChange={e => otherOptionOnChange(e.target.value)}
                         value={otherOptionValue}
                     />
