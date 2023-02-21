@@ -40,7 +40,7 @@ const plugin: FbEditorTrigger = {
                             <Input
                                 rows={5}
                                 label={t`E-mail content`}
-                                description="You can use {fields.slug} (example {field.firstName}) in the email content, which will be replaced with actual values from the form before the email is sent."
+                                description='You can use {fields.FIELD_NAME} placeholders to reference form submission values. For example: "Hello {fields.firstName} {fields.lastName}!".'
                             />
                         </Bind>
                     </Cell>
