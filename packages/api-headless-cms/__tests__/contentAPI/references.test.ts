@@ -3,7 +3,6 @@ import { useArticleManageHandler } from "../testHelpers/useArticleManageHandler"
 import { useArticleReadHandler } from "../testHelpers/useArticleReadHandler";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { setupContentModelGroup, setupContentModels } from "../testHelpers/setup";
-import { until } from "../testHelpers/helpers";
 
 const createCategoryItem = async ({ manager, from = null, publish, data }: any) => {
     const [response] = await (from
@@ -218,23 +217,6 @@ describe("entry references", () => {
             publish: true
         });
 
-        /**
-         * Make sure we have all articles published.
-         */
-        await until(
-            () => articleManager.listArticles().then(([data]) => data),
-            ({ data }: any) => {
-                const entries = data.listArticles.data || [];
-                if (entries.length !== 3) {
-                    return false;
-                }
-                return entries.every((entry: any) => {
-                    return !!entry.meta.publishedOn;
-                });
-            },
-            { name: "list all published articles", tries: 10 }
-        );
-
         const [readListResponse] = await articleRead.listArticles({
             sort: ["createdOn_DESC"]
         });
@@ -362,38 +344,6 @@ describe("entry references", () => {
                 }
             }
         });
-        /**
-         * Make sure we have article published.
-         */
-        await until(
-            () => articleManager.listArticles().then(([data]) => data),
-            ({ data }: any) => {
-                const entries: any[] = data?.listArticles?.data || [];
-                if (entries.length !== 1) {
-                    return false;
-                }
-                return entries.every(entry => {
-                    return !!entry.meta.publishedOn;
-                });
-            },
-            {
-                name: "list all published articles"
-            }
-        );
-        /**
-         * And that we can see it on read api.
-         */
-        await until(
-            () => articleRead.listArticles().then(([data]) => data),
-            ({ data }: any) => {
-                const entries: any[] = data?.listArticles?.data || [];
-
-                return entries.length === 1;
-            },
-            {
-                name: "list all published articles"
-            }
-        );
 
         const [listManageResponse] = await articleManager.listArticles();
         expect(listManageResponse).toEqual({
@@ -464,19 +414,6 @@ describe("entry references", () => {
                 }
             }
         });
-        /**
-         * Make sure there are no categories.
-         */
-        await until(
-            () => categoryManager.listCategories().then(([data]) => data),
-            ({ data }: any) => {
-                const entries = data?.listCategories?.data || [];
-                return entries.length === 0;
-            },
-            {
-                name: "list all categories after delete"
-            }
-        );
 
         const [listAfterDeleteManageResponse] = await articleManager.listArticles();
         expect(listAfterDeleteManageResponse).toEqual({
@@ -659,23 +596,6 @@ describe("entry references", () => {
             },
             publish: true
         });
-
-        /**
-         * Make sure we have all articles published.
-         */
-        await until(
-            () => articleManager.listArticles().then(([data]) => data),
-            ({ data }: any) => {
-                const entries: any[] = data?.listArticles?.data || [];
-                if (entries.length !== 4) {
-                    return false;
-                }
-                return entries.every(entry => {
-                    return !!entry.meta.publishedOn;
-                });
-            },
-            { name: "list all published articles", tries: 10 }
-        );
 
         const [listArticlesEntryIdResponse] = await articleReader.listArticles({
             where: {
@@ -1104,23 +1024,6 @@ describe("entry references", () => {
             },
             publish: true
         });
-
-        /**
-         * Make sure we have all articles published.
-         */
-        await until(
-            () => articleManager.listArticles().then(([data]) => data),
-            ({ data }: any) => {
-                const entries = data.listArticles.data || [];
-                if (entries.length !== 1) {
-                    return false;
-                }
-                return entries.every((entry: any) => {
-                    return !!entry.meta.publishedOn;
-                });
-            },
-            { name: "list all published articles", tries: 10 }
-        );
 
         const [result] = await articleRead.listArticlesWithoutReferences();
 

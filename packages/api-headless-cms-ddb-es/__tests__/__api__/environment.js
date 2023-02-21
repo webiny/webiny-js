@@ -121,7 +121,13 @@ class CmsTestEnvironment extends NodeEnvironment {
                 context.cms.onEntryAfterPublish.subscribe(async ({ model }) => {
                     await refreshIndex(model);
                 });
+                context.cms.onEntryAfterRepublish.subscribe(async ({ model }) => {
+                    await refreshIndex(model);
+                });
                 context.cms.onEntryAfterUnpublish.subscribe(async ({ model }) => {
+                    await refreshIndex(model);
+                });
+                context.cms.onEntryRevisionAfterDelete.subscribe(async ({ model }) => {
                     await refreshIndex(model);
                 });
                 context.cms.onEntryAfterDelete.subscribe(async ({ model }) => {

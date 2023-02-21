@@ -1,12 +1,6 @@
-import { createWcpContext } from "@webiny/api-wcp";
 import { getIntrospectionQuery } from "graphql";
-import i18nContext from "@webiny/api-i18n/graphql/context";
 import { createHandler } from "@webiny/handler-aws/gateway";
-import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
-import { ApiKey, SecurityIdentity } from "@webiny/api-security/types";
-import apiKeyAuthentication from "@webiny/api-security/plugins/apiKeyAuthentication";
-import apiKeyAuthorization from "@webiny/api-security/plugins/apiKeyAuthorization";
-import { createPermissions, until, sleep, PermissionsArg, createDummyLocales } from "./helpers";
+import { until, sleep } from "./helpers";
 import { INSTALL_MUTATION, IS_INSTALLED_QUERY, UPGRADE_MUTATION } from "./graphql/settings";
 import {
     CREATE_CONTENT_MODEL_GROUP_MUTATION,
@@ -23,15 +17,8 @@ import {
     LIST_CONTENT_MODELS_QUERY,
     UPDATE_CONTENT_MODEL_MUTATION
 } from "./graphql/contentModel";
-import { Plugin, PluginCollection, PluginsContainer } from "@webiny/plugins/types";
+import { PluginsContainer } from "@webiny/plugins/types";
 
-/**
- * Unfortunately at we need to import the api-i18n-ddb package manually
- */
-import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
-import { createTenancyAndSecurity } from "./tenancySecurity";
-import { getStorageOperations } from "./storageOperations";
-import { HeadlessCmsStorageOperations } from "~/types";
 import {
     GET_CONTENT_ENTRIES_QUERY,
     GET_CONTENT_ENTRY_QUERY,
@@ -42,23 +29,9 @@ import {
     SEARCH_CONTENT_ENTRIES_QUERY,
     SearchContentEntriesVariables
 } from "./graphql/contentEntry";
-import { ContextPlugin } from "@webiny/api";
-import { TestContext } from "./types";
-import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "~/index";
-import graphQLHandlerPlugins from "@webiny/handler-graphql";
+import { createHandlerCore, CreateHandlerCoreParams } from "~tests/testHelpers/plugins";
 
-export interface CreateHeadlessCmsAppParams {
-    storageOperations: HeadlessCmsStorageOperations;
-}
-export interface GraphQLHandlerParams {
-    setupTenancyAndSecurityGraphQL?: boolean;
-    permissions?: PermissionsArg[];
-    identity?: SecurityIdentity;
-    topPlugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
-    plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
-    storageOperationPlugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
-    path?: string;
-}
+export type GraphQLHandlerParams = CreateHandlerCoreParams;
 
 export interface InvokeParams {
     httpMethod?: "POST" | "GET" | "OPTIONS";
@@ -70,81 +43,12 @@ export interface InvokeParams {
 }
 
 export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
-    const ops = getStorageOperations({
-        plugins: params.storageOperationPlugins || []
-    });
+    const { identity, path } = params;
 
-    const tenant = {
-        id: "root",
-        name: "Root",
-        parent: null
-    };
-    const {
-        permissions,
-        identity,
-        plugins = [],
-        topPlugins = [],
-        path,
-        setupTenancyAndSecurityGraphQL
-    } = params;
-
-    const app = createHeadlessCmsContext({
-        storageOperations: ops.storageOperations
-    });
-
-    const handlerPlugins = [
-        topPlugins,
-        createWcpContext(),
-        ...ops.plugins,
-        ...createTenancyAndSecurity({
-            setupGraphQL: setupTenancyAndSecurityGraphQL,
-            permissions: createPermissions(permissions),
-            identity
-        }),
-        {
-            type: "context",
-            name: "context-security-tenant",
-            async apply(context) {
-                context.security.getApiKeyByToken = async (
-                    token: string
-                ): Promise<ApiKey | null> => {
-                    if (!token || token !== "aToken") {
-                        return null;
-                    }
-                    const apiKey = "a1234567890";
-                    return {
-                        id: apiKey,
-                        name: apiKey,
-                        tenant: tenant.id,
-                        // @ts-ignore
-                        permissions: identity?.permissions || [],
-                        token,
-                        createdBy: {
-                            id: "test",
-                            displayName: "test",
-                            type: "admin"
-                        },
-                        description: "test",
-                        createdOn: new Date().toISOString(),
-                        webinyVersion: context.WEBINY_VERSION
-                    };
-                };
-            }
-        } as ContextPlugin<TestContext>,
-        apiKeyAuthentication({ identityType: "api-key" }),
-        apiKeyAuthorization({ identityType: "api-key" }),
-        i18nContext(),
-        i18nDynamoDbStorageOperations(),
-        createDummyLocales(),
-        mockLocalesPlugins(),
-        ...app,
-        createHeadlessCmsGraphQL(),
-        plugins,
-        graphQLHandlerPlugins()
-    ];
+    const core = createHandlerCore(params);
 
     const handler = createHandler({
-        plugins: handlerPlugins,
+        plugins: core.plugins,
         http: {
             debug: false
         }
@@ -177,10 +81,10 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
         sleep,
         handler,
         invoke,
-        tenant,
+        tenant: core.tenant,
         identity,
-        plugins: new PluginsContainer(handlerPlugins),
-        storageOperations: ops.storageOperations,
+        plugins: new PluginsContainer(core.plugins),
+        storageOperations: core.storageOperations,
         async introspect() {
             return invoke({ body: { query: getIntrospectionQuery() } });
         },

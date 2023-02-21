@@ -13,6 +13,8 @@ export class Context extends BaseContext implements BaseContextType {
     public handlerClient: BaseContextType["handlerClient"];
     // @ts-ignore
     public request: BaseContextType["request"];
+    // @ts-ignore
+    public reply: BaseContextType["reply"];
 
     public constructor(params: ContextParams) {
         super(params);

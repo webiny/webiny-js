@@ -66,7 +66,7 @@ describe("model delete", () => {
     };
 
     it("should be able to delete model when there are no more entries", async () => {
-        const { createCategory, deleteCategory, listCategories, until } = useCategoryManageHandler({
+        const { createCategory, deleteCategory } = useCategoryManageHandler({
             ...manageOpts
         });
 
@@ -89,14 +89,6 @@ describe("model delete", () => {
                 return response.data.createCategory.data;
             });
         });
-
-        await until(
-            () => listCategories().then(([data]) => data),
-            ({ data }: any) => data.listCategories.data.length === categories.length,
-            {
-                name: "after create categories"
-            }
-        );
 
         const [deleteFailResponse] = await deleteContentModelMutation({
             modelId: model.modelId
@@ -124,13 +116,6 @@ describe("model delete", () => {
             );
         }
         await Promise.all(deletePromises);
-        await until(
-            () => listCategories().then(([data]) => data),
-            ({ data }: any) => data.listCategories.data.length === 0,
-            {
-                name: "after delete categories"
-            }
-        );
 
         const [deleteSuccessResponse] = await deleteContentModelMutation({
             modelId: model.modelId

@@ -86,6 +86,7 @@ export const createManageSDL: CreateManageSDL = ({
         ${
             inputFields &&
             `input ${mTypeName}Input {
+                id: ID
             ${inputFields.map(f => f.fields).join("\n")}
         }`
         }

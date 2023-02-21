@@ -34,6 +34,7 @@ export default /* GraphQL */ `
     }
 
     input ReviewInput {
+        id: ID
         text: String!
         product: RefFieldInput
         rating: Number

@@ -38,6 +38,13 @@ export interface CreateWebsitePulumiAppParams {
      * Prefixes names of all Pulumi cloud infrastructure resource with given prefix.
      */
     pulumiResourceNamePrefix?: PulumiAppParam<string>;
+
+    /**
+     * Treats provided environments as production environments, which
+     * are deployed in production deployment mode.
+     * https://www.webiny.com/docs/architecture/deployment-modes/production
+     */
+    productionEnvironments?: PulumiAppParam<string[]>;
 }
 
 export const createWebsitePulumiApp = (projectAppParams: CreateWebsitePulumiAppParams = {}) => {
@@ -65,13 +72,14 @@ export const createWebsitePulumiApp = (projectAppParams: CreateWebsitePulumiAppP
                 });
             }
 
-            const prod = app.params.run.env === "prod";
+            const productionEnvironments = app.params.create.productionEnvironments || ["prod"];
+            const isProduction = productionEnvironments.includes(app.params.run.env);
 
             // Register core output as a module available for all other modules
             const core = app.addModule(CoreOutput);
 
             // Register VPC config module to be available to other modules.
-            const vpcEnabled = app.getParam(projectAppParams?.vpc) ?? prod;
+            const vpcEnabled = app.getParam(projectAppParams?.vpc) ?? isProduction;
             app.addModule(VpcConfig, { enabled: vpcEnabled });
 
             const appBucket = createPrivateAppBucket(app, "app");

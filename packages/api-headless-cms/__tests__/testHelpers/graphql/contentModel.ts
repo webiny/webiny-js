@@ -6,6 +6,7 @@ const DATA_FIELD = /* GraphQL*/ `
         group {
             id
             name
+            slug
         }
         layout
         titleFieldId

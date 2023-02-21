@@ -118,13 +118,6 @@ export const createEntriesFactory = (manager: ProductManager) => {
             });
             entries.push(response.data.createProduct.data);
         }
-        await manager.until(
-            () => manager.listProducts().then(([data]) => data),
-            ({ data }: any) => {
-                return data.listProducts.data.length === products.length;
-            },
-            { name: "list all products" }
-        );
         return entries;
     };
 };

@@ -1,4 +1,5 @@
 import {
+    CmsContext,
     CmsModel,
     CmsModelField,
     CmsModelFieldToGraphQLPlugin,
@@ -9,7 +10,6 @@ import {
 import WebinyError from "@webiny/error";
 import { createManageSDL } from "~/graphql/schema/createManageSDL";
 import gql from "graphql-tag";
-import { PluginsContainer } from "@webiny/plugins";
 import { createFieldStorageId } from "./createFieldStorageId";
 import { GraphQLError } from "graphql";
 import { getBaseFieldType } from "~/utils/getBaseFieldType";
@@ -17,6 +17,9 @@ import { getContentModelTitleFieldId } from "./fields/titleField";
 import { getContentModelDescriptionFieldId } from "./fields/descriptionField";
 import { getContentModelImageFieldId } from "./fields/imageField";
 import { CmsGraphQLSchemaSorterPlugin } from "~/plugins";
+import { buildSchemaPlugins } from "~/graphql/buildSchemaPlugins";
+import { createExecutableSchema } from "~/graphql/createExecutableSchema";
+import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
 
 const extractInvalidField = (model: CmsModel, err: GraphQLError) => {
     const sdl = err.source?.body || "";
@@ -71,7 +74,7 @@ const createValidateChildFields = (
     plugins: CmsModelFieldToGraphQLPlugin[]
 ): CmsModelFieldToGraphQLPluginValidateChildFieldsValidate => {
     return ({ fields, originalFields }) => {
-        if (fields.length === 0) {
+        if (fields.length === 0 && originalFields.length === 0) {
             return;
         }
         validateFields({
@@ -92,11 +95,9 @@ interface ValidateFieldsParams {
 const validateFields = (params: ValidateFieldsParams) => {
     const { plugins, fields, originalFields, lockedFields } = params;
 
+    const idList: string[] = [];
     const fieldIdList: string[] = [];
-
     const storageIdList: string[] = [];
-
-    const validateChildFields = createValidateChildFields(plugins);
 
     for (const field of fields) {
         const baseType = getBaseFieldType(field);
@@ -107,6 +108,19 @@ const validateFields = (params: ValidateFieldsParams) => {
                 `Cannot update content model because of the unknown "${baseType}" field.`
             );
         }
+        /**
+         * Check the field's id against existing ones.
+         * There cannot be two fields with the same id.
+         */
+        if (idList.includes(field.id)) {
+            throw new WebinyError(
+                `Cannot update content model because field "${
+                    field.storageId || field.fieldId
+                }" has id "${field.id}", which is already used.`
+            );
+        }
+        idList.push(field.id);
+
         const originalField = originalFields.find(f => f.id === field.id);
         /**
          * Field MUST have an fieldId defined.
@@ -130,7 +144,7 @@ const validateFields = (params: ValidateFieldsParams) => {
          * https://discuss.elastic.co/t/illegal-characters-in-elasticsearch-field-names/17196/2
          */
         const isLocked = lockedFields.some(lockedField => {
-            return lockedField.fieldId === field.storageId;
+            return lockedField.fieldId === field.storageId || lockedField.fieldId === field.fieldId;
         });
         if (!field.storageId) {
             /**
@@ -183,6 +197,7 @@ const validateFields = (params: ValidateFieldsParams) => {
         if (!plugin.validateChildFields) {
             continue;
         }
+        const validateChildFields = createValidateChildFields(plugins);
         plugin.validateChildFields({
             field,
             originalField,
@@ -190,15 +205,47 @@ const validateFields = (params: ValidateFieldsParams) => {
         });
     }
 };
+interface CreateGraphQLSchemaParams {
+    context: CmsContext;
+    model: CmsModel;
+}
+const createGraphQLSchema = async (params: CreateGraphQLSchemaParams): Promise<any> => {
+    const { context, model } = params;
+
+    const modelPlugins = await buildSchemaPlugins({
+        context,
+        models: [model]
+    });
+
+    const plugins = context.plugins.byType<GraphQLSchemaPlugin<CmsContext>>(
+        GraphQLSchemaPlugin.type
+    );
+    plugins.push(...modelPlugins);
+
+    return createExecutableSchema({
+        plugins
+    });
+};
+
+const extractErrorObject = (error: any) => {
+    return ["message", "code", "data", "stack"].reduce<Record<string, any>>((output, key) => {
+        if (!error[key]) {
+            return output;
+        }
+        output[key] = error[key];
+        return output;
+    }, {});
+};
 
 interface ValidateModelFieldsParams {
     model: CmsModel;
     original?: CmsModel;
-    plugins: PluginsContainer;
+    context: CmsContext;
 }
 export const validateModelFields = (params: ValidateModelFieldsParams) => {
-    const { model, original, plugins } = params;
+    const { model, original, context } = params;
     const { titleFieldId, descriptionFieldId, imageFieldId } = model;
+    const { plugins } = context;
 
     /**
      * There should be fields/locked fields in either model or data to be updated.
@@ -212,9 +259,6 @@ export const validateModelFields = (params: ValidateModelFieldsParams) => {
     const fieldTypePlugins = plugins.byType<CmsModelFieldToGraphQLPlugin>(
         "cms-model-field-to-graphql"
     );
-    const sorterPlugins = plugins.byType<CmsGraphQLSchemaSorterPlugin>(
-        CmsGraphQLSchemaSorterPlugin.type
-    );
 
     validateFields({
         fields,
@@ -224,6 +268,9 @@ export const validateModelFields = (params: ValidateModelFieldsParams) => {
     });
 
     if (fields.length) {
+        const sorterPlugins = plugins.byType<CmsGraphQLSchemaSorterPlugin>(
+            CmsGraphQLSchemaSorterPlugin.type
+        );
         /**
          * Make sure that this model can be safely converted to a GraphQL SDL
          */
@@ -240,6 +287,25 @@ export const validateModelFields = (params: ValidateModelFieldsParams) => {
             gql(schema);
         } catch (err) {
             throw new WebinyError(extractInvalidField(model, err));
+        }
+        /**
+         *
+         */
+        try {
+            await createGraphQLSchema({
+                context,
+                model
+            });
+        } catch (err) {
+            throw new WebinyError({
+                message:
+                    "Cannot generate GraphQL schema when testing with the given model. Please check the response for more details.",
+                code: "GRAPHQL_SCHEMA_ERROR",
+                data: {
+                    modelId: model.modelId,
+                    error: extractErrorObject(err)
+                }
+            });
         }
     }
 

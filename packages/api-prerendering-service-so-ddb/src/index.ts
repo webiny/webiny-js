@@ -5,9 +5,11 @@ import { createRenderEntity } from "~/definitions/render";
 import { createSettingsEntity } from "~/definitions/settings";
 import { createQueueJobEntity } from "~/definitions/queueJob";
 import { createRenderStorageOperations } from "~/operations/render";
+import { createTenantStorageOperations } from "~/operations/tenant";
 import { createSettingsStorageOperations } from "~/operations/settings";
 import { createQueueJobStorageOperations } from "~/operations/queueJob";
 import { createTagPathLinkEntity } from "~/definitions/tagPathLink";
+import { createTenantEntity } from "~/definitions/tenantEntity";
 
 const reservedFields = ["PK", "SK", "index", "data", "TYPE", "__type", "GSI1_PK", "GSI1_SK"];
 
@@ -53,6 +55,10 @@ export const createPrerenderingServiceStorageOperations: PrerenderingServiceFact
             entityName: ENTITIES.TAG_PATH_LINK,
             table: tableInstance,
             attributes: attributes ? attributes[ENTITIES.TAG_PATH_LINK] : {}
+        }),
+        tenant: createTenantEntity({
+            entityName: ENTITIES.TENANT,
+            table: tableInstance
         })
     };
 
@@ -68,6 +74,9 @@ export const createPrerenderingServiceStorageOperations: PrerenderingServiceFact
         }),
         ...createSettingsStorageOperations({
             entity: entities.settings
+        }),
+        ...createTenantStorageOperations({
+            entity: entities.tenant
         })
     };
 };

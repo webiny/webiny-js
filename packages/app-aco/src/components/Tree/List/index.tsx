@@ -91,7 +91,7 @@ export const List = ({
     };
 
     const sort = (a: NodeModel<DndItemData>, b: NodeModel<DndItemData>) => {
-        return a.data!.name.localeCompare(b.data!.name, undefined, { numeric: true });
+        return a.data!.title.localeCompare(b.data!.title, undefined, { numeric: true });
     };
 
     const handleChangeOpen = (folderIds: NodeModel["id"][]) => {

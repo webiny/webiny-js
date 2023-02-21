@@ -1918,6 +1918,9 @@ export interface CmsEntryMeta {
     totalCount: number;
 }
 
+/**
+ * Create
+ */
 export interface OnEntryBeforeCreateTopicParams {
     input: CreateCmsEntryInput;
     entry: CmsEntry;
@@ -1937,6 +1940,9 @@ export interface OnEntryCreateErrorTopicParams {
     model: CmsModel;
 }
 
+/**
+ * Revision Create
+ */
 export interface OnEntryRevisionBeforeCreateTopicParams {
     input: CreateFromCmsEntryInput;
     entry: CmsEntry;
@@ -1960,6 +1966,9 @@ export interface OnEntryCreateRevisionErrorTopicParams {
     model: CmsModel;
 }
 
+/**
+ * Update
+ */
 export interface OnEntryBeforeUpdateTopicParams {
     input: UpdateCmsEntryInput;
     original: CmsEntry;
@@ -1981,6 +1990,10 @@ export interface OnEntryUpdateErrorTopicParams {
     model: CmsModel;
 }
 
+/**
+ * Publish
+ */
+
 export interface OnEntryBeforePublishTopicParams {
     entry: CmsEntry;
     model: StorageOperationsCmsModel;
@@ -1997,6 +2010,30 @@ export interface OnEntryPublishErrorTopicParams {
     entry: CmsEntry;
     model: StorageOperationsCmsModel;
 }
+
+/**
+ * Republish
+ */
+export interface OnEntryBeforeRepublishTopicParams {
+    entry: CmsEntry;
+    model: StorageOperationsCmsModel;
+}
+
+export interface OnEntryAfterRepublishTopicParams {
+    entry: CmsEntry;
+    model: StorageOperationsCmsModel;
+    storageEntry: CmsEntry;
+}
+
+export interface OnEntryRepublishErrorTopicParams {
+    error: Error;
+    entry: CmsEntry;
+    model: StorageOperationsCmsModel;
+}
+
+/**
+ * Unpublish
+ */
 
 export interface OnEntryBeforeUnpublishTopicParams {
     entry: CmsEntry;
@@ -2060,6 +2097,7 @@ export interface EntryBeforeListTopicParams {
  * @category CmsEntry
  */
 export interface CreateCmsEntryInput {
+    id?: string;
     [key: string]: any;
 }
 
@@ -2265,6 +2303,10 @@ export interface CmsEntryContext {
     onEntryBeforePublish: Topic<OnEntryBeforePublishTopicParams>;
     onEntryAfterPublish: Topic<OnEntryAfterPublishTopicParams>;
     onEntryPublishError: Topic<OnEntryPublishErrorTopicParams>;
+
+    onEntryBeforeRepublish: Topic<OnEntryBeforeRepublishTopicParams>;
+    onEntryAfterRepublish: Topic<OnEntryAfterRepublishTopicParams>;
+    onEntryRepublishError: Topic<OnEntryRepublishErrorTopicParams>;
 
     onEntryBeforeUnpublish: Topic<OnEntryBeforeUnpublishTopicParams>;
     onEntryAfterUnpublish: Topic<OnEntryAfterUnpublishTopicParams>;

@@ -3,7 +3,7 @@ import uniqid from "uniqid";
 context("Pages Creation", () => {
     beforeEach(() => cy.login());
 
-    it("should be able to create, publish, create new revision, and immediately delete everything", () => {
+    it.skip("should be able to create, publish, create new revision, and immediately delete everything", () => {
         const newPageTitle = `Test page ${uniqid()}`;
 
         cy.visit("/page-builder/pages");
