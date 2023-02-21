@@ -52,7 +52,7 @@ export const templatesHandler = async (
         const { input } = subTask;
         const { templateId, exportTemplatesDataKey } = input;
 
-        const template = await pageBuilder.getPageTemplate(templateId);
+        const template = await pageBuilder.getPageTemplate({ where: { id: templateId } });
 
         if (!template) {
             log(`Unable to load template "${templateId}"`);

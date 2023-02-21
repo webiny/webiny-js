@@ -66,10 +66,10 @@ export interface PageSettings {
         meta: Array<{ name: string; content: string }>;
     };
     general?: {
-        tags: string[];
-        snippet: string;
-        layout: string;
-        image: File;
+        tags?: string[];
+        snippet?: string;
+        layout?: string;
+        image?: File;
     };
     /**
      * Basically we can have anything in page settings.
@@ -89,7 +89,7 @@ export interface Page {
     content: Record<string, any> | null;
     publishedOn: string | null;
     version: number;
-    settings?: PageSettings;
+    settings: PageSettings;
     locked: boolean;
     status: PageStatus;
     createdOn: string;
@@ -895,7 +895,9 @@ export interface PageBlockStorageOperations {
 export interface PageTemplate {
     id: string;
     title: string;
-    description?: string;
+    slug: string;
+    tags: string[];
+    description: string;
     layout?: string;
     content?: any;
     createdOn: string;
@@ -905,7 +907,10 @@ export interface PageTemplate {
     locale: string;
 }
 
-export type PageTemplateInput = Pick<PageTemplate, "title" | "description" | "content">;
+export type PageTemplateInput = Pick<
+    PageTemplate,
+    "title" | "description" | "content" | "slug" | "tags" | "layout"
+> & { id?: string };
 
 /**
  * @category StorageOperations
@@ -913,7 +918,8 @@ export type PageTemplateInput = Pick<PageTemplate, "title" | "description" | "co
  */
 export interface PageTemplateStorageOperationsGetParams {
     where: {
-        id: string;
+        id?: string;
+        slug?: string;
         tenant: string;
         locale: string;
     };

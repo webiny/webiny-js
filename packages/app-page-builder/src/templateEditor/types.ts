@@ -1,8 +1,8 @@
 import { EventActionCallable } from "~/types";
-import { TemplateAtomType } from "~/templateEditor/state";
+import { PageTemplate } from "~/templateEditor/state";
 
 export interface TemplateEditorEventActionCallableState {
-    template: TemplateAtomType;
+    template: PageTemplate;
 }
 
 export type TemplateEventActionCallable<TArgs> = EventActionCallable<

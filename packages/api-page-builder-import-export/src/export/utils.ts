@@ -108,7 +108,7 @@ export async function exportBlock(
 }
 
 export interface ExportedTemplateData {
-    template: Pick<PageTemplate, "title" | "description" | "content">;
+    template: Pick<PageTemplate, "title" | "slug" | "tags" | "description" | "content" | "layout">;
     files: File[];
 }
 
@@ -131,8 +131,11 @@ export async function exportTemplate(
     const templateData = {
         template: {
             title: template.title,
+            slug: template.slug,
+            tags: template.tags,
             description: template.description,
-            content: template.content
+            content: template.content,
+            layout: template.layout
         },
         files: imageFilesData
     };

@@ -2,32 +2,46 @@ import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSche
 
 import resolve from "./utils/resolve";
 import { PageTemplate, PbContext } from "~/types";
+import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
+
+const defaultResolver = <T>(
+    name: keyof PageTemplate,
+    value: T
+): GraphQLFieldResolver<PageTemplate> => {
+    return parent => parent[name] || value;
+};
 
 export const createPageTemplateGraphQL = new GraphQLSchemaPlugin<PbContext>({
     typeDefs: /* GraphQL */ `
         type PbPageTemplate {
-            id: ID
-            title: String
-            description: String
+            id: ID!
+            title: String!
+            slug: String!
+            description: String!
+            tags: [String!]
+            content: JSON!
+            createdOn: DateTime!
+            savedOn: DateTime!
+            createdBy: PbCreatedBy!
             layout: String
-            content: JSON
-            createdOn: DateTime
-            savedOn: DateTime
-            createdBy: PbCreatedBy
         }
 
         input PbCreatePageTemplateInput {
             title: String!
-            description: String
+            description: String!
+            slug: String!
+            tags: [String!]
             layout: String
             content: JSON
         }
 
         input PbUpdatePageTemplateInput {
             title: String
+            slug: String
             description: String
             layout: String
             content: JSON
+            tags: [String!]
         }
 
         # Response types
@@ -37,7 +51,7 @@ export const createPageTemplateGraphQL = new GraphQLSchemaPlugin<PbContext>({
         }
 
         type PbPageTemplateListResponse {
-            data: [PbPageTemplate]
+            data: [PbPageTemplate!]
             error: PbError
         }
 
@@ -48,15 +62,19 @@ export const createPageTemplateGraphQL = new GraphQLSchemaPlugin<PbContext>({
 
         extend type PbMutation {
             createPageTemplate(data: PbCreatePageTemplateInput!): PbPageTemplateResponse
+            createPageFromTemplate(templateId: ID, category: String, meta: JSON): PbPageResponse
             updatePageTemplate(id: ID!, data: PbUpdatePageTemplateInput!): PbPageTemplateResponse
             deletePageTemplate(id: ID!): PbPageTemplateResponse
         }
     `,
     resolvers: {
         PbPageTemplate: {
+            description: defaultResolver("description", ""),
+            slug: defaultResolver("slug", ""),
+            tags: defaultResolver("tags", []),
             content: async (pageTemplate: PageTemplate, _, context) => {
                 if (!pageTemplate.content?.elements) {
-                    return pageTemplate.content;
+                    return pageTemplate.content || {};
                 }
 
                 // Map block references
@@ -68,7 +86,7 @@ export const createPageTemplateGraphQL = new GraphQLSchemaPlugin<PbContext>({
         PbQuery: {
             getPageTemplate: async (_, args: any, context) => {
                 return resolve(() => {
-                    return context.pageBuilder.getPageTemplate(args.id);
+                    return context.pageBuilder.getPageTemplate({ where: { id: args.id } });
                 });
             },
             listPageTemplates: async (_, args: any, context) => {
@@ -81,6 +99,15 @@ export const createPageTemplateGraphQL = new GraphQLSchemaPlugin<PbContext>({
             createPageTemplate: async (_, args: any, context) => {
                 return resolve(() => {
                     return context.pageBuilder.createPageTemplate(args.data);
+                });
+            },
+            createPageFromTemplate: async (_, { templateId, category, meta }: any, context) => {
+                return resolve(() => {
+                    return context.pageBuilder.createPageFromTemplate({
+                        id: templateId,
+                        category,
+                        meta
+                    });
                 });
             },
             updatePageTemplate: async (_, args: any, context) => {

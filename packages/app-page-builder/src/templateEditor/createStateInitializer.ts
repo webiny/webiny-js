@@ -1,9 +1,9 @@
 import omit from "lodash/omit";
-import { templateAtom, TemplateAtomType, TemplateWithContent } from "~/templateEditor/state";
+import { templateAtom, PageTemplate, PageTemplateWithContent } from "~/templateEditor/state";
 import { EditorStateInitializerFactory } from "~/editor/Editor";
 
 export const createStateInitializer = (
-    template: TemplateWithContent
+    template: PageTemplateWithContent
 ): EditorStateInitializerFactory => {
     return () => ({
         content: template.content,
@@ -11,7 +11,7 @@ export const createStateInitializer = (
             /**
              * We always unset the content because we are not using it via the template atom.
              */
-            const templateData: TemplateAtomType = omit(template, ["content"]);
+            const templateData: PageTemplate = omit(template, ["content"]);
 
             set(templateAtom, templateData);
         }

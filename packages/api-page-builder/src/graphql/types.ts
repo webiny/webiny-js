@@ -18,7 +18,8 @@ import {
     PageSettings,
     PageSpecialType,
     Settings,
-    System
+    System,
+    PageTemplateInput
 } from "~/types";
 import { PrerenderingServiceClientContext } from "@webiny/api-prerendering-service/client/types";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
@@ -854,16 +855,55 @@ export interface OnPageTemplateAfterDeleteTopicParams {
     pageTemplate: PageTemplate;
 }
 
+interface CreatePageFromTemplateParams {
+    id?: string;
+    slug?: string;
+    category: string;
+    path?: string;
+    meta?: Record<string, any>;
+}
+
+export interface PageBlockVariable {
+    id: string;
+    label: string;
+    type: string;
+    value: string;
+}
+
+export interface PageTemplateVariable {
+    blockId: string;
+    variables: PageBlockVariable[];
+}
+
+interface GetPageTemplateParams {
+    where: {
+        id?: string;
+        slug?: string;
+    };
+}
+
+export interface PageContentWithTemplate extends PbPageElement {
+    data: {
+        template: {
+            slug: string;
+            variables?: PageTemplateVariable[];
+        };
+    };
+}
+
 /**
  * @category PageTemplates
  */
 export interface PageTemplatesCrud {
-    getPageTemplate(id: string): Promise<PageTemplate | null>;
+    getPageTemplate(params: GetPageTemplateParams): Promise<PageTemplate | null>;
     listPageTemplates(params?: ListPageTemplatesParams): Promise<PageTemplate[]>;
-    createPageTemplate(data: Record<string, any>): Promise<PageTemplate>;
+    createPageTemplate(data: PageTemplateInput): Promise<PageTemplate>;
+    createPageFromTemplate(data: CreatePageFromTemplateParams): Promise<Page>;
+    // Copy relevant data from page template to page instance, by reference.
+    copyTemplateDataToPage(template: PageTemplate, page: Page): void;
     updatePageTemplate(id: string, data: Record<string, any>): Promise<PageTemplate>;
     deletePageTemplate(id: string): Promise<PageTemplate>;
-    resolvePageTemplate(content: Record<string, any> | null): Promise<any>;
+    resolvePageTemplate(content: PageContentWithTemplate): Promise<any>;
 
     /**
      * Lifecycle events
