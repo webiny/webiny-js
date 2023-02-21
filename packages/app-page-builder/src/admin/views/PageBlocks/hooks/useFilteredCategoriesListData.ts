@@ -3,7 +3,7 @@ import orderBy from "lodash/orderBy";
 
 import { PbBlockCategory, PbPageBlock } from "~/types";
 
-const useCategoriesListData = (
+const useFilteredCategoriesListData = (
     pageBlocksData: PbPageBlock[],
     blockCategoriesData: PbBlockCategory[],
     sort: string,
@@ -45,4 +45,4 @@ const useCategoriesListData = (
     return [filteredBlocksData, sortData(filteredBlockCategoriesData)];
 };
 
-export default useCategoriesListData;
+export default useFilteredCategoriesListData;

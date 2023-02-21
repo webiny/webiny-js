@@ -39,7 +39,7 @@ import { LIST_PAGE_BLOCKS_AND_CATEGORIES, LIST_PAGE_BLOCKS, CREATE_PAGE_BLOCK } 
 import { addElementId } from "~/editor/helpers";
 import useImportBlock from "~/admin/views/PageBlocks/hooks/useImportBlock";
 import useExportBlockDialog from "~/editor/plugins/defaultBar/components/ExportBlockButton/useExportBlockDialog";
-import useCategoriesListData from "./hooks/useCategoriesListData";
+import useFilteredCategoriesListData from "./hooks/useFilteredCategoriesListData";
 
 const t = i18n.ns("app-page-builder/admin/page-blocks/by-categories-data-list");
 
@@ -114,7 +114,7 @@ const BlocksByCategoriesDataList = ({
         listQuery?.data?.pageBuilder?.listBlockCategories?.data || [];
     const pageBlocksData: PbPageBlock[] = listQuery?.data?.pageBuilder?.listPageBlocks?.data || [];
 
-    const [blocksList, filteredBlockCategoriesList] = useCategoriesListData(
+    const [filteredBlocksList, filteredBlockCategoriesList] = useFilteredCategoriesListData(
         pageBlocksData,
         blockCategoriesData,
         sort,
@@ -369,7 +369,7 @@ const BlocksByCategoriesDataList = ({
                 {({ data }: { data: PbBlockCategory[] }) => (
                     <ScrollList data-testid="default-data-list">
                         {data.map(item => {
-                            const numberOfBlocks = blocksList.filter(
+                            const numberOfBlocks = filteredBlocksList.filter(
                                 pageBlock => pageBlock.blockCategory === item.slug
                             ).length;
                             return (
