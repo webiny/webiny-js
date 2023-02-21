@@ -1,13 +1,24 @@
 import { ContextPlugin } from "@webiny/api";
 import { SecurityContext, SecurityIdentity } from "@webiny/api-security/types";
-import { createAuthenticator, Config as CognitoConfig } from "@webiny/api-cognito-authenticator";
+import {
+    createAuthenticator,
+    Config as CognitoConfig,
+    TokenData
+} from "@webiny/api-cognito-authenticator";
 
 export interface Config extends CognitoConfig {
     identityType: string;
     getIdentity?<TIdentity extends SecurityIdentity = SecurityIdentity>(params: {
         identityType: string;
-        token: { [key: string]: any };
+        token: CognitoTokenData;
     }): TIdentity;
+}
+
+export interface CognitoTokenData extends TokenData {
+    given_name: string;
+    family_name: string;
+    email: string;
+    [key: string]: any;
 }
 
 export default (config: Config) => {
@@ -18,7 +29,7 @@ export default (config: Config) => {
 
     return new ContextPlugin<SecurityContext>(({ security }) => {
         security.addAuthenticator(async token => {
-            const tokenObj = await cognitoAuthenticator(token);
+            const tokenObj = await cognitoAuthenticator<CognitoTokenData>(token);
 
             if (!tokenObj) {
                 return null;
