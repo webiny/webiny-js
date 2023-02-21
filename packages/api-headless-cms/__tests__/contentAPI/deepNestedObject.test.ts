@@ -552,20 +552,6 @@ describe("Cars Model Deep Nested Object Fields", () => {
             }
         });
 
-        await handler.until(
-            () =>
-                handler
-                    .invoke({
-                        body: {
-                            query: LIST_CARS_QUERY
-                        }
-                    })
-                    .then(([data]) => data),
-            ({ data }: any) => {
-                return data.listCars.data.length > 0;
-            }
-        );
-
         const [getResult] = await handler.invoke({
             body: {
                 query: GET_CAR_QUERY,

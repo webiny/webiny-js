@@ -6,7 +6,7 @@ import { FieldErrorMessage } from "./components/FieldErrorMessage";
 import { FieldHelperMessage } from "./components/FieldHelperMessage";
 import { FieldLabel } from "./components/FieldLabel";
 import styled from "@emotion/styled";
-import { colors } from "../../../../theme";
+import theme from "../../../../theme";
 
 interface RadioProps {
     field: FormRenderFbFormModelField;
@@ -22,7 +22,7 @@ const RadioGroup = styled.div`
 const RadioButton = styled.input`
     margin-left: 0;
     line-height: 100%;
-    background-color: ${colors.color5};
+    background-color: ${theme.styles.colors["color5"]};
     min-width: 25px;
     width: 25px;
     height: 25px;
@@ -30,7 +30,7 @@ const RadioButton = styled.input`
     -webkit-appearance: none;
 
     &:focus {
-        border-color: ${colors["color2"]};
+        border-color: ${theme.styles.colors["color2"]};
         box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
         outline: none;
     }
@@ -60,19 +60,21 @@ export const RadioField: React.FC<RadioProps> = ({ field }) => {
         <Field>
             <FieldLabel field={field} />
             {field.helpText && <FieldHelperMessage>{field.helpText}</FieldHelperMessage>}
-            {(field.options || []).map(option => (
-                <RadioGroup key={option.value}>
-                    <RadioButton
-                        checked={value === option.value}
-                        onChange={() => onChange(option.value)}
-                        name={fieldId}
-                        type="radio"
-                        id={"radio-" + fieldId + option.value}
-                        value={option.value}
-                    />
-                    <label htmlFor={"radio-" + fieldId + option.value}>{option.label}</label>
-                </RadioGroup>
-            ))}
+            {(field.options || []).map(option => {
+                return (
+                    <RadioGroup key={option.value}>
+                        <RadioButton
+                            checked={value === option.value}
+                            onChange={() => onChange(option.value)}
+                            name={fieldId}
+                            type="radio"
+                            id={"radio-" + fieldId + option.value}
+                            value={option.value}
+                        />
+                        <label htmlFor={"radio-" + fieldId + option.value}>{option.label}</label>
+                    </RadioGroup>
+                );
+            })}
             <FieldErrorMessage isValid={validation.isValid} message={validation.message} />
         </Field>
     );

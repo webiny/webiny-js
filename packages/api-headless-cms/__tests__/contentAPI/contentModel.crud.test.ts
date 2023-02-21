@@ -145,7 +145,8 @@ describe("content model test", () => {
                         plugin: false,
                         group: {
                             id: contentModelGroup.id,
-                            name: contentModelGroup.name
+                            name: contentModelGroup.name,
+                            slug: contentModelGroup.slug
                         }
                     },
                     error: null
@@ -278,8 +279,7 @@ describe("content model test", () => {
             updateContentModelMutation,
             deleteContentModelMutation
         } = useGraphQLHandler(manageHandlerOpts);
-        const { createCategory, until, listCategories } =
-            useCategoryManageHandler(manageHandlerOpts);
+        const { createCategory } = useCategoryManageHandler(manageHandlerOpts);
         const category = models.find(m => m.modelId === "category");
         if (!category) {
             throw new Error("Could not find model `category`.");
@@ -310,13 +310,6 @@ describe("content model test", () => {
                 slug: "title"
             }
         });
-
-        // If this `until` resolves successfully, we know entry is accessible via the "read" API
-        await until(
-            () => listCategories().then(([data]) => data),
-            ({ data }: any) => data.listCategories.data.length > 0,
-            { name: "list categories to check that categories are available" }
-        );
 
         const [response] = await deleteContentModelMutation({
             modelId: model.modelId
@@ -523,7 +516,8 @@ describe("content model test", () => {
                         ],
                         group: {
                             id: contentModelGroup.id,
-                            name: "Group"
+                            name: "Group",
+                            slug: contentModelGroup.slug
                         },
                         modelId: contentModel.modelId,
                         layout: [[textField.id], [numberField.id]],
@@ -968,6 +962,96 @@ describe("content model test", () => {
             description: null
         });
         expect(response.data.getContentModel.error).toEqual(null);
+    });
+
+    it("should allow to update a model with description set to null", async () => {
+        const { createContentModelMutation, updateContentModelMutation } =
+            useGraphQLHandler(manageHandlerOpts);
+
+        const model = {
+            name: `Test Content model instance`,
+            modelId: `testContentModel`
+        };
+        const [createResponse] = await createContentModelMutation({
+            data: {
+                ...model,
+                group: contentModelGroup.id
+            }
+        });
+        expect(createResponse).toMatchObject({
+            data: {
+                createContentModel: {
+                    data: {
+                        ...model,
+                        description: ""
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [updateNoDescriptionResponse] = await updateContentModelMutation({
+            modelId: model.modelId,
+            data: {
+                name: "Updated",
+                fields: [],
+                layout: []
+            }
+        });
+        expect(updateNoDescriptionResponse).toMatchObject({
+            data: {
+                updateContentModel: {
+                    data: {
+                        name: "Updated",
+                        modelId: model.modelId,
+                        description: null
+                    },
+                    error: null
+                }
+            }
+        });
+        const [updateNullDescriptionResponse] = await updateContentModelMutation({
+            modelId: model.modelId,
+            data: {
+                name: "Updated",
+                fields: [],
+                layout: [],
+                description: null
+            }
+        });
+        expect(updateNullDescriptionResponse).toMatchObject({
+            data: {
+                updateContentModel: {
+                    data: {
+                        name: "Updated",
+                        modelId: model.modelId,
+                        description: null
+                    },
+                    error: null
+                }
+            }
+        });
+        const [updateEmptyDescriptionResponse] = await updateContentModelMutation({
+            modelId: model.modelId,
+            data: {
+                name: "Updated",
+                fields: [],
+                layout: [],
+                description: ""
+            }
+        });
+        expect(updateEmptyDescriptionResponse).toMatchObject({
+            data: {
+                updateContentModel: {
+                    data: {
+                        name: "Updated",
+                        modelId: model.modelId,
+                        description: null
+                    },
+                    error: null
+                }
+            }
+        });
     });
 
     it("should assign description field", async () => {

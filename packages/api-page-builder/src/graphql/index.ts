@@ -1,3 +1,5 @@
+export { useElementVariables } from "./elementProcessors/useElementVariables";
+
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { createCrud, CreateCrudParams } from "./crud";
 import graphql from "./graphql";

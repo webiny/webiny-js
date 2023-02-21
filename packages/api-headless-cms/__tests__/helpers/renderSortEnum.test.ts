@@ -2,7 +2,6 @@ import models from "../contentAPI/mocks/contentModels";
 import { renderSortEnum } from "~/utils/renderSortEnum";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { CmsFieldTypePlugins, CmsModel, CmsModelFieldToGraphQLPlugin } from "~/types";
-import { filterModelsDeletedFields } from "~/utils/filterModelFields";
 import { createCmsGraphQLSchemaSorterPlugin } from "~/plugins";
 
 const sortPlugin = createCmsGraphQLSchemaSorterPlugin(({ sorters }) => {
@@ -20,10 +19,7 @@ describe("Render GraphQL sort enum", () => {
         }, {});
 
     it("should render non-deleted fields sorts - read API", () => {
-        const [model] = filterModelsDeletedFields({
-            models: [models.find(model => model.modelId === "product") as CmsModel],
-            type: "read"
-        });
+        const model = models.find(model => model.modelId === "product") as CmsModel;
 
         const result = renderSortEnum({
             model,
@@ -60,10 +56,7 @@ describe("Render GraphQL sort enum", () => {
     });
 
     it("should render non-deleted fields sorts - manage API", () => {
-        const [model] = filterModelsDeletedFields({
-            models: [models.find(model => model.modelId === "product") as CmsModel],
-            type: "manage"
-        });
+        const model = models.find(model => model.modelId === "product") as CmsModel;
 
         const result = renderSortEnum({
             model,

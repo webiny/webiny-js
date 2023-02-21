@@ -1,5 +1,5 @@
 import WebinyError from "@webiny/error";
-import { Response } from "@webiny/handler-graphql";
+import { ErrorResponse, Response } from "@webiny/handler-graphql";
 import { CmsEntry, CmsContext, CmsModel, CmsEntryListWhere, CreatedBy } from "~/types";
 import { NotAuthorizedResponse } from "@webiny/api-security";
 import { getEntryTitle } from "~/utils/getEntryTitle";
@@ -109,7 +109,9 @@ const getContentEntriesMethods = {
     published: "getPublishedEntriesByIds",
     exact: "getEntriesByIds"
 };
-const getContentEntries = async (params: GetContentEntriesParams): Promise<Response> => {
+const getContentEntries = async (
+    params: GetContentEntriesParams
+): Promise<Response | ErrorResponse> => {
     const { args, context, type } = params;
 
     const method = getFetchMethod(type, context);
@@ -141,9 +143,10 @@ const getContentEntries = async (params: GetContentEntriesParams): Promise<Respo
         return new Response([]);
     }
 
-    const results = await Promise.all(getters);
+    try {
+        const results = await Promise.all(getters);
 
-    const entries = results
+        const entries = results
         .reduce<CmsEntryRecord[]>((collection, items) => {
             return collection.concat(
                 items.map(item => {
@@ -155,7 +158,10 @@ const getContentEntries = async (params: GetContentEntriesParams): Promise<Respo
         }, [])
         .filter(Boolean);
 
-    return new Response(entries);
+        return new Response(entries);
+    } catch (ex) {
+        return new ErrorResponse(ex);
+    }
 };
 
 /**
@@ -235,15 +241,22 @@ const createResolveDescription = (): Resolvers<CmsContext> => {
     };
 };
 
-export const createContentEntriesSchema = (context: CmsContext): CmsGraphQLSchemaPlugin => {
+interface Params {
+    context: CmsContext;
+}
+export const createContentEntriesSchema = ({
+    context
+}: Params): CmsGraphQLSchemaPlugin<CmsContext> => {
     if (!context.cms.MANAGE) {
-        return new CmsGraphQLSchemaPlugin({
+        const plugin = new CmsGraphQLSchemaPlugin({
             typeDefs: "",
             resolvers: {}
         });
+        plugin.name = `headless-cms.graphql.schema.${context.cms.type}.empty`;
+        return plugin;
     }
 
-    return new CmsGraphQLSchemaPlugin({
+    const plugin = new CmsGraphQLSchemaPlugin({
         typeDefs: /* GraphQL */ `
             type CmsModelMeta {
                 modelId: String!
@@ -361,15 +374,19 @@ export const createContentEntriesSchema = (context: CmsContext): CmsGraphQLSchem
                             });
                         });
 
-                    const entries = await Promise.all(getters).then(results =>
-                        results.reduce((result, item) => result.concat(item), [])
-                    );
-
-                    return new Response(
-                        entries
-                            .sort((a, b) => b.savedOn.getTime() - a.savedOn.getTime())
-                            .slice(0, limit)
-                    );
+                    try {
+                        const entries = await Promise.all(getters).then(results =>
+                            results.reduce((result, item) => result.concat(item), [])
+                        );
+                        
+                        return new Response(
+                            entries
+                                .sort((a, b) => Date.parse(b.savedOn) - Date.parse(a.savedOn))
+                                .slice(0, limit)
+                        );
+                    } catch (ex) {
+                        return new ErrorResponse(ex);
+                    }
                 },
                 async getContentEntry(_, args: any, context) {
                     return getContentEntry({
@@ -416,4 +433,8 @@ export const createContentEntriesSchema = (context: CmsContext): CmsGraphQLSchem
             }
         }
     });
+
+    plugin.name = `headless-cms.graphql.schema.${context.cms.type}.content-entries`;
+
+    return plugin;
 };

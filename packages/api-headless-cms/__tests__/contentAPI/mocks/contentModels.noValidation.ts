@@ -1,4 +1,4 @@
-import contentModelGroup from "./contentModelGroup";
+import { createContentModelGroup } from "./contentModelGroup";
 import { CmsModel } from "~/types";
 import { generateAlphaNumericLowerCaseId } from "@webiny/utils";
 
@@ -8,6 +8,8 @@ const ids = {
     field11: generateAlphaNumericLowerCaseId(8),
     field12: generateAlphaNumericLowerCaseId(8)
 };
+
+const contentModelGroup = createContentModelGroup();
 
 const models: CmsModel[] = [
     {

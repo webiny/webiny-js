@@ -5,13 +5,17 @@ import {
     NotFoundResponse
 } from "@webiny/handler-graphql/responses";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
-import { Page, PbContext, PageSecurityPermission } from "~/types";
+import { Page, PbContext, PageSecurityPermission, PageContentWithTemplate } from "~/types";
 import WebinyError from "@webiny/error";
 import resolve from "./utils/resolve";
 import { createPageSettingsGraphQL } from "./pages/pageSettings";
 import { fetchEmbed, findProvider } from "./pages/oEmbed";
 import lodashGet from "lodash/get";
 import checkBasePermissions from "~/graphql/crud/utils/checkBasePermissions";
+
+function hasTemplate(content: Page["content"]): content is PageContentWithTemplate {
+    return content?.data?.template;
+}
 
 const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
     return {
@@ -279,17 +283,19 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                             return page.content;
                         }
 
-                        // Map block references
-                        const blocks = await context.pageBuilder.resolvePageBlocks(page);
-                        const pageWithNewContent = {
-                            ...page,
-                            content: { ...page.content, elements: blocks }
-                        };
+                        let blocks;
+
+                        if (hasTemplate(page.content)) {
+                            blocks = await context.pageBuilder.resolvePageTemplate(page.content);
+                        } else {
+                            blocks = await context.pageBuilder.resolvePageBlocks(page.content);
+                        }
 
                         // Run element processors on the full page content for potential transformations.
-                        const processedPage = await context.pageBuilder.processPageContent(
-                            pageWithNewContent
-                        );
+                        const processedPage = await context.pageBuilder.processPageContent({
+                            ...page,
+                            content: { ...page.content, elements: blocks }
+                        });
 
                         return processedPage.content;
                     }

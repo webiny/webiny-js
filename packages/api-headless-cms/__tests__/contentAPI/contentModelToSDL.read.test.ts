@@ -7,7 +7,6 @@ import productSDL from "./snapshots/product.read";
 import reviewSDL from "./snapshots/review.read";
 import pageSDL from "./snapshots/page.read";
 import { CmsModel, CmsModelFieldToGraphQLPlugin } from "~/types";
-import { filterModelsDeletedFields } from "~/utils/filterModelFields";
 import { pageModel } from "./mocks/pageWithDynamicZonesModel";
 
 /**
@@ -18,15 +17,11 @@ import { pageModel } from "./mocks/pageWithDynamicZonesModel";
  */
 
 const getModel = (modelId: string): CmsModel => {
-    const initialModel = contentModels.find(c => c.modelId === modelId);
-    if (!initialModel) {
-        throw new Error(`Could not find model "category".`);
+    const model = contentModels.find(c => c.modelId === modelId);
+    if (!model) {
+        throw new Error(`Could not find model "${modelId}".`);
     }
-    const models = filterModelsDeletedFields({
-        models: [initialModel],
-        type: "read"
-    });
-    return models.shift() as CmsModel;
+    return model;
 };
 
 describe("READ - ContentModel to SDL", () => {

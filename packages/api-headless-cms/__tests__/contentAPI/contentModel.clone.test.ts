@@ -1,6 +1,7 @@
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { CmsGroup, CmsModel, CmsModelField } from "~/types";
 import models from "./mocks/contentModels";
+import { toSlug } from "~/utils/toSlug";
 
 const setEmptyTextsAsNull = (fields: CmsModelField[]): CmsModelField[] => {
     return fields.map(field => {
@@ -20,7 +21,8 @@ const createExpectedModel = (original: CmsModel, group?: CmsGroup) => {
         ...original,
         group: {
             id: group ? group.id : original.group.id,
-            name: group ? group.name : original.group.name
+            name: group ? group.name : original.group.name,
+            slug: group ? group.slug : toSlug(original.group.name)
         },
         fields: setEmptyTextsAsNull(original.fields),
         createdOn: expect.stringMatching(/^20/),

@@ -17,6 +17,10 @@ const PluginsProviderComponent: React.FC<PluginsProviderComponentProps> = ({ chi
 
 export const PluginsProvider = memo(PluginsProviderComponent);
 
+/**
+ * @param children
+ * @deprecated This component should not be used directly. Use the <Plugin> component to create plugins.
+ */
 export const Plugins: React.FC = ({ children }) => {
     const { addPlugin } = useApp();
     const hasParentPlugin = useContext(PluginsContext);

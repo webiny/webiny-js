@@ -14,7 +14,10 @@ import {
 import { GraphQLScalarType } from "graphql";
 import { CmsGraphQLSchemaPlugin } from "~/plugins";
 
-export const createBaseContentSchema = (context: CmsContext): CmsGraphQLSchemaPlugin => {
+interface Params {
+    context: CmsContext;
+}
+export const createBaseContentSchema = ({ context }: Params): CmsGraphQLSchemaPlugin => {
     const scalars = context.plugins
         .byType<GraphQLScalarPlugin>("graphql-scalar")
         .map(item => item.scalar);
