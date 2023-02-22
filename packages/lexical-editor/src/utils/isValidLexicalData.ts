@@ -1,5 +1,4 @@
 import { isValidJSON } from "~/utils/isValidJSON";
-import { has } from "lodash";
 import { LexicalValue } from "~/types";
 /*
  * @description Checks for valid lexical data.
@@ -11,9 +10,9 @@ export const isValidLexicalData = (editorStateValue: LexicalValue | null): boole
     if (!editorStateValue) {
         return false;
     }
-    if (!isValidJSON(editorStateValue as string)) {
+    if (!isValidJSON(editorStateValue)) {
         return false;
     }
-    const data = JSON.parse(editorStateValue as string);
-    return has(data, "root.children");
+    const data = JSON.parse(editorStateValue);
+    return !!data["root"];
 };
