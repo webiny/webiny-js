@@ -134,7 +134,7 @@ export const createGroupsSchema = ({ context }: Params): GraphQLSchemaPlugin<Cms
         };
     }
 
-    return new GraphQLSchemaPlugin<CmsContext>({
+    const plugin = new GraphQLSchemaPlugin<CmsContext>({
         typeDefs: /* GraphQL */ `
             type CmsContentModelGroup {
                 id: ID!
@@ -155,4 +155,7 @@ export const createGroupsSchema = ({ context }: Params): GraphQLSchemaPlugin<Cms
         `,
         resolvers
     });
+    plugin.name = `headless-cms.graphql.schema.${context.cms.type}.groups`;
+
+    return plugin;
 };
