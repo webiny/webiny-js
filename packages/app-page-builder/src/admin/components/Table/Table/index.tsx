@@ -32,6 +32,7 @@ interface Props {
     folders: FolderItem[];
     loading?: boolean;
     openPreviewDrawer: () => void;
+    onSelectRow: (rows: Entry[] | []) => void;
 }
 
 interface Entry {
@@ -44,10 +45,11 @@ interface Entry {
     version?: number;
     category?: string;
     original: PbPageDataLink | FolderItem;
+    selectable: boolean;
 }
 
 export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
-    const { folders, pages, loading, openPreviewDrawer } = props;
+    const { folders, pages, loading, openPreviewDrawer, onSelectRow } = props;
 
     const [data, setData] = useState<Entry[]>([]);
     const [selectedFolder, setSelectedFolder] = useState<FolderItem>();
@@ -65,7 +67,8 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
                 status: item.status,
                 version: item.version,
                 category: item.category.name,
-                original: item
+                original: item,
+                selectable: true
             }));
     }, [pages]);
 
@@ -74,10 +77,11 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
             items.map(item => ({
                 id: item.id,
                 type: "FOLDER",
-                title: item.name,
+                title: item.title,
                 createdBy: item.createdBy.displayName || "-",
                 savedOn: item.createdOn,
-                original: item
+                original: item,
+                selectable: false
             }));
     }, [folders]);
 
@@ -164,7 +168,13 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
 
     return (
         <div ref={ref}>
-            <DataTable columns={columns} data={data} loadingInitial={loading} stickyRows={1} />
+            <DataTable
+                columns={columns}
+                data={data}
+                loadingInitial={loading}
+                stickyRows={1}
+                onSelectRow={onSelectRow}
+            />
             {selectedFolder && (
                 <>
                     <FolderDialogUpdate

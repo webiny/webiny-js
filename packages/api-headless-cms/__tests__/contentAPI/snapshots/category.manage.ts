@@ -30,6 +30,7 @@ export default /* GraphQL */ `
     }
 
     input CategoryInput {
+        id: ID
         title: String!
         slug: String!
     }

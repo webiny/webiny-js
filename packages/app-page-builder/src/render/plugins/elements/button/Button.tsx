@@ -1,10 +1,10 @@
 import React, { CSSProperties, useCallback, useMemo } from "react";
 import kebabCase from "lodash/kebabCase";
 import { plugins } from "@webiny/plugins";
-import { ElementRoot } from "../../../components/ElementRoot";
+import { ElementRoot } from "~/render";
 import { PbButtonElementClickHandlerPlugin, PbElement, PbElementDataType } from "~/types";
 import { Link } from "@webiny/react-router";
-import { PageBuilderContext } from "~/contexts/PageBuilder";
+import { usePageBuilder } from "~/hooks/usePageBuilder";
 
 const formatUrl = (url: string): string => {
     // Check if external domain url (e.g. google.com, https://www.google.com)
@@ -31,7 +31,7 @@ interface ButtonProps {
 const Button: React.FC<ButtonProps> = ({ element }) => {
     const {
         responsiveDisplayMode: { displayMode }
-    } = React.useContext(PageBuilderContext);
+    } = usePageBuilder();
     const {
         type = "default",
         icon = {},

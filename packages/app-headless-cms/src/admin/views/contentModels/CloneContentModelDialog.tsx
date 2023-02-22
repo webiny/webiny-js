@@ -233,16 +233,12 @@ const CloneContentModelDialog: React.FC<Props> = ({ open, onClose, contentModel,
                                     </Cell>
                                     <Cell span={12}>
                                         <Bind name="description">
-                                            {props => (
-                                                <Input
-                                                    {...props}
-                                                    rows={4}
-                                                    maxLength={200}
-                                                    characterCount
-                                                    label={t`Description`}
-                                                    value={contentModel.description}
-                                                />
-                                            )}
+                                            <Input
+                                                rows={4}
+                                                maxLength={200}
+                                                characterCount
+                                                label={t`Description`}
+                                            />
                                         </Bind>
                                     </Cell>
                                 </Grid>

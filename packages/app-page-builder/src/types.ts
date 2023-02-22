@@ -9,7 +9,7 @@ import { GenericFormData, FormOnSubmit, FormSetValue, FormAPI } from "@webiny/fo
 import { CoreOptions } from "medium-editor";
 import { MenuTreeItem } from "~/admin/views/Menus/types";
 import { SecurityPermission } from "@webiny/app-security/types";
-import { LinkItem } from "@webiny/app-aco/types";
+import { SearchRecordItem } from "@webiny/app-aco/types";
 import { PagesListComponent } from "@webiny/app-page-builder-elements/renderers/pagesList/types";
 import { Theme } from "@webiny/app-theme/types";
 
@@ -364,7 +364,7 @@ export interface PbPageRevision {
 }
 
 export interface PbPageDataLink extends PbPageData {
-    link: LinkItem;
+    link: SearchRecordItem;
 }
 
 export interface PbRenderElementPluginRenderParams {
@@ -491,7 +491,7 @@ export interface PbEditorPageElementPluginToolbar {
     // Element group this element belongs to.
     group?: string;
     // A function to render an element preview in the toolbar.
-    preview?: (params?: { theme: PbTheme | Theme }) => ReactNode; // @deprecation-warning pb-legacy-rendering-engine
+    preview?: (params?: { theme: PbTheme | Theme | undefined }) => ReactNode; // @deprecation-warning pb-legacy-rendering-engine
 }
 
 export type PbEditorPageElementPluginSettings = string[] | Record<string, any>;
@@ -855,6 +855,17 @@ export interface PbPageBlock {
     createdBy: PbIdentity;
 }
 
+export interface PbPageTemplate {
+    id: string;
+    title: string;
+    description: string;
+    layout: string;
+    content: any;
+    createdOn: string;
+    savedOn: string;
+    createdBy: PbIdentity;
+}
+
 /**
  * TODO: have types for both API and app in the same package?
  * GraphQL response types
@@ -960,3 +971,16 @@ export interface PageBuilderSecurityPermission extends SecurityPermission {
 export type Loading<T extends string> = { [P in T]?: boolean };
 
 export type LoadingActions = "INIT" | "LIST" | "LIST_MORE";
+
+// TODO: move to a declaration file
+declare global {
+    // eslint-disable-next-line
+    namespace JSX {
+        interface IntrinsicElements {
+            "ps-tag": {
+                "data-key": string;
+                "data-value": string;
+            };
+        }
+    }
+}

@@ -1,5 +1,5 @@
 import React, { lazy, Suspense } from "react";
-import { AddMenu as Menu, AddRoute } from "@webiny/app-admin";
+import { AddMenu as Menu, AddRoute, Plugins } from "@webiny/app-admin";
 import { SecureRoute } from "@webiny/app-security";
 import { AdminLayout } from "@webiny/app-admin/components/AdminLayout";
 import Helmet from "react-helmet";
@@ -15,7 +15,7 @@ const Loader: React.FC<LoaderProps> = ({ children, ...props }) => (
     <Suspense fallback={<CircularProgress />}>{React.cloneElement(children, props)}</Suspense>
 );
 
-export const Module: React.FC = () => {
+const MailerSettings: React.FC = () => {
     const { canChangeSettings } = usePermission();
 
     const changeSettings = canChangeSettings();
@@ -50,5 +50,13 @@ export const Module: React.FC = () => {
                 )}
             />
         </>
+    );
+};
+
+export const Module: React.FC = () => {
+    return (
+        <Plugins>
+            <MailerSettings />
+        </Plugins>
     );
 };

@@ -1,7 +1,13 @@
 import React, { createContext } from "react";
-import { PageContextValue, PageProviderProps } from "~/types";
+import { Page, PageProviderProps } from "~/types";
 
-export const PageContext = createContext<PageContextValue>(null as unknown as any);
+export interface PageContext {
+    page: Page;
+    layout?: React.ComponentType<{ children: React.ReactNode }>;
+    layoutProps: Record<string, any>;
+}
+
+export const PageContext = createContext<PageContext | undefined>(undefined);
 
 export const PageProvider: React.FC<PageProviderProps> = ({
     children,
@@ -9,7 +15,7 @@ export const PageProvider: React.FC<PageProviderProps> = ({
     layout,
     layoutProps = {}
 }) => {
-    const value: PageContextValue = {
+    const value: PageContext = {
         page,
         layout,
         layoutProps

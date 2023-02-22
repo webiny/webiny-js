@@ -2,7 +2,6 @@ import { pageModel } from "./mocks/pageWithDynamicZonesModel";
 import { setupGroupAndModels } from "../testHelpers/setup";
 import { usePageManageHandler } from "../testHelpers/usePageManageHandler";
 import { usePageReadHandler } from "../testHelpers/usePageReadHandler";
-import { until } from "../testHelpers/helpers";
 
 const contentEntryQueryData = {
     content: [
@@ -164,13 +163,6 @@ describe("dynamicZone field", () => {
 
         const page = createPageResponse.data.createPage.data;
 
-        await manage.until(
-            () => manage.listPages().then(([data]) => data),
-            ({ data }: any) => {
-                return data.listPages.data.length === 1;
-            }
-        );
-
         const [manageList] = await manage.listPages();
 
         expect(manageList).toEqual({
@@ -214,26 +206,13 @@ describe("dynamicZone field", () => {
         });
 
         // Test `read` get
-        const previewGet = await until(
-            () => {
-                return preview
-                    .getPage({
-                        where: {
-                            id: page.id
-                        }
-                    })
-                    .then(([data]) => data);
-            },
-            ({ data }: any) => {
-                return data.getPage.data !== null;
-            },
-            {
-                name: "get page from /read endpoint",
-                tries: 20,
-                debounce: 2000,
-                wait: 2000
-            }
-        );
+        const previewGet = await preview
+            .getPage({
+                where: {
+                    id: page.id
+                }
+            })
+            .then(([data]) => data);
 
         expect(previewGet).toEqual({
             data: {

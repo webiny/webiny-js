@@ -36,7 +36,7 @@ describe("not_contains filter", () => {
                     query_string: {
                         allow_leading_wildcard: true,
                         fields: ["values.title"],
-                        query: normalizeValue(title),
+                        query: `*${normalizeValue(title)}*`,
                         default_operator: "and"
                     }
                 }

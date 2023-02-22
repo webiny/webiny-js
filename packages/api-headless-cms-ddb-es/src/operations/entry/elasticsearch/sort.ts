@@ -33,36 +33,44 @@ export const createElasticsearchSort = (params: Params): esSort => {
 
     const sortPlugins = Object.values(modelFields).reduce<
         Record<string, CmsEntryElasticsearchFieldPlugin>
-    >((plugins, field) => {
-        /**
-         * We do not support sorting by nested fields.
-         */
-        if (field.parents.length > 0) {
+    >(
+        (plugins, field) => {
+            /**
+             * We do not support sorting by nested fields.
+             */
+            if (field.parents.length > 0) {
+                return plugins;
+            }
+            const { fieldId, storageId } = field.field;
+
+            fieldIdToStorageIdIdMap[fieldId] = fieldId;
+
+            const { path } = createFieldPath({
+                key: storageId,
+                field,
+                value: "",
+                keyword: false
+            });
+            /**
+             * Plugins must be stored with fieldId as key because it is later used to find the sorting plugin.
+             */
+            plugins[fieldId] = new CmsEntryElasticsearchFieldPlugin({
+                unmappedType: field.unmappedType,
+                keyword: hasKeyword(field),
+                sortable: field.isSortable,
+                searchable: field.isSearchable,
+                field: fieldId,
+                path
+            });
             return plugins;
+        },
+        {
+            ["*"]: new CmsEntryElasticsearchFieldPlugin({
+                field: CmsEntryElasticsearchFieldPlugin.ALL,
+                keyword: false
+            })
         }
-        const { fieldId, storageId } = field.field;
-
-        fieldIdToStorageIdIdMap[fieldId] = fieldId;
-
-        const { path } = createFieldPath({
-            key: storageId,
-            field,
-            value: "",
-            keyword: false
-        });
-        /**
-         * Plugins must be stored with fieldId as key because it is later used to find the sorting plugin.
-         */
-        plugins[fieldId] = new CmsEntryElasticsearchFieldPlugin({
-            unmappedType: field.unmappedType,
-            keyword: hasKeyword(field),
-            sortable: field.isSortable,
-            searchable: field.isSearchable,
-            field: fieldId,
-            path
-        });
-        return plugins;
-    }, {});
+    );
 
     const transformedSort = sort
         .map(value => {

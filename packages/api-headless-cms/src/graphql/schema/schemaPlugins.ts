@@ -1,16 +1,21 @@
-import { CmsModelFieldToGraphQLPlugin, CmsFieldTypePlugins, CmsContext } from "~/types";
+import { CmsModelFieldToGraphQLPlugin, CmsFieldTypePlugins, CmsContext, CmsModel } from "~/types";
 import { createManageSDL } from "./createManageSDL";
 import { createReadSDL } from "./createReadSDL";
 import { createManageResolvers } from "./createManageResolvers";
 import { createReadResolvers } from "./createReadResolvers";
 import { createPreviewResolvers } from "./createPreviewResolvers";
-import { getSchemaFromFieldPlugins } from "~/utils/getSchemaFromFieldPlugins";
-import { filterModelsDeletedFields } from "~/utils/filterModelFields";
+import { createGraphQLSchemaPluginFromFieldPlugins } from "~/utils/getSchemaFromFieldPlugins";
+import { CmsGraphQLSchemaSorterPlugin } from "~/plugins";
 import { CmsGraphQLSchemaPlugin } from "~/plugins";
 
+interface GenerateSchemaPluginsParams {
+    context: CmsContext;
+    models: CmsModel[];
+}
 export const generateSchemaPlugins = async (
-    context: CmsContext
+    params: GenerateSchemaPluginsParams
 ): Promise<CmsGraphQLSchemaPlugin[]> => {
+    const { context, models } = params;
     const { plugins, cms } = context;
 
     /**
@@ -23,57 +28,58 @@ export const generateSchemaPlugins = async (
     }
 
     // Structure plugins for faster access
-    const fieldTypePlugins: CmsFieldTypePlugins = plugins
+    const fieldTypePlugins = plugins
         .byType<CmsModelFieldToGraphQLPlugin>("cms-model-field-to-graphql")
-        .reduce((acc, pl) => {
+        .reduce<CmsFieldTypePlugins>((acc, pl) => {
             acc[pl.fieldType] = pl;
             return acc;
-        }, {} as Record<string, CmsModelFieldToGraphQLPlugin>);
+        }, {});
 
-    // Load model data
-    context.security.disableAuthorization();
-    const initialModels = (await cms.listModels()).filter(model => model.isPrivate !== true);
-    context.security.enableAuthorization();
+    const sorterPlugins = plugins.byType<CmsGraphQLSchemaSorterPlugin>(
+        CmsGraphQLSchemaSorterPlugin.type
+    );
 
-    const models = filterModelsDeletedFields({
-        models: initialModels,
-        type
-    });
+    // const schemas = getSchemaFromFieldPlugins({
+    //     models,
+    //     fieldTypePlugins,
+    //     type
+    // });
 
-    const schemas = getSchemaFromFieldPlugins({
+    // const newPlugins: CmsGraphQLSchemaPlugin[] = [];
+    // for (const schema of schemas) {
+    //     newPlugins.push(new CmsGraphQLSchemaPlugin(schema));
+    // }
+    const schemaPlugins = createGraphQLSchemaPluginFromFieldPlugins({
         models,
         fieldTypePlugins,
         type
     });
-
-    const newPlugins: CmsGraphQLSchemaPlugin[] = [];
-    for (const schema of schemas) {
-        newPlugins.push(new CmsGraphQLSchemaPlugin(schema));
-    }
 
     models
         .filter(model => model.fields.length > 0)
         .forEach(model => {
             switch (type) {
                 case "manage":
-                    newPlugins.push(
-                        new CmsGraphQLSchemaPlugin({
-                            typeDefs: createManageSDL({ model, fieldTypePlugins }),
+                    {
+                        const plugin = new CmsGraphQLSchemaPlugin({
+                            typeDefs: createManageSDL({ model, fieldTypePlugins, sorterPlugins }),
                             resolvers: createManageResolvers({
                                 models,
                                 model,
                                 fieldTypePlugins,
                                 context
                             })
-                        })
-                    );
+                        });
+                        plugin.name = `headless-cms.graphql.schema.manage.${model.modelId}`;
+                        schemaPlugins.push(plugin);
+                    }
 
                     break;
                 case "preview":
                 case "read":
-                    newPlugins.push(
-                        new CmsGraphQLSchemaPlugin({
-                            typeDefs: createReadSDL({ model, fieldTypePlugins }),
+                    {
+                        const plugin = new CmsGraphQLSchemaPlugin({
+                            typeDefs: createReadSDL({ model, fieldTypePlugins, sorterPlugins }),
                             resolvers: cms.READ
                                 ? createReadResolvers({
                                       models,
@@ -87,13 +93,15 @@ export const generateSchemaPlugins = async (
                                       fieldTypePlugins,
                                       context
                                   })
-                        })
-                    );
+                        });
+                        plugin.name = `headless-cms.graphql.schema.${type}.${model.modelId}`;
+                        schemaPlugins.push(plugin);
+                    }
                     break;
                 default:
                     return;
             }
         });
 
-    return newPlugins.filter(pl => !!pl.schema.typeDefs);
+    return schemaPlugins.filter(pl => !!pl.schema.typeDefs);
 };

@@ -1,57 +1,72 @@
 import React, { useMemo, useState, useCallback } from "react";
+import { useApolloClient } from "@apollo/react-hooks";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
+import { useSecurity } from "@webiny/app-security";
+import { CircularProgress } from "@webiny/ui/Progress";
+import { useRouter } from "@webiny/react-router";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
+
+import * as GQLCache from "~/admin/views/Pages/cache";
+import CategoriesDialog from "~/admin/views/Categories/CategoriesDialog";
+import { CREATE_PAGE, CREATE_PAGE_FROM_TEMPLATE } from "~/admin/graphql/pages";
+import useImportPage from "./hooks/useImportPage";
 import PagesDataList from "./PagesDataList";
 import PageDetails from "./PageDetails";
-import { useSecurity } from "@webiny/app-security";
-import CategoriesDialog from "../Categories/CategoriesDialog";
-import { CircularProgress } from "@webiny/ui/Progress";
-import useImportPage from "./hooks/useImportPage";
-import useCreatePage from "./hooks/useCreatePage";
-import { PageBuilderSecurityPermission } from "~/types";
-import { useRouter } from "@webiny/react-router";
-
-enum LoadingLabel {
-    CREATING_PAGE = "Creating page...",
-    IMPORTING_PAGE = "Importing page..."
-}
-
-enum Operation {
-    CREATE = "create",
-    IMPORT = "import"
-}
+import PageTemplatesDialog from "./PageTemplatesDialog";
+import { PageBuilderSecurityPermission, PbPageTemplate } from "~/types";
 
 const Pages: React.FC = () => {
     const { history } = useRouter();
-    const [operation, setOperation] = useState<string>(Operation.CREATE);
-    const [loadingLabel, setLoadingLabel] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const [showCategoriesDialog, setCategoriesDialog] = useState(false);
+    const [showTemplatesDialog, setTemplatesDialog] = useState(false);
+    const client = useApolloClient();
+    const { showSnackbar } = useSnackbar();
 
-    const openDialog = useCallback(() => setCategoriesDialog(true), []);
-    const closeDialog = useCallback(() => setCategoriesDialog(false), []);
-
-    const { createPageMutation } = useCreatePage({
-        setLoadingLabel: () => setLoadingLabel(LoadingLabel.CREATING_PAGE),
-        clearLoadingLabel: () => setLoadingLabel(null),
-        closeDialog
-    });
+    const openCategoriesDialog = useCallback(() => setCategoriesDialog(true), []);
+    const closeCategoriesDialog = useCallback(() => setCategoriesDialog(false), []);
+    const openTemplatesDialog = useCallback(() => setTemplatesDialog(true), []);
+    const closeTemplatesDialog = useCallback(() => setTemplatesDialog(false), []);
 
     const { showDialog } = useImportPage({
-        setLoadingLabel: () => setLoadingLabel(LoadingLabel.IMPORTING_PAGE),
-        clearLoadingLabel: () => setLoadingLabel(null),
-        closeDialog
+        setLoadingLabel: () => setIsLoading(true),
+        clearLoadingLabel: () => setIsLoading(false),
+        closeDialog: closeCategoriesDialog
     });
 
-    const handleOnCreatePage = useCallback(() => {
-        setOperation(Operation.CREATE);
-        openDialog();
-    }, []);
+    const onCreatePage = useCallback(async (template?: PbPageTemplate) => {
+        setIsLoading(true);
+        try {
+            const MUTATION = template ? CREATE_PAGE_FROM_TEMPLATE : CREATE_PAGE;
+            const variables = {
+                // category is temporarily hardcoded
+                category: "static",
+                templateId: template?.id
+            };
 
-    const handleOnImportPage = useCallback(() => {
-        setOperation(Operation.IMPORT);
-        openDialog();
-    }, []);
+            const newPage = await client.mutate({
+                mutation: MUTATION,
+                variables,
+                update(cache, { data }) {
+                    if (data.pageBuilder.createPage.error) {
+                        return;
+                    }
 
-    const onSelect = operation === Operation.CREATE ? createPageMutation : showDialog;
+                    GQLCache.addPageToListCache(cache, data.pageBuilder.createPage.data);
+                }
+            });
+
+            const { error, data } = newPage.data.pageBuilder.createPage;
+            if (error) {
+                showSnackbar(error.message);
+            } else {
+                history.push(`/page-builder/editor/${encodeURIComponent(data.id)}`);
+            }
+        } catch (e) {
+            showSnackbar(e.message);
+        }
+        setIsLoading(false);
+    }, []);
 
     const { identity, getPermission } = useSecurity();
 
@@ -70,21 +85,32 @@ const Pages: React.FC = () => {
 
     return (
         <>
-            <CategoriesDialog open={showCategoriesDialog} onClose={closeDialog} onSelect={onSelect}>
-                {loadingLabel && <CircularProgress label={loadingLabel} />}
+            <CategoriesDialog
+                open={showCategoriesDialog}
+                onClose={closeCategoriesDialog}
+                onSelect={showDialog}
+            >
+                {isLoading && <CircularProgress label={"Importing page..."} />}
             </CategoriesDialog>
+            {showTemplatesDialog && (
+                <PageTemplatesDialog
+                    onClose={closeTemplatesDialog}
+                    onSelect={onCreatePage}
+                    isLoading={isLoading}
+                />
+            )}
             <SplitView>
                 <LeftPanel>
                     <PagesDataList
                         canCreate={canCreate}
-                        onCreatePage={handleOnCreatePage}
-                        onImportPage={handleOnImportPage}
+                        onCreatePage={openTemplatesDialog}
+                        onImportPage={openCategoriesDialog}
                     />
                 </LeftPanel>
                 <RightPanel>
                     <PageDetails
                         canCreate={canCreate}
-                        onCreatePage={handleOnCreatePage}
+                        onCreatePage={openTemplatesDialog}
                         onDelete={() => history.push("/page-builder/pages")}
                     />
                 </RightPanel>

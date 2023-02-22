@@ -5,7 +5,8 @@ import {
     OnModelBeforeCreateFromTopicParams,
     OnModelBeforeCreateTopicParams,
     CmsModel,
-    HeadlessCmsStorageOperations
+    HeadlessCmsStorageOperations,
+    CmsContext
 } from "~/types";
 import { Topic } from "@webiny/pubsub/types";
 import { PluginsContainer } from "@webiny/plugins";
@@ -171,7 +172,7 @@ interface AssignBeforeModelCreateParams {
     onModelBeforeCreate: Topic<OnModelBeforeCreateTopicParams>;
     onModelBeforeCreateFrom: Topic<OnModelBeforeCreateFromTopicParams>;
     storageOperations: HeadlessCmsStorageOperations;
-    plugins: PluginsContainer;
+    context: CmsContext;
 }
 
 /**
@@ -179,7 +180,7 @@ interface AssignBeforeModelCreateParams {
  * Callables are identical.
  */
 export const assignModelBeforeCreate = (params: AssignBeforeModelCreateParams) => {
-    const { onModelBeforeCreate, onModelBeforeCreateFrom, storageOperations, plugins } = params;
+    const { onModelBeforeCreate, onModelBeforeCreateFrom, storageOperations, context } = params;
 
     onModelBeforeCreate.subscribe(async ({ model, input }) => {
         /**
@@ -191,26 +192,25 @@ export const assignModelBeforeCreate = (params: AssignBeforeModelCreateParams) =
          */
         const cb = createOnModelBeforeCb({
             storageOperations,
-            plugins
+            plugins: context.plugins
         });
         await cb({
             model,
             input
         });
-
         /**
          * and then we move onto model and fields...
          */
         await validateModel({
             model,
-            plugins
+            context
         });
     });
 
     onModelBeforeCreateFrom.subscribe(
         createOnModelBeforeCb({
             storageOperations,
-            plugins
+            plugins: context.plugins
         })
     );
 };

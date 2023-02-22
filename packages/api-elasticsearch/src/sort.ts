@@ -44,7 +44,8 @@ export const createSort = (params: CreateSortParams): SortType => {
         const [, field, initialOrder] = match;
         const order: SortOrder = initialOrder.toLowerCase() === "asc" ? "asc" : "desc";
 
-        const plugin: ElasticsearchFieldPlugin = fieldPlugins[field] || fieldPlugins["*"];
+        const plugin: ElasticsearchFieldPlugin =
+            fieldPlugins[field] || fieldPlugins[ElasticsearchFieldPlugin.ALL];
         if (!plugin) {
             throw new WebinyError(`Missing plugin for the field "${field}"`, "PLUGIN_SORT_ERROR", {
                 field

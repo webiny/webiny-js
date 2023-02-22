@@ -8,6 +8,7 @@ import { Context as BaseContext } from "@webiny/handler/types";
 
 import {
     PageBlock,
+    PageTemplate,
     BlockCategory,
     Category,
     DefaultSettings,
@@ -17,11 +18,11 @@ import {
     PageSettings,
     PageSpecialType,
     Settings,
-    System
+    System,
+    PageTemplateInput
 } from "~/types";
 import { PrerenderingServiceClientContext } from "@webiny/api-prerendering-service/client/types";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
-import { ACOContext } from "@webiny/api-aco/types";
 
 // CRUD types.
 export interface ListPagesParams {
@@ -68,12 +69,14 @@ export interface GetPagesOptions {
  */
 export interface OnPageBeforeCreateTopicParams<TPage extends Page = Page> {
     page: TPage;
+    meta?: Record<string, any>;
 }
 /**
  * @category Lifecycle events
  */
 export interface OnPageAfterCreateTopicParams<TPage extends Page = Page> {
     page: TPage;
+    meta?: Record<string, any>;
 }
 /**
  * @category Lifecycle events
@@ -200,8 +203,14 @@ export interface PagesCrud {
     }): Promise<TPage>;
     getPublishedPageByPath<TPage extends Page = Page>(args: { path: string }): Promise<TPage>;
     listPageRevisions<TPage extends Page = Page>(id: string): Promise<TPage[]>;
-    createPage<TPage extends Page = Page>(category: string): Promise<TPage>;
-    createPageFrom<TPage extends Page = Page>(page: string): Promise<TPage>;
+    createPage<TPage extends Page = Page>(
+        category: string,
+        meta?: Record<string, any>
+    ): Promise<TPage>;
+    createPageFrom<TPage extends Page = Page>(
+        page: string,
+        meta?: Record<string, any>
+    ): Promise<TPage>;
     updatePage<TPage extends Page = Page>(id: string, data: PbUpdatePageInput): Promise<TPage>;
     deletePage<TPage extends Page = Page>(id: string): Promise<[TPage, TPage]>;
     publishPage<TPage extends Page = Page>(id: string): Promise<TPage>;
@@ -786,7 +795,7 @@ export interface PageBlocksCrud {
     createPageBlock(data: PageBlockCreateInput): Promise<PageBlock>;
     updatePageBlock(id: string, data: PageBlockUpdateInput): Promise<PageBlock>;
     deletePageBlock(id: string): Promise<PageBlock>;
-    resolvePageBlocks(page: Page): Promise<any>;
+    resolvePageBlocks(content: Record<string, any> | null): Promise<any>;
 
     /**
      * Lifecycle events
@@ -799,12 +808,121 @@ export interface PageBlocksCrud {
     onPageBlockAfterDelete: Topic<OnPageBlockAfterDeleteTopicParams>;
 }
 
+export interface ListPageTemplatesParams {
+    sort?: string[];
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnPageTemplateBeforeCreateTopicParams {
+    pageTemplate: PageTemplate;
+}
+
+/**
+ * @category Lifecycle events
+ */
+export interface OnPageTemplateAfterCreateTopicParams {
+    pageTemplate: PageTemplate;
+}
+
+/**
+ * @category Lifecycle events
+ */
+export interface OnPageTemplateBeforeUpdateTopicParams {
+    original: PageTemplate;
+    pageTemplate: PageTemplate;
+}
+
+/**
+ * @category Lifecycle events
+ */
+export interface OnPageTemplateAfterUpdateTopicParams {
+    original: PageTemplate;
+    pageTemplate: PageTemplate;
+}
+
+/**
+ * @category Lifecycle events
+ */
+export interface OnPageTemplateBeforeDeleteTopicParams {
+    pageTemplate: PageTemplate;
+}
+
+/**
+ * @category Lifecycle events
+ */
+export interface OnPageTemplateAfterDeleteTopicParams {
+    pageTemplate: PageTemplate;
+}
+
+interface CreatePageFromTemplateParams {
+    id?: string;
+    slug?: string;
+    category: string;
+    path?: string;
+    meta?: Record<string, any>;
+}
+
+export interface PageBlockVariable {
+    id: string;
+    label: string;
+    type: string;
+    value: string;
+}
+
+export interface PageTemplateVariable {
+    blockId: string;
+    variables: PageBlockVariable[];
+}
+
+interface GetPageTemplateParams {
+    where: {
+        id?: string;
+        slug?: string;
+    };
+}
+
+export interface PageContentWithTemplate extends PbPageElement {
+    data: {
+        template: {
+            slug: string;
+            variables?: PageTemplateVariable[];
+        };
+    };
+}
+
+/**
+ * @category PageTemplates
+ */
+export interface PageTemplatesCrud {
+    getPageTemplate(params: GetPageTemplateParams): Promise<PageTemplate | null>;
+    listPageTemplates(params?: ListPageTemplatesParams): Promise<PageTemplate[]>;
+    createPageTemplate(data: PageTemplateInput): Promise<PageTemplate>;
+    createPageFromTemplate(data: CreatePageFromTemplateParams): Promise<Page>;
+    // Copy relevant data from page template to page instance, by reference.
+    copyTemplateDataToPage(template: PageTemplate, page: Page): void;
+    updatePageTemplate(id: string, data: Record<string, any>): Promise<PageTemplate>;
+    deletePageTemplate(id: string): Promise<PageTemplate>;
+    resolvePageTemplate(content: PageContentWithTemplate): Promise<any>;
+
+    /**
+     * Lifecycle events
+     */
+    onPageTemplateBeforeCreate: Topic<OnPageTemplateBeforeCreateTopicParams>;
+    onPageTemplateAfterCreate: Topic<OnPageTemplateAfterCreateTopicParams>;
+    onPageTemplateBeforeUpdate: Topic<OnPageTemplateBeforeUpdateTopicParams>;
+    onPageTemplateAfterUpdate: Topic<OnPageTemplateAfterUpdateTopicParams>;
+    onPageTemplateBeforeDelete: Topic<OnPageTemplateBeforeDeleteTopicParams>;
+    onPageTemplateAfterDelete: Topic<OnPageTemplateAfterDeleteTopicParams>;
+}
+
 export interface PageBuilderContextObject
     extends PagesCrud,
         PageElementsCrud,
         CategoriesCrud,
         BlockCategoriesCrud,
         PageBlocksCrud,
+        PageTemplatesCrud,
         MenusCrud,
         SettingsCrud,
         SystemCrud {
@@ -826,8 +944,7 @@ export interface PbContext
         SecurityContext,
         TenancyContext,
         FileManagerContext,
-        PrerenderingServiceClientContext,
-        ACOContext {
+        PrerenderingServiceClientContext {
     pageBuilder: PageBuilderContextObject;
 }
 

@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import { useQuery } from "@apollo/react-hooks";
-import Render from "./Render";
+import { PageRenderer } from "./PageRenderer";
 import {
     GET_SETTINGS,
     GET_PUBLISHED_PAGE,
@@ -30,7 +30,7 @@ const trimPath = (value: string) => {
 const notFoundInitialPath = trimPath(location.pathname);
 
 /**
- * This component will fetch the published page's data and pass it to the `Render` function. Note that if the
+ * This component will fetch the published page's data and pass it to the `PageRenderer` component. Note that, if the
  * `preview` query parameter is present, we're getting the page directly by its ID, instead of the URL.
  * The `preview` search parameter is set, for example, when previewing pages from Page Builder's editor / Admin app.
  */
@@ -75,5 +75,10 @@ export const Page: React.FC = () => {
         getSettingsQuery.data?.pageBuilder?.getSettings?.data || ({} as SettingsQueryResponseData);
 
     // Let's render the page.
-    return <Render page={page} error={error} settings={settings} />;
+    return (
+        <>
+            {page ? <ps-tag data-key={"pb-page"} data-value={page.id} /> : null}
+            <PageRenderer page={page} error={error} settings={settings} />
+        </>
+    );
 };

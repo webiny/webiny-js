@@ -151,7 +151,7 @@ describe("Content model locked fields", () => {
      * Removed in 5.33.0 because users can now remove fields whenever they want to.
      */
     it.skip("should allow deleting fields when no entries are present", async () => {
-        const { createCategory, deleteCategory, listCategories, until } = useCategoryManageHandler({
+        const { createCategory, deleteCategory } = useCategoryManageHandler({
             ...manageOpts
         });
 
@@ -179,14 +179,6 @@ describe("Content model locked fields", () => {
                 return response.data.createCategory.data;
             });
         });
-
-        await until(
-            () => listCategories().then(([data]) => data),
-            ({ data }: any) => data.listCategories.data.length === categories.length,
-            {
-                name: "after create categories"
-            }
-        );
 
         const fields = model.fields.filter(field => {
             return field.storageId !== slugField.storageId;
@@ -231,14 +223,6 @@ describe("Content model locked fields", () => {
             });
         });
         expect(deleteResults).toEqual(categories.map(() => true));
-
-        await until(
-            () => listCategories().then(([data]) => data),
-            ({ data }: any) => data.listCategories.data.length === 0,
-            {
-                name: "after delete categories"
-            }
-        );
 
         const [updateModelSuccessResponse] = await updateContentModelMutation({
             modelId: model.modelId,
