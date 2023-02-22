@@ -16,7 +16,6 @@ import { getBaseFieldType } from "~/utils/getBaseFieldType";
 import { CmsGraphQLSchemaSorterPlugin } from "~/plugins";
 import { buildSchemaPlugins } from "~/graphql/buildSchemaPlugins";
 import { createExecutableSchema } from "~/graphql/createExecutableSchema";
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
 
 const defaultTitleFieldId = "id";
 
@@ -157,6 +156,7 @@ interface ValidateFieldsParams {
     originalFields: CmsModelField[];
     lockedFields: LockedField[];
 }
+
 const validateFields = (params: ValidateFieldsParams) => {
     const { plugins, fields, originalFields, lockedFields } = params;
 
@@ -270,22 +270,23 @@ const validateFields = (params: ValidateFieldsParams) => {
         });
     }
 };
+
 interface CreateGraphQLSchemaParams {
     context: CmsContext;
     model: CmsModel;
 }
+
 const createGraphQLSchema = async (params: CreateGraphQLSchemaParams): Promise<any> => {
     const { context, model } = params;
 
-    const modelPlugins = await buildSchemaPlugins({
-        context,
-        models: [model]
-    });
+    context.security.disableAuthorization();
+    const models = await context.cms.listModels();
+    context.security.enableAuthorization();
 
-    const plugins = context.plugins.byType<GraphQLSchemaPlugin<CmsContext>>(
-        GraphQLSchemaPlugin.type
-    );
-    plugins.push(...modelPlugins);
+    const plugins = await buildSchemaPlugins({
+        context,
+        models: models.concat([model])
+    });
 
     return createExecutableSchema({
         plugins
@@ -307,6 +308,7 @@ interface ValidateModelFieldsParams {
     original?: CmsModel;
     context: CmsContext;
 }
+
 export const validateModelFields = async (params: ValidateModelFieldsParams): Promise<void> => {
     const { model, original, context } = params;
     const { titleFieldId } = model;
