@@ -16,6 +16,8 @@ import { getBaseFieldType } from "~/utils/getBaseFieldType";
 import { CmsGraphQLSchemaSorterPlugin } from "~/plugins";
 import { buildSchemaPlugins } from "~/graphql/buildSchemaPlugins";
 import { createExecutableSchema } from "~/graphql/createExecutableSchema";
+import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
+import { generateAlphaNumericId } from "@webiny/utils";
 
 const defaultTitleFieldId = "id";
 
@@ -156,7 +158,6 @@ interface ValidateFieldsParams {
     originalFields: CmsModelField[];
     lockedFields: LockedField[];
 }
-
 const validateFields = (params: ValidateFieldsParams) => {
     const { plugins, fields, originalFields, lockedFields } = params;
 
@@ -270,12 +271,10 @@ const validateFields = (params: ValidateFieldsParams) => {
         });
     }
 };
-
 interface CreateGraphQLSchemaParams {
     context: CmsContext;
     model: CmsModel;
 }
-
 const createGraphQLSchema = async (params: CreateGraphQLSchemaParams): Promise<any> => {
     const { context, model } = params;
 
@@ -283,13 +282,25 @@ const createGraphQLSchema = async (params: CreateGraphQLSchemaParams): Promise<a
     const models = await context.cms.listModels();
     context.security.enableAuthorization();
 
-    const plugins = await buildSchemaPlugins({
+    const modelPlugins = await buildSchemaPlugins({
         context,
         models: models.concat([model])
     });
 
+    const plugins = context.plugins
+        .byType<GraphQLSchemaPlugin<CmsContext>>(GraphQLSchemaPlugin.type)
+        .reduce<Record<string, GraphQLSchemaPlugin<CmsContext>>>((collection, plugin) => {
+            const name = plugin.name || `${plugin.type}-${generateAlphaNumericId(16)}`;
+            collection[name] = plugin;
+            return collection;
+        }, {});
+    for (const plugin of modelPlugins) {
+        const name = plugin.name || `${plugin.type}-${generateAlphaNumericId(16)}`;
+        plugins[name] = plugin;
+    }
+
     return createExecutableSchema({
-        plugins
+        plugins: Object.values(plugins)
     });
 };
 
@@ -308,7 +319,6 @@ interface ValidateModelFieldsParams {
     original?: CmsModel;
     context: CmsContext;
 }
-
 export const validateModelFields = async (params: ValidateModelFieldsParams): Promise<void> => {
     const { model, original, context } = params;
     const { titleFieldId } = model;
