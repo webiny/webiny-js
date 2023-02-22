@@ -88,9 +88,9 @@ export interface PageElementsContextValue extends PageElementsProviderProps {
     setStylesCallback: SetStylesCallback;
 }
 
-type GetElement = <TElementData = Record<string, any>>() => Element<TElementData>;
-type GetAttributes = () => HTMLAttributes<HTMLElement>;
-type GetLoader = <TLoaderData = Record<string, any>>() => { data: TLoaderData; loading: boolean };
+export type GetElement = <TElementData = Record<string, any>>() => Element<TElementData>;
+export type GetAttributes = () => HTMLAttributes<HTMLElement>;
+export type GetLoader = <TLoaderData = Record<string, any>>() => { data: TLoaderData; loading: boolean };
 
 export interface RendererContextValue extends PageElementsContextValue {
     getElement: GetElement;
@@ -160,5 +160,11 @@ declare global {
                 "data-value": string;
             };
         }
+    }
+}
+
+declare global {
+    interface Window {
+        __PE_LOADER_DATA_CACHE__?: Record<string, Record<string, any>>;
     }
 }

@@ -1,6 +1,6 @@
 import React, { createContext } from "react";
 import { usePageElements } from "~/hooks/usePageElements";
-import { RendererContextValue, RendererProviderProps } from "~/types";
+import { RendererContextValue, GetElement, GetLoader, RendererProviderProps } from "~/types";
 
 export const RendererContext = createContext<RendererContextValue>(null as unknown as any);
 
@@ -11,19 +11,20 @@ export const RendererProvider: React.FC<RendererProviderProps> = ({
     loader,
     meta
 }) => {
-    const getElement = () => element;
+    const getElement = (() => element) as GetElement;
     const getAttributes = () => attributes;
-    const getLoader = () => loader;
+    const getLoader = (() => loader) as GetLoader;
 
     const pageElements = usePageElements();
 
-    // @ts-ignore Resolve the `getElement` issue.
     const value: RendererContextValue = {
         ...pageElements,
         getElement,
         getAttributes,
         getLoader,
-        meta
+        meta,
+        beforeRenderer: pageElements.beforeRenderer || null,
+        afterRenderer: pageElements.afterRenderer || null
     };
 
     return <RendererContext.Provider value={value}>{children}</RendererContext.Provider>;

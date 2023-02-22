@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { request } from "graphql-request";
 import { createRenderer, useRenderer } from "@webiny/app-page-builder-elements";
+import {withApollo, WithApolloClient} from "@apollo/react-hoc";
 
 // For simplicity, we're hard-coding the GraphQL HTTP API URL here.
 const GQL_API_URL = "https://spacex-production.up.railway.app/";
@@ -45,9 +46,11 @@ export interface SpaceXElementData {
     };
 }
 
+export type Props = WithApolloClient<{kobajica: number}>
 // The renderer React component.
-export const SpaceX = createRenderer(
-    () => {
+
+export const SpaceX = withApollo(createRenderer<Props>(
+    (props) => {
         // Let's retrieve the variables that were chosen by
         // the user upon dropping the page element onto the page.
         const { getLoader } = useRenderer();
@@ -81,7 +84,7 @@ export const SpaceX = createRenderer(
         );
     },
     {
-        loader: ({ getElement, graphql }) => {
+        loader: ({ getElement, props }) => {
             const element = getElement<SpaceXElementData>();
             const { limit, offset, type } = element.data.variables;
 
@@ -91,4 +94,4 @@ export const SpaceX = createRenderer(
             }).then(response => response.data);
         }
     }
-);
+));

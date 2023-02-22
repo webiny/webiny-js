@@ -4,6 +4,7 @@ import { Renderer, Element, RendererLoader } from "~/types";
 import { Theme, StylesObject } from "@webiny/theme/types";
 import { RendererProvider } from "~/contexts/Renderer";
 import { CSSObject, ClassNames } from "@emotion/core";
+import { createObjectHash } from "~/utils";
 
 type GetElement = <TElementData = Record<string, any>>() => Element<TElementData>;
 
@@ -12,11 +13,16 @@ interface GetStylesParams {
     element: Element;
 }
 
+interface RendererOptionsLoaderParams<TRenderComponentProps> {
+    getElement: GetElement;
+    props: TRenderComponentProps
+}
+
 export type CreateRendererOptions<TRenderComponentProps> = Partial<{
     propsAreEqual: (prevProps: TRenderComponentProps, nextProps: TRenderComponentProps) => boolean;
     themeStyles: StylesObject | ((params: GetStylesParams) => StylesObject);
     baseStyles: StylesObject | ((params: GetStylesParams) => StylesObject);
-    loader: (params: { getElement: GetElement }) => Promise<any>;
+    loader: (params: RendererOptionsLoaderParams<TRenderComponentProps>) => Promise<any>;
 }>;
 
 const DEFAULT_RENDERER_STYLES: StylesObject = {
@@ -35,9 +41,13 @@ function useLoaderCachedData<TRenderComponentProps>(
     }
 
     return useMemo<null | Awaited<ReturnType<typeof options.loader>>>(() => {
-        const selector = `pe-loader-data-cache[data-key="${element.id}"]`;
-        console.log("selector", selector);
-        const cachedResultElement = document.querySelector(selector);
+        const elementDataHash = createObjectHash(element.data);
+        const elementCacheKey = `${element.id}-${elementDataHash}`;
+
+        const cachedResultElement =
+            localStorage[`pe_loader_data_cache_${elementCacheKey}`] ||
+            window?.__PE_LOADER_DATA_CACHE__?.[elementCacheKey] ||
+            document.querySelector(`pe-loader-data-cache[data-key="${elementCacheKey}"]`);
 
         if (!cachedResultElement) {
             return null;
@@ -89,20 +99,31 @@ export function createRenderer<TRenderComponentProps = {}>(
                 : { data: null, loading: Boolean(options.loader), cacheHit: false }
         );
 
+        const elementDataHash = createObjectHash(element.data);
+
         useEffect(() => {
             if (!options.loader || loaderCachedData) {
                 return;
             }
-            `pe-loader-data-cache[data-key="${element.id}"]`;
-            options.loader({ getElement: () => element }).then(data => {
+
+            const loaderParams: RendererOptionsLoaderParams<TRenderComponentProps> = {
+                getElement: (() => element) as GetElement,
+                props
+            };
+
+            options.loader(loaderParams).then(data => {
                 const html = `<pe-loader-data-cache data-key="${
                     element.id
-                }" data-value='${JSON.stringify(data)}'></pe-loader-data-cache>`;
+                }-${elementDataHash}" data-value='${JSON.stringify(data)}'></pe-loader-data-cache>`;
                 document.body.insertAdjacentHTML("beforeend", html);
 
                 setLoader({ ...loader, data, loading: false });
             });
-        }, []);
+
+            return () => {
+                // TODO: clean all stored caches.
+            };
+        }, [elementDataHash]);
 
         const attributes = getElementAttributes(element);
 

@@ -62,6 +62,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@apollo/react-hoc@npm:^3.0.0":
+  version: 3.1.5
+  resolution: "@apollo/react-hoc@npm:3.1.5"
+  dependencies:
+    "@apollo/react-common": ^3.1.4
+    "@apollo/react-components": ^3.1.5
+    hoist-non-react-statics: ^3.3.0
+    ts-invariant: ^0.4.4
+    tslib: ^1.10.0
+  peerDependencies:
+    "@types/react": ^16.8.0
+    apollo-client: ^2.6.4
+    graphql: ^14.3.1
+    react: ^16.8.0
+    react-dom: ^16.8.0
+  checksum: b54af496548b333c367e776a3257696a85c1f9af7e636ff703c6700fc3e9ac8ea201a891ade3acc143c84a56f9ae78fc4c316219cc563bb0f8254ac1054e95ec
+  languageName: node
+  linkType: hard
+
 "@apollo/react-hooks@npm:^3.1.5":
   version: 3.1.5
   resolution: "@apollo/react-hooks@npm:3.1.5"
@@ -39452,6 +39471,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "theme@workspace:apps/theme"
   dependencies:
+    "@apollo/react-hoc": ^3.0.0
     "@apollo/react-hooks": ^3.1.5
     "@emotion/core": ^10.0.17
     "@emotion/styled": ^10.0.17
