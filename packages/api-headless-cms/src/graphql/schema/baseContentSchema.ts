@@ -77,7 +77,7 @@ export const createBaseContentSchema = ({ context }: Params): CmsGraphQLSchemaPl
             }
         }
     });
-    plugin.name = `headless-cms.graphql.schema.base`;
+    plugin.name = `headless-cms.graphql.schema.baseContentSchema`;
 
     return plugin;
 };
