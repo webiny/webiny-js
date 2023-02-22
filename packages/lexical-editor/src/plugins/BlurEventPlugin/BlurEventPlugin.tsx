@@ -1,10 +1,10 @@
 import { FC, useEffect } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { BLUR_COMMAND, COMMAND_PRIORITY_LOW } from "lexical";
-import { EditorStateJSONString } from "~/types";
+import { LexicalValue } from "~/types";
 
 interface BlurEventPlugin {
-    onBlur?: (editorState: EditorStateJSONString) => void;
+    onBlur?: (editorState: LexicalValue) => void;
 }
 
 export const BlurEventPlugin: FC<BlurEventPlugin> = ({ onBlur }) => {

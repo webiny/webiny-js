@@ -1,15 +1,13 @@
 import { isValidJSON } from "~/utils/isValidJSON";
 import { has } from "lodash";
-import { SerializedEditorState } from "lexical";
+import { LexicalValue } from "~/types";
 /*
  * @description Checks for valid lexical data.
  *
  * Check for first level of properties that empty editor state data need to have.
- * Note: Base empty editor state data can getEmptyEditorStateJSONString utility function.
+ * @see generateInitialLexicalValue
  */
-export const isValidLexicalData = (
-    editorStateValue: string | null | undefined | SerializedEditorState
-): boolean => {
+export const isValidLexicalData = (editorStateValue: LexicalValue | null): boolean => {
     if (!editorStateValue) {
         return false;
     }

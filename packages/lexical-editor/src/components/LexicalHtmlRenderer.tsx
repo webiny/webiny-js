@@ -1,7 +1,7 @@
 import React from "react";
-import { EditorStateJSONString } from "~/types";
+import { LexicalValue } from "~/types";
 import { isValidLexicalData } from "~/utils/isValidLexicalData";
-import { getEmptyEditorStateJSONString } from "~/utils/getEmptyEditorStateJSONString";
+import { generateInitialLexicalValue } from "~/utils/generateInitialLexicalValue";
 import { WebinyNodes } from "~/nodes/webinyNodes";
 import { theme } from "~/themes/webinyLexicalTheme";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
@@ -13,12 +13,12 @@ import { Klass, LexicalNode } from "lexical";
 
 interface LexicalHtmlRendererProps {
     nodes?: Klass<LexicalNode>[];
-    value: EditorStateJSONString | null;
+    value: LexicalValue | null;
 }
 
 export const LexicalHtmlRenderer: React.FC<LexicalHtmlRendererProps> = ({ nodes, value }) => {
     const initialConfig = {
-        editorState: isValidLexicalData(value) ? value : getEmptyEditorStateJSONString(),
+        editorState: isValidLexicalData(value) ? value : generateInitialLexicalValue(),
         namespace: "webiny",
         onError: (error: Error) => {
             throw error;

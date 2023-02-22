@@ -1,11 +1,11 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import React, { FC, useEffect } from "react";
 import { isValidLexicalData } from "~/utils/isValidLexicalData";
-import { getEmptyEditorStateJSONString } from "~/utils/getEmptyEditorStateJSONString";
-import { EditorStateJSONString } from "~/types";
+import { generateInitialLexicalValue } from "~/utils/generateInitialLexicalValue";
+import { LexicalValue } from "~/types";
 
 interface LexicalUpdateStatePlugin {
-    value: EditorStateJSONString | undefined | null;
+    value: LexicalValue | null;
     readOnly?: boolean;
 }
 
@@ -24,7 +24,9 @@ export const LexicalUpdateStatePlugin: FC<LexicalUpdateStatePlugin> = ({
             }
 
             const initialEditorState = editor.parseEditorState(
-                isValidLexicalData(value) ? value : getEmptyEditorStateJSONString()
+                isValidLexicalData(value)
+                    ? (value as string)
+                    : (generateInitialLexicalValue() as string)
             );
             editor.setEditorState(initialEditorState);
         }

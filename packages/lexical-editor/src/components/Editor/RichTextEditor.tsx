@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
-import { EditorStateJSONString } from "~/types";
+import { LexicalValue } from "~/types";
 import { Placeholder } from "~/ui/Placeholder";
-import { getEmptyEditorStateJSONString } from "~/utils/getEmptyEditorStateJSONString";
+import { generateInitialLexicalValue } from "~/utils/generateInitialLexicalValue";
 import { WebinyNodes } from "~/nodes/webinyNodes";
 import { theme } from "~/themes/webinyLexicalTheme";
 import { EditorState } from "lexical/LexicalEditorState";
@@ -22,22 +22,20 @@ import { BlurEventPlugin } from "~/plugins/BlurEventPlugin/BlurEventPlugin";
 export interface RichTextEditorProps {
     toolbar: React.ReactNode;
     tag: string;
-    onChange?: (json: EditorStateJSONString) => void;
-    initValue: EditorStateJSONString | null;
-    value?: EditorStateJSONString | null;
+    onChange?: (json: LexicalValue) => void;
+    value: LexicalValue | null;
     placeholder?: string;
     nodes?: Klass<LexicalNode>[];
     /**
      * @description Lexical plugins
      */
     children?: React.ReactNode | React.ReactNode[];
-    onBlur?: (editorState: EditorStateJSONString) => void;
+    onBlur?: (editorState: LexicalValue) => void;
 }
 
 const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
     toolbar,
     onChange,
-    initValue,
     value,
     nodes,
     placeholder,
@@ -57,7 +55,7 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
     };
 
     const initialConfig = {
-        editorState: isValidLexicalData(initValue) ? initValue : getEmptyEditorStateJSONString(),
+        editorState: isValidLexicalData(value) ? value : generateInitialLexicalValue(),
         namespace: "webiny",
         onError: (error: Error) => {
             throw error;
@@ -80,7 +78,7 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
             <div ref={scrollRef}>
                 {/* data */}
                 <OnChangePlugin onChange={handleOnChange} />
-                {initValue && <LexicalUpdateStatePlugin value={initValue} />}
+                {value && <LexicalUpdateStatePlugin value={value} />}
                 <ClearEditorPlugin />
                 {/* Events */}
                 {onBlur && <BlurEventPlugin onBlur={onBlur} />}

@@ -1,36 +1,22 @@
 import React from "react";
 import { HeadingEditor, ParagraphEditor } from "@webiny/lexical-editor";
-import { EditorStateJSONString } from "@webiny/lexical-editor/types";
+import { LexicalValue } from "@webiny/lexical-editor/types";
 import { isHeadingTag } from "~/utils/isHeadingTag";
 import { isParagraphTag } from "~/utils/isParagraphTag";
 
 interface LexicalEditorProps {
     tag: string | [string, Record<string, any>];
-    initValue: EditorStateJSONString | null;
-    value?: EditorStateJSONString | null;
-    onChange?: (json: EditorStateJSONString) => void;
-    onBlur?: (editorState: EditorStateJSONString) => void;
+    value: LexicalValue;
+    onChange?: (value: LexicalValue) => void;
+    onBlur?: (editorState: LexicalValue) => void;
 }
 
-export const LexicalEditor: React.FC<LexicalEditorProps> = ({
-    tag,
-    initValue,
-    value,
-    onChange,
-    ...rest
-}) => {
+export const LexicalEditor: React.FC<LexicalEditorProps> = ({ tag, value, onChange, ...rest }) => {
     return (
         <>
-            {isHeadingTag(tag) && (
-                <HeadingEditor initValue={initValue} value={value} onChange={onChange} {...rest} />
-            )}
+            {isHeadingTag(tag) && <HeadingEditor value={value} onChange={onChange} {...rest} />}
             {isParagraphTag(tag) ? (
-                <ParagraphEditor
-                    initValue={initValue}
-                    value={value}
-                    onChange={onChange}
-                    {...rest}
-                />
+                <ParagraphEditor value={value} onChange={onChange} {...rest} />
             ) : null}
         </>
     );

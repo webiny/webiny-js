@@ -1,9 +1,9 @@
-import { EditorStateJSONString } from "~/types";
+import { LexicalValue } from "~/types";
 
 /**
  * @description Basic JSON data string that will initialize the editor.
  */
-export const getEmptyEditorStateJSONString = (): EditorStateJSONString => {
+export const generateInitialLexicalValue = (): LexicalValue => {
     return JSON.stringify({
         root: {
             children: [

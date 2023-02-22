@@ -6,15 +6,14 @@ import { FloatingLinkEditorPlugin } from "~/plugins/FloatingLinkEditorPlugin/Flo
 import { ClickableLinkPlugin } from "~/plugins/ClickableLinkPlugin/ClickableLinkPlugin";
 import { ParagraphToolbar } from "~/components/Toolbar/ParagraphToolbar";
 import { RichTextEditor } from "~/components/Editor/RichTextEditor";
-import { EditorStateJSONString } from "~/types";
+import { LexicalValue } from "~/types";
 
 interface ParagraphLexicalEditorProps {
-    initValue: EditorStateJSONString | null;
-    value?: EditorStateJSONString | null;
-    onChange?: (json: EditorStateJSONString) => void;
+    value: LexicalValue;
+    onChange?: (value: LexicalValue) => void;
     tag?: "p";
     placeholder?: string;
-    onBlur?: (editorState: EditorStateJSONString) => void;
+    onBlur?: (value: LexicalValue) => void;
 }
 
 const ParagraphEditor: React.FC<ParagraphLexicalEditorProps> = ({ placeholder, tag, ...rest }) => {

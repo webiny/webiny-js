@@ -65,7 +65,7 @@ export const PeText = makeComposable<TextElementProps>(
         return (
             <DelayedOnChange value={textContent} onChange={onChange}>
                 {({ value, onChange }) => (
-                    <LexicalEditor tag={tag} initValue={value} onChange={onChange} />
+                    <LexicalEditor tag={tag} value={value} onChange={onChange} />
                 )}
             </DelayedOnChange>
         );

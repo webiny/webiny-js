@@ -2,8 +2,7 @@
   "name": "@webiny/lexical-editor-pb-element",
   "version": "0.0.0",
   "dependencies": {
-    "@emotion/react": "^11.10.6",
-    "@emotion/styled": "^11.10.6",
+    "@emotion/styled": "^10.0.27",
     "@material-design-icons/svg": "^0.14.2",
     "@webiny/app-admin": "0.0.0",
     "@webiny/app-page-builder": "0.0.0",
