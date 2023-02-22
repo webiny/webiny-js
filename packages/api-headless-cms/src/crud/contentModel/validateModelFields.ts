@@ -394,14 +394,6 @@ export const validateModelFields = async (params: ValidateModelFieldsParams): Pr
          */
         if (!existingField) {
             continue;
-            // throw new WebinyError(
-            //     `Cannot remove the field "${lockedField.fieldId}" because it's already in use in created content.`,
-            //     "ENTRY_FIELD_USED",
-            //     {
-            //         lockedField,
-            //         fields
-            //     }
-            // );
         }
 
         if (lockedField.multipleValues !== existingField.multipleValues) {
