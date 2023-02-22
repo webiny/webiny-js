@@ -116,40 +116,31 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/auth@npm:^4.0.2, @aws-amplify/auth@npm:^4.3.10":
-  version: 4.6.16
-  resolution: "@aws-amplify/auth@npm:4.6.16"
+"@aws-amplify/auth@npm:^5.1.9":
+  version: 5.1.9
+  resolution: "@aws-amplify/auth@npm:5.1.9"
   dependencies:
-    "@aws-amplify/cache": 4.0.65
-    "@aws-amplify/core": 4.7.14
-    amazon-cognito-identity-js: 5.2.14
-    crypto-js: ^4.1.1
-  checksum: db2706fdd16831d6e68a98371544c0dd7e41d0db229437c29230c994a069a282ff70bed8cc862110265f958feaefb6e022528e9d356c270d60ba2f22050d1096
+    "@aws-amplify/core": 5.0.15
+    amazon-cognito-identity-js: 6.1.2
+    tslib: ^1.8.0
+  checksum: d9f477e827a13f9e244b6d1fffa43f645fbbcc1a1d95512827e76da96ecd4dbfdc44fa3cfece2c223a86731aaf2a61b15470504a43a3b094ccd23993a0b5ebcb
   languageName: node
   linkType: hard
 
-"@aws-amplify/cache@npm:4.0.65":
-  version: 4.0.65
-  resolution: "@aws-amplify/cache@npm:4.0.65"
+"@aws-amplify/core@npm:5.0.15":
+  version: 5.0.15
+  resolution: "@aws-amplify/core@npm:5.0.15"
   dependencies:
-    "@aws-amplify/core": 4.7.14
-  checksum: 1292a68e6bc167461ecf2ab78f5c81c1f1fc4db6091532a14a58a3f0700af314c549aeecbaa0141688e29a990394380f8412fe125e418f19869d2aa5823fd199
-  languageName: node
-  linkType: hard
-
-"@aws-amplify/core@npm:4.7.14":
-  version: 4.7.14
-  resolution: "@aws-amplify/core@npm:4.7.14"
-  dependencies:
-    "@aws-crypto/sha256-js": 1.0.0-alpha.0
+    "@aws-crypto/sha256-js": 1.2.2
     "@aws-sdk/client-cloudwatch-logs": 3.6.1
     "@aws-sdk/client-cognito-identity": 3.6.1
     "@aws-sdk/credential-provider-cognito-identity": 3.6.1
     "@aws-sdk/types": 3.6.1
     "@aws-sdk/util-hex-encoding": 3.6.1
+    tslib: ^1.8.0
     universal-cookie: ^4.0.4
     zen-observable-ts: 0.8.19
-  checksum: f48339ef1c748c0381b98e6fe8a41b7ae2b59bd642f3935325a81bfb09d5c536cfcfbe8ccfc490fe25a2d8d31dd2dc3d5ffe23cd45d598f2e4dbfcae6a87d009
+  checksum: effbe44decabb9da49e229bc3a2282c6a6edad31dda3e3da03bf5ebe201e0bea94c9871b71b3ca9ac84da01da7aca237579276980a61cd909f07b022967c98f3
   languageName: node
   linkType: hard
 
@@ -227,14 +218,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-crypto/sha256-js@npm:1.0.0-alpha.0":
-  version: 1.0.0-alpha.0
-  resolution: "@aws-crypto/sha256-js@npm:1.0.0-alpha.0"
+"@aws-crypto/sha256-js@npm:1.2.2, @aws-crypto/sha256-js@npm:^1.0.0, @aws-crypto/sha256-js@npm:^1.2.2":
+  version: 1.2.2
+  resolution: "@aws-crypto/sha256-js@npm:1.2.2"
   dependencies:
-    "@aws-sdk/types": ^1.0.0-alpha.0
-    "@aws-sdk/util-utf8-browser": ^1.0.0-alpha.0
-    tslib: ^1.9.3
-  checksum: 89430e9b26c4faae90d0dc0086ac68302cea9d5698341f86278ac1194f394fca92c3aec6858523a9fa1b06db921273c91431a70265339fef268a76eccb189b80
+    "@aws-crypto/util": ^1.2.2
+    "@aws-sdk/types": ^3.1.0
+    tslib: ^1.11.1
+  checksum: b6aeb71f88ecc219c5473803345bb15150ecd056a337582638dd60fb2344e0ff63908c684ef55268b249290fe0776e8e6fc830605f0aad850ff325b9cfe0dc6a
   languageName: node
   linkType: hard
 
@@ -257,17 +248,6 @@ __metadata:
     "@aws-sdk/types": ^3.222.0
     tslib: ^1.11.1
   checksum: 644ded32ea310237811afae873d3c7320739cb6f6cc39dced9c94801379e68e5ee2cca0c34f0384793fa9e750a7e0a5e2468f95754bd08e6fd72ab833c8fe23c
-  languageName: node
-  linkType: hard
-
-"@aws-crypto/sha256-js@npm:^1.0.0, @aws-crypto/sha256-js@npm:^1.2.2":
-  version: 1.2.2
-  resolution: "@aws-crypto/sha256-js@npm:1.2.2"
-  dependencies:
-    "@aws-crypto/util": ^1.2.2
-    "@aws-sdk/types": ^3.1.0
-    tslib: ^1.11.1
-  checksum: b6aeb71f88ecc219c5473803345bb15150ecd056a337582638dd60fb2344e0ff63908c684ef55268b249290fe0776e8e6fc830605f0aad850ff325b9cfe0dc6a
   languageName: node
   linkType: hard
 
@@ -1849,13 +1829,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/types@npm:^1.0.0-alpha.0":
-  version: 1.0.0-rc.10
-  resolution: "@aws-sdk/types@npm:1.0.0-rc.10"
-  checksum: 46e5ce8937a3abac4dfbff91a8aee980631ec847373b32635f2e1541849ae724ee736ab5a3d8a259352099b7851a71d72c63231b2fcb85b7742bcd1ae59c299b
-  languageName: node
-  linkType: hard
-
 "@aws-sdk/types@npm:^3.110.0":
   version: 3.272.0
   resolution: "@aws-sdk/types@npm:3.272.0"
@@ -2290,15 +2263,6 @@ __metadata:
   dependencies:
     tslib: ^1.8.0
   checksum: a06728b6e68d772677eb92ac2d990005b048d18d2d5fb76f9226d9d28b47ac4de4a34d8515ae8e28c46000aa93e28056578133eb91ac2a0d0718f6fd212108d7
-  languageName: node
-  linkType: hard
-
-"@aws-sdk/util-utf8-browser@npm:^1.0.0-alpha.0":
-  version: 1.0.0-rc.8
-  resolution: "@aws-sdk/util-utf8-browser@npm:1.0.0-rc.8"
-  dependencies:
-    tslib: ^1.8.0
-  checksum: f9208591a58a8b8a3286385de28cf473e2f95b71ddd62a397bbbfbc3b7cc4d55263bade99b842986f3693258254983b477abd22c0a9099fe4e88a7d9e99b0aa6
   languageName: node
   linkType: hard
 
@@ -12551,7 +12515,7 @@ __metadata:
   resolution: "@webiny/app-admin-cognito@workspace:packages/app-admin-cognito"
   dependencies:
     "@apollo/react-hooks": ^3.1.5
-    "@aws-amplify/auth": ^4.3.10
+    "@aws-amplify/auth": ^5.1.9
     "@babel/cli": ^7.19.3
     "@babel/core": ^7.19.3
     "@babel/plugin-proposal-class-properties": ^7.16.0
@@ -12832,7 +12796,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/app-cognito-authenticator@workspace:packages/app-cognito-authenticator"
   dependencies:
-    "@aws-amplify/auth": ^4.0.2
+    "@aws-amplify/auth": ^5.1.9
     "@babel/cli": ^7.19.3
     "@babel/core": ^7.19.3
     "@babel/plugin-proposal-class-properties": ^7.18.6
@@ -15662,16 +15626,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"amazon-cognito-identity-js@npm:5.2.14":
-  version: 5.2.14
-  resolution: "amazon-cognito-identity-js@npm:5.2.14"
+"amazon-cognito-identity-js@npm:6.1.2":
+  version: 6.1.2
+  resolution: "amazon-cognito-identity-js@npm:6.1.2"
   dependencies:
+    "@aws-crypto/sha256-js": 1.2.2
     buffer: 4.9.2
-    crypto-js: ^4.1.1
     fast-base64-decode: ^1.0.0
     isomorphic-unfetch: ^3.0.0
     js-cookie: ^2.2.1
-  checksum: 490a2fa2a4477cfefa3fdde300f617f374047346ccbf67bcec1f3708fbc5421288e12995b40b91f48fe2e9ce7fb7841b1b953cf20068cca584d9a7588ed6b978
+  checksum: 6a79e5adca08884b6def7d27bee3003449a86139ddef1c0864a76887898e032951f9fa77f1e78e8cf57f45ff0b9c10fe14a5277b51026d14de26604bf0aea7f8
   languageName: node
   linkType: hard
 
