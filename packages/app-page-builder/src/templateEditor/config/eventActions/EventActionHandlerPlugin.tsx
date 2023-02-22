@@ -6,7 +6,7 @@ import {
     GetCallableState
 } from "~/editor/contexts/EventActionHandlerProvider";
 import { TemplateEditorEventActionCallableState } from "~/templateEditor/types";
-import { TemplateAtomType } from "~/templateEditor/state";
+import { PageTemplate } from "~/templateEditor/state";
 import { useTemplate } from "~/templateEditor/hooks/useTemplate";
 import { PbElement, PbEditorElement } from "~/types";
 
@@ -16,7 +16,7 @@ export const EventActionHandlerPlugin = createComponentPlugin(
     EventActionHandlerProvider as ComposableFC<ProviderProps>,
     Component => {
         return function PbEventActionHandlerProvider(props) {
-            const templateAtomValueRef = useRef<TemplateAtomType>();
+            const templateAtomValueRef = useRef<PageTemplate>();
             const [templateAtomValue, setTemplateAtomValue] = useTemplate();
 
             useEffect(() => {
@@ -77,7 +77,7 @@ export const EventActionHandlerPlugin = createComponentPlugin(
                 const callableState = next(state);
 
                 return {
-                    template: templateAtomValueRef.current as TemplateAtomType,
+                    template: templateAtomValueRef.current as PageTemplate,
                     ...callableState
                 };
             };

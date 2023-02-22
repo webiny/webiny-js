@@ -29,10 +29,7 @@ export const renderWebsite = {
                             Source: "webiny-cli",
                             EventBusName: coreOutput["eventBusArn"],
                             DetailType: "RenderPages",
-                            Detail: JSON.stringify({
-                                path: "*",
-                                tenant: "root"
-                            })
+                            Detail: JSON.stringify({ path: "*", tenant: "*" })
                         }
                     ]
                 })

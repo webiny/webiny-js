@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import styled from "@emotion/styled";
 import InputField from "./SimpleUI/InputField";
 import { ReactComponent as SearchIcon } from "../assets/icons/search-24px.svg";
@@ -41,15 +41,31 @@ const SearchWrapper = styled("div")({
 export interface SearchProps {
     value: string;
     onChange: (value: string) => void;
+    onEnter?: () => any;
     inputPlaceholder?: string;
 }
-const Search: React.FC<SearchProps> = ({ value, onChange, inputPlaceholder = "Search..." }) => {
+const Search: React.FC<SearchProps> = ({
+    value,
+    onChange,
+    onEnter,
+    inputPlaceholder = "Search..."
+}) => {
+    const inputOnKeyDown = useCallback(
+        e => {
+            if (typeof onEnter === "function" && e.key === "Enter") {
+                onEnter();
+            }
+        },
+        [onEnter]
+    );
+
     return (
         <SearchWrapper data-testid={"default-data-list.search"}>
             <div className="search__icon">
                 <SearchIcon />
             </div>
             <InputField
+                onKeyDown={inputOnKeyDown}
                 className="search__input"
                 placeholder={inputPlaceholder}
                 value={value}

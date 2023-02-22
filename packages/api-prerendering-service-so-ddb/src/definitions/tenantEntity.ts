@@ -1,17 +1,14 @@
 import { Entity, Table } from "dynamodb-toolbox";
-import { Attributes } from "~/types";
 
 interface Params {
     table: Table;
     entityName: string;
-    attributes: Attributes;
 }
 
-export const createPageTemplateEntity = (params: Params): Entity<any> => {
-    const { entityName, attributes, table } = params;
+export const createTenantEntity = ({ entityName, table }: Params): Entity<any> => {
     return new Entity({
-        name: entityName,
         table,
+        name: entityName,
         attributes: {
             PK: {
                 partitionKey: true
@@ -28,10 +25,9 @@ export const createPageTemplateEntity = (params: Params): Entity<any> => {
             TYPE: {
                 type: "string"
             },
-            data: {
-                type: "map"
-            },
-            ...(attributes || {})
+            id: {
+                type: "string"
+            }
         }
     });
 };

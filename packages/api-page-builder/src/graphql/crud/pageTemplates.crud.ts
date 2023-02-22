@@ -4,6 +4,7 @@
 // @ts-ignore
 import mdbid from "mdbid";
 import zod from "zod";
+import uniqid from "uniqid";
 
 import {
     OnPageTemplateAfterCreateTopicParams,
@@ -18,7 +19,10 @@ import {
     PageTemplateInput,
     PageTemplatesCrud,
     PageTemplateStorageOperationsListParams,
-    PbContext
+    PageBlockVariable,
+    PbContext,
+    Page,
+    PageContentWithTemplate
 } from "~/types";
 import checkBasePermissions from "./utils/checkBasePermissions";
 import checkOwnPermissions from "./utils/checkOwnPermissions";
@@ -28,19 +32,32 @@ import { createTopic } from "@webiny/pubsub";
 
 const createSchema = zod.object({
     title: zod.string().max(100),
-    description: zod.string().max(100).optional(),
+    slug: zod.string().max(100),
+    tags: zod.string().array(),
+    description: zod.string().max(100),
     layout: zod.string().max(100).optional(),
     content: zod.any()
 });
 
 const updateSchema = zod.object({
     title: zod.string().max(100).optional(),
+    slug: zod.string().max(100).optional(),
+    tags: zod.string().array().optional(),
     description: zod.string().max(100).optional(),
     layout: zod.string().max(100).optional(),
     content: zod.any()
 });
 
 const PERMISSION_NAME = "pb.template";
+
+const getDefaultContent = () => {
+    return {
+        id: uniqid.time(),
+        type: "document",
+        data: {},
+        elements: []
+    };
+};
 
 export interface CreatePageTemplatesCrudParams {
     context: PbContext;
@@ -71,23 +88,16 @@ export const createPageTemplatesCrud = (
         onPageTemplateBeforeDelete,
         onPageTemplateAfterDelete,
 
-        async getPageTemplate(id) {
+        async getPageTemplate({ where }) {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "r"
             });
 
-            if (id === "") {
-                throw new WebinyError(
-                    "Could not load page template by empty id.",
-                    "GET_PAGE_TEMPLATE_ERROR"
-                );
-            }
-
             const params = {
                 where: {
+                    ...where,
                     tenant: getTenantId(),
-                    locale: getLocaleCode(),
-                    id
+                    locale: getLocaleCode()
                 }
             };
 
@@ -153,16 +163,16 @@ export const createPageTemplatesCrud = (
         async createPageTemplate(this: PageBuilderContextObject, input: PageTemplateInput) {
             await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
 
-            const id: string = mdbid();
             const identity = context.security.getIdentity();
 
             const data = await createSchema.parseAsync(input);
 
             const pageTemplate: PageTemplate = {
                 ...data,
+                content: data.content || getDefaultContent(),
                 tenant: getTenantId(),
                 locale: getLocaleCode(),
-                id,
+                id: input.id || mdbid(),
                 createdOn: new Date().toISOString(),
                 savedOn: new Date().toISOString(),
                 createdBy: {
@@ -200,7 +210,7 @@ export const createPageTemplatesCrud = (
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "w"
             });
-            const original = await this.getPageTemplate(id);
+            const original = await this.getPageTemplate({ where: { id } });
             if (!original) {
                 throw new NotFoundError(`Page template "${id}" not found.`);
             }
@@ -244,14 +254,14 @@ export const createPageTemplatesCrud = (
             }
         },
 
-        async deletePageTemplate(this: PageBuilderContextObject, slug) {
+        async deletePageTemplate(this: PageBuilderContextObject, id) {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "d"
             });
 
-            const pageTemplate = await this.getPageTemplate(slug);
+            const pageTemplate = await this.getPageTemplate({ where: { id } });
             if (!pageTemplate) {
-                throw new NotFoundError(`Page template "${slug}" not found.`);
+                throw new NotFoundError(`Page template "${id}" not found.`);
             }
 
             const identity = context.security.getIdentity();
@@ -280,56 +290,64 @@ export const createPageTemplatesCrud = (
             }
         },
 
-        async resolvePageTemplate(
-            this: PageBuilderContextObject,
-            content: Record<string, any> | null
-        ) {
-            const templateId = content?.data?.templateId;
+        async resolvePageTemplate(this: PageBuilderContextObject, content) {
+            const { slug } = content.data.template;
+            const blocks = [];
 
-            const templateData = await storageOperations.pageTemplates.get({
+            const template = await storageOperations.pageTemplates.get({
                 where: {
+                    slug,
                     tenant: getTenantId(),
-                    locale: getLocaleCode(),
-                    id: templateId
+                    locale: getLocaleCode()
                 }
             });
 
-            const templateVariablesData = templateData?.content?.data?.templateVariables || [];
-            const pageVariablesData = content?.data?.templateVariables || [];
-            const blocks = [];
+            if (template) {
+                // Take blocks from template, and assign the appropriate variable values to them.
+                const templateContent = template.content as PageContentWithTemplate;
+                const templateBlocks = templateContent.elements || [];
 
-            for (const pageBlock of templateData?.content?.elements) {
-                const blockVariablesFromTemplate =
-                    templateVariablesData.find(
-                        (templateVariables: Record<string, any> | null) =>
-                            templateVariables?.blockId === pageBlock.data?.templateBlockId
-                    )?.variables || [];
+                // Template-level variables.
+                const templateVars = templateContent.data.template.variables || [];
 
-                const blockVariablesFromPage =
-                    pageVariablesData.find(
-                        (templateVariables: Record<string, any> | null) =>
-                            templateVariables?.blockId === pageBlock.data?.templateBlockId
-                    )?.variables || [];
+                // Page-level variables.
+                const pageVars = content.data.template.variables || [];
 
-                // If block is linked, then we take variables set on page
-                // Else we take variables set in templates editor, but values for them from page
-                if (pageBlock.data?.blockId) {
-                    blocks.push({
-                        ...pageBlock,
-                        data: { ...pageBlock.data, variables: blockVariablesFromPage }
-                    });
-                } else {
+                for (const pageBlock of templateBlocks) {
+                    // Find page-level variables for current page block.
+                    const pageBlockVars =
+                        pageVars.find(pageVar => {
+                            return pageVar.blockId === pageBlock.data?.templateBlockId;
+                        })?.variables || [];
+
+                    // If block is linked, then we use variables set on the page itself.
+                    if (pageBlock.data?.blockId) {
+                        blocks.push({
+                            ...pageBlock,
+                            data: { ...pageBlock.data, variables: pageBlockVars }
+                        });
+
+                        continue;
+                    }
+
+                    // Otherwise, we use variable definitions set on the template, but assign values set on the page.
                     const variables = [];
 
-                    for (const templateVariable of blockVariablesFromTemplate) {
-                        const valueFromPage = blockVariablesFromPage.find(
-                            (variableFromPage: Record<string, any> | null) =>
-                                variableFromPage?.id === templateVariable.id
-                        )?.value;
+                    // Find template-level variables for current page block.
+                    const templateBlockVars: PageBlockVariable[] =
+                        templateVars.find(templateVar => {
+                            return templateVar.blockId === pageBlock.data?.templateBlockId;
+                        })?.variables || [];
+
+                    for (const templateVariable of templateBlockVars) {
+                        const { value } =
+                            pageBlockVars.find(
+                                pageVariable => pageVariable.id === templateVariable.id
+                            ) || {};
 
                         variables.push({
                             ...templateVariable,
-                            value: valueFromPage || templateVariable.value
+                            value: value || templateVariable.value
                         });
                     }
 
@@ -341,6 +359,44 @@ export const createPageTemplatesCrud = (
             }
 
             return await context.pageBuilder.resolvePageBlocks({ ...content, elements: blocks });
+        },
+        async createPageFromTemplate({ id, slug, category, path, meta }) {
+            const template = await this.getPageTemplate({ where: { id, slug } });
+            if (!template) {
+                throw new NotFoundError(`Page template "${id || slug}" was not found!`);
+            }
+            const page = await context.pageBuilder.createPage(category, meta);
+            this.copyTemplateDataToPage(template, page);
+
+            await context.pageBuilder.updatePage(page.id, {
+                content: page.content,
+                settings: page.settings,
+                path: path || page.path
+            });
+
+            return page;
+        },
+        copyTemplateDataToPage(template: PageTemplate, page: Page) {
+            const content = {
+                ...template.content,
+                data: {
+                    ...template.content.data,
+                    template: {
+                        ...template.content.data.template,
+                        slug: template.slug
+                    }
+                },
+                elements: []
+            };
+
+            const settings = {
+                general: {
+                    ...page.settings.general,
+                    layout: template.layout
+                }
+            };
+
+            Object.assign(page, { content, settings });
         }
     };
 };
