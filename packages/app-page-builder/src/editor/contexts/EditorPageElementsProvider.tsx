@@ -10,7 +10,7 @@ import { initializeAos } from "@webiny/app-page-builder-elements/modifiers/attri
 // Styles modifiers.
 import { createBackground } from "@webiny/app-page-builder-elements/modifiers/styles/background";
 import { createBorder } from "@webiny/app-page-builder-elements/modifiers/styles/border";
-import { createGridFlexWrap } from "@webiny/app-page-builder-elements/modifiers/styles/gridFlexWrap";
+import { createGridSettings } from "@webiny/app-page-builder-elements/modifiers/styles/gridSettings";
 import { createHeight } from "@webiny/app-page-builder-elements/modifiers/styles/height";
 import { createHorizontalAlign } from "@webiny/app-page-builder-elements/modifiers/styles/horizontalAlign";
 import { createMargin } from "@webiny/app-page-builder-elements/modifiers/styles/margin";
@@ -52,7 +52,7 @@ export const EditorPageElementsProvider: React.FC = ({ children }) => {
             animationZIndexFix: createAnimationZIndexFix(),
             background: createBackground(),
             border: createBorder(),
-            gridFlexWrap: createGridFlexWrap(),
+            gridSettings: createGridSettings(),
             height: createHeight(),
             horizontalAlign: createHorizontalAlign(),
             margin: createMargin(),

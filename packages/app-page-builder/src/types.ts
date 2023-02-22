@@ -153,6 +153,12 @@ export interface PbElementDataSettingsType {
     border?: PbElementDataSettingsBorderType;
     grid?: {
         cellsType?: string;
+        columnGap?: {
+            [key in DisplayMode]?: {
+                value: number;
+            };
+        };
+        rowCount?: number;
         size?: number;
     };
     columnWidth?: {

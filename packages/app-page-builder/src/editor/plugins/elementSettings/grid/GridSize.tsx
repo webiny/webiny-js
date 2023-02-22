@@ -2,8 +2,11 @@ import React from "react";
 import { css } from "emotion";
 import styled from "@emotion/styled";
 import { useRecoilValue } from "recoil";
+import set from "lodash/set";
+import merge from "lodash/merge";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import {
+    DisplayMode,
     PbEditorGridPresetPluginType,
     PbEditorPageElementSettingsRenderComponentProps,
     PbEditorElement
@@ -14,7 +17,7 @@ import { calculatePresetPluginCells, getPresetPlugins } from "../../../plugins/g
 import { UpdateElementActionEvent } from "../../../recoil/actions";
 import { activeElementAtom, elementWithChildrenByIdSelector } from "../../../recoil/modules";
 // Components
-import CellSize from "./CellSize";
+import CounterInput from "./CounterInput";
 import { ContentWrapper } from "../components/StyledComponents";
 import Accordion from "../components/Accordion";
 
@@ -80,9 +83,10 @@ const resizeCells = (elements: PbEditorElement[], cells: number[]): PbEditorElem
 
 const updateChildrenWithPreset = (
     target: PbEditorElement,
-    pl: PbEditorGridPresetPluginType
+    pl: PbEditorGridPresetPluginType,
+    rowCount?: number
 ): PbEditorElement[] => {
-    const cells = calculatePresetPluginCells(pl);
+    const cells = [...Array(rowCount || 1)].map(() => calculatePresetPluginCells(pl)).flat();
     const total = target.elements.length;
     const max = cells.length;
     if (total === max) {
@@ -103,6 +107,7 @@ export const GridSize: React.FC<PbEditorPageElementSettingsRenderComponentProps>
         elementWithChildrenByIdSelector(activeElementId)
     ) as unknown as PbEditorElement;
     const currentCellsType = element.data.settings?.grid?.cellsType;
+    const currentRowCount = element.data.settings?.grid?.rowCount || 1;
     const presetPlugins = getPresetPlugins();
 
     const onInputSizeChange = (value: number, index: number) => {
@@ -119,6 +124,7 @@ export const GridSize: React.FC<PbEditorPageElementSettingsRenderComponentProps>
                         settings: {
                             ...(cellElement.data.settings || {}),
                             grid: {
+                                ...(cellElement.data.settings?.grid || {}),
                                 size: value
                             }
                         }
@@ -143,11 +149,12 @@ export const GridSize: React.FC<PbEditorPageElementSettingsRenderComponentProps>
                         settings: {
                             ...(element.data.settings || {}),
                             grid: {
+                                ...(element.data.settings?.grid || {}),
                                 cellsType
                             }
                         }
                     },
-                    elements: updateChildrenWithPreset(element, pl) as any
+                    elements: updateChildrenWithPreset(element, pl, currentRowCount) as any
                 },
                 history: true
             })
@@ -156,6 +163,33 @@ export const GridSize: React.FC<PbEditorPageElementSettingsRenderComponentProps>
     const totalCellsUsed = element.elements.reduce((total, cell) => {
         return total + ((cell as PbEditorElement).data.settings?.grid?.size || 1);
     }, 0);
+
+    const onRowsChange = (rowCount: number) => {
+        const newElement = merge(
+            {},
+            element,
+            set({}, "data.settings.grid.rowCount", rowCount),
+            set({}, `data.settings.gridSettings.${DisplayMode.DESKTOP}.flexDirection`, "column"),
+            set({}, `data.settings.gridSettings.${DisplayMode.TABLET}.flexDirection`, "column"),
+            set({}, `data.settings.verticalAlign.${DisplayMode.DESKTOP}`, "stretch"),
+            set({}, `data.settings.verticalAlign.${DisplayMode.TABLET}`, "stretch")
+        );
+        handler.trigger(
+            new UpdateElementActionEvent({
+                element: {
+                    ...newElement,
+                    elements: updateChildrenWithPreset(
+                        newElement,
+                        presetPlugins.find(
+                            plugin => plugin.cellsType === currentCellsType
+                        ) as PbEditorGridPresetPluginType,
+                        rowCount
+                    ) as any
+                },
+                history: true
+            })
+        );
+    };
 
     return (
         <Accordion title={"Grid Size"} defaultValue={defaultAccordionValue}>
@@ -177,15 +211,32 @@ export const GridSize: React.FC<PbEditorPageElementSettingsRenderComponentProps>
                 </Grid>
 
                 <Grid className={classes.grid}>
+                    <Cell span={12}>
+                        <CounterInput
+                            value={element.data.settings?.grid?.rowCount || 1}
+                            label={"Row count"}
+                            minErrorMessage={"Grid can't have less rows than this."}
+                            maxErrorMessage={"Grid can't have more rows than this."}
+                            onChange={value => {
+                                onRowsChange(value);
+                            }}
+                            maxAllowed={12}
+                        />
+                    </Cell>
+                </Grid>
+
+                <Grid className={classes.grid}>
                     {element.elements.map((cell, index) => {
                         const size = (cell as PbEditorElement).data.settings?.grid?.size || 1;
                         return (
                             <Cell span={12} key={`cell-size-${index}`}>
-                                <CellSize
+                                <CounterInput
                                     value={size}
                                     label={`Cell ${index + 1}`}
+                                    minErrorMessage={"Cell can't get smaller than this."}
+                                    maxErrorMessage={"Cell can't get bigger than this."}
                                     onChange={value => onInputSizeChange(value, index)}
-                                    maxAllowed={12 - totalCellsUsed}
+                                    maxAllowed={12 - totalCellsUsed / currentRowCount}
                                 />
                             </Cell>
                         );

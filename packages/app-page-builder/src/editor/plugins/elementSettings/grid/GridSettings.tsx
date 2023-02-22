@@ -12,6 +12,7 @@ import { applyFallbackDisplayMode } from "~/editor/plugins/elementSettings/eleme
 // Components
 import Wrapper from "~/editor/plugins/elementSettings/components/Wrapper";
 import SelectField from "~/editor/plugins/elementSettings/components/SelectField";
+import InputField from "~/editor/plugins/elementSettings/components/InputField";
 import {
     ContentWrapper,
     classes
@@ -31,6 +32,8 @@ export const GridSettings: React.FC<PbEditorPageElementSettingsRenderComponentPr
     const updateElement = useUpdateElement();
     const flexDirectionPropName = `${DATA_NAMESPACE}.${displayMode}.flexDirection`;
     const verticalAlignPropName = `data.settings.verticalAlign.${displayMode}`;
+    const columnGapPropName = `${DATA_NAMESPACE}.${displayMode}.columnGap`;
+    const rowGapPropName = `${DATA_NAMESPACE}.${displayMode}.rowGap`;
 
     const flexDirectionFallbackValue = useMemo(() => {
         const value = applyFallbackDisplayMode(displayMode, mode =>
@@ -81,6 +84,36 @@ export const GridSettings: React.FC<PbEditorPageElementSettingsRenderComponentPr
             element,
             set({}, verticalAlignPropName, value === "auto" ? "flex-start" : "stretch")
         );
+        updateElement(newElement);
+    };
+
+    const columnGapFallbackValue = useMemo(
+        () =>
+            applyFallbackDisplayMode(displayMode, mode =>
+                get(element, `data.settings.gridSettings.${mode}.columnGap`)
+            ),
+        [displayMode]
+    );
+
+    const columnGap = get(element, columnGapPropName, columnGapFallbackValue || "");
+
+    const onColumnGapChange = (value: string) => {
+        const newElement = merge({}, element, set({}, columnGapPropName, value));
+        updateElement(newElement);
+    };
+
+    const rowGapFallbackValue = useMemo(
+        () =>
+            applyFallbackDisplayMode(displayMode, mode =>
+                get(element, `data.settings.gridSettings.${mode}.rowGap`)
+            ),
+        [displayMode]
+    );
+
+    const rowGap = get(element, rowGapPropName, rowGapFallbackValue || "");
+
+    const onRowGapChange = (value: string) => {
+        const newElement = merge({}, element, set({}, rowGapPropName, value));
         updateElement(newElement);
     };
 
@@ -135,6 +168,22 @@ export const GridSettings: React.FC<PbEditorPageElementSettingsRenderComponentPr
                         <option value="auto">Match content size</option>
                         <option value="full-height">Match grid height</option>
                     </SelectField>
+                </Wrapper>
+                <Wrapper
+                    containerClassName={classes.simpleGrid}
+                    label={"Column gap"}
+                    leftCellSpan={8}
+                    rightCellSpan={4}
+                >
+                    <InputField placeholder={"px"} value={columnGap} onChange={onColumnGapChange} />
+                </Wrapper>
+                <Wrapper
+                    containerClassName={classes.simpleGrid}
+                    label={"Row gap"}
+                    leftCellSpan={8}
+                    rightCellSpan={4}
+                >
+                    <InputField placeholder={"px"} value={rowGap} onChange={onRowGapChange} />
                 </Wrapper>
             </ContentWrapper>
         </Accordion>

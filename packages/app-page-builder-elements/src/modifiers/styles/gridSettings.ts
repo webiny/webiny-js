@@ -1,6 +1,6 @@
 import { ElementStylesModifier } from "~/types";
 
-const gridFlexWrap: ElementStylesModifier = ({ element, theme }) => {
+const gridSettings: ElementStylesModifier = ({ element, theme }) => {
     // This modifier can only be applied to Grid page element renderer.
     if (element.type !== "grid") {
         return null;
@@ -16,11 +16,28 @@ const gridFlexWrap: ElementStylesModifier = ({ element, theme }) => {
             return returnStyles;
         }
 
+        const columns = element.data?.settings?.grid?.cellsType?.split("-")?.length || 1;
         const value = { ...gridSettings[breakpointName] };
+
+        if (value.columnGap) {
+            value["--cellWidthOffset"] = `${value.columnGap - value.columnGap / columns}px`;
+            value.columnGap = `${value.columnGap}px`;
+        } else {
+            value["--cellWidthOffset"] = "0px";
+        }
+
+        if (value.rowGap) {
+            value.rowGap = `${value.rowGap}px`;
+        }
+
         // If we have flex direction set to "column" or "column-reverse",
         // we also want to apply 100% width to direct `pb-cell` elements.
-        if (value.flexDirection !== "row") {
-            value["> pb-cell"] = { width: "100%" };
+        if (
+            value.flexDirection &&
+            value.flexDirection !== "row" &&
+            element.data?.settings?.verticalAlign?.[breakpointName] !== "stretch"
+        ) {
+            value["& > pb-cell"] = { width: "100% !important" };
         }
 
         return {
@@ -30,4 +47,4 @@ const gridFlexWrap: ElementStylesModifier = ({ element, theme }) => {
     }, {});
 };
 
-export const createGridFlexWrap = () => gridFlexWrap;
+export const createGridSettings = () => gridSettings;

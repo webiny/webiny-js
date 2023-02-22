@@ -39,6 +39,14 @@ const verticalAlign: ElementStylesModifier = ({ element, theme }) => {
                 }
 
                 return newStyles;
+            } else {
+                return {
+                    ...returnStyles,
+                    [breakpointName]: {
+                        alignItems: verticalAlign[breakpointName],
+                        flexFlow: "unset"
+                    }
+                };
             }
         }
 

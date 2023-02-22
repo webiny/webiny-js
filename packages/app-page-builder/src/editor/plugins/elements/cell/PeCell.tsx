@@ -88,7 +88,7 @@ const PeCell = createRenderer(
                 return styles;
             }
 
-            styles.width = `${(size / 12) * 100}%`;
+            styles.width = `calc(${(size / 12) * 100}% - var(--cellWidthOffset, 0px))`;
             return styles;
         }
     }
