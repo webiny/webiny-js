@@ -14698,7 +14698,6 @@ __metadata:
   dependencies:
     "@emotion/styled": ^10.0.27
     "@material-design-icons/svg": ^0.14.2
-    "@webiny/app-admin": 0.0.0
     "@webiny/app-page-builder": 0.0.0
     "@webiny/app-page-builder-elements": 0.0.0
     "@webiny/cli": 0.0.0

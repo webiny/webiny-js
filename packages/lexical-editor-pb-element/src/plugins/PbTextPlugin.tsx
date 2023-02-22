@@ -1,5 +1,4 @@
 import React, { useMemo } from "react";
-import { PbText as LexicalPbText } from "~/components/PbText";
 import { createComponentPlugin } from "@webiny/react-composition";
 import get from "lodash/get";
 import { applyFallbackDisplayMode } from "@webiny/app-page-builder/editor/plugins/elementSettings/elementSettingsUtils";
@@ -8,6 +7,7 @@ import { useDisplayMode } from "@webiny/app-page-builder/editor/hooks/useDisplay
 import { isValidLexicalData } from "@webiny/lexical-editor";
 import { useElementVariableValue } from "@webiny/app-page-builder/editor/hooks/useElementVariableValue";
 import PbText from "@webiny/app-page-builder/editor/components/Text/PbText";
+import { LexicalText } from "~/components/LexicalText";
 
 const DATA_NAMESPACE = "data.text";
 export const PbTextPlugin = createComponentPlugin(PbText, Original => {
@@ -33,7 +33,7 @@ export const PbTextPlugin = createComponentPlugin(PbText, Original => {
         const content = variableValue || element.data?.text?.data?.text;
 
         return isValidLexicalData(content) ? (
-            <LexicalPbText elementId={elementId} tag={tag} />
+            <LexicalText elementId={elementId} tag={tag} />
         ) : (
             <Original
                 elementId={elementId}
