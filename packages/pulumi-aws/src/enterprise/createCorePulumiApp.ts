@@ -60,6 +60,12 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
                     });
                 }
 
+                if (!useExistingVpc.lambdaFunctionsVpcConfig) {
+                    throw new Error(
+                        "Cannot specify `useExistingVpc` parameter because the `lambdaFunctionsVpcConfig` parameter wasn't provided."
+                    );
+                }
+
                 onResource(resource => {
                     if (isResourceOfType(resource, aws.lambda.Function)) {
                         resource.config.vpcConfig(useExistingVpc!.lambdaFunctionsVpcConfig);
