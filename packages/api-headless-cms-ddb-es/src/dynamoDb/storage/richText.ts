@@ -48,21 +48,10 @@ export const createRichTextStorageTransformPlugin = () => {
              * This is to circumvent a bug introduced with 5.8.0 storage operations.
              * Do not remove.
              */
-            if (storageValue.hasOwnProperty("compression") === false) {
+            if (!storageValue["compression"]) {
                 return storageValue;
             }
             const { compression, value } = storageValue;
-            if (!compression) {
-                throw new WebinyError(
-                    `Missing compression in "fromStorage" function in field "${
-                        field.storageId
-                    }": ${JSON.stringify(storageValue)}.`,
-                    "MISSING_COMPRESSION",
-                    {
-                        value: storageValue
-                    }
-                );
-            }
             if (compression !== "jsonpack") {
                 throw new WebinyError(
                     `This plugin cannot transform something not packed with "jsonpack".`,
@@ -71,6 +60,12 @@ export const createRichTextStorageTransformPlugin = () => {
                         compression
                     }
                 );
+            }
+            /**
+             * No point in going further if no value.
+             */
+            if (!value) {
+                return null;
             }
             try {
                 return jsonpack.unpack(value);
@@ -88,7 +83,7 @@ export const createRichTextStorageTransformPlugin = () => {
              * There is a possibility that we are trying to compress already compressed value.
              * Introduced a bug with 5.8.0 storage operations, so just return the value to correct it.
              */
-            if (value && value.hasOwnProperty("compression") === true) {
+            if (!!value?.compression) {
                 return value as any;
             }
             value = transformArray(value);
