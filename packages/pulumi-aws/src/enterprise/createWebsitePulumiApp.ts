@@ -32,7 +32,7 @@ export function createWebsitePulumiApp(projectAppParams: CreateWebsitePulumiAppP
                 return pulumi?.(...args);
             }
 
-            const [{ onResource }] = args;
+            const [{ onResource, addResource }] = args;
             const { useExistingVpc } = vpc;
 
             // 1. We first deal with "existing VPC" setup.
@@ -50,13 +50,13 @@ export function createWebsitePulumiApp(projectAppParams: CreateWebsitePulumiAppP
 
                     if (isResourceOfType(resource, aws.iam.Role)) {
                         if (resource.meta.isLambdaFunctionRole) {
-                            new aws.iam.RolePolicyAttachment(
-                                `${resource.name}-vpc-access-execution-role`,
-                                {
+                            addResource(aws.iam.RolePolicyAttachment, {
+                                name: `${resource.name}-vpc-access-execution-role`,
+                                config: {
                                     role: resource.output.name,
                                     policyArn: aws.iam.ManagedPolicy.AWSLambdaVPCAccessExecutionRole
                                 }
-                            );
+                            });
                         }
                     }
                 });
