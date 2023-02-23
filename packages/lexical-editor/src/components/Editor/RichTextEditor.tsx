@@ -18,12 +18,14 @@ import { RichTextEditorProvider } from "~/context/RichTextEditorContext";
 import { isValidLexicalData } from "~/utils/isValidLexicalData";
 import { LexicalUpdateStatePlugin } from "~/plugins/LexicalUpdateStatePlugin";
 import { BlurEventPlugin } from "~/plugins/BlurEventPlugin/BlurEventPlugin";
+// import {FocusPlugin} from "~/plugins/FocusPlugin/FocusPlugin";
 
 export interface RichTextEditorProps {
-    toolbar: React.ReactNode;
-    tag: string;
+    toolbar?: React.ReactNode;
+    tag?: string;
     onChange?: (json: LexicalValue) => void;
     value: LexicalValue | null;
+    focus?: boolean;
     placeholder?: string;
     nodes?: Klass<LexicalNode>[];
     /**
@@ -40,7 +42,8 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
     nodes,
     placeholder,
     children,
-    onBlur
+    onBlur,
+    focus
 }: RichTextEditorProps) => {
     const placeholderElem = <Placeholder>{placeholder || "Enter text..."}</Placeholder>;
     const scrollRef = useRef(null);
@@ -82,7 +85,7 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
                 <ClearEditorPlugin />
                 {/* Events */}
                 {onBlur && <BlurEventPlugin onBlur={onBlur} />}
-                <AutoFocusPlugin />
+                {focus && <AutoFocusPlugin />}
                 {/* External plugins and components */}
                 {children}
                 <RichTextPlugin
