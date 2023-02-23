@@ -73,13 +73,13 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
 
                     if (isResourceOfType(resource, aws.iam.Role)) {
                         if (resource.meta.isLambdaFunctionRole) {
-                            new aws.iam.RolePolicyAttachment(
-                                `${resource.name}-vpc-access-execution-role`,
-                                {
+                            addResource(aws.iam.RolePolicyAttachment, {
+                                name: `${resource.name}-vpc-access-execution-role`,
+                                config: {
                                     role: resource.output.name,
                                     policyArn: aws.iam.ManagedPolicy.AWSLambdaVPCAccessExecutionRole
                                 }
-                            );
+                            });
                         }
                     }
                 });
