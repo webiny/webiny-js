@@ -57,31 +57,32 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
                                 useExistingVpc!.elasticSearchDomainVpcConfig
                             );
                         }
-
-                        if (isResourceOfType(resource, aws.lambda.Function)) {
-                            resource.config.vpcConfig(useExistingVpc!.lambdaFunctionsVpcConfig);
-                        }
-
-                        if (isResourceOfType(resource, aws.iam.Role)) {
-                            if (resource.meta.isLambdaFunctionRole) {
-                                new aws.iam.RolePolicyAttachment(
-                                    `${resource.name}-vpc-access-execution-role`,
-                                    {
-                                        role: resource.output.name,
-                                        policyArn:
-                                            aws.iam.ManagedPolicy.AWSLambdaVPCAccessExecutionRole
-                                    }
-                                );
-                            }
-                        }
                     });
                 }
+
+                onResource(resource => {
+                    if (isResourceOfType(resource, aws.lambda.Function)) {
+                        resource.config.vpcConfig(useExistingVpc!.lambdaFunctionsVpcConfig);
+                    }
+
+                    if (isResourceOfType(resource, aws.iam.Role)) {
+                        if (resource.meta.isLambdaFunctionRole) {
+                            new aws.iam.RolePolicyAttachment(
+                                `${resource.name}-vpc-access-execution-role`,
+                                {
+                                    role: resource.output.name,
+                                    policyArn: aws.iam.ManagedPolicy.AWSLambdaVPCAccessExecutionRole
+                                }
+                            );
+                        }
+                    }
+                });
 
                 return pulumi?.(...args);
             }
 
+            // 2. Now we deal with "non-existing VPC" setup.
             if (useVpcEndpoints) {
-                // 2. Now we deal with "non-existing VPC" setup.
                 onResource(resource => {
                     if (isResourceOfType(resource, aws.ec2.Vpc)) {
                         resource.config.enableDnsSupport(true);
