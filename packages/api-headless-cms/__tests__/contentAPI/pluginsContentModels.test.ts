@@ -307,6 +307,7 @@ describe("content model plugins", () => {
                             ],
                             group: {
                                 id: "ecommerce",
+                                slug: "e-commerce",
                                 name: "E-Commerce"
                             },
                             layout: [["name"], ["sku", "price"]],
@@ -380,6 +381,7 @@ describe("content model plugins", () => {
                                 ],
                                 group: {
                                     id: "ecommerce",
+                                    slug: "e-commerce",
                                     name: "E-Commerce"
                                 },
                                 layout: [["name"], ["sku", "price"]],

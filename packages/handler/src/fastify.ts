@@ -32,8 +32,8 @@ const getDefaultHeaders = (routes: DefinedContextRoutes): Record<string, string>
     /**
      * If we are accepting all headers, just output that one.
      */
-    const keys = Object.keys(routes);
-    const all = keys.every(key => routes[key as HTTPMethods].length > 0);
+    const keys = Object.keys(routes) as HTTPMethods[];
+    const all = keys.every(key => routes[key].length > 0);
     if (all) {
         return {
             ...DEFAULT_HEADERS,
@@ -43,8 +43,7 @@ const getDefaultHeaders = (routes: DefinedContextRoutes): Record<string, string>
     return {
         ...DEFAULT_HEADERS,
         "Access-Control-Allow-Methods": keys
-            .filter(key => {
-                const type = key as unknown as HTTPMethods;
+            .filter(type => {
                 if (!routes[type] || Array.isArray(routes[type]) === false) {
                     return false;
                 }
@@ -53,6 +52,19 @@ const getDefaultHeaders = (routes: DefinedContextRoutes): Record<string, string>
             .sort()
             .join(",")
     };
+};
+
+const stringifyError = (error: Error) => {
+    const { name, message, code, stack, data } = error as any;
+    return JSON.stringify({
+        ...error,
+        constructorName: error.constructor?.name || "UnknownError",
+        name: name || "No error name",
+        message: message || "No error message",
+        code: code || "NO_CODE",
+        data,
+        stack: process.env.DEBUG === "true" ? stack : "Turn on the debug flag to see the stack."
+    });
 };
 
 const OPTIONS_HEADERS: Record<string, string> = {
@@ -91,13 +103,17 @@ export const createHandler = (params: CreateHandlerParams) => {
         options?: RouteMethodOptions
     ): void => {
         if (type === "ALL") {
-            const all = Object.keys(definedRoutes).some(key => {
+            const all = Object.keys(definedRoutes).find(key => {
                 const routes = definedRoutes[key as HTTPMethods];
                 return routes.includes(path);
             });
             if (!all) {
                 return;
             }
+            console.log(
+                `Error while registering onAll route. One of the routes is already defined.`
+            );
+            console.log(JSON.stringify(all));
             throw new WebinyError(
                 `You cannot override a route with onAll() method, please remove unnecessary route from the system.`,
                 "OVERRIDE_ROUTE_ERROR",
@@ -111,6 +127,7 @@ export const createHandler = (params: CreateHandlerParams) => {
         } else if (options?.override === true) {
             return;
         }
+        console.log(`Error while trying to override route: [${type}] ${path}`);
         throw new WebinyError(
             `When you are trying to override existing route, you must send "override" parameter when adding that route.`,
             "OVERRIDE_ROUTE_ERROR",
@@ -121,8 +138,7 @@ export const createHandler = (params: CreateHandlerParams) => {
         );
     };
 
-    const addDefinedRoute = (inputType: HTTPMethods, path: string): void => {
-        const type = (inputType as string).toUpperCase() as HTTPMethods;
+    const addDefinedRoute = (type: HTTPMethods, path: string): void => {
         if (!definedRoutes[type]) {
             return;
         } else if (definedRoutes[type].includes(path)) {
@@ -213,24 +229,32 @@ export const createHandler = (params: CreateHandlerParams) => {
             app.head(path, handler);
         }
     };
-    const context = new Context({
-        plugins: [
+    let context: Context;
+    try {
+        context = new Context({
+            plugins: [
+                /**
+                 * We must have handlerClient by default.
+                 * And it must be one of the first context plugins applied.
+                 */
+                createHandlerClient(),
+                ...(params.plugins || [])
+            ],
             /**
-             * We must have handlerClient by default.
-             * And it must be one of the first context plugins applied.
+             * Inserted via webpack on build time.
              */
-            createHandlerClient(),
-            ...(params.plugins || [])
-        ],
-        /**
-         * Inserted via webpack on build time.
-         */
-        WEBINY_VERSION: process.env.WEBINY_VERSION as string,
-        server: app,
-        routes
-    });
+            WEBINY_VERSION: process.env.WEBINY_VERSION as string,
+            server: app,
+            routes
+        });
+    } catch (ex) {
+        console.log(`Error while constructing the Context.`);
+        console.log(stringifyError(ex));
+        throw ex;
+    }
+
     /**
-     * We are attaching our custom context to webiny variable on the fastify app so it is accessible everywhere
+     * We are attaching our custom context to webiny variable on the fastify app, so it is accessible everywhere.
      */
     app.decorate("webiny", context);
 
@@ -246,11 +270,23 @@ export const createHandler = (params: CreateHandlerParams) => {
     /**
      * Add routes to the system.
      */
-    for (const plugin of routePlugins) {
-        plugin.cb({
-            ...app.webiny.routes,
-            context: app.webiny
-        });
+    let routePluginName: string | undefined;
+    try {
+        for (const plugin of routePlugins) {
+            routePluginName = plugin.name;
+            plugin.cb({
+                ...app.webiny.routes,
+                context: app.webiny
+            });
+        }
+    } catch (ex) {
+        console.log(
+            `Error while running the "RoutePlugin" ${
+                routePluginName ? `(${routePluginName})` : ""
+            } plugin in the beginning of the "createHandler" callable.`
+        );
+        console.log(stringifyError(ex));
+        throw ex;
     }
 
     /**
@@ -269,11 +305,24 @@ export const createHandler = (params: CreateHandlerParams) => {
         const plugins = app.webiny.plugins.byType<HandlerOnRequestPlugin>(
             HandlerOnRequestPlugin.type
         );
-        for (const plugin of plugins) {
-            const result = await plugin.exec(request, reply);
-            if (result === false) {
-                return;
+
+        let name: string | undefined;
+        try {
+            for (const plugin of plugins) {
+                name = plugin.name;
+                const result = await plugin.exec(request, reply);
+                if (result === false) {
+                    return;
+                }
             }
+        } catch (ex) {
+            console.log(
+                `Error while running the "HandlerOnRequestPlugin" ${
+                    name ? `(${name})` : ""
+                } plugin in the onRequest hook.`
+            );
+            console.log(stringifyError(ex));
+            throw ex;
         }
         /**
          * When we receive the OPTIONS request, we end it before it goes any further as there is no need for anything to run after this - at least for our use cases.
@@ -297,20 +346,32 @@ export const createHandler = (params: CreateHandlerParams) => {
             );
             return;
         }
-        const raw = reply.code(204).hijack().raw;
-        const headers = { ...defaultHeaders, ...OPTIONS_HEADERS };
-        for (const key in headers) {
-            raw.setHeader(key, headers[key]);
-        }
 
-        raw.end("");
+        reply
+            .headers({ ...defaultHeaders, ...OPTIONS_HEADERS })
+            .code(204)
+            .send("")
+            .hijack();
     });
 
-    app.addHook("preParsing", async request => {
+    app.addHook("preParsing", async (request, reply) => {
         app.webiny.request = request;
+        app.webiny.reply = reply;
         const plugins = app.webiny.plugins.byType<ContextPlugin>(ContextPlugin.type);
-        for (const plugin of plugins) {
-            await plugin.apply(app.webiny);
+        let name: string | undefined;
+        try {
+            for (const plugin of plugins) {
+                name = plugin.name;
+                await plugin.apply(app.webiny);
+            }
+        } catch (ex) {
+            console.log(
+                `Error while running the "ContextPlugin" ${
+                    name ? `(${name})` : ""
+                } plugin in the preParsing hook.`
+            );
+            console.log(stringifyError(ex));
+            throw ex;
         }
     });
     /**
@@ -318,8 +379,20 @@ export const createHandler = (params: CreateHandlerParams) => {
      */
     app.addHook("preHandler", async () => {
         const plugins = app.webiny.plugins.byType<BeforeHandlerPlugin>(BeforeHandlerPlugin.type);
-        for (const plugin of plugins) {
-            await plugin.apply(app.webiny);
+        let name: string | undefined;
+        try {
+            for (const plugin of plugins) {
+                name = plugin.name;
+                await plugin.apply(app.webiny);
+            }
+        } catch (ex) {
+            console.log(
+                `Error while running the "BeforeHandlerPlugin" ${
+                    name ? `(${name})` : ""
+                } plugin in the preHandler hook.`
+            );
+            console.log(stringifyError(ex));
+            throw ex;
         }
     });
 
@@ -328,8 +401,20 @@ export const createHandler = (params: CreateHandlerParams) => {
      */
     const preSerialization: preSerializationAsyncHookHandler<any> = async (_, __, payload) => {
         const plugins = app.webiny.plugins.byType<HandlerResultPlugin>(HandlerResultPlugin.type);
-        for (const plugin of plugins) {
-            await plugin.handle(app.webiny, payload);
+        let name: string | undefined;
+        try {
+            for (const plugin of plugins) {
+                name = plugin.name;
+                await plugin.handle(app.webiny, payload);
+            }
+        } catch (ex) {
+            console.log(
+                `Error while running the "HandlerResultPlugin" ${
+                    name ? `(${name})` : ""
+                } plugin in the preSerialization hook.`
+            );
+            console.log(stringifyError(ex));
+            throw ex;
         }
         return payload;
     };
@@ -342,11 +427,16 @@ export const createHandler = (params: CreateHandlerParams) => {
             .headers({
                 "Cache-Control": "no-store"
             })
-            .send({
-                message: error.message,
-                code: error.code,
-                data: error.data
-            });
+            .send(
+                /**
+                 * When we are sending the error in the response, we cannot send the whole error object, as it might contain some sensitive data.
+                 */
+                JSON.stringify({
+                    message: error.message,
+                    code: error.code,
+                    data: error.data
+                })
+            );
     });
 
     app.addHook("onError", async (_, reply, error: any) => {
@@ -355,14 +445,24 @@ export const createHandler = (params: CreateHandlerParams) => {
          * Log error to cloud, as these can be extremely annoying to debug!
          */
         console.log("@webiny/handler");
-        console.log(
-            JSON.stringify({
-                ...error,
-                message: error.message,
-                code: error.code,
-                data: error.data
+        console.log(stringifyError(error));
+
+        reply
+            .status(500)
+            .headers({
+                "Cache-Control": "no-store"
             })
-        );
+            .send(
+                /**
+                 * When we are sending the error in the response, we cannot send the whole error object, as it might contain some sensitive data.
+                 */
+                JSON.stringify({
+                    message: error.message,
+                    code: error.code,
+                    data: error.data
+                })
+            );
+
         const handler = middleware(
             plugins.map(pl => {
                 return (context: Context, error: Error, next: Function) => {
@@ -372,24 +472,28 @@ export const createHandler = (params: CreateHandlerParams) => {
         );
         await handler(app.webiny, error);
 
-        return reply
-            .send({
-                message: error.message,
-                code: error.code,
-                data: error.data
-            })
-            .headers({
-                "Cache-Control": "no-store"
-            })
-            .status(500);
+        return reply;
     });
 
     /**
      * With these plugins we give users possibility to do anything they want on our fastify instance.
      */
     const modifyPlugins = app.webiny.plugins.byType<ModifyFastifyPlugin>(ModifyFastifyPlugin.type);
-    for (const plugin of modifyPlugins) {
-        plugin.modify(app);
+
+    let modifyFastifyPluginName: string | undefined;
+    try {
+        for (const plugin of modifyPlugins) {
+            modifyFastifyPluginName = plugin.name;
+            plugin.modify(app);
+        }
+    } catch (ex) {
+        console.log(
+            `Error while running the "ModifyFastifyPlugin" ${
+                modifyFastifyPluginName ? `(${modifyFastifyPluginName})` : ""
+            } plugin in the end of the "createHandler" callable.`
+        );
+        console.log(stringifyError(ex));
+        throw ex;
     }
 
     return app;

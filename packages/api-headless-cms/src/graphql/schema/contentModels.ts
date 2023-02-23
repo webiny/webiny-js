@@ -3,8 +3,12 @@ import { CmsContext, CmsModel } from "~/types";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
 import { Resolvers } from "@webiny/handler-graphql/types";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";
+import { toSlug } from "~/utils/toSlug";
 
-export const createModelsSchema = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
+interface Params {
+    context: CmsContext;
+}
+export const createModelsSchema = ({ context }: Params): GraphQLSchemaPlugin<CmsContext> => {
     const resolvers: Resolvers<CmsContext> = {
         Query: {
             getContentModel: async (_: unknown, args: any, context) => {
@@ -38,6 +42,18 @@ export const createModelsSchema = (context: CmsContext): GraphQLSchemaPlugin<Cms
             }
         },
         CmsContentModel: {
+            group: async (model: CmsModel) => {
+                context.security.disableAuthorization();
+                const groups = await context.cms.listGroups();
+                context.security.enableAuthorization();
+
+                const group = groups.find(group => group.id === model.group.id);
+                return {
+                    ...model.group,
+                    slug: toSlug(model.group.name),
+                    ...(group || {})
+                };
+            },
             tags(model: CmsModel) {
                 // Make sure `tags` always contain a `type` tag, to differentiate between models.
                 const hasType = (model.tags || []).find(tag => tag.startsWith("type:"));
@@ -196,7 +212,7 @@ export const createModelsSchema = (context: CmsContext): GraphQLSchemaPlugin<Cms
         `;
     }
 
-    return new GraphQLSchemaPlugin<CmsContext>({
+    const plugin = new GraphQLSchemaPlugin<CmsContext>({
         typeDefs: /* GraphQL */ `
             type CmsFieldValidation {
                 name: String!
@@ -276,4 +292,7 @@ export const createModelsSchema = (context: CmsContext): GraphQLSchemaPlugin<Cms
         `,
         resolvers
     });
+
+    plugin.name = `headless-cms.graphql.schema.${context.cms.type}.models`;
+    return plugin;
 };

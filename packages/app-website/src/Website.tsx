@@ -1,19 +1,16 @@
 import React from "react";
-import { AddRoute, App, createProviderPlugin, Plugins } from "@webiny/app";
+import { App, AppProps, HigherOrderComponent } from "@webiny/app";
 import { ApolloProvider } from "@apollo/react-hooks";
 import { CacheProvider } from "@emotion/core";
 import { PageBuilderProvider } from "@webiny/app-page-builder/contexts/PageBuilder";
 import { Page } from "./Page";
 import { createApolloClient, createEmotionCache } from "~/utils";
-import { ThemeLoader } from "@webiny/app-theme-manager/components/ThemeLoader";
-import { ThemeSource } from "@webiny/app-theme-manager/types";
 
-interface Props {
+export interface WebsiteProps extends AppProps {
     apolloClient?: ReturnType<typeof createApolloClient>;
-    themes?: ThemeSource[];
 }
 
-const PageBuilderProviderPlugin = createProviderPlugin(PreviousProvider => {
+const PageBuilderProviderHOC: HigherOrderComponent = PreviousProvider => {
     return function PageBuilderProviderHOC({ children }) {
         return (
             <PageBuilderProvider>
@@ -21,38 +18,28 @@ const PageBuilderProviderPlugin = createProviderPlugin(PreviousProvider => {
             </PageBuilderProvider>
         );
     };
-});
-
-const createThemeLoaderPlugin = (themes: ThemeSource[]) => {
-    return createProviderPlugin(PreviousProvider => {
-        return function PageBuilderProviderHOC({ children }) {
-            if (themes.length > 0) {
-                return (
-                    <ThemeLoader themes={themes}>
-                        <PreviousProvider>{children}</PreviousProvider>
-                    </ThemeLoader>
-                );
-            }
-
-            return <PreviousProvider>{children}</PreviousProvider>;
-        };
-    });
 };
 
-export const Website: React.FC<Props> = ({ children, ...props }) => {
+export const Website: React.FC<WebsiteProps> = ({
+    children,
+    routes = [],
+    providers = [],
+    ...props
+}) => {
     const apolloClient = props.apolloClient || createApolloClient();
     const emotionCache = createEmotionCache();
-    const ThemeLoaderPlugin = createThemeLoaderPlugin(props.themes || []);
+
+    // In development, debounce render by 1ms, to avoid router warnings about missing routes.
+    const debounceMs = Number(process.env.NODE_ENV !== "production");
 
     return (
         <CacheProvider value={emotionCache}>
             <ApolloProvider client={apolloClient}>
-                <App debounceRender={0}>
-                    <PageBuilderProviderPlugin />
-                    <ThemeLoaderPlugin />
-                    <Plugins>
-                        <AddRoute path={"*"} element={<Page />} />
-                    </Plugins>
+                <App
+                    debounceRender={debounceMs}
+                    routes={[...routes, { path: "*", element: <Page /> }]}
+                    providers={[PageBuilderProviderHOC, ...providers]}
+                >
                     {children}
                 </App>
             </ApolloProvider>

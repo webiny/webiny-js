@@ -16,7 +16,7 @@ const Wrapper = styled.div`
     width: 100%;
     padding: 0 5px 5px 5px;
     box-sizing: border-box;
-    background-color: ${theme.styles.colors.color6};
+    background-color: ${theme.styles.colors["color6"]};
 `;
 
 /**
@@ -47,7 +47,6 @@ const DefaultFormLayout: FormLayoutComponent = ({
     /**
      * Once the data is successfully submitted, we show a success message.
      */
-
     const submitForm = async (data: Record<string, any>): Promise<void> => {
         setLoading(true);
         const result = await submit(data);
@@ -62,7 +61,7 @@ const DefaultFormLayout: FormLayoutComponent = ({
     }
 
     return (
-        /* "onSubmit" callback gets triggered once all of the fields are valid. */
+        /* "onSubmit" callback gets triggered once all the fields are valid. */
         /* We also pass the default values for all fields via the getDefaultValues callback. */
         <Form onSubmit={submitForm} data={getDefaultValues()}>
             {({ submit }) => (

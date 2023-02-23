@@ -143,7 +143,8 @@ describe("content model test", () => {
                         plugin: false,
                         group: {
                             id: contentModelGroup.id,
-                            name: contentModelGroup.name
+                            name: contentModelGroup.name,
+                            slug: contentModelGroup.slug
                         }
                     },
                     error: null
@@ -519,7 +520,8 @@ describe("content model test", () => {
                         ],
                         group: {
                             id: contentModelGroup.id,
-                            name: "Group"
+                            name: "Group",
+                            slug: contentModelGroup.slug
                         },
                         modelId: contentModel.modelId,
                         layout: [[textField.id], [numberField.id]],

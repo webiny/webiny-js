@@ -19,7 +19,7 @@ export interface FormElementData {
 export const createForm = (params: CreateFormParams) => {
     const { dataLoaders } = params;
 
-    return createRenderer(() => {
+    return createRenderer<{ headers?: Record<string, any> }>(({ headers }) => {
         const { getElement } = useRenderer();
 
         const element = getElement<FormElementData>();
@@ -34,13 +34,13 @@ export const createForm = (params: CreateFormParams) => {
             }
         }
 
-        const variablesHash = JSON.stringify(variables);
+        const variablesHash = JSON.stringify({ variables, headers });
 
         // We want to trigger form data load immediately, and not within a `useEffect` hook.
         // This enables us to render the actual form in the initial component render, and not
         // in a subsequent one.
         const getFormDataLoad = useMemo(() => {
-            return dataLoaders.getForm({ variables });
+            return dataLoaders.getForm({ variables, headers });
         }, [variablesHash]);
 
         const preloadedFormData = useMemo(() => {
@@ -68,7 +68,6 @@ export const createForm = (params: CreateFormParams) => {
             if (cached) {
                 setFormData(cached);
             } else {
-                // If
                 if ("then" in getFormDataLoad) {
                     setLoading(true);
                     getFormDataLoad.then(formData => {

@@ -39,7 +39,10 @@ export const ElasticSearch = createAppModule({
     config(app, params: ElasticSearchParams) {
         const domainName = "webiny-js";
         const accountId = getAwsAccountId(app);
-        const prod = app.params.run.env === "prod";
+
+        const productionEnvironments = app.params.create.productionEnvironments || ["prod"];
+        const isProduction = productionEnvironments.includes(app.params.run.env);
+
         const vpc = app.getModule(CoreVpc, { optional: true });
 
         // This needs to be implemented in order to be able to use a shared ElasticSearch cluster.
@@ -62,7 +65,7 @@ export const ElasticSearch = createAppModule({
                 name: domainName,
                 config: {
                     elasticsearchVersion: "7.10",
-                    clusterConfig: prod ? getProdClusterConfig() : getDevClusterConfig(),
+                    clusterConfig: isProduction ? getProdClusterConfig() : getDevClusterConfig(),
                     vpcOptions: vpc
                         ? {
                               subnetIds: vpc.subnets.private.map(s => s.output.id),

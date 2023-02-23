@@ -264,14 +264,20 @@ describe("latest entries", function () {
                             categories: [
                                 {
                                     id: updatedFruitCategory.id,
+                                    entryId: updatedFruitCategory.entryId,
+                                    modelId: "category",
                                     title: updatedFruitCategory.title
                                 },
                                 {
                                     id: vehicleCategory.id,
+                                    entryId: vehicleCategory.entryId,
+                                    modelId: "category",
                                     title: vehicleCategory.title
                                 },
                                 {
                                     id: animalCategory.id,
+                                    entryId: animalCategory.entryId,
+                                    modelId: "category",
                                     title: animalCategory.title
                                 }
                             ]
@@ -372,14 +378,20 @@ describe("latest entries", function () {
                             categories: [
                                 {
                                     id: publishedFruitCategory.id,
+                                    entryId: publishedFruitCategory.entryId,
+                                    modelId: "category",
                                     title: updatedFruitCategory.title
                                 },
                                 {
                                     id: vehicleCategory.id,
+                                    entryId: vehicleCategory.entryId,
+                                    modelId: "category",
                                     title: vehicleCategory.title
                                 },
                                 {
                                     id: animalCategory.id,
+                                    entryId: animalCategory.entryId,
+                                    modelId: "category",
                                     title: animalCategory.title
                                 }
                             ]

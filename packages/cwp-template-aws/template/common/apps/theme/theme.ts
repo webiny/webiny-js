@@ -39,7 +39,7 @@ const paragraphs = {
     fontFamily: fonts.font1,
     color: colors.color3,
     fontWeight: 400,
-    lineHeight: "1.5rem",
+    lineHeight: 1.35,
     WebkitFontSmoothing: "antialiased"
 };
 

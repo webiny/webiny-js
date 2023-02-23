@@ -2015,13 +2015,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/helper-string-parser@npm:^7.18.10":
-  version: 7.18.10
-  resolution: "@babel/helper-string-parser@npm:7.18.10"
-  checksum: d554a4393365b624916b5c00a4cc21c990c6617e7f3fe30be7d9731f107f12c33229a7a3db9d829bfa110d2eb9f04790745d421640e3bd245bb412dc0ea123c1
-  languageName: node
-  linkType: hard
-
 "@babel/helper-string-parser@npm:^7.19.4":
   version: 7.19.4
   resolution: "@babel/helper-string-parser@npm:7.19.4"
@@ -3693,36 +3686,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/types@npm:^7.0.0, @babel/types@npm:^7.0.0-beta.49, @babel/types@npm:^7.18.10, @babel/types@npm:^7.18.4, @babel/types@npm:^7.18.6, @babel/types@npm:^7.18.9, @babel/types@npm:^7.19.0, @babel/types@npm:^7.19.3, @babel/types@npm:^7.2.0, @babel/types@npm:^7.3.0, @babel/types@npm:^7.3.3, @babel/types@npm:^7.4.4, @babel/types@npm:^7.7.0, @babel/types@npm:^7.8.3":
-  version: 7.19.3
-  resolution: "@babel/types@npm:7.19.3"
-  dependencies:
-    "@babel/helper-string-parser": ^7.18.10
-    "@babel/helper-validator-identifier": ^7.19.1
-    to-fast-properties: ^2.0.0
-  checksum: 34a5b3db3b99a1a80ec2a784c2bb0e48769a38f1526dc377a5753a3ac5e5704663c405a393117ecc7a9df9da07b01625be7c4c3fee43ae46aba23b0c40928d77
-  languageName: node
-  linkType: hard
-
-"@babel/types@npm:^7.19.4":
-  version: 7.19.4
-  resolution: "@babel/types@npm:7.19.4"
+"@babel/types@npm:^7.0.0, @babel/types@npm:^7.0.0-beta.49, @babel/types@npm:^7.18.10, @babel/types@npm:^7.18.4, @babel/types@npm:^7.18.6, @babel/types@npm:^7.18.9, @babel/types@npm:^7.19.0, @babel/types@npm:^7.19.3, @babel/types@npm:^7.19.4, @babel/types@npm:^7.2.0, @babel/types@npm:^7.20.2, @babel/types@npm:^7.20.7, @babel/types@npm:^7.3.0, @babel/types@npm:^7.3.3, @babel/types@npm:^7.4.4, @babel/types@npm:^7.7.0, @babel/types@npm:^7.8.3":
+  version: 7.21.0
+  resolution: "@babel/types@npm:7.21.0"
   dependencies:
     "@babel/helper-string-parser": ^7.19.4
     "@babel/helper-validator-identifier": ^7.19.1
     to-fast-properties: ^2.0.0
-  checksum: 4032f6407093f80dd4f4764be676f7527d2a5c0381586967cd79683cf8af01cdc16745a381b9cef045f702f0c9b0dffd880d84ee55dad59ba01bd23d5d52a8e0
-  languageName: node
-  linkType: hard
-
-"@babel/types@npm:^7.20.2, @babel/types@npm:^7.20.7":
-  version: 7.20.7
-  resolution: "@babel/types@npm:7.20.7"
-  dependencies:
-    "@babel/helper-string-parser": ^7.19.4
-    "@babel/helper-validator-identifier": ^7.19.1
-    to-fast-properties: ^2.0.0
-  checksum: b39af241f0b72bba67fd6d0d23914f6faec8c0eba8015c181cbd5ea92e59fc91a52a1ab490d3520c7dbd19ddb9ebb76c476308f6388764f16d8201e37fae6811
+  checksum: dbcdda202b3a2bfd59e4de880ce38652f1f8957893a9751be069ac86e47ad751222070fe6cd92220214d77973f1474e4e1111c16dc48199dfca1489c0ee8c0c5
   languageName: node
   linkType: hard
 
@@ -12626,7 +12597,6 @@ __metadata:
     "@webiny/app-admin": 0.0.0
     "@webiny/app-headless-cms": 0.0.0
     "@webiny/app-i18n": 0.0.0
-    "@webiny/app-mailer": 0.0.0
     "@webiny/app-page-builder": 0.0.0
     "@webiny/app-security": 0.0.0
     "@webiny/cli": 0.0.0
@@ -12766,6 +12736,7 @@ __metadata:
     "@webiny/app-page-builder-elements": 0.0.0
     "@webiny/app-plugin-admin-welcome-screen": 0.0.0
     "@webiny/app-security": 0.0.0
+    "@webiny/app-tenancy": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/feature-flags": 0.0.0
     "@webiny/form": 0.0.0
@@ -13309,6 +13280,7 @@ __metadata:
     "@webiny/app-headless-cms": 0.0.0
     "@webiny/app-i18n": 0.0.0
     "@webiny/app-i18n-content": 0.0.0
+    "@webiny/app-mailer": 0.0.0
     "@webiny/app-page-builder": 0.0.0
     "@webiny/app-security": 0.0.0
     "@webiny/app-security-access-management": 0.0.0
@@ -13407,7 +13379,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/app-theme-manager@0.0.0, @webiny/app-theme-manager@workspace:packages/app-theme-manager":
+"@webiny/app-theme-manager@workspace:packages/app-theme-manager":
   version: 0.0.0-use.local
   resolution: "@webiny/app-theme-manager@workspace:packages/app-theme-manager"
   dependencies:
@@ -13421,6 +13393,7 @@ __metadata:
     "@emotion/core": ^10.0.27
     "@emotion/styled": ^10.0.27
     "@types/react": 17.0.39
+    "@webiny/app": 0.0.0
     "@webiny/app-admin": 0.0.0
     "@webiny/app-page-builder": 0.0.0
     "@webiny/app-tenant-manager": 0.0.0
@@ -13546,7 +13519,6 @@ __metadata:
     "@webiny/app-page-builder": 0.0.0
     "@webiny/app-page-builder-elements": 0.0.0
     "@webiny/app-theme": 0.0.0
-    "@webiny/app-theme-manager": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
@@ -14601,6 +14573,7 @@ __metadata:
     "@webiny/project-utils": 0.0.0
     "@webiny/react-composition": 0.0.0
     nanoid: ^3.3.4
+    prettier: ^2.8.3
     react: 17.0.2
   languageName: unknown
   linkType: soft
@@ -34308,6 +34281,15 @@ __metadata:
   bin:
     prettier: bin-prettier.js
   checksum: 55a4409182260866ab31284d929b3cb961e5fdb91fe0d2e099dac92eaecec890f36e524b4c19e6ceae839c99c6d7195817579cdffc8e2c80da0cb794463a748b
+  languageName: node
+  linkType: hard
+
+"prettier@npm:^2.8.3":
+  version: 2.8.3
+  resolution: "prettier@npm:2.8.3"
+  bin:
+    prettier: bin-prettier.js
+  checksum: 92f2ceb522d454370e02082aa74ad27388672f7cee8975028b59517c069fe643bdc73e322675c8faf2ff173d7a626d1a6389f26b474000308e793aa25fff46e5
   languageName: node
   linkType: hard
 

@@ -7,14 +7,18 @@ import React, {
     FunctionComponentElement,
     ReactElement
 } from "react";
-import { BrowserRouter, RouteProps } from "@webiny/react-router";
+import { BrowserRouter, RouteProps, Route } from "@webiny/react-router";
 import { compose, HigherOrderComponent, CompositionProvider } from "@webiny/react-composition";
 import { Routes as SortRoutes } from "./core/Routes";
 import { DebounceRender } from "./core/DebounceRender";
 import { PluginsProvider } from "./core/Plugins";
 
+type RoutesByPath = {
+    [key: string]: ReactElement<RouteProps>;
+};
+
 interface State {
-    routes: Record<string, ReactElement<RouteProps>>;
+    routes: RoutesByPath;
     plugins: JSX.Element[];
     providers: HigherOrderComponent[];
 }
@@ -41,14 +45,18 @@ export const useApp = () => {
 
 export interface AppProps {
     debounceRender?: number;
+    routes?: Array<RouteProps>;
+    providers?: Array<HigherOrderComponent>;
     children?: React.ReactNode | React.ReactNode[];
 }
 
-export const App = ({ debounceRender = 50, children }: AppProps) => {
+export const App = ({ debounceRender = 50, routes = [], providers = [], children }: AppProps) => {
     const [state, setState] = useState<State>({
-        routes: {},
+        routes: routes.reduce<RoutesByPath>((acc, item) => {
+            return { ...acc, [item.path as string]: <Route {...item} /> };
+        }, {}),
         plugins: [],
-        providers: []
+        providers
     });
 
     const addRoute = useCallback((route: FunctionComponentElement<RouteProps>) => {
@@ -92,19 +100,18 @@ export const App = ({ debounceRender = 50, children }: AppProps) => {
         [state]
     );
 
-    const AppRouter = useMemo(
-        () =>
-            function AppRouter() {
-                const routes = Object.values(state.routes);
-                return <SortRoutes key={routes.length} routes={routes} />;
-            },
-        [state.routes]
-    );
+    const AppRouter = useMemo(() => {
+        return function AppRouter() {
+            const routes = Object.values(state.routes);
+            return <SortRoutes key={routes.length} routes={routes} />;
+        };
+    }, [state.routes]);
 
-    const Providers = useMemo(
-        () => compose(...(state.providers || []))(DebounceRender),
-        [state.providers]
-    );
+    const Providers = useMemo(() => {
+        return compose(...(state.providers || []))(({ children }: any) => (
+            <DebounceRender wait={debounceRender}>{children}</DebounceRender>
+        ));
+    }, [state.providers.length]);
 
     Providers.displayName = "Providers";
 
