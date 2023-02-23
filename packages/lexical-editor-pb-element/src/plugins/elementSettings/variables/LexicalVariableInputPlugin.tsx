@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ReactComponent as ExpandIcon } from "@material-design-icons/svg/filled/fullscreen.svg";
 import { Dialog, DialogActions, DialogContent } from "@webiny/ui/Dialog";
 import { ButtonPrimary, IconButton } from "@webiny/ui/Button";
@@ -54,15 +54,25 @@ export const LexicalVariableInputPlugin: React.FC<LexicalVariableInputPlugin> = 
 }): JSX.Element => {
     const { value, onChange } = useVariable<LexicalValue>(variableId);
     const [initialValue, setInitialValue] = useState(value);
+    const [localValue, setLocalValue] = useState(value);
     // We need a separate piece of state for dialog input, to support "cancel edit" functionality
     const [dialogEditorValue, setDialogEditorValue] = useState(value);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
+    useEffect(() => {
+        if (localValue !== value) {
+            setLocalValue(value);
+        }
+    }, [value]);
+
     const saveData = (data: LexicalValue) => {
         // Update variable value, and trigger page save
-        onChange(data, true);
         // Set a new initial value for all inputs
         setInitialValue(data);
+    };
+
+    const onInputChange = (data: LexicalValue) => {
+        onChange(data, true);
     };
 
     const onDialogOpen = () => {
@@ -83,15 +93,20 @@ export const LexicalVariableInputPlugin: React.FC<LexicalVariableInputPlugin> = 
         <InputWrapper>
             <IconButton icon={<ExpandIcon />} onClick={onDialogOpen} />
             <EditorWrapper className="webiny-pb-page-element-text">
-                <LexicalEditor tag={tag} value={value} onChange={onChange} onBlur={saveData} />
+                <LexicalEditor
+                    tag={tag}
+                    value={initialValue}
+                    onChange={data => onInputChange(data)}
+                    onBlur={data => saveData(data)}
+                />
             </EditorWrapper>
-            <Dialog open={isDialogOpen} onClose={onDialogClose}>
+            <Dialog open={isDialogOpen} onClose={() => onDialogClose()}>
                 <DialogContent>
                     <ModalEditorWrapper className="webiny-pb-page-element-text">
                         <LexicalEditor
                             tag={tag}
-                            value={dialogEditorValue}
-                            onChange={setDialogEditorValue}
+                            value={initialValue}
+                            onChange={data => setDialogEditorValue(data)}
                         />
                     </ModalEditorWrapper>
                 </DialogContent>
