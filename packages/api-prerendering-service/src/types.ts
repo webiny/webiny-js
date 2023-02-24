@@ -164,17 +164,17 @@ export interface PrerenderingServiceStorageOperations
  */
 export interface RenderEvent {
     path: string;
+    tags?: Tag[];
     tenant: string;
     locale: string;
     exclude?: string[];
-    tags?: Tag[];
 }
 
 export interface FlushEvent {
-    tenant: string;
-    locale: string;
     path?: string;
     tag?: Tag;
+    tenant: string;
+    locale: string;
 }
 
 export interface RenderPagesEvent extends RenderEvent {
