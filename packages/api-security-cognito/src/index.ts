@@ -1,17 +1,25 @@
 import { ContextPlugin } from "@webiny/api";
-import { SecurityContext, SecurityIdentity } from "@webiny/api-security/types";
+import { SecurityContext, SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
 import {
     createAuthenticator,
     Config as CognitoConfig,
     TokenData
 } from "@webiny/api-cognito-authenticator";
 
-export interface Config extends CognitoConfig {
+interface GetIdentityParams<TContext, TToken> {
     identityType: string;
-    getIdentity?<TIdentity extends SecurityIdentity = SecurityIdentity>(params: {
-        identityType: string;
-        token: CognitoTokenData;
-    }): TIdentity;
+    token: TToken;
+    context: TContext;
+}
+
+interface GetPermissionsParams<TContext> {
+    context: TContext;
+}
+
+interface Config<TContext, TToken, TIdentity> extends CognitoConfig {
+    identityType: string;
+    getIdentity?(params: GetIdentityParams<TContext, TToken>): TIdentity;
+    getPermissions?(params: GetPermissionsParams<TContext>): Promise<SecurityPermission[] | null>;
 }
 
 export interface CognitoTokenData extends TokenData {
@@ -21,24 +29,33 @@ export interface CognitoTokenData extends TokenData {
     [key: string]: any;
 }
 
-export default (config: Config) => {
+export const createCognito = <
+    TContext extends SecurityContext = SecurityContext,
+    TToken extends CognitoTokenData = CognitoTokenData,
+    TIdentity extends SecurityIdentity = SecurityIdentity
+>(
+    config: Config<TContext, TToken, TIdentity>
+) => {
     const cognitoAuthenticator = createAuthenticator({
         region: config.region,
         userPoolId: config.userPoolId
     });
 
-    return new ContextPlugin<SecurityContext>(({ security }) => {
-        security.addAuthenticator(async token => {
-            const tokenObj = await cognitoAuthenticator<CognitoTokenData>(token);
+    const { getIdentity, getPermissions } = config;
+
+    return new ContextPlugin<TContext>(context => {
+        context.security.addAuthenticator(async token => {
+            const tokenObj = await cognitoAuthenticator<TToken>(token);
 
             if (!tokenObj) {
                 return null;
             }
 
-            if (typeof config.getIdentity === "function") {
-                return config.getIdentity({
+            if (typeof getIdentity === "function") {
+                return getIdentity({
                     identityType: config.identityType,
-                    token: tokenObj
+                    token: tokenObj,
+                    context
                 });
             }
 
@@ -51,5 +68,13 @@ export default (config: Config) => {
                 lastName: tokenObj.family_name
             };
         });
+
+        if (getPermissions) {
+            context.security.addAuthorizer(async () => {
+                return getPermissions({ context });
+            });
+        }
     });
 };
+
+export default createCognito;

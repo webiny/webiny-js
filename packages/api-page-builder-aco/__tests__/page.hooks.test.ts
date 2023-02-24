@@ -67,6 +67,7 @@ describe("Pages -> Search records", () => {
             },
             data: {
                 id,
+                title,
                 createdBy,
                 createdOn,
                 savedOn,
@@ -93,10 +94,11 @@ describe("Pages -> Search records", () => {
         const searchRecord = searchResponse.data?.search?.getRecord?.data;
 
         expect(searchRecord).toMatchObject({
-            title: title,
+            title,
             originalId: pid,
             data: {
                 id: page.id,
+                title: title,
                 status: "draft",
                 version: 2,
                 locked: false
@@ -128,6 +130,7 @@ describe("Pages -> Search records", () => {
             title: updatePage.title,
             content: `${updatePage.title} Demo Heading Demo Content Demo button Demo Image 1 Demo Image 2 Demo Image 3`,
             data: {
+                title: updatePage.title,
                 savedOn: updatePage.savedOn
             }
         });

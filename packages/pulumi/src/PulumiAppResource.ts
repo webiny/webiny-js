@@ -14,6 +14,7 @@ export interface CreatePulumiAppResourceParams<TConstructor extends PulumiAppRes
     name: string;
     config: PulumiAppResourceArgs<TConstructor>;
     opts?: pulumi.CustomResourceOptions;
+    meta?: Record<string, any>;
 }
 
 export interface PulumiAppResourceConfigModifier<T> {
@@ -34,5 +35,6 @@ export interface PulumiAppResource<T extends PulumiAppResourceConstructor> {
     type: T;
     readonly config: PulumiAppResourceConfigProxy<PulumiAppResourceArgs<T>>;
     readonly opts: pulumi.CustomResourceOptions;
+    readonly meta: Record<string, any>;
     readonly output: pulumi.Output<pulumi.Unwrap<PulumiAppResourceType<T>>>;
 }
