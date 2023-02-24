@@ -53,3 +53,9 @@ export class CmsEntryElasticsearchQueryBuilderValueSearchPlugin extends Plugin {
         return null;
     }
 }
+
+export const createCmsEntryElasticsearchQueryBuilderValueSearchPlugin = (
+    params: CmsEntryElasticsearchQueryBuilderValueSearchPluginParams
+) => {
+    return new CmsEntryElasticsearchQueryBuilderValueSearchPlugin(params);
+};
