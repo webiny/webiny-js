@@ -26,7 +26,7 @@ export const useRecords = (type: string, folderId: string) => {
          * We don't need to store the result of it to any local state; that is managed by the context provider.
          */
         listRecords(type, folderId);
-    }, [location]);
+    }, [folderId]);
 
     return useMemo(
         () => ({

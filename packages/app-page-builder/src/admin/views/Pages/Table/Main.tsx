@@ -66,8 +66,6 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
         listRecords
     } = useRecords(FOLDER_TYPE, folderId || FOLDER_ID_DEFAULT);
 
-    // const { pages, loading: pagesLoading } = useGetPages(records, folderId);
-
     const [subFolders, setSubFolders] = useState<FolderItem[]>([]);
     const [folderName, setFolderName] = useState<string>();
 

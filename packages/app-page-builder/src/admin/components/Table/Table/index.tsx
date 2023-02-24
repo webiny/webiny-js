@@ -60,7 +60,7 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
             items.map(item => {
                 console.log("item", item);
                 return {
-                    id: item.id,
+                    id: item.data.id,
                     type: "PAGE",
                     title: item.title || "-",
                     createdBy: item.data.createdBy.displayName || "-",
