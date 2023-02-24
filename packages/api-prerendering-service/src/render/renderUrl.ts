@@ -221,4 +221,7 @@ export const defaultRenderUrlFunction = async (
             await browser.close();
         }
     }
+
+    // There's no catch block here because errors are already being handled
+    // in the entrypoint function, located in `./index.ts` file.
 };
