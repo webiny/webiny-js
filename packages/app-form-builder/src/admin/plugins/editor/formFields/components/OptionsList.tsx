@@ -38,7 +38,9 @@ const OptionListItem = styled("li")({
 
 const switchWrapper = css`
     align-self: end;
-    padding-bottom: 12px;
+    height: 100%;
+    display: flex;
+    align-items: center;
 
     .switch-label {
         margin-right: 12px;
@@ -124,7 +126,7 @@ const SortableItem: React.FC<SortableItemProps> = sortableElement(
 interface OptionsListProps {
     form: FormRenderPropParams;
     multiple?: boolean;
-    otherOptionSwitch?: boolean;
+    otherOption?: boolean;
 }
 interface OptionsListBindParams {
     validation: any;
@@ -132,7 +134,7 @@ interface OptionsListBindParams {
     onChange: (values: FieldOption[]) => void;
 }
 
-const OptionsList: React.FC<OptionsListProps> = ({ form, multiple, otherOptionSwitch }) => {
+const OptionsList: React.FC<OptionsListProps> = ({ form, multiple, otherOption }) => {
     const { Bind } = form;
 
     const [editOption, setEditOption] = useState<SetEditOptionParams>({
@@ -166,7 +168,7 @@ const OptionsList: React.FC<OptionsListProps> = ({ form, multiple, otherOptionSw
                     <>
                         <div>Options</div>
                         <Grid>
-                            <Cell span={otherOptionSwitch ? 9 : 12}>
+                            <Cell span={otherOption ? 9 : 12}>
                                 <AddOptionInput
                                     options={optionsValue}
                                     validation={optionsValidation}
@@ -182,9 +184,9 @@ const OptionsList: React.FC<OptionsListProps> = ({ form, multiple, otherOptionSw
                                     }}
                                 />
                             </Cell>
-                            {otherOptionSwitch && (
+                            {otherOption && (
                                 <Cell span={3} className={switchWrapper}>
-                                    <Typography use={"headline6"} className="switch-label">
+                                    <Typography use={"button"} className="switch-label">
                                         Allow &quot;<strong>Other</strong>&quot;
                                     </Typography>
                                     <Bind name={"settings.otherOption"}>

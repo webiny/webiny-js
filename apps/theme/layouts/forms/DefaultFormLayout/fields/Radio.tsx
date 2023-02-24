@@ -16,7 +16,7 @@ interface RadioProps {
 const RadioGroup = styled.div`
     align-items: center;
     display: flex;
-    margin: 5px 50px 5px 2px;
+    margin: 7px 50px 7px 2px;
     width: 100%;
 `;
 
@@ -52,15 +52,12 @@ const RadioButton = styled.input`
 const OtherInput = styled(StyledInput)`
     padding-top: 5px;
     padding-bottom: 5px;
+    margin-top: -4px;
+    margin-bottom: -4px;
     margin-left: 16px;
-
-    &:disabled {
-        visibility: hidden;
-    }
 `;
 
 export const RadioField: React.FC<RadioProps> = ({ field }) => {
-    const otherInputRef = React.useRef<HTMLInputElement>(null);
     const { validation, value, onChange } = useBind({
         name: field.fieldId,
         validators: field.validators
@@ -98,23 +95,18 @@ export const RadioField: React.FC<RadioProps> = ({ field }) => {
                         id={"radio-" + fieldId + "other"}
                         value="other"
                         checked={value === "other"}
-                        onChange={e => {
-                            onChange("other");
-                            if (e.target.checked && otherInputRef.current) {
-                                otherInputRef.current.disabled = false;
-                                otherInputRef.current.focus();
-                            }
-                        }}
+                        onChange={() => onChange("other")}
                     />
                     <label htmlFor={"radio-" + fieldId + "other"}>Other</label>
-                    <OtherInput
-                        name={`${fieldId}Other`}
-                        id={`${fieldId}Other`}
-                        ref={otherInputRef}
-                        disabled={value !== "other"}
-                        value={otherOptionValue}
-                        onChange={e => otherOptionOnChange(e.target.value)}
-                    />
+                    {value === "other" && (
+                        <OtherInput
+                            name={`${fieldId}Other`}
+                            id={`${fieldId}Other`}
+                            value={otherOptionValue}
+                            onChange={e => otherOptionOnChange(e.target.value)}
+                            autoFocus
+                        />
+                    )}
                 </RadioGroup>
             )}
             <FieldErrorMessage isValid={validation.isValid} message={validation.message} />
