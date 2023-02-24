@@ -64,16 +64,12 @@ const CUSTOM_HANDLERS = {
     },
     // Setup "api-aco" tests.
     "api-aco": () => {
-        return [
-            "packages/api-aco/* --keyword=cms:ddb --keyword=aco:base",
-            "packages/api-aco/* --keyword=cms:ddb-es --keyword=aco:base"
-        ];
+        return ["packages/api-aco/* --keyword=cms:ddb --keyword=aco:base"];
     },
     // Setup "api-page-builder-aco" tests.
     "api-page-builder-aco": () => {
         return [
-            "packages/api-page-builder-aco/* --keyword=cms:ddb --keyword=aco:base --keyword=pb:ddb --keyword=pb:base --keyword=api-page-builder-aco:base",
-            "packages/api-page-builder-aco/* --keyword=cms:ddb-es --keyword=aco:base --keyword=pb:ddb-es --keyword=pb:base --keyword=api-page-builder-aco:base"
+            "packages/api-page-builder-aco/* --keyword=cms:ddb --keyword=aco:base --keyword=pb:ddb --keyword=pb:base --keyword=api-page-builder-aco:base"
         ];
     }
 };
