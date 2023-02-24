@@ -26,6 +26,7 @@ export const createPageRecordPayload = async (
         location,
         data: {
             id,
+            title,
             createdBy,
             createdOn,
             savedOn,
@@ -49,6 +50,7 @@ export const updatePageRecordPayload = async (
         content,
         data: {
             id,
+            title,
             createdBy,
             createdOn,
             savedOn,
