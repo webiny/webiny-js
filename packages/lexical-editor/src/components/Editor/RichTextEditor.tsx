@@ -18,7 +18,6 @@ import { RichTextEditorProvider } from "~/context/RichTextEditorContext";
 import { isValidLexicalData } from "~/utils/isValidLexicalData";
 import { LexicalUpdateStatePlugin } from "~/plugins/LexicalUpdateStatePlugin";
 import { BlurEventPlugin } from "~/plugins/BlurEventPlugin/BlurEventPlugin";
-// import {FocusPlugin} from "~/plugins/FocusPlugin/FocusPlugin";
 
 export interface RichTextEditorProps {
     toolbar?: React.ReactNode;
@@ -33,6 +32,8 @@ export interface RichTextEditorProps {
      */
     children?: React.ReactNode | React.ReactNode[];
     onBlur?: (editorState: LexicalValue) => void;
+    height?: number | string;
+    width?: number | string;
 }
 
 const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
@@ -43,7 +44,9 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
     placeholder,
     children,
     onBlur,
-    focus
+    focus,
+    width,
+    height
 }: RichTextEditorProps) => {
     const placeholderElem = <Placeholder>{placeholder || "Enter text..."}</Placeholder>;
     const scrollRef = useRef(null);
@@ -55,6 +58,13 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
         if (_floatingAnchorElem !== null) {
             setFloatingAnchorElem(_floatingAnchorElem);
         }
+    };
+
+    const editorSizeStyle = (): { width: number | string; height: number | string } => {
+        return {
+            height: height || "",
+            width: width || ""
+        };
     };
 
     const initialConfig = {
@@ -78,7 +88,7 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
 
     return (
         <LexicalComposer initialConfig={initialConfig}>
-            <div ref={scrollRef}>
+            <div ref={scrollRef} style={{ ...editorSizeStyle() }}>
                 {/* data */}
                 <OnChangePlugin onChange={handleOnChange} />
                 {value && <LexicalUpdateStatePlugin value={value} />}
@@ -90,9 +100,9 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
                 {children}
                 <RichTextPlugin
                     contentEditable={
-                        <div className="editor-scroller">
-                            <div className="editor" ref={onRef}>
-                                <ContentEditable style={{ outline: 0 }} />
+                        <div className="editor-scroller" style={{ ...editorSizeStyle() }}>
+                            <div className="editor" ref={onRef} style={{ ...editorSizeStyle() }}>
+                                <ContentEditable style={{ outline: 0, ...editorSizeStyle() }} />
                             </div>
                         </div>
                     }

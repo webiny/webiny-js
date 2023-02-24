@@ -7,10 +7,11 @@ import { isParagraphTag } from "~/utils/isParagraphTag";
 interface LexicalEditorProps {
     tag: string | [string, Record<string, any>];
     value: LexicalValue;
-
     focus?: boolean;
     onChange?: (value: LexicalValue) => void;
     onBlur?: (editorState: LexicalValue) => void;
+    height?: number | string;
+    width?: number | string;
 }
 
 export const LexicalEditor: React.FC<LexicalEditorProps> = ({ tag, value, onChange, ...rest }) => {

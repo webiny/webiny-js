@@ -113,6 +113,7 @@ export const LexicalVariableInputPlugin: React.FC<LexicalVariableInputPlugin> = 
                             value={initialValue}
                             onChange={data => setDialogEditorValue(data)}
                             focus={dialogInputFocused}
+                            height="100%"
                         />
                     </ModalEditorWrapper>
                 </DialogContent>
