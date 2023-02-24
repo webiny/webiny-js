@@ -217,7 +217,7 @@ export const defaultRenderUrlFunction = async (
             }
         };
     } finally {
-        if (browser !== null) {
+        if (browser) {
             await browser.close();
         }
     }
