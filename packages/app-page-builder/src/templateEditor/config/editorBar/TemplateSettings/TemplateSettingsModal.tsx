@@ -1,9 +1,9 @@
 import React, { useCallback } from "react";
-import styled from "@emotion/styled";
+import slugify from "slugify";
 import { css } from "emotion";
 import { useRecoilState } from "recoil";
-
-import { Form } from "@webiny/form";
+import pick from "lodash/pick";
+import { Form, FormAPI } from "@webiny/form";
 import { plugins } from "@webiny/plugins";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { Grid, Cell } from "@webiny/ui/Grid";
@@ -16,15 +16,10 @@ import { templateSettingsStateAtom } from "./state";
 import { useTemplate } from "~/templateEditor/hooks/useTemplate";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import { UpdateDocumentActionEvent } from "~/editor/recoil/actions";
-import { TemplateAtomType } from "~/templateEditor/state";
+import { PageTemplate } from "~/templateEditor/state";
 import { Input } from "@webiny/ui/Input";
 import { PbPageLayoutPlugin } from "~/types";
-
-const ButtonWrapper = styled.div`
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-`;
+import { Tags } from "@webiny/ui/Tags";
 
 const narrowDialog = css`
     & .mdc-dialog__surface {
@@ -46,7 +41,7 @@ const TemplateSettingsModal: React.FC = () => {
         return (layoutPlugins || []).map(pl => pl.layout);
     }, []);
 
-    const updateTemplate = (data: Partial<TemplateAtomType>) => {
+    const updateTemplate = (data: Partial<PageTemplate>) => {
         handler.trigger(
             new UpdateDocumentActionEvent({
                 history: false,
@@ -55,33 +50,53 @@ const TemplateSettingsModal: React.FC = () => {
         );
     };
 
+    const generateSlug = (form: FormAPI) => () => {
+        if (form.data.slug) {
+            return;
+        }
+
+        // We want to update slug only when the group is first being created.
+        form.setValue(
+            "slug",
+            slugify(form.data.title, {
+                replacement: "-",
+                lower: true,
+                remove: /[*#\?<>_\{\}\[\]+~.()'"!:;@]/g,
+                trim: false
+            })
+        );
+    };
+
     const onSubmit = useCallback(formData => {
-        updateTemplate({
-            title: formData.title,
-            description: formData.description,
-            layout: formData.layout
-        });
+        updateTemplate(formData);
         onClose();
     }, []);
 
+    const settings = pick(template, ["title", "description", "slug", "layout", "tags"]);
+
     return (
         <Dialog open={true} onClose={onClose} className={narrowDialog}>
-            <Form
-                data={{ title: template.title, description: template.description }}
-                onSubmit={onSubmit}
-            >
+            <Form data={settings} onSubmit={onSubmit}>
                 {({ form, Bind }) => (
                     <>
                         <DialogTitle>Template Settings</DialogTitle>
                         <DialogContent>
                             <SimpleFormContent>
                                 <Grid>
-                                    <Cell span={12}>
+                                    <Cell span={6}>
                                         <Bind
                                             name="title"
                                             validators={[validation.create("required")]}
                                         >
-                                            <Input label="Title" />
+                                            <Input label="Title" onBlur={generateSlug(form)} />
+                                        </Bind>
+                                    </Cell>
+                                    <Cell span={6}>
+                                        <Bind
+                                            name="slug"
+                                            validators={[validation.create("required")]}
+                                        >
+                                            <Input label="Slug" />
                                         </Bind>
                                     </Cell>
                                     <Cell span={12}>
@@ -103,20 +118,23 @@ const TemplateSettingsModal: React.FC = () => {
                                             </Select>
                                         </Bind>
                                     </Cell>
+                                    <Cell span={12}>
+                                        <Bind name="tags">
+                                            <Tags label="Tags" />
+                                        </Bind>
+                                    </Cell>
                                 </Grid>
                             </SimpleFormContent>
                         </DialogContent>
                         <DialogActions>
-                            <ButtonWrapper>
-                                <DialogCancel onClick={onClose}>Cancel</DialogCancel>
-                                <ButtonPrimary
-                                    onClick={ev => {
-                                        form.submit(ev);
-                                    }}
-                                >
-                                    Save
-                                </ButtonPrimary>
-                            </ButtonWrapper>
+                            <DialogCancel onClick={onClose}>Cancel</DialogCancel>
+                            <ButtonPrimary
+                                onClick={ev => {
+                                    form.submit(ev);
+                                }}
+                            >
+                                Save
+                            </ButtonPrimary>
                         </DialogActions>
                     </>
                 )}

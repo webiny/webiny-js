@@ -68,7 +68,6 @@ export const createForm = (params: CreateFormParams) => {
             if (cached) {
                 setFormData(cached);
             } else {
-                // If
                 if ("then" in getFormDataLoad) {
                     setLoading(true);
                     getFormDataLoad.then(formData => {

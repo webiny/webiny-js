@@ -74,6 +74,9 @@ export const templatesHandler = async (
         // Create a template
         const pbTemplate = await context.pageBuilder.createPageTemplate({
             title: template.title,
+            slug: template.slug,
+            tags: template.tags,
+            layout: template.layout,
             description: template.description,
             content: template.content
         });
