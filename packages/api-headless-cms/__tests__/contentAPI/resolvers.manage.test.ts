@@ -994,11 +994,11 @@ describe("MANAGE - Resolvers", () => {
 
         const { vegetables } = await createCategories();
 
-        const { createProduct } = useProductManageHandler({
+        const { createProduct, listProducts } = useProductManageHandler({
             ...manageOpts
         });
 
-        const [potatoResponse] = await createProduct({
+        const [createPotatoResponse] = await createProduct({
             data: {
                 title: "Potato",
                 price: 99.9,
@@ -1020,6 +1020,7 @@ describe("MANAGE - Resolvers", () => {
                 variant: {
                     name: "Variant 1",
                     price: 100,
+                    images: ["testImage.jpg", "testImage2.jpg"],
                     category: {
                         modelId: "category",
                         id: vegetables.id
@@ -1028,6 +1029,7 @@ describe("MANAGE - Resolvers", () => {
                         {
                             name: "Option 1",
                             price: 10,
+                            image: "testImageOption1.jpg",
                             category: {
                                 modelId: "category",
                                 id: vegetables.id
@@ -1038,11 +1040,12 @@ describe("MANAGE - Resolvers", () => {
                                     id: vegetables.id
                                 }
                             ],
-                            longText: [null]
+                            longText: []
                         },
                         {
                             name: "Option 2",
                             price: 20,
+                            image: "testImageOption2.jpg",
                             category: {
                                 modelId: "category",
                                 id: vegetables.id
@@ -1060,9 +1063,9 @@ describe("MANAGE - Resolvers", () => {
             }
         });
 
-        expect(potatoResponse.errors).toBeUndefined();
+        expect(createPotatoResponse.errors).toBeUndefined();
 
-        expect(potatoResponse).toEqual({
+        expect(createPotatoResponse).toEqual({
             data: {
                 createProduct: {
                     data: {
@@ -1093,6 +1096,7 @@ describe("MANAGE - Resolvers", () => {
                         variant: {
                             name: "Variant 1",
                             price: 100,
+                            images: ["testImage.jpg", "testImage2.jpg"],
                             category: {
                                 modelId: "category",
                                 id: vegetables.id,
@@ -1102,6 +1106,7 @@ describe("MANAGE - Resolvers", () => {
                                 {
                                     name: "Option 1",
                                     price: 10,
+                                    image: "testImageOption1.jpg",
                                     category: {
                                         modelId: "category",
                                         id: vegetables.id,
@@ -1114,11 +1119,12 @@ describe("MANAGE - Resolvers", () => {
                                             entryId: vegetables.entryId
                                         }
                                     ],
-                                    longText: [null]
+                                    longText: []
                                 },
                                 {
                                     name: "Option 2",
                                     price: 20,
+                                    image: "testImageOption2.jpg",
                                     category: {
                                         modelId: "category",
                                         id: vegetables.id,
@@ -1135,6 +1141,28 @@ describe("MANAGE - Resolvers", () => {
                                 }
                             ]
                         }
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const potato = createPotatoResponse.data.createProduct.data;
+
+        const [listResponse] = await listProducts();
+
+        expect(listResponse).toEqual({
+            data: {
+                listProducts: {
+                    data: [
+                        {
+                            ...potato
+                        }
+                    ],
+                    meta: {
+                        totalCount: 1,
+                        hasMoreItems: false,
+                        cursor: null
                     },
                     error: null
                 }

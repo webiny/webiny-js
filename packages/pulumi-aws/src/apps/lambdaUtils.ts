@@ -1,6 +1,7 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import { PulumiApp } from "@webiny/pulumi";
+
 export * from "../utils/lambdaEnvVariables";
 
 import { VpcConfig } from "./common";
@@ -27,7 +28,8 @@ export function createLambdaRole(app: PulumiApp, params: LambdaRoleParams) {
                     }
                 ]
             }
-        }
+        },
+        meta: { isLambdaFunctionRole: true }
     });
 
     if (params.policy) {

@@ -42,8 +42,10 @@ const ids = {
     field211: "variant",
     field212: "variantName",
     field213: "variantPrice",
+    field2110: "variantImage",
     field214: "variantOptions",
     field215: "variantOptionsName",
+    field2111: "variantOptionsImage",
     field216: "variantOptionsPrice",
     field217: "variantCategory",
     field218: "variantOptionsCategory",
@@ -517,6 +519,19 @@ const models: CmsModel[] = [
                             }
                         },
                         {
+                            id: ids.field2110,
+                            fieldId: "images",
+                            storageId: `file@${ids.field2110}`,
+                            multipleValues: true,
+                            placeholderText: null,
+                            helpText: "",
+                            label: "Image",
+                            type: "file",
+                            renderer: {
+                                name: "file"
+                            }
+                        },
+                        {
                             id: ids.field217,
                             multipleValues: false,
                             helpText: "",
@@ -595,6 +610,19 @@ const models: CmsModel[] = [
                                         },
                                         renderer: {
                                             name: "renderer"
+                                        }
+                                    },
+                                    {
+                                        id: ids.field2111,
+                                        fieldId: "image",
+                                        storageId: `file@${ids.field2111}`,
+                                        multipleValues: false,
+                                        placeholderText: null,
+                                        helpText: "",
+                                        label: "Image",
+                                        type: "file",
+                                        renderer: {
+                                            name: "file"
                                         }
                                     },
                                     {
