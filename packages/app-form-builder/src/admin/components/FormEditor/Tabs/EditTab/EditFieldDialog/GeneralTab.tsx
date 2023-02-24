@@ -21,7 +21,7 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ field, form }) => {
         setValue("fieldId", camelCase(value));
     }, []);
 
-    const uniqueFieldIdValidator = useCallback((fieldId: string): boolean => {
+    const uniqueFieldIdValidator: Validator = useCallback((fieldId: string) => {
         const existingField = getField({ fieldId });
         if (!existingField) {
             return true;
@@ -33,19 +33,16 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ field, form }) => {
         throw new Error("Please enter a unique Field ID");
     }, []);
 
-    const fieldIdValidator: Validator = (value: string | undefined) => {
-        if (!value) {
+    const fieldIdValidator: Validator = useCallback((fieldId: string) => {
+        if (!fieldId) {
             return true;
         }
 
-        if (/^[a-zA-Z0-9_-]*$/.test(value)) {
+        if (/^[a-zA-Z0-9_-]*$/.test(fieldId)) {
             return true;
         }
-
-        throw Error(
-            'Field ID can only contain letters, numbers and chars ("-", "_") without any spaces.'
-        );
-    };
+        throw Error('Field ID may contain only letters, numbers and "-" and "_" characters.');
+    }, []);
 
     const fieldPlugin = getFieldPlugin({ name: field.name });
 
