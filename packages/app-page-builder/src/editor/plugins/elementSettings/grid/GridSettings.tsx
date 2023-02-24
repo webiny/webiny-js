@@ -69,7 +69,7 @@ export const GridSettings: React.FC<PbEditorPageElementSettingsRenderComponentPr
         [displayMode]
     );
 
-    const cellSizing =
+    const columnHeight =
         get(
             element,
             `data.settings.verticalAlign.${displayMode}`,
@@ -78,7 +78,7 @@ export const GridSettings: React.FC<PbEditorPageElementSettingsRenderComponentPr
             ? "full-height"
             : "auto";
 
-    const onCellSizingChange = (value: string) => {
+    const onColumnHeightChange = (value: string) => {
         const newElement = merge(
             {},
             element,
@@ -159,12 +159,15 @@ export const GridSettings: React.FC<PbEditorPageElementSettingsRenderComponentPr
                     </SelectField>
                 </Wrapper>
                 <Wrapper
-                    label={"Cell sizing"}
-                    leftCellSpan={4}
-                    rightCellSpan={8}
+                    label={"Column height"}
+                    leftCellSpan={5}
+                    rightCellSpan={7}
                     containerClassName={classes.simpleGrid}
                 >
-                    <SelectField value={cellSizing} onChange={value => onCellSizingChange(value)}>
+                    <SelectField
+                        value={columnHeight}
+                        onChange={value => onColumnHeightChange(value)}
+                    >
                         <option value="auto">Match content size</option>
                         <option value="full-height">Match grid height</option>
                     </SelectField>

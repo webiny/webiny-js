@@ -40,13 +40,20 @@ const verticalAlign: ElementStylesModifier = ({ element, theme }) => {
 
                 return newStyles;
             } else {
-                return {
-                    ...returnStyles,
-                    [breakpointName]: {
-                        alignItems: verticalAlign[breakpointName],
-                        flexFlow: "unset"
-                    }
-                };
+                const columns = element.data?.settings?.grid?.cellsType?.split("-")?.length || 1;
+                const rowCount = element.data.settings?.grid?.rowCount || 1;
+
+                if (rowCount > 1) {
+                    return {
+                        ...returnStyles,
+                        [breakpointName]: {
+                            flexFlow: "unset",
+                            flexWrap: "wrap",
+                            flex: `1 0 ${100 / columns}%`,
+                            alignItems: verticalAlign[breakpointName]
+                        }
+                    };
+                }
             }
         }
 

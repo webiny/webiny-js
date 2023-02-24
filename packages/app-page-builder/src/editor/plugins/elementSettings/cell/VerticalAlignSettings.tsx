@@ -115,7 +115,7 @@ const VerticalAlignSettings: React.FC<PbEditorPageElementSettingsRenderComponent
                 </ContentWrapper>
             ) : (
                 <Typography use={"body2"}>
-                    To align the cell vertically either set the “Cell Sizing” property on the Grid
+                    To align the cell vertically either set the “Column height” property on the Grid
                     element to “Match grid height”, or use the “Vertical Align” settings on the Grid
                     element to align the content vertically.
                 </Typography>

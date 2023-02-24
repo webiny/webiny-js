@@ -17,13 +17,12 @@ const gridSettings: ElementStylesModifier = ({ element, theme }) => {
         }
 
         const columns = element.data?.settings?.grid?.cellsType?.split("-")?.length || 1;
+        const rowCount = element.data.settings?.grid?.rowCount || 1;
         const value = { ...gridSettings[breakpointName] };
 
         if (value.columnGap) {
             value["--cellWidthOffset"] = `${value.columnGap - value.columnGap / columns}px`;
             value.columnGap = `${value.columnGap}px`;
-        } else {
-            value["--cellWidthOffset"] = "0px";
         }
 
         if (value.rowGap) {
@@ -35,7 +34,8 @@ const gridSettings: ElementStylesModifier = ({ element, theme }) => {
         if (
             value.flexDirection &&
             value.flexDirection !== "row" &&
-            element.data?.settings?.verticalAlign?.[breakpointName] !== "stretch"
+            element.data?.settings?.verticalAlign?.[breakpointName] !== "stretch" &&
+            rowCount === 1
         ) {
             value["& > pb-cell"] = { width: "100% !important" };
         }

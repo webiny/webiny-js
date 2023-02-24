@@ -108,27 +108,25 @@ export const GridSize: React.FC<PbEditorPageElementSettingsRenderComponentProps>
     ) as unknown as PbEditorElement;
     const currentCellsType = element.data.settings?.grid?.cellsType;
     const currentRowCount = element.data.settings?.grid?.rowCount || 1;
+    const columns = element.data?.settings?.grid?.cellsType?.split("-")?.length || 1;
     const presetPlugins = getPresetPlugins();
 
     const onInputSizeChange = (value: number, index: number) => {
-        const cellElement = element.elements[index] as PbEditorElement;
-        if (!cellElement) {
-            throw new Error(`There is no element on index ${index}.`);
-        }
+        const cellsToUpdate = [...Array(currentRowCount)].map(
+            (_, rowIndex) => index + columns * rowIndex
+        );
+        const updatedCells = element.elements.map((cell, cellIndex) => {
+            if (cellsToUpdate.includes(cellIndex)) {
+                return merge({}, cell, set({}, "data.settings.grid.size", value));
+            }
+            return cell;
+        });
+
         handler.trigger(
             new UpdateElementActionEvent({
                 element: {
-                    ...cellElement,
-                    data: {
-                        ...cellElement.data,
-                        settings: {
-                            ...(cellElement.data.settings || {}),
-                            grid: {
-                                ...(cellElement.data.settings?.grid || {}),
-                                size: value
-                            }
-                        }
-                    }
+                    ...element,
+                    elements: updatedCells
                 } as any,
                 history: true
             })
@@ -160,7 +158,7 @@ export const GridSize: React.FC<PbEditorPageElementSettingsRenderComponentProps>
             })
         );
     };
-    const totalCellsUsed = element.elements.reduce((total, cell) => {
+    const totalCellsUsed = element.elements.slice(0, columns).reduce((total, cell) => {
         return total + ((cell as PbEditorElement).data.settings?.grid?.size || 1);
     }, 0);
 
@@ -226,17 +224,19 @@ export const GridSize: React.FC<PbEditorPageElementSettingsRenderComponentProps>
                 </Grid>
 
                 <Grid className={classes.grid}>
-                    {element.elements.map((cell, index) => {
-                        const size = (cell as PbEditorElement).data.settings?.grid?.size || 1;
+                    {[...Array(columns)].map((_, index) => {
+                        const size =
+                            (element.elements?.[index] as PbEditorElement)?.data?.settings?.grid
+                                ?.size || 1;
                         return (
-                            <Cell span={12} key={`cell-size-${index}`}>
+                            <Cell span={12} key={`column-size-${index}`}>
                                 <CounterInput
                                     value={size}
-                                    label={`Cell ${index + 1}`}
-                                    minErrorMessage={"Cell can't get smaller than this."}
-                                    maxErrorMessage={"Cell can't get bigger than this."}
+                                    label={`Column ${index + 1}`}
+                                    minErrorMessage={"Column can't get smaller than this."}
+                                    maxErrorMessage={"Column can't get bigger than this."}
                                     onChange={value => onInputSizeChange(value, index)}
-                                    maxAllowed={12 - totalCellsUsed / currentRowCount}
+                                    maxAllowed={12 - totalCellsUsed}
                                 />
                             </Cell>
                         );
