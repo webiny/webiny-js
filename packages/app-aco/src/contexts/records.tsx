@@ -132,6 +132,23 @@ export const SearchRecordsProvider = ({ children }: Props) => {
                 throw new Error(error?.message || `Could not fetch record with id: ${id}`);
             }
 
+            setRecords(prevRecords => {
+                const recordIndex = prevRecords.findIndex(r => r.id === data.id);
+
+                if (recordIndex === -1) {
+                    return prevRecords;
+                }
+
+                return [
+                    ...prevRecords.slice(0, recordIndex),
+                    {
+                        ...prevRecords[recordIndex],
+                        ...data
+                    },
+                    ...prevRecords.slice(recordIndex + 1)
+                ];
+            });
+
             return data;
         },
 
@@ -172,14 +189,14 @@ export const SearchRecordsProvider = ({ children }: Props) => {
         },
 
         async updateRecord(record, contextFolderId) {
-            const { id, location } = record;
+            const { id, location, data, title, content } = record;
 
             const { data: response } = await apolloFetchingHandler(
                 loadingHandler("UPDATE", setLoading),
                 () =>
                     client.mutate<UpdateSearchRecordResponse, UpdateSearchRecordVariables>({
                         mutation: UPDATE_RECORD,
-                        variables: { id, data: { location } }
+                        variables: { id, data: { title, content, location, data } }
                     })
             );
 
@@ -187,19 +204,19 @@ export const SearchRecordsProvider = ({ children }: Props) => {
                 throw new Error("Network error while updating record");
             }
 
-            const { data, error } = response.search.updateRecord;
+            const { result, error } = response.search.updateRecord;
 
-            if (!data) {
+            if (!result) {
                 throw new Error(error?.message || "Could not update record");
             }
 
             setRecords(records =>
                 records
-                    .map(record => (record.id === id ? data : record))
+                    .map(record => (record.id === id ? result : record))
                     .filter(record => record.location.folderId === contextFolderId)
             );
 
-            return data;
+            return result;
         },
 
         async deleteRecord(record) {
