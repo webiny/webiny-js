@@ -1,15 +1,11 @@
 import React from "react";
-import { set } from "dot-prop-immutable";
 import { useApolloClient } from "@apollo/react-hooks";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { UNPUBLISH_PAGE, GET_PAGE } from "~/admin/graphql/pages";
+import { UNPUBLISH_PAGE } from "~/admin/graphql/pages";
 import { useAdminPageBuilder } from "~/admin/hooks/useAdminPageBuilder";
 import { PbPageDataItem } from "~/types";
 
-interface UsePublishRevisionHandlerParams {
-    page: PbPageDataItem;
-}
-export function usePublishRevisionHandler({ page }: UsePublishRevisionHandlerParams) {
+export function usePublishRevisionHandler() {
     const client = useApolloClient();
     const { showSnackbar } = useSnackbar();
     const pageBuilder = useAdminPageBuilder();

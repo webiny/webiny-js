@@ -23,7 +23,7 @@ const PublishRevision: React.FC<PublishRevisionProps> = props => {
     const { canPublish, canUnpublish } = usePermission();
     const { page } = props;
 
-    const { publishRevision, unpublishRevision } = usePublishRevisionHandler({ page });
+    const { publishRevision, unpublishRevision } = usePublishRevisionHandler();
 
     const { showConfirmation: showPublishConfirmation } = useConfirmationDialog({
         title: t`Publish page`,

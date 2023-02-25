@@ -1,5 +1,5 @@
 import React, { ReactElement, useMemo } from "react";
-import { PbPageData, PbPageDataItem } from "~/types";
+import { PbPageDataItem } from "~/types";
 import { useSecurity } from "@webiny/app-security";
 import usePermission from "~/hooks/usePermission";
 import { usePublishRevisionHandler } from "~/admin/plugins/pageDetails/pageRevisions/usePublishRevisionHandler";
@@ -7,7 +7,6 @@ import { useConfirmationDialog } from "@webiny/app-admin";
 import { i18n } from "@webiny/app/i18n";
 import { SecurityPermission } from "@webiny/app-security/types";
 import { MenuItem } from "@webiny/ui/Menu";
-import { useRecords } from "@webiny/app-aco";
 
 const t = i18n.ns("app-headless-cms/app-page-builder/pages-table/actions/page/publish");
 
@@ -19,7 +18,7 @@ export const RecordActionPublish = ({ record }: Props): ReactElement => {
     const { identity, getPermission } = useSecurity();
     const { canPublish, canUnpublish } = usePermission();
 
-    const { publishRevision, unpublishRevision } = usePublishRevisionHandler({ page: record });
+    const { publishRevision, unpublishRevision } = usePublishRevisionHandler();
 
     const { showConfirmation: showPublishConfirmation } = useConfirmationDialog({
         title: t`Publish page`,
