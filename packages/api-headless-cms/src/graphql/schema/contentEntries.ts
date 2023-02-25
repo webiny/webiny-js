@@ -205,7 +205,7 @@ export const createContentEntriesSchema = ({
         });
     }
 
-    return new GraphQLSchemaPlugin<CmsContext>({
+    const plugin = new GraphQLSchemaPlugin<CmsContext>({
         typeDefs: /* GraphQL */ `
             type CmsModelMeta {
                 modelId: String
@@ -385,4 +385,7 @@ export const createContentEntriesSchema = ({
             }
         }
     });
+    plugin.name = `headless-cms.graphql.schema.${context.cms.type}.contentEntries`;
+
+    return plugin;
 };

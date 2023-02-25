@@ -22,7 +22,7 @@ export const createBaseContentSchema = ({ context }: Params): GraphQLSchemaPlugi
         .byType<GraphQLScalarPlugin>("graphql-scalar")
         .map(item => item.scalar);
 
-    return new GraphQLSchemaPlugin({
+    const plugin = new GraphQLSchemaPlugin({
         typeDefs: /* GraphQL */ `
             ${scalars.map(scalar => `scalar ${scalar.name}`).join(" ")}
             scalar JSON
@@ -77,4 +77,7 @@ export const createBaseContentSchema = ({ context }: Params): GraphQLSchemaPlugi
             }
         }
     });
+    plugin.name = `headless-cms.graphql.schema.base`;
+
+    return plugin;
 };

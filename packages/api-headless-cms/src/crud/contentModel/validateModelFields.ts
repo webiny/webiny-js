@@ -17,6 +17,7 @@ import { CmsGraphQLSchemaSorterPlugin } from "~/plugins";
 import { buildSchemaPlugins } from "~/graphql/buildSchemaPlugins";
 import { createExecutableSchema } from "~/graphql/createExecutableSchema";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
+import { generateAlphaNumericId } from "@webiny/utils";
 
 const defaultTitleFieldId = "id";
 
@@ -277,18 +278,29 @@ interface CreateGraphQLSchemaParams {
 const createGraphQLSchema = async (params: CreateGraphQLSchemaParams): Promise<any> => {
     const { context, model } = params;
 
+    context.security.disableAuthorization();
+    const models = await context.cms.listModels();
+    context.security.enableAuthorization();
+
     const modelPlugins = await buildSchemaPlugins({
         context,
-        models: [model]
+        models: models.concat([model])
     });
 
-    const plugins = context.plugins.byType<GraphQLSchemaPlugin<CmsContext>>(
-        GraphQLSchemaPlugin.type
-    );
-    plugins.push(...modelPlugins);
+    const plugins = context.plugins
+        .byType<GraphQLSchemaPlugin<CmsContext>>(GraphQLSchemaPlugin.type)
+        .reduce<Record<string, GraphQLSchemaPlugin<CmsContext>>>((collection, plugin) => {
+            const name = plugin.name || `${plugin.type}-${generateAlphaNumericId(16)}`;
+            collection[name] = plugin;
+            return collection;
+        }, {});
+    for (const plugin of modelPlugins) {
+        const name = plugin.name || `${plugin.type}-${generateAlphaNumericId(16)}`;
+        plugins[name] = plugin;
+    }
 
     return createExecutableSchema({
-        plugins
+        plugins: Object.values(plugins)
     });
 };
 
@@ -392,14 +404,6 @@ export const validateModelFields = async (params: ValidateModelFieldsParams): Pr
          */
         if (!existingField) {
             continue;
-            // throw new WebinyError(
-            //     `Cannot remove the field "${lockedField.fieldId}" because it's already in use in created content.`,
-            //     "ENTRY_FIELD_USED",
-            //     {
-            //         lockedField,
-            //         fields
-            //     }
-            // );
         }
 
         if (lockedField.multipleValues !== existingField.multipleValues) {

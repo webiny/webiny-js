@@ -39,13 +39,13 @@ const PeForm: FormRenderer = props => {
                 },
                 submitForm: ({ variables }) => {
                     return apolloClient
-                        .query({ query: gql(CREATE_FORM_SUBMISSION), variables })
-                        .then(({ data }) => data.formBuilder.createFormSubmission.data);
+                        .mutate({ mutation: gql(CREATE_FORM_SUBMISSION), variables })
+                        .then(({ data }) => data.formBuilder.createFormSubmission);
                 },
                 logFormView: ({ variables }) => {
                     return apolloClient
-                        .query({ query: gql(LOG_FORM_VIEW), variables })
-                        .then(({ data }) => data.formBuilder.createFormSubmission.data);
+                        .mutate({ mutation: gql(LOG_FORM_VIEW), variables })
+                        .then(({ data }) => data.formBuilder.saveFormView);
                 }
             },
             formLayoutComponents: () => {
