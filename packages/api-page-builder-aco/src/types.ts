@@ -11,15 +11,7 @@ interface PageSearchProcessorParams {
 
 export type PbPageRecordData = Pick<
     Page,
-    | "id"
-    | "title"
-    | "createdOn"
-    | "createdBy"
-    | "savedOn"
-    | "status"
-    | "version"
-    | "locked"
-    | "path"
+    "id" | "pid" | "title" | "createdOn" | "createdBy" | "savedOn" | "status" | "version" | "locked" | "path"
 >;
 
 export interface PageSearchProcessor {
