@@ -8,7 +8,7 @@ import * as GQLCache from "~/admin/views/Pages/cache";
 const t = i18n.ns("app-headless-cms/app-page-builder/dialogs/dialog-delete-page");
 
 interface UseDeletePageParams {
-    page: PbPageData;
+    page: Pick<PbPageData, "id" | "title">;
     onDelete?: () => void;
 }
 
@@ -48,8 +48,6 @@ export const useDeletePage = ({ page, onDelete }: UseDeletePageParams) => {
                                 if (data.pageBuilder.deletePage.error) {
                                     return;
                                 }
-                                // Also, delete the page from "LIST_PAGES_ cache
-                                GQLCache.removePageFromListCache(client.cache, page);
                             }
                         }
                     }

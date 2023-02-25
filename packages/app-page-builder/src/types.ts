@@ -363,9 +363,10 @@ export interface PbPageRevision {
     savedOn: string;
 }
 
-export interface PbPageDataLink extends PbPageData {
-    link: SearchRecordItem;
-}
+export type PbPageDataItem = Pick<
+    PbPageData,
+    "id" | "title" | "createdBy" | "savedOn" | "status" | "version" | "locked" | "path"
+>;
 
 export interface PbRenderElementPluginRenderParams {
     theme: PbTheme;

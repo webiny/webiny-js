@@ -12,18 +12,22 @@ export interface FolderItem {
     savedOn: string;
 }
 
+export type GenericSearchData = {
+    [key: string]: any;
+};
+
 export interface Location {
     folderId: string;
 }
 
-export interface SearchRecordItem {
+export interface SearchRecordItem<TData extends GenericSearchData = GenericSearchData> {
     id: string;
     originalId: string;
     type: string;
-    title?: string;
-    content?: string;
+    title: string;
+    content: string;
     location: Location;
-    data?: Record<string, any>;
+    data: TData;
 }
 
 export type Loading<T extends string> = { [P in T]?: boolean };

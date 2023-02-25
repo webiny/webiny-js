@@ -6,15 +6,15 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { i18n } from "@webiny/app/i18n";
 import { useMutation } from "@apollo/react-hooks";
 import usePermission from "~/hooks/usePermission";
-import { PbPageData } from "~/types";
+import { PbPageDataItem } from "~/types";
 import { MenuItem } from "@webiny/ui/Menu";
 
 const t = i18n.ns("app-headless-cms/app-page-builder/pages-table/actions/page/edit");
 
 interface Props {
-    page: PbPageData;
+    record: PbPageDataItem;
 }
-export const PageActionEdit = ({ page }: Props): ReactElement => {
+export const RecordActionEdit = ({ record }: Props): ReactElement => {
     const { canEdit } = usePermission();
     const { history } = useRouter();
     const [inProgress, setInProgress] = useState<boolean>();
@@ -24,7 +24,7 @@ export const PageActionEdit = ({ page }: Props): ReactElement => {
     const createFromAndEdit = useCallback(async () => {
         setInProgress(true);
         const response = await createPageFrom({
-            variables: { from: page.id },
+            variables: { from: record.id },
             update(cache, { data }) {
                 if (data.pageBuilder.createPage.error) {
                     return;
@@ -39,20 +39,20 @@ export const PageActionEdit = ({ page }: Props): ReactElement => {
             return showSnackbar(error.message);
         }
         history.push(`/page-builder/editor/${encodeURIComponent(data.id)}`);
-    }, [page]);
+    }, [record]);
 
-    if (!canEdit(page)) {
+    if (!canEdit(record)) {
         return <></>;
     }
 
-    if (page.locked) {
+    if (record.locked) {
         return <MenuItem disabled={inProgress} onClick={createFromAndEdit}>{t`Edit`}</MenuItem>;
     }
     return (
         <MenuItem
             disabled={inProgress}
             onClick={() => {
-                history.push(`/page-builder/editor/${encodeURIComponent(page.id)}`);
+                history.push(`/page-builder/editor/${encodeURIComponent(record.id)}`);
             }}
         >{t`Edit`}</MenuItem>
     );

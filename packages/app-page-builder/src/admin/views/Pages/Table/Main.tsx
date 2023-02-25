@@ -23,7 +23,8 @@ import { FOLDER_ID_DEFAULT, FOLDER_TYPE } from "~/admin/constants/folders";
 
 import { MainContainer, Wrapper } from "./styled";
 
-import { FolderItem, ListMeta } from "@webiny/app-aco/types";
+import { FolderItem, ListMeta, SearchRecordItem } from "@webiny/app-aco/types";
+import { PbPageDataItem } from "~/types";
 
 interface Props {
     folderId?: string;
@@ -207,7 +208,7 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
                                 <Table
                                     ref={tableRef}
                                     folders={subFolders}
-                                    records={records}
+                                    records={records as SearchRecordItem<PbPageDataItem>[]}
                                     loading={isLoading}
                                     openPreviewDrawer={openPreviewDrawer}
                                     onSelectRow={rows => {

@@ -1,7 +1,7 @@
 import React, { forwardRef, useMemo, useState } from "react";
 
 import { ReactComponent as More } from "@material-design-icons/svg/filled/more_vert.svg";
-import { FolderDialogUpdate } from "@webiny/app-aco";
+import { FolderDialogDelete, FolderDialogUpdate } from "@webiny/app-aco";
 import { FolderItem, SearchRecordItem } from "@webiny/app-aco/types";
 import { IconButton } from "@webiny/ui/Button";
 import { Columns, DataTable } from "@webiny/ui/DataTable";
@@ -17,18 +17,17 @@ import useDeepCompareEffect from "use-deep-compare-effect";
 import { FolderName, PageName } from "./Row/Name";
 import { FolderActionDelete } from "./Row/Folder/FolderActionDelete";
 import { FolderActionEdit } from "./Row/Folder/FolderActionEdit";
-import { PageActionDelete } from "./Row/Page/PageActionDelete";
-import { PageActionEdit } from "./Row/Page/PageActionEdit";
-import { PageActionPreview } from "./Row/Page/PageActionPreview";
-import { PageActionPublish } from "./Row/Page/PageActionPublish";
+import { RecordActionDelete } from "./Row/Record/RecordActionDelete";
+import { RecordActionEdit } from "./Row/Record/RecordActionEdit";
+import { RecordActionPreview } from "./Row/Record/RecordActionPreview";
+import { RecordActionPublish } from "./Row/Record/RecordActionPublish";
 
 import statusLabels from "~/admin/constants/pageStatusesLabels";
 
-import { PbPageDataLink } from "~/types";
-import { FolderDialogDelete } from "@webiny/app-aco/components";
+import { PbPageDataItem } from "~/types";
 
 interface Props {
-    records: SearchRecordItem[];
+    records: SearchRecordItem<PbPageDataItem>[];
     folders: FolderItem[];
     loading?: boolean;
     openPreviewDrawer: () => void;
@@ -37,13 +36,13 @@ interface Props {
 
 interface Entry {
     id: string;
-    type: "PAGE" | "FOLDER";
+    type: "RECORD" | "FOLDER";
     title: string;
     createdBy: string;
     savedOn: string;
     status?: string;
     version?: number;
-    original: SearchRecordItem | FolderItem;
+    original: PbPageDataItem | FolderItem;
     selectable: boolean;
 }
 
@@ -56,21 +55,18 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
     const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
 
     const createRecordsData = useMemo(() => {
-        return (items: SearchRecordItem[]): Entry[] =>
-            items.map(item => {
-                console.log("item", item);
-                return {
-                    id: item.data.id,
-                    type: "PAGE",
-                    title: item.title || "-",
-                    createdBy: item.data.createdBy.displayName || "-",
-                    savedOn: item.data.savedOn || "-",
-                    status: item.data.status || "-",
-                    version: item.data.version || "-",
-                    original: item.data || {},
-                    selectable: true
-                };
-            });
+        return (items: SearchRecordItem<PbPageDataItem>[]): Entry[] =>
+            items.map(({ data }) => ({
+                id: data.id,
+                type: "RECORD",
+                title: data.title,
+                createdBy: data.createdBy.displayName,
+                savedOn: data.savedOn,
+                status: data.status,
+                version: data.version,
+                original: data || {},
+                selectable: true
+            }));
     }, [records]);
 
     const createFoldersData = useMemo(() => {
@@ -90,7 +86,7 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
         const foldersData = createFoldersData(folders);
         const pagesData = createRecordsData(records);
 
-        const dataset = orderBy([...foldersData, ...pagesData], ["type", "name"], ["asc", "asc"]);
+        const dataset = orderBy([...foldersData, ...pagesData], ["type"], ["asc", "asc"]);
         setData(dataset);
     }, [{ ...folders }, { ...records }]);
 
@@ -98,7 +94,7 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
         title: {
             header: "Name",
             cell: ({ id, title, type }) => {
-                if (type === "PAGE") {
+                if (type === "RECORD") {
                     return <PageName name={title} id={id} onClick={openPreviewDrawer} />;
                 } else {
                     return <FolderName name={title} id={id} />;
@@ -132,13 +128,13 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
                     return <></>;
                 }
 
-                if (type === "PAGE") {
+                if (type === "RECORD") {
                     return (
                         <Menu handle={<IconButton icon={<More />} />}>
-                            <PageActionEdit page={original as SearchRecordItem} />
-                            <PageActionPreview page={original as SearchRecordItem} />
-                            <PageActionPublish page={original as SearchRecordItem} />
-                            <PageActionDelete page={original as SearchRecordItem} />
+                            <RecordActionEdit record={original as PbPageDataItem} />
+                            <RecordActionPreview record={original as PbPageDataItem} />
+                            <RecordActionPublish record={original as PbPageDataItem} />
+                            <RecordActionDelete record={original as PbPageDataItem} />
                         </Menu>
                     );
                 } else {

@@ -6,18 +6,18 @@ import { MenuItem } from "@webiny/ui/Menu";
 import usePermission from "~/hooks/usePermission";
 import { useDeletePage } from "~/admin/views/Pages/hooks/useDeletePage";
 
-import { PbPageDataLink } from "~/types";
+import { PbPageDataItem } from "~/types";
 
 const t = i18n.ns("app-headless-cms/app-page-builder/pages-table/actions/page/delete");
 
 interface Props {
-    page: PbPageDataLink;
+    record: PbPageDataItem;
 }
-export const PageActionDelete = ({ page }: Props): ReactElement => {
+export const RecordActionDelete = ({ record }: Props): ReactElement => {
     const { canDelete } = usePermission();
-    const { openDialogDeletePage } = useDeletePage({ page });
+    const { openDialogDeletePage } = useDeletePage({ page: record });
 
-    if (!canDelete(page)) {
+    if (!canDelete(record)) {
         console.log("Does not have permission to delete page.");
         return <></>;
     }
