@@ -2,7 +2,7 @@ import { useContext, useEffect, useMemo } from "react";
 import { SearchRecordsContext } from "~/contexts/records";
 import { SearchRecordItem } from "~/types";
 
-export const useRecords = (type: string, folderId: string) => {
+export const useRecords = (type?: string, folderId?: string) => {
     const context = useContext(SearchRecordsContext);
 
     if (!context) {
@@ -17,7 +17,8 @@ export const useRecords = (type: string, folderId: string) => {
         getRecord,
         createRecord,
         updateRecord,
-        deleteRecord
+        deleteRecord,
+        syncRecord
     } = context;
 
     useEffect(() => {
@@ -25,7 +26,9 @@ export const useRecords = (type: string, folderId: string) => {
          * On first mount, call `listRecords`, which will either issue a network request, or load links from cache.
          * We don't need to store the result of it to any local state; that is managed by the context provider.
          */
-        listRecords(type, folderId);
+        if (type && folderId) {
+            listRecords(type, folderId);
+        }
     }, [type, folderId]);
 
     return useMemo(
@@ -36,15 +39,15 @@ export const useRecords = (type: string, folderId: string) => {
              * Since this method lists records with pagination, you might need to call it multiple times passing the `after` param.
              */
             loading,
-            meta: meta[folderId] || {},
+            meta: meta[folderId!] || {},
             records: records.filter(record => record.location.folderId === folderId),
             listRecords(after: string, limit?: number) {
                 return listRecords(type, folderId, limit, after);
             },
             getRecord(id: string) {
-                return getRecord(id, folderId);
+                return getRecord(id);
             },
-            createRecord(record: Omit<SearchRecordItem, "linkId">) {
+            createRecord(record: Omit<SearchRecordItem, "id">) {
                 return createRecord(record);
             },
             updateRecord(record: SearchRecordItem) {
@@ -52,6 +55,9 @@ export const useRecords = (type: string, folderId: string) => {
             },
             deleteRecord(record: SearchRecordItem) {
                 return deleteRecord(record);
+            },
+            syncRecord(id: string) {
+                return syncRecord(id);
             }
         }),
         [records, loading, meta]

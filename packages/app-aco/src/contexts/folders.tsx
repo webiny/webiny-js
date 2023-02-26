@@ -50,7 +50,8 @@ const defaultLoading: Record<LoadingActions, boolean> = {
     GET: false,
     CREATE: false,
     UPDATE: false,
-    DELETE: false
+    DELETE: false,
+    SYNC: false
 };
 
 export const FoldersProvider = ({ children }: Props) => {

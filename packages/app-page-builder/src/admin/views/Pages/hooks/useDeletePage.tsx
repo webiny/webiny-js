@@ -3,7 +3,7 @@ import { i18n } from "@webiny/app/i18n";
 import { PbPageData } from "~/types";
 import { useConfirmationDialog, useDialog, useSnackbar } from "@webiny/app-admin";
 import { useAdminPageBuilder } from "~/admin/hooks/useAdminPageBuilder";
-import * as GQLCache from "~/admin/views/Pages/cache";
+import { useRecords } from "@webiny/app-aco";
 
 const t = i18n.ns("app-headless-cms/app-page-builder/dialogs/dialog-delete-page");
 
@@ -16,6 +16,7 @@ export const useDeletePage = ({ page, onDelete }: UseDeletePageParams) => {
     const { showSnackbar } = useSnackbar();
     const { showDialog } = useDialog();
     const { deletePage, client } = useAdminPageBuilder();
+    const { syncRecord } = useRecords();
 
     const { showConfirmation } = useConfirmationDialog({
         title: t`Delete page`,
@@ -61,6 +62,9 @@ export const useDeletePage = ({ page, onDelete }: UseDeletePageParams) => {
                     showDialog(error.message, { title: t`Could not delete page.` });
                     return;
                 }
+
+                // Sync ACO record - retrieve the most updated record from network
+                await syncRecord(uniquePageId);
 
                 showSnackbar(
                     t`The page "{title}" was deleted successfully.`({

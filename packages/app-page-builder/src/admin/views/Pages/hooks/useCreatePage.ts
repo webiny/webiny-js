@@ -4,6 +4,7 @@ import { CREATE_PAGE } from "~/admin/graphql/pages";
 import * as GQLCache from "~/admin/views/Pages/cache";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useRouter } from "@webiny/react-router";
+import { useRecords } from "@webiny/app-aco";
 
 interface UseCreatePageParams {
     setLoadingLabel: () => void;
@@ -20,6 +21,7 @@ const useCreatePage = ({
     const [create] = useMutation(CREATE_PAGE);
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
+    const { syncRecord } = useRecords();
 
     const createPageMutation = useCallback(
         async ({ slug: category }) => {
@@ -51,6 +53,7 @@ const useCreatePage = ({
                     showSnackbar(error.message);
                 } else {
                     history.push(`/page-builder/editor/${encodeURIComponent(data.id)}`);
+                    await syncRecord(data.pid);
                 }
             } catch (e) {
                 showSnackbar(e.message);

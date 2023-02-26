@@ -32,7 +32,15 @@ export interface SearchRecordItem<TData extends GenericSearchData = GenericSearc
 
 export type Loading<T extends string> = { [P in T]?: boolean };
 
-export type LoadingActions = "INIT" | "LIST" | "LIST_MORE" | "GET" | "CREATE" | "UPDATE" | "DELETE";
+export type LoadingActions =
+    | "INIT"
+    | "LIST"
+    | "LIST_MORE"
+    | "GET"
+    | "CREATE"
+    | "UPDATE"
+    | "DELETE"
+    | "SYNC";
 
 export interface Error {
     code: string;

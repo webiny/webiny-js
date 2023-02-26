@@ -1,5 +1,6 @@
 import React, { ReactNode, useState } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
+import unionBy from "lodash/unionBy";
 
 import { apolloFetchingHandler, loadingHandler } from "~/handlers";
 
@@ -34,15 +35,16 @@ interface SearchRecordsContext {
     loading: Loading<LoadingActions>;
     meta: Meta<ListMeta>;
     listRecords: (
-        type: string,
-        folderId: string,
+        type?: string,
+        folderId?: string,
         limit?: number,
         after?: string
     ) => Promise<SearchRecordItem[]>;
-    getRecord: (id: string, folderId: string) => Promise<SearchRecordItem>;
-    createRecord: (link: Omit<SearchRecordItem, "id">) => Promise<SearchRecordItem>;
-    updateRecord: (link: SearchRecordItem, contextFolderId: string) => Promise<SearchRecordItem>;
-    deleteRecord(link: SearchRecordItem): Promise<true>;
+    getRecord: (id: string) => Promise<SearchRecordItem>;
+    createRecord: (record: Omit<SearchRecordItem, "id">) => Promise<SearchRecordItem>;
+    updateRecord: (record: SearchRecordItem, contextFolderId?: string) => Promise<SearchRecordItem>;
+    deleteRecord(record: SearchRecordItem): Promise<true>;
+    syncRecord: (id: string) => Promise<void>;
 }
 
 export const SearchRecordsContext = React.createContext<SearchRecordsContext | undefined>(
@@ -60,7 +62,8 @@ const defaultLoading: Record<LoadingActions, boolean> = {
     GET: false,
     CREATE: false,
     UPDATE: false,
-    DELETE: false
+    DELETE: false,
+    SYNC: false
 };
 
 export const SearchRecordsProvider = ({ children }: Props) => {
@@ -73,9 +76,9 @@ export const SearchRecordsProvider = ({ children }: Props) => {
         records,
         loading,
         meta,
-        async listRecords(type: string, folderId: string, limit = 10, after?: string) {
-            if (!folderId) {
-                throw new Error("`folderId` is mandatory");
+        async listRecords(type?: string, folderId?: string, limit = 10, after?: string) {
+            if (!folderId || !type) {
+                throw new Error("`folderId` and `type` are mandatory");
             }
 
             const action = after ? "LIST_MORE" : "LIST";
@@ -85,7 +88,8 @@ export const SearchRecordsProvider = ({ children }: Props) => {
                 () =>
                     client.query<ListSearchRecordsResponse, ListSearchRecordsQueryVariables>({
                         query: LIST_RECORDS,
-                        variables: { type, location: { folderId }, limit, after }
+                        variables: { type, location: { folderId }, limit, after },
+                        fetchPolicy: "no-cache"
                     })
             );
 
@@ -95,7 +99,7 @@ export const SearchRecordsProvider = ({ children }: Props) => {
                 throw new Error(error?.message || "Could not fetch records");
             }
 
-            setRecords(records => [...new Set([...records, ...data])]);
+            setRecords(records => unionBy(data, records, "id"));
 
             setMeta(meta => ({
                 ...meta,
@@ -131,23 +135,6 @@ export const SearchRecordsProvider = ({ children }: Props) => {
             if (!data) {
                 throw new Error(error?.message || `Could not fetch record with id: ${id}`);
             }
-
-            setRecords(prevRecords => {
-                const recordIndex = prevRecords.findIndex(r => r.id === data.id);
-
-                if (recordIndex === -1) {
-                    return prevRecords;
-                }
-
-                return [
-                    ...prevRecords.slice(0, recordIndex),
-                    {
-                        ...prevRecords[recordIndex],
-                        ...data
-                    },
-                    ...prevRecords.slice(recordIndex + 1)
-                ];
-            });
 
             return data;
         },
@@ -189,6 +176,10 @@ export const SearchRecordsProvider = ({ children }: Props) => {
         },
 
         async updateRecord(record, contextFolderId) {
+            if (!contextFolderId) {
+                throw new Error("`folderId` is mandatory");
+            }
+
             const { id, location, data, title, content } = record;
 
             const { data: response } = await apolloFetchingHandler(
@@ -253,6 +244,54 @@ export const SearchRecordsProvider = ({ children }: Props) => {
             }));
 
             return true;
+        },
+
+        async syncRecord(id) {
+            if (!id) {
+                throw new Error("Record `id` is mandatory");
+            }
+
+            const { data: response } = await apolloFetchingHandler(
+                loadingHandler("SYNC", setLoading),
+                () =>
+                    client.query<GetSearchRecordResponse, GetSearchRecordQueryVariables>({
+                        query: GET_RECORD,
+                        variables: { id },
+                        fetchPolicy: "network-only"
+                    })
+            );
+
+            const { data, error } = response.search.getRecord;
+
+            if (error && error.code !== "NOT_FOUND") {
+                throw new Error("Network error while syncing record");
+            }
+
+            if (!data) {
+                // No record found - must be deleted by previous operation
+                setRecords(records => records.filter(record => record.originalId !== id));
+            } else {
+                setRecords(prevRecords => {
+                    const recordIndex = prevRecords.findIndex(record => record.originalId === id);
+
+                    // No record found in the list - must be added by previous operation
+                    if (recordIndex === -1) {
+                        return [...prevRecords, data];
+                    }
+
+                    // Updating record found in the list
+                    const result = [
+                        ...prevRecords.slice(0, recordIndex),
+                        {
+                            ...prevRecords[recordIndex],
+                            ...data
+                        },
+                        ...prevRecords.slice(recordIndex + 1)
+                    ];
+
+                    return result;
+                });
+            }
         }
     };
 

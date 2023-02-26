@@ -12493,6 +12493,7 @@ __metadata:
     apollo-link: ^1.2.14
     graphql: ^15.7.2
     graphql-tag: ^2.12.6
+    lodash: ^4.2.0
     react: 17.0.2
     react-dnd: ^16.0.1
     react-dom: 17.0.2
@@ -29975,7 +29976,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash@npm:4.17.21, lodash@npm:>=4.17.21, lodash@npm:^4.0.1, lodash@npm:^4.17.10, lodash@npm:^4.17.11, lodash@npm:^4.17.12, lodash@npm:^4.17.14, lodash@npm:^4.17.15, lodash@npm:^4.17.19, lodash@npm:^4.17.20, lodash@npm:^4.17.21, lodash@npm:^4.17.3, lodash@npm:^4.17.4, lodash@npm:^4.17.5, lodash@npm:^4.2.1, lodash@npm:^4.3.0, lodash@npm:^4.4.2, lodash@npm:^4.5.0, lodash@npm:^4.6.2, lodash@npm:~4.17.21, lodash@npm:~>=4.17.21":
+"lodash@npm:4.17.21, lodash@npm:>=4.17.21, lodash@npm:^4.0.1, lodash@npm:^4.17.10, lodash@npm:^4.17.11, lodash@npm:^4.17.12, lodash@npm:^4.17.14, lodash@npm:^4.17.15, lodash@npm:^4.17.19, lodash@npm:^4.17.20, lodash@npm:^4.17.21, lodash@npm:^4.17.3, lodash@npm:^4.17.4, lodash@npm:^4.17.5, lodash@npm:^4.2.0, lodash@npm:^4.2.1, lodash@npm:^4.3.0, lodash@npm:^4.4.2, lodash@npm:^4.5.0, lodash@npm:^4.6.2, lodash@npm:~4.17.21, lodash@npm:~>=4.17.21":
   version: 4.17.21
   resolution: "lodash@npm:4.17.21"
   checksum: eb835a2e51d381e561e508ce932ea50a8e5a68f4ebdd771ea240d3048244a8d13658acbd502cd4829768c56f2e16bdd4340b9ea141297d472517b83868e677f7

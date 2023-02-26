@@ -3,14 +3,16 @@ import { useApolloClient } from "@apollo/react-hooks";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { UNPUBLISH_PAGE } from "~/admin/graphql/pages";
 import { useAdminPageBuilder } from "~/admin/hooks/useAdminPageBuilder";
+import { useRecords } from "@webiny/app-aco";
 import { PbPageDataItem } from "~/types";
 
 export function usePublishRevisionHandler() {
     const client = useApolloClient();
     const { showSnackbar } = useSnackbar();
     const pageBuilder = useAdminPageBuilder();
+    const { syncRecord } = useRecords();
 
-    const publishRevision = async (revision: Pick<PbPageDataItem, "id" | "version">) => {
+    const publishRevision = async (revision: Pick<PbPageDataItem, "id" | "version" | "pid">) => {
         const response = await pageBuilder.publishPage(revision, {
             client: pageBuilder.client
         });
@@ -19,6 +21,9 @@ export function usePublishRevisionHandler() {
             if (error) {
                 return showSnackbar(error.message);
             }
+
+            // Sync ACO record - retrieve the most updated record from network
+            await syncRecord(revision.pid);
 
             showSnackbar(
                 <span>
@@ -29,7 +34,7 @@ export function usePublishRevisionHandler() {
     };
 
     const unpublishRevision = async (
-        revision: Pick<PbPageDataItem, "id" | "version">
+        revision: Pick<PbPageDataItem, "id" | "version" | "pid">
     ): Promise<void> => {
         const { data: res } = await client.mutate({
             mutation: UNPUBLISH_PAGE,
@@ -46,6 +51,9 @@ export function usePublishRevisionHandler() {
         if (error) {
             return showSnackbar(error.message);
         }
+
+        // Sync ACO record - retrieve the most updated record from network
+        await syncRecord(revision.pid);
 
         showSnackbar(
             <span>
