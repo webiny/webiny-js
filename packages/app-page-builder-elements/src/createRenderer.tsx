@@ -1,12 +1,15 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { usePageElements } from "~/hooks/usePageElements";
-import { Renderer, Element, RendererLoader } from "~/types";
+import { Renderer, Element, RendererLoader, RendererProps } from "~/types";
 import { Theme, StylesObject } from "@webiny/theme/types";
 import { RendererProvider } from "~/contexts/Renderer";
 import { CSSObject, ClassNames } from "@emotion/core";
 import { createObjectHash } from "~/utils";
 
 type GetElement = <TElementData = Record<string, any>>() => Element<TElementData>;
+type Loader = <TRenderComponentProps, TLoaderData>(
+    params: RendererOptionsLoaderParams<TRenderComponentProps>
+) => TLoaderData;
 
 interface GetStylesParams {
     theme: Theme;
@@ -15,14 +18,14 @@ interface GetStylesParams {
 
 interface RendererOptionsLoaderParams<TRenderComponentProps> {
     getElement: GetElement;
-    props: TRenderComponentProps
+    props: TRenderComponentProps;
 }
 
 export type CreateRendererOptions<TRenderComponentProps> = Partial<{
     propsAreEqual: (prevProps: TRenderComponentProps, nextProps: TRenderComponentProps) => boolean;
     themeStyles: StylesObject | ((params: GetStylesParams) => StylesObject);
     baseStyles: StylesObject | ((params: GetStylesParams) => StylesObject);
-    loader: (params: RendererOptionsLoaderParams<TRenderComponentProps>) => Promise<any>;
+    loader?: Loader;
 }>;
 
 const DEFAULT_RENDERER_STYLES: StylesObject = {
@@ -32,38 +35,90 @@ const DEFAULT_RENDERER_STYLES: StylesObject = {
     boxSizing: "border-box"
 };
 
-function useLoaderCachedData<TRenderComponentProps>(
-    options: CreateRendererOptions<TRenderComponentProps> = {},
-    element: Element
-) {
-    if (!options.loader) {
+const getElementCacheKey = (element: Element) => {
+    const elementDataHash = createObjectHash(element.data);
+    return `${element.id}-${elementDataHash}`;
+};
+
+const getLoaderCachedData = (element: Element) => {
+    const elementCacheKey = getElementCacheKey(element);
+    let data = localStorage[`pe_loader_data_cache_${elementCacheKey}`];
+    if (data) {
+        return data;
+    }
+
+    data = window?.__PE_LOADER_DATA_CACHE__?.[elementCacheKey];
+    if (data) {
+        return data;
+    }
+
+    const htmlElement = document.querySelector(
+        `pe-loader-data-cache[data-key="${elementCacheKey}"]`
+    );
+    if (!htmlElement) {
         return null;
     }
 
-    return useMemo<null | Awaited<ReturnType<typeof options.loader>>>(() => {
-        const elementDataHash = createObjectHash(element.data);
-        const elementCacheKey = `${element.id}-${elementDataHash}`;
+    const cachedResultElementValue = htmlElement.getAttribute("data-value");
+    if (!cachedResultElementValue) {
+        return null;
+    }
 
-        const cachedResultElement =
-            localStorage[`pe_loader_data_cache_${elementCacheKey}`] ||
-            window?.__PE_LOADER_DATA_CACHE__?.[elementCacheKey] ||
-            document.querySelector(`pe-loader-data-cache[data-key="${elementCacheKey}"]`);
+    try {
+        return JSON.parse(cachedResultElementValue);
+    } catch {
+        return null;
+    }
+};
 
-        if (!cachedResultElement) {
-            return null;
-        }
+function useLoader<TRenderComponentProps>(
+    options: CreateRendererOptions<TRenderComponentProps>,
+    props: RendererProps<TRenderComponentProps>
+): RendererLoader {
+    const optionsLoader = options.loader;
+    if (!optionsLoader) {
+        return { data: null, loading: false, cacheHit: false };
+    }
 
-        const cachedResultElementValue = cachedResultElement.getAttribute("data-value");
-        if (!cachedResultElementValue) {
-            return null;
-        }
+    const { element } = props;
+    const elementDataHash = createObjectHash(element.data);
 
-        try {
-            return JSON.parse(cachedResultElementValue);
-        } catch {
-            return null;
-        }
-    }, []);
+    const loaderCachedData = useMemo<Awaited<ReturnType<typeof optionsLoader>>>(
+        () => getLoaderCachedData(element),
+        []
+    );
+
+    const [loader, setLoader] = useState<RendererLoader>(
+        loaderCachedData
+            ? {
+                  data: loaderCachedData,
+                  loading: false,
+                  cacheHit: true
+              }
+            : { data: null, loading: Boolean(options.loader), cacheHit: false }
+    );
+
+    useEffect(() => {
+        const loaderParams: RendererOptionsLoaderParams<TRenderComponentProps> = {
+            getElement: (() => element) as GetElement,
+            props
+        };
+
+        optionsLoader(loaderParams).then(data => {
+            const html = `<pe-loader-data-cache data-key="${
+                element.id
+            }-${elementDataHash}" data-value='${JSON.stringify(data)}'></pe-loader-data-cache>`;
+            document.body.insertAdjacentHTML("beforeend", html);
+
+            setLoader({ ...loader, data, loading: false });
+        });
+
+        return () => {
+            // TODO: clean all stored caches.
+        };
+    }, [elementDataHash]);
+
+    return loader;
 }
 
 export function createRenderer<TRenderComponentProps = {}>(
@@ -87,46 +142,13 @@ export function createRenderer<TRenderComponentProps = {}>(
 
         const { element, meta, ...componentProps } = props;
 
-        const loaderCachedData = useLoaderCachedData(options, element);
+        // 1. Loader.
+        const loader = useLoader<TRenderComponentProps>(options, props);
 
-        const [loader, setLoader] = useState<RendererLoader>(
-            loaderCachedData
-                ? {
-                      data: loaderCachedData,
-                      loading: false,
-                      cacheHit: true
-                  }
-                : { data: null, loading: Boolean(options.loader), cacheHit: false }
-        );
-
-        const elementDataHash = createObjectHash(element.data);
-
-        useEffect(() => {
-            if (!options.loader || loaderCachedData) {
-                return;
-            }
-
-            const loaderParams: RendererOptionsLoaderParams<TRenderComponentProps> = {
-                getElement: (() => element) as GetElement,
-                props
-            };
-
-            options.loader(loaderParams).then(data => {
-                const html = `<pe-loader-data-cache data-key="${
-                    element.id
-                }-${elementDataHash}" data-value='${JSON.stringify(data)}'></pe-loader-data-cache>`;
-                document.body.insertAdjacentHTML("beforeend", html);
-
-                setLoader({ ...loader, data, loading: false });
-            });
-
-            return () => {
-                // TODO: clean all stored caches.
-            };
-        }, [elementDataHash]);
-
+        // 2. Attributes.
         const attributes = getElementAttributes(element);
 
+        // 3. Styles.
         const styles: CSSObject[] = [DEFAULT_RENDERER_STYLES];
 
         if (options.baseStyles) {
