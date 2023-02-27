@@ -3,7 +3,7 @@ import {
     createWebsitePulumiApp as baseCreateWebsitePulumiApp,
     CreateWebsitePulumiAppParams as BaseCreateWebsitePulumiAppParams
 } from "~/apps/website/createWebsitePulumiApp";
-import { isResourceOfType } from "@webiny/pulumi";
+import { isResourceOfType, PulumiAppParam } from "@webiny/pulumi";
 
 export type WebsitePulumiApp = ReturnType<typeof createWebsitePulumiApp>;
 
@@ -15,27 +15,32 @@ export type WebsitePulumiAppAdvancedVpcParams = Partial<{
 
 export interface CreateWebsitePulumiAppParams
     extends Omit<BaseCreateWebsitePulumiAppParams, "vpc"> {
-    vpc?: boolean | WebsitePulumiAppAdvancedVpcParams;
+    vpc?: PulumiAppParam<boolean | WebsitePulumiAppAdvancedVpcParams>;
 }
 
 export function createWebsitePulumiApp(projectAppParams: CreateWebsitePulumiAppParams = {}) {
-    const { vpc, pulumi } = projectAppParams;
-    const usingAdvancedVpcParams = vpc && typeof vpc !== "boolean";
-
     return baseCreateWebsitePulumiApp({
         ...projectAppParams,
         // If using existing VPC, we ensure `vpc` param is set to `false`.
-        vpc: usingAdvancedVpcParams && vpc.useExistingVpc ? false : Boolean(vpc),
+        vpc: ({ getParam }) => {
+            const vpc = getParam(projectAppParams.vpc);
+            const usingAdvancedVpcParams = vpc && typeof vpc !== "boolean";
+
+            return usingAdvancedVpcParams && vpc.useExistingVpc ? false : Boolean(vpc);
+        },
         pulumi(...args) {
+            const [{ getParam }] = args;
+            const vpc = getParam(projectAppParams.vpc);
+            const usingAdvancedVpcParams = vpc && typeof vpc !== "boolean";
+
             // Not using advanced VPC params? Then immediately exit.
             if (!usingAdvancedVpcParams) {
-                return pulumi?.(...args);
+                return projectAppParams.pulumi?.(...args);
             }
 
             const [{ onResource, addResource }] = args;
             const { useExistingVpc } = vpc;
 
-            // 1. We first deal with "existing VPC" setup.
             if (useExistingVpc) {
                 if (!useExistingVpc.lambdaFunctionsVpcConfig) {
                     throw new Error(
@@ -62,7 +67,7 @@ export function createWebsitePulumiApp(projectAppParams: CreateWebsitePulumiAppP
                 });
             }
 
-            return pulumi?.(...args);
+            return projectAppParams.pulumi?.(...args);
         }
     });
 }
