@@ -1,6 +1,6 @@
 const DATA_FIELD = (extra = "") => /* GraphQL */ `
     {
-        originalId
+        id
         type
         title
         content

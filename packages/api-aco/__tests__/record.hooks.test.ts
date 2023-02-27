@@ -2,7 +2,7 @@ import { useGraphQlHandler } from "./utils/useGraphQlHandler";
 
 import { assignRecordLifecycleEvents, tracker } from "./mocks/lifecycle.mock";
 
-const originalId = "record-originalId-lifecycle-events";
+const id = "id-lifecycle-events";
 const type = "demo-lifecycle-events";
 const title = "Record Lifecycle Events Title";
 const content = "Record Lifecycle Events Content";
@@ -23,7 +23,7 @@ describe("Search Record Lifecycle Events", () => {
     it("should trigger create lifecycle events", async () => {
         const [response] = await search.createRecord({
             data: {
-                originalId,
+                id,
                 type,
                 title,
                 content,
@@ -39,7 +39,7 @@ describe("Search Record Lifecycle Events", () => {
                 search: {
                     createRecord: {
                         data: {
-                            originalId,
+                            id: expect.stringContaining(id),
                             type,
                             title,
                             content,
@@ -65,7 +65,7 @@ describe("Search Record Lifecycle Events", () => {
     it("should trigger update lifecycle events", async () => {
         await search.createRecord({
             data: {
-                originalId,
+                id,
                 type,
                 title,
                 content,
@@ -79,7 +79,7 @@ describe("Search Record Lifecycle Events", () => {
         tracker.reset();
 
         const [updateResponse] = await search.updateRecord({
-            id: originalId,
+            id,
             data: {
                 title: `${title} updated`,
                 content: `${content} updated`,
@@ -125,7 +125,7 @@ describe("Search Record Lifecycle Events", () => {
     it("should trigger delete lifecycle events", async () => {
         await search.createRecord({
             data: {
-                originalId,
+                id,
                 type,
                 title,
                 content,
@@ -139,7 +139,7 @@ describe("Search Record Lifecycle Events", () => {
         tracker.reset();
 
         const [deleteResponse] = await search.deleteRecord({
-            id: originalId
+            id
         });
 
         expect(deleteResponse).toMatchObject({
