@@ -30,12 +30,15 @@ const gridSettings: ElementStylesModifier = ({ element, theme }) => {
         }
 
         // If we have flex direction set to "column" or "column-reverse",
-        // we also want to apply 100% width to direct `pb-cell` elements.
+        // we also want to apply 100% width to direct `pb-cell` elements
+        // (only applies to single-row grid or multi-row grid on mobile).
         if (
             value.flexDirection &&
             value.flexDirection !== "row" &&
             element.data?.settings?.verticalAlign?.[breakpointName] !== "stretch" &&
-            rowCount === 1
+            (rowCount === 1 ||
+                breakpointName === "mobile-landscape" ||
+                breakpointName === "mobile-portrait")
         ) {
             value["& > pb-cell"] = { width: "100% !important" };
         }

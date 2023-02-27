@@ -170,7 +170,8 @@ export const GridSize: React.FC<PbEditorPageElementSettingsRenderComponentProps>
             set({}, `data.settings.gridSettings.${DisplayMode.DESKTOP}.flexDirection`, "column"),
             set({}, `data.settings.gridSettings.${DisplayMode.TABLET}.flexDirection`, "column"),
             set({}, `data.settings.verticalAlign.${DisplayMode.DESKTOP}`, "stretch"),
-            set({}, `data.settings.verticalAlign.${DisplayMode.TABLET}`, "stretch")
+            set({}, `data.settings.verticalAlign.${DisplayMode.TABLET}`, "stretch"),
+            set({}, `data.settings.verticalAlign.${DisplayMode.MOBILE_LANDSCAPE}`, "flex-start")
         );
         handler.trigger(
             new UpdateElementActionEvent({
