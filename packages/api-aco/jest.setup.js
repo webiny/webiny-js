@@ -1,6 +1,6 @@
 const base = require("../../jest.config.base");
 const items = require("@webiny/project-utils/testing/presets")(
-    ["@webiny/api-aco", "storage-operations"],
+    ["@webiny/api-headless-cms", "storage-operations"],
     "storage-operations"
 );
 

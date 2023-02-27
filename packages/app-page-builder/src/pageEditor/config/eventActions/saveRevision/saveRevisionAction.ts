@@ -5,6 +5,7 @@ import { SaveRevisionActionArgsType } from "./types";
 import { ToggleSaveRevisionStateActionEvent } from "./event";
 import { PageAtomType } from "~/pageEditor/state";
 import { PageEventActionCallable } from "~/pageEditor/types";
+import { PbElement } from "~/types";
 
 interface PageRevisionType extends Pick<PageAtomType, "title" | "snippet" | "path" | "settings"> {
     category: string;
@@ -23,8 +24,47 @@ const triggerOnFinish = (args?: SaveRevisionActionArgsType): void => {
     }
     args.onFinish();
 };
-// TODO @ts-refactor not worth it
-let debouncedSave: any = null;
+
+let debouncedSave: ReturnType<typeof lodashDebounce> | null = null;
+
+const syncTemplateVariables = (content: PbElement) => {
+    const templateVariables = [];
+
+    for (const block of content.elements) {
+        if (block.data.variables?.length > 0) {
+            templateVariables.push({
+                blockId: block.data.templateBlockId,
+                variables: block.data.variables
+            });
+        }
+    }
+
+    const template = { ...content.data.template, variables: templateVariables };
+
+    return { ...content, data: { ...content.data, template }, elements: [] };
+};
+
+const removeTemplateBlockIds = (content: PbElement) => {
+    const blocks = content.elements.map(block => {
+        // we need to drop templateBlockId property, when block is no longer inside template
+        // we also remove variables from unlinked blocks, since they don't need them outside template
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { templateBlockId, variables, ...blockData } = block.data;
+        if (block.data.blockId) {
+            return {
+                ...block,
+                data: { ...blockData, variables }
+            };
+        } else {
+            return {
+                ...block,
+                data: blockData
+            };
+        }
+    });
+
+    return { ...content, elements: blocks };
+};
 
 export const saveRevisionAction: PageEventActionCallable<SaveRevisionActionArgsType> = async (
     state,
@@ -37,12 +77,20 @@ export const saveRevisionAction: PageEventActionCallable<SaveRevisionActionArgsT
         };
     }
 
+    let updatedContent = (await state.getElementTree()) as PbElement;
+
+    if (updatedContent.data.template) {
+        updatedContent = syncTemplateVariables(updatedContent);
+    } else {
+        updatedContent = removeTemplateBlockIds(updatedContent);
+    }
+
     const data: PageRevisionType = {
         title: state.page.title,
         snippet: state.page.snippet,
         path: state.page.path,
         settings: state.page.settings,
-        content: await state.getElementTree(),
+        content: updatedContent,
         category: state.page.category ? state.page.category.slug : ""
     };
 

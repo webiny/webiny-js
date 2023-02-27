@@ -17,7 +17,6 @@
     "@babel/runtime": "^7.19.0",
     "@commodo/fields": "beta",
     "@webiny/api": "0.0.0",
-    "@webiny/api-aco": "0.0.0",
     "@webiny/api-file-manager": "0.0.0",
     "@webiny/api-i18n": "0.0.0",
     "@webiny/api-prerendering-service": "0.0.0",
@@ -48,7 +47,8 @@
     "rimraf": "^3.0.2",
     "stream": "^0.0.2",
     "uniqid": "^5.2.0",
-    "zip-local": "^0.3.4"
+    "zip-local": "^0.3.4",
+    "zod": "^3.20.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.19.3",
@@ -59,7 +59,6 @@
     "@types/extract-zip": "^1.6.2",
     "@types/node-fetch": "^2.6.1",
     "@types/rimraf": "^3.0.2",
-    "@webiny/api-aco": "0.0.0",
     "@webiny/api-file-manager-ddb": "0.0.0",
     "@webiny/api-i18n-ddb": "0.0.0",
     "@webiny/api-security-so-ddb": "0.0.0",

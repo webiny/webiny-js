@@ -17,6 +17,7 @@ interface GetRowHeightParams {
     index: number;
     blocks: PbEditorBlockPlugin[];
 }
+
 const getRowHeight = (params: GetRowHeightParams): number => {
     const { index, blocks } = params;
     let height = get(blocks[index], "image.meta.height", 50);
@@ -66,7 +67,9 @@ const BlocksList: React.FC<BlocksListProps> = props => {
     const prevProps = useRef<BlocksListProps | null>(null);
 
     useEffect(() => {
-        rightPanelElement.current = document.querySelector(".webiny-split-view__right-panel");
+        rightPanelElement.current = document.querySelector(
+            ".webiny-split-view__right-panel-wrapper"
+        );
         setTimestamp(new Date().getTime());
     }, []);
 

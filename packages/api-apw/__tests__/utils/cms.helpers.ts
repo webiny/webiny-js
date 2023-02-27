@@ -1,6 +1,7 @@
 import { setupDefaultWorkflow } from "./helpers";
 import { ApwWorkflowApplications } from "~/types";
 import { CmsGroup, CmsModel } from "@webiny/api-headless-cms/types";
+import { useGraphQlHandler } from "~tests/utils/useGraphQlHandler";
 
 const createGroupData = () => {
     return {
@@ -217,13 +218,20 @@ const setupEntry = async (handler: any) => {
     };
 };
 
-export const createSetupForEntryContentReview = async (handler: any) => {
-    const workflow = await setupDefaultWorkflow(handler, {
+interface CreateSetupForEntryContentReviewParams {
+    cmsHandler: ReturnType<typeof useGraphQlHandler>;
+    coreHandler: ReturnType<typeof useGraphQlHandler>;
+}
+export const createSetupForEntryContentReview = async (
+    params: CreateSetupForEntryContentReviewParams
+) => {
+    const { coreHandler, cmsHandler } = params;
+    const workflow = await setupDefaultWorkflow(coreHandler, {
         app: ApwWorkflowApplications.CMS
     });
 
-    await handler.until(
-        () => handler.listWorkflowsQuery({}).then(([data]: any) => data),
+    await coreHandler.until(
+        () => coreHandler.listWorkflowsQuery({}).then(([data]: any) => data),
         (response: any) => {
             const list = response.data.apw.listWorkflows.data;
             return list.length === 1;
@@ -233,7 +241,7 @@ export const createSetupForEntryContentReview = async (handler: any) => {
         }
     );
 
-    const { entry, model, group } = await setupEntry(handler);
+    const { entry, model, group } = await setupEntry(cmsHandler);
 
     return {
         entry,

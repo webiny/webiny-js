@@ -8,15 +8,6 @@ export const createCategoryFactory = (manager: CategoryManager) => {
                 slug: "items"
             }
         });
-        const category = createCategoryResponse.data.createCategory.data as ProductCategory;
-
-        await manager.until(
-            () => manager.listCategories().then(([data]) => data),
-            ({ data }: any) => {
-                return data.listCategories.data[0].id === category.id;
-            },
-            { name: "make sure category exists" }
-        );
-        return category;
+        return createCategoryResponse.data.createCategory.data as ProductCategory;
     };
 };

@@ -11,15 +11,18 @@ import {
     JsonScalar,
     DateTimeZScalar
 } from "@webiny/handler-graphql/builtInTypes";
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
 import { GraphQLScalarType } from "graphql";
+import { CmsGraphQLSchemaPlugin } from "~/plugins";
 
-export const createBaseContentSchema = (context: CmsContext): GraphQLSchemaPlugin => {
+interface Params {
+    context: CmsContext;
+}
+export const createBaseContentSchema = ({ context }: Params): CmsGraphQLSchemaPlugin => {
     const scalars = context.plugins
         .byType<GraphQLScalarPlugin>("graphql-scalar")
         .map(item => item.scalar);
 
-    return new GraphQLSchemaPlugin({
+    const plugin = new CmsGraphQLSchemaPlugin({
         typeDefs: /* GraphQL */ `
             ${scalars.map(scalar => `scalar ${scalar.name}`).join(" ")}
             scalar JSON
@@ -74,4 +77,7 @@ export const createBaseContentSchema = (context: CmsContext): GraphQLSchemaPlugi
             }
         }
     });
+    plugin.name = `headless-cms.graphql.schema.baseContentSchema`;
+
+    return plugin;
 };

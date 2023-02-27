@@ -62,7 +62,7 @@ export const ElementControls = () => {
                 type={element.type}
                 isVisible={() => true}
             >
-                {({ drop }) => <ElementControlsOverlay innerRef={drop} />}
+                {({ drop }) => <ElementControlsOverlay dropRef={drop} />}
             </Droppable>
         );
     }

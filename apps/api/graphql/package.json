@@ -7,7 +7,6 @@
   },
   "dependencies": {
     "@webiny/api-aco": "0.0.0",
-    "@webiny/api-aco-so-ddb": "0.0.0",
     "@webiny/api-admin-users-cognito": "0.0.0",
     "@webiny/api-admin-users-cognito-so-ddb": "0.0.0",
     "@webiny/api-apw": "0.0.0",

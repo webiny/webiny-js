@@ -23,7 +23,6 @@ describe("cms entry status filtering", () => {
     };
 
     const {
-        until,
         createCategory,
         publishCategory,
         listCategories,
@@ -121,30 +120,6 @@ describe("cms entry status filtering", () => {
                 }
             });
         }
-
-        await until(
-            () => listCategories().then(([data]) => data),
-            ({ data }: any) => {
-                if (data.listCategories.meta.totalCount !== categories.length) {
-                    return false;
-                }
-                for (const i in data.listCategories.data) {
-                    if (Number(i) % 2 === 0) {
-                        continue;
-                    } else if (data.listCategories.data[i].meta.status === "published") {
-                        continue;
-                    }
-                    return false;
-                }
-                return true;
-            },
-            {
-                name: "list all fruits",
-                tries: 20,
-                debounce: 2000,
-                wait: 2000
-            }
-        );
 
         const [listCategoriesResponse] = await listCategories({
             sort: ["createdOn_ASC"],

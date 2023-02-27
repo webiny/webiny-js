@@ -47,7 +47,7 @@ export interface ExportPagesDialogProps {
     ids?: string[];
     where?: Record<string, any>;
     sort?: string;
-    search: { query: string };
+    search?: { query: string };
 }
 
 const ExportPageLoadingDialogMessage: React.FC<ExportPagesDialogProps> = props => {

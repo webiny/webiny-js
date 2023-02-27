@@ -1,18 +1,16 @@
 import { GraphQLSchema } from "graphql";
-import { makeExecutableSchema } from "@graphql-tools/schema";
 import { ApiEndpoint, CmsContext } from "~/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { NotAuthorizedError } from "@webiny/api-security";
 import { PluginCollection } from "@webiny/plugins/types";
 import debugPlugins from "@webiny/handler-graphql/debugPlugins";
 import processRequestBody from "@webiny/handler-graphql/processRequestBody";
-import { buildSchemaPlugins } from "./buildSchemaPlugins";
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
 import { GraphQLRequestBody } from "@webiny/handler-graphql/types";
 import { RoutePlugin } from "@webiny/handler";
 import WebinyError from "@webiny/error";
 // @ts-ignore `code-frame` has no types
 import codeFrame from "code-frame";
+import { generateSchema } from "~/graphql/generateSchema";
 
 interface SchemaCache {
     key: string;
@@ -24,36 +22,20 @@ interface GetSchemaParams {
     locale: I18NLocale;
 }
 
+const createRequestBody = (body: unknown): GraphQLRequestBody | GraphQLRequestBody[] => {
+    /**
+     * We are trusting that the body payload is correct.
+     * The `processRequestBody` will fail if it is not.
+     */
+    return typeof body === "string" ? JSON.parse(body) : body;
+};
+
 const schemaList = new Map<string, SchemaCache>();
 
 const generateCacheKey = async (args: GetSchemaParams): Promise<string> => {
     const { context, locale, type } = args;
     const lastModelChange = await context.cms.getModelLastChange();
     return [locale.code, type, lastModelChange.toISOString()].join("#");
-};
-
-const generateSchema = async (args: GetSchemaParams): Promise<GraphQLSchema> => {
-    const { context } = args;
-
-    context.plugins.register(await buildSchemaPlugins(context));
-    /**
-     * Really hard to type this to satisfy the makeExecutableSchema
-     */
-    // TODO @ts-refactor
-    const typeDefs: any = [];
-    const resolvers: any = [];
-
-    // Get schema definitions from plugins
-    const schemaPlugins = context.plugins.byType<GraphQLSchemaPlugin>(GraphQLSchemaPlugin.type);
-    for (const pl of schemaPlugins) {
-        typeDefs.push(pl.schema.typeDefs);
-        resolvers.push(pl.schema.resolvers);
-    }
-
-    return makeExecutableSchema({
-        typeDefs,
-        resolvers
-    });
 };
 
 /**
@@ -66,46 +48,47 @@ const getSchema = async (params: GetSchemaParams): Promise<GraphQLSchema> => {
     const id = `${tenantId}#${type}#${locale.code}`;
 
     const cacheKey = await generateCacheKey(params);
-    if (!schemaList.has(id)) {
-        try {
-            const schema = await generateSchema(params);
-            schemaList.set(id, {
-                key: cacheKey,
-                schema
-            });
-            return schema;
-        } catch (err) {
-            if (!Array.isArray(err.locations)) {
-                throw new WebinyError({
-                    ...err
-                });
-            }
-            const [location] = err.locations;
-
+    const cachedSchema = schemaList.get(id);
+    if (cachedSchema?.key === cacheKey) {
+        return cachedSchema.schema;
+    }
+    // Load model data
+    context.security.disableAuthorization();
+    const models = (await context.cms.listModels()).filter(model => model.isPrivate !== true);
+    context.security.enableAuthorization();
+    try {
+        const schema = await generateSchema({
+            ...params,
+            models
+        });
+        schemaList.set(id, {
+            key: cacheKey,
+            schema
+        });
+        return schema;
+    } catch (err) {
+        if (!Array.isArray(err.locations)) {
             throw new WebinyError({
-                code: "INVALID_GRAPHQL_SCHEMA",
                 message: err.message,
+                code: err.code || "INVALID_GRAPHQL_SCHEMA_LOCATIONS",
                 data: {
-                    invalidSegment: codeFrame(err.source.body, location.line, location.column, {
-                        frameSize: 15
-                    })
+                    ...(err.data || {}),
+                    locations: err.locations
                 }
             });
         }
+        const [location] = err.locations;
+
+        throw new WebinyError({
+            code: "INVALID_GRAPHQL_SCHEMA",
+            message: err.message,
+            data: {
+                invalidSegment: codeFrame(err.source.body, location.line, location.column, {
+                    frameSize: 15
+                })
+            }
+        });
     }
-    /**
-     * Safe to cast because check was done few lines up.
-     */
-    const cache = schemaList.get(id) as SchemaCache;
-    if (cache.key === cacheKey) {
-        return cache.schema;
-    }
-    const schema = await generateSchema(params);
-    schemaList.set(id, {
-        key: cacheKey,
-        schema
-    });
-    return schema;
 };
 
 const checkEndpointAccess = async (context: CmsContext): Promise<void> => {
@@ -119,20 +102,22 @@ const checkEndpointAccess = async (context: CmsContext): Promise<void> => {
     }
 };
 
-const formatErrorPayload = (error: Error) => {
+const formatErrorPayload = (error: Error): string => {
     if (error instanceof WebinyError) {
-        return {
+        return JSON.stringify({
+            type: "CmsGraphQLWebinyError",
             message: error.message,
             code: error.code,
             data: error.data
-        };
+        });
     }
 
-    return {
+    return JSON.stringify({
+        type: "Error",
         name: error.name,
         message: error.message,
         stack: error.stack
-    };
+    });
 };
 
 export interface GraphQLHandlerFactoryParams {
@@ -155,24 +140,44 @@ const cmsRoutes = new RoutePlugin<CmsContext>(({ onPost, onOptions, context }) =
             });
         }
 
+        let schema: GraphQLSchema;
         try {
-            const schema = await getSchema({
+            schema = await getSchema({
                 context,
                 locale: context.cms.getLocale(),
                 type: context.cms.type as ApiEndpoint
             });
-            const body: GraphQLRequestBody | GraphQLRequestBody[] = request.body as any;
+        } catch (ex) {
+            console.log(`Error while generating the schema.`);
+            console.log(formatErrorPayload(ex));
+            throw ex;
+        }
+
+        let body: GraphQLRequestBody | GraphQLRequestBody[] = [];
+        try {
+            body = createRequestBody(request.body);
+        } catch (ex) {
+            console.log(`Error while creating the body request.`);
+            console.log(formatErrorPayload(ex));
+            throw ex;
+        }
+
+        try {
             const result = await processRequestBody(body, schema, context);
             return reply.code(200).send(result);
         } catch (ex) {
-            return reply.code(500).send(formatErrorPayload(ex));
+            console.log(`Error while processing the body request.`);
+            console.log(formatErrorPayload(ex));
+            throw ex;
         }
     });
 
     onOptions("/cms/:type(^manage|preview|read$)/:locale", async (_, reply) => {
-        return reply.hijack().send({});
+        return reply.status(204).send({}).hijack();
     });
 });
+
+cmsRoutes.name = "headless-cms.graphql.route.default";
 
 export const graphQLHandlerFactory = ({ debug }: GraphQLHandlerFactoryParams): PluginCollection => {
     return [

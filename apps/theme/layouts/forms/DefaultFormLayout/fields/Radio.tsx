@@ -2,7 +2,8 @@ import * as React from "react";
 import { FormRenderFbFormModelField } from "@webiny/app-form-builder/types";
 import { useBind } from "@webiny/form";
 import { Field } from "./components/Field";
-import { FieldMessage } from "./components/FieldMessage";
+import { FieldErrorMessage } from "./components/FieldErrorMessage";
+import { FieldHelperMessage } from "./components/FieldHelperMessage";
 import { FieldLabel } from "./components/FieldLabel";
 import styled from "@emotion/styled";
 import theme from "../../../../theme";
@@ -21,7 +22,7 @@ const RadioGroup = styled.div`
 const RadioButton = styled.input`
     margin-left: 0;
     line-height: 100%;
-    background-color: ${theme.styles.colors.color5};
+    background-color: ${theme.styles.colors["color5"]};
     min-width: 25px;
     width: 25px;
     height: 25px;
@@ -29,7 +30,7 @@ const RadioButton = styled.input`
     -webkit-appearance: none;
 
     &:focus {
-        border-color: ${theme.styles.colors.color2};
+        border-color: ${theme.styles.colors["color2"]};
         box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
         outline: none;
     }
@@ -57,8 +58,8 @@ export const RadioField: React.FC<RadioProps> = ({ field }) => {
 
     return (
         <Field>
-            <FieldLabel>{field.label}</FieldLabel>
-
+            <FieldLabel field={field} />
+            {field.helpText && <FieldHelperMessage>{field.helpText}</FieldHelperMessage>}
             {(field.options || []).map(option => {
                 return (
                     <RadioGroup key={option.value}>
@@ -74,11 +75,7 @@ export const RadioField: React.FC<RadioProps> = ({ field }) => {
                     </RadioGroup>
                 );
             })}
-            <FieldMessage
-                isValid={validation.isValid}
-                errorMessage={validation.message}
-                helperMessage={field.helpText}
-            />
+            <FieldErrorMessage isValid={validation.isValid} message={validation.message} />
         </Field>
     );
 };

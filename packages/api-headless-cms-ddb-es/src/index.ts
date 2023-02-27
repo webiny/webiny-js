@@ -21,16 +21,19 @@ import {
     ElasticsearchQueryBuilderOperatorPlugin,
     getElasticsearchOperators
 } from "@webiny/api-elasticsearch";
-import { elasticsearchFields as cmsEntryElasticsearchFields } from "~/operations/entry/elasticsearchFields";
 import { elasticsearchIndexPlugins } from "./elasticsearch/indices";
 import { deleteElasticsearchIndex } from "./elasticsearch/deleteElasticsearchIndex";
-import { CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
 import {
     CmsEntryElasticsearchBodyModifierPlugin,
+    CmsEntryElasticsearchFullTextSearchPlugin,
+    CmsEntryElasticsearchIndexPlugin,
+    CmsEntryElasticsearchQueryBuilderValueSearchPlugin,
     CmsEntryElasticsearchQueryModifierPlugin,
-    CmsEntryElasticsearchSortModifierPlugin
+    CmsEntryElasticsearchSortModifierPlugin,
+    CmsEntryElasticsearchFieldPlugin
 } from "~/plugins";
 import { createFilterPlugins } from "~/operations/entry/elasticsearch/filtering/plugins";
+import { CmsEntryFilterPlugin } from "~/plugins/CmsEntryFilterPlugin";
 
 export * from "./plugins";
 
@@ -91,10 +94,6 @@ export const createStorageOperations: StorageOperationsFactory = params => {
          * Plugins of type CmsModelFieldToGraphQLPlugin.
          */
         /**
-         * Elasticsearch field definitions for the entry record.
-         */
-        cmsEntryElasticsearchFields,
-        /**
          * DynamoDB filter plugins for the where conditions.
          */
         dynamoDbValueFilters(),
@@ -139,44 +138,25 @@ export const createStorageOperations: StorageOperationsFactory = params => {
              */
             context.plugins.register([dynamoDbPlugins()]);
             /**
-             * Collect all required plugins from parent context.
+             * We need to fetch all the plugin types in the list from the main container.
+             * This way we do not need to register plugins in the storage plugins contains.
              */
-            const fieldPlugins = context.plugins.byType<CmsModelFieldToGraphQLPlugin>(
-                "cms-model-field-to-graphql"
-            );
-            plugins.register(fieldPlugins);
-            /**
-             * We need to get all the operator plugins from the main plugin container.
-             */
-            const elasticsearchOperatorPlugins =
-                context.plugins.byType<ElasticsearchQueryBuilderOperatorPlugin>(
-                    ElasticsearchQueryBuilderOperatorPlugin.type
-                );
-            plugins.register(elasticsearchOperatorPlugins);
-            /**
-             * We need to get all the query modifier plugins
-             */
-            const queryModifierPlugins =
-                context.plugins.byType<CmsEntryElasticsearchQueryModifierPlugin>(
-                    CmsEntryElasticsearchQueryModifierPlugin.type
-                );
-            plugins.register(queryModifierPlugins);
-            /**
-             * We need to get all the sort modifier plugins
-             */
-            const sortModifierPlugins =
-                context.plugins.byType<CmsEntryElasticsearchSortModifierPlugin>(
-                    CmsEntryElasticsearchSortModifierPlugin.type
-                );
-            plugins.register(sortModifierPlugins);
-            /**
-             * We need to get all the body modifier plugins
-             */
-            const bodyModifierPlugins =
-                context.plugins.byType<CmsEntryElasticsearchBodyModifierPlugin>(
-                    CmsEntryElasticsearchBodyModifierPlugin.type
-                );
-            plugins.register(bodyModifierPlugins);
+            const types: string[] = [
+                "cms-model-field-to-graphql",
+                CmsEntryFilterPlugin.type,
+                ElasticsearchQueryBuilderOperatorPlugin.type,
+                CmsEntryElasticsearchBodyModifierPlugin.type,
+                CmsEntryElasticsearchFullTextSearchPlugin.type,
+                CmsEntryElasticsearchIndexPlugin.type,
+                CmsEntryElasticsearchQueryBuilderValueSearchPlugin.type,
+                CmsEntryElasticsearchQueryModifierPlugin.type,
+                CmsEntryElasticsearchSortModifierPlugin.type,
+                CmsEntryElasticsearchFieldPlugin.type
+            ];
+            for (const type of types) {
+                const contextPlugins = context.plugins.byType(type);
+                plugins.register(contextPlugins);
+            }
         },
         init: async context => {
             /**

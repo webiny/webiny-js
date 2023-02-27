@@ -65,6 +65,7 @@ const getValue = (params: GetValueParams): string => {
 interface InputBoxProps {
     value?: string | number;
     onChange?: (value: any) => void;
+    onKeyDown?: (e: React.SyntheticEvent<HTMLInputElement>) => any;
     defaultValue?: string | number;
     type?: "string" | "number";
     [key: string]: any;
@@ -73,6 +74,7 @@ const InputField: React.FC<InputBoxProps> = ({
     className,
     value,
     onChange,
+    onKeyDown,
     label,
     description,
     validation = { isValid: true },
@@ -93,6 +95,7 @@ const InputField: React.FC<InputBoxProps> = ({
                     type: props.type || "string",
                     defaultValue
                 })}
+                onKeyDown={onKeyDown}
                 onChange={ev => {
                     if (!onChange) {
                         return;

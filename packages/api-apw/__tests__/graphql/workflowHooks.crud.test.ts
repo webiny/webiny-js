@@ -1,7 +1,7 @@
 import { setupCategory } from "../utils/helpers";
-import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
 import mocks from "./mocks/workflows";
 import { ApwWorkflowApplications, WorkflowScopeTypes } from "~/types";
+import { useGraphQlHandler } from "~tests/utils/useGraphQlHandler";
 
 describe("Workflow assignment to a PB Page", () => {
     const {
@@ -17,7 +17,9 @@ describe("Workflow assignment to a PB Page", () => {
         until,
         reviewer: reviewerGQL,
         securityIdentity
-    } = usePageBuilderHandler();
+    } = useGraphQlHandler({
+        path: "/graphql"
+    });
 
     const login = async () => {
         return await securityIdentity.login();

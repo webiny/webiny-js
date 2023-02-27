@@ -113,6 +113,18 @@ const createExecuteActionLambda = (params: Configuration) => {
                     continue;
                 }
 
+                const url = plugin.getUrl({
+                    locale,
+                    tenant
+                });
+                if (!url) {
+                    console.error(
+                        `There is no url defined, in the Plugin, for type "${item.data.type}".`
+                    );
+                    console.log(JSON.stringify(item));
+                    continue;
+                }
+
                 const body = plugin.getGraphQLBody(item.data);
 
                 if (!body) {
@@ -128,7 +140,7 @@ const createExecuteActionLambda = (params: Configuration) => {
                     name,
                     payload: {
                         httpMethod: "POST",
-                        path: `/cms/manage/${locale}`,
+                        path: url,
                         headers: {
                             ["content-type"]: "application/json",
                             Authorization: encodeToken({

@@ -5,7 +5,7 @@ import toKebabCase from "lodash/kebabCase";
 
 import { createAppModule, PulumiApp, PulumiAppModule } from "@webiny/pulumi";
 import { createLambdaRole, getCommonLambdaEnvVariables } from "../lambdaUtils";
-import { ApiHeadlessCMS, CoreOutput, VpcConfig } from "~/apps";
+import { CoreOutput, VpcConfig } from "~/apps";
 import { getAwsAccountId, getAwsRegion } from "../awsUtils";
 
 interface GraphqlParams {
@@ -59,10 +59,6 @@ export const ApiGraphql = createAppModule({
                 vpcConfig: app.getModule(VpcConfig).functionVpcConfig
             }
         });
-
-        const headlessCmsModule = app.getModule(ApiHeadlessCMS);
-
-        const headlessCmsGraphQL = headlessCmsModule.functions.graphql;
         /**
          * Store meta information like "mainGraphqlFunctionArn" in APW settings at deploy time.
          *
@@ -80,7 +76,6 @@ export const ApiGraphql = createAppModule({
                 item: pulumi.interpolate`{
               "PK": {"S": "APW#SETTINGS"},
               "SK": {"S": "${app.params.run.variant || "default"}"},
-              "cmsGraphqlFunctionArn": {"S": "${headlessCmsGraphQL.output.arn}"},
               "mainGraphqlFunctionArn": {"S": "${graphql.output.arn}"},
               "eventRuleName": {"S": "${params.apwSchedulerEventRule.name}"},
               "eventTargetId": {"S": "${params.apwSchedulerEventTarget.targetId}"}

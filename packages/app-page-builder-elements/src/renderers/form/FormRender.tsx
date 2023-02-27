@@ -146,7 +146,6 @@ const FormRender: React.FC<FormRenderProps> = props => {
     const submit = async (
         formSubmissionFieldValues: FormSubmissionFieldValues
     ): Promise<FormSubmissionResponse> => {
-        console.log("ideeee");
         if (reCaptchaEnabled(formData) && !reCaptchaResponseToken.current) {
             return {
                 data: null,
@@ -207,7 +206,7 @@ const FormRender: React.FC<FormRenderProps> = props => {
     return (
         <>
             <FormLayoutComponent {...layoutProps} />
-            <ps-tag data-key="fb-form" data-value={formData.parent} />
+            <ps-tag data-key="fb-form" data-value={formData.formId} />
         </>
     );
 };

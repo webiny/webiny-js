@@ -3,17 +3,10 @@
  * GraphQL will not work without context, but context will without GraphQL.
  */
 import graphql from "~/plugins/graphql";
-import {
-    createApwHeadlessCmsContext as createHeadlessCms,
-    createApwPageBuilderContext as createPageBuilder
-} from "./plugins/context";
+import { createApwPageBuilderContext as createPageBuilder } from "./plugins/context";
 import { CreateApwContextParams } from "./scheduler/types";
 import { createMailerContext, createMailerGraphQL } from "@webiny/api-mailer";
 import { createAdminSettingsContext } from "@webiny/api-admin-settings";
-
-export const createApwHeadlessCmsContext = (params: CreateApwContextParams) => {
-    return [...createAdminSettingsContext(), ...createMailerContext(), createHeadlessCms(params)];
-};
 
 export const createApwPageBuilderContext = (params: CreateApwContextParams) => {
     return [

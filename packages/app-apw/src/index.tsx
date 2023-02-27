@@ -9,8 +9,6 @@ import {
     PublishPageButtonHoc,
     PublishRevisionHoc,
     PublishPageMenuOptionHoc,
-    PageRequestChangesHoc,
-    PageRequestReviewHoc,
     PageRevisionListItemGraphicHoc
 } from "./plugins/pageBuilder/PublishPageHocs";
 /**
@@ -19,8 +17,6 @@ import {
 import PagePublishRevision from "@webiny/app-page-builder/admin/plugins/pageDetails/header/publishRevision/PublishRevision";
 import { PublishPageMenuOption } from "@webiny/app-page-builder/admin/plugins/pageDetails/pageRevisions/PublishPageMenuOption";
 import { PublishPageButton } from "@webiny/app-page-builder/pageEditor";
-import PageRequestReview from "@webiny/app-page-builder/admin/plugins/pageDetails/header/requestReview/RequestReview";
-import PageRequestChanges from "@webiny/app-page-builder/admin/plugins/pageDetails/header/requestChanges/RequestChanges";
 import { PageRevisionListItemGraphic } from "@webiny/app-page-builder/admin/plugins/pageDetails/pageRevisions/PageRevisionListItemGraphic";
 import { ApwPageBuilderWorkflowScope } from "~/views/publishingWorkflows/components/pageBuilder/ApwPageBuilderWorkflowScope";
 /**
@@ -30,12 +26,8 @@ import { ApwOnEntryDelete } from "~/plugins/cms/ApwOnEntryDelete";
 import { ApwOnEntryPublish } from "~/plugins/cms/ApwOnEntryPublish";
 import { SaveAndPublishButton as HeadlessCmsEntrySaveAndPublishButton } from "@webiny/app-headless-cms/admin/views/contentEntries/ContentEntry/header/saveAndPublishContent/SaveAndPublishContent";
 import { PublishEntryRevisionListItem } from "@webiny/app-headless-cms/admin/views/contentEntries/ContentEntry/PublishEntryRevisionListItem";
-import { RequestReview as EntryRequestReview } from "@webiny/app-headless-cms/admin/views/contentEntries/ContentEntry/header/requestReview/RequestReview";
-import { RequestChanges as EntryRequestChanges } from "@webiny/app-headless-cms/admin/views/contentEntries/ContentEntry/header/requestChanges/RequestChanges";
 import { ApwHeadlessCmsWorkflowScope } from "~/views/publishingWorkflows/components/cms/ApwHeadlessCmsWorkflowScope";
 import {
-    EntryRequestChangesHoc,
-    EntryRequestReviewHoc,
     EntryRevisionListItemGraphicHoc,
     PublishEntryButtonHoc
 } from "~/plugins/cms/PublishEntryHocs";
@@ -47,7 +39,6 @@ import { WorkflowScope } from "~/views/publishingWorkflows/components/WorkflowSc
 import { DefaultBar } from "~/plugins/editor/defaultBar";
 import { MenuGroupRenderer } from "~/plugins/cms/MenuGroupRenderer";
 import { ApwPermissions } from "~/plugins/permissionRenderer";
-import { Module as MailerSettings } from "@webiny/app-mailer";
 
 export const AdvancedPublishingWorkflow: React.FC = () => {
     const { canUseFeature } = useWcp();
@@ -59,8 +50,6 @@ export const AdvancedPublishingWorkflow: React.FC = () => {
             <Compose with={PublishRevisionHoc} component={PagePublishRevision} />
             <Compose with={PublishPageMenuOptionHoc} component={PublishPageMenuOption} />
             <Compose with={PublishPageButtonHoc} component={PublishPageButton} />
-            <Compose with={PageRequestReviewHoc} component={PageRequestReview} />
-            <Compose with={PageRequestChangesHoc} component={PageRequestChanges} />
             <Compose
                 with={PageRevisionListItemGraphicHoc}
                 component={PageRevisionListItemGraphic}
@@ -77,12 +66,9 @@ export const AdvancedPublishingWorkflow: React.FC = () => {
                 with={EntryRevisionListItemGraphicHoc}
                 component={PublishEntryRevisionListItem}
             />
-            <Compose with={EntryRequestReviewHoc} component={EntryRequestReview} />
-            <Compose with={EntryRequestChangesHoc} component={EntryRequestChanges} />
             <Compose with={MenuGroupRenderer} component={MenuItemRenderer} />
             <Plugins>
                 <DefaultBar />
-                <MailerSettings />
                 <Module />
                 <ApwOnPublish />
                 <ApwOnPageDelete />

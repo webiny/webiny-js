@@ -2,6 +2,7 @@ import React, { FC, Fragment, useEffect, useState } from "react";
 import { plugins } from "@webiny/plugins";
 import { useCurrentTheme } from "~/hooks/useCurrentTheme";
 import { ThemeSource } from "~/types";
+import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
 
 export interface ThemeLoaderProps {
     themes: ThemeSource[];
@@ -13,10 +14,12 @@ interface LoadThemeProps {
 
 const LoadTheme: FC<LoadThemeProps> = ({ theme, children }) => {
     const [loaded, setLoaded] = useState(false);
+    const { loadThemeFromPlugins } = usePageBuilder();
 
     useEffect(() => {
         theme.load().then(pluginFactory => {
             plugins.register(pluginFactory());
+            loadThemeFromPlugins();
             setLoaded(true);
         });
     }, []);

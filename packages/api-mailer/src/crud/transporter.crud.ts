@@ -11,7 +11,6 @@ import { createTopic } from "@webiny/pubsub";
 import { attachOnTransportBeforeSend } from "~/crud/transport/onTransportBeforeSend";
 import { CreateTransportPlugin } from "~/plugins";
 import WebinyError from "@webiny/error";
-
 import { createValidation } from "./settings/validation";
 
 interface BuildMailerParams {
@@ -65,15 +64,9 @@ const getDefaultSettings = (): TransportSettings | null => {
         return null;
     }
 
-    try {
-        const result = createValidation.validate(input);
+    const result = createValidation.safeParse(input);
 
-        if (!result.error) {
-            return result.value;
-        }
-    } catch (ex) {}
-
-    return null;
+    return result.success ? result.data : null;
 };
 
 export const createTransporterCrud = async (

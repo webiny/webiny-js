@@ -18,20 +18,22 @@ const createRequestBody = (body: unknown): GraphQLRequestBody | GraphQLRequestBo
     return typeof body === "string" ? JSON.parse(body) : body;
 };
 
-const formatErrorPayload = (error: Error) => {
+const formatErrorPayload = (error: Error): string => {
     if (error instanceof WebinyError) {
-        return {
+        return JSON.stringify({
+            type: "CoreGraphQLWebinyError",
             message: error.message,
             code: error.code,
             data: error.data
-        };
+        });
     }
 
-    return {
+    return JSON.stringify({
+        type: "Error",
         name: error.name,
         message: error.message,
         stack: error.stack
-    };
+    });
 };
 
 export default (options: HandlerGraphQLOptions = {}): PluginCollection => {
@@ -48,7 +50,8 @@ export default (options: HandlerGraphQLOptions = {}): PluginCollection => {
                 .headers({
                     "Cache-Control": `public, max-age=${DEFAULT_CACHE_MAX_AGE}`
                 })
-                .send({});
+                .send({})
+                .hijack();
         });
         onPost(path, async (request, reply) => {
             if (!schema) {
@@ -58,9 +61,22 @@ export default (options: HandlerGraphQLOptions = {}): PluginCollection => {
                     return reply.code(500).send(formatErrorPayload(ex));
                 }
             }
-            const body = createRequestBody(request.body);
-            const result = await processRequestBody(body, schema, context);
-            return reply.status(200).send(result);
+            let body: GraphQLRequestBody | GraphQLRequestBody[];
+            try {
+                body = createRequestBody(request.body);
+            } catch (ex) {
+                console.log(`Error while creating the body request.`);
+                console.log(formatErrorPayload(ex));
+                throw ex;
+            }
+            try {
+                const result = await processRequestBody(body, schema, context);
+                return reply.status(200).send(result);
+            } catch (ex) {
+                console.log(`Error while processing the body request.`);
+                console.log(formatErrorPayload(ex));
+                throw ex;
+            }
         });
     });
 

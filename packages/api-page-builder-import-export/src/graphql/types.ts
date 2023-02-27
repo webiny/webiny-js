@@ -23,6 +23,7 @@ export interface ExportPagesParams {
 export interface ImportPagesParams {
     category: string;
     zipFileUrl: string;
+    meta?: Record<string, any>;
 }
 
 export type PagesImportExportCrud = {
@@ -46,6 +47,20 @@ export interface ImportBlocksParams {
 export type BlocksImportExportCrud = {
     exportBlocks(params: ExportBlocksParams): Promise<{ task: ImportExportTask }>;
     importBlocks(params: ImportBlocksParams): Promise<{ task: ImportExportTask }>;
+};
+
+export interface ExportTemplatesParams {
+    ids?: string[];
+    sort?: string[];
+}
+
+export interface ImportTemplatesParams {
+    zipFileUrl: string;
+}
+
+export type TemplatesImportExportCrud = {
+    exportTemplates(params: ExportTemplatesParams): Promise<{ task: ImportExportTask }>;
+    importTemplates(params: ImportTemplatesParams): Promise<{ task: ImportExportTask }>;
 };
 
 type ImportExportTaskCreateData = Omit<ImportExportTask, "id" | "createdOn" | "createdBy">;
@@ -91,6 +106,7 @@ export interface PbImportExportContext extends PbContext {
     pageBuilder: PbContext["pageBuilder"] & {
         pages: PagesImportExportCrud;
         blocks: BlocksImportExportCrud;
+        templates: TemplatesImportExportCrud;
         importExportTask: ImportExportTaskCrud;
     };
 }

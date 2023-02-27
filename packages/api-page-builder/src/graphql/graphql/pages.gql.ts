@@ -5,13 +5,17 @@ import {
     NotFoundResponse
 } from "@webiny/handler-graphql/responses";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
-import { Page, PbContext, PageSecurityPermission } from "~/types";
+import { Page, PbContext, PageSecurityPermission, PageContentWithTemplate } from "~/types";
 import WebinyError from "@webiny/error";
 import resolve from "./utils/resolve";
 import { createPageSettingsGraphQL } from "./pages/pageSettings";
 import { fetchEmbed, findProvider } from "./pages/oEmbed";
 import lodashGet from "lodash/get";
 import checkBasePermissions from "~/graphql/crud/utils/checkBasePermissions";
+
+function hasTemplate(content: Page["content"]): content is PageContentWithTemplate {
+    return content?.data?.template;
+}
 
 const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
     return {
@@ -231,10 +235,13 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                 }
 
                 extend type PbMutation {
-                    createPage(from: ID, category: String): PbPageResponse
+                    createPage(from: ID, category: String, meta: JSON): PbPageResponse
 
                     # Update page by given ID.
                     updatePage(id: ID!, data: PbUpdatePageInput!): PbPageResponse
+
+                    # Duplicate page by given ID.
+                    duplicatePage(id: ID!): PbPageResponse
 
                     # Publish page
                     publishPage(id: ID!): PbPageResponse
@@ -276,17 +283,19 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                             return page.content;
                         }
 
-                        // Map block references
-                        const blocks = await context.pageBuilder.resolvePageBlocks(page);
-                        const pageWithNewContent = {
-                            ...page,
-                            content: { ...page.content, elements: blocks }
-                        };
+                        let blocks;
+
+                        if (hasTemplate(page.content)) {
+                            blocks = await context.pageBuilder.resolvePageTemplate(page.content);
+                        } else {
+                            blocks = await context.pageBuilder.resolvePageBlocks(page.content);
+                        }
 
                         // Run element processors on the full page content for potential transformations.
-                        const processedPage = await context.pageBuilder.processPageContent(
-                            pageWithNewContent
-                        );
+                        const processedPage = await context.pageBuilder.processPageContent({
+                            ...page,
+                            content: { ...page.content, elements: blocks }
+                        });
 
                         return processedPage.content;
                     }
@@ -418,9 +427,13 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                     }
                 },
                 PbMutation: {
-                    createPage: async (_, args: { from?: string; category?: string }, context) => {
+                    createPage: async (
+                        _,
+                        args: { from?: string; category?: string; meta?: Record<string, any> },
+                        context
+                    ) => {
                         return resolve(() => {
-                            const { from, category } = args;
+                            const { from, category, meta } = args;
                             if (!from && !category) {
                                 throw new WebinyError(
                                     `Cannot create page - you must provide either "from" or "category" input.`
@@ -428,12 +441,12 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                             }
 
                             if (from) {
-                                return context.pageBuilder.createPageFrom(from);
+                                return context.pageBuilder.createPageFrom(from, meta);
                             }
                             /**
                              * We can safely cast because we check for category existence in the beginning of the fn
                              */
-                            return context.pageBuilder.createPage(category as string);
+                            return context.pageBuilder.createPage(category as string, meta);
                         });
                     },
                     deletePage: async (_, args: any, context) => {
@@ -450,6 +463,31 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                             const { data } = args;
                             return context.pageBuilder.updatePage(args.id, data);
                         });
+                    },
+
+                    duplicatePage: async (_, args: any, context) => {
+                        try {
+                            const page = await context.pageBuilder.getPage(args.id);
+                            const { id: duplicatedPageId } = await context.pageBuilder.createPage(
+                                page.category
+                            );
+
+                            const duplicatedPageData = {
+                                title: `${page.title} (Copy)`,
+                                path: `${page.path}-copy`,
+                                content: page.content,
+                                settings: page.settings
+                            };
+
+                            return new Response(
+                                await context.pageBuilder.updatePage(
+                                    duplicatedPageId,
+                                    duplicatedPageData
+                                )
+                            );
+                        } catch (e) {
+                            return new ErrorResponse(e);
+                        }
                     },
 
                     publishPage: async (_, args: any, context) => {

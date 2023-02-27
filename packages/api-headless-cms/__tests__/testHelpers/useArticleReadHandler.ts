@@ -19,10 +19,14 @@ const fields = `
     body
     categories {
         id
+        entryId
+        modelId
         title
     }
     category {
         id
+        entryId
+        modelId
         title
     }
 `;
@@ -67,6 +71,32 @@ const listArticlesQuery = /* GraphQL */ `
     }
 `;
 
+const addPopulate = (fields: string) => {
+    return fields
+        .replace("categories {", "categories(populate: false) {")
+        .replace("category {", "category(populate: false) {");
+};
+const listArticlesWithoutReferencesQuery = /* GraphQL */ `
+    query ListArticles(
+        $where: ArticleListWhereInput
+        $sort: [ArticleListSorter!]
+        $limit: Int
+        $after: String
+    ) {
+        listArticles(where: $where, sort: $sort, limit: $limit, after: $after) {
+            data {
+                ${addPopulate(fields)}
+            }
+            meta {
+                cursor
+                hasMoreItems
+                totalCount
+            }
+            ${errorFields}
+        }
+    }
+`;
+
 export const useArticleReadHandler = (params: GraphQLHandlerParams) => {
     const contentHandler = useGraphQLHandler(params);
 
@@ -81,6 +111,12 @@ export const useArticleReadHandler = (params: GraphQLHandlerParams) => {
         async listArticles(variables = {}, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: { query: listArticlesQuery, variables },
+                headers
+            });
+        },
+        async listArticlesWithoutReferences(variables = {}, headers: Record<string, any> = {}) {
+            return await contentHandler.invoke({
+                body: { query: listArticlesWithoutReferencesQuery, variables },
                 headers
             });
         }
