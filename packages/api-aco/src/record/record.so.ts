@@ -33,19 +33,19 @@ export const createSearchRecordOperations = (
         security.disableAuthorization();
 
         /**
-         * The record "id" is generated on creation.
-         * Still, we need to get/update/delete records by the original entry id.
+         * The record "id" has been passed by the original entry.
+         * We need to retrieve it via `cms.getEntryRevisions()` method and return the first one.
          */
-        const entry = await cms.getEntryById(model, id);
+        const revisions = await cms.getEntryRevisions(model, id);
 
-        if (!entry) {
-            throw new WebinyError("Could not load record.", "GET_ENTRY_ERROR", {
+        if (revisions.length === 0) {
+            throw new WebinyError("Record not found.", "NOT_FOUND", {
                 id
             });
         }
 
         security.enableAuthorization();
-        return getFieldValues(entry, baseFields);
+        return getFieldValues(revisions[0], baseFields);
     };
 
     return {
@@ -85,7 +85,7 @@ export const createSearchRecordOperations = (
                 ...data
             };
 
-            const entry = await cms.updateEntry(model, id, input);
+            const entry = await cms.updateEntry(model, original.id, input);
             security.enableAuthorization();
             return getFieldValues(entry, baseFields);
         },

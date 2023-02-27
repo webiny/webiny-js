@@ -1,6 +1,6 @@
 const DATA_FIELD = (extra = "") => /* GraphQL */ `
     {
-        originalId
+        id
         type
         title
         content
@@ -32,7 +32,7 @@ export const CREATE_RECORD = /* GraphQL */ `
     mutation CreateRecord($data: SearchRecordCreateInput!) {
         search {
             createRecord(data: $data) {
-                data ${DATA_FIELD("id")}
+                data ${DATA_FIELD()}
                 error ${ERROR_FIELD}
             }
         }
