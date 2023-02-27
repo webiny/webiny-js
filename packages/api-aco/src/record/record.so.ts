@@ -36,7 +36,7 @@ export const createSearchRecordOperations = (
          * The record "id" is generated on creation.
          * Still, we need to get/update/delete records by the original entry id.
          */
-        const entry = await cms.getEntry(model, { where: { originalId: id, latest: true } });
+        const entry = await cms.getEntryById(model, id);
 
         if (!entry) {
             throw new WebinyError("Could not load record.", "GET_ENTRY_ERROR", {
@@ -85,7 +85,7 @@ export const createSearchRecordOperations = (
                 ...data
             };
 
-            const entry = await cms.updateEntry(model, original.id, input);
+            const entry = await cms.updateEntry(model, id, input);
             security.enableAuthorization();
             return getFieldValues(entry, baseFields);
         },

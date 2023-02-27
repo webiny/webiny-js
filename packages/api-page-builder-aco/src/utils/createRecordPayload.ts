@@ -19,7 +19,7 @@ export const createPageRecordPayload = async (
     };
 
     return {
-        originalId: pid,
+        id: pid,
         type: PB_PAGE_TYPE,
         title,
         content,

@@ -7,23 +7,6 @@ export type SearchRecordModelDefinition = Pick<
     "name" | "modelId" | "layout" | "titleFieldId" | "description" | "fields" | "isPrivate"
 >;
 
-const originalIdField = () =>
-    createModelField({
-        label: "Original Id",
-        type: "text",
-        parent: "searchRecord",
-        validation: [
-            {
-                name: "required",
-                message: "Value is required."
-            },
-            {
-                name: "unique",
-                message: "Value must be unique."
-            }
-        ]
-    });
-
 const typeField = () =>
     createModelField({
         label: "Type",
@@ -86,9 +69,8 @@ export const createSearchModelDefinition = (): SearchRecordModelDefinition => {
     return {
         name: "ACO - Search Record",
         modelId: SEARCH_RECORD_MODEL_ID,
-        titleFieldId: "originalId",
+        titleFieldId: "title",
         layout: [
-            ["searchRecord_originalId"],
             ["searchRecord_type"],
             ["searchRecord_title"],
             ["searchRecord_content"],
@@ -96,7 +78,6 @@ export const createSearchModelDefinition = (): SearchRecordModelDefinition => {
             ["searchRecord_data"]
         ],
         fields: [
-            originalIdField(),
             typeField(),
             titleField(),
             contentField(),
