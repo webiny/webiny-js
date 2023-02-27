@@ -2,8 +2,8 @@ import WebinyError from "@webiny/error";
 import { AcoContext } from "~/types";
 
 export const onFolderBeforeDeleteHook = ({ aco }: AcoContext) => {
-    try {
-        aco.folder.onFolderBeforeDelete.subscribe(async ({ folder }) => {
+    aco.folder.onFolderBeforeDelete.subscribe(async ({ folder }) => {
+        try {
             const { id, type } = folder;
 
             // Fetching all child folders
@@ -27,11 +27,11 @@ export const onFolderBeforeDeleteHook = ({ aco }: AcoContext) => {
                     }
                 );
             }
-        });
-    } catch (error) {
-        throw WebinyError.from(error, {
-            message: "Error while executing onFolderBeforeDelete hook",
-            code: "ACO_BEFORE_FOLDER_DELETE_HOOK"
-        });
-    }
+        } catch (error) {
+            throw WebinyError.from(error, {
+                message: "Error while executing onFolderBeforeDelete hook",
+                code: "ACO_BEFORE_FOLDER_DELETE_HOOK"
+            });
+        }
+    });
 };
