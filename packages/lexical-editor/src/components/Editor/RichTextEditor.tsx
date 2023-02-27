@@ -60,11 +60,9 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
         }
     };
 
-    const editorSizeStyle = (): { width: number | string; height: number | string } => {
-        return {
-            height: height || "",
-            width: width || ""
-        };
+    const sizeStyle = {
+        height: height || "",
+        width: width || ""
     };
 
     const initialConfig = {
@@ -88,7 +86,7 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
 
     return (
         <LexicalComposer initialConfig={initialConfig}>
-            <div ref={scrollRef} style={{ ...editorSizeStyle() }}>
+            <div ref={scrollRef} style={{ ...sizeStyle }}>
                 {/* data */}
                 <OnChangePlugin onChange={handleOnChange} />
                 {value && <LexicalUpdateStatePlugin value={value} />}
@@ -100,9 +98,9 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
                 {children}
                 <RichTextPlugin
                     contentEditable={
-                        <div className="editor-scroller" style={{ ...editorSizeStyle() }}>
-                            <div className="editor" ref={onRef} style={{ ...editorSizeStyle() }}>
-                                <ContentEditable style={{ outline: 0, ...editorSizeStyle() }} />
+                        <div className="editor-scroller" style={{ ...sizeStyle }}>
+                            <div className="editor" ref={onRef} style={{ ...sizeStyle }}>
+                                <ContentEditable style={{ outline: 0, ...sizeStyle }} />
                             </div>
                         </div>
                     }

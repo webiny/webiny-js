@@ -18,7 +18,8 @@
     { "path": "../app-security-access-management" },
     { "path": "../app-tenancy" },
     { "path": "../app-tenant-manager" },
-    { "path": "../plugins" }
+    { "path": "../plugins" },
+    { "path": "../lexical-editor-pb-element" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -60,7 +61,9 @@
       "@webiny/app-tenant-manager/*": ["../app-tenant-manager/src/*"],
       "@webiny/app-tenant-manager": ["../app-tenant-manager/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"]
+      "@webiny/plugins": ["../plugins/src"],
+      "@webiny/lexical-editor-pb-element/*": ["../lexical-editor-pb-element/src/*"],
+      "@webiny/lexical-editor-pb-element": ["../lexical-editor-pb-element/src"]
     },
     "baseUrl": "."
   }
