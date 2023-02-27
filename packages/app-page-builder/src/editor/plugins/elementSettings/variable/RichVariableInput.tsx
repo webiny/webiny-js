@@ -76,7 +76,7 @@ interface RichVariableInputProps {
     variableId: string;
 }
 
-const RichVariableInput: React.FC<RichVariableInputProps> = makeComposable<RichVariableInputProps>(
+const RichVariableInput = makeComposable<RichVariableInputProps>(
     "RichVariableInput",
     ({ variableId }) => {
         const [element] = useActiveElement();
