@@ -104,6 +104,9 @@ export const DelayedOnChange: React.FC<DelayedOnChangeProps> = ({ children, ...o
 
     // Need to apply value if input lost focus
     const onBlur: OnBlurCallable = ev => {
+        if (!ev["persist"]) {
+            return;
+        }
         ev.persist();
         applyValue((ev.target as HTMLInputElement).value, () => realOnBlur(ev));
     };
