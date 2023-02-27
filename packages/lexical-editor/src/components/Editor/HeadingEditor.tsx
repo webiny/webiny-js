@@ -2,15 +2,11 @@ import React from "react";
 import { LinkPlugin } from "@lexical/react/LexicalLinkPlugin";
 import { ClickableLinkPlugin } from "~/plugins/ClickableLinkPlugin/ClickableLinkPlugin";
 import { FloatingLinkEditorPlugin } from "~/plugins/FloatingLinkEditorPlugin/FloatingLinkEditorPlugin";
-import { EditorStateJSONString } from "~/types";
 import { HeadingToolbar } from "~/components/Toolbar/HeadingToolbar";
-import { RichTextEditor } from "~/components/Editor/RichTextEditor";
+import { RichTextEditor, RichTextEditorProps } from "~/components/Editor/RichTextEditor";
 
-interface HeadingEditorProps {
-    value: EditorStateJSONString | null;
-    onChange?: (editorState: EditorStateJSONString) => void;
+interface HeadingEditorProps extends RichTextEditorProps {
     tag?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
-    placeholder?: string;
 }
 
 export const HeadingEditor: React.FC<HeadingEditorProps> = ({ tag, placeholder, ...rest }) => {

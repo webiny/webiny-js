@@ -1,11 +1,12 @@
 import React, { FC } from "react";
 import { createComponentPlugin } from "@webiny/react-composition";
 import { RichTextEditor } from "~/components/Editor/RichTextEditor";
+import { LexicalValue } from "~/types";
 
 interface AddRichTextEditorProps {
     toolbar: React.ReactNode;
     placeholder?: string;
-    initValue?: string;
+    value: LexicalValue;
     children?: React.ReactNode;
 }
 

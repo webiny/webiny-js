@@ -5,14 +5,10 @@ import { LinkPlugin } from "@lexical/react/LexicalLinkPlugin";
 import { FloatingLinkEditorPlugin } from "~/plugins/FloatingLinkEditorPlugin/FloatingLinkEditorPlugin";
 import { ClickableLinkPlugin } from "~/plugins/ClickableLinkPlugin/ClickableLinkPlugin";
 import { ParagraphToolbar } from "~/components/Toolbar/ParagraphToolbar";
-import { RichTextEditor } from "~/components/Editor/RichTextEditor";
-import { EditorStateJSONString } from "~/types";
+import { RichTextEditor, RichTextEditorProps } from "~/components/Editor/RichTextEditor";
 
-interface ParagraphLexicalEditorProps {
-    value: EditorStateJSONString | null;
-    onChange?: (json: EditorStateJSONString) => void;
+interface ParagraphLexicalEditorProps extends RichTextEditorProps {
     tag?: "p";
-    placeholder?: string;
 }
 
 const ParagraphEditor: React.FC<ParagraphLexicalEditorProps> = ({ placeholder, tag, ...rest }) => {

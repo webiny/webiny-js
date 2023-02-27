@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
-import { EditorStateJSONString } from "~/types";
+import { LexicalValue } from "~/types";
 import { Placeholder } from "~/ui/Placeholder";
-import { getEmptyEditorStateJSONString } from "~/utils/getEmptyEditorStateJSONString";
+import { generateInitialLexicalValue } from "~/utils/generateInitialLexicalValue";
 import { WebinyNodes } from "~/nodes/webinyNodes";
 import { theme } from "~/themes/webinyLexicalTheme";
 import { EditorState } from "lexical/LexicalEditorState";
@@ -15,18 +15,25 @@ import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
 import { makeComposable } from "@webiny/react-composition";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { RichTextEditorProvider } from "~/context/RichTextEditorContext";
+import { isValidLexicalData } from "~/utils/isValidLexicalData";
+import { LexicalUpdateStatePlugin } from "~/plugins/LexicalUpdateStatePlugin";
+import { BlurEventPlugin } from "~/plugins/BlurEventPlugin/BlurEventPlugin";
 
 export interface RichTextEditorProps {
-    toolbar: React.ReactNode;
-    tag: string;
-    onChange?: (json: EditorStateJSONString) => void;
-    value: EditorStateJSONString | undefined | null;
+    toolbar?: React.ReactNode;
+    tag?: string;
+    onChange?: (json: LexicalValue) => void;
+    value: LexicalValue | null;
+    focus?: boolean;
     placeholder?: string;
     nodes?: Klass<LexicalNode>[];
     /**
      * @description Lexical plugins
      */
     children?: React.ReactNode | React.ReactNode[];
+    onBlur?: (editorState: LexicalValue) => void;
+    height?: number | string;
+    width?: number | string;
 }
 
 const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
@@ -35,7 +42,11 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
     value,
     nodes,
     placeholder,
-    children
+    children,
+    onBlur,
+    focus,
+    width,
+    height
 }: RichTextEditorProps) => {
     const placeholderElem = <Placeholder>{placeholder || "Enter text..."}</Placeholder>;
     const scrollRef = useRef(null);
@@ -49,8 +60,13 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
         }
     };
 
+    const sizeStyle = {
+        height: height || "",
+        width: width || ""
+    };
+
     const initialConfig = {
-        editorState: value ?? getEmptyEditorStateJSONString(),
+        editorState: isValidLexicalData(value) ? value : generateInitialLexicalValue(),
         namespace: "webiny",
         onError: (error: Error) => {
             throw error;
@@ -70,22 +86,28 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
 
     return (
         <LexicalComposer initialConfig={initialConfig}>
-            <div ref={scrollRef}>
+            <div ref={scrollRef} style={{ ...sizeStyle }}>
+                {/* data */}
                 <OnChangePlugin onChange={handleOnChange} />
-                <AutoFocusPlugin />
+                {value && <LexicalUpdateStatePlugin value={value} />}
                 <ClearEditorPlugin />
+                {/* Events */}
+                {onBlur && <BlurEventPlugin onBlur={onBlur} />}
+                {focus && <AutoFocusPlugin />}
+                {/* External plugins and components */}
                 {children}
                 <RichTextPlugin
                     contentEditable={
-                        <div className="editor-scroller">
-                            <div className="editor" ref={onRef}>
-                                <ContentEditable />
+                        <div className="editor-scroller" style={{ ...sizeStyle }}>
+                            <div className="editor" ref={onRef} style={{ ...sizeStyle }}>
+                                <ContentEditable style={{ outline: 0, ...sizeStyle }} />
                             </div>
                         </div>
                     }
                     placeholder={placeholderElem}
                     ErrorBoundary={LexicalErrorBoundary}
                 />
+                {/* Toolbar */}
                 {floatingAnchorElem && toolbar}
             </div>
         </LexicalComposer>

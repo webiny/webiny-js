@@ -1,3 +1,5 @@
+// render
+export { LexicalHtmlRenderer } from "~/components/LexicalHtmlRenderer";
 // hooks
 export { useRichTextEditor } from "~/hooks/useRichTextEditor";
 // UI elements
@@ -30,11 +32,14 @@ export { LinkPlugin } from "@lexical/react/LexicalLinkPlugin";
 export { FloatingLinkEditorPlugin } from "~/plugins/FloatingLinkEditorPlugin/FloatingLinkEditorPlugin";
 export { CodeHighlightPlugin } from "~/plugins/CodeHighlightPlugin/CodeHighlightPlugin";
 export { ClickableLinkPlugin } from "~/plugins/ClickableLinkPlugin/ClickableLinkPlugin";
+export { BlurEventPlugin } from "~/plugins/BlurEventPlugin/BlurEventPlugin";
+export { LexicalUpdateStatePlugin } from "~/plugins/LexicalUpdateStatePlugin";
 // composition
 export { AddToolbarAction } from "~/components/AddToolbarAction";
 export { AddRichTextEditorPlugin } from "~/components/AddRichTextEditorPlugin";
 export { AddRichTextEditorNodeType } from "~/components/AddRichTextEditorNodeType";
 // utils
-export { getEmptyEditorStateJSONString } from "~/utils/getEmptyEditorStateJSONString";
+export { generateInitialLexicalValue } from "~/utils/generateInitialLexicalValue";
+export { isValidLexicalData } from "~/utils/isValidLexicalData";
 // types
 export * as types from "./types";

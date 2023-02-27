@@ -7,20 +7,21 @@
  .ContentEditable__root{
    font-size: inherit;
    line-height: 1.25;
+
  }
-.PlaygroundEditorTheme__ltr {
+.WebinyLexical__ltr {
   text-align: inherit;
 }
-.PlaygroundEditorTheme__rtl {
+.WebinyLexical__rtl {
   text-align: inherit;
 }
-.PlaygroundEditorTheme__paragraph {
+.WebinyLexical__paragraph {
   margin: 0;
   position: relative;
   text-align: inherit;
   font-size: inherit;
 }
-.PlaygroundEditorTheme__quote {
+.WebinyLexical__quote {
   margin: 0;
   margin-left: 20px;
   margin-bottom: 10px;
@@ -31,65 +32,65 @@
   border-left-style: solid;
   padding-left: 16px;
 }
-.PlaygroundEditorTheme__h1 {
+.WebinyLexical__h1 {
   font-size: 24px;
   color: rgb(5, 5, 5);
   font-weight: 400;
   margin: 0;
 }
-.PlaygroundEditorTheme__h2 {
+.WebinyLexical__h2 {
   font-size: 15px;
   color: rgb(101, 103, 107);
   font-weight: 700;
   margin: 0;
   text-transform: uppercase;
 }
-.PlaygroundEditorTheme__h3 {
+.WebinyLexical__h3 {
   font-size: 12px;
   margin: 0;
   text-transform: uppercase;
 }
-.PlaygroundEditorTheme__textBold {
+.WebinyLexical__textBold {
   font-weight: bold;
 }
-.PlaygroundEditorTheme__textItalic {
+.WebinyLexical__textItalic {
   font-style: italic;
 }
-.PlaygroundEditorTheme__textUnderline {
+.WebinyLexical__textUnderline {
   text-decoration: underline;
 }
-.PlaygroundEditorTheme__textStrikethrough {
+.WebinyLexical__textStrikethrough {
   text-decoration: line-through;
 }
-.PlaygroundEditorTheme__textUnderlineStrikethrough {
+.WebinyLexical__textUnderlineStrikethrough {
   text-decoration: underline line-through;
 }
-.PlaygroundEditorTheme__textSubscript {
+.WebinyLexical__textSubscript {
   font-size: 0.8em;
   vertical-align: sub !important;
 }
-.PlaygroundEditorTheme__textSuperscript {
+.WebinyLexical__textSuperscript {
   font-size: 0.8em;
   vertical-align: super;
 }
-.PlaygroundEditorTheme__textCode {
+.WebinyLexical__textCode {
   background-color: rgb(240, 242, 245);
   padding: 1px 0.25rem;
   font-family: Menlo, Consolas, Monaco, monospace;
   font-size: 94%;
 }
-.PlaygroundEditorTheme__hashtag {
+.WebinyLexical__hashtag {
   background-color: rgba(88, 144, 255, 0.15);
   border-bottom: 1px solid rgba(88, 144, 255, 0.3);
 }
-.PlaygroundEditorTheme__link {
+.WebinyLexical__link {
   color: rgb(33, 111, 219);
   text-decoration: none;
 }
-.PlaygroundEditorTheme__link:hover {
+.WebinyLexical__link:hover {
   text-decoration: underline;
 }
-.PlaygroundEditorTheme__code {
+.WebinyLexical__code {
   background-color: rgb(240, 242, 245);
   font-family: Menlo, Consolas, Monaco, monospace;
   display: block;
@@ -104,7 +105,7 @@
   overflow-x: auto;
   position: relative;
 }
-.PlaygroundEditorTheme__code:before {
+.WebinyLexical__code:before {
   content: attr(data-gutter);
   position: absolute;
   background-color: #eee;
@@ -117,7 +118,7 @@
   text-align: right;
   min-width: 25px;
 }
-.PlaygroundEditorTheme__table {
+.WebinyLexical__table {
   border-collapse: collapse;
   border-spacing: 0;
   max-width: 100%;
@@ -126,10 +127,10 @@
   width: calc(100% - 25px);
   margin: 30px 0;
 }
-.PlaygroundEditorTheme__tableSelected {
+.WebinyLexical__tableSelected {
   outline: 2px solid rgb(60, 132, 244);
 }
-.PlaygroundEditorTheme__tableCell {
+.WebinyLexical__tableCell {
   border: 1px solid #bbb;
   min-width: 75px;
   vertical-align: top;
@@ -139,7 +140,7 @@
   cursor: default;
   outline: none;
 }
-.PlaygroundEditorTheme__tableCellSortedIndicator {
+.WebinyLexical__tableCellSortedIndicator {
   display: block;
   opacity: 0.5;
   position: absolute;
@@ -149,7 +150,7 @@
   height: 4px;
   background-color: #999;
 }
-.PlaygroundEditorTheme__tableCellResizer {
+.WebinyLexical__tableCellResizer {
   position: absolute;
   right: -4px;
   height: 100%;
@@ -158,14 +159,14 @@
   z-index: 10;
   top: 0;
 }
-.PlaygroundEditorTheme__tableCellHeader {
+.WebinyLexical__tableCellHeader {
   background-color: #f2f3f5;
   text-align: start;
 }
-.PlaygroundEditorTheme__tableCellSelected {
+.WebinyLexical__tableCellSelected {
   background-color: #c9dbf0;
 }
-.PlaygroundEditorTheme__tableCellPrimarySelected {
+.WebinyLexical__tableCellPrimarySelected {
   border: 2px solid rgb(60, 132, 244);
   display: block;
   height: calc(100% - 2px);
@@ -175,11 +176,11 @@
   top: -1px;
   z-index: 2;
 }
-.PlaygroundEditorTheme__tableCellEditing {
+.WebinyLexical__tableCellEditing {
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.4);
   border-radius: 3px;
 }
-.PlaygroundEditorTheme__tableAddColumns {
+.WebinyLexical__tableAddColumns {
   position: absolute;
   top: 0;
   width: 20px;
@@ -191,10 +192,10 @@
   cursor: pointer;
 }
 
-.PlaygroundEditorTheme__tableAddColumns:hover {
+.WebinyLexical__tableAddColumns:hover {
   background-color: #c9dbf0;
 }
-.PlaygroundEditorTheme__tableAddRows {
+.WebinyLexical__tableAddRows {
   position: absolute;
   bottom: -25px;
   width: calc(100% - 25px);
@@ -207,7 +208,7 @@
 }
 
 
-.PlaygroundEditorTheme__tableAddRows:hover {
+.WebinyLexical__tableAddRows:hover {
   background-color: #c9dbf0;
 }
 @keyframes table-controls {
@@ -218,7 +219,7 @@
     opacity: 1;
   }
 }
-.PlaygroundEditorTheme__tableCellResizeRuler {
+.WebinyLexical__tableCellResizeRuler {
   display: block;
   position: absolute;
   width: 1px;
@@ -226,7 +227,7 @@
   height: 100%;
   top: 0;
 }
-.PlaygroundEditorTheme__tableCellActionButtonContainer {
+.WebinyLexical__tableCellActionButtonContainer {
   display: block;
   right: 5px;
   top: 6px;
@@ -235,7 +236,7 @@
   width: 20px;
   height: 20px;
 }
-.PlaygroundEditorTheme__tableCellActionButton {
+.WebinyLexical__tableCellActionButton {
   background-color: #eee;
   display: block;
   border: 0;
@@ -245,21 +246,21 @@
   color: #222;
   cursor: pointer;
 }
-.PlaygroundEditorTheme__tableCellActionButton:hover {
+.WebinyLexical__tableCellActionButton:hover {
   background-color: #ddd;
 }
-.PlaygroundEditorTheme__characterLimit {
+.WebinyLexical__characterLimit {
   display: inline;
   background-color: #ffbbbb !important;
 }
-.PlaygroundEditorTheme__ol1 {
+.WebinyLexical__ol1 {
   list-style: auto;
   padding: 0;
   margin: 0;
   margin-left: 16px;
   list-style-position: inside;
 }
-.PlaygroundEditorTheme__ol2 {
+.WebinyLexical__ol2 {
   list-style: initial;
   padding: 0;
   margin: 0;
@@ -267,7 +268,7 @@
   list-style-type: upper-alpha;
   list-style-position: inside;
 }
-.PlaygroundEditorTheme__ol3 {
+.WebinyLexical__ol3 {
   list-style: initial;
   list-style: auto;
   padding: 0;
@@ -276,7 +277,7 @@
   list-style-type: lower-alpha;
   list-style-position: inside;
 }
-.PlaygroundEditorTheme__ol4 {
+.WebinyLexical__ol4 {
   list-style: initial;
   padding: 0;
   margin: 0;
@@ -284,7 +285,7 @@
   list-style-type: upper-roman;
   list-style-position: inside;
 }
-.PlaygroundEditorTheme__ol5 {
+.WebinyLexical__ol5 {
   list-style: initial;
   padding: 0;
   margin: 0;
@@ -292,18 +293,18 @@
   list-style-type: lower-roman;
   list-style-position: inside;
 }
-.PlaygroundEditorTheme__ul {
+.WebinyLexical__ul {
   list-style: initial;
   padding: 0;
   margin: 0;
   margin-left: 16px;
   list-style-position: inside;
 }
-.PlaygroundEditorTheme__listItem {
+.WebinyLexical__listItem {
   margin: 0 32px;
 }
-.PlaygroundEditorTheme__listItemChecked,
-.PlaygroundEditorTheme__listItemUnchecked {
+.WebinyLexical__listItemChecked,
+.WebinyLexical__listItemUnchecked {
   position: relative;
   margin-left: 8px;
   margin-right: 8px;
@@ -312,11 +313,11 @@
   list-style-type: none;
   outline: none;
 }
-.PlaygroundEditorTheme__listItemChecked {
+.WebinyLexical__listItemChecked {
   text-decoration: line-through;
 }
-.PlaygroundEditorTheme__listItemUnchecked:before,
-.PlaygroundEditorTheme__listItemChecked:before {
+.WebinyLexical__listItemUnchecked:before,
+.WebinyLexical__listItemChecked:before {
   content: '';
   width: 16px;
   height: 16px;
@@ -327,27 +328,27 @@
   background-size: cover;
   position: absolute;
 }
-.PlaygroundEditorTheme__listItemUnchecked[dir='rtl']:before,
-.PlaygroundEditorTheme__listItemChecked[dir='rtl']:before {
+.WebinyLexical__listItemUnchecked[dir='rtl']:before,
+.WebinyLexical__listItemChecked[dir='rtl']:before {
   left: auto;
   right: 0;
 }
-.PlaygroundEditorTheme__listItemUnchecked:focus:before,
-.PlaygroundEditorTheme__listItemChecked:focus:before {
+.WebinyLexical__listItemUnchecked:focus:before,
+.WebinyLexical__listItemChecked:focus:before {
   box-shadow: 0 0 0 2px #a6cdfe;
   border-radius: 2px;
 }
-.PlaygroundEditorTheme__listItemUnchecked:before {
+.WebinyLexical__listItemUnchecked:before {
   border: 1px solid #999;
   border-radius: 2px;
 }
-.PlaygroundEditorTheme__listItemChecked:before {
+.WebinyLexical__listItemChecked:before {
   border: 1px solid rgb(61, 135, 245);
   border-radius: 2px;
   background-color: #3d87f5;
   background-repeat: no-repeat;
 }
-.PlaygroundEditorTheme__listItemChecked:after {
+.WebinyLexical__listItemChecked:after {
   content: '';
   cursor: pointer;
   border-color: #fff;
@@ -361,61 +362,61 @@
   transform: rotate(45deg);
   border-width: 0 2px 2px 0;
 }
-.PlaygroundEditorTheme__nestedListItem {
+.WebinyLexical__nestedListItem {
   list-style-type: none;
 }
-.PlaygroundEditorTheme__nestedListItem:before,
-.PlaygroundEditorTheme__nestedListItem:after {
+.WebinyLexical__nestedListItem:before,
+.WebinyLexical__nestedListItem:after {
   display: none;
 }
-.PlaygroundEditorTheme__tokenComment {
+.WebinyLexical__tokenComment {
   color: slategray;
 }
-.PlaygroundEditorTheme__tokenPunctuation {
+.WebinyLexical__tokenPunctuation {
   color: #999;
 }
-.PlaygroundEditorTheme__tokenProperty {
+.WebinyLexical__tokenProperty {
   color: #905;
 }
-.PlaygroundEditorTheme__tokenSelector {
+.WebinyLexical__tokenSelector {
   color: #690;
 }
-.PlaygroundEditorTheme__tokenOperator {
+.WebinyLexical__tokenOperator {
   color: #9a6e3a;
 }
-.PlaygroundEditorTheme__tokenAttr {
+.WebinyLexical__tokenAttr {
   color: #07a;
 }
-.PlaygroundEditorTheme__tokenVariable {
+.WebinyLexical__tokenVariable {
   color: #e90;
 }
-.PlaygroundEditorTheme__tokenFunction {
+.WebinyLexical__tokenFunction {
   color: #dd4a68;
 }
-.PlaygroundEditorTheme__mark {
+.WebinyLexical__mark {
   background: rgba(255, 212, 0, 0.14);
   border-bottom: 2px solid rgba(255, 212, 0, 0.3);
   padding-bottom: 2px;
 }
-.PlaygroundEditorTheme__markOverlap {
+.WebinyLexical__markOverlap {
   background: rgba(255, 212, 0, 0.3);
   border-bottom: 2px solid rgba(255, 212, 0, 0.7);
 }
-.PlaygroundEditorTheme__mark.selected {
+.WebinyLexical__mark.selected {
   background: rgba(255, 212, 0, 0.5);
   border-bottom: 2px solid rgba(255, 212, 0, 1);
 }
-.PlaygroundEditorTheme__markOverlap.selected {
+.WebinyLexical__markOverlap.selected {
   background: rgba(255, 212, 0, 0.7);
   border-bottom: 2px solid rgba(255, 212, 0, 0.7);
 }
-.PlaygroundEditorTheme__embedBlock {
+.WebinyLexical__embedBlock {
   user-select: none;
 }
-.PlaygroundEditorTheme__embedBlockFocus {
+.WebinyLexical__embedBlockFocus {
   outline: 2px solid rgb(60, 132, 244);
 }
 
-.PlaygroundEditorTheme__placeholder {
+.WebinyLexical__placeholder {
   text-align: left;
 }

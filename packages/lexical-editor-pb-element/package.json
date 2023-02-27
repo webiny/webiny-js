@@ -1,11 +1,16 @@
 {
-  "name": "@webiny/lexical-editor-pb",
+  "name": "@webiny/lexical-editor-pb-element",
   "version": "0.0.0",
-  "private": true,
   "dependencies": {
-    "@webiny/app-admin": "0.0.0",
+    "@emotion/styled": "^10.0.27",
+    "@material-design-icons/svg": "^0.14.2",
     "@webiny/app-page-builder": "0.0.0",
+    "@webiny/app-page-builder-elements": "0.0.0",
     "@webiny/lexical-editor": "0.0.0",
+    "@webiny/react-composition": "0.0.0",
+    "@webiny/ui": "0.0.0",
+    "lodash": "^4.17.10",
+    "medium-editor": "^5.23.3",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
   },
