@@ -29,7 +29,7 @@ export const createSearchRecordOperations = (
         return model;
     };
 
-    const getRecord: AcoSearchRecordStorageOperations["getRecord"] = async ({ id }) => {
+    const getRecord = async (id: string) => {
         const context = getCmsContext();
         const initialModel = await getRecordModel();
 
@@ -50,12 +50,20 @@ export const createSearchRecordOperations = (
             });
         }
 
-        return getFieldValues(revisions[0], baseFields);
+        return revisions[0];
     };
 
     return {
         getRecordModel,
-        getRecord,
+        async getRecord({ id }) {
+            security.disableAuthorization();
+
+            const record = await getRecord(id);
+
+            security.enableAuthorization();
+
+            return getFieldValues(record, baseFields);
+        },
         async listRecords(params) {
             const model = await getRecordModel();
             security.disableAuthorization();
@@ -83,7 +91,7 @@ export const createSearchRecordOperations = (
             const model = await getRecordModel();
             security.disableAuthorization();
 
-            const original = await getRecord({ id });
+            const original = await getRecord(id);
 
             const input = {
                 ...original,
@@ -98,7 +106,7 @@ export const createSearchRecordOperations = (
             const model = await getRecordModel();
             security.disableAuthorization();
 
-            const entry = await getRecord({ id });
+            const entry = await getRecord(id);
 
             await cms.deleteEntry(model, entry.id);
 

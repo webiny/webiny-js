@@ -39,7 +39,7 @@ describe("Search Record Lifecycle Events", () => {
                 search: {
                     createRecord: {
                         data: {
-                            id: expect.stringContaining(id),
+                            id,
                             type,
                             title,
                             content,

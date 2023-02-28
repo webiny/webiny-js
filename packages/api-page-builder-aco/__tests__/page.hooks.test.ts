@@ -58,7 +58,7 @@ describe("Pages -> Search records", () => {
         const searchRecord = searchResponse.data?.search?.getRecord?.data;
 
         expect(searchRecord).toMatchObject({
-            id: expect.stringContaining(pid),
+            id: pid,
             type: PB_PAGE_TYPE,
             title,
             content: title,
@@ -97,7 +97,7 @@ describe("Pages -> Search records", () => {
 
         expect(searchRecord).toMatchObject({
             title,
-            id: expect.stringContaining(pid),
+            id: pid,
             data: {
                 id: page.id,
                 title: title,
@@ -128,7 +128,7 @@ describe("Pages -> Search records", () => {
         const searchRecord = searchResponse.data?.search?.getRecord?.data;
 
         expect(searchRecord).toMatchObject({
-            id: expect.stringContaining(pid),
+            id: pid,
             title: updatePage.title,
             content: `${updatePage.title} Demo Heading Demo Content Demo button Demo Image 1 Demo Image 2 Demo Image 3`,
             data: {
@@ -152,7 +152,7 @@ describe("Pages -> Search records", () => {
         const publishedSearchRecord = publishedSearchResponse.data?.search?.getRecord?.data;
 
         expect(publishedSearchRecord).toMatchObject({
-            id: expect.stringContaining(pid),
+            id: pid,
             data: {
                 status: "published",
                 locked: true,
