@@ -25,7 +25,6 @@ export function createWebsitePulumiApp(projectAppParams: CreateWebsitePulumiAppP
         vpc: ({ getParam }) => {
             const vpc = getParam(projectAppParams.vpc);
             const usingAdvancedVpcParams = vpc && typeof vpc !== "boolean";
-
             return usingAdvancedVpcParams && vpc.useExistingVpc ? false : Boolean(vpc);
         },
         pulumi(...args) {
