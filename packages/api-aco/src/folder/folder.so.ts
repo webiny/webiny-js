@@ -5,7 +5,11 @@ import { FOLDER_MODEL_ID } from "./folder.model";
 import { baseFields, CreateAcoStorageOperationsParams } from "~/createAcoStorageOperations";
 import { getFieldValues } from "~/utils/getFieldValues";
 
-import { AcoFolderStorageOperations as BaseAcoFolderStorageOperations } from "./folder.types";
+import {
+    AcoFolderStorageOperations as BaseAcoFolderStorageOperations,
+    Folder
+} from "./folder.types";
+import { ListMeta } from "~/types";
 
 interface AcoFolderStorageOperations extends BaseAcoFolderStorageOperations {
     getFolderModel(): Promise<CmsModel>;
@@ -43,131 +47,130 @@ export const createFolderOperations = (
         type,
         parentId
     }) => {
-        const model = await getFolderModel();
-        security.disableAuthorization();
+        return await security.withoutAuthorization<Folder>(async () => {
+            const model = await getFolderModel();
+            let entry;
 
-        let entry;
+            if (id) {
+                entry = await cms.getEntryById(model, id);
+            } else if (slug && type) {
+                entry = await cms.getEntry(model, {
+                    where: { slug, type, parentId, latest: true }
+                });
+            }
 
-        if (id) {
-            entry = await cms.getEntryById(model, id);
-        } else if (slug && type) {
-            entry = await cms.getEntry(model, { where: { slug, type, parentId, latest: true } });
-        }
+            if (!entry) {
+                throw new WebinyError("Could not load folder.", "GET_FOLDER_ERROR", {
+                    id,
+                    slug,
+                    type,
+                    parentId
+                });
+            }
 
-        if (!entry) {
-            throw new WebinyError("Could not load folder.", "GET_FOLDER_ERROR", {
-                id,
-                slug,
-                type,
-                parentId
-            });
-        }
-
-        security.enableAuthorization();
-        return getFieldValues(entry, baseFields);
+            return getFieldValues(entry, baseFields);
+        });
     };
 
     const checkExistingFolder = async ({ id, params }: AcoCheckExistingFolderParams) => {
-        const model = await getFolderModel();
-        security.disableAuthorization();
+        await security.withoutAuthorization(async () => {
+            const model = await getFolderModel();
 
-        const { type, slug, parentId } = params;
+            const { type, slug, parentId } = params;
 
-        const [existings] = await cms.listLatestEntries(model, {
-            where: {
-                type,
-                slug,
-                parentId,
-                id_not: id
-            },
-            limit: 1
+            const [existings] = await cms.listLatestEntries(model, {
+                where: {
+                    type,
+                    slug,
+                    parentId,
+                    id_not: id
+                },
+                limit: 1
+            });
+
+            if (existings.length > 0) {
+                throw new WebinyError(
+                    `Folder with slug "${slug}" already exists at this level.`,
+                    "FOLDER_ALREADY_EXISTS",
+                    {
+                        id,
+                        params
+                    }
+                );
+            }
+
+            return;
         });
-
-        if (existings.length > 0) {
-            throw new WebinyError(
-                `Folder with slug "${slug}" already exists at this level.`,
-                "FOLDER_ALREADY_EXISTS",
-                {
-                    id,
-                    params
-                }
-            );
-        }
-
-        security.enableAuthorization();
-        return;
     };
 
     return {
         getFolderModel,
         getFolder,
         async listFolders(params) {
-            const model = await getFolderModel();
-            security.disableAuthorization();
+            return await security.withoutAuthorization<[Folder[], ListMeta]>(async () => {
+                const model = await getFolderModel();
 
-            const [entries, meta] = await cms.listLatestEntries(model, {
-                ...params,
-                where: {
-                    ...(params.where || {})
-                }
+                const [entries, meta] = await cms.listLatestEntries(model, {
+                    ...params,
+                    where: {
+                        ...(params.where || {})
+                    }
+                });
+
+                return [entries.map(entry => getFieldValues(entry, baseFields)), meta];
             });
-
-            security.enableAuthorization();
-            return [entries.map(entry => getFieldValues(entry, baseFields)), meta];
         },
         async createFolder({ data }) {
-            const model = await getFolderModel();
-            security.disableAuthorization();
+            return await security.withoutAuthorization<Folder>(async () => {
+                const model = await getFolderModel();
 
-            await checkExistingFolder({
-                params: {
-                    type: data.type,
-                    slug: data.slug,
-                    parentId: data.parentId
-                }
+                await checkExistingFolder({
+                    params: {
+                        type: data.type,
+                        slug: data.slug,
+                        parentId: data.parentId
+                    }
+                });
+
+                const entry = await cms.createEntry(model, {
+                    ...data,
+                    parentId: data.parentId || null
+                });
+
+                return getFieldValues(entry, baseFields);
             });
-
-            const entry = await cms.createEntry(model, {
-                ...data,
-                parentId: data.parentId || null
-            });
-
-            security.enableAuthorization();
-            return getFieldValues(entry, baseFields);
         },
         async updateFolder({ id, data }) {
-            const { slug, parentId } = data;
-            const model = await getFolderModel();
-            security.disableAuthorization();
+            return await security.withoutAuthorization<Folder>(async () => {
+                const { slug, parentId } = data;
+                const model = await getFolderModel();
 
-            const original = await getFolder({ id });
+                const original = await getFolder({ id });
 
-            await checkExistingFolder({
-                id,
-                params: {
-                    type: original.type,
-                    slug: slug || original.slug,
-                    parentId: parentId !== undefined ? parentId : original.parentId // parentId can be `null`
-                }
+                await checkExistingFolder({
+                    id,
+                    params: {
+                        type: original.type,
+                        slug: slug || original.slug,
+                        parentId: parentId !== undefined ? parentId : original.parentId // parentId can be `null`
+                    }
+                });
+
+                const input = {
+                    ...original,
+                    ...data
+                };
+
+                const entry = await cms.updateEntry(model, id, input);
+                return getFieldValues(entry, baseFields);
             });
-
-            const input = {
-                ...original,
-                ...data
-            };
-
-            const entry = await cms.updateEntry(model, id, input);
-            security.enableAuthorization();
-            return getFieldValues(entry, baseFields);
         },
         async deleteFolder({ id }) {
-            const model = await getFolderModel();
-            security.disableAuthorization();
-
-            await cms.deleteEntry(model, id);
-
-            security.enableAuthorization();
-            return true;
+            return await security.withoutAuthorization<boolean>(async () => {
+                const model = await getFolderModel();
+                await cms.deleteEntry(model, id);
+                return true;
+            });
         }
     };
 };

@@ -105,6 +105,7 @@ export interface Security<TIdentity = SecurityIdentity> extends Authentication<T
     getVersion(): Promise<string | null>;
     setVersion(version: string): Promise<System>;
     install(this: Security): Promise<void>;
+    withoutAuthorization<TResult>(cb: () => Promise<TResult>): Promise<TResult>;
 }
 
 export interface SecurityStorageOperations {

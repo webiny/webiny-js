@@ -49,7 +49,7 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
         }).then(permissions => {
             // Re-enable authorization.
             if (shouldEnableAuthorization) {
-                security.enableAuthorization();
+                enableAuthorization();
             }
 
             return permissions;
@@ -58,20 +58,24 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
         return permissionsLoader;
     };
 
+    const enableAuthorization = () => {
+        performAuthorization = true;
+    };
+
+    const disableAuthorization = () => {
+        performAuthorization = false;
+    };
+
     return {
         ...authentication,
         onBeforeLogin: createTopic("security.onBeforeLogin"),
         onLogin: createTopic("security.onLogin"),
         onAfterLogin: createTopic("security.onAfterLogin"),
         onIdentity: createTopic("security.onIdentity"),
+        enableAuthorization,
+        disableAuthorization,
         getStorageOperations() {
             return config.storageOperations;
-        },
-        enableAuthorization() {
-            performAuthorization = true;
-        },
-        disableAuthorization() {
-            performAuthorization = false;
         },
         addAuthorizer(authorizer: Authorizer) {
             authorizers.push(authorizer);
@@ -117,6 +121,15 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
 
             return permissions.some(p => p.name === "*");
         },
+
+        // Utility to run any callback without authorization checks
+        async withoutAuthorization(cb) {
+            disableAuthorization();
+            const result = await cb();
+            enableAuthorization();
+            return result;
+        },
+
         ...createTenantLinksMethods(config),
         ...createGroupsMethods(config),
         ...createApiKeysMethods(config),
