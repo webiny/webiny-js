@@ -2,6 +2,7 @@ import React from "react";
 import { css } from "emotion";
 import styled from "@emotion/styled";
 import { useRecoilValue } from "recoil";
+import get from "lodash/get";
 import set from "lodash/set";
 import merge from "lodash/merge";
 import { Grid, Cell } from "@webiny/ui/Grid";
@@ -98,6 +99,29 @@ const updateChildrenWithPreset = (
     return resizeCells(created, cells);
 };
 
+const updateCells = (
+    target: PbEditorElement,
+    rowCount: number,
+    columns: number
+): PbEditorElement[] => {
+    const cells = [...Array(rowCount || 1)]
+        .map(() => {
+            return [...Array(columns || 1)].map((_, index) =>
+                get(target.elements?.[index] || {}, "data.settings.grid.size", 1)
+            );
+        })
+        .flat();
+    const total = target.elements.length;
+    const max = cells.length;
+    if (total < max) {
+        const created = [...(target.elements as PbEditorElement[]), ...createCells(max - total)];
+        return resizeCells(created, cells);
+    } else if (total > max) {
+        return resizeCells(target.elements.slice(0, max) as PbEditorElement[], cells);
+    }
+    return target.elements as PbEditorElement[];
+};
+
 export const GridSize: React.FC<PbEditorPageElementSettingsRenderComponentProps> = ({
     defaultAccordionValue
 }) => {
@@ -171,19 +195,14 @@ export const GridSize: React.FC<PbEditorPageElementSettingsRenderComponentProps>
             set({}, `data.settings.gridSettings.${DisplayMode.TABLET}.flexDirection`, "column"),
             set({}, `data.settings.verticalAlign.${DisplayMode.DESKTOP}`, "stretch"),
             set({}, `data.settings.verticalAlign.${DisplayMode.TABLET}`, "stretch"),
-            set({}, `data.settings.verticalAlign.${DisplayMode.MOBILE_LANDSCAPE}`, "flex-start")
+            set({}, `data.settings.verticalAlign.${DisplayMode.MOBILE_LANDSCAPE}`, "flex-start"),
+            set({}, `data.settings.verticalAlign.${DisplayMode.MOBILE_PORTRAIT}`, "flex-start")
         );
         handler.trigger(
             new UpdateElementActionEvent({
                 element: {
                     ...newElement,
-                    elements: updateChildrenWithPreset(
-                        newElement,
-                        presetPlugins.find(
-                            plugin => plugin.cellsType === currentCellsType
-                        ) as PbEditorGridPresetPluginType,
-                        rowCount
-                    ) as any
+                    elements: updateCells(newElement, rowCount, columns) as any
                 },
                 history: true
             })

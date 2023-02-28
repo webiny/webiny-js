@@ -24,6 +24,7 @@ const verticalAlign: ElementStylesModifier = ({ element, theme }) => {
         // Cells of grid need auto height for stretch to work
         if (element.type === "grid") {
             const value = verticalAlign[breakpointName];
+            const rowCount = element.data.settings?.grid?.rowCount || 1;
             if (value === "stretch") {
                 const newStyles: { [key: string]: any } = {
                     ...returnStyles,
@@ -35,25 +36,27 @@ const verticalAlign: ElementStylesModifier = ({ element, theme }) => {
 
                 // For correct display when the Grid "Column wrap" is set to “wrap”
                 if (element.data.settings?.gridSettings[breakpointName]?.flexDirection !== "row") {
-                    newStyles[breakpointName].flexFlow = "row wrap";
+                    newStyles[breakpointName].flexDirection = "row";
+                    newStyles[breakpointName].flexWrap = "wrap";
                 }
 
                 return newStyles;
-            } else {
+            } else if (rowCount > 1) {
                 const columns = element.data?.settings?.grid?.cellsType?.split("-")?.length || 1;
-                const rowCount = element.data.settings?.grid?.rowCount || 1;
+                const isMobileView =
+                    breakpointName === "mobile-landscape" || breakpointName === "mobile-portrait";
 
-                if (rowCount > 1) {
-                    return {
-                        ...returnStyles,
-                        [breakpointName]: {
-                            flexFlow: "unset",
-                            flexWrap: "wrap",
-                            flex: `1 0 ${100 / columns}%`,
-                            alignItems: verticalAlign[breakpointName]
-                        }
-                    };
-                }
+                return {
+                    ...returnStyles,
+                    [breakpointName]: {
+                        flexDirection: isMobileView
+                            ? element.data.settings?.gridSettings[breakpointName]?.flexDirection
+                            : "",
+                        flexWrap: "wrap",
+                        flex: `1 0 ${100 / columns}%`,
+                        alignItems: verticalAlign[breakpointName]
+                    }
+                };
             }
         }
 
