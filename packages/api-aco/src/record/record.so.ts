@@ -106,9 +106,7 @@ export const createSearchRecordOperations = (
             const model = await getRecordModel();
             security.disableAuthorization();
 
-            const entry = await getRecord(id);
-
-            await cms.deleteEntry(model, entry.id);
+            await cms.deleteEntry(model, id);
 
             security.enableAuthorization();
             return true;
