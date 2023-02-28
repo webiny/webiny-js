@@ -62,7 +62,7 @@ export const createSearchRecordOperations = (
 
             security.enableAuthorization();
 
-            return getFieldValues(record, baseFields);
+            return getFieldValues(record, baseFields, true);
         },
         async listRecords(params) {
             const model = await getRecordModel();
@@ -76,7 +76,7 @@ export const createSearchRecordOperations = (
             });
 
             security.enableAuthorization();
-            return [entries.map(entry => getFieldValues(entry, baseFields)), meta];
+            return [entries.map(entry => getFieldValues(entry, baseFields, true)), meta];
         },
         async createRecord({ data }) {
             const model = await getRecordModel();
@@ -85,7 +85,7 @@ export const createSearchRecordOperations = (
             const entry = await cms.createEntry(model, data);
 
             security.enableAuthorization();
-            return getFieldValues(entry, baseFields);
+            return getFieldValues(entry, baseFields, true);
         },
         async updateRecord({ id, data }) {
             const model = await getRecordModel();
@@ -100,7 +100,7 @@ export const createSearchRecordOperations = (
 
             const entry = await cms.updateEntry(model, original.id, input);
             security.enableAuthorization();
-            return getFieldValues(entry, baseFields);
+            return getFieldValues(entry, baseFields, true);
         },
         async deleteRecord({ id }) {
             const model = await getRecordModel();
