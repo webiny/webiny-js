@@ -139,8 +139,6 @@ describe("`search` CRUD", () => {
             })
         );
 
-        console.log("recordB", recordB);
-
         // Let's update the "page-b" title.
         const updatedTitle = "Title updated";
         const [updateB] = await search.updateRecord({
