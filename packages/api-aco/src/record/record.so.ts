@@ -1,3 +1,4 @@
+import { attachCmsModelFieldConverters } from "@webiny/api-headless-cms/utils/converters/valueKeyStorageConverter";
 import { CmsModel } from "@webiny/api-headless-cms/types";
 import WebinyError from "@webiny/error";
 
@@ -14,7 +15,7 @@ interface AcoSearchRecordStorageOperations extends BaseAcoSearchRecordStorageOpe
 export const createSearchRecordOperations = (
     params: CreateAcoStorageOperationsParams
 ): AcoSearchRecordStorageOperations => {
-    const { cms, security } = params;
+    const { cms, security, getCmsContext } = params;
     const getRecordModel = async () => {
         security.disableAuthorization();
         const model = await cms.getModel(SEARCH_RECORD_MODEL_ID);
@@ -29,14 +30,19 @@ export const createSearchRecordOperations = (
     };
 
     const getRecord: AcoSearchRecordStorageOperations["getRecord"] = async ({ id }) => {
-        const model = await getRecordModel();
-        security.disableAuthorization();
+        const context = getCmsContext();
+        const initialModel = await getRecordModel();
+
+        const model = attachCmsModelFieldConverters({
+            model: initialModel,
+            plugins: context.plugins
+        });
 
         /**
          * The record "id" has been passed by the original entry.
-         * We need to retrieve it via `cms.getEntryRevisions()` method and return the first one.
+         * We need to retrieve it via `cms.storageOperations.entries.getLatestByIds()` method and return the first one.
          */
-        const revisions = await cms.getEntryRevisions(model, id);
+        const revisions = await cms.storageOperations.entries.getLatestByIds(model, { ids: [id] });
 
         if (revisions.length === 0) {
             throw new WebinyError("Record not found.", "NOT_FOUND", {
@@ -44,7 +50,6 @@ export const createSearchRecordOperations = (
             });
         }
 
-        security.enableAuthorization();
         return getFieldValues(revisions[0], baseFields);
     };
 
