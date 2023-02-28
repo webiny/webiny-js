@@ -13,7 +13,7 @@ export const createPageRecordPayload = async (
     meta?: Record<string, any>
 ): Promise<CreateSearchRecordParams<PbPageRecordData>> => {
     const { id, pid, title, createdOn, createdBy, savedOn, status, version, locked, path } = page;
-    const content = await context.pageBuilderAco.processPageSearchContent(page);
+    const content = await context.pageBuilderAco.getSearchablePageContent(page);
     const location = {
         folderId: meta?.location?.folderId || ROOT_FOLDER
     };
@@ -45,7 +45,7 @@ export const updatePageRecordPayload = async (
     meta?: Record<string, any>
 ): Promise<UpdateSearchRecordParams<PbPageRecordData>> => {
     const { id, pid, title, createdOn, createdBy, savedOn, status, version, locked, path } = page;
-    const content = await context.pageBuilderAco.processPageSearchContent(page);
+    const content = await context.pageBuilderAco.getSearchablePageContent(page);
 
     return {
         title,

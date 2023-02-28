@@ -7,7 +7,7 @@ interface ElementCallback {
     (element: PbPageElement): Promise<void>;
 }
 
-export async function processPageSearchContent(
+export async function getSearchablePageContent(
     context: PbAcoContext,
     page: Page,
     processors: PageSearchProcessor[]

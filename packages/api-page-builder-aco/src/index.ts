@@ -2,7 +2,7 @@ import { ContextPlugin } from "@webiny/api";
 
 import { createPageHooks } from "~/page/hooks";
 import { createPageProcessors } from "~/page/processors";
-import { processPageSearchContent } from "~/utils/createSearchContent";
+import { getSearchablePageContent } from "~/utils/getSearchableContent";
 
 import { PageSearchProcessor, PbAcoContext } from "~/types";
 
@@ -13,8 +13,8 @@ const setupContext = (context: PbAcoContext) => {
         addPageSearchProcessor(processor) {
             pageSearchProcessors.push(processor);
         },
-        async processPageSearchContent(page) {
-            return processPageSearchContent(context, page, pageSearchProcessors);
+        async getSearchablePageContent(page) {
+            return getSearchablePageContent(context, page, pageSearchProcessors);
         }
     };
 };
