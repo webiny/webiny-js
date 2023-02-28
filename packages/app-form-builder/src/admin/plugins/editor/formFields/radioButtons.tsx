@@ -30,7 +30,7 @@ const plugin: FbBuilderFieldPlugin = {
             return (
                 <Grid>
                     <Cell span={12}>
-                        <OptionsList form={form} otherOptionSwitch />
+                        <OptionsList form={form} otherOption />
                     </Cell>
                 </Grid>
             );
