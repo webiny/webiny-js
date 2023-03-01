@@ -7,20 +7,45 @@ import {
     SELECTION_CHANGE_COMMAND
 } from "lexical";
 import { $getSelectionStyleValueForProperty, $patchStyleText } from "@lexical/selection";
-import {ColorPickerDropdown} from "~/components/ColorPickerDropdown/ColorPickerDropdown";
-import {makeComposable} from "@webiny/react-composition";
+import { createComponentPlugin, makeComposable } from "@webiny/react-composition";
 
-
-interface ColorPickerElement {
-    onChange: (color: string) => void;
-    value: string;
+export interface FontColorPicker {
+    value?: string;
+    onChange?: (value: string) => void;
 }
 
-interface FontColorAction {
-    ColorPickerElement?: JSX.Element;
+/*
+ * Composable Color Picker component that is mounted on toolbar action.
+ * Note: Toa add custom component access trough @see LexicalEditorConfig API
+ * */
+export const FontColorPicker = makeComposable<FontColorPicker>(
+    "FontColorPicker",
+    (): JSX.Element | null => {
+        useEffect(() => {
+            console.log("Default FontColorPicker, please add your own component");
+        }, []);
+        return null;
+    }
+);
+
+interface FontActionColorPicker {
+    Element: typeof FontColorPicker;
 }
 
-export const FontColorAction = makeComposable<FontColorAction>("FontColorAction",  (colorPickerElement) => {
+const FontActionColorPicker: React.FC<FontActionColorPicker> = ({ Element }): JSX.Element => {
+    const FontColorPickerPlugin = createComponentPlugin(FontColorPicker, () => {
+        return function FontColorPickerPlugin({ value, onChange }): JSX.Element {
+            return <Element value={value} onChange={onChange} />;
+        };
+    });
+    return <FontColorPickerPlugin />;
+};
+
+export interface FontColorAction extends React.FC<unknown> {
+    ColorPicker: typeof FontActionColorPicker;
+}
+
+export const FontColorAction: FontColorAction = () => {
     const [editor] = useLexicalComposerContext();
     const [activeEditor, setActiveEditor] = useState(editor);
     const [fontColor, setFontColor] = useState<string>("#000");
@@ -69,5 +94,10 @@ export const FontColorAction = makeComposable<FontColorAction>("FontColorAction"
         );
     }, [editor, updateToolbar]);
 
-    return <ColorPickerDropdown value={fontColor}  onChange={onFontColorSelect} />;
-});
+    return <FontColorPicker value={fontColor} onChange={onFontColorSelect} />;
+};
+
+{
+    /* Color action settings */
+}
+FontColorAction.ColorPicker = FontActionColorPicker;

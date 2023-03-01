@@ -43,3 +43,5 @@ export { generateInitialLexicalValue } from "~/utils/generateInitialLexicalValue
 export { isValidLexicalData } from "~/utils/isValidLexicalData";
 // types
 export * as types from "./types";
+// config
+export { LexicalEditorConfig } from "~/components/LexicalEditorConfig/LexicalEditorConfig";
