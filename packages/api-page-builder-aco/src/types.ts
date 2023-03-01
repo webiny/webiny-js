@@ -30,6 +30,6 @@ export interface PageSearchProcessor {
 export interface PbAcoContext extends BaseContext, AcoContext, PbContext {
     pageBuilderAco: {
         addPageSearchProcessor(processor: PageSearchProcessor): void;
-        processPageSearchContent(content: Page): Promise<string>;
+        getSearchablePageContent(content: Page): Promise<string>;
     };
 }

@@ -10982,6 +10982,7 @@ __metadata:
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
     "@webiny/pubsub": 0.0.0
+    "@webiny/utils": 0.0.0
     lodash: ^4.4.2
     rimraf: ^3.0.2
     ttypescript: ^1.5.13

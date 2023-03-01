@@ -48,7 +48,7 @@ describe("Pages -> Search records", () => {
     });
 
     it("should create a search record on page creation", async () => {
-        const { pid, title, id, createdOn, createdBy, savedOn, status, version, locked } =
+        const { id, pid, title, createdBy, createdOn, savedOn, status, version, locked, path } =
             await createDummyPage();
 
         expect(tracker.isExecutedOnce("page:beforeCreate")).toEqual(true);
@@ -58,7 +58,7 @@ describe("Pages -> Search records", () => {
         const searchRecord = searchResponse.data?.search?.getRecord?.data;
 
         expect(searchRecord).toMatchObject({
-            originalId: pid,
+            id: pid,
             type: PB_PAGE_TYPE,
             title,
             content: title,
@@ -67,13 +67,15 @@ describe("Pages -> Search records", () => {
             },
             data: {
                 id,
+                pid,
                 title,
                 createdBy,
                 createdOn,
                 savedOn,
                 status,
                 version,
-                locked
+                locked,
+                path
             }
         });
     });
@@ -95,7 +97,7 @@ describe("Pages -> Search records", () => {
 
         expect(searchRecord).toMatchObject({
             title,
-            originalId: pid,
+            id: pid,
             data: {
                 id: page.id,
                 title: title,
@@ -126,7 +128,7 @@ describe("Pages -> Search records", () => {
         const searchRecord = searchResponse.data?.search?.getRecord?.data;
 
         expect(searchRecord).toMatchObject({
-            originalId: pid,
+            id: pid,
             title: updatePage.title,
             content: `${updatePage.title} Demo Heading Demo Content Demo button Demo Image 1 Demo Image 2 Demo Image 3`,
             data: {
@@ -150,7 +152,7 @@ describe("Pages -> Search records", () => {
         const publishedSearchRecord = publishedSearchResponse.data?.search?.getRecord?.data;
 
         expect(publishedSearchRecord).toMatchObject({
-            originalId: pid,
+            id: pid,
             data: {
                 status: "published",
                 locked: true,
@@ -169,7 +171,7 @@ describe("Pages -> Search records", () => {
         const unpublishedSearchRecord = unpublishedSearchResponse.data?.search?.getRecord?.data;
 
         expect(unpublishedSearchRecord).toMatchObject({
-            originalId: pid,
+            id: expect.stringContaining(pid),
             data: {
                 status: "unpublished",
                 locked: true,
@@ -197,7 +199,9 @@ describe("Pages -> Search records", () => {
                         data: null,
                         error: {
                             code: "NOT_FOUND",
-                            data: null
+                            data: {
+                                id: pid
+                            }
                         }
                     }
                 }
