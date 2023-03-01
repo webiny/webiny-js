@@ -9,7 +9,7 @@ interface CreateOperationsWrapperParams extends CreateAcoStorageOperationsParams
 export const createOperationsWrapper = (params: CreateOperationsWrapperParams) => {
     const { cms, security, modelName } = params;
 
-    const withModelWithoutAuthorization = async <TResult>(
+    const withModel = async <TResult>(
         cb: (model: CmsModel) => Promise<TResult>
     ): Promise<TResult> => {
         security.disableAuthorization();
@@ -27,6 +27,6 @@ export const createOperationsWrapper = (params: CreateOperationsWrapperParams) =
     };
 
     return {
-        withModelWithoutAuthorization
+        withModel
     };
 };

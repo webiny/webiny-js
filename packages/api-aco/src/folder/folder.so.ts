@@ -21,18 +21,13 @@ export const createFolderOperations = (
 ): AcoFolderStorageOperations => {
     const { cms } = params;
 
-    const { withModelWithoutAuthorization } = createOperationsWrapper({
+    const { withModel } = createOperationsWrapper({
         ...params,
         modelName: FOLDER_MODEL_ID
     });
 
-    const getFolder: AcoFolderStorageOperations["getFolder"] = async ({
-        id,
-        slug,
-        type,
-        parentId
-    }) => {
-        return await withModelWithoutAuthorization(async model => {
+    const getFolder: AcoFolderStorageOperations["getFolder"] = ({ id, slug, type, parentId }) => {
+        return withModel(async model => {
             let entry;
 
             if (id) {
@@ -56,8 +51,8 @@ export const createFolderOperations = (
         });
     };
 
-    const checkExistingFolder = async ({ id, params }: AcoCheckExistingFolderParams) => {
-        await withModelWithoutAuthorization(async model => {
+    const checkExistingFolder = ({ id, params }: AcoCheckExistingFolderParams) => {
+        return withModel(async model => {
             const { type, slug, parentId } = params;
 
             const [existings] = await cms.listLatestEntries(model, {
@@ -87,8 +82,8 @@ export const createFolderOperations = (
 
     return {
         getFolder,
-        async listFolders(params) {
-            return await withModelWithoutAuthorization(async model => {
+        listFolders(params) {
+            return withModel(async model => {
                 const [entries, meta] = await cms.listLatestEntries(model, {
                     ...params,
                     where: {
@@ -99,8 +94,8 @@ export const createFolderOperations = (
                 return [entries.map(entry => getFieldValues(entry, baseFields)), meta];
             });
         },
-        async createFolder({ data }) {
-            return await withModelWithoutAuthorization(async model => {
+        createFolder({ data }) {
+            return withModel(async model => {
                 await checkExistingFolder({
                     params: {
                         type: data.type,
@@ -117,8 +112,8 @@ export const createFolderOperations = (
                 return getFieldValues(entry, baseFields);
             });
         },
-        async updateFolder({ id, data }) {
-            return await withModelWithoutAuthorization(async model => {
+        updateFolder({ id, data }) {
+            return withModel(async model => {
                 const { slug, parentId } = data;
 
                 const original = await getFolder({ id });
@@ -141,8 +136,8 @@ export const createFolderOperations = (
                 return getFieldValues(entry, baseFields);
             });
         },
-        async deleteFolder({ id }) {
-            return await withModelWithoutAuthorization(async model => {
+        deleteFolder({ id }) {
+            return withModel(async model => {
                 await cms.deleteEntry(model, id);
                 return true;
             });

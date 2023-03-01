@@ -14,13 +14,13 @@ export const createSearchRecordOperations = (
 ): AcoSearchRecordStorageOperations => {
     const { cms, getCmsContext } = params;
 
-    const { withModelWithoutAuthorization } = createOperationsWrapper({
+    const { withModel } = createOperationsWrapper({
         ...params,
         modelName: SEARCH_RECORD_MODEL_ID
     });
 
-    const getRecord = async (id: string) => {
-        return await withModelWithoutAuthorization(async initialModel => {
+    const getRecord = (id: string) => {
+        return withModel(async initialModel => {
             const context = getCmsContext();
 
             const model = attachCmsModelFieldConverters({
@@ -51,8 +51,8 @@ export const createSearchRecordOperations = (
             const record = await getRecord(id);
             return getFieldValues(record, baseFields, true);
         },
-        async listRecords(params) {
-            return await withModelWithoutAuthorization(async model => {
+        listRecords(params) {
+            return withModel(async model => {
                 const [entries, meta] = await cms.listLatestEntries(model, {
                     ...params,
                     where: {
@@ -63,15 +63,15 @@ export const createSearchRecordOperations = (
                 return [entries.map(entry => getFieldValues(entry, baseFields, true)), meta];
             });
         },
-        async createRecord({ data }) {
-            return await withModelWithoutAuthorization(async model => {
+        createRecord({ data }) {
+            return withModel(async model => {
                 const entry = await cms.createEntry(model, data);
 
                 return getFieldValues(entry, baseFields, true);
             });
         },
-        async updateRecord({ id, data }) {
-            return await withModelWithoutAuthorization(async model => {
+        updateRecord({ id, data }) {
+            return withModel(async model => {
                 const original = await getRecord(id);
 
                 const input = {
@@ -84,8 +84,8 @@ export const createSearchRecordOperations = (
                 return getFieldValues(entry, baseFields, true);
             });
         },
-        async deleteRecord({ id }) {
-            return await withModelWithoutAuthorization(async model => {
+        deleteRecord({ id }) {
+            return withModel(async model => {
                 await cms.deleteEntry(model, id);
                 return true;
             });
