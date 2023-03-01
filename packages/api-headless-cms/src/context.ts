@@ -9,9 +9,7 @@ import { createModelsCrud } from "~/crud/contentModel.crud";
 import { createContentEntryCrud } from "~/crud/contentEntry.crud";
 
 const getParameters = async (context: CmsContext): Promise<CmsParametersPluginResponse> => {
-    console.log("context", context);
     const plugins = context.plugins.byType<CmsParametersPlugin>(CmsParametersPlugin.type);
-    console.log("plugins", plugins);
 
     for (const plugin of plugins) {
         const result = await plugin.getParameters(context);
