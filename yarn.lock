@@ -14046,6 +14046,7 @@ __metadata:
     "@babel/runtime": ^7.19.0
     "@emotion/core": ^10.0.27
     "@webiny/app": 0.0.0
+    "@webiny/app-aco": 0.0.0
     "@webiny/app-admin": 0.0.0
     "@webiny/app-admin-rmwc": 0.0.0
     "@webiny/app-apw": 0.0.0
