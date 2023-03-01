@@ -42,6 +42,7 @@ export const DATA_FIELDS = `
         }
         successMessage
         submitButtonLabel 
+        fullWidthSubmitButton
         termsOfServiceMessage {
             enabled
             message

@@ -54,6 +54,7 @@
     "@types/react": "17.0.39",
     "@types/resize-observer-browser": "^0.1.4",
     "@webiny/cli": "0.0.0",
+    "@webiny/lexical-editor": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "babel-plugin-lodash": "^3.3.4",
     "execa": "^5.0.0",

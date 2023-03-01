@@ -1,7 +1,10 @@
 {
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
-  "references": [{ "path": "../theme/tsconfig.build.json" }],
+  "references": [
+    { "path": "../theme/tsconfig.build.json" },
+    { "path": "../lexical-editor/tsconfig.build.json" }
+  ],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",

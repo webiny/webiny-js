@@ -40,6 +40,7 @@ export const GET_PUBLISHED_FORM = /* GraphQL */ `
                         }
                         successMessage
                         submitButtonLabel
+                        fullWidthSubmitButton
                         termsOfServiceMessage {
                             enabled
                             message

@@ -388,6 +388,7 @@ export interface FbReCaptchaInput {
 export interface FbFormSettingsInput {
     layout: FbFormSettingsLayoutInput;
     submitButtonLabel: string;
+    fullWidthSubmitButton: boolean;
     successMessage: Record<string, string>;
     termsOfServiceMessage: FbTermsOfServiceMessageInput;
     reCaptcha: FbReCaptchaInput;
