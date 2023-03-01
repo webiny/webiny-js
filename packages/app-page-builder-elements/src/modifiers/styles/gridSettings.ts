@@ -17,6 +17,9 @@ const gridSettings: ElementStylesModifier = ({ element, theme }) => {
         }
 
         const columns = element.data?.settings?.grid?.cellsType?.split("-")?.length || 1;
+        const columnSizes: number[] =
+            element.data?.settings?.grid?.columnSizes ||
+            element.data?.settings?.grid?.cellsType?.split("-");
         const rowCount = element.data.settings?.grid?.rowCount || 1;
         const value = { ...gridSettings[breakpointName] };
 
@@ -33,14 +36,25 @@ const gridSettings: ElementStylesModifier = ({ element, theme }) => {
         // we also want to apply 100% width to direct `pb-cell` elements
         // (only applies to single-row grid or multi-row grid on mobile).
         if (
-            value.flexDirection &&
             value.flexDirection !== "row" &&
             element.data?.settings?.verticalAlign?.[breakpointName] !== "stretch" &&
             (rowCount === 1 ||
                 breakpointName === "mobile-landscape" ||
                 breakpointName === "mobile-portrait")
         ) {
-            value["& > pb-cell"] = { width: "100% !important" };
+            columnSizes.forEach(
+                (_, index) =>
+                    (value[`& > pb-cell:nth-of-type(${columns}n + ${index + 1})`] = {
+                        width: "100%"
+                    })
+            );
+        } else {
+            columnSizes.forEach(
+                (size, index) =>
+                    (value[`& > pb-cell:nth-of-type(${columns}n + ${index + 1})`] = {
+                        width: `calc(${(size / 12) * 100}% - var(--cellWidthOffset, 0px))`
+                    })
+            );
         }
 
         return {

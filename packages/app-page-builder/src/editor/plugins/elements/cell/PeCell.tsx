@@ -81,16 +81,7 @@ const PeCell = createRenderer(
         );
     },
     {
-        baseStyles: ({ element }) => {
-            const styles = { height: "100%", width: "100%" };
-            const size = element.data?.settings?.grid?.size;
-            if (typeof size !== "number") {
-                return styles;
-            }
-
-            styles.width = `calc(${(size / 12) * 100}% - var(--cellWidthOffset, 0px))`;
-            return styles;
-        }
+        baseStyles: { height: "100%", width: "100%" }
     }
 );
 

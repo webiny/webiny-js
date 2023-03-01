@@ -38,6 +38,9 @@ const verticalAlign: ElementStylesModifier = ({ element, theme }) => {
                 if (element.data.settings?.gridSettings[breakpointName]?.flexDirection !== "row") {
                     newStyles[breakpointName].flexDirection = "row";
                     newStyles[breakpointName].flexWrap = "wrap";
+                } else {
+                    newStyles[breakpointName].flexDirection = "row";
+                    newStyles[breakpointName].flexWrap = "nowrap";
                 }
 
                 return newStyles;

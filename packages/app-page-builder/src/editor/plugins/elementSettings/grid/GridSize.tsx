@@ -136,6 +136,17 @@ export const GridSize: React.FC<PbEditorPageElementSettingsRenderComponentProps>
     const presetPlugins = getPresetPlugins();
 
     const onInputSizeChange = (value: number, index: number) => {
+        const columnSizes = element.elements?.slice(0, columns)?.map((cell, cellIndex) => {
+            if (cellIndex === index) {
+                return value;
+            }
+            return (cell as PbEditorElement)?.data?.settings?.grid?.size || 1;
+        });
+        const newElement = merge(
+            {},
+            element,
+            set({}, "data.settings.grid.columnSizes", columnSizes)
+        );
         const cellsToUpdate = [...Array(currentRowCount)].map(
             (_, rowIndex) => index + columns * rowIndex
         );
@@ -149,7 +160,7 @@ export const GridSize: React.FC<PbEditorPageElementSettingsRenderComponentProps>
         handler.trigger(
             new UpdateElementActionEvent({
                 element: {
-                    ...element,
+                    ...newElement,
                     elements: updatedCells
                 } as any,
                 history: true
@@ -172,6 +183,7 @@ export const GridSize: React.FC<PbEditorPageElementSettingsRenderComponentProps>
                             ...(element.data.settings || {}),
                             grid: {
                                 ...(element.data.settings?.grid || {}),
+                                columnSizes: undefined,
                                 cellsType
                             }
                         }

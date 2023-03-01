@@ -153,6 +153,7 @@ export interface PbElementDataSettingsType {
     border?: PbElementDataSettingsBorderType;
     grid?: {
         cellsType?: string;
+        columnSizes?: string[];
         rowCount?: number;
         size?: number;
     };
