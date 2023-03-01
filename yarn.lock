@@ -14721,16 +14721,17 @@ __metadata:
     "@babel/core": ^7.19.3
     "@babel/preset-env": ^7.19.4
     "@babel/runtime": ^7.19.0
+    "@elastic/elasticsearch": 7.12.0
     "@types/semver": ^7.3.4
-    "@webiny/api": 0.0.0
     "@webiny/cli": 0.0.0
-    "@webiny/error": 0.0.0
-    "@webiny/plugins": 0.0.0
+    "@webiny/db-dynamodb": 0.0.0
+    "@webiny/handler-aws": 0.0.0
     "@webiny/project-utils": 0.0.0
+    dynamodb-toolbox: ^0.3.5
     jest: ^28.1.0
+    jest-dynalite: ^3.2.0
     jest-mock-console: ^1.0.0
     rimraf: ^3.0.2
-    semver: ^7.3.4
     typescript: 4.7.4
   languageName: unknown
   linkType: soft
