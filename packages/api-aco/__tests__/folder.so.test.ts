@@ -82,7 +82,7 @@ describe("`folder` CRUD", () => {
                 aco: {
                     updateFolder: {
                         data: {
-                            ...folderMocks.folderB,
+                            ...folderB,
                             ...update
                         },
                         error: null
@@ -132,7 +132,7 @@ describe("`folder` CRUD", () => {
                 aco: {
                     getFolder: {
                         data: {
-                            ...folderMocks.folderA,
+                            ...folderA,
                             parentId: null
                         },
                         error: null
