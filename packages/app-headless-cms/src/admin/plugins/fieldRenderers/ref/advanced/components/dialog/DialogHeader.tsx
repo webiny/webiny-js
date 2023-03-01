@@ -1,6 +1,7 @@
 import styled from "@emotion/styled";
 import React from "react";
 import { CmsModel } from "~/types";
+import { ReactComponent as CloseIcon } from "./assets/close.svg";
 
 const Container = styled("div")({
     width: "100%",
@@ -33,16 +34,37 @@ const Model = styled("h3")({
     }
 });
 
-const CloseContainer = styled("div")({});
+const CloseContainer = styled("div")({
+    width: "20px",
+    height: "20px",
+    paddingTop: "5px"
+});
 
-const CloseButton = styled("button")({});
+const CloseButton = styled("button")({
+    background: "transparent",
+    border: "0 none",
+    outline: "none",
+    cursor: "pointer",
+    display: "block",
+    width: "100%",
+    height: "100%",
+    padding: "0",
+    margin: "0",
+    " > svg": {
+        display: "block",
+        width: "100%",
+        height: "100%"
+    }
+});
 interface CloseProps {
     onClick: () => void;
 }
 const Close: React.FC<CloseProps> = ({ onClick }) => {
     return (
         <CloseContainer>
-            <CloseButton onClick={onClick}>x</CloseButton>
+            <CloseButton onClick={onClick}>
+                <CloseIcon />
+            </CloseButton>
         </CloseContainer>
     );
 };

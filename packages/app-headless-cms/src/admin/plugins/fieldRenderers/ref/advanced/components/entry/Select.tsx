@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import React, { useCallback, useState } from "react";
+import React, { useCallback } from "react";
 import {
     CmsReferenceContentEntry,
     CmsReferenceValue

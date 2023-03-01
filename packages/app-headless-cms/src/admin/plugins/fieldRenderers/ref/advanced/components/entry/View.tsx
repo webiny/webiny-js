@@ -1,5 +1,4 @@
 import styled from "@emotion/styled";
-import { css } from "emotion";
 import React from "react";
 import { CmsReferenceContentEntry } from "~/admin/plugins/fieldRenderers/ref/components/types";
 import { ReactComponent as ViewIcon } from "./assets/view.svg";

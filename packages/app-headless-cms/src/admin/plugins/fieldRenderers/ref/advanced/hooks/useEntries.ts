@@ -8,24 +8,35 @@ import {
     SEARCH_CONTENT_ENTRIES
 } from "~/admin/plugins/fieldRenderers/ref/components/graphql";
 
+interface ExecuteQueryParams {
+    query?: string;
+    items: CmsReferenceContentEntry[];
+    after?: string;
+}
+
 interface Params {
     model: CmsModel;
+    limit?: number;
 }
 export const useEntries = (params: Params) => {
     const client = useApolloClient();
-    const { model } = params;
+    const { model, limit } = params;
 
     const [entries, setEntries] = useState<CmsReferenceContentEntry[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
+    // const [searchQuery, setSearchQuery] = useState<string | undefined>(undefined);
+    // const [searchAfter, setSearchAfter] = useState<string | undefined>(undefined);
 
-    const runSearch = useCallback(
-        async (query?: string) => {
+    const executeQuery = useCallback(
+        async (params: ExecuteQueryParams) => {
+            const { query, items } = params;
             if (loading) {
                 console.log(`Cannot run a new search. Please wait for the previous one to finish.`);
                 return;
             }
             setLoading(true);
+
             try {
                 const result = await client.query<
                     CmsEntrySearchQueryResponse,
@@ -33,9 +44,9 @@ export const useEntries = (params: Params) => {
                 >({
                     query: SEARCH_CONTENT_ENTRIES,
                     variables: {
+                        query,
                         modelIds: [model.modelId],
-                        limit: 10,
-                        query
+                        limit: limit || 10
                     }
                 });
 
@@ -50,23 +61,44 @@ export const useEntries = (params: Params) => {
                     );
                     return;
                 } else {
-                    setEntries(result.data.content.data);
+                    setEntries(items.concat(result.data.content.data));
                     setError(null);
                 }
             } catch (ex) {
                 setEntries([]);
-                console.log(`Error while feching entries for model ${model.modelId}.`);
+                console.log(`Error while fetching entries for model ${model.modelId}.`);
                 console.log(JSON.stringify(ex));
                 setError(ex.message);
             } finally {
                 setLoading(false);
             }
         },
-        [model]
+        [model.modelId, entries]
     );
+
+    const runSearch = useCallback(
+        (query?: string) => {
+            // setSearchQuery(query);
+            executeQuery({
+                query,
+                items: [],
+                after: undefined
+            });
+        },
+        [executeQuery]
+    );
+
+    // const runLoadMore = useCallback(() => {
+    //     executeQuery({
+    //         query: searchQuery,
+    //         items: entries,
+    //         after: searchAfter
+    //     });
+    // }, [executeQuery, searchQuery]);
 
     return {
         runSearch,
+        // runLoadMore,
         loading,
         entries,
         error

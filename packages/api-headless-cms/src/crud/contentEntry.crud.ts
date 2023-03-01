@@ -772,7 +772,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
             const owner = getCreatedBy();
 
-            const { id, entryId, version } = createEntryId(1);
+            const { id, entryId, version } = createEntryId(inputData);
             /**
              * There is a possibility that user sends an ID in the input, so we will use that one.
              * There is no check if the ID is unique or not, that is up to the user.

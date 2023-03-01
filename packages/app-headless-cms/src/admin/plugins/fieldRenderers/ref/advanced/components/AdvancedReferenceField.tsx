@@ -82,7 +82,7 @@ export const AdvancedReferenceField: React.FC<Props> = props => {
     }, [entry]);
 
     const models = useMemo(() => {
-        if (!loadedModels || !entry) {
+        if (!loadedModels || !field.settings?.models) {
             return [];
         }
 

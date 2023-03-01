@@ -147,16 +147,16 @@ const getContentEntries = async (
         const results = await Promise.all(getters);
 
         const entries = results
-        .reduce<CmsEntryRecord[]>((collection, items) => {
-            return collection.concat(
-                items.map(item => {
-                    const model = modelsMap[item.modelId];
+            .reduce<CmsEntryRecord[]>((collection, items) => {
+                return collection.concat(
+                    items.map(item => {
+                        const model = modelsMap[item.modelId];
 
-                    return createCmsEntryRecord(model, item);
-                })
-            );
-        }, [])
-        .filter(Boolean);
+                        return createCmsEntryRecord(model, item);
+                    })
+                );
+            }, [])
+            .filter(Boolean);
 
         return new Response(entries);
     } catch (ex) {
@@ -378,10 +378,10 @@ export const createContentEntriesSchema = ({
                         const entries = await Promise.all(getters).then(results =>
                             results.reduce((result, item) => result.concat(item), [])
                         );
-                        
+
                         return new Response(
                             entries
-                                .sort((a, b) => Date.parse(b.savedOn) - Date.parse(a.savedOn))
+                                .sort((a, b) => b.savedOn.getTime() - a.savedOn.getTime())
                                 .slice(0, limit)
                         );
                     } catch (ex) {

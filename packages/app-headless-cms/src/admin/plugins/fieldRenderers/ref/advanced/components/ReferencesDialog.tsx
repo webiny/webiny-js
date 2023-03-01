@@ -4,7 +4,11 @@ import { css } from "emotion";
 import { DialogHeader } from "./dialog/DialogHeader";
 import { Search } from "./Search";
 import { Entry } from "./Entry";
-import { Dialog, DialogActions, DialogContent } from "~/admin/components/Dialog";
+import {
+    Dialog as BaseDialog,
+    DialogActions,
+    DialogContent as BaseDialogContent
+} from "~/admin/components/Dialog";
 import { CmsEditorFieldRendererProps } from "~/types";
 import {
     CmsReferenceContentEntry,
@@ -31,10 +35,21 @@ const Content = styled("div")({
     boxSizing: "border-box",
     padding: "0 2px"
 });
-const dialogClass = css({
-    minWidth: "800px"
+
+const Dialog = styled(BaseDialog)({
+    minWidth: "800px",
+    ".mdc-dialog__surface": {
+        width: "auto",
+        maxWidth: "800px",
+        minWidth: "800px",
+        maxHeight: "calc(100vh - 100px)"
+    },
+    ".mdc-dialog__content": {
+        overflow: "auto !important"
+    }
 });
-const dialogContentClass = css({
+
+const DialogContent = styled(BaseDialogContent)({
     padding: "0 !important"
 });
 
@@ -82,9 +97,9 @@ export const ReferencesDialog: React.FC<Props> = props => {
 
     return (
         <>
-            <Dialog open={true} onClose={onDialogClose} className={dialogClass}>
+            <Dialog open={true} onClose={onDialogClose}>
                 <DialogHeader model={contentModel} onClose={onDialogClose} />
-                <DialogContent className={dialogContentClass}>
+                <DialogContent>
                     <Container>
                         <Search
                             model={contentModel}

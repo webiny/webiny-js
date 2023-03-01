@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useApolloClient, useQuery } from "~/admin/hooks";
+import { useApolloClient } from "~/admin/hooks";
 import {
     CmsReferenceContentEntry,
     CmsReferenceValue
@@ -21,7 +21,6 @@ export const useReference = ({ value }: Params) => {
 
     const { id = "", modelId = "" } = value || {};
 
-    console.log(`id: ${id}`);
     useEffect(() => {
         if (!id || !modelId) {
             setEntry(null);

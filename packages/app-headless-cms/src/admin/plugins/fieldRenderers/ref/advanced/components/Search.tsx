@@ -1,8 +1,9 @@
-import React, { useEffect, Dispatch, SetStateAction, useState, useCallback, useRef } from "react";
+import React, { useEffect, Dispatch, SetStateAction, useCallback, useRef } from "react";
 import styled from "@emotion/styled";
 import { CmsModel } from "~/types";
 import { useEntries } from "~/admin/plugins/fieldRenderers/ref/advanced/hooks/useEntries";
 import { CmsReferenceContentEntry } from "~/admin/plugins/fieldRenderers/ref/components/types";
+import { ReactComponent as SearchIcon } from "./assets/search.svg";
 
 const Container = styled("div")({
     display: "flex",
@@ -12,10 +13,12 @@ const Container = styled("div")({
     marginBottom: "16px"
 });
 
-const Icon = styled("div")({
+const Icon = styled(SearchIcon)({
     position: "absolute",
-    top: 0,
-    left: 0
+    top: "6px",
+    left: "16px",
+    width: "24px",
+    height: "24px"
 });
 
 const Input = styled("input")({
@@ -27,7 +30,7 @@ const Input = styled("input")({
     height: "100%",
     fontSize: "14px",
     lineHeight: "36px",
-    paddingLeft: "55px",
+    paddingLeft: "46px",
     ":focus-visible": {
         outline: "none"
     }

@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import React, { useCallback, useState } from "react";
+import React, { useCallback } from "react";
 import { CmsReferenceContentEntry } from "~/admin/plugins/fieldRenderers/ref/components/types";
 import { ReactComponent as RemoveIcon } from "./assets/remove.svg";
 import { useConfirmationDialog } from "@webiny/app-admin";
@@ -21,9 +21,6 @@ const SelectButton = styled("button")({
     cursor: "pointer"
 });
 
-interface IconProps {
-    selected?: boolean;
-}
 const Icon = styled("div")(() => {
     return {
         width: "16px",
