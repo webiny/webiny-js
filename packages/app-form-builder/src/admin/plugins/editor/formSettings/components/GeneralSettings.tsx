@@ -3,6 +3,7 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 import { get } from "lodash";
 import { Input } from "@webiny/ui/Input";
+import { Switch } from "@webiny/ui/Switch";
 import { plugins } from "@webiny/plugins";
 import { FbFormLayoutPlugin } from "~/types";
 import { PbTheme, PbThemePlugin } from "@webiny/app-page-builder/types";
@@ -54,6 +55,16 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({ Bind }) => {
                 <Cell span={12}>
                     <Bind name={"submitButtonLabel"}>
                         <Input label={"Submit button label"} />
+                    </Bind>
+                </Cell>
+                <Cell span={12}>
+                    <Bind name={"fullWidthSubmitButton"}>
+                        <Switch
+                            label={"Full width submit button"}
+                            description={
+                                "Should the submit button be fully stretched or should it match the submit label size."
+                            }
+                        />
                     </Bind>
                 </Cell>
                 <Cell span={12}>

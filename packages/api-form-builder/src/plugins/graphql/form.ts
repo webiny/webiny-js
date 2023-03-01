@@ -120,6 +120,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
             type FbFormSettingsType {
                 layout: FbFormSettingsLayoutType
                 submitButtonLabel: String
+                fullWidthSubmitButton: Boolean
                 successMessage: JSON
                 termsOfServiceMessage: FbTermsOfServiceMessage
                 reCaptcha: FbReCaptcha
@@ -156,6 +157,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
             input FbFormSettingsInput {
                 layout: FbFormSettingsLayoutInput
                 submitButtonLabel: String
+                fullWidthSubmitButton: Boolean
                 successMessage: JSON
                 termsOfServiceMessage: FbTermsOfServiceMessageInput
                 reCaptcha: FbReCaptchaInput
