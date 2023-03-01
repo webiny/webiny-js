@@ -29,9 +29,6 @@ const plugin = new GraphQLSchemaPlugin({
         extend type CmsMutation {
             # Install CMS
             install: CmsBooleanResponse
-
-            # Upgrade CMS
-            upgrade(version: String!): CmsBooleanResponse
         }
     `,
     resolvers: {
@@ -62,15 +59,6 @@ const plugin = new GraphQLSchemaPlugin({
                     }
 
                     await cms.installSystem();
-                    return new Response(true);
-                } catch (e) {
-                    return new ErrorResponse(e);
-                }
-            },
-            upgrade: async (_: any, args: any, { cms }: CmsContext) => {
-                const { version } = args;
-                try {
-                    await cms.upgradeSystem(version);
                     return new Response(true);
                 } catch (e) {
                     return new ErrorResponse(e);

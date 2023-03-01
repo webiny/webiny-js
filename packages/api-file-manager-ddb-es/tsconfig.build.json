@@ -5,7 +5,6 @@
     { "path": "../api/tsconfig.build.json" },
     { "path": "../api-elasticsearch/tsconfig.build.json" },
     { "path": "../api-file-manager/tsconfig.build.json" },
-    { "path": "../api-upgrade/tsconfig.build.json" },
     { "path": "../db-dynamodb/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
     { "path": "../handler-db/tsconfig.build.json" },

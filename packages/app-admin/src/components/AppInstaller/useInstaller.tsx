@@ -1,31 +1,16 @@
-import React, { useCallback, useReducer, useEffect, Suspense } from "react";
+import { useCallback, useReducer, useEffect } from "react";
 import { Graph, alg } from "graphlib";
-import { sort, gt, lte } from "semver";
 import { useApolloClient } from "@apollo/react-hooks";
 import { plugins } from "@webiny/plugins";
 import { AdminInstallationPlugin } from "~/types";
-import { CircularProgress } from "@webiny/ui/Progress";
 import { config as appConfig } from "@webiny/app/config";
-
-const Loader: React.FC<{ children: React.ReactElement }> = ({ children, ...props }) => (
-    <Suspense fallback={<CircularProgress label={"Loading..."} />}>
-        {React.cloneElement(children, props)}
-    </Suspense>
-);
 
 interface GetInstallersResult {
     toInstall: Installer[];
-    toUpgrade: Installer[];
 }
 
 interface UseInstallerParams {
     isInstalled: boolean;
-}
-
-interface SkippingVersionState {
-    current: string;
-    latest: string;
-    availableUpgrades: string[];
 }
 
 interface BaseInstaller {
@@ -34,7 +19,7 @@ interface BaseInstaller {
 }
 
 export interface Installer extends BaseInstaller {
-    type: "install" | "upgrade";
+    type: "install";
     name: string;
     title: string;
     render: AdminInstallationPlugin["render"];
@@ -45,7 +30,6 @@ interface State {
     installers: Installer[];
     installerIndex: number;
     showLogin: boolean;
-    skippingVersions: SkippingVersionState | null;
 }
 
 interface Reducer {
@@ -58,10 +42,9 @@ export const useInstaller = (params: UseInstallerParams) => {
         loading: true,
         installers: [],
         installerIndex: -1,
-        showLogin: false,
-        skippingVersions: null
+        showLogin: false
     });
-    const { loading, installers, installerIndex, showLogin, skippingVersions } = state;
+    const { loading, installers, installerIndex, showLogin } = state;
 
     const client = useApolloClient();
 
@@ -106,8 +89,7 @@ export const useInstaller = (params: UseInstallerParams) => {
         (
             installers: BaseInstaller[],
             graph: Graph,
-            toInstall: Installer[] = [],
-            toUpgrade: Installer[] = []
+            toInstall: Installer[] = []
         ): GetInstallersResult => {
             const leaf = graph.sinks()[0];
             if (leaf) {
@@ -127,47 +109,9 @@ export const useInstaller = (params: UseInstallerParams) => {
                         installed: null,
                         plugin: installer.plugin
                     });
-                } else {
-                    const wbyVersion = appConfig.getKey(
-                        "WEBINY_VERSION",
-                        process.env.REACT_APP_WEBINY_VERSION as string
-                    );
-
-                    const upgrades = (installer.plugin.upgrades || []).filter(({ version }) => {
-                        // TODO use coerce
-                        return lte(version, wbyVersion) && gt(version, installer.installed || "");
-                    });
-
-                    if (upgrades.length > 1) {
-                        const availableUpgrades = sort(upgrades.map(u => u.version));
-                        const latestUpgrade = availableUpgrades[availableUpgrades.length - 1];
-                        setState({
-                            skippingVersions: {
-                                current: installer.installed,
-                                latest: latestUpgrade,
-                                availableUpgrades
-                            }
-                        });
-                    } else if (upgrades.length === 1) {
-                        toUpgrade.push({
-                            type: "upgrade",
-                            name: `${installer.plugin.name}-upgrade`,
-                            title: installer.plugin.title,
-                            secure: true,
-                            installed: null,
-                            plugin: installer.plugin,
-                            render({ onInstalled }) {
-                                const Component = upgrades[0].getComponent();
-                                return (
-                                    <Loader>
-                                        <Component onInstalled={onInstalled} />
-                                    </Loader>
-                                );
-                            }
-                        });
-                    }
                 }
-                return getInstallers(installers, graph, toInstall, toUpgrade);
+
+                return getInstallers(installers, graph, toInstall);
             }
             toInstall.sort((a, b) => {
                 if (a.secure && !b.secure) {
@@ -177,7 +121,7 @@ export const useInstaller = (params: UseInstallerParams) => {
                 }
                 return 0;
             });
-            return { toInstall, toUpgrade };
+            return { toInstall };
         },
         []
     );
@@ -231,13 +175,13 @@ export const useInstaller = (params: UseInstallerParams) => {
             );
 
             const graph = createGraph(allInstallers);
-            const { toInstall, toUpgrade } = getInstallers(allInstallers, graph);
-            const installers = [...toUpgrade, ...toInstall];
+            const { toInstall } = getInstallers(allInstallers, graph);
+            const installers = [...toInstall];
             setState({
                 installers,
                 installerIndex: 0,
                 loading: false,
-                showLogin: toUpgrade.length > 0 || (toInstall.length > 0 && toInstall[0].secure)
+                showLogin: toInstall.length > 0 && toInstall[0].secure
             });
         })();
     }, []);
@@ -251,7 +195,6 @@ export const useInstaller = (params: UseInstallerParams) => {
         installer: installers[installerIndex],
         showNextInstaller,
         showLogin,
-        onUser,
-        skippingVersions
+        onUser
     };
 };
