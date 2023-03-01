@@ -1,8 +1,5 @@
 import React from "react";
-import {
-    ParagraphToolbarPreset,
-    HeadingToolbarPreset
-} from "@webiny/lexical-editor";
+import { ParagraphToolbarPreset, HeadingToolbarPreset } from "@webiny/lexical-editor";
 import { PeTextPlugin } from "~/plugins/PeTextPlugin";
 import { HeadingPlugin } from "~/plugins/HeadingPlugin";
 import { ParagraphPlugin } from "~/plugins/ParagraphPlugin";
