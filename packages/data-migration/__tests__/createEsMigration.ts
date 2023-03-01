@@ -19,7 +19,7 @@ export const createEsMigration = (id: string, opts = { error: false }): DataMigr
             return id;
         }
 
-        shouldExecute(context: WithLog<ElasticsearchMigrationContext>): Promise<boolean> {
+        shouldExecute(): Promise<boolean> {
             return Promise.resolve(true);
         }
     }

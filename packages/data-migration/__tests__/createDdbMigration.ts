@@ -19,7 +19,7 @@ export const createDdbMigration = (id: string, opts = { error: false }): DataMig
             return id;
         }
 
-        shouldExecute(context: WithLog<DynamoDbMigrationContext>): Promise<boolean> {
+        shouldExecute(): Promise<boolean> {
             return Promise.resolve(true);
         }
     }
