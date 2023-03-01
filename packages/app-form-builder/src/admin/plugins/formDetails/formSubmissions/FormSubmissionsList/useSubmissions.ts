@@ -30,7 +30,7 @@ export const useSubmissions = (form: Pick<FbFormModel, "id">) => {
     const { showSnackbar } = useSnackbar();
 
     const listQuery = useQuery(LIST_FORM_SUBMISSIONS, {
-        variables: { form: form.id, sort: state.sort }
+        variables: { form: form.id, sort: state.sort, limit: 20 }
     });
 
     const loadMoreOnScroll = useCallback(
@@ -40,7 +40,7 @@ export const useSubmissions = (form: Pick<FbFormModel, "id">) => {
                 if (meta.cursor) {
                     setState({ loading: true });
                     listQuery.fetchMore({
-                        variables: { after: meta.cursor },
+                        variables: { after: meta.cursor, limit: 10 },
                         updateQuery: (prev: any, { fetchMoreResult }: any) => {
                             if (!fetchMoreResult) {
                                 return prev;
