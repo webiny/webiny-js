@@ -10515,13 +10515,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^10.0.0":
-  version: 10.17.60
-  resolution: "@types/node@npm:10.17.60"
-  checksum: 2cdb3a77d071ba8513e5e8306fa64bf50e3c3302390feeaeff1fd325dd25c8441369715dfc8e3701011a72fed5958c7dfa94eb9239a81b3c286caa4d97db6eef
-  languageName: node
-  linkType: hard
-
 "@types/node@npm:^14.14.31":
   version: 14.18.36
   resolution: "@types/node@npm:14.18.36"
@@ -15435,7 +15428,6 @@ __metadata:
     "@pulumi/aws": ^5.8.0
     "@pulumi/pulumi": ^3.34.0
     "@types/lodash": ^4.14.190
-    "@types/node": "*"
     "@webiny/cli": 0.0.0
     "@webiny/project-utils": 0.0.0
     decompress: ^4.2.1
@@ -15458,7 +15450,6 @@ __metadata:
     "@babel/core": ^7.19.3
     "@pulumi/pulumi": ^3.34.0
     "@types/lodash": ^4.14.190
-    "@types/node": ^10.0.0
     "@webiny/cli": 0.0.0
     "@webiny/project-utils": 0.0.0
     find-up: ^5.0.0
