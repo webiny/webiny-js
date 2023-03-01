@@ -17,8 +17,7 @@ export const useRecords = (type?: string, folderId?: string) => {
         getRecord,
         createRecord,
         updateRecord,
-        deleteRecord,
-        syncRecord
+        deleteRecord
     } = context;
 
     useEffect(() => {
@@ -55,9 +54,6 @@ export const useRecords = (type?: string, folderId?: string) => {
             },
             deleteRecord(record: SearchRecordItem) {
                 return deleteRecord(record);
-            },
-            syncRecord(id: string) {
-                return syncRecord(id);
             }
         }),
         [records, loading, meta]

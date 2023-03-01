@@ -44,7 +44,6 @@ interface SearchRecordsContext {
     createRecord: (record: Omit<SearchRecordItem, "id">) => Promise<SearchRecordItem>;
     updateRecord: (record: SearchRecordItem, contextFolderId?: string) => Promise<SearchRecordItem>;
     deleteRecord(record: SearchRecordItem): Promise<true>;
-    syncRecord: (id: string) => Promise<void>;
 }
 
 export const SearchRecordsContext = React.createContext<SearchRecordsContext | undefined>(
@@ -62,8 +61,7 @@ const defaultLoading: Record<LoadingActions, boolean> = {
     GET: false,
     CREATE: false,
     UPDATE: false,
-    DELETE: false,
-    SYNC: false
+    DELETE: false
 };
 
 export const SearchRecordsProvider = ({ children }: Props) => {
@@ -126,14 +124,41 @@ export const SearchRecordsProvider = ({ children }: Props) => {
                 () =>
                     client.query<GetSearchRecordResponse, GetSearchRecordQueryVariables>({
                         query: GET_RECORD,
-                        variables: { id }
+                        variables: { id },
+                        fetchPolicy: "network-only"
                     })
             );
 
             const { data, error } = response.search.getRecord;
 
+            if (error && error.code !== "NOT_FOUND") {
+                throw new Error("Network error while syncing record");
+            }
+
             if (!data) {
-                throw new Error(error?.message || `Could not fetch record with id: ${id}`);
+                // No record found - must be deleted by previous operation
+                setRecords(records => records.filter(record => record.id !== id));
+            } else {
+                setRecords(prevRecords => {
+                    const recordIndex = prevRecords.findIndex(record => record.id === id);
+
+                    // No record found in the list - must be added by previous operation
+                    if (recordIndex === -1) {
+                        return [...prevRecords, data];
+                    }
+
+                    // Updating record found in the list
+                    const result = [
+                        ...prevRecords.slice(0, recordIndex),
+                        {
+                            ...prevRecords[recordIndex],
+                            ...data
+                        },
+                        ...prevRecords.slice(recordIndex + 1)
+                    ];
+
+                    return result;
+                });
             }
 
             return data;
@@ -244,54 +269,6 @@ export const SearchRecordsProvider = ({ children }: Props) => {
             }));
 
             return true;
-        },
-
-        async syncRecord(id) {
-            if (!id) {
-                throw new Error("Record `id` is mandatory");
-            }
-
-            const { data: response } = await apolloFetchingHandler(
-                loadingHandler("SYNC", setLoading),
-                () =>
-                    client.query<GetSearchRecordResponse, GetSearchRecordQueryVariables>({
-                        query: GET_RECORD,
-                        variables: { id },
-                        fetchPolicy: "network-only"
-                    })
-            );
-
-            const { data, error } = response.search.getRecord;
-
-            if (error && error.code !== "NOT_FOUND") {
-                throw new Error("Network error while syncing record");
-            }
-
-            if (!data) {
-                // No record found - must be deleted by previous operation
-                setRecords(records => records.filter(record => record.originalId !== id));
-            } else {
-                setRecords(prevRecords => {
-                    const recordIndex = prevRecords.findIndex(record => record.originalId === id);
-
-                    // No record found in the list - must be added by previous operation
-                    if (recordIndex === -1) {
-                        return [...prevRecords, data];
-                    }
-
-                    // Updating record found in the list
-                    const result = [
-                        ...prevRecords.slice(0, recordIndex),
-                        {
-                            ...prevRecords[recordIndex],
-                            ...data
-                        },
-                        ...prevRecords.slice(recordIndex + 1)
-                    ];
-
-                    return result;
-                });
-            }
         }
     };
 

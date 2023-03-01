@@ -21,7 +21,7 @@ const useCreatePage = ({
     const [create] = useMutation(CREATE_PAGE);
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
-    const { syncRecord } = useRecords();
+    const { getRecord } = useRecords();
 
     const createPageMutation = useCallback(
         async ({ slug: category }) => {
@@ -53,7 +53,7 @@ const useCreatePage = ({
                     showSnackbar(error.message);
                 } else {
                     history.push(`/page-builder/editor/${encodeURIComponent(data.id)}`);
-                    await syncRecord(data.pid);
+                    await getRecord(data.pid);
                 }
             } catch (e) {
                 showSnackbar(e.message);

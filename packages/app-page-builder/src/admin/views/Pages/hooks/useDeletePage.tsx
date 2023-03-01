@@ -16,7 +16,7 @@ export const useDeletePage = ({ page, onDelete }: UseDeletePageParams) => {
     const { showSnackbar } = useSnackbar();
     const { showDialog } = useDialog();
     const { deletePage, client } = useAdminPageBuilder();
-    const { syncRecord } = useRecords();
+    const { getRecord } = useRecords();
 
     const { showConfirmation } = useConfirmationDialog({
         title: t`Delete page`,
@@ -64,7 +64,7 @@ export const useDeletePage = ({ page, onDelete }: UseDeletePageParams) => {
                 }
 
                 // Sync ACO record - retrieve the most updated record from network
-                await syncRecord(uniquePageId);
+                await getRecord(uniquePageId);
 
                 showSnackbar(
                     t`The page "{title}" was deleted successfully.`({

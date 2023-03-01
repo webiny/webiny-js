@@ -10,7 +10,7 @@ export function usePublishRevisionHandler() {
     const client = useApolloClient();
     const { showSnackbar } = useSnackbar();
     const pageBuilder = useAdminPageBuilder();
-    const { syncRecord } = useRecords();
+    const { getRecord } = useRecords();
 
     const publishRevision = async (revision: Pick<PbPageDataItem, "id" | "version" | "pid">) => {
         const response = await pageBuilder.publishPage(revision, {
@@ -23,7 +23,7 @@ export function usePublishRevisionHandler() {
             }
 
             // Sync ACO record - retrieve the most updated record from network
-            await syncRecord(revision.pid);
+            await getRecord(revision.pid);
 
             showSnackbar(
                 <span>
@@ -53,7 +53,7 @@ export function usePublishRevisionHandler() {
         }
 
         // Sync ACO record - retrieve the most updated record from network
-        await syncRecord(revision.pid);
+        await getRecord(revision.pid);
 
         showSnackbar(
             <span>

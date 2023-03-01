@@ -48,7 +48,7 @@ const PageOptionsMenu: React.FC<PageOptionsMenuProps> = props => {
         usePageBuilderSettings();
     const client = useApolloClient();
     const { history } = useRouter();
-    const { syncRecord } = useRecords();
+    const { getRecord } = useRecords();
 
     const [isSiteRunning, refreshSiteStatus] = useSiteStatus(getWebsiteUrl());
     const { showConfigureWebsiteUrlDialog } = useConfigureWebsiteUrlDialog(
@@ -101,7 +101,7 @@ const PageOptionsMenu: React.FC<PageOptionsMenuProps> = props => {
                         )}`
                     );
                     // Sync ACO record - retrieve the most updated record from network
-                    await syncRecord(data.pageBuilder.duplicatePage.data.pid);
+                    await getRecord(data.pageBuilder.duplicatePage.data.pid);
                 }
             });
         } catch (error) {

@@ -11,7 +11,6 @@ const ERROR_FIELD = /* GraphQL */ `
 const DATA_FIELD = /* GraphQL */ `
     {
         id
-        originalId
         type
         location {
             folderId

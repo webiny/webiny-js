@@ -22,7 +22,6 @@ export interface Location {
 
 export interface SearchRecordItem<TData extends GenericSearchData = GenericSearchData> {
     id: string;
-    originalId: string;
     type: string;
     title: string;
     content: string;
@@ -32,15 +31,7 @@ export interface SearchRecordItem<TData extends GenericSearchData = GenericSearc
 
 export type Loading<T extends string> = { [P in T]?: boolean };
 
-export type LoadingActions =
-    | "INIT"
-    | "LIST"
-    | "LIST_MORE"
-    | "GET"
-    | "CREATE"
-    | "UPDATE"
-    | "DELETE"
-    | "SYNC";
+export type LoadingActions = "INIT" | "LIST" | "LIST_MORE" | "GET" | "CREATE" | "UPDATE" | "DELETE";
 
 export interface Error {
     code: string;
