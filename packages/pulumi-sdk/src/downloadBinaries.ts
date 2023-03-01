@@ -51,9 +51,13 @@ export default async (
     return true;
 };
 
+const SUPPORTED_ARCHITECTURES = ["x64", "arm64"];
+
 async function setupDarwin(downloadFolder: string) {
     const version = getPulumiVersion();
-    const filename = `pulumi-v${version}-darwin-x64.tar.gz`;
+    const arch = SUPPORTED_ARCHITECTURES.includes(process.arch) ? process.arch : "x64";
+
+    const filename = `pulumi-v${version}-darwin-${arch}.tar.gz`;
     const downloadUrl = "https://get.pulumi.com/releases/sdk/" + filename;
 
     await download(downloadUrl, downloadFolder);

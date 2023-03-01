@@ -40,6 +40,7 @@ const productFields = `
     variant {
         name
         price
+        images
         category {
             modelId
             entryId
@@ -48,6 +49,7 @@ const productFields = `
         options {
             name
             price
+            image
             category {
                 modelId
                 entryId

@@ -43,6 +43,13 @@ export interface CreateCorePulumiAppParams {
      * Prefixes names of all Pulumi cloud infrastructure resource with given prefix.
      */
     pulumiResourceNamePrefix?: PulumiAppParam<string>;
+
+    /**
+     * Treats provided environments as production environments, which
+     * are deployed in production deployment mode.
+     * https://www.webiny.com/docs/architecture/deployment-modes/production
+     */
+    productionEnvironments?: PulumiAppParam<string[]>;
 }
 
 export interface CoreAppLegacyConfig {
@@ -74,15 +81,17 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
                 });
             }
 
-            const prod = app.params.run.env === "prod";
-            const protect = app.getParam(projectAppParams.protect) ?? prod;
+            const productionEnvironments = app.params.create.productionEnvironments || ["prod"];
+            const isProduction = productionEnvironments.includes(app.params.run.env);
+
+            const protect = app.getParam(projectAppParams.protect) ?? isProduction;
             const legacyConfig = app.getParam(projectAppParams.legacy) || {};
 
             // Setup DynamoDB table
             const dynamoDbTable = app.addModule(CoreDynamo, { protect });
 
             // Setup VPC
-            const vpcEnabled = app.getParam(projectAppParams?.vpc) ?? prod;
+            const vpcEnabled = app.getParam(projectAppParams?.vpc) ?? isProduction;
             const vpc = vpcEnabled ? app.addModule(CoreVpc) : null;
 
             // Setup Cognito

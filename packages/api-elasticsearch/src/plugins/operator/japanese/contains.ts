@@ -25,14 +25,14 @@ export class ElasticsearchQueryBuilderJapaneseOperatorContainsPlugin extends Ela
         const value = normalizeValue(initialValue);
         query.must.push({
             multi_match: {
-                query: value,
+                query: `*${value}*`,
                 type: "phrase",
                 fields: [`${basePath}.ngram`]
             }
         });
         query.should.push({
             multi_match: {
-                query: value,
+                query: `*${value}*`,
                 type: "phrase",
                 fields: [`${basePath}`]
             }

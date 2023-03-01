@@ -27,6 +27,7 @@ export default /* GraphQL */ `
     type Product_Variant_Options {
         name: String
         price: Number
+        image: String
         category(populate: Boolean = true): Category
         categories(populate: Boolean = true): [Category!]
         longText: [String]
@@ -63,6 +64,7 @@ export default /* GraphQL */ `
     type Product_Variant {
         name: String
         price: Number
+        images: [String]
         category(populate: Boolean = true): Category
         options: [Product_Variant_Options!]
     }

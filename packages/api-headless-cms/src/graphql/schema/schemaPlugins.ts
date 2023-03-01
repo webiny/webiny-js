@@ -1,17 +1,21 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
-import { CmsModelFieldToGraphQLPlugin, CmsFieldTypePlugins, CmsContext } from "~/types";
+import { CmsModelFieldToGraphQLPlugin, CmsFieldTypePlugins, CmsContext, CmsModel } from "~/types";
 import { createManageSDL } from "./createManageSDL";
 import { createReadSDL } from "./createReadSDL";
 import { createManageResolvers } from "./createManageResolvers";
 import { createReadResolvers } from "./createReadResolvers";
 import { createPreviewResolvers } from "./createPreviewResolvers";
 import { getSchemaFromFieldPlugins } from "~/utils/getSchemaFromFieldPlugins";
-import { filterModelsDeletedFields } from "~/utils/filterModelFields";
 import { CmsGraphQLSchemaSorterPlugin } from "~/plugins";
 
+interface GenerateSchemaPluginsParams {
+    context: CmsContext;
+    models: CmsModel[];
+}
 export const generateSchemaPlugins = async (
-    context: CmsContext
+    params: GenerateSchemaPluginsParams
 ): Promise<GraphQLSchemaPlugin<CmsContext>[]> => {
+    const { context, models } = params;
     const { plugins, cms } = context;
 
     /**
@@ -35,16 +39,6 @@ export const generateSchemaPlugins = async (
         CmsGraphQLSchemaSorterPlugin.type
     );
 
-    // Load model data
-    context.security.disableAuthorization();
-    const initialModels = (await cms.listModels()).filter(model => model.isPrivate !== true);
-    context.security.enableAuthorization();
-
-    const models = filterModelsDeletedFields({
-        models: initialModels,
-        type
-    });
-
     const schemas = getSchemaFromFieldPlugins({
         models,
         fieldTypePlugins,
@@ -61,8 +55,8 @@ export const generateSchemaPlugins = async (
         .forEach(model => {
             switch (type) {
                 case "manage":
-                    newPlugins.push(
-                        new GraphQLSchemaPlugin({
+                    {
+                        const plugin = new GraphQLSchemaPlugin({
                             typeDefs: createManageSDL({ model, fieldTypePlugins, sorterPlugins }),
                             resolvers: createManageResolvers({
                                 models,
@@ -70,14 +64,16 @@ export const generateSchemaPlugins = async (
                                 fieldTypePlugins,
                                 context
                             })
-                        })
-                    );
+                        });
+                        plugin.name = `headless-cms.graphql.schema.manage.${model.modelId}`;
+                        newPlugins.push(plugin);
+                    }
 
                     break;
                 case "preview":
                 case "read":
-                    newPlugins.push(
-                        new GraphQLSchemaPlugin({
+                    {
+                        const plugin = new GraphQLSchemaPlugin({
                             typeDefs: createReadSDL({ model, fieldTypePlugins, sorterPlugins }),
                             resolvers: cms.READ
                                 ? createReadResolvers({
@@ -92,8 +88,10 @@ export const generateSchemaPlugins = async (
                                       fieldTypePlugins,
                                       context
                                   })
-                        })
-                    );
+                        });
+                        plugin.name = `headless-cms.graphql.schema.${type}.${model.modelId}`;
+                        newPlugins.push(plugin);
+                    }
                     break;
                 default:
                     return;

@@ -5,7 +5,10 @@ import { Resolvers } from "@webiny/handler-graphql/types";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";
 import { toSlug } from "~/utils/toSlug";
 
-export const createModelsSchema = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
+interface Params {
+    context: CmsContext;
+}
+export const createModelsSchema = ({ context }: Params): GraphQLSchemaPlugin<CmsContext> => {
     const resolvers: Resolvers<CmsContext> = {
         Query: {
             getContentModel: async (_: unknown, args: any, context) => {
@@ -209,7 +212,7 @@ export const createModelsSchema = (context: CmsContext): GraphQLSchemaPlugin<Cms
         `;
     }
 
-    return new GraphQLSchemaPlugin<CmsContext>({
+    const plugin = new GraphQLSchemaPlugin<CmsContext>({
         typeDefs: /* GraphQL */ `
             type CmsFieldValidation {
                 name: String!
@@ -289,4 +292,7 @@ export const createModelsSchema = (context: CmsContext): GraphQLSchemaPlugin<Cms
         `,
         resolvers
     });
+
+    plugin.name = `headless-cms.graphql.schema.${context.cms.type}.models`;
+    return plugin;
 };

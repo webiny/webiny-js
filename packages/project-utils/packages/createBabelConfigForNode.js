@@ -1,3 +1,22 @@
+/**
+ * This is override for https://github.com/lodash/babel-plugin-lodash/issues/259.
+ * babel-plugin-lodash is using deprecated babel API, which causes generation of many
+ * console.trace calls.
+ */
+const consoleTrace = console.trace.bind(console);
+console.trace = (message, ...optionalParams) => {
+    if (
+        typeof message === "string" &&
+        message.startsWith("`isModuleDeclaration` has been deprecated")
+    ) {
+        return undefined; // noop
+    }
+
+    return consoleTrace(message, ...optionalParams);
+};
+/**
+ *
+ */
 module.exports = ({ path, esm }) => {
     return {
         presets: [

@@ -1,24 +1,16 @@
 import React, { useMemo } from "react";
 import { FbFormLayoutPlugin } from "~/plugins";
 import { createForm, FormRenderer } from "@webiny/app-page-builder-elements/renderers/form";
-import {
-    createSubmitFormDataLoader,
-    createLogFormViewDataLoader
-} from "@webiny/app-page-builder-elements/renderers/form/dataLoaders";
 import { plugins } from "@webiny/plugins";
-import { getTenantId } from "~/utils";
 import { FbFormFieldValidatorPlugin, FbFormTriggerHandlerPlugin } from "~/types";
 import { BeforeFormRender } from "~/page-builder/components/BeforeFormRender";
 import { useApolloClient } from "@apollo/react-hooks";
 import gql from "graphql-tag";
-import { GET_PUBLISHED_FORM } from "@webiny/app-page-builder-elements/renderers/form/dataLoaders/graphql";
-
-const dataLoadersConfig = {
-    apiUrl: process.env.REACT_APP_API_URL + "/graphql",
-    includeHeaders: {
-        "x-tenant": getTenantId()
-    }
-};
+import {
+    LOG_FORM_VIEW,
+    CREATE_FORM_SUBMISSION,
+    GET_PUBLISHED_FORM
+} from "@webiny/app-page-builder-elements/renderers/form/dataLoaders/graphql";
 
 const PeForm: FormRenderer = props => {
     // We wrap the original renderer in order to be able to provide the Apollo client.
@@ -32,8 +24,6 @@ const PeForm: FormRenderer = props => {
                 // ensure the data gets cached during page prerendering. Using a
                 // default `getForm` data loader would not give us that option.
                 getForm: ({ variables }) => {
-                    const queryParams = { query: gql(GET_PUBLISHED_FORM), variables };
-
                     try {
                         const data = apolloClient.readQuery({
                             query: gql(GET_PUBLISHED_FORM),
@@ -43,12 +33,20 @@ const PeForm: FormRenderer = props => {
                         return data.formBuilder.getPublishedForm.data;
                     } catch {
                         return apolloClient
-                            .query(queryParams)
+                            .query({ query: gql(GET_PUBLISHED_FORM), variables })
                             .then(({ data }) => data.formBuilder.getPublishedForm.data);
                     }
                 },
-                submitForm: createSubmitFormDataLoader(dataLoadersConfig),
-                logFormView: createLogFormViewDataLoader(dataLoadersConfig)
+                submitForm: ({ variables }) => {
+                    return apolloClient
+                        .mutate({ mutation: gql(CREATE_FORM_SUBMISSION), variables })
+                        .then(({ data }) => data.formBuilder.createFormSubmission);
+                },
+                logFormView: ({ variables }) => {
+                    return apolloClient
+                        .mutate({ mutation: gql(LOG_FORM_VIEW), variables })
+                        .then(({ data }) => data.formBuilder.saveFormView);
+                }
             },
             formLayoutComponents: () => {
                 const registeredPlugins = plugins.byType<FbFormLayoutPlugin>("form-layout");

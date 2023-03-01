@@ -71,6 +71,8 @@ export const createElasticsearchBody = ({ plugins, model, params }: Params): Sea
      * Apply the full text search, if term is set.
      */
     applyFullTextSearch({
+        model,
+        plugins,
         query,
         term,
         fields: fullTextSearchFields
