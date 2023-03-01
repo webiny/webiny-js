@@ -1,19 +1,11 @@
-import { CmsModel } from "@webiny/api-headless-cms/types";
 import WebinyError from "@webiny/error";
 
 import { FOLDER_MODEL_ID } from "./folder.model";
 import { baseFields, CreateAcoStorageOperationsParams } from "~/createAcoStorageOperations";
+import { createOperationsWrapper } from "~/utils/createOperationsWrapper";
 import { getFieldValues } from "~/utils/getFieldValues";
 
-import {
-    AcoFolderStorageOperations as BaseAcoFolderStorageOperations,
-    Folder
-} from "./folder.types";
-import { ListMeta } from "~/types";
-
-interface AcoFolderStorageOperations extends BaseAcoFolderStorageOperations {
-    getFolderModel(): Promise<CmsModel>;
-}
+import { AcoFolderStorageOperations } from "./folder.types";
 
 interface AcoCheckExistingFolderParams {
     params: {
@@ -27,19 +19,12 @@ interface AcoCheckExistingFolderParams {
 export const createFolderOperations = (
     params: CreateAcoStorageOperationsParams
 ): AcoFolderStorageOperations => {
-    const { cms, security } = params;
-    const getFolderModel = async () => {
-        security.disableAuthorization();
-        const model = await cms.getModel(FOLDER_MODEL_ID);
-        security.enableAuthorization();
-        if (!model) {
-            throw new WebinyError(
-                `Could not find "${FOLDER_MODEL_ID}" model.`,
-                "MODEL_NOT_FOUND_ERROR"
-            );
-        }
-        return model;
-    };
+    const { cms } = params;
+
+    const { withModelWithoutAuthorization } = createOperationsWrapper({
+        ...params,
+        modelName: FOLDER_MODEL_ID
+    });
 
     const getFolder: AcoFolderStorageOperations["getFolder"] = async ({
         id,
@@ -47,8 +32,7 @@ export const createFolderOperations = (
         type,
         parentId
     }) => {
-        return await security.withoutAuthorization<Folder>(async () => {
-            const model = await getFolderModel();
+        return await withModelWithoutAuthorization(async model => {
             let entry;
 
             if (id) {
@@ -73,9 +57,7 @@ export const createFolderOperations = (
     };
 
     const checkExistingFolder = async ({ id, params }: AcoCheckExistingFolderParams) => {
-        await security.withoutAuthorization(async () => {
-            const model = await getFolderModel();
-
+        await withModelWithoutAuthorization(async model => {
             const { type, slug, parentId } = params;
 
             const [existings] = await cms.listLatestEntries(model, {
@@ -104,12 +86,9 @@ export const createFolderOperations = (
     };
 
     return {
-        getFolderModel,
         getFolder,
         async listFolders(params) {
-            return await security.withoutAuthorization<[Folder[], ListMeta]>(async () => {
-                const model = await getFolderModel();
-
+            return await withModelWithoutAuthorization(async model => {
                 const [entries, meta] = await cms.listLatestEntries(model, {
                     ...params,
                     where: {
@@ -121,9 +100,7 @@ export const createFolderOperations = (
             });
         },
         async createFolder({ data }) {
-            return await security.withoutAuthorization<Folder>(async () => {
-                const model = await getFolderModel();
-
+            return await withModelWithoutAuthorization(async model => {
                 await checkExistingFolder({
                     params: {
                         type: data.type,
@@ -141,9 +118,8 @@ export const createFolderOperations = (
             });
         },
         async updateFolder({ id, data }) {
-            return await security.withoutAuthorization<Folder>(async () => {
+            return await withModelWithoutAuthorization(async model => {
                 const { slug, parentId } = data;
-                const model = await getFolderModel();
 
                 const original = await getFolder({ id });
 
@@ -166,8 +142,7 @@ export const createFolderOperations = (
             });
         },
         async deleteFolder({ id }) {
-            return await security.withoutAuthorization<boolean>(async () => {
-                const model = await getFolderModel();
+            return await withModelWithoutAuthorization(async model => {
                 await cms.deleteEntry(model, id);
                 return true;
             });
