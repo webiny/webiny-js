@@ -3,6 +3,7 @@ import { Client } from "@elastic/elasticsearch";
 import { Table, Entity } from "dynamodb-toolbox";
 import { EntityAttributes } from "dynamodb-toolbox/dist/classes/Entity";
 import { dynamoDbUtils } from "./utils/dynamoDb";
+export { MigrationEventHandlerResponse } from "./createMigrationEventHandler";
 
 export interface MigrationItem {
     id: string;

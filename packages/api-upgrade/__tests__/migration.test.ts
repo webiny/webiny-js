@@ -6,6 +6,7 @@ import { createMigrationsRepository } from "~/repository/migrations.repository";
 import { createDdbMigration } from "~tests/createDdbMigration";
 import { DynamoDbMigrationRunner } from "~/runners/DynamoDbMigrationRunner";
 import { createEsMigration } from "~tests/createEsMigration";
+import { ElasticsearchMigrationRunner } from "~/runners/ElasticsearchMigrationRunner";
 
 jest.retryTimes(0);
 
@@ -132,7 +133,6 @@ describe("Migration Lambda Handler", () => {
             })
         );
 
-        // TODO: get TS to show proper return type here
         const { executed } = await handler({}, {} as any);
 
         expect(executed).toBeTruthy();
@@ -171,6 +171,41 @@ describe("Migration Lambda Handler", () => {
         expect(skipped[0].reason).toEqual("no-runner");
         expect(skipped[1].id).toEqual("0.0.0-003");
         expect(skipped[1].reason).toEqual("no-runner");
+    });
+
+    it("should execute all migrations that have a runner", async () => {
+        const { handler } = useHandler(
+            createMigrationEventHandler({
+                migrations: [
+                    createDdbMigration("0.0.0-001"),
+                    createEsMigration("0.0.0-003"),
+                    createEsMigration("0.0.0-002")
+                ],
+                runners: [
+                    new DynamoDbMigrationRunner({
+                        table,
+                        documentClient
+                    }),
+                    new ElasticsearchMigrationRunner({
+                        table,
+                        documentClient,
+                        elasticsearchClient: {} as any
+                    })
+                ],
+                repository
+            })
+        );
+
+        const { executed, skipped } = await handler({}, {} as any);
+
+        expect(executed.length).toEqual(3);
+        expect(executed[0].id).toEqual("0.0.0-001");
+        expect(executed[0].result.runner).toEqual("dynamodb-migration-runner");
+        expect(executed[1].id).toEqual("0.0.0-002");
+        expect(executed[1].result.runner).toEqual("elasticsearch-migration-runner");
+        expect(executed[2].id).toEqual("0.0.0-003");
+        expect(executed[2].result.runner).toEqual("elasticsearch-migration-runner");
+        expect(skipped.length).toEqual(0);
     });
 
     it("should execute 2 out of 3 migrations", async () => {

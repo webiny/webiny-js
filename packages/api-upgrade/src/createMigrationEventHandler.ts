@@ -9,19 +9,19 @@ interface CreateDataMigrationConfig {
     migrations: DataMigration<any>[];
 }
 
-interface ExecutedMigrationResponse {
+export interface ExecutedMigrationResponse {
     id: string;
     name: string;
     result: MigrationResult;
 }
 
-interface SkippedMigrationResponse {
+export interface SkippedMigrationResponse {
     id: string;
     name: string;
     reason: string;
 }
 
-interface Response {
+export interface MigrationEventHandlerResponse {
     executed: ExecutedMigrationResponse[];
     skipped: SkippedMigrationResponse[];
 }
@@ -31,7 +31,7 @@ export const createMigrationEventHandler = ({
     migrations,
     runners
 }: CreateDataMigrationConfig) => {
-    return createRawEventHandler<any, any, Response>(async () => {
+    return createRawEventHandler(async () => {
         const [latestMigration] = await repository.listMigrations({ limit: 1 });
 
         const currentVersion = process.env.WEBINY_VERSION;
