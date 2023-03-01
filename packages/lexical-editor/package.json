@@ -18,6 +18,7 @@
     "@lexical/selection": "0.8.1",
     "@lexical/utils": "0.8.1",
     "@webiny/react-composition": "0.0.0",
+    "@webiny/ui": "0.0.0",
     "lexical": "0.8.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
