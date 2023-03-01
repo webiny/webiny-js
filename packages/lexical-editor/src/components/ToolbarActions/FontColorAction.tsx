@@ -7,33 +7,20 @@ import {
     SELECTION_CHANGE_COMMAND
 } from "lexical";
 import { $getSelectionStyleValueForProperty, $patchStyleText } from "@lexical/selection";
-import { DropDown } from "~/ui/DropDown";
-import { makeComposable } from "@webiny/react-composition";
-import { ColorPicker } from "@webiny/ui/ColorPicker";
+import {ColorPickerDropdown} from "~/components/ColorPickerDropdown/ColorPickerDropdown";
+import {makeComposable} from "@webiny/react-composition";
 
-interface FontColorPicker {
-    onChange: (value: string) => void;
+
+interface ColorPickerElement {
+    onChange: (color: string) => void;
+    value: string;
 }
 
-export const FontColorPicker = makeComposable(
-    "FontColorPicker",
-    ({ onChange }: FontColorPicker): JSX.Element => {
-        return (
-            <DropDown
-                buttonClassName="toolbar-item font-color"
-                buttonLabel={"value"}
-                buttonAriaLabel={"Formatting options for font size"}
-            >
-                <div className="color-picker-wrapper" style={{ width: "auto" }}>
-                    <ColorPicker onChange={onChange} />
-                    Some color picker thing
-                </div>
-            </DropDown>
-        );
-    }
-);
+interface FontColorAction {
+    ColorPickerElement?: JSX.Element;
+}
 
-export const FontColorAction = () => {
+export const FontColorAction = makeComposable<FontColorAction>("FontColorAction",  (colorPickerElement) => {
     const [editor] = useLexicalComposerContext();
     const [activeEditor, setActiveEditor] = useState(editor);
     const [fontColor, setFontColor] = useState<string>("#000");
@@ -47,7 +34,7 @@ export const FontColorAction = () => {
     useEffect(() => {
         const selection = $getSelection();
         if ($isRangeSelection(selection)) {
-            setFontColor($getSelectionStyleValueForProperty(selection, "color", fontColor));
+            setFontColor($getSelectionStyleValueForProperty(selection, "color", "#000"));
         }
     }, [activeEditor]);
 
@@ -82,5 +69,5 @@ export const FontColorAction = () => {
         );
     }, [editor, updateToolbar]);
 
-    return <FontColorPicker onChange={onFontColorSelect} />;
-};
+    return <ColorPickerDropdown value={fontColor}  onChange={onFontColorSelect} />;
+});
