@@ -1,12 +1,31 @@
-const { green } = require("chalk");
+const { green, red } = require("chalk");
 const { Pulumi } = require("@webiny/pulumi-sdk");
 const ora = require("ora");
 const merge = require("lodash/merge");
 const { getProject } = require("@webiny/cli/utils");
 const path = require("path");
+const fs = require("fs");
 
 module.exports = async ({ projectApplication, pulumi, install }) => {
     const spinner = new ora();
+
+    let cwd = projectApplication.paths.absolute;
+    if (projectApplication.type === "v5-workspaces") {
+        cwd = projectApplication.paths.workspace;
+        if (!fs.existsSync(cwd)) {
+            const message = [
+                "The command cannot be run because the internal",
+                red(projectApplication.paths.workspace),
+                "workspace folder does not exist.",
+                "This usually happens when a project application wasn't built or deployed.",
+                "To fix this, either fully deploy the project application by running the",
+                red(`yarn webiny deploy ${projectApplication.paths.relative} --env {environment}`),
+                "command, or build it by running",
+                red(`yarn webiny build ${projectApplication.paths.relative} --env {environment}.`)
+            ].join(" ");
+            throw new Error(message);
+        }
+    }
 
     const instance = new Pulumi(
         merge(
@@ -27,14 +46,7 @@ module.exports = async ({ projectApplication, pulumi, install }) => {
                     });
                 }
             },
-            projectApplication && {
-                execa: {
-                    cwd:
-                        projectApplication.type === "v5-workspaces"
-                            ? projectApplication.paths.workspace
-                            : projectApplication.paths.absolute
-                }
-            },
+            projectApplication && { execa: { cwd } },
             pulumi
         )
     );
