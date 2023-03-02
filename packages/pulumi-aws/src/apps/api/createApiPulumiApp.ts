@@ -1,3 +1,4 @@
+import * as pulumi from "@pulumi/pulumi";
 import { createPulumiApp, PulumiAppParam, PulumiAppParamCallback } from "@webiny/pulumi";
 import {
     ApiGateway,
@@ -198,15 +199,32 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
 
             const cloudfront = app.addModule(ApiCloudfront);
 
+            // These will always contain the default Cloudfront domain,
+            // no matter if the user provided a custom domain or not.
+            const cloudfrontApiDomain = cloudfront.output.domainName;
+            const cloudfrontApiUrl = cloudfront.output.domainName.apply(value => `https://${value}`);
+
+            let apiDomain = cloudfrontApiDomain;
+            let apiUrl = cloudfrontApiUrl;
+
             const domains = app.getParam(projectAppParams.domains);
             if (domains) {
                 applyCustomDomain(cloudfront, domains);
+
+                // Instead of the default Cloudfront domain, we use the first custom
+                // domain that was provided via the `domains.domains` array, and that
+                // is what will be included in the final stack output.
+                const domainsOutput = pulumi.output(domains.domains);
+                apiDomain = domainsOutput.apply(([firstDomain]) => firstDomain);
+                apiUrl = domainsOutput.apply(([firstDomain]) => `https://${firstDomain}`);
             }
 
             app.addOutputs({
                 region: process.env.AWS_REGION,
-                apiUrl: cloudfront.output.domainName.apply(value => `https://${value}`),
-                apiDomain: cloudfront.output.domainName,
+                apiUrl,
+                apiDomain,
+                cloudfrontApiUrl,
+                cloudfrontApiDomain,
                 cognitoUserPoolId: core.cognitoUserPoolId,
                 cognitoAppClientId: core.cognitoAppClientId,
                 cognitoUserPoolPasswordPolicy: core.cognitoUserPoolPasswordPolicy,
