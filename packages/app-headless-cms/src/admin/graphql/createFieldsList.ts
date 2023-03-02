@@ -11,8 +11,13 @@ export function createFieldsList({ model, fields }: CreateFieldsListParams): str
         .byType<CmsEditorFieldTypePlugin>("cms-editor-field-type")
         .reduce((acc, item) => ({ ...acc, [item.field.type]: item.field }), {});
 
+    // console.log(fields, model);
     return fields
         .map(field => {
+            if (!fieldPlugins[field.type]) {
+                console.log(`Unknown field plugin for field type "${field.type}".`);
+                return null;
+            }
             const { graphql } = fieldPlugins[field.type];
 
             if (graphql && graphql.queryField) {
@@ -25,5 +30,6 @@ export function createFieldsList({ model, fields }: CreateFieldsListParams): str
 
             return field.fieldId;
         })
+        .filter(Boolean)
         .join("\n");
 }

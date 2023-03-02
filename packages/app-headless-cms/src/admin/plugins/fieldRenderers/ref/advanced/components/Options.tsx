@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import styled from "@emotion/styled";
-import { CmsModel, CmsModelField } from "~/types";
+import { CmsModel } from "~/types";
 import { OptionsModelList } from "~/admin/plugins/fieldRenderers/ref/advanced/components/options/OptionsModelList";
 
 const Container = styled("div")({

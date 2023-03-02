@@ -1,14 +1,9 @@
 import React, { useCallback, useEffect, useState } from "react";
 import styled from "@emotion/styled";
-import { css } from "emotion";
 import { DialogHeader } from "./dialog/DialogHeader";
 import { Search } from "./Search";
 import { Entry } from "./Entry";
-import {
-    Dialog as BaseDialog,
-    DialogActions,
-    DialogContent as BaseDialogContent
-} from "~/admin/components/Dialog";
+import { DialogActions, DialogContent as BaseDialogContent } from "~/admin/components/Dialog";
 import { CmsEditorFieldRendererProps } from "~/types";
 import {
     CmsReferenceContentEntry,
@@ -18,6 +13,7 @@ import { ButtonDefault, ButtonPrimary } from "@webiny/ui/Button";
 import { useSnackbar } from "@webiny/app-admin";
 import { parseIdentifier } from "@webiny/utils";
 import { Loader } from "./Loader";
+import { Dialog } from "./dialog/Dialog";
 
 const Container = styled("div")({
     width: "100%",
@@ -34,19 +30,6 @@ const Content = styled("div")({
     minHeight: "100px",
     boxSizing: "border-box",
     padding: "0 2px"
-});
-
-const Dialog = styled(BaseDialog)({
-    minWidth: "800px",
-    ".mdc-dialog__surface": {
-        width: "auto",
-        maxWidth: "800px",
-        minWidth: "800px",
-        maxHeight: "calc(100vh - 100px)"
-    },
-    ".mdc-dialog__content": {
-        overflow: "auto !important"
-    }
 });
 
 const DialogContent = styled(BaseDialogContent)({

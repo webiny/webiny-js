@@ -11,6 +11,7 @@ import * as GQL from "~/admin/viewsGraphql";
 import { useSnackbar } from "@webiny/app-admin";
 import { CmsReferenceValue } from "~/admin/plugins/fieldRenderers/ref/components/types";
 import { Loader } from "./Loader";
+import { NewReferencedEntryDialog } from "~/admin/plugins/fieldRenderers/ref/advanced/components/NewReferencedEntryDialog";
 
 const Container = styled("div")({
     borderLeft: "3px solid var(--mdc-theme-background)",
@@ -25,7 +26,8 @@ export const AdvancedReferenceField: React.FC<Props> = props => {
     const { showSnackbar } = useSnackbar();
 
     const [linkEntryDialogModel, setLinkEntryDialogModel] = useState<CmsModel | null>(null);
-    const [newEntryDialog, setNewEntryDialogModel] = useState<CmsModel | null>(null);
+    // eslint-disable-next-line
+    const [newEntryDialogModel, setNewEntryDialogModel] = useState<CmsModel | null>(null);
 
     const [loadedModels, setLoadedModels] = useState<CmsModel[]>([]);
 
@@ -55,6 +57,11 @@ export const AdvancedReferenceField: React.FC<Props> = props => {
         },
         [loadedModels, linkEntryDialogModel]
     );
+
+    const onNewEntryDialogClose = useCallback(() => {
+        setNewEntryDialogModel(null);
+    }, [linkEntryDialogModel]);
+
     const onExistingRecord = useCallback(
         (modelId: string) => {
             const model = loadedModels.find(model => model.modelId === modelId);
@@ -95,13 +102,6 @@ export const AdvancedReferenceField: React.FC<Props> = props => {
 
     const loading = loadingEntry || loadingModels;
 
-    const selectedEntries = useMemo(() => {
-        if (!bind.value?.id) {
-            return [];
-        }
-        return [bind.value.id];
-    }, [bind.value]);
-
     const storeValue = useCallback(
         (value: CmsReferenceValue | null) => {
             bind.onChange(value);
@@ -118,6 +118,16 @@ export const AdvancedReferenceField: React.FC<Props> = props => {
                 onNewRecord={onNewRecord}
                 onLinkExistingRecord={onExistingRecord}
             />
+
+            {newEntryDialogModel && (
+                <NewReferencedEntryDialog
+                    model={newEntryDialogModel}
+                    onClose={onNewEntryDialogClose}
+                    onChange={data => {
+                        console.log(data);
+                    }}
+                />
+            )}
 
             {linkEntryDialogModel && (
                 <ReferencesDialog
