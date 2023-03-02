@@ -114,7 +114,9 @@ export const createReactPulumiApp = (projectAppParams: CreateReactPulumiAppParam
             // These will always contain the default Cloudfront domain,
             // no matter if the user provided a custom domain or not.
             const cloudfrontAppDomain = cloudfront.output.domainName;
-            const cloudfrontAppUrl = cloudfront.output.domainName.apply(value => `https://${value}`);
+            const cloudfrontAppUrl = cloudfront.output.domainName.apply(
+                value => `https://${value}`
+            );
 
             // These will contain a custom domain if provided,
             // otherwise again the default Cloudfront domain.
@@ -135,10 +137,10 @@ export const createReactPulumiApp = (projectAppParams: CreateReactPulumiAppParam
 
             app.addOutputs({
                 appStorage: bucket.bucket.output.id,
-                appDomain,
-                appUrl,
                 cloudfrontAppDomain,
                 cloudfrontAppUrl,
+                appDomain,
+                appUrl
             });
 
             tagResources({

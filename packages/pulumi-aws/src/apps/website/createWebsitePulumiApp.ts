@@ -274,20 +274,20 @@ export const createWebsitePulumiApp = (projectAppParams: CreateWebsitePulumiAppP
                 // The files that are generated in that process are stored in the `deliveryStorage` S3 bucket further below.
                 appId: appCloudfront.output.id,
                 appStorage: appBucket.bucket.output.id,
-                appDomain,
-                appUrl,
                 cloudfrontAppUrl,
                 cloudfrontAppDomain,
+                appDomain,
+                appUrl,
 
                 // These are the Cloudfront and S3 bucket that will deliver static pages to the actual website visitors.
                 // The static HTML snapshots delivered from them still rely on the app's S3 bucket
                 // defined above, for serving static assets (JS, CSS, images).
                 deliveryId: deliveryCloudfront.output.id,
                 deliveryStorage: deliveryBucket.bucket.output.id,
-                deliveryDomain,
-                deliveryUrl,
                 cloudfrontDeliveryUrl,
-                cloudfrontDeliveryDomain
+                cloudfrontDeliveryDomain,
+                deliveryDomain,
+                deliveryUrl
             });
 
             tagResources({
