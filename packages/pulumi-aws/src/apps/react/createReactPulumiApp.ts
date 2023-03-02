@@ -116,6 +116,8 @@ export const createReactPulumiApp = (projectAppParams: CreateReactPulumiAppParam
             const cloudfrontAppDomain = cloudfront.output.domainName;
             const cloudfrontAppUrl = cloudfront.output.domainName.apply(value => `https://${value}`);
 
+            // These will contain a custom domain if provided,
+            // otherwise again the default Cloudfront domain.
             let appDomain = cloudfrontAppDomain;
             let appUrl = cloudfrontAppUrl;
 

@@ -204,6 +204,8 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
             const cloudfrontApiDomain = cloudfront.output.domainName;
             const cloudfrontApiUrl = cloudfront.output.domainName.apply(value => `https://${value}`);
 
+            // These will contain a custom domain if provided,
+            // otherwise again the default Cloudfront domain.
             let apiDomain = cloudfrontApiDomain;
             let apiUrl = cloudfrontApiUrl;
 
