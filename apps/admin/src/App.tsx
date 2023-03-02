@@ -12,7 +12,7 @@ export const App: React.FC = () => {
         <Admin>
             <Cognito />
             <LexicalEditorConfig>
-                <FontColorAction.ColorPickerElement element={<FontColorPickerDropdown />} />
+                <FontColorAction.ColorPicker element={<FontColorPickerDropdown />} />
             </LexicalEditorConfig>
         </Admin>
     );

@@ -2,6 +2,7 @@
 export { LexicalHtmlRenderer } from "~/components/LexicalHtmlRenderer";
 // hooks
 export { useRichTextEditor } from "~/hooks/useRichTextEditor";
+export { useFontColorPicker } from "~/hooks/useFontColorPicker";
 // UI elements
 export { Divider } from "~/ui/Divider";
 export { DropDownItem } from "~/ui/DropDown";

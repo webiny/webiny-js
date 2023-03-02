@@ -8,6 +8,7 @@ import {
 } from "lexical";
 import { $getSelectionStyleValueForProperty, $patchStyleText } from "@lexical/selection";
 import { Compose, makeComposable } from "@webiny/react-composition";
+import { FontColorActionContext } from "~/context/FontColorActionContext";
 
 /*
  * Composable Color Picker component that is mounted on toolbar action.
@@ -82,9 +83,9 @@ export const FontColorAction: FontColorAction = () => {
     }, [editor, updateToolbar]);
 
     return (
-        // <FontColorPickerProvider value={{ value, onChange }}>
-        <FontColorPicker />
-        // </FontColorPickerProvider>
+        <FontColorActionContext.Provider value={{ value: fontColor, onChange: onFontColorSelect }}>
+            <FontColorPicker />
+        </FontColorActionContext.Provider>
     );
 };
 
