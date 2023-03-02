@@ -5,14 +5,14 @@ import "./App.scss";
 import { LexicalEditorConfig } from "@webiny/lexical-editor";
 import { FontColorPickerDropdown } from "./lexicalEditor/ColorPickerDropdown";
 
+const { FontColorAction } = LexicalEditorConfig;
+
 export const App: React.FC = () => {
     return (
         <Admin>
             <Cognito />
             <LexicalEditorConfig>
-                <LexicalEditorConfig.FontColorAction.ColorPicker
-                    Element={FontColorPickerDropdown}
-                />
+                <FontColorAction.ColorPickerElement element={<FontColorPickerDropdown />} />
             </LexicalEditorConfig>
         </Admin>
     );

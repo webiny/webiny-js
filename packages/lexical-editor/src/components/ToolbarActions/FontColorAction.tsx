@@ -7,38 +7,25 @@ import {
     SELECTION_CHANGE_COMMAND
 } from "lexical";
 import { $getSelectionStyleValueForProperty, $patchStyleText } from "@lexical/selection";
-import { createComponentPlugin, makeComposable } from "@webiny/react-composition";
-
-export interface FontColorPicker {
-    value?: string;
-    onChange?: (value: string) => void;
-}
+import { Compose, makeComposable } from "@webiny/react-composition";
 
 /*
  * Composable Color Picker component that is mounted on toolbar action.
  * Note: Toa add custom component access trough @see LexicalEditorConfig API
  * */
-export const FontColorPicker = makeComposable<FontColorPicker>(
-    "FontColorPicker",
-    (): JSX.Element | null => {
-        useEffect(() => {
-            console.log("Default FontColorPicker, please add your own component");
-        }, []);
-        return null;
-    }
-);
+export const FontColorPicker = makeComposable("FontColorPicker", (): JSX.Element | null => {
+    useEffect(() => {
+        console.log("Default FontColorPicker, please add your own component");
+    }, []);
+    return null;
+});
 
 interface FontActionColorPicker {
-    Element: typeof FontColorPicker;
+    element: JSX.Element;
 }
 
-const FontActionColorPicker: React.FC<FontActionColorPicker> = ({ Element }): JSX.Element => {
-    const FontColorPickerPlugin = createComponentPlugin(FontColorPicker, () => {
-        return function FontColorPickerPlugin({ value, onChange }): JSX.Element {
-            return <Element value={value} onChange={onChange} />;
-        };
-    });
-    return <FontColorPickerPlugin />;
+const FontActionColorPicker: React.FC<FontActionColorPicker> = ({ element }): JSX.Element => {
+    return <Compose component={FontColorPicker} with={() => () => element} />;
 };
 
 export interface FontColorAction extends React.FC<unknown> {
@@ -94,7 +81,11 @@ export const FontColorAction: FontColorAction = () => {
         );
     }, [editor, updateToolbar]);
 
-    return <FontColorPicker value={fontColor} onChange={onFontColorSelect} />;
+    return (
+        // <FontColorPickerProvider value={{ value, onChange }}>
+        <FontColorPicker />
+        // </FontColorPickerProvider>
+    );
 };
 
 {
