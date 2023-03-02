@@ -12,14 +12,14 @@
     { "path": "../handler" },
     { "path": "../handler-graphql" },
     { "path": "../pubsub" },
+    { "path": "../utils" },
     { "path": "../api-headless-cms-ddb" },
     { "path": "../api-i18n-ddb" },
     { "path": "../api-security-so-ddb" },
     { "path": "../api-tenancy-so-ddb" },
     { "path": "../api-wcp" },
     { "path": "../handler-aws" },
-    { "path": "../plugins" },
-    { "path": "../utils" }
+    { "path": "../plugins" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -48,6 +48,8 @@
       "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/pubsub/*": ["../pubsub/src/*"],
       "@webiny/pubsub": ["../pubsub/src"],
+      "@webiny/utils/*": ["../utils/src/*"],
+      "@webiny/utils": ["../utils/src"],
       "@webiny/api-headless-cms-ddb/*": ["../api-headless-cms-ddb/src/*"],
       "@webiny/api-headless-cms-ddb": ["../api-headless-cms-ddb/src"],
       "@webiny/api-i18n-ddb/*": ["../api-i18n-ddb/src/*"],
@@ -61,9 +63,7 @@
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
       "@webiny/handler-aws": ["../handler-aws/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"],
-      "@webiny/utils/*": ["../utils/src/*"],
-      "@webiny/utils": ["../utils/src"]
+      "@webiny/plugins": ["../plugins/src"]
     },
     "baseUrl": "."
   }
