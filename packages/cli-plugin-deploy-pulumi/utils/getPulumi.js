@@ -15,7 +15,7 @@ module.exports = async ({ projectApplication, pulumi, install }) => {
         if (!fs.existsSync(cwd)) {
             const message = [
                 "The command cannot be run because the project application hasn't been built. ",
-                "To build the application, run ",
+                "To build it, run ",
                 red(`yarn webiny build ${projectApplication.paths.relative} --env {environment}`),
                 "."
             ].join("");
