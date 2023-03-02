@@ -1,0 +1,9 @@
+{
+  "name": "logs",
+  "version": "0.1.0",
+  "dependencies": {
+    "@pulumi/aws": "^4.33.0",
+    "@pulumi/pulumi": "^3.19.0",
+    "@webiny/cli-plugin-deploy-pulumi": "0.0.0"
+  }
+}
