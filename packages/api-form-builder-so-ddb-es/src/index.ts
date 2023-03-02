@@ -133,7 +133,6 @@ export const createFormBuilderStorageOperations: FormBuilderStorageOperationsFac
                 });
             });
         },
-        upgrade: null,
         getTable: () => table,
         getEsTable: () => esTable,
         getEntities: () => entities,
