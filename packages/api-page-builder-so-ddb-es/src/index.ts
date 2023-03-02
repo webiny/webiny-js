@@ -42,6 +42,10 @@ import { createPageBlockEntity } from "~/definitions/pageBlockEntity";
 import { createPageBlockDynamoDbFields } from "~/operations/pageBlock/fields";
 import { createPageBlockStorageOperations } from "~/operations/pageBlock";
 
+export * from "./plugins";
+
+// import {} from "@webiny/api-page-builder-so-ddb-es";
+
 export const createStorageOperations: StorageOperationsFactory = params => {
     const {
         documentClient,
