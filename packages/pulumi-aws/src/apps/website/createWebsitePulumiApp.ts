@@ -216,7 +216,7 @@ export const createWebsitePulumiApp = (projectAppParams: CreateWebsitePulumiAppP
             // These will always contain the default Cloudfront domain,
             // no matter if the user provided a custom domain or not.
             const cloudfrontDeliveryDomain = deliveryCloudfront.output.domainName;
-            const cloudfrontDeliveryUrl = deliveryCloudfront.output.domainName.apply(
+            const cloudfrontDeliveryUrl = cloudfrontDeliveryDomain.apply(
                 value => `https://${value}`
             );
 
@@ -274,8 +274,8 @@ export const createWebsitePulumiApp = (projectAppParams: CreateWebsitePulumiAppP
                 // The files that are generated in that process are stored in the `deliveryStorage` S3 bucket further below.
                 appId: appCloudfront.output.id,
                 appStorage: appBucket.bucket.output.id,
-                cloudfrontAppUrl,
                 cloudfrontAppDomain,
+                cloudfrontAppUrl,
                 appDomain,
                 appUrl,
 
@@ -284,8 +284,8 @@ export const createWebsitePulumiApp = (projectAppParams: CreateWebsitePulumiAppP
                 // defined above, for serving static assets (JS, CSS, images).
                 deliveryId: deliveryCloudfront.output.id,
                 deliveryStorage: deliveryBucket.bucket.output.id,
-                cloudfrontDeliveryUrl,
                 cloudfrontDeliveryDomain,
+                cloudfrontDeliveryUrl,
                 deliveryDomain,
                 deliveryUrl
             });

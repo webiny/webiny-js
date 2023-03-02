@@ -202,9 +202,7 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
             // These will always contain the default Cloudfront domain,
             // no matter if the user provided a custom domain or not.
             const cloudfrontApiDomain = cloudfront.output.domainName;
-            const cloudfrontApiUrl = cloudfront.output.domainName.apply(
-                value => `https://${value}`
-            );
+            const cloudfrontApiUrl = cloudfrontApiDomain.apply(value => `https://${value}`);
 
             // These will contain a custom domain if provided,
             // otherwise again the default Cloudfront domain.
@@ -225,10 +223,10 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
 
             app.addOutputs({
                 region: process.env.AWS_REGION,
-                cloudfrontApiUrl,
                 cloudfrontApiDomain,
-                apiUrl,
+                cloudfrontApiUrl,
                 apiDomain,
+                apiUrl,
                 cognitoUserPoolId: core.cognitoUserPoolId,
                 cognitoAppClientId: core.cognitoAppClientId,
                 cognitoUserPoolPasswordPolicy: core.cognitoUserPoolPasswordPolicy,
