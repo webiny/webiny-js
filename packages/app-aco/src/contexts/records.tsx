@@ -97,7 +97,11 @@ export const SearchRecordsProvider = ({ children }: Props) => {
                 throw new Error(error?.message || "Could not fetch records");
             }
 
-            setRecords(records => unionBy(data, records, "id"));
+            if (after) {
+                setRecords(records => [...new Set([...records, ...data])]);
+            } else {
+                setRecords(records => unionBy(data, records, "id"));
+            }
 
             setMeta(meta => ({
                 ...meta,
