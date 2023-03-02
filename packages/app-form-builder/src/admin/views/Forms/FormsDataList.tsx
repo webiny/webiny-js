@@ -5,6 +5,7 @@ import React, { useRef, useCallback, useState, useMemo } from "react";
 // @ts-ignore
 import TimeAgo from "timeago-react";
 import { css } from "emotion";
+import styled from "@emotion/styled";
 import orderBy from "lodash/orderBy";
 import upperFirst from "lodash/upperFirst";
 import { useRouter } from "@webiny/react-router";
@@ -27,6 +28,7 @@ import {
     ListItemTextSecondary,
     ListItemMeta,
     ListActions,
+    ListSelectBox,
     DataListModalOverlayAction,
     DataListModalOverlay
 } from "@webiny/ui/List";
@@ -38,7 +40,13 @@ import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/fil
 import SearchUI from "@webiny/app-admin/components/SearchUI";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
+import { Checkbox } from "@webiny/ui/Checkbox";
+import { useMultiSelect } from "./hooks/useMultiSelect";
 import { usePermission } from "~/hooks/usePermission";
+import { ReactComponent as FileUploadIcon } from "@material-design-icons/svg/round/upload.svg";
+import useImportForm from "./hooks/useImportForm";
+import { ExportFormsButton } from "~/admin/plugins/editor/defaultBar/ExportButton";
+import { OptionsMenu } from "~/admin/components/OptionsMenu";
 import { useForms } from "./useForms";
 import { deserializeSorters } from "../utils";
 import { FbFormModel, FbRevisionModel } from "~/types";
@@ -51,6 +59,12 @@ const rightAlign = css({
 const listItemMinHeight = css({
     minHeight: "66px !important"
 });
+
+const DataListActionsWrapper = styled.div`
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+`;
 
 export type FormsDataListProps = {
     onCreateForm: () => void;
@@ -220,18 +234,51 @@ const FormsDataList: React.FC<FormsDataListProps> = props => {
     const filteredData = filter === "" ? listFormsData : listFormsData.filter(filterData);
     const forms = sortData(filteredData);
 
+    const { showImportDialog } = useImportForm();
+
+    const listActions = useMemo(() => {
+        if (!canCreate) {
+            return null;
+        }
+        return (
+            <DataListActionsWrapper>
+                <ButtonSecondary data-testid="new-record-button" onClick={props.onCreateForm}>
+                    <ButtonIcon icon={<AddIcon />} /> {t`New Form`}
+                </ButtonSecondary>
+                <OptionsMenu
+                    items={[
+                        {
+                            label: "Import Forms",
+                            icon: <FileUploadIcon />,
+                            onClick: showImportDialog,
+                            "data-testid": "import-form-button"
+                        }
+                    ]}
+                />
+            </DataListActionsWrapper>
+        );
+    }, [canCreate, showImportDialog]);
+
+    const multiSelectProps = useMultiSelect({
+        useRouter: false,
+        getValue: (item: any) => item.id
+    });
+
     return (
         <DataList
             title={t`Forms`}
             data={forms}
             loading={listQuery.loading}
-            actions={
-                canCreate ? (
-                    <ButtonSecondary data-testid="new-record-button" onClick={props.onCreateForm}>
-                        <ButtonIcon icon={<AddIcon />} /> {t`New Form`}
-                    </ButtonSecondary>
-                ) : null
+            actions={listActions}
+            multiSelectActions={
+                <ExportFormsButton
+                    getMultiSelected={multiSelectProps.getMultiSelected}
+                    sort={sort}
+                />
             }
+            multiSelectAll={multiSelectProps.multiSelectAll}
+            isAllMultiSelected={multiSelectProps.isAllMultiSelected}
+            isNoneMultiSelected={multiSelectProps.isNoneMultiSelected}
             search={
                 <SearchUI value={filter} onChange={setFilter} inputPlaceholder={t`Search forms`} />
             }
@@ -244,6 +291,12 @@ const FormsDataList: React.FC<FormsDataListProps> = props => {
                         const name = form.createdBy.displayName;
                         return (
                             <ListItem key={form.id} className={listItemMinHeight}>
+                                <ListSelectBox>
+                                    <Checkbox
+                                        onChange={() => multiSelectProps.multiSelect(form)}
+                                        value={multiSelectProps.isMultiSelected(form)}
+                                    />
+                                </ListSelectBox>
                                 <ListItemText
                                     onClick={() => {
                                         query.set("id", form.id);
