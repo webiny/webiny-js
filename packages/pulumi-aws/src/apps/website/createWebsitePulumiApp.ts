@@ -6,7 +6,7 @@ import { createPrivateAppBucket } from "../createAppBucket";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
 import { createPrerenderingService } from "./WebsitePrerendering";
 import { CoreOutput, VpcConfig } from "~/apps";
-import {addDomainsUrlsOutputs, tagResources, withCommonLambdaEnvVariables} from "~/utils";
+import { addDomainsUrlsOutputs, tagResources, withCommonLambdaEnvVariables } from "~/utils";
 import { applyTenantRouter } from "~/apps/tenantRouter";
 
 export type WebsitePulumiApp = ReturnType<typeof createWebsitePulumiApp>;
