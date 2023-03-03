@@ -6,7 +6,7 @@ import { createPrivateAppBucket } from "../createAppBucket";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
 import { createPrerenderingService } from "./WebsitePrerendering";
 import { CoreOutput, VpcConfig } from "~/apps";
-import { tagResources, withCommonLambdaEnvVariables } from "~/utils";
+import { addLambdaFunctionsListOutput, tagResources, withCommonLambdaEnvVariables } from "~/utils";
 import { applyTenantRouter } from "~/apps/tenantRouter";
 
 export type WebsitePulumiApp = ReturnType<typeof createWebsitePulumiApp>;
@@ -246,6 +246,8 @@ export const createWebsitePulumiApp = (projectAppParams: CreateWebsitePulumiAppP
                 deliveryDomain: deliveryCloudfront.output.domainName,
                 deliveryUrl: deliveryCloudfront.output.domainName.apply(value => `https://${value}`)
             });
+
+            addLambdaFunctionsListOutput({ app });
 
             tagResources({
                 WbyProjectName: String(process.env["WEBINY_PROJECT_NAME"]),

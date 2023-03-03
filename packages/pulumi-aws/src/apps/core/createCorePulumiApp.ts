@@ -6,6 +6,7 @@ import { CoreEventBus } from "./CoreEventBus";
 import { CoreFileManger } from "./CoreFileManager";
 import { CoreVpc } from "./CoreVpc";
 import { tagResources } from "~/utils";
+import { addLambdaFunctionsListOutput } from "~/utils";
 
 export type CorePulumiApp = ReturnType<typeof createCorePulumiApp>;
 
@@ -122,6 +123,8 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
                 cognitoAppClientId: cognito.userPoolClient.output.id,
                 eventBusArn: eventBus.output.arn
             });
+
+            addLambdaFunctionsListOutput({ app });
 
             tagResources({
                 WbyProjectName: String(process.env["WEBINY_PROJECT_NAME"]),

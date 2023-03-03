@@ -12,7 +12,7 @@ import {
 } from "~/apps";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
 import { tagResources } from "~/utils";
-import { withCommonLambdaEnvVariables } from "~/utils";
+import { withCommonLambdaEnvVariables, addLambdaFunctionsListOutput } from "~/utils";
 
 export type ApiPulumiApp = ReturnType<typeof createApiPulumiApp>;
 
@@ -217,6 +217,8 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 dynamoDbTable: core.primaryDynamodbTableName,
                 dynamoDbElasticsearchTable: core.elasticsearchDynamodbTableName
             });
+
+            addLambdaFunctionsListOutput({app});
 
             tagResources({
                 WbyProjectName: String(process.env["WEBINY_PROJECT_NAME"]),
