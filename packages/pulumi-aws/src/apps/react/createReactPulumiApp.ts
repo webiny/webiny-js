@@ -131,8 +131,8 @@ export const createReactPulumiApp = (projectAppParams: CreateReactPulumiAppParam
                 map: {
                     distributionDomain: "cloudfrontAppDomain",
                     distributionUrl: "cloudfrontAppUrl",
-                    usedDomain: "appUrl",
-                    usedUrl: "appDomain"
+                    usedDomain: "appDomain",
+                    usedUrl: "appUrl"
                 }
             });
 
