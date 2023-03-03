@@ -1,10 +1,10 @@
-import { Table, Entity } from "dynamodb-toolbox";
+import { Entity, Table } from "dynamodb-toolbox";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { Client as ElasticsearchClient } from "@elastic/elasticsearch";
 import { dynamoDbUtils } from "~/utils/dynamoDb";
 import { DataMigration, ElasticsearchMigrationContext, EntityParams } from "~/types";
-import { ElasticsearchDataMigration } from "~/migrations/ElasticsearchDataMigration";
 import { AbstractDataMigrationRunner } from "~/runners/AbstractDataMigrationRunner";
+import { ElasticsearchDataMigration } from "~/migrations/ElasticsearchDataMigration";
 
 interface ElasticsearchMigrationRunnerConfig {
     table: Table;

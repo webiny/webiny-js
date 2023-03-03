@@ -1,6 +1,6 @@
 {
   "extends": "../../tsconfig.json",
-  "include": ["src", "__tests__/**/*.ts"],
+  "include": ["src", "__tests__/**/*.ts", "handlers"],
   "references": [
     { "path": "../api-apw" },
     { "path": "../api-apw-scheduler-so-ddb" },
@@ -24,6 +24,7 @@
     { "path": "../api-security-so-ddb" },
     { "path": "../api-tenancy" },
     { "path": "../api-tenancy-so-ddb" },
+    { "path": "../data-migration" },
     { "path": "../db-dynamodb" },
     { "path": "../feature-flags" },
     { "path": "../handler-aws" },
@@ -89,6 +90,8 @@
       "@webiny/api-tenancy": ["../api-tenancy/src"],
       "@webiny/api-tenancy-so-ddb/*": ["../api-tenancy-so-ddb/src/*"],
       "@webiny/api-tenancy-so-ddb": ["../api-tenancy-so-ddb/src"],
+      "@webiny/data-migration/*": ["../data-migration/src/*"],
+      "@webiny/data-migration": ["../data-migration/src"],
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
       "@webiny/db-dynamodb": ["../db-dynamodb/src"],
       "@webiny/feature-flags/*": ["../feature-flags/src/*"],

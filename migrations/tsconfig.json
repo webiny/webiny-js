@@ -1,0 +1,14 @@
+{
+  "extends": "../tsconfig",
+  "include": ["src"],
+  "compilerOptions": {
+    "rootDir": ".",
+    "baseUrl": ".",
+    "composite": false
+  },
+  "references": [
+    {
+      "path": "../packages/data-migration"
+    }
+  ]
+}

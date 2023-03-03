@@ -1,0 +1,15 @@
+{
+  "name": "migrations",
+  "version": "0.0.0",
+  "private": true,
+  "dependencies": {
+    "@webiny/data-migration": "0.0.0"
+  },
+  "devDependencies": {
+    "@webiny/cli": "0.0.0",
+    "@webiny/project-utils": "0.0.0"
+  },
+  "scripts": {
+    "build": "yarn webiny run build-ddb && yarn webiny run build-ddb-es"
+  }
+}
