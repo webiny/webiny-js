@@ -6,7 +6,7 @@ export const ComplianceVpcFlowLogs = createAppModule({
     name: "ComplianceVpcFlowLogs",
     config({ addResource, getModule }) {
         const vpcConfig = getModule(VpcConfig);
-        if (vpcConfig.enabled) {
+        if (!vpcConfig.enabled) {
             return;
         }
 

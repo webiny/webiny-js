@@ -137,6 +137,7 @@ export const CoreVpc = createAppModule({
         };
 
         app.addOutputs({
+            vpcId: vpc.output.id,
             vpcPublicSubnetIds: subnets.public.map(subNet => subNet.output.id),
             vpcPrivateSubnetIds: subnets.private.map(subNet => subNet.output.id),
             vpcSecurityGroupIds: [vpc.output.defaultSecurityGroupId]

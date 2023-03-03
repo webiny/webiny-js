@@ -28,6 +28,7 @@ export const CoreOutput = createAppModule({
                 cognitoAppClientId: output["cognitoAppClientId"] as string,
                 eventBusArn: output["eventBusArn"] as string,
                 // These outputs are optional, since VPC is not always enabled.
+                vpcId: output["vpcId"] as string | undefined,
                 vpcPublicSubnetIds: output["vpcPublicSubnetIds"] as string[] | undefined,
                 vpcPrivateSubnetIds: output["vpcPrivateSubnetIds"] as string[] | undefined,
                 vpcSecurityGroupIds: output["vpcSecurityGroupIds"] as string[] | undefined,
@@ -41,7 +42,8 @@ export const CoreOutput = createAppModule({
                     | undefined,
                 elasticsearchDynamodbTableName: output["elasticsearchDynamodbTableName"] as
                     | string
-                    | undefined
+                    | undefined,
+                lambdaFunctionsList: output['lambdaFunctionsList'] as any[]
             };
         });
     }

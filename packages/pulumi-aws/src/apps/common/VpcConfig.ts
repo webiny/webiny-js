@@ -25,6 +25,7 @@ export const VpcConfig = createAppModule({
             }
 
             return {
+                vpcId: CoreOutput.vpcId,
                 functionVpcConfig,
                 enabled
             };
