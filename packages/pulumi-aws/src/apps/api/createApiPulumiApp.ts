@@ -1,4 +1,3 @@
-import * as pulumi from "@pulumi/pulumi";
 import { createPulumiApp, PulumiAppParam, PulumiAppParamCallback } from "@webiny/pulumi";
 import {
     ApiGateway,
