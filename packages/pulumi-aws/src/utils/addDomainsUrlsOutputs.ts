@@ -13,6 +13,10 @@ interface AddDomainsUrlsOutputsParams {
     };
 }
 
+/**
+ * Based on the provided Cloudfront distribution and map,
+ * adds domain and URL-related values to final stack output.
+ */
 export const addDomainsUrlsOutputs = (params: AddDomainsUrlsOutputsParams) => {
     const { cloudfrontDistribution, app, map } = params;
 
