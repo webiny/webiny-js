@@ -34,6 +34,8 @@ import { createPageBlockEntity } from "~/definitions/pageBlockEntity";
 import { createPageBlockDynamoDbFields } from "~/operations/pageBlock/fields";
 import { createPageBlockStorageOperations } from "~/operations/pageBlock";
 
+export * from "./plugins";
+
 export const createStorageOperations: StorageOperationsFactory = params => {
     const { documentClient, table, attributes, plugins: userPlugins } = params;
 
