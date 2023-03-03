@@ -264,8 +264,8 @@ export const createWebsitePulumiApp = (projectAppParams: CreateWebsitePulumiAppP
                 map: {
                     distributionDomain: "cloudfrontAppDomain",
                     distributionUrl: "cloudfrontAppUrl",
-                    usedDomain: "appUrl",
-                    usedUrl: "appDomain"
+                    usedDomain: "appDomain",
+                    usedUrl: "appUrl"
                 }
             });
 
