@@ -1,12 +1,27 @@
-const { green } = require("chalk");
+const { green, red } = require("chalk");
 const { Pulumi } = require("@webiny/pulumi-sdk");
 const ora = require("ora");
 const merge = require("lodash/merge");
 const { getProject } = require("@webiny/cli/utils");
 const path = require("path");
+const fs = require("fs");
 
 module.exports = async ({ projectApplication, pulumi, install }) => {
     const spinner = new ora();
+
+    let cwd = projectApplication.paths.absolute;
+    if (projectApplication.type === "v5-workspaces") {
+        cwd = projectApplication.paths.workspace;
+        if (!fs.existsSync(cwd)) {
+            const message = [
+                "The command cannot be run because the project application hasn't been built. ",
+                "To build it, run ",
+                red(`yarn webiny build ${projectApplication.paths.relative} --env {environment}`),
+                "."
+            ].join("");
+            throw new Error(message);
+        }
+    }
 
     const instance = new Pulumi(
         merge(
@@ -27,14 +42,7 @@ module.exports = async ({ projectApplication, pulumi, install }) => {
                     });
                 }
             },
-            projectApplication && {
-                execa: {
-                    cwd:
-                        projectApplication.type === "v5-workspaces"
-                            ? projectApplication.paths.workspace
-                            : projectApplication.paths.absolute
-                }
-            },
+            projectApplication && { execa: { cwd } },
             pulumi
         )
     );
