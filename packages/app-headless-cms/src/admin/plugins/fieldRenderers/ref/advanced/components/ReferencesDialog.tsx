@@ -80,11 +80,12 @@ export const ReferencesDialog: React.FC<Props> = props => {
              * Let's handle the single usage first as it is quite simple.
              */
             if (!multiple) {
-                if (values.length === 0 || !values[0]?.id) {
+                const [value] = values;
+                if (!value?.id) {
                     setValues([reference]);
                     return;
                 }
-                const { id: valueEntryId } = parseIdentifier(values[0].id);
+                const { id: valueEntryId } = parseIdentifier(value.id);
                 if (referenceEntryId === valueEntryId) {
                     setValues([]);
                     return;
