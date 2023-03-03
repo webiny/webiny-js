@@ -573,9 +573,16 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
             const model: CmsModel = {
                 ...original,
                 ...data,
-                titleFieldId: data.titleFieldId as string,
-                descriptionFieldId: data.descriptionFieldId,
-                imageFieldId: data.imageFieldId,
+                titleFieldId:
+                    data.titleFieldId === undefined
+                        ? original.titleFieldId
+                        : (data.titleFieldId as string),
+                descriptionFieldId:
+                    data.descriptionFieldId === undefined
+                        ? original.descriptionFieldId
+                        : data.descriptionFieldId,
+                imageFieldId:
+                    data.imageFieldId === undefined ? original.imageFieldId : data.imageFieldId,
                 group,
                 description: data.description || original.description,
                 tenant: original.tenant || getTenant().id,
