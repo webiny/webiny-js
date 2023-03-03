@@ -12,8 +12,7 @@ import {
     VpcConfig
 } from "~/apps";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
-import { tagResources } from "~/utils";
-import { withCommonLambdaEnvVariables } from "~/utils";
+import { tagResources, withCommonLambdaEnvVariables, addDomainsUrlsOutputs } from "~/utils";
 
 export type ApiPulumiApp = ReturnType<typeof createApiPulumiApp>;
 
@@ -199,34 +198,13 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
 
             const cloudfront = app.addModule(ApiCloudfront);
 
-            // These will always contain the default Cloudfront domain,
-            // no matter if the user provided a custom domain or not.
-            const cloudfrontApiDomain = cloudfront.output.domainName;
-            const cloudfrontApiUrl = cloudfrontApiDomain.apply(value => `https://${value}`);
-
-            // These will contain a custom domain if provided,
-            // otherwise again the default Cloudfront domain.
-            let apiDomain = cloudfrontApiDomain;
-            let apiUrl = cloudfrontApiUrl;
-
             const domains = app.getParam(projectAppParams.domains);
             if (domains) {
                 applyCustomDomain(cloudfront, domains);
-
-                // Instead of the default Cloudfront domain, we use the first custom
-                // domain that was provided via the `domains.domains` array, and that
-                // is what will be included in the final stack output.
-                const domainsOutput = pulumi.output(domains.domains);
-                apiDomain = domainsOutput.apply(([firstDomain]) => firstDomain);
-                apiUrl = domainsOutput.apply(([firstDomain]) => `https://${firstDomain}`);
             }
 
             app.addOutputs({
                 region: process.env.AWS_REGION,
-                cloudfrontApiDomain,
-                cloudfrontApiUrl,
-                apiDomain,
-                apiUrl,
                 cognitoUserPoolId: core.cognitoUserPoolId,
                 cognitoAppClientId: core.cognitoAppClientId,
                 cognitoUserPoolPasswordPolicy: core.cognitoUserPoolPasswordPolicy,
@@ -235,7 +213,25 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 apwSchedulerEventRule: apwScheduler.eventRule.output.name,
                 apwSchedulerEventTargetId: apwScheduler.eventTarget.output.targetId,
                 dynamoDbTable: core.primaryDynamodbTableName,
-                dynamoDbElasticsearchTable: core.elasticsearchDynamodbTableName
+                dynamoDbElasticsearchTable: core.elasticsearchDynamodbTableName,
+
+                // For some reason, without listing these here, the below `addDomainsUrlsOutputs`
+                // call does not work as expected (stack output just doesn't get updated correctly).
+                cloudfrontApiDomain: undefined,
+                cloudfrontApiUrl: undefined,
+                apiDomain: undefined,
+                apiUrl: undefined
+            });
+
+            addDomainsUrlsOutputs({
+                app,
+                cloudfrontDistribution: cloudfront,
+                map: {
+                    distributionDomain: "cloudfrontApiDomain",
+                    distributionUrl: "cloudfrontApiUrl",
+                    usedDomain: "apiDomain",
+                    usedUrl: "apiUrl"
+                }
             });
 
             tagResources({

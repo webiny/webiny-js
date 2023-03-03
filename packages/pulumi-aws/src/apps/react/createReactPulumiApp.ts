@@ -1,7 +1,7 @@
 import * as aws from "@pulumi/aws";
 
 import { createPulumiApp, PulumiAppParam, PulumiAppParamCallback } from "@webiny/pulumi";
-import { tagResources } from "~/utils";
+import {addDomainsUrlsOutputs, tagResources} from "~/utils";
 import { createPrivateAppBucket } from "../createAppBucket";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
 import * as pulumi from "@pulumi/pulumi";
@@ -111,34 +111,29 @@ export const createReactPulumiApp = (projectAppParams: CreateReactPulumiAppParam
                 }
             });
 
-            // These will always contain the default Cloudfront domain,
-            // no matter if the user provided a custom domain or not.
-            const cloudfrontAppDomain = cloudfront.output.domainName;
-            const cloudfrontAppUrl = cloudfrontAppDomain.apply(value => `https://${value}`);
-
-            // These will contain a custom domain if provided,
-            // otherwise again the default Cloudfront domain.
-            let appDomain = cloudfrontAppDomain;
-            let appUrl = cloudfrontAppUrl;
-
             const domains = app.getParam(projectAppParams.domains);
             if (domains) {
                 applyCustomDomain(cloudfront, domains);
-
-                // Instead of the default Cloudfront domain, we use the first custom
-                // domain that was provided via the `domains.domains` array, and that
-                // is what will be included in the final stack output.
-                const domainsOutput = pulumi.output(domains.domains);
-                appDomain = domainsOutput.apply(([firstDomain]) => firstDomain);
-                appUrl = domainsOutput.apply(([firstDomain]) => `https://${firstDomain}`);
             }
 
             app.addOutputs({
                 appStorage: bucket.bucket.output.id,
-                cloudfrontAppDomain,
-                cloudfrontAppUrl,
-                appDomain,
-                appUrl
+
+                // For some reason, without listing these here, the below `addDomainsUrlsOutputs`
+                // call does not work as expected (stack output just doesn't get updated correctly).
+                appDomain: undefined,
+                appUrl: undefined
+            });
+
+            addDomainsUrlsOutputs({
+                app,
+                cloudfrontDistribution: cloudfront,
+                map: {
+                    distributionDomain: "cloudfrontAppDomain",
+                    distributionUrl: "cloudfrontAppUrl",
+                    usedDomain: "appUrl",
+                    usedUrl: "appDomain"
+                }
             });
 
             tagResources({
@@ -165,8 +160,8 @@ export const createReactPulumiApp = (projectAppParams: CreateReactPulumiAppParam
                             "M": {
                               "appUrl": {
                                 "S": "${cloudfront.output.domainName.apply(
-                                    value => `https://${value}`
-                                )}"
+                        value => `https://${value}`
+                    )}"
                               }
                             }
                           }

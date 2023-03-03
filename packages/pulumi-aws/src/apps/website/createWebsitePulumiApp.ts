@@ -6,7 +6,7 @@ import { createPrivateAppBucket } from "../createAppBucket";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
 import { createPrerenderingService } from "./WebsitePrerendering";
 import { CoreOutput, VpcConfig } from "~/apps";
-import { tagResources, withCommonLambdaEnvVariables } from "~/utils";
+import {addDomainsUrlsOutputs, tagResources, withCommonLambdaEnvVariables} from "~/utils";
 import { applyTenantRouter } from "~/apps/tenantRouter";
 
 export type WebsitePulumiApp = ReturnType<typeof createWebsitePulumiApp>;
@@ -213,50 +213,14 @@ export const createWebsitePulumiApp = (projectAppParams: CreateWebsitePulumiAppP
                 cloudfrontId: deliveryCloudfront.output.id
             });
 
-            // These will always contain the default Cloudfront domain,
-            // no matter if the user provided a custom domain or not.
-            const cloudfrontDeliveryDomain = deliveryCloudfront.output.domainName;
-            const cloudfrontDeliveryUrl = cloudfrontDeliveryDomain.apply(
-                value => `https://${value}`
-            );
-
-            // These will contain a custom domain if provided,
-            // otherwise again the default Cloudfront domain.
-            let deliveryDomain = cloudfrontDeliveryDomain;
-            let deliveryUrl = cloudfrontDeliveryUrl;
-
             const domains = app.getParam(projectAppParams.domains);
             if (domains) {
                 applyCustomDomain(deliveryCloudfront, domains);
-
-                // Instead of the default Cloudfront domain, we use the first custom
-                // domain that was provided via the `domains.domains` array, and that
-                // is what will be included in the final stack output.
-                const domainsOutput = pulumi.output(domains.domains);
-                deliveryDomain = domainsOutput.apply(([firstDomain]) => firstDomain);
-                deliveryUrl = domainsOutput.apply(([firstDomain]) => `https://${firstDomain}`);
             }
-
-            // These will always contain the default Cloudfront domain,
-            // no matter if the user provided a custom domain or not.
-            const cloudfrontAppDomain = appCloudfront.output.domainName;
-            const cloudfrontAppUrl = cloudfrontAppDomain.apply(value => `https://${value}`);
-
-            // These will contain a custom domain if provided,
-            // otherwise again the default Cloudfront domain.
-            let appDomain = cloudfrontAppDomain;
-            let appUrl = cloudfrontAppUrl;
 
             const previewDomains = app.getParam(projectAppParams.previewDomains);
             if (previewDomains) {
                 applyCustomDomain(appCloudfront, previewDomains);
-
-                // Instead of the default Cloudfront domain, we use the first custom
-                // domain that was provided via the `domains.domains` array, and that
-                // is what will be included in the final stack output.
-                const domainsOutput = pulumi.output(previewDomains.domains);
-                appDomain = domainsOutput.apply(([firstDomain]) => firstDomain);
-                appUrl = domainsOutput.apply(([firstDomain]) => `https://${firstDomain}`);
             }
 
             if (
@@ -272,20 +236,48 @@ export const createWebsitePulumiApp = (projectAppParams: CreateWebsitePulumiAppP
                 // The files that are generated in that process are stored in the `deliveryStorage` S3 bucket further below.
                 appId: appCloudfront.output.id,
                 appStorage: appBucket.bucket.output.id,
-                cloudfrontAppDomain,
-                cloudfrontAppUrl,
-                appDomain,
-                appUrl,
+
+                // For some reason, without listing these here, the below `addDomainsUrlsOutputs`
+                // call does not work as expected (stack output just doesn't get updated correctly).
+                cloudfrontAppDomain: undefined,
+                cloudfrontAppUrl: undefined,
+                appUrl: undefined,
+                appDomain: undefined,
 
                 // These are the Cloudfront and S3 bucket that will deliver static pages to the actual website visitors.
                 // The static HTML snapshots delivered from them still rely on the app's S3 bucket
                 // defined above, for serving static assets (JS, CSS, images).
                 deliveryId: deliveryCloudfront.output.id,
                 deliveryStorage: deliveryBucket.bucket.output.id,
-                cloudfrontDeliveryDomain,
-                cloudfrontDeliveryUrl,
-                deliveryDomain,
-                deliveryUrl
+
+                // For some reason, without listing these here, the below `addDomainsUrlsOutputs`
+                // call does not work as expected (stack output just doesn't get updated correctly).
+                cloudfrontDeliveryDomain: undefined,
+                cloudfrontDeliveryUrl: undefined,
+                deliveryDomain: undefined,
+                deliveryUrl: undefined
+            });
+
+            addDomainsUrlsOutputs({
+                app,
+                cloudfrontDistribution: appCloudfront,
+                map: {
+                    distributionDomain: "cloudfrontAppDomain",
+                    distributionUrl: "cloudfrontAppUrl",
+                    usedDomain: "appUrl",
+                    usedUrl: "appDomain"
+                }
+            });
+
+            addDomainsUrlsOutputs({
+                app,
+                cloudfrontDistribution: deliveryCloudfront,
+                map: {
+                    distributionDomain: "cloudfrontDeliveryDomain",
+                    distributionUrl: "cloudfrontDeliveryUrl",
+                    usedDomain: "deliveryUrl",
+                    usedUrl: "deliveryDomain"
+                }
             });
 
             tagResources({
