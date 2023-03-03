@@ -98,6 +98,8 @@ const VerticalAlignSettings: React.FC<PbEditorPageElementSettingsRenderComponent
                 </Tooltip>
             }
         >
+            {/* When parent grid's "Column height" property is set to "Match grid height",
+                its `data.settings.verticalAlign` property is set to "stretch". */}
             {parentAlign === "stretch" ? (
                 <ContentWrapper>
                     {alignments.map(type => (

@@ -13,7 +13,6 @@ import { useElementById } from "~/editor/hooks/useElementById";
 import { PbEditorElement } from "~/types";
 
 const EmptyCell = styled.div<{ isActive: boolean }>`
-    height: 100%;
     display: flex;
     justify-content: center;
     width: 100%;

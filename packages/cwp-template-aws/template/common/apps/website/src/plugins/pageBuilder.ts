@@ -45,7 +45,6 @@ import animation from "@webiny/app-page-builder/render/plugins/elementSettings/a
 import background from "@webiny/app-page-builder/render/plugins/elementSettings/background";
 import border from "@webiny/app-page-builder/render/plugins/elementSettings/border";
 import gridSettings from "@webiny/app-page-builder/render/plugins/elementSettings/grid";
-import cellSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/cell";
 import height from "@webiny/app-page-builder/render/plugins/elementSettings/height";
 import width from "@webiny/app-page-builder/render/plugins/elementSettings/width";
 import shadow from "@webiny/app-page-builder/render/plugins/elementSettings/shadow";
@@ -94,7 +93,6 @@ export default [
     background,
     border,
     gridSettings,
-    cellSettings,
     height,
     width,
     shadow,

@@ -31,7 +31,7 @@ const cellPlugin = (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPl
         "pb-editor-page-element-style-settings-padding",
         "pb-editor-page-element-style-settings-margin",
         "pb-editor-page-element-style-settings-horizontal-align-flex",
-        "pb-editor-page-element-style-settings-cell"
+        "pb-editor-page-element-style-settings-cell-vertical-align"
     ];
 
     const elementType = kebabCase(args.elementType || "cell");

@@ -13,7 +13,6 @@ import { useElementById } from "~/editor/hooks/useElementById";
 import { PbEditorElement } from "~/types";
 
 const EmptyCell = styled.div<{ isActive: boolean }>`
-    height: 100%;
     display: flex;
     justify-content: center;
     width: 100%;
@@ -81,7 +80,16 @@ const PeCell = createRenderer(
         );
     },
     {
-        baseStyles: { height: "100%", width: "100%" }
+        baseStyles: ({ element }) => {
+            const styles = { height: "100%", width: "100%" };
+            const size = element.data?.settings?.grid?.size;
+            if (typeof size !== "number") {
+                return styles;
+            }
+
+            styles.width = `${(size / 12) * 100}%`;
+            return styles;
+        }
     }
 );
 
