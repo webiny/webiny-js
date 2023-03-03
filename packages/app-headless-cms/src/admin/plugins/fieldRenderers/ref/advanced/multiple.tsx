@@ -1,7 +1,7 @@
 import React from "react";
 import { CmsEditorFieldRendererPlugin } from "~/types";
 import { i18n } from "@webiny/app/i18n";
-import { AdvancedReferenceField } from "./components/AdvancedReferenceField";
+import { AdvancedMultipleReferenceField } from "./components/AdvancedMultipleReferenceField";
 
 const t = i18n.ns("app-headless-cms/admin/fields/ref");
 
@@ -24,7 +24,7 @@ export const createAdvancedMultipleRenderer = (): CmsEditorFieldRendererPlugin =
                     <Bind>
                         {bind => {
                             return (
-                                <AdvancedReferenceField
+                                <AdvancedMultipleReferenceField
                                     field={field}
                                     getBind={getBind}
                                     bind={bind}

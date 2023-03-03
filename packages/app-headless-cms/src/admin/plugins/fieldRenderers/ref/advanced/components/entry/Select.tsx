@@ -53,19 +53,15 @@ const Text = styled("span")({
 interface Props {
     entry: CmsReferenceContentEntry;
     selected?: boolean;
-    onChange: (value: CmsReferenceValue | null) => void;
+    onChange: (value: CmsReferenceValue) => void;
 }
 export const Select: React.FC<Props> = ({ entry, selected, onChange }) => {
     const onIconClick = useCallback(() => {
-        if (selected) {
-            onChange(null);
-            return;
-        }
         onChange({
             id: entry.id,
             modelId: entry.model.modelId
         });
-    }, [entry, selected, onChange]);
+    }, [entry, onChange]);
     return (
         <Container>
             <SelectButton onClick={onIconClick}>

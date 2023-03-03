@@ -30,7 +30,7 @@ interface Props {
     onClick: (modelId: string) => void;
 }
 export const OptionsModelList: React.FC<Props> = ({ models, onClick }) => {
-    if (models.length === 0) {
+    if (models.length <= 1) {
         return null;
     }
 

@@ -44,7 +44,7 @@ const Text = styled("span")({
 
 interface Props {
     entry: CmsReferenceContentEntry;
-    onRemove: () => void;
+    onRemove: (entryId: string) => void;
 }
 export const Remove: React.FC<Props> = ({ entry, onRemove }) => {
     const { showConfirmation } = useConfirmationDialog({
@@ -55,7 +55,7 @@ export const Remove: React.FC<Props> = ({ entry, onRemove }) => {
 
     const onRemoveClick = useCallback(() => {
         showConfirmation(() => {
-            onRemove();
+            onRemove(entry.entryId);
         });
     }, [entry]);
 

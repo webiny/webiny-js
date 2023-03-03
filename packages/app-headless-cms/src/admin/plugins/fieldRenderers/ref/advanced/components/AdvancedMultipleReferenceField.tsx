@@ -12,6 +12,7 @@ import { useSnackbar } from "@webiny/app-admin";
 import { CmsReferenceValue } from "~/admin/plugins/fieldRenderers/ref/components/types";
 import { Loader } from "./Loader";
 import { NewReferencedEntryDialog } from "~/admin/plugins/fieldRenderers/ref/advanced/components/NewReferencedEntryDialog";
+import { parseIdentifier } from "@webiny/utils";
 
 const Container = styled("div")({
     borderLeft: "3px solid var(--mdc-theme-background)",
@@ -21,12 +22,11 @@ const Container = styled("div")({
 interface Props extends CmsEditorFieldRendererProps {
     bind: BindComponentRenderProp<CmsReferenceValue | null>;
 }
-export const AdvancedReferenceField: React.FC<Props> = props => {
+export const AdvancedMultipleReferenceField: React.FC<Props> = props => {
     const { bind, field } = props;
     const { showSnackbar } = useSnackbar();
 
     const [linkEntryDialogModel, setLinkEntryDialogModel] = useState<CmsModel | null>(null);
-    // eslint-disable-next-line
     const [newEntryDialogModel, setNewEntryDialogModel] = useState<CmsModel | null>(null);
 
     const [loadedModels, setLoadedModels] = useState<CmsModel[]>([]);
@@ -78,15 +78,25 @@ export const AdvancedReferenceField: React.FC<Props> = props => {
         setLinkEntryDialogModel(null);
     }, []);
 
-    const reference = useReference({
-        value: bind.value
+    const { entries, loading: loadingEntries } = useReference({
+        values: bind.value
     });
 
-    const { entry, loading: loadingEntry } = reference;
-
-    const onRemove = useCallback(() => {
-        bind.onChange(null);
-    }, [entry]);
+    const onRemove = useCallback(
+        (id: string) => {
+            if (!bind.value || !Array.isArray(bind.value)) {
+                return;
+            }
+            const { id: entryId } = parseIdentifier(id);
+            bind.onChange(
+                bind.value.filter(value => {
+                    const { id: valueEntryId } = parseIdentifier(value.id);
+                    return valueEntryId !== entryId;
+                })
+            );
+        },
+        [entries, bind.value]
+    );
 
     const models = useMemo(() => {
         if (!loadedModels || !field.settings?.models) {
@@ -98,21 +108,30 @@ export const AdvancedReferenceField: React.FC<Props> = props => {
                 return loadedModels.find(model => model.modelId === modelId);
             })
             .filter(Boolean) as CmsModel[];
-    }, [loadedModels, entry]);
+    }, [loadedModels, entries]);
 
-    const loading = loadingEntry || loadingModels;
+    const loading = loadingEntries || loadingModels;
 
-    const storeValue = useCallback(
-        (value: CmsReferenceValue | null) => {
-            bind.onChange(value);
+    const storeValues = useCallback(
+        (values: CmsReferenceValue[]) => {
+            bind.onChange(values);
         },
-        [bind.value, bind.onChange, entry]
+        [bind.value, bind.onChange, entries]
     );
 
     return (
         <Container>
             {loading && <Loader />}
-            {!loadingEntry && <Entry entry={entry} onRemove={onRemove} />}
+            {!loadingEntries &&
+                entries.map(entry => {
+                    return (
+                        <Entry
+                            key={`reference-entry-${entry.id}`}
+                            entry={entry}
+                            onRemove={onRemove}
+                        />
+                    );
+                })}
             <Options
                 models={models}
                 onNewRecord={onNewRecord}
@@ -124,6 +143,7 @@ export const AdvancedReferenceField: React.FC<Props> = props => {
                     model={newEntryDialogModel}
                     onClose={onNewEntryDialogClose}
                     onChange={data => {
+                        console.log("New Referenced Entry Dialog");
                         console.log(data);
                     }}
                 />
@@ -132,10 +152,10 @@ export const AdvancedReferenceField: React.FC<Props> = props => {
             {linkEntryDialogModel && (
                 <ReferencesDialog
                     {...props}
-                    value={bind.value}
-                    entry={entry}
+                    multiple={true}
+                    values={(bind.value as unknown as CmsReferenceValue[]) || []}
                     contentModel={linkEntryDialogModel}
-                    storeValue={storeValue}
+                    storeValues={storeValues}
                     onDialogClose={onLinkEntryDialogClose}
                 />
             )}

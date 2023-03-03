@@ -50,7 +50,7 @@ export const Search: React.FC<Props> = ({ model, setEntries, setLoading, setErro
     const debouncedSearch = useRef<number | null>(null);
 
     const onInput = useCallback(ev => {
-        const value = ev.target.value || null;
+        const value = (String(ev.target.value) || "").trim();
         if (debouncedSearch.current) {
             clearTimeout(debouncedSearch.current);
             debouncedSearch.current = null;
@@ -71,7 +71,7 @@ export const Search: React.FC<Props> = ({ model, setEntries, setLoading, setErro
     }, [entries, loading, error]);
 
     useEffect(() => {
-        runSearch();
+        runSearch("");
     }, []);
 
     return (

@@ -228,7 +228,7 @@ const createResolveDescription = (): Resolvers<CmsContext> => {
         if (!field) {
             return null;
         }
-        const value = parent[field.fieldId];
+        const value = parent.description || parent[field.fieldId];
         if (!value) {
             return null;
         }

@@ -12,8 +12,8 @@ import {
 import { ButtonDefault, ButtonPrimary } from "@webiny/ui/Button";
 import { useSnackbar } from "@webiny/app-admin";
 import { parseIdentifier } from "@webiny/utils";
-import { Loader } from "./Loader";
 import { Dialog } from "./dialog/Dialog";
+import { AbsoluteLoader } from "~/admin/plugins/fieldRenderers/ref/advanced/components/Loader";
 
 const Container = styled("div")({
     width: "100%",
@@ -36,25 +36,28 @@ const DialogContent = styled(BaseDialogContent)({
     padding: "0 !important"
 });
 
-const isSelected = (entry: CmsReferenceContentEntry, value: CmsReferenceValue | null) => {
-    if (!value?.id) {
+const isSelected = (id: string, values: CmsReferenceValue[]) => {
+    if (!id) {
         return false;
     }
-    const { id: entryId } = parseIdentifier(value.id);
-    return entry.entryId === entryId;
+    return values.some(value => {
+        const { id: entryId } = parseIdentifier(id);
+        const { id: valueEntryId } = parseIdentifier(value.id);
+        return entryId === valueEntryId;
+    });
 };
 
 interface Props extends CmsEditorFieldRendererProps {
-    entry: CmsReferenceContentEntry | null;
-    value: CmsReferenceValue | null;
+    values?: CmsReferenceValue[] | null;
     onDialogClose: () => void;
-    storeValue: (value: CmsReferenceValue | null) => void;
+    storeValues: (values: CmsReferenceValue[]) => void;
+    multiple: boolean;
 }
 export const ReferencesDialog: React.FC<Props> = props => {
-    const { contentModel, onDialogClose, storeValue, value: initialValue } = props;
+    const { contentModel, onDialogClose, storeValues, values: initialValues, multiple } = props;
     const { showSnackbar } = useSnackbar();
 
-    const [value, setValue] = useState<CmsReferenceValue | null>(initialValue);
+    const [values, setValues] = useState<CmsReferenceValue[]>(initialValues || []);
     const [error, setError] = useState<string | null>(null);
     const [references, setReferences] = useState<CmsReferenceContentEntry[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
@@ -65,18 +68,51 @@ export const ReferencesDialog: React.FC<Props> = props => {
         }
         showSnackbar(error);
     }, [error]);
-
+    /**
+     * On change needs to handle the adding or removing of a reference.
+     *
+     * This is for both single and multiple reference fields.
+     */
     const onChange = useCallback(
-        (reference: CmsReferenceValue | null) => {
-            setValue(reference);
+        (reference: CmsReferenceValue) => {
+            const { id: referenceEntryId } = parseIdentifier(reference.id);
+            /**
+             * Let's handle the single usage first as it is quite simple.
+             */
+            if (!multiple) {
+                if (values.length === 0 || !values[0]?.id) {
+                    setValues([reference]);
+                    return;
+                }
+                const { id: valueEntryId } = parseIdentifier(values[0].id);
+                if (referenceEntryId === valueEntryId) {
+                    setValues([]);
+                    return;
+                }
+                setValues([reference]);
+                return;
+            }
+
+            const newValues = values.filter(value => {
+                if (!value?.id) {
+                    return false;
+                }
+                const { id: valueEntryId } = parseIdentifier(value.id);
+                return referenceEntryId !== valueEntryId;
+            });
+            if (newValues.length === values.length) {
+                setValues([...values, reference]);
+                return;
+            }
+            setValues(newValues);
         },
-        [setValue, value]
+        [setValues, values]
     );
 
     const onDialogSave = useCallback(() => {
-        storeValue(value);
+        storeValues(values);
         onDialogClose();
-    }, [value]);
+    }, [values]);
 
     return (
         <>
@@ -91,13 +127,13 @@ export const ReferencesDialog: React.FC<Props> = props => {
                             setLoading={setLoading}
                         />
                         <Content>
-                            {loading && <Loader />}
+                            {loading && <AbsoluteLoader />}
                             {references.map(reference => {
                                 return (
                                     <Entry
                                         key={`reference-${reference.id}`}
                                         entry={reference}
-                                        selected={isSelected(reference, value)}
+                                        selected={isSelected(reference.id, values)}
                                         onChange={onChange}
                                     />
                                 );

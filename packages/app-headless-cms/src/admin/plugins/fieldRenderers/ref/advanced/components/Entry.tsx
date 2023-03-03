@@ -46,8 +46,8 @@ const FooterContainer = styled("div")({
 
 interface Props {
     entry?: CmsReferenceContentEntry | null;
-    onChange?: (value: CmsReferenceValue | null) => void;
-    onRemove?: () => void;
+    onChange?: (value: CmsReferenceValue) => void;
+    onRemove?: (entryId: string) => void;
     selected?: boolean;
 }
 export const Entry: React.FC<Props> = ({ entry, onChange, onRemove, selected }) => {

@@ -18,6 +18,7 @@ interface Params {
     model: CmsModel;
     limit?: number;
 }
+
 export const useEntries = (params: Params) => {
     const client = useApolloClient();
     const { model, limit } = params;
@@ -25,7 +26,7 @@ export const useEntries = (params: Params) => {
     const [entries, setEntries] = useState<CmsReferenceContentEntry[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
-    // const [searchQuery, setSearchQuery] = useState<string | undefined>(undefined);
+    const [searchQuery, setSearchQuery] = useState<string | undefined>(undefined);
     // const [searchAfter, setSearchAfter] = useState<string | undefined>(undefined);
 
     const executeQuery = useCallback(
@@ -78,7 +79,10 @@ export const useEntries = (params: Params) => {
 
     const runSearch = useCallback(
         (query?: string) => {
-            // setSearchQuery(query);
+            if (searchQuery === query) {
+                return;
+            }
+            setSearchQuery(query);
             executeQuery({
                 query,
                 items: [],
