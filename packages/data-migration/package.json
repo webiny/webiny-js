@@ -17,6 +17,7 @@
     "@webiny/db-dynamodb": "0.0.0",
     "@webiny/handler-aws": "0.0.0",
     "@webiny/ioc": "0.0.0",
+    "chalk": "^4.1.2",
     "dynamodb-toolbox": "^0.3.5",
     "pino": "^8.11.0",
     "pino-pretty": "^9.4.0",
@@ -42,5 +43,12 @@
   "scripts": {
     "build": "yarn webiny run build",
     "watch": "yarn webiny run watch"
+  },
+  "adio": {
+    "ignore": {
+      "dependencies": [
+        "@types/pino"
+      ]
+    }
   }
 }

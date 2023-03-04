@@ -1,6 +1,6 @@
 import { Table } from "dynamodb-toolbox";
 import pick from "lodash.pick";
-import { createLegacyEntity } from "~/utils";
+import { createLegacyEntity, createStandardEntity } from "~/utils";
 
 const attributes: Parameters<typeof createLegacyEntity>[2] = {
     id: {
@@ -47,4 +47,8 @@ export const getFileData = (file: any) => {
 
 export const createLegacyFileEntity = (table: Table) => {
     return createLegacyEntity(table, "Files", attributes);
+};
+
+export const createFileEntity = (table: Table) => {
+    return createStandardEntity(table, "File");
 };

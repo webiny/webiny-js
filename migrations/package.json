@@ -12,6 +12,15 @@
   },
   "devDependencies": {
     "@webiny/cli": "0.0.0",
-    "@webiny/project-utils": "0.0.0"
+    "@webiny/handler-aws": "0.0.0",
+    "@webiny/project-utils": "0.0.0",
+    "jest-dynalite": "^3.2.0"
+  },
+  "adio": {
+    "ignore": {
+      "dependencies": [
+        "@types/lodash.pick"
+      ]
+    }
   }
 }

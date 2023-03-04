@@ -76,6 +76,9 @@
       "backup/"
     ],
     "ignore": {
+      "src": [
+        "migrations"
+      ],
       "dependencies": [
         "@aws-sdk/client-cloudwatch-events",
         "@pulumi/pulumi",

@@ -5,3 +5,4 @@ export * from "./insertTestData";
 export * from "./createDdbMigrationHandler";
 export * from "./createDdbEsMigrationHandler";
 export * from "./assertNotError";
+export * from "./scanTable";

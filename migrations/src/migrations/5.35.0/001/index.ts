@@ -8,12 +8,12 @@ import {
     queryAllWithCallback,
     batchWriteAll
 } from "~/utils";
-import { createLegacyFileEntity, getFileData } from "./createLegacyFileEntity";
+import { createFileEntity, getFileData, createLegacyFileEntity } from "./createFileEntity";
 import { createLocaleEntity } from "./createLocaleEntity";
 import { createTenantEntity } from "./createTenantEntity";
 
 export class FileManager_5_35_0_001 implements DataMigration {
-    private readonly newFileEntity: ReturnType<typeof createStandardEntity>;
+    private readonly newFileEntity: ReturnType<typeof createFileEntity>;
     private readonly legacyFileEntity: ReturnType<typeof createLegacyFileEntity>;
     private readonly tenantEntity: ReturnType<typeof createTenantEntity>;
     private readonly localeEntity: ReturnType<typeof createLocaleEntity>;
