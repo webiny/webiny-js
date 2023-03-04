@@ -1,14 +1,18 @@
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { useHandler } from "~tests/useHandler";
-import { createMigrationEventHandler } from "~/createMigrationEventHandler";
 import { createTable } from "~/createTable";
-import { createMigrationsRepository } from "~/repository/migrations.repository";
 import { createDdbMigration } from "~tests/createDdbMigration";
-import { DynamoDbMigrationRunner } from "~/runners/DynamoDbMigrationRunner";
-import { createEsMigration } from "~tests/createEsMigration";
-import { ElasticsearchMigrationRunner } from "~/runners/ElasticsearchMigrationRunner";
+import { MigrationEventHandlerResponse, MigrationRepository } from "~/types";
+import { MigrationRepositoryImpl } from "~/repository/migrations.repository";
+import { createDdbProjectMigration } from "~/createDdbProjectMigration";
 
 jest.retryTimes(0);
+
+function assertNotError(error: MigrationEventHandlerResponse["error"]): asserts error is undefined {
+    if (error) {
+        throw Error(`Migration handler returned and error: ${error.message}`);
+    }
+}
 
 describe("Migration Lambda Handler", () => {
     const documentClient = new DocumentClient({
@@ -20,24 +24,19 @@ describe("Migration Lambda Handler", () => {
         secretAccessKey: "test"
     });
 
-    let repository: ReturnType<typeof createMigrationsRepository>;
+    let repository: MigrationRepository;
     let table: ReturnType<typeof createTable>;
 
     beforeEach(() => {
         table = createTable({ name: String(process.env.DB_TABLE), documentClient });
-        repository = createMigrationsRepository(table);
-    });
-
-    afterEach(() => {
-        jest.restoreAllMocks();
+        repository = new MigrationRepositoryImpl(table);
     });
 
     it("should create zero-migration record", async () => {
         const { handler } = useHandler(
-            createMigrationEventHandler({
-                migrations: [],
-                runners: [],
-                repository
+            createDdbProjectMigration({
+                primaryTable: table,
+                migrations: []
             })
         );
 
@@ -62,26 +61,25 @@ describe("Migration Lambda Handler", () => {
 
     it("should execute all migrations (empty system)", async () => {
         const { handler } = useHandler(
-            createMigrationEventHandler({
+            createDdbProjectMigration({
+                primaryTable: table,
                 migrations: [
                     createDdbMigration("0.0.0-001"),
                     createDdbMigration("0.0.0-003"),
                     createDdbMigration("0.0.0-002")
-                ],
-                runners: [
-                    new DynamoDbMigrationRunner({
-                        table,
-                        documentClient
-                    })
-                ],
-                repository
+                ]
             })
         );
 
-        await handler({}, {} as any);
+        const { data, error } = await handler({}, {} as any);
+
+        assertNotError(error);
+
+        expect(data.executed.length).toEqual(3);
 
         const migrations = await repository.listMigrations();
         expect(migrations.length).toEqual(4);
+
         expect(migrations[0].id).toEqual("0.0.0-003");
         expect(migrations[1].id).toEqual("0.0.0-002");
         expect(migrations[2].id).toEqual("0.0.0-001");
@@ -90,122 +88,48 @@ describe("Migration Lambda Handler", () => {
 
     it("should return migration results with logs", async () => {
         const { handler } = useHandler(
-            createMigrationEventHandler({
+            createDdbProjectMigration({
+                primaryTable: table,
                 migrations: [
                     createDdbMigration("0.0.0-001"),
                     createDdbMigration("0.0.0-003"),
                     createDdbMigration("0.0.0-002")
-                ],
-                runners: [
-                    new DynamoDbMigrationRunner({
-                        table,
-                        documentClient
-                    })
-                ],
-                repository
+                ]
             })
         );
 
-        const { executed } = await handler({}, {} as any);
+        const { data, error } = await handler({}, {} as any);
 
-        expect(executed).toBeTruthy();
-        expect(executed.length).toBe(3);
-        expect(executed[0].id).toBe("0.0.0-001");
-        expect(executed[1].id).toBe("0.0.0-002");
-        expect(executed[2].id).toBe("0.0.0-003");
+        assertNotError(error);
+
+        expect(data.executed).toBeTruthy();
+        expect(data.executed.length).toBe(3);
+        expect(data.executed[0].id).toBe("0.0.0-001");
+        expect(data.executed[1].id).toBe("0.0.0-002");
+        expect(data.executed[2].id).toBe("0.0.0-003");
     });
 
     it("should return migration results after an error", async () => {
         const { handler } = useHandler(
-            createMigrationEventHandler({
+            createDdbProjectMigration({
+                primaryTable: table,
                 migrations: [
                     createDdbMigration("0.0.0-001"),
                     createDdbMigration("0.0.0-003"),
                     createDdbMigration("0.0.0-002", { error: true })
-                ],
-                runners: [
-                    new DynamoDbMigrationRunner({
-                        table,
-                        documentClient
-                    })
-                ],
-                repository
+                ]
             })
         );
 
-        const { executed } = await handler({}, {} as any);
+        const { data, error } = await handler({}, {} as any);
 
-        expect(executed).toBeTruthy();
-        expect(executed.length).toBe(2);
-        expect(executed[0].id).toBe("0.0.0-001");
-        expect(executed[0].result.success).toBe(true);
-        expect(executed[1].id).toBe("0.0.0-002");
-        expect(executed[1].result.success).toBe(false);
-    });
+        assertNotError(error);
 
-    it("should skip migrations that don't have a runner", async () => {
-        const { handler } = useHandler(
-            createMigrationEventHandler({
-                migrations: [
-                    createDdbMigration("0.0.0-001"),
-                    createEsMigration("0.0.0-003"),
-                    createEsMigration("0.0.0-002")
-                ],
-                runners: [
-                    new DynamoDbMigrationRunner({
-                        table,
-                        documentClient
-                    })
-                ],
-                repository
-            })
-        );
-
-        const { executed, skipped } = await handler({}, {} as any);
-
-        expect(executed.length).toEqual(1);
-        expect(executed[0].id).toEqual("0.0.0-001");
-        expect(executed[0].result.runner).toEqual("dynamodb-migration-runner");
-        expect(skipped.length).toEqual(2);
-        expect(skipped[0].id).toEqual("0.0.0-002");
-        expect(skipped[0].reason).toEqual("no-runner");
-        expect(skipped[1].id).toEqual("0.0.0-003");
-        expect(skipped[1].reason).toEqual("no-runner");
-    });
-
-    it("should execute all migrations that have a runner", async () => {
-        const { handler } = useHandler(
-            createMigrationEventHandler({
-                migrations: [
-                    createDdbMigration("0.0.0-001"),
-                    createEsMigration("0.0.0-003"),
-                    createEsMigration("0.0.0-002")
-                ],
-                runners: [
-                    new DynamoDbMigrationRunner({
-                        table,
-                        documentClient
-                    }),
-                    new ElasticsearchMigrationRunner({
-                        table,
-                        documentClient,
-                        elasticsearchClient: {} as any
-                    })
-                ],
-                repository
-            })
-        );
-
-        const { executed, skipped } = await handler({}, {} as any);
-
-        expect(executed.length).toEqual(3);
-        expect(executed[0].id).toEqual("0.0.0-001");
-        expect(executed[0].result.runner).toEqual("dynamodb-migration-runner");
-        expect(executed[1].id).toEqual("0.0.0-002");
-        expect(executed[1].result.runner).toEqual("elasticsearch-migration-runner");
-        expect(executed[2].id).toEqual("0.0.0-003");
-        expect(executed[2].result.runner).toEqual("elasticsearch-migration-runner");
-        expect(skipped.length).toEqual(0);
+        expect(data.executed.length).toBe(3);
+        expect(data.executed[0].id).toBe("0.0.0-001");
+        expect(data.executed[0].result.success).toBe(true);
+        expect(data.executed[1].id).toBe("0.0.0-002");
+        expect(data.executed[1].result.success).toBe(false);
     });
 
     it("should execute 2 out of 3 migrations", async () => {
@@ -215,20 +139,10 @@ describe("Migration Lambda Handler", () => {
             createDdbMigration("0.0.0-002")
         ];
 
-        const migration1 = jest.spyOn(allMigrations[0], "execute");
-        const migration2 = jest.spyOn(allMigrations[1], "execute");
-        const migration3 = jest.spyOn(allMigrations[2], "execute");
-
         const { handler } = useHandler(
-            createMigrationEventHandler({
-                migrations: allMigrations,
-                runners: [
-                    new DynamoDbMigrationRunner({
-                        table,
-                        documentClient
-                    })
-                ],
-                repository
+            createDdbProjectMigration({
+                primaryTable: table,
+                migrations: allMigrations
             })
         );
 
@@ -236,19 +150,20 @@ describe("Migration Lambda Handler", () => {
             id: "0.0.0-001",
             name: "0.0.0-001",
             createdOn: new Date().toISOString(),
-            duration: 0,
-            logs: []
+            duration: 0
         });
 
         // Run assertions
-        await handler({}, {} as any);
+        const { data, error } = await handler({}, {} as any);
+
+        assertNotError(error);
 
         const migrations = await repository.listMigrations();
         // This time, we expect 3 migrations, because zero-migration will not be inserted.
         expect(migrations.length).toEqual(3);
-        expect(migration1).not.toHaveBeenCalled();
-        expect(migration2).toHaveBeenCalled();
-        expect(migration3).toHaveBeenCalled();
+        expect(data.executed.length).toEqual(2);
+        expect(data.skipped.length).toEqual(0);
+        expect(data.notApplicable.length).toEqual(1);
     });
 
     it("should not execute older or newer migrations", async () => {
@@ -262,20 +177,10 @@ describe("Migration Lambda Handler", () => {
             createDdbMigration("3.0.0-002")
         ];
 
-        const spies = allMigrations.map(migration => {
-            return jest.spyOn(migration, "execute");
-        });
-
         const { handler } = useHandler(
-            createMigrationEventHandler({
-                migrations: allMigrations,
-                runners: [
-                    new DynamoDbMigrationRunner({
-                        table,
-                        documentClient
-                    })
-                ],
-                repository
+            createDdbProjectMigration({
+                primaryTable: table,
+                migrations: allMigrations
             })
         );
 
@@ -283,40 +188,91 @@ describe("Migration Lambda Handler", () => {
             id: "1.1.0-001",
             name: "1.1.0-001",
             createdOn: new Date().toISOString(),
-            duration: 0,
-            logs: []
+            duration: 0
         });
 
         process.env.WEBINY_VERSION = "2.1.0";
 
         // Run assertions
-        await handler({}, {} as any);
+        const { data, error } = await handler({}, {} as any);
+
+        assertNotError(error);
 
         // Should run several migrations
         {
             const migrations = await repository.listMigrations();
             expect(migrations.length).toEqual(4);
-            expect(spies[0]).not.toHaveBeenCalled();
-            expect(spies[1]).not.toHaveBeenCalled();
-            expect(spies[2]).toHaveBeenCalled();
-            expect(spies[3]).toHaveBeenCalled();
-            expect(spies[4]).toHaveBeenCalled();
-            expect(spies[6]).not.toHaveBeenCalled();
+            expect(data.executed.length).toEqual(3);
+            expect(data.skipped.length).toEqual(0);
+            expect(data.notApplicable.length).toEqual(4);
         }
-
-        jest.clearAllMocks();
 
         // Should NOT run any migrations.
         {
-            await handler({}, {} as any);
+            const { data, error } = await handler({}, {} as any);
+
+            assertNotError(error);
+
             const migrations = await repository.listMigrations();
             expect(migrations.length).toEqual(4);
-            expect(spies[0]).not.toHaveBeenCalled();
-            expect(spies[1]).not.toHaveBeenCalled();
-            expect(spies[2]).not.toHaveBeenCalled();
-            expect(spies[3]).not.toHaveBeenCalled();
-            expect(spies[4]).not.toHaveBeenCalled();
-            expect(spies[6]).not.toHaveBeenCalled();
+            expect(data.executed.length).toEqual(0);
+            expect(data.skipped.length).toEqual(0);
+            expect(data.notApplicable.length).toEqual(7);
         }
+    });
+
+    it("should apply user-provided migration filter", async () => {
+        const allMigrations = [
+            createDdbMigration("1.0.0-001"),
+            createDdbMigration("1.1.0-001"),
+            createDdbMigration("2.0.0-001"),
+            createDdbMigration("2.1.0-001"),
+            createDdbMigration("2.1.0-002"),
+            createDdbMigration("3.0.0-001"),
+            createDdbMigration("3.0.0-002")
+        ];
+
+        const { handler } = useHandler(
+            createDdbProjectMigration({
+                primaryTable: table,
+                migrations: allMigrations,
+                isMigrationApplicable(migration) {
+                    return migration.getId() === "2.1.0-001";
+                }
+            })
+        );
+
+        // Run assertions
+        const { data, error } = await handler({}, {} as any);
+
+        assertNotError(error);
+
+        expect(data.executed.length).toEqual(1);
+        expect(data.skipped.length).toEqual(0);
+        expect(data.notApplicable.length).toEqual(6);
+    });
+
+    it("should throw error on duplicate migration IDs", async () => {
+        const allMigrations = [
+            createDdbMigration("1.0.0-001"),
+            createDdbMigration("1.1.0-001"),
+            createDdbMigration("2.0.0-001"),
+            createDdbMigration("2.1.0-001"),
+            createDdbMigration("2.1.0-001")
+        ];
+
+        const { handler } = useHandler(
+            createDdbProjectMigration({
+                primaryTable: table,
+                migrations: allMigrations,
+                isMigrationApplicable() {
+                    return true;
+                }
+            })
+        );
+
+        const { error } = await handler({}, {} as any);
+
+        expect(error?.message).toMatch("Duplicate ID found");
     });
 });

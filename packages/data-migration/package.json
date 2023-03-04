@@ -13,9 +13,13 @@
   "dependencies": {
     "@babel/runtime": "^7.19.0",
     "@elastic/elasticsearch": "7.12.0",
+    "@types/pino": "^7.0.5",
     "@webiny/db-dynamodb": "0.0.0",
     "@webiny/handler-aws": "0.0.0",
-    "dynamodb-toolbox": "^0.3.5"
+    "@webiny/ioc": "0.0.0",
+    "dynamodb-toolbox": "^0.3.5",
+    "pino": "^8.11.0",
+    "pino-pretty": "^9.4.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.19.3",

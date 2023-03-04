@@ -1,9 +1,11 @@
 import { Table, Entity } from "dynamodb-toolbox";
+import { queryAll } from "@webiny/db-dynamodb/utils/query";
 import { MigrationItem, MigrationRepository } from "~/types";
 import { createMigrationsEntity } from "~/repository/migrations.entity";
-import { dynamoDbUtils } from "~/utils/dynamoDb";
+import { inject, makeInjectable } from "@webiny/ioc";
+import { PrimaryDynamoTableSymbol } from "~/symbols";
 
-class MigrationRepositoryImpl implements MigrationRepository {
+export class MigrationRepositoryImpl implements MigrationRepository {
     private readonly entity: Entity<any>;
 
     constructor(table: Table) {
@@ -12,14 +14,14 @@ class MigrationRepositoryImpl implements MigrationRepository {
 
     async listMigrations(params?: { limit: number }): Promise<MigrationItem[]> {
         const { limit } = params || {};
-        const result = await dynamoDbUtils.queryAll<{ data: MigrationItem }>({
+        const result = await queryAll<{ data: MigrationItem }>({
             entity: this.entity,
             partitionKey: "MIGRATIONS",
             options: {
                 index: "GSI1",
                 gt: " ",
                 limit,
-                // Sort by GSI1_SK
+                // Sort by GSI1_SK in descending order.
                 reverse: true
             }
         });
@@ -39,6 +41,4 @@ class MigrationRepositoryImpl implements MigrationRepository {
     }
 }
 
-export const createMigrationsRepository = (table: Table) => {
-    return new MigrationRepositoryImpl(table);
-};
+makeInjectable(MigrationRepositoryImpl, [inject(PrimaryDynamoTableSymbol)]);

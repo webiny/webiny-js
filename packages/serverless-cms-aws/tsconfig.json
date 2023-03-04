@@ -1,6 +1,6 @@
 {
   "extends": "../../tsconfig.json",
-  "include": ["src", "__tests__/**/*.ts", "handlers"],
+  "include": ["src", "__tests__/**/*.ts"],
   "references": [
     { "path": "../api-apw" },
     { "path": "../api-apw-scheduler-so-ddb" },

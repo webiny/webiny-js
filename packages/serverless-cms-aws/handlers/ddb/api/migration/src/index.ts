@@ -11,8 +11,7 @@ const documentClient = new DocumentClient({
 export const handler = createHandler({
     plugins: [
         createDdbProjectMigration({
-            documentClient,
-            table: createTable({
+            primaryTable: createTable({
                 name: String(process.env.DB_TABLE),
                 documentClient
             }),

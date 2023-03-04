@@ -3,13 +3,12 @@
   "version": "0.0.0",
   "private": true,
   "dependencies": {
-    "@webiny/data-migration": "0.0.0"
+    "@webiny/data-migration": "0.0.0",
+    "@webiny/ioc": "0.0.0",
+    "dynamodb-toolbox": "^0.3.5"
   },
   "devDependencies": {
     "@webiny/cli": "0.0.0",
     "@webiny/project-utils": "0.0.0"
-  },
-  "scripts": {
-    "build": "yarn webiny run build-ddb && yarn webiny run build-ddb-es"
   }
 }
