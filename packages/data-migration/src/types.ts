@@ -4,7 +4,7 @@ export { Logger };
 
 export interface MigrationItem {
     id: string;
-    name: string;
+    description: string;
     createdOn: string;
     duration: number;
 }
@@ -16,7 +16,7 @@ export interface MigrationRepository {
 
 export interface DataMigration {
     getId(): string;
-    getName(): string;
+    getDescription(): string;
     // This function should check of the migration needs to apply some changes to the system.
     // Returning `false` means "everything is ok, mark this migration as executed".
     shouldExecute(logger: Logger): Promise<boolean>;
@@ -31,13 +31,13 @@ export interface MigrationResult {
 
 export interface ExecutedMigrationResponse {
     id: string;
-    name: string;
+    description: string;
     result: MigrationResult;
 }
 
 export interface SkippedMigrationResponse {
     id: string;
-    name: string;
+    description: string;
     reason: string;
 }
 

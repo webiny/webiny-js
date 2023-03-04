@@ -19,7 +19,8 @@
     "@webiny/ioc": "0.0.0",
     "dynamodb-toolbox": "^0.3.5",
     "pino": "^8.11.0",
-    "pino-pretty": "^9.4.0"
+    "pino-pretty": "^9.4.0",
+    "semver": "^6.3.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.19.3",

@@ -10,7 +10,7 @@ jest.retryTimes(0);
 
 function assertNotError(error: MigrationEventHandlerResponse["error"]): asserts error is undefined {
     if (error) {
-        throw Error(`Migration handler returned and error: ${error.message}`);
+        throw Error(`Migration handler returned an error: ${error.message}`);
     }
 }
 
@@ -53,7 +53,7 @@ describe("Migration Lambda Handler", () => {
             GSI1_SK: "0.0.0-000",
             data: {
                 id: "0.0.0-000",
-                name: "starting point for applicable migrations detection",
+                description: "starting point for applicable migrations detection",
                 createdOn: expect.stringMatching(/^20/)
             }
         });
@@ -148,7 +148,7 @@ describe("Migration Lambda Handler", () => {
 
         await repository.logMigration({
             id: "0.0.0-001",
-            name: "0.0.0-001",
+            description: "0.0.0-001",
             createdOn: new Date().toISOString(),
             duration: 0
         });
@@ -186,7 +186,7 @@ describe("Migration Lambda Handler", () => {
 
         await repository.logMigration({
             id: "1.1.0-001",
-            name: "1.1.0-001",
+            description: "1.1.0-001",
             createdOn: new Date().toISOString(),
             duration: 0
         });
@@ -264,15 +264,52 @@ describe("Migration Lambda Handler", () => {
         const { handler } = useHandler(
             createDdbProjectMigration({
                 primaryTable: table,
-                migrations: allMigrations,
-                isMigrationApplicable() {
-                    return true;
-                }
+                migrations: allMigrations
             })
         );
 
         const { error } = await handler({}, {} as any);
 
-        expect(error?.message).toMatch("Duplicate ID found");
+        expect(error?.message).toMatch("Duplicate migration ID found");
+    });
+
+    it("should throw error on migration ID ending with 000", async () => {
+        const allMigrations = [createDdbMigration("1.0.0-000")];
+
+        const { handler } = useHandler(
+            createDdbProjectMigration({
+                primaryTable: table,
+                migrations: allMigrations
+            })
+        );
+
+        const { error } = await handler({}, {} as any);
+
+        expect(error?.message).toMatch(`Migration ID must not end with "000": 1.0.0-000`);
+    });
+
+    it("should run migrations in preid releases", async () => {
+        process.env.WEBINY_VERSION = "2.1.0-beta.1";
+
+        const allMigrations = [
+            createDdbMigration("1.0.0-001"),
+            createDdbMigration("1.1.0-001"),
+            createDdbMigration("2.0.0-001"),
+            createDdbMigration("2.1.0-001"),
+            createDdbMigration("2.1.0-002")
+        ];
+
+        const { handler } = useHandler(
+            createDdbProjectMigration({
+                primaryTable: table,
+                migrations: allMigrations
+            })
+        );
+
+        const { data, error } = await handler({}, {} as any);
+
+        assertNotError(error);
+
+        expect(data.executed.length).toBe(2);
     });
 });

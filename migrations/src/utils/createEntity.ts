@@ -5,7 +5,7 @@ export const createLegacyEntity = (
     table: Table,
     entityName: string,
     attributes: EntityAttributes
-): Entity<any> => {
+) => {
     return new Entity({
         table,
         name: entityName,
@@ -30,7 +30,7 @@ export const createLegacyEntity = (
     });
 };
 
-export const createStandardEntity = (table: Table, entityName: string): Entity<any> => {
+export const createStandardEntity = (table: Table, entityName: string) => {
     return new Entity({
         table,
         name: entityName,

@@ -8,9 +8,3 @@ export const useHandler = (...plugins: any[]) => {
 
     return { handler };
 };
-
-export function assertNotError(error: MigrationEventHandlerResponse["error"]): asserts error is undefined {
-    if (error) {
-        throw Error(`Migration handler returned and error: ${error.message}`);
-    }
-}

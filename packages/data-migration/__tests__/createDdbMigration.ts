@@ -25,7 +25,7 @@ export const createDdbMigration = (
             return id;
         }
 
-        getName(): string {
+        getDescription(): string {
             return id;
         }
 

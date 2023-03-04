@@ -7,7 +7,8 @@ import {
     ElasticsearchClientSymbol,
     MigrationRepositorySymbol,
     PrimaryDynamoTableSymbol,
-    ElasticsearchDynamoTableSymbol
+    ElasticsearchDynamoTableSymbol,
+    MigrationSymbol
 } from "~/symbols";
 import { IsMigrationApplicable, MigrationRunner } from "~/MigrationRunner";
 import { MigrationRepositoryImpl } from "~/repository/migrations.repository";
@@ -44,14 +45,14 @@ export const createDdbEsProjectMigration = ({
             container.bind(MigrationRepositorySymbol).to(MigrationRepositoryImpl);
         }
 
-        // Resolve the provided migrations.
-        const resolvedMigrations = migrations.map(migration => container.resolve(migration));
+        // Bind the provided migrations.
+        migrations.forEach(migration => container.bind(MigrationSymbol).to(migration));
 
         // Inject dependencies and execute.
         try {
             const data = await container
                 .resolve(MigrationRunner)
-                .execute(resolvedMigrations, isMigrationApplicable);
+                .execute(String(process.env.WEBINY_VERSION), isMigrationApplicable);
 
             return { data };
         } catch (err) {

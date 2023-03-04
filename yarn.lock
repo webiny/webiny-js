@@ -10433,6 +10433,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/lodash.pick@npm:^4.4.7":
+  version: 4.4.7
+  resolution: "@types/lodash.pick@npm:4.4.7"
+  dependencies:
+    "@types/lodash": "*"
+  checksum: 78428a83b5d85e75bd13fb632030f9adb08dfc5bde3a9b6a302434fe7ac98e62919f87a7337e0ba674017d63bc57a8855ef863f5fcecd25e63b1d39eba2e4697
+  languageName: node
+  linkType: hard
+
 "@types/lodash@npm:*, @types/lodash@npm:^4.14.190":
   version: 4.14.191
   resolution: "@types/lodash@npm:4.14.191"
@@ -14741,6 +14750,7 @@ __metadata:
     pino: ^8.11.0
     pino-pretty: ^9.4.0
     rimraf: ^3.0.2
+    semver: ^6.3.0
     typescript: 4.7.4
   languageName: unknown
   linkType: soft
@@ -30778,6 +30788,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lodash.pick@npm:^4.4.0":
+  version: 4.4.0
+  resolution: "lodash.pick@npm:4.4.0"
+  checksum: 2c36cab7da6b999a20bd3373b40e31a3ef81fa264f34a6979c852c5bc8ac039379686b27380f0cb8e3781610844fafec6949c6fbbebc059c98f8fa8570e3675f
+  languageName: node
+  linkType: hard
+
 "lodash.set@npm:^4.3.2":
   version: 4.3.2
   resolution: "lodash.set@npm:4.3.2"
@@ -31641,11 +31658,14 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "migrations@workspace:migrations"
   dependencies:
+    "@types/lodash.pick": ^4.4.7
     "@webiny/cli": 0.0.0
     "@webiny/data-migration": 0.0.0
+    "@webiny/db-dynamodb": 0.0.0
     "@webiny/ioc": 0.0.0
     "@webiny/project-utils": 0.0.0
     dynamodb-toolbox: ^0.3.5
+    lodash.pick: ^4.4.0
   languageName: unknown
   linkType: soft
 

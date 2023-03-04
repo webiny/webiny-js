@@ -3,7 +3,7 @@ import { createRawEventHandler } from "@webiny/handler-aws";
 import { Constructor, createContainer } from "@webiny/ioc";
 import { DataMigration, MigrationEventHandlerResponse, MigrationRepository } from "~/types";
 import { IsMigrationApplicable, MigrationRunner } from "~/MigrationRunner";
-import { MigrationRepositorySymbol, PrimaryDynamoTableSymbol } from "~/symbols";
+import { MigrationRepositorySymbol, MigrationSymbol, PrimaryDynamoTableSymbol } from "~/symbols";
 import { MigrationRepositoryImpl } from "~/repository/migrations.repository";
 
 interface CreateDdbDataMigrationConfig {
@@ -32,14 +32,14 @@ export const createDdbProjectMigration = ({
             container.bind(MigrationRepositorySymbol).to(MigrationRepositoryImpl);
         }
 
-        // Resolve the provided migrations.
-        const resolvedMigrations = migrations.map(migration => container.resolve(migration));
+        // Bind the provided migrations.
+        migrations.forEach(migration => container.bind(MigrationSymbol).to(migration));
 
         // Inject dependencies and execute.
         try {
             const data = await container
                 .resolve(MigrationRunner)
-                .execute(resolvedMigrations, isMigrationApplicable);
+                .execute(String(process.env.WEBINY_VERSION), isMigrationApplicable);
 
             return { data };
         } catch (err) {
