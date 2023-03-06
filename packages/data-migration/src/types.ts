@@ -7,6 +7,7 @@ export interface MigrationItem {
     description: string;
     createdOn: string;
     duration: number;
+    reason: string;
 }
 
 export interface MigrationRepository {
@@ -39,6 +40,11 @@ export interface SkippedMigrationResponse {
     id: string;
     description: string;
     reason: string;
+}
+
+export interface MigrationEventPayload {
+    version?: string;
+    pattern?: string;
 }
 
 export type MigrationEventHandlerResponse =

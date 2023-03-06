@@ -4,7 +4,7 @@ import { DataMigration, Logger, PrimaryDynamoTableSymbol } from "~/index";
 
 export const createDdbMigration = (
     id: string,
-    opts = { error: false }
+    opts: { error?: boolean; skip?: boolean } = { error: false, skip: false }
 ): Constructor<DataMigration> => {
     class DynamoDbMigration implements DataMigration {
         private readonly table: Table;
@@ -30,7 +30,7 @@ export const createDdbMigration = (
         }
 
         shouldExecute(): Promise<boolean> {
-            return Promise.resolve(true);
+            return Promise.resolve(!opts.skip);
         }
     }
 

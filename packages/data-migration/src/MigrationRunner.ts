@@ -40,11 +40,11 @@ export class MigrationRunner {
 
         // Get current version, and coerce it to a valid SemVer.
         // With this, we can run migrations targeted for stable versions, released under a preid tag (e.g., `beta`).
-        const currentVersion = coerce(projectVersion);
+        const currentVersion = coerce(projectVersion) + "";
         const startingId = latestMigration ? latestMigration.id : `${currentVersion}-000`;
         const lastId = `${currentVersion}-999`;
 
-        // Create zero-migration record.
+        // Create initial migration record.
         if (!latestMigration) {
             this.logger.info(
                 `No migrations were ever executed. Creating initial migration record %s.`,
@@ -54,7 +54,8 @@ export class MigrationRunner {
                 id: startingId,
                 description: "starting point for applicable migrations detection",
                 createdOn: new Date().toISOString(),
-                duration: 0
+                duration: 0,
+                reason: "initial migration"
             });
         } else {
             this.logger.info(`Latest migration ID is %s.`, latestMigration.id);
@@ -105,6 +106,15 @@ export class MigrationRunner {
                     description: migration.getDescription(),
                     reason: "migration already applied"
                 });
+
+                await this.repository.logMigration({
+                    id: migration.getId(),
+                    description: migration.getDescription(),
+                    createdOn: new Date().toISOString(),
+                    duration: 0,
+                    reason: "skipped"
+                });
+
                 continue;
             }
 
@@ -145,7 +155,8 @@ export class MigrationRunner {
                     id: migration.getId(),
                     description: migration.getDescription(),
                     createdOn: new Date().toISOString(),
-                    duration: result.duration
+                    duration: result.duration,
+                    reason: "executed"
                 });
             }
         }
