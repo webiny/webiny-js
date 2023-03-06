@@ -19,6 +19,7 @@ import {
     updateElementAction
 } from "~/editor/recoil/actions";
 import { AfterDropElementActionEvent } from "~/editor/recoil/actions/afterDropElement";
+import { isLegacyRenderingEngine } from "~/utils";
 
 import lodashGet from "lodash/get";
 
@@ -29,10 +30,15 @@ const cellPlugin = (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPl
         "pb-editor-page-element-style-settings-border",
         "pb-editor-page-element-style-settings-shadow",
         "pb-editor-page-element-style-settings-padding",
-        "pb-editor-page-element-style-settings-margin",
-        "pb-editor-page-element-style-settings-horizontal-align-flex",
-        "pb-editor-page-element-style-settings-cell-vertical-align"
+        "pb-editor-page-element-style-settings-margin"
     ];
+
+    if (!isLegacyRenderingEngine) {
+        defaultSettings.push(
+            "pb-editor-page-element-style-settings-horizontal-align-flex",
+            "pb-editor-page-element-style-settings-cell-vertical-align"
+        );
+    }
 
     const elementType = kebabCase(args.elementType || "cell");
 
