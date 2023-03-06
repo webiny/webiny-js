@@ -1,5 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { BindComponentRenderProp, CmsEditorFieldRendererProps, CmsModel } from "~/types";
+import {
+    BindComponentRenderProp,
+    CmsEditorContentEntry,
+    CmsEditorFieldRendererProps,
+    CmsModel
+} from "~/types";
 import { Options } from "./Options";
 import { useReference } from "../hooks/useReference";
 import { Entry } from "./Entry";
@@ -112,6 +117,34 @@ export const AdvancedSingleReferenceField: React.FC<Props> = props => {
         [bind.value, bind.onChange, entries]
     );
 
+    const onNewEntryCreate = useCallback(
+        (data: CmsEditorContentEntry | null) => {
+            if (!data) {
+                console.log(
+                    `Could not store new entry to the reference field. Missing whole entry.`
+                );
+                return;
+            } else if (!data.id) {
+                console.log(
+                    `Could not store new entry to the reference field. Missing "id" value.`
+                );
+                return;
+            } else if (!data.modelId) {
+                console.log(
+                    `Could not store new entry to the reference field. Missing "modelId" value.`
+                );
+                return;
+            }
+            storeValues([
+                {
+                    id: data.id,
+                    modelId: data.modelId
+                }
+            ]);
+        },
+        [storeValues]
+    );
+
     return (
         <Container>
             {loading && <Loader />}
@@ -126,10 +159,7 @@ export const AdvancedSingleReferenceField: React.FC<Props> = props => {
                 <NewReferencedEntryDialog
                     model={newEntryDialogModel}
                     onClose={onNewEntryDialogClose}
-                    onChange={data => {
-                        console.log("New Referenced Entry Dialog");
-                        console.log(data);
-                    }}
+                    onChange={onNewEntryCreate}
                 />
             )}
 

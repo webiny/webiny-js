@@ -21,7 +21,8 @@ const t = i18n.ns("app-headless-cms/admin/fields/ref");
 interface EntryFormProps {
     onCreate: (entry: CmsEditorContentEntry) => void;
 }
-const EntryForm: React.FC<EntryFormProps> = ({ onCreate }) => {
+
+const EntryForm: React.VFC<EntryFormProps> = ({ onCreate }) => {
     const { setFormRef, contentModel } = useContentEntry();
 
     return (
@@ -41,10 +42,19 @@ const EntryForm: React.FC<EntryFormProps> = ({ onCreate }) => {
     );
 };
 
-const DialogSaveButton: React.FC = () => {
+const DialogSaveButton: React.VFC = () => {
     const { form } = useContentEntry();
 
-    return <ButtonPrimary onClick={form.current.submit}>{t`Create Entry`}</ButtonPrimary>;
+    const onClick = useCallback(
+        (ev: React.MouseEvent) => {
+            (async () => {
+                await form.current.submit(ev);
+            })();
+        },
+        [form.current]
+    );
+
+    return <ButtonPrimary onClick={onClick}>{t`Create Entry`}</ButtonPrimary>;
 };
 
 interface Props {
@@ -53,7 +63,7 @@ interface Props {
     onChange: (entry: any) => void;
 }
 
-export const NewReferencedEntryDialog: React.FC<Props> = ({
+export const NewReferencedEntryDialog: React.VFC<Props> = ({
     model: baseModel,
     onClose,
     onChange
@@ -63,9 +73,6 @@ export const NewReferencedEntryDialog: React.FC<Props> = ({
 
     useEffect(() => {
         (async () => {
-            if (!baseModel?.modelId) {
-                return;
-            }
             const response = await apolloClient.query<
                 GetCmsModelQueryResponse,
                 GetCmsModelQueryVariables
