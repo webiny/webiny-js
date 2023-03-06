@@ -86,10 +86,6 @@ export type AdminInstallationPlugin = Plugin & {
     dependencies?: string[];
     secure: boolean;
     render(params: AdminInstallationPluginRenderParams): React.ReactNode;
-    upgrades?: {
-        version: string;
-        getComponent(): React.ComponentType<{ onInstalled: () => void }>;
-    }[];
 };
 
 export type AdminAppPermissionRendererPlugin = Plugin & {

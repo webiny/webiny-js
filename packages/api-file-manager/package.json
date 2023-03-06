@@ -23,7 +23,6 @@
     "@webiny/api": "0.0.0",
     "@webiny/api-security": "0.0.0",
     "@webiny/api-tenancy": "0.0.0",
-    "@webiny/api-upgrade": "0.0.0",
     "@webiny/error": "0.0.0",
     "@webiny/handler": "0.0.0",
     "@webiny/handler-aws": "0.0.0",

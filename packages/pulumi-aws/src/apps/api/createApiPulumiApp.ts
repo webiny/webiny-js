@@ -5,6 +5,7 @@ import {
     ApiCloudfront,
     ApiFileManager,
     ApiGraphql,
+    ApiMigration,
     ApiPageBuilder,
     CoreOutput,
     VpcConfig
@@ -172,6 +173,7 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
             });
 
             const cloudfront = app.addModule(ApiCloudfront);
+            const migration = app.addModule(ApiMigration);
 
             const domains = app.getParam(projectAppParams.domains);
             if (domains) {
@@ -190,7 +192,8 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 apwSchedulerEventRule: apwScheduler.eventRule.output.name,
                 apwSchedulerEventTargetId: apwScheduler.eventTarget.output.targetId,
                 dynamoDbTable: core.primaryDynamodbTableName,
-                dynamoDbElasticsearchTable: core.elasticsearchDynamodbTableName
+                dynamoDbElasticsearchTable: core.elasticsearchDynamodbTableName,
+                migrationLambdaArn: migration.function.output.arn
             });
 
             tagResources({
@@ -203,7 +206,8 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 graphql,
                 apiGateway,
                 cloudfront,
-                apwScheduler
+                apwScheduler,
+                migration
             };
         }
     });

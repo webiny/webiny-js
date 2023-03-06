@@ -220,6 +220,31 @@ module.exports = [
                     process.exit(0);
                 }
             );
+
+            yargs.command(
+                "execute-migrations [pattern]",
+                `Execute data migrations Lambda. If pattern is provided, only the matching migrations will be executed.`,
+                () => {
+                    yargs.example("$0 execute-migrations --env dev");
+                    yargs.example("$0 execute-migrations 5.35.0-001 --env dev");
+                    yargs.example(`$0 execute-migrations "5.35.*" --env dev`);
+
+                    yargs.positional("pattern", {
+                        describe: `Pattern to match against the migration ID.`,
+                        type: "string"
+                    });
+
+                    yargs.option("env", {
+                        describe: `Environment`,
+                        type: "string",
+                        required: true
+                    });
+                },
+                async argv => {
+                    await require("./executeMigrations")(argv, context);
+                    process.exit(0);
+                }
+            );
         }
     }
 ];

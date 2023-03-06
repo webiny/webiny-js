@@ -1,10 +1,20 @@
-import { DynamoDbDataMigration } from "~/migrations/DynamoDbDataMigration";
-import { DataMigration, DynamoDbMigrationContext, WithLog } from "~/types";
+import { Table } from "dynamodb-toolbox";
+import { makeInjectable, inject, Constructor } from "@webiny/ioc";
+import { DataMigration, Logger, PrimaryDynamoTableSymbol } from "~/index";
 
-export const createDdbMigration = (id: string, opts = { error: false }): DataMigration<any> => {
-    class MigrationImpl extends DynamoDbDataMigration {
-        execute(context: WithLog<DynamoDbMigrationContext>): Promise<void> {
-            context.log(`Migrating stuff...`, { id });
+export const createDdbMigration = (
+    id: string,
+    opts: { error?: boolean; skip?: boolean } = { error: false, skip: false }
+): Constructor<DataMigration> => {
+    class DynamoDbMigration implements DataMigration {
+        private readonly table: Table;
+
+        constructor(table: Table) {
+            this.table = table;
+        }
+
+        execute(logger: Logger): Promise<void> {
+            logger.info(`Migrating stuff...`, { id });
             if (opts.error) {
                 throw Error(`Something went wrong in ${id}`);
             }
@@ -15,14 +25,16 @@ export const createDdbMigration = (id: string, opts = { error: false }): DataMig
             return id;
         }
 
-        getName(): string {
+        getDescription(): string {
             return id;
         }
 
         shouldExecute(): Promise<boolean> {
-            return Promise.resolve(true);
+            return Promise.resolve(!opts.skip);
         }
     }
 
-    return new MigrationImpl();
+    makeInjectable(DynamoDbMigration, [inject(PrimaryDynamoTableSymbol)]);
+
+    return DynamoDbMigration;
 };

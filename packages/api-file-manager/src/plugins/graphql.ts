@@ -165,12 +165,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                 createFiles(data: [FileInput]!): CreateFilesResponse
                 updateFile(id: ID!, data: FileInput!): FileResponse
                 deleteFile(id: ID!): FilesDeleteResponse
-
-                # Install File manager
                 install(srcPrefix: String): FileManagerBooleanResponse
-
-                upgrade(version: String!): FileManagerBooleanResponse
-
                 updateSettings(data: FileManagerSettingsInput): FileManagerSettingsResponse
             }
 
@@ -253,9 +248,6 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                     return resolve(() =>
                         context.fileManager.system.install({ srcPrefix: args.srcPrefix })
                     );
-                },
-                async upgrade(_, args: any, context) {
-                    return resolve(() => context.fileManager.system.upgrade(args.version));
                 },
                 async updateSettings(_, args: any, context) {
                     return resolve(() => context.fileManager.settings.updateSettings(args.data));
