@@ -8,6 +8,11 @@ interface DdbMigrationHandlerConfig {
     migration: Constructor<DataMigration>;
 }
 
+interface Payload {
+    version?: string;
+    pattern?: string;
+}
+
 export function createDdbMigrationHandler(config: DdbMigrationHandlerConfig) {
     const { handler } = useHandler(
         createDdbProjectMigration({
@@ -17,5 +22,5 @@ export function createDdbMigrationHandler(config: DdbMigrationHandlerConfig) {
         })
     );
 
-    return () => handler({}, {} as any);
+    return (payload?: Payload) => handler({ version: "0.1.0", ...payload }, {} as any);
 }

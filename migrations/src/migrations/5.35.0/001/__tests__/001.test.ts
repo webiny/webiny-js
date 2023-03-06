@@ -2,23 +2,19 @@ import { FileManager_5_35_0_001 } from "~/migrations/5.35.0/001";
 import {
     assertNotError,
     createDdbMigrationHandler,
-    getDocumentClient,
     getPrimaryDynamoDbTable,
     insertTestData,
-    scanTable
+    scanTable,
+    logTestNameBeforeEachTest
 } from "~/testUtils";
 import { testData } from "./001.data";
 
 jest.retryTimes(0);
 
 describe("5.35.0-001", () => {
-    const documentClient = getDocumentClient();
-    let table: ReturnType<typeof getPrimaryDynamoDbTable>;
+    const table = getPrimaryDynamoDbTable();
 
-    beforeEach(async () => {
-        table = getPrimaryDynamoDbTable({ documentClient });
-        process.stdout.write(`\n===== ${expect.getState().currentTestName} =====\n`);
-    });
+    logTestNameBeforeEachTest();
 
     it("should not run if system is not installed", async () => {
         const handler = createDdbMigrationHandler({ table, migration: FileManager_5_35_0_001 });
@@ -45,28 +41,32 @@ describe("5.35.0-001", () => {
         expect(data.notApplicable.length).toBe(0);
 
         // Let's make sure that the number of migrated records corresponds to the number of the original records.
-        const allNewFiles = await scanTable(table, {
-            entity: "File",
-            filters: [
-                { attr: "TYPE", eq: "fm.file" },
-                { attr: "data", exists: true }
-            ]
-        });
+        const allNewFiles = (
+            await scanTable(table, {
+                entity: "File",
+                filters: [
+                    { attr: "TYPE", eq: "fm.file" },
+                    { attr: "data", exists: true }
+                ]
+            })
+        ).sort((a, b) => a.GSI1_SK > b.GSI1_SK ? 1 : -1);
+
+        const allOldFiles = (
+            await scanTable(table, {
+                entity: "Files",
+                filters: [
+                    { attr: "TYPE", eq: "fm.file" },
+                    { attr: "GSI1_PK", exists: false },
+                    { attr: "GSI1_SK", exists: false }
+                ]
+            })
+        ).sort((a, b) => a.id > b.id ? 1 : -1);
 
         expect(allNewFiles.length).toEqual(5000);
-        expect(allNewFiles[0].GSI1_PK.endsWith("#FM#FILES")).toBe(true);
-
-        const allOldFiles = await scanTable(table, {
-            entity: "Files",
-            filters: [
-                { attr: "TYPE", eq: "fm.file" },
-                { attr: "GSI1_PK", exists: false },
-                { attr: "GSI1_SK", exists: false }
-            ]
-        });
-
         expect(allOldFiles.length).toEqual(5000);
-        expect(allOldFiles[0].PK.endsWith("#FM#F")).toBe(true);
+
+        expect(allNewFiles[0].GSI1_PK.endsWith("#FM#FILES")).toBe(true);
+        expect(allNewFiles[0].data.id).toEqual(allOldFiles[0].id);
     });
 
     it("should not run migration if data is already in the expected shape", async () => {

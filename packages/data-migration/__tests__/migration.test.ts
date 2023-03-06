@@ -24,11 +24,11 @@ describe("Migration Lambda Handler", () => {
         secretAccessKey: "test"
     });
 
+    const table = createTable({ name: String(process.env.DB_TABLE), documentClient });
+
     let repository: MigrationRepository;
-    let table: ReturnType<typeof createTable>;
 
     beforeEach(() => {
-        table = createTable({ name: String(process.env.DB_TABLE), documentClient });
         repository = new MigrationRepositoryImpl(table);
         process.stdout.write(`\n===== ${expect.getState().currentTestName} =====\n`);
     });
