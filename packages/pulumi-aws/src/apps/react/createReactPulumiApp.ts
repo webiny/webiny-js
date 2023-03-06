@@ -116,14 +116,7 @@ export const createReactPulumiApp = (projectAppParams: CreateReactPulumiAppParam
                 applyCustomDomain(cloudfront, domains);
             }
 
-            app.addOutputs({
-                appStorage: bucket.bucket.output.id,
-
-                // For some reason, without listing these here, the below `addDomainsUrlsOutputs`
-                // call does not work as expected (stack output just doesn't get updated correctly).
-                appDomain: undefined,
-                appUrl: undefined
-            });
+            app.addOutput("appStorage", bucket.bucket.output.id);
 
             addDomainsUrlsOutputs({
                 app,

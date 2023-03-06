@@ -237,25 +237,11 @@ export const createWebsitePulumiApp = (projectAppParams: CreateWebsitePulumiAppP
                 appId: appCloudfront.output.id,
                 appStorage: appBucket.bucket.output.id,
 
-                // For some reason, without listing these here, the below `addDomainsUrlsOutputs`
-                // call does not work as expected (stack output just doesn't get updated correctly).
-                cloudfrontAppDomain: undefined,
-                cloudfrontAppUrl: undefined,
-                appUrl: undefined,
-                appDomain: undefined,
-
                 // These are the Cloudfront and S3 bucket that will deliver static pages to the actual website visitors.
                 // The static HTML snapshots delivered from them still rely on the app's S3 bucket
                 // defined above, for serving static assets (JS, CSS, images).
                 deliveryId: deliveryCloudfront.output.id,
-                deliveryStorage: deliveryBucket.bucket.output.id,
-
-                // For some reason, without listing these here, the below `addDomainsUrlsOutputs`
-                // call does not work as expected (stack output just doesn't get updated correctly).
-                cloudfrontDeliveryDomain: undefined,
-                cloudfrontDeliveryUrl: undefined,
-                deliveryDomain: undefined,
-                deliveryUrl: undefined
+                deliveryStorage: deliveryBucket.bucket.output.id
             });
 
             addDomainsUrlsOutputs({

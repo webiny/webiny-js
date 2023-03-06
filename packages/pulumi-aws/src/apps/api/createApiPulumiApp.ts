@@ -212,14 +212,7 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 apwSchedulerEventRule: apwScheduler.eventRule.output.name,
                 apwSchedulerEventTargetId: apwScheduler.eventTarget.output.targetId,
                 dynamoDbTable: core.primaryDynamodbTableName,
-                dynamoDbElasticsearchTable: core.elasticsearchDynamodbTableName,
-
-                // For some reason, without listing these here, the below `addDomainsUrlsOutputs`
-                // call does not work as expected (stack output just doesn't get updated correctly).
-                cloudfrontApiDomain: undefined,
-                cloudfrontApiUrl: undefined,
-                apiDomain: undefined,
-                apiUrl: undefined
+                dynamoDbElasticsearchTable: core.elasticsearchDynamodbTableName
             });
 
             addDomainsUrlsOutputs({
