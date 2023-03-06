@@ -42,7 +42,7 @@ interface Props {
     setError: Dispatch<SetStateAction<string | null>>;
     setLoading: Dispatch<SetStateAction<boolean>>;
 }
-export const Search: React.FC<Props> = ({ model, setEntries, setLoading, setError }) => {
+export const Search: React.VFC<Props> = ({ model, setEntries, setLoading, setError }) => {
     const { entries, loading, error, runSearch } = useEntries({
         model
     });

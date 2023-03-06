@@ -5,7 +5,6 @@ import { OptionsModelListItem } from "./OptionsModelListItem";
 
 const Container = styled("span")({
     display: "flex",
-    // position: "relative",
     marginLeft: "5px"
 });
 const ModelsContainer = styled("div")({
@@ -29,7 +28,7 @@ interface Props {
     models: CmsModel[];
     onClick: (modelId: string) => void;
 }
-export const OptionsModelList: React.FC<Props> = ({ models, onClick }) => {
+export const OptionsModelList: React.VFC<Props> = ({ models, onClick }) => {
     if (models.length <= 1) {
         return null;
     }

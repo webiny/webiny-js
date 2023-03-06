@@ -34,7 +34,7 @@ const createEntryUrl = (entry: CmsReferenceContentEntry) => {
 interface Props {
     entry: CmsReferenceContentEntry;
 }
-export const View: React.FC<Props> = ({ entry }) => {
+export const View: React.VFC<Props> = ({ entry }) => {
     return (
         <Container>
             <ViewTag href={createEntryUrl(entry)} target="_blank">

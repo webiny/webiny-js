@@ -35,7 +35,7 @@ interface Props {
     model: CmsModel;
     onClick: (modelId: string) => void;
 }
-export const OptionsModelListItem: React.FC<Props> = ({ model, onClick: originalOnClick }) => {
+export const OptionsModelListItem: React.VFC<Props> = ({ model, onClick: originalOnClick }) => {
     const onClick = useCallback(() => {
         originalOnClick(model.modelId);
     }, [originalOnClick]);

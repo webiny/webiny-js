@@ -11,6 +11,6 @@ const Content = styled("p")({
 interface Props {
     description?: string | null;
 }
-export const Description: React.FC<Props> = ({ description }) => {
+export const Description: React.VFC<Props> = ({ description }) => {
     return <Content>{description}</Content>;
 };

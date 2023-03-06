@@ -10,7 +10,7 @@ interface Props {
     modifiedBy?: CmsCreatedBy | null;
     savedOn: Date;
 }
-export const ModifiedBy: React.FC<Props> = ({ modifiedBy, savedOn }) => {
+export const ModifiedBy: React.VFC<Props> = ({ modifiedBy, savedOn }) => {
     return (
         <Box icon={null} name={"Modified By"}>
             {modifiedBy?.displayName && savedOn && (

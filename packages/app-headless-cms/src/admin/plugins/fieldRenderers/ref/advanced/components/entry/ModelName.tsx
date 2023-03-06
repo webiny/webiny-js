@@ -13,6 +13,6 @@ const Content = styled("h4")({
 interface Props {
     name: string;
 }
-export const ModelName: React.FC<Props> = ({ name }) => {
+export const ModelName: React.VFC<Props> = ({ name }) => {
     return <Content>{name}</Content>;
 };

@@ -51,7 +51,7 @@ interface Props {
     onNewRecord: (modelId: string) => void;
     onLinkExistingRecord: (modelId: string) => void;
 }
-export const Options: React.FC<Props> = ({ models, onNewRecord, onLinkExistingRecord }) => {
+export const Options: React.VFC<Props> = ({ models, onNewRecord, onLinkExistingRecord }) => {
     const hasMultipleModels = models.length > 1;
     const onSingleNewRecord = useCallback(() => {
         if (models.length === 0 || hasMultipleModels) {

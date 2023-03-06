@@ -46,7 +46,7 @@ interface Props {
     entry: CmsReferenceContentEntry;
     onRemove: (entryId: string) => void;
 }
-export const Remove: React.FC<Props> = ({ entry, onRemove }) => {
+export const Remove: React.VFC<Props> = ({ entry, onRemove }) => {
     const { showConfirmation } = useConfirmationDialog({
         title: "Remove referenced entry",
         message: `Are you sure you want to remove the referenced entry "${entry.title}"?`,

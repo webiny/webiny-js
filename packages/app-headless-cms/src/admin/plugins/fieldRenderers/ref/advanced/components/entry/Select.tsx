@@ -55,7 +55,7 @@ interface Props {
     selected?: boolean;
     onChange: (value: CmsReferenceValue) => void;
 }
-export const Select: React.FC<Props> = ({ entry, selected, onChange }) => {
+export const Select: React.VFC<Props> = ({ entry, selected, onChange }) => {
     const onIconClick = useCallback(() => {
         onChange({
             id: entry.id,

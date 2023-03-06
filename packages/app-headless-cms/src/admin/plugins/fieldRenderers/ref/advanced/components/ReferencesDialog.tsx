@@ -53,7 +53,7 @@ interface Props extends CmsEditorFieldRendererProps {
     storeValues: (values: CmsReferenceValue[]) => void;
     multiple: boolean;
 }
-export const ReferencesDialog: React.FC<Props> = props => {
+export const ReferencesDialog: React.VFC<Props> = props => {
     const { contentModel, onDialogClose, storeValues, values: initialValues, multiple } = props;
     const { showSnackbar } = useSnackbar();
 

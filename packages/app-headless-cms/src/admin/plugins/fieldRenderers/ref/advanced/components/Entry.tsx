@@ -50,7 +50,7 @@ interface Props {
     onRemove?: (entryId: string) => void;
     selected?: boolean;
 }
-export const Entry: React.FC<Props> = ({ entry, onChange, onRemove, selected }) => {
+export const Entry: React.VFC<Props> = ({ entry, onChange, onRemove, selected }) => {
     if (!entry) {
         return null;
     }

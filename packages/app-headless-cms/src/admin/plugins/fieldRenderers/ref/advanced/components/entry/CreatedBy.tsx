@@ -11,7 +11,7 @@ interface Props {
     createdBy: CmsCreatedBy;
     createdOn: Date;
 }
-export const CreatedBy: React.FC<Props> = ({ createdBy, createdOn }) => {
+export const CreatedBy: React.VFC<Props> = ({ createdBy, createdOn }) => {
     return (
         <Box icon={null} name={"Created By"}>
             {createdBy.displayName}, <TimeAgo datetime={createdOn} />

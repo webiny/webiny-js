@@ -21,7 +21,7 @@ const getIcon = (status: CmsContentEntryStatusType) => {
 interface Props {
     status: CmsContentEntryStatusType;
 }
-export const Status: React.FC<Props> = ({ status }) => {
+export const Status: React.VFC<Props> = ({ status }) => {
     return (
         <Box icon={getIcon(status)} name={"Status"}>
             {status.toUpperCase()}

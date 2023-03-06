@@ -15,14 +15,14 @@ const AbsoluteLoaderContainer = styled("div")({
     top: 0,
     left: 0
 });
-export const Loader: React.FC = () => {
+export const Loader: React.VFC = () => {
     return (
         <LoaderContainer>
             <CircularProgress />
         </LoaderContainer>
     );
 };
-export const AbsoluteLoader: React.FC = () => {
+export const AbsoluteLoader: React.VFC = () => {
     return (
         <AbsoluteLoaderContainer>
             <CircularProgress />

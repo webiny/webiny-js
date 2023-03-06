@@ -37,9 +37,10 @@ const Text = styled("h5")({
 interface Props {
     icon: React.ReactElement | null;
     name: string;
+    children?: React.ReactNode;
 }
 
-export const Box: React.FC<Props> = ({ icon, name, children }) => {
+export const Box: React.VFC<Props> = ({ icon, name, children }) => {
     if (!children) {
         return <Container />;
     }

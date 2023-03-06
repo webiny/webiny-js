@@ -58,7 +58,7 @@ const DialogSaveButton: React.VFC = () => {
 };
 
 interface Props {
-    model: CmsModel;
+    model: Pick<CmsModel, "modelId">;
     onClose: () => void;
     onChange: (entry: any) => void;
 }

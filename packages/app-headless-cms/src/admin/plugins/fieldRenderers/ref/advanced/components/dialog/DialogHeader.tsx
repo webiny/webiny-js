@@ -73,7 +73,7 @@ interface Props {
     model: CmsModel;
     onClose: () => void;
 }
-export const DialogHeader: React.FC<Props> = ({ model, onClose }) => {
+export const DialogHeader: React.VFC<Props> = ({ model, onClose }) => {
     return (
         <Container>
             <Content>

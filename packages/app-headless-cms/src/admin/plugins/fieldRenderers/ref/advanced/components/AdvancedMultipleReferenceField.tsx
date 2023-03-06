@@ -6,7 +6,7 @@ import {
     CmsModel
 } from "~/types";
 import { Options } from "./Options";
-import { useReference } from "../hooks/useReference";
+import { useReferences } from "../hooks/useReferences";
 import { Entry } from "./Entry";
 import { ReferencesDialog } from "./ReferencesDialog";
 import styled from "@emotion/styled";
@@ -25,9 +25,9 @@ const Container = styled("div")({
 });
 
 interface Props extends CmsEditorFieldRendererProps {
-    bind: BindComponentRenderProp<CmsReferenceValue | null>;
+    bind: BindComponentRenderProp<CmsReferenceValue[] | null>;
 }
-export const AdvancedMultipleReferenceField: React.FC<Props> = props => {
+export const AdvancedMultipleReferenceField: React.VFC<Props> = props => {
     const { bind, field } = props;
     const { showSnackbar } = useSnackbar();
 
@@ -83,7 +83,7 @@ export const AdvancedMultipleReferenceField: React.FC<Props> = props => {
         setLinkEntryDialogModel(null);
     }, []);
 
-    const { entries, loading: loadingEntries } = useReference({
+    const { entries, loading: loadingEntries } = useReferences({
         values: bind.value
     });
 
@@ -142,12 +142,14 @@ export const AdvancedMultipleReferenceField: React.FC<Props> = props => {
                 );
                 return;
             }
-            storeValues([
-                {
-                    id: data.id,
-                    modelId: data.modelId
-                }
-            ]);
+            storeValues(
+                (bind.value || []).concat([
+                    {
+                        id: data.id,
+                        modelId: data.modelId
+                    }
+                ])
+            );
         },
         [storeValues]
     );

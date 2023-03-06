@@ -16,7 +16,7 @@ interface Props {
     src?: string | null;
     width?: number;
 }
-export const Image: React.FC<Props> = ({ title, src, width = 166 }) => {
+export const Image: React.VFC<Props> = ({ title, src, width = 166 }) => {
     if (!src) {
         return <Container />;
     }

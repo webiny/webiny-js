@@ -12,8 +12,8 @@ export const createAdvancedSingleRenderer = (): CmsEditorFieldRendererPlugin => 
         name: "cms-editor-field-renderer-ref-single-advanced",
         renderer: {
             rendererName: "ref-advanced-single",
-            name: t`Advanced Reference Input`,
-            description: t`Renders a advanced reference selection, allowing selection of a single entry.`,
+            name: t`Detailed view with modal search`,
+            description: t`Renders a preview card of the selected record and the user searches through records using a modal window.`,
             canUse({ field }) {
                 return field.type === "ref" && !field.multipleValues;
             },

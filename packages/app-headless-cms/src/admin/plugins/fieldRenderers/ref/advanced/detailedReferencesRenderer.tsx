@@ -11,8 +11,8 @@ export const createAdvancedMultipleRenderer = (): CmsEditorFieldRendererPlugin =
         name: "cms-editor-field-renderer-ref-multiple-advanced",
         renderer: {
             rendererName: "ref-advanced-multiple",
-            name: t`Advanced References Input`,
-            description: t`Renders a advanced references selection, allowing selection of multiple entries.`,
+            name: t`Detailed view with modal search`,
+            description: t`Renders a preview card of the selected record and the user searches through records using a modal window.`,
             canUse({ field }) {
                 return field.type === "ref" && !!field.multipleValues;
             },
