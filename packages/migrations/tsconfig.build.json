@@ -13,6 +13,12 @@
       "path": "../data-migration/tsconfig.build.json"
     },
     {
+      "path": "../db-dynamodb/tsconfig.build.json"
+    },
+    {
+      "path": "../handler-aws/tsconfig.build.json"
+    },
+    {
       "path": "../ioc/tsconfig.build.json"
     }
   ]

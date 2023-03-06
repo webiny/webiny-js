@@ -8,12 +8,20 @@
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
       "@webiny/data-migration": ["../data-migration/src"],
+      "@webiny/db-dynamodb": ["../db-dynamodb/src"],
+      "@webiny/handler-aws": ["../handler-aws/src"],
       "@webiny/ioc": ["../ioc/src"]
     }
   },
   "references": [
     {
       "path": "../data-migration"
+    },
+    {
+      "path": "../db-dynamodb"
+    },
+    {
+      "path": "../handler-aws"
     },
     {
       "path": "../ioc"
