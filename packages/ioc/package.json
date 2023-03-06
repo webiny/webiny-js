@@ -4,15 +4,18 @@
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/webiny/webiny-js.git"
+    "url": "https://github.com/webiny/webiny-js.git",
+    "directory": "packages/ioc"
   },
-  "contributors": [
-    "Michał Kędrzyński <michal@webiny.com>"
-  ],
+  "author": "Webiny Ltd",
   "license": "MIT",
+  "dependencies": {
+    "inversify": "^6.0.1"
+  },
   "devDependencies": {
     "@webiny/cli": "0.0.0",
     "@webiny/project-utils": "0.0.0",
+    "reflect-metadata": "^0.1.13",
     "ttypescript": "^1.5.13",
     "typescript": "4.7.4"
   },
@@ -23,6 +26,5 @@
   "scripts": {
     "build": "yarn webiny run build",
     "watch": "yarn webiny run watch"
-  },
-  "gitHead": "8476da73b653c89cc1474d968baf55c1b0ae0e5f"
+  }
 }

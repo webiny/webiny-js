@@ -100,7 +100,7 @@ export const queryOne = async <T>(params: QueryOneParams): Promise<DbItem<T> | n
     return item ? item : null;
 };
 /**
- * Will run the query to fetch the results no matter how much iterations it needs to go through.
+ * Will run the query to fetch the results no matter how many iterations it needs to go through.
  */
 export const queryAll = async <T>(params: QueryAllParams): Promise<DbItem<T>[]> => {
     const items: DbItem<T>[] = [];
@@ -114,4 +114,23 @@ export const queryAll = async <T>(params: QueryAllParams): Promise<DbItem<T>[]> 
         previousResult = results.result;
     }
     return items;
+};
+
+/**
+ * Will run the query to fetch the results no matter how many iterations it needs to go through.
+ * Results of each iteration will be passed to the provided callback
+ */
+export const queryAllWithCallback = async <T>(
+    params: QueryAllParams,
+    callback: (items: DbItem<T>[]) => Promise<void>
+): Promise<void> => {
+    let results: QueryResult<DbItem<T>>;
+    let previousResult: any = undefined;
+    while ((results = await query({ ...params, previous: previousResult }))) {
+        if (!results.result) {
+            break;
+        }
+        await callback(results.items);
+        previousResult = results.result;
+    }
 };
