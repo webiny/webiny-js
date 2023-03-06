@@ -1,7 +1,7 @@
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { createElasticsearchClient } from "@webiny/api-elasticsearch";
 import { createHandler } from "@webiny/handler-aws/raw";
-import { createDdbEsMigrationHandler, createTable } from "@webiny/data-migration";
+import { createDdbEsProjectMigration, createTable } from "@webiny/data-migration";
 import { migrations } from "@webiny/migrations/ddb-es";
 
 const documentClient = new DocumentClient({
@@ -15,7 +15,7 @@ const elasticsearchClient = createElasticsearchClient({
 
 export const handler = createHandler({
     plugins: [
-        createDdbEsMigrationHandler({
+        createDdbEsProjectMigration({
             primaryTable: createTable({
                 name: String(process.env.DB_TABLE),
                 documentClient
