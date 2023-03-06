@@ -1,7 +1,7 @@
 import { createHandler } from "@webiny/handler-aws/raw";
 import { createDdbProjectMigration, createTable } from "@webiny/data-migration";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import { migrations } from "migrations/src/ddb";
+import { migrations } from "@webiny/migrations/ddb";
 
 const documentClient = new DocumentClient({
     convertEmptyValues: true,

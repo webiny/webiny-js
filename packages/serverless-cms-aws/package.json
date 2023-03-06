@@ -45,6 +45,7 @@
     "@webiny/handler-aws": "0.0.0",
     "@webiny/handler-db": "0.0.0",
     "@webiny/handler-logs": "0.0.0",
+    "@webiny/migrations": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/pulumi": "0.0.0",
     "@webiny/pulumi-aws": "0.0.0",

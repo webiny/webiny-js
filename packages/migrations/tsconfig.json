@@ -1,0 +1,22 @@
+{
+  "extends": "../../tsconfig",
+  "include": ["src", "__tests__"],
+  "compilerOptions": {
+    "rootDir": ".",
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/data-migration": ["../data-migration/src"],
+      "@webiny/ioc": ["../ioc/src"]
+    }
+  },
+  "references": [
+    {
+      "path": "../data-migration"
+    },
+    {
+      "path": "../ioc"
+    }
+  ]
+}

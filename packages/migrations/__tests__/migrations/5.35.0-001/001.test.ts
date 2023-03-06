@@ -6,7 +6,7 @@ import {
     insertTestData,
     scanTable,
     logTestNameBeforeEachTest
-} from "~/testUtils";
+} from "~tests/utils";
 import { testData } from "./001.data";
 
 jest.retryTimes(0);
@@ -49,7 +49,7 @@ describe("5.35.0-001", () => {
                     { attr: "data", exists: true }
                 ]
             })
-        ).sort((a, b) => a.GSI1_SK > b.GSI1_SK ? 1 : -1);
+        ).sort((a, b) => (a.GSI1_SK > b.GSI1_SK ? 1 : -1));
 
         const allOldFiles = (
             await scanTable(table, {
@@ -60,7 +60,7 @@ describe("5.35.0-001", () => {
                     { attr: "GSI1_SK", exists: false }
                 ]
             })
-        ).sort((a, b) => a.id > b.id ? 1 : -1);
+        ).sort((a, b) => (a.id > b.id ? 1 : -1));
 
         expect(allNewFiles.length).toEqual(5000);
         expect(allOldFiles.length).toEqual(5000);

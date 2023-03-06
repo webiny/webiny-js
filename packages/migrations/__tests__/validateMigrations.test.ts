@@ -1,11 +1,10 @@
-import { createDdbEsProjectMigration, createDdbProjectMigration } from "@webiny/data-migration";
-import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/client";
 import {
     assertNotError,
+    createDdbEsMigrationHandler,
+    createDdbMigrationHandler,
     getDynamoToEsTable,
-    getPrimaryDynamoDbTable,
-    useHandler
-} from "~/testUtils";
+    getPrimaryDynamoDbTable
+} from "~tests/utils";
 import { migrations as ddbMigrations } from "~/ddb";
 import { migrations as ddbEsMigrations } from "~/ddb-es";
 
@@ -27,15 +26,13 @@ describe("Validate Migrations", () => {
 
     it("should run all DDB migrations", async () => {
         const migrations = ddbMigrations();
-        const { handler } = useHandler(
-            createDdbProjectMigration({
-                primaryTable,
-                migrations,
-                isMigrationApplicable: () => true
-            })
-        );
 
-        const { data, error } = await handler({}, {} as any);
+        const handler = createDdbMigrationHandler({
+            table: primaryTable,
+            migrations
+        });
+
+        const { data, error } = await handler();
 
         assertNotError(error);
 
@@ -50,17 +47,13 @@ describe("Validate Migrations", () => {
 
     it("should run all DDB-ES migrations", async () => {
         const migrations = ddbEsMigrations();
-        const { handler } = useHandler(
-            createDdbEsProjectMigration({
-                primaryTable,
-                dynamoToEsTable,
-                migrations,
-                elasticsearchClient: createElasticsearchClient(),
-                isMigrationApplicable: () => true
-            })
-        );
+        const handler = createDdbEsMigrationHandler({
+            primaryTable,
+            dynamoToEsTable,
+            migrations
+        });
 
-        const { data, error } = await handler({}, {} as any);
+        const { data, error } = await handler();
 
         assertNotError(error);
 

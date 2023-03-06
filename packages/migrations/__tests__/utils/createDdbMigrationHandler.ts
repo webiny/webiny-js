@@ -5,7 +5,7 @@ import { useHandler } from "./useHandler";
 
 interface DdbMigrationHandlerConfig {
     table: ReturnType<typeof getPrimaryDynamoDbTable>;
-    migration: Constructor<DataMigration>;
+    migrations: Constructor<DataMigration>[];
 }
 
 interface Payload {
@@ -17,7 +17,7 @@ export function createDdbMigrationHandler(config: DdbMigrationHandlerConfig) {
     const { handler } = useHandler(
         createDdbProjectMigration({
             primaryTable: config.table,
-            migrations: [config.migration],
+            migrations: config.migrations,
             isMigrationApplicable: () => true
         })
     );

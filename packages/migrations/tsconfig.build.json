@@ -1,0 +1,19 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["src"],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": { "~/*": ["./src/*"], "~tests/*": ["./__tests__/*"] },
+    "baseUrl": "."
+  },
+  "references": [
+    {
+      "path": "../data-migration/tsconfig.build.json"
+    },
+    {
+      "path": "../ioc/tsconfig.build.json"
+    }
+  ]
+}

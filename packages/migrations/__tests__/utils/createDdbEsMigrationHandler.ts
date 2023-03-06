@@ -1,13 +1,13 @@
 import { Constructor } from "@webiny/ioc";
 import { createDdbEsProjectMigration, DataMigration } from "@webiny/data-migration";
-import { getPrimaryDynamoDbTable } from "~/testUtils/getPrimaryDynamoDbTable";
+import { getPrimaryDynamoDbTable } from "~tests/utils/getPrimaryDynamoDbTable";
 import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/client";
 import { useHandler } from "./useHandler";
 
 interface DdbEsMigrationHandlerConfig {
     primaryTable: ReturnType<typeof getPrimaryDynamoDbTable>;
     dynamoToEsTable: ReturnType<typeof getPrimaryDynamoDbTable>;
-    migration: Constructor<DataMigration>;
+    migrations: Constructor<DataMigration>[];
 }
 
 interface Payload {
@@ -20,7 +20,7 @@ export function createDdbEsMigrationHandler(config: DdbEsMigrationHandlerConfig)
         createDdbEsProjectMigration({
             primaryTable: config.primaryTable,
             dynamoToEsTable: config.dynamoToEsTable,
-            migrations: [config.migration],
+            migrations: config.migrations,
             elasticsearchClient: createElasticsearchClient(),
             isMigrationApplicable: () => true
         })

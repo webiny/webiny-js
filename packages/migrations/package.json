@@ -1,7 +1,11 @@
 {
-  "name": "migrations",
+  "name": "@webiny/migrations",
   "version": "0.0.0",
   "private": true,
+  "scripts": {
+    "build": "yarn webiny run build",
+    "watch": "yarn webiny run watch"
+  },
   "dependencies": {
     "@types/lodash.pick": "^4.4.7",
     "@webiny/data-migration": "0.0.0",
@@ -9,6 +13,10 @@
     "@webiny/ioc": "0.0.0",
     "dynamodb-toolbox": "^0.3.5",
     "lodash.pick": "^4.4.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
   },
   "devDependencies": {
     "@webiny/cli": "0.0.0",
