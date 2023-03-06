@@ -17,7 +17,7 @@ describe("5.35.0-001", () => {
     logTestNameBeforeEachTest();
 
     it("should not run if system is not installed", async () => {
-        const handler = createDdbMigrationHandler({ table, migration: FileManager_5_35_0_001 });
+        const handler = createDdbMigrationHandler({ table, migrations: [FileManager_5_35_0_001] });
 
         const { data, error } = await handler();
 
@@ -31,7 +31,7 @@ describe("5.35.0-001", () => {
     it("should execute migration", async () => {
         await insertTestData(table, testData);
 
-        const handler = createDdbMigrationHandler({ table, migration: FileManager_5_35_0_001 });
+        const handler = createDdbMigrationHandler({ table, migrations: [FileManager_5_35_0_001] });
         const { data, error } = await handler();
 
         assertNotError(error);
@@ -71,7 +71,7 @@ describe("5.35.0-001", () => {
 
     it("should not run migration if data is already in the expected shape", async () => {
         await insertTestData(table, testData);
-        const handler = createDdbMigrationHandler({ table, migration: FileManager_5_35_0_001 });
+        const handler = createDdbMigrationHandler({ table, migrations: [FileManager_5_35_0_001] });
 
         // Should run the migration
         process.stdout.write("[First run]\n");
