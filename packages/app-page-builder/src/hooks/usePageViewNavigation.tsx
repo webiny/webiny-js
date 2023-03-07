@@ -6,11 +6,10 @@ const PAGE_BUILDER_LIST_LINK = "/page-builder/pages";
 const LOCAL_STORAGE_LATEST_VISITED_FOLDER = "webiny_pb_page_latest_visited_folder";
 
 export const usePageViewNavigation = () => {
-    const [currentFolderId, setCurrentFolderId] = useState<string>();
-    const { history, location } = useRouter();
-
+    const { history } = useRouter();
     const query = new URLSearchParams(location.search);
     const folderId = query.get("folderId") || undefined;
+    const [currentFolderId, setCurrentFolderId] = useState<string | undefined>(folderId);
 
     useEffect(() => {
         setCurrentFolderId(folderId);
