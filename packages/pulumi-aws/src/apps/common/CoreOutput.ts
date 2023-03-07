@@ -3,6 +3,27 @@ import { getStackOutput } from "@webiny/cli-plugin-deploy-pulumi/utils";
 
 export type CoreOutput = PulumiAppModule<typeof CoreOutput>;
 
+export interface CoreOutputObject {
+    fileManagerBucketId: string;
+    primaryDynamodbTableArn: string;
+    primaryDynamodbTableName: string;
+    primaryDynamodbTableHashKey: string;
+    primaryDynamodbTableRangeKey: string;
+    cognitoUserPoolId: string;
+    cognitoUserPoolArn: string;
+    cognitoUserPoolPasswordPolicy: string;
+    cognitoAppClientId: string;
+    eventBusArn: string;
+    vpcId: string | undefined;
+    vpcPublicSubnetIds: string[] | undefined;
+    vpcPrivateSubnetIds: string[] | undefined;
+    vpcSecurityGroupIds: string[] | undefined;
+    elasticsearchDomainArn: string | undefined;
+    elasticsearchDomainEndpoint: string | undefined;
+    elasticsearchDynamodbTableArn: string | undefined;
+    elasticsearchDynamodbTableName: string | undefined;
+}
+
 export const CoreOutput = createAppModule({
     name: "CoreOutput",
     config(app) {
@@ -17,7 +38,6 @@ export const CoreOutput = createAppModule({
             }
 
             return {
-                webinyInstanceId: output["webinyInstanceId"] as string,
                 fileManagerBucketId: output["fileManagerBucketId"] as string,
                 primaryDynamodbTableArn: output["primaryDynamodbTableArn"] as string,
                 primaryDynamodbTableName: output["primaryDynamodbTableName"] as string,
@@ -43,9 +63,8 @@ export const CoreOutput = createAppModule({
                     | undefined,
                 elasticsearchDynamodbTableName: output["elasticsearchDynamodbTableName"] as
                     | string
-                    | undefined,
-                lambdaFunctionsList: output["lambdaFunctionsList"] as any[]
-            };
+                    | undefined
+            } as CoreOutputObject;
         });
     }
 });

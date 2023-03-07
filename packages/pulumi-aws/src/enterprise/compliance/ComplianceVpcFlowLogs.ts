@@ -1,13 +1,18 @@
 import * as aws from "@pulumi/aws";
-import { Output } from "@pulumi/pulumi";
 import { createAppModule } from "@webiny/pulumi";
-import { VpcConfig } from "@webiny/pulumi-aws/apps";
+import { getStackOutput } from "@webiny/cli-plugin-deploy-pulumi/utils";
+import { CoreOutputObject } from "../../apps";
 
 export const ComplianceVpcFlowLogs = createAppModule({
     name: "ComplianceVpcFlowLogs",
-    config({ addResource, getModule }) {
-        const vpcConfig = getModule(VpcConfig);
-        if (!vpcConfig.enabled) {
+    config({ addResource, params }) {
+        const { vpcId } = getStackOutput<CoreOutputObject>({
+            folder: "apps/core",
+            env: params.run.env
+        });
+
+        // If VPC is not being used, no need to do anything here.
+        if (!vpcId) {
             return;
         }
 
@@ -64,7 +69,7 @@ export const ComplianceVpcFlowLogs = createAppModule({
                 iamRoleArn: vpcFlowLogsRole.output.arn,
                 logDestination: vpcFlowLogsLogGroup.output.arn,
                 trafficType: "ALL",
-                vpcId: vpcConfig.vpcId as Output<string>
+                vpcId
             }
         });
 

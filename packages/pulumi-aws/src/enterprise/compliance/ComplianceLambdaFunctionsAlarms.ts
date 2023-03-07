@@ -15,12 +15,11 @@ const getLambdaFunctionsList = (params: GetLambdaFunctionsListParams) => {
         );
     }
 
-    const lambdaFunctions = stackExport.filter(
+    const lambdaFunctions = stackExport.deployment.resources.filter(
         (item: any) => item.type === "aws:lambda/function:Function"
     );
 
     return lambdaFunctions.map((item: any) => {
-        console.log("item", item);
         return { name: item.outputs.name, arn: item.outputs.arn };
     });
 };

@@ -1,4 +1,3 @@
-import * as random from "@pulumi/random";
 import { createPulumiApp, PulumiAppParam } from "@webiny/pulumi";
 import { CoreCognito } from "./CoreCognito";
 import { CoreDynamo } from "./CoreDynamo";
@@ -66,10 +65,6 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
         path: APP_PATH,
         config: projectAppParams,
         program: async app => {
-            const webinyInstanceId = new random.RandomId("webiny-instance-id", {
-                byteLength: 8
-            });
-
             const pulumiResourceNamePrefix = app.getParam(
                 projectAppParams.pulumiResourceNamePrefix
             );
@@ -119,7 +114,6 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
                 : null;
 
             app.addOutputs({
-                webinyInstanceId: webinyInstanceId.id,
                 fileManagerBucketId: fileManagerBucket.output.id,
                 primaryDynamodbTableArn: dynamoDbTable.output.arn,
                 primaryDynamodbTableName: dynamoDbTable.output.name,
@@ -129,14 +123,13 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
                 cognitoUserPoolArn: cognito.userPool.output.arn,
                 cognitoUserPoolPasswordPolicy: cognito.userPool.output.passwordPolicy,
                 cognitoAppClientId: cognito.userPoolClient.output.id,
-                eventBusArn: eventBus.output.arn
+                eventBusArn: eventBus.output.arn,
+                vpcId: vpc?.vpc.output.id
             });
 
             tagResources({
-                WbyProjectApp: APP_NAME,
                 WbyProjectName: String(process.env["WEBINY_PROJECT_NAME"]),
-                WbyEnvironment: String(process.env["WEBINY_ENV"]),
-                WbyProjectInstanceId: webinyInstanceId.id as unknown as string
+                WbyEnvironment: String(process.env["WEBINY_ENV"])
             });
 
             return {

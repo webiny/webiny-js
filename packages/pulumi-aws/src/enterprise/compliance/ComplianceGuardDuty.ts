@@ -3,7 +3,7 @@ import { createAppModule } from "@webiny/pulumi";
 
 export const ComplianceGuardDuty = createAppModule({
     name: "ComplianceGuardDuty",
-    config({ addResource, getModule }) {
+    config({ addResource }) {
         addResource(aws.guardduty.Detector, {
             name: "guard-duty-detector",
             config: {
@@ -23,7 +23,7 @@ export const ComplianceGuardDuty = createAppModule({
             }
         });
 
-        addResource(aws.cloudwatch.EventRule, {
+        const rule = addResource(aws.cloudwatch.EventRule, {
             name: "guard-duty-event-rule",
             config: {
                 eventPattern: JSON.stringify({
@@ -71,8 +71,8 @@ export const ComplianceGuardDuty = createAppModule({
         addResource(aws.cloudwatch.EventTarget, {
             name: "guard-duty-event-target",
             config: {
-                rule: rule.name,
-                arn: snsTopic.arn,
+                rule: rule.output.name,
+                arn: snsTopic.output.arn,
                 inputTransformer: {
                     inputPaths: {
                         severity: "$.detail.severity",

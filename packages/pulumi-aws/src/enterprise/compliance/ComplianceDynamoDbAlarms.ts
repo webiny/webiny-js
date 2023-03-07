@@ -1,16 +1,20 @@
 import { createAppModule } from "@webiny/pulumi";
 import * as aws from "@pulumi/aws";
-import { CoreOutput } from "@webiny/pulumi-aws/apps";
+import { CoreOutputObject } from "~/apps";
+import { getStackOutput } from "@webiny/cli-plugin-deploy-pulumi/utils";
 
 export const ComplianceDynamoDbAlarms = createAppModule({
     name: "ComplianceDynamoDbAlarms",
-    config({ addResource, getModule }) {
+    config({ addResource, params }) {
         // The alarm is activated whenever the consumed read capacity is at least 4 units per second
         // (80% of provisioned read capacity of 5) for 1 minute (60 seconds). So, the threshold is 240
         // read capacity units (4 units/sec * 60 seconds). Any time the read capacity is updated you
         // should update the alarm calculations appropriately.
 
-        const { primaryDynamodbTableName } = getModule(CoreOutput);
+        const { primaryDynamodbTableName } = getStackOutput<CoreOutputObject>({
+            folder: "apps/core",
+            env: params.run.env
+        });
 
         addResource(aws.cloudwatch.MetricAlarm, {
             name: "dynamo-db-alarm-read-capacity-units-limit",
