@@ -56,6 +56,6 @@ export const useRecords = (type?: string, folderId?: string) => {
                 return deleteRecord(record);
             }
         }),
-        [records, loading, meta, folderId]
+        [records, loading, meta]
     );
 };
