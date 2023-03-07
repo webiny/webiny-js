@@ -16781,13 +16781,10 @@ __metadata:
     "@webiny/api-file-manager-s3": 0.0.0
     "@webiny/api-form-builder": 0.0.0
     "@webiny/api-form-builder-so-ddb": 0.0.0
-    "@webiny/api-headless-cms": 0.0.0
-    "@webiny/api-headless-cms-ddb": 0.0.0
     "@webiny/api-i18n": 0.0.0
     "@webiny/api-i18n-content": 0.0.0
     "@webiny/api-i18n-ddb": 0.0.0
     "@webiny/api-page-builder": 0.0.0
-    "@webiny/api-page-builder-aco": 0.0.0
     "@webiny/api-page-builder-import-export": 0.0.0
     "@webiny/api-page-builder-import-export-so-ddb": 0.0.0
     "@webiny/api-page-builder-so-ddb": 0.0.0

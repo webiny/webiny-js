@@ -1,6 +1,6 @@
 import { ContextPlugin } from "@webiny/api";
 
-import { createImportExportPageHooks, createPageHooks } from "~/page/hooks";
+import { createPageHooks } from "~/page/hooks";
 import { createPageProcessors } from "~/page/processors";
 import { getSearchablePageContent } from "~/utils/getSearchableContent";
 
@@ -23,14 +23,6 @@ export const createAcoPageBuilderContext = () => {
     return new ContextPlugin<PbAcoContext>(context => {
         setupContext(context);
         createPageHooks(context);
-        createPageProcessors(context);
-    });
-};
-
-export const createAcoPageBuilderImportExportContext = () => {
-    return new ContextPlugin<PbAcoContext>(context => {
-        setupContext(context);
-        createImportExportPageHooks(context);
         createPageProcessors(context);
     });
 };
