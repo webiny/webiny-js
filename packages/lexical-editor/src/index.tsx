@@ -7,6 +7,7 @@ export { useFontColorPicker } from "~/hooks/useFontColorPicker";
 export { Divider } from "~/ui/Divider";
 export { DropDownItem } from "~/ui/DropDown";
 export { DropDown } from "~/ui/DropDown";
+export { ToolbarActionDialog } from "~/ui/ToolbarActionDialog";
 // actions
 export { BoldAction } from "~/components/ToolbarActions/BoldAction";
 export { BulletListAction } from "~/components/ToolbarActions/BulletListAction";

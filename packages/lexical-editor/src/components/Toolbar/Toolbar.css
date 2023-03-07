@@ -194,7 +194,7 @@ i.chevron-down {
   background-color: rgb(223, 232, 250);
 }
 
-i.font-color {
+i.font-color, .icon.font-color {
   background-image: url("../../images/icons/font-color.svg");
 }
 

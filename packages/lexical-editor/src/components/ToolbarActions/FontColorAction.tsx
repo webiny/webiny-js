@@ -1,14 +1,10 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import {
-    $getSelection,
-    $isRangeSelection,
-    COMMAND_PRIORITY_CRITICAL,
-    SELECTION_CHANGE_COMMAND
-} from "lexical";
-import { $getSelectionStyleValueForProperty, $patchStyleText } from "@lexical/selection";
+import { $getSelection, $isRangeSelection, LexicalCommand } from "lexical";
+import { $getSelectionStyleValueForProperty } from "@lexical/selection";
 import { Compose, makeComposable } from "@webiny/react-composition";
 import { FontColorActionContext } from "~/context/FontColorActionContext";
+import { ADD_FONT_COLOR_COMMAND, FontColorPayload } from "~/nodes/FontColorNode";
 
 /*
  * Composable Color Picker component that is mounted on toolbar action.
@@ -38,12 +34,6 @@ export const FontColorAction: FontColorAction = () => {
     const [activeEditor, setActiveEditor] = useState(editor);
     const [fontColor, setFontColor] = useState<string>("#000");
 
-    const updateToolbar = useCallback(() => {
-        const selection = $getSelection();
-        if ($isRangeSelection(selection)) {
-        }
-    }, [activeEditor]);
-
     useEffect(() => {
         const selection = $getSelection();
         if ($isRangeSelection(selection)) {
@@ -51,39 +41,19 @@ export const FontColorAction: FontColorAction = () => {
         }
     }, [activeEditor]);
 
-    const applyStyleText = useCallback(
-        (styles: Record<string, string>) => {
-            activeEditor.update(() => {
-                const selection = $getSelection();
-                if ($isRangeSelection(selection)) {
-                    $patchStyleText(selection, styles);
-                }
-            });
-        },
-        [activeEditor]
-    );
-
-    const onFontColorSelect = useCallback(
-        (value: string) => {
-            applyStyleText({ color: value });
-        },
-        [applyStyleText]
-    );
-
-    useEffect(() => {
-        return editor.registerCommand(
-            SELECTION_CHANGE_COMMAND,
-            (_payload, newEditor) => {
-                updateToolbar();
-                setActiveEditor(newEditor);
-                return false;
-            },
-            COMMAND_PRIORITY_CRITICAL
-        );
-    }, [editor, updateToolbar]);
+    const onFontColorSelect = useCallback((value: string) => {
+        editor.dispatchCommand<LexicalCommand<FontColorPayload>>(ADD_FONT_COLOR_COMMAND, {
+            themeColor: value
+        });
+    }, []);
 
     return (
-        <FontColorActionContext.Provider value={{ value: fontColor, onChange: onFontColorSelect }}>
+        <FontColorActionContext.Provider
+            value={{
+                value: fontColor,
+                applyColor: onFontColorSelect
+            }}
+        >
             <FontColorPicker />
         </FontColorActionContext.Provider>
     );

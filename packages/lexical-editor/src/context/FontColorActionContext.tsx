@@ -1,8 +1,16 @@
 import React from "react";
 
 export interface FontColorActionContext {
+    /*
+     * @desc Current selected color value
+     * */
     value: string;
-    onChange: (value: string) => void;
+
+    /*
+     * @desc Apply color to selected text.
+     * @params: value
+     */
+    applyColor: (value: string) => void;
 }
 
 export const FontColorActionContext = React.createContext<FontColorActionContext | undefined>(

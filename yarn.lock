@@ -13895,7 +13895,7 @@ __metadata:
     platform: ^1.3.5
     prop-types: ^15.7.2
     react: 17.0.2
-    react-color: ^2.14.1
+    react-color: ^2.19.3
     react-dnd: ^11.1.3
     react-dnd-html5-backend: ^11.1.3
     react-dom: 17.0.2
@@ -14121,7 +14121,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/app-theme-manager@workspace:packages/app-theme-manager":
+"@webiny/app-theme-manager@0.0.0, @webiny/app-theme-manager@workspace:packages/app-theme-manager":
   version: 0.0.0-use.local
   resolution: "@webiny/app-theme-manager@workspace:packages/app-theme-manager"
   dependencies:
@@ -15170,6 +15170,7 @@ __metadata:
     "@lexical/rich-text": 0.8.1
     "@lexical/selection": 0.8.1
     "@lexical/utils": 0.8.1
+    "@webiny/app-page-builder-elements": 0.0.0
     "@webiny/cli": ^5.33.1
     "@webiny/project-utils": ^5.33.1
     "@webiny/react-composition": 0.0.0
@@ -16205,17 +16206,21 @@ __metadata:
     "@webiny/app-form-builder": 0.0.0
     "@webiny/app-page-builder": 0.0.0
     "@webiny/app-page-builder-editor": 0.0.0
+    "@webiny/app-page-builder-elements": 0.0.0
     "@webiny/app-serverless-cms": 0.0.0
+    "@webiny/app-theme-manager": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/lexical-editor": 0.0.0
     "@webiny/plugins": 0.0.0
     "@webiny/react-properties": 0.0.0
     "@webiny/serverless-cms-aws": 0.0.0
+    "@webiny/ui": 0.0.0
     core-js: ^3.0.1
     cross-env: ^5.0.2
     cross-fetch: ^3.0.4
     prop-types: ^15.7.2
     react: 17.0.2
+    react-color: ^2.19.3
     react-dom: 17.0.2
     regenerator-runtime: ^0.13.5
     theme: ^0.1.0
@@ -36142,7 +36147,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-color@npm:^2.14.1, react-color@npm:^2.17.0":
+"react-color@npm:^2.14.1, react-color@npm:^2.17.0, react-color@npm:^2.19.3":
   version: 2.19.3
   resolution: "react-color@npm:2.19.3"
   dependencies:

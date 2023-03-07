@@ -18,6 +18,7 @@ import { RichTextEditorProvider } from "~/context/RichTextEditorContext";
 import { isValidLexicalData } from "~/utils/isValidLexicalData";
 import { LexicalUpdateStatePlugin } from "~/plugins/LexicalUpdateStatePlugin";
 import { BlurEventPlugin } from "~/plugins/BlurEventPlugin/BlurEventPlugin";
+import { FontColorPlugin } from "~/plugins/FontColorPlugin/FontColorPlugin";
 
 export interface RichTextEditorProps {
     toolbar?: React.ReactNode;
@@ -91,6 +92,7 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
                 <OnChangePlugin onChange={handleOnChange} />
                 {value && <LexicalUpdateStatePlugin value={value} />}
                 <ClearEditorPlugin />
+                <FontColorPlugin />
                 {/* Events */}
                 {onBlur && <BlurEventPlugin onBlur={onBlur} />}
                 {focus && <AutoFocusPlugin />}
