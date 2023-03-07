@@ -86,17 +86,6 @@ export const DUPLICATE_PAGE = gql`
             duplicatePage(id: $id) {
                 data {
                     ${LIST_PAGES_DATA_FIELDS}
-                    settings {
-                        general {
-                            snippet
-                            tags
-                            layout
-                            image {
-                                id
-                                src
-                            }
-                        }
-                    }
                 }
                 ${error}
             }
