@@ -42,9 +42,13 @@ import { createPageBlockEntity } from "~/definitions/pageBlockEntity";
 import { createPageBlockDynamoDbFields } from "~/operations/pageBlock/fields";
 import { createPageBlockStorageOperations } from "~/operations/pageBlock";
 
+export * from "./plugins";
+
 import { createPageTemplateEntity } from "~/definitions/pageTemplateEntity";
 import { createPageTemplateDynamoDbFields } from "~/operations/pageTemplate/fields";
 import { createPageTemplateStorageOperations } from "~/operations/pageTemplate";
+
+
 
 export const createStorageOperations: StorageOperationsFactory = params => {
     const {
