@@ -74,17 +74,9 @@ export const SearchRecordsProvider = ({ children }: Props) => {
         records,
         loading,
         meta,
-        async listRecords(type?: string, folderId?: string, limit = 10, after?: string) {
+        async listRecords(type?: string, folderId?: string, limit = 20, after?: string) {
             if (!folderId || !type) {
                 throw new Error("`folderId` and `type` are mandatory");
-            }
-
-            /*
-             * We are setting `fetchPolicy: "network-only"`, this causes a second network fetch in case
-             * of multiple items pages while we navigate back to an already loaded folder.
-             */
-            if (meta[folderId!] && !meta[folderId!].hasMoreItems) {
-                return;
             }
 
             const action = after ? "LIST_MORE" : "LIST";
