@@ -17,6 +17,7 @@ export const CoreOutput = createAppModule({
             }
 
             return {
+                webinyInstanceId: output["webinyInstanceId"] as string,
                 fileManagerBucketId: output["fileManagerBucketId"] as string,
                 primaryDynamodbTableArn: output["primaryDynamodbTableArn"] as string,
                 primaryDynamodbTableName: output["primaryDynamodbTableName"] as string,
@@ -43,7 +44,7 @@ export const CoreOutput = createAppModule({
                 elasticsearchDynamodbTableName: output["elasticsearchDynamodbTableName"] as
                     | string
                     | undefined,
-                lambdaFunctionsList: output['lambdaFunctionsList'] as any[]
+                lambdaFunctionsList: output["lambdaFunctionsList"] as any[]
             };
         });
     }

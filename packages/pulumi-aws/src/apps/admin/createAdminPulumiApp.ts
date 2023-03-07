@@ -26,10 +26,13 @@ export interface CreateAdminPulumiAppParams {
     productionEnvironments?: PulumiAppParam<string[]>;
 }
 
+const APP_NAME = "admin";
+const APP_PATH = "apps/admin";
+
 export const createAdminPulumiApp = (projectAppParams: CreateAdminPulumiAppParams) => {
     return createReactPulumiApp({
-        name: "admin",
-        folder: "apps/admin",
+        name: APP_NAME,
+        folder: APP_PATH,
         ...projectAppParams
     });
 };

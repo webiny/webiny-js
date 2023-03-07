@@ -13,6 +13,7 @@ import {
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
 import { tagResources } from "~/utils";
 import { withCommonLambdaEnvVariables, addLambdaFunctionsListOutput } from "~/utils";
+import { getStackExport } from "@webiny/cli-plugin-deploy-pulumi/utils";
 
 export type ApiPulumiApp = ReturnType<typeof createApiPulumiApp>;
 
@@ -45,10 +46,13 @@ export interface CreateApiPulumiAppParams {
     productionEnvironments?: PulumiAppParam<string[]>;
 }
 
+const APP_NAME = "api";
+const APP_PATH = "apps/api";
+
 export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = {}) => {
     const app = createPulumiApp({
-        name: "api",
-        path: "apps/api",
+        name: APP_NAME,
+        path: APP_PATH,
         config: projectAppParams,
         program: async app => {
             const pulumiResourceNamePrefix = app.getParam(
@@ -62,6 +66,20 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 });
             }
 
+            const lambdaFunctionsList = getStackExport({
+                folder: "apps/api",
+                env: "dev"
+            })
+                .deployment.resources.filter(
+                    (item: Record<string, any>) => item.type === "aws:lambda/function:Function"
+                )
+                .map(item => {
+                    console.log("item", item);
+                    return { name: item.outputs.name, arn: item.outputs.arn };
+                });
+
+            console.log("ww");
+            console.log(lambdaFunctionsList);
             // Overrides must be applied via a handler, registered at the very start of the program.
             // By doing this, we're ensuring user's adjustments are not applied too late.
             if (projectAppParams.pulumi) {
@@ -218,11 +236,13 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 dynamoDbElasticsearchTable: core.elasticsearchDynamodbTableName
             });
 
-            addLambdaFunctionsListOutput({app});
+            addLambdaFunctionsListOutput({ app });
 
             tagResources({
+                WbyProjectApp: APP_NAME,
                 WbyProjectName: String(process.env["WEBINY_PROJECT_NAME"]),
-                WbyEnvironment: String(process.env["WEBINY_ENV"])
+                WbyEnvironment: String(process.env["WEBINY_ENV"]),
+                WbyInstanceId: core.webinyInstanceId as unknown as string
             });
 
             return {

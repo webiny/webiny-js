@@ -1,6 +1,7 @@
 const createProjectApplicationWorkspace = require("./createProjectApplicationWorkspace");
 const getPulumi = require("./getPulumi");
 const getStackOutput = require("./getStackOutput");
+const getStackExport = require("./getStackExport");
 const createPulumiCommand = require("./createPulumiCommand");
 const loadEnvVariables = require("./loadEnvVariables");
 const processHooks = require("./processHooks");
@@ -13,6 +14,7 @@ const getRandomColorForString = require("./getRandomColorForString");
 module.exports = {
     getPulumi,
     getStackOutput,
+    getStackExport,
     createPulumiCommand,
     loadEnvVariables,
     mapStackOutput,

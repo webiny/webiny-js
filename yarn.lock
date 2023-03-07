@@ -7225,6 +7225,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@pulumi/random@npm:^4.11.2":
+  version: 4.11.2
+  resolution: "@pulumi/random@npm:4.11.2"
+  dependencies:
+    "@pulumi/pulumi": ^3.0.0
+  checksum: 83b336314c54a49432a7e333ee40a4208524d8f6def043033b3b0b432bab6374a4b42f62bf2e9bf95da961c0ef9045f889ab6e08ff8d77e8aedbd6e31d91af24
+  languageName: node
+  linkType: hard
+
 "@reach/router@npm:^1.2.1":
   version: 1.3.4
   resolution: "@reach/router@npm:1.3.4"
@@ -13740,6 +13749,7 @@ __metadata:
     "@babel/runtime": ^7.19.0
     "@pulumi/aws": ^5.8.0
     "@pulumi/pulumi": ^3.34.0
+    "@pulumi/random": ^4.11.2
     "@webiny/api-page-builder": 0.0.0
     "@webiny/aws-layers": 0.0.0
     "@webiny/cli": 0.0.0
