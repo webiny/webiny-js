@@ -149,7 +149,7 @@ interface BaseTransportSendData {
     bcc?: string[];
     from?: string;
     subject: string;
-    text: string;
+    text?: string;
     html?: string;
     replyTo?: string;
 }

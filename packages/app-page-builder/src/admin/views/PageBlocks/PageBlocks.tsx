@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from "react";
+import React, { useMemo, useCallback, useState } from "react";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
 import { useSecurity } from "@webiny/app-security";
 
@@ -13,6 +13,7 @@ export interface CreatableItem {
 }
 
 const PageBlocks: React.FC = () => {
+    const [filter, setFilter] = useState<string>("");
     const { identity, getPermission } = useSecurity();
     const pbPageBlockPermission = useMemo((): PageBuilderSecurityPermission | null => {
         return getPermission("pb.block");
@@ -61,10 +62,19 @@ const PageBlocks: React.FC = () => {
     return (
         <SplitView>
             <LeftPanel>
-                <BlocksByCategoriesDataList canCreate={canCreate} />
+                <BlocksByCategoriesDataList
+                    filter={filter}
+                    setFilter={setFilter}
+                    canCreate={canCreate}
+                />
             </LeftPanel>
             <RightPanel>
-                <PageBlocksDataList canCreate={canCreate} canEdit={canEdit} canDelete={canDelete} />
+                <PageBlocksDataList
+                    filter={filter}
+                    canCreate={canCreate}
+                    canEdit={canEdit}
+                    canDelete={canDelete}
+                />
             </RightPanel>
         </SplitView>
     );

@@ -44,7 +44,7 @@ export const createForm = (params: CreateFormParams) => {
         }, [variablesHash]);
 
         const preloadedFormData = useMemo(() => {
-            return "formId" in getFormDataLoad ? getFormDataLoad : null;
+            return getFormDataLoad && "formId" in getFormDataLoad ? getFormDataLoad : null;
         }, [getFormDataLoad]);
 
         // The `preloadedFormData` initial state assignment will occur in the initial component render.
@@ -68,7 +68,6 @@ export const createForm = (params: CreateFormParams) => {
             if (cached) {
                 setFormData(cached);
             } else {
-                // If
                 if ("then" in getFormDataLoad) {
                     setLoading(true);
                     getFormDataLoad.then(formData => {

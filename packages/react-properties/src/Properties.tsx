@@ -5,7 +5,7 @@ export interface Property {
     id: string;
     parent: string;
     name: string;
-    value: unknown;
+    value?: unknown;
     array?: boolean;
 }
 

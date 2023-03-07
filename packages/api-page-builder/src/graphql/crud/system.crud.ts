@@ -1,7 +1,5 @@
 import WebinyError from "@webiny/error";
 import { NotAuthorizedError } from "@webiny/api-security";
-import { UpgradePlugin } from "@webiny/api-upgrade/types";
-import { getApplicablePlugin } from "@webiny/api-upgrade";
 import { preparePageData } from "./install/welcomeToWebinyPageData";
 import { preparePageDataLegacy } from "./install/welcomeToWebinyPageDataLegacy";
 import { notFoundPageData } from "./install/notFoundPageData";
@@ -229,30 +227,6 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCrud => 
             await onSystemAfterInstall.publish({
                 tenant: getTenantId()
             });
-        },
-        async upgradeSystem(version) {
-            const identity = context.security.getIdentity();
-            if (!identity) {
-                throw new NotAuthorizedError();
-            }
-
-            const upgradePlugins = context.plugins
-                .byType<UpgradePlugin>("api-upgrade")
-                .filter(pl => pl.app === "page-builder");
-
-            const plugin = getApplicablePlugin({
-                deployedVersion: context.WEBINY_VERSION,
-                installedAppVersion: await this.getSystemVersion(),
-                upgradePlugins,
-                upgradeToVersion: version
-            });
-
-            await plugin.apply(context);
-
-            // Store new app version
-            await this.setSystemVersion(version);
-
-            return true;
         }
     };
 };

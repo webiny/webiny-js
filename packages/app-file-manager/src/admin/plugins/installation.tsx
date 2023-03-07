@@ -95,8 +95,7 @@ const plugin: AdminInstallationPlugin = {
     },
     render({ onInstalled }) {
         return <FMInstaller onInstalled={onInstalled} />;
-    },
-    upgrades: []
+    }
 };
 
 export default plugin;

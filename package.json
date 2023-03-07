@@ -3,6 +3,7 @@
   "workspaces": {
     "packages": [
       "packages/*",
+      "migrations",
       "apps/admin",
       "apps/custom",
       "apps/website",
@@ -12,6 +13,7 @@
       "apps/api/apw/*",
       "apps/api/fileManager/*",
       "apps/api/graphql",
+      "apps/api/migration",
       "apps/api/pageBuilder/updateSettings",
       "apps/api/pageBuilder/import/*",
       "apps/api/pageBuilder/export/*"

@@ -5,6 +5,7 @@ import { usePageBuilder } from "~/hooks/usePageBuilder";
 import { DisplayMode, PbElement } from "~/types";
 import { ElementRoot } from "./ElementRoot";
 import { applyFallbackDisplayMode } from "~/editor/plugins/elementSettings/elementSettingsUtils";
+import { makeComposable } from "@webiny/react-composition";
 
 const DATA_NAMESPACE = "data.text";
 
@@ -12,7 +13,7 @@ interface TextPropsType {
     element: PbElement;
     rootClassName?: string;
 }
-const TextElement: React.FC<TextPropsType> = ({ element, rootClassName }) => {
+const TextElement = makeComposable<TextPropsType>("TextElement", ({ element, rootClassName }) => {
     const {
         responsiveDisplayMode: { displayMode }
     } = usePageBuilder();
@@ -38,8 +39,8 @@ const TextElement: React.FC<TextPropsType> = ({ element, rootClassName }) => {
             })}
         </ElementRoot>
     );
-};
+});
 
 export const className = "webiny-pb-base-page-element-style webiny-pb-page-element-text";
 
-export default React.memo(TextElement);
+export default TextElement;

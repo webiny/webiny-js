@@ -20,6 +20,7 @@
     "@emotion/core": "^10.0.17",
     "@emotion/styled": "^10.0.17",
     "@material-design-icons/svg": "^0.14.2",
+    "@material-symbols/svg-400": "^0.4.1",
     "@svgr/webpack": "^6.1.1",
     "@types/react": "17.0.39",
     "@webiny/app": "0.0.0",

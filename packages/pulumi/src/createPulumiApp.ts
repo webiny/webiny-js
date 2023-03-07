@@ -92,6 +92,7 @@ export function createPulumiApp<TResources extends Record<string, unknown>>(
         ) {
             const config = params.config ?? ({} as PulumiAppResourceArgs<T>);
             const opts = params.opts ?? {};
+            const meta = params.meta ?? {};
 
             const promise = new Promise<PulumiAppResourceType<T>>(resolve => {
                 app.handlers.push(() => {
@@ -106,6 +107,7 @@ export function createPulumiApp<TResources extends Record<string, unknown>>(
                 type: resourceConstructor,
                 config: createPulumiAppResourceConfigProxy(config),
                 opts,
+                meta,
                 output: pulumi.output(promise)
             };
 

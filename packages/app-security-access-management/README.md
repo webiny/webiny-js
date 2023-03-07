@@ -51,7 +51,7 @@ A simple `Authenticator` React component (uses Amazon Cognito and AWS Amplify's 
 
 ```tsx
 import React, { useEffect } from "react";
-import Auth from "@aws-amplify/auth";
+import { Auth } from "@aws-amplify/auth";
 import { useSecurity, SecurityIdentity } from "@webiny/app-security";
 
 // Apart from the React component, we also configure the Auth class here.

@@ -238,7 +238,7 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                     createPage(from: ID, category: String, meta: JSON): PbPageResponse
 
                     # Update page by given ID.
-                    updatePage(id: ID!, data: PbUpdatePageInput!): PbPageResponse
+                    updatePage(id: ID!, data: PbUpdatePageInput!, meta: JSON): PbPageResponse
 
                     # Duplicate page by given ID.
                     duplicatePage(id: ID!): PbPageResponse

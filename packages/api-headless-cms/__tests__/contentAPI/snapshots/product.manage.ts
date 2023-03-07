@@ -44,6 +44,7 @@ export default /* GraphQL */ `
     type Product_Variant_Options {
     name: String
     price: Number
+    image: String
     category: RefField
     categories: [RefField!]
     longText: [String]
@@ -80,6 +81,7 @@ export default /* GraphQL */ `
     type Product_Variant {
     name: String
     price: Number
+    images: [String]
     category: RefField
     options: [Product_Variant_Options!]
     }
@@ -124,6 +126,7 @@ export default /* GraphQL */ `
     input Product_Variant_OptionsInput {
         name: String
         price: Number
+        image: String
         category: RefFieldInput!
         categories: [RefFieldInput]
         longText: [String]
@@ -132,6 +135,7 @@ export default /* GraphQL */ `
     input Product_VariantInput {
         name: String
         price: Number
+        images: [String]
         category: RefFieldInput!
         options: [Product_Variant_OptionsInput!]
     }

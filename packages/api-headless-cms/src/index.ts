@@ -1,5 +1,4 @@
 import { createGraphQL as baseCreateGraphQL, CreateGraphQLParams } from "~/graphql";
-import { createUpgrades } from "~/upgrades";
 import { createDefaultModelManager } from "~/modelManager";
 import { createGraphQLFields } from "~/graphqlFields";
 import { createValidators } from "~/validators";
@@ -48,8 +47,7 @@ export const createHeadlessCmsContext = (params: ContentContextParams) => {
         createValidators(),
         createDefaultStorageTransform(),
         createObjectStorageTransform(),
-        createDynamicZoneStorageTransform(),
-        createUpgrades()
+        createDynamicZoneStorageTransform()
     ];
 };
 export * from "~/graphqlFields";

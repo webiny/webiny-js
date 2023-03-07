@@ -13,7 +13,7 @@
   "license": "MIT",
   "dependencies": {
     "@apollo/react-hooks": "^3.1.5",
-    "@aws-amplify/auth": "^4.3.10",
+    "@aws-amplify/auth": "^5.1.9",
     "@emotion/styled": "^10.0.27",
     "@webiny/app": "0.0.0",
     "@webiny/app-admin": "0.0.0",

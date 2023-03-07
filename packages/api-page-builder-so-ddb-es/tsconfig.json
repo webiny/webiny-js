@@ -4,7 +4,6 @@
   "references": [
     { "path": "../api-elasticsearch" },
     { "path": "../api-page-builder" },
-    { "path": "../api-upgrade" },
     { "path": "../db-dynamodb" },
     { "path": "../error" },
     { "path": "../handler-db" },
@@ -28,8 +27,6 @@
       "@webiny/api-elasticsearch": ["../api-elasticsearch/src"],
       "@webiny/api-page-builder/*": ["../api-page-builder/src/*"],
       "@webiny/api-page-builder": ["../api-page-builder/src"],
-      "@webiny/api-upgrade/*": ["../api-upgrade/src/*"],
-      "@webiny/api-upgrade": ["../api-upgrade/src"],
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
       "@webiny/db-dynamodb": ["../db-dynamodb/src"],
       "@webiny/error/*": ["../error/src/*"],
