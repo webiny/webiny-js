@@ -6,7 +6,7 @@ import { createPrivateAppBucket } from "../createAppBucket";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
 import { createPrerenderingService } from "./WebsitePrerendering";
 import { CoreOutput, VpcConfig } from "~/apps";
-import { addLambdaFunctionsListOutput, tagResources, withCommonLambdaEnvVariables } from "~/utils";
+import { addDomainsUrlsOutputs, tagResources, withCommonLambdaEnvVariables } from "~/utils";
 import { applyTenantRouter } from "~/apps/tenantRouter";
 
 export type WebsitePulumiApp = ReturnType<typeof createWebsitePulumiApp>;
@@ -236,18 +236,35 @@ export const createWebsitePulumiApp = (projectAppParams: CreateWebsitePulumiAppP
                 // The files that are generated in that process are stored in the `deliveryStorage` S3 bucket further below.
                 appId: appCloudfront.output.id,
                 appStorage: appBucket.bucket.output.id,
-                appUrl: appCloudfront.output.domainName.apply(value => `https://${value}`),
-                appDomain: appCloudfront.output.domainName,
+
                 // These are the Cloudfront and S3 bucket that will deliver static pages to the actual website visitors.
                 // The static HTML snapshots delivered from them still rely on the app's S3 bucket
                 // defined above, for serving static assets (JS, CSS, images).
                 deliveryId: deliveryCloudfront.output.id,
-                deliveryStorage: deliveryBucket.bucket.output.id,
-                deliveryDomain: deliveryCloudfront.output.domainName,
-                deliveryUrl: deliveryCloudfront.output.domainName.apply(value => `https://${value}`)
+                deliveryStorage: deliveryBucket.bucket.output.id
             });
 
-            addLambdaFunctionsListOutput({ app });
+            addDomainsUrlsOutputs({
+                app,
+                cloudfrontDistribution: appCloudfront,
+                map: {
+                    distributionDomain: "cloudfrontAppDomain",
+                    distributionUrl: "cloudfrontAppUrl",
+                    usedDomain: "appDomain",
+                    usedUrl: "appUrl"
+                }
+            });
+
+            addDomainsUrlsOutputs({
+                app,
+                cloudfrontDistribution: deliveryCloudfront,
+                map: {
+                    distributionDomain: "cloudfrontDeliveryDomain",
+                    distributionUrl: "cloudfrontDeliveryUrl",
+                    usedDomain: "deliveryDomain",
+                    usedUrl: "deliveryUrl"
+                }
+            });
 
             tagResources({
                 WbyProjectName: String(process.env["WEBINY_PROJECT_NAME"]),
