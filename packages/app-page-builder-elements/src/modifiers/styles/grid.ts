@@ -16,14 +16,15 @@ const grid: ElementStylesModifier = ({ element, theme }) => {
             return returnStyles;
         }
 
-        const columns = element.data?.settings?.grid?.cellsType?.split("-")?.length || 1;
+        const columnsCount = element.data?.settings?.grid?.cellsType?.split("-")?.length || 1;
         const columnSizes: number[] =
             element.data?.settings?.grid?.columnSizes ||
-            element.data?.settings?.grid?.cellsType?.split("-");
+            element.data?.settings?.grid?.cellsType?.split("-").map((x: string) => Number(x)); // cellsType is here for backward compatibility.
         const rowCount = element.data.settings?.grid?.rowCount || 1;
+
         const value = { ...gridSettings[breakpointName] };
-        const cellWidthOffset = value.columnGap
-            ? `${value.columnGap - value.columnGap / columns}px`
+        const cellWidthReduction = value.columnGap
+            ? `${value.columnGap - value.columnGap / columnsCount}px`
             : null; // Number of pixels we need to subtract from each cell to ensure they fit in the grid with column gap
 
         // We need to transform gap values to pixels (e.g. "15" to "15px")
@@ -40,7 +41,7 @@ const grid: ElementStylesModifier = ({ element, theme }) => {
             breakpointName === "mobile-portrait"; // Only applies to single-row grid or on mobile view.
 
         // If we have flex direction set to "column" or "column-reverse",
-        // we also want to apply 100% width to direct `pb-cell` elements
+        // we also want to apply 100% width to direct `pb-cell` elements.
         if (
             value.flexDirection !== "row" &&
             element.data?.settings?.verticalAlign?.[breakpointName] !== "stretch" &&
@@ -48,15 +49,15 @@ const grid: ElementStylesModifier = ({ element, theme }) => {
         ) {
             columnSizes.forEach(
                 (_, index) =>
-                    (value[`& > pb-cell:nth-of-type(${columns}n + ${index + 1})`] = {
+                    (value[`& > pb-cell:nth-of-type(${columnsCount}n + ${index + 1})`] = {
                         width: "100%"
                     })
             );
-        } else if (cellWidthOffset) {
+        } else if (cellWidthReduction) {
             columnSizes.forEach(
                 (size, index) =>
-                    (value[`& > pb-cell:nth-of-type(${columns}n + ${index + 1})`] = {
-                        width: `calc(${(size / 12) * 100}% - ${cellWidthOffset})`
+                    (value[`& > pb-cell:nth-of-type(${columnsCount}n + ${index + 1})`] = {
+                        width: `calc(${(size / 12) * 100}% - ${cellWidthReduction})`
                     })
             );
         }

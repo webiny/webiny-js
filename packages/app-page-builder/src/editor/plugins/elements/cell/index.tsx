@@ -1,5 +1,6 @@
 import React from "react";
 import kebabCase from "lodash/kebabCase";
+import set from "lodash/set";
 import Cell from "./Cell";
 import {
     DisplayMode,
@@ -75,14 +76,19 @@ const cellPlugin = (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPl
                         ),
                         grid: {
                             size: lodashGet(options, "data.settings.grid.size", 1)
-                        },
-                        horizontalAlignFlex: createInitialPerDeviceSettingValue(
-                            "flex-start",
-                            DisplayMode.DESKTOP
-                        )
+                        }
                     }
                 }
             };
+
+            if (!isLegacyRenderingEngine) {
+                set(
+                    defaultValue,
+                    "data.settings.horizontalAlignFlex",
+                    createInitialPerDeviceSettingValue("flex-start", DisplayMode.DESKTOP)
+                );
+            }
+
             return typeof args.create === "function" ? args.create(defaultValue) : defaultValue;
         },
         onReceived({ source, position, target, state, meta }) {

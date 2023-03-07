@@ -133,11 +133,11 @@ export const GridSize: React.FC<PbEditorPageElementSettingsRenderComponentProps>
     ) as unknown as PbEditorElement;
     const currentCellsType = element.data.settings?.grid?.cellsType;
     const currentRowCount = element.data.settings?.grid?.rowCount || 1;
-    const columns = element.data?.settings?.grid?.cellsType?.split("-")?.length || 1;
+    const columnsCount = element.data?.settings?.grid?.cellsType?.split("-")?.length || 1;
     const presetPlugins = getPresetPlugins();
 
     const onInputSizeChange = (value: number, index: number) => {
-        const columnSizes = element.elements?.slice(0, columns)?.map((cell, cellIndex) => {
+        const columnSizes = element.elements?.slice(0, columnsCount)?.map((cell, cellIndex) => {
             if (cellIndex === index) {
                 return value;
             }
@@ -149,7 +149,7 @@ export const GridSize: React.FC<PbEditorPageElementSettingsRenderComponentProps>
             set({}, "data.settings.grid.columnSizes", columnSizes)
         );
         const cellsToUpdate = [...Array(currentRowCount)].map(
-            (_, rowIndex) => index + columns * rowIndex
+            (_, rowIndex) => index + columnsCount * rowIndex
         );
         const updatedCells = element.elements.map((cell, cellIndex) => {
             if (cellsToUpdate.includes(cellIndex)) {
@@ -195,7 +195,7 @@ export const GridSize: React.FC<PbEditorPageElementSettingsRenderComponentProps>
             })
         );
     };
-    const totalCellsUsed = element.elements.slice(0, columns).reduce((total, cell) => {
+    const totalCellsUsed = element.elements.slice(0, columnsCount).reduce((total, cell) => {
         return total + ((cell as PbEditorElement).data.settings?.grid?.size || 1);
     }, 0);
 
@@ -215,7 +215,7 @@ export const GridSize: React.FC<PbEditorPageElementSettingsRenderComponentProps>
             new UpdateElementActionEvent({
                 element: {
                     ...newElement,
-                    elements: updateCells(newElement, rowCount, columns) as any
+                    elements: updateCells(newElement, rowCount, columnsCount) as any
                 },
                 history: true
             })
@@ -259,7 +259,7 @@ export const GridSize: React.FC<PbEditorPageElementSettingsRenderComponentProps>
                 )}
 
                 <Grid className={classes.grid}>
-                    {[...Array(columns)].map((_, index) => {
+                    {[...Array(columnsCount)].map((_, index) => {
                         const size =
                             (element.elements?.[index] as PbEditorElement)?.data?.settings?.grid
                                 ?.size || 1;

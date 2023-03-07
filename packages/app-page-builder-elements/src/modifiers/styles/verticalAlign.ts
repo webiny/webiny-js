@@ -45,7 +45,8 @@ const verticalAlign: ElementStylesModifier = ({ element, theme }) => {
 
                 return newStyles;
             } else if (rowCount > 1) {
-                const columns = element.data?.settings?.grid?.cellsType?.split("-")?.length || 1;
+                const columnsCount =
+                    element.data?.settings?.grid?.cellsType?.split("-")?.length || 1;
                 const isMobileView =
                     breakpointName === "mobile-landscape" || breakpointName === "mobile-portrait";
 
@@ -56,7 +57,7 @@ const verticalAlign: ElementStylesModifier = ({ element, theme }) => {
                             ? element.data.settings?.gridSettings[breakpointName]?.flexDirection
                             : "",
                         flexWrap: "wrap",
-                        flex: `1 0 ${100 / columns}%`,
+                        flex: `1 0 ${100 / columnsCount}%`,
                         alignItems: verticalAlign[breakpointName]
                     }
                 };
