@@ -9,7 +9,6 @@ import {
 import { SecurityPermission } from "@webiny/api-security/types";
 import { DbContext } from "@webiny/handler-db/types";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
-import { UpgradePlugin } from "@webiny/api-upgrade/types";
 import { Topic } from "@webiny/pubsub/types";
 import { CmsModelConverterCallable } from "~/utils/converters/ConverterCollection";
 
@@ -930,9 +929,7 @@ export interface OnSystemInstallErrorTopicParams {
 export type CmsSystemContext = {
     getSystemVersion: () => Promise<string | null>;
     setSystemVersion: (version: string) => Promise<void>;
-    getReadAPIKey(): Promise<string | null>;
     installSystem: () => Promise<void>;
-    upgradeSystem: (version: string) => Promise<boolean>;
     /**
      * Lifecycle events - deprecated
      */
@@ -2901,8 +2898,4 @@ export interface HeadlessCmsStorageOperations<C = CmsContext> {
      */
     beforeInit?: (context: C) => Promise<void>;
     init?: (context: C) => Promise<void>;
-    /**
-     * An upgrade to run if necessary.
-     */
-    upgrade?: UpgradePlugin | null;
 }

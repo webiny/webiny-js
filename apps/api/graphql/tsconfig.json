@@ -48,6 +48,9 @@
       "path": "../../../packages/api-page-builder/tsconfig.build.json"
     },
     {
+      "path": "../../../packages/api-page-builder-aco/tsconfig.build.json"
+    },
+    {
       "path": "../../../packages/api-page-builder-import-export/tsconfig.build.json"
     },
     {
@@ -139,6 +142,8 @@
       "@webiny/api-i18n-ddb": ["../../../packages/api-i18n-ddb/src"],
       "@webiny/api-page-builder/*": ["../../../packages/api-page-builder/src/*"],
       "@webiny/api-page-builder": ["../../../packages/api-page-builder/src"],
+      "@webiny/api-page-builder-aco/*": ["../../../packages/api-page-builder-aco/src/*"],
+      "@webiny/api-page-builder-aco": ["../../../packages/api-page-builder-aco/src"],
       "@webiny/api-page-builder-import-export/*": [
         "../../../packages/api-page-builder-import-export/src/*"
       ],

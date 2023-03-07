@@ -110,7 +110,6 @@ export interface SystemCRUD {
     getVersion(): Promise<string | null>;
     setVersion(version: string): Promise<void>;
     install(args: { srcPrefix: string }): Promise<boolean>;
-    upgrade(version: string, data?: Record<string, any>): Promise<boolean>;
 }
 
 export interface FileManagerSettings {

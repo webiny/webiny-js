@@ -1,6 +1,6 @@
 export const recordMocks = {
     recordA: {
-        originalId: "page-a",
+        id: "page-a",
         type: "page",
         title: "Page a",
         content: "Sed arcu quam",
@@ -12,7 +12,7 @@ export const recordMocks = {
         }
     },
     recordB: {
-        originalId: "page-b",
+        id: "page-b",
         type: "page",
         title: "Page b",
         content: "Lorem ipsum docet",
@@ -24,7 +24,7 @@ export const recordMocks = {
         }
     },
     recordC: {
-        originalId: "page-c",
+        id: "page-c",
         type: "page",
         title: "Page c",
         content: "Lorem ipsum docet",
@@ -36,7 +36,7 @@ export const recordMocks = {
         }
     },
     recordD: {
-        originalId: "post-d",
+        id: "post-d",
         type: "post",
         title: "Post d",
         content: "Sed arcu quam",
@@ -48,7 +48,7 @@ export const recordMocks = {
         }
     },
     recordE: {
-        originalId: "post-e",
+        id: "post-e",
         type: "post",
         title: "Post e",
         content: "Lorem ipsum docet",

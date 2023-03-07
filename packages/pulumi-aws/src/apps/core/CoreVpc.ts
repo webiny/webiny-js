@@ -131,6 +131,11 @@ export const CoreVpc = createAppModule({
             private: [privateSubnet1, privateSubnet2]
         };
 
+        const routeTables = {
+            privateSubnets: privateSubnetRouteTable,
+            publicSubnets: publicSubnetRouteTable
+        };
+
         app.addOutputs({
             vpcPublicSubnetIds: subnets.public.map(subNet => subNet.output.id),
             vpcPrivateSubnetIds: subnets.private.map(subNet => subNet.output.id),
@@ -139,7 +144,8 @@ export const CoreVpc = createAppModule({
 
         return {
             vpc,
-            subnets
+            subnets,
+            routeTables
         };
     }
 });

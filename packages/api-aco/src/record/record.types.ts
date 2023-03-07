@@ -11,7 +11,6 @@ export interface Location {
 
 export interface SearchRecord<TData extends GenericSearchData = GenericSearchData>
     extends AcoBaseFields {
-    originalId: string;
     type: string;
     title?: string;
     content?: string;
@@ -36,7 +35,7 @@ export interface ListSearchRecordsParams {
 
 export type CreateSearchRecordParams<TData> = Pick<
     SearchRecord<TData>,
-    "originalId" | "title" | "content" | "type" | "location" | "data"
+    "id" | "title" | "content" | "type" | "location" | "data"
 >;
 
 export interface UpdateSearchRecordParams<TData extends GenericSearchData> {
