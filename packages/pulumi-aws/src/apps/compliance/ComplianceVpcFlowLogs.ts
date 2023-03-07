@@ -1,4 +1,5 @@
 import * as aws from "@pulumi/aws";
+import { Output } from "@pulumi/pulumi";
 import { createAppModule } from "@webiny/pulumi";
 import { VpcConfig } from "@webiny/pulumi-aws/apps";
 
@@ -63,7 +64,7 @@ export const ComplianceVpcFlowLogs = createAppModule({
                 iamRoleArn: vpcFlowLogsRole.output.arn,
                 logDestination: vpcFlowLogsLogGroup.output.arn,
                 trafficType: "ALL",
-                vpcId: vpcConfig.vpcId
+                vpcId: vpcConfig.vpcId as Output<string>
             }
         });
 

@@ -1,8 +1,13 @@
 import * as aws from "@pulumi/aws";
 import { createAppModule } from "@webiny/pulumi";
-const { getStackExport } = require("@webiny/cli-plugin-deploy-pulumi/utils");
+import { getStackExport } from "@webiny/cli-plugin-deploy-pulumi/utils";
 
-const getLambdaFunctionsList = (params: { folder: string; env: string }) => {
+interface GetLambdaFunctionsListParams {
+    folder: string;
+    env: string;
+}
+
+const getLambdaFunctionsList = (params: GetLambdaFunctionsListParams) => {
     const stackExport = getStackExport(params);
     if (!stackExport) {
         throw new Error(
