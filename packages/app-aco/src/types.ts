@@ -128,6 +128,7 @@ export interface ListSearchRecordsQueryVariables {
     location: Location;
     limit?: number;
     after?: string | null;
+    sort?: string[];
 }
 
 export interface GetSearchRecordResponse {

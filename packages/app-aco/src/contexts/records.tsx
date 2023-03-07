@@ -1,5 +1,6 @@
 import React, { ReactNode, useState } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
+import orderBy from "lodash/orderBy";
 import unionBy from "lodash/unionBy";
 
 import { apolloFetchingHandler, loadingHandler } from "~/handlers";
@@ -38,7 +39,8 @@ interface SearchRecordsContext {
         type?: string,
         folderId?: string,
         limit?: number,
-        after?: string
+        after?: string,
+        sort?: string[]
     ) => Promise<SearchRecordItem[]>;
     getRecord: (id: string) => Promise<SearchRecordItem>;
     createRecord: (record: Omit<SearchRecordItem, "id">) => Promise<SearchRecordItem>;
@@ -74,19 +76,29 @@ export const SearchRecordsProvider = ({ children }: Props) => {
         records,
         loading,
         meta,
-        async listRecords(type?: string, folderId?: string, limit = 20, after?: string) {
+        async listRecords(
+            type?: string,
+            folderId?: string,
+            limit = 20,
+            after?: string,
+            sort = ["savedOn_DESC"]
+        ) {
             if (!folderId || !type) {
                 throw new Error("`folderId` and `type` are mandatory");
             }
 
             const action = after ? "LIST_MORE" : "LIST";
+            const sortParams = sort.map(s => "data." + s.split("_")[0]);
+            const sortDir = sort.map(s => s.split("_")[1].toLowerCase() as "asc" | "desc");
+
+            console.log(sortParams, sortDir);
 
             const { data: response } = await apolloFetchingHandler(
                 loadingHandler(action, setLoading),
                 () =>
                     client.query<ListSearchRecordsResponse, ListSearchRecordsQueryVariables>({
                         query: LIST_RECORDS,
-                        variables: { type, location: { folderId }, limit, after },
+                        variables: { type, location: { folderId }, limit, after, sort },
                         fetchPolicy: "network-only"
                     })
             );
@@ -97,11 +109,7 @@ export const SearchRecordsProvider = ({ children }: Props) => {
                 throw new Error(error?.message || "Could not fetch records");
             }
 
-            if (after) {
-                setRecords(records => [...new Set([...records, ...data])]);
-            } else {
-                setRecords(records => unionBy(data, records, "id"));
-            }
+            setRecords(records => orderBy(unionBy(data, records, "id"), sortParams, sortDir));
 
             setMeta(meta => ({
                 ...meta,

@@ -86,7 +86,7 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
         const foldersData = createFoldersData(folders);
         const pagesData = createRecordsData(records);
 
-        const dataset = orderBy([...foldersData, ...pagesData], ["type"], ["asc", "asc"]);
+        const dataset = orderBy([...foldersData, ...pagesData], ["type"], ["asc"]);
         setData(dataset);
     }, [{ ...folders }, { ...records }]);
 

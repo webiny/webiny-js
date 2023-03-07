@@ -40,8 +40,8 @@ export const useRecords = (type?: string, folderId?: string) => {
             loading,
             meta: meta[folderId!] || {},
             records: records.filter(record => record.location.folderId === folderId),
-            listRecords(after: string, limit?: number) {
-                return listRecords(type, folderId, limit, after);
+            listRecords(params: { after?: string; limit?: number; sort?: string[] }) {
+                return listRecords(type, folderId, params.limit, params.after, params.sort);
             },
             getRecord(id: string) {
                 return getRecord(id);

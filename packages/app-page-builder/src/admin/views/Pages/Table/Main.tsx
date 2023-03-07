@@ -117,7 +117,7 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
 
     const loadMoreLinks = async ({ hasMoreItems, cursor }: ListMeta) => {
         if (hasMoreItems && cursor) {
-            await listRecords(cursor);
+            await listRecords({ after: cursor });
         }
     };
 
