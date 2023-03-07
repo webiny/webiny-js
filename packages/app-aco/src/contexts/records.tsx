@@ -79,6 +79,14 @@ export const SearchRecordsProvider = ({ children }: Props) => {
                 throw new Error("`folderId` and `type` are mandatory");
             }
 
+            /*
+             * We are setting `fetchPolicy: "network-only"`, this causes a second network fetch in case
+             * of multiple items pages while we navigate back to an already loaded folder.
+             */
+            if (meta[folderId!] && !meta[folderId!].hasMoreItems) {
+                return;
+            }
+
             const action = after ? "LIST_MORE" : "LIST";
 
             const { data: response } = await apolloFetchingHandler(
@@ -87,7 +95,7 @@ export const SearchRecordsProvider = ({ children }: Props) => {
                     client.query<ListSearchRecordsResponse, ListSearchRecordsQueryVariables>({
                         query: LIST_RECORDS,
                         variables: { type, location: { folderId }, limit, after },
-                        fetchPolicy: "no-cache"
+                        fetchPolicy: "network-only"
                     })
             );
 
