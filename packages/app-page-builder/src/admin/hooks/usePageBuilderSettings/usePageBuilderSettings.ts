@@ -85,12 +85,10 @@ export function usePageBuilderSettings() {
         return settings.websiteUrl || defaultSettings.websiteUrl;
     };
 
-    const getPageUrl = (
-        page: Pick<PbPageData, "id" | "status" | "path">,
-        preview = false
-    ): string => {
+    const getPageUrl = (page: Pick<PbPageData, "id" | "status" | "path">): string => {
+        const preview = page.status !== "published";
         const url = getWebsiteUrl(preview) + page.path;
-        if (!preview || page.status === "published") {
+        if (!preview) {
             return url;
         }
 

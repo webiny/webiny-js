@@ -71,7 +71,7 @@ const PageOptionsMenu: React.FC<PageOptionsMenuProps> = props => {
 
     // We must prevent opening in new tab - Cypress doesn't work with new tabs.
     const target = "Cypress" in window ? "_self" : "_blank";
-    const url = getPageUrl(page, !page.locked);
+    const url = getPageUrl(page);
 
     const handlePreviewClick = useCallback(() => {
         if (isSiteRunning) {
@@ -120,7 +120,7 @@ const PageOptionsMenu: React.FC<PageOptionsMenuProps> = props => {
         return permission.rwd.includes("w");
     }, [identity]);
 
-    const previewButtonLabel = page.locked ? "View" : "Preview";
+    const previewButtonLabel = page.status === "published" ? "View" : "Preview";
     return (
         <Menu
             className={menuStyles}

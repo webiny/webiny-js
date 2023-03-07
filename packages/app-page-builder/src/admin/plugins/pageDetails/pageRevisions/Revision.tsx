@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { css } from "emotion";
 /**
  * Package timeago-react does not have types.
@@ -64,6 +64,20 @@ const Revision: React.FC<RevisionProps> = ({ revision, page }) => {
 
     const { canUnpublish, canDelete } = usePermission();
 
+    // We must prevent opening in new tab - Cypress doesn't work with new tabs.
+    const target = "Cypress" in window ? "_self" : "_blank";
+    const url = getPageUrl({ id: revision.id, status: revision.status, path: page.path });
+
+    const handlePreviewClick = useCallback(() => {
+        if (isSiteRunning) {
+            window.open(url, target, "noopener");
+        } else {
+            showConfigureWebsiteUrlDialog();
+        }
+    }, [url, isSiteRunning]);
+
+    const previewButtonLabel = revision.status === "published" ? "View" : "Preview";
+
     return (
         <ConfirmationDialog
             title="Confirmation required!"
@@ -113,26 +127,11 @@ const Revision: React.FC<RevisionProps> = ({ revision, page }) => {
                                 </MenuItem>
                             )}
 
-                            <MenuItem
-                                onClick={() => {
-                                    if (isSiteRunning) {
-                                        window.open(
-                                            getPageUrl({
-                                                ...revision,
-                                                path: page.path
-                                            }),
-                                            "_blank",
-                                            "noopener"
-                                        );
-                                    } else {
-                                        showConfigureWebsiteUrlDialog();
-                                    }
-                                }}
-                            >
+                            <MenuItem onClick={handlePreviewClick}>
                                 <ListItemGraphic>
                                     <Icon icon={<PreviewIcon />} />
                                 </ListItemGraphic>
-                                Preview
+                                {previewButtonLabel}
                             </MenuItem>
 
                             {canDelete(page) && (

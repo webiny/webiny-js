@@ -26,7 +26,7 @@ export const PageActionPreview = ({ page }: Props): ReactElement => {
 
     // We must prevent opening in new tab - Cypress doesn't work with new tabs.
     const target = "Cypress" in window ? "_self" : "_blank";
-    const url = getPageUrl(page, !page.locked);
+    const url = getPageUrl(page);
 
     const handlePreviewClick = useCallback(() => {
         if (isSiteRunning) {
@@ -36,7 +36,7 @@ export const PageActionPreview = ({ page }: Props): ReactElement => {
         }
     }, [url, isSiteRunning]);
 
-    const previewButtonLabel = page.locked ? t`View` : t`Preview`;
+    const previewButtonLabel = page.status === "published" ? t`View` : t`Preview`;
 
     return <MenuItem onClick={handlePreviewClick}>{previewButtonLabel}</MenuItem>;
 };
