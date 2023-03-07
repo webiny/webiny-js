@@ -8,6 +8,7 @@ import { CircularProgress } from "@webiny/ui/Progress";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
 
 import CategoriesDialog from "~/admin/views/Categories/CategoriesDialog";
+import PageTemplatesDialog from "~/admin/views/Pages/PageTemplatesDialog";
 import useCreatePage from "~/admin/views/Pages/hooks/useCreatePage";
 import useImportPage from "~/admin/views/Pages/hooks/useImportPage";
 import { useCanCreatePage } from "~/admin/views/Pages/hooks/useCanCreate";
@@ -29,16 +30,6 @@ import { PbPageDataItem } from "~/types";
 interface Props {
     folderId?: string;
     defaultFolderName: string;
-}
-
-enum LoadingLabel {
-    CREATING_PAGE = "Creating page...",
-    IMPORTING_PAGE = "Importing page..."
-}
-
-enum Operation {
-    CREATE = "create",
-    IMPORT = "import"
 }
 
 const getCurrentFolderList = (
@@ -70,10 +61,13 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
     const [subFolders, setSubFolders] = useState<FolderItem[]>([]);
     const [folderName, setFolderName] = useState<string>();
 
-    const [loadingLabel, setLoadingLabel] = useState<string | null>(null);
+    const [isCreateLoading, setIsCreateLoading] = useState<boolean>(false);
     const [showCategoriesDialog, setCategoriesDialog] = useState(false);
-    const openCategoryDialog = useCallback(() => setCategoriesDialog(true), []);
-    const closeCategoryDialog = useCallback(() => setCategoriesDialog(false), []);
+    const [showTemplatesDialog, setTemplatesDialog] = useState(false);
+    const openCategoriesDialog = useCallback(() => setCategoriesDialog(true), []);
+    const closeCategoriesDialog = useCallback(() => setCategoriesDialog(false), []);
+    const openTemplatesDialog = useCallback(() => setTemplatesDialog(true), []);
+    const closeTemplatesDialog = useCallback(() => setTemplatesDialog(false), []);
 
     const [showFoldersDialog, setFoldersDialog] = useState(false);
     const openFoldersDialog = useCallback(() => setFoldersDialog(true), []);
@@ -91,8 +85,6 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
 
     const [selected, setSelected] = useState<string[]>([]);
 
-    const [operation, setOperation] = useState<string>(Operation.CREATE);
-
     useEffect(() => {
         setTableHeight(tableRef?.current?.clientHeight || 0);
 
@@ -109,32 +101,19 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
         setFolderName(currentFolder?.title || defaultFolderName);
     }, [{ ...folders }, folderId]);
 
+    const { showDialog } = useImportPage({
+        setLoading: () => setIsCreateLoading(true),
+        clearLoading: () => setIsCreateLoading(false),
+        closeDialog: closeCategoriesDialog,
+        folderId
+    });
+
     const { createPageMutation } = useCreatePage({
-        setLoadingLabel: () => setLoadingLabel(LoadingLabel.CREATING_PAGE),
-        clearLoadingLabel: () => setLoadingLabel(null),
-        closeDialog: closeCategoryDialog,
+        setLoading: () => setIsCreateLoading(true),
+        clearLoading: () => setIsCreateLoading(false),
+        closeDialog: closeTemplatesDialog,
         folderId
     });
-
-    const { showDialog: importPageMutation } = useImportPage({
-        setLoadingLabel: () => setLoadingLabel(LoadingLabel.IMPORTING_PAGE),
-        clearLoadingLabel: () => setLoadingLabel(null),
-        closeDialog: closeCategoryDialog,
-        folderId
-    });
-
-    const handleOnCreatePage = useCallback(() => {
-        setOperation(Operation.CREATE);
-        openCategoryDialog();
-    }, []);
-
-    const handleOnImportPage = useCallback(() => {
-        setOperation(Operation.IMPORT);
-        openCategoryDialog();
-    }, []);
-
-    const onCategorySelect =
-        operation === Operation.CREATE ? createPageMutation : importPageMutation;
 
     const loadMoreLinks = async ({ hasMoreItems, cursor }: ListMeta) => {
         if (hasMoreItems && cursor) {
@@ -155,13 +134,13 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
         await loadMoreLinks(meta);
     }, [meta]);
 
-    const isLoading = useMemo(() => {
+    const isListLoading = useMemo(() => {
         return (
             recordsLoading.INIT || foldersLoading.INIT || recordsLoading.LIST || foldersLoading.LIST
         );
     }, [foldersLoading, recordsLoading]);
 
-    const isLoadingMore = useMemo(() => {
+    const isListLoadingMore = useMemo(() => {
         return recordsLoading.LIST_MORE;
     }, [recordsLoading]);
 
@@ -179,18 +158,18 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
         <>
             <MainContainer>
                 <Header
-                    title={!isLoading ? folderName : undefined}
+                    title={!isListLoading ? folderName : undefined}
                     canCreate={canCreate}
-                    onCreatePage={handleOnCreatePage}
-                    onImportPage={handleOnImportPage}
+                    onCreatePage={openTemplatesDialog}
+                    onImportPage={openCategoriesDialog}
                     onCreateFolder={openFoldersDialog}
                     selected={selected}
                 />
                 <Wrapper>
-                    {records.length === 0 && subFolders.length === 0 && !isLoading ? (
+                    {records.length === 0 && subFolders.length === 0 && !isListLoading ? (
                         <Empty
                             canCreate={canCreate}
-                            onCreatePage={handleOnCreatePage}
+                            onCreatePage={openTemplatesDialog}
                             onCreateFolder={openFoldersDialog}
                         />
                     ) : (
@@ -199,7 +178,7 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
                                 open={showPreviewDrawer}
                                 onClose={() => closePreviewDrawer()}
                                 canCreate={canCreate}
-                                onCreatePage={handleOnCreatePage}
+                                onCreatePage={openTemplatesDialog}
                             />
                             <Scrollbar
                                 data-testid="default-data-list"
@@ -209,7 +188,7 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
                                     ref={tableRef}
                                     folders={subFolders}
                                     records={records as SearchRecordItem<PbPageDataItem>[]}
-                                    loading={isLoading}
+                                    loading={isListLoading}
                                     openPreviewDrawer={openPreviewDrawer}
                                     onSelectRow={rows => {
                                         //@ts-ignore
@@ -218,14 +197,14 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
                                     }}
                                 />
                                 <LoadMoreButton
-                                    show={!isLoading && meta.hasMoreItems}
-                                    disabled={isLoadingMore}
+                                    show={!isListLoading && meta.hasMoreItems}
+                                    disabled={isListLoadingMore}
                                     windowHeight={windowHeight}
                                     tableHeight={tableHeight}
                                     onClick={loadMoreOnClick}
                                 />
                             </Scrollbar>
-                            {isLoadingMore && <LoadingMore />}
+                            {isListLoadingMore && <LoadingMore />}
                         </>
                     )}
                 </Wrapper>
@@ -238,11 +217,18 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
             />
             <CategoriesDialog
                 open={showCategoriesDialog}
-                onClose={closeCategoryDialog}
-                onSelect={onCategorySelect}
+                onClose={closeCategoriesDialog}
+                onSelect={showDialog}
             >
-                {loadingLabel && <CircularProgress label={loadingLabel} />}
+                {isCreateLoading && <CircularProgress label={"Importing page..."} />}
             </CategoriesDialog>
+            {showTemplatesDialog && (
+                <PageTemplatesDialog
+                    onClose={closeTemplatesDialog}
+                    onSelect={createPageMutation}
+                    isLoading={isCreateLoading}
+                />
+            )}
         </>
     );
 };
