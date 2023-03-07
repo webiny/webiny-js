@@ -48,7 +48,7 @@
     "@webiny/pulumi": "0.0.0",
     "@webiny/pulumi-aws": "0.0.0",
     "@webiny/wcp": "0.0.0",
-    "fast-glob": "^3.2.5",
+    "fast-glob": "^3.2.7",
     "find-up": "^5.0.0",
     "invariant": "^2.2.4",
     "node-fetch": "^2.6.1",
