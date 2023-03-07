@@ -8,6 +8,7 @@ const PAGE_TEMPLATE_BASE_FIELDS = `
     tags
     description
     layout
+    content
     createdOn
     savedOn
     createdBy {
