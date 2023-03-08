@@ -417,7 +417,6 @@ export interface Settings {
         home: string;
         notFound: string;
     };
-    type: string;
     tenant: string | undefined | false;
     locale: string | undefined | false;
 }
@@ -433,7 +432,6 @@ export interface DefaultSettings {
  */
 export interface SettingsStorageOperationsGetParams {
     where: {
-        type: string;
         tenant: string;
         locale: string;
     };

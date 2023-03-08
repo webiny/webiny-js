@@ -21,7 +21,6 @@ import { createTopic } from "@webiny/pubsub";
 interface SettingsParams {
     tenant: string;
     locale: string;
-    type: string;
 }
 
 /**
@@ -51,7 +50,7 @@ export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCr
         },
         {
             cacheKeyFn: (key: SettingsParams) => {
-                return [`T#${key.tenant}`, `L#${key.locale}`, `TYPE#${key.type}`].join("#");
+                return [`T#${key.tenant}`, `L#${key.locale}`].join("#");
             }
         }
     );
@@ -98,8 +97,7 @@ export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCr
 
             const key = {
                 tenant: getTenantId(),
-                locale: getLocaleCode(),
-                type: SETTINGS_TYPE.DEFAULT
+                locale: getLocaleCode()
             };
 
             try {

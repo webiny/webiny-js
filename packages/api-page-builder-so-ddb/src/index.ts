@@ -88,8 +88,7 @@ export const createStorageOperations: StorageOperationsFactory = params => {
     const entities = {
         settings: createSettingsEntity({
             entityName: ENTITIES.SETTINGS,
-            table: tableInstance,
-            attributes: attributes ? attributes[ENTITIES.SETTINGS] : {}
+            table: tableInstance
         }),
         system: createSystemEntity({
             entityName: ENTITIES.SYSTEM,
