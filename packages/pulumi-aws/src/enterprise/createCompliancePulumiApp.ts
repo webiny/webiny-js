@@ -11,6 +11,36 @@ export interface CreateCompliancePulumiAppParams {
      * Prefixes names of all Pulumi cloud infrastructure resource with given prefix.
      */
     pulumiResourceNamePrefix?: PulumiAppParam<string>;
+
+    /**
+     * Secure Standardized Logging Service - AWS CloudTrail
+     * https://aws.amazon.com/cloudtrail
+     */
+    cloudtrail?: PulumiAppParam<boolean>;
+
+    /**
+     * Logging IP traffic using VPC Flow Logs
+     * https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html
+     */
+    vpcFlowLogs?: PulumiAppParam<boolean>;
+
+    /**
+     * Amazon GuardDuty - Intelligent threat detection
+     * https://aws.amazon.com/guardduty/
+     */
+    guardDuty?: PulumiAppParam<boolean>;
+
+    /**
+     * Creating CloudWatch alarms to monitor DynamoDB
+     * https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/creating-alarms.html
+     */
+    dynamoDbAlarms?: PulumiAppParam<boolean>;
+
+    /**
+     * AWS Lambda CloudWatch alarms
+     * https://docs.aws.amazon.com/lambda/latest/operatorguide/important-metrics.html
+     */
+    lambdaFunctionsAlarms?: PulumiAppParam<boolean>;
 }
 
 const APP_NAME = "compliance";
@@ -36,17 +66,40 @@ export function createCompliancePulumiApp(projectAppParams: CreateCompliancePulu
                 });
             }
 
-            const cloudtrail = app.addModule(ComplianceCloudtrail);
-            const vpcFlowLogs = app.addModule(ComplianceVpcFlowLogs);
+            const useCloudtrail = app.getParam(projectAppParams.cloudtrail);
+            const useVpcFlowLogs = app.getParam(projectAppParams.vpcFlowLogs);
+            const useGuardDuty = app.getParam(projectAppParams.guardDuty);
+            const useDynamoDbAlarms = app.getParam(projectAppParams.dynamoDbAlarms);
+            const useLambdaFunctionsAlarms = app.getParam(projectAppParams.lambdaFunctionsAlarms);
 
-            // TODO: Should probably expose these as well.
-            app.addModule(ComplianceGuardDuty);
-            app.addModule(ComplianceDynamoDbAlarms);
-            app.addModule(ComplianceLambdaFunctionsAlarms);
+            let cloudtrail, vpcFlowLogs, guardDuty, dynamoDbAlarms, lambdaFunctionsAlarms;
+
+            if (useCloudtrail === true) {
+                cloudtrail = app.addModule(ComplianceCloudtrail);
+            }
+
+            if (useVpcFlowLogs === true) {
+                vpcFlowLogs = app.addModule(ComplianceVpcFlowLogs);
+            }
+
+            if (useGuardDuty === true) {
+                guardDuty = app.addModule(ComplianceGuardDuty);
+            }
+
+            if (useDynamoDbAlarms === true) {
+                dynamoDbAlarms = app.addModule(ComplianceDynamoDbAlarms);
+            }
+
+            if (useLambdaFunctionsAlarms === true) {
+                lambdaFunctionsAlarms = app.addModule(ComplianceLambdaFunctionsAlarms);
+            }
 
             return {
                 cloudtrail,
-                vpcFlowLogs
+                vpcFlowLogs,
+                guardDuty,
+                dynamoDbAlarms,
+                lambdaFunctionsAlarms
             };
         }
     });
