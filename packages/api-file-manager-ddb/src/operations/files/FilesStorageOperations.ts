@@ -27,12 +27,14 @@ import { sortItems } from "@webiny/db-dynamodb/utils/sort";
 import { FileDynamoDbFieldPlugin } from "~/plugins/FileDynamoDbFieldPlugin";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
 import { get as getEntityItem } from "@webiny/db-dynamodb/utils/get";
-import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 
-interface FileItem extends File {
+interface FileItem {
     PK: string;
     SK: string;
+    GSI1_PK: string;
+    GSI1_SK: string;
     TYPE: string;
+    data: File;
 }
 
 interface ConstructorParams {
@@ -46,11 +48,10 @@ interface QueryAllOptionsParams {
 interface CreatePartitionKeyParams {
     locale: string;
     tenant: string;
-}
-
-interface CreateSortKeyParams {
     id: string;
 }
+
+type CreateGSI1PartitionKeyParams = Pick<CreatePartitionKeyParams, "tenant" | "locale">;
 
 export class FilesStorageOperations implements FileManagerFilesStorageOperations {
     private readonly _context: FileManagerContext;
@@ -77,14 +78,15 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
         const { where } = params;
         const keys = {
             PK: this.createPartitionKey(where),
-            SK: this.createSortKey(where)
+            SK: "A"
         };
         try {
-            const file = await getEntityItem<File>({
+            const file = await getEntityItem<{ data: File }>({
                 entity: this.entity,
                 keys
             });
-            return cleanupItem<File>(this.entity, file);
+
+            return file ? file.data : null;
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not fetch requested file.",
@@ -100,14 +102,13 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
     public async create(params: FileManagerFilesStorageOperationsCreateParams): Promise<File> {
         const { file } = params;
 
-        const keys = {
-            PK: this.createPartitionKey(file),
-            SK: this.createSortKey(file)
-        };
         const item: FileItem = {
-            ...file,
-            ...keys,
-            TYPE: "fm.file"
+            PK: this.createPartitionKey(file),
+            SK: "A",
+            GSI1_PK: this.createGSI1PartitionKey(file),
+            GSI1_SK: file.id,
+            TYPE: "fm.file",
+            data: file
         };
         try {
             await this.entity.put(item);
@@ -126,37 +127,26 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
     }
 
     public async update(params: FileManagerFilesStorageOperationsUpdateParams): Promise<File> {
-        const { file } = params;
-        const keys = {
-            PK: this.createPartitionKey(file),
-            SK: this.createSortKey(file)
-        };
-
-        const item: FileItem = {
-            ...file,
-            ...keys,
-            TYPE: "fm.file"
-        };
         try {
-            await this.entity.put(item);
+            await this.create(params);
         } catch (ex) {
-            throw new WebinyError(
-                ex.message || "Could not update a file in the DynamoDB.",
-                ex.code || "UPDATE_FILE_ERROR",
-                {
-                    error: ex,
-                    item
-                }
-            );
+            if (ex.code === "CREATE_FILE_ERROR") {
+                throw new WebinyError(
+                    "Could not update a file in the DynamoDB.",
+                    "UPDATE_FILE_ERROR",
+                    ex.data
+                );
+            }
+            throw ex;
         }
-        return file;
+        return params.file;
     }
 
     public async delete(params: FileManagerFilesStorageOperationsDeleteParams): Promise<void> {
         const { file } = params;
         const keys = {
             PK: this.createPartitionKey(file),
-            SK: this.createSortKey(file)
+            SK: "A"
         };
 
         try {
@@ -181,10 +171,12 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
 
         const items = files.map(file => {
             return this.entity.putBatch({
-                ...file,
                 PK: this.createPartitionKey(file),
-                SK: this.createSortKey(file),
-                TYPE: "fm.file"
+                SK: "A",
+                GSI1_PK: this.createGSI1PartitionKey(file),
+                GSI1_SK: file.id,
+                TYPE: "fm.file",
+                data: file
             });
         });
 
@@ -216,12 +208,13 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
         });
         const queryAllParams = {
             entity: this.entity,
-            partitionKey: this.createPartitionKey(initialWhere),
+            partitionKey: this.createGSI1PartitionKey(initialWhere),
             options
         };
         let items = [];
         try {
-            items = await queryAll<File>(queryAllParams);
+            const dbItems = await queryAll<{ data: File }>(queryAllParams);
+            items = dbItems.map(item => item.data);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not query for the files.",
@@ -308,15 +301,17 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
 
         const queryAllParams = {
             entity: this.entity,
-            partitionKey: this.createPartitionKey(initialWhere),
+            partitionKey: this.createGSI1PartitionKey(initialWhere),
             options: {
+                index: "GSI1",
                 gte: " ",
                 reverse: false
             }
         };
         let results = [];
         try {
-            results = await queryAll<File>(queryAllParams);
+            const dbItems = await queryAll<{ data: File }>(queryAllParams);
+            results = dbItems.map(item => item.data);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Error in the DynamoDB query.",
@@ -379,21 +374,21 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
     }
 
     private createQueryAllOptions({ where }: QueryAllOptionsParams): DynamoDBToolboxQueryOptions {
-        const options: DynamoDBToolboxQueryOptions = {};
+        const options: DynamoDBToolboxQueryOptions = { index: "GSI1" };
         if (where.id) {
             options.eq = where.id;
+        } else {
+            options.gt = " ";
         }
         return options;
     }
 
     private createPartitionKey(params: CreatePartitionKeyParams): string {
-        const { tenant, locale } = params;
-        return `T#${tenant}#L#${locale}#FM#F`;
+        const { tenant, locale, id } = params;
+        return `T#${tenant}#L#${locale}#FM#FILE#${id}`;
     }
-
-    private createSortKey(params: CreateSortKeyParams) {
-        const { id } = params;
-
-        return id;
+    private createGSI1PartitionKey(params: CreateGSI1PartitionKeyParams): string {
+        const { tenant, locale } = params;
+        return `T#${tenant}#L#${locale}#FM#FILES`;
     }
 }
