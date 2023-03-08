@@ -9,7 +9,7 @@ import { Entity } from "dynamodb-toolbox";
 import WebinyError from "@webiny/error";
 import defineTable from "~/definitions/table";
 import defineSettingsEntity from "~/definitions/settingsEntity";
-import { queryOne } from "@webiny/db-dynamodb/utils/query";
+import { get } from "@webiny/db-dynamodb/utils/get";
 
 interface SettingsStorageOperationsConstructorParams {
     context: FileManagerContext;
@@ -43,18 +43,15 @@ export class SettingsStorageOperations implements FileManagerSettingsStorageOper
 
     public async get(): Promise<FileManagerSettings | null> {
         try {
-            const settings = await queryOne<{ data: FileManagerSettings }>({
+            const settings = await get<{ data: FileManagerSettings }>({
                 entity: this._entity,
-                partitionKey: this.partitionKey,
-                options: {
-                    eq: "A"
+                keys: {
+                    PK: this.partitionKey,
+                    SK: "A"
                 }
             });
 
-            if (!settings) {
-                return null;
-            }
-            return settings.data;
+            return settings ? settings.data : null;
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not fetch the FileManager settings.",
