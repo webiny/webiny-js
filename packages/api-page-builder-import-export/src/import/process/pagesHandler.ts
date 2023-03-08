@@ -74,6 +74,9 @@ export const pagesHandler = async (
         // Create a page
         let pbPage = await context.pageBuilder.createPage(category, meta);
 
+        // Hooks attached to `pageBuilder.createPage` might enable security back again, here we disable security
+        mockSecurity(identity, context);
+
         // Update page with data
         pbPage = await context.pageBuilder.updatePage(pbPage.id, {
             content: page.content,
@@ -81,6 +84,9 @@ export const pagesHandler = async (
             path: page.path,
             settings: page.settings
         });
+
+        // Hooks attached to `pageBuilder.updatePage` might enable security back again, here we disable security
+        mockSecurity(identity, context);
 
         // TODO: Publish page
 

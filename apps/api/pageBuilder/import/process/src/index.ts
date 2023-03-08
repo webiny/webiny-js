@@ -19,6 +19,14 @@ import fileManagerDynamoDbStorageOperation from "@webiny/api-file-manager-ddb";
 import logsPlugins from "@webiny/handler-logs";
 import fileManagerS3 from "@webiny/api-file-manager-s3";
 import securityPlugins from "./security";
+import { createACO } from "@webiny/api-aco";
+import { createAcoPageBuilderImportExportContext } from "@webiny/api-page-builder-aco";
+import {
+    CmsParametersPlugin,
+    createHeadlessCmsContext,
+    createHeadlessCmsGraphQL
+} from "@webiny/api-headless-cms";
+import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb";
 
 const documentClient = new DocumentClient({
     convertEmptyValues: true,
@@ -26,8 +34,6 @@ const documentClient = new DocumentClient({
 });
 
 const debug = process.env.DEBUG === "true";
-
-import { createACO } from "@webiny/api-aco";
 
 export const handler = createHandler({
     plugins: [
@@ -58,7 +64,21 @@ export const handler = createHandler({
                 process: String(process.env.AWS_LAMBDA_FUNCTION_NAME)
             }
         }),
-        createACO()
+        createHeadlessCmsContext({
+            storageOperations: createHeadlessCmsStorageOperations({
+                documentClient
+            })
+        }),
+        new CmsParametersPlugin(async context => {
+            const locale = context.i18n.getCurrentLocale("content")?.code || "en-US";
+            return {
+                type: "manage",
+                locale
+            };
+        }),
+        createHeadlessCmsGraphQL(),
+        createACO(),
+        createAcoPageBuilderImportExportContext()
     ],
     http: { debug }
 });
