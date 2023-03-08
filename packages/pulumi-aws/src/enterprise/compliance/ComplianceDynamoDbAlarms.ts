@@ -16,7 +16,7 @@ export const ComplianceDynamoDbAlarms = createAppModule({
             env: params.run.env
         });
 
-        addResource(aws.cloudwatch.MetricAlarm, {
+        const readCapacityUnitsLimit = addResource(aws.cloudwatch.MetricAlarm, {
             name: "dynamo-db-alarm-read-capacity-units-limit",
             config: {
                 alarmDescription: "Alarm when read capacity reaches 80% of what was provisioned",
@@ -41,7 +41,7 @@ export const ComplianceDynamoDbAlarms = createAppModule({
             }
         });
 
-        addResource(aws.cloudwatch.MetricAlarm, {
+        const writeCapacityUnitsLimit = addResource(aws.cloudwatch.MetricAlarm, {
             name: "dynamo-db-alarm-write-capacity-units-limit",
             config: {
                 alarmDescription: "Alarm when write capacity reaches 80% of what was provisioned",
@@ -65,5 +65,7 @@ export const ComplianceDynamoDbAlarms = createAppModule({
                 ]
             }
         });
+
+        return { readCapacityUnitsLimit, writeCapacityUnitsLimit };
     }
 });

@@ -1,5 +1,5 @@
 import * as aws from "@pulumi/aws";
-import { createAppModule } from "@webiny/pulumi";
+import { createAppModule, PulumiAppResource } from "@webiny/pulumi";
 import { getStackExport } from "@webiny/cli-plugin-deploy-pulumi/utils";
 
 interface GetLambdaFunctionsListParams {
@@ -40,35 +40,41 @@ export const ComplianceLambdaFunctionsAlarms = createAppModule({
             ...websiteLambdaFunctionsList
         ];
 
+        const metricAlarms: Array<PulumiAppResource<typeof aws.cloudwatch.MetricAlarm>> = [];
+
         for (let i = 0; i < lambdaFunctionsList.length; i++) {
             const fn: { name: string; arn: string } = lambdaFunctionsList[i];
 
-            addResource(aws.cloudwatch.MetricAlarm, {
-                name: `${fn.name}-lambda-fn-alarm-errors`,
-                config: {
-                    alarmDescription: `Create alarm when ${fn.name} AWS Lambda function fails.`,
-                    comparisonOperator: "GreaterThanOrEqualToThreshold",
-                    evaluationPeriods: 1,
-                    threshold: 0,
-                    metricQueries: [
-                        {
-                            id: "m1",
-                            metric: {
-                                dimensions: {
-                                    Name: "FunctionName",
-                                    Value: fn.name
+            metricAlarms.push(
+                addResource(aws.cloudwatch.MetricAlarm, {
+                    name: `${fn.name}-lambda-fn-alarm-errors`,
+                    config: {
+                        alarmDescription: `Create alarm when ${fn.name} AWS Lambda function fails.`,
+                        comparisonOperator: "GreaterThanOrEqualToThreshold",
+                        evaluationPeriods: 1,
+                        threshold: 0,
+                        metricQueries: [
+                            {
+                                id: "m1",
+                                metric: {
+                                    dimensions: {
+                                        Name: "FunctionName",
+                                        Value: fn.name
+                                    },
+                                    metricName: "Errors",
+                                    namespace: "AWS/Lambda",
+                                    period: 300,
+                                    stat: "Sum",
+                                    unit: "Count"
                                 },
-                                metricName: "Errors",
-                                namespace: "AWS/Lambda",
-                                period: 300,
-                                stat: "Sum",
-                                unit: "Count"
-                            },
-                            returnData: true
-                        }
-                    ]
-                }
-            });
+                                returnData: true
+                            }
+                        ]
+                    }
+                })
+            );
         }
+
+        return { metricAlarms };
     }
 });

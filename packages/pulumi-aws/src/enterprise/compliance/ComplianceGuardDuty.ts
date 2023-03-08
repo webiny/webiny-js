@@ -4,7 +4,7 @@ import { createAppModule } from "@webiny/pulumi";
 export const ComplianceGuardDuty = createAppModule({
     name: "ComplianceGuardDuty",
     config({ addResource }) {
-        addResource(aws.guardduty.Detector, {
+        const detector = addResource(aws.guardduty.Detector, {
             name: "guard-duty-detector",
             config: {
                 enable: true,
@@ -14,7 +14,7 @@ export const ComplianceGuardDuty = createAppModule({
 
         const snsTopic = addResource(aws.sns.Topic, { name: "guard-duty-sns-topic", config: {} });
 
-        addResource(aws.sns.TopicSubscription, {
+        const snsTopicSubscription = addResource(aws.sns.TopicSubscription, {
             name: "guard-duty-sns-topic-subscription",
             config: {
                 topic: snsTopic.output.arn,
@@ -23,7 +23,7 @@ export const ComplianceGuardDuty = createAppModule({
             }
         });
 
-        const rule = addResource(aws.cloudwatch.EventRule, {
+        const eventRule = addResource(aws.cloudwatch.EventRule, {
             name: "guard-duty-event-rule",
             config: {
                 eventPattern: JSON.stringify({
@@ -42,7 +42,7 @@ export const ComplianceGuardDuty = createAppModule({
             }
         });
 
-        const snsTopicPolicy = snsTopic.output.arn.apply(arn =>
+        const snsTopicPolicyDocument = snsTopic.output.arn.apply((arn: string) =>
             aws.iam.getPolicyDocumentOutput({
                 statements: [
                     {
@@ -60,18 +60,18 @@ export const ComplianceGuardDuty = createAppModule({
             })
         );
 
-        addResource(aws.sns.TopicPolicy, {
+        const snsTopicPolicy = addResource(aws.sns.TopicPolicy, {
             name: "guard-duty-sns-topic-policy",
             config: {
                 arn: snsTopic.output.arn,
-                policy: snsTopicPolicy.apply(snsTopicPolicy => snsTopicPolicy.json)
+                policy: snsTopicPolicyDocument.apply(snsTopicPolicy => snsTopicPolicy.json)
             }
         });
 
-        addResource(aws.cloudwatch.EventTarget, {
+        const eventTarget = addResource(aws.cloudwatch.EventTarget, {
             name: "guard-duty-event-target",
             config: {
-                rule: rule.output.name,
+                rule: eventRule.output.name,
                 arn: snsTopic.output.arn,
                 inputTransformer: {
                     inputPaths: {
@@ -91,5 +91,15 @@ export const ComplianceGuardDuty = createAppModule({
                 }
             }
         });
+
+        return {
+            detector,
+            snsTopic,
+            snsTopicSubscription,
+            eventRule,
+            snsTopicPolicyDocument,
+            snsTopicPolicy,
+            eventTarget
+        };
     }
 });
