@@ -30,9 +30,6 @@ const attributes: Parameters<typeof createLegacyEntity>[2] = {
     pages: {
         type: "map"
     },
-    type: {
-        type: "string"
-    },
     tenant: {
         type: "string"
     },

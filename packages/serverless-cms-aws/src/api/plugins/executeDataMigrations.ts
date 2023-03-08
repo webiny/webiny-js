@@ -48,7 +48,7 @@ export const executeDataMigrations = {
                         return [`- %s: ${mig.description} (reason: %s)`, mig.id, mig.reason];
                     })
                 ].filter(Boolean);
-                context.success("Data migrations Lambda executed successfully!");
+                context.success("Data migration Lambda executed successfully!");
                 if (logItems.length) {
                     logItems.forEach(line => context.info(...(line as string[])));
                 } else {
