@@ -25,7 +25,6 @@ import { createElasticsearchBody } from "~/operations/files/body";
 import { transformFromIndex, transformToIndex } from "~/operations/files/transformers";
 import { FileIndexTransformPlugin } from "~/plugins/FileIndexTransformPlugin";
 import { get as getEntityItem } from "@webiny/db-dynamodb/utils/get";
-import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
 import {
     ElasticsearchSearchResponse,
@@ -33,10 +32,13 @@ import {
 } from "@webiny/api-elasticsearch/types";
 import { FileManagerContext } from "~/types";
 
-interface FileItem extends File {
+interface FileItem {
     PK: string;
     SK: string;
+    GSI1_PK: string;
+    GSI1_SK: string;
     TYPE: string;
+    data: File;
 }
 
 interface EsFileItem {
@@ -51,10 +53,12 @@ interface ConstructorParams {
 }
 
 interface CreatePartitionKeyParams {
-    id: string;
     locale: string;
     tenant: string;
+    id: string;
 }
+
+type CreateGSI1PartitionKeyParams = Pick<CreatePartitionKeyParams, "tenant" | "locale">;
 
 export class FilesStorageOperations implements FileManagerFilesStorageOperations {
     private readonly context: FileManagerContext;
@@ -99,15 +103,15 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
         const { where } = params;
         const keys = {
             PK: this.createPartitionKey(where),
-            SK: this.createSortKey()
+            SK: "A"
         };
 
         try {
-            const file = await getEntityItem<File>({
+            const file = await getEntityItem<{ data: File }>({
                 entity: this.entity,
                 keys
             });
-            return cleanupItem<File>(this.entity, file);
+            return file ? file.data : null;
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not fetch requested file.",
@@ -122,22 +126,23 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
     public async create(params: FileManagerFilesStorageOperationsCreateParams): Promise<File> {
         const { file } = params;
 
-        const keys = {
-            PK: this.createPartitionKey(file),
-            SK: this.createSortKey()
-        };
         const item: FileItem = {
-            ...file,
-            ...keys,
-            TYPE: "fm.file"
+            PK: this.createPartitionKey(file),
+            SK: "A",
+            GSI1_PK: this.createGSI1PartitionKey(file),
+            GSI1_SK: file.id,
+            TYPE: "fm.file",
+            data: file
         };
+
         const esData = await transformToIndex({
             plugins: this.getFileIndexTransformPlugins(),
             file
         });
         const esCompressedData = await compress(this.context.plugins, esData);
         const esItem: EsFileItem = {
-            ...keys,
+            PK: this.createPartitionKey(file),
+            SK: "A",
             index: this.getElasticsearchIndex(),
             data: esCompressedData
         };
@@ -159,49 +164,26 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
     }
 
     public async update(params: FileManagerFilesStorageOperationsUpdateParams): Promise<File> {
-        const { file } = params;
-
-        const keys = {
-            PK: this.createPartitionKey(file),
-            SK: this.createSortKey()
-        };
-
-        const item: FileItem = {
-            ...file,
-            ...keys,
-            TYPE: "fm.file"
-        };
-        const esData = await transformToIndex({
-            plugins: this.getFileIndexTransformPlugins(),
-            file
-        });
-        const esCompressedData = await compress(this.context.plugins, esData);
-        const esItem: EsFileItem = {
-            ...keys,
-            index: this.getElasticsearchIndex(),
-            data: esCompressedData
-        };
         try {
-            await this.entity.put(item);
-            await this.esEntity.put(esItem);
+            await this.create(params);
         } catch (ex) {
-            throw new WebinyError(
-                ex.message || "Could not update a file in the DynamoDB.",
-                ex.code || "UPDATE_FILE_ERROR",
-                {
-                    item,
-                    esItem
-                }
-            );
+            if (ex.code === "CREATE_FILE_ERROR") {
+                throw new WebinyError(
+                    "Could not update a file in the DynamoDB.",
+                    "UPDATE_FILE_ERROR",
+                    ex.data
+                );
+            }
+            throw ex;
         }
-        return file;
+        return params.file;
     }
 
     public async delete(params: FileManagerFilesStorageOperationsDeleteParams): Promise<void> {
         const { file } = params;
         const keys = {
             PK: this.createPartitionKey(file),
-            SK: this.createSortKey()
+            SK: "A"
         };
 
         try {
@@ -230,14 +212,16 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
         for (const file of files) {
             const keys = {
                 PK: this.createPartitionKey(file),
-                SK: this.createSortKey()
+                SK: "A"
             };
 
             items.push(
                 this.entity.putBatch({
-                    ...file,
                     ...keys,
-                    TYPE: "fm.file"
+                    GSI1_PK: this.createGSI1PartitionKey(file),
+                    GSI1_SK: file.id,
+                    TYPE: "fm.file",
+                    data: file
                 })
             );
 
@@ -405,11 +389,11 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
 
     private createPartitionKey(params: CreatePartitionKeyParams): string {
         const { tenant, locale, id } = params;
-        return `T#${tenant}#L#${locale}#FM#F${id}`;
+        return `T#${tenant}#L#${locale}#FM#FILE#${id}`;
     }
-
-    private createSortKey(): string {
-        return "A";
+    private createGSI1PartitionKey(params: CreateGSI1PartitionKeyParams): string {
+        const { tenant, locale } = params;
+        return `T#${tenant}#L#${locale}#FM#FILES`;
     }
 
     private getFileIndexTransformPlugins(): FileIndexTransformPlugin[] {
