@@ -72,6 +72,10 @@ interface Props<T> {
      * The number of rows to affix to the top of the table when scrolling.
      */
     stickyRows?: number;
+    /*
+     * Show or hide borders
+     */
+    bordered?: boolean;
 }
 
 const defineColumns = <T,>(
@@ -164,7 +168,8 @@ export const DataTable = <T extends Object & DefaultData>({
     onSelectRow,
     loadingInitial,
     stickyColumns,
-    stickyRows
+    stickyRows,
+    bordered
 }: Props<T>) => {
     const [rowSelection, setRowSelection] = React.useState({});
 
@@ -187,7 +192,7 @@ export const DataTable = <T extends Object & DefaultData>({
     }, [rowSelection]);
 
     return (
-        <Table stickyColumns={stickyColumns} stickyRows={stickyRows}>
+        <Table stickyColumns={stickyColumns} stickyRows={stickyRows} bordered={bordered}>
             <DataTableContent>
                 <DataTableHead>
                     {table.getHeaderGroups().map(headerGroup => (
