@@ -53,32 +53,15 @@ export const testData = [
         _et: "I18NLocale",
         _md: "2023-01-25T09:38:22.041Z"
     },
-    ...Array.from({ length: 5000 }).map((_, index) => {
-        return {
-            PK: "T#root#L#en-US#FM#F",
-            SK: "63d0f8a1ce8f180008bb6054" + index,
-            createdBy: {
-                displayName: "Pavel Denisjuk",
-                id: "e6ea2871-ba36-4494-87ac-afb73d4e7eb2",
-                type: "admin"
-            },
-            createdOn: "2023-01-25T09:38:41.943Z",
-            id: "63d0f8a1ce8f180008bb6054" + index,
-            key: index + "welcome-to-webiny-page-8ldbh4sq4-hero-block-bg.svg",
-            locale: "en-US",
-            meta: {
-                private: true
-            },
-            name: "welcome-to-webiny-page-8ldbh4sq4-hero-block-bg.svg",
-            size: 1864,
-            tags: [],
-            tenant: "root",
-            TYPE: "fm.file",
-            type: "image/svg+xml",
-            webinyVersion: "0.0.0",
-            _ct: "2023-01-25T09:38:41.961Z",
-            _et: "Files",
-            _md: "2023-01-25T09:38:41.961Z"
-        };
-    })
+    // TODO: delete this record in 5.36.0
+    {
+        PK: "T#root#FM#SETTINGS",
+        SK: "default",
+        srcPrefix: "https://d30lvz3v210qz3.cloudfront.net/files/",
+        uploadMaxFileSize: 26214401,
+        uploadMinFileSize: 0,
+        _ct: "2023-01-25T09:38:22.381Z",
+        _et: "Settings",
+        _md: "2023-01-25T09:38:22.381Z"
+    }
 ];

@@ -10415,6 +10415,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/lodash.chunk@npm:^4.2.7":
+  version: 4.2.7
+  resolution: "@types/lodash.chunk@npm:4.2.7"
+  dependencies:
+    "@types/lodash": "*"
+  checksum: 09df5ca00d8866776038bf94658d30b4ea84bffe5f81c14c01568bcb6be692bf59f6ea093de2bb0afbb3f8e54ae96ebd97595f2838ab59b77865427ca77d391e
+  languageName: node
+  linkType: hard
+
 "@types/lodash.debounce@npm:^4.0.7":
   version: 4.0.7
   resolution: "@types/lodash.debounce@npm:4.0.7"
@@ -15229,6 +15238,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/migrations@workspace:packages/migrations"
   dependencies:
+    "@types/lodash.chunk": ^4.2.7
     "@types/lodash.pick": ^4.4.7
     "@webiny/cli": 0.0.0
     "@webiny/data-migration": 0.0.0
@@ -15238,6 +15248,7 @@ __metadata:
     "@webiny/project-utils": 0.0.0
     dynamodb-toolbox: ^0.3.5
     jest-dynalite: ^3.2.0
+    lodash.chunk: ^4.2.0
     lodash.pick: ^4.4.0
   languageName: unknown
   linkType: soft
@@ -30658,6 +30669,13 @@ __metadata:
   version: 3.0.0
   resolution: "lodash._reinterpolate@npm:3.0.0"
   checksum: 06d2d5f33169604fa5e9f27b6067ed9fb85d51a84202a656901e5ffb63b426781a601508466f039c720af111b0c685d12f1a5c14ff8df5d5f27e491e562784b2
+  languageName: node
+  linkType: hard
+
+"lodash.chunk@npm:^4.2.0":
+  version: 4.2.0
+  resolution: "lodash.chunk@npm:4.2.0"
+  checksum: 6286c6d06814fbeda502164015c42ef53a9194e6ebaac52ec2b41e83344aefe7bc3d94fdfec525adcd2c66cefdf05dc333b6a1128e4de739797342315c17cbc7
   languageName: node
   linkType: hard
 
