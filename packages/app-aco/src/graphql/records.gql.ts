@@ -18,6 +18,7 @@ const DATA_FIELD = /* GraphQL */ `
         title
         content
         data
+        savedOn
     }
 `;
 

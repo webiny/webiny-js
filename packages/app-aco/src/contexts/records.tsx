@@ -87,11 +87,19 @@ export const SearchRecordsProvider = ({ children }: Props) => {
                 throw new Error("`folderId` and `type` are mandatory");
             }
 
-            const action = after ? "LIST_MORE" : "LIST";
-            const sortParams = sort.map(s => "data." + s.split("_")[0]);
-            const sortDir = sort.map(s => s.split("_")[1].toLowerCase() as "asc" | "desc");
+            /*
+             * Avoiding to fetch records in case they have already been fetched.
+             * This happens when visiting a list with all records loaded and receives "after" param.
+             */
+            const recordsCount = records.filter(
+                record => record.location.folderId === folderId
+            ).length;
+            const totalCount = meta[folderId]?.totalCount || 0;
+            if (after && recordsCount === totalCount) {
+                return;
+            }
 
-            console.log(sortParams, sortDir);
+            const action = after ? "LIST_MORE" : "LIST";
 
             const { data: response } = await apolloFetchingHandler(
                 loadingHandler(action, setLoading),
@@ -109,7 +117,10 @@ export const SearchRecordsProvider = ({ children }: Props) => {
                 throw new Error(error?.message || "Could not fetch records");
             }
 
-            setRecords(records => orderBy(unionBy(data, records, "id"), sortParams, sortDir));
+            // Adjusting sorting while merging records with data received from the server.
+            const sortFields = sort.map(s => s.split("_")[0]);
+            const sortOrders = sort.map(s => s.split("_")[1].toLowerCase() as "asc" | "desc");
+            setRecords(records => orderBy(unionBy(data, records, "id"), sortFields, sortOrders));
 
             setMeta(meta => ({
                 ...meta,
