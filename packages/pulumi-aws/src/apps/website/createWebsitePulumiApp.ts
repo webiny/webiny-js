@@ -244,26 +244,28 @@ export const createWebsitePulumiApp = (projectAppParams: CreateWebsitePulumiAppP
                 deliveryStorage: deliveryBucket.bucket.output.id
             });
 
-            addDomainsUrlsOutputs({
-                app,
-                cloudfrontDistribution: appCloudfront,
-                map: {
-                    distributionDomain: "cloudfrontAppDomain",
-                    distributionUrl: "cloudfrontAppUrl",
-                    usedDomain: "appDomain",
-                    usedUrl: "appUrl"
-                }
-            });
+            app.addHandler(() => {
+                addDomainsUrlsOutputs({
+                    app,
+                    cloudfrontDistribution: appCloudfront,
+                    map: {
+                        distributionDomain: "cloudfrontAppDomain",
+                        distributionUrl: "cloudfrontAppUrl",
+                        usedDomain: "appDomain",
+                        usedUrl: "appUrl"
+                    }
+                });
 
-            addDomainsUrlsOutputs({
-                app,
-                cloudfrontDistribution: deliveryCloudfront,
-                map: {
-                    distributionDomain: "cloudfrontDeliveryDomain",
-                    distributionUrl: "cloudfrontDeliveryUrl",
-                    usedDomain: "deliveryDomain",
-                    usedUrl: "deliveryUrl"
-                }
+                addDomainsUrlsOutputs({
+                    app,
+                    cloudfrontDistribution: deliveryCloudfront,
+                    map: {
+                        distributionDomain: "cloudfrontDeliveryDomain",
+                        distributionUrl: "cloudfrontDeliveryUrl",
+                        usedDomain: "deliveryDomain",
+                        usedUrl: "deliveryUrl"
+                    }
+                });
             });
 
             tagResources({

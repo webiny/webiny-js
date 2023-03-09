@@ -215,16 +215,19 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 dynamoDbElasticsearchTable: core.elasticsearchDynamodbTableName
             });
 
-            addDomainsUrlsOutputs({
-                app,
-                cloudfrontDistribution: cloudfront,
-                map: {
-                    distributionDomain: "cloudfrontApiDomain",
-                    distributionUrl: "cloudfrontApiUrl",
-                    usedDomain: "apiDomain",
-                    usedUrl: "apiUrl"
-                }
-            });
+            app.addHandler(() => {
+                addDomainsUrlsOutputs({
+                    app,
+                    cloudfrontDistribution: cloudfront,
+                    map: {
+                        distributionDomain: "cloudfrontApiDomain",
+                        distributionUrl: "cloudfrontApiUrl",
+                        usedDomain: "apiDomain",
+                        usedUrl: "apiUrl"
+                    }
+                });
+            })
+
 
             tagResources({
                 WbyProjectName: String(process.env["WEBINY_PROJECT_NAME"]),
