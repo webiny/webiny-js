@@ -9,7 +9,7 @@ import WebinyError from "@webiny/error";
 import defineTable from "~/definitions/table";
 import defineSettingsEntity from "~/definitions/settingsEntity";
 import { FileManagerContext } from "~/types";
-import { queryOne } from "@webiny/db-dynamodb/utils/query";
+import { get } from "@webiny/db-dynamodb/utils/get";
 
 interface SettingsStorageOperationsConstructorParams {
     context: FileManagerContext;
@@ -43,11 +43,11 @@ export class SettingsStorageOperations implements FileManagerSettingsStorageOper
 
     public async get(): Promise<FileManagerSettings | null> {
         try {
-            const settings = await queryOne<{ data: FileManagerSettings }>({
+            const settings = await get<{ data: FileManagerSettings }>({
                 entity: this._entity,
-                partitionKey: this.partitionKey,
-                options: {
-                    eq: SORT_KEY
+                keys: {
+                    PK: this.partitionKey,
+                    SK: SORT_KEY
                 }
             });
 
