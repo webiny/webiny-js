@@ -1,8 +1,6 @@
 import { LexicalValue } from "~/types";
 import { $getRoot } from "lexical";
 import { createHeadlessEditor } from "@lexical/headless";
-import { WebinyNodes } from "~/nodes/webinyNodes";
-import { theme } from "~/themes/webinyLexicalTheme";
 import { isValidLexicalData } from "~/utils/isValidLexicalData";
 
 /**
@@ -19,16 +17,7 @@ export const getLexicalContentText = (value: LexicalValue | null): string | null
         return value;
     }
 
-    const config = {
-        namespace: "webiny",
-        nodes: [...WebinyNodes],
-        onError: (error: Error) => {
-            throw error;
-        },
-        theme: theme
-    };
-
-    const editor = createHeadlessEditor(config);
+    const editor = createHeadlessEditor();
     const newEditorState = editor.parseEditorState(value);
 
     return newEditorState.read(() => $getRoot().getTextContent());
