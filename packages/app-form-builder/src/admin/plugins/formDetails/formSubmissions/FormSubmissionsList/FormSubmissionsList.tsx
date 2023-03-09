@@ -89,7 +89,7 @@ export const FormSubmissionsList: React.FC<FormSubmissionsListProps> = ({ form }
         <>
             <Block title="Submissions" className={blockWrapper}>
                 <DataList
-                    loading={Boolean(loading)}
+                    loading={loading}
                     refresh={refresh}
                     data={submissions}
                     setSorters={setSorter}

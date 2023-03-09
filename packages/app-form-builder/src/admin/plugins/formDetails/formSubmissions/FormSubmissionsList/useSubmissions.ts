@@ -35,7 +35,7 @@ export const useSubmissions = (form: Pick<FbFormModel, "id">) => {
 
     const loadMoreOnScroll = useCallback(
         debounce(scrollFrame => {
-            if (scrollFrame.top > 0.9) {
+            if (!state.loading && scrollFrame.top > 0.9) {
                 const meta = get(listQuery, "data.formBuilder.listFormSubmissions.meta", {});
                 if (meta.cursor) {
                     setState({ loading: true });
@@ -92,7 +92,7 @@ export const useSubmissions = (form: Pick<FbFormModel, "id">) => {
     }, [form]);
 
     return {
-        loading: [listQuery].find(item => item.loading),
+        loading: [listQuery].some(item => item.loading),
         fetchMoreLoading: state.loading,
         refresh: () => {
             if (!listQuery.refetch) {
