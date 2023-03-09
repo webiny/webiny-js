@@ -4,9 +4,8 @@ import { ReactComponent as More } from "@material-design-icons/svg/filled/more_v
 import { FolderDialogDelete, FolderDialogUpdate } from "@webiny/app-aco";
 import { FolderItem, SearchRecordItem } from "@webiny/app-aco/types";
 import { IconButton } from "@webiny/ui/Button";
-import { Columns, DataTable } from "@webiny/ui/DataTable";
+import { Columns, DataTable, OnSortingChange, Sorting } from "@webiny/ui/DataTable";
 import { Menu } from "@webiny/ui/Menu";
-import { orderBy } from "lodash";
 /**
  * Package timeago-react does not have types.
  */
@@ -32,6 +31,8 @@ interface Props {
     loading?: boolean;
     openPreviewDrawer: () => void;
     onSelectRow: (rows: Entry[] | []) => void;
+    sorting: Sorting;
+    onSortingChange: OnSortingChange;
 }
 
 interface Entry {
@@ -47,7 +48,8 @@ interface Entry {
 }
 
 export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
-    const { folders, records, loading, openPreviewDrawer, onSelectRow } = props;
+    const { folders, records, loading, openPreviewDrawer, onSelectRow, sorting, onSortingChange } =
+        props;
 
     const [data, setData] = useState<Entry[]>([]);
     const [selectedFolder, setSelectedFolder] = useState<FolderItem>();
@@ -85,9 +87,7 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
     useDeepCompareEffect(() => {
         const foldersData = createFoldersData(folders);
         const pagesData = createRecordsData(records);
-
-        const dataset = orderBy([...foldersData, ...pagesData], ["type"], ["asc"]);
-        setData(dataset);
+        setData([...foldersData, ...pagesData]);
     }, [{ ...folders }, { ...records }]);
 
     const columns: Columns<Entry> = {
@@ -99,14 +99,16 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
                 } else {
                     return <FolderName name={title} id={id} />;
                 }
-            }
-        },
-        createdBy: {
-            header: "Author"
+            },
+            enableSorting: true
         },
         savedOn: {
             header: "Last modified",
-            cell: ({ savedOn }) => <TimeAgo datetime={savedOn} />
+            cell: ({ savedOn }) => <TimeAgo datetime={savedOn} />,
+            enableSorting: true
+        },
+        createdBy: {
+            header: "Author"
         },
         status: {
             header: "Status",
@@ -167,6 +169,8 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
                 loadingInitial={loading}
                 stickyRows={1}
                 onSelectRow={onSelectRow}
+                sorting={sorting}
+                onSortingChange={onSortingChange}
             />
             {selectedFolder && (
                 <>

@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 import debounce from "lodash/debounce";
 import useDeepCompareEffect from "use-deep-compare-effect";
+import { i18n } from "@webiny/app/i18n";
 import { FolderDialogCreate, useFolders, useRecords } from "@webiny/app-aco";
 import { useHistory, useLocation } from "@webiny/react-router";
 import { CircularProgress } from "@webiny/ui/Progress";
@@ -26,6 +27,9 @@ import { MainContainer, Wrapper } from "./styled";
 
 import { FolderItem, ListMeta, SearchRecordItem } from "@webiny/app-aco/types";
 import { PbPageDataItem } from "~/types";
+import { Sorting } from "@webiny/ui/DataTable";
+
+const t = i18n.ns("app-page-builder/admin/views/pages/table/main");
 
 interface Props {
     folderId?: string;
@@ -84,6 +88,8 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
     const tableRef = useRef<HTMLDivElement>(null);
 
     const [selected, setSelected] = useState<string[]>([]);
+    const [tableSorting, setTableSorting] = useState<Sorting>([]);
+    const [sort, setSort] = useState<string[]>([]);
 
     useEffect(() => {
         setTableHeight(tableRef?.current?.clientHeight || 0);
@@ -115,23 +121,36 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
         folderId
     });
 
-    const loadMoreLinks = async ({ hasMoreItems, cursor }: ListMeta) => {
+    useEffect(() => {
+        const sort = tableSorting.map(s => `${s.id}_${s.desc ? "DESC" : "ASC"}`);
+        setSort(sort);
+    }, [tableSorting]);
+
+    useEffect(() => {
+        const listSortedRecords = async () => {
+            await listRecords({ sort });
+        };
+
+        listSortedRecords();
+    }, [sort]);
+
+    const loadMoreRecords = async ({ hasMoreItems, cursor }: ListMeta) => {
         if (hasMoreItems && cursor) {
-            await listRecords({ after: cursor });
+            await listRecords({ after: cursor, sort });
         }
     };
 
     const loadMoreOnScroll = useCallback(
         debounce(async ({ scrollFrame }) => {
             if (scrollFrame.top > 0.8) {
-                await loadMoreLinks(meta);
+                await loadMoreRecords(meta);
             }
         }, 200),
         [meta]
     );
 
     const loadMoreOnClick = useCallback(async () => {
-        await loadMoreLinks(meta);
+        await loadMoreRecords(meta);
     }, [meta]);
 
     const isListLoading = useMemo(() => {
@@ -195,6 +214,8 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
                                         const ids = rows.map(row => row.original.pid);
                                         setSelected(ids);
                                     }}
+                                    sorting={tableSorting}
+                                    onSortingChange={setTableSorting}
                                 />
                                 <LoadMoreButton
                                     show={!isListLoading && meta.hasMoreItems}
@@ -220,7 +241,7 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
                 onClose={closeCategoriesDialog}
                 onSelect={showDialog}
             >
-                {isCreateLoading && <CircularProgress label={"Importing page..."} />}
+                {isCreateLoading && <CircularProgress label={t`Importing page...`} />}
             </CategoriesDialog>
             {showTemplatesDialog && (
                 <PageTemplatesDialog

@@ -139,7 +139,7 @@ export const FoldersProvider = ({ children }: Props) => {
                 throw new Error(error?.message || "Could not create folder");
             }
 
-            setFolders(folders => ({ ...folders, [type]: [...folders[type], data] }));
+            setFolders(folders => ({ ...folders, [type]: [data, ...folders[type]] }));
 
             return data;
         },

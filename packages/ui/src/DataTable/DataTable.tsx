@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo } from "react";
+import React, { ReactElement, useEffect, useMemo } from "react";
+
 import {
     DataTableContent,
     DataTableHead,
@@ -9,13 +10,21 @@ import {
     DataTableCellProps
 } from "@rmwc/data-table";
 
-import { flexRender, getCoreRowModel, useReactTable, ColumnDef } from "@tanstack/react-table";
+import {
+    flexRender,
+    getCoreRowModel,
+    useReactTable,
+    ColumnDef,
+    getSortedRowModel,
+    OnChangeFn,
+    SortingState
+} from "@tanstack/react-table";
 
 import { Checkbox } from "~/Checkbox";
 import { Skeleton } from "~/Skeleton";
 
 import "@rmwc/data-table/data-table.css";
-import { Table } from "./styled";
+import { ColumnDirectionIcon, ColumnDirectionWrapper, ColumnHeaderWrapper, Table } from "./styled";
 
 interface Column<T> {
     /*
@@ -34,6 +43,10 @@ interface Column<T> {
      * Column class names.
      */
     className?: string;
+    /*
+     * Enable column sorting.
+     */
+    enableSorting?: boolean;
 }
 
 export type Columns<T> = {
@@ -46,6 +59,10 @@ export type DefaultData = {
      */
     selectable?: boolean;
 };
+
+export type Sorting = SortingState;
+
+export type OnSortingChange = OnChangeFn<Sorting>;
 
 interface Props<T> {
     /*
@@ -73,9 +90,21 @@ interface Props<T> {
      */
     stickyRows?: number;
     /*
-     * Show or hide borders
+     * Show or hide borders.
      */
     bordered?: boolean;
+    /*
+     * Sorting state.
+     */
+    sorting?: Sorting;
+    /*
+     * Callback that receives current sorting state.
+     */
+    onSortingChange?: OnSortingChange;
+}
+
+export interface ColumnDirectionProps {
+    direction?: "asc" | "desc";
 }
 
 const defineColumns = <T,>(
@@ -90,7 +119,7 @@ const defineColumns = <T,>(
         }));
 
         const defaults: ColumnDef<T>[] = columnsList.map(column => {
-            const { id, header, meta, cell } = column;
+            const { id, header, meta, cell, enableSorting = false } = column;
 
             return {
                 accessorKey: id,
@@ -102,6 +131,7 @@ const defineColumns = <T,>(
                         return info.getValue();
                     }
                 },
+                enableSorting,
                 meta
             };
         });
@@ -133,7 +163,8 @@ const defineColumns = <T,>(
                       meta: {
                           hasFormControl: true,
                           className: "datatable-select-column"
-                      }
+                      },
+                      enableSorting: false
                   }
               ]
             : [];
@@ -162,6 +193,18 @@ const defineData = <T,>(
     }, [data, loadingInitial]);
 };
 
+const ColumnDirection = ({ direction }: ColumnDirectionProps): ReactElement | null => {
+    if (direction) {
+        return (
+            <ColumnDirectionWrapper>
+                <ColumnDirectionIcon direction={direction} />
+            </ColumnDirectionWrapper>
+        );
+    }
+
+    return null;
+};
+
 export const DataTable = <T extends Object & DefaultData>({
     data,
     columns,
@@ -169,7 +212,9 @@ export const DataTable = <T extends Object & DefaultData>({
     loadingInitial,
     stickyColumns,
     stickyRows,
-    bordered
+    bordered,
+    sorting,
+    onSortingChange
 }: Props<T>) => {
     const [rowSelection, setRowSelection] = React.useState({});
 
@@ -177,11 +222,16 @@ export const DataTable = <T extends Object & DefaultData>({
         data: defineData(data, loadingInitial),
         columns: defineColumns(columns, onSelectRow, loadingInitial),
         getCoreRowModel: getCoreRowModel(),
+        getSortedRowModel: getSortedRowModel(),
         state: {
-            rowSelection
+            rowSelection,
+            sorting
         },
         enableRowSelection: row => row.original.selectable || false,
-        onRowSelectionChange: setRowSelection
+        onRowSelectionChange: setRowSelection,
+        enableSorting: !!onSortingChange,
+        manualSorting: true,
+        onSortingChange
     });
 
     useEffect(() => {
@@ -197,19 +247,23 @@ export const DataTable = <T extends Object & DefaultData>({
                 <DataTableHead>
                     {table.getHeaderGroups().map(headerGroup => (
                         <DataTableRow key={headerGroup.id}>
-                            {headerGroup.headers.map(header => (
-                                <DataTableHeadCell
-                                    key={header.id}
-                                    {...header.column.columnDef.meta}
-                                >
-                                    {header.isPlaceholder
-                                        ? null
-                                        : flexRender(
-                                              header.column.columnDef.header,
-                                              header.getContext()
-                                          )}
-                                </DataTableHeadCell>
-                            ))}
+                            {headerGroup.headers.map(
+                                ({ id, isPlaceholder, column, getContext }) => (
+                                    <DataTableHeadCell key={id} {...column.columnDef.meta}>
+                                        {isPlaceholder ? null : (
+                                            <ColumnHeaderWrapper
+                                                onClick={column.getToggleSortingHandler()}
+                                                sortable={column.getCanSort()}
+                                            >
+                                                {flexRender(column.columnDef.header, getContext())}
+                                                <ColumnDirection
+                                                    direction={column.getIsSorted() || undefined}
+                                                />
+                                            </ColumnHeaderWrapper>
+                                        )}
+                                    </DataTableHeadCell>
+                                )
+                            )}
                         </DataTableRow>
                     ))}
                 </DataTableHead>

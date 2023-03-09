@@ -81,7 +81,7 @@ export const SearchRecordsProvider = ({ children }: Props) => {
             folderId?: string,
             limit = 20,
             after?: string,
-            sort = ["savedOn_DESC"]
+            sorting?: string[]
         ) {
             if (!folderId || !type) {
                 throw new Error("`folderId` and `type` are mandatory");
@@ -99,7 +99,13 @@ export const SearchRecordsProvider = ({ children }: Props) => {
                 return;
             }
 
+            // Remove records in case of sorting change and not a paginated request.
+            if (sorting && !after) {
+                setRecords([]);
+            }
+
             const action = after ? "LIST_MORE" : "LIST";
+            const sort = sorting && sorting.length > 0 ? sorting : ["savedOn_DESC"];
 
             const { data: response } = await apolloFetchingHandler(
                 loadingHandler(action, setLoading),
@@ -118,9 +124,9 @@ export const SearchRecordsProvider = ({ children }: Props) => {
             }
 
             // Adjusting sorting while merging records with data received from the server.
-            const sortFields = sort.map(s => s.split("_")[0]);
-            const sortOrders = sort.map(s => s.split("_")[1].toLowerCase() as "asc" | "desc");
-            setRecords(records => orderBy(unionBy(data, records, "id"), sortFields, sortOrders));
+            const fields = sort.map(s => s.split("_")[0]);
+            const orders = sort.map(s => s.split("_")[1].toLowerCase() as "asc" | "desc");
+            setRecords(records => orderBy(unionBy(data, records, "id"), fields, orders));
 
             setMeta(meta => ({
                 ...meta,
