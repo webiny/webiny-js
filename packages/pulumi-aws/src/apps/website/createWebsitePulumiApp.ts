@@ -280,7 +280,7 @@ export const createWebsitePulumiApp = (projectAppParams: CreateWebsitePulumiAppP
                 // Page Builder and "previewing" pages. In other words, the "preview" property
                 // contains all resources related to serving page previews, unlike "delivery",
                 // which is used to serve published pages to actual website visitors.
-                // The "app" property was still left here just or backwards compatibility.
+                // The "app" property was still left here just for backwards compatibility.
                 preview: {
                     ...appBucket,
                     cloudfront: appCloudfront
