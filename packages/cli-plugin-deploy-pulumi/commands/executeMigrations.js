@@ -7,7 +7,7 @@ const { getStackOutput } = require("../utils");
 module.exports = async (params, context) => {
     const apiOutput = getStackOutput({ folder: "apps/api", env: params.env });
 
-    context.info("Invoking data migrations Lambda function...");
+    context.info("Invoking data migration Lambda function...");
 
     try {
         const lambdaClient = new LambdaClient({
@@ -43,7 +43,7 @@ module.exports = async (params, context) => {
                     return [`- %s: ${mig.description}`, mig.id];
                 })
             ].filter(Boolean);
-            context.success("Data migrations Lambda executed successfully!");
+            context.success("Data migration Lambda executed successfully!");
             logItems.forEach(line => context.info(...line));
         }
     } catch (e) {
