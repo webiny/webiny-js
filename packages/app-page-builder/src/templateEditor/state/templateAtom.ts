@@ -12,6 +12,7 @@ export interface PageTemplate {
     tags?: string[];
     description?: string;
     layout?: string;
+    pageCategory?: string;
     savedOn?: string;
     createdBy: {
         id: string | null;
