@@ -275,6 +275,7 @@ export const createWebsitePulumiApp = (projectAppParams: CreateWebsitePulumiAppP
 
             return {
                 prerendering,
+
                 // "preview" and "app" are the same.
                 // We introduced "preview" just because it's the word we use when talking about
                 // Page Builder and "previewing" pages. In other words, the "preview" property
@@ -289,6 +290,7 @@ export const createWebsitePulumiApp = (projectAppParams: CreateWebsitePulumiAppP
                     ...appBucket,
                     cloudfront: appCloudfront
                 },
+
                 delivery: {
                     ...deliveryBucket,
                     cloudfront: deliveryCloudfront
