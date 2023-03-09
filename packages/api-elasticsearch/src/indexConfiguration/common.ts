@@ -15,7 +15,13 @@ const getDefaultMappings = (): ElasticsearchIndexRequestBodyMappingsDynamicTempl
                 match: "number@*",
                 mapping: {
                     type: "scaled_float",
-                    scaling_factor: 10000
+                    scaling_factor: 10000,
+                    fields: {
+                        keyword: {
+                            type: "keyword",
+                            ignore_above: 256
+                        }
+                    }
                 }
             }
         },
@@ -35,6 +41,7 @@ interface Modifier {
         mappings: ElasticsearchIndexRequestBodyMappingsDynamicTemplate[]
     ): ElasticsearchIndexRequestBodyMappingsDynamicTemplate[];
 }
+
 /**
  * @internal
  */
