@@ -11,6 +11,12 @@ export default (params: TableParams): Table => {
         name: process.env.DB_TABLE_FILE_MANGER || process.env.DB_TABLE || getTable(context),
         partitionKey: "PK",
         sortKey: "SK",
-        DocumentClient: getDocumentClient(context)
+        DocumentClient: getDocumentClient(context),
+        indexes: {
+            GSI1: {
+                partitionKey: "GSI1_PK",
+                sortKey: "GSI1_SK"
+            }
+        }
     });
 };
