@@ -45,7 +45,7 @@ import { useMultiSelect } from "./hooks/useMultiSelect";
 import { usePermission } from "~/hooks/usePermission";
 import { ReactComponent as FileUploadIcon } from "@material-design-icons/svg/round/upload.svg";
 import useImportForm from "./hooks/useImportForm";
-import { ExportFormsButton } from "~/admin/plugins/editor/defaultBar/ExportButton";
+import { ExportFormsButton } from "~/admin/plugins/formsDataList/ExportButton";
 import { OptionsMenu } from "~/admin/components/OptionsMenu";
 import { useForms } from "./useForms";
 import { deserializeSorters } from "../utils";

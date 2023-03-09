@@ -3,8 +3,8 @@ import get from "lodash/get";
 import { useMutation } from "@apollo/react-hooks";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { IMPORT_FORMS } from "~/admin/graphql";
-import useImportFormDialog from "~/admin/plugins/editor/defaultBar/ImportButton/useImportFormDialog";
-import useImportFormLoadingDialog from "~/admin/plugins/editor/defaultBar/ImportButton/useImportFormLoadingDialog";
+import useImportFormDialog from "~/admin/plugins/formsDataList/ImportButton/useImportFormDialog";
+import useImportFormLoadingDialog from "~/admin/plugins/formsDataList/ImportButton/useImportFormLoadingDialog";
 
 const useImportForm = () => {
     const [importForm] = useMutation(IMPORT_FORMS);
