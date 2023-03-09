@@ -1,4 +1,4 @@
-import { Klass, LexicalNode } from "lexical";
+import { Klass, LexicalNode, TextNode } from "lexical";
 import { HeadingNode, QuoteNode } from "@lexical/rich-text";
 import { ListItemNode, ListNode } from "@lexical/list";
 import { CodeHighlightNode, CodeNode } from "@lexical/code";
@@ -7,11 +7,14 @@ import { AutoLinkNode, LinkNode } from "@lexical/link";
 import { OverflowNode } from "@lexical/overflow";
 import { MarkNode } from "@lexical/mark";
 import { FontColorTextNode } from "~/nodes/FontColorNode";
+import { ThemeStyles } from "@webiny/app-page-builder-elements/types";
+// import {FontColorAction} from "~/components/ToolbarActions/FontColorAction";
 
 /*
  * @description create nodes
- * */
-const nodesFactory = (theme: unknown): Array<Klass<LexicalNode>> => {
+ */
+export const nodesFactory = (theme: ThemeStyles): Klass<LexicalNode>[] => {
+    // const FontActionColorNode = createFontColorNodeClass(theme);
     return [
         HeadingNode,
         ListNode,
@@ -27,5 +30,3 @@ const nodesFactory = (theme: unknown): Array<Klass<LexicalNode>> => {
         FontColorTextNode
     ];
 };
-
-export const getNodeInstanceWithTheme = (node: LexicalNode, theme: unknown) => {};

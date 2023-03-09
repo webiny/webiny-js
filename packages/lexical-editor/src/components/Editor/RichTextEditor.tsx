@@ -2,8 +2,6 @@ import React, { useRef, useState } from "react";
 import { LexicalValue } from "~/types";
 import { Placeholder } from "~/ui/Placeholder";
 import { generateInitialLexicalValue } from "~/utils/generateInitialLexicalValue";
-import { WebinyNodes } from "~/nodes/webinyNodes";
-import { theme } from "~/themes/webinyLexicalTheme";
 import { EditorState } from "lexical/LexicalEditorState";
 import { Klass, LexicalEditor, LexicalNode } from "lexical";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
@@ -19,6 +17,8 @@ import { isValidLexicalData } from "~/utils/isValidLexicalData";
 import { LexicalUpdateStatePlugin } from "~/plugins/LexicalUpdateStatePlugin";
 import { BlurEventPlugin } from "~/plugins/BlurEventPlugin/BlurEventPlugin";
 import { FontColorPlugin } from "~/plugins/FontColorPlugin/FontColorPlugin";
+import { usePageElements } from "@webiny/app-page-builder-elements";
+import { nodesFactory } from "~/nodes/nodesFactory";
 
 export interface RichTextEditorProps {
     toolbar?: React.ReactNode;
@@ -54,6 +54,7 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
     const [floatingAnchorElem, setFloatingAnchorElem] = useState<HTMLElement | undefined>(
         undefined
     );
+    const { theme } = usePageElements();
 
     const onRef = (_floatingAnchorElem: HTMLDivElement) => {
         if (_floatingAnchorElem !== null) {
@@ -72,7 +73,7 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
         onError: (error: Error) => {
             throw error;
         },
-        nodes: [...WebinyNodes, ...(nodes || [])],
+        nodes: [...nodesFactory(theme.styles), ...(nodes || [])],
         theme: theme
     };
 

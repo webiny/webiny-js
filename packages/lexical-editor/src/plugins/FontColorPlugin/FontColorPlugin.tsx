@@ -4,10 +4,13 @@ import { usePageElements } from "@webiny/app-page-builder-elements";
 import {
     $createFontColorNode,
     ADD_FONT_COLOR_COMMAND,
-    FontColorPayload
+    FontColorPayload,
+    FontColorTextNode
 } from "~/nodes/FontColorNode";
 import {
     $createParagraphNode,
+    $createTextNode,
+    $getRoot,
     $getSelection,
     $insertNodes,
     $isRangeSelection,
@@ -18,22 +21,20 @@ import { $wrapNodeInElement } from "@lexical/utils";
 
 export const FontColorPlugin: React.FC = () => {
     const [editor] = useLexicalComposerContext();
-    const pageElements = usePageElements();
+    const { theme } = usePageElements();
 
     useEffect(() => {
         return editor.registerCommand<FontColorPayload>(
             ADD_FONT_COLOR_COMMAND,
             payload => {
                 editor.update(() => {
-                    const { themeColor } = payload;
+                    const { color } = payload;
                     const selection = editor.getEditorState().read($getSelection);
                     if ($isRangeSelection(selection) && !selection.isCollapsed()) {
-                        const colors = pageElements.theme?.styles?.colors;
-                        const applyColor = colors[themeColor] ?? themeColor;
                         const fontColorNode = $createFontColorNode(
                             selection.getTextContent(),
-                            applyColor,
-                            themeColor
+                            color,
+                            theme.styles
                         );
                         $insertNodes([fontColorNode]);
                         if ($isRootOrShadowRoot(fontColorNode.getParentOrThrow())) {
@@ -45,6 +46,28 @@ export const FontColorPlugin: React.FC = () => {
             },
             COMMAND_PRIORITY_EDITOR
         );
+    }, [editor]);
+
+    useEffect(() => {
+        return editor.registerMutationListener(FontColorTextNode, mutatedNodes => {
+            // mutatedNodes is a Map where each key is the NodeKey, and the value is the state of mutation.
+            for (const [nodeKey, mutation] of mutatedNodes) {
+                console.log(nodeKey, mutation);
+                console.log(mutatedNodes.get(nodeKey));
+            }
+        });
+    }, [editor]);
+
+    useEffect(() => {
+        return editor.registerNodeTransform(FontColorTextNode, paragraph => {
+            // Triggers
+            editor.update(() => {
+                const paragraph = $getRoot().getFirstChild();
+                if (paragraph) {
+                    paragraph.append($createTextNode("foo"));
+                }
+            });
+        });
     }, [editor]);
 
     return null;

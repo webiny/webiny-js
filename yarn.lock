@@ -6540,6 +6540,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@lexical/headless@npm:^0.8.1":
+  version: 0.8.1
+  resolution: "@lexical/headless@npm:0.8.1"
+  peerDependencies:
+    lexical: 0.8.1
+  checksum: f9b65d6c0bed4c9dc2d0fea74c2a920b47e59f8a504037dde9f781913f01be2b5119646fac444249eafe61459b0120ef2e4e32b3d12bec068a1116d118724daf
+  languageName: node
+  linkType: hard
+
 "@lexical/history@npm:0.8.1":
   version: 0.8.1
   resolution: "@lexical/history@npm:0.8.1"
@@ -15162,6 +15171,7 @@ __metadata:
   dependencies:
     "@lexical/code": 0.8.1
     "@lexical/hashtag": 0.8.1
+    "@lexical/headless": ^0.8.1
     "@lexical/link": 0.8.1
     "@lexical/list": 0.8.1
     "@lexical/mark": 0.8.1

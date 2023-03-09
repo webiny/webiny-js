@@ -10,6 +10,8 @@ import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
 import { LexicalUpdateStatePlugin } from "~/plugins/LexicalUpdateStatePlugin";
 import { Klass, LexicalNode } from "lexical";
+import { nodesFactory } from "~/nodes/nodesFactory";
+import { usePageElements } from "@webiny/app-page-builder-elements";
 
 interface LexicalHtmlRendererProps {
     nodes?: Klass<LexicalNode>[];
@@ -17,6 +19,7 @@ interface LexicalHtmlRendererProps {
 }
 
 export const LexicalHtmlRenderer: React.FC<LexicalHtmlRendererProps> = ({ nodes, value }) => {
+    const { theme } = usePageElements();
     const initialConfig = {
         editorState: isValidLexicalData(value) ? value : generateInitialLexicalValue(),
         namespace: "webiny",
@@ -24,7 +27,7 @@ export const LexicalHtmlRenderer: React.FC<LexicalHtmlRendererProps> = ({ nodes,
             throw error;
         },
         editable: false,
-        nodes: [...WebinyNodes, ...(nodes || [])],
+        nodes: [...nodesFactory(theme.styles), ...(nodes || [])],
         theme: theme
     };
 

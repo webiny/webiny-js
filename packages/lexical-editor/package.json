@@ -9,6 +9,7 @@
   "dependencies": {
     "@lexical/code": "0.8.1",
     "@lexical/hashtag": "0.8.1",
+    "@lexical/headless": "^0.8.1",
     "@lexical/link": "0.8.1",
     "@lexical/list": "0.8.1",
     "@lexical/mark": "0.8.1",
