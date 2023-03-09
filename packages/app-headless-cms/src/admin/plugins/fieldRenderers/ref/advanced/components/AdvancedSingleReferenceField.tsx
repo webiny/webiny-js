@@ -23,9 +23,18 @@ const Container = styled("div")({
     paddingLeft: "10px"
 });
 
+const FieldLabel = styled("h3")({
+    fontSize: 24,
+    fontWeight: "normal",
+    borderBottom: "1px solid var(--mdc-theme-background)",
+    marginBottom: "20px",
+    paddingBottom: "5px"
+});
+
 interface Props extends CmsEditorFieldRendererProps {
     bind: BindComponentRenderProp<CmsReferenceValue | null>;
 }
+
 export const AdvancedSingleReferenceField: React.VFC<Props> = props => {
     const { bind, field } = props;
     const { showSnackbar } = useSnackbar();
@@ -146,33 +155,38 @@ export const AdvancedSingleReferenceField: React.VFC<Props> = props => {
     );
 
     return (
-        <Container>
-            {loading && <Loader />}
-            {!loadingEntries && <Entry entry={entries[0]} onRemove={onRemove} />}
-            <Options
-                models={models}
-                onNewRecord={onNewRecord}
-                onLinkExistingRecord={onExistingRecord}
-            />
-
-            {newEntryDialogModel && (
-                <NewReferencedEntryDialog
-                    model={newEntryDialogModel}
-                    onClose={onNewEntryDialogClose}
-                    onChange={onNewEntryCreate}
+        <>
+            <FieldLabel>{field.label}</FieldLabel>
+            <Container>
+                {loading && <Loader />}
+                {!loadingEntries && !!entries[0] && (
+                    <Entry index={0} entry={entries[0]} onRemove={onRemove} />
+                )}
+                <Options
+                    models={models}
+                    onNewRecord={onNewRecord}
+                    onLinkExistingRecord={onExistingRecord}
                 />
-            )}
 
-            {linkEntryDialogModel && (
-                <ReferencesDialog
-                    {...props}
-                    multiple={false}
-                    values={bind.value ? [bind.value] : []}
-                    contentModel={linkEntryDialogModel}
-                    storeValues={storeValues}
-                    onDialogClose={onLinkEntryDialogClose}
-                />
-            )}
-        </Container>
+                {newEntryDialogModel && (
+                    <NewReferencedEntryDialog
+                        model={newEntryDialogModel}
+                        onClose={onNewEntryDialogClose}
+                        onChange={onNewEntryCreate}
+                    />
+                )}
+
+                {linkEntryDialogModel && (
+                    <ReferencesDialog
+                        {...props}
+                        multiple={false}
+                        values={bind.value ? [bind.value] : []}
+                        contentModel={linkEntryDialogModel}
+                        storeValues={storeValues}
+                        onDialogClose={onLinkEntryDialogClose}
+                    />
+                )}
+            </Container>
+        </>
     );
 };

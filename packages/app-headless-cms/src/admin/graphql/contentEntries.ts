@@ -212,7 +212,18 @@ export const createCreateMutation = (model: CmsEditorContentModel) => {
                 data {
                     id
                     savedOn
+                    createdOn
                     ${createFieldsList({ model, fields: model.fields })}
+                    createdBy {
+                        id
+                        type
+                        displayName
+                    }
+                    ownedBy {
+                       id
+                       type
+                       displayName
+                    }
                     meta {
                         ${CONTENT_META_FIELDS}
                     }

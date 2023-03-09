@@ -6,7 +6,8 @@ const Content = styled("p")({
     fontWeight: 400,
     fontSize: 14,
     lineHeight: "20px",
-    letterSpacing: "0.25px"
+    letterSpacing: "0.25px",
+    padding: "0 10px 0 0"
 });
 interface Props {
     description?: string | null;

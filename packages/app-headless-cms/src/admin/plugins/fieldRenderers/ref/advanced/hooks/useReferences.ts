@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useApolloClient } from "~/admin/hooks";
 import {
     CmsReferenceContentEntry,
@@ -62,19 +62,43 @@ export const useReferences = ({ values: initialValues }: UseReferencesParams) =>
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | undefined | null>(null);
 
+    const [hash, setHash] = useState<string | null>(null);
+
     const values = useMemo(() => {
-        if (!initialValues) {
-            return [];
-        } else if (Array.isArray(initialValues)) {
-            return initialValues;
-        } else if (!initialValues?.id) {
-            return [];
-        }
-        return [initialValues];
+        return Array.isArray(initialValues) ? initialValues : initialValues ? [initialValues] : [];
     }, [initialValues]);
 
     useEffect(() => {
-        if (values.length === 0) {
+        const value = values
+            .map(item => {
+                return item.id;
+            })
+            .sort()
+            .join("-");
+        if (value.length === 0) {
+            setEntries([]);
+            setHash(null);
+            return;
+        }
+        /**
+         * If there is no crypto.subtle, lets skip this - but at this point the hash will be enormous.
+         */
+        if (!window.crypto?.subtle) {
+            setHash(value);
+            return;
+        }
+
+        window.crypto.subtle.digest("SHA-1", new TextEncoder().encode(value)).then(encoded => {
+            const decoded = new TextDecoder().decode(encoded);
+            if (hash === decoded) {
+                return;
+            }
+            setHash(decoded);
+        });
+    }, [values]);
+
+    useEffect(() => {
+        if (!hash || values.length === 0) {
             setEntries([]);
             return;
         }
@@ -85,11 +109,20 @@ export const useReferences = ({ values: initialValues }: UseReferencesParams) =>
             setError,
             setEntries
         });
-    }, [values, setEntries, setLoading, setError, client]);
+    }, [hash]);
+
+    const loadMore = useCallback(() => {
+        return null;
+    }, []);
 
     return {
         loading,
-        entries,
-        error
+        entries: values
+            .map(({ id }) => {
+                return entries.find(entry => entry.id === id);
+            })
+            .filter(Boolean) as CmsReferenceContentEntry[],
+        error,
+        loadMore
     };
 };

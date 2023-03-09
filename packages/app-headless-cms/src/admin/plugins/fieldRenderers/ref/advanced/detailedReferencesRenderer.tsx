@@ -24,13 +24,15 @@ export const createAdvancedMultipleRenderer = (): CmsEditorFieldRendererPlugin =
                     <Bind>
                         {bind => {
                             return (
-                                <AdvancedMultipleReferenceField
-                                    field={field}
-                                    getBind={getBind}
-                                    bind={bind}
-                                    Label={Label}
-                                    contentModel={contentModel}
-                                />
+                                <>
+                                    <AdvancedMultipleReferenceField
+                                        field={field}
+                                        getBind={getBind}
+                                        bind={bind}
+                                        Label={Label}
+                                        contentModel={contentModel}
+                                    />
+                                </>
                             );
                         }}
                     </Bind>

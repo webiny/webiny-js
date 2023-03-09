@@ -3,34 +3,7 @@ import React, { useCallback } from "react";
 import { CmsReferenceContentEntry } from "~/admin/plugins/fieldRenderers/ref/components/types";
 import { ReactComponent as RemoveIcon } from "./assets/remove.svg";
 import { useConfirmationDialog } from "@webiny/app-admin";
-
-const Container = styled("div")({
-    width: "140px",
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center"
-});
-
-const SelectButton = styled("button")({
-    border: 0,
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    background: "transparent",
-    color: "var(--mdc-theme-primary)",
-    cursor: "pointer"
-});
-
-const Icon = styled("div")(() => {
-    return {
-        width: "16px",
-        height: "16px",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        cursor: "pointer"
-    };
-});
+import { ButtonLink } from "./elements/ButtonLink";
 
 const Text = styled("span")({
     fontFamily: "Source Sans Pro",
@@ -46,6 +19,7 @@ interface Props {
     entry: CmsReferenceContentEntry;
     onRemove: (entryId: string) => void;
 }
+
 export const Remove: React.VFC<Props> = ({ entry, onRemove }) => {
     const { showConfirmation } = useConfirmationDialog({
         title: "Remove referenced entry",
@@ -60,13 +34,9 @@ export const Remove: React.VFC<Props> = ({ entry, onRemove }) => {
     }, [entry]);
 
     return (
-        <Container>
-            <SelectButton onClick={onRemoveClick}>
-                <Icon>
-                    <RemoveIcon />
-                </Icon>
-                <Text>Remove</Text>
-            </SelectButton>
-        </Container>
+        <ButtonLink onClick={onRemoveClick} maxWidth={"100px"}>
+            <RemoveIcon />
+            <Text>Remove</Text>
+        </ButtonLink>
     );
 };
