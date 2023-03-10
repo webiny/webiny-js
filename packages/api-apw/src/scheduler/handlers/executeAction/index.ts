@@ -5,7 +5,7 @@ import { ContextPlugin } from "@webiny/api";
 import { PageBuilderGraphQL } from "./plugins/PageBuilderGraphQL";
 import { HeadlessCMSGraphQL } from "./plugins/HeadlessCMSGraphQL";
 import { ApplicationGraphQL } from "./plugins/ApplicationGraphQL";
-import { createEvent } from "@webiny/handler";
+import { createRawEventHandler } from "@webiny/handler-aws";
 
 export interface HandlerArgs {
     datetime: string;
@@ -24,7 +24,7 @@ interface Configuration {
 const createExecuteActionLambda = (params: Configuration) => {
     const { storageOperations } = params;
 
-    return createEvent<HandlerArgs>(async ({ payload, context }) => {
+    return createRawEventHandler<HandlerArgs>(async ({ payload, context }) => {
         const log = console.log;
 
         const applicationGraphQLPlugins = context.plugins.byType<ApplicationGraphQL>(
@@ -135,6 +135,7 @@ const createExecuteActionLambda = (params: Configuration) => {
                     continue;
                 }
 
+                console.log(`Invoking Lambda "${name}" with url "${url}".`);
                 // Perform the actual action call.
                 const response = await context.handlerClient.invoke({
                     name,
@@ -156,7 +157,11 @@ const createExecuteActionLambda = (params: Configuration) => {
                     await: true
                 });
                 if (response?.body) {
-                    console.log(JSON.stringify({ body: response.body }, null, 2));
+                    const error = response.body.data?.content?.error;
+                    if (!error) {
+                        continue;
+                    }
+                    console.log(JSON.stringify({ error }, null, 2));
                     continue;
                 }
                 console.log(JSON.stringify({ response }, null, 2));
