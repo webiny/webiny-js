@@ -16,3 +16,11 @@ export const DialogContainer = styled(Dialog)`
 export const DialogActions = styled(DefaultDialogActions)`
     justify-content: space-between;
 `;
+
+export const DialogFoldersContainer = styled("div")`
+    max-height: 300px;
+    overflow-y: scroll;
+    margin-top: 16px;
+    padding: 16px;
+    background: var(--mdc-theme-background);
+`;

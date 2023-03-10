@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
 
+import { useSnackbar } from "@webiny/app-admin";
+import { i18n } from "@webiny/app/i18n";
 import { ButtonPrimary, ButtonDefault } from "@webiny/ui/Button";
 import { DialogTitle, DialogContent, DialogOnClose } from "@webiny/ui/Dialog";
-import { Grid, Cell } from "@webiny/ui/Grid";
 import { CircularProgress } from "@webiny/ui/Progress";
-import { i18n } from "@webiny/app/i18n";
-import { useSnackbar } from "@webiny/app-admin";
+import { Typography } from "@webiny/ui/Typography";
 
 import { FolderTree } from "~/components";
 import { useRecords } from "~/hooks";
 
-import { DialogContainer, DialogActions } from "./styled";
+import { DialogContainer, DialogActions, DialogFoldersContainer } from "./styled";
 
 import { SearchRecordItem } from "~/types";
 
@@ -32,7 +32,6 @@ export const EntryDialogMove: React.FC<Props> = ({ type, searchRecord, onClose, 
     const onSubmit = async () => {
         try {
             if (folderId) {
-                console.log(folderId, searchRecord);
                 const { id, title, type, content, data } = searchRecord;
                 await updateRecord({
                     id,
@@ -45,7 +44,7 @@ export const EntryDialogMove: React.FC<Props> = ({ type, searchRecord, onClose, 
                     }
                 });
 
-                showSnackbar(t`Entry moved successfully!`);
+                showSnackbar(t`Item moved successfully!`);
             }
             setDialogOpen(false);
         } catch (error) {
@@ -62,22 +61,18 @@ export const EntryDialogMove: React.FC<Props> = ({ type, searchRecord, onClose, 
             {dialogOpen && (
                 <>
                     <DialogTitle>{t`Move item`}</DialogTitle>
-                    {loading.UPDATE && <CircularProgress label={t`Updating entry...`} />}
+                    {loading.UPDATE && <CircularProgress label={t`Moving item...`} />}
                     <DialogContent>
-                        <Grid>
-                            <Cell span={12}>
-                                <FolderTree
-                                    title={"Root folder"}
-                                    type={type}
-                                    focusedFolderId={folderId}
-                                    onFolderClick={data => {
-                                        console.log(data?.id);
-                                        setFolderId(data?.id);
-                                    }}
-                                    onTitleClick={() => setFolderId("ROOT")}
-                                />
-                            </Cell>
-                        </Grid>
+                        <Typography use="body1">{t`Choose the folder where you want to move the item. You can always create a new one if you prefer.`}</Typography>
+                        <DialogFoldersContainer>
+                            <FolderTree
+                                title={"Root folder"}
+                                type={type}
+                                focusedFolderId={folderId || searchRecord.location.folderId}
+                                onFolderClick={data => setFolderId(data?.id)}
+                                onTitleClick={() => setFolderId("ROOT")}
+                            />
+                        </DialogFoldersContainer>
                     </DialogContent>
                     <DialogActions>
                         <ButtonDefault
