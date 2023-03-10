@@ -6,15 +6,15 @@ import { HashtagNode } from "@lexical/hashtag";
 import { AutoLinkNode, LinkNode } from "@lexical/link";
 import { OverflowNode } from "@lexical/overflow";
 import { MarkNode } from "@lexical/mark";
-import { FontColorTextNode } from "~/nodes/FontColorNode";
 import { ThemeStyles } from "@webiny/app-page-builder-elements/types";
+import { createFontColorNodeClass } from "~/nodes/FontColorNode";
 // import {FontColorAction} from "~/components/ToolbarActions/FontColorAction";
 
 /*
  * @description create nodes
  */
 export const nodesFactory = (theme: ThemeStyles): Klass<LexicalNode>[] => {
-    // const FontActionColorNode = createFontColorNodeClass(theme);
+    const FontAction = createFontColorNodeClass(theme);
     return [
         HeadingNode,
         ListNode,
@@ -27,6 +27,6 @@ export const nodesFactory = (theme: ThemeStyles): Klass<LexicalNode>[] => {
         LinkNode,
         OverflowNode,
         MarkNode,
-        FontColorTextNode
+        FontAction
     ];
 };

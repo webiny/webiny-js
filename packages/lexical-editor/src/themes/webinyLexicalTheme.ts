@@ -91,5 +91,6 @@ export const theme: EditorThemeClasses = {
         underline: "WebinyLexical__textUnderline",
         underlineStrikethrough: "WebinyLexical__textUnderlineStrikethrough"
     },
-    fontColorText: "WebinyLexical__fontColorText"
+    fontColorText: "WebinyLexical__fontColorText",
+    colors: {}
 };

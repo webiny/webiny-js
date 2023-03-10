@@ -34,13 +34,6 @@ export const FontColorAction: FontColorAction = () => {
     const [activeEditor, setActiveEditor] = useState(editor);
     const [fontColor, setFontColor] = useState<string>("#000");
 
-    useEffect(() => {
-        const selection = $getSelection();
-        if ($isRangeSelection(selection)) {
-            setFontColor($getSelectionStyleValueForProperty(selection, "color", "#000"));
-        }
-    }, [activeEditor]);
-
     const onFontColorSelect = useCallback((value: string) => {
         editor.dispatchCommand<LexicalCommand<FontColorPayload>>(ADD_FONT_COLOR_COMMAND, {
             color: value

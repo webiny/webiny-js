@@ -19,6 +19,7 @@ import { BlurEventPlugin } from "~/plugins/BlurEventPlugin/BlurEventPlugin";
 import { FontColorPlugin } from "~/plugins/FontColorPlugin/FontColorPlugin";
 import { usePageElements } from "@webiny/app-page-builder-elements";
 import { nodesFactory } from "~/nodes/nodesFactory";
+import { createFontColorNodeClass } from "~/nodes/FontColorNode";
 
 export interface RichTextEditorProps {
     toolbar?: React.ReactNode;
@@ -51,11 +52,16 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
 }: RichTextEditorProps) => {
     const placeholderElem = <Placeholder>{placeholder || "Enter text..."}</Placeholder>;
     const scrollRef = useRef(null);
+    const { theme } = usePageElements();
     const [floatingAnchorElem, setFloatingAnchorElem] = useState<HTMLElement | undefined>(
         undefined
     );
-    const { theme } = usePageElements();
 
+    const FontActionNodeClassRef = useRef<Klass<LexicalNode>>(
+        createFontColorNodeClass(theme.styles)
+    );
+    // console.log(new FontActionNodeClassRef.current());
+    debugger;
     const onRef = (_floatingAnchorElem: HTMLDivElement) => {
         if (_floatingAnchorElem !== null) {
             setFloatingAnchorElem(_floatingAnchorElem);
@@ -81,6 +87,7 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
         editorState.read(() => {
             if (typeof onChange === "function") {
                 const editorState = editor.getEditorState();
+                //TODO: send plain JSON object
                 onChange(JSON.stringify(editorState.toJSON()));
             }
         });
@@ -93,7 +100,7 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
                 <OnChangePlugin onChange={handleOnChange} />
                 {value && <LexicalUpdateStatePlugin value={value} />}
                 <ClearEditorPlugin />
-                <FontColorPlugin />
+                <FontColorPlugin NodeFactoryClass={FontActionNodeClassRef.current} />
                 {/* Events */}
                 {onBlur && <BlurEventPlugin onBlur={onBlur} />}
                 {focus && <AutoFocusPlugin />}

@@ -2,8 +2,6 @@ import React from "react";
 import { LexicalValue } from "~/types";
 import { isValidLexicalData } from "~/utils/isValidLexicalData";
 import { generateInitialLexicalValue } from "~/utils/generateInitialLexicalValue";
-import { WebinyNodes } from "~/nodes/webinyNodes";
-import { theme } from "~/themes/webinyLexicalTheme";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
