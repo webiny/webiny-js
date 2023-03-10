@@ -25,22 +25,26 @@ export const createWcp = async (): Promise<WcpContextObject> => {
         }
     }
 
+    // Returns the dedicated Webiny Control Panel (WCP) REST API URL for given org and project.
+    const getWcpProjectUrl = (path = "") => {
+        if (!wcpProjectEnvironment) {
+            return null;
+        }
+
+        const orgId = wcpProjectEnvironment.org.id;
+        const projectId = wcpProjectEnvironment.project.id;
+        const url = ["/orgs", orgId, "projects", projectId, path].filter(Boolean).join("/");
+        return getWcpApiUrl(url);
+    };
+
     const updateSeats = async (operation: "increment" | "decrement"): Promise<void> => {
         if (!wcpProjectEnvironment) {
             return;
         }
 
-        const updateSeatsUrl = getWcpApiUrl(
-            [
-                "/orgs",
-                wcpProjectEnvironment!.org.id,
-                "projects",
-                wcpProjectEnvironment!.project.id,
-                "package/seats"
-            ].join("/")
-        );
+        const updateSeatsUrl = getWcpProjectUrl("package/seats");
 
-        const response = await fetch(updateSeatsUrl, {
+        const response = await fetch(updateSeatsUrl!, {
             method: "POST",
             headers: { authorization: wcpProjectEnvironment.apiKey },
             body: JSON.stringify({ operation })
@@ -58,9 +62,11 @@ export const createWcp = async (): Promise<WcpContextObject> => {
             jsonParseError = e;
         }
 
-        let message = `Failed to ${operation} user seats.`;
+        let message: string;
         if (jsonParseError) {
-            message += " Could not JSON-parse received HTTP response.";
+            message = `Failed to ${operation} user seats.`;
+        } else {
+            message = json.message;
         }
 
         console.error(message, response.status, response.statusText, jsonParseError || json);
@@ -68,13 +74,52 @@ export const createWcp = async (): Promise<WcpContextObject> => {
         throw new WError(message, "WCP_CANNOT_UPDATE_USER_SEATS");
     };
 
+    const updateTenants = async (operation: "increment" | "decrement"): Promise<void> => {
+        if (!wcpProjectEnvironment) {
+            return;
+        }
+
+        const updateTenantsUrl = getWcpProjectUrl("package/tenants");
+
+        const response = await fetch(updateTenantsUrl!, {
+            method: "POST",
+            headers: { authorization: wcpProjectEnvironment.apiKey },
+            body: JSON.stringify({ operation })
+        });
+
+        if (response.ok) {
+            return;
+        }
+
+        let jsonParseError, json;
+
+        try {
+            json = await response.json();
+        } catch (e) {
+            jsonParseError = e;
+        }
+
+        let message: string;
+        if (jsonParseError) {
+            message = `Failed to ${operation} user seats.`;
+        } else {
+            message = json.message;
+        }
+
+        console.error(message, response.status, response.statusText, jsonParseError || json);
+
+        throw new WError(message, "WCP_CANNOT_UPDATE_USER_TENANTS");
+    };
+
     return {
         getProjectEnvironment: () => {
             return wcpProjectEnvironment;
         },
+
         getProjectLicense: () => {
             return cachedWcpProjectLicense.license;
         },
+
         canUseFeature(wcpFeatureId: keyof typeof WCP_FEATURE_LABEL) {
             const projectLicense = this.getProjectLicense();
 
@@ -84,6 +129,7 @@ export const createWcp = async (): Promise<WcpContextObject> => {
             }
             return projectLicense?.package?.features?.[wcpFeatureId]?.enabled === true;
         },
+
         ensureCanUseFeature(wcpFeatureId: keyof typeof WCP_FEATURE_LABEL) {
             if (this.canUseFeature(wcpFeatureId)) {
                 return;
@@ -98,11 +144,21 @@ export const createWcp = async (): Promise<WcpContextObject> => {
 
             throw new WError(message, "WCP_CANNOT_USE_FEATURE", { wcpFeatureId });
         },
+
         async incrementSeats() {
             await updateSeats("increment");
         },
+
         async decrementSeats() {
             await updateSeats("decrement");
+        },
+
+        async incrementTenants() {
+            await updateTenants("increment");
+        },
+
+        async decrementTenants() {
+            await updateTenants("decrement");
         }
     } as WcpContextObject;
 };

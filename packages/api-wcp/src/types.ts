@@ -13,6 +13,8 @@ export interface WcpContextObject {
     ensureCanUseFeature: (featureId: keyof typeof WCP_FEATURE_LABEL) => void;
     incrementSeats: () => Promise<void>;
     decrementSeats: () => Promise<void>;
+    incrementTenants: () => Promise<void>;
+    decrementTenants: () => Promise<void>;
 }
 
 export interface CachedWcpProjectLicense {

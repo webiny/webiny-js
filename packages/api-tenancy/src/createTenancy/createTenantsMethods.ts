@@ -45,7 +45,17 @@ function createTenantLoaders(storageOperations: TenancyStorageOperations) {
     };
 }
 
-export function createTenantsMethods(storageOperations: TenancyStorageOperations) {
+export interface CreateTenantsMethodsParams {
+    storageOperations: TenancyStorageOperations;
+    incrementWcpTenants: () => Promise<void>;
+    decrementWcpTenants: () => Promise<void>;
+}
+
+export function createTenantsMethods({
+    storageOperations,
+    incrementWcpTenants,
+    decrementWcpTenants
+}: CreateTenantsMethodsParams) {
     const loaders = createTenantLoaders(storageOperations);
 
     return {
@@ -96,7 +106,14 @@ export function createTenantsMethods(storageOperations: TenancyStorageOperations
 
             await this.onTenantBeforeCreate.publish({ tenant });
 
-            await storageOperations.createTenant(tenant);
+            await incrementWcpTenants();
+
+            try {
+                await storageOperations.createTenant(tenant);
+            } catch (e) {
+                await decrementWcpTenants();
+                throw e;
+            }
 
             await this.onTenantAfterCreate.publish({ tenant });
 
@@ -134,6 +151,8 @@ export function createTenantsMethods(storageOperations: TenancyStorageOperations
             await this.onTenantBeforeDelete.publish({ tenant });
 
             await storageOperations.deleteTenant(id);
+
+            await decrementWcpTenants();
 
             await this.onTenantAfterDelete.publish({ tenant });
 
