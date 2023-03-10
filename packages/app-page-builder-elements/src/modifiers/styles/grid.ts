@@ -19,7 +19,7 @@ const grid: ElementStylesModifier = ({ element, theme }) => {
         const columnsCount = element.data?.settings?.grid?.cellsType?.split("-")?.length || 1;
         const columnSizes: number[] =
             element.data?.settings?.grid?.columnSizes ||
-            element.data?.settings?.grid?.cellsType?.split("-").map((x: string) => Number(x)); // cellsType is here for backward compatibility.
+            element.data?.settings?.grid?.cellsType?.split("-").map(Number); // cellsType is here for backward compatibility.
         const rowCount = element.data.settings?.grid?.rowCount || 1;
 
         const value = { ...gridSettings[breakpointName] };

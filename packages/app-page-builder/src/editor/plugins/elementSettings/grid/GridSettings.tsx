@@ -9,6 +9,7 @@ import { activeElementAtom, elementWithChildrenByIdSelector } from "~/editor/rec
 import { useUpdateElement } from "~/editor/hooks/useUpdateElement";
 import { useDisplayMode } from "~/editor/hooks/useDisplayMode";
 import { applyFallbackDisplayMode } from "~/editor/plugins/elementSettings/elementSettingsUtils";
+import { isLegacyRenderingEngine } from "~/utils";
 // Components
 import Wrapper from "~/editor/plugins/elementSettings/components/Wrapper";
 import SelectField from "~/editor/plugins/elementSettings/components/SelectField";
@@ -158,36 +159,48 @@ export const GridSettings: React.FC<PbEditorPageElementSettingsRenderComponentPr
                         <option value="column-reverse">Reverse</option>
                     </SelectField>
                 </Wrapper>
-                <Wrapper
-                    label={"Column height"}
-                    leftCellSpan={5}
-                    rightCellSpan={7}
-                    containerClassName={classes.simpleGrid}
-                >
-                    <SelectField
-                        value={columnHeight}
-                        onChange={value => onColumnHeightChange(value)}
-                    >
-                        <option value="auto">Match content size</option>
-                        <option value="full-height">Match grid height</option>
-                    </SelectField>
-                </Wrapper>
-                <Wrapper
-                    containerClassName={classes.simpleGrid}
-                    label={"Column gap"}
-                    leftCellSpan={8}
-                    rightCellSpan={4}
-                >
-                    <InputField placeholder={"px"} value={columnGap} onChange={onColumnGapChange} />
-                </Wrapper>
-                <Wrapper
-                    containerClassName={classes.simpleGrid}
-                    label={"Row gap"}
-                    leftCellSpan={8}
-                    rightCellSpan={4}
-                >
-                    <InputField placeholder={"px"} value={rowGap} onChange={onRowGapChange} />
-                </Wrapper>
+                {!isLegacyRenderingEngine && (
+                    <>
+                        <Wrapper
+                            label={"Column height"}
+                            leftCellSpan={5}
+                            rightCellSpan={7}
+                            containerClassName={classes.simpleGrid}
+                        >
+                            <SelectField
+                                value={columnHeight}
+                                onChange={value => onColumnHeightChange(value)}
+                            >
+                                <option value="auto">Match content size</option>
+                                <option value="full-height">Match grid height</option>
+                            </SelectField>
+                        </Wrapper>
+                        <Wrapper
+                            containerClassName={classes.simpleGrid}
+                            label={"Column gap"}
+                            leftCellSpan={8}
+                            rightCellSpan={4}
+                        >
+                            <InputField
+                                placeholder={"px"}
+                                value={columnGap}
+                                onChange={onColumnGapChange}
+                            />
+                        </Wrapper>
+                        <Wrapper
+                            containerClassName={classes.simpleGrid}
+                            label={"Row gap"}
+                            leftCellSpan={8}
+                            rightCellSpan={4}
+                        >
+                            <InputField
+                                placeholder={"px"}
+                                value={rowGap}
+                                onChange={onRowGapChange}
+                            />
+                        </Wrapper>
+                    </>
+                )}
             </ContentWrapper>
         </Accordion>
     );

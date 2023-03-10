@@ -1,7 +1,6 @@
 import React from "react";
 import { GridSize } from "./GridSize";
 import { GridSettings } from "./GridSettings";
-import { isLegacyRenderingEngine } from "~/utils";
 import { PbEditorPageElementStyleSettingsPlugin } from "../../../../types";
 
 export default [
@@ -16,7 +15,7 @@ export default [
         name: "pb-editor-page-element-style-settings-grid-settings",
         type: "pb-editor-page-element-style-settings",
         render() {
-            return isLegacyRenderingEngine ? <></> : <GridSettings />;
+            return <GridSettings />;
         }
     } as PbEditorPageElementStyleSettingsPlugin
 ];
