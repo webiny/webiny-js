@@ -1,16 +1,13 @@
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import { Client } from "@elastic/elasticsearch";
-import { Table, Entity } from "dynamodb-toolbox";
-import { EntityAttributes } from "dynamodb-toolbox/dist/classes/Entity";
-import { dynamoDbUtils } from "./utils/dynamoDb";
-export { MigrationEventHandlerResponse } from "./createMigrationEventHandler";
+import { Logger, LogEvent } from "pino";
+
+export { Logger };
 
 export interface MigrationItem {
     id: string;
-    name: string;
+    description: string;
     createdOn: string;
     duration: number;
-    logs: Log[];
+    reason: string;
 }
 
 export interface MigrationRepository {
@@ -18,56 +15,59 @@ export interface MigrationRepository {
     logMigration(migration: MigrationItem): Promise<void>;
 }
 
-export type WithLog<T> = T & { log: (message: string, data?: any) => void };
+export interface DataMigrationContext {
+    projectVersion: string;
+    logger: Logger;
+}
 
-/**
- * Implement this interface for DDB migrations.
- */
-export interface DataMigration<TContext> {
+export interface DataMigration {
     getId(): string;
-    getName(): string;
+    getDescription(): string;
     // This function should check of the migration needs to apply some changes to the system.
     // Returning `false` means "everything is ok, mark this migration as executed".
-    shouldExecute(context: WithLog<TContext>): Promise<boolean>;
-    execute(context: WithLog<TContext>): Promise<void>;
-}
-
-export interface DataMigrationRunner<TContext> {
-    canExecute(migration: DataMigration<TContext>): boolean;
-    execute(migration: DataMigration<TContext>): Promise<MigrationResult>;
-}
-
-export interface EntityParams {
-    name: string;
-    attributes: EntityAttributes;
-}
-
-interface Log {
-    message: string;
-    data?: any;
+    shouldExecute(context: DataMigrationContext): Promise<boolean>;
+    execute(context: DataMigrationContext): Promise<void>;
 }
 
 export interface MigrationResult {
     success: boolean;
-    logs: Log[];
+    logs: LogEvent[];
     duration: number;
-    runner: string;
 }
 
-export interface DynamoDbMigrationContext {
-    // Primary DynamoDB table
-    table: Table;
-    // Entity factory
-    createEntity(params: EntityParams): Entity<any>;
-    // DocumentClient instance
-    documentClient: DocumentClient;
-    // Various tools to write migrations for DynamoDB
-    dynamoDbUtils: typeof dynamoDbUtils;
+export interface ExecutedMigrationResponse {
+    id: string;
+    description: string;
+    result: MigrationResult;
 }
 
-export interface ElasticsearchMigrationContext extends DynamoDbMigrationContext {
-    // Dynamo-to-Elastic DynamoDB table
-    table: Table;
-    // Elasticsearch client instance
-    elasticsearchClient: Client;
+export interface SkippedMigrationResponse {
+    id: string;
+    description: string;
+    reason: string;
 }
+
+export interface MigrationEventPayload {
+    version?: string;
+    pattern?: string;
+}
+
+export type MigrationEventHandlerResponse =
+    // We can either have a `data`, or `error`, but never both.
+    | {
+          error: {
+              message: string;
+          };
+          data?: never;
+      }
+    | {
+          data: {
+              // Executed migrations
+              executed: ExecutedMigrationResponse[];
+              // Applicable, but the migration itself decided it should not be executed.
+              skipped: SkippedMigrationResponse[];
+              // Not applicable; either out of version range, or already applied.
+              notApplicable: SkippedMigrationResponse[];
+          };
+          error?: never;
+      };

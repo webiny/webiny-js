@@ -650,7 +650,6 @@ export interface SystemCrud {
     getSystemVersion(): Promise<string | null>;
     setSystemVersion(version: string): Promise<void>;
     installSystem(args: { name: string; insertDemoData: boolean }): Promise<void>;
-    upgradeSystem(version: string, data?: Record<string, any>): Promise<boolean>;
     /**
      * Lifecycle events - deprecated in 5.34.0 - will be removed in 5.36.0
      */

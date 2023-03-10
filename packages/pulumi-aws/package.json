@@ -32,7 +32,7 @@
     "@webiny/project-utils": "0.0.0",
     "chalk": "^4.1.0",
     "lodash": "^4.5.0",
-    "mime": "2.5.2",
+    "mime": "^2.5.2",
     "rimraf": "^3.0.2",
     "ttypescript": "^1.5.12",
     "typescript": "4.7.4"

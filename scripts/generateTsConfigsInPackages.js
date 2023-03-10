@@ -50,7 +50,7 @@ async function output(target, content) {
         // Generate `tsconfig.json`
         const tsconfigJson = {
             extends: "../../tsconfig.json",
-            include: ["src", "__tests__/**/*.ts"],
+            include: ["src", "__tests__"],
             references: dependencies.map(dep => ({
                 path: `${getRelativePath(wpObject.packageFolder, dep.packageFolder)}`
             })),

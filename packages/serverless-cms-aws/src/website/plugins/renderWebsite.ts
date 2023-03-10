@@ -15,6 +15,11 @@ export const renderWebsite = {
             return;
         }
 
+        // No need to re-render the website if we're doing a preview.
+        if (params.inputs.preview) {
+            return;
+        }
+
         const coreOutput = getStackOutput({ folder: "apps/core", env: params.env });
 
         context.info("Issuing a complete website render job...");

@@ -1,15 +1,13 @@
 import { Entity, Table } from "dynamodb-toolbox";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
-import { getExtraAttributes } from "@webiny/db-dynamodb/utils/attributes";
 
 export interface SettingsEntityParams {
     context: FileManagerContext;
     table: Table;
 }
 export default (params: SettingsEntityParams): Entity<any> => {
-    const { context, table } = params;
-    const entityName = "Settings";
-    const attributes = getExtraAttributes(context, entityName);
+    const { table } = params;
+    const entityName = "FM.Settings";
     return new Entity({
         name: entityName,
         table,
@@ -20,22 +18,18 @@ export default (params: SettingsEntityParams): Entity<any> => {
             SK: {
                 sortKey: true
             },
+            GSI1_PK: {
+                type: "string"
+            },
+            GSI1_SK: {
+                type: "string"
+            },
             TYPE: {
                 type: "string"
             },
-            key: {
-                type: "string"
-            },
-            uploadMinFileSize: {
-                type: "number"
-            },
-            uploadMaxFileSize: {
-                type: "number"
-            },
-            srcPrefix: {
-                type: "string"
-            },
-            ...attributes
+            data: {
+                type: "map"
+            }
         }
     });
 };

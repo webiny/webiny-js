@@ -34,6 +34,8 @@ import { createPageBlockEntity } from "~/definitions/pageBlockEntity";
 import { createPageBlockDynamoDbFields } from "~/operations/pageBlock/fields";
 import { createPageBlockStorageOperations } from "~/operations/pageBlock";
 
+export * from "./plugins";
+
 import { createPageTemplateEntity } from "~/definitions/pageTemplateEntity";
 import { createPageTemplateDynamoDbFields } from "~/operations/pageTemplate/fields";
 import { createPageTemplateStorageOperations } from "~/operations/pageTemplate";
@@ -88,8 +90,7 @@ export const createStorageOperations: StorageOperationsFactory = params => {
     const entities = {
         settings: createSettingsEntity({
             entityName: ENTITIES.SETTINGS,
-            table: tableInstance,
-            attributes: attributes ? attributes[ENTITIES.SETTINGS] : {}
+            table: tableInstance
         }),
         system: createSystemEntity({
             entityName: ENTITIES.SYSTEM,

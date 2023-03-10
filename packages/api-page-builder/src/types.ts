@@ -1,5 +1,4 @@
 import { DefaultSettingsCrudOptions, PbContext } from "~/graphql/types";
-import { UpgradePlugin } from "@webiny/api-upgrade";
 
 export * from "./graphql/types";
 
@@ -418,7 +417,6 @@ export interface Settings {
         home: string;
         notFound: string;
     };
-    type: string;
     tenant: string | undefined | false;
     locale: string | undefined | false;
 }
@@ -434,7 +432,6 @@ export interface DefaultSettings {
  */
 export interface SettingsStorageOperationsGetParams {
     where: {
-        type: string;
         tenant: string;
         locale: string;
     };
@@ -693,10 +690,6 @@ export interface PageBuilderStorageOperations {
 
     beforeInit?: (context: PbContext) => Promise<void>;
     init?: (context: PbContext) => Promise<void>;
-    /**
-     * An upgrade to run if necessary.
-     */
-    upgrade?: UpgradePlugin | null;
 }
 
 /**

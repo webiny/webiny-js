@@ -7,7 +7,7 @@ export class SettingsAttributePlugin extends AttributePlugin {
     public constructor(params: Omit<AttributePluginParams, "entity">) {
         super({
             ...params,
-            entity: "Settings"
+            entity: "FM.Settings"
         });
     }
 }

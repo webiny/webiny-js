@@ -5,13 +5,13 @@ import {
     ApiCloudfront,
     ApiFileManager,
     ApiGraphql,
+    ApiMigration,
     ApiPageBuilder,
     CoreOutput,
     VpcConfig
 } from "~/apps";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
-import { tagResources } from "~/utils";
-import { withCommonLambdaEnvVariables } from "~/utils";
+import { tagResources, withCommonLambdaEnvVariables, addDomainsUrlsOutputs } from "~/utils";
 
 export type ApiPulumiApp = ReturnType<typeof createApiPulumiApp>;
 
@@ -172,6 +172,7 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
             });
 
             const cloudfront = app.addModule(ApiCloudfront);
+            const migration = app.addModule(ApiMigration);
 
             const domains = app.getParam(projectAppParams.domains);
             if (domains) {
@@ -180,8 +181,6 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
 
             app.addOutputs({
                 region: process.env.AWS_REGION,
-                apiUrl: cloudfront.output.domainName.apply(value => `https://${value}`),
-                apiDomain: cloudfront.output.domainName,
                 cognitoUserPoolId: core.cognitoUserPoolId,
                 cognitoAppClientId: core.cognitoAppClientId,
                 cognitoUserPoolPasswordPolicy: core.cognitoUserPoolPasswordPolicy,
@@ -190,7 +189,19 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 apwSchedulerEventRule: apwScheduler.eventRule.output.name,
                 apwSchedulerEventTargetId: apwScheduler.eventTarget.output.targetId,
                 dynamoDbTable: core.primaryDynamodbTableName,
-                dynamoDbElasticsearchTable: core.elasticsearchDynamodbTableName
+                dynamoDbElasticsearchTable: core.elasticsearchDynamodbTableName,
+                migrationLambdaArn: migration.function.output.arn
+            });
+
+            addDomainsUrlsOutputs({
+                app,
+                cloudfrontDistribution: cloudfront,
+                map: {
+                    distributionDomain: "cloudfrontApiDomain",
+                    distributionUrl: "cloudfrontApiUrl",
+                    usedDomain: "apiDomain",
+                    usedUrl: "apiUrl"
+                }
             });
 
             tagResources({
@@ -203,7 +214,8 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 graphql,
                 apiGateway,
                 cloudfront,
-                apwScheduler
+                apwScheduler,
+                migration
             };
         }
     });

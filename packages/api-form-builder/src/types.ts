@@ -4,7 +4,6 @@ import { SecurityPermission } from "@webiny/api-security/types";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
 import { I18NContext } from "@webiny/api-i18n/types";
 import { Topic } from "@webiny/pubsub/types";
-import { UpgradePlugin } from "@webiny/api-upgrade/types";
 
 interface FbFormTriggerData {
     urls?: string[];
@@ -319,7 +318,6 @@ export interface SystemCRUD {
     getSystemVersion(): Promise<string | null>;
     setSystemVersion(version: string): Promise<void>;
     installSystem(args: { domain?: string }): Promise<void>;
-    upgradeSystem(version: string, data?: Record<string, any>): Promise<boolean>;
     /**
      * Events
      */
@@ -802,8 +800,4 @@ export interface FormBuilderStorageOperations
         FormBuilderSubmissionStorageOperations {
     beforeInit?: (context: FormBuilderContext) => Promise<void>;
     init?: (context: FormBuilderContext) => Promise<void>;
-    /**
-     * An upgrade to run if necessary.
-     */
-    upgrade?: UpgradePlugin | null;
 }
