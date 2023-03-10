@@ -2,6 +2,8 @@ import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { createHandler } from "@webiny/handler-aws/raw";
 import i18nPlugins from "@webiny/api-i18n/graphql";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
+import { createFormBuilder } from "@webiny/api-form-builder";
+import { createFormBuilderStorageOperations } from "@webiny/api-form-builder-so-ddb-es";
 import {
     createPageBuilderGraphQL,
     createPageBuilderContext
@@ -56,6 +58,12 @@ export const handler = createHandler({
             })
         }),
         createPageBuilderGraphQL(),
+        createFormBuilder({
+            storageOperations: createFormBuilderStorageOperations({
+                documentClient,
+                elasticsearch: elasticsearchClient
+            })
+        }),
         pageBuilderImportExportPlugins({
             storageOperations: createPageBuilderImportExportStorageOperations({ documentClient })
         }),
