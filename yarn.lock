@@ -10406,6 +10406,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/lodash.chunk@npm:^4.2.7":
+  version: 4.2.7
+  resolution: "@types/lodash.chunk@npm:4.2.7"
+  dependencies:
+    "@types/lodash": "*"
+  checksum: 09df5ca00d8866776038bf94658d30b4ea84bffe5f81c14c01568bcb6be692bf59f6ea093de2bb0afbb3f8e54ae96ebd97595f2838ab59b77865427ca77d391e
+  languageName: node
+  linkType: hard
+
 "@types/lodash.debounce@npm:^4.0.7":
   version: 4.0.7
   resolution: "@types/lodash.debounce@npm:4.0.7"
@@ -14962,6 +14971,7 @@ __metadata:
     reflect-metadata: ^0.1.13
     ttypescript: ^1.5.13
     typescript: 4.7.4
+    zod: ^3.21.4
   languageName: unknown
   linkType: soft
 
@@ -15012,6 +15022,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/migrations@workspace:packages/migrations"
   dependencies:
+    "@types/lodash.chunk": ^4.2.7
     "@types/lodash.pick": ^4.4.7
     "@webiny/cli": 0.0.0
     "@webiny/data-migration": 0.0.0
@@ -15021,6 +15032,7 @@ __metadata:
     "@webiny/project-utils": 0.0.0
     dynamodb-toolbox: ^0.3.5
     jest-dynalite: ^3.2.0
+    lodash.chunk: ^4.2.0
     lodash.pick: ^4.4.0
   languageName: unknown
   linkType: soft
@@ -30378,6 +30390,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lodash.chunk@npm:^4.2.0":
+  version: 4.2.0
+  resolution: "lodash.chunk@npm:4.2.0"
+  checksum: 6286c6d06814fbeda502164015c42ef53a9194e6ebaac52ec2b41e83344aefe7bc3d94fdfec525adcd2c66cefdf05dc333b6a1128e4de739797342315c17cbc7
+  languageName: node
+  linkType: hard
+
 "lodash.clonedeep@npm:^4.5.0":
   version: 4.5.0
   resolution: "lodash.clonedeep@npm:4.5.0"
@@ -42972,5 +42991,12 @@ __metadata:
   version: 3.20.2
   resolution: "zod@npm:3.20.2"
   checksum: 04172f7e9350372684ccd298d4716908edc9113751295b6c4e1b3ea84e2af8997e504b33ba36f4741417bb2a5dc90bfd40501f6b0e7389df10e42a63d6d8366c
+  languageName: node
+  linkType: hard
+
+"zod@npm:^3.21.4":
+  version: 3.21.4
+  resolution: "zod@npm:3.21.4"
+  checksum: f185ba87342ff16f7a06686767c2b2a7af41110c7edf7c1974095d8db7a73792696bcb4a00853de0d2edeb34a5b2ea6a55871bc864227dace682a0a28de33e1f
   languageName: node
   linkType: hard

@@ -50,5 +50,5 @@ export const createLegacyFileEntity = (table: Table) => {
 };
 
 export const createFileEntity = (table: Table) => {
-    return createStandardEntity(table, "File");
+    return createStandardEntity(table, "FM.File");
 };
