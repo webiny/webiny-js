@@ -70,13 +70,13 @@ export const handler = createHandler({
         }),
         createPageBuilderGraphQL(),
         pageBuilderPrerenderingPlugins(),
+        pageBuilderImportExportPlugins({
+            storageOperations: createPageBuilderImportExportStorageOperations({ documentClient })
+        }),
         createFormBuilder({
             storageOperations: createFormBuilderStorageOperations({
                 documentClient
             })
-        }),
-        pageBuilderImportExportPlugins({
-            storageOperations: createPageBuilderImportExportStorageOperations({ documentClient })
         }),
         createHeadlessCmsContext({
             storageOperations: createHeadlessCmsStorageOperations({
