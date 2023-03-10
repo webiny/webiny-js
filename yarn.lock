@@ -11962,7 +11962,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-form-builder-so-ddb-es@workspace:packages/api-form-builder-so-ddb-es":
+"@webiny/api-form-builder-so-ddb-es@0.0.0, @webiny/api-form-builder-so-ddb-es@workspace:packages/api-form-builder-so-ddb-es":
   version: 0.0.0-use.local
   resolution: "@webiny/api-form-builder-so-ddb-es@workspace:packages/api-form-builder-so-ddb-es"
   dependencies:
@@ -15385,6 +15385,9 @@ __metadata:
     "@webiny/api-file-manager-ddb": 0.0.0
     "@webiny/api-file-manager-ddb-es": 0.0.0
     "@webiny/api-file-manager-s3": 0.0.0
+    "@webiny/api-form-builder": 0.0.0
+    "@webiny/api-form-builder-so-ddb": 0.0.0
+    "@webiny/api-form-builder-so-ddb-es": 0.0.0
     "@webiny/api-i18n": 0.0.0
     "@webiny/api-i18n-content": 0.0.0
     "@webiny/api-i18n-ddb": 0.0.0
