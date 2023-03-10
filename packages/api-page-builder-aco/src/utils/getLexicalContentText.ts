@@ -1,17 +1,9 @@
 export const getLexicalContentText = (value: string): string => {
-    if (!isValidJSON(value)) {
-        return value;
-    }
-
-    return traverse(JSON.parse(value), "text");
-};
-
-const isValidJSON = (value: string): boolean => {
     try {
-        const o = JSON.parse(value);
-        return !!o && typeof o === "object" && !Array.isArray(o);
+        const content = JSON.parse(value);
+        return traverse(content, "text");
     } catch {
-        return false;
+        return value;
     }
 };
 
