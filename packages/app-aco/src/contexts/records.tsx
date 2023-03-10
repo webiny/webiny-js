@@ -249,7 +249,7 @@ export const SearchRecordsProvider = ({ children }: Props) => {
                 throw new Error("Network error while updating record");
             }
 
-            const { result, error } = response.search.updateRecord;
+            const { data: result, error } = response.search.updateRecord;
 
             if (!result) {
                 throw new Error(error?.message || "Could not update record");
