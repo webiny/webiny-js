@@ -226,8 +226,7 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                         usedUrl: "apiUrl"
                     }
                 });
-            })
-
+            });
 
             tagResources({
                 WbyProjectName: String(process.env["WEBINY_PROJECT_NAME"]),
