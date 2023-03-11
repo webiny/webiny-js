@@ -156,9 +156,21 @@ const createExecuteActionLambda = (params: Configuration) => {
                     },
                     await: true
                 });
+                /**
+                 *
+                 */
+                await storageOperations.delete({
+                    locale,
+                    tenant,
+                    id: item.id
+                });
+                /**
+                 * Check for the response and log the error if any.
+                 */
                 if (response?.body) {
                     const error = response.body.data?.content?.error;
                     if (!error) {
+                        console.log("Invoke successful.");
                         continue;
                     }
                     console.log(JSON.stringify({ error }, null, 2));
