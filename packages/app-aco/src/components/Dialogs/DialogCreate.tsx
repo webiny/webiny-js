@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 
-import { AutoComplete } from "@webiny/ui/AutoComplete";
 import { ButtonPrimary, ButtonDefault } from "@webiny/ui/Button";
 import { DialogTitle, DialogContent, DialogOnClose } from "@webiny/ui/Dialog";
 import { Grid, Cell } from "@webiny/ui/Grid";
@@ -11,26 +10,29 @@ import { validation } from "@webiny/validation";
 import { i18n } from "@webiny/app/i18n";
 import { useSnackbar } from "@webiny/app-admin";
 
+import { FolderTree } from "~/components";
 import { useFolders } from "~/hooks/useFolders";
 
-import { DialogContainer, DialogActions } from "./styled";
+import { DialogContainer, DialogActions, DialogFoldersContainer } from "./styled";
 
 import { FolderItem } from "~/types";
+import { Typography } from "@webiny/ui/Typography";
 
 type Props = {
     type: string;
     open: boolean;
     onClose: DialogOnClose;
-    parentId?: string | null;
+    currentParentId?: string | null;
 };
 
 const t = i18n.ns("app-aco/components/tree/dialog-create");
 
 type SubmitData = Omit<FolderItem, "id">;
 
-export const FolderDialogCreate: React.FC<Props> = ({ type, onClose, open, parentId }) => {
-    const { folders, loading, createFolder } = useFolders(type);
+export const FolderDialogCreate: React.FC<Props> = ({ type, onClose, open, currentParentId }) => {
+    const { loading, createFolder } = useFolders(type);
     const [dialogOpen, setDialogOpen] = useState(false);
+    const [parentId, setParentId] = useState<string>();
     const { showSnackbar } = useSnackbar();
 
     const onSubmit: FormOnSubmit<SubmitData> = async data => {
@@ -79,19 +81,20 @@ export const FolderDialogCreate: React.FC<Props> = ({ type, onClose, open, paren
                                             <Input label={t`Slug`} />
                                         </Bind>
                                     </Cell>
-                                    {typeof parentId === "undefined" && (
-                                        <Cell span={12}>
-                                            <Bind name="parentId">
-                                                <AutoComplete
-                                                    options={folders.map(({ id, title }) => ({
-                                                        id,
-                                                        name: title
-                                                    }))}
-                                                    label={t`Parent`}
-                                                />
-                                            </Bind>
-                                        </Cell>
-                                    )}
+                                    <Cell span={12}>
+                                        <Typography use="body1">{t`Parent folder`}</Typography>
+                                        <DialogFoldersContainer>
+                                            <FolderTree
+                                                title={"Root folder"}
+                                                type={type}
+                                                focusedFolderId={
+                                                    currentParentId || parentId || undefined
+                                                }
+                                                onFolderClick={data => setParentId(data?.id)}
+                                                onTitleClick={() => setParentId(undefined)}
+                                            />
+                                        </DialogFoldersContainer>
+                                    </Cell>
                                 </Grid>
                             </DialogContent>
                             <DialogActions>

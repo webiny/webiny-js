@@ -71,6 +71,7 @@ export const EntryDialogMove: React.FC<Props> = ({ type, searchRecord, onClose, 
                                 focusedFolderId={folderId || searchRecord.location.folderId}
                                 onFolderClick={data => setFolderId(data?.id)}
                                 onTitleClick={() => setFolderId("ROOT")}
+                                showCreateButton={true}
                             />
                         </DialogFoldersContainer>
                     </DialogContent>

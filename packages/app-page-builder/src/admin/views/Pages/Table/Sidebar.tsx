@@ -22,6 +22,7 @@ export const Sidebar = ({ folderId, defaultFolderName }: Props): ReactElement =>
                 focusedFolderId={folderId}
                 onTitleClick={() => navigateToPageHome()}
                 onFolderClick={data => data?.id && navigateToFolder(data?.id)}
+                showCreateButton={true}
             />
         </SidebarContainer>
     );

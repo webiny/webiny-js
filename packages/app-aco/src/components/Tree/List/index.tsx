@@ -29,6 +29,7 @@ type Props = {
     type: string;
     folders: FolderItem[];
     focusedFolderId?: string;
+    hiddenFolderId?: string;
     onFolderClick: (data: NodeModel<DndItemData>["data"]) => void;
     onDragStart: () => void;
     onDragEnd: () => void;
@@ -39,6 +40,7 @@ export const List = ({
     folders,
     onFolderClick,
     focusedFolderId,
+    hiddenFolderId,
     onDragStart,
     onDragEnd
 }: Props) => {
@@ -53,7 +55,7 @@ export const List = ({
 
     useDeepCompareEffect(() => {
         if (folders) {
-            setTreeData(createTreeData(folders, focusedFolderId));
+            setTreeData(createTreeData(folders, focusedFolderId, hiddenFolderId));
         }
 
         /**

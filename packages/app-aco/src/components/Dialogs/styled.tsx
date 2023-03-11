@@ -18,9 +18,9 @@ export const DialogActions = styled(DefaultDialogActions)`
 `;
 
 export const DialogFoldersContainer = styled("div")`
-    max-height: 300px;
+    max-height: 30vh;
     overflow-y: scroll;
-    margin-top: 16px;
-    padding: 16px;
+    margin-top: 8px;
+    padding: 8px;
     background: var(--mdc-theme-background);
 `;
