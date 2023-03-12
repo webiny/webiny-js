@@ -193,15 +193,17 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 migrationLambdaArn: migration.function.output.arn
             });
 
-            addDomainsUrlsOutputs({
-                app,
-                cloudfrontDistribution: cloudfront,
-                map: {
-                    distributionDomain: "cloudfrontApiDomain",
-                    distributionUrl: "cloudfrontApiUrl",
-                    usedDomain: "apiDomain",
-                    usedUrl: "apiUrl"
-                }
+            app.addHandler(() => {
+                addDomainsUrlsOutputs({
+                    app,
+                    cloudfrontDistribution: cloudfront,
+                    map: {
+                        distributionDomain: "cloudfrontApiDomain",
+                        distributionUrl: "cloudfrontApiUrl",
+                        usedDomain: "apiDomain",
+                        usedUrl: "apiUrl"
+                    }
+                });
             });
 
             tagResources({
