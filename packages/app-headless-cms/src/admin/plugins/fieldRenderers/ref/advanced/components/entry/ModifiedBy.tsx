@@ -6,14 +6,19 @@ import { Box } from "./Box";
  */
 // @ts-ignore
 import TimeAgo from "timeago-react";
+
 interface Props {
     modifiedBy?: CmsCreatedBy | null;
     savedOn: Date;
 }
+
 export const ModifiedBy: React.VFC<Props> = ({ modifiedBy, savedOn }) => {
+    const showInformation = !!(modifiedBy?.displayName && savedOn);
+
     return (
         <Box icon={null} name={"Modified By"}>
-            {modifiedBy?.displayName && savedOn && (
+            {!showInformation && <></>}
+            {showInformation && (
                 <>
                     {modifiedBy?.displayName}, <TimeAgo datetime={savedOn} />
                 </>

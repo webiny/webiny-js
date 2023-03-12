@@ -1,20 +1,22 @@
+import ApolloClient from "apollo-client";
+import lodashChunk from "lodash/chunk";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useApolloClient } from "~/admin/hooks";
 import {
     CmsReferenceContentEntry,
-    CmsReferenceValue
+    CmsReferenceValue as BaseCmsReferenceValue
 } from "~/admin/plugins/fieldRenderers/ref/components/types";
 import {
     LIST_LATEST_CONTENT_ENTRIES,
     ListLatestCmsEntriesResponse,
     ListLatestCmsEntriesVariables
 } from "~/admin/plugins/fieldRenderers/ref/advanced/hooks/graphql";
-import ApolloClient from "apollo-client";
+import { parseIdentifier } from "@webiny/utils";
 
 interface ExecuteSearchParams {
     setLoading: (loading: boolean) => void;
     setError: (error: string | undefined | null) => void;
-    setEntries: (entries: CmsReferenceContentEntry[]) => void;
+    setEntries: (entries: Record<string, CmsReferenceContentEntry>) => void;
     client: ApolloClient<any>;
     values: CmsReferenceValue[];
 }
@@ -40,50 +42,102 @@ const executeSearch = async (params: ExecuteSearchParams): Promise<void> => {
         const error = result.data.entries?.error;
         if (error) {
             setError(error.message);
-            setEntries([]);
+            return;
         }
         setError(null);
-        setEntries(result.data.entries.data);
+        const entries = result.data.entries.data.reduce<Record<string, CmsReferenceContentEntry>>(
+            (collection, entry) => {
+                collection[entry.entryId] = entry;
+                return collection;
+            },
+            {}
+        );
+        setEntries(entries);
     } catch (ex) {
         setError(ex.message);
-        setEntries([]);
     } finally {
         setLoading(false);
     }
 };
+/**
+ * How many entries to load per page.
+ */
+const perPage = 3;
+
+interface CmsReferenceValue extends BaseCmsReferenceValue {
+    entryId: string;
+}
 
 interface UseReferencesParams {
-    values?: CmsReferenceValue[] | CmsReferenceValue | null;
+    values?: BaseCmsReferenceValue[] | BaseCmsReferenceValue | null;
 }
 
 export const useReferences = ({ values: initialValues }: UseReferencesParams) => {
     const client = useApolloClient();
-    const [entries, setEntries] = useState<CmsReferenceContentEntry[]>([]);
+    const [entries, setEntries] = useState<Record<string, CmsReferenceContentEntry>>({});
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | undefined | null>(null);
-
     const [hash, setHash] = useState<string | null>(null);
-
-    const values = useMemo(() => {
-        return Array.isArray(initialValues) ? initialValues : initialValues ? [initialValues] : [];
+    const [currentPage, setCurrentPage] = useState<number>(0);
+    const pages = useMemo(() => {
+        const values = Array.isArray(initialValues)
+            ? initialValues
+            : initialValues
+            ? [initialValues]
+            : [];
+        return lodashChunk<CmsReferenceValue>(
+            values.map(value => {
+                const { id: entryId } = parseIdentifier(value.id);
+                return {
+                    ...value,
+                    entryId
+                };
+            }),
+            perPage
+        );
     }, [initialValues]);
 
+    const entriesToLoad = useMemo(() => {
+        /**
+         * We need to make sure that all the previous page entries are loaded
+         * And we add the current page entries to the list.
+         */
+        const toLoad: CmsReferenceValue[] = [];
+        for (let p = 0; p <= currentPage; p++) {
+            const page = pages[p];
+            if (!page || page.length === 0) {
+                return toLoad;
+            }
+            toLoad.push(
+                ...page.filter(item => {
+                    return !entries[item.entryId];
+                })
+            );
+        }
+        return toLoad;
+    }, [pages, currentPage]);
+
     useEffect(() => {
-        const value = values
+        if (entriesToLoad.length === 0) {
+            return;
+        }
+        const value = entriesToLoad
             .map(item => {
                 return item.id;
             })
             .sort()
             .join("-");
         if (value.length === 0) {
-            setEntries([]);
-            setHash(null);
+            // setHash(null);
             return;
         }
         /**
          * If there is no crypto.subtle, lets skip this - but at this point the hash will be enormous.
          */
         if (!window.crypto?.subtle) {
+            if (hash === value) {
+                return;
+            }
             setHash(value);
             return;
         }
@@ -95,33 +149,55 @@ export const useReferences = ({ values: initialValues }: UseReferencesParams) =>
             }
             setHash(decoded);
         });
-    }, [values]);
+    }, [entriesToLoad]);
 
     useEffect(() => {
-        if (!hash || values.length === 0) {
-            setEntries([]);
+        if (!hash || entriesToLoad.length === 0) {
             return;
         }
         executeSearch({
             client,
-            values,
+            values: entriesToLoad,
             setLoading,
             setError,
-            setEntries
+            setEntries: items => {
+                setEntries(prev => {
+                    return {
+                        ...prev,
+                        ...items
+                    };
+                });
+            }
         });
     }, [hash]);
 
     const loadMore = useCallback(() => {
-        return null;
-    }, []);
+        const nextPage = currentPage + 1;
+        if (!pages[nextPage] || pages[nextPage].length === 0) {
+            return;
+        }
+        setCurrentPage(nextPage);
+    }, [pages, currentPage]);
+
+    /**
+     * This variable contains all the entries that are loaded so far + the current page.
+     */
+    const loadedEntries = useMemo<CmsReferenceContentEntry[]>(() => {
+        const collection: CmsReferenceContentEntry[] = [];
+        for (let page = 0; page <= currentPage; page++) {
+            const items = pages[page] || [];
+            collection.push(
+                ...items.map(item => {
+                    return entries[item.entryId];
+                })
+            );
+        }
+        return collection.filter(Boolean);
+    }, [currentPage, entries, pages]);
 
     return {
         loading,
-        entries: values
-            .map(({ id }) => {
-                return entries.find(entry => entry.id === id);
-            })
-            .filter(Boolean) as CmsReferenceContentEntry[],
+        entries: loadedEntries,
         error,
         loadMore
     };

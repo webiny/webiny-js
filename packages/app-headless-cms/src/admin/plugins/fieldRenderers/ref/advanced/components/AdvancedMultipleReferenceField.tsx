@@ -1,4 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import styled from "@emotion/styled";
+import * as GQL from "~/admin/viewsGraphql";
 import {
     BindComponentRenderProp,
     CmsEditorContentEntry,
@@ -9,13 +11,11 @@ import { Options } from "./Options";
 import { useReferences } from "../hooks/useReferences";
 import { Entry } from "./Entry";
 import { ReferencesDialog } from "./ReferencesDialog";
-import styled from "@emotion/styled";
 import { useQuery } from "~/admin/hooks";
 import { ListCmsModelsQueryResponse } from "~/admin/viewsGraphql";
-import * as GQL from "~/admin/viewsGraphql";
 import { useSnackbar } from "@webiny/app-admin";
 import { CmsReferenceValue } from "~/admin/plugins/fieldRenderers/ref/components/types";
-import { Loader } from "./Loader";
+import { AbsoluteLoader as Loader } from "./Loader";
 import { NewReferencedEntryDialog } from "../components/NewReferencedEntryDialog";
 import { parseIdentifier } from "@webiny/utils";
 import { Entries } from "./Entries";
@@ -24,7 +24,9 @@ const Container = styled("div")({
     borderLeft: "3px solid var(--mdc-theme-background)",
     paddingLeft: "10px",
     width: "100%",
-    boxSizing: "border-box"
+    boxSizing: "border-box",
+    minHeight: "100px",
+    position: "relative"
 });
 
 const FieldLabel = styled("h3")({
@@ -39,12 +41,16 @@ const FieldLabel = styled("h3")({
 });
 
 interface Props extends CmsEditorFieldRendererProps {
-    bind: BindComponentRenderProp<CmsReferenceValue[] | null>;
+    bind: BindComponentRenderProp<CmsReferenceValue[] | undefined | null>;
 }
 
 export const AdvancedMultipleReferenceField: React.VFC<Props> = props => {
     const { bind, field } = props;
     const { showSnackbar } = useSnackbar();
+
+    const values = useMemo(() => {
+        return bind.value || [];
+    }, [bind.value]);
 
     const [linkEntryDialogModel, setLinkEntryDialogModel] = useState<CmsModel | null>(null);
     const [newEntryDialogModel, setNewEntryDialogModel] = useState<CmsModel | null>(null);
@@ -103,23 +109,23 @@ export const AdvancedMultipleReferenceField: React.VFC<Props> = props => {
         loading: loadingEntries,
         loadMore
     } = useReferences({
-        values: bind.value
+        values
     });
 
     const onRemove = useCallback(
         (id: string) => {
-            if (!bind.value || !Array.isArray(bind.value)) {
+            if (!values || !Array.isArray(values)) {
                 return;
             }
             const { id: entryId } = parseIdentifier(id);
             bind.onChange(
-                bind.value.filter(value => {
+                values.filter(value => {
                     const { id: valueEntryId } = parseIdentifier(value.id);
                     return valueEntryId !== entryId;
                 })
             );
         },
-        [entries, bind.value]
+        [entries, values]
     );
 
     const models = useMemo(() => {
@@ -139,12 +145,13 @@ export const AdvancedMultipleReferenceField: React.VFC<Props> = props => {
     const storeValues = useCallback(
         (values: CmsReferenceValue[]) => {
             bind.onChange(values);
+            return;
         },
-        [bind.value, bind.onChange, entries]
+        [values]
     );
 
     const onNewEntryCreate = useCallback(
-        (data: CmsEditorContentEntry | null) => {
+        (data: Partial<CmsEditorContentEntry> | null) => {
             if (!data) {
                 console.log(
                     `Could not store new entry to the reference field. Missing whole entry.`
@@ -162,7 +169,7 @@ export const AdvancedMultipleReferenceField: React.VFC<Props> = props => {
                 return;
             }
             storeValues(
-                (bind.value || []).concat([
+                values.concat([
                     {
                         id: data.id,
                         modelId: data.modelId
@@ -175,48 +182,50 @@ export const AdvancedMultipleReferenceField: React.VFC<Props> = props => {
 
     const onMoveUp = useCallback(
         (index: number, toTop?: boolean) => {
-            if (!bind.value) {
+            if (values.length === 0) {
                 return;
             } else if (toTop) {
-                const arr = bind.value.splice(index, 1);
-                bind.onChange(arr.concat(bind.value));
+                const arr = values.splice(index, 1);
+                bind.onChange(arr.concat(values));
                 return;
             }
             bind.moveValueUp(index);
         },
-        [bind.value]
+        [values]
     );
     const onMoveDown = useCallback(
         (index: number, toBottom?: boolean) => {
-            if (!bind.value) {
+            if (values.length === 0) {
                 return;
             } else if (toBottom === true) {
-                const arr = bind.value.splice(index, 1);
-                bind.onChange(bind.value.concat(arr));
+                const arr = values.splice(index, 1);
+                bind.onChange(values.concat(arr));
                 return;
             }
             bind.moveValueDown(index);
         },
-        [bind.value]
+        [values]
     );
 
     return (
         <>
             <FieldLabel>
-                {field.label} <span>({(bind.value || []).length} Records Selected)</span>
+                {field.label} <span>({values.length} Records Selected)</span>
             </FieldLabel>
             <Container>
                 {loading && <Loader />}
                 <Entries entries={entries} loadMore={loadMore}>
                     {(entry, index) => {
+                        const isFirst = index === 0;
+                        const isLast = index >= values.length - 1;
                         return (
                             <Entry
                                 key={`reference-entry-${entry.id}`}
                                 index={index}
                                 entry={entry}
                                 onRemove={onRemove}
-                                onMoveUp={index > 0 ? onMoveUp : undefined}
-                                onMoveDown={index < entries.length - 1 ? onMoveDown : undefined}
+                                onMoveUp={!isFirst ? onMoveUp : undefined}
+                                onMoveDown={!isLast ? onMoveDown : undefined}
                             />
                         );
                     }}
@@ -239,7 +248,7 @@ export const AdvancedMultipleReferenceField: React.VFC<Props> = props => {
                     <ReferencesDialog
                         {...props}
                         multiple={true}
-                        values={(bind.value as unknown as CmsReferenceValue[]) || []}
+                        values={values}
                         contentModel={linkEntryDialogModel}
                         storeValues={storeValues}
                         onDialogClose={onLinkEntryDialogClose}
