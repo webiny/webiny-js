@@ -8,6 +8,7 @@ import { positionValues as PositionValues } from "react-custom-scrollbars";
 interface ContainerProps {
     height?: `${number}px` | `${number}%` | `${number}vh`;
 }
+
 const Container = styled("div")(({ height }: ContainerProps) => {
     return {
         minWidth: "100%",
@@ -39,7 +40,7 @@ export const Entries: React.VFC<Props> = props => {
             }
             loadMore();
         }, 500),
-        [entries]
+        [entries, loadMore]
     );
 
     if (entries.length === 0) {

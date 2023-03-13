@@ -56,10 +56,12 @@ const CloseButton = styled("button")({
         height: "100%"
     }
 });
+
 interface CloseProps {
     onClick: () => void;
 }
-const Close: React.FC<CloseProps> = ({ onClick }) => {
+
+const Close: React.VFC<CloseProps> = ({ onClick }) => {
     return (
         <CloseContainer>
             <CloseButton onClick={onClick}>
@@ -73,6 +75,7 @@ interface Props {
     model: CmsModel;
     onClose: () => void;
 }
+
 export const DialogHeader: React.VFC<Props> = ({ model, onClose }) => {
     return (
         <Container>

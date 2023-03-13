@@ -1,8 +1,5 @@
-import React, { useEffect, Dispatch, SetStateAction, useCallback, useRef } from "react";
+import React from "react";
 import styled from "@emotion/styled";
-import { CmsModel } from "~/types";
-import { useEntries } from "~/admin/plugins/fieldRenderers/ref/advanced/hooks/useEntries";
-import { CmsReferenceContentEntry } from "~/admin/plugins/fieldRenderers/ref/components/types";
 import { ReactComponent as SearchIcon } from "./assets/search.svg";
 
 const Container = styled("div")({
@@ -37,43 +34,10 @@ const Input = styled("input")({
 });
 
 interface Props {
-    model: CmsModel;
-    setEntries: Dispatch<SetStateAction<CmsReferenceContentEntry[]>>;
-    setError: Dispatch<SetStateAction<string | null>>;
-    setLoading: Dispatch<SetStateAction<boolean>>;
+    onInput: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
-export const Search: React.VFC<Props> = ({ model, setEntries, setLoading, setError }) => {
-    const { entries, loading, error, runSearch } = useEntries({
-        model
-    });
 
-    const debouncedSearch = useRef<number | null>(null);
-
-    const onInput = useCallback(ev => {
-        const value = (String(ev.target.value) || "").trim();
-        if (debouncedSearch.current) {
-            clearTimeout(debouncedSearch.current);
-            debouncedSearch.current = null;
-        }
-        /**
-         * We can safely cast as setTimeout really produces a number.
-         * There is an error while coding because Storm thinks this is NodeJS timeout.
-         */
-        debouncedSearch.current = setTimeout(() => {
-            runSearch(value);
-        }, 200) as unknown as number;
-    }, []);
-
-    useEffect(() => {
-        setError(error);
-        setLoading(loading);
-        setEntries(entries || []);
-    }, [entries, loading, error]);
-
-    useEffect(() => {
-        runSearch("");
-    }, []);
-
+export const Search: React.VFC<Props> = ({ onInput }) => {
     return (
         <Container>
             <Icon />
