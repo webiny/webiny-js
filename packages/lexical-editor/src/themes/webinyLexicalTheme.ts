@@ -7,9 +7,9 @@ export type WebinyTheme = {
     styles?: ThemeStyles;
 };
 
-export type WebinyLexicalTheme = WebinyTheme & EditorThemeClasses;
+export type WebinyEditorTheme = WebinyTheme & EditorThemeClasses;
 
-export const webinyLexicalTheme: WebinyLexicalTheme = {
+export const webinyEditorTheme: WebinyEditorTheme = {
     styles: undefined,
     characterLimit: "WebinyLexical__characterLimit",
     code: "WebinyLexical__code",

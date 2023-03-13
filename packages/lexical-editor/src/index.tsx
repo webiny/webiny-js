@@ -12,6 +12,7 @@ export { BoldAction } from "~/components/ToolbarActions/BoldAction";
 export { BulletListAction } from "~/components/ToolbarActions/BulletListAction";
 export { CodeHighlightAction } from "~/components/ToolbarActions/CodeHighlightAction";
 export { FontSizeAction } from "~/components/ToolbarActions/FontSizeAction";
+export { FontColorAction } from "~/components/ToolbarActions/FontColorAction";
 export { ItalicAction } from "~/components/ToolbarActions/ItalicAction";
 export { LinkAction } from "~/components/ToolbarActions/LinkAction";
 export { NumberedListAction } from "~/components/ToolbarActions/NumberedListAction";
@@ -34,7 +35,7 @@ export { FloatingLinkEditorPlugin } from "~/plugins/FloatingLinkEditorPlugin/Flo
 export { CodeHighlightPlugin } from "~/plugins/CodeHighlightPlugin/CodeHighlightPlugin";
 export { ClickableLinkPlugin } from "~/plugins/ClickableLinkPlugin/ClickableLinkPlugin";
 export { BlurEventPlugin } from "~/plugins/BlurEventPlugin/BlurEventPlugin";
-export { LexicalUpdateStatePlugin } from "~/plugins/LexicalUpdateStatePlugin";
+export { LexicalUpdateStatePlugin } from "~/plugins/LexicalUpdateStatePlugin/LexicalUpdateStatePlugin";
 // composition
 export { AddToolbarAction } from "~/components/AddToolbarAction";
 export { AddRichTextEditorPlugin } from "~/components/AddRichTextEditorPlugin";

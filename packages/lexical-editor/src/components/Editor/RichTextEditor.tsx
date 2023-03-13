@@ -18,7 +18,7 @@ import { LexicalUpdateStatePlugin } from "~/plugins/LexicalUpdateStatePlugin";
 import { BlurEventPlugin } from "~/plugins/BlurEventPlugin/BlurEventPlugin";
 import { FontColorPlugin } from "~/plugins/FontColorPlugin/FontColorPlugin";
 import { usePageElements } from "@webiny/app-page-builder-elements";
-import { webinyLexicalTheme } from "~/themes/webinyLexicalTheme";
+import { webinyEditorTheme } from "~/themes/webinyLexicalTheme";
 import { WebinyNodes } from "~/nodes/webinyNodes";
 
 export interface RichTextEditorProps {
@@ -75,7 +75,7 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
             throw error;
         },
         nodes: [...WebinyNodes, ...(nodes || [])],
-        theme: { ...webinyLexicalTheme, styles: theme.styles }
+        theme: { ...webinyEditorTheme, styles: theme.styles }
     };
 
     function handleOnChange(editorState: EditorState, editor: LexicalEditor) {
