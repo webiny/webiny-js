@@ -570,7 +570,11 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
 
                             Object.keys(fields).map(fieldId => {
                                 if (fieldId in submissionData) {
-                                    row[fields[fieldId]] = submissionData[fieldId];
+                                    const value = submissionData[fieldId];
+                                    // Remove brackets from arrays;
+                                    row[fields[fieldId]] = Array.isArray(value)
+                                        ? value.map(item => `"${item}"`).join(", ")
+                                        : value;
                                 } else {
                                     row[fields[fieldId]] = "N/A";
                                 }
