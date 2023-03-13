@@ -52,7 +52,14 @@ export const RecordActionEdit = ({ record }: Props): ReactElement => {
     }
 
     if (record.locked) {
-        return <MenuItem disabled={inProgress} onClick={createFromAndEdit}>{t`Edit`}</MenuItem>;
+        return (
+            <MenuItem disabled={inProgress} onClick={createFromAndEdit}>
+                <ListItemGraphic>
+                    <Icon icon={<Edit />} />
+                </ListItemGraphic>
+                {t`Edit`}
+            </MenuItem>
+        );
     }
     return (
         <MenuItem
