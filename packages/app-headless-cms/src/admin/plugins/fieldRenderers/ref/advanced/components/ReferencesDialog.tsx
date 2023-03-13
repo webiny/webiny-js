@@ -27,8 +27,7 @@ const Content = styled("div")({
     position: "relative",
     width: "100%",
     minHeight: "100px",
-    boxSizing: "border-box",
-    padding: "0 2px"
+    boxSizing: "border-box"
 });
 
 const DialogContent = styled(BaseDialogContent)({
@@ -109,7 +108,7 @@ export const ReferencesDialog: React.VFC<Props> = props => {
      */
     const { entries, loading, error, runSearch, loadMore } = useEntries({
         model: contentModel,
-        limit: 5
+        limit: 10
     });
 
     useEffect(() => {

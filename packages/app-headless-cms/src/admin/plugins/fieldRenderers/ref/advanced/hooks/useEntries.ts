@@ -149,7 +149,9 @@ export const useEntries = (params: Params) => {
             console.log(`Please wait until the loading finishes to start a new one.`);
             return;
         } else if (!cursor) {
-            console.log(`Trying to load more results but there is no cursor defined.`);
+            console.log(
+                `Trying to load more results but there is no cursor defined. Probably there are no more results.`
+            );
             return;
         }
         executeQuery({
