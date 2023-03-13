@@ -11,6 +11,7 @@ export default /* GraphQL */ `
         savedOn: DateTime!
         createdBy: CmsCreatedBy!
         ownedBy: CmsOwnedBy!
+        modifiedBy: CmsModifiedBy
         meta: ReviewMeta
         text: String
         product: RefField
