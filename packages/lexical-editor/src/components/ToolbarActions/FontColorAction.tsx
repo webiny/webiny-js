@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $getSelection, $isRangeSelection, LexicalCommand } from "lexical";
-import { $getSelectionStyleValueForProperty } from "@lexical/selection";
+import { LexicalCommand } from "lexical";
 import { Compose, makeComposable } from "@webiny/react-composition";
 import { FontColorActionContext } from "~/context/FontColorActionContext";
 import { ADD_FONT_COLOR_COMMAND, FontColorPayload } from "~/nodes/FontColorNode";
+import { usePageElements } from "@webiny/app-page-builder-elements";
 
 /*
  * Composable Color Picker component that is mounted on toolbar action.
@@ -31,13 +31,31 @@ export interface FontColorAction extends React.FC<unknown> {
 
 export const FontColorAction: FontColorAction = () => {
     const [editor] = useLexicalComposerContext();
-    const [activeEditor, setActiveEditor] = useState(editor);
     const [fontColor, setFontColor] = useState<string>("#000");
+    const { theme } = usePageElements();
 
-    const onFontColorSelect = useCallback((value: string) => {
-        editor.dispatchCommand<LexicalCommand<FontColorPayload>>(ADD_FONT_COLOR_COMMAND, {
-            color: value
-        });
+    const isThemeColorName = (color: string): boolean => {
+        return !!theme?.styles?.colors[color];
+    };
+
+    const getThemeColor = (colorValue: string): string => {
+        return isThemeColorName(colorValue) ? theme?.styles?.colors[colorValue] : colorValue;
+    };
+
+    const onFontColorSelect = useCallback((colorValue: string) => {
+        const color = getThemeColor(colorValue);
+        const isThemeColor = isThemeColorName(colorValue);
+        const themeColorName = isThemeColor ? colorValue : undefined;
+        setFontColor(colorValue);
+        const payloadData = {
+            color,
+            themeColorName,
+            isThemeColor
+        };
+        editor.dispatchCommand<LexicalCommand<FontColorPayload>>(
+            ADD_FONT_COLOR_COMMAND,
+            payloadData
+        );
     }, []);
 
     return (

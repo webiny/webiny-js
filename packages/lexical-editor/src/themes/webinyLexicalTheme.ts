@@ -1,16 +1,16 @@
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-
 import type { EditorThemeClasses } from "lexical";
 
 import "./webinyLexicalTheme.css";
+import { ThemeStyles } from "@webiny/app-page-builder-elements/types";
 
-export const theme: EditorThemeClasses = {
+export type WebinyTheme = {
+    styles?: ThemeStyles;
+};
+
+export type WebinyLexicalTheme = WebinyTheme & EditorThemeClasses;
+
+export const webinyLexicalTheme: WebinyLexicalTheme = {
+    styles: undefined,
     characterLimit: "WebinyLexical__characterLimit",
     code: "WebinyLexical__code",
     codeHighlight: {
@@ -91,6 +91,5 @@ export const theme: EditorThemeClasses = {
         underline: "WebinyLexical__textUnderline",
         underlineStrikethrough: "WebinyLexical__textUnderlineStrikethrough"
     },
-    fontColorText: "WebinyLexical__fontColorText",
-    colors: {}
+    fontColorText: "WebinyLexical__fontColorText"
 };

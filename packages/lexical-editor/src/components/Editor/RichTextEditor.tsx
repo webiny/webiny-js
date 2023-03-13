@@ -18,8 +18,8 @@ import { LexicalUpdateStatePlugin } from "~/plugins/LexicalUpdateStatePlugin";
 import { BlurEventPlugin } from "~/plugins/BlurEventPlugin/BlurEventPlugin";
 import { FontColorPlugin } from "~/plugins/FontColorPlugin/FontColorPlugin";
 import { usePageElements } from "@webiny/app-page-builder-elements";
-import { nodesFactory } from "~/nodes/nodesFactory";
-import { createFontColorNodeClass } from "~/nodes/FontColorNode";
+import { webinyLexicalTheme } from "~/themes/webinyLexicalTheme";
+import { WebinyNodes } from "~/nodes/webinyNodes";
 
 export interface RichTextEditorProps {
     toolbar?: React.ReactNode;
@@ -57,11 +57,6 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
         undefined
     );
 
-    const FontActionNodeClassRef = useRef<Klass<LexicalNode>>(
-        createFontColorNodeClass(theme.styles)
-    );
-    // console.log(new FontActionNodeClassRef.current());
-    debugger;
     const onRef = (_floatingAnchorElem: HTMLDivElement) => {
         if (_floatingAnchorElem !== null) {
             setFloatingAnchorElem(_floatingAnchorElem);
@@ -79,8 +74,8 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
         onError: (error: Error) => {
             throw error;
         },
-        nodes: [...nodesFactory(theme.styles), ...(nodes || [])],
-        theme: theme
+        nodes: [...WebinyNodes, ...(nodes || [])],
+        theme: { ...webinyLexicalTheme, styles: theme.styles }
     };
 
     function handleOnChange(editorState: EditorState, editor: LexicalEditor) {
@@ -100,7 +95,7 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
                 <OnChangePlugin onChange={handleOnChange} />
                 {value && <LexicalUpdateStatePlugin value={value} />}
                 <ClearEditorPlugin />
-                <FontColorPlugin NodeFactoryClass={FontActionNodeClassRef.current} />
+                <FontColorPlugin />
                 {/* Events */}
                 {onBlur && <BlurEventPlugin onBlur={onBlur} />}
                 {focus && <AutoFocusPlugin />}

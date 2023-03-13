@@ -1,23 +1,17 @@
 import React, { useEffect } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { ADD_FONT_COLOR_COMMAND, FontColorPayload } from "~/nodes/FontColorNode";
+import { ADD_FONT_COLOR_COMMAND, FontColorNode, FontColorPayload } from "~/nodes/FontColorNode";
 import {
     $createParagraphNode,
     $getSelection,
     $insertNodes,
     $isRangeSelection,
     $isRootOrShadowRoot,
-    COMMAND_PRIORITY_EDITOR,
-    Klass,
-    LexicalNode
+    COMMAND_PRIORITY_EDITOR
 } from "lexical";
 import { $wrapNodeInElement } from "@lexical/utils";
 
-interface FontColorPlugin {
-    NodeFactoryClass: Klass<LexicalNode>;
-}
-
-export const FontColorPlugin: React.FC<FontColorPlugin> = ({ NodeFactoryClass }) => {
+export const FontColorPlugin: React.FC = () => {
     const [editor] = useLexicalComposerContext();
 
     useEffect(() => {
@@ -25,12 +19,13 @@ export const FontColorPlugin: React.FC<FontColorPlugin> = ({ NodeFactoryClass })
             ADD_FONT_COLOR_COMMAND,
             payload => {
                 editor.update(() => {
-                    const { color } = payload;
+                    const { color, themeColorName } = payload;
                     const selection = $getSelection();
                     if ($isRangeSelection(selection)) {
-                        const fontColorNode = new NodeFactoryClass(
+                        const fontColorNode = new FontColorNode(
                             selection.getTextContent(),
-                            color
+                            color,
+                            themeColorName
                         );
                         $insertNodes([fontColorNode]);
                         if ($isRootOrShadowRoot(fontColorNode.getParentOrThrow())) {
