@@ -348,6 +348,8 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 ...data,
                 modelId: data.modelId || "",
                 titleFieldId: "id",
+                descriptionFieldId: null,
+                imageFieldId: null,
                 description: data.description || "",
                 locale: getLocale().code,
                 tenant: getTenant().id,
@@ -571,9 +573,16 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
             const model: CmsModel = {
                 ...original,
                 ...data,
-                titleFieldId: data.titleFieldId || original.titleFieldId || "",
-                descriptionFieldId: data.descriptionFieldId || original.descriptionFieldId || "",
-                imageFieldId: data.imageFieldId || original.imageFieldId || "",
+                titleFieldId:
+                    data.titleFieldId === undefined
+                        ? original.titleFieldId
+                        : (data.titleFieldId as string),
+                descriptionFieldId:
+                    data.descriptionFieldId === undefined
+                        ? original.descriptionFieldId
+                        : data.descriptionFieldId,
+                imageFieldId:
+                    data.imageFieldId === undefined ? original.imageFieldId : data.imageFieldId,
                 group,
                 description: data.description || original.description,
                 tenant: original.tenant || getTenant().id,

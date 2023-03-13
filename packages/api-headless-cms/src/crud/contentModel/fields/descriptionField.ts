@@ -19,7 +19,7 @@ export const getContentModelDescriptionFieldId = (
         const descriptionField = fields.find(field => {
             return getBaseFieldType(field) === "long-text" && !field.multipleValues;
         });
-        return descriptionField?.fieldId;
+        return descriptionField?.fieldId || null;
     }
     const target = fields.find(
         field => field.fieldId === descriptionFieldId && getBaseFieldType(field) === "long-text"

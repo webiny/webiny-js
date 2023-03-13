@@ -11,6 +11,7 @@ export default /* GraphQL */ `
         savedOn: DateTime!
         createdBy: CmsCreatedBy!
         ownedBy: CmsOwnedBy!
+        modifiedBy: CmsModifiedBy
         meta: PageMeta
         content: [Page_Content!]
         header: Page_Header

@@ -44,6 +44,9 @@ export const createEntryEntity = (params: CreateEntryEntityParams): Entity<any> 
             ownedBy: {
                 type: "map"
             },
+            modifiedBy: {
+                type: "map"
+            },
             createdOn: {
                 type: "string"
             },

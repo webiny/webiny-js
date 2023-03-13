@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { CmsModel, CmsModelField } from "~/types";
+import { CmsModel as BaseCmsModel, CmsModelField } from "~/types";
 import { useQuery } from "~/admin/hooks";
 import {
     LIST_REFERENCED_MODELS,
@@ -8,7 +8,7 @@ import {
 import styled from "@emotion/styled";
 import { useSnackbar } from "@webiny/app-admin";
 
-type TinyCmsModel = Pick<CmsModel, "modelId" | "name">;
+type CmsModel = Pick<BaseCmsModel, "modelId" | "name">;
 
 const Information = styled("div")({
     display: "flex",
@@ -43,7 +43,7 @@ const Extras = styled("div")({
 });
 
 interface BadgeProps {
-    model: TinyCmsModel;
+    model: CmsModel;
 }
 const Badge: React.FC<BadgeProps> = ({ model }) => {
     return <BadgeItem>{model.name}</BadgeItem>;
@@ -51,7 +51,7 @@ const Badge: React.FC<BadgeProps> = ({ model }) => {
 
 interface Params {
     field: CmsModelField;
-    model: TinyCmsModel;
+    model: CmsModel;
 }
 
 const takeBadges = 1;
@@ -71,7 +71,7 @@ const RenderInfo: React.FC<Params> = ({ field }) => {
 
     const { showSnackbar } = useSnackbar();
 
-    const [models, setModels] = useState<TinyCmsModel[]>([]);
+    const [models, setModels] = useState<CmsModel[]>([]);
 
     useEffect(() => {
         if (!data || loading) {
@@ -85,11 +85,16 @@ const RenderInfo: React.FC<Params> = ({ field }) => {
     }, [data, loading]);
 
     const { items, badges } = useMemo(() => {
+        const fieldModels = (field.settings?.models || [])
+            .map(model => {
+                return models.find(m => m.modelId === model.modelId);
+            })
+            .filter(Boolean) as CmsModel[];
         return {
-            items: models.slice(0, takeBadges),
-            badges: models.length - takeBadges
+            items: fieldModels.slice(0, takeBadges),
+            badges: fieldModels.length - takeBadges
         };
-    }, [models]);
+    }, [models, field]);
 
     if (models.length === 0) {
         return null;

@@ -242,6 +242,8 @@ describe("Content entries", () => {
                         entryId: apple.entryId,
                         status: apple.meta.status,
                         title: apple.name,
+                        description: apple.description,
+                        image: null,
                         model: {
                             modelId: apple.meta.modelId,
                             name: "Fruit"
@@ -278,6 +280,8 @@ describe("Content entries", () => {
                             entryId: apple.entryId,
                             status: apple.meta.status,
                             title: apple.name,
+                            description: apple.description,
+                            image: null,
                             model: {
                                 modelId: apple.meta.modelId,
                                 name: "Fruit"
@@ -288,6 +292,8 @@ describe("Content entries", () => {
                             entryId: banana.entryId,
                             status: "unpublished",
                             title: banana.name,
+                            description: banana.description,
+                            image: null,
                             model: {
                                 modelId: banana.meta.modelId,
                                 name: "Fruit"
@@ -298,6 +304,8 @@ describe("Content entries", () => {
                             entryId: strawberry.entryId,
                             status: strawberry.meta.status,
                             title: strawberry.name,
+                            description: strawberry.description,
+                            image: null,
                             model: {
                                 modelId: strawberry.meta.modelId,
                                 name: "Fruit"
@@ -327,6 +335,8 @@ describe("Content entries", () => {
                         entryId: thirdBanana.entryId,
                         status: "draft",
                         title: thirdBanana.name,
+                        description: thirdBanana.description,
+                        image: null,
                         model: {
                             modelId: thirdBanana.meta.modelId,
                             name: "Fruit"
@@ -363,6 +373,8 @@ describe("Content entries", () => {
                             entryId: apple.entryId,
                             status: "published",
                             title: apple.name,
+                            description: apple.description,
+                            image: null,
                             model: {
                                 modelId: apple.meta.modelId,
                                 name: "Fruit"
@@ -373,6 +385,8 @@ describe("Content entries", () => {
                             entryId: thirdBanana.entryId,
                             status: "draft",
                             title: thirdBanana.name,
+                            description: thirdBanana.description,
+                            image: null,
                             model: {
                                 modelId: thirdBanana.meta.modelId,
                                 name: "Fruit"
@@ -383,6 +397,8 @@ describe("Content entries", () => {
                             entryId: strawberry.entryId,
                             status: "published",
                             title: strawberry.name,
+                            description: strawberry.description,
+                            image: null,
                             model: {
                                 modelId: strawberry.meta.modelId,
                                 name: "Fruit"
@@ -411,6 +427,8 @@ describe("Content entries", () => {
                         entryId: secondBanana.entryId,
                         status: "published",
                         title: secondBanana.name,
+                        description: secondBanana.description,
+                        image: null,
                         model: {
                             modelId: secondBanana.meta.modelId,
                             name: "Fruit"
@@ -447,6 +465,8 @@ describe("Content entries", () => {
                             entryId: apple.entryId,
                             status: "published",
                             title: apple.name,
+                            description: apple.description,
+                            image: null,
                             model: {
                                 modelId: apple.meta.modelId,
                                 name: "Fruit"
@@ -457,6 +477,8 @@ describe("Content entries", () => {
                             entryId: secondBanana.entryId,
                             status: "published",
                             title: secondBanana.name,
+                            description: secondBanana.description,
+                            image: null,
                             model: {
                                 modelId: secondBanana.meta.modelId,
                                 name: "Fruit"
@@ -467,6 +489,8 @@ describe("Content entries", () => {
                             entryId: strawberry.entryId,
                             status: "published",
                             title: strawberry.name,
+                            description: strawberry.description,
+                            image: null,
                             model: {
                                 modelId: strawberry.meta.modelId,
                                 name: "Fruit"

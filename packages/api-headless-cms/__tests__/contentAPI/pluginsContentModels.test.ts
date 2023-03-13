@@ -42,6 +42,7 @@ const contentModelPlugin = new CmsModelPlugin({
     ],
     layout: [["name"], ["sku", "price"], ["descr"]],
     titleFieldId: "name",
+    descriptionFieldId: "descr",
     description: ""
 });
 

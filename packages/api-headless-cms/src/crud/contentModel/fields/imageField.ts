@@ -23,7 +23,7 @@ export const getContentModelImageFieldId = (
                 field.settings?.imagesOnly
             );
         });
-        return imageField?.fieldId;
+        return imageField?.fieldId || null;
     }
     const target = fields.find(
         field =>
