@@ -41,6 +41,13 @@ export interface Error {
 
 export type Meta<T> = Record<string, { [P in keyof T]: T[P] }>;
 
+export enum ListSortDirection {
+    ASC = "ASC",
+    DESC = "DESC"
+}
+
+export type ListSort = Record<string, ListSortDirection>;
+
 export interface ListMeta {
     cursor: string | null;
     totalCount: number;
@@ -128,7 +135,7 @@ export interface ListSearchRecordsQueryVariables {
     location: Location;
     limit?: number;
     after?: string | null;
-    sort?: string[];
+    sort?: ListSort;
 }
 
 export interface GetSearchRecordResponse {

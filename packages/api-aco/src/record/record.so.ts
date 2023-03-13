@@ -4,6 +4,7 @@ import WebinyError from "@webiny/error";
 
 import { SEARCH_RECORD_MODEL_ID } from "./record.model";
 import { baseFields, CreateAcoStorageOperationsParams } from "~/createAcoStorageOperations";
+import { createListSort } from "~/utils/createListSort";
 import { createOperationsWrapper } from "~/utils/createOperationsWrapper";
 import { getFieldValues } from "~/utils/getFieldValues";
 
@@ -54,10 +55,13 @@ export const createSearchRecordOperations = (
         },
         listRecords(params) {
             return withModel(async model => {
+                const { sort, where } = params;
+
                 const [entries, meta] = await cms.listLatestEntries(model, {
                     ...params,
+                    sort: createListSort(sort),
                     where: {
-                        ...(params.where || {})
+                        ...(where || {})
                     }
                 });
 

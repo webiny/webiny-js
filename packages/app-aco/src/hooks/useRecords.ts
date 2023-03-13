@@ -1,6 +1,6 @@
 import { useContext, useEffect, useMemo } from "react";
 import { SearchRecordsContext } from "~/contexts/records";
-import { SearchRecordItem } from "~/types";
+import { ListSort, SearchRecordItem } from "~/types";
 
 export const useRecords = (type?: string, folderId?: string) => {
     const context = useContext(SearchRecordsContext);
@@ -40,7 +40,7 @@ export const useRecords = (type?: string, folderId?: string) => {
             loading,
             meta: meta[folderId!] || {},
             records: records.filter(record => record.location.folderId === folderId),
-            listRecords(params: { after?: string; limit?: number; sort?: string[] }) {
+            listRecords(params: { after?: string; limit?: number; sort?: ListSort }) {
                 return listRecords(type, folderId, params.limit, params.after, params.sort);
             },
             getRecord(id: string) {

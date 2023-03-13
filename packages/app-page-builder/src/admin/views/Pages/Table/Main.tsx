@@ -25,7 +25,7 @@ import { FOLDER_ID_DEFAULT, FOLDER_TYPE } from "~/admin/constants/folders";
 
 import { MainContainer, Wrapper } from "./styled";
 
-import { FolderItem, ListMeta, SearchRecordItem } from "@webiny/app-aco/types";
+import { FolderItem, ListMeta, ListSort, SearchRecordItem } from "@webiny/app-aco/types";
 import { PbPageDataItem } from "~/types";
 import { Sorting } from "@webiny/ui/DataTable";
 
@@ -89,7 +89,7 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
 
     const [selected, setSelected] = useState<string[]>([]);
     const [tableSorting, setTableSorting] = useState<Sorting>([]);
-    const [sort, setSort] = useState<string[]>([]);
+    const [sort, setSort] = useState<ListSort>();
 
     useEffect(() => {
         setTableHeight(tableRef?.current?.clientHeight || 0);
@@ -122,7 +122,10 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
     });
 
     useEffect(() => {
-        const sort = tableSorting.map(s => `${s.id}_${s.desc ? "DESC" : "ASC"}`);
+        const sort = tableSorting.reduce((current, next) => {
+            return { ...current, [next.id]: next.desc ? "DESC" : "ASC" };
+        }, {});
+
         setSort(sort);
     }, [tableSorting]);
 

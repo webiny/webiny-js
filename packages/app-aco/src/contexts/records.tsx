@@ -28,7 +28,8 @@ import {
     LoadingActions,
     Meta,
     UpdateSearchRecordResponse,
-    UpdateSearchRecordVariables
+    UpdateSearchRecordVariables,
+    ListSort
 } from "~/types";
 
 interface SearchRecordsContext {
@@ -40,7 +41,7 @@ interface SearchRecordsContext {
         folderId?: string,
         limit?: number,
         after?: string,
-        sort?: string[]
+        sort?: ListSort
     ) => Promise<SearchRecordItem[]>;
     getRecord: (id: string) => Promise<SearchRecordItem>;
     createRecord: (record: Omit<SearchRecordItem, "id">) => Promise<SearchRecordItem>;
@@ -81,7 +82,7 @@ export const SearchRecordsProvider = ({ children }: Props) => {
             folderId?: string,
             limit = 20,
             after?: string,
-            sorting?: string[]
+            sorting?: ListSort
         ) {
             if (!folderId || !type) {
                 throw new Error("`folderId` and `type` are mandatory");
@@ -105,7 +106,10 @@ export const SearchRecordsProvider = ({ children }: Props) => {
             }
 
             const action = after ? "LIST_MORE" : "LIST";
-            const sort = sorting && sorting.length > 0 ? sorting : ["savedOn_DESC"];
+            const sort =
+                sorting && Object.keys(sorting).length > 0
+                    ? sorting
+                    : ({ savedOn: "DESC" } as unknown as ListSort);
 
             const { data: response } = await apolloFetchingHandler(
                 loadingHandler(action, setLoading),
@@ -124,8 +128,12 @@ export const SearchRecordsProvider = ({ children }: Props) => {
             }
 
             // Adjusting sorting while merging records with data received from the server.
-            const fields = sort.map(s => s.split("_")[0]);
-            const orders = sort.map(s => s.split("_")[1].toLowerCase() as "asc" | "desc");
+            const fields = [] as string[];
+            const orders = [] as Array<"asc" | "desc">;
+            for (const [field, order] of Object.entries(sort)) {
+                fields.push(field);
+                orders.push(order.toLowerCase() as "asc" | "desc");
+            }
             setRecords(records => orderBy(unionBy(data, records, "id"), fields, orders));
 
             setMeta(meta => ({
