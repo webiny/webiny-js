@@ -157,11 +157,17 @@ export const uploadAssets = async (params: UploadAssetsParams): Promise<UploadAs
         };
     }
 
+    // Check if files with such keys already exist
+    const [existingFiles] = await context.fileManager.files.listFiles();
+    const filteredFiles = filesData.filter(
+        file => !existingFiles.some(existingFile => existingFile.key === file.key)
+    );
+
     // Save files meta data against old key for later use.
     const fileKeyToFileMap = new Map<string, FileItem>();
     // Initialize maps.
-    for (let i = 0; i < filesData.length; i++) {
-        const file = filesData[i];
+    for (let i = 0; i < filteredFiles.length; i++) {
+        const file = filteredFiles[i];
         fileKeyToFileMap.set(file.key, file);
 
         // Initialize the value
