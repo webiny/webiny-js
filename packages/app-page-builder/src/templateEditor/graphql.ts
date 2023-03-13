@@ -16,6 +16,7 @@ const DATA_FIELD = `
         slug
         tags
         layout
+        pageCategory
         description
         content
         createdOn

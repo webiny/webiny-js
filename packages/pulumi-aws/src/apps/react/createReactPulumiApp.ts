@@ -118,15 +118,17 @@ export const createReactPulumiApp = (projectAppParams: CreateReactPulumiAppParam
 
             app.addOutput("appStorage", bucket.bucket.output.id);
 
-            addDomainsUrlsOutputs({
-                app,
-                cloudfrontDistribution: cloudfront,
-                map: {
-                    distributionDomain: "cloudfrontAppDomain",
-                    distributionUrl: "cloudfrontAppUrl",
-                    usedDomain: "appDomain",
-                    usedUrl: "appUrl"
-                }
+            app.addHandler(() => {
+                addDomainsUrlsOutputs({
+                    app,
+                    cloudfrontDistribution: cloudfront,
+                    map: {
+                        distributionDomain: "cloudfrontAppDomain",
+                        distributionUrl: "cloudfrontAppUrl",
+                        usedDomain: "appDomain",
+                        usedUrl: "appUrl"
+                    }
+                });
             });
 
             tagResources({

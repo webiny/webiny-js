@@ -863,7 +863,6 @@ export interface OnPageTemplateAfterDeleteTopicParams {
 interface CreatePageFromTemplateParams {
     id?: string;
     slug?: string;
-    category: string;
     path?: string;
     meta?: Record<string, any>;
 }

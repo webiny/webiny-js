@@ -77,6 +77,7 @@ export const templatesHandler = async (
             slug: template.slug,
             tags: template.tags,
             layout: template.layout,
+            pageCategory: template.pageCategory,
             description: template.description,
             content: template.content
         });
