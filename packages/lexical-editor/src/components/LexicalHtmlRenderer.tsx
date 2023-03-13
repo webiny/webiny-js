@@ -9,8 +9,8 @@ import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
 import { LexicalUpdateStatePlugin } from "~/plugins/LexicalUpdateStatePlugin";
 import { Klass, LexicalNode } from "lexical";
 import { usePageElements } from "@webiny/app-page-builder-elements";
-import {WebinyNodes} from "~/nodes/webinyNodes";
-import {webinyLexicalTheme} from "~/themes/webinyLexicalTheme";
+import { WebinyNodes } from "~/nodes/webinyNodes";
+import { webinyLexicalTheme } from "~/themes/webinyLexicalTheme";
 
 interface LexicalHtmlRendererProps {
     nodes?: Klass<LexicalNode>[];
