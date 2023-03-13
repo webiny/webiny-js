@@ -1,11 +1,11 @@
 import { ImportExportTaskStatus, PbImportExportContext } from "~/types";
-import { importPage } from "~/import/utils";
+import { importTemplate } from "./importTemplate";
 import { invokeHandlerClient } from "~/client";
 import { mockSecurity } from "~/mockSecurity";
 import { zeroPad } from "@webiny/utils";
 import { Configuration, Payload, Response } from "~/import/process";
 
-export const pagesHandler = async (
+export const templatesHandler = async (
     configuration: Configuration,
     payload: Payload,
     context: PbImportExportContext
@@ -15,7 +15,7 @@ export const pagesHandler = async (
     let noPendingTask = true;
     let prevStatusOfSubTask = ImportExportTaskStatus.PENDING;
 
-    log("RUNNING Import Page Queue Process");
+    log("RUNNING Import Template Queue Process");
     const { pageBuilder } = context;
     const { taskId, subTaskIndex, type, identity } = payload;
     // Disable authorization; this is necessary because we call Page Builder CRUD methods which include authorization checks
@@ -47,10 +47,10 @@ export const pagesHandler = async (
 
         log(`Fetched sub task => ${subTask.id}`);
 
-        const { pageKey, category, zipFileKey, input, meta } = subTask.data;
+        const { templateKey, zipFileKey, input } = subTask.data;
         const { fileUploadsData } = input;
 
-        log(`Processing page key "${pageKey}"`);
+        log(`Processing template key "${templateKey}"`);
 
         // Mark task status as PROCESSING
         subTask = await pageBuilder.importExportTask.updateSubTask(taskId, subTask.id, {
@@ -64,42 +64,31 @@ export const pagesHandler = async (
         prevStatusOfSubTask = subTask.status;
 
         // Real job
-        const page = await importPage({
+        const template = await importTemplate({
             context,
-            pageKey,
+            templateKey,
             key: zipFileKey,
             fileUploadsData
         });
 
-        // Create a page
-        let pbPage = await context.pageBuilder.createPage(category, meta);
-
-        // Hooks attached to `pageBuilder.createPage` might enable security back again, here we disable security
-        mockSecurity(identity, context);
-
-        // Update page with data
-        pbPage = await context.pageBuilder.updatePage(pbPage.id, {
-            content: page.content,
-            title: page.title,
-            path: page.path,
-            settings: page.settings
+        // Create a template
+        const pbTemplate = await context.pageBuilder.createPageTemplate({
+            title: template.title,
+            slug: template.slug,
+            tags: template.tags,
+            layout: template.layout,
+            description: template.description,
+            content: template.content
         });
-
-        // Hooks attached to `pageBuilder.updatePage` might enable security back again, here we disable security
-        mockSecurity(identity, context);
-
-        // TODO: Publish page
 
         // Update task record in DB
         subTask = await pageBuilder.importExportTask.updateSubTask(taskId, subTask.id, {
             status: ImportExportTaskStatus.COMPLETED,
             data: {
                 message: "Done",
-                page: {
-                    id: pbPage.id,
-                    title: pbPage.title,
-                    version: pbPage.version,
-                    status: pbPage.status
+                template: {
+                    id: pbTemplate.id,
+                    title: pbTemplate.title
                 }
             }
         });
@@ -110,7 +99,7 @@ export const pagesHandler = async (
         });
         prevStatusOfSubTask = subTask.status;
     } catch (e) {
-        log("[IMPORT_PAGES_PROCESS] Error => ", e);
+        log("[IMPORT_TEMPLATES_PROCESS] Error => ", e.message);
 
         if (subTask && subTask.id) {
             /**
@@ -122,7 +111,6 @@ export const pagesHandler = async (
                 error: {
                     name: e.name,
                     message: e.message,
-                    stack: e.stack,
                     code: "IMPORT_FAILED"
                 }
             });
@@ -149,12 +137,12 @@ export const pagesHandler = async (
             await pageBuilder.importExportTask.updateTask(taskId, {
                 status: ImportExportTaskStatus.COMPLETED,
                 data: {
-                    message: `Finish importing pages.`
+                    message: `Finish importing templates.`
                 }
             });
         } else {
             log(`Invoking PROCESS for task "${subTaskIndex + 1}"`);
-            // We want to continue with Self invocation no matter if current page error out.
+            // We want to continue with Self invocation no matter if current template error out.
             await invokeHandlerClient<Payload>({
                 context,
                 name: configuration.handlers.process,
@@ -164,7 +152,7 @@ export const pagesHandler = async (
                     type,
                     identity: context.security.getIdentity()
                 },
-                description: "Import pages - process - subtask"
+                description: "Import templates - process - subtask"
             });
         }
     }

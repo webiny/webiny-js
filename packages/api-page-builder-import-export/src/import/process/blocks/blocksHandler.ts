@@ -1,11 +1,11 @@
 import { ImportExportTaskStatus, PbImportExportContext } from "~/types";
-import { importTemplate } from "~/import/utils";
 import { invokeHandlerClient } from "~/client";
 import { mockSecurity } from "~/mockSecurity";
 import { zeroPad } from "@webiny/utils";
 import { Configuration, Payload, Response } from "~/import/process";
+import { importBlock } from "./importBlock";
 
-export const templatesHandler = async (
+export const blocksHandler = async (
     configuration: Configuration,
     payload: Payload,
     context: PbImportExportContext
@@ -15,7 +15,7 @@ export const templatesHandler = async (
     let noPendingTask = true;
     let prevStatusOfSubTask = ImportExportTaskStatus.PENDING;
 
-    log("RUNNING Import Template Queue Process");
+    log("RUNNING Import Block Queue Process");
     const { pageBuilder } = context;
     const { taskId, subTaskIndex, type, identity } = payload;
     // Disable authorization; this is necessary because we call Page Builder CRUD methods which include authorization checks
@@ -46,11 +46,12 @@ export const templatesHandler = async (
         prevStatusOfSubTask = subTask.status;
 
         log(`Fetched sub task => ${subTask.id}`);
+        console.log("subTask", subTask);
 
-        const { templateKey, zipFileKey, input } = subTask.data;
+        const { blockKey, category, zipFileKey, input } = subTask.data;
         const { fileUploadsData } = input;
 
-        log(`Processing template key "${templateKey}"`);
+        log(`Processing block key "${blockKey}"`);
 
         // Mark task status as PROCESSING
         subTask = await pageBuilder.importExportTask.updateSubTask(taskId, subTask.id, {
@@ -64,21 +65,19 @@ export const templatesHandler = async (
         prevStatusOfSubTask = subTask.status;
 
         // Real job
-        const template = await importTemplate({
+        const block = await importBlock({
             context,
-            templateKey,
+            blockKey,
             key: zipFileKey,
             fileUploadsData
         });
 
-        // Create a template
-        const pbTemplate = await context.pageBuilder.createPageTemplate({
-            title: template.title,
-            slug: template.slug,
-            tags: template.tags,
-            layout: template.layout,
-            description: template.description,
-            content: template.content
+        // Create a block
+        const pbBlock = await context.pageBuilder.createPageBlock({
+            name: block.name,
+            blockCategory: category,
+            content: block.content,
+            preview: block.preview
         });
 
         // Update task record in DB
@@ -86,9 +85,9 @@ export const templatesHandler = async (
             status: ImportExportTaskStatus.COMPLETED,
             data: {
                 message: "Done",
-                template: {
-                    id: pbTemplate.id,
-                    title: pbTemplate.title
+                block: {
+                    id: pbBlock.id,
+                    name: pbBlock.name
                 }
             }
         });
@@ -99,7 +98,7 @@ export const templatesHandler = async (
         });
         prevStatusOfSubTask = subTask.status;
     } catch (e) {
-        log("[IMPORT_TEMPLATES_PROCESS] Error => ", e.message);
+        log("[IMPORT_BLOCKS_PROCESS] Error => ", e.message);
 
         if (subTask && subTask.id) {
             /**
@@ -137,12 +136,12 @@ export const templatesHandler = async (
             await pageBuilder.importExportTask.updateTask(taskId, {
                 status: ImportExportTaskStatus.COMPLETED,
                 data: {
-                    message: `Finish importing templates.`
+                    message: `Finish importing blocks.`
                 }
             });
         } else {
             log(`Invoking PROCESS for task "${subTaskIndex + 1}"`);
-            // We want to continue with Self invocation no matter if current template error out.
+            // We want to continue with Self invocation no matter if current block error out.
             await invokeHandlerClient<Payload>({
                 context,
                 name: configuration.handlers.process,
@@ -152,7 +151,7 @@ export const templatesHandler = async (
                     type,
                     identity: context.security.getIdentity()
                 },
-                description: "Import templates - process - subtask"
+                description: "Import blocks - process - subtask"
             });
         }
     }

@@ -1,4 +1,4 @@
-import { File } from "~/types";
+import { FileInput } from "~/types";
 
 export default [
     {
@@ -900,4 +900,4 @@ export default [
         aliases: [],
         tags: ["serverless"]
     }
-] as File[];
+] as Partial<FileInput>[];

@@ -319,6 +319,57 @@ describe("Files CRUD test", () => {
         });
     });
 
+    it("should find files by specific IDs", async () => {
+        const [createResponse] = await createFiles({
+            data: [fileAData, fileBData, fileCData, fileDData]
+        });
+        expect(createResponse).toEqual({
+            data: {
+                fileManager: {
+                    createFiles: {
+                        data: expect.any(Array),
+                        error: null
+                    }
+                }
+            }
+        });
+        await until(
+            () => listFiles().then(([data]) => data),
+            ({ data }: any) => {
+                return data.fileManager.listFiles.data.length === 4;
+            },
+            {
+                name: "bulk list files",
+                tries: 10
+            }
+        );
+
+        const [response] = await listFiles({
+            ids: [fileAData.id, fileBData.id, fileCData.id, fileDData.id]
+        });
+
+        expect(response).toEqual({
+            data: {
+                fileManager: {
+                    listFiles: {
+                        data: [
+                            { ...fileDData, aliases: [] },
+                            { ...fileCData, aliases: [] },
+                            fileBData,
+                            fileAData
+                        ],
+                        error: null,
+                        meta: {
+                            hasMoreItems: false,
+                            cursor: expect.any(String),
+                            totalCount: 4
+                        }
+                    }
+                }
+            }
+        });
+    });
+
     it("should list all the tags from files", async () => {
         const [createResponse] = await createFiles({
             data: [fileAData, fileBData, fileCData, fileDData]

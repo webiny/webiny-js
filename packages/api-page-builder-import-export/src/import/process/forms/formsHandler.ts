@@ -1,11 +1,11 @@
 import { ImportExportTaskStatus, PbImportExportContext } from "~/types";
-import { importBlock } from "~/import/utils";
+import { importForm } from "./importForm";
 import { invokeHandlerClient } from "~/client";
 import { mockSecurity } from "~/mockSecurity";
 import { zeroPad } from "@webiny/utils";
 import { Configuration, Payload, Response } from "~/import/process";
 
-export const blocksHandler = async (
+export const formsHandler = async (
     configuration: Configuration,
     payload: Payload,
     context: PbImportExportContext
@@ -15,10 +15,10 @@ export const blocksHandler = async (
     let noPendingTask = true;
     let prevStatusOfSubTask = ImportExportTaskStatus.PENDING;
 
-    log("RUNNING Import Block Queue Process");
-    const { pageBuilder } = context;
+    log("RUNNING Import Form Queue Process");
+    const { formBuilder, pageBuilder } = context;
     const { taskId, subTaskIndex, type, identity } = payload;
-    // Disable authorization; this is necessary because we call Page Builder CRUD methods which include authorization checks
+    // Disable authorization; this is necessary because we call Form Builder CRUD methods which include authorization checks
     // and this Lambda is invoked internally, without credentials.
     mockSecurity(identity, context);
 
@@ -46,12 +46,11 @@ export const blocksHandler = async (
         prevStatusOfSubTask = subTask.status;
 
         log(`Fetched sub task => ${subTask.id}`);
-        console.log("subTask", subTask);
 
-        const { blockKey, category, zipFileKey, input } = subTask.data;
+        const { formKey, zipFileKey, input } = subTask.data;
         const { fileUploadsData } = input;
 
-        log(`Processing block key "${blockKey}"`);
+        log(`Processing form key "${formKey}"`);
 
         // Mark task status as PROCESSING
         subTask = await pageBuilder.importExportTask.updateSubTask(taskId, subTask.id, {
@@ -65,19 +64,22 @@ export const blocksHandler = async (
         prevStatusOfSubTask = subTask.status;
 
         // Real job
-        const block = await importBlock({
-            context,
-            blockKey,
+        const form = await importForm({
+            formKey,
             key: zipFileKey,
             fileUploadsData
         });
 
-        // Create a block
-        const pbBlock = await context.pageBuilder.createPageBlock({
-            name: block.name,
-            blockCategory: category,
-            content: block.content,
-            preview: block.preview
+        // Create a form
+        let fbForm = await formBuilder.createForm({ name: form.name });
+
+        // Update form with data
+        fbForm = await formBuilder.updateForm(fbForm.id, {
+            name: form.name,
+            fields: form.fields,
+            layout: form.layout,
+            settings: form.settings,
+            triggers: form.triggers
         });
 
         // Update task record in DB
@@ -85,9 +87,11 @@ export const blocksHandler = async (
             status: ImportExportTaskStatus.COMPLETED,
             data: {
                 message: "Done",
-                block: {
-                    id: pbBlock.id,
-                    name: pbBlock.name
+                form: {
+                    id: fbForm.id,
+                    name: fbForm.name,
+                    status: fbForm.status,
+                    version: fbForm.version
                 }
             }
         });
@@ -98,7 +102,7 @@ export const blocksHandler = async (
         });
         prevStatusOfSubTask = subTask.status;
     } catch (e) {
-        log("[IMPORT_BLOCKS_PROCESS] Error => ", e.message);
+        log("[IMPORT_FORMS_PROCESS] Error => ", e);
 
         if (subTask && subTask.id) {
             /**
@@ -110,6 +114,7 @@ export const blocksHandler = async (
                 error: {
                     name: e.name,
                     message: e.message,
+                    stack: e.stack,
                     code: "IMPORT_FAILED"
                 }
             });
@@ -136,12 +141,12 @@ export const blocksHandler = async (
             await pageBuilder.importExportTask.updateTask(taskId, {
                 status: ImportExportTaskStatus.COMPLETED,
                 data: {
-                    message: `Finish importing blocks.`
+                    message: `Finish importing forms.`
                 }
             });
         } else {
             log(`Invoking PROCESS for task "${subTaskIndex + 1}"`);
-            // We want to continue with Self invocation no matter if current block error out.
+            // We want to continue with Self invocation no matter if current form error out.
             await invokeHandlerClient<Payload>({
                 context,
                 name: configuration.handlers.process,
@@ -151,7 +156,7 @@ export const blocksHandler = async (
                     type,
                     identity: context.security.getIdentity()
                 },
-                description: "Import blocks - process - subtask"
+                description: "Import forms - process - subtask"
             });
         }
     }
