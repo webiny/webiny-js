@@ -62,7 +62,7 @@ const plugins: RoutePlugin[] = [
         )
     },
     /**
-     * @deprecated since version 5.34
+     * @deprecated since version 5.35
      * The old Page Datalist view will be removed completely within version 5.36
      */
     {
