@@ -1,7 +1,6 @@
 import React, { useCallback, useState } from "react";
 import styled from "@emotion/styled";
 import { css } from "emotion";
-import { COLORS } from "./StyledComponents";
 import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
 import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
 import { PbTheme } from "@webiny/app-page-builder/types";
@@ -13,11 +12,12 @@ import { ChromePicker } from "react-color";
 import { ReactComponent as IconPalette } from "./round-color_lens-24px.svg";
 
 const ColorPickerStyle = styled("div")({
+    position: "relative",
     display: "flex",
     flexWrap: "wrap",
     justifyContent: "space-between",
-    width: 240,
-    padding: 5,
+    width: 225,
+    padding: 0,
     backgroundColor: "#fff"
 });
 
@@ -26,10 +26,7 @@ const ColorBox = styled("div")({
     width: 50,
     height: 40,
     margin: 10,
-    borderRadius: 2,
-    boxSizing: "border-box",
-    transition: "transform 0.2s",
-    color: "var(--mdc-theme-text-secondary-on-background)"
+    borderRadius: 2
 });
 
 const Color = styled("button")({
@@ -76,6 +73,14 @@ const iconPaletteStyle = css({
     color: "var(--mdc-theme-secondary)"
 });
 
+const COLORS = {
+    lightGray: "hsla(0, 0%, 97%, 1)",
+    gray: "hsla(300, 2%, 92%, 1)",
+    darkGray: "hsla(0, 0%, 70%, 1)",
+    darkestGray: "hsla(0, 0%, 20%, 1)",
+    black: "hsla(208, 100%, 5%, 1)"
+};
+
 const styles = {
     selectedColor: css({
         boxShadow: "0px 0px 0px 2px var(--mdc-theme-secondary)"
@@ -105,7 +110,7 @@ const styles = {
 
 interface LexicalColorPickerProps {
     value: string;
-    onChange: Function;
+    onChange?: Function;
     onChangeComplete: Function;
     handlerClassName?: string;
 }
@@ -126,9 +131,13 @@ export const LexicalColorPicker: React.FC<LexicalColorPickerProps> = ({
 
     const onColorChange = useCallback(
         (color, event) => {
-            setActualSelectedColor(value);
-            onChange(getColorValue(color.rgb));
             event.preventDefault();
+            // controls of the picker are updated as user moves the mouse
+            const customColor = getColorValue(color.rgb);
+            setActualSelectedColor(customColor);
+            if (typeof onChange === "function") {
+                onChange(customColor);
+            }
         },
         [onChange]
     );
@@ -143,7 +152,6 @@ export const LexicalColorPicker: React.FC<LexicalColorPickerProps> = ({
     );
 
     const togglePicker = useCallback(e => {
-        debugger;
         e.stopPropagation();
         setShowPicker(!showPicker);
     }, []);
@@ -218,7 +226,11 @@ export const LexicalColorPicker: React.FC<LexicalColorPickerProps> = ({
             </ColorBox>
 
             {showPicker && (
-                <ChromePicker onChange={onColorChange} onChangeComplete={onColorChangeComplete} />
+                <ChromePicker
+                    color={actualSelectedColor}
+                    onChange={onColorChange}
+                    onChangeComplete={onColorChangeComplete}
+                />
             )}
         </ColorPickerStyle>
     );

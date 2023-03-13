@@ -5,15 +5,12 @@ import {
     LexicalEditor,
     LexicalNode,
     NodeKey,
-    NodeSelection,
     RangeSelection,
     SerializedTextNode,
     Spread,
-    TextFormatType,
     TextNode
 } from "lexical";
 import { WebinyLexicalTheme } from "~/themes/webinyLexicalTheme";
-import { FontColorAction } from "~/components/ToolbarActions/FontColorAction";
 
 export const ADD_FONT_COLOR_COMMAND: LexicalCommand<FontColorPayload> =
     createCommand("ADD_FONT_COLOR_COMMAND");
@@ -40,8 +37,6 @@ export type SerializedFontColorNode = Spread<
     SerializedTextNode
 >;
 
-// export const createFontColorNodeClass = (themeStyles: ThemeStyles) => {
-
 /**
  * Main responsibility of this node is to apply custom or Webiny theme color to selected text.
  * Extends the original TextNode node to add additional transformation and support for webiny theme font color.
@@ -61,13 +56,7 @@ export class FontColorNode extends TextNode {
     }
 
     static override clone(node: FontColorNode): FontColorNode {
-        const nodeCLone = new FontColorNode(
-            node.__text,
-            node.__color,
-            node.__themeColor,
-            node.__key
-        );
-        return nodeCLone;
+        return new FontColorNode(node.__text, node.__color, node.__themeColor, node.__key);
     }
 
     static override importJSON(serializedNode: SerializedFontColorNode): TextNode {
@@ -120,6 +109,13 @@ export class FontColorNode extends TextNode {
         return isUpdated;
     }
 
+    getColorStyle(): { color: string; themeColor: ThemeColor } {
+        return {
+            color: this.__color,
+            themeColor: this.__themeColor
+        };
+    }
+
     override createDOM(config: EditorConfig): HTMLElement {
         const element = super.createDOM(config);
         return this.addColorValueToHTMLElement(element, config.theme);
@@ -135,9 +131,9 @@ export const $createFontColorNode = (
     return new FontColorNode(text, color, themeColor, key);
 };
 
-export function $isFontColorNode(node: LexicalNode | null | undefined): node is FontColorNode {
+export const $isFontColorNode = (node: LexicalNode): boolean => {
     return node instanceof FontColorNode;
-}
+};
 
 export function $applyStylesToNode(node: FontColorNode, nodeStyleProvider: RangeSelection) {
     node.setFormat(nodeStyleProvider.format);

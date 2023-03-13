@@ -7,7 +7,6 @@ import {
     FontColorPayload
 } from "~/nodes/FontColorNode";
 import {
-    $createNodeSelection,
     $createParagraphNode,
     $getSelection,
     $insertNodes,

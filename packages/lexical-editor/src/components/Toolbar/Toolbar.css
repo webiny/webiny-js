@@ -323,6 +323,12 @@ i.font-color, .icon.font-color {
   overflow-y: auto;
 }
 
+.lexical-dropdown.no-scroll {
+  max-height: inherit;
+  overflow: auto;
+  overflow-y: auto;
+}
+
 .lexical-dropdown .item {
   margin: 0 8px 0 8px;
   padding: 8px;

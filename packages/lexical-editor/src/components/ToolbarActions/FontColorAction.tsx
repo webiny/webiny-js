@@ -1,10 +1,11 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { LexicalCommand } from "lexical";
+import { $getSelection, $isRangeSelection, LexicalCommand } from "lexical";
 import { Compose, makeComposable } from "@webiny/react-composition";
 import { FontColorActionContext } from "~/context/FontColorActionContext";
-import { ADD_FONT_COLOR_COMMAND, FontColorPayload } from "~/nodes/FontColorNode";
+import { $isFontColorNode, ADD_FONT_COLOR_COMMAND, FontColorPayload } from "~/nodes/FontColorNode";
 import { usePageElements } from "@webiny/app-page-builder-elements";
+import { getSelectedNode } from "~/utils/getSelectedNode";
 
 /*
  * Composable Color Picker component that is mounted on toolbar action.
@@ -42,11 +43,18 @@ export const FontColorAction: FontColorAction = () => {
         return isThemeColorName(colorValue) ? theme?.styles?.colors[colorValue] : colorValue;
     };
 
+    const setFontColorSelect = useCallback(
+        (fontColorValue: string) => {
+            setFontColor(fontColorValue);
+        },
+        [fontColor]
+    );
+
     const onFontColorSelect = useCallback((colorValue: string) => {
         const color = getThemeColor(colorValue);
         const isThemeColor = isThemeColorName(colorValue);
         const themeColorName = isThemeColor ? colorValue : undefined;
-        setFontColor(colorValue);
+        setFontColorSelect(colorValue);
         const payloadData = {
             color,
             themeColorName,
@@ -57,6 +65,27 @@ export const FontColorAction: FontColorAction = () => {
             payloadData
         );
     }, []);
+
+    const updatePopup = useCallback(() => {
+        editor.getEditorState().read(() => {
+            const selection = $getSelection();
+            if (!$isRangeSelection(selection)) {
+                return;
+            }
+            const node = getSelectedNode(selection);
+            if ($isFontColorNode(node)) {
+                const colorStyle = node.getColorStyle();
+                setFontColor(colorStyle.color);
+            }
+        });
+    }, [editor]);
+
+    useEffect(() => {
+        document.addEventListener("selectionchange", updatePopup);
+        return () => {
+            document.removeEventListener("selectionchange", updatePopup);
+        };
+    }, [updatePopup]);
 
     return (
         <FontColorActionContext.Provider
