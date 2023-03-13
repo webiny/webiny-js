@@ -10,6 +10,7 @@ import { LexicalUpdateStatePlugin } from "~/plugins/LexicalUpdateStatePlugin";
 import { Klass, LexicalNode } from "lexical";
 import { usePageElements } from "@webiny/app-page-builder-elements";
 import {WebinyNodes} from "~/nodes/webinyNodes";
+import {webinyLexicalTheme} from "~/themes/webinyLexicalTheme";
 
 interface LexicalHtmlRendererProps {
     nodes?: Klass<LexicalNode>[];
@@ -26,7 +27,7 @@ export const LexicalHtmlRenderer: React.FC<LexicalHtmlRendererProps> = ({ nodes,
         },
         editable: false,
         nodes: [...WebinyNodes, ...(nodes || [])],
-        theme: theme
+        theme: { ...webinyLexicalTheme, styles: theme.styles }
     };
 
     return (
