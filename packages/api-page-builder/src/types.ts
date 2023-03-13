@@ -892,6 +892,7 @@ export interface PageTemplate {
     tags: string[];
     description: string;
     layout?: string;
+    pageCategory: string;
     content?: any;
     createdOn: string;
     savedOn: string;
@@ -902,7 +903,7 @@ export interface PageTemplate {
 
 export type PageTemplateInput = Pick<
     PageTemplate,
-    "title" | "description" | "content" | "slug" | "tags" | "layout"
+    "title" | "description" | "content" | "slug" | "tags" | "layout" | "pageCategory"
 > & { id?: string };
 
 /**

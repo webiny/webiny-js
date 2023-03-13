@@ -110,7 +110,10 @@ export async function exportBlock(
 }
 
 export interface ExportedTemplateData {
-    template: Pick<PageTemplate, "title" | "slug" | "tags" | "description" | "content" | "layout">;
+    template: Pick<
+        PageTemplate,
+        "title" | "slug" | "tags" | "description" | "content" | "layout" | "pageCategory"
+    >;
     files: File[];
 }
 
@@ -137,7 +140,8 @@ export async function exportTemplate(
             tags: template.tags,
             description: template.description,
             content: template.content,
-            layout: template.layout
+            layout: template.layout,
+            pageCategory: template.pageCategory
         },
         files: imageFilesData
     };
