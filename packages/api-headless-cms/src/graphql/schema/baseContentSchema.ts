@@ -53,6 +53,12 @@ export const createBaseContentSchema = ({ context }: Params): CmsGraphQLSchemaPl
                 type: String
             }
 
+            type CmsModifiedBy {
+                id: String
+                displayName: String
+                type: String
+            }
+
             enum CmsEntryStatusType {
                 latest
                 published
