@@ -11,6 +11,7 @@ const FILE_FIELDS = /* GraphQL */ `
         size
         type
         tags
+        aliases
         createdOn
         createdBy {
             id
@@ -119,7 +120,7 @@ export interface CreateFileMutationVariables {
     data: FileInput;
 }
 export const CREATE_FILE = gql`
-    mutation CreateFile($data: FileInput!) {
+    mutation CreateFile($data: CreateFileInput!) {
         fileManager {
             createFile(data: $data) {
                 error ${ERROR_FIELDS}
@@ -145,7 +146,7 @@ export interface UpdateFileMutationVariables {
     data: Partial<FileInput>;
 }
 export const UPDATE_FILE = gql`
-    mutation UpdateFile($id: ID!, $data: FileInput!) {
+    mutation UpdateFile($id: ID!, $data: UpdateFileInput!) {
         fileManager {
             updateFile(id: $id, data: $data) {
                 data {

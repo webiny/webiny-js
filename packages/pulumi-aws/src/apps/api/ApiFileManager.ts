@@ -12,9 +12,13 @@ import { getAwsAccountId } from "~/apps/awsUtils";
 
 export type ApiFileManager = PulumiAppModule<typeof ApiFileManager>;
 
+interface ApiFileManagerConfig {
+    env: Record<string, any>;
+}
+
 export const ApiFileManager = createAppModule({
     name: "ApiFileManager",
-    config(app: PulumiApp) {
+    config(app: PulumiApp, config: ApiFileManagerConfig) {
         const core = app.getModule(CoreOutput);
         const accountId = getAwsAccountId(app);
 
@@ -91,7 +95,8 @@ export const ApiFileManager = createAppModule({
                     variables: getCommonLambdaEnvVariables().apply(value => ({
                         ...value,
                         S3_BUCKET: core.fileManagerBucketId,
-                        IMAGE_TRANSFORMER_FUNCTION: transform.output.arn
+                        IMAGE_TRANSFORMER_FUNCTION: transform.output.arn,
+                        ...config.env
                     }))
                 },
                 vpcConfig: app.getModule(VpcConfig).functionVpcConfig
@@ -169,6 +174,15 @@ function createFileManagerLambdaPolicy(app: PulumiApp) {
                         Resource: [
                             pulumi.interpolate`arn:aws:s3:::${core.fileManagerBucketId}`,
                             pulumi.interpolate`arn:aws:s3:::${core.fileManagerBucketId}/*`
+                        ]
+                    },
+                    {
+                        Sid: "PermissionForDynamoDB",
+                        Effect: "Allow",
+                        Action: ["dynamodb:GetItem", "dynamodb:Query"],
+                        Resource: [
+                            pulumi.interpolate`${core.primaryDynamodbTableArn}`,
+                            pulumi.interpolate`${core.primaryDynamodbTableArn}/*`
                         ]
                     }
                 ]

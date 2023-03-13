@@ -29,20 +29,33 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                 displayName: String
             }
 
-            input FileInput {
+            input CreateFileInput {
+                id: ID!
+                key: String!
+                name: String!
+                size: Int!
+                type: String!
+                tags: [String!]
+                aliases: [String!]
+                meta: JSON
+            }
+
+            input UpdateFileInput {
                 key: String
                 name: String
                 size: Int
                 type: String
-                tags: [String]
+                tags: [String!]
+                aliases: [String!]
                 meta: JSON
             }
 
             type UploadFileResponseDataFile {
-                name: String
-                type: String
-                size: Int
-                key: String
+                id: ID!
+                name: String!
+                type: String!
+                size: Int!
+                key: String!
             }
 
             type UploadFileResponseData {
@@ -76,18 +89,19 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
             }
 
             type CreateFilesResponse {
-                data: [File]!
+                data: [File]
                 error: FileError
             }
 
             type File {
-                id: ID
-                key: String
-                name: String
-                size: Int
-                type: String
-                src: String
-                tags: [String]
+                id: ID!
+                key: String!
+                name: String!
+                size: Int!
+                type: String!
+                src: String!
+                tags: [String!]
+                aliases: [String!]
                 meta: JSON
                 createdOn: DateTime
                 createdBy: FmCreatedBy
@@ -161,9 +175,9 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
             }
 
             type FmMutation {
-                createFile(data: FileInput!): FileResponse
-                createFiles(data: [FileInput]!): CreateFilesResponse
-                updateFile(id: ID!, data: FileInput!): FileResponse
+                createFile(data: CreateFileInput!): FileResponse
+                createFiles(data: [CreateFileInput]!): CreateFilesResponse
+                updateFile(id: ID!, data: UpdateFileInput!): FileResponse
                 deleteFile(id: ID!): FilesDeleteResponse
                 install(srcPrefix: String): FileManagerBooleanResponse
                 updateSettings(data: FileManagerSettingsInput): FileManagerSettingsResponse

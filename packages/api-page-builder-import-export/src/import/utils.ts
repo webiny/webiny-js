@@ -1,4 +1,5 @@
-import uniqueId from "uniqid";
+// @ts-ignore
+import mdbid from "mdbid";
 import S3 from "aws-sdk/clients/s3";
 import dotProp from "dot-prop-immutable";
 import { createWriteStream } from "fs";
@@ -23,15 +24,6 @@ import {
     ExportedFormData
 } from "~/export/utils";
 import { PageSettings } from "@webiny/api-page-builder/types";
-
-interface FileItem extends File {
-    key: string;
-    type: string;
-    name: string;
-    size: number;
-    meta: Record<string, any>;
-    tags: string[];
-}
 
 const streamPipeline = promisify(pipeline);
 
@@ -157,15 +149,13 @@ export const uploadAssets = async (params: UploadAssetsParams): Promise<UploadAs
         };
     }
 
-    // Save files meta data against old key for later use.
-    const fileKeyToFileMap = new Map<string, FileItem>();
-    // Initialize maps.
-    for (let i = 0; i < filesData.length; i++) {
-        const file = filesData[i];
-        fileKeyToFileMap.set(file.key, file);
+    // Save files metadata against old key for later use.
+    const fileKeyToFileMap = new Map<string, File>();
 
-        // Initialize the value
-        fileIdToKeyMap.set(file.id, file.type);
+    // Initialize maps.
+    for(const file of filesData) {
+        fileKeyToFileMap.set(file.key, file);
+        fileIdToKeyMap.set(file.id, file.key);
     }
 
     const fileUploadResults = await uploadFilesFromS3({
@@ -191,7 +181,8 @@ export const uploadAssets = async (params: UploadAssetsParams): Promise<UploadAs
                 size: file.size,
                 type: file.type,
                 meta: file.meta,
-                tags: file.tags
+                tags: file.tags,
+                aliases: []
             };
         })
         .filter(Boolean) as FileInput[];
@@ -499,7 +490,7 @@ async function uploadFilesFromS3({
         const fileMetaData = fileKeyToFileMap.get(oldKey);
 
         if (fileMetaData) {
-            const newKey = uniqueId("", `-${fileMetaData.key}`);
+            const newKey = `${mdbid()}/${fileMetaData.key}`;
             const { streamPassThrough, streamPassThroughUploadPromise: promise } =
                 s3Stream.writeStream(newKey, fileMetaData.type);
             readStream.pipe(streamPassThrough);
