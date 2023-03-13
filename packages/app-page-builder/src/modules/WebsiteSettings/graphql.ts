@@ -141,14 +141,6 @@ export interface UpdateSettingsMutationVariablesData {
         home: string;
         notFound: string;
     };
-    prerendering?: {
-        storage: {
-            name: string;
-        };
-        app: {
-            url: string;
-        };
-    };
 }
 export interface UpdateSettingsMutationVariables {
     data: UpdateSettingsMutationVariablesData;

@@ -15,13 +15,18 @@ export interface MigrationRepository {
     logMigration(migration: MigrationItem): Promise<void>;
 }
 
+export interface DataMigrationContext {
+    projectVersion: string;
+    logger: Logger;
+}
+
 export interface DataMigration {
     getId(): string;
     getDescription(): string;
     // This function should check of the migration needs to apply some changes to the system.
     // Returning `false` means "everything is ok, mark this migration as executed".
-    shouldExecute(logger: Logger): Promise<boolean>;
-    execute(logger: Logger): Promise<void>;
+    shouldExecute(context: DataMigrationContext): Promise<boolean>;
+    execute(context: DataMigrationContext): Promise<void>;
 }
 
 export interface MigrationResult {

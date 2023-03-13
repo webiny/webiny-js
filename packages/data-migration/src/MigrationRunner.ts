@@ -8,7 +8,8 @@ import {
     ExecutedMigrationResponse,
     SkippedMigrationResponse,
     MigrationRepository,
-    DataMigration
+    DataMigration,
+    DataMigrationContext
 } from "~/types";
 
 export type IsMigrationApplicable = (migration: DataMigration) => boolean;
@@ -96,8 +97,9 @@ export class MigrationRunner {
 
         for (const migration of executableMigrations) {
             const logger = getChildLogger(this.logger, migration);
+            const context: DataMigrationContext = { projectVersion, logger };
 
-            const shouldExecute = await migration.shouldExecute(logger);
+            const shouldExecute = await migration.shouldExecute(context);
 
             if (!shouldExecute) {
                 this.logger.info(`Skipping migration %s.`, migration.getId());
@@ -131,7 +133,7 @@ export class MigrationRunner {
                     migration.getId(),
                     migration.getDescription()
                 );
-                await migration.execute(logger);
+                await migration.execute(context);
             } catch (err) {
                 result.success = false;
                 this.logger.error(err, err.message);

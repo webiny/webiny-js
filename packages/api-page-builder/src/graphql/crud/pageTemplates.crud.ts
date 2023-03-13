@@ -36,6 +36,7 @@ const createSchema = zod.object({
     tags: zod.string().array(),
     description: zod.string().max(100),
     layout: zod.string().max(100).optional(),
+    pageCategory: zod.string().max(100),
     content: zod.any()
 });
 
@@ -45,6 +46,7 @@ const updateSchema = zod.object({
     tags: zod.string().array().optional(),
     description: zod.string().max(100).optional(),
     layout: zod.string().max(100).optional(),
+    pageCategory: zod.string().max(100).optional(),
     content: zod.any()
 });
 
@@ -360,12 +362,12 @@ export const createPageTemplatesCrud = (
 
             return await context.pageBuilder.resolvePageBlocks({ ...content, elements: blocks });
         },
-        async createPageFromTemplate({ id, slug, category, path, meta }) {
+        async createPageFromTemplate({ id, slug, path, meta }) {
             const template = await this.getPageTemplate({ where: { id, slug } });
             if (!template) {
                 throw new NotFoundError(`Page template "${id || slug}" was not found!`);
             }
-            const page = await context.pageBuilder.createPage(category, meta);
+            const page = await context.pageBuilder.createPage(template.pageCategory, meta);
             this.copyTemplateDataToPage(template, page);
 
             await context.pageBuilder.updatePage(page.id, {

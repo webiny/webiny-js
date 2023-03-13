@@ -8,6 +8,7 @@ const PAGE_TEMPLATE_BASE_FIELDS = `
     tags
     description
     layout
+    pageCategory
     createdOn
     savedOn
     createdBy {
@@ -131,6 +132,7 @@ export interface UpdatePageTemplateMutationVariables {
         slug?: string;
         tags?: string[];
         layout?: string;
+        pageCategory?: string;
         content?: string;
     };
 }

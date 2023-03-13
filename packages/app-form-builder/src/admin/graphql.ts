@@ -4,7 +4,8 @@ import {
     FbFormModel,
     FbFormSubmissionData,
     FbMetaResponse,
-    FbRevisionModel
+    FbRevisionModel,
+    FormBuilderImportExportSubTask
 } from "~/types";
 
 const ERROR_FIELDS = `
@@ -24,6 +25,16 @@ const BASE_FORM_FIELDS = `
         id
         displayName
     }
+`;
+
+const STATS = `
+stats {
+    total
+    processing
+    pending
+    completed
+    failed
+}
 `;
 /**
  * ####################
@@ -352,6 +363,104 @@ export const DELETE_FORM = gql`
         formBuilder {
             deleteForm(id: $id) {
                 data
+                error {
+                    ${ERROR_FIELDS}
+                }
+            }
+        }
+    }
+`;
+
+export const IMPORT_FORMS = gql`
+    mutation FbImportForm(
+        $zipFileUrl: String
+    ) {
+        formBuilder {
+            importForms(
+                zipFileUrl: $zipFileUrl
+            ) {
+                data {
+                    task {
+                        id
+                        status
+                        data
+                        ${STATS}
+                    }
+                }
+                error {
+                    ${ERROR_FIELDS}
+                }
+            }
+        }
+    }
+`;
+
+export const EXPORT_FORMS = gql`
+    mutation FbExportForms(
+        $ids: [ID!],
+        $revisionType: FbExportFormRevisionType!,
+    ) {
+        formBuilder {
+            exportForms(
+                ids: $ids,
+                revisionType: $revisionType
+            ) {
+                data {
+                    task {
+                        id
+                        status
+                        data
+                        ${STATS}
+                    }
+                }
+                error {
+                    ${ERROR_FIELDS}
+                }
+            }
+        }
+    }
+`;
+
+export const GET_FORM_IMPORT_EXPORT_TASK = gql`
+    query FbGetFormImportExportTask($id: ID!) {
+        pageBuilder {
+            getImportExportTask(id: $id) {
+                data {
+                    status
+                    data
+                    error
+                    ${STATS}
+                }
+                error {
+                    ${ERROR_FIELDS}
+                }
+            }
+        }
+    }
+`;
+
+export interface ListFormImportExportSubTasksResponse {
+    pageBuilder: {
+        listImportExportSubTask: {
+            data: FormBuilderImportExportSubTask[];
+            error?: {
+                message: string;
+                code: string;
+                data: Record<string, any>;
+            };
+        };
+    };
+}
+
+export const LIST_FORM_IMPORT_EXPORT_SUB_TASKS = gql`
+    query FbFormListFormImportExportSubTask($id: ID!, $status: PbImportExportTaskStatus, $limit: Int) {
+        pageBuilder {
+            listImportExportSubTask(id: $id, status: $status, limit: $limit) {
+                data {
+                    id
+                    status
+                    data
+                }
                 error {
                     ${ERROR_FIELDS}
                 }
