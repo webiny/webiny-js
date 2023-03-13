@@ -129,18 +129,20 @@ export const AdvancedMultipleReferenceField: React.VFC<Props> = props => {
     );
 
     const models = useMemo(() => {
-        if (!loadedModels || !field.settings?.models) {
+        if (!loadedModels || !field.settings?.models || !Array.isArray(field.settings.models)) {
             return [];
         }
 
-        return (field.settings?.models || [])
-            .map(({ modelId }) => {
-                return loadedModels.find(model => model.modelId === modelId);
-            })
-            .filter(Boolean) as CmsModel[];
-    }, [loadedModels, entries]);
+        return field.settings.models.reduce<CmsModel[]>((collection, ref) => {
+            const model = loadedModels.find(model => model.modelId === ref.modelId);
+            if (!model) {
+                return collection;
+            }
+            collection.push(model);
 
-    const loading = loadingEntries || loadingModels;
+            return collection;
+        }, []);
+    }, [loadedModels, entries]);
 
     const storeValues = useCallback(
         (values: CmsReferenceValue[]) => {
@@ -206,6 +208,8 @@ export const AdvancedMultipleReferenceField: React.VFC<Props> = props => {
         },
         [values]
     );
+
+    const loading = loadingEntries || loadingModels;
 
     return (
         <>

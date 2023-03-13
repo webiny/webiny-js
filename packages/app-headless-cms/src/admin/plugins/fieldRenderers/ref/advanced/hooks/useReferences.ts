@@ -44,7 +44,6 @@ const executeSearch = async (params: ExecuteSearchParams): Promise<void> => {
             setError(error.message);
             return;
         }
-        setError(null);
         const entries = result.data.entries.data.reduce<Record<string, CmsReferenceContentEntry>>(
             (collection, entry) => {
                 collection[entry.entryId] = entry;
@@ -52,6 +51,7 @@ const executeSearch = async (params: ExecuteSearchParams): Promise<void> => {
             },
             {}
         );
+        setError(null);
         setEntries(entries);
     } catch (ex) {
         setError(ex.message);
@@ -128,7 +128,6 @@ export const useReferences = ({ values: initialValues }: UseReferencesParams) =>
             .sort()
             .join("-");
         if (value.length === 0) {
-            // setHash(null);
             return;
         }
         /**
@@ -180,19 +179,21 @@ export const useReferences = ({ values: initialValues }: UseReferencesParams) =>
     }, [pages, currentPage]);
 
     /**
-     * This variable contains all the entries that are loaded so far + the current page.
+     * This variable contains all the pages with entries, up to the current page, which is inlcuded.
      */
     const loadedEntries = useMemo<CmsReferenceContentEntry[]>(() => {
         const collection: CmsReferenceContentEntry[] = [];
         for (let page = 0; page <= currentPage; page++) {
             const items = pages[page] || [];
-            collection.push(
-                ...items.map(item => {
-                    return entries[item.entryId];
-                })
-            );
+            for (const item of items) {
+                const entry = entries[item.entryId];
+                if (!entry) {
+                    continue;
+                }
+                collection.push(entry);
+            }
         }
-        return collection.filter(Boolean);
+        return collection;
     }, [currentPage, entries, pages]);
 
     return {
