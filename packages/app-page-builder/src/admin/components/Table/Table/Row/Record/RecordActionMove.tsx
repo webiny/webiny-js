@@ -15,7 +15,6 @@ interface Props {
 export const RecordActionMove = ({ onClick }: Props): ReactElement => {
     return (
         <MenuItem onClick={onClick}>
-            {" "}
             <ListItemGraphic>
                 <Icon icon={<Move />} />
             </ListItemGraphic>

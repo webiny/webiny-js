@@ -30,6 +30,7 @@ type Props = {
     folders: FolderItem[];
     focusedFolderId?: string;
     hiddenFolderId?: string;
+    enableActions?: boolean;
     onFolderClick: (data: NodeModel<DndItemData>["data"]) => void;
     onDragStart: () => void;
     onDragEnd: () => void;
@@ -41,6 +42,7 @@ export const List = ({
     onFolderClick,
     focusedFolderId,
     hiddenFolderId,
+    enableActions,
     onDragStart,
     onDragEnd
 }: Props) => {
@@ -116,6 +118,7 @@ export const List = ({
                             node={node}
                             depth={depth}
                             isOpen={isOpen}
+                            enableActions={enableActions}
                             onToggle={onToggle}
                             onClick={data => onFolderClick(data)}
                             onUpdateFolder={data => {
