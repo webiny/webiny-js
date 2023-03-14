@@ -69,7 +69,7 @@ const PageBuilderBlockCategoriesDataList = ({
     canCreate
 }: PageBuilderBlockCategoriesDataListProps) => {
     const [filter, setFilter] = useState<string>("");
-    const [sort, setSort] = useState<string>(SORTERS[0].sort);
+    const [sort, setSort] = useState<string>(SORTERS[2].sort);
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
     const listQuery = useQuery(LIST_BLOCK_CATEGORIES);
