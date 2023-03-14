@@ -18,6 +18,13 @@ export interface ListMeta {
     hasMoreItems: boolean;
 }
 
+export enum ListSortDirection {
+    ASC,
+    DESC
+}
+
+export type ListSort = Record<string, ListSortDirection>;
+
 export interface AcoBaseFields {
     id: string;
     entryId: string;

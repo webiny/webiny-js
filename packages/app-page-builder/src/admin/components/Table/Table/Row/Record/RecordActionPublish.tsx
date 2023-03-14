@@ -1,31 +1,38 @@
 import React, { ReactElement, useMemo } from "react";
-import { PbPageData } from "~/types";
-import { useSecurity } from "@webiny/app-security";
-import usePermission from "~/hooks/usePermission";
-import { usePublishRevisionHandler } from "~/admin/plugins/pageDetails/pageRevisions/usePublishRevisionHandler";
+
+import { ReactComponent as Publish } from "@material-design-icons/svg/filled/publish.svg";
+import { ReactComponent as Restore } from "@material-design-icons/svg/filled/settings_backup_restore.svg";
 import { useConfirmationDialog } from "@webiny/app-admin";
 import { i18n } from "@webiny/app/i18n";
 import { SecurityPermission } from "@webiny/app-security/types";
+import { useSecurity } from "@webiny/app-security";
 import { MenuItem } from "@webiny/ui/Menu";
+
+import usePermission from "~/hooks/usePermission";
+import { usePublishRevisionHandler } from "~/admin/plugins/pageDetails/pageRevisions/usePublishRevisionHandler";
+
+import { PbPageDataItem } from "~/types";
+import { Icon } from "@webiny/ui/Icon";
+import { ListItemGraphic } from "~/admin/components/Table/Table/styled";
 
 const t = i18n.ns("app-headless-cms/app-page-builder/pages-table/actions/page/publish");
 
 interface Props {
-    page: PbPageData;
+    record: PbPageDataItem;
 }
 
-export const PageActionPublish = ({ page }: Props): ReactElement => {
+export const RecordActionPublish = ({ record }: Props): ReactElement => {
     const { identity, getPermission } = useSecurity();
     const { canPublish, canUnpublish } = usePermission();
 
-    const { publishRevision, unpublishRevision } = usePublishRevisionHandler({ page });
+    const { publishRevision, unpublishRevision } = usePublishRevisionHandler();
 
     const { showConfirmation: showPublishConfirmation } = useConfirmationDialog({
         title: t`Publish page`,
         message: (
             <p>
                 {t`You are about to publish the {title} page. Are you sure you want to continue?`({
-                    title: <strong>{page.title}</strong>
+                    title: <strong>{record.title}</strong>
                 })}
             </p>
         )
@@ -37,7 +44,7 @@ export const PageActionPublish = ({ page }: Props): ReactElement => {
             <p>
                 {t`You are about to unpublish the {title} page. Are you sure you want to continue?`(
                     {
-                        title: <strong>{page.title}</strong>
+                        title: <strong>{record.title}</strong>
                     }
                 )}
             </p>
@@ -52,15 +59,20 @@ export const PageActionPublish = ({ page }: Props): ReactElement => {
         return <></>;
     }
 
-    if (page.status === "published" && canUnpublish()) {
+    if (record.status === "published" && canUnpublish()) {
         return (
             <MenuItem
                 onClick={() =>
                     showUnpublishConfirmation(async () => {
-                        await unpublishRevision(page);
+                        await unpublishRevision(record);
                     })
                 }
-            >{t`Unpublish`}</MenuItem>
+            >
+                <ListItemGraphic>
+                    <Icon icon={<Restore />} />
+                </ListItemGraphic>
+                {t`Unpublish`}
+            </MenuItem>
         );
     }
 
@@ -69,10 +81,15 @@ export const PageActionPublish = ({ page }: Props): ReactElement => {
             <MenuItem
                 onClick={() =>
                     showPublishConfirmation(async () => {
-                        await publishRevision(page);
+                        await publishRevision(record);
                     })
                 }
-            >{t`Publish`}</MenuItem>
+            >
+                <ListItemGraphic>
+                    <Icon icon={<Publish />} />
+                </ListItemGraphic>
+                {t`Publish`}
+            </MenuItem>
         );
     }
 

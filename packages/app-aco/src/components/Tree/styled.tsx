@@ -11,7 +11,7 @@ export const Container = styled("div")`
     }
 
     & .dropTarget {
-        background: var(--mdc-theme-background);
+        background: var(--mdc-theme-on-background);
     }
 
     & .draggingSource {
