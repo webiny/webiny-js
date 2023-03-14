@@ -16,8 +16,11 @@ const Container = styled("div")(({ height }: ContainerProps) => {
         maxHeight: 460,
         backgroundColor: "var(--mdc-theme-background)",
         boxSizing: "border-box",
-        ">div": {
-            marginRight: 20
+        display: "flex",
+        ">div>div": {
+            overflowX: "hidden !important",
+            overflowY: "scroll",
+            paddingRight: 20
         }
     };
 });

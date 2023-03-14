@@ -30,7 +30,8 @@ const Content = styled("div")({
     boxSizing: "border-box",
     padding: "20px 0 20px 20px",
     backgroundColor: "var(--mdc-theme-background)",
-    border: '1px solid var(--mdc-theme-on-background)'
+    border: "1px solid var(--mdc-theme-on-background)",
+    overflowX: "hidden"
 });
 
 const DialogContent = styled(BaseDialogContent)({

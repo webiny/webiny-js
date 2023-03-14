@@ -7,11 +7,25 @@ const Content = styled("p")({
     fontSize: 14,
     lineHeight: "20px",
     letterSpacing: "0.25px",
-    padding: "0 10px 0 0"
+    boxSizing: "border-box",
+    paddingRight: 20,
+    paddingBottom: 10
 });
 interface Props {
     description?: string | null;
 }
+
 export const Description: React.VFC<Props> = ({ description }) => {
-    return <Content>{description}</Content>;
+    const MAX_LENGTH = 320;
+    if (!description) {
+        return <Content />;
+    }
+
+    return (
+        <Content>
+            {description.length > MAX_LENGTH
+                ? description.substring(0, MAX_LENGTH) + "..."
+                : description}
+        </Content>
+    );
 };
