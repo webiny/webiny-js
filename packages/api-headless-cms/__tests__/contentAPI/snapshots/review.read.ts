@@ -8,8 +8,8 @@ export default /* GraphQL */ `
         modelId: String!
         createdOn: DateTime!
         savedOn: DateTime!
-        createdBy: CmsCreatedBy!
-        ownedBy: CmsOwnedBy!
+        createdBy: CmsIdentity!
+        ownedBy: CmsIdentity!
         text: String
         product(populate: Boolean = true): Product
         rating: Number

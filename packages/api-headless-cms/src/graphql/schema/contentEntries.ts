@@ -1,6 +1,6 @@
 import WebinyError from "@webiny/error";
 import { ErrorResponse, Response } from "@webiny/handler-graphql";
-import { CmsEntry, CmsContext, CmsModel, CmsEntryListWhere, CreatedBy } from "~/types";
+import { CmsEntry, CmsContext, CmsModel, CmsEntryListWhere, CmsIdentity } from "~/types";
 import { NotAuthorizedResponse } from "@webiny/api-security";
 import { getEntryTitle } from "~/utils/getEntryTitle";
 import { CmsGraphQLSchemaPlugin } from "~/plugins";
@@ -32,8 +32,8 @@ interface CmsEntryRecord {
     title: string;
     description?: string | null;
     image?: string | null;
-    createdBy: CreatedBy;
-    modifiedBy: CreatedBy | null;
+    createdBy: CmsIdentity;
+    modifiedBy?: CmsIdentity | null;
     /**
      * We can use the number since it is an internal field.
      * Created via Date.parse() method.
@@ -279,8 +279,9 @@ export const createContentEntriesSchema = ({
                 title: String!
                 description: String
                 image: String
-                createdBy: CmsCreatedBy!
-                modifiedBy: CmsCreatedBy
+                createdBy: CmsIdentity!
+                ownedBy: CmsIdentity!
+                modifiedBy: CmsIdentity
                 published: CmsPublishedContentEntry
                 createdOn: DateTime!
                 savedOn: DateTime!

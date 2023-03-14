@@ -458,7 +458,7 @@ export interface CmsModel {
     /**
      * CreatedBy object wrapper. Contains id, name and type of the user.
      */
-    createdBy?: CreatedBy;
+    createdBy?: CmsIdentity;
     /**
      * List of fields defining entry values.
      */
@@ -855,7 +855,7 @@ export interface CmsFieldTypePlugins {
  *
  * @category General
  */
-export interface CreatedBy {
+export interface CmsIdentity {
     /**
      * ID if the user.
      */
@@ -1013,7 +1013,7 @@ export interface CmsGroup {
     /**
      * CreatedBy reference object.
      */
-    createdBy?: CreatedBy;
+    createdBy?: CmsIdentity;
     /**
      * Date group was created on.
      */
@@ -1446,15 +1446,15 @@ export interface CmsEntry<T = CmsEntryValues> {
     /**
      * CreatedBy object reference.
      */
-    createdBy: CreatedBy;
+    createdBy: CmsIdentity;
     /**
      * OwnedBy object reference. Can be different from CreatedBy.
      */
-    ownedBy: CreatedBy;
+    ownedBy: CmsIdentity;
     /**
      * ModifiedBy object reference. Last person who modified the entry.
      */
-    modifiedBy: CreatedBy | null;
+    modifiedBy?: CmsIdentity | null;
     /**
      * A string of Date.toISOString() type.
      * Populated on creation.

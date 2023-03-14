@@ -41,19 +41,7 @@ export const createBaseContentSchema = ({ context }: Params): CmsGraphQLSchemaPl
                 _empty: String
             }
 
-            type CmsCreatedBy {
-                id: String
-                displayName: String
-                type: String
-            }
-
-            type CmsOwnedBy {
-                id: String
-                displayName: String
-                type: String
-            }
-
-            type CmsModifiedBy {
+            type CmsIdentity {
                 id: String
                 displayName: String
                 type: String

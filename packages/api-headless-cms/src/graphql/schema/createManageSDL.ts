@@ -47,9 +47,9 @@ export const createManageSDL: CreateManageSDL = ({
             entryId: String!
             createdOn: DateTime!
             savedOn: DateTime!
-            createdBy: CmsCreatedBy!
-            ownedBy: CmsOwnedBy!
-            modifiedBy: CmsModifiedBy
+            createdBy: CmsIdentity!
+            ownedBy: CmsIdentity!
+            modifiedBy: CmsIdentity
             meta: ${mTypeName}Meta
             ${fields.map(f => f.fields).join("\n")}
         }

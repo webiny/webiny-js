@@ -61,8 +61,8 @@ export const createReadSDL: CreateReadSDL = ({
             ${hasModelIdField ? "" : "modelId: String!"}
             createdOn: DateTime!
             savedOn: DateTime!
-            createdBy: CmsCreatedBy!
-            ownedBy: CmsOwnedBy!
+            createdBy: CmsIdentity!
+            ownedBy: CmsIdentity!
             ${fieldsRender.map(f => f.fields).join("\n")}
         }
         

@@ -266,7 +266,7 @@ export const createModelsSchema = ({ context }: Params): CmsGraphQLSchemaPlugin 
                 group: CmsContentModelGroup!
                 createdOn: DateTime
                 savedOn: DateTime
-                createdBy: CmsCreatedBy
+                createdBy: CmsIdentity
                 fields: [CmsContentModelField!]!
                 lockedFields: [JSON]
                 layout: [[String!]!]!
