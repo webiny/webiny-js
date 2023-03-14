@@ -3,6 +3,7 @@ export { LexicalHtmlRenderer } from "~/components/LexicalHtmlRenderer";
 // hooks
 export { useRichTextEditor } from "~/hooks/useRichTextEditor";
 export { useFontColorPicker } from "~/hooks/useFontColorPicker";
+export { useTypographyAction } from "~/hooks/useTypographyAction";
 // UI elements
 export { Divider } from "~/ui/Divider";
 export { DropDownItem } from "~/ui/DropDown";
@@ -18,6 +19,7 @@ export { LinkAction } from "~/components/ToolbarActions/LinkAction";
 export { NumberedListAction } from "~/components/ToolbarActions/NumberedListAction";
 export { QuoteAction } from "~/components/ToolbarActions/QuoteAction";
 export { UnderlineAction } from "~/components/ToolbarActions/UnderlineAction";
+export { TypographyAction } from "~/components/ToolbarActions/TypographyAction";
 // toolbars
 export { HeadingToolbar } from "~/components/Toolbar/HeadingToolbar";
 export { ParagraphToolbar } from "~/components/Toolbar/ParagraphToolbar";

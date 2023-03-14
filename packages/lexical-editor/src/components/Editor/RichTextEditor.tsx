@@ -19,6 +19,7 @@ import { BlurEventPlugin } from "~/plugins/BlurEventPlugin/BlurEventPlugin";
 import { FontColorPlugin } from "~/plugins/FontColorPlugin/FontColorPlugin";
 import { webinyEditorTheme, WebinyTheme } from "~/themes/webinyLexicalTheme";
 import { WebinyNodes } from "~/nodes/webinyNodes";
+import { TypographyPlugin } from "~/plugins/TypographyPlugin/TypographyPlugin";
 
 export interface RichTextEditorProps {
     toolbar?: React.ReactNode;
@@ -99,6 +100,7 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
                 {value && <LexicalUpdateStatePlugin value={value} />}
                 <ClearEditorPlugin />
                 <FontColorPlugin />
+                <TypographyPlugin />
                 {/* Events */}
                 {onBlur && <BlurEventPlugin onBlur={onBlur} />}
                 {focus && <AutoFocusPlugin />}

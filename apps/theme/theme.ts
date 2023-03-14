@@ -44,13 +44,13 @@ const paragraphs = {
 };
 
 export const typography = {
-    heading1: { ...headings, fontWeight: "bold", fontSize: 48 },
-    heading2: { ...headings, fontSize: 36 },
-    heading3: { ...headings, fontSize: 30 },
-    heading4: { ...headings, fontSize: 24 },
-    heading5: { ...headings, fontSize: 20 },
-    heading6: { ...headings, fontSize: 18, lineHeight: "1.75rem" },
-    paragraph1: { ...paragraphs, fontSize: 16.5 },
+    heading1: { ...headings, fontWeight: "bold", fontSize: "48px" },
+    heading2: { ...headings, fontSize: "36px" },
+    heading3: { ...headings, fontSize: "30px" },
+    heading4: { ...headings, fontSize: "24px" },
+    heading5: { ...headings, fontSize: "20px" },
+    heading6: { ...headings, fontSize: "18px", lineHeight: "1.75rem" },
+    paragraph1: { ...paragraphs, fontSize: "16.5px" },
     paragraph2: {
         ...paragraphs,
         fontSize: 12.5,
