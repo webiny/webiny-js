@@ -34,4 +34,5 @@ export const SidebarContainer = styled("div")`
     height: calc(100vh - 67px);
     overflow-y: scroll;
     background: var(--mdc-theme-background);
+    padding-top: 12px;
 `;

@@ -1,4 +1,5 @@
 import { PbContext } from "@webiny/api-page-builder/types";
+import { FormBuilderContext } from "@webiny/api-form-builder/types";
 import {
     ExportRevisionType,
     ImportExportTask,
@@ -63,6 +64,22 @@ export type TemplatesImportExportCrud = {
     importTemplates(params: ImportTemplatesParams): Promise<{ task: ImportExportTask }>;
 };
 
+export interface ExportFormsParams {
+    ids?: string[];
+    revisionType: ExportRevisionType;
+    search?: { query?: string };
+    sort?: string[];
+}
+
+export interface ImportFormsParams {
+    zipFileUrl: string;
+}
+
+export type FormsImportExportCrud = {
+    exportForms(params: ExportFormsParams): Promise<{ task: ImportExportTask }>;
+    importForms(params: ImportFormsParams): Promise<{ task: ImportExportTask }>;
+};
+
 type ImportExportTaskCreateData = Omit<ImportExportTask, "id" | "createdOn" | "createdBy">;
 
 export type ImportExportTaskCrud = {
@@ -108,6 +125,9 @@ export interface PbImportExportContext extends PbContext {
         blocks: BlocksImportExportCrud;
         templates: TemplatesImportExportCrud;
         importExportTask: ImportExportTaskCrud;
+    };
+    formBuilder: FormBuilderContext["formBuilder"] & {
+        forms: FormsImportExportCrud;
     };
 }
 

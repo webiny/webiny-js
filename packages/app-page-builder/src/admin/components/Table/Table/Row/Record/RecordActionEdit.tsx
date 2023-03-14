@@ -1,13 +1,19 @@
 import React, { ReactElement, useCallback, useState } from "react";
-import { useRouter } from "@webiny/react-router";
-import { CREATE_PAGE } from "~/admin/graphql/pages";
-import * as GQLCache from "~/admin/views/Pages/cache";
+
+import { useMutation } from "@apollo/react-hooks";
+import { ReactComponent as Edit } from "@material-design-icons/svg/filled/edit.svg";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { i18n } from "@webiny/app/i18n";
-import { useMutation } from "@apollo/react-hooks";
-import usePermission from "~/hooks/usePermission";
-import { PbPageDataItem } from "~/types";
+import { useRouter } from "@webiny/react-router";
+import { Icon } from "@webiny/ui/Icon";
 import { MenuItem } from "@webiny/ui/Menu";
+
+import { CREATE_PAGE } from "~/admin/graphql/pages";
+import * as GQLCache from "~/admin/views/Pages/cache";
+import usePermission from "~/hooks/usePermission";
+
+import { ListItemGraphic } from "~/admin/components/Table/Table/styled";
+import { PbPageDataItem } from "~/types";
 
 const t = i18n.ns("app-headless-cms/app-page-builder/pages-table/actions/page/edit");
 
@@ -46,7 +52,14 @@ export const RecordActionEdit = ({ record }: Props): ReactElement => {
     }
 
     if (record.locked) {
-        return <MenuItem disabled={inProgress} onClick={createFromAndEdit}>{t`Edit`}</MenuItem>;
+        return (
+            <MenuItem disabled={inProgress} onClick={createFromAndEdit}>
+                <ListItemGraphic>
+                    <Icon icon={<Edit />} />
+                </ListItemGraphic>
+                {t`Edit`}
+            </MenuItem>
+        );
     }
     return (
         <MenuItem
@@ -54,6 +67,11 @@ export const RecordActionEdit = ({ record }: Props): ReactElement => {
             onClick={() => {
                 history.push(`/page-builder/editor/${encodeURIComponent(record.id)}`);
             }}
-        >{t`Edit`}</MenuItem>
+        >
+            <ListItemGraphic>
+                <Icon icon={<Edit />} />
+            </ListItemGraphic>
+            {t`Edit`}
+        </MenuItem>
     );
 };

@@ -26,6 +26,7 @@ export interface CognitoTokenData extends TokenData {
     given_name: string;
     family_name: string;
     email: string;
+    "custom:id": string;
     [key: string]: any;
 }
 
@@ -60,7 +61,7 @@ export const createCognito = <
             }
 
             return {
-                id: tokenObj.sub,
+                id: tokenObj["custom:id"] || tokenObj.sub,
                 type: config.identityType,
                 displayName: `${tokenObj.given_name} ${tokenObj.family_name}`,
                 email: tokenObj.email,

@@ -1,11 +1,18 @@
 import React, { useEffect, useState } from "react";
 
-import { ButtonPrimary, ButtonDefault } from "@webiny/ui/Button";
-import { DialogTitle, DialogContent, DialogOnClose } from "@webiny/ui/Dialog";
+import slugify from "slugify";
+import { ButtonPrimary } from "@webiny/ui/Button";
+import {
+    DialogTitle,
+    DialogActions,
+    DialogContent,
+    DialogOnClose,
+    DialogCancel
+} from "@webiny/ui/Dialog";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { CircularProgress } from "@webiny/ui/Progress";
-import { Form, FormOnSubmit } from "@webiny/form";
+import { Form, FormAPI, FormOnSubmit } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import { i18n } from "@webiny/app/i18n";
 import { useSnackbar } from "@webiny/app-admin";
@@ -13,7 +20,7 @@ import { useSnackbar } from "@webiny/app-admin";
 import { FolderTree } from "~/components";
 import { useFolders } from "~/hooks/useFolders";
 
-import { DialogContainer, DialogActions, DialogFoldersContainer } from "./styled";
+import { DialogContainer, DialogFoldersContainer } from "./styled";
 
 import { FolderItem } from "~/types";
 import { Typography } from "@webiny/ui/Typography";
@@ -49,6 +56,23 @@ export const FolderDialogCreate: React.FC<Props> = ({ type, onClose, open, curre
         }
     };
 
+    const generateSlug = (form: FormAPI) => () => {
+        if (form.data.slug) {
+            return;
+        }
+
+        // We want to update slug only when the folder is first being created.
+        form.setValue(
+            "slug",
+            slugify(form.data.title, {
+                replacement: "-",
+                lower: true,
+                remove: /[*#\?<>_\{\}\[\]+~.()'"!:;@]/g,
+                trim: false
+            })
+        );
+    };
+
     useEffect(() => {
         setDialogOpen(open);
     }, [open]);
@@ -57,7 +81,7 @@ export const FolderDialogCreate: React.FC<Props> = ({ type, onClose, open, curre
         <DialogContainer open={dialogOpen} onClose={onClose}>
             {dialogOpen && (
                 <Form onSubmit={onSubmit}>
-                    {({ Bind, submit }) => (
+                    {({ form, Bind, submit }) => (
                         <>
                             {loading.CREATE && <CircularProgress label={t`Creating folder...`} />}
                             <DialogTitle>{t`Create a new folder`}</DialogTitle>
@@ -68,7 +92,7 @@ export const FolderDialogCreate: React.FC<Props> = ({ type, onClose, open, curre
                                             name={"title"}
                                             validators={[validation.create("required,minLength:3")]}
                                         >
-                                            <Input label={t`Title`} />
+                                            <Input label={t`Title`} onBlur={generateSlug(form)} />
                                         </Bind>
                                     </Cell>
                                     <Cell span={12}>
@@ -98,13 +122,13 @@ export const FolderDialogCreate: React.FC<Props> = ({ type, onClose, open, curre
                                 </Grid>
                             </DialogContent>
                             <DialogActions>
-                                <ButtonDefault
+                                <DialogCancel
                                     onClick={() => {
                                         setDialogOpen(false);
                                     }}
                                 >
                                     {t`Cancel`}
-                                </ButtonDefault>
+                                </DialogCancel>
                                 <ButtonPrimary onClick={submit}>{t`Create Folder`}</ButtonPrimary>
                             </DialogActions>
                         </>

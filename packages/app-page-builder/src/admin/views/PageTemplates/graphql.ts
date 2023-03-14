@@ -9,6 +9,7 @@ const PAGE_TEMPLATE_BASE_FIELDS = `
     description
     layout
     content
+    pageCategory
     createdOn
     savedOn
     createdBy {

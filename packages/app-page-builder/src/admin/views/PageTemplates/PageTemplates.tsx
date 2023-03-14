@@ -82,7 +82,8 @@ const PageTemplates: React.FC = () => {
                     slug: "new-template",
                     description: "Blank template",
                     tags: [],
-                    layout: "static" // Hardcoded until better UI is in place
+                    layout: "static", // Hardcoded until better UI is in place
+                    pageCategory: "static"
                 }
             },
             refetchQueries: [{ query: LIST_PAGE_TEMPLATES }]

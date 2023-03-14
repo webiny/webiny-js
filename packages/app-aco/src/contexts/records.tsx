@@ -28,20 +28,21 @@ import {
     LoadingActions,
     Meta,
     UpdateSearchRecordResponse,
-    UpdateSearchRecordVariables
+    UpdateSearchRecordVariables,
+    ListSort
 } from "~/types";
 
 interface SearchRecordsContext {
     records: SearchRecordItem[];
     loading: Loading<LoadingActions>;
     meta: Meta<ListMeta>;
-    listRecords: (
-        type?: string,
-        folderId?: string,
-        limit?: number,
-        after?: string,
-        sort?: string[]
-    ) => Promise<SearchRecordItem[]>;
+    listRecords: (params: {
+        type?: string;
+        folderId?: string;
+        limit?: number;
+        after?: string;
+        sort?: ListSort;
+    }) => Promise<SearchRecordItem[]>;
     getRecord: (id: string) => Promise<SearchRecordItem>;
     createRecord: (record: Omit<SearchRecordItem, "id">) => Promise<SearchRecordItem>;
     updateRecord: (record: SearchRecordItem, contextFolderId?: string) => Promise<SearchRecordItem>;
@@ -76,18 +77,19 @@ export const SearchRecordsProvider = ({ children }: Props) => {
         records,
         loading,
         meta,
-        async listRecords(
-            type?: string,
-            folderId?: string,
-            limit = 20,
-            after?: string,
-            sorting?: string[]
-        ) {
+        async listRecords(params) {
+            const { type, folderId, after, limit, sort: sorting } = params;
+
+            /**
+             * Both folderId and type are optional to init `useRecords` but required to list records:
+             * this allows us to use `useRecords` methods like `getRecord` without passing useless params.
+             * But still, we need these params to list records.
+             */
             if (!folderId || !type) {
                 throw new Error("`folderId` and `type` are mandatory");
             }
 
-            /*
+            /**
              * Avoiding to fetch records in case they have already been fetched.
              * This happens when visiting a list with all records loaded and receives "after" param.
              */
@@ -105,7 +107,10 @@ export const SearchRecordsProvider = ({ children }: Props) => {
             }
 
             const action = after ? "LIST_MORE" : "LIST";
-            const sort = sorting && sorting.length > 0 ? sorting : ["savedOn_DESC"];
+            const sort =
+                sorting && Object.keys(sorting).length > 0
+                    ? sorting
+                    : ({ savedOn: "DESC" } as unknown as ListSort);
 
             const { data: response } = await apolloFetchingHandler(
                 loadingHandler(action, setLoading),
@@ -124,8 +129,12 @@ export const SearchRecordsProvider = ({ children }: Props) => {
             }
 
             // Adjusting sorting while merging records with data received from the server.
-            const fields = sort.map(s => s.split("_")[0]);
-            const orders = sort.map(s => s.split("_")[1].toLowerCase() as "asc" | "desc");
+            const fields = [] as string[];
+            const orders = [] as Array<"asc" | "desc">;
+            for (const [field, order] of Object.entries(sort)) {
+                fields.push(field);
+                orders.push(order.toLowerCase() as "asc" | "desc");
+            }
             setRecords(records => orderBy(unionBy(data, records, "id"), fields, orders));
 
             setMeta(meta => ({

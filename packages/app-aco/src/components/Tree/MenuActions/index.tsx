@@ -1,10 +1,13 @@
 import React from "react";
 
+import { ReactComponent as Delete } from "@material-design-icons/svg/filled/delete.svg";
+import { ReactComponent as Edit } from "@material-design-icons/svg/filled/edit.svg";
 import { ReactComponent as More } from "@material-design-icons/svg/filled/more_vert.svg";
 import { i18n } from "@webiny/app/i18n";
+import { Icon } from "@webiny/ui/Icon";
 import { Menu, MenuItem } from "@webiny/ui/Menu";
 
-import { Container } from "~/components/Tree/MenuActions/styled";
+import { Container, ListItemGraphic } from "~/components/Tree/MenuActions/styled";
 
 import { FolderItem } from "~/types";
 
@@ -21,8 +24,18 @@ export const MenuActions = ({ folder, onUpdateFolder, onDeleteFolder }: Props) =
         return (
             <Container className={"folder-tree-menu-action"}>
                 <Menu handle={<More />} renderToPortal={true}>
-                    <MenuItem onClick={() => onUpdateFolder(folder)}> {t`Edit`}</MenuItem>
-                    <MenuItem onClick={() => onDeleteFolder(folder)}> {t`Delete`}</MenuItem>
+                    <MenuItem onClick={() => onUpdateFolder(folder)}>
+                        <ListItemGraphic>
+                            <Icon icon={<Edit />} />
+                        </ListItemGraphic>
+                        {t`Edit`}
+                    </MenuItem>
+                    <MenuItem onClick={() => onDeleteFolder(folder)}>
+                        <ListItemGraphic>
+                            <Icon icon={<Delete />} />
+                        </ListItemGraphic>
+                        {t`Delete`}
+                    </MenuItem>
                 </Menu>
             </Container>
         );

@@ -244,26 +244,28 @@ export const createWebsitePulumiApp = (projectAppParams: CreateWebsitePulumiAppP
                 deliveryStorage: deliveryBucket.bucket.output.id
             });
 
-            addDomainsUrlsOutputs({
-                app,
-                cloudfrontDistribution: appCloudfront,
-                map: {
-                    distributionDomain: "cloudfrontAppDomain",
-                    distributionUrl: "cloudfrontAppUrl",
-                    usedDomain: "appDomain",
-                    usedUrl: "appUrl"
-                }
-            });
+            app.addHandler(() => {
+                addDomainsUrlsOutputs({
+                    app,
+                    cloudfrontDistribution: appCloudfront,
+                    map: {
+                        distributionDomain: "cloudfrontAppDomain",
+                        distributionUrl: "cloudfrontAppUrl",
+                        usedDomain: "appDomain",
+                        usedUrl: "appUrl"
+                    }
+                });
 
-            addDomainsUrlsOutputs({
-                app,
-                cloudfrontDistribution: deliveryCloudfront,
-                map: {
-                    distributionDomain: "cloudfrontDeliveryDomain",
-                    distributionUrl: "cloudfrontDeliveryUrl",
-                    usedDomain: "deliveryDomain",
-                    usedUrl: "deliveryUrl"
-                }
+                addDomainsUrlsOutputs({
+                    app,
+                    cloudfrontDistribution: deliveryCloudfront,
+                    map: {
+                        distributionDomain: "cloudfrontDeliveryDomain",
+                        distributionUrl: "cloudfrontDeliveryUrl",
+                        usedDomain: "deliveryDomain",
+                        usedUrl: "deliveryUrl"
+                    }
+                });
             });
 
             tagResources({
@@ -273,10 +275,22 @@ export const createWebsitePulumiApp = (projectAppParams: CreateWebsitePulumiAppP
 
             return {
                 prerendering,
+
+                // "preview" and "app" are the same.
+                // We introduced "preview" just because it's the word we use when talking about
+                // Page Builder and "previewing" pages. In other words, the "preview" property
+                // contains all resources related to serving page previews, unlike "delivery",
+                // which is used to serve published pages to actual website visitors.
+                // The "app" property was still left here just for backwards compatibility.
+                preview: {
+                    ...appBucket,
+                    cloudfront: appCloudfront
+                },
                 app: {
                     ...appBucket,
                     cloudfront: appCloudfront
                 },
+
                 delivery: {
                     ...deliveryBucket,
                     cloudfront: deliveryCloudfront

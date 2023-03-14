@@ -11962,7 +11962,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-form-builder-so-ddb-es@workspace:packages/api-form-builder-so-ddb-es":
+"@webiny/api-form-builder-so-ddb-es@0.0.0, @webiny/api-form-builder-so-ddb-es@workspace:packages/api-form-builder-so-ddb-es":
   version: 0.0.0-use.local
   resolution: "@webiny/api-form-builder-so-ddb-es@workspace:packages/api-form-builder-so-ddb-es"
   dependencies:
@@ -12406,6 +12406,7 @@ __metadata:
     "@webiny/api-dynamodb-to-elasticsearch": 0.0.0
     "@webiny/api-file-manager": 0.0.0
     "@webiny/api-file-manager-ddb-es": 0.0.0
+    "@webiny/api-form-builder": 0.0.0
     "@webiny/api-i18n-ddb": 0.0.0
     "@webiny/api-page-builder": 0.0.0
     "@webiny/api-security": 0.0.0
@@ -12948,6 +12949,7 @@ __metadata:
     react-dnd: ^16.0.1
     react-dom: 17.0.2
     rimraf: ^3.0.2
+    slugify: ^1.2.9
     ttypescript: ^1.5.12
     typescript: 4.7.4
     use-deep-compare-effect: ^1.6.1
@@ -13404,6 +13406,7 @@ __metadata:
     emotion: ^10.0.17
     graphql: ^15.7.2
     graphql-tag: ^2.12.6
+    history: ^5.3.0
     json2csv: ^4.5.2
     lodash: ^4.17.10
     prop-types: ^15.7.2
@@ -15385,6 +15388,9 @@ __metadata:
     "@webiny/api-file-manager-ddb": 0.0.0
     "@webiny/api-file-manager-ddb-es": 0.0.0
     "@webiny/api-file-manager-s3": 0.0.0
+    "@webiny/api-form-builder": 0.0.0
+    "@webiny/api-form-builder-so-ddb": 0.0.0
+    "@webiny/api-form-builder-so-ddb-es": 0.0.0
     "@webiny/api-i18n": 0.0.0
     "@webiny/api-i18n-content": 0.0.0
     "@webiny/api-i18n-ddb": 0.0.0
@@ -16584,6 +16590,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "api-page-builder-export-combine@workspace:apps/api/pageBuilder/export/combine"
   dependencies:
+    "@webiny/api-form-builder": 0.0.0
+    "@webiny/api-form-builder-so-ddb": 0.0.0
     "@webiny/api-i18n": 0.0.0
     "@webiny/api-i18n-content": 0.0.0
     "@webiny/api-i18n-ddb": 0.0.0
@@ -16611,6 +16619,8 @@ __metadata:
     "@webiny/api-file-manager": 0.0.0
     "@webiny/api-file-manager-ddb": 0.0.0
     "@webiny/api-file-manager-s3": 0.0.0
+    "@webiny/api-form-builder": 0.0.0
+    "@webiny/api-form-builder-so-ddb": 0.0.0
     "@webiny/api-i18n": 0.0.0
     "@webiny/api-i18n-content": 0.0.0
     "@webiny/api-i18n-ddb": 0.0.0
@@ -16635,6 +16645,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "api-page-builder-import-create@workspace:apps/api/pageBuilder/import/create"
   dependencies:
+    "@webiny/api-form-builder": 0.0.0
+    "@webiny/api-form-builder-so-ddb": 0.0.0
     "@webiny/api-i18n": 0.0.0
     "@webiny/api-i18n-content": 0.0.0
     "@webiny/api-i18n-ddb": 0.0.0
@@ -16663,6 +16675,8 @@ __metadata:
     "@webiny/api-file-manager": 0.0.0
     "@webiny/api-file-manager-ddb": 0.0.0
     "@webiny/api-file-manager-s3": 0.0.0
+    "@webiny/api-form-builder": 0.0.0
+    "@webiny/api-form-builder-so-ddb": 0.0.0
     "@webiny/api-headless-cms": 0.0.0
     "@webiny/api-headless-cms-ddb": 0.0.0
     "@webiny/api-i18n": 0.0.0

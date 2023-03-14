@@ -1,12 +1,10 @@
 import { Entity, Table } from "dynamodb-toolbox";
-import { Attributes } from "~/types";
 
 interface Params {
     entityName: string;
     table: Table;
-    attributes?: Attributes;
 }
-export const createTenantEntity = ({ entityName, table, attributes }: Params): Entity<any> => {
+export const createTenantEntity = ({ entityName, table }: Params): Entity<any> => {
     return new Entity({
         table,
         name: entityName,
@@ -26,39 +24,9 @@ export const createTenantEntity = ({ entityName, table, attributes }: Params): E
             TYPE: {
                 type: "string"
             },
-            id: {
-                type: "string"
-            },
-            name: {
-                type: "string"
-            },
-            description: {
-                type: "string"
-            },
-            status: {
-                type: "string",
-                default: "active"
-            },
-            createdOn: {
-                type: "string"
-            },
-            savedOn: {
-                type: "string"
-            },
-            createdBy: {
+            data: {
                 type: "map"
-            },
-            parent: {
-                type: "string"
-            },
-            webinyVersion: {
-                type: "string"
-            },
-            settings: {
-                type: "map",
-                default: {}
-            },
-            ...(attributes || {})
+            }
         }
     });
 };

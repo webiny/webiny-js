@@ -42,7 +42,7 @@ export const CREATE_RECORD = gql`
 `;
 
 export const LIST_RECORDS = gql`
-    query ListRecords ($type: String!, $location: SearchLocationInput!, $limit: Int, $after: String, $sort: [AcoListSort!]) {
+    query ListRecords ($type: String!, $location: SearchLocationInput!, $limit: Int, $after: String, $sort: AcoSort!) {
         search {
             listRecords(where: { type: $type, location: $location }, limit: $limit, after: $after, sort: $sort) {
                 data ${DATA_FIELD}

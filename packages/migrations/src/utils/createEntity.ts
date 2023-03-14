@@ -30,7 +30,11 @@ export const createLegacyEntity = (
     });
 };
 
-export const createStandardEntity = (table: Table, entityName: string) => {
+export const createStandardEntity = (
+    table: Table,
+    entityName: string,
+    attributes: EntityAttributes = {}
+) => {
     return new Entity({
         table,
         name: entityName,
@@ -52,7 +56,9 @@ export const createStandardEntity = (table: Table, entityName: string) => {
             },
             data: {
                 type: "map"
-            }
+            },
+            // When moving attributes to `data` envelope, we need to keep the old attributes in place for 1 version.
+            ...attributes
         }
     });
 };

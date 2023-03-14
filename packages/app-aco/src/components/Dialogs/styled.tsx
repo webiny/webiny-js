@@ -5,11 +5,6 @@ export const DialogContainer = styled(Dialog)`
     .mdc-dialog__surface {
         width: 600px;
         min-width: 600px;
-        overflow: initial;
-    }
-
-    .mdc-dialog__content {
-        overflow: initial !important;
     }
 `;
 
