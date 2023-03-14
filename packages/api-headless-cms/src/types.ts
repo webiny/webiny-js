@@ -9,7 +9,6 @@ import {
 import { SecurityPermission } from "@webiny/api-security/types";
 import { DbContext } from "@webiny/handler-db/types";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
-import { UpgradePlugin } from "@webiny/api-upgrade/types";
 import { Topic } from "@webiny/pubsub/types";
 import { CmsModelConverterCallable } from "~/utils/converters/ConverterCollection";
 
@@ -916,9 +915,7 @@ export interface OnSystemInstallErrorTopicParams {
 export type CmsSystemContext = {
     getSystemVersion: () => Promise<string | null>;
     setSystemVersion: (version: string) => Promise<void>;
-    getReadAPIKey(): Promise<string | null>;
     installSystem: () => Promise<void>;
-    upgradeSystem: (version: string) => Promise<boolean>;
     /**
      * Lifecycle events - deprecated
      */
@@ -1221,7 +1218,7 @@ export interface CmsModelCreateInput {
     /**
      * Description of the content model.
      */
-    description?: string;
+    description?: string | null;
     /**
      * Group where to put the content model in.
      */
@@ -1348,7 +1345,7 @@ export interface CmsModelUpdateInput {
     /**
      * A new description of the content model.
      */
-    description?: string;
+    description?: string | null;
     /**
      * A list of content model fields to define the entry values.
      */
@@ -2081,6 +2078,7 @@ export interface EntryBeforeListTopicParams {
  * @category CmsEntry
  */
 export interface CreateCmsEntryInput {
+    id?: string;
     [key: string]: any;
 }
 
@@ -2880,8 +2878,4 @@ export interface HeadlessCmsStorageOperations<C = CmsContext> {
      */
     beforeInit?: (context: C) => Promise<void>;
     init?: (context: C) => Promise<void>;
-    /**
-     * An upgrade to run if necessary.
-     */
-    upgrade?: UpgradePlugin | null;
 }

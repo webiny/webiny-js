@@ -5,13 +5,17 @@ import {
     NotFoundResponse
 } from "@webiny/handler-graphql/responses";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
-import { Page, PbContext, PageSecurityPermission } from "~/types";
+import { Page, PbContext, PageSecurityPermission, PageContentWithTemplate } from "~/types";
 import WebinyError from "@webiny/error";
 import resolve from "./utils/resolve";
 import { createPageSettingsGraphQL } from "./pages/pageSettings";
 import { fetchEmbed, findProvider } from "./pages/oEmbed";
 import lodashGet from "lodash/get";
 import checkBasePermissions from "~/graphql/crud/utils/checkBasePermissions";
+
+function hasTemplate(content: Page["content"]): content is PageContentWithTemplate {
+    return content?.data?.template;
+}
 
 const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
     return {
@@ -234,7 +238,7 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                     createPage(from: ID, category: String, meta: JSON): PbPageResponse
 
                     # Update page by given ID.
-                    updatePage(id: ID!, data: PbUpdatePageInput!): PbPageResponse
+                    updatePage(id: ID!, data: PbUpdatePageInput!, meta: JSON): PbPageResponse
 
                     # Duplicate page by given ID.
                     duplicatePage(id: ID!): PbPageResponse
@@ -279,9 +283,9 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                             return page.content;
                         }
 
-                        let blocks = {};
+                        let blocks;
 
-                        if (page.content.data.templateId) {
+                        if (hasTemplate(page.content)) {
                             blocks = await context.pageBuilder.resolvePageTemplate(page.content);
                         } else {
                             blocks = await context.pageBuilder.resolvePageBlocks(page.content);

@@ -5,13 +5,13 @@ import {
     ApiCloudfront,
     ApiFileManager,
     ApiGraphql,
+    ApiMigration,
     ApiPageBuilder,
     CoreOutput,
     VpcConfig
 } from "~/apps";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
-import { tagResources } from "~/utils";
-import { withCommonLambdaEnvVariables } from "~/utils";
+import { tagResources, withCommonLambdaEnvVariables, addDomainsUrlsOutputs } from "~/utils";
 
 export type ApiPulumiApp = ReturnType<typeof createApiPulumiApp>;
 
@@ -100,7 +100,11 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 }
             });
 
-            const fileManager = app.addModule(ApiFileManager);
+            const fileManager = app.addModule(ApiFileManager, {
+                env: {
+                    DB_TABLE: core.primaryDynamodbTableName
+                }
+            });
 
             const apwScheduler = app.addModule(ApiApwScheduler, {
                 primaryDynamodbTableArn: core.primaryDynamodbTableArn,
@@ -155,7 +159,7 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                     function: graphql.functions.graphql.output.arn
                 },
                 "files-any": {
-                    path: "/files/{path}",
+                    path: "/files/{path+}",
                     method: "ANY",
                     function: fileManager.functions.download.output.arn
                 },
@@ -168,10 +172,16 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                     path: "/cms/{key+}",
                     method: "OPTIONS",
                     function: graphql.functions.graphql.output.arn
+                },
+                "files-catch-all": {
+                    path: "/{path+}",
+                    method: "ANY",
+                    function: fileManager.functions.download.output.arn
                 }
             });
 
             const cloudfront = app.addModule(ApiCloudfront);
+            const migration = app.addModule(ApiMigration);
 
             const domains = app.getParam(projectAppParams.domains);
             if (domains) {
@@ -180,8 +190,6 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
 
             app.addOutputs({
                 region: process.env.AWS_REGION,
-                apiUrl: cloudfront.output.domainName.apply(value => `https://${value}`),
-                apiDomain: cloudfront.output.domainName,
                 cognitoUserPoolId: core.cognitoUserPoolId,
                 cognitoAppClientId: core.cognitoAppClientId,
                 cognitoUserPoolPasswordPolicy: core.cognitoUserPoolPasswordPolicy,
@@ -190,7 +198,21 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 apwSchedulerEventRule: apwScheduler.eventRule.output.name,
                 apwSchedulerEventTargetId: apwScheduler.eventTarget.output.targetId,
                 dynamoDbTable: core.primaryDynamodbTableName,
-                dynamoDbElasticsearchTable: core.elasticsearchDynamodbTableName
+                dynamoDbElasticsearchTable: core.elasticsearchDynamodbTableName,
+                migrationLambdaArn: migration.function.output.arn
+            });
+
+            app.addHandler(() => {
+                addDomainsUrlsOutputs({
+                    app,
+                    cloudfrontDistribution: cloudfront,
+                    map: {
+                        distributionDomain: "cloudfrontApiDomain",
+                        distributionUrl: "cloudfrontApiUrl",
+                        usedDomain: "apiDomain",
+                        usedUrl: "apiUrl"
+                    }
+                });
             });
 
             tagResources({
@@ -203,7 +225,8 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 graphql,
                 apiGateway,
                 cloudfront,
-                apwScheduler
+                apwScheduler,
+                migration
             };
         }
     });

@@ -1,5 +1,10 @@
 import lodashSet from "lodash/set";
-import { ApwContentReviewStepStatus, ApwContext } from "~/types";
+import {
+    ApwContentReviewStatus,
+    ApwContentReviewStepStatus,
+    ApwContext,
+    ApwWorkflowStepTypes
+} from "~/types";
 import { getContentReviewStepInitialStatus } from "~/plugins/utils";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { getContentApwSettingsPlugin } from "~/utils/contentApwSettingsPlugin";
@@ -57,9 +62,15 @@ export const initializeContentReviewSteps = ({ apw, plugins }: ApwContext) => {
             };
         });
         /**
-         * TODO Figure our what does this actually do?
-         * There is no steps property on CreateApwContentReviewParams
+         * If there are only steps which are not mandatory ones, put review status to ApwContentReviewStatus.READY_TO_BE_PUBLISHED.
          */
+        const isNonMandatory = updatedSteps.every(step => {
+            return step.type === ApwWorkflowStepTypes.NON_MANDATORY;
+        });
+        if (isNonMandatory) {
+            input.reviewStatus = ApwContentReviewStatus.READY_TO_BE_PUBLISHED;
+        }
+
         input = lodashSet(input, "steps", updatedSteps);
     });
 };

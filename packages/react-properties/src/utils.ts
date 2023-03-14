@@ -1,5 +1,5 @@
 import { customAlphabet } from "nanoid";
-const nanoid = customAlphabet("1234567890abcdef", 6);
+const nanoid = customAlphabet("1234567890abcdef");
 import { Property } from "./Properties";
 
 function buildRoots(roots: Property[], properties: Property[]) {
@@ -28,6 +28,6 @@ export function toObject<T = unknown>(properties: Property[]): T {
     return buildRoots(roots, properties) as T;
 }
 
-export function getUniqueId() {
-    return nanoid();
+export function getUniqueId(length = 12) {
+    return nanoid(length);
 }

@@ -13,6 +13,10 @@ const DATA_FIELD = `
     {
         id
         title
+        slug
+        tags
+        layout
+        pageCategory
         description
         content
         createdOn

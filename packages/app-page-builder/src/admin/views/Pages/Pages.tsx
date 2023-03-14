@@ -1,6 +1,5 @@
 import React, { useMemo, useState, useCallback } from "react";
-import { useMutation } from "@apollo/react-hooks";
-
+import { useApolloClient } from "@apollo/react-hooks";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
 import { useSecurity } from "@webiny/app-security";
 import { CircularProgress } from "@webiny/ui/Progress";
@@ -9,7 +8,7 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 
 import * as GQLCache from "~/admin/views/Pages/cache";
 import CategoriesDialog from "~/admin/views/Categories/CategoriesDialog";
-import { CREATE_PAGE, UPDATE_PAGE } from "~/admin/graphql/pages";
+import { CREATE_PAGE, CREATE_PAGE_FROM_TEMPLATE } from "~/admin/graphql/pages";
 import useImportPage from "./hooks/useImportPage";
 import PagesDataList from "./PagesDataList";
 import PageDetails from "./PageDetails";
@@ -21,8 +20,7 @@ const Pages: React.FC = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [showCategoriesDialog, setCategoriesDialog] = useState(false);
     const [showTemplatesDialog, setTemplatesDialog] = useState(false);
-    const [create] = useMutation(CREATE_PAGE);
-    const [update] = useMutation(UPDATE_PAGE);
+    const client = useApolloClient();
     const { showSnackbar } = useSnackbar();
 
     const openCategoriesDialog = useCallback(() => setCategoriesDialog(true), []);
@@ -31,16 +29,24 @@ const Pages: React.FC = () => {
     const closeTemplatesDialog = useCallback(() => setTemplatesDialog(false), []);
 
     const { showDialog } = useImportPage({
-        setLoadingLabel: () => setIsLoading(true),
-        clearLoadingLabel: () => setIsLoading(false),
+        setLoading: () => setIsLoading(true),
+        clearLoading: () => setIsLoading(false),
         closeDialog: closeCategoriesDialog
     });
 
     const onCreatePage = useCallback(async (template?: PbPageTemplate) => {
         setIsLoading(true);
         try {
-            const res = await create({
-                variables: { category: "static" }, // hardcoded for now
+            const MUTATION = template ? CREATE_PAGE_FROM_TEMPLATE : CREATE_PAGE;
+            const variables = {
+                // category is temporarily hardcoded
+                category: "static",
+                templateId: template?.id
+            };
+
+            const newPage = await client.mutate({
+                mutation: MUTATION,
+                variables,
                 update(cache, { data }) {
                     if (data.pageBuilder.createPage.error) {
                         return;
@@ -50,31 +56,7 @@ const Pages: React.FC = () => {
                 }
             });
 
-            if (template) {
-                await update({
-                    variables: {
-                        id: res.data.pageBuilder.createPage.data.id,
-                        data: {
-                            content: {
-                                ...template.content,
-                                data: {
-                                    ...template.content.data,
-                                    templateId: template.id
-                                },
-                                elements: []
-                            },
-                            settings: {
-                                general: {
-                                    ...res.data.pageBuilder.createPage.data.settings.general,
-                                    layout: template.layout
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-
-            const { error, data } = res.data.pageBuilder.createPage;
+            const { error, data } = newPage.data.pageBuilder.createPage;
             if (error) {
                 showSnackbar(error.message);
             } else {

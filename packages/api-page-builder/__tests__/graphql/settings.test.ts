@@ -1,7 +1,7 @@
 import useGqlHandler from "./useGqlHandler";
-import useHandler from "./../updateSettings/useHandler";
 
 jest.setTimeout(100000);
+jest.retryTimes(0);
 
 describe("Settings Test", () => {
     const {
@@ -155,45 +155,8 @@ describe("Settings Test", () => {
             })
         );
 
-        const { handler } = useHandler();
-        await handler(
-            {
-                data: {
-                    name: "test 1",
-                    websiteUrl: "https://www.test.com/",
-                    websitePreviewUrl: "https://preview.test.com/",
-                    social: {
-                        facebook: "https://www.facebook.com/",
-                        instagram: "https://www.instagram.com/",
-                        twitter: "https://www.twitter.com/",
-                        image: {
-                            id: "1kucKwtX3vI2w6tYuPwJsvRFn9g",
-                            src: "https://d1peg08dnrinui.cloudfront.net/files/9ki1goobp-webiny_security__1_.png"
-                        }
-                    }
-                }
-            },
-            {} as any
-        );
-
-        await getDefaultSettings().then(([res]) =>
-            expect(res).toEqual({
-                data: {
-                    pageBuilder: {
-                        getDefaultSettings: {
-                            data: {
-                                websitePreviewUrl: "https://www.test.com",
-                                websiteUrl: "https://www.test.com"
-                            },
-                            error: null
-                        }
-                    }
-                }
-            })
-        );
-
         // Updating settings for tenant / locale should not affect default settings. Default settings can only
-        // be affected by changing default system and default tenant data.
+        // be affected by deploying the `website` app, which contains the Prerendering Service.
         await updateSettings({
             data: {
                 name: "test 1-UPDATED",

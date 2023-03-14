@@ -4,9 +4,12 @@ import { PbPageTemplate, PbErrorResponse } from "~/types";
 const PAGE_TEMPLATE_BASE_FIELDS = `
     id
     title
+    slug
+    tags
     description
     layout
     content
+    pageCategory
     createdOn
     savedOn
     createdBy {
@@ -26,15 +29,18 @@ export interface GetPageTemplateQueryResponse {
         error?: PbErrorResponse;
     };
 }
+
 export interface GetPageTemplateQueryVariables {
     id: string;
 }
+
 export const GET_PAGE_TEMPLATE = gql`
-    query GetPageTemplates($id: ID!) {
+    query GetPageTemplate($id: ID!) {
         pageBuilder {
             getPageTemplate(id: $id) {
                 data {
                     ${PAGE_TEMPLATE_BASE_FIELDS}
+                    content
                 }
                 error {
                     code
@@ -55,9 +61,11 @@ export interface ListPageTemplatesQueryResponse {
         error?: PbErrorResponse;
     };
 }
+
 export interface ListPageTemplatesQueryVariables {
     templateCategory: string;
 }
+
 export const LIST_PAGE_TEMPLATES = gql`
     query ListPageTemplates {
         pageBuilder {
@@ -122,6 +130,8 @@ export interface UpdatePageTemplateMutationVariables {
     data: {
         title?: string;
         description?: string;
+        slug?: string;
+        tags?: string[];
         layout?: string;
         content?: string;
     };
@@ -132,6 +142,7 @@ export const UPDATE_PAGE_TEMPLATE = gql`
             pageTemplate: updatePageTemplate(id: $id, data: $data) {
                 data {
                     ${PAGE_TEMPLATE_BASE_FIELDS}
+                    content
                 }
                 error {
                     code

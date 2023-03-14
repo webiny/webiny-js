@@ -63,3 +63,12 @@ export interface QueryKey {
 export type QueryKeys = QueryKey[];
 
 export type QuerySort = Record<string, -1 | 1>;
+
+export type DbItem<TData extends Record<string, any> = Record<string, any>> = {
+    PK: string;
+    SK: string;
+    GSI1_PK: string;
+    GSI1_SK: string;
+    TYPE: string;
+    data: TData;
+};

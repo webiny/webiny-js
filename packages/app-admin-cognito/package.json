@@ -13,7 +13,7 @@
   "license": "MIT",
   "dependencies": {
     "@apollo/react-hooks": "^3.1.5",
-    "@aws-amplify/auth": "^4.3.10",
+    "@aws-amplify/auth": "^5.1.9",
     "@emotion/styled": "^10.0.27",
     "@webiny/app": "0.0.0",
     "@webiny/app-admin": "0.0.0",
@@ -32,7 +32,7 @@
   "devDependencies": {
     "@babel/cli": "^7.19.3",
     "@babel/core": "^7.19.3",
-    "@babel/plugin-proposal-class-properties": "^7.16.0",
+    "@babel/plugin-proposal-class-properties": "^7.18.6",
     "@babel/plugin-proposal-throw-expressions": "^7.16.0",
     "@babel/preset-env": "^7.19.4",
     "@babel/preset-react": "^7.16.0",

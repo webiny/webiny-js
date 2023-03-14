@@ -73,12 +73,14 @@ describe("storage transform for complex entries", () => {
                 name: "variant #1",
                 category,
                 price: 101,
+                images: ["test-product.png"],
                 options: [
                     {
                         name: "subvariant #1",
                         category,
                         categories: [category],
                         price: 1234567890,
+                        image: "test-product.png",
                         longText: ["Long text in the subvariant #1"]
                     }
                 ]

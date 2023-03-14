@@ -1,5 +1,4 @@
 import { DefaultSettingsCrudOptions, PbContext } from "~/graphql/types";
-import { UpgradePlugin } from "@webiny/api-upgrade";
 
 export * from "./graphql/types";
 
@@ -66,10 +65,10 @@ export interface PageSettings {
         meta: Array<{ name: string; content: string }>;
     };
     general?: {
-        tags: string[];
-        snippet: string;
-        layout: string;
-        image: File;
+        tags?: string[];
+        snippet?: string;
+        layout?: string;
+        image?: File;
     };
     /**
      * Basically we can have anything in page settings.
@@ -89,7 +88,7 @@ export interface Page {
     content: Record<string, any> | null;
     publishedOn: string | null;
     version: number;
-    settings?: PageSettings;
+    settings: PageSettings;
     locked: boolean;
     status: PageStatus;
     createdOn: string;
@@ -418,7 +417,6 @@ export interface Settings {
         home: string;
         notFound: string;
     };
-    type: string;
     tenant: string | undefined | false;
     locale: string | undefined | false;
 }
@@ -434,7 +432,6 @@ export interface DefaultSettings {
  */
 export interface SettingsStorageOperationsGetParams {
     where: {
-        type: string;
         tenant: string;
         locale: string;
     };
@@ -693,10 +690,6 @@ export interface PageBuilderStorageOperations {
 
     beforeInit?: (context: PbContext) => Promise<void>;
     init?: (context: PbContext) => Promise<void>;
-    /**
-     * An upgrade to run if necessary.
-     */
-    upgrade?: UpgradePlugin | null;
 }
 
 /**
@@ -895,8 +888,11 @@ export interface PageBlockStorageOperations {
 export interface PageTemplate {
     id: string;
     title: string;
-    description?: string;
+    slug: string;
+    tags: string[];
+    description: string;
     layout?: string;
+    pageCategory: string;
     content?: any;
     createdOn: string;
     savedOn: string;
@@ -905,7 +901,10 @@ export interface PageTemplate {
     locale: string;
 }
 
-export type PageTemplateInput = Pick<PageTemplate, "title" | "description" | "content">;
+export type PageTemplateInput = Pick<
+    PageTemplate,
+    "title" | "description" | "content" | "slug" | "tags" | "layout" | "pageCategory"
+> & { id?: string };
 
 /**
  * @category StorageOperations
@@ -913,7 +912,8 @@ export type PageTemplateInput = Pick<PageTemplate, "title" | "description" | "co
  */
 export interface PageTemplateStorageOperationsGetParams {
     where: {
-        id: string;
+        id?: string;
+        slug?: string;
         tenant: string;
         locale: string;
     };

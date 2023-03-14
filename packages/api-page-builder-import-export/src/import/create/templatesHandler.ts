@@ -1,10 +1,11 @@
 import { ImportExportTaskStatus, PbImportExportContext } from "~/types";
-import { initialStats, readExtractAndUploadZipFileContents } from "~/import/utils";
+import { initialStats } from "~/import/utils";
 import { invokeHandlerClient } from "~/client";
 import { Payload as ProcessPayload } from "../process";
 import { mockSecurity } from "~/mockSecurity";
 import { zeroPad } from "@webiny/utils";
 import { Configuration, Payload, Response } from "~/import/create";
+import { extractAndUploadZipFileContents } from "~/import/utils/extractAndUploadZipFileContents";
 
 export const templatesHandler = async (
     configuration: Configuration,
@@ -27,7 +28,7 @@ export const templatesHandler = async (
         }
         mockSecurity(identity, context);
         // Step 1: Read the zip file
-        const templateImportDataList = await readExtractAndUploadZipFileContents(zipFileUrl);
+        const templateImportDataList = await extractAndUploadZipFileContents(zipFileUrl);
 
         // For each template create a subtask and invoke the process handler
         for (let i = 0; i < templateImportDataList.length; i++) {

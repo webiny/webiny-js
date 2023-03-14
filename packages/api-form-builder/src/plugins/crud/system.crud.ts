@@ -1,7 +1,5 @@
 import WebinyError from "@webiny/error";
 import { NotAuthorizedError } from "@webiny/api-security";
-import { UpgradePlugin } from "@webiny/api-upgrade/types";
-import { getApplicablePlugin } from "@webiny/api-upgrade";
 import {
     OnSystemBeforeInstallTopic,
     OnSystemAfterInstallTopic,
@@ -24,7 +22,7 @@ interface CreateSystemCrudParams {
 }
 
 export const createSystemCrud = (params: CreateSystemCrudParams): SystemCRUD => {
-    const { getTenant, getLocale, getIdentity, context } = params;
+    const { getTenant, getLocale, context } = params;
 
     const onSystemBeforeInstall = createTopic<OnSystemBeforeInstallTopic>(
         "formBuilder.onSystemBeforeInstall"
@@ -146,39 +144,6 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCRUD => 
                     }
                 );
             }
-        },
-        async upgradeSystem(this: FormBuilder, version: string) {
-            const identity = getIdentity();
-            if (!identity) {
-                throw new NotAuthorizedError();
-            }
-
-            const upgradePlugins: UpgradePlugin[] = [];
-
-            /**
-             * There are no more registered plugins for the upgrades because each storage operations gives it's own, if some upgrade exists.
-             */
-            if (this.storageOperations.upgrade) {
-                upgradePlugins.push(this.storageOperations.upgrade);
-            }
-
-            const installedAppVersion = await this.getSystemVersion();
-
-            const plugin = getApplicablePlugin({
-                deployedVersion: context.WEBINY_VERSION,
-                installedAppVersion,
-                upgradePlugins,
-                upgradeToVersion: version
-            });
-
-            await plugin.apply(context);
-
-            /**
-             * Store new app version
-             */
-            await this.setSystemVersion(version);
-
-            return true;
         }
     };
 };

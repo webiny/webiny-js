@@ -7,6 +7,8 @@ import {
     createPageBuilderGraphQL,
     createPageBuilderContext
 } from "@webiny/api-page-builder/graphql";
+import { createFormBuilder } from "@webiny/api-form-builder";
+import { createFormBuilderStorageOperations } from "@webiny/api-form-builder-so-ddb";
 import { createStorageOperations as createPageBuilderStorageOperations } from "@webiny/api-page-builder-so-ddb";
 import pageBuilderImportExportPlugins from "@webiny/api-page-builder-import-export/graphql";
 import { createStorageOperations as createPageBuilderImportExportStorageOperations } from "@webiny/api-page-builder-import-export-so-ddb";
@@ -48,6 +50,11 @@ export const handler = createHandler({
             })
         }),
         createPageBuilderGraphQL(),
+        createFormBuilder({
+            storageOperations: createFormBuilderStorageOperations({
+                documentClient
+            })
+        }),
         pageBuilderImportExportPlugins({
             storageOperations: createPageBuilderImportExportStorageOperations({ documentClient })
         }),

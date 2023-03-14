@@ -43,6 +43,7 @@ export interface ProductCategoryRef {
 export interface ProductVariantOption {
     name: string;
     price: number;
+    image: string;
     category: ProductCategoryRef;
     categories: ProductCategoryRef[];
     longText: string[];
@@ -50,6 +51,7 @@ export interface ProductVariantOption {
 export interface ProductVariant {
     name: string;
     price: number;
+    images: string[];
     category: ProductCategoryRef;
     options?: ProductVariantOption[];
 }

@@ -7,7 +7,13 @@ import { Container, SkeletonWrapper } from "./styled";
 export const Loader = () => {
     return (
         <Container>
-            <Skeleton count={4} inline={true} height={"100%"} wrapper={SkeletonWrapper} />
+            <Skeleton
+                count={4}
+                inline={true}
+                height={"100%"}
+                wrapper={SkeletonWrapper}
+                theme={"dark"}
+            />
         </Container>
     );
 };

@@ -10,6 +10,7 @@ import { Ripple } from "@webiny/ui/Ripple";
 import { IconButton } from "@webiny/ui/Button";
 import { ReactComponent as Checked } from "./icons/round-check_box-24px.svg";
 import { ReactComponent as SettingsIcon } from "../../assets/icons/round-settings-24px.svg";
+import { FileItem } from "~/components/FileManager/types";
 
 const COMPONENT_WIDTH = 200;
 const COMPONENT_HEIGHT = 200;
@@ -102,7 +103,7 @@ const styles = css({
 export interface FileProps {
     file: FileItem;
     selected: boolean;
-    uploadFile: (item: FileItem[] | FileItem) => Promise<number | null>;
+    uploadFile: (item: FileItem | FileItem[]) => Promise<number | null>;
     onSelect: (event?: React.MouseEvent) => void;
     onClick?: (event?: React.MouseEvent) => void;
     options?: Array<{ label: string; onClick: (file: Object) => void }>;

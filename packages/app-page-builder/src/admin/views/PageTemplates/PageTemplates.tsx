@@ -78,7 +78,12 @@ const PageTemplates: React.FC = () => {
             mutation: CREATE_PAGE_TEMPLATE,
             variables: {
                 data: {
-                    title: "New template"
+                    title: "New template",
+                    slug: "new-template",
+                    description: "Blank template",
+                    tags: [],
+                    layout: "static", // Hardcoded until better UI is in place
+                    pageCategory: "static"
                 }
             },
             refetchQueries: [{ query: LIST_PAGE_TEMPLATES }]

@@ -11,6 +11,7 @@ import set from "lodash/set";
 import cloneDeep from "lodash/cloneDeep";
 import Tags from "./FileDetails/Tags";
 import Name from "./FileDetails/Name";
+import { Aliases } from "./FileDetails/Aliases";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { Icon } from "@webiny/ui/Icon";
 import { Typography } from "@webiny/ui/Typography";
@@ -43,6 +44,7 @@ import { i18n } from "@webiny/app/i18n";
 import mime from "mime";
 import { FileItem, FileManagerSecurityPermission } from "./types";
 import { FilesRenderChildren } from "react-butterfiles";
+import { FileProvider } from "./FileDetails/FileProvider";
 
 const t = i18n.ns("app-admin/file-manager/file-details");
 
@@ -154,7 +156,7 @@ const style: any = {
         }
     })
 };
-interface FileDetailsProps {
+export interface FileDetailsProps {
     canEdit: (item: any) => boolean;
     file: FileItem;
     uploadFile: (files: FileItem[] | FileItem) => Promise<number | null>;
@@ -173,7 +175,7 @@ const isImage = (file: FileItem) => {
 };
 
 const FileDetails: React.FC<FileDetailsProps> = props => {
-    const { file, uploadFile, validateFiles } = props;
+    const { file } = props;
 
     const filePlugin = getFileTypePlugin(file);
     const actions: React.FC[] =
@@ -370,86 +372,88 @@ const FileDetails: React.FC<FileDetailsProps> = props => {
             data-testid={"fm.file-details.drawer"}
         >
             {file && (
-                <div className={style.wrapper} dir="ltr">
-                    <div className={style.header}>
-                        <Typography use={"headline5"}>{t`File details`}</Typography>
-                    </div>
-                    <div
-                        className={classNames(style.preview, {
-                            dark: darkImageBackground
-                        })}
-                    >
-                        {filePlugin &&
-                            filePlugin.render({
-                                /**
-                                 * TODO: @ts-refactor
-                                 * Figure out which type is the file
-                                 */
-                                // @ts-ignore
-                                file,
-                                uploadFile,
-                                validateFiles
+                <FileProvider file={file} canEdit={props.canEdit}>
+                    <div className={style.wrapper} dir="ltr">
+                        <div className={style.header}>
+                            <Typography use={"headline5"}>{t`File details`}</Typography>
+                        </div>
+                        <div
+                            className={classNames(style.preview, {
+                                dark: darkImageBackground
                             })}
-                    </div>
-                    <div className={style.download}>
-                        <>
-                            <Tooltip content={<span>{t`Copy URL`}</span>} placement={"bottom"}>
-                                <IconButton
-                                    onClick={() => {
-                                        navigator.clipboard.writeText(file.src);
-                                        showSnackbar(t`URL copied successfully.`);
-                                    }}
-                                    icon={<CopyContentIcon style={{ margin: "0 8px 0 0" }} />}
-                                />
-                            </Tooltip>
+                        >
+                            {filePlugin && filePlugin.render({ file })}
+                        </div>
+                        <div className={style.download}>
+                            <>
+                                <Tooltip content={<span>{t`Copy URL`}</span>} placement={"bottom"}>
+                                    <IconButton
+                                        onClick={() => {
+                                            navigator.clipboard.writeText(file.src);
+                                            showSnackbar(t`URL copied successfully.`);
+                                        }}
+                                        icon={<CopyContentIcon style={{ margin: "0 8px 0 0" }} />}
+                                    />
+                                </Tooltip>
 
-                            {actions.map((Component: React.FC, index: number) => (
-                                <Component key={index} {...props} />
-                            ))}
-                            {renderDeleteImageAction(file)}
-                            {/* Render background switcher */}
-                            <Tooltip content={t`Toggle background`} placement={"bottom"}>
-                                <IconButton
-                                    icon={<HighlightIcon />}
-                                    onClick={() => setDarkImageBackground(!darkImageBackground)}
-                                    className={classNames({ "icon--active": darkImageBackground })}
-                                />
-                            </Tooltip>
-                        </>
+                                {actions.map((Component: React.FC, index: number) => (
+                                    <Component key={index} {...props} />
+                                ))}
+                                {renderDeleteImageAction(file)}
+                                {/* Render background switcher */}
+                                <Tooltip content={t`Toggle background`} placement={"bottom"}>
+                                    <IconButton
+                                        icon={<HighlightIcon />}
+                                        onClick={() => setDarkImageBackground(!darkImageBackground)}
+                                        className={classNames({
+                                            "icon--active": darkImageBackground
+                                        })}
+                                    />
+                                </Tooltip>
+                            </>
+                        </div>
+                        <DrawerContent dir="ltr" className={style.drawerContent}>
+                            <ul className={style.list}>
+                                <li>
+                                    <Name {...props} />
+                                </li>
+                                <li>
+                                    <li-title>
+                                        <Icon className={"list-item__icon"} icon={fileTypeIcon} />
+                                        <div>
+                                            <Typography use={"subtitle1"}>{file.type}</Typography>{" "}
+                                            {" - "}
+                                            <Typography use={"subtitle1"}>
+                                                {bytes.format(file.size, { unitSeparator: " " })}
+                                            </Typography>
+                                        </div>
+                                    </li-title>
+                                </li>
+                                <li>
+                                    <li-title>
+                                        <Icon
+                                            className={"list-item__icon"}
+                                            icon={<CalendarIcon />}
+                                        />
+                                        <div>
+                                            <Typography use={"subtitle1"}>
+                                                {dayjs(file.createdOn).format(
+                                                    "DD MMM YYYY [at] HH:mm"
+                                                )}
+                                            </Typography>
+                                        </div>
+                                    </li-title>
+                                </li>
+                                <li>
+                                    <Tags key={props.file.id} {...props} />
+                                </li>
+                                <li>
+                                    <Aliases key={props.file.id} {...props} />
+                                </li>
+                            </ul>
+                        </DrawerContent>
                     </div>
-                    <DrawerContent dir="ltr" className={style.drawerContent}>
-                        <ul className={style.list}>
-                            <li>
-                                <Name {...props} />
-                            </li>
-                            <li>
-                                <li-title>
-                                    <Icon className={"list-item__icon"} icon={fileTypeIcon} />
-                                    <div>
-                                        <Typography use={"subtitle1"}>{file.type}</Typography>{" "}
-                                        {" - "}
-                                        <Typography use={"subtitle1"}>
-                                            {bytes.format(file.size, { unitSeparator: " " })}
-                                        </Typography>
-                                    </div>
-                                </li-title>
-                            </li>
-                            <li>
-                                <li-title>
-                                    <Icon className={"list-item__icon"} icon={<CalendarIcon />} />
-                                    <div>
-                                        <Typography use={"subtitle1"}>
-                                            {dayjs(file.createdOn).format("DD MMM YYYY [at] HH:mm")}
-                                        </Typography>
-                                    </div>
-                                </li-title>
-                            </li>
-                            <li>
-                                <Tags key={props.file.id} {...props} />
-                            </li>
-                        </ul>
-                    </DrawerContent>
-                </div>
+                </FileProvider>
             )}
         </Drawer>
     );

@@ -111,12 +111,13 @@ const NoRecordsWrapper = styled("div")({
 });
 
 type PageBlocksDataListProps = {
+    filter: string;
     canCreate: boolean;
     canEdit: (item: CreatableItem) => boolean;
     canDelete: (item: CreatableItem) => boolean;
 };
 
-const PageBlocksDataList = ({ canCreate, canEdit, canDelete }: PageBlocksDataListProps) => {
+const PageBlocksDataList = ({ filter, canCreate, canEdit, canDelete }: PageBlocksDataListProps) => {
     const { history, location } = useRouter();
     const { showSnackbar } = useSnackbar();
     const { showConfirmation } = useConfirmationDialog();
@@ -153,7 +154,16 @@ const PageBlocksDataList = ({ canCreate, canEdit, canDelete }: PageBlocksDataLis
         onCompleted: () => refetch()
     });
 
+    const filterData = useCallback(
+        ({ name }) => {
+            return name.toLowerCase().includes(filter);
+        },
+        [filter]
+    );
+
     const pageBlocksData: PbPageBlock[] = data?.pageBuilder?.listPageBlocks?.data || [];
+    const filteredBlocksData: PbPageBlock[] =
+        filter === "" ? pageBlocksData : pageBlocksData.filter(filterData);
 
     const deleteItem = useCallback(
         item => {
@@ -209,7 +219,7 @@ const PageBlocksDataList = ({ canCreate, canEdit, canDelete }: PageBlocksDataLis
         );
     }
 
-    const showNoRecordsView = !isLoading && isEmpty(pageBlocksData);
+    const showNoRecordsView = !isLoading && isEmpty(filteredBlocksData);
     // Render "No records found" view.
     if (showNoRecordsView) {
         return (
@@ -223,7 +233,7 @@ const PageBlocksDataList = ({ canCreate, canEdit, canDelete }: PageBlocksDataLis
         <>
             <List>
                 {isLoading && <CircularProgress />}
-                {pageBlocksData.map(pageBlock => (
+                {filteredBlocksData.map(pageBlock => (
                     <ListItem key={pageBlock.id}>
                         <img
                             src={pageBlock?.preview?.src || previewFallback}

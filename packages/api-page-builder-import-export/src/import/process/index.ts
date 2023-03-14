@@ -1,9 +1,10 @@
 import { PbImportExportContext } from "~/types";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { createRawEventHandler } from "@webiny/handler-aws";
-import { blocksHandler } from "~/import/process/blocksHandler";
-import { pagesHandler } from "~/import/process/pagesHandler";
-import { templatesHandler } from "~/import/process/templatesHandler";
+import { blocksHandler } from "~/import/process/blocks/blocksHandler";
+import { formsHandler } from "~/import/process/forms/formsHandler";
+import { pagesHandler } from "~/import/process/pages/pagesHandler";
+import { templatesHandler } from "~/import/process/templates/templatesHandler";
 
 export interface Configuration {
     handlers: {
@@ -30,6 +31,9 @@ export default (configuration: Configuration) => {
             switch (payload.type) {
                 case "block": {
                     return await blocksHandler(configuration, payload, context);
+                }
+                case "form": {
+                    return await formsHandler(configuration, payload, context);
                 }
                 case "template": {
                     return await templatesHandler(configuration, payload, context);

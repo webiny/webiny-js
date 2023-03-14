@@ -72,7 +72,11 @@ export const markLockedFields = async (params: MarkLockedFieldsParams): Promise<
         throw new WebinyError(
             `Could not update model "${model.modelId}" with new locked fields.`,
             "MODEL_LOCKED_FIELDS_UPDATE_FAILED",
-            ex
+            {
+                message: ex.message,
+                code: ex.code,
+                data: ex.data
+            }
         );
     }
 };
@@ -104,7 +108,11 @@ export const markUnlockedFields = async (params: MarkFieldsUnlockedParams) => {
         throw new WebinyError(
             `Could not update model "${model.modelId}" with unlocked fields.`,
             "MODEL_UNLOCKED_FIELDS_UPDATE_FAILED",
-            ex
+            {
+                message: ex.message,
+                code: ex.code,
+                data: ex.data
+            }
         );
     }
 };

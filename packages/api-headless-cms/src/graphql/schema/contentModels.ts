@@ -292,8 +292,6 @@ export const createModelsSchema = ({ context }: Params): CmsGraphQLSchemaPlugin 
         `,
         resolvers
     });
-
     plugin.name = `headless-cms.graphql.schema.${context.cms.type}.content-models`;
-
     return plugin;
 };

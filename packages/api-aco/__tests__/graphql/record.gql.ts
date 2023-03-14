@@ -1,6 +1,6 @@
-const DATA_FIELD = (extra = "") => /* GraphQL */ `
+const DATA_FIELD = /* GraphQL */ `
     {
-        originalId
+        id
         type
         title
         content
@@ -8,7 +8,6 @@ const DATA_FIELD = (extra = "") => /* GraphQL */ `
             folderId
         }
         data
-        ${extra}
     }
 `;
 
@@ -32,7 +31,7 @@ export const CREATE_RECORD = /* GraphQL */ `
     mutation CreateRecord($data: SearchRecordCreateInput!) {
         search {
             createRecord(data: $data) {
-                data ${DATA_FIELD("id")}
+                data ${DATA_FIELD}
                 error ${ERROR_FIELD}
             }
         }
@@ -43,7 +42,7 @@ export const UPDATE_RECORD = /* GraphQL */ `
     mutation UpdateRecord($id: ID!, $data: SearchRecordUpdateInput!) {
         search {
             updateRecord(id: $id, data: $data) {
-                data ${DATA_FIELD()}
+                data ${DATA_FIELD}
                 error ${ERROR_FIELD}
             }
         }
@@ -62,10 +61,10 @@ export const DELETE_RECORD = /* GraphQL */ `
 `;
 
 export const LIST_RECORDS = /* GraphQL */ `
-    query ListRecords($where: SearchRecordListWhereInput, $search: String, $limit: Int, $after: String, $sort: [AcoListSort]) {
+    query ListRecords($where: SearchRecordListWhereInput, $search: String, $limit: Int, $after: String, $sort: AcoSort) {
         search {
             listRecords(where: $where, search: $search, limit: $limit, after: $after, sort: $sort) {
-                data ${DATA_FIELD()}
+                data ${DATA_FIELD}
                 meta ${LIST_META_FIELD}
                 error ${ERROR_FIELD}
             }
@@ -77,7 +76,7 @@ export const GET_RECORD = /* GraphQL */ `
     query GetRecord($id: ID!) {
         search {
             getRecord(id: $id ) {
-                data ${DATA_FIELD()}
+                data ${DATA_FIELD}
                 error ${ERROR_FIELD}
             }
         }

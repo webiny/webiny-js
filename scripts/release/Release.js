@@ -184,7 +184,6 @@ class Release {
             tag_name: tag,
             name: tag,
             body: changelog,
-            draft: true,
             prerelease: false
         });
     }

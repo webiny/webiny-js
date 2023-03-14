@@ -4,7 +4,6 @@ import styled from "@emotion/styled";
 import { i18n } from "@webiny/app/i18n";
 import { useRouter } from "@webiny/react-router";
 import { useQuery, useApolloClient } from "@apollo/react-hooks";
-import orderBy from "lodash/orderBy";
 import isEmpty from "lodash/isEmpty";
 import get from "lodash/get";
 
@@ -40,6 +39,7 @@ import { LIST_PAGE_BLOCKS_AND_CATEGORIES, LIST_PAGE_BLOCKS, CREATE_PAGE_BLOCK } 
 import { addElementId } from "~/editor/helpers";
 import useImportBlock from "~/admin/views/PageBlocks/hooks/useImportBlock";
 import useExportBlockDialog from "~/editor/plugins/defaultBar/components/ExportBlockButton/useExportBlockDialog";
+import useFilteredCategoriesListData from "./hooks/useFilteredCategoriesListData";
 
 const t = i18n.ns("app-page-builder/admin/page-blocks/by-categories-data-list");
 
@@ -92,11 +92,16 @@ const SORTERS: Sorter[] = [
 ];
 
 type PageBuilderBlocksByCategoriesDataListProps = {
+    filter: string;
+    setFilter: React.Dispatch<React.SetStateAction<string>>;
     canCreate: boolean;
 };
-const BlocksByCategoriesDataList = ({ canCreate }: PageBuilderBlocksByCategoriesDataListProps) => {
+const BlocksByCategoriesDataList = ({
+    filter,
+    setFilter,
+    canCreate
+}: PageBuilderBlocksByCategoriesDataListProps) => {
     const [operation, setOperation] = useState<string>(Operation.CREATE);
-    const [filter, setFilter] = useState<string>("");
     const [sort, setSort] = useState<string>(SORTERS[0].sort);
     const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
     const { history } = useRouter();
@@ -109,22 +114,11 @@ const BlocksByCategoriesDataList = ({ canCreate }: PageBuilderBlocksByCategories
         listQuery?.data?.pageBuilder?.listBlockCategories?.data || [];
     const pageBlocksData: PbPageBlock[] = listQuery?.data?.pageBuilder?.listPageBlocks?.data || [];
 
-    const filterData = useCallback(
-        ({ slug, name }) => {
-            return slug.toLowerCase().includes(filter) || name.toLowerCase().includes(filter);
-        },
-        [filter]
-    );
-
-    const sortData = useCallback(
-        categories => {
-            if (!sort) {
-                return categories;
-            }
-            const [field, order] = sort.split("_");
-            return orderBy(categories, field, order.toLowerCase() as "asc" | "desc");
-        },
-        [sort]
+    const [filteredBlocksList, filteredBlockCategoriesList] = useFilteredCategoriesListData(
+        pageBlocksData,
+        blockCategoriesData,
+        sort,
+        filter
     );
 
     const selectedBlocksCategory = new URLSearchParams(location.search).get("category");
@@ -155,10 +149,6 @@ const BlocksByCategoriesDataList = ({ canCreate }: PageBuilderBlocksByCategories
         ),
         [sort]
     );
-
-    const filteredBlockCategoriesData: PbBlockCategory[] =
-        filter === "" ? blockCategoriesData : blockCategoriesData.filter(filterData);
-    const categoryList: PbBlockCategory[] = sortData(filteredBlockCategoriesData);
 
     const onCreatePageBlock = async (categorySlug: string) => {
         const { data: res } = await client.mutate({
@@ -330,7 +320,7 @@ const BlocksByCategoriesDataList = ({ canCreate }: PageBuilderBlocksByCategories
             <DataList
                 title={t`Blocks`}
                 loading={Boolean(loading)}
-                data={categoryList}
+                data={filteredBlockCategoriesList}
                 actions={
                     <DataListActionsWrapper>
                         {canCreate ? (
@@ -359,7 +349,7 @@ const BlocksByCategoriesDataList = ({ canCreate }: PageBuilderBlocksByCategories
                     <SearchUI
                         value={filter}
                         onChange={setFilter}
-                        inputPlaceholder={t`Search categories`}
+                        inputPlaceholder={t`Search blocks`}
                     />
                 }
                 modalOverlay={blockCategoriesDataListModalOverlay}
@@ -379,7 +369,7 @@ const BlocksByCategoriesDataList = ({ canCreate }: PageBuilderBlocksByCategories
                 {({ data }: { data: PbBlockCategory[] }) => (
                     <ScrollList data-testid="default-data-list">
                         {data.map(item => {
-                            const numberOfBlocks = pageBlocksData.filter(
+                            const numberOfBlocks = filteredBlocksList.filter(
                                 pageBlock => pageBlock.blockCategory === item.slug
                             ).length;
                             return (
@@ -417,7 +407,7 @@ const BlocksByCategoriesDataList = ({ canCreate }: PageBuilderBlocksByCategories
                 </DialogTitle>
                 <DialogContent>
                     <React.Fragment>
-                        {isEmpty(categoryList) ? (
+                        {isEmpty(blockCategoriesData) ? (
                             <div className={noRecordsWrapper}>
                                 <Typography use="overline">
                                     There are no block categories
@@ -425,7 +415,7 @@ const BlocksByCategoriesDataList = ({ canCreate }: PageBuilderBlocksByCategories
                             </div>
                         ) : (
                             <List twoLine>
-                                {categoryList.map(item => (
+                                {blockCategoriesData.map(item => (
                                     <ListItem key={item.slug} onClick={() => onSelect(item.slug)}>
                                         <ListItemGraphic>
                                             <Icon category={item} />

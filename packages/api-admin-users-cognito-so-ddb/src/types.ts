@@ -9,16 +9,6 @@ import { AdminUsersStorageOperations as BaseAdminUsersStorageOperations } from "
 
 export type AttributeDefinition = DynamoDBTypes | EntityAttributeConfig | EntityCompositeAttributes;
 
-/**
- * @internal
- * @private
- */
-export type DbItem<T> = T & {
-    PK: string;
-    SK: string;
-    TYPE: string;
-};
-
 export type Attributes = Record<string, AttributeDefinition>;
 
 export enum ENTITIES {

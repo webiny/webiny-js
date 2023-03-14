@@ -2,7 +2,7 @@ import lodashDebounce from "lodash/debounce";
 import { plugins } from "@webiny/plugins";
 import { SaveTemplateActionArgsType } from "./types";
 import { TemplateEventActionCallable } from "~/templateEditor/types";
-import { TemplateWithContent } from "~/templateEditor/state";
+import { PageTemplateWithContent } from "~/templateEditor/state";
 import { UPDATE_PAGE_TEMPLATE } from "~/admin/views/PageTemplates/graphql";
 import { PbElement, PbBlockVariable, PbBlockEditorCreateVariablePlugin } from "~/types";
 
@@ -52,19 +52,17 @@ const syncTemplateBlockVariables = (block: PbElement) => {
 };
 
 const syncTemplateVariables = (content: PbElement) => {
-    const templateVariables = [];
+    const variables = [];
 
     for (const block of content.elements) {
-        templateVariables.push({
+        variables.push({
             blockId: block.data.templateBlockId,
             variables: block.data.variables
         });
     }
 
-    return { ...content, data: { ...content.data, templateVariables } };
+    return { ...content, data: { ...content.data, template: { variables } } };
 };
-
-type TemplateType = Pick<TemplateWithContent, "title" | "description" | "content" | "layout">;
 
 const triggerOnFinish = (args?: SaveTemplateActionArgsType): void => {
     if (!args || !args.onFinish || typeof args.onFinish !== "function") {
@@ -89,10 +87,13 @@ export const saveTemplateAction: TemplateEventActionCallable<SaveTemplateActionA
         return element;
     });
 
-    const data: TemplateType = {
+    const data: Omit<PageTemplateWithContent, "id" | "createdBy"> = {
         title: state.template.title,
+        slug: state.template.slug,
+        tags: state.template.tags || [],
         description: state.template?.description || "",
         layout: state.template?.layout || "",
+        pageCategory: state.template?.pageCategory || "",
         content: syncTemplateVariables({ ...content, elements })
     };
 

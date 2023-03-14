@@ -2,7 +2,7 @@ import DataLoader from "dataloader";
 import { batchReadAll } from "@webiny/db-dynamodb/utils/batchRead";
 import { PageTemplate } from "@webiny/api-page-builder/types";
 import { Entity } from "dynamodb-toolbox";
-import { createPartitionKey, createSortKey } from "./keys";
+import { createPrimaryPK } from "./keys";
 import { DataContainer } from "~/types";
 
 interface Params {
@@ -41,8 +41,8 @@ export class PageTemplateDataLoader {
                 async items => {
                     const batched = items.map(item => {
                         return this.entity.getBatch({
-                            PK: createPartitionKey(item),
-                            SK: createSortKey(item)
+                            PK: createPrimaryPK(item),
+                            SK: "A"
                         });
                     });
 
