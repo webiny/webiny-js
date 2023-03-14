@@ -2,6 +2,8 @@ import React, { useCallback } from "react";
 import styled from "@emotion/styled";
 import { CmsModel } from "~/types";
 import { OptionsModelList } from "~/admin/plugins/fieldRenderers/ref/advanced/components/options/OptionsModelList";
+import {ReactComponent as LinkIcon} from './assets/link.svg';
+import {ReactComponent as AddIcon} from './assets/add-circle.svg';
 
 const Container = styled("div")({
     display: "flex",
@@ -13,6 +15,7 @@ const NewRecord = styled("div")({
     padding: "10px 15px",
     display: "flex",
     position: "relative",
+    alignItems: 'center',
     " > div ": {
         display: "none"
     },
@@ -25,17 +28,32 @@ const NewRecordButton = styled("button")({
     border: "none",
     color: "var(--mdc-theme-primary)",
     padding: "2px 2px",
-    cursor: "pointer"
+    cursor: "pointer",
+    alignItems: 'center',
+    display: 'flex',
+    'svg':{
+        color: "var(--mdc-theme-primary)",
+        width: '24px',
+        height: '24px',
+        marginRight: 10
+    }
 });
 const LinkExistingRecord = styled("div")({
     padding: "10px 15px",
-    display: "flex",
+    alignItems: 'center',
+    display: 'flex',
     position: "relative",
     " > div ": {
         display: "none"
     },
     ":hover > div": {
         display: "block"
+    },
+    'svg':{
+        color: "var(--mdc-theme-primary)",
+        width: '24px',
+        height: '24px',
+        marginRight: 10
     }
 });
 const LinkExistingRecordButton = styled("button")({
@@ -43,7 +61,9 @@ const LinkExistingRecordButton = styled("button")({
     border: "none",
     color: "var(--mdc-theme-primary)",
     padding: "2px 5px",
-    cursor: "pointer"
+    cursor: "pointer",
+    alignItems: 'center',
+    display: 'flex',
 });
 
 interface Props {
@@ -69,17 +89,14 @@ export const Options: React.VFC<Props> = ({ models, onNewRecord, onLinkExistingR
     return (
         <Container>
             <NewRecord>
-                <NewRecordButton
-                    style={hasMultipleModels ? { cursor: "default" } : {}}
-                    onClick={onSingleNewRecord}
-                >
-                    + create a new record
+                <NewRecordButton onClick={onSingleNewRecord}>
+                    <AddIcon /> create a new record
                 </NewRecordButton>
                 <OptionsModelList onClick={onNewRecord} models={models} />
             </NewRecord>
             <LinkExistingRecord>
                 <LinkExistingRecordButton onClick={onSingleExistingRecord}>
-                    (+) link existing record
+                <LinkIcon/> link an existing record
                 </LinkExistingRecordButton>
                 <OptionsModelList onClick={onLinkExistingRecord} models={models} />
             </LinkExistingRecord>

@@ -8,9 +8,9 @@ const Container = styled("div")({
     position: "relative",
     height: "36px",
     marginBottom: "16px",
-    padding: '5px 0',
+    padding: "5px 0",
     border: "1px solid var(--mdc-theme-on-background)",
-    backgroundColor: "var(--mdc-theme-background)",
+    backgroundColor: "var(--mdc-theme-background)"
 });
 
 const Icon = styled("img")({
@@ -24,8 +24,8 @@ const Icon = styled("img")({
 const Input = styled("input")({
     display: "block",
     boxSizing: "border-box",
-    border: 'none',
-    backgroundColor: 'transparent',
+    border: "none",
+    backgroundColor: "transparent",
     width: "100%",
     height: "100%",
     fontSize: "14px",
@@ -43,7 +43,7 @@ interface Props {
 export const Search: React.VFC<Props> = ({ onInput }) => {
     return (
         <Container>
-            <Icon src={searchIcon}/>
+            <Icon src={searchIcon} />
             <Input placeholder={"Search entries"} onKeyUp={onInput} />
         </Container>
     );

@@ -2,33 +2,39 @@ import React, { useCallback } from "react";
 import styled from "@emotion/styled";
 import { CmsModel } from "~/types";
 
+const Title = styled("div")({
+    width: '100%',
+    boxSizing: 'border-box',
+});
+
+const Content = styled("div")({
+    display: "flex",
+    flexDirection: "column",
+    width: '100%',
+});
+
 const Container = styled("div")({
     color: "--var(mdc-theme-primary)",
     display: "flex",
     flexDirection: "row",
     width: "100%",
     cursor: "pointer",
+    padding: 15,
+    boxSizing:"border-box",
+    borderBottom: '1px solid var(--mdc-theme-background)',
     ":hover": {
         backgroundColor: "var(--mdc-theme-background)"
+    },
+    '&:last-of-type':{
+        borderBottom: 'none'
     }
 });
 
-// const Icon = styled("div")({
-//     width: "50px"
-// });
-const Content = styled("div")({
-    display: "flex",
-    flexDirection: "column"
-});
-
-const Title = styled("h4")({
-    padding: "10px 10px 10px 0",
-    paddingLeft: "10px"
-});
 const Description = styled("p")({
     fontSize: 12,
-    padding: "0 0px 10px 0",
-    paddingLeft: "10px"
+    marginTop: 10,
+    lineHeight: '125%',
+    color: '#666'
 });
 
 interface Props {
