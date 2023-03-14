@@ -126,7 +126,7 @@ interface FormUpdateInput {
     fields: Record<string, any>[];
     layout: string[][];
     settings: Record<string, any>;
-    triggers: Record<string, any>;
+    triggers: Record<string, any> | null;
 }
 
 export interface FbFormStats {

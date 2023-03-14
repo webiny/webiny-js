@@ -3,6 +3,7 @@
   "include": ["src"],
   "references": [
     { "path": "../app/tsconfig.build.json" },
+    { "path": "../app-aco/tsconfig.build.json" },
     { "path": "../app-admin/tsconfig.build.json" },
     { "path": "../app-admin-rmwc/tsconfig.build.json" },
     { "path": "../app-apw/tsconfig.build.json" },
@@ -19,6 +20,7 @@
     { "path": "../app-security-access-management/tsconfig.build.json" },
     { "path": "../app-tenancy/tsconfig.build.json" },
     { "path": "../app-tenant-manager/tsconfig.build.json" },
+    { "path": "../lexical-editor-actions/tsconfig.build.json" },
     { "path": "../lexical-editor-pb-element/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" }
   ],

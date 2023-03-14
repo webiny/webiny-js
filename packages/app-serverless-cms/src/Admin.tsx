@@ -26,7 +26,9 @@ import { createViewCompositionProvider } from "@webiny/app-admin/base/providers/
 import { AdvancedPublishingWorkflow } from "@webiny/app-apw";
 import { TenantManager } from "@webiny/app-tenant-manager";
 import { LexicalEditorPlugin } from "@webiny/lexical-editor-pb-element";
+import { LexicalEditorActions } from "@webiny/lexical-editor-actions";
 import { Module as MailerSettings } from "@webiny/app-mailer";
+import { ACOProvider } from "@webiny/app-aco";
 
 export interface AdminProps extends Omit<BaseAdminProps, "createApolloClient"> {
     createApolloClient?: BaseAdminProps["createApolloClient"];
@@ -52,11 +54,13 @@ const App = (props: AdminProps) => {
             <Provider hoc={ViewCompositionProvider} />
             <PageBuilder />
             <LexicalEditorPlugin />
+            <LexicalEditorActions />
             <FormBuilder />
             <HeadlessCMS createApolloClient={createApolloClient} />
             <AdvancedPublishingWorkflow />
             <TenantManager />
             <MailerSettings />
+            <ACOProvider />
             {props.children}
         </BaseAdmin>
     );

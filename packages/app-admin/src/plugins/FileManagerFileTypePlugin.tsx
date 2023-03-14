@@ -1,23 +1,9 @@
 import * as React from "react";
 import { Plugin } from "@webiny/plugins";
-
-interface File {
-    id: string;
-    name: string;
-    key: string;
-    src: string;
-    size: number;
-    type: string;
-    tags: string[];
-    createdOn: string;
-    createdBy: {
-        id: string;
-    };
-    [key: string]: any;
-}
+import { FileItem } from "~/components/FileManager/types";
 
 export interface RenderParams {
-    file: File;
+    file: FileItem;
 }
 
 interface Config {

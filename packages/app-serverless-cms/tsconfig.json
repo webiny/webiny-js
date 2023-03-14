@@ -3,6 +3,7 @@
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
     { "path": "../app" },
+    { "path": "../app-aco" },
     { "path": "../app-admin" },
     { "path": "../app-admin-rmwc" },
     { "path": "../app-apw" },
@@ -19,6 +20,7 @@
     { "path": "../app-security-access-management" },
     { "path": "../app-tenancy" },
     { "path": "../app-tenant-manager" },
+    { "path": "../lexical-editor-actions" },
     { "path": "../lexical-editor-pb-element" },
     { "path": "../plugins" }
   ],
@@ -31,6 +33,8 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/app/*": ["../app/src/*"],
       "@webiny/app": ["../app/src"],
+      "@webiny/app-aco/*": ["../app-aco/src/*"],
+      "@webiny/app-aco": ["../app-aco/src"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
       "@webiny/app-admin": ["../app-admin/src"],
       "@webiny/app-admin-rmwc/*": ["../app-admin-rmwc/src/*"],
@@ -63,6 +67,8 @@
       "@webiny/app-tenancy": ["../app-tenancy/src"],
       "@webiny/app-tenant-manager/*": ["../app-tenant-manager/src/*"],
       "@webiny/app-tenant-manager": ["../app-tenant-manager/src"],
+      "@webiny/lexical-editor-actions/*": ["../lexical-editor-actions/src/*"],
+      "@webiny/lexical-editor-actions": ["../lexical-editor-actions/src"],
       "@webiny/lexical-editor-pb-element/*": ["../lexical-editor-pb-element/src/*"],
       "@webiny/lexical-editor-pb-element": ["../lexical-editor-pb-element/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],

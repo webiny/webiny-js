@@ -194,6 +194,9 @@ i.chevron-down {
   background-color: rgb(223, 232, 250);
 }
 
+i.font-color, .icon.font-color {
+  background-image: url("../../images/icons/font-color.svg");
+}
 
 .floating-text-format-popup button.toolbar-item {
   border: 0;
@@ -317,6 +320,12 @@ i.chevron-down {
   background-color: #fff;
   max-height: 250px;
   overflow: hidden;
+  overflow-y: auto;
+}
+
+.lexical-dropdown.no-scroll {
+  max-height: inherit;
+  overflow: auto;
   overflow-y: auto;
 }
 

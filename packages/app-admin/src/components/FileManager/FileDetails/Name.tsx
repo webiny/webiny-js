@@ -1,80 +1,65 @@
 import React, { useMemo } from "react";
-import { get, cloneDeep } from "lodash";
-import { useApolloClient } from "@apollo/react-hooks";
+import { cloneDeep } from "lodash";
 import { Input } from "@webiny/ui/Input";
-import { Form } from "@webiny/form";
+import { Form, FormOnSubmit } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import { useSnackbar } from "~/hooks/useSnackbar";
-import {
-    UPDATE_FILE,
-    LIST_FILES,
-    UpdateFileMutationResponse,
-    UpdateFileMutationVariables,
-    ListFilesQueryResponse
-} from "./../graphql";
+import { LIST_FILES, ListFilesQueryResponse } from "./../graphql";
 import { useFileManager } from "./../FileManagerContext";
 import { FileItem } from "../types";
+import { useUpdateFile } from "./useUpdateFile";
 
 interface NameProps {
     file: FileItem;
     canEdit: (file: FileItem) => boolean;
 }
+
+interface NameFormData {
+    name: string;
+}
+
 const Name: React.FC<NameProps> = ({ file, canEdit }) => {
     const name = file.name || "";
     const { showSnackbar } = useSnackbar();
-    const client = useApolloClient();
+    const { updateFile } = useUpdateFile(file);
 
     const { queryParams } = useFileManager();
 
+    const onSubmit: FormOnSubmit<NameFormData> = async ({ name }) => {
+        // Bail out if name is same as the current file name.
+        if (name === file.name) {
+            return;
+        }
+
+        await updateFile({ name }, cache => {
+            const data = cloneDeep(
+                cache.readQuery<ListFilesQueryResponse>({
+                    query: LIST_FILES,
+                    variables: queryParams
+                })
+            );
+
+            if (data) {
+                data.fileManager.listFiles.data.forEach(item => {
+                    if (item.src === file.src) {
+                        item.name = name;
+                    }
+                });
+            }
+
+            cache.writeQuery({
+                query: LIST_FILES,
+                variables: queryParams,
+                data: data
+            });
+        });
+
+        showSnackbar("Name successfully updated.");
+    };
+
     const editContent = useMemo(() => {
         return (
-            <Form
-                data={{
-                    name
-                }}
-                onSubmit={async ({ name }) => {
-                    // Bail out if name is same as the current file name.
-                    if (name === file.name) {
-                        return;
-                    }
-                    // Update file.
-                    await client.mutate<UpdateFileMutationResponse, UpdateFileMutationVariables>({
-                        mutation: UPDATE_FILE,
-                        variables: {
-                            id: file.id,
-                            data: { name }
-                        },
-                        update: (cache, updated) => {
-                            const newFileData = get(
-                                updated,
-                                "data.fileManager.updateFile.data"
-                            ) as unknown as FileItem;
-                            const data = cloneDeep(
-                                cache.readQuery<ListFilesQueryResponse>({
-                                    query: LIST_FILES,
-                                    variables: queryParams
-                                })
-                            );
-
-                            if (data) {
-                                data.fileManager.listFiles.data.forEach(item => {
-                                    if (item.src === newFileData.src) {
-                                        item.name = newFileData.name;
-                                    }
-                                });
-                            }
-
-                            cache.writeQuery({
-                                query: LIST_FILES,
-                                variables: queryParams,
-                                data: data
-                            });
-                        }
-                    });
-
-                    showSnackbar("Name successfully updated.");
-                }}
-            >
+            <Form<NameFormData> data={{ name }} onSubmit={onSubmit}>
                 {({ Bind, submit }) => (
                     <Bind name={"name"} validators={validation.create("required")}>
                         <Input

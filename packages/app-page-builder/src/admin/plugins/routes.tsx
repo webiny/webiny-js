@@ -61,6 +61,30 @@ const plugins: RoutePlugin[] = [
             />
         )
     },
+    /**
+     * @deprecated since version 5.35
+     * The old Page Datalist view will be removed completely within version 5.36
+     */
+    {
+        name: "route-pb-pages-old",
+        type: "route",
+        route: (
+            <Route
+                exact
+                path="/page-builder/pages-old"
+                render={({ location }) => (
+                    <SecureRoute permission={ROLE_PB_PAGES}>
+                        <EditorPluginsLoader location={location}>
+                            <AdminLayout>
+                                <Helmet title={"Page Builder - Pages Old"} />
+                                <PagesOld />
+                            </AdminLayout>
+                        </EditorPluginsLoader>
+                    </SecureRoute>
+                )}
+            />
+        )
+    },
     {
         name: "route-pb-pages",
         type: "route",
@@ -73,26 +97,6 @@ const plugins: RoutePlugin[] = [
                         <EditorPluginsLoader location={location}>
                             <AdminLayout>
                                 <Helmet title={"Page Builder - Pages"} />
-                                <PagesOld />
-                            </AdminLayout>
-                        </EditorPluginsLoader>
-                    </SecureRoute>
-                )}
-            />
-        )
-    },
-    {
-        name: "route-pb-pages-table",
-        type: "route",
-        route: (
-            <Route
-                exact
-                path="/page-builder/pages-table"
-                render={({ location }) => (
-                    <SecureRoute permission={ROLE_PB_PAGES}>
-                        <EditorPluginsLoader location={location}>
-                            <AdminLayout>
-                                <Helmet title={"Page Builder - Pages Table"} />
                                 <Pages />
                             </AdminLayout>
                         </EditorPluginsLoader>

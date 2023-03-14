@@ -381,7 +381,7 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
             update: updateCacheAfterCreateFile
         }
     );
-    const uploadFile = async (files: FileItem[] | FileItem): Promise<number | null> => {
+    const uploadFile = async (files: FileItem | FileItem[]): Promise<number | null> => {
         setUploading(true);
         const list: FileItem[] = Array.isArray(files) ? files : [files];
 

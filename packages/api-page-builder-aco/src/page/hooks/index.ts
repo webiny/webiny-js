@@ -15,3 +15,8 @@ export const createPageHooks = (context: PbAcoContext) => {
     onPageAfterUnpublishHook(context);
     onPageAfterUpdateHook(context);
 };
+
+export const createImportExportPageHooks = (context: PbAcoContext) => {
+    onPageAfterCreateHook(context);
+    onPageAfterUpdateHook(context);
+};

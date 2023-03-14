@@ -4,6 +4,7 @@ export const MainContainer = styled("div")`
     overflow: hidden;
     position: relative;
     height: 100%;
+    margin-right: 8px;
 `;
 
 export const Wrapper = styled("div")`
@@ -12,7 +13,8 @@ export const Wrapper = styled("div")`
     top: 64px;
     bottom: 0;
     left: 0;
-    background: var(--mdc-theme-surface);
+    border-radius: 4px;
+    overflow: hidden;
 
     .mdc-data-table {
         display: inline-table;
@@ -31,4 +33,6 @@ export const Wrapper = styled("div")`
 export const SidebarContainer = styled("div")`
     height: calc(100vh - 67px);
     overflow-y: scroll;
+    background: var(--mdc-theme-background);
+    padding-top: 12px;
 `;

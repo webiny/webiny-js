@@ -1,5 +1,6 @@
 import {
     File,
+    FileAlias,
     FileManagerFilesStorageOperations,
     FileManagerFilesStorageOperationsCreateBatchParams,
     FileManagerFilesStorageOperationsCreateParams,
@@ -17,27 +18,24 @@ import { Entity, Table } from "dynamodb-toolbox";
 import WebinyError from "@webiny/error";
 import defineTable from "~/definitions/table";
 import defineEsTable from "~/definitions/tableElasticsearch";
-import defineFilesEntity from "~/definitions/filesEntity";
 import defineFilesEsEntity from "~/definitions/filesElasticsearchEntity";
 import { configurations } from "~/configurations";
 import { encodeCursor, compress } from "@webiny/api-elasticsearch";
 import { createElasticsearchBody } from "~/operations/files/body";
 import { transformFromIndex, transformToIndex } from "~/operations/files/transformers";
 import { FileIndexTransformPlugin } from "~/plugins/FileIndexTransformPlugin";
+import { createStandardEntity, DbItem } from "@webiny/db-dynamodb";
 import { get as getEntityItem } from "@webiny/db-dynamodb/utils/get";
-import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
 import {
     ElasticsearchSearchResponse,
     SearchBody as ElasticsearchSearchBody
 } from "@webiny/api-elasticsearch/types";
 import { FileManagerContext } from "~/types";
+import { queryAll } from "@webiny/db-dynamodb/utils/query";
 
-interface FileItem extends File {
-    PK: string;
-    SK: string;
-    TYPE: string;
-}
+type FileItem = DbItem<File>;
+type FileAliasItem = DbItem<FileAlias>;
 
 interface EsFileItem {
     PK: string;
@@ -51,17 +49,20 @@ interface ConstructorParams {
 }
 
 interface CreatePartitionKeyParams {
-    id: string;
     locale: string;
     tenant: string;
+    id: string;
 }
+
+type CreateGSI1PartitionKeyParams = Pick<CreatePartitionKeyParams, "tenant" | "locale">;
 
 export class FilesStorageOperations implements FileManagerFilesStorageOperations {
     private readonly context: FileManagerContext;
     private readonly table: Table;
     private readonly esTable: Table;
-    private readonly entity: Entity<any>;
-    private readonly esEntity: Entity<any>;
+    private readonly fileEntity: Entity<any>;
+    private readonly esFileEntity: Entity<any>;
+    private readonly aliasEntity: Entity<any>;
 
     private get esClient() {
         const ctx = this.context;
@@ -80,16 +81,14 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
             context
         });
 
-        this.entity = defineFilesEntity({
-            context,
-            table: this.table
-        });
+        this.fileEntity = createStandardEntity(this.table, "FM.File");
+        this.aliasEntity = createStandardEntity(this.table, "FM.FileAlias");
 
         this.esTable = defineEsTable({
             context
         });
 
-        this.esEntity = defineFilesEsEntity({
+        this.esFileEntity = defineFilesEsEntity({
             context,
             table: this.esTable
         });
@@ -99,15 +98,15 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
         const { where } = params;
         const keys = {
             PK: this.createPartitionKey(where),
-            SK: this.createSortKey()
+            SK: "A"
         };
 
         try {
-            const file = await getEntityItem<File>({
-                entity: this.entity,
+            const file = await getEntityItem<{ data: File }>({
+                entity: this.fileEntity,
                 keys
             });
-            return cleanupItem<File>(this.entity, file);
+            return file ? file.data : null;
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not fetch requested file.",
@@ -122,34 +121,58 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
     public async create(params: FileManagerFilesStorageOperationsCreateParams): Promise<File> {
         const { file } = params;
 
-        const keys = {
-            PK: this.createPartitionKey(file),
-            SK: this.createSortKey()
-        };
+        const items: any[] = [];
+
         const item: FileItem = {
-            ...file,
-            ...keys,
-            TYPE: "fm.file"
+            PK: this.createPartitionKey(file),
+            SK: "A",
+            GSI1_PK: this.createGSI1PartitionKey(file),
+            GSI1_SK: file.id,
+            TYPE: "fm.file",
+            data: file
         };
+
+        items.push(this.fileEntity.putBatch(item));
+
+        this.createNewAliasesRecords(file).forEach(alias => {
+            items.push(this.aliasEntity.putBatch(alias));
+        });
+
+        try {
+            await batchWriteAll({
+                table: this.table,
+                items
+            });
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could not create a new file in the DynamoDB.",
+                ex.code || "CREATE_FILE_ERROR",
+                {
+                    items
+                }
+            );
+        }
+
+        // Create Elasticsearch data
         const esData = await transformToIndex({
             plugins: this.getFileIndexTransformPlugins(),
             file
         });
         const esCompressedData = await compress(this.context.plugins, esData);
         const esItem: EsFileItem = {
-            ...keys,
+            PK: this.createPartitionKey(file),
+            SK: "A",
             index: this.getElasticsearchIndex(),
             data: esCompressedData
         };
+
         try {
-            await this.entity.put(item);
-            await this.esEntity.put(esItem);
+            await this.esFileEntity.put(esItem);
         } catch (ex) {
             throw new WebinyError(
-                ex.message || "Could not create a new file in the DynamoDB.",
+                ex.message || "Could not create a new file in the Elasticsearch DynamoDB table.",
                 ex.code || "CREATE_FILE_ERROR",
                 {
-                    item,
                     esItem
                 }
             );
@@ -161,59 +184,136 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
     public async update(params: FileManagerFilesStorageOperationsUpdateParams): Promise<File> {
         const { file } = params;
 
-        const keys = {
-            PK: this.createPartitionKey(file),
-            SK: this.createSortKey()
-        };
+        const items: any[] = [];
 
         const item: FileItem = {
-            ...file,
-            ...keys,
-            TYPE: "fm.file"
+            PK: this.createPartitionKey(file),
+            SK: "A",
+            GSI1_PK: this.createGSI1PartitionKey(file),
+            GSI1_SK: file.id,
+            TYPE: "fm.file",
+            data: file
         };
+
+        items.push(this.fileEntity.putBatch(item));
+
+        const existingAliases = await queryAll<FileAliasItem>({
+            entity: this.aliasEntity,
+            partitionKey: `T#${file.tenant}#L#${file.locale}#FM#FILE#${file.id}`,
+            options: {
+                beginsWith: `ALIAS#`
+            }
+        });
+
+        const newAliases = this.createNewAliasesRecords(
+            file,
+            existingAliases.map(alias => alias.data)
+        );
+
+        newAliases.forEach(alias => {
+            items.push(this.aliasEntity.putBatch(alias));
+        });
+
+        // Delete aliases that are in the DB but are NOT in the file.
+        for (const { data } of existingAliases) {
+            if (!file.aliases.some(alias => data.alias === alias)) {
+                items.push(
+                    this.aliasEntity.deleteBatch({
+                        PK: this.createPartitionKey(file),
+                        SK: `ALIAS#${data.alias}`
+                    })
+                );
+            }
+        }
+
+        try {
+            await batchWriteAll({
+                table: this.table,
+                items
+            });
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could not update a file in the DynamoDB.",
+                ex.code || "UPDATE_FILE_ERROR",
+                {
+                    items
+                }
+            );
+        }
+
+        // Create Elasticsearch data
         const esData = await transformToIndex({
             plugins: this.getFileIndexTransformPlugins(),
             file
         });
         const esCompressedData = await compress(this.context.plugins, esData);
         const esItem: EsFileItem = {
-            ...keys,
+            PK: this.createPartitionKey(file),
+            SK: "A",
             index: this.getElasticsearchIndex(),
             data: esCompressedData
         };
+
         try {
-            await this.entity.put(item);
-            await this.esEntity.put(esItem);
+            await this.esFileEntity.put(esItem);
         } catch (ex) {
             throw new WebinyError(
-                ex.message || "Could not update a file in the DynamoDB.",
-                ex.code || "UPDATE_FILE_ERROR",
+                ex.message || "Could not create a new file in the Elasticsearch DynamoDB table.",
+                ex.code || "CREATE_FILE_ERROR",
                 {
-                    item,
                     esItem
                 }
             );
         }
-        return file;
+
+        return params.file;
     }
 
     public async delete(params: FileManagerFilesStorageOperationsDeleteParams): Promise<void> {
         const { file } = params;
         const keys = {
             PK: this.createPartitionKey(file),
-            SK: this.createSortKey()
+            SK: "A"
         };
 
+        const aliasItems = await queryAll({
+            entity: this.aliasEntity,
+            partitionKey: keys.PK,
+            options: {
+                beginsWith: "ALIAS#"
+            }
+        });
+
+        // All items to delete in batch
+        const items: any[] = [];
+
         try {
-            await this.entity.delete(keys);
-            await this.esEntity.delete(keys);
+            // Delete the main file item
+            items.push(this.fileEntity.deleteBatch(keys));
+
+            // Delete file alias items
+            aliasItems.forEach(item => {
+                items.push(
+                    this.aliasEntity.deleteBatch({
+                        PK: item.PK,
+                        SK: item.SK
+                    })
+                );
+            });
+
+            await batchWriteAll({ table: this.table, items });
+
+            // Delete file record from ES table
+            await this.esFileEntity.delete(keys);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not delete file from the DynamoDB.",
                 ex.code || "DELETE_FILE_ERROR",
                 {
                     error: ex,
-                    file
+                    file,
+                    keys,
+                    aliasItems
                 }
             );
         }
@@ -230,21 +330,27 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
         for (const file of files) {
             const keys = {
                 PK: this.createPartitionKey(file),
-                SK: this.createSortKey()
+                SK: "A"
             };
 
             items.push(
-                this.entity.putBatch({
-                    ...file,
+                this.fileEntity.putBatch({
                     ...keys,
-                    TYPE: "fm.file"
+                    GSI1_PK: this.createGSI1PartitionKey(file),
+                    GSI1_SK: file.id,
+                    TYPE: "fm.file",
+                    data: file
                 })
             );
+
+            this.createNewAliasesRecords(file).forEach(alias => {
+                items.push(this.aliasEntity.putBatch(alias));
+            });
 
             const esCompressedData = await compress(this.context.plugins, file);
 
             esItems.push(
-                this.esEntity.putBatch({
+                this.esFileEntity.putBatch({
                     ...keys,
                     index: this.getElasticsearchIndex(),
                     data: esCompressedData
@@ -254,7 +360,7 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
 
         try {
             await batchWriteAll({
-                table: this.entity.table,
+                table: this.fileEntity.table,
                 items
             });
         } catch (ex) {
@@ -270,7 +376,7 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
 
         try {
             await batchWriteAll({
-                table: this.esEntity.table,
+                table: this.esFileEntity.table,
                 items: esItems
             });
         } catch (ex) {
@@ -405,11 +511,11 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
 
     private createPartitionKey(params: CreatePartitionKeyParams): string {
         const { tenant, locale, id } = params;
-        return `T#${tenant}#L#${locale}#FM#F${id}`;
+        return `T#${tenant}#L#${locale}#FM#FILE#${id}`;
     }
-
-    private createSortKey(): string {
-        return "A";
+    private createGSI1PartitionKey(params: CreateGSI1PartitionKeyParams): string {
+        const { tenant, locale } = params;
+        return `T#${tenant}#L#${locale}#FM#FILES`;
     }
 
     private getFileIndexTransformPlugins(): FileIndexTransformPlugin[] {
@@ -429,5 +535,35 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
             locale: locale.code
         });
         return index;
+    }
+
+    private createNewAliasesRecords(
+        file: File,
+        existingAliases: FileAlias[] = []
+    ): FileAliasItem[] {
+        return (file.aliases || [])
+            .map(alias => {
+                // If alias is already in the DB, skip it.
+                if (existingAliases.find(item => item.alias === alias)) {
+                    return null;
+                }
+
+                // Add a new alias.
+                return {
+                    PK: this.createPartitionKey(file),
+                    SK: `ALIAS#${alias}`,
+                    GSI1_PK: `T#${file.tenant}#FM#FILE_ALIASES`,
+                    GSI1_SK: alias,
+                    TYPE: "fm.fileAlias",
+                    data: {
+                        alias,
+                        tenant: file.tenant,
+                        locale: file.locale,
+                        fileId: file.id,
+                        key: file.key
+                    }
+                };
+            })
+            .filter(Boolean) as FileAliasItem[];
     }
 }

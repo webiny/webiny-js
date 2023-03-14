@@ -15,9 +15,9 @@
     "@webiny/handler-graphql": "0.0.0",
     "@webiny/validation": "0.0.0",
     "form-data": "^4.0.0",
+    "mdbid": "^1.0.0",
     "node-fetch": "^2.6.1",
-    "sanitize-filename": "^1.6.3",
-    "uniqid": "^5.2.0"
+    "sanitize-filename": "^1.6.3"
   },
   "devDependencies": {
     "@babel/cli": "^7.19.3",

@@ -24,6 +24,7 @@ export const createPageTemplateGraphQL = new GraphQLSchemaPlugin<PbContext>({
             savedOn: DateTime!
             createdBy: PbCreatedBy!
             layout: String
+            pageCategory: String
         }
 
         input PbCreatePageTemplateInput {
@@ -32,6 +33,7 @@ export const createPageTemplateGraphQL = new GraphQLSchemaPlugin<PbContext>({
             slug: String!
             tags: [String!]
             layout: String
+            pageCategory: String
             content: JSON
         }
 
@@ -40,6 +42,7 @@ export const createPageTemplateGraphQL = new GraphQLSchemaPlugin<PbContext>({
             slug: String
             description: String
             layout: String
+            pageCategory: String
             content: JSON
             tags: [String!]
         }
@@ -62,7 +65,7 @@ export const createPageTemplateGraphQL = new GraphQLSchemaPlugin<PbContext>({
 
         extend type PbMutation {
             createPageTemplate(data: PbCreatePageTemplateInput!): PbPageTemplateResponse
-            createPageFromTemplate(templateId: ID, category: String, meta: JSON): PbPageResponse
+            createPageFromTemplate(templateId: ID, meta: JSON): PbPageResponse
             updatePageTemplate(id: ID!, data: PbUpdatePageTemplateInput!): PbPageTemplateResponse
             deletePageTemplate(id: ID!): PbPageTemplateResponse
         }
@@ -101,11 +104,10 @@ export const createPageTemplateGraphQL = new GraphQLSchemaPlugin<PbContext>({
                     return context.pageBuilder.createPageTemplate(args.data);
                 });
             },
-            createPageFromTemplate: async (_, { templateId, category, meta }: any, context) => {
+            createPageFromTemplate: async (_, { templateId, meta }: any, context) => {
                 return resolve(() => {
                     return context.pageBuilder.createPageFromTemplate({
                         id: templateId,
-                        category,
                         meta
                     });
                 });

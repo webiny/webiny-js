@@ -1,39 +1,48 @@
 import { useCallback } from "react";
-import { useMutation } from "@apollo/react-hooks";
-import { CREATE_PAGE } from "~/admin/graphql/pages";
+import { useApolloClient } from "@apollo/react-hooks";
+import { CREATE_PAGE, CREATE_PAGE_FROM_TEMPLATE } from "~/admin/graphql/pages";
 import * as GQLCache from "~/admin/views/Pages/cache";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useRouter } from "@webiny/react-router";
+import { useRecords } from "@webiny/app-aco";
+import { PbPageTemplate } from "~/types";
 
 interface UseCreatePageParams {
-    setLoadingLabel: () => void;
-    clearLoadingLabel: () => void;
+    setLoading: () => void;
+    clearLoading: () => void;
     closeDialog: () => void;
     folderId?: string;
 }
 const useCreatePage = ({
-    setLoadingLabel,
-    clearLoadingLabel,
+    setLoading,
+    clearLoading,
     closeDialog,
     folderId
 }: UseCreatePageParams) => {
-    const [create] = useMutation(CREATE_PAGE);
+    const client = useApolloClient();
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
+    const { getRecord } = useRecords();
 
     const createPageMutation = useCallback(
-        async ({ slug: category }) => {
+        async (template?: PbPageTemplate) => {
             try {
-                setLoadingLabel();
-                const res = await create({
-                    variables: {
-                        category,
-                        meta: {
-                            location: {
-                                folderId
-                            }
+                const MUTATION = template ? CREATE_PAGE_FROM_TEMPLATE : CREATE_PAGE;
+
+                const variables = {
+                    // category is temporarily hardcoded
+                    category: "static",
+                    templateId: template?.id,
+                    meta: {
+                        location: {
+                            folderId
                         }
-                    },
+                    }
+                };
+                setLoading();
+                const res = await client.mutate({
+                    mutation: MUTATION,
+                    variables,
                     update(cache, { data }) {
                         if (data.pageBuilder.createPage.error) {
                             return;
@@ -43,7 +52,7 @@ const useCreatePage = ({
                     }
                 });
 
-                clearLoadingLabel();
+                clearLoading();
                 closeDialog();
 
                 const { error, data } = res.data.pageBuilder.createPage;
@@ -51,6 +60,7 @@ const useCreatePage = ({
                     showSnackbar(error.message);
                 } else {
                     history.push(`/page-builder/editor/${encodeURIComponent(data.id)}`);
+                    await getRecord(data.pid);
                 }
             } catch (e) {
                 showSnackbar(e.message);

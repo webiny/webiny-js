@@ -1,7 +1,7 @@
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
 
 import { assignPageLifecycleEvents, tracker } from "./mocks/lifecycle.mock";
-import { pageContentMock } from "./mocks/page.mocks";
+import { pageContentMock, pageLegacyContentMock } from "./mocks/page.mocks";
 import { PB_PAGE_TYPE, ROOT_FOLDER } from "~/contants";
 import { Page } from "@webiny/api-page-builder/types";
 
@@ -116,6 +116,36 @@ describe("Pages -> Search records", () => {
             data: {
                 title: `${title} + update`,
                 content: pageContentMock
+            }
+        });
+
+        const updatePage = update.data?.pageBuilder?.updatePage?.data;
+
+        expect(tracker.isExecutedOnce("page:beforeUpdate")).toEqual(true);
+        expect(tracker.isExecutedOnce("page:afterUpdate")).toEqual(true);
+
+        const [searchResponse] = await search.getRecord({ id: pid });
+        const searchRecord = searchResponse.data?.search?.getRecord?.data;
+
+        expect(searchRecord).toMatchObject({
+            id: pid,
+            title: updatePage.title,
+            content: `${updatePage.title} Demo Heading Demo Content Demo button Demo Image 1 Demo Image 2 Demo Image 3`,
+            data: {
+                title: updatePage.title,
+                savedOn: updatePage.savedOn
+            }
+        });
+    });
+
+    it("should update an existing search record with legacy content (NO lexical-editor)", async () => {
+        const { pid, title, id } = dummyPage;
+
+        const [update] = await pageBuilder.updatePage({
+            id,
+            data: {
+                title: `${title} + update`,
+                content: pageLegacyContentMock
             }
         });
 

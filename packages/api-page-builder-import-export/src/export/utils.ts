@@ -1,5 +1,6 @@
 import S3 from "aws-sdk/clients/s3";
 import { Page, PageBlock, PageTemplate } from "@webiny/api-page-builder/types";
+import { FbForm } from "@webiny/api-form-builder/types";
 import { FileManagerContext, File } from "@webiny/api-file-manager/types";
 import get from "lodash/get";
 import Zipper from "./zipper";
@@ -7,6 +8,7 @@ import Zipper from "./zipper";
 export const EXPORT_PAGES_FOLDER_KEY = "WEBINY_PB_EXPORT_PAGES";
 export const EXPORT_BLOCKS_FOLDER_KEY = "WEBINY_PB_EXPORT_BLOCK";
 export const EXPORT_TEMPLATES_FOLDER_KEY = "WEBINY_PB_EXPORT_TEMPLATE";
+export const EXPORT_FORMS_FOLDER_KEY = "WEBINY_FB_EXPORT_FORM";
 
 export interface ExportedPageData {
     page: Pick<Page, "content" | "title" | "version" | "status" | "settings" | "path">;
@@ -108,7 +110,10 @@ export async function exportBlock(
 }
 
 export interface ExportedTemplateData {
-    template: Pick<PageTemplate, "title" | "slug" | "tags" | "description" | "content" | "layout">;
+    template: Pick<
+        PageTemplate,
+        "title" | "slug" | "tags" | "description" | "content" | "layout" | "pageCategory"
+    >;
     files: File[];
 }
 
@@ -135,7 +140,8 @@ export async function exportTemplate(
             tags: template.tags,
             description: template.description,
             content: template.content,
-            layout: template.layout
+            layout: template.layout,
+            pageCategory: template.pageCategory
         },
         files: imageFilesData
     };
@@ -182,4 +188,42 @@ export function extractFilesFromData(data: Record<string, any>, files: any[] = [
         }
     }
     return files;
+}
+
+export interface ExportedFormData {
+    form: Pick<
+        FbForm,
+        "name" | "status" | "version" | "fields" | "layout" | "settings" | "triggers"
+    >;
+    files: File[];
+}
+
+export async function exportForm(
+    form: FbForm,
+    exportFormsDataKey: string
+): Promise<S3.ManagedUpload.SendData> {
+    // Extract the form data in a json file and upload it to S3
+    const formData = {
+        form: {
+            name: form.name,
+            status: form.status,
+            version: form.version,
+            fields: form.fields,
+            layout: form.layout,
+            settings: form.settings,
+            triggers: form.triggers
+        }
+    };
+    const formDataBuffer = Buffer.from(JSON.stringify(formData));
+
+    const zipper = new Zipper({
+        exportInfo: {
+            files: [],
+            name: form.name,
+            dataBuffer: formDataBuffer
+        },
+        archiveFileKey: exportFormsDataKey
+    });
+
+    return zipper.process();
 }

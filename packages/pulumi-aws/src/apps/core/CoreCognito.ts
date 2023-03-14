@@ -42,6 +42,9 @@ export const CoreCognito = createAppModule({
                 verificationMessageTemplate: {
                     defaultEmailOption: "CONFIRM_WITH_CODE"
                 },
+                accountRecoverySetting: {
+                    recoveryMechanisms: [{ name: "verified_email", priority: 1 }]
+                },
                 schemas: [
                     {
                         attributeDataType: "String",
@@ -73,6 +76,17 @@ export const CoreCognito = createAppModule({
                         mutable: true,
                         stringAttributeConstraints: {
                             maxLength: "2048",
+                            minLength: "0"
+                        }
+                    },
+                    {
+                        attributeDataType: "String",
+                        name: "id",
+                        required: false,
+                        developerOnlyAttribute: false,
+                        mutable: true,
+                        stringAttributeConstraints: {
+                            maxLength: "36",
                             minLength: "0"
                         }
                     }

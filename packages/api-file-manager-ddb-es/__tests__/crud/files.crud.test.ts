@@ -38,15 +38,17 @@ const simpleRichTextData = {
 };
 
 const fileData = {
-    key: "/files/filenameA.png",
+    id: "12345678",
+    key: "12345678/filenameA.png",
     name: "filenameA.png",
     size: 123456,
     type: "image/png",
     tags: ["sketch"],
+    aliases: [],
     richText: richTextData
 };
 /**
- * Add fields that are added via the plugins so we get them back in the result.
+ * Add fields that are added via the plugins, so we get them back in the result.
  */
 const extraFields = ["richText {editor data}"];
 
@@ -96,16 +98,12 @@ describe("Files CRUD ddb/es", () => {
             data: {
                 fileManager: {
                     createFile: {
-                        data: {
-                            ...fileData,
-                            id: expect.any(String)
-                        },
+                        data: fileData,
                         error: null
                     }
                 }
             }
         });
-        const id = createResponse.data.fileManager.createFile.data.id;
 
         /**
          * Wait until the data is available.
@@ -115,7 +113,7 @@ describe("Files CRUD ddb/es", () => {
             ({ data }: any) => {
                 return (
                     data.fileManager.listFiles.data.length === 1 &&
-                    data.fileManager.listFiles.data[0].id === id
+                    data.fileManager.listFiles.data[0].id === fileData.id
                 );
             },
             { name: "list all files after create", tries: 10 }
@@ -125,7 +123,7 @@ describe("Files CRUD ddb/es", () => {
          */
         const [getResponse] = await getFile(
             {
-                id
+                id: fileData.id
             },
             ["id"].concat(extraFields)
         );
@@ -135,8 +133,7 @@ describe("Files CRUD ddb/es", () => {
                 fileManager: {
                     getFile: {
                         data: {
-                            ...fileData,
-                            id
+                            ...fileData
                         },
                         error: null
                     }
@@ -147,11 +144,12 @@ describe("Files CRUD ddb/es", () => {
         /**
          * Update the file data custom field with some new data.
          */
+        const { id, ...data } = fileData;
         const [updateResponse] = await updateFile(
             {
                 id,
                 data: {
-                    ...fileData,
+                    ...data,
                     richText: simpleRichTextData
                 }
             },
@@ -163,8 +161,7 @@ describe("Files CRUD ddb/es", () => {
                     updateFile: {
                         data: {
                             ...fileData,
-                            richText: simpleRichTextData,
-                            id
+                            richText: simpleRichTextData
                         },
                         error: null
                     }
@@ -177,7 +174,7 @@ describe("Files CRUD ddb/es", () => {
          */
         const [getUpdatedResponse] = await getFile(
             {
-                id
+                id: fileData.id
             },
             ["id"].concat(extraFields)
         );
@@ -188,8 +185,7 @@ describe("Files CRUD ddb/es", () => {
                     getFile: {
                         data: {
                             ...fileData,
-                            richText: simpleRichTextData,
-                            id
+                            richText: simpleRichTextData
                         },
                         error: null
                     }

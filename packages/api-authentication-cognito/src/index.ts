@@ -18,7 +18,6 @@ export const getIdentity: GetIdentity = ({ identityType, token }) => {
     const {
         given_name = null,
         family_name = null,
-        sub: id = null,
         email = null,
         preferred_username = null
     } = token;
@@ -26,7 +25,7 @@ export const getIdentity: GetIdentity = ({ identityType, token }) => {
     const displayName = [given_name, family_name].filter(Boolean).join(" ").trim() || null;
 
     return {
-        id,
+        id: token["custom:id"] || token["sub"] || null,
         type: identityType,
         displayName,
         email: preferred_username || email,

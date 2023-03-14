@@ -1,13 +1,14 @@
 import {
     DefaultSettings,
     DefaultSettingsCrudOptions,
+    Settings,
     SettingsStorageOperations,
     SettingsStorageOperationsCreateParams,
     SettingsStorageOperationsGetParams,
     SettingsStorageOperationsUpdateParams
 } from "@webiny/api-page-builder/types";
 import { Entity } from "dynamodb-toolbox";
-import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
+import { get as getRecord } from "@webiny/db-dynamodb/utils/get";
 import WebinyError from "@webiny/error";
 
 /**
@@ -31,25 +32,6 @@ const createPartitionKey = (params: PartitionKeyParams): string => {
     parts.push("PB#SETTINGS");
 
     return parts.join("#");
-};
-
-/**
- * We expect any object that has type property in it.
- * This way we can either receive a settings object or where conditions
- */
-interface SortKeyParams {
-    type: string;
-}
-const createSortKey = (params: SortKeyParams): string => {
-    const { type } = params;
-    switch (type) {
-        case "default":
-            return type;
-        default:
-            throw new WebinyError("Unsupported type for the sort key.", "UNSUPPORTED_TYPE", {
-                type
-            });
-    }
 };
 
 const createType = (): string => {
@@ -94,14 +76,11 @@ export const createSettingsStorageOperations = ({
 
         const keys = {
             PK: createPartitionKey(where),
-            SK: createSortKey(where)
+            SK: "A"
         };
         try {
-            const result = await entity.get(keys);
-            if (!result || !result.Item) {
-                return null;
-            }
-            return cleanupItem(entity, result.Item);
+            const result = await getRecord<{ data: Settings }>({ entity, keys });
+            return result ? result.data : null;
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not load settings record.",
@@ -117,13 +96,13 @@ export const createSettingsStorageOperations = ({
         const { settings } = params;
         const keys = {
             PK: createPartitionKey(settings),
-            SK: createSortKey(settings)
+            SK: "A"
         };
         try {
             await entity.put({
-                ...settings,
+                ...keys,
                 TYPE: createType(),
-                ...keys
+                data: settings
             });
 
             return settings;
@@ -143,13 +122,13 @@ export const createSettingsStorageOperations = ({
         const { original, settings } = params;
         const keys = {
             PK: createPartitionKey(settings),
-            SK: createSortKey(settings)
+            SK: "A"
         };
         try {
             await entity.put({
-                ...settings,
+                ...keys,
                 TYPE: createType(),
-                ...keys
+                data: settings
             });
 
             return settings;
