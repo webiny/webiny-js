@@ -26,7 +26,7 @@ export const useRecords = (type?: string, folderId?: string) => {
          * We don't need to store the result of it to any local state; that is managed by the context provider.
          */
         if (type && folderId) {
-            listRecords(type, folderId);
+            listRecords({ type, folderId });
         }
     }, [type, folderId]);
 
@@ -41,7 +41,7 @@ export const useRecords = (type?: string, folderId?: string) => {
             meta: meta[folderId!] || {},
             records: records.filter(record => record.location.folderId === folderId),
             listRecords(params: { after?: string; limit?: number; sort?: ListSort }) {
-                return listRecords(type, folderId, params.limit, params.after, params.sort);
+                return listRecords({ type, folderId, ...params });
             },
             getRecord(id: string) {
                 return getRecord(id);

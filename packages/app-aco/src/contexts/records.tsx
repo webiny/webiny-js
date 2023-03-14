@@ -36,13 +36,13 @@ interface SearchRecordsContext {
     records: SearchRecordItem[];
     loading: Loading<LoadingActions>;
     meta: Meta<ListMeta>;
-    listRecords: (
-        type?: string,
-        folderId?: string,
-        limit?: number,
-        after?: string,
-        sort?: ListSort
-    ) => Promise<SearchRecordItem[]>;
+    listRecords: (params: {
+        type?: string;
+        folderId?: string;
+        limit?: number;
+        after?: string;
+        sort?: ListSort;
+    }) => Promise<SearchRecordItem[]>;
     getRecord: (id: string) => Promise<SearchRecordItem>;
     createRecord: (record: Omit<SearchRecordItem, "id">) => Promise<SearchRecordItem>;
     updateRecord: (record: SearchRecordItem, contextFolderId?: string) => Promise<SearchRecordItem>;
@@ -77,13 +77,9 @@ export const SearchRecordsProvider = ({ children }: Props) => {
         records,
         loading,
         meta,
-        async listRecords(
-            type?: string,
-            folderId?: string,
-            limit = 20,
-            after?: string,
-            sorting?: ListSort
-        ) {
+        async listRecords(params) {
+            const { type, folderId, after, limit, sort: sorting } = params;
+
             if (!folderId || !type) {
                 throw new Error("`folderId` and `type` are mandatory");
             }
