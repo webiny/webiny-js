@@ -59,6 +59,7 @@ export const FontColorAction: FontColorAction = () => {
             }
             const node = getSelectedNode(selection);
             if ($isFontColorNode(node)) {
+                debugger;
                 const colorStyle = node.getColorStyle();
                 setFontColor(colorStyle.color);
             }
