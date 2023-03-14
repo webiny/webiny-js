@@ -10,7 +10,7 @@ import {
     Spread,
     TextNode
 } from "lexical";
-import {WebinyEditorTheme} from "~/themes/webinyLexicalTheme";
+import { WebinyEditorTheme } from "~/themes/webinyLexicalTheme";
 
 export const ADD_FONT_COLOR_COMMAND: LexicalCommand<FontColorPayload> =
     createCommand("ADD_FONT_COLOR_COMMAND");
