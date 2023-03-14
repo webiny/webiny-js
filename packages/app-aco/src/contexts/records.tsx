@@ -80,11 +80,16 @@ export const SearchRecordsProvider = ({ children }: Props) => {
         async listRecords(params) {
             const { type, folderId, after, limit, sort: sorting } = params;
 
+            /**
+             * Both folderId and type are optional to init `useRecords` but required to list records:
+             * this allows us to use `useRecords` methods like `getRecord` without passing useless params.
+             * But still, we need these params to list records.
+             */
             if (!folderId || !type) {
                 throw new Error("`folderId` and `type` are mandatory");
             }
 
-            /*
+            /**
              * Avoiding to fetch records in case they have already been fetched.
              * This happens when visiting a list with all records loaded and receives "after" param.
              */

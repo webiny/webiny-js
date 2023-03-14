@@ -34,7 +34,7 @@ export const useRecords = (type?: string, folderId?: string) => {
         () => ({
             /**
              * NOTE: you do NOT need to call `listRecords` from this hook on component mount, because you already have folders in the `listRecords` property.
-             * As soon as you call `useSearchRecords()`, you'll initiate fetching of `records`, which is managed by the `SearchRecordContext`.
+             * As soon as you call `useRecords()`, you'll initiate fetching of `records`, which is managed by the `SearchRecordContext`.
              * Since this method lists records with pagination, you might need to call it multiple times passing the `after` param.
              */
             loading,
