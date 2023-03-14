@@ -1,5 +1,4 @@
 import useGqlHandler from "./useGqlHandler";
-import useUpdateSettingsHandler from "../updateSettings/useHandler";
 import { Page } from "~/types";
 import { waitPage } from "./utils/waitPage";
 
@@ -92,24 +91,6 @@ describe("page full URL test", () => {
 
     test("full URL must be returned correctly when only default settings exist", async () => {
         await createInitialData();
-        const { handler } = useUpdateSettingsHandler();
-
-        await handler(
-            {
-                data: {
-                    name: "test 1",
-                    websiteUrl: "https://www.test.com/",
-                    websitePreviewUrl: "https://preview.test.com/",
-                    prerendering: {
-                        app: {
-                            url: "https://www.app.com/"
-                        },
-                        storage: { name: "storage-name" }
-                    }
-                }
-            },
-            {} as any
-        );
 
         const [listPagesAfterFirstSettingsUpdate] = await until(
             () =>

@@ -9,12 +9,13 @@ import { Entity } from "dynamodb-toolbox";
 import WebinyError from "@webiny/error";
 import defineTable from "~/definitions/table";
 import defineSettingsEntity from "~/definitions/settingsEntity";
+import { get } from "@webiny/db-dynamodb/utils/get";
 
 interface SettingsStorageOperationsConstructorParams {
     context: FileManagerContext;
 }
 
-const SORT_KEY = "default";
+const SORT_KEY = "A";
 
 export class SettingsStorageOperations implements FileManagerSettingsStorageOperations {
     private readonly _context: FileManagerContext;
@@ -42,14 +43,15 @@ export class SettingsStorageOperations implements FileManagerSettingsStorageOper
 
     public async get(): Promise<FileManagerSettings | null> {
         try {
-            const settings = await this._entity.get({
-                PK: this.partitionKey,
-                SK: SORT_KEY
+            const settings = await get<{ data: FileManagerSettings }>({
+                entity: this._entity,
+                keys: {
+                    PK: this.partitionKey,
+                    SK: "A"
+                }
             });
-            if (!settings || !settings.Item) {
-                return null;
-            }
-            return settings.Item;
+
+            return settings ? settings.data : null;
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not fetch the FileManager settings.",
@@ -62,9 +64,7 @@ export class SettingsStorageOperations implements FileManagerSettingsStorageOper
         data
     }: FileManagerSettingsStorageOperationsCreateParams): Promise<FileManagerSettings> {
         const original = await this.get();
-        /**
-         * TODO: check if need to throw an error on existing settings
-         */
+
         if (original) {
             return await this.update({ original, data });
         }
@@ -73,7 +73,8 @@ export class SettingsStorageOperations implements FileManagerSettingsStorageOper
             await this._entity.put({
                 PK: this.partitionKey,
                 SK: SORT_KEY,
-                ...data
+                TYPE: "fm.settings",
+                data
             });
             return data;
         } catch (ex) {
@@ -94,7 +95,8 @@ export class SettingsStorageOperations implements FileManagerSettingsStorageOper
             await this._entity.update({
                 PK: this.partitionKey,
                 SK: SORT_KEY,
-                ...data
+                TYPE: "fm.settings",
+                data
             });
             return data;
         } catch (ex) {

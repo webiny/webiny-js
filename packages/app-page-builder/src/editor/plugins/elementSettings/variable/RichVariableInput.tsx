@@ -64,7 +64,7 @@ const ButtonPrimaryStyled = styled(ButtonPrimary)`
 
 const DEFAULT_EDITOR_OPTIONS: CoreOptions = {
     toolbar: {
-        buttons: ["bold", "italic", "underline", "anchor"]
+        buttons: ["anchor"]
     },
     anchor: {
         targetCheckbox: true,

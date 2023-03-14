@@ -1,23 +1,23 @@
-import { FileManager_5_35_0_001 } from "~/migrations/5.35.0/001";
+import { Tenancy_5_35_0_004 } from "~/migrations/5.35.0/004";
 import {
     assertNotError,
     createDdbMigrationHandler,
     getPrimaryDynamoDbTable,
     insertTestData,
-    scanTable,
-    logTestNameBeforeEachTest
+    logTestNameBeforeEachTest,
+    scanTable
 } from "~tests/utils";
-import { testData } from "./001.data";
+import { testData } from "./004.data";
 
 jest.retryTimes(0);
 
-describe("5.35.0-001", () => {
+describe("5.35.0-004", () => {
     const table = getPrimaryDynamoDbTable();
 
     logTestNameBeforeEachTest();
 
     it("should not run if system is not installed", async () => {
-        const handler = createDdbMigrationHandler({ table, migrations: [FileManager_5_35_0_001] });
+        const handler = createDdbMigrationHandler({ table, migrations: [Tenancy_5_35_0_004] });
 
         const { data, error } = await handler();
 
@@ -30,8 +30,7 @@ describe("5.35.0-001", () => {
 
     it("should execute migration", async () => {
         await insertTestData(table, testData);
-
-        const handler = createDdbMigrationHandler({ table, migrations: [FileManager_5_35_0_001] });
+        const handler = createDdbMigrationHandler({ table, migrations: [Tenancy_5_35_0_004] });
         const { data, error } = await handler();
 
         assertNotError(error);
@@ -40,38 +39,26 @@ describe("5.35.0-001", () => {
         expect(data.skipped.length).toBe(0);
         expect(data.notApplicable.length).toBe(0);
 
-        // Let's make sure that the number of migrated records corresponds to the number of the original records.
-        const allNewFiles = (
-            await scanTable(table, {
-                entity: "File",
-                filters: [
-                    { attr: "TYPE", eq: "fm.file" },
-                    { attr: "data", exists: true }
-                ]
-            })
-        ).sort((a, b) => (a.GSI1_SK > b.GSI1_SK ? 1 : -1));
+        const allTenants = await scanTable(table, {
+            index: "GSI1",
+            filters: [{ attr: "GSI1_PK", eq: "TENANTS" }]
+        });
 
-        const allOldFiles = (
-            await scanTable(table, {
-                entity: "Files",
-                filters: [
-                    { attr: "TYPE", eq: "fm.file" },
-                    { attr: "GSI1_PK", exists: false },
-                    { attr: "GSI1_SK", exists: false }
-                ]
-            })
-        ).sort((a, b) => (a.id > b.id ? 1 : -1));
-
-        expect(allNewFiles.length).toEqual(5000);
-        expect(allOldFiles.length).toEqual(5000);
-
-        expect(allNewFiles[0].GSI1_PK.endsWith("#FM#FILES")).toBe(true);
-        expect(allNewFiles[0].data.id).toEqual(allOldFiles[0].id);
+        expect(allTenants.length).toEqual(3);
+        expect(allTenants[0].data).toBeTruthy();
+        expect(allTenants[0].data.id).toEqual(allTenants[0].id);
+        expect(allTenants[0].GSI1_SK).toEqual(testData[0].GSI1_SK);
+        expect(allTenants[1].data).toBeTruthy();
+        expect(allTenants[1].data.id).toEqual(allTenants[1].id);
+        expect(allTenants[1].GSI1_SK).toEqual(testData[1].GSI1_SK);
+        expect(allTenants[2].data).toBeTruthy();
+        expect(allTenants[2].data.id).toEqual(allTenants[2].id);
+        expect(allTenants[2].GSI1_SK).toEqual(testData[2].GSI1_SK);
     });
 
     it("should not run migration if data is already in the expected shape", async () => {
         await insertTestData(table, testData);
-        const handler = createDdbMigrationHandler({ table, migrations: [FileManager_5_35_0_001] });
+        const handler = createDdbMigrationHandler({ table, migrations: [Tenancy_5_35_0_004] });
 
         // Should run the migration
         process.stdout.write("[First run]\n");

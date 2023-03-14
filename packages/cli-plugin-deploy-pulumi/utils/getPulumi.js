@@ -9,17 +9,24 @@ const fs = require("fs");
 module.exports = async ({ projectApplication, pulumi, install }) => {
     const spinner = new ora();
 
-    let cwd = projectApplication.paths.absolute;
-    if (projectApplication.type === "v5-workspaces") {
-        cwd = projectApplication.paths.workspace;
-        if (!fs.existsSync(cwd)) {
-            const message = [
-                "The command cannot be run because the project application hasn't been built. ",
-                "To build it, run ",
-                red(`yarn webiny build ${projectApplication.paths.relative} --env {environment}`),
-                "."
-            ].join("");
-            throw new Error(message);
+    let cwd;
+
+    // When running the `webiny deploy` command without specifying the
+    // project application, the `projectApplication` variable is empty.
+    if (projectApplication) {
+        cwd = projectApplication.paths.absolute;
+        if (projectApplication.type === "v5-workspaces") {
+            cwd = projectApplication.paths.workspace;
+            if (!fs.existsSync(cwd)) {
+                const cmd = `yarn webiny build ${projectApplication.paths.relative} --env {environment}`;
+                const message = [
+                    "The command cannot be run because the project application hasn't been built. ",
+                    "To build it, run ",
+                    red(cmd),
+                    "."
+                ].join("");
+                throw new Error(message);
+            }
         }
     }
 
@@ -42,7 +49,7 @@ module.exports = async ({ projectApplication, pulumi, install }) => {
                     });
                 }
             },
-            projectApplication && { execa: { cwd } },
+            { execa: { cwd } },
             pulumi
         )
     );

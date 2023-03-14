@@ -93,6 +93,7 @@ export const saveTemplateAction: TemplateEventActionCallable<SaveTemplateActionA
         tags: state.template.tags || [],
         description: state.template?.description || "",
         layout: state.template?.layout || "",
+        pageCategory: state.template?.pageCategory || "",
         content: syncTemplateVariables({ ...content, elements })
     };
 

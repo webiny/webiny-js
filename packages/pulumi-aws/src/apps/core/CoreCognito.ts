@@ -75,6 +75,17 @@ export const CoreCognito = createAppModule({
                             maxLength: "2048",
                             minLength: "0"
                         }
+                    },
+                    {
+                        attributeDataType: "String",
+                        name: "id",
+                        required: false,
+                        developerOnlyAttribute: false,
+                        mutable: true,
+                        stringAttributeConstraints: {
+                            maxLength: "36",
+                            minLength: "0"
+                        }
                     }
                 ]
             },

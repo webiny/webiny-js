@@ -9,6 +9,8 @@
     "@webiny/api-file-manager": "0.0.0",
     "@webiny/api-file-manager-ddb": "0.0.0",
     "@webiny/api-file-manager-s3": "0.0.0",
+    "@webiny/api-form-builder": "0.0.0",
+    "@webiny/api-form-builder-so-ddb": "0.0.0",
     "@webiny/api-i18n": "0.0.0",
     "@webiny/api-i18n-content": "0.0.0",
     "@webiny/api-i18n-ddb": "0.0.0",
