@@ -33,7 +33,7 @@ type SubmitData = Omit<FolderItem, "id">;
 export const FolderDialogCreate: React.FC<Props> = ({ type, onClose, open, currentParentId }) => {
     const { loading, createFolder } = useFolders(type);
     const [dialogOpen, setDialogOpen] = useState(false);
-    const [parentId, setParentId] = useState<string>();
+    const [parentId, setParentId] = useState<string | null>();
     const { showSnackbar } = useSnackbar();
 
     const onSubmit: FormOnSubmit<SubmitData> = async data => {
@@ -41,7 +41,7 @@ export const FolderDialogCreate: React.FC<Props> = ({ type, onClose, open, curre
             await createFolder({
                 ...data,
                 type,
-                ...(typeof parentId !== "undefined" && { parentId })
+                parentId: parentId || null
             });
             setDialogOpen(false);
             showSnackbar(t`Folder created successfully!`);
@@ -72,13 +72,17 @@ export const FolderDialogCreate: React.FC<Props> = ({ type, onClose, open, curre
     };
 
     useEffect(() => {
+        setParentId(currentParentId);
+    }, [currentParentId]);
+
+    useEffect(() => {
         setDialogOpen(open);
     }, [open]);
 
     return (
         <DialogContainer open={dialogOpen} onClose={onClose}>
             {dialogOpen && (
-                <Form onSubmit={onSubmit}>
+                <Form<SubmitData> onSubmit={onSubmit}>
                     {({ form, Bind, submit }) => (
                         <>
                             {loading.CREATE && <CircularProgress label={t`Creating folder...`} />}
@@ -109,11 +113,11 @@ export const FolderDialogCreate: React.FC<Props> = ({ type, onClose, open, curre
                                             <FolderTree
                                                 title={t`Root folder`}
                                                 type={type}
-                                                focusedFolderId={
-                                                    currentParentId || parentId || undefined
+                                                focusedFolderId={currentParentId || undefined}
+                                                onFolderClick={data =>
+                                                    setParentId(data?.id || null)
                                                 }
-                                                onFolderClick={data => setParentId(data?.id)}
-                                                onTitleClick={() => setParentId(undefined)}
+                                                onTitleClick={() => setParentId(null)}
                                             />
                                         </DialogFoldersContainer>
                                     </Cell>

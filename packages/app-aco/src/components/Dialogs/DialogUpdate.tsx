@@ -37,7 +37,7 @@ const t = i18n.ns("app-aco/components/tree/dialog-update");
 export const FolderDialogUpdate: React.FC<Props> = ({ folder, onClose, open }) => {
     const { loading, updateFolder } = useFolders(folder.type);
     const [dialogOpen, setDialogOpen] = useState(false);
-    const [parentId, setParentId] = useState<string>();
+    const [parentId, setParentId] = useState<string | null>();
     const { showSnackbar } = useSnackbar();
 
     const onSubmit: FormOnSubmit<SubmitData> = async data => {
@@ -53,6 +53,10 @@ export const FolderDialogUpdate: React.FC<Props> = ({ folder, onClose, open }) =
             showSnackbar(error.message);
         }
     };
+
+    useEffect(() => {
+        setParentId(folder.parentId);
+    }, [folder.parentId]);
 
     useEffect(() => {
         setDialogOpen(open);
@@ -103,12 +107,12 @@ export const FolderDialogUpdate: React.FC<Props> = ({ folder, onClose, open }) =
                                                 <FolderTree
                                                     title={t`Root folder`}
                                                     type={folder.type}
-                                                    focusedFolderId={
-                                                        parentId || folder.parentId || undefined
-                                                    }
+                                                    focusedFolderId={parentId || undefined}
                                                     hiddenFolderId={folder.id}
-                                                    onFolderClick={data => setParentId(data?.id)}
-                                                    onTitleClick={() => setParentId(undefined)}
+                                                    onFolderClick={data =>
+                                                        setParentId(data?.id || null)
+                                                    }
+                                                    onTitleClick={() => setParentId(null)}
                                                 />
                                             </DialogFoldersContainer>
                                         </Cell>
