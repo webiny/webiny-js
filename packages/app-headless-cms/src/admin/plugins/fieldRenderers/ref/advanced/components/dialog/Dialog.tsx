@@ -7,9 +7,6 @@ export const Dialog = styled(BaseDialog)({
         width: "auto",
         minWidth: "800px",
         maxHeight: "calc(100vh - 100px)"
-    },
-    ".mdc-dialog__content": {
-        overflow: "auto !important"
     }
 });
 
@@ -21,8 +18,5 @@ export const FullWidthDialog = styled(BaseDialog)({
         maxWidth: "100%",
         minWidth: "90%",
         maxHeight: "calc(100vh - 100px)"
-    },
-    ".mdc-dialog__content": {
-        overflow: "auto !important"
     }
 });

@@ -3,14 +3,14 @@ import styled from "@emotion/styled";
 import { CmsModel } from "~/types";
 
 const Title = styled("div")({
-    width: '100%',
-    boxSizing: 'border-box',
+    width: "100%",
+    boxSizing: "border-box"
 });
 
 const Content = styled("div")({
     display: "flex",
     flexDirection: "column",
-    width: '100%',
+    width: "100%"
 });
 
 const Container = styled("div")({
@@ -20,21 +20,21 @@ const Container = styled("div")({
     width: "100%",
     cursor: "pointer",
     padding: 15,
-    boxSizing:"border-box",
-    borderBottom: '1px solid var(--mdc-theme-background)',
+    boxSizing: "border-box",
+    borderBottom: "1px solid var(--mdc-theme-background)",
     ":hover": {
         backgroundColor: "var(--mdc-theme-background)"
     },
-    '&:last-of-type':{
-        borderBottom: 'none'
+    "&:last-of-type": {
+        borderBottom: "none"
     }
 });
 
 const Description = styled("p")({
     fontSize: 12,
     marginTop: 10,
-    lineHeight: '125%',
-    color: '#666'
+    lineHeight: "125%",
+    color: "#666"
 });
 
 interface Props {

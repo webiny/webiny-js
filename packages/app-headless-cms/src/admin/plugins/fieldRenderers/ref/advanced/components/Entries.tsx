@@ -12,15 +12,19 @@ interface ContainerProps {
 const Container = styled("div")(({ height }: ContainerProps) => {
     return {
         minWidth: "100%",
-        height: height || "500px",
+        height: height || "460px",
+        maxHeight: 460,
         backgroundColor: "var(--mdc-theme-background)",
-        boxSizing: "border-box"
+        boxSizing: "border-box",
+        '>div':{
+            marginRight: 20
+        }
     };
 });
 const ContainerChild = styled("div")({
-    padding: "20px",
     boxSizing: "border-box",
-    width: "100%"
+    width: "100%",
+    margin: '0 2px 25px 2px'
 });
 
 interface Props {
