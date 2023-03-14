@@ -1,7 +1,7 @@
 import gql from "graphql-tag";
 import {
     CmsContentEntryStatusType,
-    CmsCreatedBy,
+    CmsIdentity,
     CmsErrorResponse,
     CmsMetaResponse,
     CmsModel
@@ -70,9 +70,9 @@ export interface SearchQueryResponseEntry {
     entryId: string;
     savedOn: Date;
     createdOn: Date;
-    createdBy: CmsCreatedBy;
-    ownedBy: CmsCreatedBy;
-    modifiedBy: CmsCreatedBy;
+    createdBy: CmsIdentity;
+    ownedBy: CmsIdentity;
+    modifiedBy: CmsIdentity;
     meta: {
         title: string;
         description?: string;

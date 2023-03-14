@@ -2,12 +2,10 @@ import styled from "@emotion/styled";
 import React from "react";
 
 const Container = styled("div")({
-    maxWidth: "166px",
-    maxHeight: "166px",
+    width: "100%",
     " > img": {
         display: "block",
-        maxWidth: "100%",
-        maxHeight: "100%"
+        width: "100%"
     }
 });
 

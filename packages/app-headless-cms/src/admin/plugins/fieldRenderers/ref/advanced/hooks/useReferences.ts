@@ -59,10 +59,6 @@ const executeSearch = async (params: ExecuteSearchParams): Promise<void> => {
         setLoading(false);
     }
 };
-/**
- * How many entries to load per page.
- */
-const perPage = 3;
 
 interface CmsReferenceValue extends BaseCmsReferenceValue {
     entryId: string;
@@ -70,9 +66,10 @@ interface CmsReferenceValue extends BaseCmsReferenceValue {
 
 interface UseReferencesParams {
     values?: BaseCmsReferenceValue[] | BaseCmsReferenceValue | null;
+    perPage?: number;
 }
 
-export const useReferences = ({ values: initialValues }: UseReferencesParams) => {
+export const useReferences = ({ values: initialValues, perPage = 10 }: UseReferencesParams) => {
     const client = useApolloClient();
     const [entries, setEntries] = useState<Record<string, CmsReferenceContentEntry>>({});
     const [loading, setLoading] = useState<boolean>(false);
@@ -95,7 +92,7 @@ export const useReferences = ({ values: initialValues }: UseReferencesParams) =>
             }),
             perPage
         );
-    }, [initialValues]);
+    }, [initialValues, perPage]);
 
     const entriesToLoad = useMemo(() => {
         /**

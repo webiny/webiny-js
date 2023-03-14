@@ -28,14 +28,12 @@ const Container = styled("div")({
 
 const ContentContainer = styled("div")({
     width: "100%",
-    display: "flex",
-    flexDirection: "row",
+    display: "grid",
+    gridTemplateColumns: "166px auto",
     borderBottom: "1px solid var(--mdc-theme-background)"
 });
 
 const Content = styled("div")({
-    display: "flex",
-    flexDirection: "column",
     paddingLeft: "16px",
     paddingTop: "18px",
     paddingBottom: "10px"

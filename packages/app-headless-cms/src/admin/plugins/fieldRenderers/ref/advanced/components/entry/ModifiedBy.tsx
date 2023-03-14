@@ -1,5 +1,5 @@
 import React from "react";
-import { CmsCreatedBy } from "~/types";
+import { CmsIdentity } from "~/types";
 import { Box } from "./Box";
 /**
  * Package timeago-react does not have types.
@@ -8,7 +8,7 @@ import { Box } from "./Box";
 import TimeAgo from "timeago-react";
 
 interface Props {
-    modifiedBy?: CmsCreatedBy | null;
+    modifiedBy?: CmsIdentity | null;
     savedOn: Date;
 }
 

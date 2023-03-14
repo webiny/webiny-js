@@ -1,6 +1,6 @@
 import { CmsModelFieldValidator } from "~/types/validation";
 import { CmsDynamicZoneTemplate, CmsEditorFieldPredefinedValues } from "~/types/index";
-import { CmsCreatedBy } from "~/types/shared";
+import { CmsIdentity } from "~/types/shared";
 
 /**
  * @deprecated Use `CmsModelField` instead.
@@ -56,7 +56,7 @@ export interface CmsGroup {
     icon?: string;
     description?: string;
     contentModels: CmsModel[];
-    createdBy: CmsCreatedBy;
+    createdBy: CmsIdentity;
     /**
      * Tells if this group is a plugin one (cannot be changed/deleted)
      */
@@ -82,7 +82,7 @@ export interface CmsModel {
     status: string;
     savedOn: string;
     meta: any;
-    createdBy: CmsCreatedBy;
+    createdBy: CmsIdentity;
     tags: string[];
     /**
      * If model is a plugin one (it cannot be changed/deleted)

@@ -133,6 +133,7 @@ export const useEntries = (params: Params) => {
     const runSearch = useCallback(
         (query?: string) => {
             if (searchQuery === query) {
+                console.log(`Skipping search as it is the same as the previous one.`);
                 return;
             }
             setSearchQuery(query);

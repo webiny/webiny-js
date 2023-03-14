@@ -18,7 +18,7 @@ import {
 } from "./validation";
 
 import { CmsModelField, CmsModel } from "./model";
-import { CmsCreatedBy } from "~/types/shared";
+import { CmsIdentity } from "~/types/shared";
 
 export * from "./validation";
 export * from "./model";
@@ -306,7 +306,7 @@ export interface CmsEditorContentEntry {
     id: string;
     savedOn: string;
     modelId: string;
-    createdBy: CmsCreatedBy;
+    createdBy: CmsIdentity;
     meta: {
         title: string;
         publishedOn: string;
@@ -321,7 +321,7 @@ export interface CmsContentEntryRevision {
     id: string;
     savedOn: string;
     modelId: string;
-    createdBy: CmsCreatedBy;
+    createdBy: CmsIdentity;
     meta: {
         title: string;
         publishedOn: string;
