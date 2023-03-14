@@ -56,7 +56,7 @@ const verticalAlign: ElementStylesModifier = ({ element, theme }) => {
                         flexDirection: isMobileView
                             ? element.data.settings?.gridSettings[breakpointName]?.flexDirection
                             : "",
-                        flexWrap: "wrap",
+                        flexWrap: isMobileView ? "" : "wrap",
                         flex: `1 0 ${100 / columnsCount}%`,
                         alignItems: verticalAlign[breakpointName]
                     }
