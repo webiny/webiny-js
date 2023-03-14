@@ -16,7 +16,7 @@ const Container = styled("div")(({ height }: ContainerProps) => {
         maxHeight: 460,
         backgroundColor: "var(--mdc-theme-background)",
         boxSizing: "border-box",
-        '>div':{
+        ">div": {
             marginRight: 20
         }
     };
@@ -24,7 +24,7 @@ const Container = styled("div")(({ height }: ContainerProps) => {
 const ContainerChild = styled("div")({
     boxSizing: "border-box",
     width: "100%",
-    margin: '0 2px 25px 2px'
+    margin: "0 2px 25px 2px"
 });
 
 interface Props {

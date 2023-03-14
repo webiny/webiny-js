@@ -28,8 +28,9 @@ const Content = styled("div")({
     width: "100%",
     minHeight: "100px",
     boxSizing: "border-box",
-    padding: '20px 0 20px 20px',
-    backgroundColor: 'var(--mdc-theme-background)'
+    padding: "20px 0 20px 20px",
+    backgroundColor: "var(--mdc-theme-background)",
+    border: '1px solid var(--mdc-theme-on-background)'
 });
 
 const DialogContent = styled(BaseDialogContent)({
