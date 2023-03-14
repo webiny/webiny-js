@@ -28,13 +28,19 @@ export const uploadAssets = async (params: UploadAssetsParams) => {
         return oldIdToNewFileMap;
     }
 
+    // Check if files with such keys already exist
+    const [existingFiles] = await context.fileManager.files.listFiles();
+    const filteredFiles = files.filter(
+        file => !existingFiles.some(existingFile => existingFile.key === file.key)
+    );
+
     // A map of temporary file keys (created during ZIP upload) to permanent file keys.
     const uploadFileMap: UploadFileMap = new Map();
 
     // Array of file inputs, to insert into the DB.
     const createFilesInput: FileInput[] = [];
 
-    for (const oldFile of files) {
+    for (const oldFile of filteredFiles) {
         const id = mdbid();
         // We replace the old file ID with a new one.
         const newKey = `${id}/${oldFile.key.replace(`${oldFile.id}/`, "")}`;
