@@ -10,7 +10,7 @@ export interface FontColorActionContext {
      * @desc Apply color to selected text.
      * @params: value
      */
-    applyColor: (value: string) => void;
+    applyColor: (value: string, themeColorName: string | undefined) => void;
 }
 
 export const FontColorActionContext = React.createContext<FontColorActionContext | undefined>(

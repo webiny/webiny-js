@@ -17,7 +17,7 @@ import { isValidLexicalData } from "~/utils/isValidLexicalData";
 import { LexicalUpdateStatePlugin } from "~/plugins/LexicalUpdateStatePlugin";
 import { BlurEventPlugin } from "~/plugins/BlurEventPlugin/BlurEventPlugin";
 import { FontColorPlugin } from "~/plugins/FontColorPlugin/FontColorPlugin";
-import { webinyEditorTheme } from "~/themes/webinyLexicalTheme";
+import { webinyEditorTheme, WebinyTheme } from "~/themes/webinyLexicalTheme";
 import { WebinyNodes } from "~/nodes/webinyNodes";
 
 export interface RichTextEditorProps {
@@ -35,6 +35,10 @@ export interface RichTextEditorProps {
     onBlur?: (editorState: LexicalValue) => void;
     height?: number | string;
     width?: number | string;
+    /*
+     * @description Theme to be injected into lexical editor
+     */
+    theme: WebinyTheme;
 }
 
 const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
@@ -47,13 +51,11 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
     onBlur,
     focus,
     width,
-    height
+    height,
+    theme
 }: RichTextEditorProps) => {
     const placeholderElem = <Placeholder>{placeholder || "Enter text..."}</Placeholder>;
     const scrollRef = useRef(null);
-    // const { theme } = usePageElements();
-    const theme = { styles: {}};
-
     const [floatingAnchorElem, setFloatingAnchorElem] = useState<HTMLElement | undefined>(
         undefined
     );
@@ -76,7 +78,7 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
             throw error;
         },
         nodes: [...WebinyNodes, ...(nodes || [])],
-        theme: { ...webinyEditorTheme, styles: theme.styles }
+        theme: { ...webinyEditorTheme, styles: theme?.styles }
     };
 
     function handleOnChange(editorState: EditorState, editor: LexicalEditor) {

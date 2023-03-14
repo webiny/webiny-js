@@ -9,16 +9,22 @@ import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
 import { LexicalUpdateStatePlugin } from "~/plugins/LexicalUpdateStatePlugin";
 import { Klass, LexicalNode } from "lexical";
 import { WebinyNodes } from "~/nodes/webinyNodes";
-import { webinyEditorTheme } from "~/themes/webinyLexicalTheme";
+import { webinyEditorTheme, WebinyTheme } from "~/themes/webinyLexicalTheme";
 
 interface LexicalHtmlRendererProps {
     nodes?: Klass<LexicalNode>[];
     value: LexicalValue | null;
+    /*
+     * @description Theme to be injected into lexical editor
+     */
+    theme: WebinyTheme;
 }
 
-export const LexicalHtmlRenderer: React.FC<LexicalHtmlRendererProps> = ({ nodes, value }) => {
-    // const { theme } = usePageElements();
-    const theme = { styles: {}};
+export const LexicalHtmlRenderer: React.FC<LexicalHtmlRendererProps> = ({
+    nodes,
+    value,
+    theme
+}) => {
     const initialConfig = {
         editorState: isValidLexicalData(value) ? value : generateInitialLexicalValue(),
         namespace: "webiny",

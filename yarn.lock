@@ -13895,7 +13895,7 @@ __metadata:
     platform: ^1.3.5
     prop-types: ^15.7.2
     react: 17.0.2
-    react-color: ^2.14.3
+    react-color: ^2.14.1
     react-dnd: ^11.1.3
     react-dnd-html5-backend: ^11.1.3
     react-dom: 17.0.2
@@ -14028,6 +14028,7 @@ __metadata:
     "@webiny/app-tenancy": 0.0.0
     "@webiny/app-tenant-manager": 0.0.0
     "@webiny/cli": 0.0.0
+    "@webiny/lexical-editor-actions": 0.0.0
     "@webiny/lexical-editor-pb-element": 0.0.0
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
@@ -15136,9 +15137,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/lexical-editor-config@workspace:packages/lexical-editor-config":
+"@webiny/lexical-editor-actions@0.0.0, @webiny/lexical-editor-actions@workspace:packages/lexical-editor-actions":
   version: 0.0.0-use.local
-  resolution: "@webiny/lexical-editor-config@workspace:packages/lexical-editor-config"
+  resolution: "@webiny/lexical-editor-actions@workspace:packages/lexical-editor-actions"
   dependencies:
     "@emotion/styled": ^10.0.27
     "@webiny/app-page-builder": 0.0.0
@@ -15146,11 +15147,10 @@ __metadata:
     "@webiny/cli": 0.0.0
     "@webiny/lexical-editor": 0.0.0
     "@webiny/project-utils": 0.0.0
-    "@webiny/react-composition": 0.0.0
     classnames: ^2.3.1
     emotion: ^10.0.27
     react: ^17.0.2
-    react-color: ^2.14.3
+    react-color: ^2.14.1
     react-dom: ^17.0.2
   languageName: unknown
   linkType: soft
@@ -36160,7 +36160,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-color@npm:^2.14.1, react-color@npm:^2.14.3, react-color@npm:^2.17.0":
+"react-color@npm:^2.14.1, react-color@npm:^2.17.0":
   version: 2.19.3
   resolution: "react-color@npm:2.19.3"
   dependencies:

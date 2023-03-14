@@ -14,9 +14,9 @@ import { ReactComponent as IconPalette } from "../../assets/icons/round-color_le
 import { ReactComponent as ColorizeIcon } from "./colorize.svg";
 import { ReactComponent as NoColorSelectedIcon } from "./unselected.svg";
 import { COLORS } from "../../plugins/elementSettings/components/StyledComponents";
+import { isLegacyRenderingEngine } from "~/utils";
 
 import { PbTheme } from "~/types";
-import { isLegacyRenderingEngine } from "~/utils";
 
 const ColorPickerStyle = styled("div")({
     display: "flex",

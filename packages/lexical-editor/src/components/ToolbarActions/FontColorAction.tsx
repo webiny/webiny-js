@@ -32,16 +32,6 @@ export interface FontColorAction extends React.FC<unknown> {
 export const FontColorAction: FontColorAction = () => {
     const [editor] = useLexicalComposerContext();
     const [fontColor, setFontColor] = useState<string>("#000");
-    // const { theme } = usePageElements();
-    const theme = { styles: {}} as any;
-
-    const isThemeColorName = (color: string): boolean => {
-        return !!theme?.styles?.colors[color];
-    };
-
-    const getThemeColor = (colorValue: string): string => {
-        return isThemeColorName(colorValue) ? theme?.styles?.colors[colorValue] : colorValue;
-    };
 
     const setFontColorSelect = useCallback(
         (fontColorValue: string) => {
@@ -50,21 +40,16 @@ export const FontColorAction: FontColorAction = () => {
         [fontColor]
     );
 
-    const onFontColorSelect = useCallback((colorValue: string) => {
-        const color = getThemeColor(colorValue);
-        const isThemeColor = isThemeColorName(colorValue);
-        const themeColorName = isThemeColor ? colorValue : undefined;
-        setFontColorSelect(colorValue);
-        const payloadData = {
-            color,
-            themeColorName,
-            isThemeColor
-        };
-        editor.dispatchCommand<LexicalCommand<FontColorPayload>>(
-            ADD_FONT_COLOR_COMMAND,
-            payloadData
-        );
-    }, []);
+    const onFontColorSelect = useCallback(
+        (colorValue: string, themeColorName: string | undefined) => {
+            setFontColorSelect(colorValue);
+            editor.dispatchCommand<LexicalCommand<FontColorPayload>>(ADD_FONT_COLOR_COMMAND, {
+                color: colorValue,
+                themeColorName
+            });
+        },
+        []
+    );
 
     const updatePopup = useCallback(() => {
         editor.getEditorState().read(() => {

@@ -1,1 +1,1 @@
-export { LexicalEditorConfigurationPlugin } from "~/LexicalEditorConfigurationPlugin";
+export { LexicalEditorActions } from "~/LexicalEditorConfigurationPlugin";

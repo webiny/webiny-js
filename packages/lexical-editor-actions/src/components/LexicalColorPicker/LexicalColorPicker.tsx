@@ -193,11 +193,14 @@ export const LexicalColorPicker: React.FC<LexicalColorPickerProps> = ({
                                 // With page elements implementation, we want to store the color key and
                                 // then the actual color will be retrieved from the theme object.
                                 let value = color;
+                                let themeColorName;
                                 if (!isLegacyRenderingEngine) {
-                                    value = key;
+                                    const colors = pageElements.theme?.styles?.colors;
+                                    themeColorName = key;
+                                    value = colors[key];
                                 }
 
-                                onChangeComplete(value);
+                                onChangeComplete(value, themeColorName);
                             }}
                         />
                     </ColorBox>
