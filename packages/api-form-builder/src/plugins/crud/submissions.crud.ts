@@ -331,7 +331,7 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
                                 addLog: (log: Record<string, any>) => {
                                     submission.logs.push(log);
                                 },
-                                data,
+                                data: utils.sanitizeFormSubmissionData(form.fields, data),
                                 // meta,
                                 trigger: form.triggers[plugin.trigger]
                             });

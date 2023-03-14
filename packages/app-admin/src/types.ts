@@ -2,10 +2,7 @@ import React, { ReactElement } from "react";
 import { Plugin } from "@webiny/plugins/types";
 import { ApolloClient } from "apollo-client";
 import { ItemProps, MenuProps, SectionProps } from "~/plugins/MenuPlugin";
-
-type RenderParams = {
-    content: React.ReactNode;
-};
+import { FileItem } from "~/components/FileManager/types";
 
 export type AdminGlobalSearchPlugin = Plugin & {
     type: "admin-global-search";
@@ -22,22 +19,12 @@ export type AdminGlobalSearchPreventHotkeyPlugin = Plugin & {
     preventOpen(e: React.KeyboardEvent): boolean | void;
 };
 
-export type AdminDrawerFooterMenuPlugin = Plugin & {
-    type: "admin-drawer-footer-menu";
-    render(params: any): React.ReactElement;
-};
-
 /**
  * LEGACY TYPE. Only for backwards compatibility.
  */
 export type AdminMenuLogoPlugin = Plugin & {
     name: "admin-menu-logo";
     type: "admin-menu-logo";
-    render(): React.ReactElement;
-};
-
-export type AdminHeaderUserMenuPlugin = Plugin & {
-    type: "admin-header-user-menu";
     render(): React.ReactElement;
 };
 
@@ -55,17 +42,8 @@ export type AdminMenuPlugin = Plugin & {
     order?: number;
 };
 
-/**
- * Enables adding custom header elements to the right side of the top bar.
- * @see https://docs.webiny.com/docs/webiny-apps/admin/development/plugins-reference/app#admin-header-right
- */
-export type AdminHeaderRightPlugin = Plugin & {
-    type: "admin-header-right";
-    render(params: RenderParams): React.ReactNode;
-};
-
 export interface AdminFileManagerFileTypePluginRenderParams {
-    file: string;
+    file: FileItem;
 }
 export type AdminFileManagerFileTypePlugin = Plugin & {
     type: "admin-file-manager-file-type";

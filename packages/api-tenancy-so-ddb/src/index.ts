@@ -247,9 +247,35 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
         },
 
         async deleteTenant(id: string): Promise<void> {
-            await entities.tenants.delete({
-                PK: `T#${id}`,
-                SK: "A"
+            const existingDomains = await queryAll<TenantDomain>({
+                entity: entities.domains,
+                partitionKey: "DOMAINS",
+                options: {
+                    index: "GSI1",
+                    beginsWith: `T#${id}`
+                }
+            });
+
+            const items = [
+                entities.tenants.deleteBatch({
+                    PK: `T#${id}`,
+                    SK: "A"
+                })
+            ];
+
+            existingDomains.forEach(domain => {
+                items.push(
+                    entities.domains.deleteBatch({
+                        PK: domain.PK,
+                        SK: domain.SK
+                    })
+                );
+            });
+
+            // Delete tenant and domain items
+            await batchWriteAll({
+                table: tableInstance,
+                items
             });
         }
     };

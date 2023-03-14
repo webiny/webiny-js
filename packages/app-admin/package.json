@@ -17,6 +17,7 @@
     "@editorjs/editorjs": "^2.19.0",
     "@emotion/core": "^10.0.17",
     "@emotion/styled": "^10.0.17",
+    "@material-design-icons/svg": "^0.14.3",
     "@svgr/webpack": "^6.1.1",
     "@types/mime": "^2.0.3",
     "@types/react": "17.0.39",

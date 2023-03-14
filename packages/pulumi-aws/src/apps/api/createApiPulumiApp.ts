@@ -100,7 +100,11 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 }
             });
 
-            const fileManager = app.addModule(ApiFileManager);
+            const fileManager = app.addModule(ApiFileManager, {
+                env: {
+                    DB_TABLE: core.primaryDynamodbTableName
+                }
+            });
 
             const apwScheduler = app.addModule(ApiApwScheduler, {
                 primaryDynamodbTableArn: core.primaryDynamodbTableArn,
@@ -155,7 +159,7 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                     function: graphql.functions.graphql.output.arn
                 },
                 "files-any": {
-                    path: "/files/{path}",
+                    path: "/files/{path+}",
                     method: "ANY",
                     function: fileManager.functions.download.output.arn
                 },
@@ -168,6 +172,11 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                     path: "/cms/{key+}",
                     method: "OPTIONS",
                     function: graphql.functions.graphql.output.arn
+                },
+                "files-catch-all": {
+                    path: "/{path+}",
+                    method: "ANY",
+                    function: fileManager.functions.download.output.arn
                 }
             });
 
