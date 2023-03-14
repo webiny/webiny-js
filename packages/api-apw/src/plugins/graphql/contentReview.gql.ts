@@ -16,7 +16,7 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
             id: ID
             savedOn: DateTime
             createdOn: DateTime
-            createdBy: ApwCreatedBy
+            createdBy: ApwIdentity
             # ContentReview specific fields
             title: String
             steps: [ApwContentReviewStep]
@@ -72,7 +72,7 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
             title: String
             pendingChangeRequests: Int
             signOffProvidedOn: DateTime
-            signOffProvidedBy: ApwCreatedBy
+            signOffProvidedBy: ApwIdentity
         }
 
         type ApwContentReview {
@@ -80,7 +80,7 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
             id: ID
             savedOn: DateTime
             createdOn: DateTime
-            createdBy: ApwCreatedBy
+            createdBy: ApwIdentity
             # ContentReview specific fields
             title: String
             steps: [ApwContentReviewStep]
@@ -152,9 +152,9 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
             version: Int!
             settings: ApwContentReviewContentSettings
             publishedOn: String
-            publishedBy: ApwCreatedBy
+            publishedBy: ApwIdentity
             scheduledOn: DateTime
-            scheduledBy: ApwCreatedBy
+            scheduledBy: ApwIdentity
         }
 
         input ApwContentReviewContentInput {

@@ -38,7 +38,7 @@ const baseSchema = new GraphQLSchemaPlugin({
             totalCount: Int
             cursor: String
         }
-        type ApwCreatedBy {
+        type ApwIdentity {
             id: ID
             displayName: String
             type: String

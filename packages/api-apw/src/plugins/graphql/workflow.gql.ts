@@ -10,7 +10,7 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
             id: ID
             savedOn: DateTime
             createdOn: DateTime
-            createdBy: ApwCreatedBy
+            createdBy: ApwIdentity
             # Workflow specific fields
             app: ApwWorkflowApplication
             title: String
@@ -41,7 +41,7 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
             id: ID
             savedOn: DateTime
             createdOn: DateTime
-            createdBy: ApwCreatedBy
+            createdBy: ApwIdentity
             # Workflow specific fields
             app: ApwWorkflowApplication
             title: String
