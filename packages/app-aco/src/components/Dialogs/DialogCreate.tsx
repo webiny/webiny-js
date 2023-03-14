@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 
-import slugify from "slugify";
+import { i18n } from "@webiny/app/i18n";
+import { useSnackbar } from "@webiny/app-admin";
+import { Form, FormAPI, FormOnSubmit } from "@webiny/form";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import {
     DialogTitle,
@@ -12,10 +14,9 @@ import {
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { CircularProgress } from "@webiny/ui/Progress";
-import { Form, FormAPI, FormOnSubmit } from "@webiny/form";
+import { Typography } from "@webiny/ui/Typography";
 import { validation } from "@webiny/validation";
-import { i18n } from "@webiny/app/i18n";
-import { useSnackbar } from "@webiny/app-admin";
+import slugify from "slugify";
 
 import { FolderTree } from "~/components";
 import { useFolders } from "~/hooks/useFolders";
@@ -23,7 +24,6 @@ import { useFolders } from "~/hooks/useFolders";
 import { DialogContainer, DialogFoldersContainer } from "./styled";
 
 import { FolderItem } from "~/types";
-import { Typography } from "@webiny/ui/Typography";
 
 type Props = {
     type: string;
@@ -58,6 +58,10 @@ export const FolderDialogCreate: React.FC<Props> = ({ type, onClose, open, curre
 
     const generateSlug = (form: FormAPI) => () => {
         if (form.data.slug) {
+            return;
+        }
+
+        if (!form.data.title) {
             return;
         }
 
@@ -109,7 +113,7 @@ export const FolderDialogCreate: React.FC<Props> = ({ type, onClose, open, curre
                                         <Typography use="body1">{t`Parent folder`}</Typography>
                                         <DialogFoldersContainer>
                                             <FolderTree
-                                                title={"Root folder"}
+                                                title={t`Root folder`}
                                                 type={type}
                                                 focusedFolderId={
                                                     currentParentId || parentId || undefined

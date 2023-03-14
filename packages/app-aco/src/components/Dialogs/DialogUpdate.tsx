@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 
+import { i18n } from "@webiny/app/i18n";
 import { useSnackbar } from "@webiny/app-admin";
+import { Form, FormOnSubmit } from "@webiny/form";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import {
     DialogTitle,
@@ -12,9 +14,8 @@ import {
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { CircularProgress } from "@webiny/ui/Progress";
-import { Form, FormOnSubmit } from "@webiny/form";
+import { Typography } from "@webiny/ui/Typography";
 import { validation } from "@webiny/validation";
-import { i18n } from "@webiny/app/i18n";
 
 import { FolderTree } from "~/components";
 import { useFolders } from "~/hooks/useFolders";
@@ -22,7 +23,6 @@ import { useFolders } from "~/hooks/useFolders";
 import { DialogContainer, DialogFoldersContainer } from "./styled";
 
 import { FolderItem } from "~/types";
-import { Typography } from "@webiny/ui/Typography";
 
 type Props = {
     folder: FolderItem;
@@ -106,7 +106,7 @@ export const FolderDialogUpdate: React.FC<Props> = ({ folder, onClose, open }) =
                                             <Typography use="body1">{t`Parent folder`}</Typography>
                                             <DialogFoldersContainer>
                                                 <FolderTree
-                                                    title={"Root folder"}
+                                                    title={t`Root folder`}
                                                     type={folder.type}
                                                     focusedFolderId={
                                                         parentId || folder.parentId || undefined
