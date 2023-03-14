@@ -10,11 +10,13 @@ import { Divider } from "~/ui/Divider";
 import { NumberedListAction } from "~/components/ToolbarActions/NumberedListAction";
 import { BulletListAction } from "~/components/ToolbarActions/BulletListAction";
 import { QuoteAction } from "~/components/ToolbarActions/QuoteAction";
+import { FontColorAction } from "~/components/ToolbarActions/FontColorAction";
 
 export const ParagraphToolbarPreset = () => {
     return (
         <>
             <AddToolbarAction element={<FontSizeAction />} type={"paragraph"} />
+            <AddToolbarAction element={<FontColorAction />} type={"paragraph"} />
             <AddToolbarAction element={<Divider />} type={"paragraph"} />
             <AddToolbarAction element={<BoldAction />} type={"paragraph"} />
             <AddToolbarAction element={<ItalicAction />} type={"paragraph"} />

@@ -4,6 +4,7 @@ import { createComponentPlugin } from "@webiny/react-composition";
 import TextElement from "@webiny/app-page-builder/render/components/Text";
 import { isValidLexicalData, LexicalHtmlRenderer } from "@webiny/lexical-editor";
 import { LexicalValue } from "@webiny/lexical-editor/types";
+import { usePageElements } from "@webiny/app-page-builder-elements";
 
 const DATA_NAMESPACE = "data.text";
 
@@ -15,8 +16,9 @@ const DATA_NAMESPACE = "data.text";
 export const TextElementRendererPlugin = createComponentPlugin(TextElement, Original => {
     return function TextElementRendererPlugin({ element, rootClassName }): JSX.Element {
         const textContent = get(element, `${DATA_NAMESPACE}.data.text`) as LexicalValue;
+        const { theme } = usePageElements();
         return isValidLexicalData(textContent) ? (
-            <LexicalHtmlRenderer value={textContent} />
+            <LexicalHtmlRenderer theme={theme} value={textContent} />
         ) : (
             <Original element={element} rootClassName={rootClassName} />
         );
