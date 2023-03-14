@@ -3,14 +3,8 @@ import React, { useEffect, useState } from "react";
 import { i18n } from "@webiny/app/i18n";
 import { useSnackbar } from "@webiny/app-admin";
 import { Form, FormAPI, FormOnSubmit } from "@webiny/form";
-import { ButtonPrimary } from "@webiny/ui/Button";
-import {
-    DialogTitle,
-    DialogActions,
-    DialogContent,
-    DialogOnClose,
-    DialogCancel
-} from "@webiny/ui/Dialog";
+import { ButtonDefault, ButtonPrimary } from "@webiny/ui/Button";
+import { DialogTitle, DialogActions, DialogContent, DialogOnClose } from "@webiny/ui/Dialog";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { CircularProgress } from "@webiny/ui/Progress";
@@ -126,13 +120,13 @@ export const FolderDialogCreate: React.FC<Props> = ({ type, onClose, open, curre
                                 </Grid>
                             </DialogContent>
                             <DialogActions>
-                                <DialogCancel
+                                <ButtonDefault
                                     onClick={() => {
                                         setDialogOpen(false);
                                     }}
                                 >
                                     {t`Cancel`}
-                                </DialogCancel>
+                                </ButtonDefault>
                                 <ButtonPrimary onClick={submit}>{t`Create Folder`}</ButtonPrimary>
                             </DialogActions>
                         </>
