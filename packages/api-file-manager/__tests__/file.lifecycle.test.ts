@@ -1,3 +1,5 @@
+// @ts-ignore
+import mdbid from "mdbid";
 import useGqlHandler from "./useGqlHandler";
 import { fileLifecyclePlugin, lifecycleEventTracker } from "./mocks/lifecyclePlugin";
 
@@ -16,12 +18,16 @@ enum FileLifecycle {
     AFTER_DELETE = "file:afterDelete"
 }
 
+const id = mdbid();
+
 const fileData = {
-    key: "/files/filenameA.png",
+    id,
+    key: `${id}/filenameA.png`,
     name: "filenameA.png",
     size: 123456,
     type: "image/png",
-    tags: ["sketch"]
+    tags: ["sketch"],
+    aliases: []
 };
 
 describe("File lifecycle events", () => {

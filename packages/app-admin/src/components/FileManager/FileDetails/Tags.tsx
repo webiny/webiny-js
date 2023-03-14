@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
 import classNames from "classnames";
 import { css } from "emotion";
-import { useApolloClient, useQuery } from "@apollo/react-hooks";
+import { useQuery } from "@apollo/react-hooks";
 import set from "lodash/set";
 import get from "lodash/get";
 import cloneDeep from "lodash/cloneDeep";
@@ -9,11 +9,10 @@ import { Chips, Chip } from "@webiny/ui/Chips";
 import { ButtonSecondary, ButtonPrimary, ButtonDefault, IconButton } from "@webiny/ui/Button";
 import { MultiAutoComplete } from "@webiny/ui/AutoComplete";
 import { Icon } from "@webiny/ui/Icon";
-import { Form } from "@webiny/form";
+import { Form, FormOnSubmit } from "@webiny/form";
 import { useSnackbar } from "~/hooks/useSnackbar";
 import { getWhere, useFileManager } from "./../FileManagerContext";
 import {
-    UPDATE_FILE,
     LIST_FILES,
     LIST_TAGS,
     ListFilesQueryResponse,
@@ -22,6 +21,7 @@ import {
 import { ReactComponent as EditIcon } from "./../icons/round-edit-24px.svg";
 import { ReactComponent as LabelIcon } from "./../icons/round-label-24px.svg";
 import { FileItem } from "../types";
+import { useUpdateFile } from "./useUpdateFile";
 
 const SCOPE_SEPARATOR = ":";
 
@@ -71,11 +71,13 @@ interface TagsProps {
     canEdit: (file: FileItem) => boolean;
 }
 
-const Tags: React.FC<TagsProps> = ({ file, canEdit }) => {
-    const client = useApolloClient();
+interface TagsFormData {
+    tags: string[];
+}
 
+const Tags: React.FC<TagsProps> = ({ file, canEdit }) => {
+    const { updateFile, updateInProgress } = useUpdateFile(file);
     const [editing, setEdit] = useState(false);
-    const [saving, setSaving] = useState(false);
     const [initialTags, setInitialTags] = useState(Array.isArray(file.tags) ? [...file.tags] : []);
     const { showSnackbar } = useSnackbar();
     const { queryParams } = useFileManager();
@@ -89,7 +91,7 @@ const Tags: React.FC<TagsProps> = ({ file, canEdit }) => {
     const isEditingAllowed = canEdit(file);
 
     const renderHeaderContent = useCallback(
-        ({ data }: { data: { tags: { name: string }[] } }) => {
+        ({ data }: { data: TagsFormData }) => {
             if (editing) {
                 return null;
             }
@@ -103,11 +105,10 @@ const Tags: React.FC<TagsProps> = ({ file, canEdit }) => {
                             {data.tags
                                 .filter(tag => tag !== queryParams.scope)
                                 .map((tag, index) => {
-                                    const label = typeof tag === "string" ? tag : tag.name;
                                     return (
                                         <Chip
-                                            key={label + index}
-                                            label={formatTagAsLabel(label, queryParams.scope)}
+                                            key={tag + index}
+                                            label={formatTagAsLabel(tag, queryParams.scope)}
                                         />
                                     );
                                 })}
@@ -137,105 +138,82 @@ const Tags: React.FC<TagsProps> = ({ file, canEdit }) => {
         [editing, isEditingAllowed]
     );
 
-    return (
-        <Form
-            data={{
-                tags: initialTags
-            }}
-            onSubmit={async ({ tags }) => {
-                setSaving(true);
-                client
-                    .mutate({
-                        mutation: UPDATE_FILE,
-                        variables: {
-                            id: file.id,
-                            data: { tags }
-                        },
-                        update: (cache, updated) => {
-                            const newFileData: FileItem = get(
-                                updated,
-                                "data.fileManager.updateFile.data"
-                            );
+    const onSubmit: FormOnSubmit<TagsFormData> = async ({ tags }) => {
+        await updateFile({ tags }, cache => {
+            // 1. Update files list cache
+            const data = cloneDeep(
+                cache.readQuery<ListFilesQueryResponse>({
+                    query: LIST_FILES,
+                    variables: queryParams
+                })
+            );
 
-                            // 1. Update files list cache
-                            const data = cloneDeep(
-                                cache.readQuery<ListFilesQueryResponse>({
-                                    query: LIST_FILES,
-                                    variables: queryParams
-                                })
-                            );
+            if (data) {
+                data.fileManager.listFiles.data.forEach(item => {
+                    if (item.key === file.key) {
+                        item.tags = tags;
+                    }
+                });
+            }
 
-                            if (data) {
-                                data.fileManager.listFiles.data.forEach(item => {
-                                    if (item.key === newFileData.key) {
-                                        item.tags = newFileData.tags;
-                                    }
-                                });
-                            }
-
-                            cache.writeQuery({
-                                query: LIST_FILES,
-                                variables: queryParams,
-                                data
-                            });
-                            // 2. Update "LIST_TAGS" cache
-                            if (Array.isArray(newFileData.tags)) {
-                                // Get list tags data
-                                const listTagsData = cloneDeep(
-                                    cache.readQuery<ListFileTagsQueryResponse>({
-                                        query: LIST_TAGS,
-                                        variables: { where: getWhere(queryParams.scope) }
-                                    })
-                                );
-                                if (!listTagsData) {
-                                    return;
-                                }
-                                // Add new tag in list
-                                const updatedTagsList = [...newFileData.tags];
-
-                                if (Array.isArray(listTagsData.fileManager.listTags)) {
-                                    listTagsData.fileManager.listTags.forEach(tag => {
-                                        if (!updatedTagsList.includes(tag)) {
-                                            updatedTagsList.push(tag);
-                                        }
-                                    });
-                                }
-
-                                set(listTagsData, "fileManager.listTags", updatedTagsList);
-                                // Write it to cache
-                                cache.writeQuery({
-                                    query: LIST_TAGS,
-                                    variables: { where: getWhere(queryParams.scope) },
-                                    data: listTagsData
-                                });
-                            }
-                        }
+            cache.writeQuery({
+                query: LIST_FILES,
+                variables: queryParams,
+                data
+            });
+            // 2. Update "LIST_TAGS" cache
+            if (Array.isArray(tags)) {
+                // Get list tags data
+                const listTagsData = cloneDeep(
+                    cache.readQuery<ListFileTagsQueryResponse>({
+                        query: LIST_TAGS,
+                        variables: { where: getWhere(queryParams.scope) }
                     })
-                    .then(() => {
-                        setInitialTags(tags);
-                        setSaving(false);
-                        setEdit(false);
-                        showSnackbar("Tags successfully updated.");
+                );
+                if (!listTagsData) {
+                    return;
+                }
+                // Add new tag in list
+                const updatedTagsList = [...tags];
+
+                if (Array.isArray(listTagsData.fileManager.listTags)) {
+                    listTagsData.fileManager.listTags.forEach(tag => {
+                        if (!updatedTagsList.includes(tag)) {
+                            updatedTagsList.push(tag);
+                        }
                     });
-            }}
-        >
+                }
+
+                set(listTagsData, "fileManager.listTags", updatedTagsList);
+                // Write it to cache
+                cache.writeQuery({
+                    query: LIST_TAGS,
+                    variables: { where: getWhere(queryParams.scope) },
+                    data: listTagsData
+                });
+            }
+        });
+
+        setInitialTags(tags);
+        setEdit(false);
+        showSnackbar("Tags successfully updated.");
+    };
+
+    return (
+        <Form<TagsFormData> data={{ tags: initialTags }} onSubmit={onSubmit}>
             {({ Bind, data, setValue, submit }) => (
                 <React.Fragment>
                     <li-title>
                         <Icon className={"list-item__icon"} icon={<LabelIcon />} />
-                        {renderHeaderContent({
-                            // TODO @ts-refactor
-                            // @ts-ignore
-                            data
-                        })}
+                        {renderHeaderContent({ data })}
                     </li-title>
                     {editing && (
                         <li-content>
                             <Bind
                                 name={"tags"}
                                 beforeChange={(
-                                    tags: string[],
-                                    baseOnChange: (tags: string[]) => void
+                                    tags: TagsFormData["tags"],
+                                    baseOnChange: (tags: TagsFormData["tags"]) => void
                                 ) => {
                                     const formattedTags = tags.map(tag => {
                                         const tagInLowerCase = tag.toLowerCase();
@@ -263,16 +241,14 @@ const Tags: React.FC<TagsProps> = ({ file, canEdit }) => {
                                         unique={true}
                                         allowFreeInput={true}
                                         useSimpleValues={true}
-                                        disabled={saving}
+                                        disabled={updateInProgress}
                                     />
                                 )}
                             </Bind>
                             <div className={actionWrapperStyle}>
                                 <ButtonPrimary
                                     small
-                                    onClick={ev => {
-                                        submit(ev);
-                                    }}
+                                    onClick={submit}
                                     data-testid={"fm.tags.submit"}
                                 >
                                     Submit

@@ -1,15 +1,8 @@
 import { Entity, Table } from "dynamodb-toolbox";
-import { FileManagerContext } from "@webiny/api-file-manager/types";
 
-export interface FilesEntityParams {
-    context: FileManagerContext;
-    table: Table;
-}
-export default (params: FilesEntityParams): Entity<any> => {
-    const { table } = params;
-    const entityName = "FM.File";
+export const createStandardEntity = (table: Table, name: string): Entity<any> => {
     return new Entity({
-        name: entityName,
+        name,
         table,
         attributes: {
             PK: {

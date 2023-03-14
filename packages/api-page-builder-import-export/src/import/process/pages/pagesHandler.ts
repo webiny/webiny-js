@@ -1,5 +1,5 @@
 import { ImportExportTaskStatus, PbImportExportContext } from "~/types";
-import { importPage } from "~/import/utils";
+import { importPage } from "./importPage";
 import { invokeHandlerClient } from "~/client";
 import { mockSecurity } from "~/mockSecurity";
 import { zeroPad } from "@webiny/utils";

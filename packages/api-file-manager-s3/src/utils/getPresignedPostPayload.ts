@@ -1,4 +1,5 @@
-import uniqueId from "uniqid";
+// @ts-ignore `mdbid` has no type declarations
+import mdbid from "mdbid";
 import sanitizeFilename from "sanitize-filename";
 import S3 from "aws-sdk/clients/s3";
 import { validation } from "@webiny/validation";
@@ -33,13 +34,14 @@ export default async (
         throw Error(`File's content type could not be resolved.`);
     }
 
+    const id = mdbid();
     let key = sanitizeFilename(data.name);
     if (key) {
-        key = uniqueId() + "-" + key;
+        key = id + "/" + key;
     }
 
     if (data.keyPrefix) {
-        key = `${sanitizeFilename(data.keyPrefix)}-${key}`;
+        key = `${sanitizeFilename(data.keyPrefix)}${key}`;
     }
 
     // Replace all whitespace.
@@ -71,7 +73,8 @@ export default async (
     return {
         data: payload,
         file: {
-            name: key,
+            id,
+            name: data.name,
             key,
             type: contentType,
             size: data.size
