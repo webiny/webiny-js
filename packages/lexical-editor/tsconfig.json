@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
-  "references": [{ "path": "../app-page-builder-elements" }, { "path": "../react-composition" }],
+  "references": [{ "path": "../react-composition" }],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",
@@ -9,8 +9,6 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
-      "@webiny/app-page-builder-elements/*": ["../app-page-builder-elements/src/*"],
-      "@webiny/app-page-builder-elements": ["../app-page-builder-elements/src"],
       "@webiny/react-composition/*": ["../react-composition/src/*"],
       "@webiny/react-composition": ["../react-composition/src"]
     },

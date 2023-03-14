@@ -4,7 +4,6 @@ import { $getSelection, $isRangeSelection, LexicalCommand } from "lexical";
 import { Compose, makeComposable } from "@webiny/react-composition";
 import { FontColorActionContext } from "~/context/FontColorActionContext";
 import { $isFontColorNode, ADD_FONT_COLOR_COMMAND, FontColorPayload } from "~/nodes/FontColorNode";
-import { usePageElements } from "@webiny/app-page-builder-elements";
 import { getSelectedNode } from "~/utils/getSelectedNode";
 
 /*
@@ -33,7 +32,8 @@ export interface FontColorAction extends React.FC<unknown> {
 export const FontColorAction: FontColorAction = () => {
     const [editor] = useLexicalComposerContext();
     const [fontColor, setFontColor] = useState<string>("#000");
-    const { theme } = usePageElements();
+    // const { theme } = usePageElements();
+    const theme = { styles: {}} as any;
 
     const isThemeColorName = (color: string): boolean => {
         return !!theme?.styles?.colors[color];

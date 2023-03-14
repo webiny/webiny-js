@@ -1,5 +1,5 @@
 {
-  "name": "@webiny/lexical-editor-config",
+  "name": "@webiny/lexical-editor-actions",
   "version": "0.0.0",
   "dependencies": {
     "@emotion/styled": "^10.0.27",

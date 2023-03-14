@@ -17,7 +17,6 @@ import { isValidLexicalData } from "~/utils/isValidLexicalData";
 import { LexicalUpdateStatePlugin } from "~/plugins/LexicalUpdateStatePlugin";
 import { BlurEventPlugin } from "~/plugins/BlurEventPlugin/BlurEventPlugin";
 import { FontColorPlugin } from "~/plugins/FontColorPlugin/FontColorPlugin";
-import { usePageElements } from "@webiny/app-page-builder-elements";
 import { webinyEditorTheme } from "~/themes/webinyLexicalTheme";
 import { WebinyNodes } from "~/nodes/webinyNodes";
 
@@ -52,7 +51,9 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
 }: RichTextEditorProps) => {
     const placeholderElem = <Placeholder>{placeholder || "Enter text..."}</Placeholder>;
     const scrollRef = useRef(null);
-    const { theme } = usePageElements();
+    // const { theme } = usePageElements();
+    const theme = { styles: {}};
+
     const [floatingAnchorElem, setFloatingAnchorElem] = useState<HTMLElement | undefined>(
         undefined
     );

@@ -1,10 +1,9 @@
 import type { EditorThemeClasses } from "lexical";
 
 import "./webinyLexicalTheme.css";
-import { ThemeStyles } from "@webiny/app-page-builder-elements/types";
 
 export type WebinyTheme = {
-    styles?: ThemeStyles;
+    styles?: Record<string, any>;
 };
 
 export type WebinyEditorTheme = WebinyTheme & EditorThemeClasses;

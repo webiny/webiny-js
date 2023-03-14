@@ -17,6 +17,7 @@
     "@babel/runtime": "^7.19.0",
     "@emotion/core": "^10.0.17",
     "@emotion/styled": "^10.0.17",
+    "@webiny/lexical-editor": "0.0.0",
     "@webiny/theme": "0.0.0"
   },
   "peerDependencies": {
@@ -54,7 +55,6 @@
     "@types/react": "17.0.39",
     "@types/resize-observer-browser": "^0.1.4",
     "@webiny/cli": "0.0.0",
-    "@webiny/lexical-editor": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "babel-plugin-lodash": "^3.3.4",
     "execa": "^5.0.0",
