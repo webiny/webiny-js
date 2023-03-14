@@ -30,12 +30,7 @@ type Props = {
     onClose: DialogOnClose;
 };
 
-interface SubmitData extends Omit<FolderItem, "id" | "parentId"> {
-    parent: {
-        id: string | null;
-        name?: string;
-    };
-}
+type SubmitData = Pick<FolderItem, "title" | "slug">;
 
 const t = i18n.ns("app-aco/components/tree/dialog-update");
 
