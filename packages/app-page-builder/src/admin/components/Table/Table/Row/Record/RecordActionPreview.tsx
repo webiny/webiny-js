@@ -30,7 +30,7 @@ export const RecordActionPreview = ({ record }: Props): ReactElement => {
     // We must prevent opening in new tab - Cypress doesn't work with new tabs.
     const target = "Cypress" in window ? "_self" : "_blank";
 
-    const url = getPageUrl(record, !record.locked);
+    const url = getPageUrl(record);
 
     const handlePreviewClick = useCallback(() => {
         if (isSiteRunning) {
