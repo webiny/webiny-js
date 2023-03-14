@@ -42,6 +42,9 @@ export const CoreCognito = createAppModule({
                 verificationMessageTemplate: {
                     defaultEmailOption: "CONFIRM_WITH_CODE"
                 },
+                accountRecoverySetting: {
+                    recoveryMechanisms: [{ name: "verified_email", priority: 1 }]
+                },
                 schemas: [
                     {
                         attributeDataType: "String",
