@@ -112,7 +112,6 @@ export const AdvancedMultipleReferenceField: React.VFC<Props> = props => {
         values,
         perPage: 10
     });
-    console.log(values);
 
     const onRemove = useCallback(
         (id: string) => {

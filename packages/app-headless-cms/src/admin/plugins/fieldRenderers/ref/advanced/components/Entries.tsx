@@ -14,7 +14,6 @@ const Container = styled("div")(({ height }: ContainerProps) => {
         minWidth: "100%",
         height: height || "500px",
         backgroundColor: "var(--mdc-theme-background)",
-        // padding: "20px",
         boxSizing: "border-box"
     };
 });

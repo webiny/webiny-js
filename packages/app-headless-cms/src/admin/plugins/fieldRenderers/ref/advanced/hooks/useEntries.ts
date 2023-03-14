@@ -167,6 +167,7 @@ export const useEntries = (params: Params) => {
         loadMore,
         loading,
         entries,
-        error
+        error,
+        hasMore: !!cursor
     };
 };
