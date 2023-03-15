@@ -46,6 +46,22 @@ const FooterContainer = styled("div")({
     padding: "10px"
 });
 
+const LeftContainer = styled('div')({
+    display: 'flex',
+    flexWrap: 'nowrap',
+    flex: '0 0 60%',
+    alignItems: 'center'
+});
+
+const RightContainer = styled('div')({
+    display: 'flex',
+    flexWrap: 'nowrap',
+    flex: '0 0 40%',
+    '>div':{
+        minWidth: "100px"
+    }
+});
+
 interface Props {
     entry: CmsReferenceContentEntry;
     onChange: (value: CmsReferenceValue) => void;
@@ -105,14 +121,18 @@ export const Entry: React.VFC<PropsWithRemove | Props> = ({
                 </Content>
             </ContentContainer>
             <FooterContainer>
-                <Status status={entry.status} />
-                <CreatedBy createdBy={entry.createdBy} createdOn={entry.createdOn} />
-                <ModifiedBy modifiedBy={entry.modifiedBy} savedOn={entry.savedOn} />
-                {onMoveUpClick && <MoveUp onClick={onMoveUp} />}
-                {onMoveDownClick && <MoveDown onClick={onMoveDown} />}
-                <View entry={entry} />
-                {onChange && <Select entry={entry} onChange={onChange} selected={selected} />}
-                {onRemove && <Remove entry={entry} onRemove={onRemove} />}
+                <LeftContainer>
+                    <Status status={entry.status} />
+                    <CreatedBy createdBy={entry.createdBy} createdOn={entry.createdOn} />
+                    <ModifiedBy modifiedBy={entry.modifiedBy} savedOn={entry.savedOn} />
+                </LeftContainer>
+                <RightContainer>
+                    {onMoveUpClick && <MoveUp onClick={onMoveUp} />}
+                    {onMoveDownClick && <MoveDown onClick={onMoveDown} />}
+                    <View entry={entry} />
+                    {onChange && <Select entry={entry} onChange={onChange} selected={selected} />}
+                    {onRemove && <Remove entry={entry} onRemove={onRemove} />}
+                </RightContainer>
             </FooterContainer>
         </Container>
     );

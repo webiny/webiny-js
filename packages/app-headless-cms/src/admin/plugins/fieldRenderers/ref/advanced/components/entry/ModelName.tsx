@@ -7,7 +7,7 @@ const Content = styled("h4")({
     lineHeight: "16px",
     fontWeight: 500,
     letterSpacing: "0.5px",
-    marginBottom: "5px"
+    textTransform: 'uppercase'
 });
 
 interface Props {

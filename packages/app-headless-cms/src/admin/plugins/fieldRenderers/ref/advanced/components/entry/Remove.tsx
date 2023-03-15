@@ -12,7 +12,6 @@ const Text = styled("span")({
     lineHeight: "20px",
     letterSpacing: "0.1px",
     textTransform: "uppercase",
-    marginLeft: "10px"
 });
 
 interface Props {

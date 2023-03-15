@@ -10,7 +10,8 @@ const Container = styled("div")({
     width: "140px",
     display: "flex",
     flexDirection: "row",
-    alignItems: "center"
+    alignItems: "center",
+    justifyContent: 'end'
 });
 
 const SelectButton = styled("button")({
@@ -20,7 +21,10 @@ const SelectButton = styled("button")({
     alignItems: "center",
     background: "transparent",
     color: "var(--mdc-theme-primary)",
-    cursor: "pointer"
+    cursor: "pointer",
+    '&:hover':{
+        textDecoration: 'underline'
+    }
 });
 
 interface IconProps {

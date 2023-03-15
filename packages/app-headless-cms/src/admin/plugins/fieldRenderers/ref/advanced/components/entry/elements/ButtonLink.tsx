@@ -7,14 +7,13 @@ const Container = styled("div")(({ maxWidth }: Props) => {
         display: "flex",
         flexDirection: "row",
         alignItems: "center",
-        // marginLeft: "auto",
-        marginRight: "auto"
+        justifyContent: 'end'
     };
 });
 
 const Button = styled("a")({
     display: "flex",
-    width: "auto",
+    height: 35,
     fontWeight: 500,
     fontSize: "14px",
     lineHeight: "20px",
@@ -26,6 +25,9 @@ const Button = styled("a")({
     color: "var(--mdc-theme-primary)",
     " > svg": {
         marginRight: "10px"
+    },
+    '&:hover':{
+        textDecoration: 'underline'
     }
 });
 

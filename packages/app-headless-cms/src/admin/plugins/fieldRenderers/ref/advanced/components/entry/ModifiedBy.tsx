@@ -15,12 +15,15 @@ interface Props {
 export const ModifiedBy: React.VFC<Props> = ({ modifiedBy, savedOn }) => {
     const showInformation = !!(modifiedBy?.displayName && savedOn);
 
+    if(!showInformation){
+        return null;
+    }
+
     return (
         <Box icon={null} name={"Modified By"}>
-            {!showInformation && <></>}
             {showInformation && (
                 <>
-                    {modifiedBy?.displayName}, <TimeAgo datetime={savedOn} />
+                    {modifiedBy?.displayName} <br/><TimeAgo datetime={savedOn} />
                 </>
             )}
         </Box>

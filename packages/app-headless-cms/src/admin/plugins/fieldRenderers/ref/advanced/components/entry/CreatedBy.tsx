@@ -14,7 +14,7 @@ interface Props {
 export const CreatedBy: React.VFC<Props> = ({ createdBy, createdOn }) => {
     return (
         <Box icon={null} name={"Created By"}>
-            {createdBy.displayName}, <TimeAgo datetime={createdOn} />
+            {createdBy.displayName} <br/><TimeAgo datetime={createdOn} />
         </Box>
     );
 };
