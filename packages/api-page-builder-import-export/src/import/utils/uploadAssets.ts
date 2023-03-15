@@ -29,9 +29,12 @@ export const uploadAssets = async (params: UploadAssetsParams) => {
     }
 
     // Check if files with such keys already exist
-    const [existingFiles] = await context.fileManager.files.listFiles();
+    const fileIds = files.map(file => file.id);
+    const [existingImages] = await context.fileManager.files.listFiles({
+        where: { id_in: fileIds }
+    });
     const filteredFiles = files.filter(
-        file => !existingFiles.some(existingFile => existingFile.key === file.key)
+        file => !existingImages.some(existingImage => existingImage.key === file.key)
     );
 
     // A map of temporary file keys (created during ZIP upload) to permanent file keys.
