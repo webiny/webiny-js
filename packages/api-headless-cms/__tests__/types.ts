@@ -1,4 +1,4 @@
-import { CmsGroup as BaseCmsGroup, CmsModel as BaseCmsModel } from "~/types";
+import { CmsGroup as BaseCmsGroup, CmsApiModel as BaseCmsModel } from "~/types";
 import { useCategoryManageHandler } from "./testHelpers/useCategoryManageHandler";
 import { useProductManageHandler } from "./testHelpers/useProductManageHandler";
 
@@ -43,7 +43,7 @@ export interface ProductCategoryRef {
 export interface ProductVariantOption {
     name: string;
     price: number;
-    image: string;
+    image?: string;
     category: ProductCategoryRef;
     categories: ProductCategoryRef[];
     longText: string[];
@@ -51,7 +51,7 @@ export interface ProductVariantOption {
 export interface ProductVariant {
     name: string;
     price: number;
-    images: string[];
+    images?: string[];
     category: ProductCategoryRef;
     options?: ProductVariantOption[];
 }

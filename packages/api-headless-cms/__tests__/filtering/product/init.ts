@@ -12,6 +12,8 @@ const createModelFactory = (manager: ProductManager, group: CmsGroup) => {
             data: {
                 name: model.name,
                 modelId: model.modelId,
+                singularApiName: model.singularApiName,
+                pluralApiName: model.pluralApiName,
                 group: group.id
             }
         });

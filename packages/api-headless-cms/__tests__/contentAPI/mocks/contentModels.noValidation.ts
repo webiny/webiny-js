@@ -1,5 +1,5 @@
 import { createContentModelGroup } from "./contentModelGroup";
-import { CmsModel } from "~/types";
+import { CmsApiModel } from "~/types";
 import { generateAlphaNumericLowerCaseId } from "@webiny/utils";
 
 const { version: webinyVersion } = require("@webiny/cli/package.json");
@@ -11,7 +11,7 @@ const ids = {
 
 const contentModelGroup = createContentModelGroup();
 
-const models: CmsModel[] = [
+const models: CmsApiModel[] = [
     {
         createdOn: new Date().toISOString(),
         savedOn: new Date().toISOString(),
@@ -20,6 +20,8 @@ const models: CmsModel[] = [
         name: "Category",
         description: "Product category",
         modelId: "category",
+        singularApiName: "Category",
+        pluralApiName: "Categories",
         group: {
             id: contentModelGroup.id,
             name: contentModelGroup.name

@@ -1,4 +1,4 @@
-import { CmsModelFieldInput, CmsGroup, CmsModelField } from "~/types";
+import { CmsModelFieldInput, CmsGroup, CmsModelField, CmsApiModel } from "~/types";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import * as helpers from "../testHelpers/helpers";
 import models from "./mocks/contentModels";
@@ -123,6 +123,8 @@ describe("content model test", () => {
             data: {
                 name: "Test Content model",
                 modelId: "test-content-model",
+                singularApiName: "TestContentModel",
+                pluralApiName: "TestContentModels",
                 group: contentModelGroup.id
             }
         });
@@ -135,6 +137,8 @@ describe("content model test", () => {
                         description: "",
                         titleFieldId: "id",
                         modelId: "testContentModel",
+                        singularApiName: "TestContentModel",
+                        pluralApiName: "TestContentModels",
                         createdBy: helpers.identity,
                         createdOn: expect.stringMatching(/^20/),
                         savedOn: expect.stringMatching(/^20/),
@@ -251,6 +255,8 @@ describe("content model test", () => {
             data: {
                 name: "Test Content model",
                 modelId: "test-content-model",
+                singularApiName: "TestContentModel",
+                pluralApiName: "TestContentModels",
                 group: contentModelGroup.id
             }
         });
@@ -288,7 +294,20 @@ describe("content model test", () => {
             data: {
                 name: category.name,
                 modelId: category.modelId,
+                singularApiName: category.singularApiName,
+                pluralApiName: category.pluralApiName,
                 group: contentModelGroup.id
+            }
+        });
+
+        expect(createContentModelResponse).toMatchObject({
+            data: {
+                createContentModel: {
+                    data: {
+                        modelId: category.modelId
+                    },
+                    error: null
+                }
             }
         });
 
@@ -300,12 +319,33 @@ describe("content model test", () => {
             }
         });
 
+        expect(updateContentModelResponse).toMatchObject({
+            data: {
+                updateContentModel: {
+                    data: {
+                        modelId: category.modelId
+                    },
+                    error: null
+                }
+            }
+        });
+
         const model = updateContentModelResponse.data.updateContentModel.data;
 
-        await createCategory({
+        const [createCategoryResponse] = await createCategory({
             data: {
                 title: "Category",
                 slug: "title"
+            }
+        });
+        expect(createCategoryResponse).toMatchObject({
+            data: {
+                createCategory: {
+                    data: {
+                        id: expect.any(String)
+                    },
+                    error: null
+                }
             }
         });
 
@@ -335,6 +375,8 @@ describe("content model test", () => {
             data: {
                 name: "Test Content model",
                 modelId: "test-content-model",
+                singularApiName: "TestContentModel",
+                pluralApiName: "TestContentModels",
                 group: contentModelGroup.id
             }
         });
@@ -430,11 +472,33 @@ describe("content model test", () => {
     test("update content model with new fields", async () => {
         const { createContentModelMutation, updateContentModelMutation } =
             useGraphQLHandler(manageHandlerOpts);
+        const modelData: Pick<
+            CmsApiModel,
+            "name" | "modelId" | "singularApiName" | "pluralApiName"
+        > = {
+            name: "Test Content model",
+            modelId: "test-content-model",
+            singularApiName: "TestContentModel",
+            pluralApiName: "TestContentModels"
+        };
+        const realModelId = "testContentModel";
         const [createResponse] = await createContentModelMutation({
             data: {
-                name: "Test Content model",
-                modelId: "test-content-model",
+                ...modelData,
+                modelId: realModelId,
                 group: contentModelGroup.id
+            }
+        });
+
+        expect(createResponse).toMatchObject({
+            data: {
+                createContentModel: {
+                    data: {
+                        ...modelData,
+                        modelId: realModelId
+                    },
+                    error: null
+                }
             }
         });
 
@@ -495,6 +559,7 @@ describe("content model test", () => {
             data: {
                 updateContentModel: {
                     data: {
+                        ...modelData,
                         savedOn: expect.stringMatching(/^20/),
                         createdBy: helpers.identity,
                         createdOn: expect.stringMatching(/^20/),
@@ -533,6 +598,8 @@ describe("content model test", () => {
             data: {
                 name: "Test Content model",
                 modelId: "test-content-model",
+                singularApiName: "TestContentModel",
+                pluralApiName: "TestContentModels",
                 group: contentModelGroup.id
             }
         });
@@ -595,6 +662,8 @@ describe("content model test", () => {
             data: {
                 name: "Test Content model",
                 modelId: "test-content-model",
+                singularApiName: "TestContentModel",
+                pluralApiName: "TestContentModels",
                 group: contentModelGroup.id
             }
         });
@@ -627,6 +696,8 @@ describe("content model test", () => {
             data: {
                 name: "Test Content model",
                 modelId: "test-content-model",
+                singularApiName: "TestContentModel",
+                pluralApiName: "TestContentModels",
                 group: contentModelGroup.id
             }
         });
@@ -639,6 +710,8 @@ describe("content model test", () => {
             data: {
                 name: "Cloned model",
                 modelId: "clonedTestModel",
+                singularApiName: "ClonedTestModel",
+                pluralApiName: "ClonedTestModels",
                 description: "Cloned model description",
                 group: contentModelGroup.id
             }
@@ -684,6 +757,8 @@ describe("content model test", () => {
             data: {
                 name: "Test Content model",
                 modelId: "test-content-model",
+                singularApiName: "TestContentModel",
+                pluralApiName: "TestContentModels",
                 group: contentModelGroup.id
             }
         });
@@ -729,6 +804,8 @@ describe("content model test", () => {
             data: {
                 name: "Test Content model",
                 modelId: "test-content-model",
+                singularApiName: "TestContentModel",
+                pluralApiName: "TestContentModels",
                 group: contentModelGroup.id
             }
         });
@@ -773,6 +850,8 @@ describe("content model test", () => {
             data: {
                 name: bugModel.name,
                 modelId: bugModel.modelId,
+                singularApiName: bugModel.singularApiName,
+                pluralApiName: bugModel.pluralApiName,
                 group: contentModelGroup.id
             }
         });
@@ -870,6 +949,8 @@ describe("content model test", () => {
                 data: {
                     name: `Test Content model instance-${i}`,
                     modelId: `test-content-model-${i}`,
+                    singularApiName: `TestContentModel${i}`,
+                    pluralApiName: `TestContentModels${i}`,
                     group: contentModelGroup.id
                 }
             });
@@ -896,6 +977,8 @@ describe("content model test", () => {
                 data: {
                     name: `Test Content model instance-${i}`,
                     modelId: `test-content-model-${i}`,
+                    singularApiName: `TestContentModel${i}`,
+                    pluralApiName: `TestContentModels${i}`,
                     group: contentModelGroup.id
                 }
             });
@@ -933,6 +1016,8 @@ describe("content model test", () => {
                 data: {
                     name: `Test Content model instance-${i}`,
                     modelId: `test-content-model-${i}`,
+                    singularApiName: `TestContentModel${i}`,
+                    pluralApiName: `TestContentModels${i}`,
                     group: contentModelGroup.id
                 }
             });
@@ -966,7 +1051,9 @@ describe("content model test", () => {
 
         const model = {
             name: `Test Content model instance`,
-            modelId: `testContentModel`
+            modelId: `testContentModel`,
+            singularApiName: `TestContentModel`,
+            pluralApiName: `TestContentModels`
         };
         const [createResponse] = await createContentModelMutation({
             data: {

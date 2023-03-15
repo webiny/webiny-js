@@ -26,6 +26,8 @@ describe("content model test", () => {
         const eventData = {
             name: "Event",
             modelId: "event",
+            singularApiName: "Event",
+            pluralApiName: "Events",
             group: contentModelGroup.id
         };
 
@@ -51,6 +53,8 @@ describe("content model test", () => {
         const eventsData = {
             name: "Event",
             modelId: "event",
+            singularApiName: "Event",
+            pluralApiName: "Events",
             group: contentModelGroup.id
         };
 
@@ -80,6 +84,8 @@ describe("content model test", () => {
         const eventData = {
             name: "Event",
             modelId: "event",
+            singularApiName: "Event",
+            pluralApiName: "Events",
             group: contentModelGroup.id
         };
         const [eventResponse] = await createContentModelMutation({
@@ -104,6 +110,8 @@ describe("content model test", () => {
         const eventsData = {
             name: "Events",
             modelId: "events",
+            singularApiName: "Event",
+            pluralApiName: "Events",
             group: contentModelGroup.id
         };
 
@@ -136,6 +144,8 @@ describe("content model test", () => {
             data: {
                 name: "Events",
                 modelId: "events",
+                singularApiName: "Event",
+                pluralApiName: "Events",
                 group: contentModelGroup.id
             }
         });
@@ -144,6 +154,8 @@ describe("content model test", () => {
             data: {
                 name: "Event",
                 modelId: "event",
+                singularApiName: "Event",
+                pluralApiName: "Events",
                 group: contentModelGroup.id
             }
         });

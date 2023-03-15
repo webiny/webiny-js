@@ -1,5 +1,5 @@
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
-import { CmsGroup, CmsModel, CmsModelField } from "~/types";
+import { CmsGroup, CmsApiModel, CmsModelField } from "~/types";
 import models from "./mocks/contentModels";
 import { toSlug } from "~/utils/toSlug";
 
@@ -16,7 +16,7 @@ const setEmptyTextsAsNull = (fields: CmsModelField[]): CmsModelField[] => {
     });
 };
 
-const createExpectedModel = (original: CmsModel, group?: CmsGroup) => {
+const createExpectedModel = (original: CmsApiModel, group?: CmsGroup) => {
     return {
         ...original,
         group: {
@@ -52,7 +52,7 @@ describe("content model - cloning", () => {
 
     let defaultGroup: CmsGroup;
     let cloneGroup: CmsGroup;
-    let originalModel: CmsModel;
+    let originalModel: CmsApiModel;
 
     beforeEach(async () => {
         const [createDefaultGroupResponse] = await createContentModelGroupMutation({
@@ -83,6 +83,8 @@ describe("content model - cloning", () => {
             data: {
                 name: targetModel.name,
                 modelId: targetModel.modelId,
+                singularApiName: targetModel.singularApiName,
+                pluralApiName: targetModel.pluralApiName,
                 group: defaultGroup.id
             }
         });
@@ -104,11 +106,17 @@ describe("content model - cloning", () => {
             data: {
                 name: "Cloned model",
                 description: "Cloned model description",
+                singularApiName: "ClonedModel",
+                pluralApiName: "ClonedModels",
                 group: defaultGroup.id
             }
         });
 
-        const expectedModel: CmsModel = createExpectedModel(originalModel);
+        const expectedModel: CmsApiModel = createExpectedModel({
+            ...originalModel,
+            singularApiName: "ClonedModel",
+            pluralApiName: "ClonedModels"
+        });
 
         expect(cloneResponse).toEqual({
             data: {
@@ -154,11 +162,20 @@ describe("content model - cloning", () => {
             data: {
                 name: "Cloned model",
                 description: "Cloned model description",
+                singularApiName: "ClonedModel",
+                pluralApiName: "ClonedModels",
                 group: cloneGroup.id
             }
         });
 
-        const expectedModel: CmsModel = createExpectedModel(originalModel, cloneGroup);
+        const expectedModel: CmsApiModel = createExpectedModel(
+            {
+                ...originalModel,
+                singularApiName: "ClonedModel",
+                pluralApiName: "ClonedModels"
+            },
+            cloneGroup
+        );
 
         expect(cloneResponse).toEqual({
             data: {
@@ -176,6 +193,8 @@ describe("content model - cloning", () => {
             data: {
                 name: originalModel.name,
                 group: defaultGroup.id,
+                singularApiName: originalModel.singularApiName,
+                pluralApiName: originalModel.pluralApiName,
                 description: "Cloned model description"
             }
         });
@@ -203,6 +222,8 @@ describe("content model - cloning", () => {
                 name: "Cloned model",
                 modelId: originalModel.modelId,
                 group: defaultGroup.id,
+                singularApiName: "ClonedModel",
+                pluralApiName: "ClonedModels",
                 description: "Cloned model description"
             }
         });
@@ -244,12 +265,21 @@ describe("content model - cloning", () => {
             data: {
                 name: "Cloned model",
                 group: deGroup.id,
+                singularApiName: "ClonedModel",
+                pluralApiName: "ClonedModels",
                 description: "Cloned model description",
                 locale: "de-DE"
             }
         });
 
-        const expectedModel: CmsModel = createExpectedModel(originalModel, deGroup);
+        const expectedModel: CmsApiModel = createExpectedModel(
+            {
+                ...originalModel,
+                singularApiName: "ClonedModel",
+                pluralApiName: "ClonedModels"
+            },
+            deGroup
+        );
 
         expect(response).toEqual({
             data: {

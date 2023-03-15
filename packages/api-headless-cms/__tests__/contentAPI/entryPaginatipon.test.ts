@@ -4,7 +4,7 @@
 import { useFruitManageHandler } from "../testHelpers/useFruitManageHandler";
 // @ts-ignore
 import mdbid from "mdbid";
-import { CmsEntry, CmsModel, StorageOperationsCmsModel } from "~/types";
+import { CmsEntry, CmsApiModel, StorageOperationsCmsModel } from "~/types";
 import { setupContentModelGroup, setupContentModels } from "../testHelpers/setup";
 import { attachCmsModelFieldConverters } from "~/utils/converters/valueKeyStorageConverter";
 
@@ -74,7 +74,7 @@ describe("entry pagination", () => {
             locale: "en-US",
             tenant: "root",
             modelId: "fruit"
-        })) as CmsModel;
+        })) as CmsApiModel;
         fruitContentModel = attachCmsModelFieldConverters({
             plugins,
             model

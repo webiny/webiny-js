@@ -1,6 +1,10 @@
+import { CmsApiModel, CmsModelField } from "~/types";
+
 const DATA_FIELD = /* GraphQL*/ `
     {
         modelId
+        singularApiName
+        pluralApiName
         name
         description
         group {
@@ -76,6 +80,49 @@ export const LIST_CONTENT_MODELS_QUERY = /* GraphQL */ `
         }
     }
 `;
+
+export interface CreateContentModelMutationVariables {
+    data: {
+        name: string;
+        modelId?: string;
+        group: string | { id: string; name: string };
+        singularApiName: string;
+        pluralApiName: string;
+        description?: string;
+        fields?: CmsModelField[];
+        layout?: string[][];
+        titleFieldId?: string;
+    };
+}
+export interface CreateContentModelFromMutationVariables {
+    modelId: string;
+    data: {
+        name: string;
+        modelId?: string;
+        group: string | { id: string; name: string };
+        singularApiName: string;
+        pluralApiName: string;
+        description?: string;
+        fields?: CmsModelField[];
+        layout?: string[][];
+        titleFieldId?: string;
+        locale?: `${Lowercase<string>}-${Uppercase<string>}`;
+    };
+}
+
+export interface CreateContentModelMutationResponse {
+    errors?: any[];
+    data: {
+        createContentModel: {
+            data: CmsApiModel;
+            error: {
+                message: string;
+                code: any;
+                data: any;
+            };
+        };
+    };
+}
 
 export const CREATE_CONTENT_MODEL_MUTATION = /* GraphQL */ `
     mutation CreateContentModelMutation($data: CmsContentModelCreateInput!) {

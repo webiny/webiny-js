@@ -6,6 +6,8 @@ const floats = [2, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 20];
 export const createNumbersModel = (group: CmsGroup): CmsModel => {
     const model: CmsModel = {
         modelId: "numbers",
+        singularApiName: "Number",
+        pluralApiName: "Numbers",
         group: {
             id: group.id,
             name: group.name

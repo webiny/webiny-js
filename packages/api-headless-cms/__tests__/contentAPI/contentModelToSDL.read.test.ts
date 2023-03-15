@@ -6,7 +6,7 @@ import categorySDL from "./snapshots/category.read";
 import productSDL from "./snapshots/product.read";
 import reviewSDL from "./snapshots/review.read";
 import pageSDL from "./snapshots/page.read";
-import { CmsModel, CmsModelFieldToGraphQLPlugin } from "~/types";
+import { CmsApiModel, CmsModelFieldToGraphQLPlugin } from "~/types";
 import { pageModel } from "./mocks/pageWithDynamicZonesModel";
 
 /**
@@ -16,7 +16,7 @@ import { pageModel } from "./mocks/pageWithDynamicZonesModel";
  * Because of that reason, we will pass the model with filtered fields into it - if we do not: schema generating test will be wrong.
  */
 
-const getModel = (modelId: string): CmsModel => {
+const getModel = (modelId: string): CmsApiModel => {
     const model = contentModels.find(c => c.modelId === modelId);
     if (!model) {
         throw new Error(`Could not find model "${modelId}".`);
@@ -60,7 +60,11 @@ describe("READ - ContentModel to SDL", () => {
     });
 
     test("Dynamic Zone SDL", async () => {
-        const sdl = createReadSDL({ model: pageModel as any, fieldTypePlugins, sorterPlugins: [] });
+        const sdl = createReadSDL({
+            model: pageModel as CmsApiModel,
+            fieldTypePlugins,
+            sorterPlugins: []
+        });
         const prettyGql = prettier.format(sdl.trim(), { parser: "graphql" });
         const prettySnapshot = prettier.format(pageSDL.trim(), { parser: "graphql" });
         expect(prettyGql).toBe(prettySnapshot);

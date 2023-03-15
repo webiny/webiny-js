@@ -1,4 +1,4 @@
-import { CmsGroup, CmsModel } from "~/types";
+import { CmsGroup, CmsApiModel } from "~/types";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
 import { useCategoryReadHandler } from "../testHelpers/useCategoryReadHandler";
@@ -39,7 +39,7 @@ describe("Endpoint access", () => {
 
     // This function is not directly within `beforeEach` as we don't always setup the same content model.
     // We call this function manually at the beginning of each test, where needed.
-    const setupContentModel = async (model?: CmsModel) => {
+    const setupContentModel = async (model?: CmsApiModel) => {
         if (!model) {
             model = models.find(m => m.modelId === "category");
             if (!model) {
@@ -61,6 +61,8 @@ describe("Endpoint access", () => {
             data: {
                 name: model.name,
                 modelId: model.modelId,
+                singularApiName: model.singularApiName,
+                pluralApiName: model.pluralApiName,
                 group: contentModelGroup.id
             }
         });

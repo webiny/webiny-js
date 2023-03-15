@@ -2,7 +2,7 @@ import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandle
 import { assignEntryEvents, pubSubTracker } from "./mocks/lifecycleHooks";
 import models from "./mocks/contentModels";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
-import { CmsGroup, CmsModel } from "~/types";
+import { CmsGroup, CmsApiModel } from "~/types";
 
 describe("contentEntryHooks", () => {
     let contentModelGroup: CmsGroup;
@@ -14,7 +14,7 @@ describe("contentEntryHooks", () => {
         createContentModelGroupMutation
     } = useGraphQLHandler(manageOpts);
 
-    const setupContentModel = async (model?: CmsModel) => {
+    const setupContentModel = async (model?: CmsApiModel) => {
         if (!model) {
             model = models.find(m => m.modelId === "category");
             if (!model) {
@@ -36,6 +36,8 @@ describe("contentEntryHooks", () => {
             data: {
                 name: model.name,
                 modelId: model.modelId,
+                singularApiName: model.singularApiName,
+                pluralApiName: model.pluralApiName,
                 group: contentModelGroup.id
             }
         });

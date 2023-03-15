@@ -1,5 +1,5 @@
 const { version: webinyVersion } = require("@webiny/cli/package.json");
-import { CmsModel as BaseCmsModel, CmsModelField as BaseCmsModelField } from "~/types";
+import { CmsApiModel as BaseCmsModel, CmsModelField as BaseCmsModelField } from "~/types";
 
 type CmsModelField = Omit<BaseCmsModelField, "storageId">;
 interface CmsModel extends Omit<BaseCmsModel, "fields"> {
@@ -17,6 +17,8 @@ export const pageModel: CmsModel = {
     },
     description: "Page",
     modelId: "page",
+    singularApiName: "Page",
+    pluralApiName: "Pages",
     savedOn: "2022-12-19T19:10:02.731Z",
     titleFieldId: "id",
     lockedFields: [],
