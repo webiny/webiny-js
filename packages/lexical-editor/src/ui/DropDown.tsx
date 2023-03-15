@@ -139,7 +139,8 @@ export function DropDown({
     buttonIconClassName,
     children,
     stopCloseOnClickSelf,
-    showScroll = true
+    showScroll = true,
+    style
 }: {
     disabled?: boolean;
     buttonAriaLabel?: string;
@@ -149,6 +150,7 @@ export function DropDown({
     children: ReactNode;
     stopCloseOnClickSelf?: boolean;
     showScroll?: boolean;
+    style: object
 }): JSX.Element {
     const buttonRef = useRef<HTMLButtonElement>(null);
     const [showDropDown, setShowDropDown] = useState(false);
@@ -181,7 +183,7 @@ export function DropDown({
 
     return (
         <button
-            style={{ position: "relative" }}
+            style={{...style, position: "relative" }}
             disabled={disabled}
             aria-label={buttonAriaLabel || buttonLabel}
             className={buttonClassName}

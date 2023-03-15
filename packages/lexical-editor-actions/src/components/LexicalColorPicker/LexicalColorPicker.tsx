@@ -15,24 +15,19 @@ const ColorPickerStyle = styled("div")({
     position: "relative",
     display: "flex",
     flexWrap: "wrap",
-    justifyContent: "space-between",
+    justifyContent: "flex-start",
+    columnGap: 20,
+    rowGap: 20,
     width: 225,
-    padding: 0,
-    backgroundColor: "#fff"
-});
-
-const ColorBox = styled("div")({
-    cursor: "pointer",
-    width: 50,
-    height: 40,
-    margin: 10,
-    borderRadius: 2
+    padding: 20,
+    backgroundColor: "#fff",
 });
 
 const Color = styled("button")({
     cursor: "pointer",
     width: 40,
-    height: 30,
+    height: 40,
+    borderRadius: 5,
     border: "1px solid var(--mdc-theme-on-background)",
     transition: "transform 0.2s, scale 0.2s",
     display: "flex",
@@ -50,7 +45,8 @@ const Color = styled("button")({
         opacity: 0
     },
     "&:hover": {
-        transform: "scale(1.25)",
+        transform: "scale(1.1)",
+        boxShadow: 'var(--color-picker-active-color) 0 0 2px',
         "&::after": {
             opacity: 1
         }
@@ -83,7 +79,7 @@ const COLORS = {
 
 const styles = {
     selectedColor: css({
-        boxShadow: "0px 0px 0px 2px var(--mdc-theme-secondary)"
+        boxShadow: "0px 0px 0px 2px var(--mdc-theme-secondary)",
     }),
     button: css({
         cursor: "pointer",
@@ -185,10 +181,10 @@ export const LexicalColorPicker: React.FC<LexicalColorPickerProps> = ({
                     themeColor = true;
                 }
                 return (
-                    <ColorBox key={index}>
                         <Color
+                            key={index}
                             className={key === value ? styles.selectedColor : ""}
-                            style={{ backgroundColor: color }}
+                            style={{ backgroundColor: color, '--color-picker-active-color': color}  as React.CSSProperties}
                             onClick={() => {
                                 // With page elements implementation, we want to store the color key and
                                 // then the actual color will be retrieved from the theme object.
@@ -203,30 +199,26 @@ export const LexicalColorPicker: React.FC<LexicalColorPickerProps> = ({
                                 onChangeComplete(value, themeColorName);
                             }}
                         />
-                    </ColorBox>
                 );
             })}
-
-            <ColorBox>
-                <Color
-                    className={classnames(transparent, {
-                        [styles.selectedColor]: value === "transparent"
-                    })}
-                    onClick={() => {
-                        onChangeComplete("transparent");
-                    }}
-                />
-            </ColorBox>
-
-            <ColorBox>
-                <Color
-                    className={value && !themeColor ? styles.selectedColor : ""}
-                    style={{ backgroundColor: themeColor ? "#fff" : value }}
-                    onClick={togglePicker}
-                >
-                    <IconPalette className={iconPaletteStyle} />
-                </Color>
-            </ColorBox>
+            
+            <Color
+                className={classnames(transparent, {
+                    [styles.selectedColor]: value === "transparent"
+                })}
+                onClick={() => {
+                    onChangeComplete("transparent");
+                }}
+            />
+        
+            <Color
+                className={value && !themeColor ? styles.selectedColor : ""}
+                style={{ backgroundColor: themeColor ? "#fff" : value }}
+                onClick={togglePicker}
+            >
+                <IconPalette className={iconPaletteStyle} />
+            </Color>
+            
 
             {showPicker && (
                 <ChromePicker
